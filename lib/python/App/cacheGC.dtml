@@ -38,28 +38,18 @@ of this text.
 </table
 
 
-
+<!--#if cacheStatistics-->
 <h3>Cache Statistics</h3>
 <table>
-<tr><th align=right>Total number of objects in the database:</th>
-<td><!--#var database_size--></td></tr>
 
-<tr><th align=right>Number of objects in the cache:</th>
-<td><!--#var cache_length--></td></tr>
-
-<tr><th align=right>Mean time since last access (minutes):</th>
-    <td><!--#var cache_mean_age fmt="%.4g"--></td></tr>
-
-<tr><th align=right>Deactivation rate (objects/minute):</th>
-    <td><!--#var cache_mean_deac fmt="%.4f"--></td></tr>
-
-<tr><th align=right>Deallocation rate (objects/minute):</th>
-    <td><!--#var cache_mean_deal fmt="%.4f"--></td></tr>
-
-<tr><th align=right>Time of last cache garbage collection:</th>
-    <td><!--#var cache_last_gc_time--></td></tr>
+<!--#in cacheStatistics-->
+<tr><th align=left><!--#var sequence-key--></th>
+    <td><!--#var sequence-item--></td>
+</tr>
+<!--#/in-->
 
 </table>
+<!--#/if-->
 
 <!--#if show_cache_detail-->
   <h4>Cache Details</h4><P>
