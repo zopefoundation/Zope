@@ -367,8 +367,7 @@ class PCGIResponse(HTTPResponse):
         if not self._wrote:
             self.stdout.write(str(self))
             self._wrote=1
-        else:
-            self.stdout.write(data)
+        self.stdout.write(data)
     
     def _finish(self):
         self.stdout.finish(self)
