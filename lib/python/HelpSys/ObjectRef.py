@@ -12,10 +12,10 @@
 ##############################################################################
 """Object Reference implementation"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
-import sys, os, string, Globals, Acquisition
+import sys, os,  Globals, Acquisition
 from HelpUtil import HelpBase, classobject
 from HelpUtil import is_class, is_module
 from Globals import DTMLFile

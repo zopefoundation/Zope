@@ -15,7 +15,6 @@ API documentation help topics
 """
 
 import types
-import string
 import HelpTopic
 from Globals import DTMLFile, Persistent
 
@@ -59,12 +58,12 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         # try to get title from first non-blank line
         # of module docstring
         if not self.title:
-            lines=string.split(self.doc,'\n')
+            lines=self.doc.split('\n')
             while 1:
-                line=string.strip(lines[0])
+                line=lines[0].strip()
                 if line:
                     # get rid of anything after a colon in the line
-                    self.title=string.split(line, ':')[0]
+                    self.title=line.split(':')[0]
                     break
                 lines.pop(0)
                 if not lines:
@@ -140,7 +139,7 @@ class APIDoc(Persistent):
         if hasattr(klass,'__extends__'):
             self.extends=[]
             for base in klass.__extends__:
-                names=string.split(base, '.')
+                names=base.split( '.')
                 url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
                 self.extends.append((names[2], url))
 
@@ -255,20 +254,20 @@ def trim_doc_string(text):
     Trims a doc string to make it format
     correctly with structured text.
     """
-    text=string.strip(text)
-    text=string.replace(text, '\r\n', '\n')
-    lines=string.split(text, '\n')
+    text=text.strip()
+    text=text.replace( '\r\n', '\n')
+    lines=text.split('\n')
     nlines=[lines[0]]
     if len(lines) > 1:
         min_indent=None
         for line in lines[1:]:
             if not line:
                 continue
-            indent=len(line) - len(string.lstrip(line))
+            indent=len(line) - len(line.lstrip())
             if indent < min_indent or min_indent is None:
                 min_indent=indent   
         for line in lines[1:]:
             nlines.append(line[min_indent:])
-    return string.join(nlines, '\n')
+    return '\n'.join(nlines)
     
     

@@ -18,7 +18,6 @@ from Globals import Persistent, HTML, DTMLFile, ImageFile
 from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 import os.path
-import string
 import Globals
 
 class HelpTopicBase:
@@ -71,7 +70,7 @@ class HelpTopicBase:
 
     def url(self):
         "URL for indexing purposes"
-        return string.join(self.getPhysicalPath(), '/')
+        return '/'.join(self.getPhysicalPath())
 
     # Private indexing methods
     # ------------------------

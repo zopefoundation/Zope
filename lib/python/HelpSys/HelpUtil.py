@@ -12,12 +12,12 @@
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import Globals, Acquisition
 import StructuredText.StructuredText
-import sys, os, string, re
+import sys, os,  re
 
 
 stx_class=StructuredText.StructuredText.HTML
@@ -70,11 +70,11 @@ class object(Acquisition.Implicit):
 
     def get_docstring_html(self):
         doc=self.get_docstring()
-        if string.find(doc, '\n\n') > -1:
-            doc=string.split(doc, '\n\n')
+        if doc.find('\n\n') > -1:
+            doc=doc.split('\n\n')
             if len(doc) > 1:
-                doc[1]=string.strip(doc[1])
-            doc=string.join(doc, '\n\n')
+                doc[1]=doc[1].strip()
+            doc='\n\n'.join(doc)
         
         return str(stx_class(doc))
 
@@ -233,7 +233,7 @@ class methodobject(object):
         if hasattr(func, '__doc__'):
             doc=func.__doc__
             if not doc: doc=''
-            doc=string.strip(doc)
+            doc=doc.strip()
         if hasattr(func, 'func_code'):
             if hasattr(func.func_code, 'co_varnames'):
                 return doc
@@ -268,14 +268,14 @@ class methodobject(object):
                 if method: args=args[1:]
                 if name=='__call__':
                     name='Call Operation'
-                return '%s(%s)' % (name, string.join(args,', '))
+                return '%s(%s)' % (name, ', '.join(args))
 
         # Other functions - look for something that smells like
         # a signature at the beginning of the docstring.
         if hasattr(func, '__doc__'):
             doc=func.__doc__
             if not doc: doc=''
-            doc=string.strip(doc)
+            doc=doc.strip()
             mo=sig_match(doc)
             if mo is not None:
                 return doc[:mo.end(0)]
