@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.45 1999/04/09 17:17:02 jim Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: SimpleItem.py,v 1.46 1999/04/27 17:00:51 amos Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -204,6 +204,10 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         try:
             if error_type  is None: error_type =sys.exc_info()[0]
             if error_value is None: error_value=sys.exc_info()[1]
+            
+            # turn error_type into a string            
+            try: error_type=error_type.__name__
+            except: pass
 
             # allow for a few different traceback options
             if tb is None and error_tb is None:
