@@ -119,6 +119,11 @@ Zope Changes
           be *more* restrictive, but that will have to wait for 2.1
           or later.
 
+        - Zope crashed under load for applications using ZCatalog due
+          to an ancient bug in handling loading of empty BTrees from
+          the database.  This bug has only become effective with
+          ZCatalog.
+
     Zope 2.0 beta 4
     
       Features Removed
