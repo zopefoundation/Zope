@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.13 1997/12/03 21:56:29 jim Exp $'
-__version__='$Revision: 1.13 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.14 1997/12/04 23:15:38 brian Exp $'
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -30,7 +30,7 @@ class Tree:
 	args=parse_params(args, name=None, expr=None,
 			  expand=None, leaves=None,
 			  header=None, footer=None,
-			  nowrap=1, branches=None)
+			  nowrap=1, branches=None, sort=None)
 	has_key=args.has_key
 
 	if has_key('name'): name=args['name']
@@ -172,6 +172,20 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     try:    items=getattr(self, args['branches'])()
     except: items=None
     if not items and have_arg('leaves'): items=1
+
+    if (args.has_key('sort')) and (items is not None) and (items != 1):
+	# Faster/less mem in-place sort
+	sort=args['sort']
+	size=range(len(items))
+	for i in size:
+	    v=items[i]
+	    k=getattr(v,sort)
+	    try:    k=k()
+	    except: pass
+	    items[i]=(k,v)
+	items.sort()
+	for i in size:
+	    items[i]=items[i][1]
 
     diff.append(id)
 
