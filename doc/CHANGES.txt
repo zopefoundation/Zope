@@ -75,6 +75,10 @@ Zope Changes
 
       - Collector #421: Storage leak in cAccessControl
 
+      - FileLibrary and GuestBook example applications gave anonymous
+        users the Manager proxy role when uploading files - a potential 
+	vulnerability on production servers.
+
     Features Added
     
       - ZCatalog index management ui is now integrated into ZCatalog rather
