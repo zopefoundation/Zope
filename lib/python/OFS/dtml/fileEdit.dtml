@@ -55,7 +55,7 @@ kind>.
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %I:%M %p">
+  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
   </div>
   </td>
 </tr>

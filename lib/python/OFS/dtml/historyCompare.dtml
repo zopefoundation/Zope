@@ -11,7 +11,7 @@ Changes to <dtml-var id> as of
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-<dtml-var dt1 fmt="%Y-%m-%d %I:%M %p">
+<dtml-var dt1 fmt="%Y-%m-%d %H:%M">
   </div>
   </td>
 </tr>
@@ -23,7 +23,7 @@ Changes to <dtml-var id> as of
   </td>
   <td align="left" valign="top">
   <div class="form-text">
-<dtml-var dt2 fmt="%Y-%m-%d %I:%M %p">
+<dtml-var dt2 fmt="%Y-%m-%d %H:%M">
   </div>
   </td>
 </tr>
