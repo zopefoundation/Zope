@@ -168,6 +168,12 @@
                       (Next 20 results)
                       </a>
 
+          'sequence-step-start-index' -- The index, starting from 0,
+             of the start of the current batch.
+
+          'sequence-step-end-index' -- The index, starting from 0, of
+             the end of the current batch.
+
           'sequence-step-size' -- The batch size used.
 
           'previous-sequence' -- This variable will be true when the
@@ -276,7 +282,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.20 1998/01/22 20:31:47 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.21 1998/02/18 15:17:54 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +336,7 @@ __rcs_id__='$Id: DT_In.py,v 1.20 1998/01/22 20:31:47 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -441,6 +447,8 @@ class In:
 	    kw['sequence-step-overlap']=overlap
 	    kw['sequence-step-start']=start
 	    kw['sequence-step-end']=end
+	    kw['sequence-step-start-index']=start-1
+	    kw['sequence-step-end-index']=end-1
 	    kw['sequence-step-orphan']=orphan
 	try:
 	    md._push(vars)
@@ -545,7 +553,7 @@ def opt(start,end,size,orphan,sequence):
 	    if end > start: end=start
 	else:
 	    end=start+size-1
-	    try: sequence[end+orphan]
+	    try: sequence[end+orphan-1]
 	    except: end=len(sequence)
 	    # if l - end < orphan: end=l
     elif end > 0:
@@ -557,7 +565,7 @@ def opt(start,end,size,orphan,sequence):
     else:
 	start=1
 	end=start+size-1
-	try: sequence[end+orphan]
+	try: sequence[end+orphan-1]
 	except: end=len(sequence)
 	# if l - end < orphan: end=l
     return start,end,size
@@ -848,6 +856,14 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.21  1998/02/18 15:17:54  jim
+# Added sequence-step-start-index and sequence-step-end-index and
+# their documentation.
+#
+# Note that I decided not to document sequence-step-start,
+# sequence-step-end, sequence-step-orphan, and sequence-step-overlap.
+# These will probably be depricated.
+#
 # Revision 1.20  1998/01/22 20:31:47  jim
 # Fixed a bug in generation of sequence-query.
 #
