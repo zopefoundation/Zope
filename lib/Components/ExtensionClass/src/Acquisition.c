@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.46 2001/01/16 15:39:41 jim Exp $
+  $Id: Acquisition.c,v 1.47 2001/02/19 19:16:07 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -118,11 +118,11 @@ CallMethodO(PyObject *self, PyObject *name,
 {
   if (! args && PyErr_Occurred()) return NULL;
   UNLESS(name=PyObject_GetAttr(self,name)) {
-    if (args) Py_DECREF(args);
+    if (args) { Py_DECREF(args); }
     return NULL;
   }
   ASSIGN(name,PyEval_CallObjectWithKeywords(name,args,kw));
-  if (args) Py_DECREF(args);
+  if (args) { Py_DECREF(args); }
   return name;
 }
 
@@ -298,7 +298,7 @@ Wrapper_special(Wrapper *self, char *name, PyObject *oname)
     case 'c':
       if (strcmp(name,"chain")==0)
 	{
-	  if (r=PyList_New(0)) 
+	  if ((r = PyList_New(0)))
 	    while (1)
 	      {
 		if (PyList_Append(r,OBJECT(self)) >= 0)
@@ -398,7 +398,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
 
   if (PyString_Check(oname)) name=PyString_AS_STRING(oname);
   if (*name=='a' && name[1]=='q' && name[2]=='_')
-    if (r=Wrapper_special(self, name+3, oname))
+    if ((r=Wrapper_special(self, name+3, oname)))
       {
 	if (filter)
 	  switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
@@ -425,7 +425,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
     {
       if (isWrapper(self->obj))
 	{
-	  if (r=Wrapper_findattr(WRAPPER(self->obj),
+	  if ((r=Wrapper_findattr(WRAPPER(self->obj),
 				 oname, filter, extra, orig, 1, 
 
 				 /* Search object container if explicit,
@@ -433,8 +433,7 @@ Wrapper_findattr(Wrapper *self, PyObject *oname,
 				 explicit ||
 				 self->obj->ob_type == 
 				 (PyTypeObject*)&Wrappertype,
-
-				 explicit, containment))
+				  explicit, containment)))
 	    {
 	      if (PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 		ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
@@ -525,12 +524,12 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 	}
       else
 	{
-	  if ((r=PyObject_GetAttr(self->container,oname)))
+	  if ((r=PyObject_GetAttr(self->container,oname))) {
 	    if (r == Acquired)
 	      {
 		Py_DECREF(r);
 	      }
-	    else
+	    else {
 	      if (filter)
 		switch(apply_filter(filter,self->container,oname,r,
 				    extra,orig))
@@ -546,6 +545,8 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 		  if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
 		  return r;
 		}
+	    }
+	  }
 	}
     }
   
@@ -566,7 +567,6 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 static PyObject *
 Xaq_getattro(Wrapper *self, PyObject *oname)
 {
-  PyObject *r, *v, *tb;
   char *name="";
 
   /* Special case backward-compatible acquire method. */
@@ -1425,7 +1425,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.46 $";
+  char *rev="$Revision: 1.47 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1444,7 +1444,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.46 2001/01/16 15:39:41 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.47 2001/02/19 19:16:07 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

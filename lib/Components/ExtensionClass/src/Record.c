@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.9 2000/04/21 14:17:23 tseaver Exp $"
+"\n$Id: Record.c,v 1.10 2001/02/19 19:16:07 jeremy Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -151,7 +151,7 @@ Record___setstate__(Record *self, PyObject *args)
 
   UNLESS(PyArg_ParseTuple(args, "|OO", &state, &parent)) return NULL;
 
-  if(state)
+  if(state) {
     if(PyDict_Check(state))
       {
 	PyObject *k, *v;
@@ -170,6 +170,7 @@ Record___setstate__(Record *self, PyObject *args)
 	    UNLESS(*d) return NULL;
 	  }
       }
+  }
 
   Py_INCREF(Py_None);
   return Py_None;
@@ -262,11 +263,11 @@ Record_getattr(Record *self, PyObject *name)
 
   if((l=Record_init(self)) < 0) return NULL;
 
-  if(io=Py_FindAttr((PyObject *)self, name)) return io;
+  if ((io=Py_FindAttr((PyObject *)self, name))) return io;
 
   PyErr_Clear();
 
-  if(io=PyObject_GetItem(self->schema, name))
+  if((io=PyObject_GetItem(self->schema, name)))
     {
       UNLESS(PyInt_Check(io))
 	{
@@ -296,7 +297,7 @@ Record_setattr(Record *self, PyObject *name, PyObject *v)
   PyObject *io;
 
   if((l=Record_init(self)) < 0) return -1;
-  if(io=PyObject_GetItem(self->schema, name))
+  if((io=PyObject_GetItem(self->schema, name)))
     {
       UNLESS(PyInt_Check(io))
 	{
@@ -350,7 +351,7 @@ Record_compare(Record *v, Record *w)
       if(*dv)
 	if(*dw)
 	  {
-	    if(c=PyObject_Compare(*dv,*dw)) return c;
+	    if((c=PyObject_Compare(*dv,*dw))) return c;
 	  }
 	else return 1;
       else if(*dw) return -1;
@@ -474,7 +475,7 @@ Record_subscript(Record *self, PyObject *key)
       return Record_item(self, i);
     }
 
-  if(io=PyObject_GetItem(self->schema, key))
+  if((io=PyObject_GetItem(self->schema, key)))
     {
       UNLESS(PyInt_Check(io))
 	{
@@ -493,7 +494,7 @@ Record_subscript(Record *self, PyObject *key)
     }
 
   PyErr_Clear();
-  if (io=PyObject_GetAttr(OBJECT(self), key)) return io;
+  if ((io=PyObject_GetAttr(OBJECT(self), key))) return io;
 
   PyErr_SetObject(PyExc_KeyError, key);					   
   return NULL;
@@ -514,7 +515,7 @@ Record_ass_sub(Record *self, PyObject *key, PyObject *v)
       return Record_ass_item(self, i, v);
     }
 
-  if(io=PyObject_GetItem(self->schema, key))
+  if((io=PyObject_GetItem(self->schema, key)))
     {
       UNLESS(PyInt_Check(io))
 	{
@@ -592,7 +593,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -631,6 +632,10 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.10  2001/02/19 19:16:07  jeremy
+  silence compiler warnings
+  (2 remain)
+
   Revision 1.9  2000/04/21 14:17:23  tseaver
   Collector #1012: Guarantee null-terminated buffer in Record_init() so Record_compare doesn't UMR
 

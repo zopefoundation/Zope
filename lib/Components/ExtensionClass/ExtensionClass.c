@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.43 2001/01/25 21:29:15 jim Exp $
+  $Id: ExtensionClass.c,v 1.44 2001/02/19 19:16:07 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.43 2001/01/25 21:29:15 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.44 2001/02/19 19:16:07 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -184,7 +184,7 @@ CallMethodO(PyObject *self, PyObject *name,
   if (! args && PyErr_Occurred()) return NULL;
   UNLESS(name=PyObject_GetAttr(self,name)) return NULL;
   ASSIGN(name,PyEval_CallObjectWithKeywords(name,args,kw));
-  if (args) Py_DECREF(args);
+  if (args) { Py_DECREF(args); }
   return name;
 }
 
@@ -607,11 +607,12 @@ CMethod_getattro(CMethod *self, PyObject *oname)
 	{
 	  ASSIGN(r, PyObject_GetAttr(r, oname));
 
-	  if (r)
+	  if (r) {
 	    if (UnboundCMethod_Check(r))
 	      ASSIGN(r, (PyObject*)bindCMethod((CMethod*)r, self->self));
 	    else if (UnboundPMethod_Check(r))
 	      ASSIGN(r, bindPMethod((PMethod*)r, self->self));
+	  }
 	}
       Py_DECREF(oname);
       return r;
@@ -921,11 +922,12 @@ PMethod_getattro(PMethod *self, PyObject *oname)
 	    {
 	      ASSIGN(r, PyObject_GetAttr(r, oname));
       
-	      if (r)
+	      if (r) {
 		if (UnboundCMethod_Check(r))
 		  ASSIGN(r, (PyObject*)bindCMethod((CMethod*)r, self->self));
 		else if (UnboundPMethod_Check(r))
 		  ASSIGN(r, bindPMethod((PMethod*)r, self->self));
+	      }
 	    }
 	  Py_DECREF(oname);
 	  return r;
@@ -1080,7 +1082,6 @@ static PyObject *
 delsetattr_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
 {
   char *name;
-  PyObject *v;
   UNLESS(PyArg_ParseTuple(args,"s",&name)) return NULL;
   UNLESS(-1 != ob_type->tp_setattr(self,name,NULL)) return NULL;
   Py_INCREF(Py_None);
@@ -1110,7 +1111,6 @@ static PyObject *
 delsetattro_by_name(PyObject *self, PyObject *args, PyTypeObject *ob_type)
 {
   PyObject *name;
-  PyObject *v;
   UNLESS(PyArg_ParseTuple(args,"O",&name)) return NULL;
   UNLESS(-1 != ob_type->tp_setattro(self,name,NULL)) return NULL;
   Py_INCREF(Py_None);
@@ -1661,7 +1661,9 @@ CCL_dealloc(PyExtensionClass *self)
       
       Py_DECREF(self->bases);
     }
-  if (((PyExtensionClass*)self->ob_type) != self) Py_XDECREF(self->ob_type);
+  if (((PyExtensionClass*)self->ob_type) != self) {
+      Py_XDECREF(self->ob_type);
+  }
   PyMem_DEL(self);
 }
   
@@ -3066,7 +3068,9 @@ subclass_dealloc(PyObject *self)
       return; /* we added a reference; don't delete now */
     }
   
-  if (HasInstDict(self)) Py_XDECREF(INSTANCE_DICT(self));
+  if (HasInstDict(self)) {
+      Py_XDECREF(INSTANCE_DICT(self));
+  }
 
   /* See if there was a dealloc handler in a (C) base class.
      If there was, then it deallocates the object and we
@@ -3340,8 +3344,6 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
 	 That means that we simply copy the base class 
 	 get/setattr.
       */
-      PyObject *r;
-
       copy_member(tp_getattr);
       copy_member(tp_getattro);
       copy_member(tp_setattr);
@@ -3528,7 +3530,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.43 $";
+  char *rev="$Revision: 1.44 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
