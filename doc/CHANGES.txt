@@ -4,6 +4,13 @@ Zope changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+        - The 'Authenticated' role has been added as one of Zope's
+          standard roles.  A user's possession of this role indicates
+          that he or she has been authenticated by the Zope security
+          machinery.  It is an implicit role, and cannot be provided to
+          users within the user management screens or the local roles
+          management screens.  It is provided to all authenticated users.
+
         - A module 'requestprofiler.py' is now part of the utilities
           directory.  When run from the command line, this utility
           allows you to generate profiling information from Zope's
