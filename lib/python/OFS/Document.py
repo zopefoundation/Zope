@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import shared_dt_globals,HTMLFile
@@ -8,21 +8,21 @@ from Globals import shared_dt_globals,HTMLFile
 class Document(HTML):
     """A Document object"""
     meta_type  ='Document'
-    description=''
-    icon       ='OFS/document.jpg'
+    title=''
+    icon       ='OFS/Document_icon.gif'
 
-    __state_names__=HTML.__state_names__+('description',)
+    __state_names__=HTML.__state_names__+('title',)
     shared_globals =shared_dt_globals
     manage_edit__allow_groups__    =None
 
     def document_template_form_header(self):
-	return ("""<br>Description: 
-                   <input type=text name=description SIZE="50" value="%s">
-                   <P>""" % self.description)
+	return ("""<br>Title: 
+                   <input type=text name=title SIZE="50" value="%s">
+                   <P>""" % self.title)
 
-    def manage_edit(self,data,description,REQUEST=None):
+    def manage_edit(self,data,title,REQUEST=None):
 	"""Edit method"""
-	self.description=description
+	self.title=title
 	return HTML.manage_edit(self,data,REQUEST)
 
 
@@ -44,30 +44,30 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
-    def manage_addDocument(self,name,description,REQUEST,file=''):
+    def manage_addDocument(self,id,title,REQUEST,file=''):
 	"""Add a new Document object"""
 	if not file: file=default_html
-        i=Document(file, __name__=name)
-	i.description=description
-	self._setObject(name,i)
+        i=Document(file, __name__=id)
+	i.title=title
+	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
-    def documentNames(self):
+    def documentIds(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Document': t.append(i['name'])
+	    if i['meta_type']=='Document': t.append(i['id'])
 	return t
 
     def documentValues(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Document': t.append(getattr(self,i['name']))
+	    if i['meta_type']=='Document': t.append(getattr(self,i['id']))
 	return t
 
     def documentItems(self):
 	t=[]
 	for i in self.objectMap():
 	    if i['meta_type']=='Document':
-		n=i['name']
+		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t

@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.1 1997/07/25 20:03:23 jim Exp $"""
+$Id: Folder.py,v 1.2 1997/08/06 18:26:13 jim Exp $"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -22,31 +22,31 @@ class FolderHandler:
 	return Folder
 	return self.__class__
 
-    def manage_addFolder(self,name,description,REQUEST):
+    def manage_addFolder(self,id,title,REQUEST):
 	"""Add a new Folder object"""
 	i=self.folderClass()()
-	i.name=name
-	i.description=description
-	self._setObject(name,i)
+	i.id=id
+	i.title=title
+	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
-    def folderNames(self):
+    def folderIds(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Folder': t.append(i['name'])
+	    if i['meta_type']=='Folder': t.append(i['id'])
 	return t
 
     def folderValues(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Folder': t.append(getattr(self,i['name']))
+	    if i['meta_type']=='Folder': t.append(getattr(self,i['id']))
 	return t
 
     def folderItems(self):
 	t=[]
 	for i in self.objectMap():
 	    if i['meta_type']=='Folder':
-		n=i['name']
+		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
 
@@ -54,11 +54,11 @@ class FolderHandler:
 class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
     """Folder object"""
     meta_type  ='Folder'
-    name       ='folder'
-    description='Folder object'
-    icon       ='OFS/folder.jpg'
+    id       ='folder'
+    title='Folder object'
+    icon       ='OFS/Folder_icon.gif'
 
-    _properties=({'name':'description', 'type': 'string'},)
+    _properties=({'id':'title', 'type': 'string'},)
 
     index_html=HTMLFile('OFS/folderIndex_html')
     meta_types=(

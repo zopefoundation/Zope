@@ -1,9 +1,15 @@
 <HTML>
 <HEAD>
-<TITLE><!--#var name fmt=spacify--></TITLE>
+<TITLE><!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--></TITLE>
 </HEAD>
 <BODY>
-<FONT SIZE="+2" COLOR="#77003B"><!--#var name fmt=spacify--></FONT>
+<FONT SIZE="+2" COLOR="#77003B">
+<!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title-->
+</FONT>
 <BR>
 
 <!--#if parentObject-->
@@ -11,9 +17,9 @@
      <A HREF="<!--#var URL2-->/manage" target="_top">
      <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/dirup.jpg" BORDER=0>
      </A>
-     Go up to
-     <!--#var name fmt=spacify-->
-     <!--#var description-->
+     Go up to <!--#if title-->
+     <!--#var title--><!--#else title-->
+     <!--#var id--><!--#/if title-->
      <BR>
   <!--#/in parentObject-->
 <!--#/if parentObject-->
@@ -21,11 +27,11 @@
 <!--#if objectValues-->
   <P>
   The following items have been defined.  To edit an item, click
-  on the item's icon.  To view an item, click on the item's name.
+  on the item's icon.  To view an item, click on the item's id.
   <P>
 
   <!--#in objectValues-->
-    <A HREF="<!--#var URL1-->/<!--#var name-->/manage"
+    <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
     <!--#if sequence-var-manage_options-->
     TARGET="_top"
     <!--#else sequence-var-manage_options-->
@@ -33,8 +39,9 @@
     <!--#endif sequence-var-manage_options-->>
     <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0">
     </A>
-    <A HREF="<!--#var URL1-->/<!--#var name-->"><!--#var name fmt=spacify-->
-    </A> <!--#var description--><BR>
+    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#if title-->
+    <!--#var title--> (<!--#var id-->)<!--#else title-->
+    <!--#var id--><!--#/if title--></A><BR>
   <!--#/in objectValues-->
   <P>
 <!--#/if objectValues-->
@@ -48,7 +55,7 @@
   <FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
   <SELECT NAME="type">
   <!--#in all_meta_types mapping-->
-    <OPTION VALUE="<!--#var name-->"><!--#var name fmt=spacify-->
+    <OPTION><!--#var name-->
   <!--#/in all_meta_types-->
   </SELECT><BR>
   <INPUT TYPE="SUBMIT" VALUE="Add">
@@ -64,9 +71,9 @@
     </TD>
     <TD VALIGN="TOP">  
     <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
-    <SELECT NAME="names:list" MULTIPLE SIZE="5">
+    <SELECT NAME="ids:list" MULTIPLE SIZE="5">
     <!--#in objectValues-->
-      <OPTION VALUE="<!--#var name-->"><!--#var name fmt=spacify-->
+      <OPTION VALUE="<!--#var id-->"><!--#var id fmt=spacify-->
     <!--#/in objectValues-->
     </SELECT><br>
     <INPUT TYPE="SUBMIT" VALUE="Delete">

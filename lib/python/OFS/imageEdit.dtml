@@ -13,8 +13,8 @@
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Name</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var name--></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><B>Image</B></TD>
@@ -23,9 +23,9 @@
   </TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Description</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="description" SIZE="50" VALUE="<!--#var description-->"></TD>
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->"></TD>
 </TR>
 <TR>
 <TD></TD>

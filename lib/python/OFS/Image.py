@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -9,12 +9,12 @@ from Globals import HTMLFile
 class Image:
     """Image object"""
     meta_type  ='Image'
-    description=''
-    icon       ='OFS/image.jpg'
+    title=''
+    icon       ='OFS/Image_icon.gif'
 
     manage_editForm=HTMLFile('OFS/imageEdit')
 
-    def manage_edit(self,file,description,content_type=''):
+    def manage_edit(self,file,title,content_type=''):
 	try:    headers=file.headers
 	except: headers=None
 
@@ -27,10 +27,10 @@ class Image:
 	    data=file.read()
 	    self.content_type=headers['content-type']
 	    self.data=data
-	self.description=description
+	self.title=title
 	
 
-    def _init(self,name,file,content_type=''):
+    def _init(self,id,file,content_type=''):
 	try:    headers=file.headers
 	except: headers=None
 	if headers is None:
@@ -41,18 +41,14 @@ class Image:
 	else:
 	    self.content_type=headers['content-type']
 	    self.data=file.read()
-	self.__name__=name
+	self.__name__=id
 
-    def name(self): return self.__name__
+    def id(self): return self.__name__
 
     def index_html(self, RESPONSE):
 	"""Default document"""
 	RESPONSE['content-type']=self.content_type
         return self.data
-
-
-
-
 
 class ImageHandler:
     """Image object handler mixin"""
@@ -60,30 +56,30 @@ class ImageHandler:
 
     manage_addImageForm=HTMLFile('OFS/imageAdd')
 
-    def manage_addImage(self,name,file,description,REQUEST):
+    def manage_addImage(self,id,file,title,REQUEST):
 	"""Add a new Image object"""
 	i=Image()
-	i._init(name,file)
-	i.description=description
-	self._setObject(name,i)
+	i._init(id,file)
+	i.title=title
+	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 
-    def imageNames(self):
+    def imageIds(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Image': t.append(i['name'])
+	    if i['meta_type']=='Image': t.append(i['id'])
 	return t
 
     def imageValues(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='Image': t.append(getattr(self,i['name']))
+	    if i['meta_type']=='Image': t.append(getattr(self,i['id']))
 	return t
 
     def imageItems(self):
 	t=[]
 	for i in self.objectMap():
 	    if i['meta_type']=='Image':
-		n=i['name']
+		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t

@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.2 1997/07/28 21:36:08 jim Exp $"""
+$Id: ObjectManager.py,v 1.3 1997/08/06 18:26:14 jim Exp $"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -22,11 +22,11 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     meta_type  ='ObjectManager'
     meta_types = dynamic_meta_types = ()
-    name       ='default'
-    description=''
+    id       ='default'
+    title=''
     icon       ='dir.jpg'
     _objects   =()
-    _properties =({'name':'description', 'type': 'string'},)
+    _properties =({'id':'title', 'type': 'string'},)
 
     manage_main          =ManageHTMLFile('OFS/main')
     manage_propertiesForm=ManageHTMLFile('OFS/properties')
@@ -56,18 +56,18 @@ class ObjectManager(Acquirer,Management,Persistent):
     def all_meta_types(self):
 	return self.meta_types+self.dynamic_meta_types
 
-    def _checkName(self,name):
-	if quote(name) != name: raise 'Bad Request', (
-	    """The name <em>%s<em>  is invalid - it
-	       contains characters illegal in URLs.""" % name)
+    def _checkId(self,id):
+	if quote(id) != id: raise 'Bad Request', (
+	    """The id <em>%s<em>  is invalid - it
+	       contains characters illegal in URLs.""" % id)
 
-	if name[:1]=='_': raise 'Bad Request', (
-	    """The name <em>%s<em>  is invalid - it 
-               begins with an underscore character, _.""" % name)
+	if id[:1]=='_': raise 'Bad Request', (
+	    """The id <em>%s<em>  is invalid - it 
+               begins with an underscore character, _.""" % id)
 
-	if hasattr(self,name): raise 'Bad Request', (
-	    """The name <em>%s<em>  is invalid - it
-               is already in use.""" % name)
+	if hasattr(self,id): raise 'Bad Request', (
+	    """The id <em>%s<em>  is invalid - it
+               is already in use.""" % id)
 
     def parentObject(self):
 	try:
@@ -78,29 +78,29 @@ class ObjectManager(Acquirer,Management,Persistent):
         #try:    return (self.aq_parent,)
 	#except: return ()
 
-    def _setObject(self,name,object):
-	self._checkName(name)
-	setattr(self,name,object)
+    def _setObject(self,id,object):
+	self._checkId(id)
+	setattr(self,id,object)
 	try:    t=object.meta_type
 	except: t=None
-	self._objects=self._objects+({'name':name,'meta_type':t},)
+	self._objects=self._objects+({'id':id,'meta_type':t},)
 
-    def _delObject(self,name):
-        delattr(self,name)
-        self._objects=tuple(filter(lambda i,n=name: i['name'] != n, 
+    def _delObject(self,id):
+        delattr(self,id)
+        self._objects=tuple(filter(lambda i,n=id: i['id'] != n, 
 				                    self._objects))
 
-    def objectNames(self):
-        # Return a list of subobject names
-	return map(lambda i: i['name'], self._objects)
+    def objectIds(self):
+        # Return a list of subobject ids
+	return map(lambda i: i['id'], self._objects)
 
     def objectValues(self):
         # Return a list of the actual subobjects
-	return map(lambda i,s=self: getattr(s,i['name']), self._objects)
+	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
     def objectItems(self):
-        # Return a list of (name, subobject) tuples
-	return map(lambda i,s=self: (i['name'], getattr(s,i['name'])),
+        # Return a list of (id, subobject) tuples
+	return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
 		                    self._objects)
     def objectMap(self):
 	# Return a tuple of mappings containing subobject meta-data
@@ -116,58 +116,58 @@ class ObjectManager(Acquirer,Management,Persistent):
 		return getattr(self,t['action'])(self,REQUEST)
 	raise 'BadRequest', 'Unknown object type: %s' % type
 
-    def manage_delObjects(self,names,REQUEST):
+    def manage_delObjects(self,ids,REQUEST):
 	"""Delete a subordinate object"""
-	while names:
-	    try:    self._delObject(names[-1])
-	    except: raise 'BadRequest', ('%s does not exist' % names[-1])
-	    del names[-1]
+	while ids:
+	    try:    self._delObject(ids[-1])
+	    except: raise 'BadRequest', ('%s does not exist' % ids[-1])
+	    del ids[-1]
 	return self.manage_main(self, REQUEST)
 
-    def _setProperty(self,name,value,type='string'):
-        self._checkName(name)
-	self._properties=self._properties+({'name':name,'type':type},)
-        setattr(self,name,value)
+    def _setProperty(self,id,value,type='string'):
+        self._checkId(id)
+	self._properties=self._properties+({'id':id,'type':type},)
+        setattr(self,id,value)
 
-    def _delProperty(self,name):
-        delattr(self,name)
-        self._properties=tuple(filter(lambda i, n=name: i['name'] != n,
+    def _delProperty(self,id):
+        delattr(self,id)
+        self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
 				     self._properties))
 
-    def propertyNames(self):
-        # Return a list of property names
-	return map(lambda i: i['name'], self._properties)
+    def propertyIds(self):
+        # Return a list of property ids
+	return map(lambda i: i['id'], self._properties)
 
     def propertyValues(self):
         # Return a list of actual property objects
-	return map(lambda i,s=self: getattr(s,i['name']), self._properties)
+	return map(lambda i,s=self: getattr(s,i['id']), self._properties)
 
     def propertyItems(self):
-        # Return a list of (name,property) tuples
-	return map(lambda i,s=self: (i['name'],getattr(s,i['name'])), 
+        # Return a list of (id,property) tuples
+	return map(lambda i,s=self: (i['id'],getattr(s,i['id'])), 
 		                    self._properties)
     def propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties
         return self._properties
 
-    def manage_addProperty(self,name,value,type,REQUEST):
+    def manage_addProperty(self,id,value,type,REQUEST):
 	"""Add a new property (www)"""
-	self._setProperty(name,value,type)
+	self._setProperty(id,value,type)
 	return self.manage_propertiesForm(self,REQUEST)
 
     def manage_editProperties(self,REQUEST):
 	"""Edit object properties"""
 	for p in self._properties:
-	    n=p['name']
+	    n=p['id']
 	    try:    setattr(self,n,REQUEST[n])
 	    except: pass
 	return self.manage_propertiesForm(self,REQUEST)
 
-    def manage_delProperties(self,names,REQUEST):
+    def manage_delProperties(self,ids,REQUEST):
 	"""Delete one or more properties"""
-	try:    p=map(lambda d: d['name'], self.__class__._properties)
+	try:    p=map(lambda d: d['id'], self.__class__._properties)
 	except: p=[]
-	for n in names:
+	for n in ids:
 	    if n in p:
 	        return MessageDialog(
 	        title  ='Cannot delete %s' % n,
@@ -211,15 +211,18 @@ class ObjectManager(Acquirer,Management,Persistent):
 	imap=self._inputMap
         r=[]
 	for p in self._properties:
-	    n=p['name']
+	    n=p['id']
 	    t=p['type']
 	    v=getattr(self,n)
-	    r.append({'name': n, 'input': imap[t](None,n,t,v)})
+	    r.append({'id': n, 'input': imap[t](None,n,t,v)})
 	return r
 
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.3  1997/08/06 18:26:14  jim
+# Renamed description->title and name->id and other changes
+#
 # Revision 1.2  1997/07/28 21:36:08  jim
 # Got rid of some message dialogs.
 #

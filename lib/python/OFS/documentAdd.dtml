@@ -13,12 +13,14 @@
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Name</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="name" SIZE="50"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Id</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="50"></TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>Description</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="description" SIZE="50"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
+  </TD>
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><B>File</B></TD>

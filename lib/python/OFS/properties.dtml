@@ -15,7 +15,7 @@ edit the value and click the "Change Properties" button.
 <!--#if propertyInputs-->
 <!--#in propertyInputs mapping-->
   <TR>
-    <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var name fmt=spacify--></B></TD>
+    <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var id fmt=spacify--></B></TD>
     <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input--></TD>
   </TR>
 <!--#/in propertyInputs-->
@@ -34,14 +34,14 @@ edit the value and click the "Change Properties" button.
 <P>
 
 <FORM ACTION="<!--#var URL1-->/manage_addProperty" METHOD="POST">
-You may add a property by filling in the name, type, and initial
+You may add a property by filling in the id, type, and initial
 value fields below and then clicking on the "Add Property" button.
 <BR>
 <TABLE>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">Name:</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">Id:</TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="name" SIZE="16">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="16">
   </TD>
 </TR>
 <TR>
@@ -72,16 +72,16 @@ value fields below and then clicking on the "Add Property" button.
 
 <!--#if propertyMap-->
 <FORM ACTION="<!--#var URL1-->/manage_delProperties" METHOD="POST">
-You may delete properties by selecting one or more property names 
+You may delete properties by selecting one or more property ids 
 from the list below and clicking the &quot;Delete Properties&quot;
 button.
 <BR>
 <TABLE>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <SELECT NAME="names:list" SIZE="5" MULTIPLE>
+  <SELECT NAME="ids:list" SIZE="5" MULTIPLE>
   <!--#in propertyMap mapping-->
-    <OPTION VALUE="<!--#var name-->"><!--#var name fmt=nicify-->
+    <OPTION VALUE="<!--#var id-->"><!--#var id fmt=nicify-->
   <!--#/in propertyMap-->
   </SELECT>
   <BR>
