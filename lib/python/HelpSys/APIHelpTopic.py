@@ -329,12 +329,13 @@ def trim_doc_string(text):
     if len(lines) > 1:
         min_indent=None
         for line in lines[1:]:
+            if not line:
+                continue
             indent=len(line) - len(string.lstrip(line))
             if indent < min_indent or min_indent is None:
                 min_indent=indent   
         for line in lines[1:]:
             nlines.append(line[min_indent:])
     return string.join(nlines, '\n')
-    
     
     

@@ -3,6 +3,7 @@
 <h1>API Documentation</h1>
 
 <dtml-if "_.len(apis) > 1">
+<h3>Classes</h3>
 <dl><dd>
 <h2 class="api">
 <dtml-in apis>
