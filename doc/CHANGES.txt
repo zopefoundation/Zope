@@ -80,6 +80,12 @@ Zope Changes
           which could cause problems rendering the Undo log if any 
           of the descriptions contained stray HTML tags.
 
+        - Bugs in the way that ZClass instances were pickled have 
+          been fixed.
+
+        - Some long-standing indentation problems with the tree tag 
+          have been fixed.
+          
 
     Zope 2.1.0 beta 1
 
