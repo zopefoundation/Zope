@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -363,18 +363,19 @@ class DateTime:
             case a 12-hour clock is assumed.
 
           - If the DateTime function is invoked with a single
-            Numeric argument, the number is assumed to be either
+            Numeric argument, the number is assumed to be 
             a floating point value such as that returned by 
-            time.time() , or a number of days after January 1, 1901 
-            00:00:00 UTC.
+            time.time().
 
-            A DateTime object is returned that represents either
+            A DateTime object is returned that represents 
             the gmt value of the time.time() float represented in
-            the local machine's timezone, or that number of days 
-            after January 1, 1901. Note that the number of days 
-            after 1901 need to be expressed from the viewpoint of
-            the local machine's timezone. A negative argument will 
-            yield a date-time value before 1901.
+            the local machine's timezone.
+
+            Note that there is a small inconsistency here.  When
+            a DateTime is converted to a number (e.g. with float()),
+            the value returned is the number of days since Jan 1,
+            1901. This means that DateTime(float(d)), where d is a
+            DateTime does not return a DateTime that is equal to d.
         
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
@@ -484,7 +485,7 @@ class DateTime:
                 a=self._tzinfo[tz].info(t)[0]
                 d,t=d-(a/86400.0),t-a
 
-            elif (arg > 0) and (int(arg)/365+1901 > 2030):
+            else:
                 # Seconds from epoch, gmt
                 t,tz=arg,self._localzone
                 ms=(t-int(t))
@@ -493,30 +494,6 @@ class DateTime:
                 d=(self._julianday(yr,mo,dy)-jd1901)+s
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
                 sc=sc+ms
-
-            else:
-                # Float days since Jan 1, 1901 machine tz
-                _j,tz=arg*86400.0,self._localzone
-                yr,mo,dy=self._calendarday((arg+jd1901))
-                s=(_j-int(_j))*86400.0
-                hr=int(s/3600)
-                s=s-(hr*3600)
-                mn=int(s/60)
-                sc=s-(mn*60)
-                if(hr==23 and mn==59 and sc>59.999):
-                    # Fix formatting for positives
-                    hr,mn,sc=0,0,0.0
-                else:
-                    # Fix formatting for negatives
-                    if hr<0: hr=23+hr
-                    if mn<0: mn=59+mn
-                    if sc<0:
-                        if (sc-int(sc)>=0.999): sc=round(sc)
-                        sc=59+sc
-                t=_j-EPOCH
-                a=self._tzinfo[tz].info(t)[0]
-                d,t=arg-(a/86400.0),t-a
-                s=d-int(d)
 
         elif ac==2:
             if type(args[1])==StringType:
@@ -869,13 +846,8 @@ class DateTime:
            in the format used by the python time module.
            Note that it is possible to create date/time values
            with DateTime that have no meaningful value to the
-           time module, and in such cases a DateTimeError is 
-           raised. A DateTime object\'s value must generally be
-           between Jan 1, 1970 (or your local machine epoch) and
-           Jan 2038 to produce a valid time.time() style value."""
-        t=self._t
-        if (t>0 and ((t/86400.0) < 24837)): return t
-        raise self.DateTimeError,'No time module compatible time to return'
+           time module."""
+        return self._t
 
     def toZone(self, z):
         """Return a DateTime with the value as the current
