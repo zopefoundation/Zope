@@ -72,9 +72,9 @@ function toggleSelect() {
   <td align="left" valign="top">&nbsp;</td>
   <td align="right" valign="top">
   <div class="form-element">
-  <form action="addIndexForm" method="get">
+  <form action="&dtml-absolute_url;" method="get">
   <dtml-if "_.len(filtered_meta_types) > 1">
-    <select class="form-element" name="index_type" 
+    <select class="form-element" name=":action" 
      onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
     <option value="manage_workspace" disabled>Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
