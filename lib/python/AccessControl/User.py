@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -131,15 +131,6 @@ class BasicUser(Implicit):
            including local roles assigned in context of
            the passed in object."""
         name=self.getUserName()
-        robj=self.REQUEST
-
-        # in-line caching
-        key='%s_%s' % (name, id(object))
-        rc=getattr(robj, '_rc__', {})
-        roles=rc.get(key, None)
-        if roles is not None:
-            return roles
-
         roles=self.getRoles()
         local={}
         while 1:
@@ -155,11 +146,6 @@ class BasicUser(Implicit):
                 continue
             break
         roles=list(roles) + local.keys()
-
-        # in-line caching
-        if not hasattr(robj, '_rc__'):
-            robj._rc__={}
-        robj._rc__[key]=roles
         return roles
 
 
