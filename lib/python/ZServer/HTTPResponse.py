@@ -89,7 +89,7 @@ The HTTPResponse class takes care of server headers, response munging
 and logging duties.
 
 """
-import time, regex, string, sys
+import time, regex, string, sys, tempfile
 from cStringIO import StringIO
 
 from ZPublisher.HTTPResponse import HTTPResponse, end_of_header_search
@@ -212,15 +212,66 @@ class ZServerHTTPResponse(HTTPResponse):
         headersl[len(headersl):]=[self.accumulated_headers, body]
         return string.join(headersl,'\r\n')
 
+    _tempfile=None
+    _tempstart=0
+    def write(self,data):
+        """\
+        Return data as a stream
+
+        HTML data may be returned using a stream-oriented interface.
+        This allows the browser to display partial results while
+        computation of a response to proceed.
+
+        The published object should first set any output headers or
+        cookies on the response object.
+
+        Note that published objects must not generate any errors
+        after beginning stream-oriented output. 
+
+        """
+        stdout=self.stdout
+        
+        if not self._wrote:
+            l=self.headers.get('content-length', None)
+            if l is not None:
+                try:
+                    if type(l) is type(''): l=string.atoi(l)
+                    if l > 128000:
+                        self._tempfile=tempfile.TemporaryFile()
+                except: pass
+                    
+            stdout.write(str(self))
+            self._wrote=1
+
+        if not data: return
+
+        t=self._tempfile
+        if t is None:
+            stdout.write(data)
+        else:
+            l=len(data)
+            b=self._tempstart
+            e=b+l
+            t.seek(b)
+            t.write(data)
+            self._tempstart=e
+            stdout.write(file_part_producer(t,b,e), l)
+
     # XXX add server headers, etc to write()
     
     def _finish(self):
-        self.stdout.finish(self)
-        self.stdout.close()
+        stdout=self.stdout
+
+        t=self._tempfile
+        if t is not None:
+            stdout.write(file_close_producer(t), 0)
+            self._tempfile=None
+        
+        stdout.finish(self)
+        stdout.close()
         
         self.stdout=None # need to break cycle?
         self._request=None
-
 
 class ChannelPipe:
     """Experimental pipe from ZPublisher to a ZServer Channel.
@@ -235,8 +286,9 @@ class ChannelPipe:
         self._close=0
         self._bytes=0
     
-    def write(self, text):
-        self._bytes=self._bytes + len(text)
+    def write(self, text, l=None):
+        if l is None: l=len(text)
+        self._bytes=self._bytes + l
         self._channel.push(text,0)
         Wakeup()
         
@@ -255,6 +307,8 @@ class ChannelPipe:
 
         self._channel=None #need to break cycles?
         self._request=None
+
+    def flush(self): pass # yeah, whatever
     
     def finish(self, response):
         if response.headers.get('bobo-exception-type', '') == \
@@ -296,4 +350,53 @@ def make_response(request, headers):
     response._server_version=request.channel.server.SERVER_IDENT
     return response
     
+
+
+class file_part_producer:
+    "producer wrapper for part of a file[-like] objects"
+
+    # match http_channel's outgoing buffer size
+    out_buffer_size = 1<<16
+    
+    def __init__(self, file, start, end):
+        self.file=file
+        self.start=start
+        self.end=end
+
+    def more(self):
+        end=self.end
+        if not end: return ''
+        start=self.start
+        if start >= end: return ''
+
+        file=self.file
+        file.seek(start)
+        size=end-start
+        bsize=self.out_buffer_size
+        if size > bsize: size=bsize
+
+        data = file.read(size)
+        if data:
+            start=start+len(data)
+            if start < end:
+                self.start=start
+                return data
+
+        self.end=0
+        del self.file
+
+        return data
+
+class file_close_producer:
+
+    def __init__(self, file):
+        self.file=file
+
+    def more(self):
+        file=self.file
+        if file is not None:
+            file.close()
+            self.file=None
+        return ''
+
 
