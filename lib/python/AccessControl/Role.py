@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -263,15 +263,24 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         indexes=range(len(valid_roles))
         have=REQUEST.has_key
         permissions=self.ac_inherited_permissions(1)
+        fails = []
         for ip in range(len(permissions)):
             roles=[]
             for ir in indexes:
                 if have("p%dr%d" % (ip,ir)): roles.append(valid_roles[ir])
             name, value = permissions[ip][:2]
-            p=Permission(name,value,self)
-            if not have('a%d' % ip): roles=tuple(roles)
-            p.setRoles(roles)
+            try:
+                p=Permission(name,value,self)
+                if not have('a%d' % ip): roles=tuple(roles)
+                p.setRoles(roles)
+            except:
+                fails.append(name)
 
+        if fails:
+            return MessageDialog(title="Warning!",
+                                 message="Some permissions had errors: "
+                                   + join(fails, ', '),
+                                 action='manage_access')
         return MessageDialog(
             title  ='Success!',
             message='Your changes have been saved',
