@@ -915,11 +915,9 @@ class DocumentClass:
         result = expr(s)
         if result:
             start,end   = result.span(2)
-            a,b = result.span(1)
-            str = strip(s[a:b]) + s[start:end]
+            str = s[start+1:end-1]
             st,en       = result.span()
             return (StructuredTextNamedLink(str),st,en)
-            #return (StructuredTextNamedLink(s[st:en]),st,en)
         return None
     
     def doc_underline(self,

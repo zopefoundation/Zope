@@ -616,17 +616,14 @@ class DocumentClass:
     
     def doc_named_link(self,
                        s,
-                       expr=re.compile("(\.\.\s)(\[[%s0-9]+\])" % letters).search):
+                       expr=re.compile(r"(\.\.\s)(\[[%s0-9]+\])" % letters).search):
         
         result = expr(s)
         if result:
             start,end   = result.span(2)
-            a,b         = result.span(1)
-            str         = strip(s[a:b]) + s[start:end]
-            str         = s[start+1:end-1]
+            str = s[start+1:end-1]
             st,en       = result.span()
             return (StructuredTextNamedLink(str),st,en)
-            #return (StructuredTextNamedLink(s[st:en]),st,en)
         return None
     
     def doc_underline(self,
