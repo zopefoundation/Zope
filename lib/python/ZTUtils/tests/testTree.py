@@ -176,6 +176,20 @@ class TreeTests(unittest.TestCase):
         self.assertEqual(treeroot1.size, treeroot2.size)
         self.assertEqual(len(treeroot1), len(treeroot2))
 
+    def testEncodedExpansionIdWithDot(self):
+        # Regression test for Collector issue #603
+        # An encoded node ID with a first character with the first 6 bits set.
+        item = Item('\xfcberbug!', (Item('b'),)) # 'uberbug!' with u-umlaut.
+        treeroot1 = self.tm.tree(item)
+        
+        encoded = Tree.encodeExpansion(treeroot1.flat())
+        decodedmap = Tree.decodeExpansion(encoded)
+
+        treeroot2 = self.tm.tree(item, decodedmap)
+
+        self.assertEqual(treeroot1.size, treeroot2.size)
+        self.assertEqual(len(treeroot1), len(treeroot2))
+
 
 def test_suite():
     return unittest.makeSuite(TreeTests)
