@@ -100,6 +100,8 @@ Zope Changes
 
         - The Zope database lock file was not properly closed.
  
+        - Linux and Solaris binary distributions did not contain the
+          python _locale module required for locale support.
 
     Zope 2.1.0 beta 1
 
