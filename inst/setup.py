@@ -45,7 +45,6 @@ import os
 import sys
 
 import distutils.core
-
 from distutils.core import Extension
 
 # This function collects setup information for one massive distutils
@@ -65,6 +64,7 @@ def setup(name=None, author=None, cmdclass=None, **kwargs):
 # globbing on data_files.
 
 from distutils.command.install import install
+from distutils.command.build import build
 from distutils.command.install_data import install_data
 from distutils.util import convert_path
 
@@ -127,6 +127,27 @@ ZOPE_INSTALL_SCHEME = {
     }
 
 class ZopeInstall(install):
+    # give distutils install step knowledge about build file placement options
+    user_options = install.user_options + [
+        ('build-base=', None, 'base directory for build library'),
+        ('build-lib=', None, 'build directory for all distribution'),
+        ('build-scripts=', None, 'build directory for scripts'),
+        ('build-temp=', None, 'temporary build directory'),
+        ]
+    build_scripts = None
+    build_temp = None
+
+    def run(self):
+        """ Override run to pass along build location info so
+        we can use custom build directories """
+        build = self.distribution.get_command_obj('build')
+        build.build_base = self.build_base
+        build.build_lib = self.build_lib
+        build.build_scripts = self.build_scripts
+        build.build_temp = self.build_temp
+
+        install.run(self)
+
     def select_scheme(self, name):
         """
         Override the default platform installation schemes, ignoring whatever
@@ -150,19 +171,19 @@ class ZopeDistribution(distutils.core.Distribution):
         distutils.core.Distribution.__init__(self, attrs)
         self.cmdclass["install"] = ZopeInstall
         self.cmdclass["install_data"] = ZopeInstallData
-
-# presumes we're currently cd'ed to the build root directory
-ZOPE_ROOT = os.path.abspath(os.getcwd())
+        
+# presumes this script lives in the 'inst' subdirectory of the base dir
+BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
 
 AUTHOR = 'Zope Corporation and Contributors'
-EXTENSIONCLASS_ROOT = os.path.join(ZOPE_ROOT, 'lib', 'Components', 'ExtensionClass')
+EXTENSIONCLASS_ROOT = os.path.join(BASE_DIR, 'lib', 'Components',
+                                   'ExtensionClass')
 EXTENSIONCLASS_SRCDIR = os.path.join(EXTENSIONCLASS_ROOT, 'src')
-PACKAGES_ROOT = os.path.join(ZOPE_ROOT, 'lib', 'python')
 EXTENSIONCLASS_INCLUDEDIRS = [EXTENSIONCLASS_SRCDIR]
 
 # Most modules are in lib/python in the source distribution
+PACKAGES_ROOT = os.path.join(BASE_DIR, 'lib', 'python')
 os.chdir(PACKAGES_ROOT)
-
 
 # AccessControl
 setup(
@@ -997,19 +1018,19 @@ distutils.core.setup(
     data_files=setup_info.get('data_files', []),
     headers=setup_info.get('headers', []),
     ext_modules=setup_info.get('ext_modules', []),
-    distclass=ZopeDistribution,
-    )
-distutils.core.setup(
-    name='Zope',
-    author=AUTHOR,
-
-    py_modules=setup_info.get('py_modules', []),
     scripts=setup_info.get('scripts', []),
     distclass=ZopeDistribution,
     )
 
+distutils.core.setup(
+    name='Zope',
+    author=AUTHOR,
+    py_modules=setup_info.get('py_modules', []),
+    distclass=ZopeDistribution,
+    )
+
 # The rest of these modules live in the root of the source tree
-os.chdir(ZOPE_ROOT)
+os.chdir(BASE_DIR)
 
 def skel_visit(skel, dirname, names):
     if "CVS" in names:

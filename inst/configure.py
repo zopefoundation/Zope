@@ -20,28 +20,28 @@ import sys
 import versions
 
 if sys.platform == 'win32':
-    TARGET_DIR = 'c:\\Zope-' + versions.ZOPE_MAJOR_VERSION
+    PREFIX = 'c:\\Zope-' + versions.ZOPE_MAJOR_VERSION
     IN_MAKEFILE = 'Makefile.win.in'
     MAKE_COMMAND='the Visual C++ batch file "VCVARS32.bat" and then "nmake build"'
 else:
-    TARGET_DIR = '/opt/Zope-' + versions.ZOPE_MAJOR_VERSION
+    PREFIX = '/opt/Zope-' + versions.ZOPE_MAJOR_VERSION
     IN_MAKEFILE = 'Makefile.in'
     MAKE_COMMAND='make'
 
 def main():
-    # below assumes this script is in the BUILD_DIR/inst directory
-    BUILD_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
+    # below assumes this script is in the BASE_DIR/inst directory
+    global PREFIX
+    BASE_DIR=os.path.abspath(os.path.dirname(os.path.dirname(sys.argv[0])))
+    BUILD_BASE=os.getcwd()
     PYTHON=sys.executable
-    MAKEFILE=open(os.path.join(BUILD_DIR, 'inst', IN_MAKEFILE)).read()
+    MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
     REQUIRE_ZLIB=1
-    OPT_FLAGS = ''
-    zope_home = TARGET_DIR
-    build_dir = BUILD_DIR
-    python = PYTHON
+    INSTALL_FLAGS = ''
+    DISTUTILS_OPTS = ''
     try:
         longopts = ["help", "ignore-largefile", "ignore-zlib", "prefix=",
-                    "optimize"]
+                    "build-base=", "optimize", "quiet"]
         opts, args = getopt.getopt(sys.argv[1:], "h", longopts)
     except getopt.GetoptError, v:
         print v
@@ -52,36 +52,38 @@ def main():
             usage()
             sys.exit()
         if o == '--prefix':
-            zope_home=os.path.abspath(os.path.expanduser(a))
+            PREFIX=os.path.abspath(os.path.expanduser(a))
         if o == "--ignore-largefile":
             REQUIRE_LF_ENABLED=0
         if o == "--ignore-zlib":
             REQUIRE_ZLIB=0
         if o == "--optimize":
-            OPT_FLAGS = '--optimize=1 --no-compile'
+            INSTALL_FLAGS = '--optimize=1 --no-compile'
+        if o == '--build-base':
+            BUILD_BASE = a
+        if o == '--quiet':
+            DISTUTILS_OPTS = '-q'
     if REQUIRE_LF_ENABLED:
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
-    print "  - Zope top-level binary directory will be %s." % zope_home
-    if OPT_FLAGS:
-        print "  - Distutils install flags will be '%s'" % OPT_FLAGS
-    distutils_opts = ""
-    if sys.version[:3] < "2.3":
-        distutils_opts = "-q"
+    print "  - Zope top-level binary directory will be %s." % PREFIX
+    if INSTALL_FLAGS:
+        print "  - Distutils install flags will be '%s'" % INSTALL_FLAGS
     idata = {
-        '<<PYTHON>>':python,
-        '<<TARGET_DIR>>':zope_home,
-        '<<BUILD_DIR>>':build_dir,
-        '<<OPT_FLAGS>>':OPT_FLAGS,
+        '<<PYTHON>>':PYTHON,
+        '<<PREFIX>>':PREFIX,
+        '<<BASE_DIR>>':BASE_DIR,
+        '<<BUILD_BASE>>':BUILD_BASE,
+        '<<INSTALL_FLAGS>>':INSTALL_FLAGS,
         '<<ZOPE_MAJOR_VERSION>>':versions.ZOPE_MAJOR_VERSION,
         '<<ZOPE_MINOR_VERSION>>':versions.ZOPE_MINOR_VERSION,
         '<<VERSION_RELEASE_TAG>>':versions.VERSION_RELEASE_TAG,
-        '<<DISTUTILS_OPTS>>':distutils_opts,
+        '<<DISTUTILS_OPTS>>':DISTUTILS_OPTS,
         }
     for k,v in idata.items():
         MAKEFILE = MAKEFILE.replace(k, v)
-    f = open(os.path.join(BUILD_DIR, 'makefile'), 'w')
+    f = open(os.path.join(BUILD_BASE, 'makefile'), 'w')
     f.write(MAKEFILE)
     print "  - Makefile written."
     print
@@ -109,14 +111,16 @@ Options:
   --optimize                    compile Python files as .pyo files
                                 instead of as .pyc files
 
-Installation directories:
+Directories:
 
-  --prefix=DIR                  install Zope files in DIR [%(zope_home)s]
+  --build-base=DIR              use DIR to store temporary build files
+
+  --prefix=DIR                  install Zope files in DIR [%(TARGET_DIR)s]
 
 By default, 'make install' will install Zope software files in
 '%(target_dir)s'  You can specify an alternate location for these
 files by using '--prefix', for example: '--prefix=$HOME/zope'.
-""" % ({'program':sys.argv[0], 'target_dir':TARGET_DIR})
+""" % ({'program':sys.argv[0], 'TARGET_DIR':TARGET_DIR})
              )
     print usage
 

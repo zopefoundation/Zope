@@ -10,8 +10,17 @@ RELEASE_TAG=<<VERSION_RELEASE_TAG>>
 PACKAGE_NAME=${NAME}-${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}
 
 PYTHON="<<PYTHON>>"
-TARGET_DIR=<<TARGET_DIR>>
-BUILD_DIR=<<BUILD_DIR>>
+PREFIX=<<PREFIX>>
+BASE_DIR=<<BASE_DIR>>
+BUILD_BASE=<<BUILD_BASE>>
+DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
+INSTALL_FLAGS=<<INSTALL_FLAGS>>
+BUILD_SUBDIR=build
+BUILD_FLAGS=--build-base="${BUILD_BASE}" \
+            --build-lib="${BUILD_BASE}/${BUILD_SUBDIR}" \
+            --build-scripts="${BUILD_BASE}/${BUILD_SUBDIR}/build_scripts.tmp" \
+            --build-temp="${BUILD_BASE}/${BUILD_SUBDIR}/build_temp.tmp"
+
 RM=rm -f
 RMRF=rm -rf
 FIND=find
@@ -19,10 +28,8 @@ XARGS=xargs
 CD=cd
 LN=ln -sf
 CP=cp
-INSTALL_COPY=${PYTHON} inst/install.py
-WRITE_INFILE=${PYTHON} inst/file_from_infile.py
 
-.PHONY : clean install uninstall instance links hacklinks untestinst testinst
+.PHONY : clean install uninstall instance untestinst testinst
 .PHONY : default
 
 default: build
@@ -32,42 +39,45 @@ default: build
 	@echo
 
 build:
-	${PYTHON} inst/setup.py <<DISTUTILS_OPTS>> build_ext -i
+	${PYTHON} "${BASE_DIR}/inst/setup.py" \
+           ${DISTUTILS_OPTS} build ${BUILD_FLAGS}
 
 install: build
-	${PYTHON} inst/setup.py <<DISTUTILS_OPTS>> install \
-	   --home="${TARGET_DIR}" <<OPT_FLAGS>>
+	${PYTHON} "${BASE_DIR}/inst/setup.py" ${DISTUTILS_OPTS} install \
+	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
 	@echo
 	@echo Zope binaries installed successfully.
-	@echo Now run \'${TARGET_DIR}/bin/mkzopeinstance\'
+	@echo Now run \'${PREFIX}/bin/mkzopeinstance\'
 
-instance: build
-	${PYTHON} bin/mkzopeinstance .
+instance:
+	${PYTHON} "${BASE_DIR}/inst/setup.py" ${DISTUTILS_OPTS} build_ext -i
+	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" .
 
 # testinst makes an instance home in the build directory without asking
 # any questions.  this is useful when testing.  instances made with
 # this can be removed via "make untestinst"
 testinst: build
-	${PYTHON} bin/mkzopeinstance --user=admin:admin .
+	${PYTHON} "${BASE_DIR}/inst/setup.py" ${DISTUTILS_OPTS} build_ext -i
+	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" --user=admin:admin .
 
 # remove the instance files made with testinst (w/ prejudice)
 untestinst:
-	${RM} bin/zopectl.py
-	${RM} bin/ntservice.py
-	${RMRF} etc
-	${RMRF} log
+	${RM} "${BASE_DIR}/bin/zopectl.py"
+	${RM} "${BASE_DIR}/bin/ntservice.py"
+	${RMRF} "${BASE_DIR}/etc"
+	${RMRF} "${BASE_DIR}/log"
 
 uninstall:
-	${RMRF} "${TARGET_DIR}"
+	${RMRF} "${PREFIX}"
 
 TESTOPTS=-v1 -d lib/python
 
 test: build
-	${PYTHON} utilities/testrunner.py ${TESTOPTS}
+	${PYTHON} "${BASE_DIR}/utilities/testrunner.py" ${TESTOPTS}
 
 clean:
-	${RMRF} build lib/python/build
-	${FIND} . -name '*.py[co]' -o -name 'core*' | ${XARGS} ${RM}
+	${RMRF} "${BUILD_BASE}/${BUILD_SUBDIR}"
+	${FIND} "${BASE_DIR}" -name '*.py[co]' -o -name 'core*' | ${XARGS} ${RM}
 
 clobber: clean untestinst
-	${FIND} lib/python -name '*.so' | ${XARGS} ${RM}
+	${FIND} "${BASE_DIR}/lib/python" -name '*.so' | ${XARGS} ${RM}
