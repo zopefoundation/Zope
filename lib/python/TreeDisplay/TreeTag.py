@@ -12,19 +12,19 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.49 2001/11/28 15:51:17 matt Exp $'
-__version__='$Revision: 1.49 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.50 2002/02/07 18:06:25 andreasjung Exp $'
+__version__='$Revision: 1.50 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
 
-from string import join, split, rfind, find, translate, replace
+from string import translate
 from urllib import quote, unquote
 from zlib import compress, decompress
 from binascii import b2a_base64, a2b_base64
 import re
 
-tbl=join(map(chr, range(256)),'')
+tbl=''.join(map(chr, range(256))
 tplus=tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
 tminus=tbl[:ord('-')]+'+'+tbl[ord('-')+1:]
 
@@ -178,7 +178,7 @@ def tpRender(self, md, section, args,
 
         url=''
         root=md['URL']
-        l=rfind(root,'/')
+        l=root.rfind('/')
         if l >= 0: root=root[l+1:]
 
     treeData={'tree-root-url': root,
@@ -188,7 +188,7 @@ def tpRender(self, md, section, args,
     prefix = args.get('prefix')
     if prefix:
         for k, v in treeData.items():
-            treeData[prefix + replace(k[4:], '-', '_')] = v
+            treeData[prefix + k[4:].replace('-', '_')] = v
     
     md._push(InstanceDict(self, md))
     md._push(treeData)
@@ -202,7 +202,7 @@ def tpRender(self, md, section, args,
         state=encode_seq(state)
         md['RESPONSE'].setCookie('tree-s',state)
 
-    return join(data,'')
+    return ''.join(data)
 
 def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                   colspan, section, md, treeData, level=0, args=None,
@@ -327,7 +327,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             if len(s) > 57: s=encode_str(s)
             else:
                 s=b2a_base64(s)[:-1]
-                l=find(s,'=')
+                l=s.find('=')
                 if l >= 0: s=s[:l]
             s=translate(s, tplus)
             ####################################
@@ -521,10 +521,10 @@ def encode_seq(state):
         states=[]
         for i in range(0,l,57):
             states.append(b2a_base64(state[i:i+57])[:-1])
-        state=join(states,'')
+        state=''.join(states)
     else: state=b2a_base64(state)[:-1]
 
-    l=find(state,'=')
+    l=state.find('=')
     if l >= 0: state=state[:l]
     
     state=translate(state, tplus)
@@ -538,10 +538,10 @@ def encode_str(state):
         states=[]
         for i in range(0,l,57):
             states.append(b2a_base64(state[i:i+57])[:-1])
-        state=join(states,'')
+        state=''.join(states)
     else: state=b2a_base64(state)[:-1]
 
-    l=find(state,'=')
+    l=state.find('=')
     if l >= 0: state=state[:l]
         
     state=translate(state, tplus)
@@ -566,7 +566,7 @@ def decode_seq(state):
             k=l%4
             if k: state=state+'='*(4-k)
             states.append(a2b_base64(state))
-        state=join(states,'')
+        state=''.join(states)
     else:
         l=len(state)
         k=l%4
@@ -574,7 +574,7 @@ def decode_seq(state):
         state=a2b_base64(state)
 
     state=decompress(state)
-    if find(state,'*') >= 0: raise 'Illegal State', state
+    if state.find('*') >= 0: raise 'Illegal State', state
     try: return list(eval(state,{'__builtins__':{}}))
     except: return []
     
