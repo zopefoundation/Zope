@@ -52,6 +52,7 @@
   <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
   <!--#/if-->
   <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
+  <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Export...">
   </TD>
 </TR>
 </TABLE>

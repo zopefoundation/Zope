@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.87 1999/02/05 18:02:12 jim Exp $'''
-__version__='$Revision: 1.87 $'[11:-2]
+$Id: Application.py,v 1.88 1999/02/11 00:49:45 amos Exp $'''
+__version__='$Revision: 1.88 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -192,6 +192,8 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
+    {'label':'Import/Export', 'action':'manage_importExportForm',
+     'target':'manage_main'},
     {'icon':'', 'label':'Security',
      'action':'manage_access',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',

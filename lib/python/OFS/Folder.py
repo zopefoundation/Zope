@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.60 1999/02/10 17:21:22 amos Exp $"""
+$Id: Folder.py,v 1.61 1999/02/11 00:49:45 amos Exp $"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -117,8 +117,11 @@ from AccessControl.Role import RoleManager
 from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
-from string import rfind, lower
+from App.Dialogs import MessageDialog
+from string import find, rfind, lower
 import marshal
+from cStringIO import StringIO
+import os
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
 
@@ -161,6 +164,8 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
      'target':'manage_main'},
     {'label':'Properties', 'action':'manage_propertiesForm',
      'target':'manage_main'},
+    {'label':'Import/Export', 'action':'manage_importExportForm',
+     'target':'manage_main'},
     {'label':'Security', 'action':'manage_access',
      'target':'manage_main'},
     {'label':'Undo', 'action':'manage_UndoForm',
@@ -195,6 +200,10 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
          ('manage_addProperty', 'manage_editProperties',
           'manage_delProperties', 'manage_changeProperties',)),
         ('FTP access',         ('manage_FTPstat','manage_FTPlist')),
+        ('Import/Export objects',
+         ('manage_importObject','manage_importExportForm',
+          'manage_exportObject')
+         ),
 
     )
 
@@ -256,6 +265,45 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         if hasattr(id,'im_func'): id=id()
         self._setObject(id,o)
         return 'OK, I imported %s' % id
+
+    # These methods replace manage_importHack and manage_exportHack
+
+    def manage_exportObject(self,id=None,download=None,RESPONSE=None):
+        """Exports an object to a file and returns that file."""        
+        if id is None: o=self
+        else: o=getattr(self,id)
+        if download:
+            f=StringIO()
+            o._p_jar.export_file(o,f)
+            RESPONSE.setHeader('Content-type','application/data')
+            RESPONSE.setHeader('Content-Disposition',
+                'inline;filename=%s.bbe' % id)
+            return f.getvalue()
+        f=Globals.data_dir+'/%s.bbe' % id
+        o._p_jar.export_file(o,f)
+        if RESPONSE is not None:
+            return MessageDialog(
+                    title="Object exported",
+                    message="<EM>%s</EM> sucessfully\
+                    exported to <pre>%s</pre>." % (id,f),
+                    action="manage_main")
+
+    manage_importExportForm=HTMLFile('importExport',globals())
+
+    def manage_importObject(self,file,REQUEST=None):
+        "Import an object from a file"
+        if find(file,'..') != -1:
+            raise ValueError, 'Bad file name %s' % file
+        f=os.path.join(INSTANCE_HOME,'Import',file)
+        o=self._p_jar.import_file(f)
+        id=o.id
+        if hasattr(id,'im_func'): id=id()
+        self._setObject(id,o)
+        if REQUEST is not None:
+            return MessageDialog(title='Object imported',
+                message='<EM>%s</EM> sucessfully imported' % id,
+                action='manage_main'
+                )
 
     # FTP support methods
     
