@@ -5,11 +5,12 @@ import unittest
 from ZODB import POSException
 
 import BerkeleyTestBase
-from BasicStorage import BasicStorage
-from VersionStorage import VersionStorage
-from TransactionalUndoStorage import TransactionalUndoStorage
-from TransactionalUndoVersionStorage import TransactionalUndoVersionStorage
-from PackableStorage import PackableStorage
+from ZODB.tests.BasicStorage import BasicStorage
+from ZODB.tests.VersionStorage import VersionStorage
+from ZODB.tests.TransactionalUndoStorage import TransactionalUndoStorage
+from ZODB.tests.TransactionalUndoVersionStorage import \
+     TransactionalUndoVersionStorage
+from ZODB.tests.PackableStorage import PackableStorage
 
 
 
