@@ -17,7 +17,7 @@
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Title</STRONG>
+  <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="title" SIZE="50">

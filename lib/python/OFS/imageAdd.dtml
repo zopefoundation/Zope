@@ -22,18 +22,18 @@
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Image</STRONG>
+  <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="file" NAME="file" SIZE="30" VALUE="">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
   </TD>
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Title</STRONG>
+  <STRONG>Image</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="50">
+  <INPUT TYPE="file" NAME="file" SIZE="30" VALUE="">
   </TD>
 </TR>
 <!--#var smallRolesWidget-->

@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>New HTML Document</H2>
 <P>
- You can create a new html document using the form below. 
+ You may create a new html document using the form below. 
  You may choose to upload an existing html file from your
  local computer by clicking the <I>Browse</I> button.
 
@@ -22,7 +22,7 @@
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Title</STRONG>
+  <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="title" SIZE="50">
@@ -30,7 +30,7 @@
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>File</STRONG>
+  <EM><STRONG>File</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file:string" SIZE="30" VALUE="">
