@@ -72,6 +72,9 @@ Zope Changes
           odd behavior in certain tree tags since the method would be
           acquired from the parent of the simple item.
 
+        - The Find form in the management interface depended on javascript
+          to function properly.
+
     Zope 1.9.0
 
       New Features
