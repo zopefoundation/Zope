@@ -276,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.14 1998/01/12 16:48:12 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.15 1998/01/14 18:26:47 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.14 1998/01/12 16:48:12 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -434,7 +434,7 @@ class In:
 
 	vars=sequence_variables(sequence,'?'+query_string,self.start_name_re)
 	kw=vars.data
-	# kw['sequence-length']=l
+	if expr is None: kw[self.__name__]=sequence # Cache sequence
 	kw['mapping']=mapping
 	if nbatchparams:
 	    kw['sequence-step-size']=sz
@@ -841,6 +841,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.15  1998/01/14 18:26:47  jim
+# Added name caching to in tag.
+#
 # Revision 1.14  1998/01/12 16:48:12  jim
 # Updated documentation.
 #
