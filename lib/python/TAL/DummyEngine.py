@@ -165,20 +165,29 @@ class DummyEngine:
         return self.evaluate(expr)
 
     def evaluateMacro(self, macroName):
-        doc, localName = self.findMacroDocument(macroName)
-        if not doc:
+        file, localName = self.findMacroFile(macroName)
+        if not file:
             # Local macro
             macro = self.macros[localName]
         else:
             # External macro
-            macroDict = macroIndexer(doc)
-            if not macroDict.has_key(localName):
-                raise TALESError("macro not found: " + `macroName`)
-            macroNode = macroDict[localName]
-            macro, dummy = TALCompiler(macroNode)()
+            from driver import compilefile
+            program, macros = compilefile(file)
+            macro = macros.get(localName)
+            if not macro:
+                raise TALESError("macro %s not found in file %s" %
+                                 (localName, file))
         return macro
 
     def findMacroDocument(self, macroName):
+        file, localName = self.findMacroFile(macroName)
+        if not file:
+            return file, localName
+        from driver import parsefile
+        doc = parsefile(file)
+        return doc, localName
+
+    def findMacroFile(self, macroName):
         if not macroName:
             raise TALESError("empty macro name")
         i = string.rfind(macroName, '/')
@@ -188,9 +197,8 @@ class DummyEngine:
         else:
             # Up to last slash is the filename
             fileName = macroName[:i]
-            from driver import parsefile
-            doc = parsefile(fileName)
-            return doc, macroName[i+1:]
+            localName = macroName[i+1:]
+            return fileName, localName
 
     def setRepeat(self, name, expr):
         seq = self.evaluateSequence(expr)
