@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
-import regex, re, sys, os, string, urllib, time, whrandom
+import  re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -448,7 +448,7 @@ class HTTPRequest(BaseRequest):
                 # We'll search from the back to the front.
                 # We'll do the search in two steps.  First, we'll
                 # do a string search, and then we'll check it with
-                # a regex search.
+                # a re search.
                 
 
                 l=rfind(key,':')
