@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -40,7 +40,8 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
     ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
     ('Change/upload data', ['manage_edit','manage_upload','PUT']),
-    ('View', ['',]),
+    ('View', ['__call__',]),
+    ('Shared permission', ['',]),
     )
    
     __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),

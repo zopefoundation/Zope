@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
@@ -37,6 +37,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     ('Change permissions', ['manage_access']),
     ('Change/upload data', ['manage_edit','manage_upload','PUT']),
     ('View', ['index_html',]),
+    ('Shared permission', ['',]),
     )
    
     __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
@@ -85,6 +86,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 		    message='Your changes have been saved',
 		    action ='manage_main')
 
+    PUT__roles__=['Manager']
     def PUT(self, BODY, REQUEST):
 	'handle PUT requests'
 	self.data=BODY
@@ -106,6 +108,8 @@ class Image(File):
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='Image',kind='image')
     manage=manage_main=manage_editForm
+
+    PUT__roles__=['Manager']
 
     def __str__(self):
 	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
