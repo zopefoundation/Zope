@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.8 1999/05/26 02:08:29 amos Exp $
+#	$Id: asynchat.py,v 1.9 1999/07/19 17:43:47 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -120,7 +120,9 @@ class async_chat (asyncore.dispatcher):
 				index = string.find (self.ac_in_buffer, terminator)
 				if index != -1:
 					# we found the terminator
-					self.collect_incoming_data (self.ac_in_buffer[:index])
+					if index > 0:
+						# don't bother reporting the empty string (source of subtle bugs)
+						self.collect_incoming_data (self.ac_in_buffer[:index])
 					self.ac_in_buffer = self.ac_in_buffer[index+terminator_len:]
 					# This does the Right Thing if the terminator is changed here.
 					self.found_terminator()
