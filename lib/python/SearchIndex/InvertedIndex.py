@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.38 1997/04/23 18:13:50 jim Exp $'''
+$Id: InvertedIndex.py,v 1.39 1997/04/23 20:56:38 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.38 1997/04/23 18:13:50 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.39  1997/04/23 20:56:38  chris
+# added support for multi-word synonyms
+#
 # Revision 1.38  1997/04/23 18:13:50  jim
 # Began allowing multi-word synonyms.
 #
@@ -211,7 +214,7 @@ $Id: InvertedIndex.py,v 1.38 1997/04/23 18:13:50 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 import regex, string, copy
@@ -320,6 +323,7 @@ class ResultList:
     
         return result
   
+
     def and_not(self, x):
         '''Return items in the receiver that are not in the argument'''
     
@@ -418,7 +422,7 @@ class ResultList:
     	    for i in range(1, len(positions)):
     		p = positions[i]
     		d = p - pl
-    		if d > 0 and d <= distance:
+    		if d <= distance:
     		    if pl != rl:
     			positionsr.append(pl)
     		    positionsr.append(p)
@@ -546,7 +550,7 @@ class Index:
         src = WordSequence(src, self.synstop)  
 
         for s in src:
-	    if s[0]: '"':
+	    if s[0] == '"':
 		self.subindex(s[1:-1],d,pos)
 	    else:
 		try:
@@ -554,6 +558,7 @@ class Index:
 		except KeyError:
 		    d[s] = [ pos ]
   
+
     def index(self, src, srckey):
         '''\
         index(src, srckey)
@@ -572,7 +577,7 @@ class Index:
         for s in src:
             i = i + 1
 
-	    if s[0]: '"':
+	    if s[0] == '"':
 		self.subindex(s[1:-1],d,i)
 	    else:
 		try:
@@ -652,6 +657,11 @@ class Index:
                 key = synstop[key]
             except KeyError:
 	        break
+	    else:
+		if (key[0] == '"'):
+                    ws = WordSequence(key, self.synstop)
+		    ws = map(lambda x, self = self: self[x], ws)
+		    return reduce(lambda x, y: x.near(y), ws)
     
         if (key is None):
             return List()
@@ -665,11 +675,29 @@ class Index:
     def keys(self):
         return self._index_object.keys()
   
+
+    def values(self):
+        return self._index_object.values()
+
   
     def __len__(self):
         return len(self._index_object)
+
   
+    def rmdoc(self, doc_key, key):
+        index = self._index_object
+        try:
+    	    del index[key][doc_key]
+        except KeyError:
+            return
+	except TypeError:
+	    if index[key][0] == doc_key:
+                del index[key]
+        else:
+            if (len(index[key]) == 0):
+                del index[key]
     
+
     def remove_document(self, doc_key, s = None):
     	'''\
     	remove_document(doc_key, s = None)
@@ -680,20 +708,19 @@ class Index:
     	speed up removal of documents from a large index.
     	'''
     
+        index = self._index_object
+
     	if (s is None):
-    	    for key in self.keys():
-    	        try:
-    	    	   del self[key][doc_key]
-    	        except KeyError:
-    	 	    continue
+	    for key in index.keys():
+                self.rmdoc(doc_key, key)
     	else:
-            s = WordSequence(s)
+            s = WordSequence(s, self.synstop)
     	    for key in s:
-    	        try:
-    		    del self[key][doc_key]
-    	        except KeyError:
-    		    continue
-  
+		if (key[0] == '"'):
+                    self.remove_document(doc_key, key)
+	        else:
+                    self.rmdoc(doc_key, key)
+
   
     def get_stopwords(self):
         synstop = self.synstop
