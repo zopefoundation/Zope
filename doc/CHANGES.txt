@@ -45,6 +45,11 @@ Zope Changes
       - Re-applied Medusa patch to allow proxy-like HTTP requests
         (GET http://hostname:port/ HTTP/1.0)
 
+      - Objects indexed by the PathIndex can now provide a hook or an 
+        attribute with the same name as the index name to provide
+        a customized path information other than using getPhysicalPath().
+
+
     Bugs fixed
 
       - Collector #2532: ZCatalog.availableSplitters is now protected

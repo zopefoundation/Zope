@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.6 2001/09/26 14:55:51 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.7 2001/10/03 13:04:06 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -97,7 +97,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree,OOSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet,difference,intersection,union
-from types import StringType
+from types import StringType, ListType, TupleType
 import re,warnings
 
 
@@ -174,12 +174,26 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
     def index_object(self, documentId, obj ,threshold=100):
         """ hook for (Z)Catalog """
 
-        try:
-            path = obj.getPhysicalPath()
-        except:
-            return 0
 
-        path = '/'+ '/'.join(path[1:])
+        # first we check if the object provide an attribute or
+        # method to be used as hook for the PathIndex
+
+        if hasattr(obj,self.id):
+            f = getattr(obj,self.id)
+            if callable(f):
+                path = f()
+            else:
+                path = f
+        else:             
+
+            try:
+                path = obj.getPhysicalPath()
+            except:
+                return 0
+
+        if type(path) in (ListType,TupleType):
+            path = '/'+ '/'.join(path[1:])
+
         comps = self.splitPath(path,obj)
 
         if obj.meta_type != 'Folder':
