@@ -70,6 +70,10 @@ Document templates support conditional and sequence insertion
 
     %(In)s
 
+%(With)s
+
+%(Raise)s
+
 Access Control
 
     Document templates provide a basic level of access control by

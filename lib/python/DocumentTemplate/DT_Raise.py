@@ -3,7 +3,7 @@
 
    Errors can be raised from DTML using the 'raise' tag.
 
-   For example:
+   For example::
 
     <!--#if expr="condition_that_tests_input"-->
        <!--#raise type="Input Error"-->
@@ -65,8 +65,8 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_Raise.py,v 1.3 1998/04/02 19:05:53 jim Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.4 1998/05/14 15:07:17 jim Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -104,6 +104,9 @@ class Raise:
 ##########################################################################
 #
 # $Log: DT_Raise.py,v $
+# Revision 1.4  1998/05/14 15:07:17  jim
+# Finished adding with and raise docs.
+#
 # Revision 1.3  1998/04/02 19:05:53  jim
 # Updated rendering code.
 #
