@@ -127,6 +127,27 @@
       </description>
     </key>
 
+    <key name="user" datatype="string"
+         required="no">
+      <description>
+        Command-line option: -u or --user.
+
+        When zdrun.py is started by root, this option specifies the
+        user as who the the zdrun.py process (and hence the daemon
+        subprocess) will run.  This can be a user name or a numeric
+        user id.  Both the user and the group are set from the
+        corresponding password entry, using setuid() and setgid().
+        This is done before zdrun.py does anything else besides
+        parsing its command line arguments.
+
+        NOTE: when zdrun.py is not started by root, specifying this
+        option is an error.  (XXX This may be a mistake.)
+
+        XXX The zdrun.py event log file may be opened *before*
+        setuid() is called.  Is this good or bad?
+      </description>
+    </key>
+
     <key name="hang-around" datatype="boolean"
 	 required="no" default="false">
       <description>

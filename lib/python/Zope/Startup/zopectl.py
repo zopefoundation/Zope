@@ -24,6 +24,7 @@ Options:
 -h/--help -- print this usage message and exit
 -i/--interactive -- start an interactive shell after executing commands
 -l/--logfile -- log file to be read by logtail command
+-u/--user -- run the daemon manager program as this user (or numeric id)
 -m/--umask -- provide octal umask for files created by the managed process
 action [arguments] -- see below
 
@@ -61,6 +62,7 @@ class ZopeCtlOptions(ZDOptions):
     program = "zopectl"
     schemadir = os.path.dirname(Zope.Startup.__file__)
     schemafile = "zopeschema.xml"
+    uid = gid = None
 
     # XXX Suppress using Zope's <eventlog> section to avoid using the
     # same logging for zdctl as for the Zope appserver.  There still
@@ -81,11 +83,32 @@ class ZopeCtlOptions(ZDOptions):
         self.add("default_to_interactive", "runner.default_to_interactive",
                  default=1)
         self.add("logfile", None, "l:", "logfile=")
+        self.add("user", "runner.user", "u:", "user=")
         self.add("prompt", "runner.prompt", default="zopectl>")
         self.add("umask", "runner.umask", "m:", "umask=")
 
     def realize(self, *args, **kw):
         ZDOptions.realize(self, *args, **kw)
+        # Additional checking of user option; set uid and gid
+        if self.user is not None:
+            import pwd
+            try:
+                uid = int(self.user)
+            except ValueError:
+                try:
+                    pwrec = pwd.getpwnam(self.user)
+                except KeyError:
+                    self.usage("username %r not found" % self.user)
+                uid = pwrec[2]
+            else:
+                try:
+                    pwrec = pwd.getpwuid(uid)
+                except KeyError:
+                    self.usage("uid %r not found" % self.user)
+            gid = pwrec[3]
+            self.uid = uid
+            self.gid = gid
+
         config = self.configroot
         self.directory = config.instancehome
         self.clienthome = config.clienthome
@@ -94,7 +117,6 @@ class ZopeCtlOptions(ZDOptions):
         else:
             self.program = [os.path.join(self.directory, "bin", "runzope")]
         self.sockname = os.path.join(self.clienthome, "zopectlsock")
-        self.user = None
         self.python = sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
                                   "zdrun.py")
