@@ -77,13 +77,11 @@ class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(FullTest, 'check'))
-        suite.addTest(unittest.makeSuite(FullRecoveryTest, 'check'))
-        suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
-    return suite
-
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        FullTest,
+        FullRecoveryTest,
+        MinimalTest,
+        )
 
 
 if __name__ == '__main__':

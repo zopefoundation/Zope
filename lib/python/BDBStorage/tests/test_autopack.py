@@ -533,16 +533,15 @@ class TestMinimalClassicPackRaceCondition(RaceConditionBase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    suite.level = 2
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(TestAutopack))
-        suite.addTest(unittest.makeSuite(TestAutomaticClassicPack))
-        suite.addTest(unittest.makeSuite(TestMinimalPack))
-        suite.addTest(unittest.makeSuite(TestFullClassicPackRaceCondition))
-        suite.addTest(unittest.makeSuite(TestMinimalClassicPackRaceCondition))
-    return suite
-
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        TestAutopack,
+        TestAutomaticClassicPack,
+        TestMinimalPack,
+        TestFullClassicPackRaceCondition,
+        TestMinimalClassicPackRaceCondition,
+        prefix='test',
+        level=2
+        )
 
 
 if __name__ == '__main__':

@@ -46,12 +46,10 @@ class MinimalNewInsertsTest(ZODBTestBase, InsertMixin):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(MinimalNewInsertsTest, 'check'))
-        suite.addTest(unittest.makeSuite(FullNewInsertsTest, 'check'))
-    return suite
-
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        MinimalNewInsertsTest,
+        FullNewInsertsTest,
+        )
 
 
 if __name__ == '__main__':

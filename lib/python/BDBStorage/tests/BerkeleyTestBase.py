@@ -18,7 +18,10 @@
 import os
 import errno
 import shutil
+import sys
+import unittest
 
+import BDBStorage
 from BDBStorage.BerkeleyBase import BerkeleyConfig
 from ZODB.tests.StorageTestBase import StorageTestBase
 
@@ -77,3 +80,18 @@ class MinimalTestBase(BerkeleyTestBase):
 class FullTestBase(BerkeleyTestBase):
     from BDBStorage import BDBFullStorage
     ConcreteStorage = BDBFullStorage.BDBFullStorage
+
+def makeSuite(*args,**kw):
+    prefix = kw.get('prefix','check')
+    level = kw.get('level')
+    suite = unittest.TestSuite()
+    if level:
+        suite.level = level
+    if BDBStorage.is_available:
+        for klass in args:
+            suite.addTest(unittest.makeSuite(klass, prefix))
+    else:
+        sys.stderr.write("BDBStorage not available, tests disabled\n")
+        
+    return suite
+    

@@ -111,13 +111,14 @@ class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(MinimalCreateTest))
-        suite.addTest(unittest.makeSuite(FullCreateTest))
-        suite.addTest(unittest.makeSuite(FullOpenExistingTest))
-        suite.addTest(unittest.makeSuite(FullOpenCloseTest))
-        suite.addTest(unittest.makeSuite(OpenRecoveryTest))
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        MinimalCreateTest,
+        FullCreateTest,
+        FullOpenExistingTest,
+        FullOpenCloseTest,
+        OpenRecoveryTest,
+        prefix='test'
+        )
     return suite
 
 

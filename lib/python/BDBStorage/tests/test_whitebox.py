@@ -246,14 +246,12 @@ class WhiteboxHighLevelFull(ZODBTestBase):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(WhiteboxLowLevelMinimal, 'check'))
-        suite.addTest(unittest.makeSuite(WhiteboxHighLevelMinimal, 'check'))
-        suite.addTest(unittest.makeSuite(WhiteboxLowLevelFull, 'check'))
-        suite.addTest(unittest.makeSuite(WhiteboxHighLevelFull, 'check'))
-    return suite
-
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        WhiteboxLowLevelMinimal,
+        WhiteboxHighLevelMinimal,
+        WhiteboxLowLevelFull,
+        WhiteboxHighLevelFull,
+        )    
 
 
 if __name__ == '__main__':

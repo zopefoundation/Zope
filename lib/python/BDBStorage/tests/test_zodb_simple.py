@@ -78,13 +78,10 @@ class FullCommitAndRead(ZODBTestBase, CommitAndRead):
 
 
 def test_suite():
-    suite = unittest.TestSuite()
-    if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(MinimalCommitAndRead, 'check'))
-        suite.addTest(unittest.makeSuite(FullCommitAndRead, 'check'))
-    return suite
-
-
+    return BDBStorage.tests.BerkeleyTestBase.makeSuite(
+        MinimalCommitAndRead,
+        FullCommitAndRead
+        )    
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
