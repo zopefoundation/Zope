@@ -118,8 +118,11 @@ sdist_tgz:
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tar.gz ${PACKAGE_NAME} \
            --exclude=${PACKAGE_NAME}.tar.gz\
-           --exclude=CVS --exclude=.cvsignore \
-           --exclude=makefile
+           --exclude=CVS \
+           --exclude=.cvsignore \
+           --exclude=makefile \
+           --exclude=*~ \
+           --exclude=.#*
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
 
 # clobber:     Make the source tree 'pristine' again.
