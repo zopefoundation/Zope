@@ -19,7 +19,7 @@ from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
 from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
-from Acquisition import Implicit, aq_base
+from Acquisition import Implicit 
 from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval
@@ -913,9 +913,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         # for new index types is to use an "extra" record.
 
         if 'extra' in base.__init__.func_code.co_varnames:
-            index = base(name, extra=extra, caller=aq_base(self))
+            index = base(name, extra=extra, caller=self)
         else:
-            index = base(name, aq_base(self))
+            index = base(name, self)
 
         self._catalog.addIndex(name,index)
 

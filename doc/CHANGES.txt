@@ -47,10 +47,15 @@ Zope Changes
 
      - Collector #741: Applied patch to provide better FTP error messages.
 
-     - Collector #814: PathIndexes now uses IITreeSet instead of
-       IISet. This should result in less memory usage.
 
     Bugs Fixed
+
+     - Index constructors were called without acquisition context of the
+       calling object. This caused caller.getPhysicalPath() to fail for
+       indexes depending on this information.
+
+     - Collector #814: PathIndexes now uses IITreeSet instead of
+       IISet. This should result in less memory usage.
 
      - Fixed a whitespace problem in Z2.log (AWStats failed to process
        Zope logfiles)
