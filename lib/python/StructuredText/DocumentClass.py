@@ -914,7 +914,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile(r"\_([%s0-9\s\.,\?]+)\_" % letters).search):
+                      expr=re.compile(r"\s*\_([%s0-9\s\.,\?]+)\_" % letters).search):
         
         result = expr(s)
         if result:
