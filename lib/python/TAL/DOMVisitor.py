@@ -193,6 +193,7 @@ class DOMVisitor:
         """
         Call visitNode() for each child of the given node.
         """
+        # XXX eventually use firstChild/nextSibling, for speed
         for child in node.childNodes:
             self.visitNode(child)
 
