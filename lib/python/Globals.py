@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string
@@ -113,3 +113,7 @@ for n in 'Z', 'BOBO':
         if n: DevelopmentMode=1
 
 opened=[]
+
+
+# Nicer alias for class initializer.
+InitializeClass = default__class_init__
