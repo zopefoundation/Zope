@@ -15,30 +15,16 @@ Important notes
 
 Running Zope
 
-  You have a number of options for running Zope. (Too Many? ;)
-
   - You can use ZServer, the integration of Zope and Medusa.  You must
-    use ZServer if you want to use ZODB 3 and use multiple concurrent
-    threads. ZServer is currently in beta, so this may not be a good
-    choice for production systems.
+    use ZServer if you want to use multiple concurrent threads.
+    ZServer is currently in beta, so this may not be a good choice for
+    production systems.
 
   - You can use the PCGI publisher with an existing web server. 
     This is currently the recommended way to run Zope for production
-    systems. 
-
-Choosing your database
-
-  We currently support two Zope databases, ZODB 2 and ZODB 3. 
-  ZODB 3 is the default database.  To use ZODB 2:
-
-    - You can use ZODB 2 with ZServer and the z2.py script
-      described below by providing the -2 command-line option to
-      z2.py. 
-
-    - You can use ZODB 2 with the PCGI publisher by editing Zope.cgi
-      (after running the installer) changing the published module to
-      'Main' and changing 'Zope' to 'Main' in the PCGI_MODULE_PATH
-      setting.
+    systems, however this will force Zope into single threaded mode.
+    See the WEBSERVER.txt file in the doc/ directory for details on
+    using Zope with an existing webserver.
 
 Quick Start
 
@@ -59,7 +45,7 @@ Quick Start
 
   where yourhost is the name or address of the machine running Zope 2.
   If you changed the HTTP port with the -w option to z2.py, then use
-  it rather than 9673.  
+  it rather than 9673.
 
   You will be prompted for a user name and password, which may
   be found in the 'access' file in the Zope installation directory.
@@ -173,20 +159,6 @@ Setting permissions on the var directory.
   of the var directory and the files in it to allow Zope to read and write
   under its changed userid.
 
-Using ZServer
-
-  Zope comes with a ZServer startup script, z2.py, for starting
-  ZServer::
-
-    python z2.py
-
-  Look at the documentation string or run the script with
-  the -h option to get information on available options.  You can edit
-  this script to change defaults, or you can create a Unix shell
-  script or DOS BAT file to run the script with arguments.  The second
-  approach is preferred to avoid having to reconfigure the z2.py script
-  after a software update. 
-
 Starting Zope with an existing web server
 
   See the WEBSERVERS.txt file for more information about configuring Zope
@@ -197,3 +169,6 @@ Starting Zope with an existing web server
     * If you wish to use ZServer with PCGI use z2.py's '-p' switch to specify
       a PCGI info file.
   
+
+
+
