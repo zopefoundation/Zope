@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -155,19 +155,27 @@ class PythonScript(Script, Historical, Cacheable):
           ('ZPythonScript_edit', 'PUT', 'manage_FTPput', 'write',
            'ZPythonScript_setTitle', 'ZPythonScriptHTML_upload',
            'ZPythonScriptHTML_uploadForm', 'manage_historyCopy',
-           'manage_beforeHistoryCopy', 'manage_afterHistoryCopy')),
+           'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
+           'ZPythonScriptHTML_editAction',)),
         ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-        ('View', ('__call__','')),
+        ('View', ('__call__', '')),
         )
+
+    security = AccessControl.ClassSecurityInfo()
 
     def __init__(self, id):
         self.id = id
         self.ZBindings_edit(defaultBindings)
         self._makeFunction(1)
 
+    security.declareProtected('View management screens',
+      'ZPythonScriptHTML_editForm', 'manage_main', 'read',
+      'ZPythonScriptHTML_uploadForm', 'ZPythonScriptHTML_editAction',
+      'document_src')
     ZPythonScriptHTML_editForm = HTMLFile('pyScriptEdit', _www)
     manage = manage_main = ZPythonScriptHTML_editForm
-    manage_proxyForm = HTMLFile('pyScriptProxy', _www)
+    ZPythonScriptHTML_uploadForm = HTMLFile('pyScriptUpload', _www)
+
     ZScriptHTML_tryForm = HTMLFile('scriptTry', _www)
 
     def ZPythonScriptHTML_editAction(self, REQUEST, title, params, body):
@@ -181,6 +189,8 @@ class PythonScript(Script, Historical, Cacheable):
         return self.ZPythonScriptHTML_editForm(self, REQUEST,
                                                manage_tabs_message=message)
 
+    security.declareProtected('Change Python Scripts',
+      'ZPythonScript_setTitle', 'ZPythonScript_edit')
     def ZPythonScript_setTitle(self, title):
         title = str(title)
         if self.title != title:
@@ -350,6 +360,9 @@ class PythonScript(Script, Historical, Cacheable):
             'because you do not have proxy roles.\n<!--%s, %s-->' 
             % (self.id, u, roles))
 
+    security.declareProtected('Change proxy roles',
+      'manage_proxyForm', 'manage_proxy')
+    manage_proxyForm = HTMLFile('pyScriptProxy', _www)
     def manage_proxy(self, roles=(), REQUEST=None):
         "Change Proxy Roles"
         self._validateProxy(roles)
