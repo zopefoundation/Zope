@@ -7,6 +7,7 @@ import os
 import time
 import unittest
 
+from DateTime.DateTime import _findLocalTimeZoneName
 from DateTime import DateTime
 
 try:
@@ -338,6 +339,16 @@ class DateTimeTests(unittest.TestCase):
         except DateTime.TimeError:
             self.fail('Zope Collector issue #484 (negative time bug): '
                       'TimeError raised')
+    
+    def testStrftimeTZhandling(self):
+        '''strftime timezone testing'''
+        # This is a test for collector issue #1127
+        format = '%Y-%m-%d %H:%M %Z'
+        dt = DateTime('Wed, 19 Nov 2003 18:32:07 -0215')
+        dt_string = dt.strftime(format)
+        dt_local = dt.toZone(_findLocalTimeZoneName(0))
+        dt_localstring = dt_local.strftime(format)
+        self.assertEqual(dt_string, dt_localstring)
 
 
 def test_suite():

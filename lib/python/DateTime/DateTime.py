@@ -1476,11 +1476,7 @@ class DateTime:
 
     def strftime(self, format):
         # Format the date/time using the *current timezone representation*.
-        diff = _tzoffset(self._tz, self._t)
-        format = re.sub('(^\|[^%])%z',
-                               '\\1%+05d' % (diff / 36),
-                               format)
-        return strftime(format, safegmtime(self.timeTime() + diff))
+        return strftime(format, safelocaltime(self.timeTime()))
 
     # General formats from previous DateTime
     def Date(self):

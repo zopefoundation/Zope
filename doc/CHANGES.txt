@@ -36,6 +36,8 @@ Zope Changes
         Statistics view in the ZMI
 
     Bugs fixed
+    
+      - Collector #1127: strftime did not take timezone into account.
 
       - ZPublisher: changed some hardcoded 'latin1' arguments to 'iso-8859-15'
         since latin1 is obsolete.
