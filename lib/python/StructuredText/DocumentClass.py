@@ -858,7 +858,7 @@ class DocumentClass:
 
     def doc_literal(
         self, s,
-        expr = re.compile(r"'([%s%s%s\s]+)'[%s]+" % (letters, digits, literal_punc, phrase_delimiters)).search):
+        expr = re.compile(r"(\W+|^)'([%s%s%s\s]+)'([%s]+|$)" % (letters, digits, literal_punc, phrase_delimiters)).search,):
 
         # old expr... failed to cross newlines.
         #        expr=re.compile(
@@ -867,9 +867,9 @@ class DocumentClass:
         #          r"'(?:\s|[,.;:!?]|$)"  # close
         #          ).search):
         
-        r=expr(s)
+        r=expr(s) #or expr2(s)
         if r:
-           start, end = r.span(1)
+           start, end = r.span(2)
            return (StructuredTextLiteral(s[start:end]), start-1, end+1)
         else:
            return None
