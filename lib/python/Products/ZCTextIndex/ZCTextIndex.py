@@ -51,7 +51,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     meta_type = 'ZCTextIndex'
 
     manage_options = (
-        {'label': 'Settings', 'action': 'manage_main'},
+        {'label': 'Overview', 'action': 'manage_main'},
     )
 
     query_options = ['query']
@@ -170,6 +170,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     def getIndexType(self):
         """Return index type string"""
         return getattr(self, '_index_type', self._index_factory.__name__)
+        
+    def getFieldName(self):
+        """Return indexed attribute name"""
+        return self._fieldname
 
 InitializeClass(ZCTextIndex)
 

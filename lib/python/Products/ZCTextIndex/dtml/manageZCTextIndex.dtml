@@ -2,7 +2,15 @@
 <dtml-var manage_tabs>
 
 <p class="form-help">
-  The ZCTextIndex Lexicon in use by this index is: 
+  Name of attribute indexed: 
+  <em><dtml-var getFieldName></em>
+</p>
+<p class="form-help">
+  Index type: 
+  <em><dtml-var getIndexType></em>
+</p>
+<p class="form-help">
+  ZCTextIndex Lexicon used: 
   <em><dtml-var expr="lexicon.getId()"></em>
 </p>
 <p class="form-help">
