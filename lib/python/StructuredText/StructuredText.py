@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.19 1999/07/15 16:43:15 jim Exp $'''
+$Id: StructuredText.py,v 1.20 1999/07/21 13:33:59 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,9 @@ $Id: StructuredText.py,v 1.19 1999/07/15 16:43:15 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.20  1999/07/21 13:33:59  jim
+# untabified.
+#
 # Revision 1.19  1999/07/15 16:43:15  jim
 # Checked in Scott Robertson's thread-safety fixes.
 #
@@ -345,9 +348,9 @@ def untabify(aString):
     result=''
     rest=aString
     while 1:
-	ts_results = indent_tab.search_group(rest, (1,2))
+        ts_results = indent_tab.search_group(rest, (1,2))
         if ts_results:
-	    start, grps = ts_results
+            start, grps = ts_results
             lnl=len(grps[0])
             indent=len(grps[1])
             result=result+rest[:start]
@@ -394,9 +397,9 @@ def indent_level(aString):
     indent=l=len(text)
     while 1:
 
-	ts_results = indent_space.search_group(text, (1,2), start)
+        ts_results = indent_space.search_group(text, (1,2), start)
         if ts_results:
-	    start, grps = ts_results
+            start, grps = ts_results
             i=len(grps[0])
             start=start+i+1
             if start < l and text[start] != '\n':       # Skip blank lines
@@ -568,43 +571,43 @@ class HTML(StructuredText):
         r=''
         for s in structure:
             # print s[0],'\n', len(s[1]), '\n\n'
-	    
-	    ts_results = bullet.match_group(s[0], (1,))
+            
+            ts_results = bullet.match_group(s[0], (1,))
             if ts_results:
-		p = ts_results[1]
+                p = ts_results[1]
                 r=self.ul(r,p,self._str(s[1],level))
-	    else:
-		ts_results = ol.match_group(s[0], (3,))
-		if ts_results:
-		    p = ts_results[1]
-		    r=self.ol(r,p,self._str(s[1],level))
-		else:
-		    ts_results = olp.match_group(s[0], (1,))
-		    if ts_results:
-			p = ts_results[1]
-			r=self.ol(r,p,self._str(s[1],level))
-		    else:
-			ts_results = dl.match_group(s[0], (1,2))
-			if ts_results:
-			    t,d = ts_results[1]
-			    r=self.dl(r,t,d,self._str(s[1],level))
-			else:
-			    if example(s[0]) >= 0 and s[1]:
-				# Introduce an example, using pre tags:
-				r=self.normal(r,s[0],self.pre(s[1]))
-			    else:
-				if s[0][-2:]=='::' and s[1]:
-				    # Introduce an example, using pre tags:
-				    r=self.normal(r,s[0][:-1],self.pre(s[1]))
-				else:
+            else:
+                ts_results = ol.match_group(s[0], (3,))
+                if ts_results:
+                    p = ts_results[1]
+                    r=self.ol(r,p,self._str(s[1],level))
+                else:
+                    ts_results = olp.match_group(s[0], (1,))
+                    if ts_results:
+                        p = ts_results[1]
+                        r=self.ol(r,p,self._str(s[1],level))
+                    else:
+                        ts_results = dl.match_group(s[0], (1,2))
+                        if ts_results:
+                            t,d = ts_results[1]
+                            r=self.dl(r,t,d,self._str(s[1],level))
+                        else:
+                            if example(s[0]) >= 0 and s[1]:
+                                # Introduce an example, using pre tags:
+                                r=self.normal(r,s[0],self.pre(s[1]))
+                            else:
+                                if s[0][-2:]=='::' and s[1]:
+                                    # Introduce an example, using pre tags:
+                                    r=self.normal(r,s[0][:-1],self.pre(s[1]))
+                                else:
 
-				    if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
-					# Treat as a heading
-					t=s[0]
-					r=self.head(r,t,level,
-						    self._str(s[1],level and level+1))
-				    else:
-					r=self.normal(r,s[0],self._str(s[1],level))
+                                    if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
+                                        # Treat as a heading
+                                        t=s[0]
+                                        r=self.head(r,t,level,
+                                                    self._str(s[1],level and level+1))
+                                    else:
+                                        r=self.normal(r,s[0],self._str(s[1],level))
         return r
         
 
@@ -659,7 +662,7 @@ def main():
             s=ts_regex.sub('^#![^\n]+','',s)
 
         r=ts_regex.compile('\([\0-\n]*\n\)')
-	ts_results = r.match_group(s, (1,))
+        ts_results = r.match_group(s, (1,))
         if ts_results:
             s=s[len(ts_results[1]):]
         s=str(html_with_references(s))
