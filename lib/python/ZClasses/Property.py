@@ -286,6 +286,8 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
                            action='manage_addCommonSheetForm'),
         )
 
+    def all_meta_types(self): return self.meta_types
+
     manage=Globals.HTMLFile('OFS/main')
     manage_addCommonSheetForm=Globals.HTMLFile('addCommonSheet', globals())
 
