@@ -18,7 +18,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -50,7 +50,7 @@ class DTML(RestrictedDTML, HTML):
         security=getSecurityManager()
         security.addContext(self)
         try:
-            return apply(HTML.__call__, (self, client, REQUEST), kw)
+            return HTML.__call__(self, client, REQUEST, **kw)
 
         finally: security.removeContext(self)
 

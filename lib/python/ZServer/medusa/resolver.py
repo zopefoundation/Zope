@@ -4,7 +4,7 @@
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 
-RCS_ID =  '$Id: resolver.py,v 1.12 2003/03/18 21:15:17 fdrake Exp $'
+RCS_ID =  '$Id: resolver.py,v 1.13 2003/07/09 16:25:29 fdrake Exp $'
 
 
 # Fast, low-overhead asynchronous name resolver.  uses 'pre-cooked'
@@ -303,15 +303,14 @@ class hooked_callback:
         self.hook, self.callback = hook, callback
         
     def __call__ (self, *args):
-        apply (self.hook, args)
-        apply (self.callback, args)
+        self.hook(*args)
+        self.callback(*args)
         
 class caching_resolver (resolver):
     "Cache DNS queries.  Will need to honor the TTL value in the replies"
     
-    def __init__ (*args):
-        apply (resolver.__init__, args)
-        self = args[0]
+    def __init__(self, *args):
+        resolver.__init__(self, *args)
         self.cache = {}
         self.forward_requests = counter()
         self.reverse_requests = counter()

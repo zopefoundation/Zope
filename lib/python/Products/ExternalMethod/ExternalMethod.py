@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -221,14 +221,14 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
         __traceback_info__=args, kw, self._v_func_defaults
 
-        try: return apply(f,args,kw)
+        try: return f(*args, **kw)
         except TypeError, v:
             tb=sys.exc_info()[2]
             try:
                 if ((self._v_func_code.co_argcount-
                      len(self._v_func_defaults or ()) - 1 == len(args))
                     and self._v_func_code.co_varnames[0]=='self'):
-                    return apply(f,(self.aq_parent.this(),)+args,kw)
+                    return f(self.aq_parent.this(), *args, **kw)
 
                 raise TypeError, v, tb
             finally: tb=None

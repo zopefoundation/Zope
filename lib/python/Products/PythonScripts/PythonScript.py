@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -317,7 +317,7 @@ class PythonScript(Script, Historical, Cacheable):
         security=getSecurityManager()
         security.addContext(self)
         try:
-            result = apply(f, args, kw)
+            result = f(*args, **kw)
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)

@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -507,7 +507,7 @@ def getB64TStamp(
     TimeStamp=TimeStamp.TimeStamp, translate=string.translate
     ):
     t=time()
-    ts=split(b2a(`apply(TimeStamp,(gmtime(t)[:5]+(t%60,)))`)[:-1],'=')[0]
+    ts=split(b2a(`TimeStamp(*gmtime(t)[:5]+(t%60,))`)[:-1],'=')[0]
     return translate(ts, b64_trans)
 
 def getB64TStampToInt(

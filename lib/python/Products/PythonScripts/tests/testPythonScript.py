@@ -81,9 +81,9 @@ class TestPythonScriptNoAq(unittest.TestCase):
     def testParam26(self):
         import string
         params = string.letters[:26]
-        sparams = string.join(params, ',')
-        tup = apply(self._newPS('##parameters=%s\nreturn %s'
-                                % (sparams,sparams)), params)
+        sparams = ','.join(params)
+        ps = self._newPS('##parameters=%s\nreturn %s' % (sparams, sparams))
+        tup = ps(*params)
         assert tup == tuple(params), (tup, params)
 
     def testArithmetic(self):

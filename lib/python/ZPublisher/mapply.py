@@ -14,7 +14,7 @@
 """
 
 def default_call_object(object, args, context):
-    result=apply(object,args) # Type s<cr> to step into published object.
+    result=object(*args) # Type s<cr> to step into published object.
     return result
 
 def default_missing_name(name, context):
@@ -86,4 +86,4 @@ def mapply(object, positional=(), keyword={},
 
     args=tuple(args)
     if debug is not None: return debug(object,args,context)
-    else: return apply(object,args)
+    else: return object(*args)

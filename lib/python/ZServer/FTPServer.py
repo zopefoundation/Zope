@@ -98,7 +98,7 @@ class zope_ftp_channel(ftp_channel):
         self.cookies={}
 
     def _join_paths(self,*args):
-        path=apply(os.path.join,args)
+        path=os.path.join(*args)
         path=os.path.normpath(path)
         if os.sep != '/':
             path=path.replace(os.sep,'/')
@@ -543,7 +543,7 @@ class ContentReceiver:
         c=self.callback
         self.callback=None
         self.args=None
-        apply(c,args)
+        c(*args)
 
 
 class FTPLimiter:
@@ -599,7 +599,7 @@ class FTPServer(ftp_server):
 
     def __init__(self,module,*args,**kw):
         self.shutup=1
-        apply(ftp_server.__init__, (self, None) + args, kw)
+        ftp_server.__init__(self, None, *args, **kw)
         self.shutup=0
         self.module=module
         self.log_info('FTP server started at %s\n'
