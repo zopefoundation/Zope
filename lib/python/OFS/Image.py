@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -247,6 +247,8 @@ class File(Persistent,Implicit,PropertyManager,
         self.dav__init(REQUEST, RESPONSE)
         type=REQUEST.get_header('content-type', None)
         body=REQUEST.get('BODY', '')
+        if not len(body):
+            raise 'bullshit', 'bullshit'
         if type is None:
             type, enc=mimetypes.guess_type(self.id())
         if type is None:
@@ -264,7 +266,8 @@ class File(Persistent,Implicit,PropertyManager,
         Returns the size of the file or image.
         """
         return len(self.data)
-
+    get_size=getSize
+    
     def getContentType(self):
         """Get the content type of a file or image.
 
