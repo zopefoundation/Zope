@@ -560,5 +560,9 @@ class ZCatalog(Folder, Persistent, Implicit):
 Globals.default__class_init__(ZCatalog)
 
 
+def p_name(name):
+    return '_' + string.translate(name, name_trans) + '_Permission'
 
-
+def absattr(attr):
+    if callable(attr): return attr()
+    return attr
