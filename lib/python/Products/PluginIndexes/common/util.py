@@ -14,7 +14,6 @@
 __version__ = '$Id$'
 
 
-import re
 from warnings import warn
 from types import StringType,ListType,TupleType,DictType,InstanceType
 from DateTime import DateTime
