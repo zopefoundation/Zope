@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.142 1999/09/08 14:52:07 brian Exp $"""
-__version__='$Revision: 1.142 $'[11:-2]
+$Id: Publish.py,v 1.143 1999/09/23 21:57:46 jim Exp $"""
+__version__='$Revision: 1.143 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -225,9 +225,12 @@ def publish_module(module_name,
             status=response.getStatus()
 
         if response:
-            response=str(response)
-            if response:
-                stdout.write(response)
+            outputBody=getattr(response, 'outputBody', None)
+            if outputBody is not None:
+                outputBody()
+            else:
+                response=str(response)
+                if response: stdout.write(response)
 
         # The module defined a post-access function, call it
         if after_list[0] is not None: after_list[0]()

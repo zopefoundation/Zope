@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.4 1999/08/04 18:05:26 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: BaseResponse.py,v 1.5 1999/09/23 21:55:12 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -119,6 +119,9 @@ class BaseResponse:
 
     __setitem__=setHeader
 
+    def outputBody(self):
+        """Output the response body"""
+        self.stdout.write(str(self))
 
     def setBody(self, body):
         self.body=body
