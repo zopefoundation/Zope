@@ -155,16 +155,43 @@ else:
 # See comment in SimpleObjectPolicies for an explanation of what the
 # dicts below actually mean.
 
-ContainerAssertions[type({})] = {
+_dict_white_list = {
     'clear':1, 'copy':1, 'fromkeys':1, 'get':get_dict_get, 'has_key':1,
     'items':1, 'iteritems':1, 'keys':1,
     'iterkeys': get_iter,  'itervalues':get_iter,
     'pop':get_dict_pop, 'popitem':1, 'setdefault':1, 'update':1, 'values':1}
 
-ContainerAssertions[type([])] = {
+def _check_dict_access(name, value):
+    # Check whether value is a dict method
+    self = getattr(value, '__self__', None)
+    if self is None: # item
+        return 1
+    # Disallow spoofing
+    if type(self) is not dict:
+        return 0
+    if getattr(value, '__name__', None) != name:
+        return 0
+    return _dict_white_list.get(name, 0)
+
+ContainerAssertions[type({})] = _check_dict_access
+
+_list_white_list = {
     'append':1, 'count':1, 'extend':1, 'index':1, 'insert':1,
     'pop':get_list_pop, 'remove':1, 'reverse':1, 'sort':1}
 
+def _check_list_access(name, value):
+    # Check whether value is a dict method
+    self = getattr(value, '__self__', None)
+    if self is None: # item
+        return 1
+    # Disallow spoofing
+    if type(self) is not list:
+        return 0
+    if getattr(value, '__name__', None) != name:
+        return 0
+    return _list_white_list.get(name, 0)
+
+ContainerAssertions[type([])] = _check_list_access
 
 # This implementation of a "safe" iterator uses a global guard()
 # function to implement the actual guard.  This check is defined as a
