@@ -90,6 +90,10 @@ Zope Changes
         by using the HTMLWithImages class (has been disabled prior 
         to Zope 2.6)
 
+      - new option --force-http-connection-close for z2.py to prevent
+        clients from maintaing pipelined connections to the Zope server
+        (Collector #412)
+
     Bugs:
     
       - External methods didn't properly setup func_defaults and func_code

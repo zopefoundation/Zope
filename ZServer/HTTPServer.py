@@ -103,6 +103,8 @@ class zhttp_collector:
 
 class zhttp_handler:
     "A medusa style handler for zhttp_server"
+
+    _force_connection_close = 0
         
     def __init__ (self, module, uri_base=None, env=None):
         """Creates a zope_handler
@@ -258,6 +260,8 @@ class zhttp_handler:
 
         env=self.get_environment(request)
         zresponse=make_response(request,env)
+        if self._force_connection_close:
+            zresponse._http_connection = 'close'
         zrequest=HTTPRequest(sin, env, zresponse)
         request.channel.current_request=None
         request.channel.queue.append((self.module_name, zrequest, zresponse))

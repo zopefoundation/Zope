@@ -114,6 +114,13 @@ Options:
 
     Multiple -W options can be provided to run multiple servers.
 
+  -C
+  --force-http-connection-close
+
+    If present, this option causes Zope to close all HTTP connections,
+    regardless of the 'Connection:' header (or lack of one) sent by
+    the client.
+
   -f port
   
     The FTP port.  If this is a dash (e.g. -f -), then FTP
@@ -357,8 +364,8 @@ try:
         raise 'Invalid python version', sys.version.split()[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:',
-                               ['icp=',
+                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:C',
+                               ['icp=', 'force-http-connection-close'
                                ])
 
     DEBUG=0
@@ -408,6 +415,8 @@ try:
             MONITOR_PORT=server_info(MONITOR_PORT, v)
         elif o=='-w':
             HTTP_PORT=server_info(HTTP_PORT, v)
+        elif o=='-C' or o=='--force-http-connection-close':
+            FORCE_HTTP_CONNECTION_CLOSE=1
         elif o=='-W':
             WEBDAV_SOURCE_PORT=server_info(WEBDAV_SOURCE_PORT, v)
         elif o=='-f':
@@ -596,6 +605,8 @@ try:
             # environment to reflect the CGI environment of the other web
             # server.    
             zh = zhttp_handler(MODULE, '', HTTP_ENV)
+            if FORCE_HTTP_CONNECTION_CLOSE:
+                zh._force_connection_close = 1
             hs.install_handler(zh)
 
     # WebDAV source Server (runs HTTP, but munges request to return
