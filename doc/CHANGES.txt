@@ -237,6 +237,10 @@ Zope Changes
           and sometimes got into infinite loops.  This was due to a very
           old bug that was made effective by Python 1.5.2.
 
+        - Objects that could not be loaded because their implementing modules
+          (or packages) had been removed were not handled properly as
+          broken objects when ZODB 3 was used.
+
     Zope 2.0 alpha 2
 
       Features added
