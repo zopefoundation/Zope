@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.99 1999/04/08 14:04:54 brian Exp $'''
-__version__='$Revision: 1.99 $'[11:-2]
+$Id: Application.py,v 1.100 1999/04/23 00:56:10 amos Exp $'''
+__version__='$Revision: 1.100 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -238,9 +238,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         method=REQUEST.get('REQUEST_METHOD', 'GET')
         if not method in ('GET', 'POST'):
             return NullResource(self, name, REQUEST).__of__(self)
-        raise 'NotFound',(
-            "Sorry, the requested document does not exist.<p>"
-            "\n<!--\n%s\n%s\n-->" % (name, method))
+        REQUEST.RESPONSE.notFoundError("%s\n%s" % (name, method))
 
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""
