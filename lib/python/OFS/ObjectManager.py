@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.1 1997/07/25 20:03:24 jim Exp $"""
+$Id: ObjectManager.py,v 1.2 1997/07/28 21:36:08 jim Exp $"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -122,11 +122,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	    try:    self._delObject(names[-1])
 	    except: raise 'BadRequest', ('%s does not exist' % names[-1])
 	    del names[-1]
-	return MessageDialog(
-	       title  ='Items Removed',
-	       message='The items were removed successfully',
-	       action =REQUEST['PARENT_URL']+'/manage_main',
-	       target ='manage_main')
+	return self.manage_main(self, REQUEST)
 
     def _setProperty(self,name,value,type='string'):
         self._checkName(name)
@@ -157,11 +153,7 @@ class ObjectManager(Acquirer,Management,Persistent):
     def manage_addProperty(self,name,value,type,REQUEST):
 	"""Add a new property (www)"""
 	self._setProperty(name,value,type)
-	return MessageDialog(
-	       title='Property Added',
-	       message='The property was added successfully',
-	       action=REQUEST['PARENT_URL']+'/manage_propertiesForm',
-	       target='manage_main')
+	return self.manage_propertiesForm(self,REQUEST)
 
     def manage_editProperties(self,REQUEST):
 	"""Edit object properties"""
@@ -169,11 +161,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	    n=p['name']
 	    try:    setattr(self,n,REQUEST[n])
 	    except: pass
-	return MessageDialog(
-	       title  ='Properties changed',
-	       message='Properties were changed successfully',
-	       action =REQUEST['PARENT_URL']+'/manage_propertiesForm',
-	       target ='manage_main')
+	return self.manage_propertiesForm(self,REQUEST)
 
     def manage_delProperties(self,names,REQUEST):
 	"""Delete one or more properties"""
@@ -191,11 +179,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	    except: raise 'BadRequest', (
 		          'The property <I>%s</I> does not exist' % n)
 
-	return MessageDialog(
-	       title  ='Properties Removed',
-	       message='The properties were removed successfully',
-	       action =REQUEST['PARENT_URL']+'/manage_propertiesForm',
-	       target ='manage_main')
+	return self.manage_propertiesForm(self,REQUEST)
 
     def _defaultInput(self,n,t,v):
         return '<INPUT NAME="%s:%s" SIZE="50" VALUE="%s"></TD>' % (n,t,v)
@@ -236,6 +220,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.2  1997/07/28 21:36:08  jim
+# Got rid of some message dialogs.
+#
 # Revision 1.1  1997/07/25 20:03:24  jim
 # initial
 #
