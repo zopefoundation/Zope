@@ -12,8 +12,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.68 2002/01/15 04:45:13 jens Exp $"""
-__version__ = "$Revision: 1.68 $"[11:-2]
+$Id: MailHost.py,v 1.69 2002/01/15 14:58:37 jens Exp $"""
+__version__ = "$Revision: 1.69 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -162,7 +162,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         """Looks like the same function as send() - scheduledSend() is nowhere 
         used in Zope. No idea if it is still needed/used (ajung)
         """
-
         headers = extractheaders(messageText)
 
         if not headers['subject']:
@@ -198,7 +197,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declarePrivate( '_send' )
     def _send( self, headers, body ):
         """ Send the message """
-        smtpserver = SMTP( self.smtp_host, self.smtp_port )
+        smtpserver = SMTP( self.smtp_host, int( self.smtp_port ) )
         smtpserver.sendmail( headers['from'], headers['to'], body )
         smtpserver.quit()
 

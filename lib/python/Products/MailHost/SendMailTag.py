@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.14 2002/01/15 04:23:08 jens Exp $'
-__version__='$Revision: 1.14 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.15 2002/01/15 14:58:37 jens Exp $'
+__version__='$Revision: 1.15 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import parse_params,render_blocks
@@ -109,7 +109,7 @@ class SendMailTag:
         if self.mailhost:
             mhost=md[self.mailhost]
         elif self.smtphost:
-            mhost=MailBase( self.smtphost, self.port )
+            mhost=MailBase( smtp_host=self.smtphost, smtp_port=self.port )
 
         mhost.send(render_blocks(self.section.blocks, md),
                    self.mailto, self.mailfrom,
