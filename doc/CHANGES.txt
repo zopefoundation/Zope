@@ -1,5 +1,6 @@
-Changes
--------
+
+Principia Changes
+-----------------
 
 Principia 1.4.0
 
