@@ -11,15 +11,14 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.17 1997/11/06 22:43:39 brian Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Application.py,v 1.18 1997/11/07 16:09:59 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 import Globals,Folder,regex
 from string import lower, find
 from AccessControl.User import UserFolder
 from DateTime import DateTime
-
 
 class Application(Folder.Folder):
     title    ='Principia'
@@ -65,11 +64,27 @@ class Application(Folder.Folder):
 
     def __class_init__(self): pass
 
-    def PrincipiaRedirect(self,destination,PARENT_URL):
+    def PrincipiaRedirect(self,destination,URL1):
 	"""Utility function to allow user-controlled redirects"""
 	if find(destination,'//') >= 0: raise 'Redirect', destination
-	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
+	raise 'Redirect', ("%s/%s" % (URL1, destination))
     Redirect=PrincipiaRedirect
+
+    def __bobo_traverse__(self, REQUEST, name=None):
+	if name is None and REQUEST.has_key(Globals.SessionNameName):
+	    pd=Globals.SessionBase[REQUEST[Globals.SessionNameName]]
+	    alternate_self=pd.jar[self._p_oid]
+	    if hasattr(self, 'aq_parent'):
+		alternate_self=alternate_self.__of__(self.aq_parent)
+	    return alternate_self
+
+	try: return getattr(self, name)
+	except AttributeError:
+	    try: return self[name]
+	    except KeyError:
+		raise 'NotFound',(
+		    "Sorry, the requested document does not exist.<p>"
+		    "\n<!--\n%s\n%s\n-->" % (name,REQUEST['REQUEST_METHOD']))
 
     def PrincipiaTime(self):
 	"""Utility function to return current date/time"""
@@ -102,10 +117,11 @@ def install_products(products):
     meta_types=list(Folder.Folder.dynamic_meta_types)
     role_names=list(app.__defined_roles__)
 
-    for product in products:
-	product=__import__(product)
+    for product_name in products:
+	product=__import__(product_name)
 	for meta_type in product.meta_types:
-	    meta_types.append(meta_type)
+	    if product_name=='OFS': meta_types.insert(0,meta_type)
+	    else: meta_types.append(meta_type)
 	    name=meta_type['name']
 
 	    if (not meta_type.has_key('prefix') and 
@@ -180,6 +196,10 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.18  1997/11/07 16:09:59  jim
+# Added __bobo_traverse__ machinery in support of sessions.
+# Updated product installation logic to give OFS special treatment.
+#
 # Revision 1.17  1997/11/06 22:43:39  brian
 # Added global roles to app
 #
