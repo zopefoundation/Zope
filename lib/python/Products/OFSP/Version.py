@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -107,7 +107,6 @@ def manage_addVersion(self, id, title, REQUEST=None):
 class Version(Persistent,Implicit,RoleManager,Item):
     """ """
     meta_type='Version'
-    icon     ='misc_/OFSP/version'
 
     manage_options=({'label':'Join/Leave', 'action':'manage_main'},
                     {'label':'Properties', 'action':'manage_editForm'},

@@ -92,11 +92,6 @@ class misc_:
 class p_:
     "Shared system information"
     __roles__=None
-
-    folder=ImageFile('www/Folder_icon.gif', globals())
-    image =ImageFile('www/Image_icon.gif', globals())
-    file  =ImageFile('www/File_icon.gif', globals())
-    dtmldoc=doc=ImageFile('www/dtmldoc.gif', globals())
     
     broken=ImageFile('www/broken.gif', globals())
 

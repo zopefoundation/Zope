@@ -83,83 +83,83 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.25 1999/03/25 00:02:35 jim Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: __init__.py,v 1.26 1999/03/30 18:15:31 jim Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
-import Version, Draft
+import Version, Draft, Globals
 import OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
 from ImageFile import ImageFile
 
-product_name='Zope built-in objects'
+# This is the new way to initialize products.  It is hoped
+# that this more direct mechanism will be more understandable.
+def initialize(context):
 
-classes=('OFS.DTMLMethod.DTMLMethod', 'OFS.DTMLDocument.DTMLDocument',
-         'Version.Version', 'OFS.Image.File', 'OFS.Image.Image',
-         )
-klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
+    perm='Add Documents, Images, and Files'
 
-meta_types=(
-    {'name': Draft.Draft.meta_type,
-     'action':'manage_addPrincipiaDraftForm'},
-    {'name': AccessControl.User.UserFolder.meta_type,
-     'action':'manage_addUserFolder'},
-    {'name': Version.Version.meta_type,
-     'action':'manage_addVersionForm'},
-    {'name': OFS.Image.File.meta_type,
-     'action':'manage_addFileForm'},
-    {'name': OFS.Image.Image.meta_type,
-     'action':'manage_addImageForm'},
-    {'name': OFS.Folder.Folder.meta_type,
-     'action':'manage_addFolderForm'},
-    {'name': OFS.DTMLMethod.DTMLMethod.meta_type,
-     'action':'manage_addDTMLMethodForm'},
-    {'name': OFS.DTMLDocument.DTMLDocument.meta_type,
-     'action':'manage_addDTMLDocumentForm'},
-    )
-
-
-methods={
-    # for bw compatibility
-    'manage_addDocument': OFS.DTMLMethod.add,    
-    'manage_addDTMLMethod': OFS.DTMLMethod.add,
-    'manage_addDTMLMethodForm': OFS.DTMLMethod.addForm,
-    'manage_addDTMLDocument': OFS.DTMLDocument.add,
-    'manage_addDTMLDocumentForm': OFS.DTMLDocument.addForm,
-    'manage_addFolder': OFS.Folder.manage_addFolder,
-    'manage_addFolderForm': OFS.Folder.manage_addFolderForm,
-    'manage_addImage': OFS.Image.manage_addImage,
-    'manage_addImageForm': OFS.Image.manage_addImageForm,
-    'manage_addFile': OFS.Image.manage_addFile,
-    'manage_addFileForm': OFS.Image.manage_addFileForm,
-    'manage_addVersionForm': Version.manage_addVersionForm,
-    'manage_addVersion': Version.manage_addVersion,
-    'manage_addUserFolder': AccessControl.User.manage_addUserFolder,
-    'manage_addPrincipiaDraftForm': Draft.manage_addPrincipiaDraftForm,
-    'manage_addPrincipiaDraft': Draft.manage_addPrincipiaDraft,
-    }
-
-misc_={
-    'version': ImageFile('images/version.gif', globals()),
-    }
-
-__ac_permissions__=(
-    (
-        ('Add Versions',('manage_addVersionForm', 'manage_addVersion')),
-        ('Add Documents, Images, and Files',
-         ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
-          'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
-          'manage_addFileForm', 'manage_addFile',
-          'manage_addImageForm', 'manage_addImage')
-         ),
-        ('Add Folders',('manage_addFolderForm', 'manage_addFolder', 'MKCOL')),
-        ('Add User Folders',('manage_addUserFolder',)),
-        ('Change DTML Documents', ()),
-        ('Change DTML Methods', ()),
-        ('Change Images and Files', ()),
-        ('Change proxy roles', ()),
-        ('Change Versions', ()),
-        ('Join/leave Versions', ()),
-        ('Save/discard Version changes', ()),
-        ('Manage users', ()),
+    context.registerClass(
+        OFS.DTMLMethod.DTMLMethod,
+        permission=perm,
+        constructors=(OFS.DTMLMethod.addForm, OFS.DTMLMethod.addDTMLMethod,),
+        icon='images/dtmlmethod.gif',
+        legacy=(
+            ('manage_addDocument', OFS.DTMLMethod.addDTMLMethod),
+            ('manage_addDTMLMethod', OFS.DTMLMethod.addDTMLMethod),
+            )
         )
-    )
+
+    context.registerClass(
+        OFS.DTMLDocument.DTMLDocument,
+        permission=perm,
+        constructors=(OFS.DTMLDocument.addForm,
+                      OFS.DTMLDocument.addDTMLDocument),
+        icon='images/dtmldoc.gif',
+        legacy=(('manage_addDTMLDocument', OFS.DTMLDocument.addDTMLDocument),),
+        )
+
+    context.registerClass(
+        OFS.Image.Image,
+        permission=perm,
+        constructors=(OFS.Image.manage_addImageForm,
+                      OFS.Image.manage_addImage),
+        icon='images/Image_icon.gif',
+        legacy=(OFS.Image.manage_addImage,),
+        )
+
+    context.registerClass(
+        OFS.Image.File,
+        permission=perm,
+        constructors=(OFS.Image.manage_addFileForm,
+                      OFS.Image.manage_addFile),
+        icon='images/File_icon.gif',
+        legacy=(OFS.Image.manage_addFile,),
+        )
+
+    context.registerClass(
+        OFS.Folder.Folder,
+        constructors=(OFS.Folder.manage_addFolderForm,
+                      OFS.Folder.manage_addFolder),
+        icon='images/Folder_icon.gif',
+        legacy=(OFS.Folder.manage_addFolder,),
+        )
+
+    context.registerClass(
+        AccessControl.User.UserFolder,
+        constructors=(AccessControl.User.manage_addUserFolder,),
+        icon='images/UserFolder_icon.gif',
+        legacy=(AccessControl.User.manage_addUserFolder,),
+        )
+
+    context.registerClass(
+        Version.Version,
+        constructors=(Version.manage_addVersionForm,
+                      Version.manage_addVersion),
+        icon='images/version.gif'
+        )
+
+    context.registerClass(
+        Draft.Draft,
+        constructors=(Draft.manage_addPrincipiaDraftForm,
+                 Draft.manage_addPrincipiaDraft),
+        icon='images/draft.gif'
+        )

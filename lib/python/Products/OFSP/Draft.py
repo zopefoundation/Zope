@@ -98,7 +98,6 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     "Daft objects"
     _refid=''
     _version='/version'
-    icon     ='misc_/OFSP/draft'
     meta_type='Zope Draft'
 
     __ac_permissions__=(
