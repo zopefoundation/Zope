@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -283,6 +283,11 @@ class Super(User):
 _remote_user_mode=0
 try:
     f=open('%s/access' % INSTANCE_HOME, 'r')
+except IOError:
+    raise 'InstallError', (
+        'No access file found at %s - see INSTALL.txt' % INSTANCE_HOME
+        )
+try:
     data=split(strip(f.readline()),':')
     f.close()
     _remote_user_mode=not data[1]
@@ -291,7 +296,7 @@ try:
     super=Super(data[0],data[1],('manage',), ds)
     del data
 except:
-    raise 'InstallError', 'No access file found - see INSTALL.txt'
+    raise 'InstallError', 'Invalid format for access file - see INSTALL.txt'
 
 
 nobody=User('Anonymous User','',('Anonymous',), [])
@@ -594,7 +599,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Copy/Paste support
 
     def _notifyOfCopyTo(self, container, op=0):
-        if hasattr(container, '__allow_groups__'):
+        if hasattr(container, 'aq_base'):
+            container=container.aq_base
+        if hasattr(container, 'acl_users'):
             raise TypeError, (
                 'Target already contains a UserFolder.')
 
