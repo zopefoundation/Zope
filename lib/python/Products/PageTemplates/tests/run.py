@@ -1,8 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 """Run all tests."""
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
 
 def test_suite():
     suite = unittest.TestSuite()
@@ -12,4 +11,4 @@ def test_suite():
     return suite
 
 if __name__ == "__main__":
-    main()
+    unittest.main(defaultTest='test_suite')
