@@ -43,6 +43,8 @@ Zope Changes
           with the CGI specification and looks like "HTTP/1.1" instead
           of "1.1"
 
+        - Creation of a TextIndex ignored the vocabulary setting.
+
     Zope 2.4 beta 2
 
       Bugs fixed
