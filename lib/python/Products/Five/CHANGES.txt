@@ -1,5 +1,12 @@
 Five Changes
 ============
+* There is now a standard standard_macros. Five page templates can use
+  context/@@standard_macros/view to get the default site layout.
+
+* The addform and editform directive now supports the widget zcml subdirective,
+  that previously was ignored.
+
+* Five now supports the vocabulary zcml directive.
 
 Five 0.3 (2005-03-11)
 ---------------------

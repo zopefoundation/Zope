@@ -44,6 +44,14 @@
       permission="zope.Public"
       />
 
+  <browser:page
+    for="*"
+    name="standard_macros"
+    permission="zope2.View"
+    class=".browser.StandardMacros"
+    allowed_interface="zope.interface.common.mapping.IItemMapping"
+    />
+        
   <view
       for="*"
       factory=".browser.AbsoluteURL"

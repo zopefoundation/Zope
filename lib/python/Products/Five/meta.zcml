@@ -81,6 +81,12 @@
 
     </meta:complexDirective>
 
+    <meta:directive
+        name="vocabulary"
+        schema="zope.app.schema.metadirectives.IVocabularyDirective"
+        handler="zope.app.schema.metaconfigure.vocabulary"
+        />
+
   </meta:directives>
 
   <meta:directives namespace="http://namespaces.zope.org/browser">

@@ -1,7 +1,6 @@
 <tal:tag condition="view/update"/>
-<html metal:use-macro="here/five_template/macros/master">
-<body metal:fill-slot="main">
-  <div>
+<html metal:use-macro="context/@@standard_macros/page">
+<body metal:fill-slot="body">
 
   <div metal:define-macro="body">
 
@@ -59,8 +58,6 @@
       <div class="separator"></div>
 
     </form>
-
-  </div>
 
   </div>
   </body>

@@ -1,6 +1,6 @@
-<html metal:use-macro="here/five_template/macros/master">
+<html metal:use-macro="context/@@standard_macros/page">
   <body>
-  <div metal:fill-slot="main">
+  <div metal:fill-slot="body">
 
   <div metal:define-macro="addform">
 

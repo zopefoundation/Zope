@@ -143,7 +143,9 @@ class Macros:
         raise KeyError, key
 
 class StandardMacros(BrowserView, Macros):
-    pass
+    macro_pages = ('five_template',
+                   'widget_macros',
+                   'form_macros',) 
 
 class EditView(BrowserView):
     """Simple edit-view base class

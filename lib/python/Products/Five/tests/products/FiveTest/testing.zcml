@@ -3,6 +3,7 @@
 
   <redefinePermission from="zope2.Public" to="zope.Public" />
 
+  <include file="meta.zcml" />
   <include file="configure.zcml" />
   <includeOverrides file="overrides.zcml" />
 

@@ -309,7 +309,22 @@
       name="edit.html"
       permission="zope2.Public"
       />
-
+      
+  <!-- With a widget override -->
+  <browser:editform
+      schema=".interfaces.IFieldSimpleContent"
+      for=".interfaces.IFieldSimpleContent"
+      name="widgetoverride.html"
+      permission="zope2.Public"
+      >
+      
+      <widget
+         field="description"
+         class="zope.app.form.browser.TextAreaWidget"
+         />
+         
+  </browser:editform>
+      
   <five:traversable class=".helpers.FiveTraversableFolder" />
   
   <browser:addform
@@ -318,6 +333,20 @@
      name="addsimplecontent.html"
      permission="zope2.Public"
      />
+     
+  <browser:addform
+     schema=".interfaces.IFieldSimpleContent"
+     content_factory=".simplecontent.FieldSimpleContent"
+     name="addwidgetoverride.html"
+     permission="zope2.Public">
+
+     <widget
+         field="description"
+         class="zope.app.form.browser.TextAreaWidget"
+         />
+         
+  </browser:addform>
+
 
   <!-- stuff that we'll override in overrides.zcml -->
 
@@ -430,9 +459,20 @@
       for="zope.app.container.interfaces.IObjectRemovedEvent"
       />
 
+  <!-- Testing the vocabulary directive -->
+  <vocabulary
+     name="aVocabulary"
+     factory="zope.schema.tests.test_vocabulary.SampleVocabulary"
+     />
+
+  <!-- testing that products meta.zcml statements are picked up. -->
+  <five:parrot
+      class=".metaconfigure.NorwegianBlue"
+      name="Polly"
+      />
+      
   <!-- as new style classes are ignored, zope.app.form.browser
        can be imported -->
-
   <include package="zope.app.form.browser"/>
 
 </configure>
