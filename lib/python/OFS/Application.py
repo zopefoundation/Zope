@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.165 2001/11/17 17:51:54 chrism Exp $'''
-__version__='$Revision: 1.165 $'[11:-2]
+$Id: Application.py,v 1.166 2001/11/19 19:43:30 amos Exp $'''
+__version__='$Revision: 1.166 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -419,7 +419,6 @@ def initialize(app):
         get_transaction().note('Added standard_error_message')
         get_transaction().commit()
 
-
     # b/c: Ensure that a temp folder exists
     if not hasattr(app, 'temp_folder'):
         from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
@@ -472,12 +471,16 @@ def initialize(app):
         get_transaction().commit()
         del sdm
 
-    # b/c: Ensure that there's an Examples folder with examples
-    if not hasattr(app, 'Examples'):
+    # b/c: Ensure that there's an Examples folder with examples.
+    # However, make sure that if the examples have been added already
+    # and then deleted that we don't add them again.
+    if not hasattr(app, 'Examples') and not \
+       hasattr(app, '_Zope25_examples_have_been_added'):
         examples_path = os.path.join(Globals.data_dir, 'Examples.zexp')
         if os.path.isfile(os.path.join(examples_path)):
             examples=app._p_jar.importFile(examples_path)
             app._setObject('Examples', examples)
+            app._Zope25_examples_have_been_added=1
             get_transaction().note('Added Examples folder')
             get_transaction().commit()
             del examples
