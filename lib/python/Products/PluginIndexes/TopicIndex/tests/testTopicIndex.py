@@ -11,22 +11,19 @@
 #
 ##############################################################################
 
+import os ,sys, re, unittest
 
 import ZODB
-import os,sys,re,unittest
 from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
-
 
 class Obj:
 
     def __init__(self,id,meta_type=''):
-        self.id        = id
+        self.id = id
         self.meta_type = meta_type
 
     def getId(self): return self.id
     def getPhysicalPath(self):  return self.id
-
-
 
 class TestBase(unittest.TestCase):
 
@@ -36,18 +33,14 @@ class TestBase(unittest.TestCase):
     def _searchOr(self,query,expected):
         return self._search(query,'or',expected)
 
-
     def _search(self,query,operator,expected):
 
         res = self.TI._apply_index({'topic':{'query':query,'operator':operator}})
         rows = list(res[0])
         rows.sort()
         expected.sort()
-
         self.assertEqual(rows,expected,query)
-
         return rows
-
 
 class TestTopicIndex(TestBase):
 
@@ -66,7 +59,6 @@ class TestTopicIndex(TestBase):
 
 
     def testOr(self):
-
         self._searchOr('doc1',[1,2])
         self._searchOr(['doc1'],[1,2])
         self._searchOr('doc2',[3,4]),
@@ -75,14 +67,11 @@ class TestTopicIndex(TestBase):
 
 
     def testAnd(self):
-
         self._searchAnd('doc1',[1,2])
         self._searchAnd(['doc1'],[1,2])
         self._searchAnd('doc2',[3,4])
         self._searchAnd(['doc2'],[3,4])
         self._searchAnd(['doc1','doc2'],[])
-
-
 
 def test_suite():
 

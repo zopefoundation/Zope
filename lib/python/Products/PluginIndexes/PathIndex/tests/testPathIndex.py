@@ -15,16 +15,15 @@ import os, sys, unittest
 
 from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
 
-
 class Dummy:
 
     meta_type="foo"
+
     def __init__( self, path):
         self.path = path
 
     def getPhysicalPath(self):
         return self.path.split('/')
-
 
     def __str__( self ):
         return '<Dummy: %s>' % self.path
@@ -62,25 +61,35 @@ class TestCase( unittest.TestCase ):
             self._index.index_object( k, v )
 
     def testEmpty(self):
-
-        assert len( self._index ) == 0
-        assert self._index.getEntryForObject( 1234 ) is None
+        self.assertEqual(self._index.numObjects() ,0)
+        self.assertEqual(self._index.getEntryForObject(1234), None)
         self._index.unindex_object( 1234 ) # nothrow
-        assert self._index._apply_index( {"suxpath":"xxx"} ) is None
+        self.assertEqual(self._index._apply_index({"suxpath":"xxx"}), None)
 
     def testUnIndex(self):
-
         self._populateIndex()
+        self.assertEqual(self._index.numObjects(), 18)
 
         for k in self._values.keys():
             self._index.unindex_object(k)
 
-        assert len(self._index._index)==0
-        assert len(self._index._unindex)==0
+        self.assertEqual(self._index.numObjects(), 0)
+        self.assertEqual(len(self._index._index), 0)
+        self.assertEqual(len(self._index._unindex), 0)
+
+    def testReindex(self):
+        self._populateIndex()
+        self.assertEqual(self._index.numObjects(), 18)
+
+        o = Dummy('/foo/bar')
+        self._index.index_object(19, o)
+        self.assertEqual(self._index.numObjects(), 19)
+        self._index.index_object(19, o)
+        self.assertEqual(self._index.numObjects(), 19)
+
 
     def testUnIndexError(self):
         self._populateIndex()
-        
         # this should not raise an error
         self._index.unindex_object(-1)
 
@@ -91,10 +100,7 @@ class TestCase( unittest.TestCase ):
     def testRoot(self):
 
         self._populateIndex()
-
-        tests = [
-            ("/",0, range(1,19)),
-        ]
+        tests = ( ("/",0, range(1,19)), )
 
         for comp,level,results in tests:
             for path in [comp,"/"+comp,"/"+comp+"/"]:
@@ -110,14 +116,10 @@ class TestCase( unittest.TestCase ):
                 lst = list(res[0].keys())
                 self.assertEqual(lst,results)
 
-
     def testRoot(self):
 
         self._populateIndex()
-
-        tests = [
-            ("/",0, range(1,19)),
-        ]
+        tests = ( ("/",0, range(1,19)), )
 
         for comp,level,results in tests:
             for path in [comp,"/"+comp,"/"+comp+"/"]:
@@ -137,7 +139,6 @@ class TestCase( unittest.TestCase ):
     def testSimpleTests(self):
 
         self._populateIndex()
-
         tests = [
             ("aa", 0, [1,2,3,4,5,6,7,8,9]),
             ("aa", 1, [1,2,3,10,11,12] ),
@@ -172,7 +173,6 @@ class TestCase( unittest.TestCase ):
     def testComplexOrTests(self):
 
         self._populateIndex()
-
         tests = [
             (['aa','bb'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
             (['aa','bb','xx'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
@@ -189,7 +189,6 @@ class TestCase( unittest.TestCase ):
     def testComplexANDTests(self):
 
         self._populateIndex()
-
         tests = [
             (['aa','bb'],1,[]),
             ([('aa',0),('bb',1)],0,[4,5,6]),
@@ -197,7 +196,6 @@ class TestCase( unittest.TestCase ):
         ]
 
         for lst ,level,results in tests:
-
             res = self._index._apply_index(
                             {"path":{'query':lst,"level":level,"operator":"and"}})
             lst = list(res[0].keys())

@@ -11,32 +11,32 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.13 2003/06/23 08:45:58 andreasjung Exp $'
-
-from Products.PluginIndexes import PluggableIndex
-from Products.PluginIndexes.common.util import parseIndexRequest
+__version__ = '$Id: TopicIndex.py,v 1.14 2003/08/16 16:44:48 andreasjung Exp $'
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
-from Acquisition import Implicit
+from zLOG import ERROR, LOG
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IISet,intersection,union
-from zLOG import ERROR, LOG
+
 import FilteredSet
+from Products.PluginIndexes import PluggableIndex
+from Products.PluginIndexes.common.util import parseIndexRequest
 
 _marker = []
 
-class TopicIndex(Persistent, Implicit, SimpleItem):
+class TopicIndex(Persistent, SimpleItem):
 
     """ A TopicIndex maintains a set of FilteredSet objects.
-    Every FilteredSet object consists of an expression and
-    and IISet with all Ids of indexed objects that eval with
-    this expression to 1.
+        Every FilteredSet object consists of an expression and
+        and IISet with all Ids of indexed objects that eval with
+        this expression to 1.
     """
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 
     meta_type="TopicIndex"
+    query_options = ('query','operator')
 
     manage_options= (
         {'label': 'FilteredSets',
@@ -44,93 +44,59 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
          'help': ('TopicIndex','TopicIndex_searchResults.stx')},
     )
 
-    manage_workspace = DTMLFile('dtml/manageTopicIndex',globals())
-
-    query_options = ('query','operator')
-
     def __init__(self,id,caller=None):
-        self.id             = id
-        self.filteredSets   = OOBTree()
-        # experimental code for specifing the operator
-        self.operators       = ('or','and')
+        self.id = id
+        self.filteredSets  = OOBTree()
+        self.operators = ('or','and')
         self.defaultOperator = 'or'
-
 
     def getId(self): return self.id
 
     def clear(self):
-        """ clear everything """
-
         for fs in self.filteredSets.values():
             fs.clear()
 
-
-    def index_object(self, documentId, obj ,threshold=100):
+    def index_object(self, docid, obj ,threshold=100):
         """ hook for (Z)Catalog """
-
         for fid, filteredSet in self.filteredSets.items():
-            filteredSet.index_object(documentId,obj)
-
+            filteredSet.index_object(docid,obj)
         return 1
 
-
-    def unindex_object(self,documentId):
+    def unindex_object(self,docid):
         """ hook for (Z)Catalog """
 
         for fs in self.filteredSets.values():
-
             try:
-                fs.unindex_object(documentId)
+                fs.unindex_object(docid)
             except KeyError:
                 LOG(self.__class__.__name__, ERROR,
                     'Attempt to unindex document'
-                    ' with id %s failed' % documentId)
+                    ' with id %s failed' % docid)
         return 1
 
-
-    def __len__(self):
-        """ len """
-        n=0
-        for fs in self.filteredSets.values():
-            n = n + len(fs.getIds())
-        return n
-
-
     def numObjects(self):
-        return "N/A"
+        return "n/a"
 
-
-    def keys(self):   pass
-    def values(self): pass
-    def items(self):  pass
-
-
-    def search(self,filterId):
-
-        if self.filteredSets.has_key(filterId):
-            return self.filteredSets[filterId].getIds()
-
+    def search(self,filter_id):
+        if self.filteredSets.has_key(filter_id):
+            return self.filteredSets[filter_id].getIds()
 
     def _apply_index(self, request, cid=''):
         """ hook for (Z)Catalog
-        request   mapping type (usually {"topic": "..." }
-        cid      ???
+            'request' --  mapping type (usually {"topic": "..." }
+            'cid' -- ???
         """
 
         record = parseIndexRequest(request,self.id,self.query_options)
-        if record.keys==None: return None
+        if record.keys is None: return None
 
-        # experimental code for specifing the operator
-        operator = record.get('operator',self.defaultOperator).lower()
-
-        # depending on the operator we use intersection of union
-        if operator=="or":  set_func = union
-        else:               set_func = intersection
+        operator = record.get('operator', self.defaultOperator).lower()
+        if operator == 'or':  set_func = union
+        else: set_func = intersection
 
         res = None
-
-        for filterId in record.keys:
-            rows = self.search(filterId)
+        for filter_id in record.keys:
+            rows = self.search(filter_id)
             res = set_func(res,rows)
 
         if res:
@@ -138,79 +104,65 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
         else:
             return IISet(), (self.id,)
 
-
-    def uniqueValues(self,name=None,withLength=0):
+    def uniqueValues(self,name=None, withLength=0):
         """ needed to be consistent with the interface """
-
         return self.filteredSets.keys()
 
-
-    def getEntryForObject(self,documentId,default=_marker):
+    def getEntryForObject(self,docid, default=_marker):
         """ Takes a document ID and returns all the information we have
-        on that specific object. """
-
+            on that specific object. 
+        """
         return self.filteredSets.keys()
 
+    def addFilteredSet(self, filter_id, typeFilteredSet, expr):
 
-    def addFilteredSet(self, filterId, typeFilteredSet, expr):
-
-        if self.filteredSets.has_key(filterId):
+        if self.filteredSets.has_key(filter_id):
             raise KeyError,\
-                'A FilteredSet with this name already exists: %s' % filterId
+                'A FilteredSet with this name already exists: %s' % filter_id
+        self.filteredSets[filter_id] = \
+            FilteredSet.factory(filter_id, typeFilteredSet, expr)
 
-        self.filteredSets[filterId] = \
-            FilteredSet.factory(filterId, typeFilteredSet, expr)
-
-
-    def delFilteredSet(self,filterId):
-
-        if not self.filteredSets.has_key(filterId):
+    def delFilteredSet(self,filter_id):
+        if not self.filteredSets.has_key(filter_id):
             raise KeyError,\
-                'no such FilteredSet:  %s' % filterId
+                'no such FilteredSet:  %s' % filter_id
+        del self.filteredSets[filter_id]
 
-        del self.filteredSets[filterId]
-
-
-    def clearFilteredSet(self,filterId):
-
-        if not self.filteredSets.has_key(filterId):
+    def clearFilteredSet(self,filter_id):
+        if not self.filteredSets.has_key(filter_id):
             raise KeyError,\
-                'no such FilteredSet:  %s' % filterId
+                'no such FilteredSet:  %s' % filter_id
+        self.filteredSets[filter_id].clear()
 
-        self.filteredSets[filterId].clear()
-
-
-    def manage_addFilteredSet(self, filterId, typeFilteredSet, expr, URL1, \
+    def manage_addFilteredSet(self, filter_id, typeFilteredSet, expr, URL1, \
             REQUEST=None,RESPONSE=None):
         """ add a new filtered set """
 
-        if len(filterId)==0: raise RuntimeError,'Length of ID too short'
-        if len(expr)==0: raise RuntimeError,'Length of expression too short'
+        if len(filter_id) == 0: raise RuntimeError,'Length of ID too short'
+        if len(expr) == 0: raise RuntimeError,'Length of expression too short'
 
-        self.addFilteredSet(filterId, typeFilteredSet, expr)
+        self.addFilteredSet(filter_id, typeFilteredSet, expr)
 
         if RESPONSE:
             RESPONSE.redirect(URL1+'/manage_workspace?'
             'manage_tabs_message=FilteredSet%20added')
 
-
-    def manage_delFilteredSet(self, filterIds=[], URL1=None, \
+    def manage_delFilteredSet(self, filter_ids=[], URL1=None, \
             REQUEST=None,RESPONSE=None):
         """ delete a list of FilteredSets"""
 
-        for filterId in filterIds:
-            self.delFilteredSet(filterId)
+        for filter_id in filter_ids:
+            self.delFilteredSet(filter_id)
 
         if RESPONSE:
             RESPONSE.redirect(URL1+'/manage_workspace?'
             'manage_tabs_message=FilteredSet(s)%20deleted')
 
-
-    def manage_saveFilteredSet(self,filterId, expr, URL1=None,\
+    def manage_saveFilteredSet(self,filter_id, expr, URL1=None,\
             REQUEST=None,RESPONSE=None):
         """ save expression for a FilteredSet """
 
-        self.filteredSets[filterId].setExpression(expr)
+        self.filteredSets[filter_id].setExpression(expr)
 
         if RESPONSE:
             RESPONSE.redirect(URL1+'/manage_workspace?'
@@ -219,22 +171,22 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
     def getIndexSourceNames(self):
         """ return names of indexed attributes """
         return ('n/a',)
-    
 
-    def manage_clearFilteredSet(self, filterIds=[], URL1=None, \
+    def manage_clearFilteredSet(self, filter_ids=[], URL1=None, \
             REQUEST=None,RESPONSE=None):
         """  clear a list of FilteredSets"""
 
-        for filterId in filterIds:
-            self.clearFilteredSet(filterId)
+        for filter_id in filter_ids:
+            self.clearFilteredSet(filter_id)
 
         if RESPONSE:
             RESPONSE.redirect(URL1+'/manage_workspace?'
              'manage_tabs_message=FilteredSet(s)%20cleared')
 
 
-    editFilteredSet = DTMLFile('dtml/editFilteredSet',globals())
     index_html      = DTMLFile('dtml/index', globals())
+    manage_workspace = DTMLFile('dtml/manageTopicIndex',globals())
+    editFilteredSet = DTMLFile('dtml/editFilteredSet',globals())
 
 
 manage_addTopicIndexForm = DTMLFile('dtml/addTopicIndex', globals())

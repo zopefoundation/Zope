@@ -13,6 +13,10 @@ Zope Changes
 
    Bugs fixed
 
+     - PathIndex and TopicIndex are now using a counter for the number
+       of indexed objects instead of using a very expensive calculation
+       based on the keys of their indexes. 
+
      - backport of TAL fixes from z3
 
        * i18n and metal interactions
