@@ -55,6 +55,7 @@ unbuild:
 install: build
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} install \
 	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
+	[ -f ${PREFIX}/bin/python ] || ${LN} ${PYTHON} ${PREFIX}/bin/python
 	@echo
 	@echo Zope binaries installed successfully.
 	@echo Now run \'${PREFIX}/bin/mkzopeinstance.py\'
