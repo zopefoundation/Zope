@@ -12,8 +12,8 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.12 2004/01/15 23:09:03 tseaver Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: DTML.py,v 1.13 2004/01/19 14:49:28 Brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
@@ -98,8 +98,10 @@ for name, v in DTMLSecurityAPI.__dict__.items():
     if name[0] != '_':
         setattr(DT_Util.TemplateDict, name, v)
 
+from types import FunctionType
 for name, v in safe_builtins.items():
-    v = DT_Util.NotBindable(v)
+    if type(v) is FunctionType:
+        v = DT_Util.NotBindable(v)
     if name.startswith('__'):
         continue
     setattr(DT_Util.TemplateDict, name, v)

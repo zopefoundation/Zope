@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.12 2004/01/16 18:18:51 tseaver Exp $'
-__version__='$Revision: 1.12 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.13 2004/01/19 14:49:29 Brian Exp $'
+__version__='$Revision: 1.13 $'[11:-2]
 
 import os, sys, unittest
 
@@ -84,10 +84,13 @@ class SecurityTests (DTMLTests):
         <dtml-var expr="_.min([1,2])">
         <dtml-var expr="_.max([2,3])">
         <dtml-var expr="_.sum([1,2,3,4])">
+        <dtml-var expr="_.hasattr(1, 'foo') and 'Yes' or 'No'">
+        <dtml-var expr="_.None">
+        <dtml-var expr="_.string.strip(' testing ')">
         <dtml-var expr="[x for x in (1, 2, 3)]">
         """
 
-        EXPECTED = ['1', '3', '10', '[1, 2, 3]']
+        EXPECTED = ['1', '3', '10', 'No', 'None', 'testing', '[1, 2, 3]']
 
         #
         #   XXX:    these expressions seem like they should work, with
