@@ -1,6 +1,6 @@
 """Restricted unpickler"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import pickle
@@ -12,7 +12,8 @@ class Unpickler(pickle.Unpickler):
 	try:    return reg[(module,name)]
 	except: raise SystemError, 'Class not registered'
 
-
+    def load_string(self):
+	raise 'BadPickle', 'Non binstring'
 
 # Public interface
 
