@@ -24,6 +24,7 @@ import getopt
 import imp
 import os
 import sys
+import time
 import traceback
 import unittest
 
@@ -212,6 +213,57 @@ class TestRunner:
             print >>sys.stderr, '*** Restoring directory to:', working_dir
         os.chdir(working_dir)
 
+
+class TimingTestResult(unittest._TextTestResult):
+    def __init__(self, *args, **kw):
+        self.timings = []
+        unittest._TextTestResult.__init__(self, *args, **kw)
+
+    def startTest(self, test):
+        unittest._TextTestResult.startTest(self, test)
+        self._t2 = None
+        self._t1 = time.time()
+
+    def stopTest(self, test):
+        t2 = time.time()
+        if self._t2 is not None:
+            t2 = self._t2
+        t = t2 - self._t1
+        self.timings.append((t, str(test)))
+        unittest._TextTestResult.stopTest(self, test)
+
+    def addSuccess(self, test):
+        self._t2 = time.time()
+        unittest._TextTestResult.addSuccess(self, test)
+
+    def addError(self, test, err):
+        self._t2 = time.time()
+        unittest._TextTestResult.addError(self, test, err)
+
+    def addFailure(self, test, err):
+        self._t2 = time.time()
+        unittest._TextTestResult.addFailure(self, test, err)
+
+
+class TimingTestRunner(unittest.TextTestRunner):
+    def _makeResult(self):
+        r = TimingTestResult(self.stream, self.descriptions, self.verbosity)
+        self.timings = r.timings
+        return r
+
+
+class TestTimer(TestRunner):
+    def createTestRunner(self):
+        return TimingTestRunner(stream=sys.stderr,
+                                verbosity=self.verbosity)
+
+    def reportTimes(self, num):
+        r = self.getTestRunner()
+        r.timings.sort()
+        for item in r.timings[-num:]:
+            print "%.1f %s" % item
+
+
 def remove_stale_bytecode(arg, dirname, names):
     names = map(os.path.normcase, names)
     for name in names:
@@ -279,6 +331,9 @@ def main(args):
           Output test results to the specified file rather than
           to stderr.
 
+       -t N
+          Report time taken by the most expensive N tests.
+
        -h
           Display usage information.
     """
@@ -289,8 +344,9 @@ def main(args):
     verbosity = VERBOSE
     mega_suite = True
     set_python_path = True
+    timed = 0
 
-    options, arg = getopt.getopt(args, 'amPhd:f:v:qMo:')
+    options, arg = getopt.getopt(args, 'amPhd:f:v:qMo:t:')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
@@ -314,6 +370,9 @@ def main(args):
             verbosity = int(value)
         elif name == '-q':
             verbosity = 1
+        elif name == '-t':
+            timed = int(value)
+            assert timed >= 0
         elif name == '-o':
             f = open(value, 'w')
             sys.stderr = f
@@ -322,7 +381,10 @@ def main(args):
 
     os.path.walk(os.curdir, remove_stale_bytecode, None)
 
-    testrunner = TestRunner(os.getcwd(), verbosity, mega_suite)
+    if timed:
+        testrunner = TestTimer(os.getcwd(), verbosity, mega_suite)
+    else:
+        testrunner = TestRunner(os.getcwd(), verbosity, mega_suite)
 
     if set_python_path:
         script = sys.argv[0]
@@ -347,6 +409,9 @@ def main(args):
         testrunner.runPath(pathname)
     elif filename:
         testrunner.runFile(filename)
+
+    if timed:
+        testrunner.reportTimes(timed)
 
     ## Report overall errors / failures if there were any
     fails = reduce(lambda x, y: x + len(y.failures), testrunner.results, 0)
