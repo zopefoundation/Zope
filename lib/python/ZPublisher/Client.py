@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -115,6 +115,7 @@ from base64 import encodestring
 from urllib import urlopen, quote
 from types import FileType, ListType, DictType, TupleType
 from string import strip, split, atoi, join, rfind, translate, maketrans
+from urlparse import urlparse
 
 class Function:
     username=None
@@ -129,6 +130,8 @@ class Function:
         while url[-1:]=='/': url=url[:-1]
         self.url=url
         self.headers=headers
+        if not headers.has_key('Host') and not headers.has_key('host'):
+            headers['Host']=split(urlparse(url)[1],':')[0]
         self.func_name=url[rfind(url,'/')+1:]
         self.__dict__['__name__']=self.func_name
         self.func_defaults=()
@@ -222,6 +225,7 @@ class Function:
         if ec==200: return (headers,response)
         self.handleError(query, ec, em, headers, response)
 
+
     def handleError(self, query, ec, em, headers, response):
         try:    v=headers.dict['bobo-exception-value']
         except: v=ec
@@ -312,6 +316,8 @@ class Object:
                  **headers):
         self.url=url
         self.headers=headers
+        if not headers.has_key('Host') and not headers.has_key('host'):
+            headers['Host']=split(urlparse(url)[1],':')[0]
         if method is not None: self.method=method
         if username is not None: self.username=username
         if password is not None: self.password=password
