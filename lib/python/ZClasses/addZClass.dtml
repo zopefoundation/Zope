@@ -23,31 +23,29 @@
     )">
 <dtml-with "_(unselected=_.reorder(all, without=selected))">
 
-<FORM ACTION="." METHOD="GET"><TABLE>
+<FORM ACTION="." METHOD="GET">
 
+<TABLE>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+  <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<dtml-var id html_quote>">
   </TD>
 </TR>
-
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
-  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+  <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<dtml-var title html_quote>">
   </TD>
 </TR>
 
 <TR>
-  <TH ALIGN="LEFT" VALIGN="TOP">
-    Meta type</TH>
-  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+  <TH ALIGN="LEFT" VALIGN="TOP">Meta type</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40" 
        VALUE="<dtml-var meta_type html_quote>">
   </TD>
 </TR>
-
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
     <INPUT TYPE="CHECKBOX" NAME="CreateAFactory:int" VALUE="1"
@@ -55,10 +53,11 @@
     <STRONG>Create constructor objects?</STRONG>
   </TD>
 </TR> 
+</table>
+<p><strong>Base classes:</strong>
 
-<tr>
+<table>
 <TR>
-  <TH ALIGN="LEFT" VALIGN="TOP">Base classes</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
      Unselected:<BR>
      <SELECT NAME="unselected:list" size=9 multiple>
@@ -89,20 +88,16 @@
      </SELECT>
   </TD>
 </TR>
+</table>
 
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
-    <INPUT TYPE="CHECKBOX" NAME="zope_object:int" VALUE="1"
+<INPUT TYPE="CHECKBOX" NAME="zope_object:int" VALUE="1"
     <!--#if zope_object-->CHECKED<!--#/if-->>
     <STRONG>Include standard Zope persistent object base classes?</STRONG>
-  </TD>
-</TR> 
+</p>
+<INPUT TYPE="SUBMIT" NAME="manage_addZClass:method" 
+         VALUE=" Add ">
 
-<TR><TD></TD>
-<TD colspan=3><BR><INPUT TYPE="SUBMIT" NAME="manage_addZClass:method" 
-         VALUE=" Add "></TD>
-</TR>
-</TABLE></FORM>
+</FORM>
 
 </dtml-with>
 </dtml-with>
