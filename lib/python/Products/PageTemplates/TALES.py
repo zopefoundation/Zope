@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import re, sys
 from MultiMapping import MultiMapping
@@ -255,7 +255,7 @@ class Context:
         try:
             return expression(self)
         except:
-            raise TALESError, (`expression`, sys.exc_info())
+            raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
 
     evaluateValue = evaluate
 
