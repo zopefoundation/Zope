@@ -105,7 +105,7 @@ def mapply(object, positional=(), keyword={},
            debug=None, maybe=None,
            missing_name=default_missing_name,
            handle_class=default_handle_class,
-           context=None
+           context=None, bind=0,
            ):
 
     if hasattr(object,'__bases__'):
@@ -135,10 +135,16 @@ def mapply(object, positional=(), keyword={},
 
     nargs=len(names)
     if positional:
+        positional=list(positional)
+        if bind and nargs and names[0]=='self':
+            positional.insert(0, missing_name('self', context))
         if len(positional) > nargs: raise TypeError, 'too many arguments'
-        args=list(positional)
+        args=positional
     else:
-        args=[]
+        if bind and nargs and names[0]=='self':
+            args=[missing_name('self', context)]
+        else:
+            args=[]
 
     get=keyword.get
     nrequired=len(names) - (len(defaults or ()))
