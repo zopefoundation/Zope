@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -23,6 +23,12 @@ from types import InstanceType,IntType,FloatType,StringType,UnicodeType
 try: from time import tzname
 except: tzname=('UNKNOWN','UNKNOWN')
 
+# To control rounding errors, we round system time to the nearest
+# millisecond.  Then delicate calculations can rely on that the
+# maximum precision that needs to be preserved is known.
+_system_time = time
+def time():
+    return round(_system_time(), 3)
 
 # Determine machine epoch
 tm=((0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334),
@@ -302,7 +308,7 @@ def _calcIndependentSecondEtc(tz, x, ms):
     d = x_adjusted / 86400.0
     t = x_adjusted - long(EPOCH) + 86400L
     millis = (x + 86400 - fset) * 1000 + \
-             long(ms * 1000.0) - long(EPOCH * 1000.0)
+             long(round(ms * 1000.0)) - long(EPOCH * 1000.0)
     s = d - math.floor(d)
     return s,d,t,millis
 
@@ -587,6 +593,9 @@ class DateTime:
             effect of this is as if you had taken the value of time.time()
             at that time on a machine in the specified timezone).
 
+        In any case that a floating point number of seconds is given
+        or derived, it's rounded to the nearest millisecond.
+
         If a string argument passed to the DateTime constructor cannot be
         parsed, it will raise DateTime.SyntaxError. Invalid date components
         will raise a DateError, while invalid time or timezone components
@@ -739,6 +748,15 @@ class DateTime:
             self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
             self._days[dx],self._days_a[dx],self._days_p[dx]
+        # Round to nearest millisecond in platform-independent way.  You
+        # cannot rely on C sprintf (Python '%') formatting to round
+        # consistently; doing it ourselves ensures that all but truly
+        # horrid C sprintf implementations will yield the same result
+        # x-platform, provided the format asks for exactly 3 digits after
+        # the decimal point.
+        sc = round(sc, 3)
+        if sc >= 60.0:  # can happen if, e.g., orig sc was 59.9999
+            sc = 59.999
         self._nearsec=math.floor(sc)
         self._year,self._month,self._day     =yr,mo,dy
         self._hour,self._minute,self._second =hr,mn,sc
@@ -1529,24 +1547,19 @@ class DateTime:
         """Convert a DateTime to a string."""
         y,m,d   =self._year,self._month,self._day
         h,mn,s,t=self._hour,self._minute,self._second,self._tz
-        if(h+mn+s):
-            if (s-int(s))> 0.0001:
-                try:
-                    # For the seconds, print two digits
-                    # before the decimal point.
-                    subsec = ('%g' % s).split('.')[1]
-                    return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d.%s %s' % (
-                        y,m,d,h,mn,s,subsec,t)
-                except:
-                    # Didn't produce the decimal point as expected.
-                    # Just fall through.
-                    pass
-                return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d %s' % (
-                    y,m,d,h,mn,s,t)
-            
+        if h == mn == s == 0:
+            # hh:mm:ss all zero -- suppress the time.
+            return '%4.4d/%2.2d/%2.2d' % (y, m, d)
+        elif s == int(s):
+            # A whole number of seconds -- suppress milliseconds.
             return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d %s' % (
-                y,m,d,h,mn,s,t)
-        else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
+                    y, m, d, h, mn, s, t)
+        else:
+            # s is already rounded to the nearest millisecond, and
+            # it's not a whole number of seconds.  Be sure to print
+            # 2 digits before the decimal point.
+            return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%06.3f %s' % (
+                    y, m, d, h, mn, s, t)
 
     def __cmp__(self,obj):
         """Compare a DateTime with another DateTime object, or
