@@ -84,10 +84,11 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
+from DocumentTemplate.DT_Util import html_quote
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
@@ -123,6 +124,16 @@ class View(App.Management.Tabs):
         if l >= 0: path=path[:l]
         return PropertySheet.inheritedAttribute('tabs_path_info')(
             self, script, path)
+
+
+
+psxml='<d:propstat xmlns:n="%s">\n' \
+      '  <d:prop>\n' \
+      '%s\n' \
+      '  </d:prop>\n' \
+      '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
+      '</d:propstat>\n'
+
 
 
 class PropertySheet(Persistent, Implicit):
@@ -257,7 +268,92 @@ class PropertySheet(Persistent, Implicit):
             dict[p['id']]=p
         return dict
 
-    def dav__propstat(self, allprop, names, join=string.join):
+
+
+
+
+
+    propstat='<d:propstat xmlns:n="%s">\n' \
+             '  <d:prop>\n' \
+             '%s\n' \
+             '  </d:prop>\n' \
+             '  <d:status>HTTP/1.1 %s</d:status>\n%s' \
+             '</d:propstat>\n',
+
+    propdesc='  <d:responsedescription>\n' \
+             '  %s\n' \
+             '  </d:responsedescription>\n'
+    
+
+    def dav__allprop(self, propstat=propstat, join=string.join):
+        # DAV helper method - return one or more propstat elements
+        # indicating property names and values for all properties.
+        result=[]
+        for item in self.propertyMap():
+            name, type=item['id'], item.get('type','string')
+            value=self.getProperty(name)
+            if type=='tokens':
+                value=join(value, ' ')
+            elif type=='lines':
+                value=join(value, '\n')
+            # check for xml property
+            attrs=item.get('meta', {}).get('__xml_attrs__', None)
+            if attrs is not None:
+                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
+                attrs=join(attrs, '')
+            else:
+                # Quote non-xml items here?
+                attrs='' 
+            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
+            result.append(prop)
+        if not result: return ''
+        result=join(result, '\n')
+        return propstat % (self.xml_namespace(), result, '200 OK', '')
+
+    def dav__propnames(self, propstat=propstat, join=string.join):
+        # DAV helper method - return a propstat element indicating
+        # property names for all properties in this PropertySheet.
+        result=[]
+        for name in self.propertyIds():
+            result.append('  <n:%s/>' % name)
+        if not result: return ''
+        result=join(result, '\n')
+        return propstat % (self.xml_namespace(), result, '200 OK', '')
+
+
+    def dav__propstat(self, name, propstat=propstat, propdesc=propdesc,
+                      join=string.join):
+        # DAV helper method - return a propstat element indicating
+        # property name and value for the requested property.
+        xml_id=self.xml_namespace()
+        propdict=self._propdict()
+        if not propdict.has_key(name):
+            prop='  <n:%s/>' % name
+            error=propdesc % ('The property %s does not exist.' % name)
+            return propstat % (xml_id, prop, '404 Not Found', error))
+        else:
+            item=propdict[name]
+            name, type=item['id'], item.get('type','string')
+            value=self.getProperty(name)
+            if type=='tokens':
+                value=join(value, ' ')
+            elif type=='lines':
+                value=join(value, '\n')
+            # allow for xml properties
+            attrs=item.get('meta', {}).get('__xml_attrs__', None)
+            if attrs is not None:
+                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
+                attrs=join(attrs, '')
+            else:
+                # quote non-xml items here?
+                attrs=''
+            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
+            return propstat % (xml_id, prop, '200 OK', ''))
+
+    del propstat
+    del propdesc
+
+    def olddav__propstat(self, allprop, names, join=string.join):
         # The dav__propstat method returns a chunk of xml containing
         # one or more propstat elements indicating property names,
         # values, errors and status codes. This is called by some
@@ -270,7 +366,8 @@ class PropertySheet(Persistent, Implicit):
                  '  </d:prop>\n' \
                  '  <d:status>HTTP/1.1 %%s</d:status>\n%%s' \
                  '</d:propstat>\n' % self.xml_namespace()
-        errormsg='  <d:responsedescription>%s</d:responsedescription>\n'
+        errormsg='  <d:responsedescription>\n  %s\n' \
+                 '  </d:responsedescription>\n'
         result=[]
         if not allprop and not names:
             # return property names only.
@@ -408,6 +505,7 @@ class DAVProperties(Virtual, PropertySheet):
         {'id':'getcontenttype',   'mode':'r'},
         {'id':'getcontentlength', 'mode':'r'},
         {'id':'source',           'mode':'r'},
+        {'id':'supportedlock',    'mode':'r'},
         )
 
     def getProperty(self, id, default=None):
@@ -471,8 +569,8 @@ class DAVProperties(Virtual, PropertySheet):
     def dav__supportedlock(self):
         return '<d:supportedlock>\n' \
                '<d:lockentry>\n' \
-               '<d:lockscope><d:exclusive/></d:lockscope>\n' \
-               '<d:locktype><d:write/></d:locktype>\n' \
+               #'<d:lockscope><d:exclusive/></d:lockscope>\n' \
+               #'<d:locktype><d:write/></d:locktype>\n' \
                '</d:lockentry>\n' \
                '</d:supportedlock>\n'
 
