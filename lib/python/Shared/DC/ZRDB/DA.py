@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.20 1998/01/09 20:37:40 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: DA.py,v 1.21 1998/01/09 21:58:25 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -181,8 +181,9 @@ class DA(
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
+	self=self.__of__(REQUEST['PARENTS'][0])
 	argdata=self._argdata(REQUEST)
-	query=self.template(self,argdata)
+	query=apply(self.template, (self,), argdata)
 
 	if self.cache_time_:
 	    result=self._cached_result(DB__, (query, self.max_rows_))
@@ -333,6 +334,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.21  1998/01/09 21:58:25  jim
+# Fixed bug in handling of arguments.
+#
 # Revision 1.20  1998/01/09 20:37:40  jim
 # Fixed stupid bug in manage_test.
 #
