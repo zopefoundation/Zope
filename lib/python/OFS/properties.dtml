@@ -29,7 +29,7 @@ To change a property's value, edit the value and click "Change".
 <!--#in propertyInputs mapping-->
 <TR>
 <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG><!--#var id fmt=spacify--></STRONG>
+  <STRONG><!--#var id--></STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#var input-->
