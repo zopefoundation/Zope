@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.27 2000/05/12 20:12:29 shane Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: HTTPResponse.py,v 1.28 2000/05/26 15:31:47 shane Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -448,7 +448,7 @@ class HTTPResponse(BaseResponse):
         tb=join(tb,'\n')
         tb=self.quoteHTML(tb)
         if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
-        else:               _tbopen, _tbclose = '<!--',  '>'
+        else:               _tbopen, _tbclose = '<!--',  '-->'
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
     def redirect(self, location):
@@ -519,7 +519,7 @@ class HTTPResponse(BaseResponse):
             "Resource not found",
             "Sorry, the requested Zope resource does not exist.<p>" +
             "Check the URL and try again.<p>" +
-            "\n<!--\n%s\n>" % entry)
+            "\n<!--\n%s\n-->" % entry)
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
