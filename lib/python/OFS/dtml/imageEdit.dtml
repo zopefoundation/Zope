@@ -20,7 +20,7 @@ kind>.
   </td>
   <td align="left" valign="top">
   <input type="text" name="title" size="40" value="<dtml-if 
-   title><dtml-var title></dtml-if>">
+   title><dtml-var title html_quote></dtml-if>">
   </td>
 </tr>
 
