@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.41 1997/04/11 22:46:26 jim Exp $"""
+$Id: Publish.py,v 1.42 1997/04/23 20:04:46 brian Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.41 1997/04/11 22:46:26 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 def main():
@@ -1325,18 +1325,17 @@ class Request:
     """
 
     def __init__(self,environ,form,stdin):
+	try: environ['HTTP_AUTHORIZATION']= \
+	     environ['HTTP_CGI_AUTHORIZATION']
+	except: pass
 	self.environ=environ
 	self.form=form
 	self.stdin=stdin
 	self.other={}
 
 	def env(key,d=environ):
-	    try: return d[key]
-	    except:
-                if string.upper(key) == 'HTTP_AUTHORIZATION':
-                    try: return d['HTTP_CGI_AUTHORIZATION']
-                    except: return ''
-                return ''
+	    try:    return d[key]
+	    except: return ''
 
 	b=script=string.strip(environ['SCRIPT_NAME'])
 	while b and b[-1]=='/': b=b[:-1]
@@ -1619,6 +1618,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.42  1997/04/23 20:04:46  brian
+# Fixed change that got around HTTP_CGI_AUTHORIZATION hack.
+#
 # Revision 1.41  1997/04/11 22:46:26  jim
 # Several changes related to traversal.
 #
