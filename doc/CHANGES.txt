@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #99: items(), keys() and values() methods
+        of IIBucket objects has been broken when called with
+        min/max parameters.
+
       - WebDAV: The long outstanding read-only problem with WinWord
         and .html is finally solved. Zope sends now an additional ETag
         header for DTMLMethods and DTMLDocuments. Many thanks to
