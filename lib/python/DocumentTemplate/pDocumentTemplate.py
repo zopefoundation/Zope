@@ -13,8 +13,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.36 2002/08/14 22:29:53 mj Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.37 2002/09/24 22:07:31 jeremy Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import  sys, types
 
@@ -97,8 +97,11 @@ class MultiMapping:
 
     def __getitem__(self, key):
         for d in self.dicts:
-            try: return d[key]
-            except KeyError, AttributeError: pass
+            try:
+                return d[key]
+            except (KeyError, AttributeError):
+                # XXX How do we get an AttributeError?
+                pass
         raise KeyError, key
 
     def push(self,d): self.dicts.insert(0,d)
