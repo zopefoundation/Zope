@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -114,6 +114,12 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         )
     
 
+def version_txt(self):
+    try: return open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
+    except: return '(unreleased version)'
+        
+    return self._v_version_txt
+
 class ApplicationManager(Folder,CacheManager):
     """System management"""
 
@@ -126,9 +132,7 @@ class ApplicationManager(Folder,CacheManager):
 
     def version_txt(self):
         if not hasattr(self, '_v_version_txt'):
-            try: self._v_version_txt=open(
-                os.path.join(SOFTWARE_HOME,'version.txt')).read()
-            except: self._v_version_txt='(unreleased version)'
+            self._v_version_txt=version_txt()
                 
         return self._v_version_txt
 
