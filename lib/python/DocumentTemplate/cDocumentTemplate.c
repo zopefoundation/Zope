@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.22 1999/04/23 13:48:18 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.23 1999/04/28 16:29:22 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -860,6 +860,7 @@ validate(PyObject *self, PyObject *args)
 {
   PyObject *inst, *parent, *name, *value, *md, *__roles__, *i, *p;
   char *cname;
+  long ir;
 
   /* def validate(self, inst, parent, name, value, md): */
   UNLESS(PyArg_ParseTuple(args,"OOOOO",&inst,&parent,&name,&value,&md))
@@ -874,21 +875,37 @@ validate(PyObject *self, PyObject *args)
 
   /*
         if hasattr(value, '__roles__'): roles=value.__roles__
-	elif inst is parent: return 1
 	else:
-	    if hasattr(inst,'aq_base'): inst=inst.aq_base
-	    p=parent
-	    if hasattr(p,'aq_base'): p=p.aq_base
-	    if inst is p: return 1
-
 	    if hasattr(parent,'__roles__'): roles=parent.__roles__
-	    else: return 0
-	    value=parent
+            elif hasattr(parent, 'aq_acquire'):
+                try: roles=parent.aq_acquire('__roles__')
+                except AttributeError:
+                    if hasattr(inst, 'aq_base'): inst=inst.aq_base
+                    if hasattr(parent, 'aq_base'): parent=parent.aq_base
+                    return inst is parent
+            else:
+                if hasattr(inst, 'aq_base'): inst=inst.aq_base
+                if hasattr(parent, 'aq_base'): parent=parent.aq_base
+                return inst is parent
+            value=parent
    */
   UNLESS(__roles__=PyObject_GetAttr(value,py___roles__))
     {
       PyErr_Clear();
-      if (inst==parent) return PyInt_FromLong(1);
+      UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
+	{
+	  PyErr_Clear();
+	  if (__roles__=PyObject_GetAttr(value,py_acquire))
+	    {
+	      ASSIGN(__roles__, 
+		     PyObject_CallFunction(__roles__, "O", py___roles__));
+	    }
+	}
+      value=parent;
+    }
+  if (! __roles__) 
+    {
+      PyErr_Clear();
 
       /* Waaaa, check for wrapped objects, waaaaa! */
       UNLESS(i=PyObject_GetAttr(inst, py_aq_base))
@@ -903,21 +920,12 @@ validate(PyObject *self, PyObject *args)
 	  Py_INCREF(parent);
 	  p=parent;
 	}
-      if (i==p)
-	{
-	  Py_DECREF(i);
-	  Py_DECREF(p);
-	  return PyInt_FromLong(1);
-	}
+
+      ir = i==p;
       Py_DECREF(i);
       Py_DECREF(p);
 
-      UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
-	{
-	  PyErr_Clear();
-	  return PyInt_FromLong(0);
-	}
-      value=parent;
+      return PyInt_FromLong(ir);
     }
 
   /* if roles is None: return 1 */
@@ -1014,7 +1022,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.22 $";
+  char *rev="$Revision: 1.23 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
