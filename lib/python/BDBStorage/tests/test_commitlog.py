@@ -231,7 +231,7 @@ class FullLogTest(BaseSetupTearDown):
         rec = self._log.next()
         unless(rec)
         key, rec = rec
-        eq(key, 'o')
+        eq(key, 'a')
         eq(len(rec), 6)
         eq(rec, (oid, zero, zero, lrevid, None, prevrevid))
         rec = self._log.next()
