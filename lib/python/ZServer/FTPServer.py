@@ -658,7 +658,11 @@ class FTPServer(ftp_server):
     def log_info(self, message, type='info'):
         if self.shutup: return
         asyncore.dispatcher.log_info(self, message, type)
-        
+
+    def create_socket(self, family, type):
+        asyncore.dispatcher.create_socket(self, family, type)
+        requestCloseOnExec(self.socket)
+
     def handle_accept (self):
         conn, addr = self.accept()
         self.total_sessions.increment()

@@ -401,6 +401,10 @@ class zhttp_server(http_server):
         if self.shutup: return
         dispatcher.log_info(self, message, type)
 
+    def create_socket(self, family, type):
+        dispatcher.create_socket(self, family, type)
+        requestCloseOnExec(self.socket)
+
     def readable(self):
         return self.accepting and \
                 len(asyncore.socket_map) < CONNECTION_LIMIT

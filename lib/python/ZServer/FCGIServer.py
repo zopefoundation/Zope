@@ -707,6 +707,9 @@ class FCGIServer(asyncore.dispatcher):
     def writable (self):
         return 0
 
+    def create_socket(self, family, type):
+        asyncore.dispatcher.create_socket(self, family, type)
+        requestCloseOnExec(self.socket)
 
     def listen(self, num):
         # override asyncore limits for nt's listen queue size

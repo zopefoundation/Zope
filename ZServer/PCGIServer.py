@@ -343,6 +343,9 @@ class PCGIServer(asyncore.dispatcher):
                 )
         self.listen(256)
 
+    def create_socket(self, family, type):
+        asyncore.dispatcher.create_socket(self, family, type)
+        requestCloseOnExec(self.socket)
 
     def read_info(self,info_file):
         "read configuration information from a PCGI info file"
