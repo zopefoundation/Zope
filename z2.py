@@ -240,6 +240,15 @@ Options:
 
       %(program)s -X -w80
       
+  -M file
+
+    Save detailed logging information to the given file.
+    This log includes separate entries for:
+
+      - The start of a request,
+      - The start of processing the request in an application thread,
+      - The start of response output, and
+      - The end of the request.
 
 Environment settings are of the form: NAME=VALUE.
 
@@ -334,6 +343,8 @@ LOCALE_ID=None
 # Socket path or port for the FastCGI Server
 FCGI_PORT=None
 
+# Detailed log file
+DETAILED_LOG_FILE=''
 
 #
 ########################################################################
@@ -370,7 +381,7 @@ try:
         raise 'Invalid python version', string.split(sys.version)[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:X')
+                               'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:XM:')
 
     DEBUG=0
     READ_ONLY=0
@@ -434,7 +445,7 @@ try:
         elif o=='-F':
             if v=='-': v=''
             FCGI_PORT=v
-
+        elif o=='-M': DETAILED_LOG_FILE=v
 
     __builtins__.__debug__=DEBUG
 
@@ -501,18 +512,17 @@ if Zpid and not READ_ONLY:
     
     zdaemon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
 
-# Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
-exec "import "+MODULE in {}
-
-
-# Uncomment to turn on Debug Logging
-# from ZServer import DebugLogger
-# logfile=os.path.join(INSTANCE_HOME,'var/debug.log')
-# DebugLogger.log=DebugLogger.DebugLogger(logfile).log
-
-
+# Import logging support
 import zLOG
 import ZLogger
+
+if DETAILED_LOG_FILE:
+    from ZServer import DebugLogger
+    logfile=os.path.join(INSTANCE_HOME, 'var', DETAILED_LOG_FILE)
+    DebugLogger.log=DebugLogger.DebugLogger(logfile).log
+    
+# Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
+exec "import "+MODULE in {}
 
 if READ_ONLY:
     zLOG._stupid_dest=sys.stderr
@@ -542,7 +552,8 @@ if MODULE=='Zope':
 
 from ZServer import resolver, logger, asyncore
 
-from ZServer import zhttp_server, zhttp_handler, PCGIServer,FTPServer,FCGIServer
+from ZServer import zhttp_server, zhttp_handler,
+from ZServer import PCGIServer,FTPServer,FCGIServer
 
 from ZServer import secure_monitor_server
 
@@ -662,6 +673,7 @@ try:
         zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
 except:
     pass
+
 
 
 # if it hasn't failed at this point, create a .pid file.
