@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -74,8 +74,7 @@ class CopyContainer:
 
 	    prev_id=Moniker.absattr(obj.id)
 	    obj.aq_parent._delObject(prev_id)
-	    while hasattr(obj, 'aq_self'):
-		obj=obj.aq_self
+            obj=obj.aq_base
 	    obj=obj.__of__(self)
 	    self._setObject(clip_id, obj)
 
