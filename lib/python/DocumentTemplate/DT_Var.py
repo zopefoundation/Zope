@@ -114,7 +114,7 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.13 1998/04/02 19:06:21 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.14 1998/04/14 11:58:21 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -168,7 +168,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.13 1998/04/02 19:06:21 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DT_Util import *
 
@@ -178,7 +178,7 @@ class Var:
     name='var'
     expr=None
 
-    def __init__(self, args, fmt=''):
+    def __init__(self, args, fmt='s'):
 	args = parse_params(args, name='', lower=1, upper=1, expr='',
 			    capitalize=1, spacify=1, null='', fmt='s',
 			    size=0, etc='...', thousands_commas=1,
@@ -197,7 +197,7 @@ class Var:
 	self.__name__, self.expr = name, expr
 	self.fmt = fmt
 
-	if len(args)==1:
+	if len(args)==1 and fmt=='s':
 	    if expr is None: expr=name
 	    else: expr=expr.eval
 	    self.simple_form=expr,
@@ -242,7 +242,9 @@ class Var:
 		else: val = fmt % val
 
 	# finally, pump it through the actual string format...
-	val = ('%'+self.fmt) % val
+	fmt=self.fmt
+	if fmt=='s': val=str(val)
+	else: val = ('%'+self.fmt) % (val,)
 
 	# next, look for upper, lower, etc
 	for f in self.modifiers: val=f(val)
@@ -368,6 +370,10 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.14  1998/04/14 11:58:21  jim
+# Fixed bug in handling: %(foo)d
+# and in handling <!--#var foo--> where foo is a tuple.
+#
 # Revision 1.13  1998/04/02 19:06:21  jim
 # *** empty log message ***
 #
