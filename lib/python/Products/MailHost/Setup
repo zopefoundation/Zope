@@ -1,6 +1,7 @@
 *shared*
 # install MailHost.py
+# install SendMailTag.py
 # install __init__.py
 # install addMailHost_form.dtml
 # install manageMailHost.dtml
-# install www www/%(package)s
+# install www
