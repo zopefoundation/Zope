@@ -66,20 +66,20 @@ Zope Changes
     
       Features Changed
 
-	- Added a new online help system. Help is now available for
-	  standard Zope objects. Zope developers can add help for their
-	  Python Products and Control Panel Products.
+        - Added a new online help system. Help is now available for
+          standard Zope objects. Zope developers can add help for their
+          Python Products and Control Panel Products. See HELPSYS.txt
 
         - The message returned when an empty result set is returned
           from a ZSQL Method has been clarified.
 
-	- In the load_site utility:
+        - In the load_site utility:
 
-	   o Added logic to try and figure out a path to ZPublisher if
-	     one was not provided.
-	     
-	   o Added an option, -I, to automatically add an index_html
-	     method that redirects to index.html or index.htm.
+           o Added logic to try and figure out a path to ZPublisher if
+             one was not provided.
+             
+           o Added an option, -I, to automatically add an index_html
+             method that redirects to index.html or index.htm.
 
       Bugs Fixed
 
@@ -91,7 +91,7 @@ Zope Changes
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
 
-	- In the load_site utility, binary files were misshandled on
+        - In the load_site utility, binary files were misshandled on
           windows.
 
         - Fixed a remaining '.' form target that we missed in the Zope
@@ -99,6 +99,11 @@ Zope Changes
           running behind Netscape servers.
 
         - Fixed a potential buffer bug in PCGI reported by Larry Luther.
+
+        - Fixed a bug which caused File objects of type 'text/html' be
+          have the wrong Content-Length set.
+
+        - Improved FCGI support in ZServer.
 
     Zope 2.1.1
 
@@ -128,9 +133,9 @@ Zope Changes
           FileStorage now checks for and avoids writing empty
           transactions in this case.
 
-	- Multiple-selection properties didn't work in regular
-	  property views, even though they did work in ZClass property
-	  sheets.
+        - Multiple-selection properties didn't work in regular
+          property views, even though they did work in ZClass property
+          sheets.
 
         - The Win32 WISE installer did not create a default Zope.cgi
           PCGI resource file.
@@ -144,21 +149,21 @@ Zope Changes
           party product authors.
 
         - There were a number of problems with the load-site utility
-	  (utilities/load_site.py):
+          (utilities/load_site.py):
 
-	   o A recent change caused HTML files to have their headers and
-	     footers replaced with var tags for standard headers and
-	     footers.  While this is sometimes very useful, it is
-	     sometimes disastrous.  This feature is now enabled with the
-	     -D option.
-	     
-	   o Handling of files with a '.dtml' extension was broken. These
-	     are now handled correctly. Files with '.dtml' suffixes now
-	     get uploaded as methods.
-	     
-	   o A workaround for old sites that had a bug in Document (aka
-	     DTMLMethod) upload has been disabled. This workaround is now
-	     enabled when the -9 option is used.
+           o A recent change caused HTML files to have their headers and
+             footers replaced with var tags for standard headers and
+             footers.  While this is sometimes very useful, it is
+             sometimes disastrous.  This feature is now enabled with the
+             -D option.
+             
+           o Handling of files with a '.dtml' extension was broken. These
+             are now handled correctly. Files with '.dtml' suffixes now
+             get uploaded as methods.
+             
+           o A workaround for old sites that had a bug in Document (aka
+             DTMLMethod) upload has been disabled. This workaround is now
+             enabled when the -9 option is used.
 
       The following bug fixes were accidentially excluded from 2.1.0:
 
@@ -197,10 +202,10 @@ Zope Changes
         - Added Martijn Pieters' patches to DT_Try.py to implement 
           try/except/else and try/finally constructs.
 
-	- Virtual Hosting and SiteObjects.  Virtual Hosting allows a
-	  server that can multi-host, like Apache, to serve different
-	  hosts from different Zope folders.  'SiteObjects' act as a
-	  placeholder for a virtualhost.
+        - Virtual Hosting and SiteObjects.  Virtual Hosting allows a
+          server that can multi-host, like Apache, to serve different
+          hosts from different Zope folders.  'SiteObjects' act as a
+          placeholder for a virtualhost.
 
       Bugs Fixed
 
