@@ -134,6 +134,8 @@ class HierarchyRequestException(DOMException):
     code = HIERARCHY_REQUEST_ERR
 class WrongDocumentException(DOMException):
     code = WRONG_DOCUMENT_ERR
+class InvalidCharacterException(DOMException):
+    code = INVALID_CHARACTER_ERR
 class NoDataAllowedException(DOMException):
     code = NO_DATA_ALLOWED_ERR
 class NoModificationAllowedException(DOMException):
@@ -221,12 +223,12 @@ class Node:
         return NodeList()
 
     def getFirstChild(self):
-        """Returns a NodeList that contains all children of this node.
-        If there are no children, this is a empty NodeList"""
+        """The first child of this node. If there is no such node
+        this returns None."""
         return None
 
     def getLastChild(self):
-        """The last child of this node.  If ther is no such node
+        """The last child of this node. If there is no such node
         this returns None."""
         return None
 
@@ -297,15 +299,15 @@ class Element(Node):
         return  NodeList(self.objectValues())
    
     def getFirstChild(self):
-        """Returns a NodeList that contains all children of this node.
-        If there are no children, this is a empty NodeList"""
+        """The first child of this node. If there is no such node
+        this returns None"""
         children = self.getChildNodes()
         if children:
             return children._data[0]
         return None
 
     def getLastChild(self):
-        """The last child of this node.  If ther is no such node
+        """The last child of this node.  If there is no such node
         this returns None."""
         children = self.getChildNodes()
         if children:
@@ -363,7 +365,7 @@ class Element(Node):
         for child in self.objectValues():
             if (child.getNodeType()==ELEMENT_NODE and \
                     child.getTagName()==tagname or tagname== '*'):
-                nodeList.append( child )
+                nodeList.append(child)
             n1 = child.getElementsByTagName(tagname)
             nodeList = nodeList + n1._data
         return NodeList(nodeList)
