@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -14,7 +14,9 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
     """ """
     meta_type='Document'
     icon     ='p_/doc'
-    __state_names__=HTML.__state_names__+('title','__roles__')
+    _proxy_roles=()
+
+
 
     # Documents masquerade as functions:
     class func_code: pass
@@ -31,19 +33,38 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 		    {'label':'View', 'action':'',
 		     'target':'manage_main',
 		    },
+		    {'label':'Proxy', 'action':'manage_proxyForm',
+		     'target':'manage_main',
+		    },
 		    {'label':'Security', 'action':'manage_access',
 		     'target':'manage_main',
 		    },
 		   )
 
     __ac_permissions__=(
-    ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
+    ('View management screens',
+     ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
     ('Change/upload data', ['manage_edit','manage_upload','PUT']),
+    ('Change proxy roles', ['manage_proxyForm','manage_proxy']),
     ('View', ['__call__',]),
     ('Shared permission', ['',]),
     )
-   
+
+    __state_names__=(
+	HTML.__state_names__+('title', '_proxy_roles')+
+	tuple(reduce(lambda a, b:
+		     a+b,
+		     map(lambda permission:
+			 map(lambda name:
+			     name+'__roles__',
+			     permission[1]
+			     ),
+			 __ac_permissions__
+			 )
+		     ))
+	)
+	   
 
     __call____roles__='Manager', 'Shared'
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
@@ -69,16 +90,26 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 	    else: return 0
 	    value=parent
 	if roles is None: return 1
-	try: return md.AUTHENTICATED_USER.hasRole(value, roles)
-	except AttributeError: return 0
+
+	try: 
+	    if md.AUTHENTICATED_USER.hasRole(value, roles):
+		return 1
+	except AttributeError: pass
+
+	for r in self._proxy_roles:
+	    if r in roles: return 1
+
+	return 0
 
     manage_editForm=HTMLFile('documentEdit', globals())
     manage_uploadForm=HTMLFile('documentUpload', globals())
     manage=manage_main=manage_editDocument=manage_editForm
+    manage_proxyForm=HTMLFile('documentProxy', globals())
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
 		    dtpref_rows='20',REQUEST=None):
 	""" """
+	self._validateProxy(REQUEST)
         if SUBMIT=='Smaller':
             rows=atoi(dtpref_rows)-5
             cols=atoi(dtpref_cols)-5
@@ -106,6 +137,7 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 
     def manage_upload(self,file='', REQUEST=None):
 	""" """
+	self._validateProxy(REQUEST)
 	self.munge(file.read())
 	if REQUEST: return MessageDialog(
 		    title  ='Success!',
@@ -115,9 +147,39 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
     PUT__roles__='Manager',
     def PUT(self, BODY, REQUEST):
 	""" """
+	self._validateProxy(REQUEST)
 	self.munge(BODY)
 	return 'OK'
 
+    def manage_haveProxy(self,r): return r in self._proxy_roles
+
+    def _validateProxy(self, request, roles=None):
+	if roles is None: roles=self._proxy_roles
+	if not roles: return
+	user=u=request.get('AUTHENTICATED_USER',None)
+	if user is not None:
+	    user=user.hasRole
+	    for r in roles:
+		if r and not user(None, (r,)):
+		    user=None
+		    break
+
+	    if user is not None: return
+
+	raise 'Forbidden', (
+	    'You are not authorized to change <em>%s</em> because you '
+	    'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
+	    
+
+    def manage_proxy(self, roles=(), REQUEST=None):
+	"Change Proxy Roles"
+	self._validateProxy(REQUEST, roles)
+	self._validateProxy(REQUEST)
+	self._proxy_roles=tuple(roles)
+	if REQUEST: return MessageDialog(
+		    title  ='Success!',
+		    message='Your changes have been saved',
+		    action ='manage_main')
 
 default_html="""<!--#var standard_html_header-->
 <H2><!--#var title_or_id--> <!--#var document_title--></H2>

@@ -1,0 +1,43 @@
+<HTML>
+<HEAD>
+<TITLE>Edit</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+  <FORM ACTION="manage_proxy" METHOD="POST">
+    <TABLE CELLSPACING="2">
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+	<TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+      </TR>
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
+	<TD ALIGN="LEFT" VALIGN="TOP"><!--#var title--></TD>
+      </TR>
+      <TR>
+	<TH ALIGN="LEFT" VALIGN="TOP">Proxy Roles</TH>
+        <TD VALIGN="TOP">
+           <SELECT NAME="roles:list" SIZE="7" MULTIPLE>
+             <!--#in valid_roles-->
+                <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
+                   <OPTION
+                   <!--#if expr="manage_haveProxy(_vars['sequence-item'])"-->
+                      SELECTED<!--#/if-->
+                   ><!--#var sequence-item--></OPTION>
+                <!--#/if-->
+             <!--#/in valid_roles-->
+           </SELECT>
+        </TD>
+      </TR>
+      <TR>
+	<TD></TD>
+	<TD>
+	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
+	</TD>
+      </TR>
+    </TABLE>
+  </FORM>
+</BODY>
+</HTML>
+
