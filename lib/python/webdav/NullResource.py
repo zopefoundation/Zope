@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -216,7 +216,11 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             # There was an If header, but the parent is not locked
             raise 'Precondition Failed'
 
-        parent.manage_addFolder(name)
+        # Add hook for webdav/FTP MKCOL (Collector #2254) (needed for CMF)
+#       parent.manage_addFolder(name)
+        mkcol_handler = getattr(parent,'MKCOL_handler' ,parent.manage_addFolder)
+        mkcol_handler(name)
+
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')
         return RESPONSE
