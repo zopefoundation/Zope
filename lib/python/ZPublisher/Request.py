@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import regex
 from string import atoi, atol, join, upper, split, strip, rfind
@@ -279,7 +279,7 @@ class Request:
     def has_key(self,key):
         return self.get(key, Request) is not Request
 
-    def get_header(self, name, default=None):
+    def getHeader(self, name, default=None):
         """Return the named HTTP header, or an optional default
         argument or None if the header is not found. Note that
         both original and CGI-ified header names are recognized,
