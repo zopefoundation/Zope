@@ -252,7 +252,7 @@ class TALVisitor(CopyingDOMVisitor):
             print "Bad syntax in z:repeat:", `arg`
             return 0
         name, expr = m.group(1, 2)
-        iterator = self.engine.setupLoop(name, expr)
+        iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.copySubtree(node, attrDict)
         return 1

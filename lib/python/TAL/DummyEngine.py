@@ -172,7 +172,7 @@ class DummyEngine:
             doc = ExpatBuilder.parse(fileName, 1)
             return doc, macroName[i+1:]
 
-    def setupLoop(self, name, expr):
+    def setRepeat(self, name, expr):
         seq = self.evaluateSequence(expr)
         return Iterator(name, seq, self)
 
