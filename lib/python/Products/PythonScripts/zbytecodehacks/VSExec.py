@@ -482,7 +482,8 @@ def _ReadGuard(ob):
     w.__dict__['_ob'] = ob
     return w
 
-ReadGuard = bind(_ReadGuard, safetypes=(type(''),))
+ReadGuard = bind(_ReadGuard, safetypes=(type(''), type([]), type({}),
+                                        type(()), type(0), type(1.0),) )
 
 def RedirectReads():
     '''Redirect LOAD_* on objects to methods
