@@ -119,7 +119,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.10 2000/08/07 20:17:16 brian Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.11 2000/09/07 17:04:07 brian Exp $'
 
 ############################################################################
 #     Copyright 
@@ -129,7 +129,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.10 2000/08/07 20:17:16 brian Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -172,7 +172,10 @@ class SQLVar:
 
         if t=='int':
             try:
-                if type(v) is StringType: atoi(v)
+                if type(v) is StringType:
+                    if v[-1:]=='L':
+                        v=v[:-1]
+                    atoi(v)
                 else: v=str(int(v))
             except:
                 if not v and args.has_key('optional') and args['optional']:
@@ -181,7 +184,10 @@ class SQLVar:
                     'Invalid integer value for <em>%s</em>' % name)
         elif t=='float':
             try:
-                if type(v) is StringType: atof(v)
+                if type(v) is StringType:
+                    if v[-1:]=='L':
+                        v=v[:-1]
+                    atof(v)
                 else: v=str(float(v))
             except:
                 if not v and args.has_key('optional') and args['optional']:
