@@ -111,8 +111,8 @@ cPickle, A C Pickle Implementation
   
   Status
 
-    The current release of cPickle is "0.2.1",
-    http://www.digicool.com/ftp/pub/releases/cPickle/cPickle-0.2.1.tar.gz.
+    The current release of cPickle is "0.2.2",
+    http://www.digicool.com/ftp/pub/releases/cPickle/cPickle-0.2.2.tar.gz.
     This release requires Python version 1.4.
 
     This version introduces a special binary mode format for floats.
@@ -197,6 +197,17 @@ cPickle, A C Pickle Implementation
 	       'CFLAGS' variable as described in the make file,
 	       'Makefile'. 
 		 
+            0.2.2 -- Bug fix release
+
+               Bugs fixed:
+
+               - Incomplete initialization of Pickler and Unpickler objects
+                 caused core dump if an error occured while creating either
+                 of the objects.
+
+               - Empty tuples saved in non-binary mode when using pickle.py
+                 produced an extra MARK if there was already an empty tuple
+                 in the memo.
 
        
 
