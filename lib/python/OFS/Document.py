@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -8,9 +8,11 @@ from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
 from Acquisition import Explicit
 import regex, Globals, sys
+import cDocumentTemplate
 
-
-class Document(HTML, Explicit, RoleManager, Item_w__name__):
+class Document(cDocumentTemplate.cDocument, HTML, Explicit,
+	       RoleManager, Item_w__name__,
+	       ):
     """ """
     meta_type='Document'
     icon     ='p_/doc'
@@ -102,7 +104,7 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)
 
-    def validate(self, inst, parent, name, value, md):
+    def oldvalidate(self, inst, parent, name, value, md):
 	if hasattr(value, '__roles__'):
 	    roles=value.__roles__
 	elif inst is parent:
