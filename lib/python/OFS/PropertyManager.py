@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 
@@ -100,10 +100,11 @@ __version__='$Revision: 1.1 $'[11:-2]
 ## import Globals
 
 from ZPublisher.Converters import type_converters
+from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split
 from DocumentTemplate import html_quote
 from DateTime import DateTime
-from Globals import HTMLFile
+
 
 
 def aq_base(ob):
