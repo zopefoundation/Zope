@@ -85,8 +85,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.25 2000/07/12 17:45:52 brian Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: RDB.py,v 1.26 2000/07/17 15:04:35 brian Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -123,6 +123,10 @@ class DatabaseResults:
     """Class for reading RDB files
     """
     _index=None
+
+    # We need to allow access to not-explicitly-protected
+    # individual record objects contained in the result.
+    __allow_access_to_unprotected_subobjects__=1
 
     def __init__(self,file,brains=NoBrains, parent=None, zbrains=None):
 
