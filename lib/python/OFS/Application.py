@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.52 1998/02/23 17:49:01 brian Exp $'''
-__version__='$Revision: 1.52 $'[11:-2]
+$Id: Application.py,v 1.53 1998/02/25 19:40:47 jim Exp $'''
+__version__='$Revision: 1.53 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -226,40 +226,6 @@ def install_products():
 	    else: meta_types.append(meta_type)
 	    name=meta_type['name']
 
-	    if (not meta_type.has_key('prefix') and 
-		not regex.match('[^a-zA-Z0-9_]', name)):
-	        meta_type['prefix']=lower(name)
-
-	    if meta_type.has_key('prefix'):
-		prefix=meta_type['prefix']
-
-		def productNames(self, name=name):
-		    t=[]
-		    for i in self.objectMap():
-			if i['meta_type']==name: t.append(i['name'])
-		    return t
-
-		setattr(Folder, "%sNames" % prefix , productNames)
-
-		def productValues(self, name=name):
-		    t=[]
-		    for i in self.objectMap():
-			if i['meta_type']==name:
-			    t.append(getattr(self,i['name']))
-		    return t
-
-		setattr(Folder, "%sValues" % prefix , productValues)
-
-		def productItems(self, name=name):
-		    t=[]
-		    for i in self.objectMap():
-			if i['meta_type']=='Image':
-			    n=i['name']
-			    t.append((n,getattr(self,n)))
-		    return t
-
-		setattr(Folder, "%sItems" % prefix , productItems)
-
 	for name,method in pgetattr(product, 'methods', {}).items():
 	    if not hasattr(Folder, name):
 		setattr(Folder, name, method)
@@ -396,6 +362,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.53  1998/02/25 19:40:47  jim
+# Got rid of xxxItems methods.
+#
 # Revision 1.52  1998/02/23 17:49:01  brian
 # Fixed bug that kept rotor from being able to decode licenses with > 7 bit rotor keys
 #
