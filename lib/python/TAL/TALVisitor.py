@@ -110,8 +110,10 @@ class TALVisitor(CopyingDOMVisitor):
         self.engine = engine
 
     def visitElement(self, node):
+        self.engine.beginScope()
         if not self.checkTAL(node):
             CopyingDOMVisitor.visitElement(self, node)
+        self.engine.endScope()
 
     def checkTAL(self, node):
         # Do TAL expansion.  Return value is 1 if node expansion

@@ -93,12 +93,21 @@ from TALVisitor import NAME_RE
 class DummyEngine:
 
     def __init__(self):
-        self.locals = {}
-        self.globals = {}
+        dict = {}
+        self.locals = self.globals = dict
+        self.stack = [dict]
 
-    # XXX scopes
+    def beginScope(self):
+        self.stack.append(self.locals)
+
+    def endScope(self):
+        assert len(self.stack) > 1, "more endScope() than beginScope() calls"
+        self.locals = self.stack.pop()
 
     def setLocal(self, name, value):
+        if self.locals is self.stack[-1]:
+            # Unmerge this scope's locals from previous scope of first set
+            self.locals = self.locals.copy()
         self.locals[name] = value
 
     def setGlobal(self, name, value):
