@@ -53,7 +53,7 @@ FILE = "tests/input/test01.xml"
 
 class TestTranslations(DummyTranslationService):
     def translate(self, domain, msgid, mapping=None, context=None,
-                  target_language=None):
+                  target_language=None, default=None):
         if msgid == 'timefmt':
             return '%(minutes)s minutes after %(hours)s %(ampm)s' % mapping
         elif msgid == 'jobnum':
@@ -67,7 +67,8 @@ class TestTranslations(DummyTranslationService):
             return '%(name)s was born in %(country)s' % mapping
         return DummyTranslationService.translate(self, domain, msgid,
                                                  mapping, context,
-                                                 target_language)
+                                                 target_language,
+                                                 default=default)
 
 class TestEngine(DummyEngine):
     def __init__(self, macros=None):

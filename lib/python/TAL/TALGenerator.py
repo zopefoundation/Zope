@@ -29,6 +29,9 @@ I18N_REPLACE = 1
 I18N_CONTENT = 2
 I18N_EXPRESSION = 3
 
+_name_rx = re.compile(NAME_RE)
+
+
 class TALGenerator:
 
     inMacroUse = 0
@@ -329,6 +332,9 @@ class TALGenerator:
         # calculate the contents of the variable, e.g.
         # "I live in <span i18n:name="country"
         #                  tal:replace="here/countryOfOrigin" />"
+        m = _name_rx.match(varname)
+        if m is None or m.group() != varname:
+            raise TALError("illegal i18n:name: %r" % varname, self.position)
         key = cexpr = None
         program = self.popProgram()
         if action == I18N_REPLACE:
@@ -458,13 +464,13 @@ class TALGenerator:
         for item in attrlist:
             key = item[0]
             if repldict.has_key(key):
-                expr, xlat = repldict[key]
-                item = item[:2] + ("replace", expr, xlat)
+                expr, xlat, msgid = repldict[key]
+                item = item[:2] + ("replace", expr, xlat, msgid)
                 del repldict[key]
             newlist.append(item)
         # Add dynamic-only attributes
-        for key, (expr, xlat) in repldict.items():
-            newlist.append((key, None, "insert", expr, xlat))
+        for key, (expr, xlat, msgid) in repldict.items():
+            newlist.append((key, None, "insert", expr, xlat, msgid))
         return newlist
 
     def emitStartElement(self, name, attrlist, taldict, metaldict, i18ndict,
@@ -651,16 +657,18 @@ class TALGenerator:
             else:
                 repldict = {}
             if i18nattrs:
-                i18nattrs = i18nattrs.split()
+                i18nattrs = _parseI18nAttributes(i18nattrs, self.position,
+                                                 self.xml)
             else:
-                i18nattrs = ()
+                i18nattrs = {}
             # Convert repldict's name-->expr mapping to a
             # name-->(compiled_expr, translate) mapping
             for key, value in repldict.items():
-                repldict[key] = self.compileExpression(value), key in i18nattrs
+                ce = self.compileExpression(value)
+                repldict[key] = ce, key in i18nattrs, i18nattrs.get(key)
             for key in i18nattrs:
                 if not repldict.has_key(key):
-                    repldict[key] = None, 1
+                    repldict[key] = None, 1, i18nattrs.get(key)
         else:
             repldict = {}
         if replace:
@@ -781,6 +789,30 @@ class TALGenerator:
             self.emitUseMacro(useMacro)
         if defineMacro:
             self.emitDefineMacro(defineMacro)
+
+
+def _parseI18nAttributes(i18nattrs, position, xml):
+    d = {}
+    for spec in i18nattrs.split(";"):
+        parts = spec.split()
+        if len(parts) > 2:
+            raise TALError("illegal i18n:attributes specification: %r" % spec,
+                           position)
+        if len(parts) == 2:
+            attr, msgid = parts
+        else:
+            # len(parts) == 1
+            attr = parts[0]
+            msgid = None
+        if not xml:
+            attr = attr.lower()
+        if attr in d:
+            raise TALError(
+                "attribute may only be specified once in i18n:attributes: %r"
+                % attr,
+                position)
+        d[attr] = msgid
+    return d
 
 def test():
     t = TALGenerator()

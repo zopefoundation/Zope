@@ -349,7 +349,7 @@ class TALInterpreter:
             return self.attrAction(item)
         name, value, action = item[:3]
         ok = 1
-        expr, msgid = item[3:]
+        expr, xlat, msgid = item[3:]
         if self.html and name.lower() in BOOLEAN_HTML_ATTRS:
             evalue = self.engine.evaluateBoolean(item[3])
             if evalue is self.Default:
@@ -368,22 +368,17 @@ class TALInterpreter:
                 if evalue is None:
                     ok = 0
                 value = evalue
-        if msgid:
-            value = self.i18n_attribute(value)
-        if value is None:
-            value = name
-        value = '%s="%s"' % (name, escape(value, 1))
+
+        if ok:
+            if xlat:
+                translated = self.translate(msgid or value, value, {})
+                if translated is not None:
+                    value = translated
+            if value is None:
+                value = name
+            value = '%s="%s"' % (name, escape(value, 1))
         return ok, name, value
     bytecode_handlers["<attrAction>"] = attrAction
-
-    def i18n_attribute(self, s):
-        # s is the value of an attribute before translation
-        # it may have been computed
-        xlated = self.translate(s, {})
-        if xlated is None:
-            return s
-        else:
-            return xlated
 
     def no_tag(self, start, program):
         state = self.saveState()
@@ -553,36 +548,19 @@ class TALInterpreter:
         # subnodes, which should /not/ go to the output stream.
         tmpstream = self.StringIO()
         self.interpretWithStream(stuff[1], tmpstream)
-        content = None
+        default = tmpstream.getvalue()
         # We only care about the evaluated contents if we need an implicit
         # message id.  All other useful information will be in the i18ndict on
         # the top of the i18nStack.
         if msgid == '':
-            content = tmpstream.getvalue()
-            msgid = normalize(content)
+            msgid = normalize(default)
         self.i18nStack.pop()
         # See if there is was an i18n:data for msgid
         if len(stuff) > 2:
             obj = self.engine.evaluate(stuff[2])
-        xlated_msgid = self.translate(msgid, i18ndict, obj)
-        # If there is no translation available, use evaluated content.
-        if xlated_msgid is None:
-            if content is None:
-                content = tmpstream.getvalue()
-            # We must do potential substitutions "by hand".
-            s = interpolate(content, i18ndict)
-        else:
-            # XXX I can't decide whether we want to cgi escape the translated
-            # string or not.  OT1H not doing this could introduce a cross-site
-            # scripting vector by allowing translators to sneak JavaScript into
-            # translations.  OTOH, for implicit interpolation values, we don't
-            # want to escape stuff like ${name} <= "<b>Timmy</b>".
-            #s = escape(xlated_msgid)
-            s = xlated_msgid
-        # If there are i18n variables to interpolate into this string, better
-        # do it now.
-        # XXX efge: actually, this is already done by the translation service.
-        self._stream_write(s)
+        xlated_msgid = self.translate(msgid, default, i18ndict, obj)
+        assert xlated_msgid is not None, self.position
+        self._stream_write(xlated_msgid)
     bytecode_handlers['insertTranslation'] = do_insertTranslation
 
     def do_insertStructure(self, stuff):
@@ -636,23 +614,14 @@ class TALInterpreter:
             self.interpret(block)
     bytecode_handlers["loop"] = do_loop
 
-    def translate(self, msgid, i18ndict=None, obj=None):
-        # XXX is this right?
-        if i18ndict is None:
-            i18ndict = {}
+    def translate(self, msgid, default, i18ndict, obj=None):
         if obj:
             i18ndict.update(obj)
-        # XXX need to fill this in with TranslationService calls.  For now,
-        # we'll just do simple interpolation based on a $-strings to %-strings
-        # algorithm in Mailman.
         if not self.i18nInterpolate:
             return msgid
-        # XXX Mmmh, it seems that sometimes the msgid is None; is that really
-        # possible?
-        if msgid is None:
-            return None
         # XXX We need to pass in one of context or target_language
-        return self.engine.translate(self.i18nContext.domain, msgid, i18ndict)
+        return self.engine.translate(self.i18nContext.domain,
+                                     msgid, i18ndict, default=default)
 
     def do_rawtextColumn(self, (s, col)):
         self._stream_write(s)

@@ -28,7 +28,9 @@ ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
 ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 ZOPE_I18N_NS = "http://xml.zope.org/namespaces/i18n"
 
-NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
+# This RE must exactly match the expression of the same name in the
+# zope.i18n.simpletranslationservice module:
+NAME_RE = "[a-zA-Z_][-a-zA-Z0-9_]*"
 
 KNOWN_METAL_ATTRIBUTES = [
     "define-macro",
@@ -118,12 +120,12 @@ def parseAttributeReplacements(arg, xml):
     for part in splitParts(arg):
         m = _attr_re.match(part)
         if not m:
-            raise TALError("Bad syntax in attributes:" + `part`)
+            raise TALError("Bad syntax in attributes: " + `part`)
         name, expr = m.group(1, 2)
         if not xml:
             name = name.lower()
         if dict.has_key(name):
-            raise TALError("Duplicate attribute name in attributes:" + `part`)
+            raise TALError("Duplicate attribute name in attributes: " + `part`)
         dict[name] = expr
     return dict
 

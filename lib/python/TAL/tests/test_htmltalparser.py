@@ -400,11 +400,11 @@ class TALGeneratorTestCases(TestCaseBase):
              {'tal:attributes': 'href string:http://www.zope.org; x string:y',
               'name': 'bar', 'href': 'foo'}),
             ('startTag', ('a',
-             [('href', 'foo', 'replace', '$string:http://www.zope.org$', 0),
+             [('href', 'foo', 'replace', '$string:http://www.zope.org$', 0, None),
               ('name', 'name="bar"'),
               ('tal:attributes',
                'href string:http://www.zope.org; x string:y', 'tal'),
-              ('x', None, 'insert', '$string:y$', 0)])),
+              ('x', None, 'insert', '$string:y$', 0, None)])),
             ('endScope', ()),
             rawtext('link</a>'),
             ])
@@ -418,7 +418,7 @@ class TALGeneratorTestCases(TestCaseBase):
               'tal:replace': 'structure string:<img>'}),
             ('insertStructure',
              ('$string:<img>$',
-              {'src': ('$string:foo.png$', 0)},
+              {'src': ('$string:foo.png$', 0, None)},
               [('startTag', ('p',
                              [('tal:replace', 'structure string:<img>', 'tal'),
                               ('tal:attributes', 'src string:foo.png',
@@ -496,10 +496,27 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setPosition', (1, 0)),
             ('beginScope', {'alt': 'foo', 'i18n:attributes': 'alt'}),
             ('startTag', ('img',
-             [('alt', 'foo', 'replace', None, 1),
+             [('alt', 'foo', 'replace', None, 1, None),
               ('i18n:attributes', 'alt', 'i18n')])),
             ('endScope', ()),
             ])
+        self._run_check("<img alt='foo' i18n:attributes='alt foo ; bar'>", [
+            ('setPosition', (1, 0)),
+            ('beginScope', {'alt': 'foo', 'i18n:attributes': 'alt foo ; bar'}),
+            ('startTag', ('img',
+             [('alt', 'foo', 'replace', None, 1, 'foo'),
+              ('i18n:attributes', 'alt foo ; bar', 'i18n'),
+              ('bar', None, 'insert', None, 1, None)])),
+            ('endScope', ()),
+            ])
+
+    def test_i18n_name_bad_name(self):
+        self._should_error("<span i18n:name='not a valid name' />")
+        self._should_error("<span i18n:name='-bad-name' />")
+
+    def test_i18n_attributes_repeated_attr(self):
+        self._should_error("<a i18n:attributes='href; href' />")
+        self._should_error("<a i18n:attributes='href; HREF' />")
 
     def check_i18n_translate(self):
         # input/test19.html

@@ -13,14 +13,22 @@
 ##############################################################################
 """Global Translation Service for providing I18n to Page Templates.
 
-$Id: GlobalTranslationService.py,v 1.3 2002/10/06 17:21:07 efge Exp $
+$Id: GlobalTranslationService.py,v 1.4 2003/04/07 17:38:27 fdrake Exp $
 """
+
+import re
+
+from DocumentTemplate.DT_Util import ustr
+from TAL.TALDefs import NAME_RE
 
 class DummyTranslationService:
     """Translation service that doesn't know anything about translation."""
     def translate(self, domain, msgid, mapping=None,
-                  context=None, target_language=None):
-        return None
+                  context=None, target_language=None, default=None):
+        def repl(m, mapping=mapping):
+            return ustr(mapping[m.group(m.lastindex)])
+        cre = re.compile(r'\$(?:(%s)|\{(%s)\})' % (NAME_RE, NAME_RE))
+        return cre.sub(repl, default or msgid)
     # XXX Not all of Zope.I18n.ITranslationService is implemented.
 
 translationService = DummyTranslationService()

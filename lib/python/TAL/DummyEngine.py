@@ -206,11 +206,17 @@ class DummyEngine:
     def getDefault(self):
         return Default
 
-    def translate(self, domain, msgid, mapping):
-        return self.translationService.translate(domain, msgid, mapping)
-    
+    def translate(self, domain, msgid, mapping, default=None):
+        return self.translationService.translate(domain, msgid, mapping,
+                                                 default=default)
+
 
 class Iterator:
+
+    # This is not an implementation of a Python iterator.  The next()
+    # method returns true or false to indicate whether another item is
+    # available; if there is another item, the iterator instance calls
+    # setLocal() on the evaluation engine passed to the constructor.
 
     def __init__(self, name, seq, engine):
         self.name = name
@@ -232,26 +238,33 @@ class DummyDomain:
     __implements__ = IDomain
 
     def translate(self, msgid, mapping=None, context=None,
-                  target_language=None):
+                  target_language=None, default=None):
         # This is a fake translation service which simply uppercases non
         # ${name} placeholder text in the message id.
         #
         # First, transform a string with ${name} placeholders into a list of
         # substrings.  Then upcase everything but the placeholders, then glue
         # things back together.
+
+        # simulate an unknown msgid by returning None
+        if msgid == "don't translate me":
+            text = default
+        else:
+            text = msgid.upper()
+
         def repl(m, mapping=mapping):
             return ustr(mapping[m.group(m.lastindex).lower()])
-        cre = re.compile(r'\$(?:([_A-Z]\w*)|\{([_A-Z]\w*)\})')
-        return cre.sub(repl, msgid.upper())
+        cre = re.compile(r'\$(?:(%s)|\{(%s)\})' % (NAME_RE, NAME_RE))
+        return cre.sub(repl, text)
 
 class DummyTranslationService:
     __implements__ = ITranslationService
 
     def translate(self, domain, msgid, mapping=None, context=None,
-                  target_language=None):
-        # Ignore domain
+                  target_language=None, default=None):
         return self.getDomain(domain).translate(msgid, mapping, context,
-                                                target_language)
+                                                target_language,
+                                                default=default)
 
     def getDomain(self, domain):
         return DummyDomain()
