@@ -259,7 +259,8 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
             
         self.setClassAttr('__ac_permissions__', tuple(r))
 
-        return self.manage(self, REQUEST,
+        if REQUEST is not None:
+            return self.manage(self, REQUEST,
                            manage_tabs_message="Permissions updated")
 
     

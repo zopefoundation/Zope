@@ -151,13 +151,24 @@ def manage_addZClass(self, id, title='', baseclasses=[],
             id+' constructor',
             addDefault % {'id': id},
             )
+        self.manage_addPermission(
+            id+'_add_permission',
+            id+' constructor permission',
+            'Add %ss' % meta_type 
+            )
         self.manage_addPrincipiaFactory(
             id+'_factory',
             id+' factory',
             meta_type,
             id+'_addForm',
+            'Add %ss' % meta_type 
             )
-    
+        getattr(self,id).propertysheets.permissions.manage_edit(
+            selected=['Add %ss' % id]) 
+        getattr(self,id).manage_setPermissionMapping(
+            permission_names=['Create class instances'],
+            class_permissions=['Add %ss' % meta_type]
+        ) 
     if REQUEST is not None:
         return self.manage_main(self,REQUEST, update_menu=1)
 

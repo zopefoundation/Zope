@@ -51,7 +51,7 @@
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
     <INPUT TYPE="CHECKBOX" NAME="CreateAFactory:int" VALUE="1"
     <!--#if CreateAFactory-->CHECKED<!--#/if-->>
-    <STRONG>Create Factory and add methods.</STRONG>
+    <STRONG>Create constructor objects.</STRONG>
   </TD>
 </TR> 
 
