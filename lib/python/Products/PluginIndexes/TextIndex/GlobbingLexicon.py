@@ -85,7 +85,7 @@
 
 from Lexicon import Lexicon
 import Splitter
-from TextIndex import Or, Op
+
 
 import re, string
 
@@ -94,6 +94,10 @@ from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
 from randid import randid
+
+from Products.PluginIndexes.TextIndex.TextIndex import Or
+from Products.PluginIndexes.TextIndex.TextIndex import Op
+
 
 class GlobbingLexicon(Lexicon):
     """Lexicon which supports basic globbing function ('*' and '?').
@@ -210,6 +214,13 @@ class GlobbingLexicon(Lexicon):
     
     def get(self, pattern):
         """ Query the lexicon for words matching a pattern."""
+
+        # single word pattern  produce a slicing problem below.
+        # Because the splitter throws away single characters we can
+        # return an empty tuple here.
+
+        if len(pattern)==1: return ()
+
         wc_set = [self.multi_wc, self.single_wc]
 
         digrams = []
