@@ -5,6 +5,10 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+
+      - Collector 454: The "default" session_data transient object
+        container was not created if an object named "session_data"
+        existed in the root.
     
       - Restored behavior of ZCatalog when arguments with empty string are
         passed in to searchResults. These values are now ignored. If only 
