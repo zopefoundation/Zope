@@ -12,7 +12,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -127,7 +127,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                 action=REQUEST['URL1']+'/manage_main',
                 message=('If cookies are enabled by your browser, then '
                          'you should have left version %s.'
-                         % self.id)
+                         % escape(self.id))
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 

@@ -55,7 +55,7 @@ your search terms below.
 </dtml-if>
 
 <TABLE width="100%" CELLSPACING="0" CELLPADDING="2" border="0">
-<dtml-if expr="_.len(results) != 1">
+<dtml-if expr="_.len(results) > batch_size">
 <tr class="list-header">
 <td width="50%">
  <div class="list-item">
@@ -171,11 +171,11 @@ your search terms below.
   <div class="form-element">
   <SELECT NAME="obj_mspec">
 
-  <OPTION VALUE="<" <dtml-if "REQUEST.obj_mspec == '<'">SELECTED</dtml-if>> before
-  <OPTION VALUE=">" <dtml-if "REQUEST.obj_mspec == '>'">SELECTED</dtml-if>> after
+  <OPTION VALUE="&lt;" <dtml-if "REQUEST.obj_mspec == '<'">SELECTED</dtml-if>> before
+  <OPTION VALUE="&gt;" <dtml-if "REQUEST.obj_mspec == '>'">SELECTED</dtml-if>> after
   </SELECT> 
   </div>
-  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22" VALUE="<dtml-var obj_mtime>">
+  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22" VALUE="&dtml-obj_mtime;">
   </TD>
 </TR>
 
@@ -193,9 +193,9 @@ your search terms below.
   <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
 <dtml-in valid_roles>
 <dtml-if obj_roles>
-  <OPTION VALUE="<dtml-var sequence-item html_quote>"<dtml-if "_['sequence-item'] in obj_roles">SELECTED</dtml-if>><dtml-var sequence-item>
+  <OPTION VALUE="&dtml-sequence-item;"<dtml-if "_['sequence-item'] in obj_roles">SELECTED</dtml-if>>&dtml-sequence-item;
 <dtml-else>
- <OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+ <OPTION VALUE="&dtml-sequence-item;">&dtml-sequence-item;
 </dtml-if>
  
 </dtml-in>
@@ -215,7 +215,7 @@ your search terms below.
   <div class="form-element">
   <SELECT NAME="obj_permission">
 <dtml-in permission_settings mapping>
-  <OPTION VALUE="<dtml-var name html_quote>"<dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>> <dtml-var name>
+  <OPTION VALUE="&dtml-name;"<dtml-in obj_metatypes><dtml-if "_['sequence-item'] == _['name']">SELECTED</dtml-if></dtml-in>> &dtml-name;
 </dtml-in>
   </SELECT>
   </div>
@@ -232,8 +232,8 @@ your search terms below.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
   <SELECT NAME="skey">
-  <OPTION VALUE="id">Type
-  <OPTION VALUE="meta_type">Id
+  <OPTION VALUE="id">Id
+  <OPTION VALUE="meta_type">Type
   <OPTION VALUE="bobobase_modification_time">Last Modified
   </SELECT> 
   <span class="form-label">

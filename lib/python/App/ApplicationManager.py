@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -401,7 +401,7 @@ class ApplicationManager(Folder,CacheManager):
             <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
             </head>
             <body>Zope is restarting</body></html>
-            """ % escape(URL1)
+            """ % escape(URL1, 1)
 
     def manage_shutdown(self):
         """Shut down the application"""

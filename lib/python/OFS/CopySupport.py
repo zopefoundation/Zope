@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -328,7 +328,7 @@ class CopyContainer(ExtensionClass.Base):
             raise CopyError, MessageDialog(
                   title   = 'Not Supported',
                   message = ('The object <EM>%s</EM> does not support this' \
-                             ' operation' % absattr(object.id)),
+                             ' operation' % escape(absattr(object.id))),
                   action  = 'manage_main')
 
         if not hasattr(self, 'all_meta_types'):
@@ -389,7 +389,7 @@ class CopyContainer(ExtensionClass.Base):
             raise CopyError, MessageDialog(
                   title   = 'Not Supported',
                   message = ('The object <EM>%s</EM> does not support this '
-                             'operation.' % absattr(object.id)),
+                             'operation.' % escape(absattr(object.id))),
                   action  = 'manage_main')
 
 Globals.default__class_init__(CopyContainer)

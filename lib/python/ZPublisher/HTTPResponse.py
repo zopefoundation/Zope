@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.79 2004/01/15 23:02:08 tseaver Exp $'''
-__version__ = '$Revision: 1.79 $'[11:-2]
+$Id: HTTPResponse.py,v 1.80 2004/01/19 19:56:53 Brian Exp $'''
+__version__ = '$Revision: 1.80 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -22,6 +22,7 @@ from BaseResponse import BaseResponse
 from zExceptions import Unauthorized, Redirect
 from zExceptions.ExceptionFormatter import format_exception
 from ZPublisher import BadRequest, InternalError, NotFound
+from cgi import escape
 
 nl2sp = maketrans('\n',' ')
 
@@ -461,7 +462,7 @@ class HTTPResponse(BaseResponse):
                     ibase = base_re_search(body)
                     if ibase is None:
                         self.body = ('%s\n<base href="%s" />\n%s' %
-                                   (body[:index], self.quoteHTML(self.base),
+                                   (body[:index], escape(self.base, 1),
                                     body[index:]))
                         self.setHeader('content-length', len(self.body))
 
@@ -553,15 +554,9 @@ class HTTPResponse(BaseResponse):
             return 1
         return 0
 
-    def quoteHTML(self,text,
-                  subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
-                  ):
-        for ent in '&<>\"':
-            if text.find( ent) >= 0:
-                text = subs[ent].join(text.split(ent))
-
-        return text
-
+    # deprecated
+    def quoteHTML(self, text):
+        return escape(text, 1)
 
     def _traceback(self, t, v, tb, as_html=1):
         tb = format_exception(t, v, tb, as_html=as_html)
@@ -634,7 +629,7 @@ class HTTPResponse(BaseResponse):
             "Resource not found",
             "Sorry, the requested resource does not exist." +
             "<p>Check the URL and try again.</p>" +
-            "<p><b>Resource:</b> %s</p>" % self.quoteHTML(entry))
+            "<p><b>Resource:</b> %s</p>" % escape(entry))
 
     forbiddenError = notFoundError  # If a resource is forbidden,
                                     # why reveal that it exists?

@@ -65,8 +65,8 @@ find option.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
   <SELECT NAME="obj_mspec">
-  <OPTION VALUE="<"> before
-  <OPTION VALUE=">"> after
+  <OPTION VALUE="&lt;"> before
+  <OPTION VALUE="&gt;"> after
   </SELECT> 
   </div>
   <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22">
