@@ -631,7 +631,8 @@ setup(
     author=AUTHOR,
 
     packages=['zdaemon', 'zdaemon.tests'],
-    data_files=[['zdaemon', ['zdaemon/sample.conf', 'zdaemon/schema.xml']]],
+    data_files=[['zdaemon', ['zdaemon/sample.conf', 'zdaemon/schema.xml']],
+                ['zdaemon/tests', ['zdaemon/tests/donothing.sh']]]
     )
 
 
@@ -1108,7 +1109,8 @@ distutils.core.setup(
     scripts=["utilities/mkzeoinstance.py", "utilities/mkzopeinstance.py",
              "utilities/check_catalog.py", "utilities/load_site.py",
              "utilities/requestprofiler.py", "utilities/zpasswd.py",
-             "utilities/testrunner.py"],
+             "utilities/testrunner.py", "utilities/copyzopeskel.py",
+             "utilities/compilezpy.py", "utilities/decompilezpy.py"],
     distclass=ZopeDistribution,
     )
 
