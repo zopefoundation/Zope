@@ -476,7 +476,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Reindexing%20Performed')
 
 
-    def availableSplitter(self):
+    def availableSplitters(self):
         """ splitter we can add """
         return Splitter.availableSplitters
 
