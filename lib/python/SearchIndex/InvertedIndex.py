@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.47 1997/05/08 19:10:43 jim Exp $'''
+$Id: InvertedIndex.py,v 1.48 1997/05/08 19:12:13 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.47 1997/05/08 19:10:43 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.48  1997/05/08 19:12:13  jim
+# Changed some string literals for emacs hilit.
+#
 # Revision 1.47  1997/05/08 19:10:43  jim
 # Changed some string literals for emacs hilit.
 # Added minimal index variety.
@@ -241,7 +244,7 @@ $Id: InvertedIndex.py,v 1.47 1997/05/08 19:10:43 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 import regex, string, copy
@@ -648,7 +651,7 @@ class Index:
 	__traceback_info__=i, d, src, srckey
 	for s in src:
 		
-	    if s[0] == '"':
+	    if s[0] == '\"':
 		self.subindex(s[1:-1],d,i)
 	    else:
 		d[s]=1
@@ -720,7 +723,7 @@ class Index:
             except KeyError:
 	        break
 	    else:
-		if ((key is not None) and (key[0] == '"')):
+		if ((key is not None) and (key[0] == '\"')):
                     ws = WordSequence(key, self.synstop)
 		    ws = map(lambda x, self = self: self[x], ws)
 		    return reduce(lambda x, y: x.near(y), ws)
