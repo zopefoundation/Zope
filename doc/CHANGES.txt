@@ -12,10 +12,6 @@ Zope Changes
        changes in C, brining the Python and C implementations back in
        sync.  See lib/python/AccessControl/PermissionRole.py.
 
-     - Renable C Zope security policy by implementing recent Python
-       changes in C, brining the Python and C implementations back in
-       sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
-
      - Add cyclic-garbage collection support to C extension classes,
        especially to acquisition wrappers.
 
@@ -25,6 +21,10 @@ Zope Changes
      - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
     Features added
+
+     - ZCatalog: added a new configuration option in the "Advanced" tab
+       to provide optional logging of the progress of long running 
+       reindexing or recataloging operations.
 
      - made Zope.configure return the starter instance to enable other
        methods to be called, such as starter.setupConfiguredLoggers()

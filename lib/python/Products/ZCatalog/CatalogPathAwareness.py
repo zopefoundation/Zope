@@ -13,7 +13,6 @@
 
 """ZCatalog Findable class"""
 
-import urllib
 from Globals import DTMLFile
 from Acquisition import aq_base
 

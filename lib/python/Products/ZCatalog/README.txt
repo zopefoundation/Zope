@@ -52,3 +52,11 @@ ZCatalog
        encoding (set in site.py of the Python installation) if any
        to the keyword uses a non-ascii encoding (e.g. using accented
        characters). 
+
+  Notes for Zope 2.8:
+
+       reindexIndex() and refreshCatalog() accept a new optional parameter 
+       'pghandler' which must be a handler instance implementing the 
+       IProgressHandler interface (see ProgressHandler.py). This can be useful
+       to provide logging during long running operations.
+ 

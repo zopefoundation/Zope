@@ -15,6 +15,8 @@
 $Id$
 """
 
+import urllib, time, sys, string,logging
+
 from Globals import DTMLFile, MessageDialog
 import Globals
 
@@ -35,9 +37,8 @@ from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
-import urllib, time, sys
-import string,logging
 from IZCatalog import IZCatalog
+from ProgressHandler import ZLogHandler
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -127,6 +128,7 @@ class ZCatalog(Folder, Persistent, Implicit):
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumn',
           'manage_addIndex', 'manage_delIndex', 'manage_clearIndex',
           'manage_reindexIndex', 'manage_main', 'availableSplitters',
+          'manage_setProgress',
 
           # these two are deprecated:
           'manage_delColumns', 'manage_deleteIndex'
@@ -250,7 +252,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         elapse = time.time()
         c_elapse = time.clock()
 
-        self.refreshCatalog(clear=1)
+        pgthreshold = self._getProgressThreshold()
+        handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
+        self.refreshCatalog(clear=1, pghandler=handler)
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
@@ -263,7 +267,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                          'Total CPU time: %s' % (`elapse`, `c_elapse`)))
 
 
-    def refreshCatalog(self, clear=0):
+    def refreshCatalog(self, clear=0, pghandler=None):
         """ re-index everything we can find """
 
         cat = self._catalog
@@ -272,26 +276,27 @@ class ZCatalog(Folder, Persistent, Implicit):
             paths = tuple(paths)
             cat.clear()
 
-        LOG('ZCatalog', BLATHER, 'Starting recataloging of ZCatalog at %s' % 
-             self.absolute_url(1))
         num_objects = len(paths)
+        if pghandler:
+            pghandler.init('Refreshing catalog: %s' % self.absolute_url(1), num_objects)
+
         for i in xrange(num_objects):
+            if pghandler: pghandler.report(i)
+
             p = paths[i]
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
                 try:
-                    LOG('ZCatalog', BLATHER, 'Recataloging object %s (%d/%d)' %
-                         (p, i, num_objects))
-                    self.catalog_object(obj, p)
+                    self.catalog_object(obj, p, pghandler=pghandler)
                 except ConflictError:
                     raise
                 except:
-                    LOG('ZCatalog', ERROR, 'Recataloging object at %s failed' % p,
-                              error=sys.exc_info())
+                    LOG.error('Recataloging object at %s failed' % p,
+                              exc_info=sys.exc_info())
 
-        LOG('ZCatalog', BLATHER, 'Recataloging of ZCatalog at %s terminated' % self.absolute_url(1))
+        if pghandler: pghandler.finish()
 
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ clears the whole enchilada """
@@ -460,10 +465,21 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
 
 
-    def reindexIndex(self, name, REQUEST):
+    def reindexIndex(self, name, REQUEST, pghandler=None):
         if isinstance(name, str):
             name = (name,)
-        for p in self._catalog.uids.keys():
+
+        paths = self._catalog.uids.keys()
+        num_paths = len(paths)   # inefficient        
+
+        i = 0
+        if pghandler:
+            pghandler.init('reindexing %s' % name, num_paths)
+
+        for p in paths:
+            i+=1
+            if pghandler: pghandler.report(i)
+
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
@@ -475,7 +491,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 # index via the UI
                 try:
                     self.catalog_object(obj, p, idxs=name,
-                                        update_metadata=0)
+                                        update_metadata=0, pghandler=pghandler)
                 except TypeError:
                     # Fall back to Zope 2.6.2 interface. This is necessary for
                     # products like CMF 1.4.2 and earlier that subclass from
@@ -485,7 +501,10 @@ class ZCatalog(Folder, Persistent, Implicit):
                     warn('catalog_object interface of %s not up to date'
                          % self.__class__.__name__,
                          DeprecationWarning)
-                    self.catalog_object(obj, p, idxs=name)
+                    self.catalog_object(obj, p, idxs=name, pghandler=pghandler)
+
+        if pghandler:
+            pghandler.finish()
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
                             URL1=None):
@@ -495,7 +514,9 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        self.reindexIndex(ids, REQUEST)
+        pgthreshold = self._getProgressThreshold()
+        handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
+        self.reindexIndex(ids, REQUEST, handler)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
@@ -509,7 +530,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         return Splitter.availableSplitters
 
 
-    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1):
+    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1, pghandler=None):
         """ wrapper around catalog """
 
         if uid is None:
@@ -551,6 +572,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                 get_transaction().commit(1)
                 self._p_jar.cacheGC()
                 self._v_total = 0
+                if pghandler:
+                    pghandler.info('commiting subtransaction')
 
     def uncatalog_object(self, uid):
         """Wrapper around catalog """
@@ -860,6 +883,21 @@ class ZCatalog(Folder, Persistent, Implicit):
           message='%s paths normalized, %s paths removed, and '
                   '%s unchanged.' % (len(fixed), len(removed), unchanged),
           action='./manage_main')
+
+    def manage_setProgress(self, pgthreshold=0, RESPONSE=None, URL1=None):
+        """Set parameter to perform logging of reindexing operations very 
+           'pgthreshold' objects
+        """
+
+        self.pgthreshold = pgthreshold
+        if RESPONSE:
+            RESPONSE.redirect(
+                URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
+
+    def _getProgressThreshold(self):
+        if not hasattr(self, 'pgthreshold'):
+            self.pgthreshold = 0
+        return self.pgthreshold
 
     def manage_convertBTrees(self, threshold=200):
         """Convert the catalog's data structures to use BTrees package"""
