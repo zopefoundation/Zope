@@ -259,6 +259,9 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
 
+    def permissionMappingPossibleValues(self):
+        return self.classDefinedAndInheritedPermissions()
+
     manage_security=Globals.HTMLFile('AccessControl/methodAccess')
     def manage_getPermissionMapping(self):
         ips=self.getClassAttr('propertysheets')
