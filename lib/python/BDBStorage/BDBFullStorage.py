@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.74 $
+$Revision: 1.75 $
 """
 
 import time
@@ -39,19 +39,7 @@ DNE = '\377'*8
 # DEBUGGING
 #DNE = 'nonexist'
 
-try:
-    # Python 2.2
-    from _helper import incr
-except ImportError:
-    # Python 2.1
-    def incr(refcount, delta):
-        return p64(U64(refcount) + delta)
-
-try:
-    True, False
-except NameError:
-    True = 1
-    False = 0
+from _helper import incr
 
 BDBFULL_SCHEMA_VERSION = 'BF01'
 
