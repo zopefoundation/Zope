@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.11 1997/01/23 20:45:01 jim Exp $
+  $Id: cStringIO.c,v 1.12 1997/01/24 19:38:28 chris Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.12  1997/01/24 19:38:28  chris
+  *** empty log message ***
+
   Revision 1.11  1997/01/23 20:45:01  jim
   ANSIfied it.
   Changed way C API was exported.
@@ -286,10 +289,10 @@ O_cwrite(PyObject *self, char *c, int  l) {
   int newl, space_needed;
 
   newl=((Oobject*)self)->pos+l;
-  if(newl > ((Oobject*)self)->buf_size)
+  if(newl >= ((Oobject*)self)->buf_size)
     {
       ((Oobject*)self)->buf_size*=2;
-      if(((Oobject*)self)->buf_size < newl) ((Oobject*)self)->buf_size=newl;
+      if(((Oobject*)self)->buf_size <= newl) ((Oobject*)self)->buf_size=newl+1;
       UNLESS(((Oobject*)self)->buf=
 	     (char*)realloc(((Oobject*)self)->buf,
 			    ((Oobject*)self)->buf_size*sizeof(char)))
