@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.19 1998/07/12 17:34:10 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: RDB.py,v 1.20 1998/12/15 21:08:34 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -209,69 +209,3 @@ class DatabaseResults:
 	return fields.__of__(parent)
 
 File=DatabaseResults
-
-############################################################################## 
-#
-# $Log: RDB.py,v $
-# Revision 1.19  1998/07/12 17:34:10  jim
-# Redid way SQL aliases are handled.
-#
-# Revision 1.18  1998/07/12 16:46:40  jim
-# Redid way SQL aliases are handled.
-#
-# Revision 1.17  1998/07/12 15:58:57  jim
-# Made row data attributes case-insensitive.
-#
-# Revision 1.16  1998/05/04 22:35:58  jim
-# Fixed flaw in (un)escaping logic.
-#
-# Revision 1.15  1998/02/23 17:47:13  jim
-# Fixed bug that broke acquisition by records when accessed with
-# getitem.
-#
-# Revision 1.14  1998/02/06 23:24:42  jim
-# *** empty log message ***
-#
-# Revision 1.13  1998/02/06 22:41:48  jim
-# Stupid bug I fixed at hway.
-#
-# Revision 1.12  1998/01/16 21:43:47  jim
-# Added parent to constructor so init can acquire
-#
-# Revision 1.11  1998/01/16 20:24:49  jim
-# Added the abilility to define constructors in brains.
-#
-# Revision 1.10  1997/12/12 23:38:59  jim
-# Added support for text (t) column type.
-#
-# Revision 1.9  1997/12/05 21:27:58  jim
-# Better brain and record-as-instance support.
-#
-# Revision 1.8  1997/10/09 15:21:49  jim
-# Fixed name error in exception handler.
-#
-# Revision 1.7  1997/10/09 15:11:12  jim
-# Added optimization to cache result classes.
-#
-# Revision 1.6  1997/09/30 16:41:06  jim
-# Fixed bug in handling empty lines.
-#
-# Revision 1.5  1997/09/26 22:17:37  jim
-# more
-#
-# Revision 1.4  1997/09/25 18:40:58  jim
-# new interfaces and RDB
-#
-# Revision 1.4  1997/09/18 17:43:10  jim
-# Updated to use Missing.
-#
-# Revision 1.3  1997/09/12 18:37:11  jim
-# Many changes leading to TextIndexes and many bug fixes.
-#
-# Revision 1.2  1997/09/02 21:24:06  jim
-# *** empty log message ***
-#
-# Revision 1.1  1997/08/13 19:15:24  jim
-# Converted name->id, description->title, copied from component
-#
-#

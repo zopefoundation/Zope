@@ -3,7 +3,7 @@
 
 <H2>New Search Interface</H2>
 
-<form action="manage_addAqueductSearch" method="POST">
+<form action="manage_addZSearch" method="POST">
 
 You can create a search interface, consisting of a search-input form
 and a report for a searchable object.
@@ -12,9 +12,9 @@ and a report for a searchable object.
             
 <tr>    <th align='LEFT'>Select one<br>or more<br>searchable objects</th>
         <td align='LEFT'><select name="queries:list" size=4 multiple>
-        <!--#in aqueductQueryIds-->
+        <!--#in ZQueryIds-->
            <option><!--#var sequence-item--></option>
-        <!--#/in aqueductQueryIds-->
+        <!--#/in-->
         </select></td></tr>
 <tr>    <th align='LEFT'>Report Id</th>
         <td align='LEFT'><input name="report_id" size="40"></td></tr>

@@ -10,8 +10,8 @@ database_type='Gadfly'
 ########################################################################### 
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.3 1998/12/02 12:11:48 jim Exp $''' % database_type
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DA.py,v 1.4 1998/12/15 21:09:55 jim Exp $''' % database_type
+__version__='$Revision: 1.4 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
@@ -36,7 +36,7 @@ class Connection(DABase.Connection):
     database_type=database_type
     id='%s_database_connection' % database_type
     meta_type=title='Zope %s Database Connection' % database_type
-    icon='misc_/Z%s/conn' % database_type
+    icon='misc_/Z%sDA/conn' % database_type
 
     def factory(self): return DB
 
@@ -65,6 +65,9 @@ class Connection(DABase.Connection):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.4  1998/12/15 21:09:55  jim
+# first Zope
+#
 # Revision 1.3  1998/12/02 12:11:48  jim
 # new names, esp for Aqueduct
 #

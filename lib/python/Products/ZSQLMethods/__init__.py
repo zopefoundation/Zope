@@ -11,15 +11,15 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.5 1998/12/02 12:11:49 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 1998/12/15 21:10:31 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 from ImageFile import ImageFile
 import Shared.DC.ZRDB.Search, SQL
 
 classes=('SQL.SQL',)
 
 meta_types=(
-    {'name':'Zope SQL Database Method',
+    {'name':SQL.SQL.meta_type,
      'action':'manage_addZSQLMethodForm',
      },
     {'name':'Zope Search Interface',
@@ -54,6 +54,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.6  1998/12/15 21:10:31  jim
+# first Zope
+#
 # Revision 1.5  1998/12/02 12:11:49  jim
 # new names, esp for Aqueduct
 #

@@ -70,8 +70,8 @@
 <!--#else-->
 <em><strong>Warning:</strong>
 There are no SQL database connections.  You need
-to add an Aqueduct SQL database connection
-before you can use an Aqueduct SQL database adapter.
+to add a Zope SQL database connection
+before you can use an Zope SQL Method.
 </em>
 <!--#/if-->
 </body></html>

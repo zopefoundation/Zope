@@ -6,7 +6,7 @@
 <!--#if SQLConnectionIDs-->
 
 
-<form action="manage_addAqueductSQLMethod" method="post">
+<form action="manage_addZSQLMethod" method="post">
 
 <table>     
             
@@ -38,8 +38,8 @@ from data</textarea></td></tr>
 <!--#else-->
 <em><strong>Warning:</strong>
 There are no SQL database connections.  You need
-to add an Aqueduct SQL database connection
-before you can use an Aqueduct SQL database adapter.
+to add a Zope SQL database connection
+before you can use a Zope SQL Method.
 </em>
 <!--#/if-->
 </body></html>

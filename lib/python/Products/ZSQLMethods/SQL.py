@@ -11,8 +11,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.6 1998/12/02 12:11:49 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: SQL.py,v 1.7 1998/12/15 21:10:31 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
@@ -101,7 +101,7 @@ class SQL(Shared.DC.ZRDB.DA.DA):
 	   employees/employee_id/1234/service_record
 
     """
-    meta_type='Z SQL Database Method'
+    meta_type='Z SQL Method'
     icon='misc_/ZSQLMethods/icon'
 		
     manage_main=HTMLFile('edit', globals())
