@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.13 $'.split()[-2:][0]
+__version__ = '$Revision: 1.14 $'.split()[-2:][0]
 
 
 
@@ -203,8 +203,16 @@ class BerkeleyBase(BaseStorage):
         """Close the storage by closing the databases it uses and by closing
         its environment.
         """
-        # BAW: the original implementation also deleted the _env attribute.
-        # Was this just to reclaim the garbage?
+        # As recommended by Keith Bostic @ Sleepycat, we need to do
+        # two checkpoints just before we close the environment.
+        # Otherwise, auto-recovery on environment opens can be
+        # extremely costly.  We want to do auto-recovery for ease of
+        # use, although they aren't strictly necessary if the database
+        # was shutdown gracefully.  The DB_FORCE flag is required for
+        # the second checkpoint, but we include it in both because it
+        # can't hurt and is more robust.
+	self._env.txn_checkpoint(0, 0, db.DB_FORCE)
+	self._env.txn_checkpoint(0, 0, db.DB_FORCE)
         self._env.close()
         self._closelog()
 
