@@ -119,3 +119,6 @@ class ZClassOwner(ExtensionClass.Base):
         r=r.items()
         r.sort()
         return r
+
+
+Globals.default__class_init__(ZClassOwner)
