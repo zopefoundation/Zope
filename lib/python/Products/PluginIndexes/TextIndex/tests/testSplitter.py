@@ -92,7 +92,7 @@ except ImportError:
     import Testing
 
 import unittest,locale
-import Splitter
+from Products.PluginIndexes.TextIndex import Splitter
 
 
 class TestCase( unittest.TestCase ):
@@ -134,7 +134,7 @@ class TestCase( unittest.TestCase ):
 
 
     def testZopeSplitter(self):
-        """test ZopeSplitter"""
+        """test ZopeSplitter (this test is known to fail because it does not support ISO stuff) """
 
         for text,splitted in self.testdata:
             self._test("ZopeSplitter",text,splitted)
