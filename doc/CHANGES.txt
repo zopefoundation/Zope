@@ -16,6 +16,8 @@ Zope Changes
        of indexed objects instead of using a very expensive calculation
        based on the keys of their indexes. 
 
+     - Collector #1039: Whitespace problem in Z2.log fixed
+
   2.7.0b2
 
     Features added
