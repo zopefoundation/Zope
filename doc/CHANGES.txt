@@ -16,6 +16,10 @@ Zope changes
         - Added basic internal support for mountable databases. A separate 
           product will still be required to make use of this ability.
 
+        - Added a new "history" tab to selected objects (DTML methods and
+          documents for now) that provides access to previous versions 
+          through the web.
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
