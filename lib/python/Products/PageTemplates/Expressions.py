@@ -17,13 +17,14 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
      TALESError, Undefined, Default
 from string import strip, split, join, replace, lstrip
 from Acquisition import aq_base, aq_inner, aq_parent
+
 
 _engine = None
 def getEngine():
@@ -254,11 +255,10 @@ def restrictedTraverse(self, path, securityManager,
             raise Unauthorized, name
         i = 1
 
-    plen = len(path)
     REQUEST={'TraversalRequestNameStack': path}
     validate = securityManager.validate
     object = self
-    while i < plen:
+    while i < len(path):
         __traceback_info__ = (path, i)
         name = path[i]
         i = i + 1
