@@ -381,8 +381,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.35 1999/06/10 15:02:55 brian Exp $'
-__version__='$Revision: 1.35 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.36 1999/06/14 14:04:33 brian Exp $'
+__version__='$Revision: 1.36 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
@@ -406,6 +406,7 @@ class InClass:
     elses=None
     expr=sort=batch=mapping=None
     start_name_re=None
+    reverse=None
     
     def __init__(self, blocks):
         tname, args, section = blocks[0]
@@ -413,7 +414,7 @@ class InClass:
                           orphan='3',overlap='1',mapping=1,
                           skip_unauthorized=1,
                           previous=1, next=1, expr='', sort='',
-                          reverse=0)
+                          reverse=1)
         self.args=args
         has_key=args.has_key
 
@@ -422,9 +423,7 @@ class InClass:
             if sort=='sequence-item': self.sort=''
 
         if has_key('reverse'):
-            self.reverse=1
-            self.sort=''
-        else: self.reverse=0
+            self.reverse=args['reverse']
             
         if has_key('mapping'): self.mapping=args['mapping']
         for n in 'start', 'size', 'end':
@@ -489,8 +488,12 @@ class InClass:
         
         mapping=self.mapping
 
-        if self.sort is not None: sequence=self.sort_sequence(sequence)
+        if self.sort is not None:
+            sequence=self.sort_sequence(sequence)
 
+        if self.reverse is not None:
+            sequence.reverse()
+            
         next=previous=0
         try: start=int_param(params,md,'start',0)
         except: start=1
@@ -636,12 +639,15 @@ class InClass:
             raise 'InError', (
                 'Strings are not allowed as input to the in tag.')
 
-        section=self.section
-        
+        section=self.section        
         mapping=self.mapping
 
-        if self.sort is not None: sequence=self.sort_sequence(sequence)
+        if self.sort is not None:
+            sequence=self.sort_sequence(sequence)
 
+        if self.reverse is not None:
+            sequence.reverse()
+            
         vars=sequence_variables(sequence)
         kw=vars.data
         kw['mapping']=mapping
@@ -717,8 +723,6 @@ class InClass:
             s.append((k,client))
 
         s.sort()
-        if self.reverse:
-            s.reverse()
 
         sequence=[]
         for k, client in s: sequence.append(client)
