@@ -408,7 +408,7 @@ class Catalog(Persistent, Acquisition.Implicit):
                 rs=data.items()
                 append(LazyMap(self.instantiate, rs))
             else:
-                for k, intset in sort_index.items():
+                for k, intset in sort_index._index.items():
                     append((k,LazyMap(self.__getitem__, intset)))
         elif rs:
             if sort_index is None:
