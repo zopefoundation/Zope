@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -73,6 +73,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         +Cacheable.manage_options
         )
 
+    # Careful in changes--used by DTMLDocument!
     __ac_permissions__=(
     ('View management screens',
      ('document_src', 'PrincipiaSearchSource')),

@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -45,16 +45,11 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         PropertyManager.manage_options +
         DTMLMethod.manage_options[2:]
         )
-
+    
+    ps = DTMLMethod.__ac_permissions__
     __ac_permissions__=(
-        ('Change DTML Documents',
-         ('manage_editForm', 'manage', 'manage_main',
-          'manage_edit', 'manage_upload', 'PUT',
-          'manage_historyCopy',
-          'manage_beforeHistoryCopy', 'manage_afterHistoryCopy',
-          )
-         ),
-        )
+        ps[0], ('Change DTML Documents', ps[1][1]), ps[2], ps[3], ps[4])
+    del ps
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='100%',
                     dtpref_rows='20',REQUEST=None):
