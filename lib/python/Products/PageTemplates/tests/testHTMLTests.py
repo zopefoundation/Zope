@@ -15,7 +15,8 @@ import os, sys, unittest
 
 from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
-from AccessControl import SecurityManager
+import ZODB
+from AccessControl import User, SecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 
 from Acquisition import Implicit
@@ -129,4 +130,4 @@ def test_suite():
     return unittest.makeSuite(HTMLTests, 'check')
 
 if __name__=='__main__':
-    main()
+    unittest.main(defaultTest='test_suite')
