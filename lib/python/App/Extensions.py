@@ -14,10 +14,10 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.21 2003/02/11 17:17:04 fdrake Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: Extensions.py,v 1.22 2003/07/09 18:44:24 fdrake Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
-import os, zlib, rotor, imp
+import os, zlib, imp
 import Products
 path_split=os.path.split
 path_join=os.path.join
@@ -110,6 +110,7 @@ def getObject(module, name, reload=0,
 
     base, ext = os.path.splitext(module)
     if ext in ('py', 'pyp', 'pyc'):
+        # XXX should never happen; splitext() keeps '.' with the extension
         p = base
     else:
         p = module
@@ -128,6 +129,7 @@ def getObject(module, name, reload=0,
         m=binmod.__dict__
 
     elif ext=='.pyp':
+        import rotor
         prod_id=module.split('.', 1)[0]
         data=zlib.decompress(
             rotor.newrotor(prod_id +' shshsh').decrypt(open(p,'rb').read())
