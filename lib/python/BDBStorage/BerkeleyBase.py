@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.32 $'.split()[-2:][0]
+__version__ = '$Revision: 1.33 $'.split()[-2:][0]
 
 import os
 import time
@@ -125,6 +125,22 @@ class BerkeleyConfig:
     frequency = 0
     packtime = 4 * 60 * 60
     classicpack = 0
+
+    def __repr__(self):
+        d = self.__class__.__dict__.copy()
+        d.update(self.__dict__)
+        return """<BerkeleyConfig:
+\tcheckpoint interval: %(interval)s seconds
+\tcheckpoint kbytes: %(kbyte)s
+\tcheckpoint minutes: %(min)s
+\t----------------------
+\tlogdir: %(logdir)s
+\tcachesize: %(cachesize)s bytes
+\t----------------------
+\tautopack frequency: %(frequency)s seconds
+\tpack to %(packtime)s seconds in the past
+\tclassic pack every %(classicpack)s autopacks
+\t>""" % d
 
 
 
