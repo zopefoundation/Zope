@@ -414,6 +414,14 @@ setup(
     cmdclass={'install_data': install_data}
 )
 
+# Signals
+setup(
+    name='Signals',
+    author=AUTHOR,
+
+    packages=['Signals'],
+)
+
 # ZRDB
 setup(
     name='ZRDB',
