@@ -158,9 +158,10 @@ class ProductContext:
 
         if permissions is None:
             permissions=[]
-            for p in instance_class.__ac_permissions__:
-                if len(p) > 2: permissions.append((p[0],p[2]))
-                else: permissions.append(p[0])
+            if hasattr(instance_class, '__ac_permissions__'):
+                for p in instance_class.__ac_permissions__:
+                    if len(p) > 2: permissions.append((p[0],p[2]))
+                    else: permissions.append(p[0])
 
         pr=None
         for p in (permission,)+tuple(permissions):
