@@ -58,8 +58,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.1 1998/04/02 17:37:36 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: DT_InSV.py,v 1.2 1998/04/03 19:28:41 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from string import lower, upper, rfind
 from math import sqrt
@@ -153,13 +153,13 @@ class sequence_variables:
 	if data['mapping']: return item[name]
 	return getattr(item,name)
 
-    def first(self,name):
+    def first(self,name,key=''):
 	data=self.data
 	if data['sequence-start']: return 1
 	index=data['sequence-index']
 	return self.value(index,name) != self.value(index-1,name)
 
-    def last(self,name):
+    def last(self,name,key=''):
 	data=self.data
 	if data['sequence-end']: return 1
 	index=data['sequence-index']
@@ -195,7 +195,7 @@ class sequence_variables:
 	'variance', 'variance-n','standard-deviation', 'standard-deviation-n',
 	)
 
-    def statistics(self,name):
+    def statistics(self,name,key):
 	items=self.items
 	data=self.data
 	mapping=data['mapping']
@@ -272,10 +272,11 @@ class sequence_variables:
 			try: data['median-%s' % name]=(
 			    "between %s and %s" % (values[n],values[n-1]))
 			except: pass
-	
 
-    def next_batches(self, suffix='batches'):
-	if suffix != 'batches': raise KeyError, 'next-batches'
+	return data[key]
+
+    def next_batches(self, suffix='batches',key=''):
+	if suffix != 'batches': raise KeyError, key
 	data=self.data
 	sequence=self.items
 	try:
@@ -301,8 +302,8 @@ class sequence_variables:
 	data['next-batches']=r
 	return r
 
-    def previous_batches(self, suffix='batches'):
-	if suffix != 'batches': raise KeyError, 'previous-batches'
+    def previous_batches(self, suffix='batches',key=''):
+	if suffix != 'batches': raise KeyError, key
 	data=self.data
 	sequence=self.items
 	try:
@@ -336,8 +337,8 @@ class sequence_variables:
 	'previous': previous_batches,
 	'next': next_batches,
 	# These two are for backward compatability with a missfeature:
-	'sequence-index': lambda self, suffix: self['sequence-'+suffix],
-	'sequence-index-is': lambda self, suffix: self['sequence-'+suffix],
+	'sequence-index': lambda self, suffix, key: self['sequence-'+suffix],
+	'sequence-index-is': lambda self, suffix, key: self['sequence-'+suffix],
 	}
     for n in statistic_names: special_prefixes[n]=statistics
 
@@ -358,7 +359,7 @@ class sequence_variables:
             return getattr(self,suffix)(data[prefix+'-index'])
 
 	if special_prefix(prefix):
-	    return special_prefixes[prefix](self, suffix)
+	    return special_prefixes[prefix](self, suffix, key)
 
         if prefix[-4:]=='-var':
             prefix=prefix[:-4]
@@ -403,6 +404,9 @@ def opt(start,end,size,orphan,sequence):
 ############################################################################## 
 #
 # $Log: DT_InSV.py,v $
+# Revision 1.2  1998/04/03 19:28:41  jim
+# Fixed statistics bug.
+#
 # Revision 1.1  1998/04/02 17:37:36  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and
