@@ -95,6 +95,23 @@ class StartupTestCase(unittest.TestCase):
             """)
         self.assert_(isinstance(conf.dns_resolver, resolver.caching_resolver))
 
+    def test_zodb_db(self):
+        conf = self.load_config_text("""\
+            instancehome <<INSTANCE_HOME>>
+            <zodb_db main>
+              <filestorage>
+               path <<INSTANCE_HOME>>/var/Data.fs
+               </filestorage>
+                connection-class  Products.TemporaryFolder.LowConflictConnection.LowConflictConnection
+                mount-point                    /
+                cache-size                     5000
+                pool-size                      7
+                version-pool-size              3
+                version-cache-size             100
+            </zodb_db>
+            """)
+        self.assertEqual(conf.databases[0].config.connection_class.__name__,
+                         'LowConflictConnection')
 
 def test_suite():
     return unittest.makeSuite(StartupTestCase)

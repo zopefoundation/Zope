@@ -15,6 +15,8 @@
 """Datatypes for the Zope schema for use with ZConfig."""
 
 import os
+from ZODB.config import ZODBDatabase
+from ZODB.config import FileStorage
 
 # generic datatypes
 
@@ -78,6 +80,27 @@ def mount_point(value):
                            "begin with a slash" % value)
     return value
 
+# A datatype that converts a Python dotted-path-name to an object
+
+def importable_name(name):
+    try:
+        components = name.split('.')
+        start = components[0]
+        g = globals()
+        package = __import__(start, g, g)
+        modulenames = [start]
+        for component in components[1:]:
+            modulenames.append(component)
+            try:
+                package = getattr(package, component)
+            except AttributeError:
+                n = '.'.join(modulenames)
+                package = __import__(n, g, g, component)
+        return package
+    except ImportError:
+        raise ValueError, (
+            'The object named by "%s" could not be imported' %  name )
+
 # Datatype for the root configuration object
 # (adds the softwarehome and zopehome fields; default values for some
 #  computed paths)
@@ -119,16 +142,24 @@ def root_config(section):
 
     return section
 
+class ZopeDatabase(ZODBDatabase):
+    """ A ZODB database datatype that can handle an extended set of
+    attributes """
+    def open(self):
+        DB = ZODBDatabase.open(self)
+        # set the connection class
+        DB.klass = self.config.connection_class
+        return DB
+    
 def getDefaultDatabaseFactory(context):
     # default to a filestorage named 'Data.fs' in clienthome
-    from ZODB.config import FileStorage
-    from ZODB.config import ZODBDatabase
-
     class dummy:
         def __init__(self, name):
             self.name = name
         def getSectionName(self):
             return self.name
+
+    from ZODB.Connection import Connection
 
     path = os.path.join(context.clienthome, 'Data.fs')
     fs_ns = dummy('default filestorage at %s' % path)
@@ -144,4 +175,6 @@ def getDefaultDatabaseFactory(context):
     db_ns.version_pool_size=3
     db_ns.version_cache_size = 100
     db_ns.mount_points = ['/']
-    return ZODBDatabase(db_ns)
+    db_ns.connection_class = Connection
+    return ZopeDatabase(db_ns)
+
