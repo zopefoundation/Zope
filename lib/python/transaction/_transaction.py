@@ -54,8 +54,10 @@ methods and support a second argument to tpc_begin().
 
 The second argument to tpc_begin() indicates that a subtransaction
 commit is beginning (if it is true).  In a subtransaction, there is no
-tpc_vote() call.  (XXX: I don't have any idea why.)  The tpc_finish()
-or tpc_abort() call applies just to that subtransaction.
+tpc_vote() call, because sub-transactions don't need 2-phase commit.
+If a sub-transaction abort or commit fails, we can abort the outer
+transaction.  The tpc_finish() or tpc_abort() call applies just to
+that subtransaction.
 
 Once a resource manager is involved in a subtransaction, all
 subsequent transactions will be treated as subtransactions until
