@@ -2,6 +2,13 @@ import os
 
 # top-level key handlers
 
+
+# XXX  I suspect there are still problems here.  In most cases, if the
+# value is not set from the config file, or if the value is the
+# default, the corresponding envvar is not unset, which is needed to
+# ensure that the environment variables and the configuration values
+# reflect a coherant configuration.
+
 def _setenv(name, value):
     if isinstance(value, str):
         os.environ[name] = value
