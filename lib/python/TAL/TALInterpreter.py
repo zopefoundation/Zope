@@ -90,7 +90,9 @@ import sys
 import string
 import getopt
 import cgi
+
 from XMLParser import XMLParser
+from TALDefs import quote
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -297,12 +299,6 @@ class TALInterpreter:
             self.interpret(compiledSlot)
         else:
             self.interpret(block)
-
-def quote(s):
-    if '"' in s and "'" not in s:
-        return "'%s'" % cgi.escape(s)
-    else:
-        return '"%s"' % cgi.escape(s, 1)
 
 def test():
     from driver import FILE, parsefile
