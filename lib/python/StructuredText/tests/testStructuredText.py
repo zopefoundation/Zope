@@ -105,6 +105,8 @@ regressions=os.path.join(package_dir, 'regressions')
 files = ['index.stx','Acquisition.stx','ExtensionClass.stx',
         'MultiMapping.stx','examples.stx']
 
+reg_files = ['Links.stx']
+
 
 def readFile(dirname,fname):
 
@@ -165,12 +167,21 @@ class StructuredTextTests(unittest.TestCase):
                 'HTML ClassicDocumentClass failed on %s' % f
 
 
-#    def testRegressionsTests(self)
-#        """ there should be a regression tests that compares 
-#             generated HTML against the reference HTML files.
-#             This test is commented in the 2.4 branch because
-#             of the change from ST to STXNG and the changed 
-#             HTML generation (HTML references files are no longer
-#             valid for STXNG)
+    def testRegressionsTests(self):
+        """ HTML regression test """
+
+        for f in reg_files:
+            Doc  = DocumentClass.DocumentClass()
+            HTML = HTMLClass.HTMLClass()
+            raw_text = readFile(regressions,f)
+            text = Doc(ST.StructuredText(raw_text))
+            html = HTML(text)
+
+            reg_fname = f.replace('.stx','.ref')
+            reg_html  = readFile(regressions , reg_fname)
+
+            assert reg_html.strip()== html.strip(), \
+                'HTML regression test failed on %s' % f
+
 
 framework()
