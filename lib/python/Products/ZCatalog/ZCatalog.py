@@ -124,7 +124,7 @@ def manage_addZCatalog(self, id, title,
     c=ZCatalog(id, title, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
-        return self.manage_main(self, REQUEST)
+        return self.manage_main(self, REQUEST,update_menu=1)
 
 
 class ZCatalog(Folder, Persistent, Implicit):
