@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -180,7 +180,7 @@ class File(Persistent,Implicit,PropertyManager,
             else:
                 c()
         RESPONSE.setHeader('content-type', self.content_type)
-        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+#        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         return self.data
 
 
