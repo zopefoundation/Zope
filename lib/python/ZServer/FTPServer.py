@@ -403,13 +403,18 @@ class zope_ftp_channel(ftp_channel):
         handle(self.module,request,response)       
            
     def stor_completion(self,response):
-        status=response.getStatus()        
+        status=response.getStatus()
+        message = response.getMessage()
+
         if status in (200,201,204,302):
-            self.client_dc.channel.respond('226 Transfer complete.')
+            self.client_dc.channel.respond('226 ' + (
+                message or 'Transfer complete.'))
         elif status==401:
-            self.client_dc.channel.respond('426 Unauthorized.')
+            self.client_dc.channel.respond('426 ' + (
+                message or 'Unauthorized.'))
         else:
-            self.client_dc.channel.respond('426 Error creating file.')       
+            self.client_dc.channel.respond('426 ' + (
+                message or 'Error creating file.'))
         self.client_dc.close()
 
     def cmd_rnfr (self, line):

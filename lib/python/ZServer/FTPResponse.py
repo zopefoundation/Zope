@@ -120,6 +120,11 @@ class FTPResponse(ZServerHTTPResponse):
     def _marshalledBody(self):
         return marshal.loads(self.body)
 
+    def setMessage(self, message):
+        self._message = message
+
+    def getMessage(self):
+        return getattr(self, '_message', '')
  
 class CallbackPipe:
     """
