@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.73 1999/06/18 00:32:39 amos Exp $"""
+$Id: ObjectManager.py,v 1.74 1999/06/24 19:27:16 jim Exp $"""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -205,6 +205,8 @@ class ObjectManager(
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
         self._setOb(id,object)
+        object=self._getOb(id)
+        object.manage_afterAdd(object, self)
         # Try to give user the local role "Owner".
         if hasattr(self, 'REQUEST') and hasattr(object, '__ac_local_roles__'):
             user=self.REQUEST['AUTHENTICATED_USER']
@@ -213,28 +215,30 @@ class ObjectManager(
                 object.manage_setLocalRoles(name, ['Owner'])
         return id
 
+    def manage_afterAdd(self, item, container):
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_afterAdd(item, container)
+            if s is None: object._p_deactivate()
+
+    def manage_afterClone(self, item):
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_afterClone(item)
+            if s is None: object._p_deactivate()
+
+    def manage_beforeDelete(self, item, container):
+        for object in self.objectValues():
+            try: s=object._p_changed
+            except: s=0
+            object.manage_beforeDelete(item, container)
+            if s is None: object._p_deactivate()
+
     def _delObject(self, id, dp=1):
-        if id=='acl_users':
-            # Yikes - acl_users is referred to by two names and
-            # must be treated as a special case! Only get rid of
-            # __allow_groups__ if it is an instance attribute, to
-            # avoid deleting the class-default __allow_groups__
-            # in the top-level application object which is needed
-            # to allow people to replace the top-level userfolder.
-            if hasattr(self, '__allow_groups__') and \
-               self.__dict__.has_key('__allow_groups__'):
-                delattr(self, '__allow_groups__')
-        # Deletion protocol - when an object is being deleted,
-        # attempt to call it's _on_delete_object method if
-        # if has one. The dp flag allows allows callers to
-        # avoid having the delete protocol triggered (for
-        # instance when an object is cut and pasted).
-        if dp:
-            ob=self._getOb(id)
-            if hasattr(ob, '_on_delete_object') and \
-               callable(ob._on_delete_object):
-                ob._on_delete_object()
-            del ob
+        object=self._getOb(id)
+        object.manage_beforeDelete(object, self)
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 

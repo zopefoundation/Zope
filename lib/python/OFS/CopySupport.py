@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -183,24 +183,25 @@ class CopyContainer(ExtensionClass.Base):
             try: ob=m.bind()
             except: raise CopyError, eNotFound
             self._verifyObjectPaste(ob, REQUEST)
-            try:    ob._notifyOfCopyTo(self, op=op)
-            except: raise CopyError, MessageDialog(
-                          title='Copy Error',
-                          message=sys.exc_value,
-                          action ='manage_main')
+            # try:    ob._notifyOfCopyTo(self, op=op)
+            # except: raise CopyError, MessageDialog(
+            #               title='Copy Error',
+            #               message=sys.exc_value,
+            #               action ='manage_main')
             oblist.append(ob)
 
         if op==0:
             # Copy operation
             for ob in oblist:
                 if not ob.cb_isCopyable():
-                    raise CopyError, eNotSupported % absattr(ob.id)
+                     raise CopyError, eNotSupported % absattr(ob.id)
                 ob=ob._getCopy(self)
+                ob.manage_afterClone(ob)
                 id=_get_id(self, absattr(ob.id))
                 ob._setId(id)
                 self._setObject(id, ob)
-                ob=ob.__of__(self)
-                ob._postCopy(self, op=0)
+                #ob=ob.__of__(self)
+                #ob._postCopy(self, op=0)
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
@@ -218,8 +219,8 @@ class CopyContainer(ExtensionClass.Base):
                 id=_get_id(self, id)
                 ob._setId(id)
                 self._setObject(id, ob)
-                ob=ob.__of__(self)            
-                ob._postCopy(self, op=1)
+                #ob=ob.__of__(self)            
+                #ob._postCopy(self, op=1)
 
             if REQUEST is not None:
                 REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
@@ -251,10 +252,10 @@ class CopyContainer(ExtensionClass.Base):
         self._delObject(id, dp=0)
         if hasattr(ob, 'aq_base'):
             ob=ob.aq_base
-        self._setObject(new_id, ob)
-        ob=ob.__of__(self)            
         ob._setId(new_id)
-        ob._postCopy(self, op=1)
+        self._setObject(new_id, ob)
+        #ob=ob.__of__(self)            
+        #ob._postCopy(self, op=1)
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, update_menu=1)
         return None
@@ -282,8 +283,8 @@ class CopyContainer(ExtensionClass.Base):
         ob=ob._getCopy(self)
         ob._setId(id)
         self._setObject(id, ob)
-        ob=ob.__of__(self)
-        ob._postCopy(self, op=0)
+        #ob=ob.__of__(self)
+        #ob._postCopy(self, op=0)
         return ob
 
     def cb_dataValid(self):

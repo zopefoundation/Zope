@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.58 1999/06/23 15:27:01 jim Exp $'''
-__version__='$Revision: 1.58 $'[11:-2]
+$Id: SimpleItem.py,v 1.59 1999/06/24 19:27:25 jim Exp $'''
+__version__='$Revision: 1.59 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -111,13 +111,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
 
-
-
-    # HACK HACK HACK -- TAKE THIS OUT LATER!!!!
-    def _on_delete_object(self):
-        if hasattr(self, 'onDeleteObject') and \
-           callable(self.onDeleteObject):
-            self.onDeleteObject()
+    def manage_afterAdd(self, item, container): pass
+    def manage_beforeDelete(self, item, container): pass
+    def manage_afterClone(self, item): pass
 
     # The name of this object and the name used to traverse to thie
     # object in a URL:

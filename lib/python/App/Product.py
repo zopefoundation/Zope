@@ -111,7 +111,7 @@ from OFS.Folder import Folder
 import regex, zlib, Globals, cPickle, marshal, rotor
 from string import rfind, atoi, find, strip, join
 from Factory import Factory
-import ZClasses
+import ZClasses, ZClasses.ZClass
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
@@ -141,13 +141,6 @@ class ProductFolder(Folder):
         self._setObject(id,i)
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
-
-    def _delObject(self,id):
-        try:
-            for factory in getattr(self, id)._factories():
-                factory._unregister()
-        except: pass
-        ProductFolder.inheritedAttribute('_delObject')(self, id)
 
     def _canCopy(self, op=0):
         return 0
@@ -206,38 +199,14 @@ class Product(Folder):
     def manage_addPrincipiaFactory(
         self, id, title, object_type, initial, REQUEST=None):
         ' '
-        i=Factory(id, title, object_type, initial, self)
+        i=Factory(id, title, object_type, initial)
         self._setObject(id,i)
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
 
-    def _delObject(self,id, dp=1):
-        o=getattr(self, id)
-        if o.meta_type==Factory.meta_type: o._unregister()
-        Product.inheritedAttribute('_delObject')(self, id, dp=1)
-        
     def __init__(self, id, title):
         self.id=id
         self.title=title
-
-    def _notifyOfCopyTo(self, container, op=0):
-        if container.__class__ is not ProductFolder:
-            raise TypeError, (
-                'Products can only be copied to <b>product folders</b>.')
-
-    def _postCopy(self, container, op=0):
-        for factory in self._factories():
-            factory._register()
-
-    def _factories(self):
-        r=[]
-        append=r.append
-        for o in self.__dict__.values():
-            if hasattr(o,'meta_type') and o.meta_type==Factory.meta_type:
-                append(o.__of__(self))
-
-        return r
-        
 
     def Destination(self):
         "Return the destination for factory output"
@@ -440,8 +409,12 @@ def initializeProduct(productp, name, home, app):
     if old is not None:
         app._manage_remove_product_meta_type(product)
         products._delObject(name)
+        for id, v in old.objectValues():
+            try: product._setObject(id, v)
+            except: pass
+
     products._setObject(name, product)
-    product.__of__(products)._postCopy(products)
+    #product.__of__(products)._postCopy(products)
     product.manage_options=Folder.manage_options
     product.icon='p_/InstalledProduct_icon'
     product.version=fver

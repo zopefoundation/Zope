@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -100,10 +100,11 @@ manage_addVersionForm=Globals.HTMLFile('versionAdd', globals())
 
 def manage_addVersion(self, id, title, REQUEST=None):
     """ """
-    
-    self._setObject(id, Version(id,title,self,REQUEST))
-    return self.manage_main(self,REQUEST)
 
+    self=self.this()
+    self._setObject(id, Version(id,title,REQUEST))
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 class Version(Persistent,Implicit,RoleManager,Item):
     """ """
@@ -121,12 +122,11 @@ class Version(Persistent,Implicit,RoleManager,Item):
         ('Save/discard Version changes', ('save','discard')),
         )
 
-    def __init__(self, id, title, parent, REQUEST):
+    cookie=''
+
+    def __init__(self, id, title, REQUEST):
         self.id=id
         self.title=title
-        try: parent=parent.Destination()
-        except: pass
-        self.cookie=self.__of__(parent).absolute_url(1)
 
     manage=manage_main=Globals.HTMLFile('version', globals())
     manage_editForm   =Globals.HTMLFile('versionEdit', globals())
@@ -230,11 +230,17 @@ class Version(Persistent,Implicit,RoleManager,Item):
             # ZODB 3
             return not db.versionEmpty(self.cookie)
     
-    def _notifyOfCopyTo(self, container, isMove=0):
-        if isMove and self.nonempty():
-            raise 'Copy Error', (
-                "You cannot copy a %s object with <b>unsaved</b> changes.\n"
-                "You must <b>save</b> the changes first."
-                % self.meta_type)
+    def manage_afterClone(self, item):
+        self.cookie=''
+
+    def manage_afterAdd(self, item, container):
+        if not self.cookie:
+            self.cookie=self.absolute_url(1)
+
+    def manage_beforeDelete(self, item, container):        
+        if self._nonempty():
+            raise 'Version Error', (
+                'Attempt to %sdelete a non-empty version.<p>'
+                ((self is not item) and 'indirectly ' or ''))
 
     

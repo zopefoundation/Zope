@@ -207,25 +207,18 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
-    def _notifyOfCopyTo(self, container, isMove=0):
-        if isMove and self.nonempty():
-            raise 'Copy Error', (
-                "You cannot copy a %s object with <b>unapproved</b> changes.\n"
-                "You must <b>approve</b> the changes first."
-                % self.meta_type)
+    def manage_afterClone(self, item):
+        self._version=''
 
-    def _postCopy(self, container, op=0):
+    def manage_afterAdd(self, item, container):
+        if not self._version:
+            self._version=self.absolute_url(1)
 
-        try: 
-            version=self.REQUEST['PATH_INFO']
-            l=rfind(version,'/')
-            if l >= 0: version=version[:l]
-            self._version="%s/%s" % (version, self.id)
-        finally:
-          if 0:
-            raise 'Copy Error', (
-                "This object can only be copied through the web.<p>")
-
+    def manage_beforeDelete(self, item, container):        
+        if self._nonempty():
+            raise 'Version Error', (
+                'Attempt to %sdelete a non-empty version.<p>'
+                ((self is not item) and 'indirectly ' or ''))
 
 Globals.default__class_init__(Draft)
 

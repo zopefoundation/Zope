@@ -84,10 +84,11 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.10 1999/06/16 14:15:27 brian Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Factory.py,v 1.11 1999/06/24 19:24:55 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
+import Product
 
 class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
     "Model factory meta-data"
@@ -101,12 +102,13 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         {'label':'Security', 'action':'manage_access'},
     )
     
-    def __init__(self, id, title, object_type, initial, product):
+    def __init__(self, id, title, object_type, initial, product=None):
         self.id=id
         self.title=title
         self.object_type=object_type
         self.initial=initial
-        self.__of__(product)._register()
+        if product is not None:
+            self.__of__(product)._register()
 
     def manage_edit(self, title, object_type, initial, REQUEST=None):
         "Modify factory properties."
@@ -117,13 +119,23 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         self._register()
         if REQUEST is not None: return self.manage_main(self, REQUEST)
 
-    def _notifyOfCopyTo(self, container, op=0):
-        if container.__class__ is not Product:
-            raise TypeError, (
-                'Factories can only be copied to <b>products</b>.')
+    def manage_afterAdd(self, item, container):
+        if hasattr(self, 'aq_parent'):
+            container=self.aq_parent
+        elif item is not self:
+            container=None
 
-    def _postCopy(self, container, op=0):
-        self._register()
+        if getattr(container, '__class__', None) is Product.Product:
+            self._register()
+
+    def manage_beforeDelete(self, item, container):
+        if hasattr(self, 'aq_parent'):
+            container=self.aq_parent
+        elif item is not self:
+            container=None
+
+        if getattr(container, '__class__', None) is Product.Product:
+            self._unregister()
 
     def _register(self):
         # Register with the product folder
@@ -136,7 +148,6 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         product=self.aq_parent
         product.aq_acquire('_manage_remove_product_meta_type')(
             product, self.id, self.object_type)
-
 
     manage_main=Globals.HTMLFile('editFactory',globals())
 

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -596,17 +596,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def user_names(self):
         return self.getUserNames()
 
-    # Copy/Paste support
+    def manage_beforeDelete(self, item, container):
+        if item is self:
+            try: del container.__allow_groups__
+            except: pass
 
-    def _notifyOfCopyTo(self, container, op=0):
-        if hasattr(container, 'aq_base'):
-            container=container.aq_base
-        if hasattr(container, 'acl_users'):
-            raise TypeError, (
-                'Target already contains a UserFolder.')
-
-    def _postCopy(self, container, op=0):
-        container.__allow_groups__=container.acl_users
+    def manage_afterAdd(self, item, container):
+        if item is self:
+            if hasattr(self, 'aq_base'): self=self.aq_base
+            container.__allow_groups__=self
 
     def _setId(self, id):
         if id != self.id:

@@ -221,9 +221,10 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
         return ''
 
-    def _on_delete_object(self):
-        for d in self._properties:
-            self.delClassAttr(d['id'])
+    def manage_beforeDelete(self, item, container):
+        if self is item:
+            for d in self._properties:
+                self.delClassAttr(d['id'])
 
     def manage_createEditor(self, id, title='', REQUEST=None):
         """Create an edit interface for a property sheet
@@ -305,7 +306,7 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                     ):
     "Waaa this is too hard"
 
-    _Manage_properties_Permission=''
+    _Manage_properties_Permission='Manage properties'
     _Access_contents_information_Permission='View'
 
     __ac_permissions__=(
