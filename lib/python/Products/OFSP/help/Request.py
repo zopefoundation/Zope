@@ -95,7 +95,7 @@ class Request:
 
     The request object is a mapping object that represents a
     collection of variable to value mappings.  In addition, variables
-    are divided into four categories:
+    are divided into five categories:
 
       - Environment variables
 
@@ -114,6 +114,18 @@ class Request:
       - Cookies
 
           These are the cookie data, if present.
+
+      - Lazy Data
+
+          These are callables which are deferred until explicitly
+          referenced, at which point they are resolved (called) and
+          the result stored as "other" data, ie regular request data.
+
+          Thus, they are "lazy" data items.  An example is SESSION objects.
+
+          Lazy data in the request may only be set by the Python
+          method set_lazy(name,callable) on the REQUEST object.  This
+          method is not callable from DTML or through the web.
 
       - Other
 
