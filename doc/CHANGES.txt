@@ -51,6 +51,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector: #1651: removed compiler warning 
+
       - Collector #1661: make 'python-check-interval' setting in zope.conf
         actually work as documented.  This setting allows for important
         tuning opportunities for production Zope servers.

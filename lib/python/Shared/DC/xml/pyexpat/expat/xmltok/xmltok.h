@@ -175,7 +175,7 @@ struct encoding {
 		       const unsigned short *toLim);
   int minBytesPerChar;
   char isUtf8;
-  char isUtf16;
+  int isUtf16;
 };
 
 /*

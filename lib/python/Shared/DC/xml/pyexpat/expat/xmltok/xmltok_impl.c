@@ -593,7 +593,7 @@ int PREFIX(scanAtts)(const ENCODING *enc, const char *ptr, const char *end,
     /* fall through */
     case BT_EQUALS:
       {
-	int open;
+	int open = 0;
 #ifdef XML_NS
 	hadColon = 0;
 #endif
@@ -1391,7 +1391,7 @@ int PREFIX(getAtts)(const ENCODING *enc, const char *ptr,
 {
   enum { other, inName, inValue } state = inName;
   int nAtts = 0;
-  int open;
+  int open = 0;
 
   for (ptr += MINBPC(enc);; ptr += MINBPC(enc)) {
     switch (BYTE_TYPE(enc, ptr)) {

@@ -70,8 +70,8 @@ my_StartElementHandler(void *userdata, const char *name, const char **atts) {
 	PyObject *rv;
 	PyObject *attrs_obj;
 	int attrs_len;
-	const char **attrs_p, **attrs_k;
-
+	const char **attrs_p;
+	const char **attrs_k = atts;
 
 	if (self->StartElementHandler != Py_None) {
 	        if (self->attrdict) {
@@ -715,7 +715,7 @@ static char pyexpat_module_documentation[] =
 void
 initdcpyexpat(void) {
 	PyObject *m, *d;
-	char *rev="$Revision: 1.4 $";
+	static const char *rev="$Revision: 1.4 $";
 
 	Xmlparsetype.ob_type = &PyType_Type;
 
@@ -726,7 +726,7 @@ initdcpyexpat(void) {
 	d = PyModule_GetDict(m);
 	ErrorObject = PyString_FromString("pyexpat.error");
 	PyDict_SetItemString(d, "error", ErrorObject);
-
+	PyDict_SetItemString(d, "API_Revision", PyString_FromString(rev));
 #define MYCONST(name) \
 	PyDict_SetItemString(d, #name, PyInt_FromLong(name))
 		
