@@ -1,0 +1,26 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+<dtml-call "REQUEST.RESPONSE.setHeader('Content-Type', 'text/html; charset=UTF-8')" >
+
+
+<table border="1" align="center" width="100%" class="form-help">
+  <dtml-in items>
+    <tr>
+      <td>&dtml-sequence-key; </td>
+      <td>   
+        <ul>
+          <dtml-let v="_['sequence-item']">
+            <dtml-if "isinstance(v, int)">
+              <li><a href="<dtml-var "getpath(v)">"<dtml-var "getpath(v)"></a></li>    
+            <dtml-else>
+              <dtml-in "v.keys()">
+                <li> <a href="<dtml-var "getpath(_['sequence-item'])">"><dtml-var "getpath(_['sequence-item'])"></a></li>
+              </dtml-in>
+            </dtml-if>
+          </dtml-let>
+        </ul>
+      </td>
+    </tr>
+  </dtml-in>
+
+<dtml-var manage_page_footer>
