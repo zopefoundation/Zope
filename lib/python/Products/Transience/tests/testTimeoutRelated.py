@@ -77,7 +77,20 @@ class TestLastAccessed(TestBase):
     def testLastAccessed(self):
         sdo = self.app.sm.new_or_existing('TempObject')
         la1 = sdo.getLastAccessed()
-        fauxtime.sleep(WRITEGRANULARITY + 1)
+        # time.time() on Windows has coarse granularity (updates at
+        # 18.2 Hz -- about once each 0.055 seconds).  We have to sleep
+        # long enough so that "the next" call to time.time() actually
+        # delivers a larger value.  _last_accessed isn't actually updated
+        # unless current time.time() is greater than the last value +
+        # WRITEGRANULARITY.  The time() and sleep() are fudged by a
+        # factor of 60, though.  The code here used to do
+        #     fauxtime.sleep(WRITEGRANULARITY + 1)
+        # and that wasn't enough on Windows.  The "+1" only added 1/60th
+        # of a second sleep time in real time, much less than the Windows
+        # time.time() resolution.  Rounding up 0.055 to 1 digit and
+        # multiplying by 60 ensures that we'll actually sleep long enough
+        # to get to the next Windows time.time() tick.
+        fauxtime.sleep(WRITEGRANULARITY + 0.06 * 60)
         sdo = self.app.sm.get('TempObject')
         assert sdo.getLastAccessed() > la1, (sdo.getLastAccessed(), la1)
 
