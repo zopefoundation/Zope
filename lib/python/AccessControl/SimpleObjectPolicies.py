@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.10 2002/01/11 17:14:27 evan Exp $''' 
-__version__='$Revision: 1.10 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.11 2002/03/12 19:37:14 evan Exp $''' 
+__version__='$Revision: 1.11 $'[11:-2] 
 
 _noroles=[] # this is imported from various places
 
@@ -57,5 +57,5 @@ def allow_type(Type, allowed=1):
         raise ValueError, "%s handles its own security" % `Type`
     if not (isinstance(allowed, IntType) or isinstance(allowed, DictType)):
         raise ValueError, "The 'allowed' argument must be an int or dict."
-    ContainerAssertions.update(Type, allowed)
+    ContainerAssertions[Type] = allowed
 
