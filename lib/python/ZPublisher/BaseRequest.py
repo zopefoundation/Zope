@@ -12,7 +12,7 @@
 ##############################################################################
 """ Basic ZPublisher request management.
 
-$Id: BaseRequest.py,v 1.55 2004/03/03 11:07:01 ctheune Exp $
+$Id: BaseRequest.py,v 1.56 2004/03/08 17:37:05 evan Exp $
 """
 
 from urllib import quote
@@ -455,20 +455,30 @@ class BaseRequest:
         # Remove http request method from the URL.
         request['URL']=URL
 
-        # Run post traversal hooks here
-        result = None
+        # Run post traversal hooks
         if post_traverse:
             result = exec_callables(post_traverse)
-
-        if result is not None:
-            object = result
+            if result is not None:
+                object = result
 
         return object
 
     def post_traverse(self, f, args=()):
-        """Set a callable object and argument tuple to be combined if traversal succeeds."""
-        if hasattr(self, "_post_traverse"):
-            self._post_traverse.append((f, tuple(args)))
+        """Add a callable object and argument tuple to be post-traversed.
+        
+        If traversal and authentication succeed, each post-traversal
+        pair is processed in the order in which they were added.
+        Each argument tuple is passed to its callable.  If a callable
+        returns a value other than None, no more pairs are processed,
+        and the return value replaces the traversal result.
+        """
+        try:
+            pairs = self._post_traverse
+        except AttributeError:
+            raise RuntimeError, ('post_traverse() may only be called '
+                                 'during publishing traversal.')
+        else:
+            pairs.append((f, tuple(args)))
 
     retry_count=0
     def supports_retry(self): return 0
