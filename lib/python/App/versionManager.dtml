@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>Manage Versions</TITLE>
+</HEAD> 
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#var manage_tabs-->
+<P>
+
+<!--#if version_info-->
+
+  <FORM ACTION="<!--#var URL1-->" METHOD="POST">
+  Select one or more versions below and then click on the &quot;Save&quot;
+  button to save the versions or click on the &quot;Discard&quot; button to
+  discard changes made in the versions.
+
+  <table>
+    <!--#in version_info mapping-->
+      <tr>
+      <td valign=top><input type=checkbox name="versions:list"
+	  value="<!--#var id-->"></td>
+      <td valign=top>
+         <a href="<!--#var SCRIPT_NAME-->/<!--#var id-->"><!--#var id--></a>
+      </td>
+    </tr>
+    <!--#/in-->
+    <tr><td colspan=2 align=center>
+    </td></tr>
+    <tr><td></td></tr>
+    <tr><td colspan=2 align=center>
+       <INPUT TYPE="SUBMIT" name="manage_saveVersions:method" VALUE=" Save ">
+       <INPUT TYPE="SUBMIT" name="manage_discardVersions:method" 
+              VALUE=" Discard ">
+    </td></tr>
+  </table>
+  </FORM>
+
+<!--#else-->
+
+  There are no non-empty versions.
+
+<!--#/if-->
+
+</BODY>
+</HTML>
