@@ -107,10 +107,10 @@ class DI_Tests(unittest.TestCase):
             (5, Dummy('e', DateTime('2062-05-08 15:16:17'))), # 1018883325
             (6, Dummy('f', 1072742620.0)),                    # 1073545923
             (7, Dummy('f', 1072742900)),                      # 1073545928
-            (8, Dummy('g', date(2034,2,5))),                   # 1073599200
-            (9, Dummy('h', datetime(2034,2,5,15,17,5))),       # (1073600117UTC)
+            (8, Dummy('g', date(2034,2,5))),                  # 1073599200
+            (9, Dummy('h', datetime(2034,2,5,15,20,5))),      # (varies)
             (10, Dummy('i', datetime(2034,2,5,10,17,5, 
-                                     tzinfo=Eastern))),        # 1073600117
+                                     tzinfo=Eastern))),       # 1073600117
         )
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}
