@@ -19,7 +19,7 @@ from OFS.History import Historical
 from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import ObjectManager, IFAwareObjectManager
 
-import string, os, sys, time
+import os, sys, time
 
 from Acquisition import Implicit
 from Persistence import Persistent

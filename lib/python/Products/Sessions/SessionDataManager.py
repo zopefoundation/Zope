@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-import re, time, string, sys
+import re, time, sys
 import Globals
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, Explicit, aq_base
@@ -150,7 +150,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                     'Container path contains characters invalid in a Zope '
                     'object path'
                     )
-            self.obpath = string.split(path, '/')
+            self.obpath = path.split('/')
         elif type(path) in (type([]), type(())):
             self.obpath = list(path) # sequence
         else:
@@ -160,7 +160,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def getContainerPath(self):
         """ """
         if self.obpath is not None:
-            return string.join(self.obpath, '/')
+            return '/'.join(self.obpath)
         return '' # blank string represents undefined state
     
     def _hasSessionDataObject(self, key):
@@ -194,7 +194,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # be construed as a security hole, albeit a minor one.
             # unrestrictedTraverse is also much faster.
             if DEBUG and not hasattr(self, '_v_wrote_dc_type'):
-                args = string.join(self.obpath, '/')
+                args = '/'.join(self.obpath)
                 LOG('Session Tracking', BLATHER,
                     'External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
@@ -202,7 +202,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         except:
             raise SessionDataManagerErr, (
                 "External session data container '%s' not found." %
-                string.join(self.obpath,'/')
+                '/'.join(self.obpath)
                 )
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getRequestName')

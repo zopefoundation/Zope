@@ -14,7 +14,6 @@ import Globals, AccessControl.User
 from Globals import Persistent
 from Acquisition import Implicit
 from OFS import SimpleItem
-from string import rfind
 
 manage_addPrincipiaDraftForm=Globals.HTMLFile('dtml/draftAdd',globals())
 def manage_addPrincipiaDraft(self, id, baseid, PATH_INFO, REQUEST=None):
@@ -39,7 +38,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         self.id=id
         self._refid=baseid
         version=PATH_INFO
-        l=rfind(version,'/')
+        l=version.rfind(/')
         if l >= 0: version=version[:l]
         self._version="%s/%s" % (version, id)
         self.users__draft__=uf=AccessControl.User.UserFolder()

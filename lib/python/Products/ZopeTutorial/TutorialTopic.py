@@ -16,7 +16,7 @@ from Globals import HTML, DTMLFile, MessageDialog
 import DateTime
 import DocumentTemplate
 import StructuredText
-import string, re
+import  re
 
 
 pre_pat=re.compile(r'<PRE>(.+?)</PRE>', re.IGNORECASE|re.DOTALL)
@@ -45,7 +45,7 @@ class TutorialTopic(TextTopic):
         if REQUEST.has_key('tutorialExamplesURL'):
             url=REQUEST['tutorialExamplesURL']
             base=REQUEST['BASE1']
-            if string.index(url, base) == 0:
+            if url.index(base) == 0:
                 url=url[len(base):]
                 try:
                     self.getPhysicalRoot().unrestrictedTraverse(url)
@@ -129,7 +129,7 @@ class GlossaryTopic(TutorialTopic):
         """
         Returns the URL to a API documentation for a given class.
         """
-        names=string.split(klass, '.')
+        names=klass.split('.')
         url="%s/Control_Panel/Products/%s/Help/%s.py#%s" % (REQUEST['SCRIPT_NAME'],
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
@@ -207,28 +207,28 @@ def clean_pre(match):
     Reformat a pre tag to get rid of extra indentation
     and extra blank lines.
     """
-    lines=string.split(match.group(1), '\n')
+    lines=match.group(1).split('\n')
     nlines=[]
 
     min_indent=None
     for line in lines:
-        indent=len(line) - len(string.lstrip(line))
+        indent=len(line) - len(line.lstrip())
         if min_indent is None or indent < min_indent:
-            if string.strip(line):
+            if line.strip():
                 min_indent=indent   
     for line in lines:
         nlines.append(line[min_indent:])
     
     while 1:
-        if not string.strip(nlines[0]):
+        if not nlines[0].strip():
             nlines.pop(0)
         else:
             break
     
     while 1:
-        if not string.strip(nlines[-1]):
+        if not nlines[-1].strip():
             nlines.pop()
         else:
             break
     
-    return "<PRE>%s</PRE>" % string.join(nlines, '\n')
+    return "<PRE>%s</PRE>" % '\n'.join(nlines)

@@ -10,14 +10,14 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.8 2001/11/28 15:50:59 matt Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.9 2002/03/11 15:54:38 andreasjung Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
 from MimeWriter import MimeWriter
 from cStringIO import StringIO
-import string, mimetools
+import mimetools
 
 MIMEError = "MIME Tag Error"
 

@@ -16,10 +16,9 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
-from string import split, join, find, lower
 import AccessControl.Role, sys, os, stat, traceback
 from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode

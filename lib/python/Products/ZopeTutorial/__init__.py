@@ -13,7 +13,6 @@
 import TutorialTopic
 import App.Common
 import os.path
-import string
 import os
 import stat
 from DateTime import DateTime
@@ -62,14 +61,14 @@ def initialize(context):
     
     while 1:
         line = f.readline()
-        if (string.strip(line) and string.find(line, ' ') != 0) or line=='':
+        if (line.strip() and line.find(' ') != 0) or line=='':
             # new topic
             if lines:
                 id = id + 1
                 topic_id = 'topic_%02d' % id
-                text=string.join(lines[1:], '')
+                text=''.join(lines[1:])
                 text=term_pat.sub(glossaryTerm, text)
-                topic=TutorialTopic.TutorialTopic(topic_id, string.strip(lines[0]), spacestrip(text))
+                topic=TutorialTopic.TutorialTopic(topic_id, lines[0].strip(), spacestrip(text))
                 context.registerHelpTopic(topic_id, topic)            
             lines=[line]
         else:
@@ -89,12 +88,12 @@ def spacestrip(txt):
     """
     
     l = []
-    for x in string.split(txt,"\n"):
+    for x in txt.split("\n"):
         if len(x)>2 and x[:2]=='  ':
             l.append(x[2:])
         else: l.append(x)
 
-    return string.join(l,'\n')
+    return '\n'.join(l)
 
 
 # Glossary functions

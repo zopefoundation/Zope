@@ -10,14 +10,13 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.15 2002/01/15 14:58:37 jens Exp $'
-__version__='$Revision: 1.15 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.16 2002/03/11 15:54:38 andreasjung Exp $'
+__version__='$Revision: 1.16 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import parse_params,render_blocks
 from DocumentTemplate.DT_String import String
 from socket import gethostname
-import string
 
 class SendMailTag:
     '''the send mail tag, used like thus:
@@ -93,7 +92,7 @@ class SendMailTag:
         self.mailfrom=args['mailfrom']
         self.subject=None or args['subject']
         if args['port'] and type(args['port']) is type('s'):
-            self.port=args['port']=string.atoi(args['port'])
+            self.port=args['port']=int(args['port'])
         elif args['port']=='':
             self.port=args['port']=25
         else:

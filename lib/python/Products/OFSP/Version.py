@@ -12,7 +12,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -20,7 +20,6 @@ from Globals import MessageDialog
 from Globals import Persistent
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
-from string import rfind, join
 from Globals import HTML
 from App.Dialogs import MessageDialog
 from OFS.ObjectManager import BeforeDeleteException
@@ -186,7 +185,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
     def manage_afterAdd(self, item, container):
         if not self.cookie:
             # Physical path
-            self.cookie=join(self.getPhysicalPath(),'/')
+            self.cookie='/'.join(self.getPhysicalPath())
 
     def manage_beforeDelete(self, item, container):        
         if self.nonempty():

@@ -12,14 +12,14 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.69 2002/01/15 14:58:37 jens Exp $"""
-__version__ = "$Revision: 1.69 $"[11:-2]
+$Id: MailHost.py,v 1.70 2002/03/11 15:54:38 andreasjung Exp $"""
+__version__ = "$Revision: 1.70 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
 from AccessControl.Role import RoleManager
 from operator import truth
-import Acquisition, sys, string, types, mimetools
+import Acquisition, sys, types, mimetools
 import OFS.SimpleItem, re, quopri, rfc822
 from cStringIO import StringIO
 from AccessControl import ClassSecurityInfo
@@ -84,7 +84,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         title=str(title)
         smtp_host=str(smtp_host)
         if type(smtp_port) is not type(1):
-            smtp_port=string.atoi(smtp_port)
+            smtp_port=int(smtp_port)
 
         self.title=title
         self.smtp_host=smtp_host
@@ -142,7 +142,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
         if mto:
             if type(mto) is type('s'):
-                mto=map(string.strip, string.split(mto,','))
+                mto=[ x.strip() for x in mto.split(',')]
             headers['to'] = filter(None, mto)
         if mfrom:
             headers['from'] = mfrom
@@ -169,7 +169,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                                              messageText)
         if mto:
             if type(mto) is type('s'):
-                mto=map(string.strip, string.split(mto,','))
+                mto=[ x.strip() for x in mto.split(',')]
             headers['to'] = filter(truth, mto)
         if mfrom:
             headers['from'] = mfrom
@@ -215,7 +215,7 @@ def _encode(body, encode=None):
     if mo.getencoding() != '7bit': 
         raise MailHostError, 'Message already encoded'
     newmfile=StringIO()
-    newmfile.write(string.joinfields(mo.headers, ''))
+    newmfile.write(''.join(mo.headers))
     newmfile.write('Content-Transfer-Encoding: %s\n' % encode)
     if not mo.has_key('Mime-Version'):
         newmfile.write('Mime-Version: 1.0\n')
@@ -226,7 +226,7 @@ def _encode(body, encode=None):
 
 def extractheaders(message):
     # return headers of message
-    mfile=StringIO(string.strip(message))
+    mfile=StringIO(message.strip())
     mo=rfc822.Message(mfile)
 
     hd={}
