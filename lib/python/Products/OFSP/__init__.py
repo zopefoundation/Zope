@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.21 1999/03/10 00:15:26 klm Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: __init__.py,v 1.22 1999/03/10 16:32:38 brian Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 import Version, Draft, ZClasses
 import OFS.Image, OFS.Folder, AccessControl.User
@@ -120,9 +120,6 @@ meta_types=(
         )
     )
 
-def PUT(self):
-    # This is here mainly as a hac^H^Hook for holding PUT permissions
-    raise TypeError, 'Directory PUT is not supported'
 
 methods={
     # for bw compatibility
@@ -139,8 +136,6 @@ methods={
     'manage_addFileForm': OFS.Image.manage_addFileForm,
     'manage_addVersionForm': Version.manage_addVersionForm,
     'manage_addVersion': Version.manage_addVersion,
-    'PUT': PUT,
-    'PUT__roles__': ('Manager',),
     'manage_addUserFolder': AccessControl.User.manage_addUserFolder,
     'manage_addPrincipiaDraftForm': Draft.manage_addPrincipiaDraftForm,
     'manage_addPrincipiaDraft': Draft.manage_addPrincipiaDraft,
@@ -160,10 +155,9 @@ __ac_permissions__=(
          ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
           'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
           'manage_addFileForm', 'manage_addFile',
-          'manage_addImageForm', 'manage_addImage',
-          'PUT')
+          'manage_addImageForm', 'manage_addImage')
          ),
-        ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
+        ('Add Folders',('manage_addFolderForm', 'manage_addFolder', 'MKCOL')),
         ('Add User Folders',('manage_addUserFolder',)),
         ('Change DTML Documents', ()),
         ('Change DTML Methods', ()),
