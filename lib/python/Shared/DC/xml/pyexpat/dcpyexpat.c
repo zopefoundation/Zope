@@ -714,13 +714,13 @@ static char pyexpat_module_documentation[] =
 ;
 
 void
-initpyexpat() {
+initdcpyexpat() {
 	PyObject *m, *d;
-	char *rev="$Revision: 1.8 $";
+	char *rev="$Revision: 1.2 $";
 
 	Xmlparsetype.ob_type = &PyType_Type;
 
-	m = Py_InitModule4("pyexpat", pyexpat_methods,
+	m = Py_InitModule4("dcpyexpat", pyexpat_methods,
 		pyexpat_module_documentation,
 		(PyObject*)NULL,PYTHON_API_VERSION);
 
