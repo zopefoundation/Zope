@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.21 1997/11/07 19:55:17 jim Exp $'''
+$Id: Response.py,v 1.22 1997/11/18 19:45:56 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.21 1997/11/07 19:55:17 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -147,6 +147,7 @@ end_of_header_re=regex.compile('</head>',regex.casefold)
 absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
 
 bogus_str=regex.compile(" [a-fA-F0-9]+>$")
+accumulate_header={'set-cookie': 1}.has_key
 
 class Response:
     """\
@@ -168,6 +169,8 @@ class Response:
     If stream oriented output is used, then the response object
     passed into the object must be used.
     """ #'
+
+    accumulated_headers=''
     
 
     def __init__(self,body='',status=200,headers=None,
@@ -210,7 +213,12 @@ class Response:
 	'''\
 	Sets an HTTP return header "name" with value "value", clearing
 	the previous value set for the header, if one exists. '''
-	self.headers[lower(name)]=value
+	n=lower(name)
+	if accumulate_header(n):
+	    self.accumulated_headers=(
+		"%s%s: %s\n" % (self.accumulated_headers, name, value))
+	else:
+	    self.headers[n]=value
 
     __setitem__=setHeader
 
@@ -548,7 +556,7 @@ class Response:
 	    headers.keys())
 	if self.cookies:
 	    headersl=headersl+self._cookie_list()
-	headersl[len(headersl):]=['',body]
+	headersl[len(headersl):]=[self.accumulated_headers,body]
 
 	return join(headersl,'\n')
 
@@ -616,6 +624,11 @@ if __name__ == "__main__": main()
 ############################################################################
 #
 # $Log: Response.py,v $
+# Revision 1.22  1997/11/18 19:45:56  jim
+# Added support for (uh ahem) accumulated headers, like set-cookie, so
+# that multiple calls to setHeader to not replace earlier header
+# settings for accumulated headers.
+#
 # Revision 1.21  1997/11/07 19:55:17  jim
 # Added check for responses that look like bogus default object strings:
 # <some damn instance as 123ab34c>
