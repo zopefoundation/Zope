@@ -1,3 +1,8 @@
+2001-03-30  Evan Simpson <evan@digicool.com>
+
+        * Version 1.0.0
+        * Minor bugs fixed
+
 2001-03-27  Evan Simpson <evan@digicool.com>
 
 	* Version 1.0.0b1
