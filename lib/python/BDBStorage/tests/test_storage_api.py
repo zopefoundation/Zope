@@ -13,6 +13,7 @@ from ZODB.tests.TransactionalUndoVersionStorage import \
 from ZODB.tests.PackableStorage import PackableStorage
 from ZODB.tests.HistoryStorage import HistoryStorage
 from ZODB.tests.IteratorStorage import IteratorStorage
+from ZODB.tests import ConflictResolution
 
 
 
@@ -33,7 +34,9 @@ class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
 
 class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage, VersionStorage,
                TransactionalUndoStorage, TransactionalUndoVersionStorage,
-               PackableStorage, HistoryStorage, IteratorStorage):
+               PackableStorage, HistoryStorage, IteratorStorage,
+               ConflictResolution.ConflictResolvingStorage,
+               ConflictResolution.ConflictResolvingTransUndoStorage):
     pass
 
 
