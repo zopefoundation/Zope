@@ -302,7 +302,7 @@ class TALGenerator:
                 raise TALError("bad TAL attribute: " + `key`)
         for key in metaldict.keys():
             if key not in KNOWN_METAL_ATTRIBUTES:
-                raise TALError("bad METAL attribute: " + `key`)
+                raise METALError("bad METAL attribute: " + `key`)
         todo = {}
         defineMacro = metaldict.get("define-macro")
         useMacro = metaldict.get("use-macro")
