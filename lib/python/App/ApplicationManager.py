@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -11,6 +11,8 @@ from CacheManager import CacheManager
 
 class ApplicationManager(Acquirer,Management,CacheManager):
     """Application management component."""
+
+    __roles__=['manage',]
 
     manage_main    =HTMLFile('App/appMain')
     manage_packForm=HTMLFile('App/pack')
@@ -42,8 +44,6 @@ class ApplicationManager(Acquirer,Management,CacheManager):
         m=int((s-(h*3600))/60)
         d=d and ('%s day%s'  % (d,(d!=1 and 's' or ''))) or ''
         return '%s %02d:%02d' % (d,h,m)
-
-    def db(self):      return Globals.Bobobase
 
     def db_name(self): return Globals.BobobaseName
 
