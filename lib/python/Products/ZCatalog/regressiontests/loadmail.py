@@ -31,7 +31,7 @@ Commands:
 
       Build a base database by:
 
-        - Deleting ../../Data.fs
+        - Deleting ../../var/Data.fs
 
         - Starting Zope
 
