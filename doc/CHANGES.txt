@@ -29,6 +29,7 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #391: Cut and paste now requires delete permissions.
 
      - Collector #331: Referenses to URL in manage_tabs was changed
        to REQUEST.URL to prevent accidental overriding.

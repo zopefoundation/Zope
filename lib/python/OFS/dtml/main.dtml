@@ -224,17 +224,19 @@ function toggleSelect() {
   <dtml-unless dontAllowCopyAndPaste>
   <input class="form-element" type="submit" name="manage_renameForm:method" 
    value="Rename" />
-  <input class="form-element" type="submit" name="manage_cutObjects:method" 
-   value="Cut" /> 
-  <input class="form-element" type="submit" name="manage_copyObjects:method" 
+  <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
+  <input class="form-element" type="submit" name="manage_cutObjects:method"
+   value="Cut" />
+  </dtml-if>
+  <input class="form-element" type="submit" name="manage_copyObjects:method"
    value="Copy" />
   <dtml-if cb_dataValid>
-  <input class="form-element" type="submit" name="manage_pasteObjects:method" 
+  <input class="form-element" type="submit" name="manage_pasteObjects:method"
    value="Paste" />
   </dtml-if>
   </dtml-unless>
   <dtml-if "_.SecurityCheckPermission('Delete objects',this())">
-  <input class="form-element" type="submit" name="manage_delObjects:method" 
+  <input class="form-element" type="submit" name="manage_delObjects:method"
    value="Delete" />
   </dtml-if>
   <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
