@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -118,6 +118,7 @@ class BaseRequest:
     The request object is a mapping object that represents a
     collection of variable to value mappings.
     """
+
 
     # While the following assignment is not strictly necessary, it
     # prevents alot of unnecessary searches because, without it,
@@ -262,7 +263,8 @@ class BaseRequest:
         if method=='GET' or method=='POST':
             method='index_html'
         else: baseflag=1
-
+        URL=request['URL']
+        
         parents=request['PARENTS']
         object=parents[-1]
         del parents[:]
@@ -272,7 +274,9 @@ class BaseRequest:
         # if the top object has a __bobo_traverse__ method, then use it
         # to possibly traverse to an alternate top-level object.
         if hasattr(object,'__bobo_traverse__'):
-            try: object=object.__bobo_traverse__(request)
+            try:
+                object=object.__bobo_traverse__(request)
+                roles =getattr(object, '__roles__', UNSPECIFIED_ROLES)
             except: pass            
 
         if not path and not method:
