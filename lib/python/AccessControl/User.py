@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -206,7 +206,7 @@ class UserFolder(Implicit, Persistent, Item):
 
 class UserFolderHandler:
     """ """
-    meta_types=({'name':'User Folder', 'action':'manage_addUserFolder'},)
+    meta_types_=({'name':'User Folder', 'action':'manage_addUserFolder'},)
 
     def manage_addUserFolder(self,dtself,REQUEST):
         """ """
@@ -245,6 +245,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.16  1997/11/07 17:33:57  jim
+# Renamed meta_types to meta_types_ for new OFS-as-product change.
+#
 # Revision 1.15  1997/11/07 17:09:31  brian
 # Fixed validRoles
 #
