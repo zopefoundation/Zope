@@ -120,16 +120,11 @@ from medusa.http_server import http_server, http_channel
 from medusa import counter, producers, asyncore, max_sockets
 from medusa.default_handler import split_path, unquote, get_header
 
+from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
+
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
 CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
 
-ZSERVER_VERSION='1.1b1'
-try:
-    import App.version_txt
-    ZOPE_VERSION=App.version_txt.version_txt()
-except:
-    ZOPE_VERSION='experimental'
-    
 # maps request some headers to environment variables.
 # (those that don't start with 'HTTP_')
 header2env={'content-length'    : 'CONTENT_LENGTH',
@@ -337,12 +332,10 @@ class zhttp_server(http_server):
     "http server"
     
     SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
-    CONNECTION_LIMIT=max_sockets.max_select_sockets()
     
     channel_class = zhttp_channel
 
-    def handle_accept(self):
-        if len(asyncore.socket_map.keys()) >= self.CONNECTION_LIMIT:
-	    return
-        http_server.handle_accept(self)
+    def readable(self):
+        return self.accepting and \
+                len(asyncore.socket_map) < CONNECTION_LIMIT
 

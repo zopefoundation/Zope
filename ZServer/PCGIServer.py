@@ -104,6 +104,8 @@ from medusa import asynchat, asyncore, logger
 from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
 
+from ZServer import CONNECTION_LIMIT
+
 from PubCore import handle
 from PubCore.ZEvent import Wakeup
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -336,7 +338,10 @@ class PCGIServer(asyncore.dispatcher):
             sys.stderr.write('warning: server accept() threw an exception\n')
             return
         self.channel_class(self, conn, addr)
-    
+   
+    def readable(self):
+        return len(asyncore.socket_map) < CONNECTION_LIMIT
+ 
     def writable (self):
         return 0
     

@@ -142,6 +142,8 @@ from medusa import asyncore, asynchat, filesys
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
 
+from ZServer import CONNECTION_LIMIT
+
 from cStringIO import StringIO
 import string
 import os
@@ -617,4 +619,6 @@ class FTPServer(ftp_server):
         print 'Incoming connection from %s:%d' % (addr[0], addr[1])
         self.ftp_channel_class (self, conn, addr, self.module)  
 
+    def readable(self):
+        return len(asyncore.socket_map) < CONNECTION_LIMIT
 
