@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.19 1997/10/29 18:46:55 jim Exp $'''
+$Id: Response.py,v 1.20 1997/11/07 14:59:18 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.19 1997/10/29 18:46:55 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.20  1997/11/07 14:59:18  jim
+# Fixed bug in printing tracebacks.
+#
 # Revision 1.19  1997/10/29 18:46:55  jim
 # Fixed leak in exception handler.
 #
@@ -136,7 +139,7 @@ $Id: Response.py,v 1.19 1997/10/29 18:46:55 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -490,6 +493,7 @@ class Response:
 
     def exception(self, fatal=0):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
+	stb=tb
 
 	# Abort running transaction, if any:
 	try: get_transaction().abort()
@@ -513,6 +517,8 @@ class Response:
 	    # Dont try so hard that we cause other problems ;)
 	    pass
 
+	tb=stb
+	stb=None
 	self.setStatus(t)
 	if self.status >= 300 and self.status < 400:
 	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
