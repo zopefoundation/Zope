@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.115 1998/12/29 18:10:12 jim Exp $"""
-__version__='$Revision: 1.115 $'[11:-2]
+$Id: Publish.py,v 1.116 1999/01/05 16:17:19 brian Exp $"""
+__version__='$Revision: 1.116 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -148,11 +148,11 @@ class ModulePublisher:
         form={}
         form_has=form.has_key
         other={}
+        meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
             form['BODY']=other['BODY']=fs.value
         else:
-            meth=None
             fslist=fs.list
             tuple_items={}
 
