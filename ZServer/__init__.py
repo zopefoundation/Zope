@@ -84,10 +84,12 @@
 ##############################################################################
 
 import sys
-from medusa import max_sockets, asyncore
+from medusa import max_sockets
 
-# We need to make sure *our* asyncore is *the* asyncore
-sys.modules['asyncore']=asyncore
+# We want to use updated asynchat and asyncore if using Python1
+if sys.version[:1] < '2':
+    import async1x
+    del async1x
 
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
@@ -115,7 +117,7 @@ try:
         else:
             LOG('ZServer', severity[type], message)     
 
-    from medusa import asyncore
+    import asyncore
     asyncore.dispatcher.log_info=log_info
 except:
     pass
@@ -135,7 +137,8 @@ except (ImportError, AttributeError):
     def requestCloseOnExec(sock):
         pass
 
-from medusa import resolver, logger, asyncore
+import asyncore
+from medusa import resolver, logger
 from HTTPServer import zhttp_server, zhttp_handler
 from PCGIServer import PCGIServer
 from FCGIServer import FCGIServer

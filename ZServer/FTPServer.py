@@ -138,7 +138,8 @@ FTP Authorization
 
 from PubCore import handle
 from medusa.ftp_server import ftp_channel, ftp_server, recv_channel
-from medusa import asyncore, asynchat, filesys
+import asyncore, asynchat
+from medusa import filesys
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
 

@@ -99,7 +99,8 @@ __version__ = "1.0"
 
 #----------------------------------------------------------------------
 
-from medusa import asynchat, asyncore, logger
+import asynchat, asyncore
+from medusa import logger
 from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
 

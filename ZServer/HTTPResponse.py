@@ -96,7 +96,8 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
-from medusa import http_server, asyncore
+from medusa import http_server
+import asyncore
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer, \
     file_part_producer, file_close_producer
 from types import LongType

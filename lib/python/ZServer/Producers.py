@@ -86,7 +86,7 @@
 ZServer pipe utils. These producers basically function as callbacks.
 """
 
-from medusa import asyncore
+import asyncore
 import sys
 
 class ShutdownProducer:
