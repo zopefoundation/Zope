@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.8 1997/09/25 17:35:30 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: DA.py,v 1.9 1997/09/25 18:41:20 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -23,6 +23,7 @@ from Globals import Persistent, HTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
 import sys, traceback
+from DocumentTemplate import HTML
 
 class Folder(OFS.Folder.Folder):    
     icon       ='AqueductDA/DBAdapterFolder_icon.gif'
@@ -106,38 +107,55 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
     icon       ='AqueductDA/DBAdapter_icon.gif'
     meta_type='Aqueduct Database Adapter'
     hasAqueductClientInterface=1
-
+    _col=None
+    
     manage=HTMLFile('AqueductDA/edit')
 
     def __init__(self,id='',key='',arguments='',template='',title=''):
 	if not id: return
 	self.id=id
-	self.report_src=default_report_src
 	self.manage_edit(key,title,arguments,template)
 
     def quoted_src(self): return quotedHTML(self.src)
 
-    def manage_edit(self,key,title,arguments,template,URL2=''):
+    def manage_edit(self,key,title,arguments,template,REQUEST=None):
 	'change query properties'
 	self.title=title
 	self.key=key
 	self.rotor=Rotor(key)
 	self.arguments_src=arguments
-	self.arguments=parse(arguments)
+	self._arg=parse(arguments)
 	self.src=template
 	self.template=DocumentTemplate.HTML(template)
-	self.manage_testForm=DocumentTemplate.HTML(
-	    default_input_form(self.id,self.arguments,
-			       action='manage_test'),
-	    __name__='test input form')
-	if URL2:
+	if REQUEST:
 	    return MessageDialog(
 		title=self.id+' changed',
 		message=self.id+' has been changed sucessfully.',
-		action=URL2+'/manage_main',
+		action=REQUEST['URL2']+'/manage_main',
 		)
 
-    def query_data(self,REQUEST):
+    
+    def manage_testForm(self, REQUEST):
+	"""Provide testing interface"""
+	input_src=default_input_form(self.title_or_id(),
+				     self._arg, 'manage_test')
+	return HTML(input_src)(self, REQUEST)
+
+    def manage_test(self, REQUEST):
+	'Perform an actual query'
+	
+	result=self(REQUEST)
+	report=HTML(custom_default_report(self.id, result))
+	return apply(report,(self,REQUEST),{self.id:result})
+
+    def index_html(self, PARENT_URL):
+	raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
+
+    def _searchable_arguments(self): return self._arg
+
+    def _searchable_result_columns(self): return self._col
+
+    def __call__(self,REQUEST):
 	try: DB__=self.database_connection()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
@@ -146,33 +164,10 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	query_string=self._query_string(argdata,'manage_test')
 	query=self.template(self,argdata)
 	result=DB__.query(query)
-	result=Aqueduct.RDB.RDB(StringIO(result))
+	result=Aqueduct.RDB.File(StringIO(result))
+	columns=result._searchable_result_columns()
+	if columns != self._col: self._col=columns
 	return result
-
-    def manage_test(self,REQUEST):
-	'Provide a simple interface for testing a query'
-	try: DB__=self.database_connection()
-	except: raise 'Database Error', (
-	    '%s is not connected to a database' % self.id)
-	
-	argdata=self._argdata(REQUEST,1)
-	query_string=self._query_string(argdata,'manage_test')
-	query=self.template(self,argdata)
-	result=DB__.query(query)
-	result=Aqueduct.RDB.RDB(StringIO(result))
-	result_names=result.names()
-	report_src=custom_default_report(result,action='/manage_testForm')
-
-	if result_names != self.result_names or report_src != self.report_src:
-	    self.result_names=names
-	    self.report_src=report_src
-
-	report=DocumentTemplate.HTML(report_src)
-	return report(self,REQUEST,
-		      query_results=result,
-		      query_string=query_string,
-		      )
-
 	
     def query(self,REQUEST,RESPONSE):
 	' '
@@ -218,6 +213,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.9  1997/09/25 18:41:20  jim
+# new interfaces
+#
 # Revision 1.8  1997/09/25 17:35:30  jim
 # Made some corrections for network behavior.
 #
