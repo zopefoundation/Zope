@@ -151,7 +151,7 @@ def splitParts(arg):
     import string
     arg = string.replace(arg, ";;", "\0")
     parts = string.split(arg, ';')
-    parts = map(lambda s, repl=string.replace: repl(s, "\0", ";;"), parts)
+    parts = map(lambda s, repl=string.replace: repl(s, "\0", ";"), parts)
     if len(parts) > 1 and not string.strip(parts[-1]):
         del parts[-1] # It ended in a semicolon
     return parts
