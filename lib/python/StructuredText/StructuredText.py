@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.27 2000/04/21 13:38:10 jim Exp $'''
+$Id: StructuredText.py,v 1.28 2000/11/10 16:51:27 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,9 @@ $Id: StructuredText.py,v 1.27 2000/04/21 13:38:10 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.28  2000/11/10 16:51:27  brian
+# Fixed a typo in stx
+#
 # Revision 1.27  2000/04/21 13:38:10  jim
 # Added closing list tags. Woo hoo!
 #
@@ -672,7 +675,7 @@ class HTML(StructuredText):
             return ('%s<h%d>%s</h%d>\n%s\n'
                     % (before,level,strip(ctag(t)),level,d))
             
-        t="<p><strong>%s</strong><p>" % strip(ctag(t))
+        t="<p><strong>%s</strong></p>" % strip(ctag(t))
         return ('%s<dl><dt>%s\n</dt><dd>%s\n</dd></dl>\n'
                 % (before,t,d))
 
