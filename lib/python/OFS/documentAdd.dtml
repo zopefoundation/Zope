@@ -13,37 +13,26 @@
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Id</STRONG>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="id" SIZE="40">
-  </TD>
+  <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="40"></TD>
 </TR>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <EM><STRONG>Title</STRONG></EM>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="40">
-  </TD>
+  <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="40"></TD>
 </TR>
 <TR>
+  <TH ALIGN="LEFT" VALIGN="TOP"><EM><STRONG>File</STRONG></EM></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <EM><STRONG>File</STRONG></EM>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
+     <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
   </TD>
 </TR>
-<TR>
-<TD></TD>
-<TD>
-<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
-</TD>
+<TR><TH></TH>
+    <TD>
+       <INPUT TYPE="SUBMIT" VALUE=" Add ">
+       <INPUT TYPE="SUBMIT" VALUE=" Add and Edit " NAME="submit">
+    </TD>
 </TR>
 </TABLE>
 </FORM>
-</BODY>
-</HTML>
+</BODY></HTML>
 

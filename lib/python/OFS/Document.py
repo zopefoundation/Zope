@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -248,7 +248,7 @@ the <!--#var title_and_id--> Folder.</P>
 
 manage_addDocumentForm=HTMLFile('documentAdd', globals())
 
-def manage_addDocument(self,id,title='',file='',REQUEST=None):
+def manage_addDocument(self, id, title='',file='', REQUEST=None, submit=None):
     """
     Add a Document object with the contents of file.
 
@@ -259,7 +259,10 @@ def manage_addDocument(self,id,title='',file='',REQUEST=None):
     i=Document(file, __name__=id)
     i.title=title
     self._setObject(id,i)
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        u=REQUEST['URL1']
+        if submit==" Add and Edit ": u="%s/%s" % (u,id)
+        REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
 class DocumentHandler:
