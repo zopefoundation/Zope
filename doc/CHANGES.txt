@@ -1,5 +1,19 @@
 Principia Changes
 
+  Principia 1.7.0
+
+    Features Added
+
+    Bugs Fixed
+
+      - The 1.6.0 installer generated an incorrect SOFTWARE_EXE line.
+
+      - The top level UserFolder was incorrectly able to be cut and pasted.
+
+      - The "Anonymous" was displayed in user add and edit screens
+        even though it makes no sense to assign the "Anonymous" role
+        to a user.
+
   Principia 1.6.0
 
     Features Added
