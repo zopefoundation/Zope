@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.130 $'[11:-2]
+__version__='$Revision: 1.131 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -1035,3 +1035,5 @@ def absattr(attr):
 def reqattr(request, attr):
     try:    return request[attr]
     except: return None
+
+Super = UnrestrictedUser  # Note: use of the Super alias is deprecated.
