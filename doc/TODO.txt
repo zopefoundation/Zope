@@ -247,3 +247,8 @@ Lots of discussion!
  - Give installer an option to put docs in a user-specifiable directory
    at software home installation time.
 
+ - Give installer an option to put instance skeleton files in a
+   user-specifiable directory at software home installation time.
+
+ - Make it possible to install Zope-related Python libraries to
+   The site-packages of the Python used to invoke setup.py.
