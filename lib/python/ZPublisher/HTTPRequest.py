@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -327,7 +327,7 @@ class HTTPRequest(BaseRequest):
 
                     #Insert in dictionary
                     if mapping_object.has_key(key):
-                       if flags&records:
+                       if flags&RECORDS:
                            #Get the list and the last record
                            #in the list
                            reclist = mapping_object[key]
