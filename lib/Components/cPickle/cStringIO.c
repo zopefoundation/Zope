@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.14 1997/01/24 19:56:24 chris Exp $
+  $Id: cStringIO.c,v 1.15 1997/02/07 17:11:55 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,10 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.15  1997/02/07 17:11:55  jim
+  Added code to ease compilation on Windoze and removed some extraneous
+  variable declarations.
+
   Revision 1.14  1997/01/24 19:56:24  chris
   undid last change
 
@@ -151,7 +155,7 @@ typedef struct {
   int pos, string_size, buf_size, closed;
 } Oobject;
 
-staticforward PyTypeObject Otype;
+static PyTypeObject Otype;
 
 /* ---------------------------------------------------------------- */
 
@@ -164,9 +168,7 @@ typedef struct {
   PyObject *pbuf;
 } Iobject;
 
-staticforward PyTypeObject Itype;
-
-
+static PyTypeObject Itype;
 
 /* ---------------------------------------------------------------- */
 
@@ -290,9 +292,7 @@ static char O_write__doc__[] =
 
 static int
 O_cwrite(PyObject *self, char *c, int  l) {
-  PyObject *s;
-  char *b;
-  int newl, space_needed;
+  int newl;
 
   newl=((Oobject*)self)->pos+l;
   if(newl >= ((Oobject*)self)->buf_size)
@@ -324,8 +324,8 @@ O_cwrite(PyObject *self, char *c, int  l) {
 static PyObject *
 O_write(Oobject *self, PyObject *args) {
   PyObject *s;
-  char *c, *b;
-  int l, newl, space_needed;
+  char *c;
+  int l;
 
   UNLESS(PyArg_Parse(args, "O", &s)) return NULL;
   UNLESS(-1 != (l=PyString_Size(s))) return NULL;
@@ -479,7 +479,8 @@ static char Otype__doc__[] =
 "Simple type for output to strings."
 ;
 
-static PyTypeObject Otype = {
+static PyTypeObject Otype_value() {
+  PyTypeObject Otype = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,	       		/*ob_size*/
 	"StringO",     		/*tp_name*/
@@ -502,7 +503,9 @@ static PyTypeObject Otype = {
 	/* Space for future expansion */
 	0L,0L,0L,0L,
 	Otype__doc__ 		/* Documentation string */
-};
+  };
+  return Otype;
+}
 
 /* End of code for StringO objects */
 /* -------------------------------------------------------- */
@@ -569,7 +572,8 @@ static char Itype__doc__[] =
 "Simple type for treating strings as input file streams"
 ;
 
-static PyTypeObject Itype = {
+static PyTypeObject Itype_value() {
+ PyTypeObject Itype = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,		       	/*ob_size*/
 	"StringI",	       	/*tp_name*/
@@ -592,7 +596,9 @@ static PyTypeObject Itype = {
 	/* Space for future expansion */
 	0L,0L,0L,0L,
 	Itype__doc__ 		/* Documentation string */
-};
+ };
+ return Itype;
+}
 
 /* End of code for StringI objects */
 /* -------------------------------------------------------- */
@@ -636,6 +642,7 @@ void
 initcStringIO() {
   PyObject *m, *d;
 
+
   /* Create the module and add the functions */
   m = Py_InitModule4("cStringIO", IO_methods,
 		     cStringIO_module_documentation,
@@ -645,13 +652,14 @@ initcStringIO() {
   d = PyModule_GetDict(m);
   
   /* Export C API */
+  Itype=Itype_value();
+  Otype=Otype_value();
   PyDict_SetItemString(d,"cStringIO_CAPI", PyCObject_FromVoidPtr(&CAPI,NULL));
 
   /* Export Types */
   PyDict_SetItemString(d,"InputType",  (PyObject*)&Itype);
   PyDict_SetItemString(d,"OutputType", (PyObject*)&Otype);
   
-
   /* Check for errors */
   if (PyErr_Occurred()) Py_FatalError("can't initialize module cStringIO");
 }
