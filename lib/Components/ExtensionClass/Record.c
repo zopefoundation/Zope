@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.8 1999/06/10 20:11:53 jim Exp $"
+"\n$Id: Record.c,v 1.9 2000/04/21 14:17:23 tseaver Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -130,12 +130,12 @@ Record_init(Record *self)
   if((l=PyObject_Length(self->schema)) < 0) return -1;
   UNLESS(self->data) 
     {
-      UNLESS(self->data=malloc(sizeof(PyObject*)*l))
+      UNLESS(self->data=malloc(sizeof(PyObject*)*(l+1)))
 	{
 	  PyErr_NoMemory();
 	  return -1;
 	}
-      memset(self->data, 0, sizeof(PyObject*)*l);
+      memset(self->data, 0, sizeof(PyObject*)*(l+1));
     }
   
   return l;
@@ -592,7 +592,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -631,6 +631,12 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.9  2000/04/21 14:17:23  tseaver
+  Collector #1012: Guarantee null-terminated buffer in Record_init() so Record_compare doesn't UMR
+
+  Revision 1.8.6.1  2000/04/11 20:39:17  tseaver
+  Guarantee null-terminated buffer in Record_init() so Record_compare doesn't UMR
+
   Revision 1.8  1999/06/10 20:11:53  jim
   Updated to use new ExtensionClass destructor protocol.
 
