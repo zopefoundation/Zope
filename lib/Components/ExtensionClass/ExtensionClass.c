@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.12 1997/06/16 13:50:51 jim Exp $
+  $Id: ExtensionClass.c,v 1.13 1997/07/02 17:33:39 jim Exp $
 
   Extension Class
 
@@ -65,12 +65,11 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.12 1997/06/16 13:50:51 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.13 1997/07/02 17:33:39 jim Exp $\n"
 ;
 
 #include <stdio.h>
-#include "Python.h"
-#include "PyErr_Format.c"
+#include "ExtensionClass.h"
 
 static void
 PyVar_Assign(PyObject **v,  PyObject *e)
@@ -84,7 +83,6 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 
 /* Declarations for objects of type ExtensionClass */
-#include "ExtensionClass.h"
 
 staticforward PyExtensionClass ECType;
 
@@ -206,6 +204,116 @@ staticforward PyTypeObject CMethodType;
 #define UnboundCMethod_Check(O) \
   ((O)->ob_type==&CMethodType && ! ((CMethod*)(O))->self)
 #define AsCMethod(O) ((CMethod*)(O))
+
+
+static PyObject *
+#ifdef HAVE_STDARG_PROTOTYPES
+/* VARARGS 2 */
+JimErr_Format(PyObject *ErrType, char *stringformat, char *format, ...)
+#else
+/* VARARGS */
+JimErr_Format(va_alist) va_dcl
+#endif
+{
+  va_list va;
+  PyObject *args=0, *retval=0;
+#ifdef HAVE_STDARG_PROTOTYPES
+  va_start(va, format);
+#else
+  PyObject *ErrType;
+  char *stringformat, *format;
+  va_start(va);
+  ErrType = va_arg(va, PyObject *);
+  stringformat   = va_arg(va, char *);
+  format   = va_arg(va, char *);
+#endif
+  
+  if(format) args = Py_VaBuildValue(format, va);
+  va_end(va);
+  if(format && ! args) return NULL;
+  if(stringformat && !(retval=PyString_FromString(stringformat))) return NULL;
+
+  if(retval)
+    {
+      if(args)
+	{
+	  PyObject *v;
+	  v=PyString_Format(retval, args);
+	  Py_DECREF(retval);
+	  Py_DECREF(args);
+	  if(! v) return NULL;
+	  retval=v;
+	}
+    }
+  else
+    if(args) retval=args;
+    else
+      {
+	PyErr_SetObject(ErrType,Py_None);
+	return NULL;
+      }
+  PyErr_SetObject(ErrType,retval);
+  Py_DECREF(retval);
+  return NULL;
+}
+
+
+static PyObject *
+#ifdef HAVE_STDARG_PROTOTYPES
+/* VARARGS 2 */
+JimString_Build(char *out_format, char *build_format, ...)
+#else
+/* VARARGS */
+JimString_Build(va_alist) va_dcl
+#endif
+{
+  va_list va;
+  PyObject *args, *retval, *fmt;
+#ifdef HAVE_STDARG_PROTOTYPES
+  va_start(va, build_format);
+#else
+  char *build_format;
+  char *out_format;
+  va_start(va);
+  out_format = va_arg(va, char *);
+  build_format   = va_arg(va, char *);
+#endif
+
+  if (build_format)
+    args = Py_VaBuildValue(build_format, va);
+  else
+    args = PyTuple_New(0);
+  
+  va_end(va);
+  
+  if(! args)
+    return NULL;
+
+  if (! PyTuple_Check(args))
+    {
+      PyObject *a;
+      
+      a=PyTuple_New(1);
+      if (! a)
+        return NULL;
+      
+      if (PyTuple_SetItem(a,0,args) == -1)
+        return NULL;
+      
+      args=a;
+    }
+
+  fmt = PyString_FromString(out_format);
+  
+  retval = PyString_Format(fmt, args);
+  
+  Py_DECREF(args);
+  Py_DECREF(fmt);
+  
+  return retval;
+}
+
+
 
 static int
 CMethod_issubclass(PyExtensionClass *sub, PyExtensionClass *type)
@@ -389,7 +497,7 @@ CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
       }
     }
 
-  return PyErr_Format(PyExc_TypeError,
+  return JimErr_Format(PyExc_TypeError,
 		      "unbound C method must be called with %s 1st argument",
 		      "s", self->type->tp_name);
 }
@@ -517,7 +625,7 @@ PMethod_New(PyObject *meth, PyObject *inst)
 {
   if(PMethod_Check(meth)) return bindPMethod((PMethod*)meth,inst);
   UNLESS(ExtensionInstance_Check(inst))
-    return PyErr_Format(PyExc_TypeError,
+    return JimErr_Format(PyExc_TypeError,
 			"Attempt to use %s as method for %s, which is "
 			"not an extension class instance.",
 			"OO",meth,inst);
@@ -621,7 +729,7 @@ PMethod_call(PMethod *self, PyObject *args, PyObject *kw)
       Py_XDECREF(ftype);
     }
 
-  return PyErr_Format(PyExc_TypeError,
+  return JimErr_Format(PyExc_TypeError,
 		      "unbound Python method must be called with %s"
 		      " 1st argument",
 		      "s", self->type->tp_name);
@@ -1358,7 +1466,7 @@ CCL_reduce(PyExtensionClass *self, PyObject *args)
 static PyObject *
 obsolete_inheritedAttribute(PyExtensionClass *self, PyObject *name)
 {
-  UNLESS(name) return PyErr_Format(PyExc_TypeError,
+  UNLESS(name) return JimErr_Format(PyExc_TypeError,
 				   "expected one argument, and none given",
 				   NULL);
   return CCL_getattr(self,name,1);
@@ -1642,7 +1750,7 @@ CCL_repr(PyExtensionClass *self)
   char p[128];
 
   sprintf(p,"%p",self);
-  return PyString_Build("<extension class %s at %s>","ss",
+  return JimString_Build("<extension class %s at %s>","ss",
 			self->tp_name, p);
 }
 
@@ -1881,7 +1989,7 @@ default_subclass_repr(PyObject *self)
   
   PyErr_Clear();
   sprintf(p,"%p",self);
-  return PyString_Build("<%s instance at %s>","ss",
+  return JimString_Build("<%s instance at %s>","ss",
 			self->ob_type->tp_name, p);
 }
 
@@ -2598,7 +2706,7 @@ extension_baseclass(PyExtensionClass *type)
       base=PyTuple_GET_ITEM(type->bases, i);
       if(ExtensionClass_Check(base)) return base;
     }
-  return PyErr_Format(PyExc_TypeError,
+  return JimErr_Format(PyExc_TypeError,
 		      "No extension class found in subclass", NULL);
 }
 
@@ -2897,7 +3005,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.12 $";
+  char *rev="$Revision: 1.13 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2934,6 +3042,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.13  1997/07/02 17:33:39  jim
+  Included my version of PyErr_Format.
+
   Revision 1.12  1997/06/16 13:50:51  jim
   Major cleanup.  Fixed bugs in numeric handling.
 
