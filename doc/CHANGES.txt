@@ -112,7 +112,7 @@ Zope Changes
 
            utilities/bbb.py -x -f output.zexp input.bbe
 
-      ZODB 3 To-do
+      ZODB 3 and 
 
         There are still a number of things to get working:
 
@@ -186,7 +186,7 @@ Zope Changes
         - 'access' file now can use SHA-1 hashing, and now does by
           default
 
-	- 'zpasswd.py' added to utilities directory to manage this
+	- 'zpasswd.py' added to top directory to manage this
           new 'access' file
 
         - A number of changes have been made to enhance security
