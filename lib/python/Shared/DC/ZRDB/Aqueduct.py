@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.9 1997/09/25 21:11:13 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Aqueduct.py,v 1.10 1997/09/25 21:45:08 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import HTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -273,7 +273,7 @@ def parse(text,
 
     result[name]=value
 
-    return parse(text[l:],prefix,result)
+    return parse(text[l:],result)
 
 def quotedHTML(text,
 	       character_entities=(
@@ -362,6 +362,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.10  1997/09/25 21:45:08  jim
+# Fixed argument parse bug
+#
 # Revision 1.9  1997/09/25 21:11:13  jim
 # cleanup and other work
 #
