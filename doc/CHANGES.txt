@@ -66,19 +66,24 @@ Zope Changes
     
       Features Changed
 
-        - Server side trojan issue fixed.
-
-        - Added new security policy architecture.
-
-        - Added formal ownership to support the default security
-          policy.
+        - Added a new security policy architecture and object ownership 
+          to address the server side trojan issue. The new architecture
+          cleaned up various places where Zope code did authorization
+          checks. A side effect of the new policy is that it is a bit
+          more strict than it used to be - objects without explicit
+          protection to which access was previously allowed will now
+          be denied. There is a new declarative method for providing
+          access to such objects, which has been applied to certain 
+          previously unprotected Zope objects that DTML writers are 
+          accustomed to having access to. See the SecurityPolicy 
+          wiki pages on Zope.org for further information.
 
         - Added a new online help system. Help is now available for
           standard Zope objects. Zope developers can add help for their
           Python Products and Control Panel Products. See HELPSYS.txt
 
         - Added logic to increase the Python interpreter "check interval"
-          which provides an average 20-50% performance improvement for 
+          that should provide at least a 20% performance improvement for 
           most Zope sites. Also added a new -i option to z2.py so that
           Zope users can pass in alternate values (the default is 120)
           for the check interval. This lets users experiment and tune
