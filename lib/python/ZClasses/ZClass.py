@@ -338,6 +338,14 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
     def tpValues(self):
         return self.propertysheets.common, self.propertysheets.methods
+
+    def ZClassBaseClassNames(self):
+        r=[]
+        for c in self._zbases:
+            if hasattr(c, 'id'): r.append(c.id)
+            elif hasattr(c, '__name__'): r.append(c.__name__)
+
+        return r
             
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
@@ -358,7 +366,7 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
         self.common=Property.ZInstanceSheetsSheet('common')
 
 
-class ZStandardSheets:
+class ZObject:
 
     manage_options=(
         {'label': 'Basic', 'action' :'propertysheets/basic/manage'},
@@ -369,6 +377,8 @@ class ZStandardSheets:
          'action' :'propertysheets/permissions/manage'},
         {'label': 'Security', 'action' :'manage_access'},        
         )
+    
+ZStandardSheets=ZObject
 
 def findActions(klass, found):
     for b in klass.__bases__:
