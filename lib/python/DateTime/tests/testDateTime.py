@@ -221,13 +221,18 @@ class DateTimeTests (unittest.TestCase):
     def testJulianWeek(self):
         """ check JulianDayWeek function """
 
-        lines  = open('julian_testdata.txt').readlines()
-        
+        try:
+            import gzip
+        except ImportError:
+            print "Warning: testJulianWeek disabled: module gzip not found"
+            return 0
+
+        lines  = gzip.GzipFile('julian_testdata.txt.gz').readlines()
+    
         for line in lines:
             d = DateTime(line[:10])
             result_from_mx=tuple(map(int, line[12:-2].split(',')))
             self.assertEqual(result_from_mx[1], d.week())
-         
 
 
 def test_suite():
