@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.57 1999/06/23 13:41:20 jim Exp $'''
-__version__='$Revision: 1.57 $'[11:-2]
+$Id: SimpleItem.py,v 1.58 1999/06/23 15:27:01 jim Exp $'''
+__version__='$Revision: 1.58 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -239,12 +239,6 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
             tb=None
-
-    def uniqueId(self):
-        return self._p_oid
-
-    def aqObjectBind(self, ob):
-        return ob.__of__(self)
 
     def manage(self, URL1):
         " "
