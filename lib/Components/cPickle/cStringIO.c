@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.4 1996/10/11 21:02:15 jim Exp $
+  $Id: cStringIO.c,v 1.5 1996/10/11 21:03:42 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.5  1996/10/11 21:03:42  jim
+  *** empty log message ***
+
   Revision 1.4  1996/10/11 21:02:15  jim
   *** empty log message ***
 
@@ -407,18 +410,18 @@ O_writelines(self, args)
 }
 
 static struct PyMethodDef O_methods[] = {
-  {"read",       O_read,         1,      O_read__doc__},
-  {"readline",   O_readline,     0,      O_readline__doc__},
-  {"write",	 O_write,        0,      O_write__doc__},
-  {"reset",      O_reset,        0,      O_reset__doc__},
-  {"seek",       O_seek,         1,      O_seek__doc__},
-  {"tell",       O_tell,         0,      O_tell__doc__},
-  {"getvalue",   O_getval,       0,      "getvalue() -- Get the string value"},
-  {"truncate",   O_truncate,     0,      O_truncate__doc__},
-  {"isatty",     O_isatty,       0,      O_isatty__doc__},
-  {"close",      O_close,        0,      O_close__doc__},
-  {"flush",      O_flush,        0,      O_flush__doc__},
-  {"writelines", O_writelines,   0,      O_writelines__doc__},
+  {"read",       (PyCFunction)O_read,         1,      O_read__doc__},
+  {"readline",   (PyCFunction)O_readline,     0,      O_readline__doc__},
+  {"write",	 (PyCFunction)O_write,        0,      O_write__doc__},
+  {"reset",      (PyCFunction)O_reset,        0,      O_reset__doc__},
+  {"seek",       (PyCFunction)O_seek,         1,      O_seek__doc__},
+  {"tell",       (PyCFunction)O_tell,         0,      O_tell__doc__},
+  {"getvalue",   (PyCFunction)O_getval,       0,      "getvalue() -- Get the string value"},
+  {"truncate",   (PyCFunction)O_truncate,     0,      O_truncate__doc__},
+  {"isatty",     (PyCFunction)O_isatty,       0,      O_isatty__doc__},
+  {"close",      (PyCFunction)O_close,        0,      O_close__doc__},
+  {"flush",      (PyCFunction)O_flush,        0,      O_flush__doc__},
+  {"writelines", (PyCFunction)O_writelines,   0,      O_writelines__doc__},
   {NULL,		NULL}		/* sentinel */
 };
 
