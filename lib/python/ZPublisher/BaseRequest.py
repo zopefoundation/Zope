@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -355,7 +355,8 @@ class BaseRequest:
                         # heirarchy -- you'd always get the
                         # existing object :(
                         
-                        if no_acquire_flag and hasattr(object, 'aq_base'):
+                        if (no_acquire_flag and len(path) == 0 and
+                            hasattr(object, 'aq_base')):
                             if hasattr(object.aq_base, entry_name):
                                 subobject=getattr(object, entry_name)
                             else: raise AttributeError, entry_name
