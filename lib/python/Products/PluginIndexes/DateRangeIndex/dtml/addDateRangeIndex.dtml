@@ -10,7 +10,7 @@ with range information based on those two markers. You can then search for
 objects for those where a given date falls within the range.
 </p>
 
-<form action="addDateRangeIndex" method="POST">
+<form action="manage_addDateRangeIndex" method="POST">
 <table cellspacing="0" cellpadding="2" border="0">
  <tr>
   <td align="left" valign="top">
