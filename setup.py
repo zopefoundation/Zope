@@ -579,9 +579,10 @@ setup(
         Extension(name='persistent.TimeStamp',
                   include_dirs=['persistent'],
                   sources=['persistent/TimeStamp.c']),
-        Extension(name='ZODB.coptimizations',
-                  include_dirs=['persistent'],
-                  sources=['ZODB/coptimizations.c']),
+        # XXX We need to rewrite this soon.
+##        Extension(name='ZODB.coptimizations',
+##                  include_dirs=['persistent'],
+##                  sources=['ZODB/coptimizations.c']),
         Extension(name='ZODB.winlock',
                   include_dirs=['persistent'],
                   sources=['ZODB/winlock.c'])],
