@@ -230,8 +230,14 @@ class ProductContext:
 
     def registerBaseClass(self, base_class, meta_type=None):
 
-        class Z: pass
+        d={}
+        zname='_ZClass_for_'+base_class.__name__
+        exec 'class %s: pass' % zname in d
+        Z=d[zname]
         Z.propertysheets=OFS.PropertySheets.PropertySheets()
         Z._zclass_=base_class
         Z.manage_options=()
+        pack=self.__pack
+        Z.__module__=pack.__name__
+        setattr(pack, zname, Z)
         return self.registerZClass(Z, meta_type)
