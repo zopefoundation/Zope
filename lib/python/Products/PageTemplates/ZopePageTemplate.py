@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -275,7 +275,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                 result = self.pt_render(extra_context=bound_names)
             except TALESError, err:
                 if (err.type == Unauthorized or
-                    isinstance(err.type, Unauthorized)):
+                    (isinstance(Unauthorized, Exception) and
+                     isinstance(err.type, Unauthorized))):
                     raise err.type, err.value, err.takeTraceback()
                 err.takeTraceback()
                 raise
@@ -319,7 +320,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Return expanded document source."""
 
         if RESPONSE is not None:
-            RESPONSE.setHeader('Content-Type', self.content_type)
+            RESPONSE.setHeader('Content-Type', 'text/plain')
         if REQUEST.get('raw'):
             return self._text
         return self.read()
