@@ -60,6 +60,8 @@ Options
 				  is called.  Finally, enter 's'
 				  followed a carriage return.
 
+   -s                             Don't generate any output
+
 Examples
 
    For example, to debug a published object (such as a method), spam,
@@ -72,7 +74,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.10 1997/04/11 22:45:22 jim Exp $
+$Id: Test.py,v 1.11 1997/04/22 03:47:29 jim Exp $
 '''
 #     Copyright 
 #
@@ -126,7 +128,7 @@ $Id: Test.py,v 1.10 1997/04/11 22:45:22 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -139,18 +141,20 @@ def main():
     global repeat_count
 
     try:
-	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:')
+	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:s')
 	if len(args) > 2 or len(args) < 2: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
 	sys.stderr.write(__doc__)
 	sys.exit(-1)
 
-    profile=u=debug=timeit=None
+    silent=profile=u=debug=timeit=None
     env={}
     for opt,val in optlist:
 	if opt=='-d':
 	    debug=1
+	if opt=='-s':
+	    silent=1
 	if opt=='-t':
 	    timeit=1
 	if opt=='-u':
@@ -169,7 +173,7 @@ def main():
 
     module=args[0]
 
-    publish(module,path_info,u=u,p=profile,d=debug,t=timeit,e=env)
+    publish(module,path_info,u=u,p=profile,d=debug,t=timeit,e=env,s=silent)
 
 
 
@@ -201,13 +205,14 @@ def run(statement, *args):
 	return prof.print_stats()
 
 
-def publish(script,path_info,u=None,p=None,d=None,t=None,e={}):
+def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None):
 
     import sys, os, getopt, string
 
     profile=p
     debug=d
     timeit=t
+    silent=s
 
     if script[0]=='+': script='../../lib/python/'+script[1:]
 
@@ -293,7 +298,7 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={}):
 	fbreak(db,cgi_module_publisher.new_find_object)
 	fbreak(db,cgi_module_publisher.old_find_object)
 
-	dbdata={'breakpoints':(), 'env':{}}
+	dbdata={'breakpoints':(), 'env':env}
 	b=''
 	try: b=open('.bobodb','r').read()
 	except: pass
@@ -303,11 +308,7 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={}):
 	    if type(b) is type(()):
 		apply(db.set_break,b)
 	    else:
-		fbreak(db,b)
-
-	for k,v in dbdata['env'].items():
-	    env[k]=v
-	
+		fbreak(db,b)	
 
 	db.prompt='pdb> '
 	# db.set_continue()
@@ -327,13 +328,18 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={}):
 		stdout=open('/dev/null','w'), environ=env)
 	stdout.write('%s milliseconds\n' % t)
     else:
-	publish_module(file, environ=env)
+	if silent: stdout=open('/dev/null','w')
+	else: stdout=sys.stdout
+	publish_module(file, environ=env, stdout=stdout)
 	print '\n%s\n' % ('_'*60)
 
 if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.11  1997/04/22 03:47:29  jim
+# *** empty log message ***
+#
 # Revision 1.10  1997/04/11 22:45:22  jim
 # Changed to require two arguments.
 #
