@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -315,7 +315,7 @@ class CopyContainer(ExtensionClass.Base):
 
     validClipData=cb_dataValid
 
-    def _verifyObjectPaste(self, ob, REQUEST):
+    def _verifyObjectPaste(self, ob, REQUEST=None):
         if not hasattr(ob, 'meta_type'):
             raise CopyError, MessageDialog(
                   title='Not Supported',
@@ -335,7 +335,10 @@ class CopyContainer(ExtensionClass.Base):
             if d['name']==mt:
                 method_name=d['action']
                 break
-            
+
+        if REQUEST is None:
+            REQUEST=getattr(self, 'REQUEST', None)
+
         if method_name is not None:
 
             meth=None
