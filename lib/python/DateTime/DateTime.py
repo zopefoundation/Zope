@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -370,12 +370,6 @@ class DateTime:
             A DateTime object is returned that represents 
             the gmt value of the time.time() float represented in
             the local machine's timezone.
-
-            Note that there is a small inconsistency here.  When
-            a DateTime is converted to a number (e.g. with float()),
-            the value returned is the number of days since Jan 1,
-            1901. This means that DateTime(float(d)), where d is a
-            DateTime does not return a DateTime that is equal to d.
         
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
@@ -1206,7 +1200,7 @@ class DateTime:
     def __add__(self,other):
         """A DateTime may be added to a number and a number may be 
            added to a DateTime;  two DateTimes cannot be added."""
-        if type(other)==InstanceType:
+        if hasattr(other,'_t'):
             raise self.DateTimeError,'Cannot add two DateTimes'
         o=float(other)
         d,t,tz=(self._d+o),(self._t+(o*86400.0)),self._tz
@@ -1264,16 +1258,16 @@ class DateTime:
                      self._day+self.time)*100)
 
     def __int__(self):
-        """Convert to an integer number of days since Jan. 1, 1901 (gmt)"""
-        return int(self._d)
+        """Convert to an integer number of seconds since the epoch (gmt)"""
+        return int(self._t)
 
     def __long__(self):
-        """Convert to a long-int number of days since Jan. 1, 1901 (gmt)"""
-        return long(self._d)
+        """Convert to a long-int number of seconds since the epoch (gmt)"""
+        return long(self._t)
 
     def __float__(self):
-        """Convert to floating-point number of days since Jan. 1, 1901 (gmt)"""
-        return float(self._d)
+        """Convert to floating-point number of seconds since the epoch (gmt)"""
+        return float(self._t)
 
 
 class strftimeFormatter:
