@@ -149,7 +149,7 @@ class FactoryDispatcher(Acquisition.Implicit):
 
     # Provide a replacement for manage_main that does a redirection:
     def manage_main(trueself, self, REQUEST, update_menu=0):
-        """IMplement a contents view by redirecting to the true view
+        """Implement a contents view by redirecting to the true view
         """
         d = update_menu and '/manage_main?update_menu=1' or '/manage_main' 
         REQUEST['RESPONSE'].redirect(self.DestinationURL()+d)
