@@ -28,8 +28,7 @@ typedef struct
 } compobject;
 
 static compobject *
-newcompobject(type)
-     PyTypeObject *type;
+newcompobject(PyTypeObject *type)
 {
         compobject *self;
         self = PyObject_NEW(compobject, type);
@@ -39,9 +38,7 @@ newcompobject(type)
 }
 
 static PyObject *
-PyZlib_compress(self, args)
-        PyObject *self;
-        PyObject *args;
+PyZlib_compress(PyObject *self, PyObject *args)
 {
   PyObject *ReturnVal;
   Byte *input, *output;
@@ -127,9 +124,7 @@ PyZlib_compress(self, args)
 }
 
 static PyObject *
-PyZlib_decompress(self, args)
-        PyObject *self;
-        PyObject *args;
+PyZlib_decompress(PyObject *self, PyObject *args)
 {
   PyObject *ReturnVal;
   Byte *input, *output;
@@ -222,9 +217,7 @@ PyZlib_decompress(self, args)
 }
 
 static PyObject *
-PyZlib_compressobj(selfptr, args)
-        PyObject *selfptr;
-        PyObject *args;
+PyZlib_compressobj(PyObject *selfptr, PyObject *args)
 {
   compobject *self;
   int level=Z_DEFAULT_COMPRESSION, method=DEFLATED;
@@ -288,9 +281,7 @@ PyZlib_compressobj(selfptr, args)
 }
 
 static PyObject *
-PyZlib_decompressobj(selfptr, args)
-        PyObject *selfptr;
-        PyObject *args;
+PyZlib_decompressobj(PyObject *selfptr, PyObject *args)
 {
   int wbits=DEF_WBITS, err;
   compobject *self;
@@ -330,25 +321,21 @@ PyZlib_decompressobj(selfptr, args)
 }
 
 static void
-Comp_dealloc(self)
-        compobject *self;
+Comp_dealloc(compobject *self)
 {
   int err;
   err=deflateEnd(&self->zst);  /* Deallocate zstream structure */
 }
 
 static void
-Decomp_dealloc(self)
-        compobject *self;
+Decomp_dealloc(compobject *self)
 {
   int err;
   err=inflateEnd(&self->zst);	/* Deallocate zstream structure */
 }
 
 static PyObject *
-PyZlib_objcompress(self, args)
-        compobject *self;
-        PyObject *args;
+PyZlib_objcompress(compobject *self, PyObject *args)
 {
   int length=0, err, inplen;
   Byte *buf=NULL;
@@ -388,9 +375,7 @@ PyZlib_objcompress(self, args)
 }
 
 static PyObject *
-PyZlib_objdecompress(self, args)
-        compobject *self;
-        PyObject *args;
+PyZlib_objdecompress(compobject *self, PyObject *args)
 {
   int length=0, err, inplen;
   Byte *buf=NULL;
@@ -429,9 +414,7 @@ PyZlib_objdecompress(self, args)
 }
 
 static PyObject *
-PyZlib_flush(self, args)
-        compobject *self;
-        PyObject *args;
+PyZlib_flush(compobject *self, PyObject *args)
 {
   int length=0, err;
   Byte *buf=NULL;
@@ -479,9 +462,7 @@ PyZlib_flush(self, args)
 }
 
 static PyObject *
-PyZlib_unflush(self, args)
-        compobject *self;
-        PyObject *args;
+PyZlib_unflush(compobject *self, PyObject *args)
 {
   int length=0, err;
   Byte *buf=NULL;
@@ -529,37 +510,32 @@ PyZlib_unflush(self, args)
 
 static PyMethodDef comp_methods[] =
 {
-        {"compress", PyZlib_objcompress, 1},
-        {"flush", PyZlib_flush, 0},
+        {"compress", (PyCFunction)PyZlib_objcompress, 1},
+        {"flush", (PyCFunction)PyZlib_flush, 0},
         {NULL, NULL}
 };
 
 static PyMethodDef Decomp_methods[] =
 {
-        {"decompress", PyZlib_objdecompress, 1},
-        {"flush", PyZlib_unflush, 0},
+        {"decompress", (PyCFunction)PyZlib_objdecompress, 1},
+        {"flush", (PyCFunction)PyZlib_unflush, 0},
         {NULL, NULL}
 };
 
 static PyObject *
-Comp_getattr(self, name)
-     compobject *self;
-     char *name;
+Comp_getattr(compobject *self, char *name)
 {
         return Py_FindMethod(comp_methods, (PyObject *)self, name);
 }
 
 static PyObject *
-Decomp_getattr(self, name)
-     compobject *self;
-     char *name;
+Decomp_getattr(compobject *self, char *name)
 {
         return Py_FindMethod(Decomp_methods, (PyObject *)self, name);
 }
 
 static PyObject *
-PyZlib_adler32(self, args)
-     PyObject *self, *args;
+PyZlib_adler32(PyObject *self, PyObject *args)
 {
  uLong adler32val=adler32(0L, Z_NULL, 0);
  Byte *buf;
@@ -575,8 +551,7 @@ PyZlib_adler32(self, args)
      
 
 static PyObject *
-PyZlib_crc32(self, args)
-     PyObject *self, *args;
+PyZlib_crc32(PyObject *self, PyObject *args)
 {
  uLong crc32val=crc32(0L, Z_NULL, 0);
  Byte *buf;
@@ -641,10 +616,7 @@ statichere PyTypeObject Decomptype = {
 /* Convenience routine to export an integer value.
    For simplicity, errors (which are unlikely anyway) are ignored. */
 static void
-insint(d, name, value)
-     PyObject *d;
-     char *name;
-     int value;
+insint(PyObject *d, char *name, int value)
 {
 	PyObject *v = PyInt_FromLong((long) value);
 	if (v == NULL) {
@@ -658,7 +630,7 @@ insint(d, name, value)
 }
 
 void
-PyInit_zlib()
+PyInit_zlib(void)
 {
         PyObject *m, *d;
 
@@ -670,7 +642,7 @@ PyInit_zlib()
         ZlibError = Py_BuildValue("s", "zlib.error");
         PyDict_SetItemString(d, "error", ZlibError);
         PyDict_SetItemString(d, "IDString",
-	PyString_FromString("$Id: zlib.c,v 1.4 2000/04/17 20:16:59 tseaver Exp $"));
+	PyString_FromString("$Id: zlib.c,v 1.5 2001/05/23 18:32:31 shane Exp $"));
 	insint(d, "MAX_WBITS", MAX_WBITS);
 	insint(d, "DEFLATED", DEFLATED);
 	insint(d, "DEF_MEM_LEVEL", DEF_MEM_LEVEL);
