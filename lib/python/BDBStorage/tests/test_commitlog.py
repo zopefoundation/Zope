@@ -9,7 +9,7 @@ import CommitLog
 # - creating with an existing file via filename
 # - creating with a file object with # incorrect mode or permissions
 # - creating with a file object raising the two flavors of LogCorruptedError
-# - The various forms of LogCorruptedError in PacklessLog.next_object()
+# - The various forms of LogCorruptedError in PacklessLog.next()
 
 
 
@@ -156,27 +156,89 @@ class PacklessLogTest(BaseSetupTearDown):
         self._log.start()
 
     def checkOneStoreAndLoad(self):
-        """PacklessLog API for one object"""
+        """PacklessLog: API for one object"""
         self._log.write_object(oid=10, pickle='ignore')
         self._log.promise()
-        oid, pickle = self._log.next_object()
+        oid, pickle = self._log.next()
         assert oid == 10 and pickle == 'ignore'
-        assert None == self._log.next_object()
+        assert None == self._log.next()
 
     def checkTenStoresAndLoads(self):
-        """PacklessLog API storing ten objects and reading them back"""
+        """PacklessLog: API storing ten objects and reading them back"""
         for k, v in Gen():
             self._log.write_object(v, k*10)
         self._log.promise()
         g = Gen()
         while 1:
-            rec = self._log.next_object()
+            rec = self._log.next()
             if rec is None:
                 break
             c, i = g()
             oid, pickle = rec
             assert oid == i and pickle == c*10
         self.assertRaises(IndexError, g)
+
+
+
+class FullLogTest(BaseSetupTearDown):
+    def setUp(self):
+        self._log = CommitLog.FullLog()
+        self._log.start()
+
+    def checkOneStoreAndLoad(self):
+        """FullLog: API for one object"""
+        oid = 10
+        vid = 8
+        nvrevid = 0
+        pickle = 'ignore'
+        prevrevid = 9
+        self._log.write_object(oid, vid, nvrevid, pickle, prevrevid)
+        self._log.promise()
+        rec = self._log.next()
+        assert rec
+        key, rec = rec
+        assert key == 'o' and len(rec) == 6
+        assert rec[0] == oid and rec[1] == vid and rec[2] == nvrevid
+        assert rec[3] == '' and rec[4] == pickle and rec[5] == prevrevid
+        assert None == self._log.next()
+
+    def checkOtherWriteMethods(self):
+        """FullLog: check other write_*() methods"""
+        oid = 10
+        vid = 1
+        nvrevid = 0
+        lrevid = 8
+        pickle = 'ignore'
+        prevrevid = 9
+        version = 'new-version'
+        zero = '\0'*8
+        self._log.write_nonversion_object(oid, lrevid, prevrevid)
+        self._log.write_moved_object(oid, vid, nvrevid, lrevid, prevrevid)
+        self._log.write_new_version(version, vid)
+        self._log.write_discard_version(vid)
+        self._log.promise()
+        rec = self._log.next()
+        assert rec
+        key, rec = rec
+        assert key == 'o' and len(rec) == 6
+        assert rec[0] == oid and rec[1] == zero and rec[2] == zero
+        assert rec[3] == lrevid and rec[4] == '' and rec[5] == prevrevid
+        rec = self._log.next()
+        assert rec
+        key, rec = rec
+        assert key == 'o' and len(rec) == 6
+        assert rec[0] == oid and rec[1] == vid and rec[2] == nvrevid
+        assert rec[3] == lrevid and rec[4] == '' and rec[5] == prevrevid
+        rec = self._log.next()
+        assert rec
+        key, rec = rec
+        assert key == 'v' and len(rec) == 2
+        assert rec[0] == version and rec[1] == vid
+        rec = self._log.next()
+        assert rec
+        key, rec = rec
+        assert key == 'd' and len(rec) == 1
+        assert rec[0] == vid
 
 
 
@@ -202,4 +264,12 @@ def suite():
     # PacklessLog API
     suite.addTest(PacklessLogTest('checkOneStoreAndLoad'))
     suite.addTest(PacklessLogTest('checkTenStoresAndLoads'))
+    # FullLog API
+    suite.addTest(FullLogTest('checkOneStoreAndLoad'))
+    suite.addTest(FullLogTest('checkOtherWriteMethods'))
     return suite
+
+
+
+if __name__ == '__main__':
+    unittest.main(defaultTest='suite')
