@@ -1,12 +1,23 @@
-<HTML><HEAD><TITLE>New Search Interface</TITLE></HEAD>
+<HTML><HEAD><TITLE>Add a Search Interface</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 
-<H2>New Search Interface</H2>
+<H2>Add a Search Interface</H2>
 
 <form action="manage_addZSearch" method="POST">
 
-You can create a search interface, consisting of a search-input form
-and a report for a searchable object.
+<P>
+A Search Interface allows you to search Zope databases.
+The Search Interface will create a 
+ search-input form and a report for displaying the search results.
+</P>
+
+<P>
+In the form below, <EM>seachable objects</EM> are the objects
+(usually Z SQL Methods) to be searched. <EM>Report Id</EM> and 
+<EM>Search Input Id</EM> are the ids of the 
+report and search form objects that will be created.
+<EM>Report Style</EM> indicates the type of report to generate.
+</P>
 
 <table>
             
