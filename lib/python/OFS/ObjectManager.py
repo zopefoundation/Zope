@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.115 2000/12/11 18:24:46 shane Exp $"""
+$Id: ObjectManager.py,v 1.116 2000/12/13 14:34:55 shane Exp $"""
 
-__version__='$Revision: 1.115 $'[11:-2]
+__version__='$Revision: 1.116 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -116,7 +116,7 @@ NOT_REPLACEABLE = 0
 REPLACEABLE = 1
 UNIQUE = 2
 
-def check_valid_id(self, id, allow_dup=0):
+def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object
     # with the given id already exists. If allow_dup is true,
     # only check that the id string contains no illegal chars;
@@ -249,7 +249,7 @@ class ObjectManager(
                 meta_types.append(meta_type)
         return meta_types
 
-    _checkId = check_valid_id
+    _checkId = checkValidId
 
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
