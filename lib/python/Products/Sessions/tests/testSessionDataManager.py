@@ -50,8 +50,8 @@ def _getDB():
         root = conn.root()
         app = Application()
         root['Application']= app
+        get_transaction().commit(1)
         _populate(app)
-        get_transaction().commit()
         stuff['db'] = db
         conn.close()
     return db
