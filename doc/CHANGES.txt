@@ -44,6 +44,9 @@ Zope Changes
         - Collector #2247: put values of properties into CDATA section  to 
           prevent non XML compliant documents to be sent to a webdav client.
 
+        - Collector #2287: fixed missing import of 'render_blocks' in 
+          SendMailTag.py
+
     Zope 2.4 alpha 1
 
       Features Added
