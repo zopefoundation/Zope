@@ -472,7 +472,7 @@ class DocumentClass:
             tmp     = []
             for item in row:
                 if item:
-                    tmp.append(item,cspan)
+                    tmp.append((item,cspan))
                     cspan = 0
                 else:
                     cspan = cspan + 1
