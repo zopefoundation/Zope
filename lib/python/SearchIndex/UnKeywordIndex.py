@@ -2,8 +2,7 @@ from UnIndex import UnIndex, MV, intSet
 from types import ListType, TupleType
 
 class UnKeywordIndex(UnIndex):
-    """
-    Like an UnIndex only it indexs sequences of items
+    """Like an UnIndex only it indexes sequences of items
     
     Searches match any keyword.
 
@@ -57,12 +56,4 @@ class UnKeywordIndex(UnIndex):
         
         self._index = index
         self._unindex = unindex
-
-
-
-
-
-
-
-
 
