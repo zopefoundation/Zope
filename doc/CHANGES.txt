@@ -5,15 +5,10 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
-    
 
       - The title_or_id attribute of browser id managers and
         session data managers is now accessible publically.
    
-      - Browser ids can now be encoded in the URL and Zope can be
-        instructed to automatically include the browser id in its
-        generated URLs.
- 
       - Collector #510: When Python scripts and other "Script" objects were
         acquired during URL traversal, the __before_publishing_traverse__ code
         did not properly stop traversal at the script and populate
@@ -22,25 +17,8 @@ Zope Changes
       - Collector #238: Version Save and Discard buttons were too
         close to each other in Version management screens.
 
-      - Cookie values are now quoted before being sent to the
-        browser and unquoted on receipt.
-
-      - Added 'url_unquote' and 'url_unquote_plus' modifiers
-        to DTML (also fmt=url-unquote and fmt=url-unquote-plus),
-        and made the same functions available in the PythonScripts.standard
-        module.
-
       - The "Add Browser ID Manager" permission was renamed to
         "Add Browser Id Manager".
-
-      - Browser Id Managers now provide a saner way to obtain a
-        hidden form element which encodes the browser id name and
-        browser id.  An interface method named "getHiddenFormField"
-        on browser id managers now exists which returns a snippet of
-        HTML as a hidden form field that encodes these values.
-
-      - A Site Error Log object is now created in the root at Zope
-        startup time.
 
       - Collector #437: dtml-sqltest now renders 'v not in (b,c)'
         when used as <dtml-sqltest v type=... multiple op=ne>.  
@@ -137,6 +115,24 @@ Zope Changes
 
     Features Added
     
+      - Browser ids can now be encoded in the URL and Zope can be
+        instructed to automatically include the browser id in its
+        generated URLs.
+ 
+      - Browser Id Managers now provide a saner way to obtain a
+        hidden form element which encodes the browser id name and
+        browser id.  An interface method named "getHiddenFormField"
+        on browser id managers now exists which returns a snippet of
+        HTML as a hidden form field that encodes these values.
+
+      - A Site Error Log object is now created in the root at Zope
+        startup time.
+
+      - Added 'url_unquote' and 'url_unquote_plus' modifiers
+        to DTML (also fmt=url-unquote and fmt=url-unquote-plus),
+        and made the same functions available in the PythonScripts.standard
+        module.
+
       - Collector #186: Added urlencode to the standard importables for
         Python scripts.
 
@@ -187,7 +183,6 @@ Zope Changes
       - Collector #61 -- now manage_PasteObjects return a list of dictionaries
 	containing {'id':original_id,'new_id':newly_pasted_obj_id} when called
 	with REQUEST=None
-
 
       - Changed FORCE_PRODUCT_LOAD so that if it is set, it determines
         whether products are installed regardless of whether ZEO_CACHE is
