@@ -14,8 +14,8 @@
 __doc__='''Examples from the Acquisition Algebra Presentation
 
 
-$Id: test_AqAlg.py,v 1.5 2002/08/14 21:24:48 mj Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: test_AqAlg.py,v 1.6 2003/05/09 21:57:10 jeremy Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Acquisition
 
@@ -51,8 +51,6 @@ class I(Acquisition.Implicit):
     __repr__=__str__
 
 A=I('A')
-print id(A)
-print A
 A.B=I('B')
 A.B.color='red'
 A.C=I('C')
