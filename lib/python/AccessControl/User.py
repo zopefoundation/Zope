@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -106,7 +106,12 @@ NotImplemented='NotImplemented'
 
 class BasicUser(Implicit):
     """Base class for all User objects"""
-    
+
+    # Allow access to has_role, etc. This is needed because otherwise
+    # the __roles__ of the acl_users that we came from would prevent
+    # us accessing any User methods from DTML.
+    __roles__=None
+
     # ----------------------------
     # Public User object interface
     # ----------------------------
@@ -340,7 +345,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         )
 
     # This prevents sneaky access to internal data.
-    __roles__=[]
+#    __roles__=[]
 
     # ----------------------------------
     # Public UserFolder object interface
