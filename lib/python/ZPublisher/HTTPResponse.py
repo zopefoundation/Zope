@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.5 1999/03/10 00:15:51 klm Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: HTTPResponse.py,v 1.6 1999/03/11 14:28:24 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -228,16 +228,27 @@ class HTTPResponse(BaseResponse):
         self.setHeader('Status', "%d %s" % (status,str(reason)))
         self.errmsg=reason
 
-    def setHeader(self, name, value):
+    def setHeader(self, name, value, literal=0):
         '''\
         Sets an HTTP return header "name" with value "value", clearing
-        the previous value set for the header, if one exists. '''
-        n=lower(name)
-        if accumulate_header(n):
+        the previous value set for the header, if one exists. If the
+        literal flag is true, the case of the header name is preserved,
+        otherwise word-capitalization will be performed on the header
+        name on output.'''
+        key=lower(name)
+        if accumulate_header(key):
             self.accumulated_headers=(
                 "%s%s: %s\n" % (self.accumulated_headers, name, value))
-        else:
-            self.headers[n]=value
+            return
+        name=literal and name or key
+        self.headers[name]=value
+
+    def addHeader(self, name, value):
+        '''\
+        Set a new HTTP return header with the given value, while retaining
+        any previously set headers with the same name.'''
+        self.accumulated_headers=(
+            "%s%s: %s\n" % (self.accumulated_headers, name, value))
 
     __setitem__=setHeader
 
@@ -628,29 +639,24 @@ class HTTPResponse(BaseResponse):
         headersl=[]
         append=headersl.append
 
-        # Make sure status comes out first!
-        try:
-            v=headers['status']
+        # status header must come first.
+        append("Status: %s" % headers.get('status', '200 OK'))
+        if headers.has_key('status'):
             del headers['status']
-        except: v="200 OK"
-        append("Status: "+v)
-
-        for k,v in headers.items():
-
-            k=upper(k[:1])+k[1:]
-
-            start=0
-            l=find(k,'-',start)
-            while l >= start:
-                k="%s-%s%s" % (k[:l],upper(k[l+1:l+2]),k[l+2:])
-                start=l+1
-                l=find(k,'-',start)
-            append("%s: %s" % (k,v))
-
+        for key, val in headers.items():
+            if lower(key)==key:
+                # only change non-literal header names
+                key="%s%s" % (upper(key[:1]), key[1:])
+                start=0
+                l=find(key,'-',start)
+                while l >= start:
+                    key="%s-%s%s" % (key[:l],upper(key[l+1:l+2]),key[l+2:])
+                    start=l+1
+                    l=find(key,'-',start)
+            append("%s: %s" % (key, val))
         if self.cookies:
             headersl=headersl+self._cookie_list()
-        headersl[len(headersl):]=[self.accumulated_headers,body]
-
+        headersl[len(headersl):]=[self.accumulated_headers, body]
         return join(headersl,'\n')
 
     def write(self,data):
