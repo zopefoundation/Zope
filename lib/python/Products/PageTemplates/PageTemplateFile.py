@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -117,7 +117,12 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
             mtime = 0
         if self._v_program is not None and mtime == self._v_last_read:
             return
-        self.pt_edit(open(self.filename), None)
+        f = open(self.filename, "rb")
+        try:
+            text = f.read()
+        finally:
+            f.close()
+        self.pt_edit(text, sniff_type(text))
         self._cook()
         if self._v_errors:
             LOG('PageTemplateFile', ERROR, 'Error in template',
@@ -154,3 +159,19 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         from ZODB.POSException import StorageError
         raise StorageError, ("Instance of AntiPersistent class %s "
                              "cannot be stored." % self.__class__.__name__)
+
+
+XML_PREFIXES = [
+    "<?xml",                      # ascii, utf-8
+    "\xef\xbb\xbf<?xml",          # utf-8 w/ byte order mark
+    "\0<\0?\0x\0m\0l",            # utf-16 big endian
+    "<\0?\0x\0m\0l\0",            # utf-16 little endian
+    "\xfe\xff\0<\0?\0x\0m\0l",    # utf-16 big endian w/ byte order mark
+    "\xff\xfe<\0?\0x\0m\0l\0",    # utf-16 little endian w/ byte order mark
+    ]
+
+def sniff_type(text):
+    for prefix in XML_PREFIXES:
+        if text.startswith(prefix):
+            return "text/xml"
+    return None
