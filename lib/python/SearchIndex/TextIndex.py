@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -540,7 +540,8 @@ def parse2(q, default_operator,
             # This word should be an operator; if it is not, splice in
             # the default operator.
             
-            if isop(q[i]): q[i] = operator_dict[q[i]]
+            if type(q[i]) is not ListType and isop(q[i]):
+                q[i] = operator_dict[q[i]]
             else: q[i : i] = [ default_operator ]
 
         i = i + 1
