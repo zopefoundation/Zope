@@ -11,8 +11,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.2 1998/01/29 16:29:47 brian Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1998/02/23 19:00:31 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 from ImageFile import ImageFile
 import Aqueduct.Search, SQL
 
@@ -28,8 +28,8 @@ meta_types=(
     )
 
 methods={
-    'manage_addAqueductSQLMethod': SQL.add,
-    'manage_addAqueductSQLMethodForm': SQL.addForm,
+    'manage_addAqueductSQLMethod': SQL.manage_addAqueductSQLMethod,
+    'manage_addAqueductSQLMethodForm': SQL.manage_addAqueductSQLMethodForm,
     'SQLConnectionIDs': SQL.SQLConnectionIDs,
 
     
@@ -42,9 +42,17 @@ misc_={
     'icon': ImageFile('AqueductDA/www/DBAdapter_icon.gif'),
     }
 
+__ac_permissions__=(
+    ('Add Database Methods',
+     ('manage_addAqueductSQLMethodForm', 'manage_addAqueductSQLMethod')),
+    )
+
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  1998/02/23 19:00:31  jim
+# updated permissions
+#
 # Revision 1.2  1998/01/29 16:29:47  brian
 # Added eval support
 #

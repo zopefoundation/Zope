@@ -11,8 +11,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.1 1998/01/07 16:29:29 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: SQL.py,v 1.2 1998/02/23 19:00:31 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import AqueductDA.DA
 from Globals import HTMLFile
@@ -40,8 +40,10 @@ def SQLConnectionIDs(self):
     ids.sort()
     return ids
 
-addForm=HTMLFile('add', globals())
-def add(self, id, title, connection_id, arguments, template, REQUEST=None):
+manage_addAqueductSQLMethodForm=HTMLFile('add', globals())
+def manage_addAqueductSQLMethod(self, id, title,
+				connection_id, arguments, template,
+				REQUEST=None):
     """Add a SQL Method to a folder"""
     self._setObject(id, SQL(id, title, connection_id, arguments, template))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
@@ -57,6 +59,9 @@ class SQL(AqueductDA.DA.DA):
 ############################################################################## 
 #
 # $Log: SQL.py,v $
+# Revision 1.2  1998/02/23 19:00:31  jim
+# updated permissions
+#
 # Revision 1.1  1998/01/07 16:29:29  jim
 # Split out Database Methods
 #
