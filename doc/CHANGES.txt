@@ -53,6 +53,8 @@ Zope Changes
 
       - STXNG: added new env. variable STX_DEFAULT_LEVEL to change
         the default level for <Hx> elements (see doc/ENVIRONMENT.txt)
+
+      - Collector #304: several catalog optimisations
         
     Bugs:
     

@@ -472,7 +472,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     r, u = r
                     for name in u: used[name]=1
                     w, rs = weightedIntersection(rs, r)
-                        
+
         #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
             # return everything
@@ -480,16 +480,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 rs=data.items()
                 append(LazyMap(self.instantiate, rs, len(self)))
             else:
-                try:
-                    for k, intset in sort_index.items():
-                        if hasattr(intset, 'keys'): intset=intset.keys() 
-                        append((k,LazyMap(self.__getitem__, intset)))
-                except AttributeError:
-                    raise ValueError, (
-                        "Incorrect index name passed as" 
-                        " 'sort_on' parameter.  Note that you may only" 
-                        " sort on values for which there is a matching" 
-                        " index available.")
+                self._build_sorted_results(data,sort_index,append)
         elif rs:
             # this is reached by having an empty result set (ie non-None)
             if sort_index is None and hasattr(rs, 'values'):
@@ -513,27 +504,46 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # reached, therefor 'sort-on' does not happen in the
                 # context of text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                if ((len(rs) / 4) > len(sort_index)):
-                    # if the sorted index has a quarter as many keys as
-                    # the result set
-                    for k, intset in sort_index.items():
-                        # We have an index that has a set of values for
-                        # each sort key, so we interset with each set and
-                        # get a sorted sequence of the intersections.
-
-                        # This only makes sense if the number of
-                        # keys is much less then the number of results.
-                        intset = intersection(rs, intset)
-                        if intset:
-                            if hasattr(intset, 'keys'): intset=intset.keys() 
-                            append((k,LazyMap(self.__getitem__, intset)))
-                else:
-                    if hasattr(rs, 'keys'): rs=rs.keys()
-                    for did in rs:
-                        append((sort_index.keyForDocument(did),
-                               LazyMap(self.__getitem__,[did])))
+                self._build_sorted_results(rs,sort_index,append)
 
         return used
+
+    def _build_sorted_results(self,rs,sort_index,append):
+        # The two 'for' loops in here contribute a significant
+        # proportion of the time to perform an indexed search.
+        # Try to avoid all non-local attribute lookup inside
+        # those loops.
+        _lazymap = LazyMap
+        _intersection = intersection
+        _self__getitem__ = self.__getitem__
+        _None = None
+        if ((len(rs) / 4) > len(sort_index)):
+            # if the sorted index has a quarter as many keys as
+            # the result set
+            for k, intset in sort_index.items():
+                # We have an index that has a set of values for
+                # each sort key, so we interset with each set and
+                # get a sorted sequence of the intersections.
+
+                # This only makes sense if the number of
+                # keys is much less then the number of results.
+                intset = _intersection(rs, intset)
+                if intset:
+                    keys = getattr(intset,'keys',_None)
+                    if keys is not _None:
+                        # Is this ever true?
+                        intset = keys()
+                    append((k,_lazymap(_self__getitem__, intset)))
+        else:
+            if hasattr(rs, 'keys'): rs=rs.keys()
+            _sort_index_keyForDocument = sort_index.keyForDocument
+            _keyerror = KeyError
+            for did in rs:
+                try:
+                    append((_sort_index_keyForDocument(did),
+                           _lazymap(_self__getitem__,[did])))
+                except _keyerror:
+                    pass
 
     def searchResults(self, REQUEST=None, used=None, **kw):
         
@@ -595,7 +605,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     so.lower() in ('reverse', 'descending')):
                     r.reverse()
 
-                r=map(lambda i: i[1], r)
+                r= [i[1] for i in r]
                 r=LazyCat(r, reduce(lambda x,y: x+len(y), r, 0))
 
         return r
