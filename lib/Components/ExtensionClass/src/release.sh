@@ -6,5 +6,8 @@ M=ExtensionClass
 StructuredText < $M.stx > $M.html
 rm -rf "$M-$R"
 mkdir  "$M-$R"
-tar -c -R release.fl -f - | (cd "$M-$R"; tar xvf -)
+for f in `cat release.fl`; do
+  cp $f "$M-$R/"
+done
+
 tar cvf - "$M-$R" | gzip > "$M-$R.tar.gz"

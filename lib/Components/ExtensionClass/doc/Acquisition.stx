@@ -53,8 +53,8 @@ Acquisition
     cannot be found in 'a'.
 
     Aquisition wrappers provide access to the wrapped objects
-    through the attributes 'aq_parent' and 'aq_self'.  In the
-    example above, the expressions::
+    through the attributes 'aq_parent', 'aq_self', 'aq_base'.  
+    In the example above, the expressions::
       
        'c.a.aq_parent is c'
 
@@ -68,6 +68,10 @@ Acquisition
 
     evaluates to false, because the expression 'c.a' evaluates
     to an acquisition wrapper around 'c' and 'a', not 'a' itself.
+
+    The attribute 'aq_base' is similar to 'aq_self'.  Wrappers may be
+    nested and 'aq_self' may be a wrapped object.  The 'aq_base'
+    attribute is the underlying object with all wrappers removed.
 
   Acquisition Control
 

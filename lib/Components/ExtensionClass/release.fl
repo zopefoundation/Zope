@@ -1,7 +1,16 @@
 ExtensionClass.stx
 ExtensionClass.html
+Installation
+Installation.html
+Acquisition.stx
+Acquisition.html
+MultiMapping.stx
+MultiMapping.html
+release.notes
+release.html
 README
-Makefile.pre.in
+Makefile.pre.in-1.4
+Makefile.pre.in-1.5
 Setup
 ExtensionClass.c
 ExtensionClass.h
