@@ -198,6 +198,12 @@ Zope Changes
 	- A bug in FileStorage and DemoStorage didn't show you more
 	  than the first 20 previous transactions in the Undo log.
 
+        - An incorrect contents view was returned after adding a File
+	  object.
+
+        - On the cache parameters page, the number of bytes, rather
+          than the number of objects in the database was shown.
+
       Note:
 
         The section for Zope 2.0 alpha 4 did not mention that ZCatalog 
