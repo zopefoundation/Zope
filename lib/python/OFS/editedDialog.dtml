@@ -1,0 +1,29 @@
+<HTML><HEAD><TITLE>Changed: <!--#var title_or_id--></TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<FORM ACTION="<!--#var URL2-->/manage_main" METHOD="GET" 
+      TARGET="manage_main">
+<TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
+<TR>
+  <TD VALIGN="TOP">
+  <BR>
+  <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
+  </TD>
+  <TD VALIGN="TOP">
+  <BR><BR>
+  <CENTER>
+  <!--#var title_and_id--> has been successfully edited.
+  </CENTER>
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  </TD>
+  <TD VALIGN="TOP">
+  <CENTER>
+  <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
+  </CENTER>
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY></HTML>
