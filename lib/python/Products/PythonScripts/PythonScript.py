@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -103,6 +103,10 @@ from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from zLOG import LOG, ERROR, INFO
+
+import imp
+Python_magic = imp.get_magic()
+del imp
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 
@@ -257,11 +261,15 @@ class PythonScript(Script, Historical, Cacheable):
             fc = f.func_code
             self._setFuncSignature(f.func_defaults, fc.co_varnames,
                                    fc.co_argcount)
+            self.Python_magic = Python_magic
         return f
 
     def _makeFunction(self, allowSideEffect=0):
         from Guarded import GuardedBlock, theGuard, safebin
         from Guarded import WriteGuard, ReadGuard
+        # Was the cached bytecode compiled with a compatible Python?
+        if getattr(self, Python_magic, None) != Python_magic:
+            allowSideEffect = 1
         if allowSideEffect:
             self._checkCBlock(GuardedBlock)
             self.ZCacheable_invalidate()
