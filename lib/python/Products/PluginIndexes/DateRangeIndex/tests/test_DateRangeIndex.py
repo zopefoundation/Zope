@@ -13,6 +13,7 @@
 
 import Zope
 import unittest
+import sys
 
 from Products.PluginIndexes.DateRangeIndex.DateRangeIndex import DateRangeIndex
 
@@ -111,6 +112,13 @@ class DRI_Tests( unittest.TestCase ):
             for result, match in map( None, results, matches ):
                 assert work.getEntryForObject( result ) == match.datum()
 
+    def test_longdates( self ):
+        self.assertRaises(ValueError, self._badlong )
+
+    def _badlong(self):
+        work = DateRangeIndex ('work', 'start', 'stop' )
+        bad = Dummy( 'bad', sys.maxint + 1, sys.maxint + 1 )
+        work.index_object( 0, bad )
 
 def test_suite():
     suite = unittest.TestSuite()
