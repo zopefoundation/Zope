@@ -669,8 +669,9 @@ class TALGenerator:
             else:
                 repldict = {}
             if i18nattrs:
-                i18nattrs = _parseI18nAttributes(i18nattrs, attrlist, repldict, self.position,
-                                                 self.xml, self.source_file)
+                i18nattrs = _parseI18nAttributes(i18nattrs, attrlist, repldict,
+                                                 self.position, self.xml,
+                                                 self.source_file)
             else:
                 i18nattrs = {}
             # Convert repldict's name-->expr mapping to a
@@ -825,19 +826,20 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position,
             attr = attr.lower()
         if attr in dic:
             raise TALError(
-                "attribute may only be specified once in i18n:attributes: %r"
-                % attr,
+                "attribute may only be specified once in i18n:attributes: "
+                + attr,
                 position)
         dic[attr] = msgid
 
     d = {}
     if ';' in i18nattrs:
         i18nattrlist = i18nattrs.split(';')
-        i18nattrlist = [attr.strip().split() for attr in i18nattrlist if attr.strip()]
+        i18nattrlist = [attr.strip().split() 
+                        for attr in i18nattrlist if attr.strip()]
         for parts in i18nattrlist:
             if len(parts) > 2:
-                raise TALError("illegal i18n:attributes specification: %r" % parts,
-                               position)
+                raise TALError("illegal i18n:attributes specification: %r"
+                                % parts, position)
             if len(parts) == 2:
                 attr, msgid = parts
             else:
@@ -849,16 +851,13 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position,
         i18nattrlist = i18nattrs.split()
         if len(i18nattrlist) == 2:
             staticattrs = [attr[0] for attr in attrlist if len(attr) == 2]
-            if (not i18nattrlist[1] in staticattrs) and (not i18nattrlist[1] in repldict):
+            if (not i18nattrlist[1] in staticattrs) and (
+                not i18nattrlist[1] in repldict):
                 attr, msgid = i18nattrlist
                 addAttribute(d, attr, msgid, position, xml)    
             else:
                 import warnings
-                warnings.warn('Space separated attributes in i18n:attributes'
-                + ' are deprecated (i18n:attributes="value title"). Please use'
-                + ' semicolon to separate attributes'
-                + ' (i18n:attributes="value; title").'
-                + '\nFile %s at row, column %s\nAttributes %s'
+                warnings.warn(I18N_ATTRIBUTES_WARNING
                 % (source_file, str(position), i18nattrs)
                 , DeprecationWarning)
                 msgid = None
@@ -866,17 +865,20 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position,
                     addAttribute(d, attr, msgid, position, xml)    
         else:    
             import warnings
-            warnings.warn('Space separated attributes in i18n:attributes'
-            + ' are deprecated (i18n:attributes="value title"). Please use'
-            + ' semicolon to separate attributes'
-            + ' (i18n:attributes="value; title").'
-            + '\nFile %s at row, column %s\nAttributes %s'
+            warnings.warn(I18N_ATTRIBUTES_WARNING
             % (source_file, str(position), i18nattrs)
             , DeprecationWarning)
             msgid = None
             for attr in i18nattrlist:
                 addAttribute(d, attr, msgid, position, xml)    
     return d
+
+I18N_ATTRIBUTES_WARNING = (
+    'Space separated attributes in i18n:attributes'
+    ' are deprecated (i18n:attributes="value title"). Please use'
+    ' semicolon to separate attributes'
+    ' (i18n:attributes="value; title").'
+    '\nFile %s at row, column %s\nAttributes %s')
 
 def test():
     t = TALGenerator()
