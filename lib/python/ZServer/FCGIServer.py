@@ -117,6 +117,7 @@ from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
 from types import StringType
+import thread
 
 tz_for_log = compute_timezone_for_log()
 
@@ -716,6 +717,7 @@ class FCGIServer(asyncore.dispatcher):
 class FCGIResponse(HTTPResponse):
   
     _tempfile=None
+    _templock=None
     _tempstart=0
     
     def setChannel(self, channel):
@@ -731,6 +733,7 @@ class FCGIResponse(HTTPResponse):
                     if type(l) is type(''): l=string.atoi(l)
                     if l > 128000:
                         self._tempfile=TemporaryFile()
+                        self._templock=thread.allocate_lock()
                 except: pass
                     
             stdout.write(str(self))
@@ -750,10 +753,14 @@ class FCGIResponse(HTTPResponse):
                 l=len(chunk)
                 b=self._tempstart
                 e=b+l
-                t.seek(b)
-                t.write(chunk)
+                self._templock.acquire()
+                try:
+                    t.seek(b)
+                    t.write(chunk)
+                finally:
+                    self._templock.release()
                 self._tempstart=e
-                stdout.write((file_part_producer(t,b,e), l))
+                stdout.write((file_part_producer(t,self._templock,b,e), l))
 
     def _finish(self):
         self.channel.reply_code=self.status

@@ -128,8 +128,9 @@ class file_part_producer:
     # match http_channel's outgoing buffer size
     out_buffer_size = 1<<16
     
-    def __init__(self, file, start, end):
+    def __init__(self, file, lock, start, end):
         self.file=file
+        self.lock=lock
         self.start=start
         self.end=end
 
@@ -140,12 +141,17 @@ class file_part_producer:
         if start >= end: return ''
 
         file=self.file
-        file.seek(start)
         size=end-start
         bsize=self.out_buffer_size
         if size > bsize: size=bsize
 
-        data = file.read(size)
+        self.lock.acquire()
+        try:
+            file.seek(start)
+            data = file.read(size)
+        finally:
+            self.lock.release()
+            
         if data:
             start=start+len(data)
             if start < end:

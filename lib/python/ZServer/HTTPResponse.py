@@ -91,7 +91,7 @@ and logging duties.
 """
 import time, regex, string, sys, tempfile
 from cStringIO import StringIO
-
+import thread
 from ZPublisher.HTTPResponse import HTTPResponse, end_of_header_search
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
@@ -215,7 +215,9 @@ class ZServerHTTPResponse(HTTPResponse):
         return string.join(headersl,'\r\n')
 
     _tempfile=None
+    _templock=None
     _tempstart=0
+    
     def write(self,data):
         """\
         Return data as a stream
@@ -240,6 +242,7 @@ class ZServerHTTPResponse(HTTPResponse):
                     if type(l) is type(''): l=string.atoi(l)
                     if l > 128000:
                         self._tempfile=tempfile.TemporaryFile()
+                        self._templock=thread.allocate_lock()
                 except: pass
                     
             stdout.write(str(self))
@@ -254,10 +257,14 @@ class ZServerHTTPResponse(HTTPResponse):
             l=len(data)
             b=self._tempstart
             e=b+l
-            t.seek(b)
-            t.write(data)
+            self._templock.acquire()
+            try:
+                t.seek(b)
+                t.write(data)
+            finally:
+                self._templock.release()
             self._tempstart=e
-            stdout.write(file_part_producer(t,b,e), l)
+            stdout.write(file_part_producer(t,self._templock,b,e), l)
     
     def _finish(self):
         stdout=self.stdout
