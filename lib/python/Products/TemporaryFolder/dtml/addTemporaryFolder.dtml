@@ -2,7 +2,7 @@
 
 <dtml-var "manage_form_title(this(), _, 
 	form_title='Add Temporary Folder',
-	help_product='Zope Help',
+	help_product='TemporaryFolder',
 	help_topic='TemporaryFolder.stx'
 	)">
 
