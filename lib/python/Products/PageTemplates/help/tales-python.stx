@@ -88,11 +88,23 @@ TALES Python expressions
       'math' -- The standard "Python math
       module":http://www.python.org/doc/current/lib/module-math.html.
 
-      'Products.PythonScripts.standard' -- XXX
+      'Products.PythonScripts.standard' -- Various HTML formatting
+      functions available in DTML. See XXX for more information.
 
-      ZPTUtils.* -- XXX
+      'ZPTUtils.Batch' -- Batch processing facilities similar to those
+      offered by 'dtml-in'. See XXX for more information.
 
-      AccessControl.XXX -- XXX
+      'ZTUtils.Tree' -- Tree processing facilities similar to those
+      offered by 'dtml-tree'. See XXX for more information.
+
+      'ZTUtils.SimpleTree' -- Simplified tree processing facilities
+      similar to those offered by 'dtml-tree'. See XXX for more
+      information.
+
+      'ZTUtils.Zope' -- XXX what is this package? See XXX for more
+      information.
+
+      'AccessControl.XXX' -- XXX what is available from this package?
 
   Examples
 
@@ -121,6 +133,3 @@ TALES Python expressions
         13.56
       </p>
 
-  See Also
-
-    XXX
