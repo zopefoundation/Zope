@@ -114,7 +114,7 @@ Access Control
           'request' -- a mapping object that contains request information,
    
           'http_authorization' -- the value of the HTTP Authorization header
-	           or 'None' is no authorization header was provided, and 
+	           or 'None' if no authorization header was provided, and 
    
           'roles' -- a list of user role names
    
@@ -231,16 +231,6 @@ Function, method, and class objects
 	string -- python strings
     
 	required -- non-blank python strings
-    
-	regex -- Python case-sensitive regular expressions
-    
-	Regex -- Python case-insensitive regular expressions
-    
-	regexs -- Multiple Python case-sensitive regular expressions
-	          separated by spaces
-    
-	Regexs -- Multiple Python case-insensitive regular expressions
-	          separated by spaces
 
 	date -- Date-time values
 
@@ -383,7 +373,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.81 1998/03/24 14:18:47 jim Exp $"""
+$Id: Publish.py,v 1.82 1998/04/07 18:32:52 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -438,21 +428,22 @@ $Id: Publish.py,v 1.81 1998/03/24 14:18:47 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
-
-def main():
-    # The "main" program for this module
-    pass
-
-
-if __name__ == "__main__": main()
-
-import sys, os, string, cgi, regex, regsub, CGIResponse
+import sys, os, string, cgi, regex
 from string import *
 from CGIResponse import Response
 from urllib import quote, unquote
 from cgi import FieldStorage, MiniFieldStorage
+
+
+# Waaaa, I wish I didn't have to work this hard.
+try: from thread import allocate_lock
+except:
+    class allocate_lock:
+	def acquire(*args): pass
+	def release(*args): pass
+
 
 ListType=type([])
 StringType=type('')
@@ -473,7 +464,6 @@ except:
     class RequestContainer:
 	def __init__(self,**kw):
 	    for k,v in kw.items(): self.__dict__[k]=v
-
 
 class ModulePublisher:
 
@@ -631,62 +621,6 @@ class ModulePublisher:
 		self.request[key]=request_params[key]
 
 
-    def get_module_info(self, server_name, module_name, module):
-
-	# Let the app specify a realm
-	if hasattr(module,'__bobo_realm__'): realm=module.__bobo_realm__
-	else: realm=module_name
-
-	# Check whether tracebacks should be hidden:
-	if (hasattr(module,'__bobo_hide_tracebacks__')
-	    and not module.__bobo_hide_tracebacks__):
-	    CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
-	
-		
-	if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
-	else: bobo_before=None
-		
-	if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
-	else: bobo_after=None
-
-	# Get request data from outermost environment:
-	if hasattr(module,'__request_data__'):
-	    request_params=module.__request_data__
-	else: request_params=None
-
-	# Get initial group data:
-	inherited_groups=[]
-	if hasattr(module,'__allow_groups__'):
-	    groups=module.__allow_groups__
-	    inherited_groups.append(groups)
-	else: groups=None
-
-	web_objects=None
-	roles=UNSPECIFIED_ROLES
-	if hasattr(module,'bobo_application'):
-	    object=module.bobo_application
-	    if hasattr(object,'__allow_groups__'):
-		groups=object.__allow_groups__
-		inherited_groups.append(groups)
-	    else: groups=None
-	    if hasattr(object,'__roles__'): roles=object.__roles__
-	else:
-	    if hasattr(module,'web_objects'):
-		web_objects=module.web_objects
-		object=web_objects
-	    else: object=module
-	published=web_objects
-
-	try: doc=module.__doc__
-	except:
-	    if web_objects is not None: doc=' '
-	    else: doc=None
-	
-	return (bobo_before, bobo_after, request_params,
-		inherited_groups, groups, roles,
-		object, doc, published, realm)
-		
-
     def publish(self, module_name, after_list, published='web_objects',
 		imported_modules={}, module_dicts={},debug=0):
 
@@ -700,29 +634,10 @@ class ModulePublisher:
 	    cancel=request_get('CANCEL_ACTION','')
 	    if cancel: raise 'Redirect', cancel
 
-	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
-	self.module_name=module_name
-	server_name=request.SERVER_NAME
-
-	info_key=server_name, module_name
-	if module_dicts.has_key(info_key): 
-	    (bobo_before, bobo_after, request_params,
-	     inherited_groups, groups, roles,
-	     object, doc, published, realm
-	     ) = info = module_dicts[info_key]
-	else:
-	    info={}
-	    try:
-		exec 'import %s' % module_name in info
-		info=self.get_module_info(server_name, module_name,
-					  info[module_name])
-		module_dicts[info_key]=info
-		(bobo_before, bobo_after, request_params,
-		 inherited_groups, groups, roles,
-		 object, doc, published, realm
-		 ) = info
-	    except: raise ImportError, (
-		sys.exc_type, sys.exc_value, sys.exc_traceback)
+	(bobo_before, bobo_after, request_params,
+	 inherited_groups, groups, roles,
+	 object, doc, published, realm, module_name
+	 ) = get_module_info(module_name)
 	    
 	after_list[0]=bobo_after
 
@@ -954,6 +869,70 @@ class ModulePublisher:
 	result=apply(object,args) # Type s<cr> to step into published object.
 	return result
 
+_l=allocate_lock()
+def get_module_info(module_name, modules={},
+		    acquire=_l.acquire,
+		    release=_l.release,
+		    ):
+
+    if modules.has_key(module_name): return modules[module_name]
+
+    if module_name[-4:]=='.cgi': module_name=module_name[:-4]
+
+    acquire()
+    try:
+	module=__import__(module_name)
+    
+	realm=module_name
+		
+	if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
+	else: bobo_before=None
+		
+	if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
+	else: bobo_after=None
+    
+	# Get request data from outermost environment:
+	if hasattr(module,'__request_data__'):
+	    request_params=module.__request_data__
+	else: request_params=None
+    
+	# Get initial group data:
+	inherited_groups=[]
+	if hasattr(module,'__allow_groups__'):
+	    groups=module.__allow_groups__
+	    inherited_groups.append(groups)
+	else: groups=None
+    
+	web_objects=None
+	roles=UNSPECIFIED_ROLES
+	if hasattr(module,'bobo_application'):
+	    object=module.bobo_application
+	    if hasattr(object,'__allow_groups__'):
+		groups=object.__allow_groups__
+		inherited_groups.append(groups)
+	    else: groups=None
+	    if hasattr(object,'__roles__'): roles=object.__roles__
+	else:
+	    if hasattr(module,'web_objects'):
+		web_objects=module.web_objects
+		object=web_objects
+	    else: object=module
+	published=web_objects
+    
+	try: doc=module.__doc__
+	except:
+	    if web_objects is not None: doc=' '
+	    else: doc=None
+    
+	info= (bobo_before, bobo_after, request_params,
+		inherited_groups, groups, roles,
+		object, doc, published, realm, module_name)
+    
+	modules[module_name]=modules[module_name+'.cgi']=info
+	
+	return info
+    finally: release()
+
 def str_field(v):
     if type(v) is ListType:
 	return map(str_field,v)
@@ -1000,11 +979,20 @@ def field2string(v):
     else: v=str(v)
     return v
 
-def field2text(v, nl=regex.compile('\r\n\|\n\r'), sub=regsub.gsub):
+def field2text(v, nl=regex.compile('\r\n\|\n\r')):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    v=sub(nl,'\n',v)
-    return v
+    l=nl.search(v)
+    if l < 0: return v
+    r=[]
+    s=0
+    while l >= s:
+	r.append(v[s:l])
+	s=l+2
+	l=nl.search(v,s)
+    r.append(v[s:])
+	
+    return join(r,'\n')
 
 def field2required(v):
     if hasattr(v,'read'): v=v.read()
@@ -1034,38 +1022,13 @@ def field2long(v):
     if v: return atol(v)
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
-def field2Regex(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    if v: return regex.compile(v)
-
-def field2regex(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    if v: return regex.compile(v,regex.casefold)
-
-def field2Regexs(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    v= map(lambda v: regex.compile(v), split(v))
-    if v: return v
-
-def field2regexs(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    v= map(lambda v: regex.compile(v, regex.casefold), split(v))
-    if v: return v
-
 def field2tokens(v):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     return split(v)
 
-def field2lines(v, crlf=regex.compile('\r\n\|\n\r')):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    v=regsub.gsub(crlf,'\n',v)
-    return split(v,'\n')
+def field2lines(v):
+    return split(field2text(v),'\n')
 
 def field2date(v):
     from DateTime import DateTime
@@ -1284,6 +1247,7 @@ isCGI_NAME = {
 
 		
 
+parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
 		 result=None,
 		 qparmre=regex.compile(
@@ -1296,25 +1260,30 @@ def parse_cookie(text,
 		     '\([^\0- ;,=\"]+\)=\([^\0;-=\"]*\)'
 		     '\([\0- ]*[;,]\)?[\0- ]*\)'
 		     ),
+		 acquire=parse_cookie_lock.acquire,
+		 release=parse_cookie_lock.release,
 		 ):
 
     if result is None: result={}
     already_have=result.has_key
 
-    if qparmre.match(text) >= 0:
-	# Match quoted correct cookies
-	name=qparmre.group(2)
-	value=qparmre.group(3)
-	l=len(qparmre.group(1))
-    elif parmre.match(text) >= 0:
-	# Match evil MSIE cookies ;)
-	name=parmre.group(2)
-	value=parmre.group(3)
-	l=len(parmre.group(1))
-    else:
-	if not text or not strip(text): return result
-	raise "InvalidParameter", text
-    
+    acquire()
+    try:
+	if qparmre.match(text) >= 0:
+	    # Match quoted correct cookies
+	    name=qparmre.group(2)
+	    value=qparmre.group(3)
+	    l=len(qparmre.group(1))
+	elif parmre.match(text) >= 0:
+	    # Match evil MSIE cookies ;)
+	    name=parmre.group(2)
+	    value=parmre.group(3)
+	    l=len(parmre.group(1))
+	else:
+	    if not text or not strip(text): return result
+	    raise "InvalidParameter", text
+    finally: release()
+
     if not already_have(name): result[name]=value
 
     return apply(parse_cookie,(text[l:],result))
@@ -1376,31 +1345,40 @@ def publish_module(module_name,
     must_die=0
     status=200
     after_list=[None]
+    request=None
     try:
-	response=Response(stdout=stdout, stderr=stderr)
-	publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
-				    environ=environ)
-	response = publisher.response
-	request=publisher.request
-	try: response = publisher.publish(module_name,after_list,debug=debug)
-	finally: request.other={}
-    except SystemExit:
-	must_die=1
-	response.exception(must_die)
-    except ImportError, v:
-	if type(v)==TupleType and len(v)==3:
-	    sys.exc_type, sys.exc_value, sys.exc_traceback = v
-	must_die=1
-	response.exception(must_die)
-    except:
-	response.exception()
-	status=response.getStatus()
-    if response:
-	response=str(response)
-    if response: stdout.write(response)
+    	try:
+	    try:
+		response=Response(stdout=stdout, stderr=stderr)
+		publisher = ModulePublisher(
+		    stdin=stdin, stdout=stdout, stderr=stderr,
+		    environ=environ)
+		response = publisher.response
+		request=publisher.request
+	    finally:
+		pass
+	    response = publisher.publish(module_name,after_list,
+					 debug=debug)
+    	except SystemExit:
+	    must_die=1
+	    response.exception(must_die)
+    	except ImportError, v:
+	    if type(v)==TupleType and len(v)==3:
+		sys.exc_type, sys.exc_value, sys.exc_traceback = v
+	    must_die=1
+	    response.exception(must_die)
+    	except:
+	    response.exception()
+	    status=response.getStatus()
+    	if response:
+	    response=str(response)
+    	if response: stdout.write(response)
 
-    # The module defined a post-access function, call it
-    if after_list[0] is not None: after_list[0]()
+	# The module defined a post-access function, call it
+	if after_list[0] is not None: after_list[0]()
+
+    finally:
+	if request is not None: request.other={}
 
     if must_die:
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
