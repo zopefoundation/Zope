@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-import re, time, string, sys
+import re, time, sys
 import Globals
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, Explicit, aq_base
@@ -23,7 +23,6 @@ from zLOG import LOG, WARNING, BLATHER
 from AccessControl import ClassSecurityInfo
 import SessionInterfaces
 from SessionPermissions import *
-from types import StringType
 from common import DEBUG
 from BrowserIdManager import isAWellFormedBrowserId, getNewBrowserId,\
      BROWSERID_MANAGER_NAME
@@ -157,7 +156,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                     'Container path contains characters invalid in a Zope '
                     'object path'
                     )
-            self.obpath = string.split(path, '/')
+            self.obpath = path.split('/')
         elif type(path) in (type([]), type(())):
             self.obpath = list(path) # sequence
         else:
@@ -167,7 +166,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def getContainerPath(self):
         """ """
         if self.obpath is not None:
-            return string.join(self.obpath, '/')
+            return  '/'.join(self.obpath)
         return '' # blank string represents undefined state
     
     def _hasSessionDataObject(self, key):
@@ -215,7 +214,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # unrestrictedTraverse is also much faster.
             # hasattr hides conflicts
             if DEBUG and not getattr(self, '_v_wrote_dc_type', None):
-                args = string.join(self.obpath, '/')
+                args = '/'.join(self.obpath)
                 LOG('Session Tracking', BLATHER,
                     'External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
@@ -223,7 +222,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         except:
             raise SessionDataManagerErr, (
                 "External session data container '%s' not found." %
-                string.join(self.obpath,'/')
+                '/'.join(self.obpath)
                 )
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getRequestName')
@@ -260,7 +259,7 @@ class SessionDataManagerTraverser(Persistent):
         self._requestSessionName = requestSessionName
         self._sessionDataManager = sessionDataManagerName
 
-    def __call__(self, container, request, StringType=StringType):
+    def __call__(self, container, request):
         """
         This method places a session data object reference in
         the request.  It is called on each and every request to Zope in
@@ -269,7 +268,7 @@ class SessionDataManagerTraverser(Persistent):
         """
         try:
             sdmName = self._sessionDataManager
-            if not isinstance(sdmName, StringType):
+            if not isinstance(sdmName, str):
                 # Zopes v2.5.0 - 2.5.1b1 stuck the actual session data
                 # manager object in _sessionDataManager in order to use
                 # its getSessionData method.  We don't actually want to
