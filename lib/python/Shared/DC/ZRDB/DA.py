@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.26 1998/01/22 20:32:50 jim Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: DA.py,v 1.27 1998/01/22 20:50:53 jim Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -134,7 +134,7 @@ class DA(
 	report=HTML(
 	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
 	    '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
-	    '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>/n<hr>\n'
+	    '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
 	    '</body></html>'
 	    % (r,src))
 
@@ -348,6 +348,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.27  1998/01/22 20:50:53  jim
+# Fixed stupid typo in text output form.
+#
 # Revision 1.26  1998/01/22 20:32:50  jim
 # Fixed bug in testing code and added output of SQL query.
 #
