@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.11 1997/10/10 19:25:03 jeffrey Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Index.py,v 1.12 1997/12/02 19:34:39 jeffrey Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -45,7 +45,7 @@ class Index:
 	self._reindex()
 
     def clear(self):
-	self._init()
+	self._index=BTree()
 
     def _reindex(self,start=0):
 	"""Recompute index data for data with ids >= start."""
@@ -186,6 +186,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.12  1997/12/02 19:34:39  jeffrey
+# fixed buglet in .clear() method
+#
 # Revision 1.11  1997/10/10 19:25:03  jeffrey
 # fixed min:max buglet
 #
