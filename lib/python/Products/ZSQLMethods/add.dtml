@@ -1,0 +1,47 @@
+<HTML><HEAD><TITLE>New SQL Method</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>New SQL Method</H2>
+
+<!--#if SQLConnectionIDs-->
+
+
+<form action="manage_addAqueductSQLMethod" method="post">
+
+<table>     
+            
+<tr>    <th>Id</th>
+        <td><input name="id" size="40"></td></tr>
+<tr>	<th><em>Title<em></th>
+        <td><input name="title" size="40"></td></tr>
+<tr>	<th>Connection id</th>
+        <td><select name="connection_id">
+              <!--#in SQLConnectionIDs-->
+                <option value="<!--#var sequence-item-->">
+                <!--#var sequence-key--></option>
+              <!--#/in-->
+            </select></td></tr>
+<tr>    <th><em>Arguments<em></th>
+        <td><input name="arguments" size="40"></td></tr>
+<tr>    <td colspan=2><strong>Query template</strong><br>
+            <textarea name="template:text" rows=9 cols=50>
+select *
+from data
+</textarea></td></tr>
+
+<tr><td><input type="hidden" name="key" value=""></td><td>
+<input type="SUBMIT" name="SUBMIT" value="Add">
+</td></tr>
+
+</table>
+</form>
+
+
+<!--#else-->
+<em><strong>Warning:</strong>
+There are no SQL database connections.  You need
+to add an Aqueduct SQL database connection
+before you can use an Aqueduct SQL database adapter.
+</em>
+<!--#/if-->
+</body></html>

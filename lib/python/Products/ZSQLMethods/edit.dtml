@@ -1,0 +1,60 @@
+<HTML><HEAD><TITLE>Edit <!--#var title_or_id--></TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<H2>Edit <!--#var title_or_id--></H2>
+
+
+<!--#if SQLConnectionIDs-->
+<!--#if connectionIsValid-->
+   <!--#if connected--><!--#else-->
+      <strong>Warning:</strong>
+      The database connection used by this method is currently not
+      open.
+   <!--#/if-->
+<!--#else-->
+      <strong>Warning:</strong>
+      The database connection for this method cannot be found!
+<!--#/if-->
+
+<form action="manage_edit" method="POST">
+
+<table>
+
+<tr>	<th>ID</th>
+        <td><!--#var id--></td></tr>
+<tr>	<th><em>Title</em></th>
+        <td><input name="title" size="40"
+             value="<!--#var title-->"></td></tr>
+<tr>	<th>Connection id</th>
+        <td><select name="connection_id">
+              <!--#in SQLConnectionIDs-->
+                <option value="<!--#var sequence-item-->"
+                 <!--#if expr="connection_id==_vars['sequence-item']"-->
+                 SELECTED<!--#/if-->>
+                <!--#var sequence-key--></option>
+              <!--#/in-->
+            </select></td></tr>
+<tr>	<th><em>Arguments</em></th>
+	<td><input name="arguments" size="40"
+             value="<!--#var arguments_src-->"></td>
+		</tr>
+<tr>	<td colspan=2><strong>Query template</strong><br>
+	    <textarea name="template:text" rows=10 cols=50>
+<!--#var src fmt=html-quote-->
+</textarea></td></tr>
+
+<tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Change"></td></tr>
+</table>
+
+</form>
+
+<!--#else-->
+<em><strong>Warning:</strong>
+There are no SQL database connections.  You need
+to add an Aqueduct SQL database connection
+before you can use an Aqueduct SQL database adapter.
+</em>
+<!--#/if-->
+</body></html>
+
+
