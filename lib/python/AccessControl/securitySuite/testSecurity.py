@@ -85,7 +85,7 @@
 # 
 ##############################################################################
 
-# $Id: testSecurity.py,v 1.8 2001/10/08 14:57:43 andreasjung Exp $
+# $Id: testSecurity.py,v 1.9 2001/10/09 14:40:53 andreasjung Exp $
 
 import os, sys
 execfile(os.path.join(sys.path[0],'framework.py'))
@@ -203,6 +203,14 @@ USERS = (
     User('manager','123',('Manager',))
 )
 
+def getAuth(username):
+
+    for user in USERS:
+        if user.username==username:
+            return "%s:%s" % (user.username,user.password)
+
+    raise KeyError,"no such username: %" % username
+
 
 class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
 
@@ -297,8 +305,31 @@ class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
     def testZPublisherAccess(self):
         """ test access through ZPublisher """
 
-        _r = [ ('/test/f1/',None,200),
-               ('/test/f1/anonobj','manager:123',200),
+        _r = [
+               ('/test/f1/',                        None,    200),
+               ('/test/f2',                         None,    200),
+               ('/test/f2/f3',                      None,    200),
+               ('/test/f2/f3/obj3/public_func',     None,    200),
+               ('/test/f2/f3/obj3/protected_func',  None,    401),
+               ('/test/f2/f3/obj3/manage_func',     None,    401),
+               ('/test/f2/f3/obj3/private_func',    None,    401),
+
+               ('/test/f1/',                        getAuth('manager'),    200),
+               ('/test/f2',                         getAuth('manager'),    200),
+               ('/test/f2/f3',                      getAuth('manager'),    200),
+               ('/test/f2/f3/obj3/public_func',     getAuth('manager'),    200),
+               ('/test/f2/f3/obj3/protected_func',  getAuth('manager'),    200),
+               ('/test/f2/f3/obj3/manage_func',     getAuth('manager'),    200),
+               ('/test/f2/f3/obj3/private_func',    getAuth('manager'),    401),
+
+               ('/test/f1/',                        getAuth('owner'),    200),
+               ('/test/f2',                         getAuth('owner'),    200),
+               ('/test/f2/f3',                      getAuth('owner'),    200),
+               ('/test/f2/f3/obj3/public_func',     getAuth('owner'),    200),
+               ('/test/f2/f3/obj3/protected_func',  getAuth('owner'),    200),
+               ('/test/f2/f3/obj3/manage_func',     getAuth('owner'),    401),
+               ('/test/f2/f3/obj3/private_func',    getAuth('owner'),    401),
+
               ]
 
         for path,auth,expected in _r:

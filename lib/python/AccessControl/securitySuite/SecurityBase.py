@@ -90,7 +90,7 @@ import ZPublisher, ResultObject
 
 class SecurityBase(unittest.TestCase) :
     """ Base class for all security tests 
-    $Id: SecurityBase.py,v 1.2 2001/10/09 14:16:34 andreasjung Exp $
+    $Id: SecurityBase.py,v 1.3 2001/10/09 14:40:53 andreasjung Exp $
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
@@ -180,7 +180,7 @@ class SecurityBase(unittest.TestCase) :
 
         if expected_code != res.code:
            raise AssertionError, \
-              self._request_debug(args,kw) 
+              self._request_debug(res,expected_code,args,kw) 
 
 
     ################################################################
@@ -205,9 +205,11 @@ class SecurityBase(unittest.TestCase) :
         return s
 
 
-    def _request_debug(self,*args,**kw):
+    def _request_debug(self,res,expected,args,kw):
+        
         s = 'Args: %s' % str(args)        
         s+= ', KW: %s' % str(kw)
+        s+= '\n%s\n' % res.__str__(with_output=0,expected=expected)
 
         return s
  

@@ -88,17 +88,18 @@ class ResultObject:
     """ result object used for keeping results from the 
         ZPublisher.Zope() calls 
 
-        $Id: ResultObject.py,v 1.1 2001/10/08 14:49:45 andreasjung Exp $
+        $Id: ResultObject.py,v 1.2 2001/10/09 14:40:53 andreasjung Exp $
     """
 
-    def __str__(self,expected=-1):
+    def __str__(self,expected=-1,with_output=1):
         s  = '\n'
         s+= '-'*78
         s+= "\nRequest: %s" % self.request
         s+= "\nUser: %s" % self.user
         s+= "\nExpected: %s" % expected + "  got: %s %s" % (self.code,self.return_text)
-        s+= "\nOutput:"
-        s+= self.output
+        if with_output:
+            s+= "\nOutput:"
+            s+= self.output
         s+= "\n"
 
         return s
