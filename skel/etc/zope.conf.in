@@ -43,6 +43,23 @@ instancehome $INSTANCE
 #    clienthome /home/chrism/projects/sessions/var
 
 
+# Directive: products
+#
+# Description:
+#     Name of a directory that contains product packages.  This
+#     directive may be used as many times as needed to add additional
+#     collections of products.  Each directory identified will be
+#     added to the __path__ of the Products package.
+#
+# Default: (none)
+#
+# Example:
+#
+#    products /home/chrism/projects/myproducts
+
+products $INSTANCE/Products
+
+
 # Directive: debug-mode
 #
 # Description:

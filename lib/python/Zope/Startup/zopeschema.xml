@@ -179,6 +179,14 @@
     </description>
   </key>
 
+  <multikey name="products" datatype="existing-directory">
+    <description>
+      This specifies additional product directories which are added to
+      Products.__path__.  Directories are added in the order in which
+      they are specified.
+    </description>
+  </multikey>
+
   <key name="structured-text-header-level" datatype="integer" default="3"
        handler="structured_text_header_level"/>
 
