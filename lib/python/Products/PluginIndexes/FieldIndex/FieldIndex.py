@@ -11,24 +11,15 @@
 # 
 ##############################################################################
 
-"""Simple column indices"""
+"""Simple column indices
 
-__version__='$Revision: 1.8 $'[11:-2]
-
-from zLOG import LOG, ERROR
-from types import StringType, ListType, IntType, TupleType
-
-from BTrees.OOBTree import OOBTree, OOSet
-from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IITreeSet, IISet, union
-import BTrees.Length
+$Id: FieldIndex.py,v 1.9 2002/06/20 20:00:34 jeremy Exp $
+"""
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.UnIndex import UnIndex
 
 from Globals import DTMLFile
-
-_marker = []
 
 class FieldIndex(UnIndex):
     """Field Indexes"""
