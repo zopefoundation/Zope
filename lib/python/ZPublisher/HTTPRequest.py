@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -636,6 +636,7 @@ class HTTPRequest(BaseRequest):
         try: object=req.traverse(path)
         except: rsp.exception(abort=0)
         if object is None:
+            req.close()
             raise rsp.errmsg, sys.exc_value
 
         # The traversal machinery may return a "default object"
