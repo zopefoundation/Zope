@@ -8,13 +8,15 @@ domain-specific customization of web environments.
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog
 import OFS.SimpleItem, os
-from string import split, join
+from string import split, join, find
 import AccessControl.Role
 	    
-braindir=SOFTWARE_HOME+'/Extensions'    
 modules={}
 
 manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
+
+path_split=os.path.split
+exists=os.path.exists
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder"""
@@ -73,11 +75,23 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 	
 	try: m=modules[module]
 	except:
-	    d,n = os.path.split(module)
+	    d,n = path_split(module)
 	    if d: raise ValueError, (
-	    'The file name, %s, should be a simple file name' % module)
+		'The file name, %s, should be a simple file name' % module)
 	    m={}
-	    exec open("%s/%s.py" % (braindir, module)) in m
+	    d=find(n,'.')
+	    if d > 0:
+		d,n=n[:d],n[d+1:]
+		n=("%s/lib/python/Products/%s/Extensions/%s.py"
+		   % (SOFTWARE_HOME,d,n))
+		__traceback_info__=n, module
+		if exists(n):
+		    exec open(n) in m
+		else:	    
+		    exec open("%s/Extensions/%s.py" %
+			      (SOFTWARE_HOME, module)) in m
+	    else:
+		exec open("%s/Extensions/%s.py" % (SOFTWARE_HOME, module)) in m
 	    modules[module]=m
 
 	f=m[self._function]
@@ -129,3 +143,6 @@ class FuncCode:
     def __cmp__(self,other):
 	return cmp((self.co_argcount, self.co_varnames),
 		   (other.co_argcount, other.co_varnames))
+
+import __init__
+__init__.need_license=1
