@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.159 2001/10/19 13:37:15 Brian Exp $'''
-__version__='$Revision: 1.159 $'[11:-2]
+$Id: Application.py,v 1.160 2001/10/19 13:40:14 Brian Exp $'''
+__version__='$Revision: 1.160 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -557,7 +557,7 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
             if not exists(path_join(package_dir, '__init__.py')):
                 if not exists(path_join(package_dir, '__init__.pyc')):
                     if not exists(path_join(package_dir, '__init__.pyo')):
-                    return
+                        return
 
             pname="Products.%s" % product_name
             try:
@@ -636,7 +636,7 @@ def install_product(app, product_dir, product_name, meta_types,
             if not exists(path_join(package_dir, '__init__.py')):
                 if not exists(path_join(package_dir, '__init__.pyc')):
                     if not exists(path_join(package_dir, '__init__.pyo')):
-                    return
+                        return
             try:
                 product=__import__("Products.%s" % product_name,
                                    global_dict, global_dict, silly)
