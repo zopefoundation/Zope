@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.7 1997/08/29 18:39:30 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Application.py,v 1.8 1997/09/08 23:38:58 brian Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Folder, regex
 import Globals
@@ -20,15 +20,23 @@ from string import lower, find
 from AccessControl.User import UserFolder
 
 class Application(Folder.Folder):
-
     title='Site Studio'
     id   =title
-#    __roles__=None
     web__form__method='GET'
-    manage_options=Folder.Folder.manage_options+(
-	{'icon':'App/arrow.jpg', 'label':'Application Management',
-	 'action':'app/manage',   'target':'_top'},
-	)
+
+    manage_options=(
+    {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
+     'action':'manage_main',   'target':'manage_main'},
+    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
+     'action':'manage_propertiesForm',   'target':'manage_main'},
+    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
+     'action':'manage_rolesForm',   'target':'manage_main'},
+    {'icon':'OFS/Help_icon.gif', 'label':'Control Panel',
+     'action':'app/manage',   'target':'_top'},
+    {'icon':'OFS/Help_icon.gif', 'label':'Help',
+     'action':'manage_help',   'target':'_new'},
+    )
+
     def folderClass(self): return Folder.Folder
 
     def __class_init__(self): pass
@@ -136,6 +144,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.8  1997/09/08 23:38:58  brian
+# Style mods
+#
 # Revision 1.7  1997/08/29 18:39:30  brian
 # Added role management and fixed a few bugs:
 #   o images/manage went nowhere
