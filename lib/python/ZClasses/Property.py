@@ -132,7 +132,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         <!--#in %s-->
            <!--#var sequence-item-->
         <!--#in %s-->
-        """
+        """ % (id, id)
 
     def manage_createView(self, id, title='', ps_view_type=None, REQUEST=None):
         """Create a view of a property sheet
