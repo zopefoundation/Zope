@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -112,7 +112,8 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
     __ac_permissions__=(
         ('View',                             ('HEAD',)),
-        ('Access contents information',      ('PROPFIND',)),
+        ('WebDAV access',                    ('PROPFIND',),
+         ('Anonymous', 'Manager')),
         ('Manage properties',                ('PROPPATCH',)),
         ('Delete objects',                   ('DELETE',)),
         ('WebDAV Lock items',                ('LOCK',)),
