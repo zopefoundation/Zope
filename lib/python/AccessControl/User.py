@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -592,24 +592,25 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
 addr_match=regex.compile('[0-9\.\*]*').match
 host_match=regex.compile('[A-Za-z0-9\.\*]*').match
 
+
 def domainSpecMatch(spec, request):
+    host=''
+    addr=''
 
     if request.has_key('REMOTE_HOST'):
         host=request['REMOTE_HOST']
-    else: host=''
 
     if request.has_key('REMOTE_ADDR'):
         addr=request['REMOTE_ADDR']
-    else: addr=''
 
     if not host and not addr:
         return 0
 
     if not host:
-        try: host=socket.gethostbyaddr(addr)[0]
+        try:    host=socket.gethostbyaddr(addr)[0]
         except: pass
     if not addr:
-        try: addr=socket.gethostbyname(host)
+        try:    addr=socket.gethostbyname(host)
         except: pass
 
     _host=split(host, '.')
@@ -623,8 +624,6 @@ def domainSpecMatch(spec, request):
         _sz=len(_ob)
 
         if addr_match(ob)==sz:
-            if _sz != _alen:
-                continue
             fail=0
             for i in range(_sz):
                 a=_addr[i]
