@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.82 2000/05/11 18:54:16 jim Exp $'''
-__version__='$Revision: 1.82 $'[11:-2]
+$Id: DA.py,v 1.83 2000/05/12 15:06:23 brian Exp $'''
+__version__='$Revision: 1.83 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -429,7 +429,7 @@ class DA(
 
         security=getSecurityManager()
         security.addContext(self)
-        try: query=apply(self.template, (p, argdata))
+        try:     query=apply(self.template, (p,), argdata)
         finally: security.removeContext(self)
 
         if src__: return query
