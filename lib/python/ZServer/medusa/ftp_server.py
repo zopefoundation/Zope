@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.6 1999/07/20 16:53:49 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.7 1999/07/26 07:08:43 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -853,15 +853,12 @@ class xmit_channel (asynchat.async_chat):
 		self.channel = channel
 		self.client_addr = client_addr
 		asynchat.async_chat.__init__ (self)
-		
-#	def __del__ (self):
-#		print 'xmit_channel.__del__()'
-
-	def log (*args):
-		pass
 
 	def readable (self):
-		return not self.connected
+		return 0
+
+	def handle_connect(self):
+		pass
 
 	def writable (self):
 		return 1
