@@ -59,4 +59,16 @@ ZCatalog
        'pghandler' which must be a handler instance implementing the 
        IProgressHandler interface (see ProgressHandler.py). This can be useful
        to provide logging during long running operations.
+
+       Example to reindex a catalog using zopectl:
+
+           > zopectl debug    
+           >
+           From the zopectl shell: 
+           > from Products.ZCatalog.ProgressHandler import StdoutHandler
+           > from Products.ZCatalog.ProgressHandler import ZLogHandler
+           > cat = app.cmfsite.portal_catalog
+           > cat.reindexIndex('SearchableText', None, pghandler=StdoutHandler())
+           > cat.refreshCatalog(pghandler=ZLogHandler())
+
  
