@@ -57,6 +57,8 @@ Zope Changes
       - added getEntryForObject() for PathIndexes. Reworked PathIndex's
         internal inverse index.
 
+      - API help topics can now document functions as well as classes.
+
     Bugs fixed
 
       - Collector #2532: ZCatalog.availableSplitters is now protected
