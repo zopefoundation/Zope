@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.13 1998/11/23 11:47:19 jim Exp $
+  $Id: ExtensionClass.h,v 1.14 1999/10/14 13:13:49 jim Exp $
 
   Extension Class Definitions
 
@@ -293,7 +293,8 @@ typedef struct {
    */
 #define PyExtensionClass_Export(D,N,T) \
  if(PyExtensionClassCAPI || \
-   (PyExtensionClassCAPI= PyCObject_Import("ExtensionClass","CAPI"))) \
+   (PyExtensionClassCAPI= (struct ExtensionClassCAPIstruct*) \
+                          PyCObject_Import("ExtensionClass","CAPI"))) \
    { PyExtensionClassCAPI->Export(D,N,&T); }
 
 /* Convert a method list to a method chain.  */
