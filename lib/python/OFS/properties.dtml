@@ -45,23 +45,23 @@ values and click "Save Changes".
    value="<!--#var "getProperty(id)" html_quote-->">
   <!--#elif "type=='boolean'"-->
   <input type="checkbox" name="<!--#var id-->:boolean" size="35"
-   <!--#if "_[id]"-->CHECKED<!--#/if-->>
+   <!--#if "getProperty(id)"-->CHECKED<!--#/if-->>
   <!--#elif "type=='tokens'"-->
   <input type="text" name="<!--#var id-->:tokens" size="35"
-   value="<!--#in "_[id]"--><!--#var sequence-item--> <!--#endin-->">
+   value="<!--#in "getProperty(id)"--><!--#var sequence-item--> <!--#endin-->">
   <!--#elif "type=='text'"-->
   <textarea name="<!--#var id-->:text" rows="6" cols="35"><!--#var 
-   "_[id]"--></textarea>
+   "getProperty(id)"--></textarea>
   <!--#elif "type=='lines'"-->
   <textarea name="<!--#var id-->:lines" rows="6" cols="35"><!--#in
-  "_[id]"--><!--#var sequence-item-->
+  "getProperty(id)"--><!--#var sequence-item-->
 <!--#endin--></textarea>
   <!--#else-->
   <em>Unknown property type</em>
   <!--#endif-->
   <!--#else-->
   <table border="1">
-  <tr><td><!--#var "_[id]"--></td></tr>
+  <tr><td><!--#var "getProperty(id)"--></td></tr>
   </table>
   <!--#endif-->
   </td>
