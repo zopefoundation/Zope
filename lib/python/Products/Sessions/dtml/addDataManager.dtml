@@ -15,7 +15,7 @@ objects.  Developers interact with a Session Data Manager in order to store
 and retrieve information during a user session.  A Session Data Manager
 communicates with a Browser Id Manager to determine the session information
 for the current user, and hands out Session Data Objects related to that
-user obtained from a Transient Object Container.
+user.
 </div>
 </tr>
 <TR>
@@ -58,7 +58,7 @@ user obtained from a Transient Object Container.
   </td>
   <td align="LEFT" valign="TOP">
   	<input class="form-element" type="TEXT" name="requestName"
-		value="SESSION">
+         value="SESSION">
   </td>
 </tr>
 

@@ -2,32 +2,24 @@ Browser Id Manager - Change
 
   Form options available are:
 
-    title -- the browser id manager title.
+    Title -- the browser id manager title.
 
-    session token key -- the cookie name and/or form variable name
+    Browser id name -- the cookie name and/or form variable name
     used for this browser id manager instance.  This will be the
     name looked up in the 'cookies' or 'form' REQUEST namespaces
     when the browser id manager attempts to find a cookie or form
-    variable with a session token in it.
+    variable with a browser id in it.
 
-    token key search namespaces -- choose a "priority" for each
-    token key namespace.  A priority of "1" is highest.  For
-    instance, setting 'cookies' to '1' and 'form vars' to '2'
-    means that the browser id manager checks for cookies with a
-    session token first, then form variables second.  Choosing
-    "off" for either 'cookies' or 'form vars' entirely excludes
-    that namespace from being searched for a session token.  The
-    namepace identifiers ('cookies' and 'form') refer to the
-    REQUEST namespaces searched for the token key
-    (ie. REQUEST.cookies, REQUEST.form).
+    Look for browser id name in -- select from one of the available
+    lookup ordering schemes involving cookies and forms
 
-    cookie path -- this is the 'path' element which should be sent
+    Cookie path -- this is the 'path' element which should be sent
     in the session token cookie.  For more information, see the
     Netscape Cookie specification at
     http://home.netscape.com/newsref/std/cookie_spec.html.
 
-    cookie domain -- this is the "domain" element which should be
-    sent in the session token cookie. For more information, see
+    Cookie domain -- this is the "domain" element which should be
+    sent in the browser id cookie. For more information, see
     the Netscape Cookie specification at
     http://home.netscape.com/newsref/std/cookie_spec.html.
     Leaving this form element blank results in no domain element
@@ -35,12 +27,12 @@ Browser Id Manager - Change
     value you enter must have at least two dots (as per the cookie
     spec).
 
-    cookie lifetime in days -- browser id cookies sent to browsers
+    Cookie lifetime in days -- browser id cookies sent to browsers
     will last this many days on a remote system before expiring if
     this value is set.  If this value is 0, cookies will persist
     on client browsers for only as long as the browser is open.
 
-    only send cookie over https -- if this flag is set, only send
+    Only send cookie over https -- if this flag is set, only send
     cookies to remote browsers if they're communicating with us
     over https.  The browser id cookie sent under this
     circumstance will also have the 'secure' flag set in it, which

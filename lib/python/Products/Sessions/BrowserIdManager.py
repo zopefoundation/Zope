@@ -75,7 +75,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -94,7 +94,7 @@ import os, time, random, string, binascii, sys, re
 b64_trans = string.maketrans('+/', '-.')
 b64_untrans = string.maketrans('-.', '+/')
 
-badtokenkeycharsin = re.compile('[\?&;, ]').search
+badidnamecharsin = re.compile('[\?&;, ]').search
 badcookiecharsin = re.compile('[;, ]').search
 twodotsin = re.compile('(\w*\.){2,}').search
 
@@ -105,16 +105,12 @@ constructBrowserIdManagerForm = Globals.DTMLFile('dtml/addIdManager',globals())
 ADD_BROWSER_ID_MANAGER_PERM="Add Browser ID Manager"
 
 def constructBrowserIdManager(
-    self, id, title='', tokenkey='_ZopeId', cookiepri=1, formpri=2,
-    urlpri=0, cookiepath='/', cookiedomain='', cookielifedays=0,
-    cookiesecure=0, REQUEST=None
+    self, id, title='', idname='_ZopeId', location='cookiethenform',
+    cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
+    REQUEST=None
     ):
     """ """
-    # flip dictionary and take what's not 0 (god I hate HTML)
-    d = {}
-    for k,v in {'url':urlpri, 'form':formpri, 'cookies':cookiepri}.items():
-        if v: d[v] = k
-    ob = BrowserIdManager(id, title, tokenkey, d, cookiepath,
+    ob = BrowserIdManager(id, title, idname, location, cookiepath,
                           cookiedomain, cookielifedays, cookiesecure)
     self._setObject(id, ob)
     ob = self._getOb(id)
@@ -148,152 +144,124 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
 
     icon = 'misc_/Sessions/idmgr.gif'
 
-    def __init__(
-        self, id, title='', tokenkey='_ZopeId',
-        tokenkeynamespaces={1:'cookies',2:'form'}, cookiepath=('/'),
-        cookiedomain='', cookielifedays=0, cookiesecure=0, on=1
-        ):
-
-        self.id = id
-        self.title = title
-        self.setTokenKey(tokenkey)
-        self.setTokenKeyNamespaces(tokenkeynamespaces)
+    def __init__(self, id, title='', idname='_ZopeId',
+                 location='cookiesthenform', cookiepath=('/'),
+                 cookiedomain='', cookielifedays=0, cookiesecure=0):
+        self.id = str(id)
+        self.title = str(title)
+        self.setBrowserIdName(idname)
+        self.setBrowserIdLocation(location)
         self.setCookiePath(cookiepath)
         self.setCookieDomain(cookiedomain)
         self.setCookieLifeDays(cookielifedays)
         self.setCookieSecure(cookiesecure)
-        if on:
-            self.turnOn()
-        else:
-            self.turnOff()
 
-    # delegating methods follow
-    # don't forget to change the name of the method in
-    # delegation if you change a delegating method name
-
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'hasToken')
-    def hasToken(self):
-        """ Returns true if there is a current browser token, but does
-        not create a browser token for the current request if one doesn't
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'hasBrowserId')
+    def hasBrowserId(self):
+        """ Returns true if there is a current browser id, but does
+        not create a browser id for the current request if one doesn't
         already exist """
-        if not self.on:
-            return self._delegateToParent('hasToken')
-        if self.getToken(create=0): return 1
+        if self.getBrowserId(create=0): return 1
                 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getToken')
-    def getToken(self, create=1):
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserId')
+    def getBrowserId(self, create=1):
         """
-        Examines the request and hands back browser token value or
-        None if no token exists.  If there is no browser token
+        Examines the request and hands back browser id value or
+        None if no id exists.  If there is no browser id
         and if 'create' is true, create one.  If cookies are are
-        an allowable id key namespace and create is true, set one.  Stuff
-        the token and the namespace it was found in into the REQUEST object
-        for further reference during this request.  Delegate this call to
-        a parent if we're turned off.
+        an allowable id namespace and create is true, set one.  Stuff
+        the id and the namespace it was found in into the REQUEST object
+        for further reference during this request.
         """
-        if not self.on:
-            return self._delegateToParent('getToken', create)
         REQUEST = self.REQUEST
-        # let's see if token has already been attached to request
-        token = getattr(REQUEST, 'browser_token_', None)
-        if token is not None:
+        # let's see if bid has already been attached to request
+        bid = getattr(REQUEST, 'browser_id_', None)
+        if bid is not None:
             # it's already set in this request so we can just return it
             # if it's well-formed
-            if not self._isAWellFormedToken(token):
+            if not self._isAWellFormedBrowserId(bid):
                 # somebody screwed with the REQUEST instance during
                 # this request.
                 raise BrowserIdManagerErr, (
-                    'Ill-formed token in REQUEST.browser_token_:  %s' % token
+                    'Ill-formed browserid in REQUEST.browser_id_:  %s' % bid
                     )
-            return token
-        # fall through & ck id key namespaces if token is not in request.
-        tk = self.token_key
-        ns = self.token_key_namespaces
+            return bid
+        # fall through & ck id namespaces if bid is not in request.
+        tk = self.browserid_name
+        ns = self.browserid_namespaces
         for name in ns:
-            token = getattr(REQUEST, name).get(tk, None)
-            if token is not None:
-                # hey, we got a token!
-                if self._isAWellFormedToken(token):
-                    # token is not "plain old broken"
-                    REQUEST.browser_token_ = token
-                    REQUEST.browser_token_ns_ = name
-                    return token
-        # fall through if token is invalid or not in key namespaces
+            bid = getattr(REQUEST, name).get(tk, None)
+            if bid is not None:
+                # hey, we got a browser id!
+                if self._isAWellFormedBrowserId(bid):
+                    # bid is not "plain old broken"
+                    REQUEST.browser_id_ = bid
+                    REQUEST.browser_id_ns_ = name
+                    return bid
+        # fall through if bid is invalid or not in namespaces
         if create:
-            # create a brand new token
-            token = self._getNewToken()
+            # create a brand new bid
+            bid = self._getNewBrowserId()
             if 'cookies' in ns:
-                self._setCookie(token, REQUEST)
-            REQUEST.browser_token_ = token
-            REQUEST.browser_token_ns_ = None
-            return token
+                self._setCookie(bid, REQUEST)
+            REQUEST.browser_id_ = bid
+            REQUEST.browser_id_ns_ = None
+            return bid
         # implies a return of None if:
         # (not create=1) and (invalid or ((not in req) and (not in ns)))
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'flushTokenCookie')
-    def flushTokenCookie(self):
-        """ removes the token cookie from the client browser """
-        if not self.on:
-            return self._delegateToParent('flushToken')
-        if 'cookies' not in self.token_key_namespaces:
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'flushBrowserIdCookie')
+    def flushBrowserIdCookie(self):
+        """ removes the bid cookie from the client browser """
+        if 'cookies' not in self.browserid_namespaces:
             raise BrowserIdManagerErr,('Cookies are not now being used as a '
-                                       'browser token key namespace, thus '
-                                       'the token cookie cannot be flushed.')
+                                       'browser id namespace, thus the '
+                                       'browserid cookie cannot be flushed.')
         self._setCookie('deleted', self.REQUEST, remove=1)
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'isTokenFromCookie')
-    def isTokenFromCookie(self):
-        """ returns true if browser token is from REQUEST.cookies """
-        if not self.on:
-            return self._delegateToParent('isTokenFromCookie')
-        if not self.getToken(): # make sure the token is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser token.'
-        if getattr(self.REQUEST, 'browser_token_ns_') == 'cookies':
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromCookie')
+    def isBrowserIdFromCookie(self):
+        """ returns true if browser id is from REQUEST.cookies """
+        if not self.getBrowserId(): # make sure the bid is stuck on REQUEST
+            raise BrowserIdManagerErr, 'There is no current browser id.'
+        if getattr(self.REQUEST, 'browser_id_ns_') == 'cookies':
             return 1
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'isTokenFromForm')
-    def isTokenFromForm(self):
-        """ returns true if browser token is from REQUEST.form """
-        if not self.on:
-            return self._delegateToParent('isTokenFromForm')
-        if not self.getToken(): # make sure the token is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser token.'
-        if getattr(self.REQUEST, 'browser_token_ns_') == 'form':
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdFromForm')
+    def isBrowserIdFromForm(self):
+        """ returns true if browser id is from REQUEST.form """
+        if not self.getBrowserId(): # make sure the bid is stuck on REQUEST
+            raise BrowserIdManagerErr, 'There is no current browser id.'
+        if getattr(self.REQUEST, 'browser_id_ns_') == 'form':
             return 1
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'isTokenNew')
-    def isTokenNew(self):
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'isBrowserIdNew')
+    def isBrowserIdNew(self):
         """
-        returns true if browser token is 'new', meaning the token exists
+        returns true if browser id is 'new', meaning the id exists
         but it has not yet been acknowledged by the client (the client
         hasn't sent it back to us in a cookie or in a formvar).
         """
-        if not self.on:
-            return self._delegateToParent('isTokenNew')
-        if not self.getToken(): # make sure the token is stuck on REQUEST
-            raise BrowserIdManagerErr, 'There is no current browser token.'
+        if not self.getBrowserId(): # make sure the id is stuck on REQUEST
+            raise BrowserIdManagerErr, 'There is no current browser id.'
         # ns will be None if new, negating None below returns 1, which
         # would indicate that it's new on this request
-        return not getattr(self.REQUEST, 'browser_token_ns_')
+        return not getattr(self.REQUEST, 'browser_id_ns_')
     
     security.declareProtected(ACCESS_CONTENTS_PERM, 'encodeUrl')
     def encodeUrl(self, url, create=1):
         """
-        encode a URL with the browser key as a postfixed query string
+        encode a URL with the browser id as a postfixed query string
         element
         """
-        if not self.on:
-            return self._delegateToParent('encodeUrl', url)
-        token = self.getToken(create)
-        if token is None:
-            raise BrowserIdManagerErr, 'There is no current browser token.'
-        key = self.getTokenKey()
+        bid = self.getBrowserId(create)
+        if bid is None:
+            raise BrowserIdManagerErr, 'There is no current browser id.'
+        name = self.getBrowserIdName()
         if '?' in url:
-            return '%s&%s=%s' % (url, key, token)
+            return '%s&%s=%s' % (url, name, bid)
         else:
-            return '%s?%s=%s' % (url, key, token)
-
-    # non-delegating methods follow
+            return '%s?%s=%s' % (url, name, bid)
 
     security.declareProtected(MGMT_SCREEN_PERM, 'manage_browseridmgr')
     manage_browseridmgr = Globals.DTMLFile('dtml/manageIdManager', globals())
@@ -301,65 +269,93 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     security.declareProtected(CHANGE_IDMGR_PERM,
                               'manage_changeBrowserIdManager')
     def manage_changeBrowserIdManager(
-        self, title='', tokenkey='_ZopeId', cookiepri=1, formpri=2,
+        self, title='', idname='_ZopeId', location='cookiesthenform',
         cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
-        on=0, REQUEST=None
+        REQUEST=None
         ):
         """ """
-        d = {}
-        for k,v in {'cookies':cookiepri, 'form':formpri}.items():
-            if v: d[v] = k # I hate HTML
         self.title = title
-        self.setTokenKey(tokenkey)
-        self.setTokenKeyNamespaces(d)
+        self.setBrowserIdName(idname)
         self.setCookiePath(cookiepath)
         self.setCookieDomain(cookiedomain)
         self.setCookieLifeDays(cookielifedays)
         self.setCookieSecure(cookiesecure)
-        if on:
-            self.turnOn()
-        else:
-            self.turnOff()
+        self.setBrowserIdLocation(location)
         if REQUEST is not None:
-            return self.manage_browseridmgr(self, REQUEST)
+            return self.manage_browseridmgr(
+                self, REQUEST, manage_tabs_message = 'Changes saved.'
+                )
 
-    security.declareProtected(CHANGE_IDMGR_PERM, 'setTokenKey')
-    def setTokenKey(self, k):
-        """ sets browser token key string """
-        if not (type(k) is type('') and k and not badtokenkeycharsin(k)):
-            raise BrowserIdManagerErr, 'Bad id key string %s' % repr(k)
-        self.token_key = k
+    security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdName')
+    def setBrowserIdName(self, k):
+        """ sets browser id name string """
+        if not (type(k) is type('') and k and not badidnamecharsin(k)):
+            raise BrowserIdManagerErr, 'Bad id name string %s' % repr(k)
+        self.browserid_name = k
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getTokenKey')
-    def getTokenKey(self):
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdName')
+    def getBrowserIdName(self):
         """ """
-        return self.token_key
+        return self.browserid_name
 
-    security.declareProtected(CHANGE_IDMGR_PERM, 'setTokenKeyNamespaces')
-    def setTokenKeyNamespaces(self,namespacesd={1:'cookies',2:'form'}):
+    security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdNamespaces')
+    def setBrowserIdNamespaces(self,namespacesd={1:'cookies',2:'form'}):
         """
-        accepts dictionary e.g. {1: 'cookies', 2: 'form'} as token
-        id key allowable namespaces and lookup ordering priority
+        accepts dictionary e.g. {1: 'cookies', 2: 'form'} as browser
+        id allowable namespaces and lookup ordering priority
         where key is 'priority' with 1 being highest.
         """
-        allowed = self.getAllTokenKeyNamespaces()
+        allowed = self.getAllBrowserIdNamespaces()
         for name in namespacesd.values():
             if name not in allowed:
                 raise BrowserIdManagerErr, (
-                    'Bad id key namespace %s' % repr(name)
+                    'Bad browser id namespace %s' % repr(name)
                     )
-        self.token_key_namespaces = []
+        self.browserid_namespaces = []
         nskeys = namespacesd.keys()
         nskeys.sort()
         for priority in nskeys:
-            self.token_key_namespaces.append(namespacesd[priority])
+            self.browserid_namespaces.append(namespacesd[priority])
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getTokenKeyNamespaces')
-    def getTokenKeyNamespaces(self):
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdLocation')
+    def getBrowserIdLocation(self):
+        d = {}
+        i = 1
+        for name in self.browserid_namespaces:
+            d[name] = i
+            i = i + 1
+        if d.get('cookies') == 1:
+            if d.get('form'):
+                return 'cookiesthenform'
+            else:
+                return 'cookiesonly'
+        elif d.get('form') == 1:
+            if d.get('cookies'):
+                return 'formthencookies'
+            else:
+                return 'formonly'
+        else:
+            return 'cookiesthenform'
+
+    security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdLocation')
+    def setBrowserIdLocation(self, location):
+        """ accepts a string and turns it into a namespaces dict """
+        if location == 'formthencookies':
+            d = {1:'form', '2':'cookies'}
+        elif location == 'cookiesonly':
+            d = {1:'cookies'}
+        elif location == 'formonly':
+            d = {1:'form'}
+        else:
+            d = {1:'cookies',2:'form'}
+        self.setBrowserIdNamespaces(d)
+
+    security.declareProtected(ACCESS_CONTENTS_PERM, 'getBrowserIdNamespaces')
+    def getBrowserIdNamespaces(self):
         """ """
         d = {}
         i = 1
-        for name in self.token_key_namespaces:
+        for name in self.browserid_namespaces:
             d[i] = name
             i = i + 1
         return d
@@ -428,33 +424,18 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         """ """
         return self.cookie_secure
 
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'getAllTokenKeyNamespaces')
-    def getAllTokenKeyNamespaces(self):
+    security.declareProtected(ACCESS_CONTENTS_PERM,'getAllBrowserIdNamespaces')
+    def getAllBrowserIdNamespaces(self):
         """
         These are the REQUEST namespaces searched when looking for an
-        id key value.
+        browser id.
         """
         return ('form', 'cookies')
 
-    security.declareProtected(CHANGE_IDMGR_PERM, 'turnOn')
-    def turnOn(self):
-        """ """
-        self.on = 1
-
-    security.declareProtected(CHANGE_IDMGR_PERM, 'turnOff')
-    def turnOff(self):
-        """ """
-        self.on = 0
-
-    security.declareProtected(ACCESS_CONTENTS_PERM, 'isOn')
-    def isOn(self):
-        """ """
-        return self.on
-
     # non-interface methods follow
 
-    def _getNewToken(self, randint=random.randint, maxint=99999999):
-        """ Returns 19-character string browser token
+    def _getNewBrowserId(self, randint=random.randint, maxint=99999999):
+        """ Returns 19-character string browser id
         'AAAAAAAABBBBBBBB'
         where:
 
@@ -465,21 +446,13 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
           '=' end-padding is stripped off
           '+' is translated to '-'
           '/' is translated to '.'
+
+        An example is: 89972317A0C3EHnUi90w
         """
         return '%08i%s' % (randint(0, maxint-1), self._getB64TStamp())
-    
-    def _delegateToParent(self, *arg, **kw):
-        fn = arg[0]
-        rest = arg[1:]
-        try:
-            parent_sessidmgr=getattr(self.aq_parent, self.id)
-            parent_fn = getattr(parent_sessidmgr, fn)
-        except AttributeError:
-            raise BrowserIdManagerErr, 'Browser id management disabled'
-        return apply(parent_fn, rest, kw)
 
     def _setCookie(
-        self, token, REQUEST, remove=0, now=time.time, strftime=time.strftime,
+        self, bid, REQUEST, remove=0, now=time.time, strftime=time.strftime,
         gmtime=time.gmtime
         ):
         """ """
@@ -501,11 +474,11 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
                 return # should we raise an exception?
          
         cookies = REQUEST.RESPONSE.cookies
-        cookie = cookies[self.token_key]= {}
+        cookie = cookies[self.browserid_name]= {}
         for k,v in d.items():
             if v:
                 cookie[k] = v #only stuff things with true values
-        cookie['value'] = token
+        cookie['value'] = bid
         
     def _getB64TStamp(
         self, b2a=binascii.b2a_base64,gmtime=time.gmtime, time=time.time,
@@ -522,19 +495,19 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         ):
         return TimeStamp(a2b(translate(ts+'=',b64_untrans))).timeTime()
 
-    def _getTokenPieces(self, token):
-        """ returns browser token parts in a tuple consisting of rand_id,
+    def _getBrowserIdPieces(self, bid):
+        """ returns browser id parts in a tuple consisting of rand_id,
         timestamp
         """
-        return (token[:8], token[8:19])
+        return (bid[:8], bid[8:19])
 
-    def _isAWellFormedToken(self, token, binerr=binascii.Error,
-                            timestamperr=TimeStamp.error):
+    def _isAWellFormedBrowserId(self, bid, binerr=binascii.Error,
+                                timestamperr=TimeStamp.error):
         try:
-            rnd, ts = self._getTokenPieces(token)
+            rnd, ts = self._getBrowserIdPieces(bid)
             int(rnd)
             self._getB64TStampToInt(ts)
-            return token
+            return bid
         except (TypeError, ValueError, AttributeError, IndexError, binerr,
                 timestamperr):
             return None

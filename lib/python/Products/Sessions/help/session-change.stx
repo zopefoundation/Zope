@@ -10,7 +10,7 @@ Session Data Manager - Change
     /temp_folder/transient_container in a default Zope installation.
 
     place SESSION in REQUEST as --
-    If set, the REQUEST variable will be updated with the session
+    If set, the REQUEST variable will be populated with the session
     object, stored as the given name (default is 'SESSION')
 
   After reviewing and changing these options, click the "Change"

@@ -85,9 +85,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.2 2001/11/14 13:50:10 matt Exp $
+$Id: testBrowserIdManager.py,v 1.3 2001/11/17 16:07:41 chrism Exp $
 """
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 import sys
 if __name__ == "__main__":
@@ -113,19 +113,19 @@ class TestBrowserIdManager(TestCase):
     def tearDown(self):
         del self.m
 
-    def testSetTokenKey(self):
-        self.m.setTokenKey('foo')
-        assert self.m.getTokenKey()== 'foo'
+    def testSetBrowserIdName(self):
+        self.m.setBrowserIdName('foo')
+        assert self.m.getBrowserIdName()== 'foo'
 
-    def testSetBadKeyString(self):
+    def testSetBadBrowserIdName(self):
         try:
-            self.m.setTokenKey('')
+            self.m.setBrowserIdName('')
         except BrowserIdManagerErr:
             pass
         else:
             assert 1 == 2
         try:
-            self.m.setTokenKey(1)
+            self.m.setBrowserIdName(1)
         except BrowserIdManagerErr:
             pass
         else:
@@ -134,7 +134,7 @@ class TestBrowserIdManager(TestCase):
     def testSetBadNamespaces(self):
         d = {1:'gummy', 2:'froopy'}
         try:
-            self.m.setTokenKeyNamespaces(d)
+            self.m.setBrowserIdNamespaces(d)
         except BrowserIdManagerErr:
             pass
         else:
@@ -142,8 +142,22 @@ class TestBrowserIdManager(TestCase):
             
     def testSetGoodNamespaces(self):
         d = {1:'cookies', 2:'form'}
-        self.m.setTokenKeyNamespaces(d)
-        assert self.m.getTokenKeyNamespaces() == d
+        self.m.setBrowserIdNamespaces(d)
+        assert self.m.getBrowserIdNamespaces() == d
+
+    def testSetNamespacesByLocation(self):
+        self.m.setBrowserIdLocation('cookiesonly')
+        assert self.m.getBrowserIdNamespaces() == {1:'cookies'}
+        assert self.m.getBrowserIdLocation() == 'cookiesonly'
+        self.m.setBrowserIdLocation('cookiesthenform')
+        assert self.m.getBrowserIdNamespaces() == {1:'cookies', 2:'form'}
+        assert self.m.getBrowserIdLocation() == 'cookiesthenform'
+        self.m.setBrowserIdLocation('formonly')
+        assert self.m.getBrowserIdNamespaces() == {1:'form'}
+        assert self.m.getBrowserIdLocation() == 'formonly'
+        self.m.setBrowserIdLocation('formthencookies')
+        assert self.m.getBrowserIdNamespaces() == {1:'form', 2:'cookies'}
+        assert self.m.getBrowserIdLocation() == 'formthencookies'
 
     def testSetBadCookiePath(self):
         path = '/;'
@@ -224,131 +238,99 @@ class TestBrowserIdManager(TestCase):
         self.m.setCookieSecure(1)
         assert self.m.getCookieSecure() == 1
 
-    def testDelegateToParent(self):
-        self.m.turnOff()
-        try:
-            a = self.m.hasToken()
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1==2
-
-    def testGetTokenCookie(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'cookies'
-        tokenkey = self.m.getTokenKey()
+    def testGetBrowserIdCookie(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'cookies'
+        tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
-        a = self.m.getToken()
+        a = self.m.getBrowserId()
         assert a == token, repr(a)
-        assert self.m.isTokenFromCookie()
+        assert self.m.isBrowserIdFromCookie()
 
-    def testSetSessionTokenDontCreate(self):
-        a = self.m.getToken(0)
+    def testSetBrowserIdDontCreate(self):
+        a = self.m.getBrowserId(0)
         assert a == None
 
-    def testSetSessionTokenCreate(self):
-        a = self.m.getToken(1)
-        tokenkey = self.m.getTokenKey()
+    def testSetBrowserIdCreate(self):
+        a = self.m.getBrowserId(1)
+        tokenkey = self.m.getBrowserIdName()
         b = self.m.REQUEST.RESPONSE.cookies[tokenkey]
         assert a == b['value'], (a, b)
 
     def testHasToken(self):
-        assert not self.m.hasToken()
-        a = self.m.getToken()
-        assert self.m.hasToken()
+        assert not self.m.hasBrowserId()
+        a = self.m.getBrowserId()
+        assert self.m.hasBrowserId()
         
     def testTokenIsNew(self):
-        a = self.m.getToken()
-        assert self.m.isTokenNew()
+        a = self.m.getBrowserId()
+        assert self.m.isBrowserIdNew()
 
-    def testIsTokenFromCookieFirst(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'cookies'
-        tokenkey = self.m.getTokenKey()
+    def testIsBrowserIdFromCookieFirst(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'cookies'
+        tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
-        self.m.setTokenKeyNamespaces({1:'cookies', 2:'form'})
-        a = self.m.getToken()
-        assert self.m.isTokenFromCookie()
+        self.m.setBrowserIdNamespaces({1:'cookies', 2:'form'})
+        a = self.m.getBrowserId()
+        assert self.m.isBrowserIdFromCookie()
 
-    def testIsTokenFromFormFirst(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'form'
-        tokenkey = self.m.getTokenKey()
+    def testIsBrowserIdFromFormFirst(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'form'
+        tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.form[tokenkey] = token
-        self.m.setTokenKeyNamespaces({1:'form', 2:'cookies'})
-        a = self.m.getToken()
-        assert self.m.isTokenFromForm()
+        self.m.setBrowserIdNamespaces({1:'form', 2:'cookies'})
+        a = self.m.getBrowserId()
+        assert self.m.isBrowserIdFromForm()
 
     def testIsTokenFromCookieOnly(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'cookies'
-        tokenkey = self.m.getTokenKey()
-        self.m.REQUEST.cookies[tokenkey] = token
-        self.m.setTokenKeyNamespaces({1:'cookies'})
-        a = self.m.getToken()
-        assert self.m.isTokenFromCookie()
-        assert not self.m.isTokenFromForm()
-
-    def testIsTokenFromFormOnly(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'form'
-        tokenkey = self.m.getTokenKey()
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'cookies'
+        tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.form[tokenkey] = token
-        self.m.setTokenKeyNamespaces({1:'form'})
-        a = self.m.getToken()
-        assert self.m.isTokenFromForm()
-        assert not self.m.isTokenFromCookie()
+        self.m.setBrowserIdNamespaces({1:'cookies'})
+        a = self.m.getBrowserId()
+        assert self.m.isBrowserIdFromCookie()
+        assert not self.m.isBrowserIdFromForm()
+ 
+    def testIsTokenFromFormOnly(self):
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'form'
+        tokenkey = self.m.getBrowserIdName()
+        self.m.REQUEST.form[tokenkey] = token
+        self.m.setBrowserIdNamespaces({1:'form'})
+        a = self.m.getBrowserId()
+        assert not self.m.isBrowserIdFromCookie()
+        assert self.m.isBrowserIdFromForm()
 
     def testFlushTokenCookie(self):
-        token = self.m.getToken()
-        self.m.REQUEST.browser_token_ = token
-        self.m.REQUEST.browser_token_ns_ = 'cookies'
-        tokenkey = self.m.getTokenKey()
+        token = self.m.getBrowserId()
+        self.m.REQUEST.browser_id_ = token
+        self.m.REQUEST.browser_id_ns_ = 'cookies'
+        tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
-        a = self.m.getToken()
+        a = self.m.getBrowserId()
         assert a == token, repr(a)
-        assert self.m.isTokenFromCookie()
-        self.m.flushTokenCookie()
+        assert self.m.isBrowserIdFromCookie()
+        self.m.flushBrowserIdCookie()
         c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
         assert c['value'] == 'deleted', c
         
-    def testDelegateToParentFail(self):
-        self.m.turnOff()
-        try:
-            self.m.getToken()
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1==2
-
-    def testDelegateToParentSucceed(self):
-        self.m.turnOff()
-        class foo:
-            pass
-        class bar:
-            def getToken(unself, create=1):
-                return 'worked'
-        fooi = foo()
-        bari = bar()
-        setattr(fooi, self.m.id, bari)
-        self.m.aq_parent = fooi
-        assert self.m.getToken() == 'worked'
-
     def testEncodeUrl(self):
-        keystring = self.m.getTokenKey()
-        key = self.m.getToken()
+        keystring = self.m.getBrowserIdName()
+        key = self.m.getBrowserId()
         u = '/home/chrism/foo'
         r = self.m.encodeUrl(u)
         assert r == '%s?%s=%s' % (u, keystring, key)
         u = 'http://www.zope.org/Members/mcdonc?foo=bar&spam=eggs'
         r = self.m.encodeUrl(u)
         assert r == '%s&%s=%s' % (u, keystring, key)
-            
 
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')

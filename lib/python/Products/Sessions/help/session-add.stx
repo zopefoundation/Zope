@@ -1,15 +1,15 @@
 Session Data Manager - Add
 
-  After instantiating at least one browser id manager, it's
-  possible to instantiate a session data manager.  You'll need to
-  do this in order to use session tracking.
+  A Zope Session Data Manager is responsible for maintaining a 
+  relationship between session data objects and Zope browser ids.
+  It is part of the Zope sessioning machinery.  Programmers will
+  sometimes interact with a session data manager in order to obtain
+  information about session data.
 
   You can place a session data manager in any Zope container,as
   long as a browser id manager object can be acquired from that
   container.  The session data manager will use the first acquired
-  browser id manager which is active (ie. it will use any acquired
-  browser id manager that has not been been "turned off" via its
-  Zope management interface).
+  object named "browser_id_manager" as a browser id manager.
 
   Choose "Session Data Manager" within the container you wish to
   house the session data manager from the "Add" dropdown box in
@@ -27,7 +27,7 @@ Session Data Manager - Add
     /temp_folder/transient_container in a default Zope installation.
 
     place SESSION in REQUEST as --
-    If set, the REQUEST variable will be updated with the session
+    If set, the REQUEST variable will be populated with the session
     object, stored as the given name (default is 'SESSION')
 
   After reviewing and changing these options, click the "Add"

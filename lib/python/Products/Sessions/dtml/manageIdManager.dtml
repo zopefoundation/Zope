@@ -7,20 +7,21 @@
 
 <FORM ACTION="manage_changeBrowserIdManager" METHOD="POST">
 <TABLE CELLSPACING="2">
-<TR>
-  <dtml-comment> 
-  <TD ALIGN="LEFT" VALIGN="TOP">
-    <div class="form-label">
-      Browser Id Mgr On
-    </div>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="checkbox" NAME="on"
-     <dtml-if isOn>CHECKED</dtml-if>>
-  </TD>
-  </dtml-comment>
-  <input type="hidden" name="on" value="1">
-</TR>
+<tr>
+  <td>&nbsp;<td>
+</tr>
+<tr class="form-help">
+  <td colspan=2>
+  Zope Browser Id Manager objects allow Zope to differentiate between site
+  visitors by "tagging" each of their browsers with a unique identifier. This
+  is useful if you need to tell visitors apart from one another even if they do
+  not "log in" to your site.  Browser Id Managers are generally used
+  by interacting with the Zope sessioning machinery.
+  </td>
+</tr>
+<tr>
+  <td>&nbsp;<td>
+</tr>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
@@ -34,57 +35,50 @@
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      Browser Token Key
+      Browser Id Name
     </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="tokenkey" SIZE="20" value="&dtml-getTokenKey;">
+    <INPUT TYPE="TEXT" NAME="idname" SIZE="20" value="&dtml-getBrowserIdName;">
   </TD>
 </TR>
-<th align=left><strong><em>Token Key Search Namespaces</strong></em></th>
-<th align=left><strong><em>Priority</strong></em> (1 is highest)</th>
+
+<dtml-let loc=getBrowserIdLocation>
 <tr>
-  <th align=left class="form-label">Cookies</th>
+<td>
+<div align=left class="form-label">Look for Browser Id Name in</th>
+</td>
+<td>
+<table border=0>
+<tr>
    <td align=left>
-   <table border=1>
-   <tr>
-   <td align=left>
-    <input type="radio" name="cookiepri:int" value="1"
-     <dtml-if "getTokenKeyNamespaces().get(1, _.None) == 'cookies'">CHECKED</dtml-if>>1
-   </td>
-   <td align=left>
-    <input type="radio" name="cookiepri:int" value="2"
-     <dtml-if "getTokenKeyNamespaces().get(2, _.None) == 'cookies'">CHECKED</dtml-if>>2
-   </td>
-   <td align=left>
-    <input type="radio" name="cookiepri:int" value="0"
-    <dtml-if "'cookies' not in getTokenKeyNamespaces().values()">CHECKED</dtml-if>>Off
-   </td>
-   </tr>
-   </table>
+    <input type="radio" name="location" value="cookiesonly"
+     <dtml-if "loc=='cookiesonly'">CHECKED</dtml-if>> Cookies only
    </td>
 </tr>
 <tr>
-  <th align=left class="form-label">Form vars</th>
    <td align=left>
-   <table border=1>
-   <tr>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="1"
-     <dtml-if "getTokenKeyNamespaces().get(1, _.None) == 'form'">CHECKED</dtml-if>>1
-   </td>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="2"
-     <dtml-if "getTokenKeyNamespaces().get(2, _.None) == 'form'">CHECKED</dtml-if>>2
-   </td>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="0"
-    <dtml-if "'form' not in getTokenKeyNamespaces().values()">CHECKED</dtml-if>>Off
-   </td>
-   </tr>
-   </table>
+    <input type="radio" name="location" value="cookiesthenform"
+    <dtml-if "loc=='cookiesthenform'">CHECKED</dtml-if>> Cookies then form
    </td>
 </tr>
+<tr>
+   <td align=left>
+    <input type="radio" name="location" value="formonly"
+     <dtml-if "loc=='formonly'">CHECKED</dtml-if>> Form only
+   </td> 
+</tr>
+<tr>
+   <td align=left>
+    <input type="radio" name="location" value="formthencookies"
+     <dtml-if "loc=='formthencookies'">CHECKED</dtml-if>> Form then cookies
+   </td>
+</tr>
+</table>
+</td>
+</tr>
+</dtml-let>
+
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
@@ -107,7 +101,7 @@
     <div class="form-help">
     leave blank to send cookies without domain <br>
     info -- however, if cookie domain is not blank,<br>
-    it must contain at least two dots)
+    it must contain at least two dots
     </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">

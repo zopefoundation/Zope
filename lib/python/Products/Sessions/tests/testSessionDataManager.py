@@ -202,15 +202,15 @@ class TestSessionManager(TestBase):
         sd.invalidate()
         assert hasattr(sd, '_invalid')
         
-    def testSessionTokenIsSet(self):
+    def testBrowserIdIsSet(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
-        assert mgr.hasToken()
+        assert mgr.hasBrowserId()
 
     def testGetSessionDataByKey(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
-        token = mgr.getToken()
+        token = mgr.getBrowserId()
         bykeysd = self.app.session_data_manager.getSessionDataByKey(token)
         assert sd == bykeysd, (sd, bykeysd, token)
 
@@ -324,8 +324,8 @@ class BaseReaderWriter(threading.Thread):
         self.conn = db.open()
         self.app = self.conn.root()['Application']
         self.app = makerequest.makerequest(self.app)
-        token = self.app.browser_id_manager._getNewToken()
-        self.app.REQUEST.session_token_ = token
+        token = self.app.browser_id_manager._getNewBrowserId()
+        self.app.REQUEST.browser_id_ = token
         self.iters = iters
         self.sdm_name = sdm_name
         self.out = []

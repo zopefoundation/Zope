@@ -8,6 +8,20 @@
 
 <form action="manage_changeSDM" method="post">
 <table cellspacing="2">
+
+<tr><td>&nbsp;</td></tr>
+<tr>
+<td class="form-help" colspan=2>
+  A Session Data Manager object is responsible for maintaining a 
+  relationship between session data objects and Zope browser ids.
+  It is part of the Zope sessioning machinery.  Programmers may
+  interact with a session data manager in order to obtain
+  information about session data, but will more often use the
+  REQUEST.SESSION object to do sessioning-related tasks.
+</td>
+</tr>
+<tr><td>&nbsp;</td></tr>
+
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
@@ -40,7 +54,7 @@
   </td>
   <td align="LEFT" valign="TOP">
   	<input class="form-element" type="TEXT" name="requestName"
-		value="&dtml-getrequestName;">
+		value="&dtml-getRequestName;">
   </td>
 </tr>
 <tr>

@@ -9,12 +9,19 @@
 <input type=hidden name="id" value="browser_id_manager">
 <TABLE CELLSPACING="2">
 <tr>
+<td>&nbsp;</td>
+</tr>
+<tr>
 <div class="form-help">
-Zope Browser Id Manager objects perform the task of setting and retrieving
-Zope browser ids for remote users.  They are used primarily by Session
-Data Manager objects.  A Browser Id Manager's 'id' must always be
-'browser_id_manager' in order for it to be found by Session Data Managers.
+Zope Browser Id Manager objects allow Zope to differentiate between site
+visitors by "tagging" each of their browsers with a unique identifier. This
+is useful if you need to tell visitors apart from one another even if they do
+not "log in" to your site.  Browser Id Managers are generally used
+by interacting with the Zope sessioning machinery.
 </div>
+</tr>
+<tr>
+<td>&nbsp;</td>
 </tr>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -23,7 +30,7 @@ Data Manager objects.  A Browser Id Manager's 'id' must always be
     </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <div class="form-label">This object's Zope id will be<br>
+    <div class="form-label">This object's Zope id must be<br>
     "browser_id_manager"
     </div>
   </TD>
@@ -41,56 +48,51 @@ Data Manager objects.  A Browser Id Manager's 'id' must always be
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      Browser Token Key
+      Browser Id Name
     </div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="tokenkey" SIZE="20" value="_ZopeId">
+    <INPUT TYPE="TEXT" NAME="idname" SIZE="20" value="_ZopeId">
   </TD>
 </TR>
 <tr>
 <td>&nbsp;</td>
 </tr>
-<th align="left"><strong><em>Token Key Search Namespaces</strong></em></th>
-<th align="left"><strong><em>Priority (1 is highest)</strong></em></th>
 <tr>
-  <th align=left class="form-label">Cookies</th>
-   <td>
-   <table border=1>
-   <tr>
+<td>
+<div align=left class="form-label">Look for Browser Id Name in</th>
+</td>
+<td>
+<table border=0>
+<tr>
    <td align=left>
-    <input type="radio" name="cookiepri:int" value="1" CHECKED> 1
+    <input type="radio" name="location" value="cookiesonly"> Cookies only
    </td>
-   <td align=left>
-    <input type="radio" name="cookiepri:int" value="2"> 2
-   </td>
-   <td align=left>
-    <input type="radio" name="cookiepri:int" value="0"> Off
-   </td>
-   </tr>
-   </table>
-  </td>
 </tr>
 <tr>
-  <th align=left class="form-label">Form vars</th>
    <td align=left>
-   <table border=1>
-   <tr>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="1"> 1
+    <input type="radio" name="location" value="cookiesthenform" CHECKED> Cookies then form
    </td>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="2" CHECKED> 2
-   </td>
-   <td align=left>
-    <input type="radio" name="formpri:int" value="0"> Off
-   </td>   </tr>
-   </table>
-  </td>
 </tr>
+<tr>
+   <td align=left>
+    <input type="radio" name="location" value="formonly"> Form only
+   </td> 
+</tr>
+<tr>
+   <td align=left>
+    <input type="radio" name="location" value="formthencookies"> Form then cookies
+   </td>
+</tr>
+</table>
+</td>
+</tr>
+
+
+<tr>
 <td>&nbsp;</td>
-<tr>
 </tr>
+
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">

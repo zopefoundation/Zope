@@ -1,20 +1,26 @@
 Session API Programming
 
-
   Overview
 
-    Developers generally *not* interact directly with a Session Data
-    Manager instance in order to make use of sessioning in Zope. 
+    Sessions allow you to maintain state associated with anonymous
+    users between requests.  A session is a temporary "scratch" area
+    in which you can store information related to a site visitor.
+    A "session" ends when a visitor who begins a session neglects to
+    revisit your site in some number of minutes.
 
-    All of the methods implemented by Session Data Managers, and
-    Browser Id Managers are fully documented in the
-    Session API in the "See Also" section below.
+  Usage
 
+    Developers will usually interact with the SESSION object stored
+    in REQUEST in order to perform session-related tasks.
+
+    More infrequently, developers will interact directly with
+    Browser Id Manager and Session Data Manager objects.
+ 
   Common Programming
 
-    Generally, instead of directly interacting with the session data
-    manager, you use it's built in traversal feature to put a SESSION
-    object in the REQUEST.  This is simple, and fairly intuitive.
+    In order to manipulate session data, you interact with the
+    REQUEST.SESSION object.
+
     For example, in DTML you might::
 
     	<dtml-with SESSION mapping>
@@ -26,12 +32,12 @@ Session API Programming
         <dtml-var SESSION>
 
     This would print the cart object in the session, or the entire SESSION
-    object.  You could set an
-    object in the session similarly to how you set it in the REQUEST::
+    object.  You could set an object in the session similarly to how you
+    set it in the REQUEST::
 
         <dtml-call expr="SESSION.set('cart','this is really more of a wagon')">
 
-    You adjust the name of the SESSION object in the management screens
+    You may change the name of the SESSION object in the management screens
     for the session data object.  You can do more complex operations on
     SESSION data with python scripts, e.g.::
 
@@ -42,18 +48,11 @@ Session API Programming
 
 	session['cart'] = cart		# force a save back to the session
 
-
-    In general, it is better to put manipulation of data in the session in
-    a python script than it is to do it via DTML or a page template; while
-    the latter is possible, it would be far better to simply place a session
-    management call at the top of any page which requires manipulation of
-    session data.
-
   Tips
 
-    Keep in mind that SESSION objects (Which are really Transient Objects)
-    are basically dictionaries; if you wish to iterate through them in the
-    context of a DTML-IN expression, you should use something like::
+    Keep in mind that SESSION objects are a lot like dictionaries; if
+    you wish to iterate through them in the context of a dtml-in expression,
+    you should use something like::
 
        <dtml-in expr="SESSION.items()">
           <dtml-var sequence-key>:  <dtml-var sequence-item>

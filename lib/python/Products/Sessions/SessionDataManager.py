@@ -90,7 +90,6 @@ from SessionPermissions import *
 from common import DEBUG
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse
-import traceback
 
 BID_MGR_NAME = 'browser_id_manager'
 
@@ -103,8 +102,8 @@ constructSessionDataManagerForm = Globals.DTMLFile('dtml/addDataManager',
 
 ADD_SESSION_DATAMANAGER_PERM="Add Session Data Manager"
 
-def constructSessionDataManager(self, id, title='', path=None, requestName=None,
-                                REQUEST=None):
+def constructSessionDataManager(self, id, title='', path=None,
+                                requestName=None, REQUEST=None):
     """ """
     ob = SessionDataManager(id, path, title, requestName)
     self._setObject(id, ob)
@@ -150,7 +149,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     security.declareProtected(ACCESS_SESSIONDATA_PERM, 'getSessionData')
     def getSessionData(self, create=1):
         """ """
-        key = self.getBrowserIdManager().getToken(create=create)
+        key = self.getBrowserIdManager().getBrowserId(create=create)
         if key is not None:
             return self._getSessionDataObject(key)
 
@@ -179,23 +178,23 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         self.id = id
         self.setContainerPath(path)
         self.setTitle(title)
-
-        if requestName:
-            self._requestSessionName=requestName
-        else:
-            self._requestSessionName=None
+        self._requestSessionName = requestName
 
     security.declareProtected(CHANGE_DATAMGR_PERM, 'manage_changeSDM')
-    def manage_changeSDM(self, title, path=None, requestName=None, REQUEST=None):
+    def manage_changeSDM(self, title, path=None, requestName=None,
+                         REQUEST=None):
         """ """
         self.setContainerPath(path)
         self.setTitle(title)
         if requestName:
-            self.updateTraversalData(requestName)
+            if requestName != self._requestSessionName:
+                self.updateTraversalData(requestName)
         else:
             self.updateTraversalData(None)
         if REQUEST is not None:
-            return self.manage_sessiondatamgr(self, REQUEST)
+            return self.manage_sessiondatamgr(
+                self, REQUEST, manage_tabs_message = 'Changes saved.'
+                )
 
     security.declareProtected(CHANGE_DATAMGR_PERM, 'setTitle')
     def setTitle(self, title):
@@ -271,8 +270,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                 string.join(self.obpath,'/')
                 )
 
-    security.declareProtected(MGMT_SCREEN_PERM, 'getrequestName')
-    def getrequestName(self):
+    security.declareProtected(MGMT_SCREEN_PERM, 'getRequestName')
+    def getRequestName(self):
         """ """
         return self._requestSessionName or ''
 
@@ -285,9 +284,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         self.updateTraversalData(None)
 
     def updateTraversalData(self, requestSessionName=None):
-        # Note this cant be called directly at add -- manage_afterAdd will work
-        # though.
-
+        # Note this cant be called directly at add -- manage_afterAdd will
+        # work though.
         parent = self.aq_inner.aq_parent
 
         if getattr(self,'_hasTraversalHook', None):
