@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -234,8 +234,8 @@ class BaseRequest:
             return response.notFoundError(path)
 
         # Cleanup the path list
-        if path[0]=='/':  path=path[1:]
-        if path[-1]=='/': path=path[:-1]
+        if path[:1]=='/':  path=path[1:]
+        if path[-1:]=='/': path=path[:-1]
         clean=[]
         for item in split(path, '/'):
             if not item or item=='.':
