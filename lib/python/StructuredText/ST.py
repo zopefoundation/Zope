@@ -113,7 +113,7 @@ def StructuredText(paragraphs, paragraph_delimiter=re.compile('\n\s*\n')):
         paragraph_delimiter.split(expandtabs('\n\n'+paragraphs+'\n\n'))
         )
     
-    if not paragraphs: return []
+    if not paragraphs: return StructuredTextDocument()
     
     ind = []     # structure based on indention levels
     for paragraph in paragraphs:
