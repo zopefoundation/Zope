@@ -46,6 +46,9 @@ Zope Changes
 
     Bugs fixed
     
+      - Collector #945:  Allow adding empty PythonScript instances
+        programmatically.
+
       - Updated doc/UNITTEST.txt and lib/python/Testing/README.txt to
         reflect progress made since UNITTEST.txt was originally written.
 
