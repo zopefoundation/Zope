@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -17,13 +17,24 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
     __state_names__=HTML.__state_names__+('title','__roles__')
 
     _formhead="""
-<TABLE>
+<TABLE CELLSPACING="2">
 <TR>
-<TH>Title:</TH>
-<TD><INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="%s"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">%s</TD>
+  </TD>
 </TR>
 <TR>
-<TD></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Title</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="%s">
+  </TD>
+</TR>
+<TR>
+<TD><STRONG>Access<BR>Control</STRONG></TD>
 <TD>
   <TABLE>
   <TR>
@@ -46,11 +57,11 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
   </TABLE>
 </TD>
 </TR>
-</TABLE><P>"""
+</TABLE>"""
 
     def document_template_form_header(self):
 	try:
-            return self._formhead % (self.title, self.aclEChecked(), 
+            return self._formhead % (self.id(),self.title, self.aclEChecked(), 
 				 self.aclAChecked(),self.aclPChecked(),
 				 join(self.selectedRoles(),'\n')
 				)
