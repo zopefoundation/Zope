@@ -95,6 +95,11 @@ Zope Changes
 
       Bugs fixed
 
+        - Changed the logic used to detect binary content types to
+          only look for control characters. The previous version
+          incorrectly considered certain Latin-1 characters as
+          binary.
+
         - The ZService.py used to implement Zope as a Win32 service 
           on NT has been updated to handle a difference in the way
           .dll files are found on internationalized versions of NT.
