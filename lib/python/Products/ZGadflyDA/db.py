@@ -83,12 +83,12 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.9 1999/07/22 16:10:23 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+'''$Id: db.py,v 1.10 1999/08/03 13:53:08 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import os
 from string import strip, split
-from gadfly import gadfly
+import gadfly
 import Globals, Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
@@ -129,10 +129,13 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     def tables(self,*args,**kw):
         if self.db is None: self.open()
-        return map(lambda name: {
+        return map(
+            lambda name: {
             'TABLE_NAME': name,
             'TABLE_TYPE': 'TABLE',
-            }, self.db.table_names())
+            },
+            filter(self.db.database.datadefs.has_key, self.db.table_names())
+            )
 
     def columns(self, table_name):
         if self.db is None: self.open()
