@@ -70,7 +70,7 @@ untestinst:
 uninstall:
 	${RMRF} "${PREFIX}"
 
-TESTOPTS=-v1 -d lib/python
+TESTOPTS=-v1 -e -d lib/python
 
 test: build
 	${PYTHON} "${BASE_DIR}/utilities/testrunner.py" ${TESTOPTS}
