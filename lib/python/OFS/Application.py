@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.43 1998/01/29 20:52:20 brian Exp $'''
-__version__='$Revision: 1.43 $'[11:-2]
+$Id: Application.py,v 1.44 1998/02/05 15:17:16 jim Exp $'''
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -116,6 +116,8 @@ class Application(Folder.Folder):
 	    if hasattr(self, 'aq_parent'):
 		alternate_self=alternate_self.__of__(self.aq_parent)
 	    return alternate_self
+
+	self._p_jar.cache.incrgc() # Perform incremental GC
 
 	try: return getattr(self, name)
 	except AttributeError:
@@ -345,6 +347,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.44  1998/02/05 15:17:16  jim
+# Added code to tickle cache.
+#
 # Revision 1.43  1998/01/29 20:52:20  brian
 # Fixed up eval support
 #
