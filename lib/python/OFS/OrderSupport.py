@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support for 'Object Manager'.
 
-$Id: OrderSupport.py,v 1.3 2003/08/07 21:33:27 yuppie Exp $
+$Id: OrderSupport.py,v 1.4 2003/09/20 10:59:51 yuppie Exp $
 """
 
 from types import StringType
@@ -151,8 +151,8 @@ class OrderSupport:
             try:
                 object = obj_dict[id]
             except KeyError:
-                raise (ValueError,
-                       'The object with the id "%s" does not exist.' % id)
+                raise ValueError('The object with the id "%s" does not exist.'
+                                 % id)
             old_position = objects.index(object)
             new_position = max( old_position - abs(delta), min_position )
             if new_position == min_position:
@@ -211,7 +211,7 @@ class OrderSupport:
         ids = self.objectIds()
         if id in ids:
             return ids.index(id)
-        raise ValueError, 'The object with the id "%s" does not exist.' % id
+        raise ValueError('The object with the id "%s" does not exist.' % id)
 
     security.declareProtected(manage_properties, 'moveObjectToPosition')
     def moveObjectToPosition(self, id, position):
