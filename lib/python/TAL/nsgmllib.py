@@ -25,8 +25,6 @@ entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
 charref = re.compile('&#([0-9]+)[^0-9]')
 
 starttagopen = re.compile('<[a-zA-Z]')
-shorttagopen = re.compile('<[a-zA-Z][-.a-zA-Z0-9]*/')
-shorttag = re.compile('<([a-zA-Z][-.a-zA-Z0-9]*)/([^/]*)/')
 piopen = re.compile('<\?')
 piclose = re.compile('>')
 endtagopen = re.compile('</[a-zA-Z]')
@@ -217,25 +215,11 @@ class SGMLParser:
         self.__starttag_text = None
         start_pos = i
         rawdata = self.rawdata
-        if shorttagopen.match(rawdata, i):
-            # SGML shorthand: <tag/data/ == <tag>data</tag>
-            # XXX Can data contain &... (entity or char refs)?
-            # XXX Can data contain < or > (tag characters)?
-            # XXX Can there be whitespace before the first /?
-            match = shorttag.match(rawdata, i)
-            if not match:
-                return -1
-            tag, data = match.group(1, 2)
-            self.__starttag_text = '<%s/' % tag
-            tag = string.lower(tag)
-            k = match.end(0)
-            self.finish_shorttag(tag, data)
-            self.__starttag_text = rawdata[start_pos:match.end(1) + 1]
-            return k
         # XXX The following should skip matching quotes (' or ")
         match = endbracket.search(rawdata, i+1)
         if not match:
             return -1
+        self.__starttag_text = rawdata[i:match.end()]
         j = match.start(0)
         # Now parse the data between i+1 and j into a tag and attrs
         attrs = []
@@ -246,20 +230,26 @@ class SGMLParser:
         tag = string.lower(rawdata[i+1:k])
         self.lasttag = tag
         while k < j:
-            match = attrfind.match(rawdata, k)
-            if not match: break
-            attrname, rest, attrvalue = match.group(1, 2, 3)
+            m = attrfind.match(rawdata, k)
+            if not m:
+                break
+            attrname, rest, attrvalue = m.group(1, 2, 3)
             if not rest:
                 attrvalue = attrname
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
             attrs.append((string.lower(attrname), attrvalue))
-            k = match.end(0)
-        if rawdata[j] == '>':
-            j = j+1
-        self.__starttag_text = rawdata[start_pos:j]
+            k = m.end(0)
+        if rawdata[j:j+1] == '/>':
+            explicit_empty = 1
+            j = j + 2
+        elif rawdata[j] == '>':
+            j = j + 1
         self.finish_starttag(tag, attrs)
+        if self.__starttag_text[-2:] == '/>':
+            # XHTML-style empty tag: <span attr="value" />
+            self.finish_endtag(tag)
         return j
 
     # Internal -- parse endtag
@@ -274,12 +264,6 @@ class SGMLParser:
             j = j+1
         self.finish_endtag(tag)
         return j
-
-    # Internal -- finish parsing of <tag/data/ (same as <tag>data</tag>)
-    def finish_shorttag(self, tag, data):
-        self.finish_starttag(tag, [])
-        self.handle_data(data)
-        self.finish_endtag(tag)
 
     # Internal -- finish processing of start tag
     # Return -1 for unknown tag, 0 for open-only tag, 1 for balanced tag
