@@ -141,9 +141,6 @@ class ProductContext:
         tt=type(())
         productObject=self.__prod
 
-        if type(initial) is tt: name, initial = initial
-        else: name=initial.__name__
-
         if icon and instance_class is not None:
             setattr(instance_class, 'icon', 'Control_Panel/Products/%s/%s' %
                     (productObject.id, os.path.split(icon)[1]))
@@ -180,6 +177,9 @@ class ProductContext:
             if not OM.__dict__.has_key(name):
                 setattr(OM, name, method)
                 setattr(OM, name+'__roles__', pr)
+
+        if type(initial) is tt: name, initial = initial
+        else: name=initial.__name__
 
         if productObject.__dict__.has_key(name): return
 
