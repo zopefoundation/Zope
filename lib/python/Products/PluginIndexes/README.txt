@@ -93,7 +93,10 @@ Changes to ZCatalog
       passed as dictionary inside the request dictionary. Example:
       
         old: <dtml-in myCatalog(myindex='xx yy',myindex_usage':'blabla')
-        new: <dtml-in myCatalog(myindex={'query':'xx yy','usage':'....'})
+        new: <dtml-in myCatalog(myindex={'query':'xx yy','XXXXX':'blabla')
+
+        Please check the indexes documentation for informations about additional 
+        parameters.
 
     - Method 3: Inside a formular you can use Record as types for parameter passing.
       Example:
