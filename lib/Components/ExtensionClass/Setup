@@ -3,8 +3,8 @@ ExtensionClass ExtensionClass.c
 Acquisition Acquisition.c
 MethodObject MethodObject.c
 MultiMapping MultiMapping.c
-#ThreadLock ThreadLock.c
-#Missing Missing.c
+ThreadLock ThreadLock.c
+Missing Missing.c
 
 # install Sync.py
 # install Xaq.py
