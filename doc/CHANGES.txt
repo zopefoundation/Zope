@@ -5,8 +5,14 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+    
+    
+      - Collector #510: When Python scripts and other "Script" objects were
+        acquired during URL traversal, the __before_publishing_traverse__ code
+        did not properly stop traversal at the script and populate
+        traverse_subpath with the remaining url path elements.
 
-      - Collector 238: Version Save and Discard buttons were too
+      - Collector #238: Version Save and Discard buttons were too
         close to each other in Version management screens.
 
       - Cookie values are now quoted before being sent to the
