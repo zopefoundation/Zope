@@ -48,3 +48,10 @@ ZCatalog - Indexes: Manage Catalog Indexes
         'PathIndex' -- Index the physical path of a sequence of
         objects. A Path Index will return all objects that match a
         partitial path specified in a search query.
+
+        'TopicIndex' -- A TopicIndex is a container for so-called
+        FilteredSet.  A FilteredSet consists of an expression and a set
+        of internal ZCatalog document identifiers that represent a
+        pre-calculated result list for performance reasons. Instead of
+        executing the same query on a ZCatalog multiple times it is much
+        faster to use a TopicIndex instead.
