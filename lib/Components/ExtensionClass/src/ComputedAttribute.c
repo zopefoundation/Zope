@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ComputedAttribute.c,v 1.4 2001/01/23 14:37:20 jim Exp $
+  $Id: ComputedAttribute.c,v 1.5 2001/05/23 18:28:33 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,16 +46,7 @@
 */
 #include "ExtensionClass.h"
 
-static void
-PyVar_Assign(PyObject **v,  PyObject *e)
-{
-  Py_XDECREF(*v);
-  *v=e;
-}
-
-#define ASSIGN(V,E) PyVar_Assign(&(V),(E))
 #define UNLESS(E) if(!(E))
-#define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 #define OBJECT(O) ((PyObject*)(O))
 
 typedef struct {
@@ -142,10 +133,10 @@ static struct PyMethodDef methods[] = {
 };
 
 void
-initComputedAttribute()
+initComputedAttribute(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -155,7 +146,7 @@ initComputedAttribute()
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.4 2001/01/23 14:37:20 jim Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.5 2001/05/23 18:28:33 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
