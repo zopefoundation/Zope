@@ -272,7 +272,7 @@ class ChannelPipe:
         # only stdout stderr were passed to the constructor. OTOH, I
         # think that that's all that is ever passed.
 
-        r=self.__class__(stdout=self.stdout, stderr=self.stderr)
+        response=self.__class__(stdout=self.stdout, stderr=self.stderr)
         response._http_version=self._http_version
         response._http_connection=self._http_connection
         response._server_version=self._server_version
