@@ -45,7 +45,7 @@ Using Zope in multi-threaded mode with ZServer
 
  PCGI
 
-  PCGI is somewhat deprecated, but still supported.
+  PCGI is deprecated and should not be used anymore.
 
   To install PCGI, please get the PCGI support package from the Zope
   2.6 tarball (it no longer ships with Zope 2.7), and read the
