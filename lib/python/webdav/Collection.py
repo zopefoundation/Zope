@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, os, string, Globals
 from common import urlfix, rfc1123_date
@@ -118,7 +118,10 @@ class Collection(Resource):
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
-        if hasattr(self, 'aq_base') and hasattr(self.aq_base, 'index_html'):
+        # Note that we are willing to acquire the default document
+        # here because what we really care about is whether doing
+        # a GET on this collection / would yield a 200 response.
+        if hasattr(self, 'index_html'):
             if hasattr(self.index_html, 'HEAD'):
                 return self.index_html.HEAD(REQUEST, RESPONSE)
             raise 'Method Not Allowed', (
