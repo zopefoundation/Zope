@@ -9,4 +9,5 @@ test:
 	$(PYTHON) utilities/testrunner.py $(TESTOPTS)
 
 clean:
-	./stupid_clean
+	find . -name '*.o' -o -name '*.so' -o -name '*.py[co]' \
+	    -o -name 'core*' | xargs rm -f
