@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.118 1999/01/06 18:18:59 jim Exp $"""
-__version__='$Revision: 1.118 $'[11:-2]
+$Id: Publish.py,v 1.119 1999/01/22 10:53:51 jim Exp $"""
+__version__='$Revision: 1.119 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -130,7 +130,6 @@ class ModulePublisher:
     def __init__(self,
                  stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                  environ=os.environ):
-        self.environ=environ
         fp=None
         try:
             if environ['REQUEST_METHOD'] != 'GET': fp=stdin
@@ -228,7 +227,7 @@ class ModulePublisher:
         # for names not otherwise specified in the form.
         cookies={}
         if environ.has_key('HTTP_COOKIE'):
-            parse_cookie(self.environ['HTTP_COOKIE'],cookies)
+            parse_cookie(environ['HTTP_COOKIE'],cookies)
             for k,item in cookies.items():
                 if not other.has_key(k):
                     other[k]=item
@@ -238,11 +237,6 @@ class ModulePublisher:
         if cookies is not None: request.cookies=cookies
         self.response=response=Response(stdout=stdout, stderr=stderr)
         request['RESPONSE']=response
-        self.stdin=stdin
-        self.stdout=stdout
-        self.stderr=stderr
-        self.base=request.base
-        self.script=request.script
 
     def html(self,title,body):
         return ("<html>\n"
@@ -348,7 +342,7 @@ class ModulePublisher:
         method=upper(request_get('REQUEST_METHOD'))
         if method=='GET' or method=='POST': method='index_html'
 
-        URL=self.script
+        URL=request.script
 
         # if the top object has a __bobo_traverse__ method, then use it
         # to possibly traverse to an alternate top-level object.
