@@ -1,17 +1,28 @@
+##############################################################################
 #
-# Default test case & fixture for Zope testing
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# The fixture consists of:
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-#   - a folder (self.folder)
-#   - a user folder inside that folder
-#   - a default user inside the user folder
-#
-# The default user is logged in and has the 'Access contents information'
-# and 'View' permissions given to his role.
-#
+##############################################################################
+"""Default test case & fixture for Zope testing
 
-# $Id: ZopeTestCase.py,v 1.29 2005/02/09 12:42:40 shh42 Exp $
+The fixture consists of:
+
+  - a folder (self.folder)
+  - a user folder inside that folder
+  - a default user inside the user folder
+
+The default user is logged in and has the 'Access contents information'
+and 'View' permissions given to his role.
+
+$Id: ZopeTestCase.py,v 1.29 2005/02/09 12:42:40 shh42 Exp $
+"""
 
 import base
 import functional
@@ -100,17 +111,6 @@ class ZopeTestCase(base.TestCase):
         '''Logs out.'''
         noSecurityManager()
 
-    # b/w compatibility methods
-
-    def _setRoles(self, roles, name=user_name):
-        self.setRoles(roles, name)
-    def _setPermissions(self, permissions, role=user_role):
-        self.setPermissions(permissions, role)
-    def _login(self, name=user_name):
-        self.login(name)
-    def _logout(self):
-        self.logout()
-
 
 class FunctionalTestCase(functional.Functional, ZopeTestCase):
     '''Base class for functional Zope tests'''
@@ -119,11 +119,6 @@ class FunctionalTestCase(functional.Functional, ZopeTestCase):
                       ZopeTestCase.__implements__)
 
 
-# b/w compatibility names
-_folder_name = folder_name
-_user_name = user_name
-_user_role = user_role
-_standard_permissions = standard_permissions
 from base import app
 from base import close
 from base import closeConnections

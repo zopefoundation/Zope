@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:meta="http://namespaces.zope.org/meta">
+
+  <meta:directives namespace="http://namespaces.zope.org/five">
+
+    <meta:directive
+       name="parrot"
+       schema=".metaconfigure.IParrotDirective"
+       handler=".metaconfigure.parrot"
+       />
+
+  </meta:directives>
+
+</configure>

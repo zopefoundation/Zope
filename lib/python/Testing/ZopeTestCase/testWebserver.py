@@ -1,22 +1,33 @@
+##############################################################################
 #
-# Example ZopeTestCase testing web access to a freshly started ZServer.
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# Note that we need to set up the error_log before starting the ZServer.
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# Note further that the test thread needs to explicitly commit its
-# transactions, so the ZServer threads can see modifications made to
-# the ZODB.
-#
-# IF YOU THINK YOU NEED THE WEBSERVER STARTED YOU ARE PROBABLY WRONG!
-# This is only required in very special cases, like when testing
-# ZopeXMLMethods where XSLT processing is done by external tools that
-# need to URL-call back into the Zope server.
-#
-# If you want to write functional unit tests, see the testFunctional.py 
-# example instead.
-#
+##############################################################################
+"""Example ZopeTestCase testing web access to a freshly started ZServer
 
-# $Id: testWebserver.py,v 1.16 2005/02/12 13:11:10 shh42 Exp $
+Note that we need to set up the error_log before starting the ZServer.
+
+Note further that the test thread needs to explicitly commit its
+transactions, so the ZServer threads can see modifications made to
+the ZODB.
+
+IF YOU THINK YOU NEED THE WEBSERVER STARTED YOU ARE PROBABLY WRONG!
+This is only required in very special cases, like when testing
+ZopeXMLMethods where XSLT processing is done by external tools that
+need to URL-call back into the Zope server.
+
+If you want to write functional unit tests, see the testFunctional.py 
+example instead.
+
+$Id: testWebserver.py,v 1.16 2005/02/12 13:11:10 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':

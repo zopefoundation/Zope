@@ -1,0 +1,2 @@
+<p tal:content="context/non_existent_thingie/fubared|context/getId">dunno</p>
+<p tal:content="context/test_folder_1_/test_folder_1_/getId">dunno</p>

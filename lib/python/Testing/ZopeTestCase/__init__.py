@@ -1,8 +1,19 @@
+##############################################################################
 #
-# Names exported by the ZopeTestCase package
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+"""Names exported by the ZopeTestCase package
 
-# $Id: __init__.py,v 1.25 2005/02/22 14:59:16 shh42 Exp $
+$Id: __init__.py,v 1.25 2005/02/22 14:59:16 shh42 Exp $
+"""
 
 import ZopeLite as Zope2
 import utils
@@ -30,18 +41,11 @@ from profiler import Profiled
 from sandbox import Sandboxed
 from functional import Functional
 
-from warnhook import WarningsHook
+from ZODB.tests.warnhook import WarningsHook
 from unittest import main
 
-# TODO
-#from doctest import ZopeDocFileSuite
-#from doctest import FunctionalDocFileSuite
-
-# b/w compatibility names
-_folder_name = folder_name
-_user_name = user_name
-_user_role = user_role
-_standard_permissions = standard_permissions
-_portal_name = portal_name
-from base import closeConnections
+from zopedoctest import ZopeDocTestSuite
+from zopedoctest import ZopeDocFileSuite
+from zopedoctest import FunctionalDocTestSuite
+from zopedoctest import FunctionalDocFileSuite
 

@@ -1,0 +1,95 @@
+==============
+Zope doc tests
+==============
+
+Doctests are a way to write tests while documenting the thing that is
+tested at the same time.  As an example, this file both documents
+Zope doc tests *and* tests them.
+
+Doctests look like regular interactive interpreter sessions.  That
+makes them very easy to create.  Doctests can either occur in an
+object's or method's docstring or in a separate file.  Use either
+``DocTestSuite`` or ``DocFileSuite`` in these cases.
+
+
+Creating Zope doc tests
+-----------------------
+
+Creating doc tests for Zope is easy.  While we cannot simply use an
+interpeter shell to write our tests, we can reuse the ZopeTestCase
+infrastructure to set up the necessary environment.
+
+1. Create a text file, just like this one, containing prose
+   documentation interspersed with doctest ``Examples``.
+
+2. In a test module import ``ZopeDocFileSuite`` and instantiate it,
+   passing the name of the text file containing the tests.
+   For example:
+
+   import os, sys
+   if __name__ == '__main__':
+       execfile(os.path.join(sys.path[0], 'framework.py'))
+
+   from unittest import TestSuite
+   from Testing.ZopeTestCase import ZopeDocFileSuite
+
+   def test_suite():
+       return TestSuite((
+           ZopeDocFileSuite('ZopeDocTest.txt'),
+       ))
+
+   if __name__ == '__main__':
+       framework()
+
+
+Examples
+--------
+
+Here we are going to demonstrate that everything we know about
+ZopeTestCase is still true for doc tests. In particular, the default
+fixture is set up for doc tests just like for unit tests.
+
+  >>> from Testing.ZopeTestCase import folder_name, user_name
+  >>> from AccessControl import getSecurityManager
+
+There should be a folder:
+
+  >>> folder_name in self.app.objectIds()
+  True
+
+Containing a user folder:
+
+  >>> 'acl_users' in self.folder.objectIds()
+  True
+
+Containing the default user:
+
+  >>> user = self.folder.acl_users.getUserById(user_name)
+  >>> user is None
+  False
+
+The default user should be logged in:
+
+  >>> getSecurityManager().getUser().getId() == user_name
+  True
+
+The custom setUp method should have been run as well. See
+testZopeDocTest.py for its definition.
+
+  >>> 'object' in self.folder.objectIds()
+  True
+
+Now let's manipulate our test objects a bit:
+
+  >>> ob = self.folder.object
+  >>> print ob.title_or_id()
+  object
+
+  >>> ob.manage_changeProperties(title='Foo')
+  >>> print ob.title_or_id()
+  Foo
+
+  >>> self.folder.manage_delObjects('object')
+  >>> 'object' in self.folder.objectIds()
+  False
+

@@ -1,16 +1,27 @@
+##############################################################################
 #
-# Example ZopeTestCase testing a PythonScript object in the default fixture.
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# Note that you are encouraged to call any of the following methods
-# from your own tests to modify the test user's security credentials:
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-#   - setRoles()
-#   - setPermissions()
-#   - login()
-#   - logout()
-#
+##############################################################################
+"""Example ZopeTestCase testing a PythonScript object in the default fixture
 
-# $Id: testPythonScript.py,v 1.9 2004/04/09 12:38:37 shh42 Exp $
+Note that you are encouraged to call any of the following methods
+from your own tests to modify the test user's security credentials:
+
+  - setRoles()
+  - setPermissions()
+  - login()
+  - logout()
+
+$Id: testPythonScript.py,v 1.9 2004/04/09 12:38:37 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':

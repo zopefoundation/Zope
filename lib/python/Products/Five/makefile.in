@@ -1,0 +1,31 @@
+NAME=Five
+
+PYTHON="/usr/bin/python"
+TMPDIR=~/tmp
+
+CURDIR=~/src/projects/Five
+BASE_DIR=${CURDIR}/..
+SOFTWARE_HOME=~/src/zope/2_7/lib/python
+INSTANCE_HOME=~/src/instance/five
+ZOPE_CONFIG=~/src/instance/five/etc/zope.conf
+Z3=~/src/z3/five
+
+.PHONY : clean test reindent reindent_clean
+.PHONY : default
+
+# default:     The default step (invoked when make is called without a target)
+default: clean test
+
+clean :
+	find . \( -name '*~' -o -name '*.py[co]' -o -name '*.bak' -o -name '\.#*' \) -exec rm {} \; -print
+
+reindent :
+	~/src/reindent.py -r -v .
+
+test :
+	export INSTANCE_HOME=${INSTANCE_HOME}; \
+	export SOFTWARE_HOME=${SOFTWARE_HOME}; \
+	export PYTHONPATH=${Z3}; \
+	export ZOPE_CONFIG=${ZOPE_CONFIG}; \
+	cd ${CURDIR}/tests && ${PYTHON} -O runalltests.py
+

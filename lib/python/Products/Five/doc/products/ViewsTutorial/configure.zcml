@@ -1,0 +1,63 @@
+<configure 
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  xmlns:five="http://namespaces.zope.org/five">
+
+  <five:traversable
+    class="OFS.Folder.Folder"
+    />
+
+  <browser:page
+    for="Products.Five.interfaces.IFolder"
+    name="overview.html"
+    template="overview.pt"
+    permission="zope2.ViewManagementScreens"
+    />
+     
+  <browser:page
+    for="Products.Five.interfaces.IFolder"
+    name="overview2.html"
+    template="overview2.pt"
+    permission="zope2.ViewManagementScreens"
+    class=".browser.Overview"
+    />
+
+  <browser:page
+    for="Products.Five.interfaces.IFolder"
+    name="test.html"
+    class=".browser.Overview"
+    attribute="directlyPublished"
+    permission="zope2.ViewManagementScreens"
+    />
+
+  <browser:pages
+      for="Products.Five.interfaces.IFolder"
+      class=".browser.NewExample"
+      permission="zope2.ViewManagementScreens"
+      >
+    <browser:page
+        name="one.html"
+        template="one.pt"
+        />
+    <browser:page
+        name="two.html"
+        attribute="two"
+        />
+  </browser:pages>
+
+  <five:traversable class=".democontent.DemoContent" />
+
+  <browser:page
+     for=".democontent.IDemoContent"
+     name="someview.html"
+     template="someview.pt"
+     permission="zope2.ViewManagementScreens"
+     />
+
+  <five:defaultViewable class=".democontent.DemoContent" />
+ 
+  <browser:defaultView
+     for=".democontent.IDemoContent"
+     name="someview.html" />
+
+</configure>

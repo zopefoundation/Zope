@@ -1,14 +1,25 @@
+##############################################################################
 #
-# Example ZopeTestCase testing the ShoppingCart example application.
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# Note the use of sessions and how the SESSION object is added to
-# the REQUEST in afterSetUp().
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-# You can use zLOG.LOG() if you set up the event log variables first.
-# Handy for debugging and tracing your tests.
-#
+##############################################################################
+"""Example ZopeTestCase testing the ShoppingCart example application.
 
-# $Id: testShoppingCart.py,v 1.11 2005/02/23 17:14:56 shh42 Exp $
+Note the use of sessions and how the SESSION object is added to
+the REQUEST in afterSetUp().
+
+You can use zLOG.LOG() if you set up the event log variables first.
+Handy for debugging and tracing your tests.
+
+$Id: testShoppingCart.py,v 1.11 2005/02/23 17:14:56 shh42 Exp $
+"""
 
 import os, sys
 if __name__ == '__main__':

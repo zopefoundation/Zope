@@ -1,0 +1,70 @@
+How to install Five
+-------------------
+
+Requirements for Five 0.3
+=========================
+
+* Zope 2.7.4+ with python 2.3.x. Zope versions lower than Zope 2.7.4
+  may work, but no guarantees.
+
+* Zope X3.0.0, found here: http://zope.org/Products/ZopeX3/3.0.0final/
+
+Installing Five
+===============
+
+Installing Five is relatively straightforward. 
+
+* Select a Zope 2.7 instance.
+
+* Download and install Zope X3.0.0. You can get it compiled and
+  installed by:
+
+    * Typing ``configure``. When you're experimenting, typically you
+      want to use the ``--prefix`` directive to install the binaries
+      to install it somewhere in your homedirectory.
+
+    * ``make``
+  
+    * ``make install``
+
+  On windows you can install choose to use the binary release instead.
+
+  Alternatively you can check out the latest subversion version of
+  Zope X3.0 and typing ``make`` to produce it in-place.
+
+* You need to make your Zope 2.7 instance aware of Zope 3 so it can
+  import the ``zope``, ``persistent`` and ``transaction`` packages from it.
+
+* In non-ZEO setups, you can simply go to the ``etc/zope.conf`` of
+  your Zope 2.7 instance and add a ``path`` entry. If you used the
+  released version of Zope X3.0.0, use something like the following::
+
+    path /path/to/installed/Zope3/lib/python
+
+  If you are instead using the subversion version, use::
+
+    path /path/to/Zope3/src
+
+  If you have problems however, see the instructions for the ZEO
+  setup.
+
+* In ZEO setups (or some other circumstances), Zope 3's ZEO packages
+  will interfere with Zope 2's. In this case you can create a new
+  directory, symlink the ``zope``, ``persistent`` and ``transaction``
+  packages in it and use this directory for the ``path`` entry in the
+  ``etc/zope.conf`` of your Zope 2.7 instance.
+
+* Next, install the Five product into your Zope 2.7 instance as a
+  product and restart Zope. Five should now be installed.
+
+* You can also install various products in the ``demo`` subdirectory
+  of Five by copying them into your ``Products`` directory. In
+  addition, you can look at tests/products/FiveTest, which is a
+  product used for the Five tests, and may contain more recent
+  examples.
+
+Installing the tests
+====================
+
+For information on how to install the automatic Five tests, please see
+``tests/README.txt``.

@@ -56,6 +56,11 @@ Zope Changes
         "javascript" as editable through the File edit form, just like
         text/<foo> types
 
+      - Zope X3 3.0.0's 'src/zope' package is included now.
+
+      - Five (Zope 3 integration technology for Zope 2) is included
+        now in Products/Five.
+
     Bugs fixed
 
       - ZPublisher would fail to recognize a XML-RPC request if the
@@ -79,6 +84,9 @@ Zope Changes
 
       - Fixed Shared.DC.ZRDB.Results to behave with the new-style
         ExtensionClass. Added a test.
+
+      - 'setup.py' did not install the new 'Zope' compatibility module
+        (the 'Zope' package has been renamedd to 'Zope2').
 
       - Collector #1507: Zope now binds again to all available IP addresses if
         ip-address is unset

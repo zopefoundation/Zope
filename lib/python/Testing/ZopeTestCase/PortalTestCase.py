@@ -1,20 +1,31 @@
+##############################################################################
 #
-# Abstract base test case for working with CMF-style portals
+# Copyright (c) 2005 Zope Corporation and Contributors. All Rights Reserved.
 #
-# This base class maintains a fixture consisting of:
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
 #
-#   - a portal object (self.portal)
-#   - a user folder inside the portal
-#   - a default user with role 'Member' inside the user folder
-#   - the default user's memberarea (self.folder)
-#   - the default user is logged in
-#
-# The twist is that the portal object itself is *not* created
-# by the PortalTestCase class! Subclasses must make sure
-# getPortal() returns a usable portal object to the setup code.
-#
+##############################################################################
+"""Abstract base test case for working with CMF-style portals
 
-# $Id: PortalTestCase.py,v 1.38 2005/02/09 12:42:40 shh42 Exp $
+This class maintains a fixture consisting of:
+
+  - a portal object (self.portal)
+  - a user folder inside the portal
+  - a default user with role 'Member' inside the user folder
+  - the default user's memberarea (self.folder)
+  - the default user is logged in
+
+The twist is that the portal object itself is *not* created
+by the PortalTestCase class! Subclasses must make sure
+getPortal() returns a usable portal object to the setup code.
+
+$Id: PortalTestCase.py,v 1.38 2005/02/09 12:42:40 shh42 Exp $
+"""
 
 import base
 import interfaces
@@ -134,19 +145,4 @@ class PortalTestCase(base.TestCase):
     def logout(self):
         '''Logs out.'''
         noSecurityManager()
-
-    # b/w compatibility methods
-
-    def _setRoles(self, roles, name=user_name):
-        self.setRoles(roles, name)
-    def _setPermissions(self, permissions, role='Member'):
-        self.setPermissions(permissions, role)
-    def _login(self, name=user_name):
-        self.login(name)
-    def _logout(self):
-        self.logout()
-
-
-# b/w compatibility names
-_portal_name = portal_name
 

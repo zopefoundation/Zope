@@ -166,7 +166,7 @@ class ZopeDistribution(distutils.core.Distribution):
         distutils.core.Distribution.__init__(self, attrs)
         self.cmdclass["install"] = ZopeInstall
         self.cmdclass["install_data"] = ZopeInstallData
-        
+
 # presumes this script lives in the base dir
 BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -502,9 +502,12 @@ setup(
     name='Testing',
     author=AUTHOR,
 
-    packages=['Testing', 'Testing.ZopeTestCase'],
+    packages=['Testing', 'Testing.ZopeTestCase',
+              'Testing.ZopeTestCase.zopetest', 'Testing.ZopeTestCase.zopedoctest'],
     data_files=[['Testing', ['Testing/README.txt']],
-                ['Testing/var', ['Testing/var/README.txt']]],
+                ['Testing/var', ['Testing/var/README.txt']],
+                ['Testing/ZopeTestCase/doc', ['Testing/ZopeTestCase/doc/*']],
+                ['Testing/ZopeTestCase/zopedoctest', ['Testing/ZopeTestCase/zopedoctest/*.txt']]],
     )
 
 # ThreadedAsync
@@ -1082,6 +1085,221 @@ setup(
     )
 
 
+setup(
+    name='Five',
+    author='Martijn Faassen',
+
+    packages=['Products.Five', 'Products.Five.tests'],
+    data_files=[['Products/Five', ['Products/Five/*']],
+                ['Products/Five/doc', ['Products/Five/doc/*']],
+                ['Products/Five/skel', ['Products/Five/skel/*']],
+                ['Products/Five/tests', ['Products/Five/tests/*']],
+                ],
+    )
+
+
+
+# Zope 3 / Five integration layer support. Note that in addition to the
+# Five package itself, we also pull in several modules from the Zope 3
+# heirarchy: zope, persistent, transaction. Most of this is ripped from
+# the Zope 3 setup.py.
+
+from distutils import dir_util
+from distutils.command.build import build as buildcmd
+from distutils.command.build_ext import build_ext
+from distutils.command.install_lib import install_lib as installcmd
+from distutils.core import setup
+from distutils.dist import Distribution
+from distutils.extension import Extension
+
+if sys.version_info < (2, 3):
+    _setup = setup
+    def setup(**kwargs):
+        if kwargs.has_key("classifiers"):
+            del kwargs["classifiers"]
+        _setup(**kwargs)
+
+
+# A hack to determine if Extension objects support the `depends' keyword arg,
+# which only exists in Python 2.3's distutils.
+if not "depends" in Extension.__init__.func_code.co_varnames:
+    # If it doesn't, create a local replacement that removes depends from the
+    # kwargs before calling the regular constructor.
+    _Extension = Extension
+    class Extension(_Extension):
+        def __init__(self, name, sources, **kwargs):
+            if "depends" in kwargs:
+                del kwargs["depends"]
+            _Extension.__init__(self, name, sources, **kwargs)
+
+
+# We have to snoop for file types that distutils doesn't copy correctly when
+# doing a non-build-in-place.
+EXTS = ['.conf', '.css', '.dtd', '.gif', '.jpg', '.html',
+        '.js',   '.mo',  '.png', '.pt', '.stx', '.ref',
+        '.txt',  '.xml', '.zcml', '.mar', '.in', '.sample',
+        ]
+IGNORE_NAMES = (
+    'CVS', '.svn', # Revision Control Directories
+    )
+
+# This class serves multiple purposes.  It walks the file system looking for
+# auxiliary files that distutils doesn't install properly, and it actually
+# copies those files (when hooked into by distutils).  It also walks the file
+# system looking for candidate packages for distutils to install as normal.
+# The key here is that the package must have an __init__.py file.
+class Finder:
+    def __init__(self, exts, prefix):
+        self._files = []
+        self._pkgs = {}
+        self._exts = exts
+        # We're finding packages in lib/python in the source dir, but we're
+        # copying them directly under build/lib.<plat>.  So we need to lop off
+        # the prefix when calculating the package names from the file names.
+        prefix, rest = os.path.split(prefix)
+        self._plen = len(prefix) + 1
+
+    def visit(self, ignore, dir, files):
+        # Remove ignored filenames
+        for ignore in IGNORE_NAMES:
+            if ignore in files:
+                files.remove(ignore)
+        for file in files:
+            # First see if this is one of the packages we want to add, or if
+            # we're really skipping this package.
+            if '__init__.py' in files:
+                aspkg = dir[self._plen:].replace(os.sep, '.')
+                self._pkgs[aspkg] = True
+            # Add any extra files we're interested in
+            base, ext = os.path.splitext(file)
+            if ext in self._exts:
+                self._files.append(os.path.join(dir, file))
+
+    def copy_files(self, cmd, outputbase):
+        for file in self._files:
+            dest = os.path.join(outputbase, file[self._plen:])
+            # Make sure the destination directory exists
+            dir = os.path.dirname(dest)
+            if not os.path.exists(dir):
+                dir_util.mkpath(dir)
+            cmd.copy_file(file, dest)
+
+    def get_packages(self):
+        return self._pkgs.keys()
+
+def remove_stale_bytecode(arg, dirname, names):
+    names = map(os.path.normcase, names)
+    for name in names:
+        if name.endswith(".pyc") or name.endswith(".pyo"):
+            srcname = name[:-1]
+            if srcname not in names:
+                fullname = os.path.join(dirname, name)
+                print "Removing stale bytecode file", fullname
+                os.unlink(fullname)
+
+# This bit uses the finder to crawl through the zope3 packages we need
+# and Do The Right Thing to arrange for setup for sub-packages.
+z3_packages = ['zope']
+packages = []
+
+for name in z3_packages:
+    basedir = os.path.join(PACKAGES_ROOT, name)
+    finder = Finder(EXTS, basedir)
+    os.path.walk(basedir, finder.visit, None)
+    packages.extend(finder.get_packages())
+
+# Distutils hook classes
+class MyBuilder(buildcmd):
+    def run(self):
+        os.path.walk(os.curdir, remove_stale_bytecode, None)
+        buildcmd.run(self)
+        finder.copy_files(self, self.build_lib)
+
+class MyExtBuilder(build_ext):
+    # Override the default build_ext to remove stale bytecodes.
+    # Technically, removing bytecode has nothing to do with
+    # building extensions, but Zope's the build_ext -i variant
+    # is used to build Zope in place.
+    def run(self):
+        os.path.walk(os.curdir, remove_stale_bytecode, None)
+        build_ext.run(self)
+
+class MyLibInstaller(installcmd):
+    def run(self):
+        installcmd.run(self)
+        finder.copy_files(self, self.install_dir)
+
+class MyDistribution(Distribution):
+    # To control the selection of MyLibInstaller and MyPyBuilder, we
+    # have to set it into the cmdclass instance variable, set in
+    # Distribution.__init__().
+    def __init__(self, *attrs):
+        Distribution.__init__(self, *attrs)
+        self.cmdclass['install'] = ZopeInstall
+        self.cmdclass['build'] = MyBuilder
+        self.cmdclass['build_ext'] = MyExtBuilder
+        self.cmdclass['install_lib'] = MyLibInstaller
+
+
+# All Zope3 extension modules must be listed here.
+ext_modules = [
+
+    Extension("zope.proxy._zope_proxy_proxy",
+              ["zope/proxy/_zope_proxy_proxy.c"],
+              include_dirs = ["zope/proxy"],
+              depends = ["zope/proxy/proxy.h"]),
+
+    Extension("zope.security._proxy", ["zope/security/_proxy.c"],
+              include_dirs = ["zope/proxy"],
+              depends = ["zope/proxy/proxy.h"]),
+
+    Extension("zope.security._zope_security_checker",
+              ["zope/security/_zope_security_checker.c"],
+              include_dirs = [],
+              depends = []),
+
+    Extension("zope.interface._zope_interface_coptimizations",
+              ["zope/interface/_zope_interface_coptimizations.c"]),
+
+    Extension("zope.hookable._zope_hookable",
+              ["zope/hookable/_zope_hookable.c"]),
+
+    Extension("zope.thread._zope_thread",
+              ["zope/thread/_zope_thread.c"]),
+
+    Extension("zope.app.container._zope_app_container_contained",
+              ["zope/app/container/_zope_app_container_contained.c"],
+              include_dirs = ["persistent",
+                              "zope/proxy",
+                              "zope/app/container"],
+              depends = [
+                 "persistent/cPersistence.h",
+                 "zope/proxy/_zope_proxy_proxy.c",
+                 ]),
+
+    ]
+
+# We're using the module docstring as the distutils descriptions.
+doclines = __doc__.split("\n")
+
+setup(name="zopex30",
+      version="X3.0",
+      maintainer="Zope Corporation",
+      maintainer_email="zope3-dev@zope.org",
+      url = "http://dev.zope.org/Zope3/",
+      ext_modules = ext_modules,
+      license = "http://www.zope.org/Resources/ZPL",
+      platforms = ["any"],
+      description = doclines[0],
+      long_description = "\n".join(doclines[2:]),
+      packages = packages,
+      distclass = MyDistribution,
+      )
+
+
+
+
+
 # Call distutils setup with all lib/python packages and modules, and
 # flush setup_info.  Wondering why we run py_modules separately?  So am I.
 # Distutils won't let us specify packages and py_modules in the same call.
@@ -1109,8 +1327,9 @@ distutils.core.setup(
 os.chdir(BASE_DIR)
 
 def skel_visit(skel, dirname, names):
-    if "CVS" in names:
-        names.remove("CVS")
+    for ignore in IGNORE_NAMES:
+        if ignore in names:
+            names.remove(ignore)
     L = []
     for name in names:
         if os.path.isfile(os.path.join(dirname, name)):

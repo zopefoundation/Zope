@@ -1,0 +1,10 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+  <adapter
+      for=".module.IElephant"
+      provides=".module.INoiseMaker"
+      factory=".module.ElephantNoiseMaker" />
+  <adapter
+      for=".other.IChicken"
+      provides=".module.INoiseMaker"
+      factory=".other.ChickenNoiseMaker" />
+</configure>
