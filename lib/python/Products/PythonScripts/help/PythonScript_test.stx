@@ -1,4 +1,4 @@
-Script (Python) - Test: Test A Script (Python)
+Test View: Test a Script (Python)
   
     Description
 
@@ -6,11 +6,11 @@ Script (Python) - Test: Test A Script (Python)
         
     Controls
 
-        If a Script (Python) has no parameters, when the "Test" tab is
-        visited, the return value of the script will be presented in
+        If a Script has no parameters, when the "Test" tab is
+        visited the return value of the script will be presented in
         the manage_main frame.
 
-        However, if a Script (Python) instance has parameters, a form
+        However, if a Script instance has parameters, a form
         will be presented with fields for "Parameter" and "Value",
         changeable on a per-parameter basis.  These accept string
         values.  The 'Run Script' button runs the script after the

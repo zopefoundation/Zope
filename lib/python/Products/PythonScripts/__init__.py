@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.6 2001/01/10 21:33:06 brian Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 2001/02/27 17:35:17 evan Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import PythonScript
 try:
@@ -111,4 +111,5 @@ def initialize(context):
         )
 
     context.registerHelp()
-    context.registerHelpTitle('Zope Help')    
+    context.registerHelpTitle('Script (Python)')
+    

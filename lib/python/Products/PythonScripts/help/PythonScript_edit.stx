@@ -1,14 +1,14 @@
-Script (Python) - Edit: Edit A Script (Python)
+Edit View: Edit A Script (Python)
   
     Description
 
         This view allows you to edit the logic which composes a script
-        in Python.  Script (Python) instances execute in a restricted
+        in Python.  Script instances execute in a restricted
         context, bounded by your user's privilege level in Zope, and
         certain global restrictions of all through-the-web code.  For
         information about what you "can" and "cannot" do in a Script
-        (Python) instance as opposed to non-through-the-web Python,
-        see the API Reference documentation for "PythonScript" in
+        instance as opposed to non-through-the-web Python,
+        see the API Reference documentation for "Script (Python)" in
         this help system.
         
     Controls
