@@ -17,7 +17,7 @@
 
 <h3>Copyright &copy; 1997, 1998, 1999
   <a href="http://www.digicool.com/" TARGET="_top">
-  Digital Creations</a>, All rights reserved.</h3>
+  Zope Corporation</a>, All rights reserved.</h3>
 
 <p>
 This license has been certified as Open Source(tm).
@@ -39,7 +39,7 @@ met:
    the documentation and/or other materials provided with the
    distribution.
 
-<li>Digital Creations requests that attribution be given to Zope
+<li>Zope Corporation requests that attribution be given to Zope
    in any manner possible. Zope includes a "Powered by Zope"
    button that is installed by default. While it is not a license
    violation to remove this button, it is requested that the
@@ -61,7 +61,7 @@ met:
    intact Zope distribution (with copyright and license included)
    then this clause is waived.
 
-<li> Names associated with Zope or Digital Creations must not be
+<li> Names associated with Zope or Zope Corporation must not be
    used to endorse or promote products derived from this
    software without prior written permission from Digital
    Creations.
@@ -69,7 +69,7 @@ met:
 <li><dl><dt>Modified redistributions of any form whatsoever must retain
    the following acknowledgment:
 
-     <dd>"This product includes software developed by Digital Creations
+     <dd>"This product includes software developed by Zope Corporation
      for use in the Z Object Publishing Environment
      (http://www.zope.org/)."
 
@@ -188,7 +188,7 @@ License Version 1.1</A>.
     <LI>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
     kept pushing it forward through the years.</LI>
 
-    <LI>Sam Rushing worked with us at Digital Creations to make Medusa
+    <LI>Sam Rushing worked with us at Zope Corporation to make Medusa
     the publishing platform for ZServer and the concurrency of Zope2.</LI>
 
     <LI>A subset of windows guru Mark Hammond's win32 extensions are
@@ -225,12 +225,12 @@ License Version 1.1</A>.
 
     <LI>Of course the list of credits would be quite incomplete without
     mentioning Guido van Rossum, benevolent dictator of Python and
-    long-time friend of Digital Creations.  Zope Power is Python
+    long-time friend of Zope Corporation.  Zope Power is Python
     Power.</LI>
 
 </UL>
  <P>
- Paul Everitt, <a href="mailto:paul@digicool.com">paul@digicool.com</a>.
+ Paul Everitt, <a href="mailto:paul@zope.com">paul@zope.com</a>.
 </P>
 </BODY>
 </HTML>
