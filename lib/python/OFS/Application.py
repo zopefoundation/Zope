@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.113 1999/10/07 14:07:32 jim Exp $'''
-__version__='$Revision: 1.113 $'[11:-2]
+$Id: Application.py,v 1.114 1999/10/07 19:56:16 jim Exp $'''
+__version__='$Revision: 1.114 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -296,7 +296,10 @@ class Expired(Globals.Persistent):
     __inform_commit__=__save__
 
 def initialize(app):
-    # Open the application database
+    # Initialize the application
+
+    # Initialize the cache:
+    app.Control_Panel.initialize_cache()
 
     product_dir=os.path.join(SOFTWARE_HOME,'Products')
 
