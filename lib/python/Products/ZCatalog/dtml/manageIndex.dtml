@@ -178,6 +178,7 @@ function toggleSelect() {
         <dtml-var meta_type>
       <dtml-else>
          (pre-2.4 index)
+         <dtml-var meta_type>
       </dtml-if>
     </div>
     </td>
