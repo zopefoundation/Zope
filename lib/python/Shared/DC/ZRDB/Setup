@@ -1,7 +1,8 @@
-# install DA.py
 # install Connection.py
-# install dbi_db.py
-# install connection.dtml
-# install daAdd.dtml
-# install edit.dtml
+# install DA.py
 # install advanced.dtml
+# install connectionAdd.dtml
+# install connectionEdit.dtml
+# install connectionStatus.dtml
+# install dbi_db.py
+
