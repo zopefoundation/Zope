@@ -348,22 +348,10 @@ sys.path=[os.path.join(here,'lib','python'),here
 
 import zLOG
 
-
 if Zpid:
     import zdaemon, App.FindHomes, posix
     sys.ZMANAGED=1
     
-    x = os.fork()
-    if x:
-        sys.exit(0)
-    elif x == -1:
-        zLOG.LOG("z2", zLOG.ERROR, "couldn't fork to detatch")
-        sys.exit(1)
-    pgrp = posix.setsid()
-    if pgrp == -1:
-        zLOG.LOG("z2", zLOG.ERROR, "setsid failed")
-        sys.exit(1)
-
     zdaemon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
 
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
