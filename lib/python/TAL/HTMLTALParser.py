@@ -317,15 +317,16 @@ class HTMLTALParser(HTMLParser):
                     if metaldict.has_key(suffix):
                         raise METALError("duplicate METAL attribute " +
                                          `suffix`, self.getpos())
-                    item = (key, value)
+                    item = (key, value, "metal")
                     metaldict[suffix] = value
-                    if suffix == "define-macro":
-                        item = (key,value,"macroHack")
                 elif nsuri == ZOPE_TAL_NS:
                     if taldict.has_key(suffix):
                         raise TALError("duplicate TAL attribute " +
                                        `suffix`, self.getpos())
-                    item = (key, value)
+                    item = (key, value, "tal")
                     taldict[suffix] = value
+                elif (prefix == "xmlns" and
+                      value in (ZOPE_METAL_NS, ZOPE_TAL_NS)):
+                    item = (key, value, "xmlns")
             attrlist.append(item)
         return attrlist, taldict, metaldict

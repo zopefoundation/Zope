@@ -150,7 +150,7 @@ class AltTALGenerator(TALGenerator):
 class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
-                 debug=0, wrap=60, metal=1, tal=1, html=0):
+                 debug=0, wrap=60, metal=1, tal=1, showtal=-1):
         self.program = program
         self.macros = macros
         self.engine = engine
@@ -160,7 +160,11 @@ class TALInterpreter:
         self.wrap = wrap
         self.metal = metal
         self.tal = tal
-        self.html = html
+        assert showtal in (-1, 0, 1)
+        if showtal == -1:
+            showtal = (not tal)
+        self.showtal = showtal
+        self.html = 0
         self.slots = {}
         self.currentMacro = None
         self.position = None, None  # (lineno, offset)
@@ -225,18 +229,14 @@ class TALInterpreter:
         assert version == TAL_VERSION
 
     def do_mode(self, mode):
-        assert mode in ["html", "xml"]
+        assert mode in ("html", "xml")
         self.html = (mode == "html")
 
     def do_setPosition(self, position):
         self.position = position
 
     def do_startEndTag(self, name, attrList):
-        if self.html and string.lower(name) not in EMPTY_HTML_TAGS:
-            self.do_startTag(name, attrList)
-            self.do_endTag(name)
-        else:
-            self.startTagCommon(name, attrList, self.endsep)
+        self.startTagCommon(name, attrList, self.endsep)
 
     def do_startTag(self, name, attrList):
         self.startTagCommon(name, attrList, ">")
@@ -251,6 +251,8 @@ class TALInterpreter:
             name, value = item[:2]
             if len(item) > 2:
                 action = item[2]
+                if not self.showtal and action in ("tal", "metal", "xmlns"):
+                    continue
                 if action == "replace" and len(item) > 3 and self.tal:
                     if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
                         ok = self.engine.evaluateBoolean(item[3])
@@ -260,7 +262,9 @@ class TALInterpreter:
                             value = None
                     else:
                         value = self.engine.evaluateText(item[3])
-                elif (action == "macroHack" and self.currentMacro and
+                        if value is None:
+                            continue
+                elif (action == "metal" and self.currentMacro and
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro

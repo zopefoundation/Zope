@@ -144,10 +144,10 @@ class TALParser(XMLParser):
             item = self.fixname(key), value
             if key[:nmetal] == metalprefix:
                 metaldict[key[nmetal:]] = value
-                if key[nmetal:] == "define-macro":
-                    item = item + ("macroHack",)
+                item = item + ("metal",)
             elif key[:ntal] == talprefix:
                 taldict[key[ntal:]] = value
+                item = item + ("tal",)
             fixedattrlist.append(item)
         return fixedattrlist, taldict, metaldict
 
@@ -155,9 +155,14 @@ class TALParser(XMLParser):
         newlist = []
         for prefix, uri in self.nsNew:
             if prefix:
-                newlist.append(("xmlns:" + prefix, uri))
+                key = "xmlns:" + prefix
             else:
-                newlist.append(("xmlns", uri))
+                key = "xmlns"
+            if uri in (ZOPE_METAL_NS, ZOPE_TAL_NS):
+                item = (key, uri, "xmlns")
+            else:
+                item = (key, uri)
+            newlist.append(item)
         self.nsNew = []
         return newlist
 

@@ -91,6 +91,3 @@ TO DO
   tal:replace and tal:attributes should not be required to do
   attribute replacement on the inserted text -- this would require a
   change to the TAL spec though.
-
-- In rendered HTML or XML, the TAL attributes should be suppressed.
-  (Effectively, when TALInterpreter is invoked with tal=1.)

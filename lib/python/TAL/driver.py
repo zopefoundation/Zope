@@ -109,16 +109,18 @@ def main():
     macros = 0
     mode = None
     showcode = 0
+    showtal = -1
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hxmns")
+        opts, args = getopt.getopt(sys.argv[1:], "hxmnst")
     except getopt.error, msg:
         sys.stderr.write("\n%s\n" % str(msg))
         sys.stderr.write(
-            "usage: driver.py [-h|-x] [-m] [-n] [s] [file]\n")
+            "usage: driver.py [-h|-x] [-m] [-n] [-s] [-t] [file]\n")
         sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn off the Python 1.5.2 test\n")
         sys.stderr.write("-s -- print intermediate code\n")
+        sys.stderr.write("-t -- leave tal/metal attributes in output\n")
         sys.exit(2)
     for o, a in opts:
         if o == '-h':
@@ -131,6 +133,8 @@ def main():
             mode = "xml"
         if o == '-s':
             showcode = 1
+        if o == '-t':
+            showtal = 1
     if not versionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
@@ -142,14 +146,15 @@ def main():
         file = FILE
     it = compilefile(file, mode)
     if showcode: showit(it)
-    else: interpretit(it, tal=(not macros))
+    else: interpretit(it, tal=(not macros), showtal=showtal)
 
-def interpretit(it, engine=None, stream=None, tal=1):
+def interpretit(it, engine=None, stream=None, tal=1, showtal=-1):
     from TALInterpreter import TALInterpreter
     program, macros = it
     if engine is None:
         engine = DummyEngine(macros)
-    TALInterpreter(program, macros, engine, stream, wrap=0, tal=tal)()
+    TALInterpreter(program, macros, engine, stream, wrap=0,
+                   tal=tal, showtal=showtal)()
 
 def compilefile(file, mode=None):
     assert mode in ("html", "xml", None)
