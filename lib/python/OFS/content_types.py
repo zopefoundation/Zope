@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -169,7 +169,7 @@ def guess_content_type(name='', body='', default=None):
     if type is None:
         if body:
             if find_binary(body) >= 0:
-                type='application/octet-stream'
+                type=default or 'application/octet-stream'
             else:
                 type=(default or text_type(body) 
                       or 'text/x-unknown-content-type')
