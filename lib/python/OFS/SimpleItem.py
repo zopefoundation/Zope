@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.43 1999/03/25 15:48:50 jim Exp $'''
-__version__='$Revision: 1.43 $'[11:-2]
+$Id: SimpleItem.py,v 1.44 1999/04/02 00:11:40 jim Exp $'''
+__version__='$Revision: 1.44 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -200,6 +200,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         error_type=None, error_value=None, tb=None,
         error_tb=None, error_message='',
         tagSearch=regex.compile('[a-zA-Z]>').search):
+
         try:
             if error_type  is None: error_type =sys.exc_info()[0]
             if error_value is None: error_value=sys.exc_info()[1]
@@ -212,6 +213,10 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
             elif type(tb) is type('') and not error_tb:
                 error_tb=tb
 
+            if hasattr(self, '_v_eek'):
+                raise error_type, error_value, tb
+            self._v_eek=1
+   
             if lower(str(error_type)) in ('redirect',):
                 raise error_type, error_value, tb
 
@@ -236,6 +241,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
             except: v='Sorry, an error occured'
             raise error_type, v, tb
         finally:
+            if hasattr(self, '_v_eek'): del self._v_eek
             tb=None
 
     def uniqueId(self):
