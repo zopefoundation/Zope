@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.110 1999/07/15 16:21:05 jim Exp $'''
-__version__='$Revision: 1.110 $'[11:-2]
+$Id: Application.py,v 1.111 1999/07/21 13:16:54 jim Exp $'''
+__version__='$Revision: 1.111 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -103,6 +103,7 @@ from cStringIO import StringIO
 from AccessControl.PermissionRole import PermissionRole
 from App.ProductContext import ProductContext
 from misc_ import Misc_
+from zLOG import LOG, ERROR
 
 
 _standard_error_msg='''\
@@ -498,6 +499,8 @@ def install_products(app):
                 get_transaction().note('Installed product '+product_name)
                 get_transaction().commit()
             except:
+                LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
+                    error=sys.exc_info())
                 get_transaction().abort()
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
