@@ -428,7 +428,7 @@ def initializeProduct(productp, name, home, app):
     if old is not None: products._delObject(name)
     products._setObject(name, product)
     product.__of__(products)._postCopy(products)
-    product.manage_options=OFS.Folder.Folder.manage_options
+    product.manage_options=Folder.manage_options
     product.icon='p_/InstalledProduct_icon'
     product.version=fver
     product._distribution=None
