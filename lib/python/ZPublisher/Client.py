@@ -1,5 +1,5 @@
 """Bobo call interface"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys,regex
 from httplib import HTTP
@@ -103,7 +103,8 @@ class RemoteMethod:
 	while url[-1:]=='/': url=url[:-1]
 	self.url=url
 	self.headers={}
-	self.func_name=self.__name__=url[rfind(url,'/')+1:]
+	self.func_name=url[rfind(url,'/')+1:]
+	self.__dict__['__name__']=self.func_name
 	self.func_defaults=()
 	
 	self.args=args
@@ -253,6 +254,10 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.9  1997/05/05 21:58:20  brian
+# Worked around weird problem where python didnt want to assign to
+# __name__ in RemoteMethod's __init__
+#
 # Revision 1.8  1997/04/29 16:23:27  brian
 # Added logic to work with the pcgi-wrapper - bci.NotAvailable will be raised
 # by a RemoteMethod if the remote host is not reachable from a network problem
