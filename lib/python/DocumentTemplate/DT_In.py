@@ -276,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.15 1998/01/14 18:26:47 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.16 1998/01/15 20:22:44 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.15 1998/01/14 18:26:47 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -356,9 +356,9 @@ class In:
 		try: atoi(v)
 		except:
 		    self.start_name_re=regex.compile(
-			'[?&]'+
+			'&'+
 			join(map(lambda c: "[%s]" % c, v),'')+
-			'=[0-9]+\(&\|$\)')
+			'=[0-9]+&')
 		    
 	name,expr=name_param(args,'in',1)
 	self.__name__, self.expr = name, expr
@@ -774,13 +774,16 @@ class sequence_variables:
 		    return l
 		elif key=='sequence-query' and self.start_name_re is not None:
 		    query_string=self.query_string
+		    while query_string[:1]=='?': query_string=query_string[1:]
+		    if query_string[:1] != '&': query_string='&'+query_string
+		    if query_string[-1:] != '&': query_string=query_string+'&'
 		    re=self.start_name_re
 		    l=re.search(query_string)
 		    if l >= 0:
 			v=re.group(0)
-			if v[:1]=='?' or v[-1:]=='&': b=l+1
-			else: b=l
-			query_string=query_string[:b]+query_string[l+len(v):]
+			query_string=(query_string[:l]+
+				      query_string[l+len(v)-1:])
+		    query_string='?'+query_string[1:]
 		    data[key]=query_string
 		    return query_string
 		    
@@ -841,6 +844,10 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.16  1998/01/15 20:22:44  jim
+# Made batch processing more robust.  Now don't need to specify
+# '?' or & when constructing query strings.
+#
 # Revision 1.15  1998/01/14 18:26:47  jim
 # Added name caching to in tag.
 #
