@@ -32,7 +32,7 @@
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
-      <em>Title</em>
+      Title
     </div>
   </td>
   <td align="left" valign="top">
@@ -52,21 +52,9 @@
 </tr>
 
 <tr>
-<td>
-<p>
-Transient Object Containers support <b>Notification Targets</b> which
-are methods which are invoked when transient objects are added or deleted
-from the container.  A notification target is invoked with the item being
-operated upon, and the transient object container as arguments.  Specify
-the path to the method to be invoked to receive the notification.
-</p>
-
-</td>
-</tr>
-<tr>
   <td align="left" valign="top">
     <div class="form-label">
-      <em>Add Notification Target</em>
+      Add Notification Target
     </div>
   </td>
   <td align="left" valign="top">
@@ -78,7 +66,7 @@ the path to the method to be invoked to receive the notification.
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
-      <em>Delete Notification Target</em>
+      Delete Notification Target
     </div>
   </td>
   <td align="left" valign="top">
@@ -107,7 +95,7 @@ the path to the method to be invoked to receive the notification.
   <td align="left" valign="top">
   <div class="form-label">
   <font color="red">WARNING!</font>
-  The data objects currently existing in this session data container
+  The data objects existing in this transient object container
   will be deleted when the data object timeout is changed.
   </div>
   </td>

@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.8 2001/11/02 20:44:22 matt Exp $
+$Id: Transience.py,v 1.9 2001/11/07 06:46:36 chrism Exp $
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -100,6 +100,7 @@ from Persistence import Persistent, PersistentMapping
 from Acquisition import Implicit, aq_base
 from AccessControl import ClassSecurityInfo
 from BTrees import OOBTree
+from zLOG import LOG, WARNING
 import os.path
 import math
 import time
@@ -113,14 +114,12 @@ WRITEGRANULARITY=30     # Timing granularity for write clustering, in seconds
 time = time.time
 
 # permissions
-ADD_DATAMGR_PERM = 'Add Transient Object Container'
-CHANGE_DATAMGR_PERM = 'Change Transient Object Containers'
+ADD_CONTAINER_PERM = 'Add Transient Object Container'
 MGMT_SCREEN_PERM = 'View management screens'
 ACCESS_CONTENTS_PERM = 'Access contents information'
 CREATE_TRANSIENTS_PERM = 'Create Transient Objects'
-ACCESS_SESSIONDATA_PERM = 'Access Transient Objects'
+ACCESS_TRANSIENTS_PERM = 'Access Transient Objects'
 MANAGE_CONTAINER_PERM = 'Manage Transient Object Container'
-
 
 constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
@@ -159,9 +158,6 @@ class TransientObjectContainer(SimpleItem):
             'action':   'manage_access'
         },
 
-        {   'label':    'Advanced',
-            'action':   'manage_advanced'
-        }
     )
 
     security = ClassSecurityInfo()
@@ -172,7 +168,7 @@ class TransientObjectContainer(SimpleItem):
                                 ['Manager',])
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,
                                 ['Manager','Anonymous'])
-    security.setPermissionDefault(ACCESS_SESSIONDATA_PERM,
+    security.setPermissionDefault(ACCESS_TRANSIENTS_PERM,
                                 ['Manager','Anonymous'])
     security.setPermissionDefault(CREATE_TRANSIENTS_PERM,
                                 ['Manager',])
@@ -180,9 +176,6 @@ class TransientObjectContainer(SimpleItem):
     security.declareProtected(MGMT_SCREEN_PERM, 'manage_container')
     manage_container = HTMLFile('dtml/manageTransientObjectContainer',
         globals())
-
-    security.declareProtected(MGMT_SCREEN_PERM, 'manage_advanced')
-    manage_advanced = HTMLFile('dtml/manageImpExpTransientObjects', globals())
 
     security.setDefaultAccess('deny')
 
@@ -222,30 +215,32 @@ class TransientObjectContainer(SimpleItem):
     #
 
     security.declareProtected(CREATE_TRANSIENTS_PERM, 'new')
-    def new(self, key):
-
+    def new(self, key, wrap_with=None):
         if type(key) is not type(''):
             raise TypeError, (key, "key is not a string type")
-    
         if self.has_key(key):
             raise KeyError, key         # Not allowed to dup keys
         
-        item = TransientObject(key, parent=self)
-
+        item = TransientObject(key)
         self[key] = item
-
         self.notifyAdd(item)
-
-        return item
-        
+        if not wrap_with:
+            return item.__of__(self)
+        else:
+            return item.__of__(wrap_with)
 
     security.declareProtected(CREATE_TRANSIENTS_PERM, 'new_or_existing')
-    def new_or_existing(self, key):
-
+    def new_or_existing(self, key, wrap_with=None):
         item  = self.get(key,_notfound)
-        if item is not _notfound: return item
-
-        return self.new(key)
+        if item is _notfound:
+            return self.new(key, wrap_with)
+        if not item.isValid():
+            del self[key]
+            return self.new(key, wrap_with)
+        if not wrap_with:
+            return item.__of__(self)
+        else:
+            return item.__of__(wrap_with)
 
     # -----------------------------------------------------------------
     # TransientItemContainer 
@@ -265,8 +260,7 @@ class TransientObjectContainer(SimpleItem):
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getAddNotificationTarget')
     def getAddNotificationTarget(self):
-        # What might we do here to help through the web stuff?
-        return self._addCallback
+        return self._addCallback or ''
 
     security.declareProtected(MANAGE_CONTAINER_PERM,
         'setAddNotificationTarget')
@@ -277,8 +271,7 @@ class TransientObjectContainer(SimpleItem):
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getDelNotificationTarget')
     def getDelNotificationTarget(self):
-        # What might we do here to help through the web stuff?
-        return self._delCallback
+        return self._delCallback or ''
 
     security.declareProtected(MANAGE_CONTAINER_PERM,
         'setDelNotificationTarget')
@@ -292,35 +285,61 @@ class TransientObjectContainer(SimpleItem):
     # Supporting methods (not part of the interface)
     #
 
-
     def notifyAdd(self, item):
-
-        callback = self._addCallback
-
-        if type(callback) is type(''):
-            callback = self.aq_parent.unrestrictedTraverse(callback)
-
-        if callable(callback):
-            try:
-                callback(item, self)            # Use self as context
-            except: pass                        # Eat all errors 
+        if self._addCallback:
+            self._notify(item, 'add')
 
     def notifyDestruct(self, item):
+        if self._delCallback:
+            self._notify(item, 'destruct')
 
-        callback = self._delCallback
+    def _notify(self, item, kind):
+        if kind =='add':
+            name = 'notifyAdd'
+            callback = self._addCallback
+        else:
+            name = 'notifyDestruct'
+            callback = self._delCallback
 
         if type(callback) is type(''):
-            callback = self.aq_parent.unrestrictedTraverse(callback)
-
-        if callable(callback):
             try:
-                callback(item, self)            # Use self as context
-            except: pass                        # Eat all errors 
+                method = self.unrestrictedTraverse(callback)
+            except (KeyError, AttributeError):
+                path = self.getPhysicalPath()
+                err = 'No such method %s in %s %s'
+                LOG('Transience',
+                    WARNING,
+                    err % (callback, '/'.join(path), name),
+                    error=sys.exc_info()
+                    )
+                return
+        else:
+            method = callback
+
+        if callable(method):
+            try:
+                method(item, self)
+            except:
+                # dont raise, just log
+                path = self.getPhysicalPath()
+                LOG('Transience',
+                    WARNING,
+                    '%s failed when calling %s in %s' % (name, callback,
+                                                    '/'.join(path)),
+                    error=sys.exc_info()
+                    )
+        else:
+            err = '%s in %s attempted to call non-callable %s'
+            path = self.getPhysicalPath()
+            LOG('Transience',
+                WARNING,
+                err % (name, '/'.join(path), callback),
+                error=sys.exc_info()
+                )
 
     # -----------------------------------------------------------------
     # Management item support (non API)
     #
-
 
     security.declareProtected(MANAGE_CONTAINER_PERM,
         'manage_changeTransientObjectContainer')
@@ -334,51 +353,15 @@ class TransientObjectContainer(SimpleItem):
 
         self.title = title
         self.setTimeoutMinutes(timeout_mins)
+        if not addNotification:
+            addNotification = None
+        if not delNotification:
+            delNotification = None
         self.setAddNotificationTarget(addNotification)
         self.setDelNotificationTarget(delNotification)
 
         if REQUEST is not None:
             return self.manage_container(self, REQUEST)
-
-
-    security.declareProtected(MANAGE_CONTAINER_PERM,
-        'manage_exportTransientObjects')
-    def manage_exportTransientObjects(self, REQUEST=None):
-    
-        """
-        Export the transient objects to a named file in the var directory.
-        """
-
-        f = os.path.join(Globals.data_dir, "transientobjects.zexp")
-        self.c = PersistentMapping()
-        for k, v in self.items():
-            self.c[k] = v
-
-        get_transaction().commit()
-        self.c._p_jar.exportFile(self.c._p_oid, f)
-        del self.c
-        if REQUEST is not None:
-            return MessageDialog(
-                title="Transient objects exported",
-                message="Transient objects exported to %s" % f,
-                action="manage_container")
-        
-    security.declareProtected(MANAGE_CONTAINER_PERM,
-        'manage_importTransientObjects')
-    def manage_importTransientObjects(self, REQUEST=None):
-        """
-        Import the transient objects from a zexp file.
-        """
-        f = os.path.join(Globals.data_dir, "transientobjects.zexp")
-        conn = self._p_jar
-        ob = conn.importFile(f)
-        for k,v in ob.items():
-            self[k] = v
-        if REQUEST is not None:
-            return MessageDialog(
-                title="Transient objects imported",
-                message="Transient objects imported from %s" % f,
-                action="manage_container")
 
     def _setTimeout(self, timeout_mins):
         if type(timeout_mins) is not type(1):
@@ -399,7 +382,6 @@ class TransientObjectContainer(SimpleItem):
             i = i + r_secs
         index = self._ctype()
         self._ring = Ring(l, index)
-
 
     def _getCurrentBucket(self, get_dump=0):
         # no timeout always returns last bucket
@@ -430,31 +412,11 @@ class TransientObjectContainer(SimpleItem):
             return b
 
     def _clean(self, b, index):
-
-
-        # What is all this?
-        #for ob in b.values():
-        #    d = last = None
-        #    f = getattr(ob, self._onend, None)
-        #    #
-        #    # HUH?
-        #    #
-        #    getDataMgr = getattr(ob, 'getDataMgr', None)
-        #    if getDataMgr is not None:
-        #        if callable(getDataMgr):
-        #            d = getDataMgr()
-        #        if d != last:
-        #            mgr = self.aq_parent.unrestrictedTraverse(d)
-        #            last = d
-        #
-        #    if callable(f): f(mgr)
-
         for k, v in list(index.items()):
             if v is b:
                 self.notifyDestruct(index[k][k])
                 del index[k]
         b.clear()
-
 
     def _show(self):
         """ debug method """
@@ -469,7 +431,6 @@ class TransientObjectContainer(SimpleItem):
 
         for x in t:
             print x
-
 
     def __setitem__(self, k, v):
         current = self._getCurrentBucket()
@@ -501,14 +462,14 @@ class TransientObjectContainer(SimpleItem):
             del b[k] # delete the item from the old bucket.
         return v
 
-    security.declareProtected(ACCESS_SESSIONDATA_PERM, 'get')
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'get')
     def set(self, k, v):
         """ """
         if type(k) is not type(''):
             raise TypeError, "Transient Object Container keys must be strings"
         self[k] = v
 
-    security.declareProtected(ACCESS_SESSIONDATA_PERM, 'get')
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'get')
     # Uses a different marker than _notfound
     def get(self, k, default=_marker):
         try: v = self[k]
@@ -527,12 +488,12 @@ class TransientObjectContainer(SimpleItem):
         del index[k]
         del b[k]
 
-    security.declareProtected(ACCESS_SESSIONDATA_PERM, '__len__')
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, '__len__')
     def __len__(self):
         self._getCurrentBucket()
         return len(self._ring._index)
 
-    security.declareProtected(ACCESS_SESSIONDATA_PERM, 'has_key')
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
     def has_key(self, k):
         self._getCurrentBucket()
         index = self._ring._index
@@ -558,7 +519,7 @@ class TransientObjectContainer(SimpleItem):
     def copy(self):
         raise NotImplementedError
 
-    security.declareProtected(ACCESS_SESSIONDATA_PERM, 'getLen')
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'getLen')
     getLen = __len__
     
 class Ring(Persistent):
@@ -587,8 +548,6 @@ class Ring(Persistent):
     def _p_independent(self):
         return 1
 
-
-
 class TransientObject(Persistent, Implicit):
     """ akin to Session Data Object """
     __implements__ = (ItemWithId, # randomly generate an id
@@ -603,17 +562,15 @@ class TransientObject(Persistent, Implicit):
     security.declareObjectPublic()
 
     #
-    # Initialzer
+    # Initializer
     #
 
-    def __init__(self, id, parent=None):
-        self.name = id
+    def __init__(self, id):
+        self.token = id
         self.id = self._generateUniqueId()
-        self._parent = parent
         self._container = {}
         self._created = self._last_accessed = time()
         self._timergranularity = WRITEGRANULARITY # timer granularity
-
 
     # -----------------------------------------------------------------
     # ItemWithId
@@ -627,9 +584,10 @@ class TransientObject(Persistent, Implicit):
     #
 
     def invalidate(self):
-        parent = self._parent
-        if parent: parent.notifyDestruct(self)
         self._invalid = None
+
+    def isValid(self):
+        return not hasattr(self, '_invalid')
 
     def getLastAccessed(self):
         return self._last_accessed
@@ -650,7 +608,6 @@ class TransientObject(Persistent, Implicit):
     # -----------------------------------------------------------------
     # DictionaryLike
     #
-
 
     def keys(self):
         return self._container.keys()
@@ -692,9 +649,6 @@ class TransientObject(Persistent, Implicit):
         if hasattr(k, '_p_jar') and k._p_jar is None:
             k._p_jar = self._p_jar
             k._p_changed = 1
-        # unwrap this thing if it's wrapped
-        k = aq_base(k)
-        v = aq_base(v)
         self._container[k] = v
         self._p_changed = 1
 
@@ -726,19 +680,20 @@ class TransientObject(Persistent, Implicit):
         # other objects (eliminates read conflicts).
         return 1
 
-    def getName(self):
-        return self.name
+    getName = getId
 
+    def getToken(self):
+        return self.token
+    
     def _generateUniqueId(self):
-        return str(time())+str(random.randint(0,sys.maxint-1))
+        t = str(int(time()))
+        d = "%010d" % random.randint(0, sys.maxint-1)
+        return "%s%s" % (t, d)
 
-    def __str__(self):
-        result = "<table>\n"
-        for (key, value) in self.items():
-            result = result + "<tr><th>%s</th><td>%s</td></tr>\n" % (key, value)
-
-        result= result + "</table>"
-        return result
+    def __repr__(self):
+        return "id: %s, token: %s, contents: %s" % (
+            self.id, self.token, `self.items()`
+            )
 
 Globals.InitializeClass(TransientObjectContainer)
 Globals.InitializeClass(TransientObject)

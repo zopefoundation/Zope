@@ -77,7 +77,8 @@
 """
 Transient Objects
 
-  TransientObjectContainers implement:
+  TransientObjectContainers are objects which contain zero or more
+  TransientObjects.  They implement the following interfaces:
 
     - ItemWithId
 
@@ -85,16 +86,24 @@ Transient Objects
 
     - TransientItemContainer
 
-  In particular, one uses the 'new_&nbsp;_or_&nbsp;_existing' method on
-  TransientObjectContainers to retrieve or create a TransientObject based
-  on a given string key.  
+  In particular, one uses the 'new_or_existing' method on
+  TransientObjectContainers to retrieve or create a TransientObject
+  based on a given string key.
 
-  If add or delete notifications are registered with the container, they
-  will be called back when items in the container are added or deleted,
-  with the item and the container as arguments.  The callbacks may be
-  registered either as bound methods, functions, or named paths in Zope.
+  If add or delete notifications are registered with the container,
+  they will be called back when items in the container are added or
+  deleted, with the item and the container as arguments.  The
+  callbacks may be registered either as bound methods, functions, or
+  physical paths to Zope Script (Python Script or External Method)
+  objects (e.g. '/some/resolvable/script/name').  In any of these
+  cases, the delete and add notifications will be called with
+  arguments allowing the callbacks to operate on data representing the
+  state of the transient object at the moment of addition or deletion
+  (see setAddNotificationTarget and setDelNotificationTarget below).
 
-  TransientObjects implement:
+  TransientObjects are containerish items held within
+  TransientObjectContainers and they implement the following
+  interfaces:
 
     - ItemWithId
 
@@ -106,7 +115,28 @@ Transient Objects
 
     - ImmutablyValuedMappingOfPickleableObjects
 
-"""
+  Of particular importance is the idea that TransientObjects do not
+  offer the contract of "normal" ZODB container objects; mutations
+  made to items which are contained within a TransientObject cannot be
+  expected to persist.  Developers need explicitly resave the state of
+  a subobject of a TransientObject by placing it back into the
+  TransientObject via the TransientObject.__setitem__ or .set methods.
+  This requirement is due to the desire to allow people to create
+  alternate TransientObject implementations that are *not* based on
+  the ZODB.  Practically, this means that when working with a
+  TransientObject which contains mutable subobjects (even if they
+  inherit from Persistence.Persistent), you *must* resave them back
+  into the TransientObject.  For example::
+
+    class Foo(Persistence.Persistent):
+        pass
+        
+    transient_object = transient_data_container.new('t')
+    foo = transient_object['foo'] = Foo()
+    foo.bar = 1
+    # the following is *necessary* to repersist the data
+    transient_object['foo'] = foo
+  """
 
 import Interface
 
@@ -117,6 +147,13 @@ class Transient(Interface.Base):
 
         Causes the transient object container's "before destruct" method
         related to this object to be called as a side effect.
+        """
+
+    def isValid(self):
+        """
+        Return true if transient object is still valid, false if not.
+        A transient object is valid if its invalidate method has not been
+        called.
         """
 
     def getLastAccessed(self):
@@ -178,23 +215,24 @@ class DictionaryLike(Interface.Base):
 class ItemWithId(Interface.Base):
     def getId(self):
         """
-        Returns a meaningful unique id for the object.
+        Returns a meaningful unique id for the object.  Note that this id
+        need not the key under which the object is stored in its container.
         """
 
 class TTWDictionary(DictionaryLike, ItemWithId):
     def set(self, k, v):
         """
-        Call _&nbsp;&nbsp;_setitem_&nbsp;&nbsp;_ with key k, value v.
+        Call __setitem__ with key k, value v.
         """
 
     def delete(self, k):
         """
-        Call _&nbsp;&nbsp;_delitem_&nbsp;&nbsp;_ with key k.
+        Call __delitem__ with key k.
         """
 
     def __guarded_setitem__(self, k, v):
         """
-        Call _&nbsp;&nbsp;_setitem_&nbsp;&nbsp;_ with key k, value v.
+        Call __setitem__ with key k, value v.
         """
 
 class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
@@ -209,11 +247,10 @@ class ImmutablyValuedMappingOfPickleableObjects(Interface.Base):
         Returns the value associated with key k.
 
         Note that no guarantee is made to persist changes made to mutable
-        objects obtained via _&nbsp;&nbsp;_getitem_&nbsp;&nbsp;_, even if
-        they support the ZODB Persistence interface.  In order to ensure
-        that changes to mutable values are persisted, you need to explicitly
-        put the value back in to the mapping via the
-        _&nbsp;&nbsp;_setitem_&nbsp;&nbsp;_.
+        objects obtained via __getitem__, even if they support the ZODB
+        Persistence interface.  In order to ensure that changes to mutable
+        values are persisted, you need to explicitly put the value back in
+        to the mapping via __setitem__.
         """
 
     def __delitem__(self, k):
@@ -228,16 +265,10 @@ class HomogeneousItemContainer(Interface.Base):
      2.  Is responsible for the creation of its subobjects.
      3.  Allows for the access of a subobject by key.
     """
-    def getSubobjectInterface(self):
-        """
-        Returns the interface object which must be supported by items added
-        to or created by this container.
-        """
-
     def get(self, k, default=None):
         """
-        Return value associated with key k.  If value associated with k does
-        not exist, return default.
+        Return value associated with key k via __getitem__.  If value
+        associated with k does not exist, return default.
         """
 
     def has_key(self, k):
@@ -252,7 +283,7 @@ class HomogeneousItemContainer(Interface.Base):
         """
 
 class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
-    def new(self, k):
+    def new(self, k, wrap_with=None):
         """
         Creates a new subobject of the type supported by this container
         with key "k" and returns it.
@@ -260,16 +291,24 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         If an object already exists in the container with key "k", a
         KeyError is raised.
 
+        If wrap_with is non-None, the subobject is returned in the
+        acquisition context of wrap_in, else it is returned in
+        the acquisition context of this transient object container.
+
         "k" must be a string, else a TypeError is raised.
         """
 
-    def new_or_existing(self, k):
+    def new_or_existing(self, k, wrap_with=None):
         """
         If an object already exists in the container with key "k", it
         is returned.
 
-        Otherwiser, create a new subobject of the type supported by this
+        Otherwise, create a new subobject of the type supported by this
         container with key "k" and return it.
+
+        If wrap_with is non-None, the subobject is returned in the
+        acquisition context of wrap_in, else it is returned in
+        the acquisition context of this transient object container.
 
         "k" must be a string, else a TypeError is raised.
         """
@@ -289,32 +328,45 @@ class TransientItemContainer(Interface.Base):
 
     def getAddNotificationTarget(self):
         """
-        Returns the current 'after add' function, or None.
+        Returns the currently registered 'add notification' value, or None.
         """
 
     def setAddNotificationTarget(self, f):
         """
-        Cause the 'after add' function to be 'f'.
+        Cause the 'add notification' function to be 'f'.
 
-        If 'f' is not callable and is a string, treat it as a Zope path to
-        a callable function.
+        If 'f' is not callable and is a string, treat it as a physical
+        path to a Zope Script object (Python Script, External Method,
+        et. al).
 
-        'after add' functions need accept a single argument: 'item', which
-        is the item being added to the container.
+        'add notify' functions need accept two arguments: 'item',
+        which is the transient object being destroyed, and 'container',
+        which is the transient object container which is performing
+        the destruction.  For example::
+
+          def addNotify(item, container):
+              print "id of 'item' arg was %s" % item.getId()
         """
 
     def getDelNotificationTarget(self):
         """
-        Returns the current 'before destruction' function, or None.
+        Returns the currently registered 'delete notification' value, or
+        None.
         """
 
     def setDelNotificationTarget(self, f):
         """
-        Cause the 'before destruction' function to be 'f'.
+        Cause the 'delete notification' function to be 'f'.
 
-        If 'f' is not callable and is a string, treat it as a Zope path to
-        a callable function.
+        If 'f' is not callable and is a string, treat it as a physical
+        path to a Zope Script object (Python Script, External Method,
+        et. al).
 
-        'before destruction' functions need accept a single argument: 'item',
-        which is the item being destroyed.
+        'Before destruction' functions need accept two arguments: 'item',
+        which is the transient object being destroyed, and 'container',
+        which is the transient object container which is performing
+        the destruction.  For example::
+
+          def delNotify(item, container):
+              print "id of 'item' arg was %s" % item.getId()
         """

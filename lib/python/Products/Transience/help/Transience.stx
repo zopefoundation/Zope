@@ -1,62 +1,66 @@
-Transient Object Containers
+Transient Objects
 
-  Transient Object Overview
+    A transient object is an object which persists for a limited
+    period of time after which it is automatically expired.  The
+    objects which make this behavior possible are
+    TransientObjectContainers and TransientObjects.
 
-    A transient object persists, but for a limited period of time.
-    To facilitate persistence of items for a limited duration, the
-    TransientObjectContainer provides a container which stores
-    TransientObjects.  A TransientObject is dictionary like; it 
-    will respond to dictionary semantics.  The TransientObjectContainer 
-    maintains a time-out mechanism to flush out expired entries.
-    The container also has a notification mechanism whereby it can
-    notify a script or method that an object has been added or removed
-    from the container.
+  Transient Object Container Overview
 
-  Using Transient Objects
+    To facilitate persistence of items for a limited duration, a
+    TransientObjectContainer is a container which stores and maintains
+    an expiration policy related to TransientObjects.
+
+    A TransientObjectContainer flushes expired entries based on a
+    timeout based on last access of a contained key.  It also has a
+    notification mechanism whereby it can notify a script or method
+    that an object has been added or removed from the container.  When
+    a new item is created, the add notification target on the
+    container is called.  Similarly, when the item is deleted, either
+    explicitly or by timeout, the delete notification target is
+    called.
 
     One uses the 'new_or_existing' or 'new' methods of a
     TransientObjectContainer to obtain a TransientObject.  The
     TransientObjectContainer only accepts string keys to name objects;
     you may not use objects as keys.
 
-    When a new item is created, the add notification target on the
-    container is notified about the object via a callback.  Similarly,
-    when the item is deleted, either explicitly or by timeout, the
-    delete notification target is called back.
+    A Transient Object is considered "expired" by a
+    TransientObjectContainer when it has not been accessed in a
+    configurable number of minutes (the "data object timeout").  
 
-    TransientObjects, since they behave as a dictionary, may contain
-    any arbitrarily keyed data.  However, the TransientObject cannot inspect
-    the contents of what it stores to determine if it has been changed,
-    thus, it is important to explicitly set data on the TransientObject
-    itself in the event some nested data has changed and requires saving.
+  Using Transient Objects
 
-    For example, consider the following python script::
+    TransientObjects are themselves "containerish" and
+    "dictionary-like"; they implement a dictionary-like interface as
+    well as methods related to manual invalidation, timeout, and
+    introspection.
 
-       # Create a transientObject
-       t = container.transient_container.new_or_existing('Foobar')
+    The values of a transient object can be any pickleable Python data
+    structure while the keys of a transient object may be any hashable
+    and pickleable Python data structure.
 
-       # Create a dictionary
-       d = {}
+    Note that TransientObjects do not offer the contract of "normal"
+    ZODB container objects; mutations made to items which are
+    contained within a TransientObject cannot be expected to persist.
+    Developers need explicitly resave the state of a subobject of a
+    TransientObject by placing it back into the TransientObject via
+    the TransientObject.__setitem__ or .set methods.  This requirement
+    is due to the desire to allow people to create alternate
+    TransientObject implementations that are *not* based on the ZODB.
+    Practically, this means that when working with a TransientObject
+    which contains mutable subobjects (even if they inherit from
+    Persistence.Persistent), you *must* resave them back into the
+    TransientObject.  For example::
 
-       # Store the dictionary in the transientObject
-       t['d'] = d
-
-    And a similar python script::
-
-       # Retrieve our transientObject
-       t = container.transient_container.new_or_existing('Foobar')
-
-       # Retreive the dictionary
-       d = t['d']
-
-       # Update the dictionary
-       d[1] = 1
-
-    In this second example, the contents of the transientObject will not
-    be saved, because the transientObject itself was not modified.  It
-    is important to update the object to signal it that it must save its
-    state.
-
+      class Foo(Persistence.Persistent):
+          pass
+        
+      transient_object = transient_data_container.new('t')
+      foo = transient_object['foo'] = Foo()
+      foo.bar = 1
+      # the following is *necessary* to repersist the data
+      transient_object['foo'] = foo
 
   See Also
 

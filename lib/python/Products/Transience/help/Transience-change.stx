@@ -1,18 +1,18 @@
-TransientObjectContainer - Change
+TransientObjectContainer - Manage
 
   Transient Object Containers
 
      A TransientObjectContainer contains objects which will expire after
      a given period of time.  A TransientObjectContainer is used by 
-     SessionDataMangers to store session information.
+     a SessionDataManager to store session data.
 
   To change a TransientObjectContainer, specify the following:
 
-     - *title* 
+     - **Title**
 
-       The title of the object.
+       The title of the object (optional).
 
-     - **timeout_minutes**
+     - **Data object timeout in minutes**
 
        The minimum number of minutes that objects in the container will
        persist for.  Objects in the container are passively deleted, so
@@ -21,29 +21,38 @@ TransientObjectContainer - Change
        If you change the timeout value, all objects in the transient
        container will be flushed.
 
-     - *addNotification*
+       The default is 20 minutes.
 
-       The name of an object to receive notifications when objects are
-       added to the TransientObjectContainer.  See NotificationTargets.
+     - **Add Notification Target**
 
-     - *delNotification*
+       The physical path of a script which will receive notifications when
+       objects are added to the TransientObjectContainer.  See
+       NotificationTargets below.  Ex: '/path/to/addNotificationMethod'.
 
-       The name of an object to receive notifications when objects are
-       deleted from the TransientObjectContainer.  See NotificationTargets.
+     - **Delete Notification Target**
 
+       The physical path of a script which will receive notifications when
+       objects are deleted from the TransientObjectContainer.  See
+       NotificationTargets below.  Ex: 'path/to/delNotificationMethod'.
   
   Notification Targets
 
-        A NotificationTarget is a callable (a bound method, function, or
-	named Zope object) which is called when an object is added or removed
-	from a TransientObjectContainer. 
+    A NotificationTarget is a string representing a physical path to a
+    Zope Script (Python Script or External Method) object which is
+    called when an object is added or removed from a
+    TransientObjectContainer.
 
-	NotificationTargets are called with two arguments, the first being
-	the item being added or removed from the container, and the second
-	being the container itself.  Within Zope, the container will be
-	acquisition wrapped, allowing the container to be used as a context
-	to reference other Zope objects.
+    Notification targets are called with two arguments, the first
+    being the item being added or removed from the container, and the
+    second being the container itself.  Within Zope, the container
+    will be acquisition wrapped, allowing the container to be used as
+    a context to reference other Zope objects.
 
+    An example of a notification target External Method::
+
+           def notificationTarget(item, container):
+               from zLOG import LOG
+               LOG(100, 'test', 'id: %s' % item.getId())
 
   See Also
 

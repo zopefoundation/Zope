@@ -85,7 +85,7 @@
 """
 Transience initialization routines
 
-$Id: __init__.py,v 1.3 2001/11/02 20:44:22 matt Exp $
+$Id: __init__.py,v 1.4 2001/11/07 06:46:36 chrism Exp $
 """
 
 import Transience
@@ -93,7 +93,7 @@ import Transience
 def initialize(context):
     context.registerClass(
         Transience.TransientObjectContainer,
-        permission=Transience.ADD_DATAMGR_PERM,
+        permission=Transience.ADD_CONTAINER_PERM,
         icon='www/datacontainer.gif',
         constructors=(Transience.constructTransientObjectContainerForm,
                       Transience.constructTransientObjectContainer)
