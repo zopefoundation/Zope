@@ -605,7 +605,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             # self.indexes is always a dict, so get() w/ 1 arg works
             sort_index = self.indexes.get(sort_index)
             if sort_index is None:
-                raise CatalogError, ('Unknown sort_on index %s' % sort_index)
+                raise CatalogError, ('Unknown sort_on index')
             else:
                 if not hasattr(sort_index, 'keyForDocument'):
                     raise CatalogError(
