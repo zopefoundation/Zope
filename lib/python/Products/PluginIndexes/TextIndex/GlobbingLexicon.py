@@ -252,10 +252,10 @@ class GlobbingLexicon(Lexicon):
                                   r'()&|!@#$%^{}\<>.')
         
         # First, deal with multi-character globbing
-        result = string.replace(result, '*', '.*')
+        result = result.replace( '*', '.*')
 
         # Next, we need to deal with single-character globbing
-        result = string.replace(result, '?', '.')
+        result = result.replace( '?', '.')
 
         return "%s$" % result 
 

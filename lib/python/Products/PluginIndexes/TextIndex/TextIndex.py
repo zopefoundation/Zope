@@ -15,10 +15,10 @@
 
 """
 
-__version__ = '$Revision: 1.23 $'[11:-2]
+__version__ = '$Revision: 1.24 $'[11:-2]
 
 
-import string, re
+import  re
 import operator,warnings
 from Globals import Persistent,DTMLFile
 from zLOG import LOG, ERROR
@@ -480,7 +480,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         r = None
 
         for key in record.keys:
-            key = string.strip(key)
+            key = key.strip()
             if not key:
                 continue
 
@@ -662,7 +662,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 def parse(s):
     """Parse parentheses and quotes"""
     l = []
-    tmp = string.lower(s)
+    tmp = s.lower()
 
     p = parens(tmp)
     while p is not None:
@@ -727,9 +727,9 @@ def parens(s, parens_re=re.compile('[()]').search):
 
 
 def quotes(s):
-    split=string.split
+
     if '"' not in s:
-        return split(s)
+        return s.split()
     
     # split up quoted regions
     splitted = re.split('\s*\"\s*', s)
@@ -738,7 +738,7 @@ def quotes(s):
     
     for i in range(1,len(splitted),2):
         # split the quoted region into words
-        words = splitted[i] = split(splitted[i])
+        words = splitted[i] = splitted[i].split()
         
         # put the Proxmity operator in between quoted words
         j = len(words) - 1
@@ -749,7 +749,7 @@ def quotes(s):
     i = len(splitted) - 1
     while i >= 0:
         # split the non-quoted region into words
-        splitted[i:i+1] = split(splitted[i])
+        splitted[i:i+1] = splitted[i].split()
         i = i - 2
 
     return filter(None, splitted)
