@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -80,14 +80,12 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	return HTML.manage_edit(self,data,REQUEST)
 
     def validate(self, inst, parent, name, value, md):
-
-	if name[:1]=='_': return 0
 	if hasattr(value, '__roles__'):
 	    roles=value.__roles__
 	elif inst is parent:
 	    return 1
 	else:
-	    if name[:6]=='manage': return 0
+	    if str(name)[:6]=='manage': return 0
 	    if hasattr(parent,'__roles__'): roles=parent.__roles__
 	    elif hasattr(parent, 'aq_acquire'):
 		try: roles=parent.aq_acquire('__roles__')
