@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -32,9 +32,9 @@ class Session(Persistent,Implicit,RoleManager,Item):
     __ac_permissions__=(
     ('View management screens', ['manage','manage_tabs','manage_editForm', '']),
     ('Change permissions', ['manage_access']),
-    ('Edit session', ['manage_edit']),
-    ('Join/leave session', ['enter','leave','leave_another']),
-    ('Save/discard session', ['save','discard']),
+    ('Change Sessions', ['manage_edit']),
+    ('Join/leave Sessions', ['enter','leave','leave_another']),
+    ('Save/discard Session changes', ['save','discard']),
     )
 
     def __init__(self, id, title, REQUEST):
@@ -105,6 +105,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.19  1998/05/20 22:07:32  jim
+# Updated permissions.
+#
 # Revision 1.18  1998/05/20 17:58:17  jim
 # Got rid of ac_types.
 #

@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -43,8 +43,9 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     __ac_permissions__=(
     ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
-    ('Change/upload data', ['manage_edit','manage_upload','PUT']),
-    ('View', ['index_html','view_image_or_file','getSize','getContentType', '']),
+    ('Change Images and Files', ['manage_edit','manage_upload','PUT']),
+    ('View',
+     ['index_html','view_image_or_file','getSize','getContentType', '']),
     )
    
 
