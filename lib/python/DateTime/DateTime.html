@@ -1,0 +1,621 @@
+<html>
+<head><title>Module DateTime</title></head>
+<body>
+
+<dl><dt><h1>DateTime</h1><dd>Encapsulation of date/time values</dl>
+<h1>Module Functions</h1>
+
+<dl><dt><strong>Timezones()</strong><dd>
+<p>Return the list of recognized timezone names</p>
+
+
+</dl>
+
+
+<h1>Class DateTime</h1>
+
+<p>DateTime objects represent instants in time and provide
+       interfaces for controlling its representation without
+       affecting the absolute value of the object. </p>
+<p>       DateTime objects may be created from a wide variety of string 
+       or numeric data, or may be computed from other DateTime objects.
+       DateTimes support the ability to convert their representations
+       to many major timezones, as well as the ablility to create a
+       DateTime object in the context of a given timezone.</p>
+
+<p>       DateTime objects provide partial numerical behavior:</p>
+<ul><li><p>Two date-time objects can be subtracted to obtain a time,
+            in days between the two.</p>
+
+
+<li><p>A date-time object and a positive or negative number may
+            be added to obtain a new date-time object that is the given
+            number of days later than the input date-time object.</p>
+
+
+<li><p>A positive or negative number and a date-time object may
+            be added to obtain a new date-time object that is the given
+            number of days later than the input date-time object.</p>
+
+
+<li><p>A positive or negative number may be subtracted from a
+            date-time object to obtain a new date-time object that is
+            the given number of days earlier than the input date-time
+            object.</p>
+
+</ul>
+<p>        DateTime objects may be converted to integer, long, or float
+        numbers of days since January 1, 1901, using the standard int, 
+        long, and float functions (Compatibility Note: int, long and
+        float return the number of days since 1901 in GMT rather than
+        local machine timezone). DateTime objects also provide access
+        to their value in a float format usable with the python time
+        module, provided that the value of the object falls in the
+        range of the epoch-based time module.</p>
+
+<p>        A DateTime object should be considered immutable; all conversion
+        and numeric operations return a new DateTime object rather than
+        modify the current object.</p>
+
+
+
+
+<dl><dt><p><strong>Constructor For DateTime</strong></p><dd>
+
+<dl><dt><strong>DateTime()</strong><dd>
+<h3>Return a new date-time object</h3>
+<p>        A DateTime object always maintains its value as an absolute 
+        UTC time, and is represented in the context of some timezone
+        based on the arguments used to create the object. A DateTime
+        object's methods return values based on the timezone context.</p>
+
+<p>        Note that in all cases the local machine timezone is used for
+        representation if no timezone is specified.</p>
+
+<h4>        DateTimes may be created with from zero to seven arguments.</h4>
+<ul><li><p>If the function is called with no arguments, then the 
+            current date/time is returned, represented in the 
+            timezone of the local machine.</p>
+
+
+<li><p>If the function is invoked with a single string argument
+            which is a recognized timezone name, an object representing
+            the current time is returned, represented in the specified
+            timezone.</p>
+
+
+<li><p>If the function is invoked with a single string argument
+            representing a valid date/time, an object representing
+            that date/time will be returned.</p>
+<p>            As a general rule, any date-time representation that is 
+            recognized and unambigous to a resident of North America is
+            acceptable.(The reason for this qualification is that
+            in North America, a date like: 2/1/1994 is interpreted
+            as February 1, 1994, while in some parts of the world,
+            it is interpreted as January 2, 1994.) A date/time
+            string consists of two components, a date component and
+            an optional time component, separated by one or more
+            spaces. If the time component is omited, 12:00am is
+            assumed. Any recognized timezone name specified as the
+            final element of the date/time string will be used for
+            computing the date/time value. (If you create a DateTime
+            with the string <code>Mar 9, 1997 1:45pm US/Pacific</code>, the
+            value will essentially be the same as if you had captured
+            time.time() at the specified date and time on a machine in
+            that timezone)
+            <PRE></p>
+
+<p>            e=DateTime(<code>US/Eastern</code>)
+            # returns current date/time, represented in US/Eastern.</p>
+
+<p>            x=DateTime(<code>1997/3/9 1:45pm</code>)
+            # returns specified time, represented in local machine zone.</p>
+
+<p>            y=DateTime(<code>Mar 9, 1997 13:45:00</code>)
+            # y is equal to x</p>
+
+<p>            </PRE></p>
+
+<p>            The date component consists of year, month, and day
+            values. The year value must be a one-, two-, or
+            four-digit integer. If a one- or two-digit year is
+            used, the year is assumed to be in the twentieth
+            century. The month may an integer, from 1 to 12, a
+            month name, or a month abreviation, where a period may
+            optionally follow the abreviation. The day must be an
+            integer from 1 to the number of days in the month. The
+            year, month, and day values may be separated by
+            periods, hyphens, forward, shashes, or spaces. Extra
+            spaces are permitted around the delimiters. Year,
+            month, and day values may be given in any order as long
+            as it is possible to distinguish the components. If all
+            three components are numbers that are less than 13,
+            then a a month-day-year ordering is assumed.</p>
+
+<p>            The time component consists of hour, minute, and second
+            values separated by colons.  The hour value must be an
+            integer between 0 and 23 inclusively. The minute value
+            must be an integer between 0 and 59 inclusively. The
+            second value may be an integer value between 0 and
+            59.999 inclusively. The second value or both the minute
+            and second values may be ommitted. The time may be
+            followed by am or pm in upper or lower case, in which
+            case a 12-hour clock is assumed.</p>
+
+
+
+<li><p>If the DateTime function is invoked with a single
+            Numeric argument, the number is assumed to be either
+            a floating point value such as that returned by 
+            time.time() , or a number of days after January 1, 1901 
+            00:00:00 UTC.</p>
+<p>            A DateTime object is returned that represents either
+            the gmt value of the time.time() float represented in
+            the local machine's timezone, or that number of days 
+            after January 1, 1901. Note that the number of days 
+            after 1901 need to be expressed from the viewpoint of
+            the local machine's timezone. A negative argument will 
+            yield a date-time value before 1901.</p>
+
+
+
+<li><p>If the function is invoked with two numeric arguments,
+            then the first is taken to be an integer year and the
+            second argument is taken to be an offset in days from
+            the beginning of the year, in the context of the local
+            machine timezone.
+            The date-time value returned is the given offset number of 
+            days from the beginning of the given year, represented in
+            the timezone of the local machine. The offset may be positive
+            or negative.
+            Two-digit years are assumed to be in the twentieth
+            century.</p>
+
+
+<li><p>If the function is invoked with two arguments, the first
+            a float representing a number of seconds past the epoch
+            in gmt (such as those returned by time.time()) and the 
+            second a string naming a recognized timezone, a DateTime
+            with a value of that gmt time will be returned, represented
+            in the given timezone.
+            <PRE>
+            import time
+            t=time.time()</p>
+<p>            now_east=DateTime(t,'US/Eastern')
+            # Time t represented as US/Eastern</p>
+
+<p>            now_west=DateTime(t,'US/Pacific')
+            # Time t represented as US/Pacific</p>
+
+<p>            # now_east == now_west
+            # only their representations are different</p>
+
+<p>            </PRE></p>
+
+
+
+<li><p>If the function is invoked with three or more numeric
+            arguments, then the first is taken to be an integer
+            year, the second is taken to be an integer month, and
+            the third is taken to be an integer day. If the
+            combination of values is not valid, then a
+            DateTimeError is raised. Two-digit years are assumed
+            to be in the twentieth century. The fourth, fifth, and
+            sixth arguments are floating point, positive or
+            negative offsets in units of hours, minutes, and days,
+            and default to zero if not given. An optional string may
+            be given as the final argument to indicate timezone (the
+            effect of this is as if you had taken the value of time.time()
+            at that time on a machine in the specified timezone).</p>
+
+</ul>
+
+<p>        In all cases, invalid date, time, or timezone components will
+        raise a DateTimeError. </p>
+
+<p>        The module function Timezones() will return a list of the 
+        timezones recognized by the DateTime module. Recognition of 
+        timezone names is case-insensitive.</p>
+
+
+
+</dl>
+</dl>
+
+<dl><dt><p><strong>Instance Methods For DateTime</strong></p><dd>
+
+<dl><dt><strong>pCommonZ()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar. 1, 1997 1:45 pm US/Eastern</p>
+
+
+</dl>
+<dl><dt><strong>mm()</strong><dd>
+<p>Return month as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>pDay()</strong><dd>
+<p>Return the abreviated (with period) name of the day of the week</p>
+
+
+</dl>
+<dl><dt><strong>year()</strong><dd>
+<p>Return the calendar year of the object</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentMinute()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current minute, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>AMPMMinutes()</strong><dd>
+<p>Return the time string for an object not showing seconds.</p>
+
+
+</dl>
+<dl><dt><strong>timeTime()</strong><dd>
+<p>Return the date/time as a floating-point number in UTC,
+           in the format used by the python time module.
+           Note that it is possible to create date/time values
+           with DateTime that have no meaningful value to the
+           time module, and in such cases a DateTimeError is 
+           raised. A DateTime object's value must generally be
+           between Jan 1, 1970 (or your local machine epoch) and
+           Jan 2038 to produce a valid time.time() style value.</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentMonth()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current month, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>DayOfWeek()</strong><dd>
+<p>Compatibility: see Day</p>
+
+
+</dl>
+<dl><dt><strong>isFuture()</strong><dd>
+<p>Return true if this object represents a date/time
+           later than the time of the call</p>
+
+
+</dl>
+<dl><dt><strong>dow_1()</strong><dd>
+<p>Return the integer day of the week, where sunday is 1</p>
+
+
+</dl>
+<dl><dt><strong>aDay()</strong><dd>
+<p>Return the abreviated name of the day of the week</p>
+
+
+</dl>
+<dl><dt><strong>dow()</strong><dd>
+<p>Return the integer day of the week, where sunday is 0</p>
+
+
+</dl>
+<dl><dt><strong>Time()</strong><dd>
+<p>Return the time string for an object to the nearest second.</p>
+
+
+</dl>
+<dl><dt><strong>month()</strong><dd>
+<p>Return the month of the object as an integer</p>
+
+
+</dl>
+<dl><dt><strong>Date()</strong><dd>
+<p>Return the date string for the object.</p>
+
+
+</dl>
+<dl><dt><strong>h_12()</strong><dd>
+<p>Return the 12-hour clock representation of the hour</p>
+
+
+</dl>
+<dl><dt><strong>greaterThan(t)</strong><dd>
+<p>Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time greater
+           than the specified time module style time.</p>
+
+
+</dl>
+<dl><dt><strong>aCommonZ()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar 1, 1997 1:45 pm US/Eastern</p>
+
+
+</dl>
+<dl><dt><strong>dd()</strong><dd>
+<p>Return day as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>AMPM()</strong><dd>
+<p>Return the time string for an object to the nearest second.</p>
+
+
+</dl>
+<dl><dt><strong>latestTime()</strong><dd>
+<p>Return a new DateTime object that represents the latest
+           possible time (in whole seconds) that still falls within
+           the current object's day, in the object's timezone context</p>
+
+
+</dl>
+<dl><dt><strong>fCommonZ()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: March 1, 1997 1:45 pm US/Eastern</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentDay()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current day, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>ampm()</strong><dd>
+<p>Return the appropriate time modifier (am or pm)</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentYear()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current year, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>h_24()</strong><dd>
+<p>Return the 24-hour clock representation of the hour</p>
+
+
+</dl>
+<dl><dt><strong>aMonth()</strong><dd>
+<p>Return the abreviated month name.</p>
+
+
+</dl>
+<dl><dt><strong>toZone(z)</strong><dd>
+<p>Return a DateTime with the value as the current
+           object, represented in the indicated timezone.</p>
+
+
+</dl>
+<dl><dt><strong>Day_()</strong><dd>
+<p>Compatibility: see pDay</p>
+
+
+</dl>
+<dl><dt><strong>isPast()</strong><dd>
+<p>Return true if this object represents a date/time
+           earlier than the time of the call</p>
+
+
+</dl>
+<dl><dt><strong>lessThan(t)</strong><dd>
+<p>Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time less
+           than the specified time module style time.</p>
+
+
+</dl>
+<dl><dt><strong>Day()</strong><dd>
+<p>Return the full name of the day of the week</p>
+
+
+</dl>
+<dl><dt><strong>second()</strong><dd>
+<p>Return the second</p>
+
+
+</dl>
+<dl><dt><strong>equalTo(t)</strong><dd>
+<p>Compare this DateTime object to a floating point number
+           such as that which is returned by the python time module.
+           Return true if the object represents a date/time equal
+           to the specified time module style time.</p>
+
+
+</dl>
+<dl><dt><strong>hour()</strong><dd>
+<p>Return the 24-hour clock representation of the hour</p>
+
+
+</dl>
+<dl><dt><strong>yy()</strong><dd>
+<p>Return calendar year as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>aCommon()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar 1, 1997 1:45 pm</p>
+
+
+</dl>
+<dl><dt><strong>TimeMinutes()</strong><dd>
+<p>Return the time string for an object not showing seconds.</p>
+
+
+</dl>
+<dl><dt><strong>Month()</strong><dd>
+<p>Return the full month name</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentHour()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current hour, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>pMonth()</strong><dd>
+<p>Return the abreviated (with period) month name.</p>
+
+
+</dl>
+<dl><dt><strong>day()</strong><dd>
+<p>Return the integer day</p>
+
+
+</dl>
+<dl><dt><strong>pCommon()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar. 1, 1997 1:45 pm</p>
+
+
+</dl>
+<dl><dt><strong>rfc822()</strong><dd>
+<p>Return the date in RFC 822 format</p>
+
+
+</dl>
+<dl><dt><strong>parts()</strong><dd>
+<p>Return a tuple containing the calendar year, month,
+           day, hour, minute second and timezone of the object</p>
+
+
+</dl>
+<dl><dt><strong>fCommon()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: March 1, 1997 1:45 pm</p>
+
+
+</dl>
+<dl><dt><strong>Mon()</strong><dd>
+<p>Compatibility: see aMonth</p>
+
+
+</dl>
+<dl><dt><strong>timezone()</strong><dd>
+<p>Return the timezone in which the object is represented.</p>
+
+
+</dl>
+<dl><dt><strong>PreciseTime()</strong><dd>
+<p>Return the time string for the object.</p>
+
+
+</dl>
+<dl><dt><strong>PreciseAMPM()</strong><dd>
+<p>Return the time string for the object.</p>
+
+
+</dl>
+<dl><dt><strong>Mon_()</strong><dd>
+<p>Compatibility: see pMonth</p>
+
+
+</dl>
+<dl><dt><strong>minute()</strong><dd>
+<p>Return the minute</p>
+
+
+</dl>
+<dl><dt><strong>dayOfYear()</strong><dd>
+<p>Return the day of the year, in context of
+           the timezone representation of the object</p>
+
+
+</dl>
+<dl><dt><strong>earliestTime()</strong><dd>
+<p>Return a new DateTime object that represents the earliest
+           possible time (in whole seconds) that still falls within
+           the current object's day, in the object's timezone context</p>
+
+
+</dl>
+<dl><dt><strong>isLeapYear()</strong><dd>
+<p>Return true if the current year (in the context of the object's
+           timezone) is a leap year</p>
+
+
+</dl>
+</dl>
+
+<dl><dt><p><strong>General Services Provided by DateTime</strong></p><dd>
+
+<dl><dt><strong>`aDateTime`</strong><dd>
+<p>Convert a DateTime to a string that 
+           looks like a Python expression.</p>
+
+
+</dl>
+<dl><dt><strong>str(aDateTime)</strong><dd>
+<p>Convert a DateTime to a string.</p>
+
+
+</dl>
+<dl><dt><strong>cmp(aDateTime, other)</strong><dd>
+<p>Compare a DateTime with another object. Note that the
+           value of a DateTime when doing comparisons is the 
+           number of days since 1901, in gmt. To compare a DateTime
+           with floats such as those used by the time module, use
+           the greaterThan, equalTo and lessThan methods.</p>
+
+
+</dl>
+<dl><dt><strong>hash(aDateTime)</strong><dd>
+<p>Compute a hash value for a DateTime</p>
+
+
+</dl>
+</dl>
+
+<dl><dt><p><strong>Numeric Services Provided by DateTime</strong></p><dd>
+
+<dl><dt><strong>aDateTime + other</strong><dd>
+<p>A DateTime may be added to a number and a number may be 
+           added to a DateTime;  two DateTimes cannot be added.</p>
+
+
+</dl>
+<dl><dt><strong>aDateTime - other</strong><dd>
+<p>Either a DateTime or a number may be subtracted from a
+           DateTime, however, a DateTime may not be subtracted from 
+           a number.</p>
+
+
+</dl>
+<dl><dt><strong>other + aDateTimeAdd aDateTime to other.</strong><dd>
+<p>A DateTime may be added to a number and a number may be 
+           added to a DateTime;  two DateTimes cannot be added.</p>
+
+
+</dl>
+<dl><dt><strong>int(aDateTime)</strong><dd>
+<p>Convert to an integer number of days since Jan. 1, 1901 (gmt)</p>
+
+
+</dl>
+<dl><dt><strong>long(aDateTime)</strong><dd>
+<p>Convert to a long-int number of days since Jan. 1, 1901 (gmt)</p>
+
+
+</dl>
+<dl><dt><strong>float(aDateTime)</strong><dd>
+<p>Convert to floating-point number of days since Jan. 1, 1901 (gmt)</p>
+
+
+</dl>
+</dl>
+
+
+
+<hr>Last Modified: 13 March 1997
+</body></html>
