@@ -16,7 +16,6 @@
 # Berkeley storages
 
 import os
-import errno
 import shutil
 import sys
 import unittest

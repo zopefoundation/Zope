@@ -15,7 +15,6 @@
 # Base class for unit tests at the ZODB layer
 
 import os
-import errno
 
 from ZODB import DB
 from BDBStorage.tests.BerkeleyTestBase import BerkeleyTestBase

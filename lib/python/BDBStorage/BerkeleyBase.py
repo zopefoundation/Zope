@@ -43,12 +43,6 @@ GBYTES = 1024 * 1024 * 1000
 # better to shutdown cleanly.
 JOIN_TIME = 10
 
-try:
-    True, False
-except NameError:
-    True = 1
-    False = 0
-
 
 
 class PackStop(Exception):
