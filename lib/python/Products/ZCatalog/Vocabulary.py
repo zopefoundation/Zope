@@ -158,6 +158,9 @@ class Vocabulary(Item, Persistent, Implicit,
         else:
             self.lexicon = Lexicon.Lexicon(stop_word_dict)
 
+    def getLexicon(self):
+        return self.lexicon
+
     def query(self, pattern):
         """ """
         result = []

@@ -354,7 +354,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             indexes[name] = UnIndex.UnIndex(name)
         elif index_type == 'TextIndex':
             lexicon=self.lexicon
-            if type(lexicon) is type(''): lexicon=getattr(self, lexicon)
+            if type(lexicon) is type(''):
+                lexicon=getattr(self, lexicon).getLexicon()
+                
             indexes[name] = UnTextIndex.UnTextIndex(name, None, None, lexicon)
         elif index_type == 'KeywordIndex':
             indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
