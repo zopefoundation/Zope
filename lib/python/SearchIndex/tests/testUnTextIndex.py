@@ -331,6 +331,28 @@ class Tests(unittest.TestCase):
        r=list(r[0].keys())
        assert  r == [0, 6], r
 
+   def checkQuoteMatchingQuery(self):
+       "Check a query with quotes.. this is known to fail under 2.3.1b3-"
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'"This is the time"'})
+       r=list(r[0].keys())
+       assert  r == [0], r
+
+       r = index._apply_index({'text':'"now is the time"'})
+       r=list(r[0].keys())
+       assert  r == [], r
+
    def checkTextIndexOperatorQuery(self):
        "Check a query with 'textindex_operator' in the request"
        index=self.dbopen()
