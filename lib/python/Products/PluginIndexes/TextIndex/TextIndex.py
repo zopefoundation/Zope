@@ -15,7 +15,7 @@
 
 """
 
-__version__ = '$Revision: 1.24 $'[11:-2]
+__version__ = '$Revision: 1.25 $'[11:-2]
 
 
 import  re
@@ -139,6 +139,10 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         if self._lexicon is None:
             ## if no lexicon is provided, create a default one
             try:
+
+                if self.catalog is None:
+                    self.catalog = self.aq_inner.aq_parent.aq_base
+                
                 self._lexicon = getattr(self.catalog,self.vocabulary_id).getLexicon()
             except:                
                 self._lexicon = Lexicon()
