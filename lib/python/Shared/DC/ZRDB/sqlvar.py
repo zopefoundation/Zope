@@ -1,6 +1,99 @@
-#!/usr/local/bin/python 
-# $What$
-
+##############################################################################
+#
+# Zope Public License (ZPL) Version 0.9.5
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+# 1. Redistributions in source code must retain the above copyright
+#    notice, this list of conditions, and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions, and the following disclaimer in
+#    the documentation and/or other materials provided with the
+#    distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a website,
+#    must either comply with the terms described below under
+#    "Attribution" or alternatively secure a separate license from
+#    Digital Creations.  Digital Creations will not unreasonably
+#    deny such a separate license in the event that the request
+#    explains in detail a valid reason for withholding attribution.
+# 
+# 4. All advertising materials and documentation mentioning
+#    features derived from or use of this software must display
+#    the following acknowledgement:
+# 
+#      "This product includes software developed by Digital Creations
+#      for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+#    In the event that the product being advertised includes an
+#    intact Zope distribution (with copyright and license included)
+#    then this clause is waived.
+# 
+# 5. Names associated with Zope or Digital Creations must not be used to
+#    endorse or promote products derived from this software without
+#    prior written permission from Digital Creations.
+# 
+# 6. Modified redistributions of any form whatsoever must retain
+#    the following acknowledgment:
+# 
+#      "This product includes software developed by Digital Creations
+#      for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+#    Intact (re-)distributions of any official Zope release do not
+#    require an external acknowledgement.
+# 
+# 7. Modifications are encouraged but must be packaged separately as
+#    patches to official Zope releases.  Distributions that do not
+#    clearly separate the patches from the original work must be clearly
+#    labeled as unofficial distributions.  Modifications which do not
+#    carry the name Zope may be packaged in any form, as long as they
+#    conform to all of the clauses above.
+# 
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND ANY
+#   EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL CREATIONS OR ITS
+#   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+#   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+#   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+#   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+#   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site must
+#   provide attribution by placing the accompanying "button" and a link
+#   to the accompanying "credits page" on the website's main entry
+#   point.  In cases where this placement of attribution is not
+#   feasible, a separate arrangment must be concluded with Digital
+#   Creations.  Those using the software for purposes other than web
+#   sites must provide a corresponding attribution in locations that
+#   include a copyright using a manner best suited to the application
+#   environment.  Where attribution is not possible, or is considered
+#   to be onerous for some other reason, a request should be made to
+#   Digital Creations to waive this requirement in writing.  As stated
+#   above, for valid requests, Digital Creations will not unreasonably
+#   deny such requests.
+# 
+# This software consists of contributions made by Digital Creations and
+# many individuals on behalf of Digital Creations.  Specific
+# attributions are listed in the accompanying credits file.
+# 
+##############################################################################
 '''Inserting values with the 'sqlvar' tag
 
     The 'sqlvar' tag is used to type-safely insert values into SQL
@@ -14,14 +107,14 @@
               ommitted.
 
       type -- The data type of the value to be inserted.  This
-	      attribute is required and may be one of 'string',
-	      'int', 'float', or 'nb'.  The 'nb' data type indicates a
-	      string that must have a length that is greater than 0.
+              attribute is required and may be one of 'string',
+              'int', 'float', or 'nb'.  The 'nb' data type indicates a
+              string that must have a length that is greater than 0.
 
       optional -- A flag indicating that a value is optional.  If a
-		  value is optional and is not provided (or is blank
-		  when a non-blank value is expected), then the string
-		  'null' is inserted.
+                  value is optional and is not provided (or is blank
+                  when a non-blank value is expected), then the string
+                  'null' is inserted.
 
     For example, given the tag::
 
@@ -38,7 +131,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.4 1998/09/04 20:45:03 jim Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.5 1998/12/16 15:25:49 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -48,7 +141,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.4 1998/09/04 20:45:03 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -60,109 +153,62 @@ class SQLVar:
     name='sqlvar'
 
     def __init__(self, args):
-	args = parse_params(args, name='', expr='', type=None, optional=1)
+        args = parse_params(args, name='', expr='', type=None, optional=1)
 
-	name,expr=name_param(args,'sqlvar',1)
-	if expr is None: expr=name
-	else: expr=expr.eval
-	self.__name__, self.expr = name, expr
+        name,expr=name_param(args,'sqlvar',1)
+        if expr is None: expr=name
+        else: expr=expr.eval
+        self.__name__, self.expr = name, expr
 
-	self.args=args
-	if not args.has_key('type'):
-	    raise ParseError, ('the type attribute is required', 'dtvar')
-	t=args['type']
-	if not valid_type(t):
-	    raise ParseError, ('invalid type, %s' % t, 'dtvar')
+        self.args=args
+        if not args.has_key('type'):
+            raise ParseError, ('the type attribute is required', 'dtvar')
+        t=args['type']
+        if not valid_type(t):
+            raise ParseError, ('invalid type, %s' % t, 'dtvar')
 
     def render(self, md):
-	name=self.__name__
-	args=self.args
-	t=args['type']
-	try:
+        name=self.__name__
+        args=self.args
+        t=args['type']
+        try:
             expr=self.expr
             if type(expr) is type(''): v=md[expr]
             else: v=expr(md)
-	except:
-	    if args.has_key('optional') and args['optional']: return 'null'
-	    raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
+        except:
+            if args.has_key('optional') and args['optional']: return 'null'
+            raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
 
-	if t=='int':
-	    try:
-		if type(v) is StringType: atoi(v)
-		else: v=str(int(v))
-	    except:
-		if not v and args.has_key('optional') and args['optional']:
-		    return 'null'
-		raise ValueError, (
-		    'Invalid integer value for <em>%s</em>' % name)
-	elif t=='float':
-	    try:
-		if type(v) is StringType: atof(v)
-		else: v=str(float(v))
-	    except:
-		if not v and args.has_key('optional') and args['optional']:
-		    return 'null'
-		raise ValueError, (
-		    'Invalid floating-point value for <em>%s</em>' % name)
-	else:
-	    v=str(v)
-	    if not v and t=='nb':
-		raise ValueError, (
-		    'Invalid empty string value for <em>%s</em>' % name)
-	    
-	    v=md.getitem('sql_quote__',0)(v)
-	    #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
-	    #v="'%s'" % v
+        if t=='int':
+            try:
+                if type(v) is StringType: atoi(v)
+                else: v=str(int(v))
+            except:
+                if not v and args.has_key('optional') and args['optional']:
+                    return 'null'
+                raise ValueError, (
+                    'Invalid integer value for <em>%s</em>' % name)
+        elif t=='float':
+            try:
+                if type(v) is StringType: atof(v)
+                else: v=str(float(v))
+            except:
+                if not v and args.has_key('optional') and args['optional']:
+                    return 'null'
+                raise ValueError, (
+                    'Invalid floating-point value for <em>%s</em>' % name)
+        else:
+            v=str(v)
+            if not v and t=='nb':
+                raise ValueError, (
+                    'Invalid empty string value for <em>%s</em>' % name)
+            
+            v=md.getitem('sql_quote__',0)(v)
+            #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
+            #v="'%s'" % v
 
-	return v
+        return v
 
     __call__=render
 
 valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
-
-############################################################################
-# $Log: sqlvar.py,v $
-# Revision 1.4  1998/09/04 20:45:03  jim
-# fixed namespace screw up due to from DT_Util import *
-#
-# Revision 1.3  1998/07/29 15:09:14  jim
-# Added expr to sqlvar
-#
-# Revision 1.2  1998/04/27 18:58:14  jim
-# Now use exported sql_quote__ function to quote strings.
-#
-# Revision 1.1  1998/03/17 19:31:22  jim
-# added new sql tags
-#
-# Revision 1.9  1998/01/12 16:47:34  jim
-# Changed a number of custom formats to modifiers, since they can
-# be applies cumulatively.
-# Updated documentation.
-#
-# Revision 1.8  1998/01/08 20:57:34  jim
-# *** empty log message ***
-#
-# Revision 1.7  1998/01/05 21:23:01  jim
-# Added support for fmt="" to allow vars with side effects.
-#
-# Revision 1.6  1997/12/12 16:19:06  jim
-# Added additional special formats, structured-text and sql-quote.
-# Also changed the way formats are handled.  This has (and will)
-# reveal now hidden fmt=invalid-thing errors.
-#
-# Revision 1.5  1997/10/27 17:39:27  jim
-# removed a comment burp.
-#
-# Revision 1.4  1997/10/23 14:27:47  jim
-# Added truncation support via size and etc attributes.
-#
-# Revision 1.3  1997/10/23 13:30:16  jim
-# Added comma-numeric format.
-#
-# Revision 1.2  1997/09/22 14:42:51  jim
-# added expr
-#
-# Revision 1.1  1997/08/27 18:55:44  jim
-# initial
-#
-#

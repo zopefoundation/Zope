@@ -1,12 +1,102 @@
-
-'''$Id: db.py,v 1.3 1998/12/02 12:11:48 jim Exp $'''
-#     Copyright 
+##############################################################################
 #
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.
+# Zope Public License (ZPL) Version 0.9.5
+# ---------------------------------------
 # 
-__version__='$Revision: 1.3 $'[11:-2]
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+# 1. Redistributions in source code must retain the above copyright
+#    notice, this list of conditions, and the following disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions, and the following disclaimer in
+#    the documentation and/or other materials provided with the
+#    distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a website,
+#    must either comply with the terms described below under
+#    "Attribution" or alternatively secure a separate license from
+#    Digital Creations.  Digital Creations will not unreasonably
+#    deny such a separate license in the event that the request
+#    explains in detail a valid reason for withholding attribution.
+# 
+# 4. All advertising materials and documentation mentioning
+#    features derived from or use of this software must display
+#    the following acknowledgement:
+# 
+#      "This product includes software developed by Digital Creations
+#      for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+#    In the event that the product being advertised includes an
+#    intact Zope distribution (with copyright and license included)
+#    then this clause is waived.
+# 
+# 5. Names associated with Zope or Digital Creations must not be used to
+#    endorse or promote products derived from this software without
+#    prior written permission from Digital Creations.
+# 
+# 6. Modified redistributions of any form whatsoever must retain
+#    the following acknowledgment:
+# 
+#      "This product includes software developed by Digital Creations
+#      for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+#    Intact (re-)distributions of any official Zope release do not
+#    require an external acknowledgement.
+# 
+# 7. Modifications are encouraged but must be packaged separately as
+#    patches to official Zope releases.  Distributions that do not
+#    clearly separate the patches from the original work must be clearly
+#    labeled as unofficial distributions.  Modifications which do not
+#    carry the name Zope may be packaged in any form, as long as they
+#    conform to all of the clauses above.
+# 
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND ANY
+#   EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+#   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL CREATIONS OR ITS
+#   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+#   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+#   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+#   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+#   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+#   SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site must
+#   provide attribution by placing the accompanying "button" and a link
+#   to the accompanying "credits page" on the website's main entry
+#   point.  In cases where this placement of attribution is not
+#   feasible, a separate arrangment must be concluded with Digital
+#   Creations.  Those using the software for purposes other than web
+#   sites must provide a corresponding attribution in locations that
+#   include a copyright using a manner best suited to the application
+#   environment.  Where attribution is not possible, or is considered
+#   to be onerous for some other reason, a request should be made to
+#   Digital Creations to waive this requirement in writing.  As stated
+#   above, for valid requests, Digital Creations will not unreasonably
+#   deny such requests.
+# 
+# This software consists of contributions made by Digital Creations and
+# many individuals on behalf of Digital Creations.  Specific
+# attributions are listed in the accompanying credits file.
+# 
+##############################################################################
+
+'''$Id: db.py,v 1.4 1998/12/16 15:28:47 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, sys, os
 from string import strip, split, find, join
@@ -37,102 +127,102 @@ def manage_DataSources():
             """ % data_dir)
     
     return map(
-	lambda d: (d,''),
-	filter(lambda f, i=os.path.isdir, d=data_dir, j=os.path.join:
-	       i(j(d,f)),
-	       os.listdir(data_dir))
-	)
+        lambda d: (d,''),
+        filter(lambda f, i=os.path.isdir, d=data_dir, j=os.path.join:
+               i(j(d,f)),
+               os.listdir(data_dir))
+        )
 
 class DB:
 
     database_error=gadfly.error
 
     def tables(self,*args,**kw):
-	return map(lambda name: {
-	    'TABLE_NAME': name,
-	    'TABLE_TYPE': 'TABLE',
-	    }, self.db.table_names())
+        return map(lambda name: {
+            'TABLE_NAME': name,
+            'TABLE_TYPE': 'TABLE',
+            }, self.db.table_names())
 
     def columns(self, table_name):
-	return map(lambda col: {
-	    'Name': col.colid, 'Type': col.datatype, 'Precision': 0,
-	    'Scale': 0, 'Nullable': 'with Null'
-	    }, self.db.database.datadefs[table_name].colelts)
+        return map(lambda col: {
+            'Name': col.colid, 'Type': col.datatype, 'Precision': 0,
+            'Scale': 0, 'Nullable': 'with Null'
+            }, self.db.database.datadefs[table_name].colelts)
 
     def __init__(self,connection):
-	path=os.path
-	dir=path.join(data_dir,connection)
-	if not path.isdir(dir):
-	    raise self.database_error, 'invalid database error, ' + connection
+        path=os.path
+        dir=path.join(data_dir,connection)
+        if not path.isdir(dir):
+            raise self.database_error, 'invalid database error, ' + connection
 
-	if not path.exists(path.join(dir,connection+".gfd")):
-	    db=gadfly.gadfly()
-	    db.startup(connection,dir)
-	else: db=gadfly.gadfly(connection,dir)
+        if not path.exists(path.join(dir,connection+".gfd")):
+            db=gadfly.gadfly()
+            db.startup(connection,dir)
+        else: db=gadfly.gadfly(connection,dir)
 
-	self.connection=connection
-	self.db=db
-	self.cursor=db.cursor()
+        self.connection=connection
+        self.db=db
+        self.cursor=db.cursor()
 
     def query(self,query_string, max_rows=9999999):
-	self._register()
-	c=self.db.cursor()
-	queries=filter(None, map(strip,split(query_string, '\0')))
-	if not queries: raise 'Query Error', 'empty query'
-	names=None
-	result='cool\ns\n'
-	for qs in queries:
-	    c.execute(qs)
-	    d=c.description
-	    if d is None: continue
-	    if names is not None:
-		raise 'Query Error', (
-		    'select in multiple sql-statement query'
-		    )
-	    names=map(lambda d: d[0], d)
-	    results=c.fetchmany(max_rows)
-	    nv=len(names)
-	    indexes=range(nv)
-	    row=['']*nv
-	    defs=[maybe_int]*nv
-	    j=join
-	    rdb=[j(names,'\t'),None]
-	    append=rdb.append
-	    for result in results:
-		for i in indexes:
-		    try: row[i]=defs[i](result[i])
-		    except NewType, v: row[i], defs[i] = v
-		append(j(row,'\t'))
-	    rdb[1]=j(map(lambda d, Defs=Defs: Defs[d], defs),'\t')
-	    rdb.append('')
-	    result=j(rdb,'\n')
+        self._register()
+        c=self.db.cursor()
+        queries=filter(None, map(strip,split(query_string, '\0')))
+        if not queries: raise 'Query Error', 'empty query'
+        names=None
+        result='cool\ns\n'
+        for qs in queries:
+            c.execute(qs)
+            d=c.description
+            if d is None: continue
+            if names is not None:
+                raise 'Query Error', (
+                    'select in multiple sql-statement query'
+                    )
+            names=map(lambda d: d[0], d)
+            results=c.fetchmany(max_rows)
+            nv=len(names)
+            indexes=range(nv)
+            row=['']*nv
+            defs=[maybe_int]*nv
+            j=join
+            rdb=[j(names,'\t'),None]
+            append=rdb.append
+            for result in results:
+                for i in indexes:
+                    try: row[i]=defs[i](result[i])
+                    except NewType, v: row[i], defs[i] = v
+                append(j(row,'\t'))
+            rdb[1]=j(map(lambda d, Defs=Defs: Defs[d], defs),'\t')
+            rdb.append('')
+            result=j(rdb,'\n')
 
-	return result
+        return result
 
     class _p_jar:
-	# This is place holder for new transaction machinery 2pc
-	def __init__(self, db=None): self.db=db
-	def begin_commit(self, *args): pass
-	def finish_commit(self, *args): pass
+        # This is place holder for new transaction machinery 2pc
+        def __init__(self, db=None): self.db=db
+        def begin_commit(self, *args): pass
+        def finish_commit(self, *args): pass
 
     _p_jar=_p_jar(_p_jar())
 
     _p_oid=_p_changed=_registered=None
     def _register(self):
-	if not self._registered:
-	    try:
-		get_transaction().register(self)
-		self._registered=1
-	    except: pass
+        if not self._registered:
+            try:
+                get_transaction().register(self)
+                self._registered=1
+            except: pass
 
     def __inform_commit__(self, *ignored):
-	self.db.commit()
-	self._registered=0
+        self.db.commit()
+        self._registered=0
 
     def __inform_abort__(self, *ignored):
-	self.db.rollback()
-	self.db.checkpoint()
-	self._registered=0
+        self.db.rollback()
+        self.db.checkpoint()
+        self._registered=0
 
 
 NewType="Excecption to raise when sniffing types, blech"
@@ -154,34 +244,14 @@ def maybe_float(v, int_type=type(0), float_type=type(0.0), t=type):
 def maybe_string(v):
     v=str(v)
     if find(v,'\t') >= 0 or find(v,'\t'):
-	raise NewType, (must_be_text(v), must_be_text)
+        raise NewType, (must_be_text(v), must_be_text)
     return v
 
 def must_be_text(v, f=find, j=join, s=split):
     if f(v,'\\'):
-	v=j(s(v,'\\'),'\\\\')
-	v=j(s(v,'\t'),'\\t')
-	v=j(s(v,'\n'),'\\n')
+        v=j(s(v,'\\'),'\\\\')
+        v=j(s(v,'\t'),'\\t')
+        v=j(s(v,'\n'),'\\n')
     return v
 
 Defs={maybe_int: 'i', maybe_float:'n', maybe_string:'s', must_be_text:'t'}
-
-
-##########################################################################
-#
-# $Log: db.py,v $
-# Revision 1.3  1998/12/02 12:11:48  jim
-# new names, esp for Aqueduct
-#
-# Revision 1.2  1998/05/21 15:33:56  jim
-# Added logic to set up gadfly area on first use.
-#
-# Revision 1.1  1998/04/15 15:10:41  jim
-# initial
-#
-# Revision 1.3  1997/08/06 18:21:27  jim
-# Renamed description->title and name->id and other changes
-#
-# Revision 1.2  1997/08/06 14:29:35  jim
-# Changed to use abstract dbi base.
-#
