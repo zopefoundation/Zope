@@ -14,7 +14,7 @@
 """Implemantation assertion facilities.
 
 Revision information:
-$Id: Implements.py,v 1.4 2003/02/12 08:46:09 andreasjung Exp $
+$Id: Implements.py,v 1.5 2003/10/20 21:44:10 tiran Exp $
 """
 
 import Exceptions
@@ -128,10 +128,19 @@ def _flatten(i, append):
         for b in bases:
             _flatten(b, append)
 
+def _detuplize(interface, append):
+    if type(interface) is TupleType:
+        for subinterface in interface:
+             _detuplize(subinterface, append)
+    else:
+        append(interface)
 
 def flattenInterfaces(interfaces, remove_duplicates=1):
+    detupledInterfaces = []
+    for interface in interfaces:
+        _detuplize(interface, detupledInterfaces.append)
     res = []
-    for i in interfaces:
+    for i in detupledInterfaces:
         _flatten(i, res.append)
     if remove_duplicates:
         # Remove duplicates in reverse.
