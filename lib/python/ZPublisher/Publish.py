@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.33 1997/02/07 16:00:46 jim Exp $"""
+$Id: Publish.py,v 1.34 1997/02/07 18:42:34 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.33 1997/02/07 16:00:46 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 def main():
@@ -582,11 +582,11 @@ def main():
 
 if __name__ == "__main__": main()
 
-import sys, os, string, types, newcgi, regex, regsub
+import sys, os, string, types, cgi, regex, regsub
 from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 
-from newcgi import FieldStorage
+from cgi import FieldStorage, MiniFieldStorage
 
 
 class ModulePublisher:
@@ -967,7 +967,7 @@ def str_field(v):
     if type(v) is types.ListType:
 	return map(str_field,v)
 
-    if type(v) is types.InstanceType and v.__class__ is newcgi.MiniFieldStorage:
+    if type(v) is types.InstanceType and v.__class__ is FieldStorage:
         v=v.value
     elif type(v) is not types.StringType:
 	try:
@@ -1360,7 +1360,7 @@ class CGIModulePublisher(ModulePublisher):
 	    if environ['REQUEST_METHOD'] != 'GET': fp=stdin
 	except: pass
 	
-	form=newcgi.FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+	form=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         request=self.request=Request(environ,form,stdin)
 	self.response=Response(stdout=stdout, stderr=stderr)
 	self.stdin=stdin
@@ -1407,6 +1407,11 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.34  1997/02/07 18:42:34  jim
+# Changed to use standard cgi module. Yey!!!
+# This incorprates fixed binary data handling and get's rid of newcgi.
+# Note that we need a new fix for windows. :-(
+#
 # Revision 1.33  1997/02/07 16:00:46  jim
 # Made "method" check more general by trying to get im_func rather than
 # by testing for type.MethodType. Du.
