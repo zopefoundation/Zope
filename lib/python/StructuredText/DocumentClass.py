@@ -34,9 +34,7 @@ class StructuredTextExample(ST.StructuredTextParagraph):
         a=t.append
         for s in subs:
             flatten(s, a)
-        apply(ST.StructuredTextParagraph.__init__,
-              (self, '\n\n'.join(t), ()),
-              kw)
+        ST.StructuredTextParagraph.__init__(self, '\n\n'.join(t), (), **kw)
 
     def getColorizableTexts(self): return ()
     def setColorizableTexts(self, src): pass # never color examples
@@ -57,7 +55,7 @@ class StructuredTextDescription(ST.StructuredTextParagraph):
     """Represents a section of a document with a title and a body"""
 
     def __init__(self, title, src, subs, **kw):
-        apply(ST.StructuredTextParagraph.__init__, (self, src, subs), kw)
+        ST.StructuredTextParagraph.__init__(self, src, subs, **kw)
         self._title=title
 
     def getColorizableTexts(self): return self._title, self._src
@@ -73,9 +71,8 @@ class StructuredTextSectionTitle(ST.StructuredTextParagraph):
 class StructuredTextSection(ST.StructuredTextParagraph):
     """Represents a section of a document with a title and a body"""
     def __init__(self, src, subs=None, **kw):
-        apply(ST.StructuredTextParagraph.__init__,
-              (self, StructuredTextSectionTitle(src), subs),
-              kw)
+        ST.StructuredTextParagraph.__init__(
+            self, StructuredTextSectionTitle(src), subs, **kw)
 
     def getColorizableTexts(self):
         return self._src.getColorizableTexts()
@@ -93,7 +90,7 @@ class StructuredTextTable(ST.StructuredTextParagraph):
     """
 
     def __init__(self, rows, src, subs, **kw):
-        apply(ST.StructuredTextParagraph.__init__,(self,subs),kw)
+        ST.StructuredTextParagraph.__init__(self, subs, **kw)
         self._rows = []
         for row in rows:
             if row:
@@ -164,7 +161,7 @@ class StructuredTextRow(ST.StructuredTextParagraph):
         [('this is column one',1), ('this is column two',1)]
         """
 
-        apply(ST.StructuredTextParagraph.__init__,(self,[]),kw)
+        ST.StructuredTextParagraph.__init__(self, [], **kw)
 
         self._columns = []
         for column in row:
@@ -197,7 +194,7 @@ class StructuredTextColumn(ST.StructuredTextParagraph):
     """
 
     def __init__(self,text,span,align,valign,typ,kw):
-        apply(ST.StructuredTextParagraph.__init__,(self,text,[]),kw)
+        ST.StructuredTextParagraph.__init__(self, text, [], **kw)
         self._span = span
         self._align = align
         self._valign = valign
@@ -427,8 +424,8 @@ class DocumentClass:
                 atts = getattr(paragraph, '_attributes', [])
                 for att in atts: kw[att] = getattr(paragraph, att)
                 subs = self.color_paragraphs(paragraph.getSubparagraphs())
-                new_paragraphs=apply(ST.StructuredTextParagraph,
-                   (paragraph.getColorizableTexts()[0], subs), kw),
+                new_paragraphs=ST.StructuredTextParagraph(
+                   paragraph. getColorizableTexts()[0], subs, **kw),
 
             # color the inline StructuredText types
             # for each StructuredTextParagraph
@@ -782,7 +779,7 @@ class DocumentClass:
             kw = {}
             atts = getattr(paragraph, '_attributes', [])
             for att in atts: kw[att] = getattr(paragraph, att)
-            return apply(ST.StructuredTextParagraph, (top[:-1], [subs]), kw)
+            return ST.StructuredTextParagraph(top[:-1], [subs], **kw)
 
         if top.find('\n') >= 0: return None
         return StructuredTextSection(top, subs, indent=paragraph.indent)

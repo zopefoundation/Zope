@@ -34,7 +34,7 @@ else:
 
         def __call__(self, *args, **kw):
             self._a()
-            try: return apply(self._f, args, kw)
+            try: return self._f(*args, **kw)
             finally: self._r()
 
     split=SafeFunction(split)
@@ -51,7 +51,7 @@ class compile:
     groupindex=None
 
     def __init__(self, *args):
-        self._r=r=apply(regex.compile,args)
+        self._r=r=regex(*compile, **args)
         self._init(r)
 
     def _init(self, r):
@@ -84,7 +84,7 @@ class compile:
             r=self._r
             l=r.search(str, pos)
             if l < 0: return None
-            return l, apply(r.group, group)
+            return l, r.group(*group)
         finally: self.__r()
 
     def match_group(self, str, group, pos=0):
@@ -99,7 +99,7 @@ class compile:
             r=self._r
             l=r.match(str, pos)
             if l < 0: return None
-            return l, apply(r.group, group)
+            return l, r.group(*group)
         finally: self.__r()
 
     def search_regs(self, str, pos=0):
@@ -133,6 +133,6 @@ class compile:
 class symcomp(compile):
 
     def __init__(self, *args):
-        self._r=r=apply(regex.symcomp,args)
+        self._r=r=regex.symcomp(*args)
         self._init(r)
         self.groupindex=r.groupindex

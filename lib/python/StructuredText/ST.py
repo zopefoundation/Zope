@@ -266,9 +266,7 @@ class StructuredTextDocument(StructuredTextParagraph):
     _attributes=()
 
     def __init__(self, subs=None, **kw):
-        apply(StructuredTextParagraph.__init__,
-                (self, '', subs),
-                kw)
+        StructuredTextParagraph.__init__(self, '', subs, **kw)
 
     def getChildren(self):
         return self._subs
