@@ -24,7 +24,7 @@ Zope Changes
 
     Bugs Fixed
 
-     - Collector #686: intSets no longer loose their values.
+     - Collector #686: intSets no longer lose their values.
 
      - Collector #685: Improved documentation explaining how, where and 
        why security assertions should be placed in:
@@ -41,6 +41,9 @@ Zope Changes
   Zope 2.6.1 beta 2
 
     Bugs Fixed
+
+      - Work around potential BTrees key enumeration bugs in Transience
+        package by checking explicitly for error cases.
 
       - Collector #736: ZPublisher now allows marshalling tags to contain
         a '-'. This is the first step towards a fix for Collector #737
