@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.24 1998/05/05 14:53:45 jim Exp $
+  $Id: cStringIO.c,v 1.25 1998/10/01 22:24:25 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -85,7 +85,7 @@ static char cStringIO_module_documentation[] =
 "If someone else wants to provide a more complete implementation,\n"
 "go for it. :-)  \n"
 "\n"
-"$Id: cStringIO.c,v 1.24 1998/05/05 14:53:45 jim Exp $\n"
+"$Id: cStringIO.c,v 1.25 1998/10/01 22:24:25 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -152,8 +152,19 @@ O_seek(Oobject *self, PyObject *args) {
     position += self->pos;
   }
 
-  self->pos = (position > self->string_size ? self->string_size : 
-	       (position < 0 ? 0 : position));
+  if (position > self->buf_size) {
+      self->buf_size*=2;
+      if(self->buf_size <= position) self->buf_size=position+1;
+      UNLESS(self->buf=(char*)realloc(self->buf,self->buf_size*sizeof(char))) {
+	  self->buf_size=self->pos=0;
+	  return PyErr_NoMemory();
+	}
+    }
+  else if(position < 0) position=0;
+  
+  self->pos=position;
+
+  while(--position >= self->string_size) self->buf[position]=0;
 
   Py_INCREF(Py_None);
   return Py_None;
