@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -285,7 +285,11 @@ class File(Persistent,Implicit,PropertyManager,
             size=len(file)
             if size < n: return file, size
             return Pdata(file), size
-        
+
+        if file.__class__ is Pdata:
+            size=len(file)
+            return file, size
+
         seek=file.seek
         read=file.read
         
@@ -581,7 +585,8 @@ class Pdata(Persistent, Implicit):
         return self.data[i:j]
 
     def __len__(self):
-        return len(self.data)
+        data = str(self)
+        return len(data)
 
     def __str__(self):
         next=self.next
