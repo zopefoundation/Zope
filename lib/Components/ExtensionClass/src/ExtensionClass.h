@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.2 1996/11/08 22:07:26 jim Exp $
+  $Id: ExtensionClass.h,v 1.3 1996/12/06 17:13:17 jim Exp $
 
   Extension Class Definitions
 
@@ -56,6 +56,10 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.3  1996/12/06 17:13:17  jim
+  Added support for attro functions and made use of cobject to export C
+  interfaces.
+
   Revision 1.2  1996/11/08 22:07:26  jim
   Added parens in if to make -Wall happy.
 
@@ -72,6 +76,11 @@
 #include "import.h"
 
 /* Declarations for objects of type ExtensionClass */
+
+#if PYTHON_API_VERSION < 1005
+typedef long getattrofunc;
+typedef long setattrofunc;
+#endif
 
 typedef struct {
 	PyObject_VAR_HEAD
@@ -98,9 +107,8 @@ typedef struct {
 	hashfunc tp_hash;
 	ternaryfunc tp_call;
 	reprfunc tp_str;
-        long tp_xxx1;  /*getattrofunc tp_getattro;*/
-        long tp_xxx2;  /*setattrofunc tp_setattro;*/
-
+	getattrofunc tp_getattro;
+	setattrofunc tp_setattro;
 	/* Space for future expansion */
 	long tp_xxx3;
 	long tp_xxx4;
@@ -124,15 +132,54 @@ typedef struct {
 #endif
 } PyExtensionClass;
 
+#ifdef Py_COBJECT_H
+PyObject *(*PyEC_getattrs)(PyObject *, char *)=NULL;
+PyObject *(*PyEC_getattro)(PyObject *, PyObject *)=NULL;
+int (*PyEC_setattrs)(PyObject *, char *, PyObject *)=NULL;
+int (*PyEC_setattro)(PyObject *, PyObject *, PyObject *)=NULL;
+
+#define Py_FindMethod(M,SELF,NAME) PyEC_getattrs((SELF),(NAME))
+
+#define Py_FindAttrString(SELF,NAME) PyEC_getattrs((SELF),(NAME))
+#define Py_FindAttr(SELF,NAME)       PyEC_getattro((SELF),(NAME))
+#define PyEC_SetAttrString(SELF,NAME,V) PyEC_setattrs((SELF),(NAME),(V))
+#define PyEC_SetAttr(SELF,NAME,V)       PyEC_setattro((SELF),(NAME),(V))
+
+#define IMPORT_C_OBJECT(P,C,M) { \
+  PyObject *_IMPORT_C_OBJECT; \
+  if((_IMPORT_C_OBJECT=PyObject_GetAttrString(M,#P))) { \
+    C=PyCObject_AsVoidPtr(_IMPORT_C_OBJECT); \
+    Py_DECREF(_IMPORT_C_OBJECT); }}
+
+#define PyExtensionClass_Export(D,N,T) { \
+  PyObject *_ExtensionClass_module, *_ExtensionClass_spam; \
+  if((_ExtensionClass_module=PyImport_ImportModule("ExtensionClass"))) { \
+      if(_ExtensionClass_spam= \
+	 PyObject_CallMethod(_ExtensionClass_module, \
+			     "ExtensionClassType", "Oi", &T, 42)) { \
+	Py_DECREF(_ExtensionClass_spam); \
+	PyMapping_SetItemString(D,N,(PyObject*)&T); } \
+      IMPORT_C_OBJECT(_PyEC_getattrs,PyEC_getattrs,_ExtensionClass_module) \
+      IMPORT_C_OBJECT(_PyEC_getattro,PyEC_getattro,_ExtensionClass_module) \
+      IMPORT_C_OBJECT(_PyEC_setattrs,PyEC_setattrs,_ExtensionClass_module) \
+      IMPORT_C_OBJECT(_PyEC_setattro,PyEC_setattro,_ExtensionClass_module) \
+      Py_DECREF(_ExtensionClass_module); }}
+
+#else
 
 /* Don't look at this. :-) */
 #define Py_FindMethod(M,SELF,NAME) \
-  ((getattrfunc)(SELF->ob_type->ob_type->tp_getattr(SELF->ob_type,"."))) \
-     (SELF,NAME) 
+ ((getattrfunc)((SELF)->ob_type->ob_type->tp_getattr((SELF)->ob_type,"."))) \
+     ((SELF),(NAME)) 
 
 #define Py_FindAttrString(SELF,NAME) \
-  ((getattrfunc)(SELF->ob_type->ob_type->tp_getattr(SELF->ob_type,"."))) \
-     (SELF,NAME) 
+ ((getattrfunc)((SELF)->ob_type->ob_type->tp_getattr((SELF)->ob_type,"."))) \
+     ((SELF),(NAME) )
+
+#define PyEC_SetAttrString(SELF,NAME,V) \
+ ((setattrfunc)((SELF)->ob_type->ob_type->tp_getattr((SELF)->ob_type, \
+						     ".s"))) \
+     ((SELF),(NAME),(V)) 
 
 #define PyExtensionClass_Export(D,N,T) { \
   PyObject *_ExtensionClass_module; \
@@ -143,6 +190,8 @@ typedef struct {
       Py_DECREF(_ExtensionClass_module); \
   } \
 }
+
+#endif
 
 #define METHOD_CHAIN(DEF) { DEF, NULL }
 
@@ -159,7 +208,6 @@ if(PyErr_Occurred()) { \
   Py_FatalError(# MESS); \
 }
   
-    
-
 #endif
+
 
