@@ -19,9 +19,11 @@ See http://www.xmlrpc.com/ and http://linux.userland.com/ for more
 information about XML-RPC and Zope.
 """
 
-import sys
+import sys, types
 from HTTPResponse import HTTPResponse
 import xmlrpclib
+
+from zExceptions import Unauthorized
 
 def parse_input(data):
     """Parse input data and return a method path and argument tuple
@@ -119,6 +121,13 @@ class Response:
         # traceback object.
         if type(info) is type(()) and len(info)==3: t,v,tb = info
         else: t,v,tb = sys.exc_info()
+
+        # Don't mask 404 respnses, as some XML-RPC libraries rely on the HTTP
+        # mechanisms for detecting when authentication is required. Fixes Zope
+        # Collector issue 525.
+        if t == 'Unauthorized' or (isinstance(t, types.ClassType)
+                                   and issubclass(t, Unauthorized)):
+            return self._real.exception(fatal=fatal, info=info)
 
         # Create an appropriate Fault object. Unfortunately, we throw away
         # most of the debugging information. More useful error reporting is
