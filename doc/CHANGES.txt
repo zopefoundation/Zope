@@ -41,6 +41,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1577: Fixed cryptic error message in ZPublisher if a
+        non-ASCII string is passed to a date, int, long or float property.
+
       - Collector #1576: Fixed Z Search Interface to use proper HTML.
 
       - Collector #1127: strftime did not take timezone into account.

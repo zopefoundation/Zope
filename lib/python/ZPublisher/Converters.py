@@ -55,7 +55,7 @@ def field2int(v):
         try: return int(v)
         except ValueError:
             raise ValueError, (
-                "An integer was expected in the value '%s'" % escape(v)
+                "An integer was expected in the value %s" % escape(`v`)
                 )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
@@ -67,8 +67,8 @@ def field2float(v):
         try: return float(v)
         except ValueError:
             raise ValueError, (
-                "A floating-point number was expected in the value '%s'" %
-                escape(v)
+                "A floating-point number was expected in the value %s" %
+                escape(`v`)
                 )
     raise ValueError, (
         'Empty entry when <strong>floating-point number</strong> expected')
@@ -84,7 +84,7 @@ def field2long(v):
         try: return long(v)
         except ValueError:
             raise ValueError, (
-                "A long integer was expected in the value '%s'" % escape(v)
+                "A long integer was expected in the value %s" % escape(`v`)
                 )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
@@ -105,7 +105,7 @@ def field2date(v):
     try:
         v = DateTime(v)
     except DateTime.SyntaxError, e:
-        raise DateTime.SyntaxError, escape(e)
+        raise DateTime.SyntaxError, "Invalid DateTime "+escape(`v`)
     return v
 
 def field2date_international(v):
@@ -113,7 +113,7 @@ def field2date_international(v):
     try:
         v = DateTime(v, datefmt="international")
     except DateTime.SyntaxError, e:
-        raise DateTime.SyntaxError, escape(e)
+        raise DateTime.SyntaxError, "Invalid DateTime "+escape(`v`)
     return v
 
 def field2boolean(v):
