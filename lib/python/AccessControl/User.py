@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.176 $'[11:-2]
+__version__='$Revision: 1.177 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -263,7 +263,10 @@ class BasicUser(Implicit):
 
     def has_permission(self, permission, object):
         """Check to see if a user has a given permission on an object."""
-        return getSecurityManager().checkPermission(permission, object)
+        roles=rolesForPermissionOn(permission, object)
+        if type(roles) is type(''):
+            roles=[roles]
+        return self.allowed(object, roles)
 
     def __len__(self): return 1
     def __str__(self): return self.getUserName()
