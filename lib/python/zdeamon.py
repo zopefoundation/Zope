@@ -173,6 +173,7 @@ def run(argv, pidfile=''):
     if os.environ.has_key('ZDEAMON_MANAGED'): return
     os.environ['ZDEAMON_MANAGED']='TRUE'
     while 1:
+        lastt=time.time()
         try:
             pid = forkit()
 
@@ -200,6 +201,8 @@ def run(argv, pidfile=''):
                     if s:
                         pstamp(('Aiieee! %s exited with error code: %s' 
                                 % (p, s)))
+                        if time.time()-lastt < 20:
+                            raise ForkError # We're probably hosed
                     else:
                         raise ForkError
                         pstamp(('The kid, %s, died on me.' % pid))
