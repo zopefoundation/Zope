@@ -188,13 +188,15 @@ class StructuredTextTests(unittest.TestCase):
 
                 try:
                     open('_tmpout','w').write(html)
-                    ndiff.fcompare(os.path.join(regressions,reg_fname),'_tmpout')
+                    ndiff.fcompare(os.path.join(regressions,reg_fname),
+                                   '_tmpout')
                     os.unlink('_tmpout')
                 finally:
                     sys.stdout = oldStdout 
 
                 raise AssertionError, \
-                    'HTML regression test failed on %s\nDiff:\n%s\n' % (f,IO.getvalue())
+                    'HTML regression test failed on %s\nDiff:\n%s\n' % (f,
+                     IO.getvalue())
 
 
 class BasicTests(unittest.TestCase):
@@ -216,11 +218,12 @@ class BasicTests(unittest.TestCase):
 
     def testStrong(self):
         """ strong """
-        self._test("xx **this is html** xx","xx <strong>this is html</strong> xx")
+        self._test("xx **this is html** xx",
+                   "xx <strong>this is html</strong> xx")
         
     def testUnderlineThroughoutTags(self):
         """Underlined text containing tags should not be transformed"""
-        self._test('<a href="index_html">index_html</a>', \
+        self._test('<a href="index_html">index_html</a>', 
                    '<a href="index_html">index_html</a>')
 
     
@@ -230,8 +233,14 @@ class BasicTests(unittest.TestCase):
         self._test("this is '__a_literal__' eh",
                    "<code>__a_literal__</code>")
 
-
 def test_suite():
-    return unittest.TestSuite((unittest.makeSuite(StructuredTextTests),
-                    unittest.makeSuite(BasicTests)))
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( StructuredTextTests ) )
+    suite.addTest( unittest.makeSuite( BasicTests ) )
+    return suite
 
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

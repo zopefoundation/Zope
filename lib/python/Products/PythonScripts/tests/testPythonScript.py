@@ -82,8 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 import ZODB
 from Products.PythonScripts.PythonScript import PythonScript
@@ -91,10 +90,21 @@ from AccessControl.SecurityManagement import newSecurityManager
 
 newSecurityManager(None, None)
 
+if __name__=='__main__':
+    sys.path.append(os.path.join(os.pardir, os.pardir, os.pardir))
+    here = os.curdir
+else:
+    from Products.PythonScripts import tests
+    from App.Common import package_home
+    here = package_home(tests.__dict__)
+
 # Test Classes
 
 def readf(name):
-    return open('tscripts/%s%s' % (name, '.ps'), 'r').read()
+    return open( os.path.join( here
+                             , 'tscripts'
+                             , '%s.ps' % name
+                             ), 'r').read()
 
 class TestPythonScriptNoAq(unittest.TestCase):
     def _newPS(self, txt, bind=None):
@@ -208,5 +218,14 @@ class TestPythonScriptNoAq(unittest.TestCase):
         true = self._newPS(readf('boolean_map'))()
         assert true
 
-framework()
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( TestPythonScriptNoAq ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()
 

@@ -83,12 +83,11 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
-from SortEx import *
-from ztestlib import *
-from results import *
+from DocumentTemplate.sequence.SortEx import *
+from DocumentTemplate.sequence.tests.ztestlib import *
+from DocumentTemplate.sequence.tests.results import *
 
 
 class TestCase( unittest.TestCase ):
@@ -142,6 +141,21 @@ class TestCase( unittest.TestCase ):
         #... and push out function onto the namespace
         md._push({"myCmp" : myCmp})
 
-        assert res7==SortEx(wordlist, (("weight",), ("key", "myCmp", "desc")), md, mapping=1)
+        assert res7==SortEx( wordlist
+                           , ( ("weight",)
+                             , ("key", "myCmp", "desc")
+                             )
+                           , md
+                           , mapping=1
+                           )
 
-framework()
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( TestCase ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

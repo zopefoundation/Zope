@@ -1,5 +1,4 @@
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 from ZTUtils import Iterator
 

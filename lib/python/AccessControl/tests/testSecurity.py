@@ -85,11 +85,10 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.4 2001/08/06 17:28:08 evan Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.5 2001/10/17 20:00:32 tseaver Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 import ZODB
 from DocumentTemplate import HTML
@@ -160,4 +159,14 @@ class SecurityTests (DTMLTests):
         assert res == '10', res
 
     # Note: we need more tests!
-framework()
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( SecurityTests ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

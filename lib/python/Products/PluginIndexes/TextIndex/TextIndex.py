@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.21 $'[11:-2]
+__version__ = '$Revision: 1.22 $'[11:-2]
 
 
 import string, re
@@ -633,7 +633,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
     def get_operands(self, q, i):
         """Evaluate and return the left and right operands for an operator"""
-
         try:
             left  = q[i - 1]
             right = q[i + 1]
@@ -643,7 +642,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         operandType = type(left)
         if operandType is IntType:
             left = self[left]
-        elif operandType in (StringType,UnicodeType): 
+        elif isinstance(left,StringType) or isinstance(left,UnicodeType):
             left = self[left]        
         elif operandType is ListType:
             left = self.evaluate(left)
@@ -651,7 +650,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         operandType = type(right)
         if operandType is IntType:
             right = self[right]
-        elif operandType in (StringType,UnicodeType): 
+        elif isinstance(right,StringType) or isinstance(right,UnicodeType):
             right = self[right]       
         elif operandType is ListType:
             right = self.evaluate(right)

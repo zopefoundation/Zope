@@ -1,5 +1,4 @@
 import os,sys
-execfile(os.path.join(sys.path[0],'framework.py'))
 import unittest
 
 import Zope
@@ -113,5 +112,55 @@ class UnicodeTextIndexCatalogTest(unittest.TestCase):
                     "%s: %s vs %s" % (q,str(r.getURL()),str(objs)) 
 
 
-framework()
+
+
+
+def test_suite():
+    return unittest.makeSuite(UnicodeTextIndexCatalogTest)
+    
+def main():
+    mb = os.path.join(here, 'zope.mbox')
+    if not os.path.isfile(mb):
+        print "do you want to get the zope.mbox file from lists.zope.org?"
+        print "it's required for testing (98MB, ~ 30mins on fast conn)"
+        print "it's also available at korak:/home/chrism/zope.mbox" 
+        print "-- type 'Y' or 'N'"
+        a = raw_input()
+        if lower(a[:1]) == 'y':
+            server = 'lists.zope.org:80'
+            method = '/pipermail/zope.mbox/zope.mbox'
+            h = httplib.HTTP(server)
+            h.putrequest('GET', method)
+            h.putheader('User-Agent', 'silly')
+            h.putheader('Accept', 'text/html')
+            h.putheader('Accept', 'text/plain')
+            h.putheader('Host', server)
+            h.endheaders()
+            errcode, errmsg, headers = h.getreply()
+            if errcode != 200:
+                f = h.getfile()
+                data = f.read()
+                print data
+                raise "Error reading from host %s" % server
+            f = h.getfile()
+            out=open(mb,'w')
+            print "this is going to take a while..."
+            print "downloading mbox from %s" % server
+            while 1:
+                l = f.readline()
+                if not l: break
+                out.write(l)
+
+    alltests=test_suite()
+    runner = unittest.TextTestRunner()
+    runner.run(alltests)
+
+def debug():
+    test_suite().debug()
+
+if __name__=='__main__':
+   if len(sys.argv) > 1:
+      globals()[sys.argv[1]]()
+   else:
+      main()
 

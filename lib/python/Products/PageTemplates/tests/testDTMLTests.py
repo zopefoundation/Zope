@@ -83,10 +83,9 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
-import util
+from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Acquisition import Implicit
 
@@ -120,18 +119,18 @@ class DTMLTests(unittest.TestCase):
       </body></html>
       """
 
-      tal = read_input('DTML1.html')
+      tal = util.read_input('DTML1.html')
       self.t.write(tal)
 
       aa=util.argv(('one', 'two', 'three', 'cha', 'cha', 'cha'))
       o=self.t.__of__(aa)()
-      expect = read_output('DTML1a.html')
+      expect = util.read_output('DTML1a.html')
 
       util.check_xml(expect, o)
 
       aa=util.argv(())
       o=self.t.__of__(aa)()
-      expect = read_output('DTML1b.html')
+      expect = util.read_output('DTML1b.html')
       util.check_xml(expect, o)
 
    def check3(self):
@@ -164,7 +163,7 @@ class DTMLTests(unittest.TestCase):
         </body></html>
       """
 
-      tal = read_input('DTML3.html')
+      tal = util.read_input('DTML3.html')
       self.t.write(tal)
 
       aa=util.argv(('one', 'two', 'three', 'four', 'five',
@@ -172,10 +171,10 @@ class DTMLTests(unittest.TestCase):
                     'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
                     'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty',
                     ))
-      import batch        
+      from Products.PageTemplates.tests import batch        
       o=self.t.__of__(aa)(batch=batch.batch(aa.args, 5))
 
-      expect = read_output('DTML3.html')
+      expect = util.read_output('DTML3.html')
       util.check_xml(expect, o)
 
 def test_suite():

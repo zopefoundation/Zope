@@ -83,10 +83,9 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
-import util
+from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 
 from Acquisition import Implicit
@@ -117,82 +116,82 @@ class HTMLTests(unittest.TestCase):
 
    def check1(self):
       laf = self.folder.laf
-      laf.write(read_input('TeeShopLAF.html'))
-      expect = read_output('TeeShopLAF.html')
+      laf.write(util.read_input('TeeShopLAF.html'))
+      expect = util.read_output('TeeShopLAF.html')
       util.check_html(expect, laf())
 
    def check2(self):
-      self.folder.laf.write(read_input('TeeShopLAF.html'))
+      self.folder.laf.write(util.read_input('TeeShopLAF.html'))
 
       t = self.folder.t
-      t.write(read_input('TeeShop2.html'))
-      expect = read_output('TeeShop2.html')
+      t.write(util.read_input('TeeShop2.html'))
+      expect = util.read_output('TeeShop2.html')
       out = t(getProducts=self.getProducts)
       util.check_html(expect, out)
       
 
    def check3(self):
-      self.folder.laf.write(read_input('TeeShopLAF.html'))
+      self.folder.laf.write(util.read_input('TeeShopLAF.html'))
 
       t = self.folder.t
-      t.write(read_input('TeeShop1.html'))
-      expect = read_output('TeeShop1.html')
+      t.write(util.read_input('TeeShop1.html'))
+      expect = util.read_output('TeeShop1.html')
       out = t(getProducts=self.getProducts)
       util.check_html(expect, out)
 
    def checkSimpleLoop(self):
       t = self.folder.t
-      t.write(read_input('Loop1.html'))
-      expect = read_output('Loop1.html')
+      t.write(util.read_input('Loop1.html'))
+      expect = util.read_output('Loop1.html')
       out = t()
       util.check_html(expect, out)
 
    def checkGlobalsShadowLocals(self):
       t = self.folder.t
-      t.write(read_input('GlobalsShadowLocals.html'))
-      expect = read_output('GlobalsShadowLocals.html')
+      t.write(util.read_input('GlobalsShadowLocals.html'))
+      expect = util.read_output('GlobalsShadowLocals.html')
       out = t()
       util.check_html(expect, out)
 
    def checkStringExpressions(self):
       t = self.folder.t
-      t.write(read_input('StringExpression.html'))
-      expect = read_output('StringExpression.html')
+      t.write(util.read_input('StringExpression.html'))
+      expect = util.read_output('StringExpression.html')
       out = t()
       util.check_html(expect, out)
       
    def checkReplaceWithNothing(self):
       t = self.folder.t
-      t.write(read_input('CheckNothing.html'))
-      expect = read_output('CheckNothing.html')
+      t.write(util.read_input('CheckNothing.html'))
+      expect = util.read_output('CheckNothing.html')
       out = t()
       util.check_html(expect, out)
 
    def checkWithXMLHeader(self):
       t = self.folder.t
-      t.write(read_input('CheckWithXMLHeader.html'))
-      expect = read_output('CheckWithXMLHeader.html')
+      t.write(util.read_input('CheckWithXMLHeader.html'))
+      expect = util.read_output('CheckWithXMLHeader.html')
       out = t()
       util.check_html(expect, out)
 
    def checkNotExpression(self):
       t = self.folder.t
-      t.write(read_input('CheckNotExpression.html'))
-      expect = read_output('CheckNotExpression.html')
+      t.write(util.read_input('CheckNotExpression.html'))
+      expect = util.read_output('CheckNotExpression.html')
       out = t()
       util.check_html(expect, out)
       
    def checkPathNothing(self):
       t = self.folder.t
-      t.write(read_input('CheckPathNothing.html'))
-      expect = read_output('CheckPathNothing.html')
+      t.write(util.read_input('CheckPathNothing.html'))
+      expect = util.read_output('CheckPathNothing.html')
       out = t()
       util.check_html(expect, out)
       
    def checkPathAlt(self):
       t = self.folder.t
-      t.write(read_input('CheckPathAlt.html'))
-      expect = read_output('CheckPathAlt.html')
+      t.write(util.read_input('CheckPathAlt.html'))
+      expect = util.read_output('CheckPathAlt.html')
       out = t()
       util.check_html(expect, out)
 

@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.141 2001/07/06 18:06:57 brian Exp $"""
+$Id: ObjectManager.py,v 1.142 2001/10/17 20:00:32 tseaver Exp $"""
 
-__version__='$Revision: 1.141 $'[11:-2]
+__version__='$Revision: 1.142 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -317,9 +317,10 @@ class ObjectManager(
             if hasattr(object, '__ac_local_roles__'):
                 if object.__ac_local_roles__ is None:
                     user=getSecurityManager().getUser()
-                    name=user.getUserName()
-                    if name != 'Anonymous User':
-                        object.manage_setLocalRoles(name, ['Owner'])
+                    if user is not None:
+                        name=user.getUserName()
+                        if name != 'Anonymous User':
+                            object.manage_setLocalRoles(name, ['Owner'])
 
         object.manage_afterAdd(object, self)
         return id

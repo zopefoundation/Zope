@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.12 2001/07/02 16:29:55 evan Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Owned.py,v 1.13 2001/10/17 20:00:31 tseaver Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager, Unauthorized
@@ -305,6 +305,8 @@ class EditUnowned(Exception):
 
 def ownerInfo(user,
               getattr=getattr, type=type, st=type(''), None=None):
+    if user is None:
+        return None
     uid=user.getId()
     if uid is None: return uid
     db=user.aq_inner.aq_parent

@@ -85,11 +85,10 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.2 2001/10/02 16:16:25 matt Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: testUserFolder.py,v 1.3 2001/10/17 20:00:32 tseaver Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 import ZODB
 from DocumentTemplate import HTML
@@ -141,5 +140,13 @@ class SecurityTests (DTMLTests):
             assert 0, "Raised overflow error erroneously"
 
 
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( SecurityTests ) )
+    return suite
 
-framework()
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

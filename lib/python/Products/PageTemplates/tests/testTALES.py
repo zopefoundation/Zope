@@ -1,5 +1,4 @@
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 from Products.PageTemplates import TALES
 from Products.PageTemplates.tests import harness1

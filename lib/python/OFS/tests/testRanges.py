@@ -82,9 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 import string, whrandom, cStringIO, time, re
 import Zope
@@ -114,28 +112,34 @@ class TestRequestRange(unittest.TestCase):
     # Test case setup and teardown
     def setUp(self):
         self.responseOut = cStringIO.StringIO()
-        self.app = makerequest(Zope.app(), stdout=self.responseOut)
-        try: self.app._delObject(TESTFOLDER_NAME)
-        except AttributeError: pass
-        self.app.manage_addFolder(TESTFOLDER_NAME)
+        self.connection = Zope.DB.open()
+        try:
+            self.root = self.connection.root()[ 'Application' ]
+            self.app = makerequest(self.root, stdout=self.responseOut)
+            try: self.app._delObject(TESTFOLDER_NAME)
+            except AttributeError: pass
+            self.app.manage_addFolder(TESTFOLDER_NAME)
 
-        data = string.letters
-        self.app[TESTFOLDER_NAME].manage_addFile('file', file=data,
-            content_type='text/plain')
+            data = string.letters
+            self.app[TESTFOLDER_NAME].manage_addFile('file', file=data,
+                content_type='text/plain')
 
-        self.file = self.app[TESTFOLDER_NAME].file
-        self.data = data
+            self.file = self.app[TESTFOLDER_NAME].file
+            self.data = data
 
-        # Hack, we need a _p_mtime for the file, so we make sure that it has
-        # one. We use a subtransaction, which means we can rollback later and
-        # pretend we didn't touch the ZODB.
-        get_transaction().commit()
+            # Hack, we need a _p_mtime for the file, so we make sure that it
+            # has one. We use a subtransaction, which means we can rollback
+            # later and pretend we didn't touch the ZODB.
+            get_transaction().commit()
+        except:
+            self.connection.close()
+            raise
 
     def tearDown(self):
         try: self.app._delObject(TESTFOLDER_NAME)
         except AttributeError: pass
         get_transaction().commit()
-        self.app._p_jar.close()
+        self.connection.close()
         self.app = None
         del self.app
 
@@ -395,4 +399,14 @@ class TestRequestRange(unittest.TestCase):
         self.expectOK('21-25,10-20',
             if_range=self.file.http__etag() + 'bar')
 
-framework()
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( TestRequestRange ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

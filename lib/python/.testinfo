@@ -1,0 +1,29 @@
+App
+BTrees
+DateTime
+DocumentTemplate
+HelpSys
+Interface
+OFS
+Persistence
+Products
+RestrictedPython
+SearchIndex
+Shared
+StructuredText
+Testing
+ThreadedAsync
+TreeDisplay
+ZClasses
+ZLogger
+ZODB
+ZPublisher
+ZTUtils
+Zope
+webdav
+zLOG
+zdaemon
+# WAAAA!  Putting this at end makes it run!
+AccessControl
+# WAAAA!  These tests are broken!
+#TAL

@@ -84,7 +84,6 @@
 ##############################################################################
 
 import os,sys
-execfile(os.path.join(sys.path[0],'framework.py'))
 
 import unittest,locale
 from Products.PluginIndexes.TextIndex import Splitter

@@ -174,3 +174,17 @@ def normalize_xml(s):
     s = re.sub(r"(?s)\s+<", "<", s)
     s = re.sub(r"(?s)>\s+", ">", s)
     return s
+
+
+import Products.PageTemplates.tests
+dir = os.path.dirname( Products.PageTemplates.tests.__file__)
+input_dir = os.path.join(dir, 'input')
+output_dir = os.path.join(dir, 'output')
+
+def read_input(filename):
+    filename = os.path.join(input_dir, filename)
+    return open(filename, 'r').read()
+
+def read_output(filename):
+    filename = os.path.join(output_dir, filename)
+    return open(filename, 'r').read()

@@ -83,25 +83,39 @@
 # 
 ##############################################################################
 
-import sys, os
-execfile(os.path.join(sys.path[0],'framework.py'))
+import sys, os, unittest
 import zLOG
 
 def log_write(subsystem, severity, summary, detail, error):
     if severity >= zLOG.PROBLEM:
         assert 0, "%s(%s): %s" % (subsystem, severity, summary)
 
-zLOG.log_write=log_write
 
 import ZODB, ZODB.DemoStorage, ZODB.FileStorage
-import TextIndex
-import GlobbingLexicon
+from Products.PluginIndexes.TextIndex import TextIndex
+from Products.PluginIndexes.TextIndex import GlobbingLexicon
+
+class Dummy:
+
+    def __init__( self, text ):
+        self._text = text
+
+    def text( self ):
+        return self._text
+    
+    def __str__( self ):
+        return '<Dummy: %s>' % self._text
+    
+    __repr__ = __str__
 
 class Tests(unittest.TestCase):
 
    def setUp(self):
        self.index=TextIndex.TextIndex('text')
        self.doc=Dummy(text='this is the time, when all good zopes')
+       self.old_log_write = zLOG.log_write
+       zLOG.log_write=log_write
+
 
    def dbopen(self):
        n = 'fs_tmp__%s' % os.getpid()
@@ -124,6 +138,7 @@ class Tests(unittest.TestCase):
        if hasattr(self, 'jar'):
            self.dbclose()
            os.system('rm -f fs_tmp__*')
+       zLOG.log_write=self.old_log_write
 
    def checkSimpleAddDelete(self):
        "Check that we can add and delete an object without error"

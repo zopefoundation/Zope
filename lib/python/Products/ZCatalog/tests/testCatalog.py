@@ -1,10 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python, unittest
 
 # Unittests for Catalog
 
-import os,sys
-execfile(os.path.join(sys.path[0],'framework.py'))
-os.environ['STUPID_LOG_FILE']= "debug.log"
+import os,sys, unittest
 
 import Zope
 from Products.ZCatalog import ZCatalog,Vocabulary
@@ -324,7 +322,8 @@ class objRS(ExtensionClass.Base):
 class testRS(unittest.TestCase):
 
     def setUp(self):
-        self._vocabulary = Vocabulary.Vocabulary('Vocabulary','Vocabulary', globbing=1)
+        self._vocabulary = Vocabulary.Vocabulary('Vocabulary','Vocabulary'
+                                                , globbing=1)
         self._catalog    = Catalog()
         index = FieldIndex('number')
         self._catalog.addIndex('number',  index)
@@ -342,11 +341,25 @@ class testRS(unittest.TestCase):
             m = whrandom.randint(0,20000) 
             n = m + 1000
 
-            for r  in self._catalog.searchResults( {"number" : (m,n) ,
-                                                    "length_usage" : "range:min:max" } 
-                                            ):
+            for r  in self._catalog.searchResults(
+                { "number" : (m,n) ,
+                  "length_usage" : "range:min:max" } ):
                 size = r.number
                 assert m<=size and size<=n , "%d vs [%d,%d]" % (r.number,m,n)
 
 
-framework()
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
+    suite.addTest( unittest.makeSuite( TestAddDelIndexes ) )
+    suite.addTest( unittest.makeSuite( TestZCatalogObject ) )
+    suite.addTest( unittest.makeSuite( TestCatalogObject ) )
+    suite.addTest( unittest.makeSuite( testRS ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

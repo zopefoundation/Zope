@@ -85,11 +85,10 @@
 """Test of AuthEncoding
 """
 
-__rcs_id__='$Id: testPasswordDigest.py,v 1.1 2001/09/13 16:26:47 shane Exp $'
-__version__='$Revision: 1.1 $'[11:-2]
+__rcs_id__='$Id: testPasswordDigest.py,v 1.2 2001/10/17 20:00:32 tseaver Exp $'
+__version__='$Revision: 1.2 $'[11:-2]
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import os, sys, unittest
 
 from AccessControl import AuthEncoding
 import unittest
@@ -156,4 +155,14 @@ class PasswordDigestTests (unittest.TestCase):
         pw = 'my-password'
         assert AuthEncoding.pw_validate(pw, pw)
 
-framework()
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( PasswordDigestTests ) )
+    return suite
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()

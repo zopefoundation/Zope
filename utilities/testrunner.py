@@ -28,11 +28,12 @@ VERBOSE = 2
 class TestRunner:
     """Test suite runner"""
 
-    def __init__(self, basepath, verbosity=VERBOSE, results=[]):
+    def __init__(self, basepath, verbosity=VERBOSE, results=[], mega_suite=0):
         # initialize python path
         self.basepath=path=basepath
         self.verbosity = verbosity
         self.results = results
+        self.mega_suite = mega_suite
         pjoin=os.path.join
         if sys.platform == 'win32':
             sys.path.insert(0, pjoin(path, 'lib/python'))
@@ -51,12 +52,10 @@ class TestRunner:
         path, filename=os.path.split(filepath)
         name, ext=os.path.splitext(filename)
         file, pathname, desc=imp.find_module(name, [path])
-        # Add path of imported module to sys.path, so local imports work.
-        sys.path.insert(0, path)
-        try:     module=imp.load_module(name, file, pathname, desc)
-        finally: file.close()
-        # Remove extra path again.
-        sys.path.remove(path)
+        try:
+            module=imp.load_module(name, file, pathname, desc)
+        finally:
+            file.close()
         function=getattr(module, 'test_suite', None)
         if function is None:
             return None
@@ -83,32 +82,90 @@ class TestRunner:
         self.results.append(runner.run(suite))
 
     def report(self, message):
-        print message
-        print
+        sys.stderr.write( '%s\n' % message )
 
     def runAllTests(self):
         """Run all tests found in the current working directory and
            all subdirectories."""
         self.runPath(self.basepath)
 
+    def listTestableNames( self, pathname ):
+        """
+            Return a list of the names to be traversed to build tests.
+        """
+        names = os.listdir(pathname)
+        if '.testinfo' in names:  # allow local control
+            f = open( os.path.join( pathname, '.testinfo' ) )
+            lines = filter( None, f.readlines() )
+            lines = map( lambda x: x[-1]=='\n' and x[:-1] or x, lines )
+            names = filter( lambda x: x and x[0] != '#', lines )
+            f.close()
+        return names
+
+    def extractSuite( self, pathname ):
+        """
+            Extract and return the appropriate test suite.
+        """
+        if os.path.isdir( pathname ):
+
+            suite = unittest.TestSuite()
+
+            for name in self.listTestableNames( pathname ):
+
+                fullpath = os.path.join( pathname, name )
+                sub_suite = self.extractSuite( fullpath )
+                if sub_suite:
+                    suite.addTest( sub_suite )
+
+            return suite.countTestCases() and suite or None
+
+        elif self.smellsLikeATest( pathname ):
+
+            working_dir = os.getcwd()
+            try:
+                dirname, name = os.path.split(pathname)
+                if dirname:
+                    os.chdir(dirname)
+                try:
+                    suite = self.getSuiteFromFile(name)
+                except:
+                    self.report('No test suite found in file:\n%s\n' % pathname)
+                    if self.verbosity > 1:
+                        traceback.print_exc()
+                    suite = None            
+            finally:
+                os.chdir(working_dir)
+            
+            return suite
+
+        else: # no test there!
+
+            return None
+
     def runPath(self, pathname):
         """Run all tests found in the directory named by pathname
            and all subdirectories."""
         if not os.path.isabs(pathname):
             pathname = os.path.join(self.basepath, pathname)
-        names=os.listdir(pathname)
-        for name in names:
-            fullpath=os.path.join(pathname, name)
-            if os.path.isdir(fullpath):
-                self.runPath(fullpath)
-            elif self.smellsLikeATest(fullpath):
-                self.runFile(fullpath)
+
+        if self.mega_suite:
+            suite = self.extractSuite( pathname )
+            self.runSuite( suite )
+        else:
+            for name in self.listTestableNames(pathname):
+                fullpath=os.path.join(pathname, name)
+                if os.path.isdir(fullpath):
+                    self.runPath(fullpath)
+                elif self.smellsLikeATest(fullpath):
+                    self.runFile(fullpath)
 
     def runFile(self, filename):
         """Run the test suite defined by filename."""
         working_dir = os.getcwd()
         dirname, name = os.path.split(filename)
         if dirname:
+            if self.verbosity > 2:
+                sys.stderr.write( '*** Changing directory to: %s\n' % dirname )
             os.chdir(dirname)
         self.report('Running: %s' % filename)
         try:    suite=self.getSuiteFromFile(name)
@@ -119,6 +176,8 @@ class TestRunner:
             self.runSuite(suite)
         else:
             self.report('No test suite found in file:\n%s\n' % filename)
+        if self.verbosity > 2:
+            sys.stderr.write( '*** Restoring directory to: %s\n' % working_dir )
         os.chdir(working_dir)
 
 
@@ -138,6 +197,24 @@ def main(args):
           Run all tests found in all subdirectories of the current
           working directory. This is the default if no options are
           specified.
+
+       -m 
+
+          Run all tests in a single, giant suite (consolidates error
+          reporting). [default]
+
+       -M
+
+          Run each test file's suite separately (noisier output, may
+          help in isolating global effects later).
+
+       -p
+
+          Add 'lib/python' to the Python search path. [default]
+
+       -P
+
+          *Don't* add 'lib/python' to the Python search path.
 
        -d dirpath
 
@@ -177,14 +254,24 @@ def main(args):
     filename=None
     test_all=None
     verbosity = VERBOSE
+    mega_suite = 1
+    set_python_path = 1
 
-    options, arg=getopt.getopt(args, 'ahd:f:v:q')
+    options, arg=getopt.getopt(args, 'amPhd:f:v:q')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
         name=name[1:]
         if name == 'a':
             test_all=1
+        elif name == 'm':
+            mega_suite = 1
+        elif name == 'M':
+            mega_suite = 0
+        elif name == 'p':
+            set_python_path = 1
+        elif name == 'P':
+            set_python_path = 0
         elif name == 'd':
             pathname=string.strip(value)
         elif name == 'f':
@@ -198,7 +285,19 @@ def main(args):
         else:
             err_exit(usage_msg)
 
-    testrunner = TestRunner(os.getcwd(), verbosity=verbosity)
+    testrunner = TestRunner( os.getcwd()
+                           , verbosity=verbosity
+                           , mega_suite=mega_suite)
+
+    if set_python_path:
+        script = sys.argv[0]
+        script_dir = os.path.split( os.path.abspath( script ) )[0]
+        zope_dir = os.path.abspath( os.path.join( script_dir, '..' ) )
+        sw_home = os.path.join( zope_dir, 'lib', 'python' )
+        if verbosity > 1:
+            testrunner.report( "Adding %s to sys.path." % sw_home )
+        sys.path.insert( 0, sw_home )
+
     if test_all:
         testrunner.runAllTests()
     elif pathname:
