@@ -102,13 +102,14 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
+from cStringIO import StringIO
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
@@ -342,16 +343,39 @@ class Image(File):
             self.content_type=content_type
         self.data=Pdata(data)
         self.size=len(data)
+
         # handle GIFs   
-        if (self.size >= 10) and self.data[:6] in ('GIF87a', 'GIF89a'):
+        if (self.size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
             w, h = struct.unpack("<HH", self.data[6:10])
             self.width=str(int(w))
             self.height=str(int(h))
+
+        # handle JPEGs
+        elif (self.size >= 2) and (data[:2] == '\377\330'):
+            jpeg=StringIO(data)
+            jpeg.read(2)
+            b=jpeg.read(1)
+            try:
+                while (b and ord(b) != 0xDA):
+                    while (ord(b) != 0xFF): b = jpeg.read(1)
+                    while (ord(b) == 0xFF): b = jpeg.read(1)
+                    if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
+                        jpeg.read(3)
+                        h, w = struct.unpack(">HH", jpeg.read(4))
+                        break
+                    else:
+                        jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
+                    b = jpeg.read(1)
+                self.width=str(int(w))
+                self.height=str(int(h))
+            except: pass
+            
         # handle PNGs
-        if (self.size >= 16) and (self.data[:8] == '\x89PNG\r\n\x1a\n'):
+        elif (self.size >= 16) and (self.data[:8] == '\x89PNG\r\n\x1a\n'):
             w, h = struct.unpack(">LL", self.data[8:16])
             self.width=str(int(w))
             self.height=str(int(h))
+            
 
     def __str__(self):
         width=self.width and ('width="%s" ' % self.width) or ''
