@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.10 2001/11/07 20:13:16 matt Exp $
+$Id: Transience.py,v 1.11 2001/11/07 20:20:26 matt Exp $
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -267,7 +267,6 @@ class TransientObjectContainer(SimpleItem):
     def setAddNotificationTarget(self, f):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
-        print "setting addNotificationTarget to %s" % f
         self._addCallback = f             
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getDelNotificationTarget')
@@ -279,7 +278,6 @@ class TransientObjectContainer(SimpleItem):
     def setDelNotificationTarget(self, f):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
-        print "setting delNotificationTarget to %s" % f
         self._delCallback = f
 
 
