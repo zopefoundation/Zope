@@ -425,7 +425,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.89 1998/08/28 13:08:15 jim Exp $"""
+$Id: Publish.py,v 1.90 1998/08/31 20:54:02 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -480,7 +480,7 @@ $Id: Publish.py,v 1.89 1998/08/28 13:08:15 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -922,7 +922,8 @@ class ModulePublisher:
 	    v=request_get(argument_name, args)
 	    if v is args:
 		if argument_name=='self': args.append(parents[0])
-		elif name_index < nrequired: self.badRequestError(argument_name)
+		elif name_index < nrequired:
+                    self.badRequestError(argument_name)
 		else: args.append(defaults[name_index-nrequired])
 	    else: args.append(v)
 
@@ -1063,17 +1064,17 @@ def field2string(v):
     else: v=str(v)
     return v
 
-def field2text(v, nl=regex.compile('\r\n\|\n\r')):
+def field2text(v, nl=regex.compile('\r\n\|\n\r').search):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    l=nl.search(v)
+    l=nl(v)
     if l < 0: return v
     r=[]
     s=0
     while l >= s:
 	r.append(v[s:l])
 	s=l+2
-	l=nl.search(v,s)
+	l=nl(v,s)
     r.append(v[s:])
 	
     return join(r,'\n')
