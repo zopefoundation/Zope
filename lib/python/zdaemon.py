@@ -181,11 +181,11 @@ def run(argv, pidfile=''):
     
     os.environ['ZDAEMON_MANAGED']='TRUE'
     while 1:
-        pid = os.fork()
-        if pid:
-            sys.exit(0)
-
-        posix.setsid()
+        if not os.environ.has_key('Z_DEBUG_MODE'):
+            pid = os.fork()
+            if pid:
+                sys.exit(0)
+            posix.setsid()
 
         lastt=time.time()
         try:
