@@ -38,7 +38,10 @@ Credits
     o Oleg Broytmann has taken up the standard of mod_pcgi and moving
       it to be a really amazing thing, and ready for prime time.
 
-    o Jephte CLAIN made some patches to European TimeZope.
+    o Jephte CLAIN made some patches to European ZopeTime.
+
+    o Thanks to Gregor Hofflight for his work in getting Zope into the
+      Debian distribution.
 
     o All the other Zopistas far and wide that stuck with us during
       the Bobo/Principia days and politely push us to make the best damn
