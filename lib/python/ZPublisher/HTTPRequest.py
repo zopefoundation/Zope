@@ -1336,6 +1336,16 @@ class HTTPRequest(BaseRequest):
     def taintWrapper(self, enabled=TAINTING_ENABLED):
         return enabled and TaintRequestWrapper(self) or self
 
+    # Used by Five
+
+    def getPresentationSkin(self):
+        """see zope.component.interfaces.IPresentationRequest"""
+        return getattr(self, '_presentation_skin', None)
+
+    def setPresentationSkin(self, skin):
+        """see zope.publisher.interfaces.IPublicationRequest"""
+        self._presentation_skin = skin
+
 
 class TaintRequestWrapper:
     def __init__(self, req):
