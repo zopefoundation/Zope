@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -287,9 +287,10 @@ class DTMLMethod(HTML, Acquisition.Implicit, RoleManager,
         "Support for searching - the document's contents are searched."
         return self.read()
 
-    def document_src(self, REQUEST, RESPONSE):
+    def document_src(self, REQUEST=None, RESPONSE=None):
         """Return unprocessed document source."""
-        RESPONSE.setHeader('Content-Type', 'text/plain')
+        if RESPONSE is not None:
+            RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
     ## Protocol handlers
