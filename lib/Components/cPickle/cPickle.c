@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.68 1999/05/17 16:15:39 jim Exp $
+ * $Id: cPickle.c,v 1.69 1999/05/17 18:17:24 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.68 1999/05/17 16:15:39 jim Exp $\n"
+"$Id: cPickle.c,v 1.69 1999/05/17 18:17:24 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -4311,7 +4311,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
     UNLESS (r=PyRun_String(
        "def __init__(self, *args): self.args=args\n\n"
        "def __str__(self):\n"
-       "  return self.args and ('%s' % self.args[0]) or '???'\n",
+       "  return self.args and ('%s' % self.args[0]) or '(what)'\n",
        Py_file_input,
        module_dict, t) ) return -1;
     Py_DECREF(r);
@@ -4381,7 +4381,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 DL_EXPORT(void)
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.68 $";
+    char *rev="$Revision: 1.69 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
