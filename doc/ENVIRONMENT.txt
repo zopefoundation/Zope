@@ -196,19 +196,20 @@ Session related
 
     ZSESSION_ADD_NOTIFY
 
-    	If this is set, it is the full path name in Zope of a callable
-        object to be set in the addNotificationTarget of the transient_container
-        which is created in temp_folder at startup.  The default is
-        /session_add.  If the name does not exist, no entry will be placed
-        in the addNotificationTarget of transient_container.
+    	An optional full Zope path name of a callable object to be set as
+        the "script to call on object addition" of the session_data
+        transient object container created in temp_folder at startup. 
 
     ZSESSION_DEL_NOTIFY
 
-    	If this is set, it is the full path name in Zope of a callable
-        object to be set in the delNotificationTarget of the transient_container
-        which is created in temp_folder at startup.  The default is
-        /session_del.  If the name does not exist, no entry will be placed
-        in the delNotificationTarget of transient_container.
+    	An optional full Zope path name of a callable object to be set as
+        the "script to call on object deletion" of the session_data
+        transient object container created in temp_folder at startup. 
+
+    ZSESSION_TIMEOUT_MINS
+
+        The number of minutes to be used as the "data object timeout" of the
+        "/temp_folder/session_data" transient object container.
 
 Esoteric 
 
