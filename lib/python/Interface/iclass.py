@@ -166,6 +166,7 @@ class Class(Named):
 
     # Note that we don't use a function definition here, because
     # we don't want to specify a signature!
+
     __call__=Method("Instantiate instances of the class")
 
     __bases__=Attribute("A sequence of base classes")
