@@ -91,6 +91,14 @@ import string
 import HelpTopic
 from Globals import HTMLFile, Persistent
 
+_ignore_objects = {}
+
+try:
+    import Interface
+    _ignore_objects.update(Interface.__dict__)
+except ImportError:
+    pass
+
 class APIHelpTopic(HelpTopic.HelpTopic):
     """
     Provides API documentation.
@@ -106,9 +114,15 @@ class APIHelpTopic(HelpTopic.HelpTopic):
         self.doc=dict.get('__doc__','')
 
         self.apis=[]
-        for v in dict.values():
-            if type(v)==types.ClassType:
-                self.apis.append(APIDoc(v))
+        for k, v in dict.items():
+            if (not _ignore_objects.has_key(k) or
+                _ignore_objects[k] is not v):
+                if type(v)==types.ClassType:
+                    # A class.
+                    self.apis.append(APIDoc(v, 0))
+                elif (hasattr(v, 'isImplementedByInstancesOf')):
+                    # A scarecrow interface.
+                    self.apis.append(APIDoc(v, 1))
 
         # try to get title from first non-blank line
         # of module docstring
@@ -143,7 +157,39 @@ class APIDoc(Persistent):
 
     extends=()
 
-    def __init__(self, klass):
+    def __init__(self, klass, isInterface=0):
+        if isInterface:
+            self._createFromInterface(klass)
+        else:
+            self._createFromClass(klass)
+
+    def _createFromInterface(self, klass):
+        # Creates an APIDoc instance given an interface object.
+        self.name=klass.__name__
+        self.doc=trim_doc_string(klass.__doc__)
+
+        # inheritence information
+        self.extends=[]
+##        for base in klass.getBases():
+##            names = string.split(base.__name__, '.')
+##            url="%s/Help/%s.py#%s" % (names[0], names[1], names[2])
+##            self.extends.append((names[2], url))
+
+        # constructor information
+##        if hasattr(klass, '__constructor__'):
+##            self.constructor=MethodDoc(klass.__constructor__)
+        
+        # Get info on methods and attributes, ignore special items
+        self.attributes=[]
+        self.methods=[]
+        from Interface.Method import Method
+        for k,v in klass.namesAndDescriptions():
+            if hasattr(v, 'getSignatureInfo'):
+                self.methods.append(MethodDoc(v, 1))
+            else:
+                self.attributes.append(AttributeDoc(k, v.__doc__))
+
+    def _createFromClass(self, klass):
         # Creates an APIDoc instance given a python class.
         # the class describes the API; it contains
         # methods, arguments and doc strings.
@@ -175,7 +221,7 @@ class APIDoc(Persistent):
         for k,v in klass.__dict__.items():
             if k not in ('__extends__', '__doc__', '__constructor__'):
                 if type(v)==types.FunctionType:
-                    self.methods.append(MethodDoc(v))
+                    self.methods.append(MethodDoc(v, 0))
                 else:
                     self.attributes.append(AttributeDoc(k, v))
         
@@ -218,7 +264,26 @@ class MethodDoc(Persistent):
     varargs=None
     kwargs=None
     
-    def __init__(self, func):
+    def __init__(self, func, isInterface=0):
+        if isInterface:
+            self._createFromInterfaceMethod(func)
+        else:
+            self._createFromFunc(func)
+
+    def _createFromInterfaceMethod(self, func):
+        self.name = func.__name__
+        self.doc = trim_doc_string(func.__doc__)
+        self.required = func.required
+        opt = []
+        for p in func.positional[len(func.required):]:
+            opt.append((p, func.optional[p]))
+        self.optional = tuple(opt)
+        if func.varargs:
+            self.varargs = func.varargs
+        if func.kwargs:
+            self.kwargs = func.kwargs
+
+    def _createFromFunc(self, func):
         if hasattr(func, 'im_func'):
             func=func.im_func
 
