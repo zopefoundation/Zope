@@ -94,11 +94,11 @@ class TransactionManager(object):
     def unregisterSynch(self, synch):
         self._synchs.remove(synch)
 
-    def commit(self):
-        self.get().commit()
+    def commit(self, sub=False):
+        self.get().commit(sub)
 
-    def abort(self):
-        self.get().abort()
+    def abort(self, sub=False):
+        self.get().abort(sub)
 
 class ThreadTransactionManager(TransactionManager):
     """Thread-aware transaction manager.
