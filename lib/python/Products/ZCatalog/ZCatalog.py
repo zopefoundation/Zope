@@ -150,7 +150,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     manage_catalogAddRowForm = HTMLFile('catalogAddRowForm', globals())
     manage_catalogView = HTMLFile('catalogView',globals())
     manage_catalogFind = HTMLFile('catalogFind',globals())
-    manage_catalogFindResult = HTMLFile('catalogFindResult',globals())
     manage_catalogSchema = HTMLFile('catalogSchema', globals())
     manage_catalogIndexes = HTMLFile('catalogIndexes', globals())
     manage_catalogStatus = HTMLFile('catalogStatus', globals())
