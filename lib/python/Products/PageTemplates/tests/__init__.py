@@ -34,4 +34,3 @@ class harness2(harness1):
         assert aargs == args, "Harness method arguments"
         assert akwargs == kwargs, "Harness method keyword args"
         return result
-    
