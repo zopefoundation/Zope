@@ -1,5 +1,6 @@
+<dtml-unless "id=='tutorialGlossary'">
 <dtml-call "REQUEST.set('ids', aq_parent.objectIds())">
-<dtml-call "ids.remove('glossary')">
+<dtml-call "ids.remove('tutorialGlossary')">
 <dtml-call "REQUEST.set('i', ids.index(id))">
 
 <table width="100%" border="0" padding="0" spacing="0">
@@ -23,3 +24,7 @@
 </dtml-unless>
 
 </td></tr></table>
+</dtml-unless>
+
+
+

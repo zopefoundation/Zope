@@ -1,1 +1,1 @@
-Zope Tutorial 1.0a5
+Zope Tutorial 1.0

@@ -1,13 +1,14 @@
 <dtml-var standard_html_header>
 <dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
+<dtml-call "REQUEST.set('management_view', 'Search')">
 <dtml-var manage_tabs>
-<h2>Search Results</h2>
 
+<p>Help topics matching <b><dtml-var SearchableText></b>:</p>
 <p>
 <dtml-in "searchResults(REQUEST)">
 <a href="<dtml-var SCRIPT_NAME><dtml-var url>" target="help_main"><dtml-var title_or_id></a><br>
 <dtml-else>
-<em>No help topics were found matching <b><dtml-var SearchableText></b>.</em>
+<em>No matches.</em>
 </dtml-in>
 </p>
 

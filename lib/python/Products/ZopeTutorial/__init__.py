@@ -122,7 +122,8 @@ def initialize(context):
     # create glossary
     text=open(glossary_path).read()
     text=term_pat.sub(defineTerm, text)
-    glossary=TutorialTopic.TutorialTopic('glossary', 'Zope Tutorial Glossary', text)
+    glossary=TutorialTopic.TutorialTopic('tutorialGlossary', 'Zope Tutorial Glossary', text)
+    context.registerHelpTopic('tutorialGlossary', glossary)
 
     # create lessons
     f=open(lesson_path)
@@ -147,8 +148,6 @@ def initialize(context):
             break
     f.close()
 
-    # register glossary last
-    context.registerHelpTopic('glossary', glossary)
 
 
 # Glossary functions
@@ -163,7 +162,7 @@ def glossaryTerm(match):
     """
     name=match.group(1)
     if name in terms:
-        return """<a href="../glossary#%s">%s</a>""" % \
+        return """<a href="../tutorialGlossary#%s">%s</a>""" % \
                 (quote_plus(name), html_quote(name))
     return """[%s]""" % name
 

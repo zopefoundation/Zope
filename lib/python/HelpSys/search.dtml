@@ -1,7 +1,7 @@
 <dtml-var standard_html_header>
 <dtml-call "REQUEST.set('MANAGE_TABS_NO_BANNER',1)">
 <dtml-var manage_tabs>
-<h2>Search</h2>
+
 <p>
 <form action="results" method="GET">
 Search terms

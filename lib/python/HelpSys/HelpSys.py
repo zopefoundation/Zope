@@ -149,6 +149,8 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     search=HTMLFile('search', globals())
     results=HTMLFile('results', globals())
     main=HTML("""<html></html>""")
+    standard_html_header=HTMLFile('menu_header', globals())
+    standard_html_footer=HTMLFile('menu_footer', globals())
 
     button=HTMLFile('button', globals())
 
