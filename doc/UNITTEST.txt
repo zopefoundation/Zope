@@ -17,7 +17,7 @@ Zope Unit Testing
   intended behavior against its actual behavior.
 
   Unit tests are a way for developers and quality assurance engineers
-  to quickly acertain whether independent units of code are working as
+  to quickly ascertain whether independent units of code are working as
   expected.  Unit tests are generally written at the same time as the
   code they are intended to test.  A unit testing framework allows a
   collection of unit tests to be run without human intervention,
@@ -225,7 +225,7 @@ Zope Unit Testing
    - operate on the Zope instance space by calling methods from the
      root object (bound to 'app'), e.g.:
 
-     app.acl_users.manage_addUser(<method signature>)
+     app.acl_users.manage_addUser(<parameters>)
 
    - a transaction will not be committed to the Zope object database
      until you call the global function "get_transaction().commit()",
@@ -236,27 +236,27 @@ Zope Unit Testing
      "app._p_jar.close()".  This closes the database connection
      cleanly.
 
-   For more information on operating on Zope programatically by
-   "importing" it, see Michel Pelletier's "The Debugger Is Your
-   Friend" at
-   http://www.zope.org/Members/michel/HowTos/TheDebuggerIsYourFriend
+  For more information on operating on Zope programatically by
+  "importing" it, see Michel Pelletier's "The Debugger Is Your
+  Friend" at
+  http://www.zope.org/Members/michel/HowTos/TheDebuggerIsYourFriend
 
-   Sometimes, just importing Zope isn't enough.  For example, it's
-   often not possible to obtain the results of a DTML or Python method
-   by simply calling it from your running code without doing lots of
-   trickery by establishing fake REQUEST object to pass in to it, as
-   Zope expects a REQUEST object to exist in the context of a web
-   request (which a DTML method is somewhat logically designed to
-   serve).
+  Sometimes, just importing Zope isn't enough.  For example, it's
+  often not possible to obtain the results of a DTML or Python method
+  by simply calling it from your running code without doing lots of
+  trickery by establishing fake REQUEST object to pass in to it, as
+  Zope expects a REQUEST object to exist in the context of a web
+  request (which a DTML method is somewhat logically designed to
+  serve).
 
-   If you find yourself getting bogged down while writing unit tests
-   by Zope's refusal to run certain methods due to missing state (like
-   REQUEST), it's useful to know about the "debug" method of the Zope
-   package.  This method allows you to simulate a web request, which
-   generally provides all the state necessary to run methods which
-   depend on web requests, and returns the results of the web request
-   as it would be seen in by a web browser.  To use the Zope debug
-   method, do the following:
+  If you find yourself getting bogged down while writing unit tests by
+  Zope's refusal to run certain methods due to missing state (like
+  REQUEST), it's useful to know about the "debug" method of the Zope
+  package.  This method allows you to simulate a web request, which
+  generally provides all the state necessary to run methods which
+  depend on web requests, and returns the results of the web request
+  as it would be seen in by a web browser.  To use the Zope debug
+  method, do the following:
 
    - add the lib/python path to your PYTHONPATH (via sys.path.insert())
 
@@ -268,17 +268,15 @@ Zope Unit Testing
                  u='username:password', s='silent', e={'some':'environment',
                  'variable':'settings'})
 
-   The "silent" option causes Zope not to print anything.  You can set
-   your python's stdout to a file or a file-like object to capture the
-   output if you do not set the silent flag.
+  The "silent" option causes Zope not to print anything.  You can set
+  your python's stdout to a file or a file-like object to capture the
+  output if you do not set the silent flag.
 
-   In Zope versions before 2.2.2, all calls to Zope.debug commit the
-   transaction represented by the call to Zope.debug by default.  Zope
-   2.2.2 and higher have allow an additional "dont_commit" flag to be
-   passed in to Zope.debug:
-
-   - 'Zope.debug('/a/url/representing/a/method?with=a?couple=arguments',
-                 u='username:password', dont_commit=1)
+  In Zope versions before 2.2.2, all calls to Zope.debug commit the
+  transaction represented by the call to Zope.debug by default.  This
+  can pose problems for unit testing, as the state of the environment
+  should not be effected by prior tests.  A solution should be
+  available by the release of Zope 2.3.
 
  Administrivia
 
