@@ -117,7 +117,7 @@ property values, edit the values and click &quot;Save Changes&quot;.
 
     <dtml-if "hasProperty(select_variable)">
     <div class="form-element">
-    <select name="<dtml-var id>:utf8:list" multiple
+    <select name="<dtml-var id>:utf8:list:string" multiple
       size="<dtml-var "_.min(7, _.len(getProperty(select_variable)))">">
       <dtml-in "getProperty(select_variable)">
          <option<dtml-if 

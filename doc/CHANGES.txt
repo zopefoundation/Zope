@@ -4,6 +4,16 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  Zope 2.6.1 beta 2
+
+    Bugs Fixed
+
+      - Collector #697: Multiple selection properties were incorrectly
+        marshalled. note than any non-ascii multiple selection properties
+        modified in versions without this fix will have been corrupted in
+        the zodb.
+
+
   Zope 2.6.1 beta 1
 
     Bugs Fixed
