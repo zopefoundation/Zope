@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -266,3 +266,4 @@ def getitems(o,names):
         r.append(v)
     return r
         
+def Dictionary(**kw): return kw # Sorry Guido
