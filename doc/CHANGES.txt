@@ -270,13 +270,13 @@ Zope Changes
                    <input name="date.day:record:int">
 
                 will result in a single variable, 'date', with
-        attributes 'year', 'month', and 'day'.
+                attributes 'year', 'month', and 'day'.
 
             :records -- allows you to input a list of records (ie a
                         table)
 
-        :ignore-empty -- Immit the field if the value is an empty
-        string.
+            :ignore-empty -- If the field if the value is an empty
+                             string.
 
           For more information, see the section on "Form variable
           types" in http://www.zope.org/Documentation/Reference/Trinkets.
