@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.50 2000/05/16 18:35:14 brian Exp $"""
-__version__ = "$Revision: 1.50 $"[11:-2]
+$Id: MailHost.py,v 1.51 2000/06/05 15:32:01 brian Exp $"""
+__version__ = "$Revision: 1.51 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -114,9 +114,11 @@ def add(self, id, title='', smtp_host=None, smtp_port=25, REQUEST=None):
     i.id=id                 #give it id
     i.title=title           #title
     i._init(smtp_host=smtp_host, smtp_port=smtp_port)
-    self._setObject(id,i)   #register it
-    if REQUEST: return self.manage_main(self,REQUEST)
 
+    self=self.this()
+    self._setObject(id,i)   #register it
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
