@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -423,6 +423,10 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
 
         ob=self._getCopy(parent)
         ob.manage_afterClone(ob)
+        # We remove any locks from the copied object because webdav clients
+        # don't track the lock status and the lock token for copied resources
+        ob.wl_clearLocks()
+
         ob._setId(name)
         if depth=='0' and hasattr(ob, '__dav_collection__'):
             for id in ob.objectIds():

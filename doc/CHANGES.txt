@@ -30,6 +30,10 @@ Zope Changes
         - WebDAV Lockmanager was not working due to a Python 2.1 
           incompatibility.
 
+        - Collector #2482: A COPY operation through WebDAV on a locked
+          resource left the destination resource in a locked state
+          so any WebDAV client  was unable to unlock the destination 
+          object. Locks are now cleared from the destination object.
 
     Zope 2.4 beta 2
 
