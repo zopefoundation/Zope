@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.4 1996/07/08 20:34:09 jfulton Exp $'''
+$Id: Response.py,v 1.5 1996/07/10 22:45:57 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,11 @@ $Id: Response.py,v 1.4 1996/07/08 20:34:09 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.5  1996/07/10 22:45:57  jfulton
+# Made exception handling fussier about exception values.
+# Now the value must contain white space to be considered an error
+# message.
+#
 # Revision 1.4  1996/07/08 20:34:09  jfulton
 # Many changes, including:
 #
@@ -80,7 +85,7 @@ $Id: Response.py,v 1.4 1996/07/08 20:34:09 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, types, sys, regex
 
@@ -384,7 +389,7 @@ class Response:
 		except: pass
 
 	b=v
-	if type(b) is not types.StringType:
+	if type(b) is not types.StringType or regex.search(' \t\n',b) < 0:
 	    return self.setBody(
 		(str(t),
 		 'Sorry, an error occurred.<p>'
