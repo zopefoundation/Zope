@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -277,7 +277,7 @@ class Super(User):
 
     hasRole=allowed
 
-    def has_role(self, roles): return 1
+    def has_role(self, roles, object=None): return 1
 
     def has_permission(self, permission, object): return 1
 
