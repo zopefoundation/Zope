@@ -119,6 +119,20 @@ try:
 except:
     pass
 
+# A routine to try to arrange for request sockets to be closed
+# on exec. This makes it easier for folks who spawn long running
+# processes from Zope code. Thanks to Dieter Maurer for this.
+try:
+    import fcntl, FCNTL
+    FCNTL.F_SETFD; FCNTL.FD_CLOEXEC
+    def requestCloseOnExec(sock):
+        fcntl.fcntl(sock.fileno(), FCNTL.F_SETFD, FCNTL.FD_CLOEXEC)
+
+except (ImportError, AttributeError):
+
+    def requestCloseOnExec(sock):
+        pass
+
 from medusa import resolver, logger, asyncore
 from HTTPServer import zhttp_server, zhttp_handler
 from PCGIServer import PCGIServer

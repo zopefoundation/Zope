@@ -142,7 +142,7 @@ from medusa import asyncore, asynchat, filesys
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
 
-from ZServer import CONNECTION_LIMIT
+from ZServer import CONNECTION_LIMIT, requestCloseOnExec
 
 from cStringIO import StringIO
 import string
@@ -161,6 +161,7 @@ class zope_ftp_channel(ftp_channel):
     
     def __init__ (self, server, conn, addr, module):
         ftp_channel.__init__(self,server,conn,addr)
+        requestCloseOnExec(conn)
         self.module=module
         self.userid=''
         self.password=''

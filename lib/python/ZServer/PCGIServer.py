@@ -105,7 +105,7 @@ from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
 from medusa.asyncore import compact_traceback
 
-from ZServer import CONNECTION_LIMIT
+from ZServer import CONNECTION_LIMIT, requestCloseOnExec
 
 from PubCore import handle
 from PubCore.ZEvent import Wakeup
@@ -132,6 +132,7 @@ class PCGIChannel(asynchat.async_chat):
         self.server = server
         self.addr = addr
         asynchat.async_chat.__init__ (self, sock)
+        requestCloseOnExec(sock)
         self.env={}
         self.data=StringIO()
         self.set_terminator(10)

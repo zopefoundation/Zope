@@ -123,7 +123,7 @@ from medusa.default_handler import split_path, unquote, get_header
 from medusa.asyncore import compact_traceback, dispatcher
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
-
+from ZServer import requestCloseOnExec
 from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
 import DebugLogger
 from medusa import logger
@@ -327,6 +327,7 @@ class zhttp_channel(http_channel):
     
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
+        requestCloseOnExec(conn)
         self.queue=[]
         self.working=0
         

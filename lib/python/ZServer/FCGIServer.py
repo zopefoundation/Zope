@@ -103,7 +103,7 @@ from medusa import asynchat, asyncore, logger
 from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
 
-from ZServer import CONNECTION_LIMIT
+from ZServer import CONNECTION_LIMIT, requestCloseOnExec
 
 from PubCore import handle
 from PubCore.ZEvent import Wakeup
@@ -347,6 +347,7 @@ class FCGIChannel(asynchat.async_chat):
         self.server = server
         self.addr = addr
         asynchat.async_chat.__init__(self, sock)
+        requestCloseOnExec(sock)
         self.setInitialState()
         self.remainingRecs = 1  # We have to read at least one
         self.env = {}
