@@ -243,3 +243,7 @@ Extending The Session Tracking Product
     implemented if they adhere to the interfaces outlined in the
     SessioningInterfaces.py documentation which ships with this
     software.
+
+See Also
+
+  - "Session Administration":session-admin.stx

@@ -37,3 +37,9 @@ Session Data Manager - Add
   You can manage a session data manager by visiting it in the
   management interface.  You may change all options available
   during the add process by doing this.
+
+See Also
+
+  - "Session Tracking":Sessions.stx
+
+  - "Session Administration":session-admin.stx
