@@ -71,6 +71,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #893: Mailhost: munge_header has been broken for addresses
+       containing the recipients full name
+
      - Collector #342: Avoiding insertion of a BASE tag for file objects 
        with content-type text/html 
 

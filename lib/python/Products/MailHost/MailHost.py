@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.79 2003/03/04 16:29:12 shane Exp $"""
-__version__ = "$Revision: 1.79 $"[11:-2]
+$Id: MailHost.py,v 1.80 2003/07/07 16:04:16 andreasjung Exp $"""
+__version__ = "$Revision: 1.80 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -183,7 +183,7 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
 
     if mto:
         if isinstance(mto, types.StringType):
-            mto=map(lambda x:x.strip(), mto.split(','))
+            mto = [rfc822.dump_address_pair(addr) for addr in rfc822.AddressList(mto) ]
         if not mo.getheader('To'):
             mo['To'] = ','.join(mto)
     else:
@@ -191,7 +191,7 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
         for header in ('To', 'Cc', 'Bcc'):
             v = mo.getheader(header)
             if v:
-                mto += [addr.strip() for addr in v.split(',')]
+                mto += [rfc822.dump_address_pair(addr) for addr in rfc822.AddressList(v)]
         if not mto:
             raise MailHostError, "No message recipients designated"
 

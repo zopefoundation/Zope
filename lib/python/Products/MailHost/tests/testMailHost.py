@@ -55,6 +55,27 @@ This is the message body."""
         self.failUnless(resfrom == 'me@example.com' )
 
 
+    def testAddressParser( self ):
+        msg = """To: "Name, Nick" <recipient@domain.com>, "Foo Bar" <foo@domain.com>
+CC: "Web, Jack" <jack@web.com>
+From: sender@domain.com
+Subject: This is the subject
+
+This is the message body."""
+        
+        # Test Address-Parser for To & CC given in messageText
+        
+        resmsg, resto, resfrom = _mungeHeaders( msg )
+        self.failUnless(resto == ['"Name, Nick" <recipient@domain.com>','"Foo Bar" <foo@domain.com>','"Web, Jack" <jack@web.com>'])
+        self.failUnless(resfrom == 'sender@domain.com' )
+
+        # Test Address-Parser for a given mto-string
+        
+        resmsg, resto, resfrom = _mungeHeaders( msg, mto= '"Public, Joe" <pjoe@domain.com>, "Foo Bar" <foo@domain.com>')
+
+        self.failUnless(resto == ['"Public, Joe" <pjoe@domain.com>','"Foo Bar" <foo@domain.com>'])
+        self.failUnless(resfrom == 'sender@domain.com' )
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestMailHost ) )
