@@ -592,7 +592,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             rs = rs.keys()
         rlen = len(rs)
         
-        if limit is None and (rlen > (len(sort_index) * (rlen / 100 + 1))):
+        if merge and limit is None and (
+            rlen > (len(sort_index) * (rlen / 100 + 1))):
             # The result set is much larger than the sorted index,
             # so iterate over the sorted index for speed.
             # This is rarely exercised in practice...
@@ -620,13 +621,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     append((k, intset, _self__getitem__))
                     # Note that sort keys are unique.
             
-            if merge:
-                result.sort()
-                if reverse:
-                    result.reverse()
-                result = LazyCat(LazyValues(result), length)
-            else:
-                return result            
+            result.sort()
+            if reverse:
+                result.reverse()
+            result = LazyCat(LazyValues(result), length)
         elif limit is None or (limit * 4 > rlen):
             # Iterate over the result set getting sort keys from the index
             for did in rs:

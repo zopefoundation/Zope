@@ -5,6 +5,7 @@
 import os
 import random
 import unittest
+from itertools import chain
 
 import ZODB, OFS.Application
 from ZODB.DemoStorage import DemoStorage
@@ -41,24 +42,10 @@ def createDatabase():
 
 app = createDatabase()
 
-
-################################################################################
-# Stuff of Chris
-# XXX What's this mean?  What does this comment apply to?
-################################################################################
-
-# XXX These imports and class don't appear to be needed?
-## from AccessControl.SecurityManagement import newSecurityManager
-## from AccessControl.SecurityManagement import noSecurityManager
-
-## class DummyUser:
-
-##     def __init__( self, name ):
-##         self._name = name
-
-##     def getUserName( self ):
-##         return self._name
-
+def sort(iterable):
+    L = list(iterable)
+    L.sort()
+    return L
 
 class CatalogBase:
     def setUp(self):
@@ -445,7 +432,7 @@ class objRS(ExtensionClass.Base):
     def __init__(self,num):
         self.number = num
 
-class testRS(unittest.TestCase):
+class TestRS(unittest.TestCase):
 
     def setUp(self):
         self._vocabulary = Vocabulary.Vocabulary('Vocabulary','Vocabulary'
@@ -472,14 +459,94 @@ class testRS(unittest.TestCase):
                 self.assert_(m<=size and size<=n,
                              "%d vs [%d,%d]" % (r.number,m,n))
 
-
+class TestMerge(unittest.TestCase):
+    # Test merging results from multiple catalogs
+    
+    def setUp(self):
+        vocabulary = Vocabulary.Vocabulary(
+            'Vocabulary','Vocabulary', globbing=1)
+        self.catalogs = []
+        for i in range(3):
+            cat = Catalog()
+            cat.addIndex('num', FieldIndex('num'))
+            cat.addIndex('big', FieldIndex('big'))
+            cat.addIndex('title', TextIndex('title'))
+            cat.vocabulary = vocabulary
+            cat.aq_parent = zdummy(16336)
+            for i in range(10):
+                obj = zdummy(i)
+                obj.big = i > 5
+                cat.catalogObject(obj, str(i))
+            self.catalogs.append(cat)
+    
+    def testNoFilterOrSort(self):
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(_merge=0) for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=False, reverse=False)]
+        expected = [r.getRID() for r in chain(*results)]
+        self.assertEqual(sort(merged_rids), sort(expected))
+    
+    def testSortedOnly(self):
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(sort_on='num', _merge=0) 
+                   for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=True, reverse=False)]
+        expected = sort(chain(*results))
+        expected = [rid for sortkey, rid, getitem in expected]
+        self.assertEqual(merged_rids, expected)
+    
+    def testSortReverse(self):
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(sort_on='num', _merge=0) 
+                   for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=True, reverse=True)]
+        expected = sort(chain(*results))
+        expected.reverse()
+        expected = [rid for sortkey, rid, getitem in expected]
+        self.assertEqual(merged_rids, expected)
+    
+    def testLimitSort(self):
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(sort_on='num', sort_limit=2, _merge=0) 
+                   for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=True, reverse=False)]
+        expected = sort(chain(*results))
+        expected = [rid for sortkey, rid, getitem in expected]
+        self.assertEqual(merged_rids, expected)
+    
+    def testScored(self):
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(title='4 or 5 or 6', _merge=0) 
+                   for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=True, reverse=False)]
+        expected = sort(chain(*results))
+        expected = [rid for sortkey, (nscore, score, rid), getitem in expected]
+        self.assertEqual(merged_rids, expected)
+        
+    def testSmallIndexSort(self):
+        # Test that small index sort optimization is not used for merging
+        from Products.ZCatalog.Catalog import mergeResults
+        results = [cat.searchResults(sort_on='big', _merge=0) 
+                   for cat in self.catalogs]
+        merged_rids = [r.getRID() for r in mergeResults(
+            results, has_sort_keys=True, reverse=False)]
+        expected = sort(chain(*results))
+        expected = [rid for sortkey, rid, getitem in expected]
+        self.assertEqual(merged_rids, expected)
+    
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
     suite.addTest( unittest.makeSuite( TestAddDelIndexes ) )
     suite.addTest( unittest.makeSuite( TestZCatalog ) )
     suite.addTest( unittest.makeSuite( TestCatalogObject ) )
-    suite.addTest( unittest.makeSuite( testRS ) )
+    suite.addTest( unittest.makeSuite( TestRS ) )
+    suite.addTest( unittest.makeSuite( TestMerge ) )
     return suite
 
 if __name__ == '__main__':
