@@ -105,8 +105,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.8 1999/03/04 18:39:31 jim Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.9 1999/03/04 21:43:17 jim Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 from DT_Util import TemplateDict
@@ -114,6 +114,7 @@ class With:
     blockContinuations=()
     name='with'
     mapping=None
+    only=0
     
     def __init__(self, blocks):
         tname, args, section = blocks[0]
