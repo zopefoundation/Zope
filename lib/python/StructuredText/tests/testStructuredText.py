@@ -224,6 +224,13 @@ class BasicTests(unittest.TestCase):
         self._test('<a href="index_html">index_html</a>', \
                    '<a href="index_html">index_html</a>')
 
+    
+    def testUnderscoresInLiteral(self):
+        """ underscores in literals shouldn't do unterlining """
+
+        self._test("this is '__a_literal__' eh",
+                   "<code>__a_literal__</code>")
+
 
 def test_suite():
     return unittest.TestSuite( (

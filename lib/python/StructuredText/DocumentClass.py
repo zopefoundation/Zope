@@ -372,8 +372,8 @@ class DocumentClass:
         'doc_href2',
         'doc_strong',
         'doc_emphasize',
-        'doc_underline',
         'doc_literal',
+        'doc_underline',
         'doc_sgml',
         'doc_xref',
         ]
