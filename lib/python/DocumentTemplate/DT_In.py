@@ -280,9 +280,23 @@
 
       Missing values are either 'None' or the attribute 'Value'
       of the module 'Missing', if present.
+
+    'else' continuation tag within in
+
+      An 'else' tag may be used as a continuation tag in the 'in' tag.
+      The source after the 'else' tag is inserted if:
+
+        - The sequence given to the 'in' tag is of zero length, or
+
+        - The 'previous' attribute was used and their are no
+	  previous batches, or
+
+        - The 'next' attribute was used and their are no
+	  next batches, or
+
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.21 1998/02/18 15:17:54 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.22 1998/03/20 17:52:29 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -336,7 +350,7 @@ __rcs_id__='$Id: DT_In.py,v 1.21 1998/02/18 15:17:54 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -461,6 +475,8 @@ class In:
 		    kw['previous-sequence-end-index']=pend-1
 		    kw['previous-sequence-size']=pend+1-pstart
 		    result=section(None,md)
+
+		elif self.elses: result=self.elses(None, md)
 		else: result=''
 	    elif next:
 		try:
@@ -475,7 +491,9 @@ class In:
 		    kw['next-sequence-end-index']=pend-1
 		    kw['next-sequence-size']=pend+1-pstart
 		    result=section(None,md)
-		except: result=''
+		except:
+		    if self.elses: result=self.elses(None, md)
+		    else: result=''
 	    else:
 		result = []
 		for index in range(first,end):
@@ -856,6 +874,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.22  1998/03/20 17:52:29  jim
+# Added new meaning for else tag when next or previous are used.
+#
 # Revision 1.21  1998/02/18 15:17:54  jim
 # Added sequence-step-start-index and sequence-step-end-index and
 # their documentation.
