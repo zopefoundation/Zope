@@ -23,7 +23,6 @@ from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
-from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex import WidCode
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
