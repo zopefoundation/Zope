@@ -99,6 +99,7 @@ from DOMVisitor import DOMVisitor
 from TALVisitor import  ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE
 from TALVisitor import macroIndexer, slotIndexer
 from TALVisitor import splitParts, parseAttributeReplacements
+from TALVisitor import parseSubstitution
 
 class TALCompiler(DOMVisitor):
 
@@ -178,11 +179,6 @@ class TALCompiler(DOMVisitor):
         self.compileElement(node)
 
     def compileElement(self, node):
-        if node.getAttributeNodeNS(ZOPE_TAL_NS, "omit"):
-            # XXX Question: should 'omit' be done before or after
-            # 'define'?  (I.e., is it a shortcut for
-            # z:condition:"false" or is it stronger?)
-            return
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
         if defines:
             self.emit("beginScope")
@@ -195,7 +191,7 @@ class TALCompiler(DOMVisitor):
     def emitDefines(self, defines):
         for part in splitParts(defines):
             m = re.match(
-                r"\s*(?:(global|local)\s+)?(%s)\s+as\s+(.*)" % NAME_RE, part)
+                r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
                 print "Bad syntax in z:define argument:", `part`
             else:
@@ -219,65 +215,62 @@ class TALCompiler(DOMVisitor):
     def modifyingElement(self, node):
         insert = node.getAttributeNS(ZOPE_TAL_NS, "insert")
         replace = node.getAttributeNS(ZOPE_TAL_NS, "replace")
-        if not (insert or replace):
-            done = 0
-        else:
-            if insert and replace:
-                print "Warning: z:insert overrides z:replace on the same node"
-            # XXX Check for z:replace in documentElement
-            done = self.doModify(node, insert, insert or replace)
-        if not done:
+        repeat = node.getAttributeNS(ZOPE_TAL_NS, "repeat")
+        n = 0
+        if insert: n = n+1
+        if replace: n = n+1
+        if repeat: n = n+1
+        if n > 1:
+            print "Please use only one of z:insert, z:replace, z:repeat"
+        ok = 0
+        if insert:
+            ok = self.doInsert(node, insert)
+        if not ok and replace:
+            # XXX Check that this isn't the documentElement
+            ok = self.doReplace(node, replace)
+        if not ok and repeat:
+            # XXX Check that this isn't the documentElement
+            ok = self.doRepeat(node, repeat)
+        if not ok:
             self.emitElement(node)
 
-    def doModify(self, node, inserting, arg):
-        m = re.match(
-            r"(?:\s*(text|structure|for\s+(%s)\s+in)\s+)?(.*)" % NAME_RE, arg)
-        if not m:
-            print "Bad syntax in z:insert/replace:", `arg`
-            return 0
-        key, name, expr = m.group(1, 2, 3)
+    def doInsert(self, node, arg):
+        key, expr = parseSubstitution(arg)
         if not key:
-            key = "text"
-        if key[:3] == "for":
-            if inserting:
-                self.doInsertLoop(node, name, expr)
-            else:
-                self.doReplaceLoop(node, name, expr)
-        else:
-            self.doNonLoop(node, inserting, key, expr)
+            return 0
+        self.emitStartTag(node)
+        self.doSubstitution(key, expr, {})
+        self.emitEndTag(node)
         return 1
 
-    def doInsertLoop(self, node, name, expr):
-        self.emitStartTag(node)
-        self.pushProgram()
-        self.visitAllChildren(node)
-        block = self.popProgram()
-        self.emit("loop", name, expr, block)
-        self.emitEndTag(node)
-
-    def doReplaceLoop(self, node, name, expr):
-        self.pushProgram()
-        self.emitElement(node)
-        block = self.popProgram()
-        self.emit("loop", name, expr, block)
-
-    def doNonLoop(self, node, inserting, key, expr):
-        if inserting:
-            self.emitStartTag(node)
-            self.doInsert(node, key, expr)
-            self.emitEndTag(node)
-        else:
-            self.doInsert(node, key, expr)
-
-    def doInsert(self, node, key, expr):
+    def doReplace(self, node, arg):
+        key, expr = parseSubstitution(arg)
+        if not key:
+            return 0
         attrDict = getAttributeReplacements(node)
+        self.doSubstitution(key, expr, attrDict)
+        return 1
+
+    def doSubstitution(self, key, expr, attrDict):
         if key == "text":
-            if attrDict and not inserting:
+            if attrDict:
                 print "Warning: z:attributes unused for text replacement"
             self.emit("insertText", expr)
         else:
             assert key == "structure"
             self.emit("insertStructure", expr, attrDict)
+
+    def doRepeat(self, node, arg):
+        m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
+        if not m:
+            print "Bad syntax in z:repeat:", `arg`
+            return 0
+        name, expr = m.group(1, 2)
+        self.pushProgram()
+        self.emitElement(node)
+        block = self.popProgram()
+        self.emit("loop", name, expr, block)
+        return 1
 
     def emitElement(self, node):
             if not node.hasChildNodes():
