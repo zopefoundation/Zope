@@ -85,11 +85,12 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.8 2001/01/10 20:22:18 chrism Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.9 2001/01/16 20:01:09 evan Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=SimpleObjectPolicies._noroles
+from zLOG import LOG, PROBLEM
 
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 
@@ -175,7 +176,14 @@ class ZopeSecurityPolicy:
             value=container
 
         # Short-circuit tests if we can:
-        if roles is None or 'Anonymous' in roles: return 1
+        try:
+            if roles is None or 'Anonymous' in roles: return 1
+        except TypeError:
+            # 'roles' isn't a sequence
+            LOG('Zope Security Policy', PROBLEM, "'%s' passed as roles"
+                " during validation of '%s' is not a sequence." % (
+                `roles`, name))
+            raise
 
         # Check executable security
         stack=context.stack

@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.45 2001/01/16 02:55:10 shane Exp $"""
+$Id: Management.py,v 1.46 2001/01/16 20:01:09 evan Exp $"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -220,13 +220,13 @@ class Navigation(ExtensionClass.Base):
                                 help_topic=None)
     manage_form_title._setFuncSignature(
         varnames=('form_title', 'help_product', 'help_topic') )
-    manage_form_title.__roles__ = None
+    manage_form_title__roles__ = None
 
     zope_quick_start=DTMLFile('dtml/zope_quick_start', globals())
-    zope_quick_start.__roles__=None
+    zope_quick_start__roles__=None
 
     manage_copyright=DTMLFile('dtml/copyright', globals())
-    manage_copyright.__roles__ = None
+    manage_copyright__roles__ = None
 
     manage_zmi_logout__roles__ = None
     def manage_zmi_logout(self, REQUEST, RESPONSE):
@@ -250,10 +250,10 @@ You have been logged out.
 
 
     manage_zmi_prefs=HTMLFile('dtml/manage_zmi_prefs', globals())
-    manage_zmi_prefs.__roles__ = None
+    manage_zmi_prefs__roles__ = None
 
 file = DTMLFile('dtml/manage_page_style.css', globals())
 setattr(Navigation, 'manage_page_style.css', file)
-file.__roles__ = None
+setattr(Navigation, 'manage_page_style.css__roles__', None)
 
 Globals.default__class_init__(Navigation)

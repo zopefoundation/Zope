@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -383,7 +383,9 @@ class BaseRequest:
                 if r is not UNSPECIFIED_ROLES:
                     roles = r
                 elif not got:
-                    roles = getattr(subobject, entry_name+'__roles__', roles)
+                    # We got the subobject as an attribute, not an item,
+                    # so we should check "next to it" for __roles__.
+                    roles = getattr(object, entry_name+'__roles__', roles)
 
                 # Promote subobject to object
                 object=subobject

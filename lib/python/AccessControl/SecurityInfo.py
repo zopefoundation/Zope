@@ -226,11 +226,7 @@ class ClassSecurityInfo(SecurityInfo):
         ac_permissions = {}
         for name, access in self.names.items():
             if access in (ACCESS_PRIVATE, ACCESS_PUBLIC, ACCESS_NONE):
-                attr=getattr(classobj, name, None)
-                try: attr.__roles__ = access
-                except:
-                    rname='%s__roles__' % name
-                    dict[rname] = access
+                dict['%s__roles__' % name] = access
             else:
                 if not ac_permissions.has_key(access):
                     ac_permissions[access] = []

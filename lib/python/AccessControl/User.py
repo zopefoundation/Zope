@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.132 $'[11:-2]
+__version__='$Revision: 1.133 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -490,12 +490,16 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def authorize(self, user, accessed, container, name, value, roles):
         newSecurityManager(None, user)
-        security=getSecurityManager()
-        if security.validate(accessed, container, name, value, roles):
-            return 1
-        else:
-            noSecurityManager()
-            return 0
+        security = getSecurityManager()
+        try:
+            try:
+                if security.validate(accessed, container, name, value, roles):
+                    return 1
+            except:
+                noSecurityManager()
+                raise
+        except 'Unauthorized': pass
+        return 0
         
     def _setRemote(self, request):
         # If no authorization, only a user with a domain spec and no

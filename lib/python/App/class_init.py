@@ -124,6 +124,4 @@ def default__class_init__(self):
             pname, mnames = acp[:2]
             pr=PermissionRole(pname)
             for mname in mnames:
-                try: getattr(self, mname).__roles__=pr
-                except: pass
                 dict[mname+'__roles__']=pr
