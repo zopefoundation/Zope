@@ -65,7 +65,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.7 1997/04/09 21:08:04 jim Exp $
+$Id: Test.py,v 1.8 1997/04/10 13:48:56 jim Exp $
 '''
 #     Copyright 
 #
@@ -119,7 +119,7 @@ $Id: Test.py,v 1.7 1997/04/09 21:08:04 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -237,8 +237,10 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 	__main__.env=env
 	print profile
 	publish_module(file, environ=env, stdout=open('/dev/null','w'))
-	c=("for i in range(10): "
-	   "publish_module(file, environ=env, stdout=open('/dev/null','w'))")
+	c=("for i in range(%s): "
+	   "publish_module(file, environ=env, stdout=open('/dev/null','w'))"
+	   % repeat_count
+	   )
 	if profile: run(c,profile)
 	else: run(c)
     elif debug:
@@ -297,6 +299,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.8  1997/04/10 13:48:56  jim
+# Modified profiling to use repeat_count.
+#
 # Revision 1.7  1997/04/09 21:08:04  jim
 # Improved profiling behavior:
 #
