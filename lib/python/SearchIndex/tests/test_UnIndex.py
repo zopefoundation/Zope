@@ -32,6 +32,7 @@ class TestCase( unittest.TestCase ):
                        , ( 4, Dummy( 'abcd' ) )
                        , ( 5, Dummy( 'abce' ) )
                        , ( 6, Dummy( 'abce' ) )
+                       , ( 7, Dummy( 0 ) ) #  Collector #1959
                        ]
         self._forward = {}
         self._backward = {}
@@ -51,6 +52,7 @@ class TestCase( unittest.TestCase ):
         self._range_req = { 'foo': ( 'abc', 'abcd' )
                           , 'foo_usage': 'range:min:max'
                           }
+        self._zero_req  = { 'foo': 0 }
 
 
     def tearDown( self ):
@@ -109,10 +111,16 @@ class TestCase( unittest.TestCase ):
 
         assert self._index._apply_index( self._noop_req ) is None
 
-        self._checkApply( self._request, self._values[ -2: ] )
-        self._checkApply( self._min_req, self._values[ 2: ] )
-        self._checkApply( self._max_req, self._values[ :3 ] )
-        self._checkApply( self._range_req, self._values[ 2:5 ] )
+        self._checkApply( self._request, values[ -3:-1 ] )
+        self._checkApply( self._min_req, values[ 2:-1 ] )
+        self._checkApply( self._max_req, values[ :3 ] + values[ -1: ] )
+        self._checkApply( self._range_req, values[ 2:5 ] )
+
+    def testZero( self ):
+        self._populateIndex()
+        values = self._values
+        self._checkApply( self._zero_req, values[ -1: ] )
+        assert 0 in self._index.uniqueValues( 'foo' )
 
 
 def test_suite():
