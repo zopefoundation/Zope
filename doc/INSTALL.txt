@@ -28,16 +28,34 @@ Building Zope:
 Setting the Zope super user name and password: 
 
   The Zope super user has full access to Zope online management
-  facilities. You must create a super user account before you can do anything
-  else.  You define the super user account by creating a file
-  named 'access' in the Zope directory. The file should contain one
-  line that has the super user name followed by a colon followed by the
-  password. For example:
+  facilities. The super user account is defined by a file named
+  'access' in the Zope directory. This file should contain one
+  line, which is the super user name followed by a colon followed by 
+  the password. For example:
 
     mario:nintendoRulez
+
+  The build scripts automatically create an 'access' file for you, 
+  using a default username and password of:
+
+    superuser:123
+
+  It is *highly recommended* that you change the default superuser 
+  name and password by editing your 'access' file after running the
+  build script. When you begin managing your Zope installation you
+  will need to enter the superuser name and password when prompted.
+
+  Note that you may also add an optional third component to the line
+  in the access file to restrict superuser access by domain. 
+  For example, the line:
+
+    mario:nintendoRules:*.mydomain.com
  
-  When you first start managing your Zope installation you will need to
-  enter the user name and password.
+  in your 'access' file will only allow superuser access to your 
+  installation from *.mydomain.com machines. Attempts to access the
+  system from other domains will fail, even if the correct superuser
+  name and password are used.
+
 
 Setting permissions ons on the var directory.
 
