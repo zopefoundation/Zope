@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.21 1998/05/22 22:31:06 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: SimpleItem.py,v 1.22 1998/08/03 13:32:39 jim Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -123,7 +123,9 @@ class Item(CopySource, App.Management.Tabs):
     def aqObjectBind(self, ob):
 	return ob.__of__(self)
 
-
+    def manage(self, URL1):
+        " "
+        raise 'Redirect', "%s/manage_main" % URL1 
 
 class Item_w__name__(Item):
 
@@ -180,6 +182,9 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.22  1998/08/03 13:32:39  jim
+# Made manage a redirect rather than an alias.
+#
 # Revision 1.21  1998/05/22 22:31:06  jim
 # Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
 # right into Persistent in Globals.
