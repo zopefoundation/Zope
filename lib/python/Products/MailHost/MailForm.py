@@ -2,6 +2,8 @@ from Globals import Persistent, HTMLFile, HTML
 from socket import *
 import Acquisition, sys, regex, string
 
+#$Id: MailForm.py,v 1.3 1997/09/09 16:09:13 jeffrey Exp $ 
+__version__ = "$Revision: 1.3 $"[11:-2]
 smtpError = "SMTP Error"
 
 addForm=HTMLFile('MailForm/addMailForm_form')
@@ -167,3 +169,8 @@ def decapitate(message,
             )
 
     return headerDict, body
+
+#$Log: MailForm.py,v $
+#Revision 1.3  1997/09/09 16:09:13  jeffrey
+#minor fixings
+#

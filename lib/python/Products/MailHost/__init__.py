@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''MailForm Product Initialization
-$Id: __init__.py,v 1.1 1997/09/08 19:37:27 jeffrey Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1997/09/09 16:09:13 jeffrey Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import MailForm
 
@@ -22,4 +22,7 @@ __.methods={
     'manage_addMailForm':     MailForm.add,
     }
 
-#$log:$
+#$Log: __init__.py,v $
+#Revision 1.2  1997/09/09 16:09:13  jeffrey
+#minor fixings
+#
