@@ -80,7 +80,6 @@ class TALParser(XMLParser):
                 taldict[keybase] = value
                 item = item + ("tal",)
             elif ns == 'i18n':
-                assert 0, "dealing with i18n: " + `(keybase, value)`
                 i18ndict[keybase] = value
                 item = item + ('i18n',)
             fixedattrlist.append(item)
