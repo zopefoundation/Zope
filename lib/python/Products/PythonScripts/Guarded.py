@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -235,7 +235,9 @@ def load_module(module, mname, mnameparts, validate, globals, locals):
                 return
             __import__(mname, globals, locals)
             nextmodule = modules[mname]
-            nextmodule.ZopeSecurity = modsec[mname]
+        if not hasattr(nextmodule, 'ZopeSecurity'):
+            nextmodule.ZopeSecurity = zs = modsec[mname]
+            zs.apply(nextmodule)
         if module and not validate(module, module, nextname, nextmodule):
             return
         module = nextmodule
