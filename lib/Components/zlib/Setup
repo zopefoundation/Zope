@@ -1,0 +1,4 @@
+*shared*
+zlib zlibmodule.c -Izlib -Lzlib -lz
+
+
