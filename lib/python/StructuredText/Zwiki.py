@@ -13,7 +13,6 @@
 ##############################################################################
 
 from Html   import HTML
-from string import split
 from ST     import DOC
 import re
 

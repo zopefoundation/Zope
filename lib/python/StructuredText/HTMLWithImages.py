@@ -11,8 +11,6 @@
 # 
 ##############################################################################
 
-from string import join, split, find
-import re, sys, ST
 
 from HTMLClass import HTMLClass
 
@@ -46,10 +44,3 @@ class HTMLWithImages(HTMLClass):
     def xref(self, doc, level, output):
         val = doc.getNodeValue()
         output('<a href="#ref%s">[%s]</a>' % (val, val) )
-
-
-
-
-
-
-

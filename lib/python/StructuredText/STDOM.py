@@ -15,8 +15,6 @@ DOM implementation in StructuredText : Read-Only methods
 
 All standard Zope objects support DOM to a limited extent.
 """
-import string
-
 
 # Node type codes
 # ---------------
@@ -415,7 +413,7 @@ class Element(Node):
          if type(c) is not st:
             c=c.getNodeValue()
          r.append(c)
-      return string.join(r,'')
+      return ''.join(r)
     
    def getParentNode(self):
       """

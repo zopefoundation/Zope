@@ -12,7 +12,6 @@
 ##############################################################################
 
 import re, STDOM
-from string import split, join, replace, expandtabs, strip, find
 
 #####################################################################
 #                              Updated functions                    #
@@ -123,10 +122,10 @@ def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
     struct            = []      # the structure to be returned
     run                = struct
 
-    paragraphs = expandtabs(paragraphs)
+    paragraphs = paragraphs.expandtabs()
     paragraphs = '%s%s%s' % ('\n\n', paragraphs, '\n\n')
     paragraphs = delimiter.split(paragraphs)
-    paragraphs = filter(strip, paragraphs)
+    paragraphs = [ x for x in  paragraphs if x.strip() ] 
 
     if not paragraphs: return StructuredTextDocument()
     
@@ -226,7 +225,7 @@ class StructuredTextParagraph(STDOM.Element):
           )
         for p in self._subs: a(`p`)
         a((' '*(self.indent or 0))+'])')
-        return join(r,'\n')
+        return '\n'.join(r)
 
     """
     create aliases for all above functions in the pythony way.
@@ -282,7 +281,7 @@ class StructuredTextDocument(StructuredTextParagraph):
         a('%s([' % self.__class__.__name__)
         for p in self._subs: a(`p`+',')
         a('])')
-        return join(r,'\n')
+        return '\n'.join(r)
     
     """
     create aliases for all above functions in the pythony way.

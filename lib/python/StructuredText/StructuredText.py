@@ -19,7 +19,7 @@ import HTMLClass, DocumentClass, ClassicDocumentClass
 import DocumentWithImages, HTMLWithImages
 from ST import Basic
 
-import re, string,sys
+import re, sys
 from STletters import letters
 
 Document = DocumentClass.DocumentClass()
