@@ -28,7 +28,7 @@ from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
 from ZODB.POSException import InvalidObjectReference, ConflictError
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-import time, threading, whrandom
+import time, threading
 from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
