@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.54 1998/03/04 17:13:16 jim Exp $'''
-__version__='$Revision: 1.54 $'[11:-2]
+$Id: Application.py,v 1.55 1998/03/09 19:37:09 jim Exp $'''
+__version__='$Revision: 1.55 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -214,7 +214,8 @@ def install_products():
 
 	product=getattr(__import__("Products.%s" % product_name), product_name)
 
-	if not lic_check(product_name):
+	if (pgetattr(product, 'need_license', None, 1) and
+	    not lic_check(product_name)):
 	    continue
 
 	permissions={}
@@ -338,8 +339,8 @@ def lic_check(product_name):
 
 
 
-def pgetattr(product, name, default=install_products):
-    if hasattr(product, name): return getattr(product, name)
+def pgetattr(product, name, default=install_products, __init__=0):
+    if not __init__ and hasattr(product, name): return getattr(product, name)
     if hasattr(product, '__init__'):
 	product=product.__init__
 	if hasattr(product, name): return getattr(product, name)
@@ -363,6 +364,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.55  1998/03/09 19:37:09  jim
+# Check for true need_license before doing license check.
+#
 # Revision 1.54  1998/03/04 17:13:16  jim
 # Added new image to mark objects that were modified in another session
 # and are therefore locked.
