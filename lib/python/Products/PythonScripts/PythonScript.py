@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -210,7 +210,7 @@ class PythonScript(Script, Historical, Cacheable):
             self._compile()
             self._v_change = 1
         elif self._code is None:
-            self._v_ft = None
+            self._v_ft = self._v_f = None
         else:
             self._newfun(marshal.loads(self._code))
 
@@ -224,7 +224,7 @@ class PythonScript(Script, Historical, Cacheable):
         self.warnings = tuple(r[2])
         if errors:
             self._code = None
-            self._v_ft = None
+            self._v_ft = self._v_f = None
             self._setFuncSignature((), (), 0)
             # Fix up syntax errors.
             filestring = '  File "<string>",'
@@ -255,7 +255,7 @@ class PythonScript(Script, Historical, Cacheable):
              }
         l = {}
         exec code in g, l
-        f = l.values()[0]
+        self._v_f = f = l.values()[0]
         self._v_ft = (f.func_code, g, f.func_defaults or ())
         return f
 
