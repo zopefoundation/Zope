@@ -6,6 +6,12 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #581: TALES Path traversal should not special-case a blank
+        string in the second element position.  It now skips directly
+        to item access when a path element is blank or has a leading '_'.
+
+      - Fixed inconsistent attribute access in TALES Paths.
+
       - Collector #587: fixed wrong migration to string methods in 
         DTMLMethod.py
 

@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -291,13 +291,6 @@ def restrictedTraverse(object, path, securityManager,
                        get=getattr, has=hasattr, N=None, M=[],
                        TupleType=type(()) ):
 
-    if not path[0]:
-        # If the path starts with an empty string, go to the root first.
-        object = object.getPhysicalRoot()
-        if not securityManager.validateValue(object):
-            raise Unauthorized
-        path.pop(0)
-
     REQUEST = {'path': path}
     REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
     path.reverse()
@@ -310,9 +303,14 @@ def restrictedTraverse(object, path, securityManager,
             object = object(*name)
             continue
 
-        if name[0] == '_':
-            # Never allowed in a URL.
-            raise AttributeError, name
+        if not name or name[0] == '_':
+            # Skip directly to item access
+            o = object[name]
+            # Check access to the item.
+            if not validate(object, object, name, o):
+                raise Unauthorized, name
+            object = o
+            continue
 
         if name=='..':
             o = get(object, 'aq_parent', M)
@@ -333,8 +331,7 @@ def restrictedTraverse(object, path, securityManager,
                 container = aq_parent(aq_inner(o))
             elif has(o, 'im_self'):
                 container = o.im_self
-            elif (has(get(object, 'aq_base', object), name)
-                and get(object, name) == o):
+            elif (has(aq_base(object), name) and get(object, name) == o):
                 container = object
             if not validate(object, container, name, o):
                 raise Unauthorized, name
@@ -354,14 +351,14 @@ def restrictedTraverse(object, path, securityManager,
                         # Try to re-raise the original attribute error.
                         # XXX I think this only happens with
                         # ExtensionClass instances.
-                        get(object, name)
+                        guarded_getattr(object, name)
                     raise
                 except TypeError, exc:
                     if str(exc).find('unsubscriptable') >= 0:
                         # The object does not support the item interface.
                         # Try to re-raise the original attribute error.
                         # XXX This is sooooo ugly.
-                        get(object, name)
+                        guarded_getattr(object, name)
                     raise
                 else:
                     # Check access to the item.
