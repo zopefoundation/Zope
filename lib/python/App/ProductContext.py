@@ -288,7 +288,9 @@ class ProductContext:
         """
         Sets the title of the Product's Product Help
         """
-        self.getProductHelp().title=title
+        h = self.getProductHelp()
+        if getattr(h, 'title', None) != title:
+            h.title = title
 
     def registerHelp(self, directory='help', clear=1):
         """
