@@ -46,10 +46,15 @@ Zope Changes
 
     Bugs fixed
 
+      - webdav.Resource: during COPY, manage_afterClone was called way
+        too early, thus the object wasn't bound to the database and
+        couldn't find a context. Changed to behave the same way as
+        CopySupport.
+
       - RAMCacheManager: opimized performance by using cPickle instead
         of pickle and by using the highest pickle protocol available
         instead of using ASCII pickles (patch by Dieter Maurer)
-        
+
       - Collector #631: Image URLs in StructuredText containing port
         numbers were not rendered correctly
 
@@ -95,12 +100,12 @@ Zope Changes
         header before it is considered as a possible DoS attack and
         discarded.
 
-      - Collector #1371: added new 'cgi-maxlen' directive to zope.conf 
-        to limit the amount of form data being processed by Zope 
+      - Collector #1371: added new 'cgi-maxlen' directive to zope.conf
+        to limit the amount of form data being processed by Zope
         to prevent DoS attacks
 
       - Collector #1407: changed WebDAV display name for objects
-        to title_or_id() 
+        to title_or_id()
 
       - the 'trusted-proxy' directive in zope.conf now also accepts
         hostnames instead of IP addresses only (patch by Dieter Maurer)
@@ -126,8 +131,8 @@ Zope Changes
         since latin1 is obsolete.
 
       - Collector #1566: Installation of Zope on some older Solaris versions
-        could fail due to a broken "echo" implementation causing the 
-        creation of a borked version.txt file.                       
+        could fail due to a broken "echo" implementation causing the
+        creation of a borked version.txt file.
 
       - Collector #934: Image and File objects are now always internally
         split into small chunks even when initialized from a string.

@@ -366,13 +366,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             else:
                 raise Locked, 'Destination is locked.'
 
-        ob=self._getCopy(parent)
-        ob.manage_afterClone(ob)
-        # We remove any locks from the copied object because webdav clients
-        # don't track the lock status and the lock token for copied resources
-        ob.wl_clearLocks()
-
+        ob = self._getCopy(parent)
         ob._setId(name)
+
         if depth=='0' and isDavCollection(ob):
             for id in ob.objectIds():
                 ob._delObject(id)
@@ -381,6 +377,11 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
         parent._setObject(name, ob)
+        ob = parent._getOb(name)
+        ob.manage_afterClone(ob)
+        # We remove any locks from the copied object because webdav clients
+        # don't track the lock status and the lock token for copied resources
+        ob.wl_clearLocks()
         RESPONSE.setStatus(existing and 204 or 201)
         if not existing:
             RESPONSE.setHeader('Location', dest)
