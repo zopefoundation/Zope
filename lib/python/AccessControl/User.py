@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.108 $'[11:-2]
+__version__='$Revision: 1.109 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -98,7 +98,6 @@ from Role import RoleManager
 from string import split, join, upper
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 from AuthEncoding import pw_validate
-from zLOG import LOG, INFO, WARNING
 
 ListType=type([])
 NotImplemented='NotImplemented'
@@ -176,20 +175,12 @@ class BasicUser(Implicit):
     
     def authenticate(self, password, request):
         passwrd=self._getPassword()
-
-        result = pw_validate(passwrd, password)
-        if not result:
-            LOG('Zope', WARNING,
-                'invalid password for user %s' % self.getUserName())
-
+        result = pw_validate(passwrd, password)    
         domains=self.getDomains()
-        if domains and result:
-            result = domainSpecMatch(domains, request)
-            if not result:
-                LOG('Zope', WARNING,
-                    'invalid domain for user %s' % self.getUserName())
-            return result
+        if domains:
+            return result and domainSpecMatch(domains, request)
         return result
+
     
     def _shared_roles(self, parent):
         r=[]
@@ -446,7 +437,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
         # Only do basic authentication
         if lower(auth[:6])!='basic ':
-            LOG('Zope', WARNING, 'non-basic authentication attempted')
             return None
         name,password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
 
@@ -459,8 +449,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # Try to get user
         user=self.getUser(name)
         if user is None:
-            LOG('Zope', WARNING, 'no such user as %s in %s' \
-                % (name, self.absolute_url()))
             return None
 
         # Try to authenticate user
@@ -473,10 +461,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # Try to authorize user
         if user.allowed(parent, roles):
             return user
-
-        LOG('Zope', WARNING,
-            'user %s is not authorized to access %s' \
-            % (name, parent.absolute_url()))
 
         return None
 
@@ -510,8 +494,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # Try to get user
             user=self.getUser(name)
             if user is None:
-                LOG('Zope', WARNING, 'no such user as %s in %s' \
-                    % (name, self.absolute_url()))
                 return None
 
             # We need the user to be able to acquire!
@@ -520,9 +502,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # Try to authorize user
             if user.allowed(parent, roles):
                 return user
-            LOG('Zope', WARNING,
-                'user %s is not authorized to access %s' \
-                % (name, parent.absolute_url()))
             return None
 
 
