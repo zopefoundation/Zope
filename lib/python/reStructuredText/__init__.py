@@ -15,14 +15,14 @@
 
 __all__ = ("HTML", ) 
 
-import docutils.core 
-from docutils.io import StringOutput, StringInput 
 import sys, os
+import docutils.core 
+from docutils.io import StringOutput, StringInput
+from App.config import getConfiguration 
 
-default_input_encoding = os.environ.get("REST_INPUT_ENCODING", 
-                                        sys.getdefaultencoding())
-default_output_encoding = os.environ.get("REST_OUTPUT_ENCODING", 
-                                         sys.getdefaultencoding())
+default_enc = sys.getdefaultencoding()
+default_output_encoding = getConfiguration().rest_output_encoding or default_enc
+default_input_encoding = getConfiguration().rest_input_encoding or default_enc
 
 class Warnings:
 
@@ -31,7 +31,6 @@ class Warnings:
 
     def write(self, message):
         self.messages.append(message)
-
 
 def HTML(src, 
          writer='html4zope', 
@@ -92,8 +91,6 @@ def HTML(src,
 
     # do the format
     return pub.writer.write(document, pub.destination)
-
-
 
 from docutils import writers
 import html4zope
