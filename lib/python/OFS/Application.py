@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.100 1999/04/23 00:56:10 amos Exp $'''
-__version__='$Revision: 1.100 $'[11:-2]
+$Id: Application.py,v 1.101 1999/04/27 23:49:46 amos Exp $'''
+__version__='$Revision: 1.101 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -107,32 +107,58 @@ from misc_ import Misc_
 
 _standard_error_msg='''\
 <!--#var standard_html_header-->
+
 <!--#if error_message-->
  <!--#var error_message-->
 <!--#else-->
+
 <TABLE BORDER="0" WIDTH="100%">
-<TR>
-  <TD WIDTH="10%" ALIGN="CENTER">
-  <STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
-  </TD>
-  <TD WIDTH="90%"><BR>
-  <FONT SIZE="+2">System Unavailable</FONT>
-  <P>This site is currently experiencing technical difficulties. 
-Please contact the site administrator for more information.  For
-additional technical information, please refer to the HTML source for this
-page.  Thank you for your patience.</P>
-  </TD>
-</TR>
+<TR VALIGN="TOP">
+
+<TD WIDTH="10%" ALIGN="CENTER">
+<STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
+</TD>
+
+<TD WIDTH="90%">
+  <H2>Zope Error</H2>
+  <P>Zope has encountered an error while publishing this resource.
+  </P>
+  
+  <P>
+  <STRONG>Error Type: <!--#var error_type--></STRONG><BR>
+  <STRONG>Error Value: <!--#var error_value--></STRONG><BR> 
+  </P>
+ 
+  <HR NOSHADE>
+ 
+  <P>Troubleshooting Suggestions</P>
+
+  <UL>
+  <!--#if "error_type in ('KeyError','NameError')"-->
+  <LI>This resource may be trying to reference a
+  nonexistent object or variable <STRONG><!--#var error_value--></STRONG>.</LI>
+  <!--#/if-->
+  <LI>The URL may be incorrect.</LI>
+  <LI>The parameters passed to this resource may be incorrect.</LI>
+  <LI>A resource that this resource relies on may be encountering an error.</LI>
+  </UL>
+
+  <P>For more detailed information about the error, please
+  refer to the HTML source for this page.
+  </P>
+
+  <P>If the error persists please contact the site maintainer.
+  Thank you for your patience.
+  </P>
+</TD></TR>
 </TABLE>
-<!--
- Error type:  <!--#var error_type-->
- Error value: <!--#var error_value-->
- -->
+
 <!--#comment-->
  Here, events like logging and other actions may also be performed, such as
  sending mail automatically to the administrator.
 <!--#/comment-->
-<!--#endif-->
+
+<!--#/if-->
 <!--#var standard_html_footer-->'''
 
 
