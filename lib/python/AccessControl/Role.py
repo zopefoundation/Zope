@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -336,7 +336,11 @@ class RoleManager(ExtensionClass.Base):
         if not self.validate_roles(roles):
             raise ValueError, 'Invalid role given.'
         dict=self.__ac_local_roles__ or {}
-        dict[userid] = dict[userid] + roles
+        local_roles = dict.get(userid, [])
+        for r in roles:
+            if r not in local_roles:
+                local_roles.append(r)
+        dict[userid] = local_roles
         self.__ac_local_roles__=dict
         if REQUEST is not None:
             stat='Your changes have been saved.'
