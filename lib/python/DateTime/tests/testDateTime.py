@@ -189,6 +189,14 @@ class DateTimeTests (unittest.TestCase):
 
         assert ddays == 3000000L, ddays
 
+    def test_tzoffset(self):
+        '''Test time-zone given as an offset
+        '''
+        from time import gmtime
+
+        dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0400')
+        self.assertEqual(gmtime(dt.timeTime())[:6],
+                         (2001,7,24,13,41,3))
 
     def testISO8601(self):
         ''' iso 8601 dates '''

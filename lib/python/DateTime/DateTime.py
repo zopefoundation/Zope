@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -34,10 +34,7 @@ to_month=tm[yr%4==0 and (yr%100!=0 or yr%400==0)][mo]
 EPOCH  =(to_year+to_month+dy+(hr/24.0+mn/1440.0+sc/86400.0))*86400
 jd1901 =2415385L
 
-
 numericTimeZoneMatch=re.compile(r'[+-][0-9][0-9][0-9][0-9]').match #TS
-
-
 
 class _timezone:
     def __init__(self,data):
@@ -364,7 +361,7 @@ def _tzoffset(tz, t):
         return DateTime._tzinfo[tz].info(t)[0]
     except:
         if numericTimeZoneMatch(tz) is not None:
-            return atoi(tz[1:3])*3600+atoi(tz[3:5])*60
+            return -int(tz[1:3])*3600-int(tz[3:5])*60
         else:
             return 0 # ??
 
@@ -918,6 +915,7 @@ class DateTime:
                 # Check for and skip day of week:
                 if DayOfWeekNames.has_key(s):
                     continue
+                    
             raise self.SyntaxError, st
 
         day=None
