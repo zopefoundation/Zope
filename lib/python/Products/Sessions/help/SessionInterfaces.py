@@ -82,11 +82,7 @@ Session API
   - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
 """
 
-import Interface
-
-class BrowserIdManagerInterface(
-    Interface.Base
-    ):
+class BrowserIdManagerInterface:
     """
     Zope Browser Id Manager interface.
 
@@ -128,7 +124,7 @@ class BrowserIdManagerInterface(
 
         Permission required: Access contents information
 
-        Raises:  BrowserIdManagerErr.  If ill-formed browser id
+        Raises:  BrowserIdManagerErr if ill-formed browser id
         is found in REQUEST.
         """
 
@@ -192,9 +188,7 @@ class BrowserIdManagerInterface(
         a browser id namespace at the time of the call.
         """
 
-class SessionDataManagerInterface(
-    Interface.Base
-    ):
+class SessionDataManagerInterface:
     """
     Zope Session Data Manager interface.
 
@@ -239,4 +233,26 @@ class SessionDataManagerInterface(
         Permission required: Access arbitrary user session data
         """
 
+class SessionDataManagerErr:
+    """
+    Error raised during some session data manager operations, as
+    explained in the API documentation of the Session Data Manager.
+
+    This exception may be caught in PythonScripts.  A successful
+    import of the exception for PythonScript use would need to be::
+
+       from Products.Sessions import SessionDataManagerErr
+    """
+
+class BrowserIdManagerErr:
+    """
+    Error raised during some browser id manager operations, as
+    explained in the API documentation of the Browser Id Manager.
+
+    This exception may be caught in PythonScripts.  A successful
+    import of the exception for PythonScript use would need to be::
+
+       from Products.Sessions import BrowserIdManagerErr
+    """
+    
 

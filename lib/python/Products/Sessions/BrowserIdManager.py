@@ -75,7 +75,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -137,8 +137,6 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     security.setPermissionDefault(MGMT_SCREEN_PERM, ['Manager'])
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
     security.setPermissionDefault(CHANGE_IDMGR_PERM, ['Manager'])
-
-    __replaceable__ = UNIQUE # singleton for now
 
     __implements__ = (SessionInterfaces.BrowserIdManagerInterface, )
 

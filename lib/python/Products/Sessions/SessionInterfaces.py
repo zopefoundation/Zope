@@ -243,4 +243,3 @@ class SessionDataManagerInterface(
         Permission required: Access arbitrary user session data
         """
 
-

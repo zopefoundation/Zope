@@ -83,7 +83,7 @@ from Persistence import Persistent
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
 from App.Management import Tabs
-from zLOG import LOG, WARNING
+from zLOG import LOG, WARNING, BLATHER
 from AccessControl import ClassSecurityInfo
 import SessionInterfaces
 from SessionPermissions import *
@@ -234,13 +234,13 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def _getSessionDataObject(self, key):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
-        ob = container.new_or_existing(key)
+        ob = aq_base(container.new_or_existing(key))
         return ob.__of__(self)
 
     def _getSessionDataObjectByKey(self, key):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
-        ob = container.get(key)
+        ob = aq_base(container.get(key))
         if ob is not None:
             return ob.__of__(self)
 
@@ -249,10 +249,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         transactions for mounted storages. """
         if self.obpath is None:
             err = 'Session data container is unspecified in %s' % self.getId()
-            if DEBUG:
-                LOG('Session Tracking', 0, err)
+            LOG('Session Tracking', WARNING, err)
             raise SessionIdManagerErr, err
-        # return an external data container
         try:
             # This should arguably use restrictedTraverse, but it
             # currently fails for mounted storages.  This might
@@ -260,7 +258,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # unrestrictedTraverse is also much faster.
             if DEBUG and not hasattr(self, '_v_wrote_dc_type'):
                 args = string.join(self.obpath, '/')
-                LOG('Session Tracking', 0,
+                LOG('Session Tracking', BLATHER,
                     'External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
             return self.unrestrictedTraverse(self.obpath)
@@ -303,24 +301,15 @@ class SessionDataManagerTraverser:
     def __init__(self, requestSessionName, sdm):
         self._requestSessionName = requestSessionName
         self._sessionDataManager = sdm
-        self._v_errors=0
 
     def __call__(self, container, request):
-        sdm = self._sessionDataManager.__of__(container)
-        # Yank our session & stuff into request
         try:
+            sdm = self._sessionDataManager.__of__(container)
             session = sdm.getSessionData
-            self._v_errors = 0
         except:
-            errors = getattr(self,"_v_errors", 0)
-            if errors < 4:
-                LOG('Session Tracking', WARNING,'Session automatic traversal '
-                    'failed to get session data', error=sys.exc_info())
-            if errors == 3:
-                LOG('Session Tracking', WARNING, 'Suppressing further '
-                    'automatic session failure error messages on this thread')
-            self._v_errors = errors + 1
-            return    # Throw our hands up but dont fail 
+            msg = 'Session automatic traversal failed to get session data'
+            LOG('Session Tracking', WARNING, msg, error=sys.exc_info())
+            return
         if self._requestSessionName is not None:
             request.set_lazy(self._requestSessionName, session)
 

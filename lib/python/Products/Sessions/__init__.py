@@ -85,11 +85,14 @@
 """
 Session initialization routines
 
-$Id: __init__.py,v 1.4 2001/11/05 21:15:47 matt Exp $
+$Id: __init__.py,v 1.5 2001/11/21 22:36:21 chrism Exp $
 """
 
+import ZODB # this is for testrunner to be happy
 import BrowserIdManager
 import SessionDataManager
+from BrowserIdManager import BrowserIdManagerErr
+from SessionDataManager import SessionDataManagerErr
 
 def initialize(context):
     context.registerClass(
@@ -108,6 +111,20 @@ def initialize(context):
                       SessionDataManager.constructSessionDataManager)
         )
 
-
     context.registerHelp()
     context.registerHelpTitle("Zope Help")
+    # do module security declarations so folks can use some of the
+    # module-level stuff in PythonScripts
+    #
+    # declare on behalf of Transience too, since ModuleSecurityInfo is too
+    # stupid for me to declare in two places without overwriting one set
+    # with the other. :-(
+    from AccessControl import ModuleSecurityInfo
+    security = ModuleSecurityInfo('Products')
+    security.declarePublic('Sessions')
+    security.declarePublic('Transience')
+    security = ModuleSecurityInfo('Products.Sessions')
+    security.declarePublic('BrowserIdManagerErr')
+    security.declarePublic('SessionDataManagerErr')
+    security = ModuleSecurityInfo('Products.Transience')
+    security.declarePublic('MaxTransientObjectsExceeded')

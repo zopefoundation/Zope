@@ -85,14 +85,15 @@
 import sys, os, time
 if __name__ == "__main__":
     sys.path.insert(0, '../../..')
-    #os.chdir('../../..')
+
 from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
+from OFS.DTMLMethod import DTMLMethod
 import Acquisition
 from Acquisition import aq_base
 from Products.Sessions.BrowserIdManager import BrowserIdManager
 from Products.Sessions.SessionDataManager import \
-    SessionDataManager, SessionDataManagerErr
+    SessionDataManager, SessionDataManagerErr, SessionDataManagerTraverser
 from Products.Transience.Transience import \
     TransientObjectContainer, TransientObject
 from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
@@ -103,8 +104,9 @@ import time, threading, whrandom
 from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
+from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
+    unregisterBeforeTraverse
 import sys
-sys.setcheckinterval(200)
 
 tf_name = 'temp_folder'
 idmgr_name = 'browser_id_manager'
@@ -139,7 +141,8 @@ def _populate(app):
     toc = TransientObjectContainer(toc_name, title='Temporary '
         'Transient Object Container', timeout_mins=20)
     session_data_manager=SessionDataManager(id='session_data_manager',
-        path='/'+tf_name+'/'+toc_name, title='Session Data Manager')
+        path='/'+tf_name+'/'+toc_name, title='Session Data Manager',
+        requestName='TESTOFSESSION')
 
     try: app._delObject(idmgr_name)
     except AttributeError: pass
@@ -148,6 +151,9 @@ def _populate(app):
     except AttributeError: pass
 
     try: app._delObject('session_data_manager')
+    except AttributeError: pass
+
+    try: app._delObject('index_html')
     except AttributeError: pass
 
     app._setObject(idmgr_name, bidmgr)
@@ -159,7 +165,11 @@ def _populate(app):
 
     app.temp_folder._setObject(toc_name, toc)
     get_transaction().commit()
-
+    
+    # index_html necessary for publishing emulation for testAutoReqPopulate
+    app._setObject('index_html', DTMLMethod('', __name__='foo'))
+    get_transaction().commit()
+    
 class TestBase(TestCase):
     def setUp(self):
         db = _getDB()
@@ -191,6 +201,11 @@ class TestSessionManager(TestBase):
         sd = self.app.session_data_manager.getSessionData()
         assert self.app.session_data_manager.hasSessionData()
 
+    def testSessionDataWrappedInSDM(self):
+        sd = self.app.session_data_manager.getSessionData(1)
+        assert aq_base(sd.aq_parent) is \
+               aq_base(self.app.session_data_manager), sd.aq_parent
+
     def testNewSessionDataObjectIsValid(self):
         sdType = type(TransientObject(1))
         sd = self.app.session_data_manager.getSessionData()
@@ -201,6 +216,7 @@ class TestSessionManager(TestBase):
         sd = self.app.session_data_manager.getSessionData()
         sd.invalidate()
         assert hasattr(sd, '_invalid')
+        assert not sd.isValid()
         
     def testBrowserIdIsSet(self):
         sd = self.app.session_data_manager.getSessionData()
@@ -215,29 +231,30 @@ class TestSessionManager(TestBase):
         assert sd == bykeysd, (sd, bykeysd, token)
 
     def testBadExternalSDCPath(self):
+        sdm = self.app.session_data_manager
         # fake out webdav
-        self.app.session_data_manager.REQUEST['REQUEST_METHOD'] = 'GET'
-        self.app.session_data_manager.setContainerPath('/fudgeffoloo')
-        try:
-            self.app.session_data_manager.getSessionData()
-        except SessionDataManagerErr:
-            pass
-        else:
-            assert 1 == 2, self.app.session_data_manager.getSessionDataContainerPath()
+        sdm.REQUEST['REQUEST_METHOD'] = 'GET'
+        sdm.setContainerPath('/fudgeffoloo')
+        self.assertRaises(SessionDataManagerErr, self._testbadsdcpath)
+
+    def _testbadsdcpath(self):
+        self.app.session_data_manager.getSessionData()
 
     def testInvalidateSessionDataObject(self):
-        sd = self.app.session_data_manager.getSessionData()
+        sdm = self.app.session_data_manager
+        sd = sdm.getSessionData()
         sd['test'] = 'Its alive!  Alive!'
         sd.invalidate()
-        assert not self.app.session_data_manager.getSessionData().has_key('test')
+        assert not sdm.getSessionData().has_key('test')
 
     def testGhostUnghostSessionManager(self):
+        sdm = self.app.session_data_manager
         get_transaction().commit()
-        sd = self.app.session_data_manager.getSessionData()
+        sd = sdm.getSessionData()
         sd.set('foo', 'bar')
-        self.app.session_data_manager._p_changed = None
+        sdm._p_changed = None
         get_transaction().commit()
-        assert self.app.session_data_manager.getSessionData().get('foo') == 'bar'
+        assert sdm.getSessionData().get('foo') == 'bar'
 
     def testSubcommit(self):
         sd = self.app.session_data_manager.getSessionData()
@@ -260,6 +277,20 @@ class TestSessionManager(TestBase):
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', aq_wrapped)
         self.assertRaises(UnpickleableError, get_transaction().commit)
+
+    def testAutoReqPopulate(self):
+        self.app.REQUEST['PARENTS'] = [self.app]
+        self.app.REQUEST['URL'] = 'a'
+        self.app.REQUEST.traverse('/')
+        assert self.app.REQUEST.has_key('TESTOFSESSION')
+
+    def testUnlazifyAutoPopulated(self):
+        self.app.REQUEST['PARENTS'] = [self.app]
+        self.app.REQUEST['URL'] = 'a'
+        self.app.REQUEST.traverse('/')
+        sess = self.app.REQUEST['TESTOFSESSION']
+        sdType = type(TransientObject(1))
+        assert type(aq_base(sess)) is sdType, type(aq_base(sess))
 
 def test_suite():
     test_datamgr = makeSuite(TestSessionManager, 'test')
