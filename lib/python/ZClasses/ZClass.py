@@ -102,6 +102,21 @@ manage_addZClassForm=Globals.HTMLFile(
     'addZClass', globals(), default_class_='OFS.SimpleItem Item',
     CreateFactory=1)
 
+
+def find_class(ob, name):
+    # Walk up the aq hierarchy, looking for a ZClass
+    # with the given name.
+    while 1:
+        if hasattr(ob, name):
+            return getattr(ob, name)
+        elif hasattr(ob, '_getOb'):
+            try:    return ob._getOb(name)
+            except: pass
+        if hasattr(ob, 'aq_parent'):
+            ob=ob.aq_parent
+            continue
+        raise AttributeError, name
+
 def manage_addZClass(self, id, title='', baseclasses=[],
                      meta_type='', CreateFactory=0, REQUEST=None):
     """Add a Z Class
@@ -110,13 +125,9 @@ def manage_addZClass(self, id, title='', baseclasses=[],
     for b in baseclasses:
         if Products.meta_classes.has_key(b):
             bases.append(Products.meta_classes[b])
-        elif hasattr(self, b):
-            bases.append(getattr(self, b))
         else:
-            # If self is the "methods" propertysheet
-            # of a ZClass, get the class from the
-            # propertysheet.
-            bases.append(self._getOb(b))
+            base=find_class(self, b)
+            bases.append(base)
 
 
     Z=ZClass(id,title,bases)
