@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.25 2001/05/01 12:49:04 andreas Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.26 2001/05/30 16:19:15 andreas Exp $'
 
 # python modules
 import os
@@ -16,6 +16,7 @@ import stat
 import string
 import sys
 import time
+import base64
 
 # async modules
 import asyncore
@@ -270,9 +271,20 @@ class http_request:
         if not user_agent: user_agent=''
         referer=self.get_header('referer')
         if not referer: referer=''  
+       
+        auth=self.get_header('Authorization')
+        name='Anonymous'
+        if auth is not None:
+            if string.lower(auth[:6]) == 'basic ':
+                [name,password] = string.split(
+                    base64.decodestring(
+                    string.split(auth)[-1]), ':')
+  
+
         self.channel.server.logger.log (
             self.channel.addr[0],
-            ' - - [%s] "%s" %d %d "%s" "%s"\n' % (
+            ' - %s [%s] "%s" %d %d "%s" "%s"\n' % (
+                name,
                 self.log_date_string (time.time()),
                 self.request,
                 self.reply_code,
