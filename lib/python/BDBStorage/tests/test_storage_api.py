@@ -72,22 +72,12 @@ class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
         self._zap_dbhome(DST_DBHOME)
 
 
-class AutopackTest(BerkeleyTestBase.AutopackTestBase, BasicStorage):
-    def checkVersionedStoreAndLoad(self):
-        # This storage doesn't support versions, so we should get an exception
-        oid = self._storage.new_oid()
-        self.assertRaises(POSException.Unsupported,
-                          self._dostore,
-                          oid, data=11, version='a version')
-
-
 
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(FullTest, 'check'))
     suite.addTest(unittest.makeSuite(FullRecoveryTest, 'check'))
     suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
-    #suite.addTest(unittest.makeSuite(AutopackTest, 'check'))
     return suite
 
 

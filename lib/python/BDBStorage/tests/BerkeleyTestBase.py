@@ -63,8 +63,3 @@ class MinimalTestBase(BerkeleyTestBase):
 class FullTestBase(BerkeleyTestBase):
     from bsddb3Storage import Full
     ConcreteStorage = Full.Full
-
-
-class AutopackTestBase(BerkeleyTestBase):
-    from bsddb3Storage import Autopack
-    ConcreteStorage = Autopack.Autopack
