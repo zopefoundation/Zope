@@ -199,6 +199,10 @@ UID='nobody'
 # Port for HTTP Server. The standard port for HTTP services is 80.
 HTTP_PORT=9673
 
+
+# HTTP enivornment settings.
+HTTP_ENV={}
+
 ## FTP configuration
 
 # Port for the FTP Server. The standard port for FTP services is 21.
@@ -237,7 +241,9 @@ try:
             a=string.split(a,'=')
             o=a[0]
             v=string.join(a[1:],'=')
-            if o: os.environ[o]=v
+            if o: 
+              os.environ[o]=v
+              HTTP_ENV[o]=v
         else:
             raise 'Invalid argument', a
 
@@ -349,7 +355,7 @@ if HTTP_PORT:
     # from another web server to ZServer, and would like the CGI
     # environment to reflect the CGI environment of the other web
     # server.    
-    zh = zhttp_handler(MODULE, '')
+    zh = zhttp_handler(MODULE, '', HTTP_ENV)
     hs.install_handler(zh)
 
 
