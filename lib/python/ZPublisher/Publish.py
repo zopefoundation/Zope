@@ -517,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.17 1996/08/30 17:08:53 jfulton Exp $"""
+$Id: Publish.py,v 1.18 1996/08/30 23:40:40 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +570,9 @@ $Id: Publish.py,v 1.17 1996/08/30 17:08:53 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.18  1996/08/30 23:40:40  jfulton
+# Fixed bug in argument marshalling!!!
+#
 # Revision 1.17  1996/08/30 17:08:53  jfulton
 # Disallowed index_html/index_html.
 #
@@ -647,7 +650,7 @@ $Id: Publish.py,v 1.17 1996/08/30 17:08:53 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 def main():
@@ -984,6 +987,8 @@ class ModulePublisher:
 	    except (KeyError,AttributeError,IndexError):
 		if name_index < nrequired:
 		    self.badRequestError(argument_name)
+		else:
+		    args.append(defaults[name_index-nrequired])
 	    except:
 		raise 'BadRequest', ('<strong>Invalid entry for %s </strong>'
 				     % argument_name)
