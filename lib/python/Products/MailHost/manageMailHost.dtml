@@ -1,46 +1,43 @@
 <HTML>
 <HEAD>
-<TITLE>Manage a MailHost</TITLE>
+<TITLE>Edit MailHost</TITLE>
 </HEAD>
-
 <BODY BGCOLOR="#FFFFFF">
-<H1>Manage a MailHost</H1>
+<H2>Edit MailHost</H2>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
-<!--#var smallRolesWidget-->
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Id</B></TD>
-  <TD ALIGN="LEFT">
-    <FONT COLOR="#CC0000"><!--#var id--></FONT>
-  </TD>
+  <TD ALIGN="LEFT"><STRONG>Id</STRONG></TD>
+  <TD ALIGN="LEFT"><!--#var id--></TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Title</B></TD>
+  <TD ALIGN="LEFT"><STRONG>Title</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Local Host</B></TD>
+  <TD ALIGN="LEFT"><STRONG>Local Host</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="localHost" SIZE="50" VALUE="<!--#var localHost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>SMTP Host</B></TD>
+  <TD ALIGN="LEFT"><STRONG>SMTP Host</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtpHost" SIZE=50 VALUE="<!--#var smtpHost-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>SMTP Port</B></TD>
+  <TD ALIGN="LEFT"><STRONG>SMTP Port</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort-->">
   </TD>
 </TR>
+<!--#var smallRolesWidget-->
 <TR VALIGN="TOP">
-<TD>&nbsp;</TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Make changes"></TD>
+<TD></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
 </TR>
 </TABLE>
 </FORM>

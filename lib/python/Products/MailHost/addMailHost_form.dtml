@@ -1,46 +1,46 @@
 <HTML>
 <HEAD>
-<TITLE>Add a MailHost</TITLE>
+<TITLE>Add MailHost</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF">
-<H1>Add a MailHost</H1>
+<H2>Add MailHost</H2>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_addMailHost" METHOD="POST">
 <TABLE CELLSPACING="2">
-<!--#var smallRolesWidget-->
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Id</B></TD>
+  <TD ALIGN="LEFT"><STRONG>Id</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="id" SIZE="50" value="MailHost">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Title</B></TD>
+  <TD ALIGN="LEFT"><STRONG>Title</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="title" SIZE="50">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>Local Host</B></TD>
+  <TD ALIGN="LEFT"><STRONG>Local Host</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="localhost" SIZE="50" VALUE="localhost">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>SMTP Host</B></TD>
+  <TD ALIGN="LEFT"><STRONG>SMTP Host</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_host" SIZE="50">
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TD ALIGN="LEFT"><B>SMTP Port</B></TD>
+  <TD ALIGN="LEFT"><STRONG>SMTP Port</STRONG></TD>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_port:int" SIZE="4" VALUE="25">
   </TD>
 </TR>
+<!--#var smallRolesWidget-->
 <TR VALIGN="TOP">
 <TD>&nbsp;</TD>
-<TD><BR><INPUT TYPE="SUBMIT" VALUE="Add MailHost"></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE=" Add "></TD>
 </TR>
 </TABLE>
 </FORM>
