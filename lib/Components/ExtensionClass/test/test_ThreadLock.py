@@ -1,4 +1,3 @@
-
 import ThreadLock, thread
 from random import random
 from time import sleep
@@ -30,7 +29,8 @@ class P(Base):
 
     def inc(self):
             c=self.count
-            sleep(random())
+            if random() > 0.7:
+                sleep(1)
             self.count=self.count+1
             return c,self.count
 
@@ -43,12 +43,24 @@ p=P(1,2,spam=3)
 
 def test():
     
-    for i in range(10):
-        n=3
-        old,new=p.incn(n)
-        print old,new
-        if old+n != new: print 'oops'
+    for i in range(8):
+        n = 3
+        old, new = p.incn(n)
+        if old + n != new:
+            print 'oops'
+        sleep(3)
+    thread_finished()
 
 
-for i in range(10): thread.start_new_thread(test,())
-sleep(50)
+def thread_finished(lock=thread.allocate_lock()):
+    global num_threads
+    lock.acquire()
+    num_threads = num_threads - 1
+    lock.release()
+
+num_threads = 8
+for i in range(num_threads):
+    thread.start_new_thread(test, ())
+
+while num_threads > 0:
+    sleep(1)
