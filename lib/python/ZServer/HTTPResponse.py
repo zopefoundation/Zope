@@ -99,6 +99,7 @@ from medusa.producers import hooked_producer
 from medusa import http_server, asyncore
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer, \
     file_part_producer, file_close_producer
+from types import LongType
 import DebugLogger
 
 
@@ -167,6 +168,16 @@ class ZServerHTTPResponse(HTTPResponse):
         if not headers.has_key('content-length') and \
                 not self._streaming:
             self.setHeader('content-length',len(body))
+
+        # ugh - str(content-length) could be a Python long, which will
+        # produce a trailing 'L' :( This can go away when we move to
+        # Python 2.0...
+        content_length= headers.get('content-length', None)
+        if type(content_length) is LongType:
+            str_rep=str(content_length)
+            if str_rep[-1:]=='L':
+                str_rep=str_rep[:-1]
+                self.setHeader('content-length', str_rep)
 
         headersl=[]
         append=headersl.append
