@@ -1,0 +1,34 @@
+<dtml-var standard_html_header>
+
+<h1>Profiling Information</h1>
+
+<p>        Zope can provide real-time profiling information.
+        Profiling helps product authors to speed up sections
+        of code that are taking too long
+        to perform their tasks.  In order to use profiling,
+        Zope has to be started with the <code>PROFILE_PUBLISHER</code>
+        environment variable set to a non-empty value. If the variable
+        is set to a valid filesystem path, then the accumlated profile
+        information will be dumped to the named file when Zope is shut
+        down. If the variable is simply set to a non-empty value that 
+        is not a valid filesystem path then Zope will still run in 
+        profiling mode, but profile information will only be available
+        through the web interface.
+        </p>
+
+<p>        Once Zope has started in profiling mode (note that profiling
+        will slow Zope performance significantly), use your site with
+        your Web browser - Zope will accumulate profiling information
+        as you are working with your site.  When you want to view the
+        profiling information, visit the Control Panel, click on the 
+        <code>Debugging information</code> link and select the <code>Profiling</code> tab.</p>
+
+<p>        The profiling screen will show a list of methods and the amount 
+        of time each method is taking. Multiple views are available by 
+        changing the sort order and pushing the "update" button. The  
+        online profiler is based on the standard Python profile module. 
+        For specific information on the meaning of the profile information,
+        see the standard Python documentation for the profile module.
+</p>
+
+<dtml-var standard_html_footer>
