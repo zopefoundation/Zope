@@ -140,7 +140,7 @@ def item_munge(ast, i):
     append(a)
     append([COMMA,','])
 
-    for sub in ast[2][2][1:]:
+    for sub in ast[i][2][1:]:
 	if sub[0]==COMMA: append(sub)
 	else:
 	    if len(sub) != 2: raise ParseError, 'Invalid slice in subscript'
@@ -178,8 +178,7 @@ def dot_munge(ast, i):
     append(a)
 
     return [power, [atom, [NAME, '__guarded_getattr__']],
-	           [trailer, [LPAR, '('], args, [RPAR, ')'],
-		    ]
+	           [trailer, [LPAR, '('], args, [RPAR, ')']],
 	    ]
 
 def multi_munge(ast):
@@ -223,6 +222,35 @@ def compile(src, file_name, ctype):
     l=munge(l)
     ast=sequence2ast(l)
     return parser.compileast(ast, file_name)
+
+def check(expr1=None, expr2=None):
+    ok=1
+    expr1=expr1 or sys.argv[1]
+    expr2=expr2 or sys.argv[2]
+    l1=munge(astl(expr1))
+    l2=astl(expr2)
+    try: c1=compileast(sequence2ast(l1))
+    except:
+        traceback.print_exc
+        c1=None
+    c2=compileast(sequence2ast(l2))
+    if c1 !=c2:
+        ok=0
+        print 'test failed', expr1, expr2
+        print
+        print l1
+        print
+        print l2
+        print
+
+    ast=parser.sequence2ast(l1)
+    c=parser.compileast(ast)
+
+    pretty(expr1)
+    pret(l1)
+    pret(l2)
+
+    return ok
     
 def spam():
     # Regression test
@@ -271,5 +299,4 @@ if __name__=='__main__':
 	del sys.argv[1]
 	globals()[c]()
     except: spam()    
-
 
