@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -366,7 +366,8 @@ class Permission:
 	    if roles is None:
 		return ['Manager','Anonymous']
 	    return roles
-	return []
+	#return []
+	return ['Shared']
 
     def setRoles(self, roles):
 	# Add the given list of role names to the appropriate
