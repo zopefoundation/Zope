@@ -11,3 +11,6 @@ OIBTree OIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 
 Query Query.c
  
+# install Index.py
+# install InvertedIndex.py
+# install TextIndex.py

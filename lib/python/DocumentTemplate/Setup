@@ -14,6 +14,8 @@ cDocumentTemplate cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install DT_render.py
 # install DTtest.py
 # install DTtest_basicIn.py
+# install DTtestExpr.py
+# install VSEval.py
 # install DocumentTemplate.py
 # install Setup
 # install __init__.py
