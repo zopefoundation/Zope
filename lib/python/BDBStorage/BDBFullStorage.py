@@ -15,11 +15,9 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.56 $'.split()[-2:][0]
+__version__ = '$Revision: 1.57 $'.split()[-2:][0]
 
-import sys
 import time
-import threading
 import cPickle as pickle
 from struct import pack, unpack
 
@@ -238,15 +236,14 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         self._delqueue = self._setupDB('delqueue', 0, db.DB_QUEUE, 8)
         # Do recovery and consistency checks
         self._withlock(self._dorecovery)
-        # Set up the autopacking thread
+
+    def _make_autopacker(self, poll):
         config = self._config
-        if config.frequency > 0:
-            lastpacktime = U64(self._last_packtime())
-            self._autopacker = _Autopack(
-                self, config.frequency,
-                config.packtime, config.classicpack,
-                lastpacktime)
-            self._autopacker.start()
+        lastpacktime = U64(self._last_packtime())
+        return _Autopack(
+            self, poll, config.frequency,
+            config.packtime, config.classicpack,
+            lastpacktime)
 
     def _dorecovery(self):
         # If these tables are non-empty, it means we crashed during a pack
@@ -1861,16 +1858,16 @@ class _Record:
 
 
 class _Autopack(_WorkThread):
-    def __init__(self, storage, frequency, packtime, classicpack,
+    def __init__(self, storage, poll, frequency, packtime, classicpack,
                  lastpacktime):
-        _WorkThread.__init__(self, storage, frequency, 'autopacking')
+        _WorkThread.__init__(self, storage, poll, frequency, 'autopacking')
         self._packtime = packtime
         self._classicpack = classicpack
         # Bookkeeping
         self._stop = False
         self._lastclassic = 0
 
-    def _dowork(self, now):
+    def _dowork(self):
         # Should we do a classic pack this time?
         if self._classicpack <= 0:
             classicp = False
@@ -1879,4 +1876,4 @@ class _Autopack(_WorkThread):
             self._lastclassic = v
             classicp = not v
         # Run the autopack phase
-        self._storage.autopack(now - self._packtime, classicp)
+        self._storage.autopack(time.time() - self._packtime, classicp)

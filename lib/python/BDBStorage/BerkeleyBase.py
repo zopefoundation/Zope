@@ -14,11 +14,12 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.29 $'.split()[-2:][0]
+__version__ = '$Revision: 1.30 $'.split()[-2:][0]
 
 import os
 import time
 import errno
+import select
 import threading
 from types import StringType
 
@@ -28,7 +29,6 @@ from bsddb3 import db
 
 # BaseStorage provides primitives for lock acquisition and release, and a host
 # of other methods, some of which are overridden here, some of which are not.
-from ZODB import POSException
 from ZODB.lock_file import lock_file
 from ZODB.BaseStorage import BaseStorage
 from ZODB.referencesf import referencesf
@@ -37,12 +37,11 @@ import zLOG
 
 GBYTES = 1024 * 1024 * 1000
 
-# Maximum number of seconds for background thread to sleep before checking to
-# see if it's time for another autopack run.  Lower numbers mean more
-# processing, higher numbers mean less responsiveness to shutdown requests.
-# 10 seconds seems like a good compromise.  Note that if the check interval is
-# less than the sleep time, the minimum will be used.
-SLEEP_TIME = 10
+# How long should we wait to join one of the background daemon threads?  It's
+# a good idea to not set this too short, or we could corrupt our database.
+# That would be recoverable, but recovery could take a long time too, so it's
+# better to shutdown cleanly.
+JOIN_TIME = 10
 
 try:
     True, False
@@ -189,7 +188,6 @@ class BerkeleyBase(BaseStorage):
 
         # Instantiate a pack lock
         self._packlock = ThreadLock.allocate_lock()
-        self._autopacker = None
         self._stop = self._closed = False
         # Initialize a few other things
         self._prefix = prefix
@@ -199,11 +197,27 @@ class BerkeleyBase(BaseStorage):
         self._setupDBs()
         # Initialize the object id counter.
         self._init_oid()
+        # Set up the checkpointing thread
         if config.interval > 0:
-            self._checkpointer = _Checkpoint(self, config.interval)
+            r, self._checkpointfd = os.pipe()
+            poll = select.poll()
+            poll.register(r, select.POLLIN)
+            self._checkpointer = _Checkpoint(self, poll, config.interval)
             self._checkpointer.start()
         else:
             self._checkpointer = None
+        # Set up the autopacking thread
+        if config.frequency > 0:
+            r, self._autopackfd = os.pipe()
+            poll = select.poll()
+            poll.register(r, select.POLLIN)
+            self._autopacker = self._make_autopacker(poll)
+            self._autopacker.start()
+        else:
+            self._autopacker = None
+
+    def _make_autopacker(self, poll):
+        raise NotImplementedError
 
     def _setupDB(self, name, flags=0, dbtype=db.DB_BTREE, reclen=None):
         """Open an individual database with the given flags.
@@ -321,9 +335,21 @@ class BerkeleyBase(BaseStorage):
         tables are closed, and finally the environment is force checkpointed
         and closed too.
         """
-        # Set this flag before acquiring the lock so we don't block waiting
-        # for the autopack thread to give up the lock.
+        # We have to shutdown the background threads before we acquire the
+        # lock, or we'll could end up closing the environment before the
+        # autopacking thread exits.
         self._stop = True
+        # Stop the autopacker thread
+        if self._autopacker:
+            self.log('stopping autopacking thread')
+            self._autopacker.stop()
+            os.write(self._autopackfd, 'STOP')
+            self._autopacker.join(JOIN_TIME)
+        if self._checkpointer:
+            self.log('stopping checkpointing thread')
+            self._checkpointer.stop()
+            os.write(self._checkpointfd, 'STOP')
+            self._checkpointer.join(JOIN_TIME)
         self._lock_acquire()
         try:
             if not self._closed:
@@ -333,15 +359,6 @@ class BerkeleyBase(BaseStorage):
             self._lock_release()
 
     def _doclose(self):
-        # Stop the autopacker thread
-        if self._autopacker:
-            self.log('stopping autopacking thread')
-            self._autopacker.stop()
-            self._autopacker.join(SLEEP_TIME * 2)
-        if self._checkpointer:
-            self.log('stopping checkpointing thread')
-            self._checkpointer.stop()
-            self._checkpointer.join(SLEEP_TIME * 2)
         # Close all the tables
         for d in self._tables:
             d.close()
@@ -426,30 +443,36 @@ def env_from_string(envname, config):
     lock_file(lockfile)
     lockfile.write(str(os.getpid()))
     lockfile.flush()
-    # Create, initialize, and open the environment
-    env = db.DBEnv()
-    if config.logdir is not None:
-        env.set_lg_dir(config.logdir)
-    gbytes, bytes = divmod(config.cachesize, GBYTES)
-    env.set_cachesize(gbytes, bytes)
-    env.open(envname,
-             db.DB_CREATE          # create underlying files as necessary
-             | db.DB_RECOVER       # run normal recovery before opening
-             | db.DB_INIT_MPOOL    # initialize shared memory buffer pool
-             | db.DB_INIT_TXN      # initialize transaction subsystem
-             | db.DB_THREAD        # we use the environment from other threads
-             )
+    try:
+        # Create, initialize, and open the environment
+        env = db.DBEnv()
+        if config.logdir is not None:
+            env.set_lg_dir(config.logdir)
+        gbytes, bytes = divmod(config.cachesize, GBYTES)
+        env.set_cachesize(gbytes, bytes)
+        env.open(envname,
+                 db.DB_CREATE          # create underlying files as necessary
+                 | db.DB_RECOVER       # run normal recovery before opening
+                 | db.DB_INIT_MPOOL    # initialize shared memory buffer pool
+                 | db.DB_INIT_TXN      # initialize transaction subsystem
+                 | db.DB_THREAD        # we use the env from multiple threads
+                 )
+    except:
+        lockfile.close()
+        raise
     return env, lockfile
 
 
 
 class _WorkThread(threading.Thread):
-    def __init__(self, storage, checkinterval, name='work'):
+    def __init__(self, storage, poll, checkinterval, name='work'):
         threading.Thread.__init__(self)
         self._storage = storage
+        self._poll = poll
         self._interval = checkinterval
         self._name = name
-        # Bookkeeping
+        # Bookkeeping.  _nextcheck is useful as a non-public interface aiding
+        # testing.  See test_autopack.py.
         self._stop = False
         self._nextcheck = checkinterval
         # We don't want these threads to hold up process exit.  That could
@@ -461,27 +484,34 @@ class _WorkThread(threading.Thread):
         self._storage.log('%s thread started', name)
         while not self._stop:
             now = time.time()
-            if now > self._nextcheck:
-                self._storage.log('running %s', name)
-                self._dowork(now)
-                self._nextcheck = now + self._interval
-            # Now we sleep for a little while before we check again.  Sleep
-            # for the minimum of self._interval and SLEEP_TIME so as to be as
-            # responsive as possible to .stop() calls.
-            time.sleep(min(self._interval, SLEEP_TIME))
+            if now < self._nextcheck:
+                continue
+            self._storage.log('running %s', name)
+            self._dowork()
+            self._nextcheck = now + self._interval
+            # Now we sleep for a little while before we check again.  We use a
+            # poll timeout so that when the parent thread writes its "stop
+            # marker" to the readfd, we'll exit out immediately.
+            fds = self._poll.poll(self._interval * 1000)
+            for fd, event in self._poll.poll(self._interval):
+                # Just read and throw away the data.  The _stop flag will
+                # already have been set if we're being shutdown.
+                if event & select.POLLIN:
+                    #print name, 'data:', os.read(fd, 1024)
+                    os.read(fd, 1024)
         self._storage.log('%s thread finished', name)
 
     def stop(self):
         self._stop = True
 
-    def _dowork(self, now):
+    def _dowork(self):
         pass
 
 
 
 class _Checkpoint(_WorkThread):
-    def __init__(self, storage, interval):
-        _WorkThread.__init__(self, storage, interval, 'checkpointing')
+    def __init__(self, storage, poll, interval):
+        _WorkThread.__init__(self, storage, poll, interval, 'checkpointing')
 
-    def _dowork(self, now):
+    def _dowork(self):
         self._storage.docheckpoint()

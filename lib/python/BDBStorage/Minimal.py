@@ -15,10 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.20 $'[-2:][0]
-
-import time
-import threading
+__version__ = '$Revision: 1.21 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
@@ -26,7 +23,7 @@ import threading
 from bsddb3 import db
 
 from ZODB import POSException
-from ZODB.utils import U64, p64
+from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
@@ -39,12 +36,6 @@ ABORT = 'A'
 COMMIT = 'C'
 PRESENT = 'X'
 ZERO = '\0'*8
-
-# Number of seconds for the autopack thread to sleep before checking to see if
-# it's time for another autopack run.  Lower numbers mean more processing,
-# higher numbers mean less responsiveness to shutdown requests.  10 seconds
-# seems like a good compromise.
-AUTOPACK_CHECK_SLEEP = 10
 
 try:
     True, False
@@ -131,11 +122,9 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
                     self._withtxn(self._docommit, tid)
             finally:
                 self._lock_release()
-        # Set up the autopacking thread
-        if self._config.frequency > 0:
-            config = self._config
-            self._autopacker = _Autopack(self, config.frequency)
-            self._autopacker.start()
+
+    def _make_autopacker(self, poll):
+        return _Autopack(self, poll, self._config.frequency)
 
     def _doabort(self, txn, tid):
         co = cs = None
@@ -548,9 +537,9 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
 
 
 class _Autopack(_WorkThread):
-    def __init__(self, storage, frequency):
-        _WorkThread.__init__(self, storage, frequency, 'autopacking')
+    def __init__(self, storage, poll, frequency):
+        _WorkThread.__init__(self, storage, poll, frequency, 'autopacking')
 
-    def _dowork(self, now):
+    def _dowork(self):
         # Run the autopack phase
         self._storage.pack('ignored', referencesf)
