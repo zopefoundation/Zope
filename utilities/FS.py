@@ -228,7 +228,8 @@ class Global:
     def __call__(self, *args):
         return Inst(self, args)
 
-    __basicnew__=__call__
+    def __basicnew__(self):
+        return Inst(self, None)
 
 def _global(m, n):
     if m[:8]=='BoboPOS.':
@@ -236,6 +237,8 @@ def _global(m, n):
             m='ZODB.conversionhack'
             n='hack'
         elif m=='BoboPOS.PersistentMapping': m='Persistence'
+        elif m=='BoboPOS.cPickleJar' and n=='ec':
+            m=n='ExtensionClass'
         else:
             raise 'Unexpected BoboPOS class', (m, n)
 
@@ -253,7 +256,7 @@ class Inst:
     def __setstate__(self, state): self._state=state
 
 
-from pickle import INST, GLOBAL, MARK, BUILD, OBJ
+from pickle import INST, GLOBAL, MARK, BUILD, OBJ, REDUCE
 
 InstanceType=type(Ghost())
 
@@ -320,18 +323,11 @@ class Pickler(pickle.Pickler):
             memo[d] = (memo_len, object)
             return
 
-        args=object._args
-
-        write(MARK)
-
         self.save_inst(object._cls)
-
-        if args:
-            for arg in args:
-                save(arg)
+        save(object._args)
 
         memo_len = len(memo)
-        write(OBJ + self.put(len(memo)))
+        write(REDUCE + self.put(memo_len))
 
         memo[d] = (memo_len, object)
 
