@@ -64,7 +64,6 @@ def setup(name=None, author=None, cmdclass=None, **kwargs):
 # globbing on data_files.
 
 from distutils.command.install import install
-from distutils.command.build import build
 from distutils.command.install_data import install_data
 from distutils.util import convert_path
 
