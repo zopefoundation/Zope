@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import re
 from string import atoi, atol, atof, join, split, strip
@@ -93,7 +93,7 @@ def field2string(v):
     else: v=str(v)
     return v
 
-def field2text(v, nl=re.compile('\r\n\|\n\r').search):
+def field2text(v, nl=re.compile('\r\n|\n\r').search):
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
     mo = nl(v)
