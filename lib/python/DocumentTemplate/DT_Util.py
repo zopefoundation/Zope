@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.30 1998/03/26 22:02:16 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.31 1998/04/02 17:37:37 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -327,8 +327,32 @@ def parse_params(text,
 try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
+#from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.31  1998/04/02 17:37:37  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.30  1998/03/26 22:02:16  jim
 # Changed value of ValidationError to Unauthorized.
 #

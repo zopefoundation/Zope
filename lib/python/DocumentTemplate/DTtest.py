@@ -2,7 +2,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.3 1997/11/11 18:39:00 jim Exp $'
+__rcs_id__='$Id: DTtest.py,v 1.4 1998/04/02 17:37:38 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: DTtest.py,v 1.3 1997/11/11 18:39:00 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -121,7 +121,7 @@ def test1():
     print ss(aa)
 
     print 'num inaccessible:'
-    ss.names({'args':'args'})
+    # ss.names({'args':'args'})
     print ss(aa)
 
     print 'quoted source:'
@@ -408,11 +408,11 @@ def test8():
 def test9():
     html=HTML(
 	"""
-	<!--#in spam-->
-	   <!--#in sequence-item-->
-	      <!--#var sequence-item-->
-	   <!--#/in sequence-item-->
-	<!--#/in spam-->
+<!--#in spam-->
+<!--#in sequence-item-->
+   <!--#var sequence-item-->
+<!--#/in sequence-item-->
+<!--#/in spam-->
 	""")
     print html(spam=[[1,2,3],[4,5,6]])
 
@@ -506,12 +506,6 @@ def main():
 	print 'Test 6', '='*60
 	try: test6()
 	except: traceback.print_exc()
-	print 'Test 7', '='*60
-	try: test7()
-	except: traceback.print_exc()
-	print 'Test 8', '='*60
-	try: test8()
-	except: traceback.print_exc()
 	print 'Test 9', '='*60
 	try: test9()
 	except: traceback.print_exc()
@@ -540,6 +534,28 @@ if __name__ == "__main__":
 
 ############################################################################
 # $Log: DTtest.py,v $
+# Revision 1.4  1998/04/02 17:37:38  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.3  1997/11/11 18:39:00  jim
 # Added test for:
 # Made sequence-items work when iterating over mapping items.

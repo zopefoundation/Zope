@@ -1,7 +1,7 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.5 1997/10/27 17:35:32 jim Exp $"""
+$Id: DT_HTML.py,v 1.6 1998/04/02 17:37:35 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
@@ -12,20 +12,21 @@ from string import strip, find
 class dtml_re_class:
 
     def search(self, text, start=0,
-	       name_match=regex.compile('[a-zA-Z]+[\0- ]*').match):
+	       name_match=regex.compile('[\0- ]*[a-zA-Z]+[\0- ]*').match,
+	       end_match=regex.compile('[\0- ]*\(/\|end\)',
+				       regex.casefold).match,
+	       ):
 	s=find(text,'<!--#',start)
 	if s < 0: return s
 	e=find(text,'-->',s)
 	if e < 0: return e
+
 	n=s+5
-	if text[n:n+1]=='/':
-	    end=text[n:n+1]
-	    n=n+1
-	elif text[n:n+3]=='end':
-	    end=text[n:n+3]
-	    n=n+3
-	else:
-	    end=''
+	l=end_match(text,n)
+	if l > 0:
+	    end=strip(text[n:n+l])
+	    n=n+l
+	else: end=''
 
 	l=name_match(text,n)
 	if l < 0: return l
@@ -59,14 +60,6 @@ class HTML(DT_String.String):
 
     def tagre(self):
 	return dtml_re_class()
-	return regex.symcomp(
-	    '<!--#'                                 # beginning
-	    '\(<end>/\|end\)?'                      # end tag marker
-	    '\(<name>[a-z]+\)'                      # tag name
-	    '[\0- ]*'                               # space after tag name
-	    '\(<args>\([^>"]+\("[^"]*"\)?\)*\)'     # arguments
-	    '-->'                                   # end
-	    , regex.casefold) 
 
     def parseTag(self, tagre, command=None, sargs=''):
 	"""Parse a tag using an already matched re
@@ -218,6 +211,28 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.6  1998/04/02 17:37:35  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.5  1997/10/27 17:35:32  jim
 # Removed old validation machinery.
 #

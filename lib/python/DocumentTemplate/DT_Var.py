@@ -105,8 +105,16 @@ __doc__='''Variable insertion parameters
        is used.  For example, if the value of spam is
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
+
+
+Evaluating expressions without rendering results
+
+   A 'call' tag is provided for evaluating named objects or expressions
+   without rendering the result.
+   
+
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.11 1998/03/24 20:21:39 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.12 1998/04/02 17:37:38 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -160,7 +168,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.11 1998/03/24 20:21:39 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DT_Util import *
 
@@ -188,6 +196,11 @@ class Var:
 
 	self.__name__, self.expr = name, expr
 	self.fmt = fmt
+
+	if len(args)==1:
+	    if expr is None: expr=name
+	    else: expr=expr.eval
+	    self.simple_form=expr,
 
     def render(self, md):
 	name=self.__name__
@@ -259,16 +272,10 @@ class Call:
 
     def __init__(self, args):
 	args = parse_params(args, name='', expr='')
-	self.__name__, self.expr = name_param(args,'call',1)
+	name, expr = name_param(args,'call',1)
+	if expr is None: expr=None
+	self.simple_form=expr,None
 
-    def render(self, md):
-	name=self.__name__
-	val=self.expr
-	if val is None: md[name]
-	else: val.eval(md)
-	return ''
-
-    __call__=render
 
 def html_quote(v, name='(Unknown name)', md={},
 	       character_entities=(
@@ -360,6 +367,28 @@ modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.12  1998/04/02 17:37:38  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.11  1998/03/24 20:21:39  jim
 # Added 'call' tag.
 #

@@ -1,22 +1,25 @@
-/***********************************************************
+/******************************************************************
      Copyright 
 
        Copyright 1997 Digital Creations, L.L.C., 910 Princess Anne
        Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
        rights reserved. 
 
-******************************************************************/
+ ******************************************************************/
 
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.10 1998/03/26 21:55:40 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.11 1998/04/02 17:37:40 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
 
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
-static PyObject *py___call__;
+static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
+static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
+static PyObject *py_Unauthorized_fmt, *py_validate;
+static PyObject *py__push, *py__pop;
 
 /* ----------------------------------------------------- */
 
@@ -36,16 +39,22 @@ typedef struct {
 staticforward PyExtensionClass InstanceDictType;
 
 static PyObject *
-InstanceDict___init__( InstanceDictobject *self, PyObject *args)
+InstanceDict___init__(InstanceDictobject *self, PyObject *args)
 {
-  UNLESS(PyArg_ParseTuple(args, "OOO",
+  self->validate=NULL;
+  UNLESS(PyArg_ParseTuple(args, "OO|O",
 			  &(self->inst),
 			  &(self->namespace),
 			  &(self->validate)))
     return NULL;
   Py_INCREF(self->inst);
   Py_INCREF(self->namespace);
-  Py_INCREF(self->validate);
+  if(self->validate)
+    Py_INCREF(self->validate);
+  else
+    UNLESS(self->validate=PyObject_GetAttr(self->namespace, py_validate))
+       return NULL;
+    
   UNLESS(self->cache=PyDict_New()) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -291,7 +300,8 @@ MM_cget(MM *self, PyObject *key, int call)
 		  if(dt)
 		    {
 		      ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
-		      UNLESS(e) return NULL;
+		      UNLESS(e)
+			return NULL;
 		    }
 		  else
 		    {
@@ -493,49 +503,324 @@ static struct PyMethodDef TemplateDict_methods[] = {
 
 /* List of methods defined in the module */
 
-static PyObject *
-render_blocks(PyObject *self, PyObject *args)
+static int
+if_finally(PyObject *md, int err)
 {
-  PyObject *md, *blocks, *rendered, *block;
-  int l, i, k;
+  PyObject *t, *v, *tb;
 
-  UNLESS(PyArg_ParseTuple(args,"OO", &self, &md)) return NULL;
-  UNLESS(md=Py_BuildValue("(O)",md)) return NULL;
-  UNLESS(rendered=PyList_New(0)) goto err;
-  UNLESS(blocks=PyObject_GetAttr(self,py_blocks)) goto err;
-  if((l=PyList_Size(blocks)) < 0) goto err;
+  if(err) PyErr_Fetch(&t, &v, &tb);
+
+  md=PyObject_GetAttr(md,py__pop);
+  if(md) ASSIGN(md, PyObject_CallObject(md,NULL));
+  
+  if(err) PyErr_Restore(t,v,tb);
+  
+  if(md)
+    {
+      Py_DECREF(md);
+      return -1;
+    }
+  else 
+    return -2;
+}
+
+static int
+render_blocks_(PyObject *blocks, PyObject *rendered,
+	       PyObject *md, PyObject *mda)
+{
+  PyObject *block;
+  int l, i, k=0, append;
+
+  if((l=PyList_Size(blocks)) < 0) return -1;
   for(i=0; i < l; i++)
     {
       block=PyList_GET_ITEM(((PyListObject*)blocks), i);
-      if(PyString_Check(block))
+      append=1;
+
+      if(PyTuple_Check(block))
 	{
-	  if(PyList_Append(rendered,block) < 0) goto err;
+	  int bs;
+
+	  bs=((PyTupleObject*)block)->ob_size;
+	  
+	  if(bs==1)
+	    {
+	      /* Simple var */
+	      block=PyTuple_GET_ITEM(block,0);
+	      if(PyString_Check(block)) block=PyObject_GetItem(md,block);
+	      else block=PyObject_CallObject(block,mda);
+	      if(block) ASSIGN(block, PyObject_Str(block));
+	      UNLESS(block) return -1;
+	    }
+	  else
+	    {
+	      /* if */
+	      int icond, m;
+	      PyObject *cond, *n, *cache;
+
+	      UNLESS(cache=PyDict_New()) return -1;
+	      cond=PyObject_GetAttr(md,py__push);
+	      if(cond) ASSIGN(cond, PyObject_CallFunction(cond,"O",cache));
+	      Py_DECREF(cache);
+	      if(cond) Py_DECREF(cond);
+	      else return -1;
+	      
+	      append=0;
+	      m=bs-1;
+	      for(icond=0; icond < m; icond += 2)
+		{
+		  cond=PyTuple_GET_ITEM(block,icond);
+		  if(PyString_Check(cond))
+		    {
+		      /* We have to be careful to handle key errors here */
+		      n=cond;
+		      if(cond=PyObject_GetItem(md,cond))
+			{
+			  if(PyDict_SetItem(cache, n, cond) < 0)
+			    {
+			      Py_DECREF(cond);
+			      return if_finally(md,1);
+			    }
+			}
+		      else
+			{
+			  PyObject *t, *v, *tb;
+
+			  PyErr_Fetch(&t, &v, &tb);
+			  if(t != PyExc_KeyError || PyObject_Compare(v,n))
+			    {
+			      PyErr_Restore(t,v,tb);
+			      return if_finally(md,1);
+			    }
+			  Py_XDECREF(t);
+			  Py_XDECREF(v);
+			  Py_XDECREF(tb);
+			  cond=Py_None;
+			  Py_INCREF(cond);
+			}
+		    }
+		  else
+		    UNLESS(cond=PyObject_CallObject(cond,mda))
+		       return if_finally(md,1);
+
+		  if(PyObject_IsTrue(cond))
+		    {
+		      Py_DECREF(cond);
+		      block=PyTuple_GET_ITEM(block,icond+1);
+		      if(block!=Py_None &&
+			 render_blocks_(block, rendered, md, mda) < 0)
+			return if_finally(md,1);
+		      m=-1;
+		      break;
+		    }
+		  else Py_DECREF(cond);
+		}
+		if(icond==m)
+		  {
+		    block=PyTuple_GET_ITEM(block,icond);
+		    if(block!=Py_None &&
+		       render_blocks_(block, rendered, md, mda) < 0)
+		      return if_finally(md,1);
+		  }
+
+		if(if_finally(md,0) == -2) return -1;
+	    }
+	}
+      else if(PyString_Check(block))
+	{
+	  Py_INCREF(block);
 	}
       else
 	{
-	  UNLESS(block=PyObject_CallObject(block,md)) goto err;
+	  UNLESS(block=PyObject_CallObject(block,mda)) return -1;
+	}
+
+      if(append && PyObject_IsTrue(block))
+	{
 	  k=PyList_Append(rendered,block);
 	  Py_DECREF(block);
-	  if(k < 0) goto err;
+	  if(k < 0) return -1;
 	}
     }
-  Py_DECREF(md);
-  Py_DECREF(blocks);
-  ASSIGN(rendered,PyObject_CallFunction(join,"OO",rendered,py_));
+
+  return 0;
+}
+
+static PyObject *
+render_blocks(PyObject *self, PyObject *args)
+{
+  PyObject *md, *blocks, *mda=0, *rendered=0;
+  int l;
+
+  UNLESS(PyArg_ParseTuple(args,"OO", &blocks, &md)) return NULL;
+  UNLESS(rendered=PyList_New(0)) goto err;
+  UNLESS(mda=Py_BuildValue("(O)",md)) goto err;
+  
+  if(render_blocks_(blocks, rendered, md, mda) < 0) goto err;
+
+  Py_DECREF(mda);
+
+  l=PyList_Size(rendered);
+  if(l==0)
+    {
+      Py_INCREF(py_);
+      ASSIGN(rendered, py_);
+    }
+  else if(l==1)
+    ASSIGN(rendered, PySequence_GetItem(rendered,0));
+  else
+    ASSIGN(rendered, PyObject_CallFunction(join,"OO",rendered,py_));
+
   return rendered;
 
 err:
-  Py_DECREF(md);
+  Py_XDECREF(mda);
   Py_XDECREF(rendered);
-  Py_XDECREF(blocks);
   return NULL;
-}
-
+}  
+  
 static struct PyMethodDef Module_Level__methods[] = {
   {"render_blocks", (PyCFunction)render_blocks,	METH_VARARGS,
    ""},
   {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
 };
+
+
+static PyObject *
+validate(PyObject *self, PyObject *args)
+{
+  PyObject *inst, *parent, *name, *value, *md, *__roles__;
+
+  /* def validate(self, inst, parent, name, value, md): */
+  UNLESS(PyArg_ParseTuple(args,"OOOOO",&inst,&parent,&name,&value,&md))
+    return NULL;
+
+  /*
+        if hasattr(value, '__roles__'):
+	    roles=value.__roles__
+	elif inst is parent:
+	    return 1
+	else:
+	    # if str(name)[:6]=='manage': return 0
+	    if hasattr(parent,'__roles__'):
+		roles=parent.__roles__
+	    elif hasattr(parent, 'aq_acquire'):
+		try: roles=parent.aq_acquire('__roles__')
+		except AttributeError: return 0
+	    else: return 0
+	    value=parent
+   */
+  UNLESS(__roles__=PyObject_GetAttr(value,py___roles__))
+    {
+      PyErr_Clear();
+      if(inst==parent) return PyInt_FromLong(1);
+      UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
+	{
+	  PyErr_Clear();
+	  UNLESS(__roles__=PyObject_GetAttr(parent,py_acquire)) goto err0;
+	  ASSIGN(__roles__,PyObject_CallFunction(__roles__,"O",py___roles__));
+	  UNLESS(__roles__) goto err0;
+	  value=parent;
+	}
+    }
+
+  /* if roles is None: return 1 */
+  if(__roles__==Py_None)
+    {
+      Py_DECREF(__roles__);
+      return PyInt_FromLong(1);
+    }
+
+  /*    try: 
+	    if md.AUTHENTICATED_USER.hasRole(value, roles):
+		return 1
+	except AttributeError: pass
+   */
+  if(md=PyObject_GetAttr(md,py_AUTHENTICATED_USER))
+    {
+      ASSIGN(md,PyObject_GetAttr(md,py_hasRole));
+      if(md) ASSIGN(md,PyObject_CallFunction(md,"OO",value,__roles__));
+      if(md)
+	{
+	  if(PyObject_IsTrue(md))
+	    {
+	      Py_DECREF(__roles__);
+	      return md;
+	    }
+	  Py_DECREF(md);
+	}
+      else PyErr_Clear();
+    }
+  else PyErr_Clear();
+
+  /*    for r in self._proxy_roles:
+	    if r in roles: return 1
+   */
+  if(PyObject_IsTrue(__roles__))
+     if((md=PyObject_GetAttr(self, py__proxy_roles)))
+     {
+       int i,l, isIn;
+       PyObject *role;
+       
+       if((l=PyObject_Length(md)) < 0) PyErr_Clear();
+       else
+	 {
+	   for(i=0; i < l; i++)
+	     {
+	       UNLESS(role=PySequence_GetItem(md,i))
+		 {
+		   PyErr_Clear();
+		   break;
+		 }
+	       isIn=PySequence_In(__roles__,role);
+	       Py_DECREF(role);
+	       if(isIn < 0)
+		 {
+		   PyErr_Clear();
+		   break;
+		 }
+	       if(isIn)
+		 {
+		   Py_DECREF(md);
+		   return __roles__; /* Any true object would do. */
+		 }
+	     }
+	 }
+       Py_DECREF(md);
+     }
+     else PyErr_Clear();
+
+  Py_DECREF(__roles__);
+
+  /*     if inst is parent:
+	    raise 'Unauthorized', (
+		'You are not authorized to access <em>%s</em>.' % name)
+   */
+  if(inst==parent)
+    {
+      if(name=PyString_Format(py_Unauthorized_fmt, name))
+	{
+	  PyErr_SetObject(py_Unauthorized, name);
+	  Py_DECREF(name);
+	}
+      return NULL;
+    }
+
+  /* return 0 */
+  return PyInt_FromLong(0);
+
+err0:
+  PyErr_Clear();
+  return PyInt_FromLong(0);
+}
+
+  
+static struct PyMethodDef Document_methods[] = {
+  {"validate", (PyCFunction)validate,	METH_VARARGS,
+   ""},
+  {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
+};
+
 
 /* Initialization function for the module (*must* be called initcDocumentTemplate) */
 
@@ -543,12 +828,28 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
+  PURE_MIXIN_CLASS(cDocument,
+	"Base class for documents that adds fast validation method",
+	Document_methods);
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
   UNLESS(py_acquire=PyString_FromString("aq_acquire")) return;
   UNLESS(py___call__=PyString_FromString("__call__")) return;
+  UNLESS(py___roles__=PyString_FromString("__roles__")) return;
+  UNLESS(py__proxy_roles=PyString_FromString("_proxy_roles")) return;
+  UNLESS(py_hasRole=PyString_FromString("hasRole")) return;
+  UNLESS(py_validate=PyString_FromString("validate")) return;
+  UNLESS(py__push=PyString_FromString("_push")) return;
+  UNLESS(py__pop=PyString_FromString("_pop")) return;
+  UNLESS(py_Unauthorized=PyString_FromString("Unauthorized")) return;
+  UNLESS(py_Unauthorized_fmt=PyString_FromString(
+	 "You are not authorized to access <em>%s</em>.")) return;
+
+  UNLESS(py_AUTHENTICATED_USER=PyString_FromString("AUTHENTICATED_USER"))
+    return;
+
   UNLESS(py_=PyString_FromString("")) return;
   UNLESS(join=PyImport_ImportModule("string")) return;
   ASSIGN(join,PyObject_GetAttrString(join,"join"));
@@ -561,6 +862,7 @@ initcDocumentTemplate()
 
   d = PyModule_GetDict(m);
 
+  PyExtensionClass_Export(d,"cDocument",cDocumentType);
   PyExtensionClass_Export(d,"InstanceDict",InstanceDictType);
   PyExtensionClass_Export(d,"TemplateDict",MMtype);
 
@@ -576,6 +878,28 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.11  1998/04/02 17:37:40  jim
+  Major redesign of block rendering. The code inside a block tag is
+  compiled as a template but only the templates blocks are saved, and
+  later rendered directly with render_blocks.
+
+  Added with tag.
+
+  Also, for the HTML syntax, we now allow spaces after # and after end
+  or '/'.  So, the tags::
+
+    <!--#
+      with spam
+      -->
+
+  and::
+
+    <!--#
+      end with
+      -->
+
+  are valid.
+
   Revision 1.10  1998/03/26 21:55:40  jim
   Fixed error propigation from aq_acquire in InstanceDict.
 

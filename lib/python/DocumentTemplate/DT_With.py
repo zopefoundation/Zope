@@ -1,21 +1,28 @@
-#!/usr/local/bin/python 
-# $What$
 
-__doc__='''Comments
+'''Nested namespace access
 
-  The 'comment' tag can be used to simply include comments
-  in DTML source.
+   The 'with' tag is used to introduce nested namespaces.
 
-  For example::
+   The text enclosed in the with tag is rendered using information
+   from the given variable or expression.
 
-    <!--#comment-->
+   For example, if the variable 'person' is bound to an object that
+   has attributes 'name' and 'age', then a 'with' tag like the
+   following can be used to access these attributes::
 
-       This text is not rendered.
+     <!--#with person-->
+       <!--#var name-->,
+       <!--#var age-->
+     <!--#/with-->
 
-    <!--#/comment-->
+   Eather a 'name' or an 'expr' attribute may be used to specify data.
+   A 'mapping' attribute may be used to indicate that the given data
+   should be treated as mapping object, rather than as an object with
+   named attributes.
 
 ''' 
-__rcs_id__='$Id: DT_Comment.py,v 1.2 1998/04/02 17:37:34 jim Exp $'
+
+__rcs_id__='$Id: DT_With.py,v 1.1 1998/04/02 17:37:38 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -69,49 +76,36 @@ __rcs_id__='$Id: DT_Comment.py,v 1.2 1998/04/02 17:37:34 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.1 $'[11:-2]
 
 from DT_Util import *
 
-from string import find, split, join
-
-class Comment: 
-    name='comment'
+class With:
     blockContinuations=()
-
-    def __init__(self, args, fmt=''): pass
+    name='with'
+    mapping=None
+    
+    def __init__(self, blocks):
+	tname, args, section = blocks[0]
+	args=parse_params(args, name='', expr='', mapping=1)
+	name,expr=name_param(args,'with',1)
+	if expr is None: expr=name
+	else: expr=expr.eval
+	self.__name__, self.expr = name, expr
+	self.section=section.blocks
+	if args.has_key('mapping') and args['mapping']: self.mapping=1
 
     def render(self, md):
-	return ''
+	expr=self.expr
+	if type(expr) is type(''): v=md[expr]
+	else: v=expr(md)
+	
+	if self.mapping: md._push(v)
+	else:
+	    if type(v) is type(()) and len(v)==1: v=v[0]
+	    md._push(InstanceDict(v,md))
+
+	try: return render_blocks(self.section, md)
+	finally: md._pop(1)
 
     __call__=render
-
-
-############################################################################
-# $Log: DT_Comment.py,v $
-# Revision 1.2  1998/04/02 17:37:34  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.1  1998/03/04 18:19:56  jim
-# added comment and raise tags
-#
-#

@@ -1,13 +1,16 @@
 #!/usr/local/bin/python 
 # $What$
 
-import DT_Doc, DT_Var, DT_In, DT_If, DT_Util
+import DT_Doc, DT_Var, DT_In, DT_If, DT_Util, DT_Comment, DT_Raise, DT_With
 __doc__=DT_Doc.__doc__ % {
     'In': DT_In.__doc__,
     'If': DT_If.__doc__,
     'Var': DT_Var.__doc__,
     'Expr': DT_Util.Expr_doc,
-    'id': '$Id: DocumentTemplate.py,v 1.4 1997/10/29 22:06:32 jim Exp $'
+    'Comment': DT_Comment.__doc__,
+    'Raise': DT_Raise.__doc__,
+    'With': DT_With.__doc__,
+    'id': '$Id: DocumentTemplate.py,v 1.5 1998/04/02 17:37:39 jim Exp $'
     }
 
 ############################################################################
@@ -62,7 +65,7 @@ __doc__=DT_Doc.__doc__ % {
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 
@@ -73,6 +76,28 @@ from DT_Var import html_quote
 
 ############################################################################
 # $Log: DocumentTemplate.py,v $
+# Revision 1.5  1998/04/02 17:37:39  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.4  1997/10/29 22:06:32  jim
 # Cleaned up imports.
 #

@@ -55,6 +55,8 @@ Two source formats are supported:
       is used to insert the variable 'total' with the C format
       '12.2f'.        
 
+%(Expr)s
+
 %(Var)s
 
 Document templates support conditional and sequence insertion
@@ -97,8 +99,6 @@ Access Control
        If a document template was called from Bobo, then the namespace
        object will have an attribute, AUTHENTICATED_USER that is the
        user object that was found if and when Bobo authenticated a user.
-
-%(Expr)s
 
 Document Templates may be created 4 ways:
 

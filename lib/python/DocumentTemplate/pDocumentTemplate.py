@@ -58,12 +58,14 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.7 1997/11/19 15:42:48 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.8 1998/04/02 17:37:40 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import regex, string
+from string import join
 
 StringType=type('')
+TupleType=type(())
 isFunctionType={}
 for name in ['BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
 	     'FunctionType', 'LambdaType', 'MethodType']:
@@ -86,6 +88,8 @@ class InstanceDict:
 	self.self=o
 	self.cache={}
 	self.namespace=namespace
+	if validate is None: self.validate=namespace.validate
+	else: self.validate=validate
 
     def has_key(self,key):
 	return hasattr(self.self,key)
@@ -128,7 +132,7 @@ class MultiMapping:
 
     def push(self,d): self.dicts.insert(0,d)
 
-    def pop(self,n): del self.dicts[:n]
+    def pop(self,n=1): del self.dicts[:n]
 
     def keys(self):
         kz = []
@@ -140,7 +144,7 @@ class TemplateDict:
 
     level=0
 
-    def _pop(self, n): return self.dicts.pop(n)
+    def _pop(self, n=1): return self.dicts.pop(n)
     def _push(self, d): return self.dicts.push(d)
 
     def __init__(self):
@@ -164,19 +168,86 @@ class TemplateDict:
 
     getitem=__getitem__
 
-def render_blocks(self, md):
+def render_blocks(blocks, md):
     rendered = []
-    for section in self.blocks:
-	if type(section) is not StringType:
+    append=rendered.append
+    for section in blocks:
+	if type(section) is TupleType:
+	    l=len(section)
+	    if l==1:
+		# Simple var
+		section=section[0]
+		if type(section) is StringType: section=md[section]
+		else: section=section(md)
+		section=str(section)
+	    else:
+		# if
+		cache={}
+		md._push(cache)
+		try:
+		    i=0
+		    m=l-1
+		    while i < m:
+			cond=section[i]
+			if type(cond) is StringType:
+			    n=cond
+			    try:
+				cond=md[cond]
+				cache[n]=cond
+			    except KeyError, v:
+				if n != v: raise KeyError, v, sys.exc_traceback
+				cond=None
+			else: cond=section(md)
+			if cond:
+			    section=section[i+1]
+			    if section: section=render_blocks(section,md)
+			    else: section=''
+			    m=0
+			    break
+			i=i+2
+		    if m:
+			if i==m: section=render_blocks(section[i],md)
+			else: section=''
+
+		finally: md._pop()
+
+	elif type(section) is not StringType:
 	    section=section(md)
+
 	if section: rendered.append(section)
-    rendered=string.join(rendered, '')
+
+    l=len(rendered)
+    if l==0: return ''
+    elif l==1: return rendered[0]
+    return join(rendered, '')
     return rendered
 
 
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.8  1998/04/02 17:37:40  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.7  1997/11/19 15:42:48  jim
 # added _ prefix to push and pop methods to make them private
 #

@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.11 1998/03/12 21:37:01 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.12 1998/04/02 17:37:39 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -11,7 +11,7 @@ __rcs_id__='$Id: VSEval.py,v 1.11 1998/03/12 21:37:01 jim Exp $'
 #       rights reserved.  
 #
 ############################################################################ 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from string import join, find, split, translate
 import sys, gparse, string
@@ -73,6 +73,7 @@ class Eval:
 	  globals -- A global namespace.
 	"""
 
+	self.__name__=expr
 	expr=translate(expr,nltosp)
 	self.expr=expr
 	self.globals=globals
@@ -131,6 +132,28 @@ compiled_getattr=compile(
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.12  1998/04/02 17:37:39  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.11  1998/03/12 21:37:01  jim
 # Added _getattr.
 #

@@ -117,8 +117,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.8 1998/01/14 18:23:42 jim Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.9 1998/04/02 17:37:35 jim Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -135,17 +135,20 @@ class If:
 	args=parse_params(args, name='', expr='')
 	name,expr=name_param(args,'if',1)
 	self.__name__= name
-	self.sections=[(name, expr, section)]
+	if expr is None: cond=name
+	else: cond=expr.eval
+	sections=[cond, section.blocks]
 
 	if blocks[-1][0]=='else':
 	    tname, args, section = blocks[-1]
-	    blocks=blocks[:-1]
+	    del blocks[-1]
 	    args=parse_params(args, name='')
 	    if args:
 		ename,expr=name_param(args,'else',1)
 		if ename != name:
 		    raise ParseError, ('name in else does not match if', 'in')
-	    self.elses=section
+	    elses=section.blocks
+	else: elses=None
 
 	for tname, args, section in blocks[1:]:
 	    if tname=='else':
@@ -153,32 +156,14 @@ class If:
 		    'more than one else tag for a single if tag', 'in')
 	    args=parse_params(args, name='', expr='')
 	    name,expr=name_param(args,'elif',1)
-	    self.sections.append((name, expr, section))
+	    if expr is None: cond=name
+	    else: cond=expr.eval
+	    sections.append(cond)
+	    sections.append(section.blocks)
 
-    def render(self,md):
-	cache={}
-	md._push(cache)
-	try:
-	    for name, expr, section in self.sections:
-		if expr is None:
-		    try: v=md[name]
-		    except KeyError, ev:
-			if ev is not name:
-			    raise KeyError, name, sys.exc_traceback
-			v=None
-		    cache[name]=v
-		else:
-		    v=expr.eval(md)
-    
-		if v: return section(None,md)
-    
-	    if self.elses: return self.elses(None, md)
+	if elses is not None: sections.append(elses)
 
-	finally: md._pop(1)
-
-	return ''
-
-    __call__=render
+	self.simple_form=tuple(sections)
 
 class Unless:
     name='unless'
@@ -188,28 +173,9 @@ class Unless:
 	tname, args, section = blocks[0]
 	args=parse_params(args, name='', expr='')
 	name,expr=name_param(args,'unless',1)
-	self.__name__ = name
-	self.section=section
-	self.expr=expr
-
-    def render(self,md):
-	name=self.__name__
-	expr=self.expr
-	if expr is None:
-	    try: v=md[name]
-	    except KeyError, ev:
-		if ev is not name: raise KeyError, name, sys.exc_traceback
-		v=None
-	    if not v:
-		md._push({name:v})
-		try: return self.section(None,md)
-		finally: md._pop(1)
-	else:
-	    if not expr.eval(md): return self.section(None,md)
-	    
-	return ''
-
-    __call__=render
+	if expr is None: cond=name
+	else: cond=expr.eval
+	self.simple_form=(cond,None,section.blocks)
 
 class Else(Unless):
     # The else tag is included for backward compatibility and is deprecated.
@@ -219,6 +185,28 @@ class Else(Unless):
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.9  1998/04/02 17:37:35  jim
+# Major redesign of block rendering. The code inside a block tag is
+# compiled as a template but only the templates blocks are saved, and
+# later rendered directly with render_blocks.
+#
+# Added with tag.
+#
+# Also, for the HTML syntax, we now allow spaces after # and after end
+# or '/'.  So, the tags::
+#
+#   <!--#
+#     with spam
+#     -->
+#
+# and::
+#
+#   <!--#
+#     end with
+#     -->
+#
+# are valid.
+#
 # Revision 1.8  1998/01/14 18:23:42  jim
 # Added expr to unless.
 #

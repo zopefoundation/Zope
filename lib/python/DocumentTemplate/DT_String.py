@@ -1,6 +1,6 @@
 
 from string import *
-import DT_Doc, DT_Var, DT_In, DT_If, regex, DT_Raise
+import DT_Doc, DT_Var, DT_In, DT_If, regex, DT_Raise, DT_With
 Var=DT_Var.Var
 
 from DT_Util import *
@@ -28,6 +28,7 @@ class String:
 	'var': DT_Var.Var,
 	'call': DT_Var.Call,
 	'in': DT_In.In,
+	'with': DT_With.With,
 	'if': DT_If.If,
 	'unless': DT_If.Unless,
 	'else': DT_If.Else,
@@ -108,10 +109,10 @@ class String:
 				       tag, l, args, command)
 	    else:
 		try:
-		    if command is Var:
-			result.append(command(args, self.varExtra(tagre)))
-		    else:
-			result.append(command(args))
+		    if command is Var: r=command(args, self.varExtra(tagre))
+		    else: r=command(args)
+		    if hasattr(r,'simple_form'): r=r.simple_form
+		    result.append(r)
 		except ParseError, m: self.parse_error(m[0],tag,text,l)
 
 	    l=tagre.search(text,start)
@@ -166,8 +167,9 @@ class String:
 		    sstart=start
 		else:
 		    try:
-			if scommand is not Comment:
-			    result.append(scommand(blocks))
+			r=scommand(blocks)
+			if hasattr(r,'simple_form'): r=r.simple_form
+			result.append(r)
 		    except ParseError, m: self.parse_error(m[0],stag,text,l)
 
 		    return start
@@ -365,7 +367,7 @@ class String:
 	md.level=level+1
 
 	if client is not None:
-	    push(InstanceDict(client,md,self.validate)) # Circ. Ref. 8-|
+	    push(InstanceDict(client,md)) # Circ. Ref. 8-|
 	    pushed=pushed+1
 
 	if self._vars: 
@@ -377,7 +379,7 @@ class String:
 	    pushed=pushed+1
 
 	try:
-	    return render_blocks(self,md)
+	    return render_blocks(self.blocks,md)
 	finally:
 	    if pushed: md._pop(pushed) # Get rid of circular reference!
 	    md.level=level # Restore previous level
