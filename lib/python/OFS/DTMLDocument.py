@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -158,14 +158,18 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         
         security=getSecurityManager()
         security.addContext(self)
-        
-        if client is None:
-            # Called as subtemplate, so don't need error propigation!
-            r=apply(HTML.__call__, (self, bself, REQUEST), kw)
-            if RESPONSE is None: return r
-            return decapitate(r, RESPONSE)
+        try: 
+            if client is None:
+                # Called as subtemplate, so don't need error propigation!
+                r=apply(HTML.__call__, (self, bself, REQUEST), kw)
+                if RESPONSE is None: return r
+                return decapitate(r, RESPONSE)
 
-        r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
+            r=apply(HTML.__call__, (self, (client, bself), REQUEST), kw)
+
+        finally: security.removeContext(self)
+
+
         if type(r) is not type(''): return r
         if RESPONSE is None: return r
 
