@@ -334,9 +334,15 @@ class Catalog(Persistent, Acquisition.Implicit):
         # ZClass problems, some items might not be here.  The try's
         # catch any inconsistencies and lets 'Update Catalog' sanify
         # the situation
-        try: del self.data[rid] except: pass
-        try: del self.uids[uid] except: pass
-        try: del self.paths[rid] except: pass
+        try:
+            del self.data[rid]
+        except: pass
+        try:
+            del self.uids[uid]
+        except: pass
+        try:
+            del self.paths[rid]
+        except: pass
 
 
     def clear(self):
