@@ -10,8 +10,9 @@
 
 <div class="form-help">
 <p>
-Temporary Folders are in-storage databases, which are created anew at every
-initialization of Zope.  They are useful for storing temporary objects in.
+Temporary Folders are folderish objects which keep their contents entirely
+in volatile memory (RAM).  Their contents are flushed on each Zope restart.
+They are useful for storing limited numbers of temporary objects.
 </p>
 </div>
 
