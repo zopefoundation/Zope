@@ -6,6 +6,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #437: dtml-sqltest now renders 'v not in (b,c)'
+        when used as <dtml-sqltest v type=... multiple op=ne>.  
+        Previously, a sqltest for inequality would render 'v <> b'
+        when a single value was submitted, but would render
+        'a in (b,c)' when multiple values were present and the
+        'multiple' switch was set.
+
       - Collector #478: Z Search Interfaces with no parameters are now
         generating correct HTML.
 
