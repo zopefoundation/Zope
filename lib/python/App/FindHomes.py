@@ -13,66 +13,75 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
-import os, sys, Products
-from Common import package_home, realpath
-path_join = os.path.join
-path_split = os.path.split
+import __builtin__
+import os
+import sys
 
-try: home=os.environ['SOFTWARE_HOME']
-except:
-    home=package_home(Products.__dict__)
-    if not os.path.isabs(home):
-        home=path_join(os.getcwd(), home)
+import Products
+from Common import package_home
 
-    home,e=path_split(home)
-    if path_split(home)[1]=='.': home=path_split(home)[0]
-    if path_split(home)[1]=='..':
-        home=path_split(path_split(home)[0])[0]
-
-home=realpath(home)
-sys.modules['__builtin__'].SOFTWARE_HOME=SOFTWARE_HOME=home
-
-try: zhome=os.environ['ZOPE_HOME']
-except:
-    zhome=os.path.join(home, '..', '..')
-
-zhome=realpath(zhome)
-sys.modules['__builtin__'].ZOPE_HOME=ZOPE_HOME=zhome
 
 try:
-    chome=os.environ['INSTANCE_HOME']
-    chome = realpath(chome)
-except:
-    chome=home
-    d,e=path_split(chome)
-    if e=='python':
-        d,e=path_split(d)
-        if e=='lib': chome=d or os.getcwd()
+    home = os.environ['SOFTWARE_HOME']
+except KeyError:
+    home = os.path.abspath(package_home(Products.__dict__))
+
+    home, e = os.path.split(home)
+    d, e = os.path.split(home)
+    if e == '.':
+        home = d
+    d, e = os.path.split(home)
+    if e == '..':
+        home = os.path.dirname(d)
+
+home = os.path.realpath(home)
+__builtin__.SOFTWARE_HOME = SOFTWARE_HOME = home
+
+try:
+    zhome = os.environ['ZOPE_HOME']
+except KeyError:
+    zhome = os.path.join(home, '..', '..')
+
+zhome = os.path.realpath(zhome)
+__builtin__.ZOPE_HOME = ZOPE_HOME = zhome
+
+try:
+    chome = os.environ['INSTANCE_HOME']
+except KeyError:
+    chome = home
+    d, e = os.path.split(chome)
+    if e == 'python':
+        d, e = os.path.split(d)
+        if e == 'lib':
+            chome = d or os.getcwd()
 else:
-    inst_ppath = path_join(chome, 'lib', 'python')
+    chome = os.path.realpath(chome)
+    inst_ppath = os.path.join(chome, 'lib', 'python')
     if os.path.isdir(inst_ppath):
         sys.path.insert(0, inst_ppath)
 
-sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
+__builtin__.INSTANCE_HOME = INSTANCE_HOME = chome
 
 # CLIENT_HOME allows ZEO clients to easily keep distinct pid and
 # log files. This is currently an *experimental* feature, as I expect
 # that increasing ZEO deployment will cause bigger changes to the
 # way that z2.py works fairly soon.
-try:    CLIENT_HOME = os.environ['CLIENT_HOME']
-except: CLIENT_HOME = path_join(INSTANCE_HOME, 'var')
+try:
+    CLIENT_HOME = os.environ['CLIENT_HOME']
+except KeyError:
+    CLIENT_HOME = os.path.join(INSTANCE_HOME, 'var')
 
-sys.modules['__builtin__'].CLIENT_HOME=CLIENT_HOME
+__builtin__.CLIENT_HOME = CLIENT_HOME
 
 # If there is a Products package in INSTANCE_HOME, add it to the
 # Products package path
-ip=path_join(INSTANCE_HOME, 'Products')
+ip = os.path.join(INSTANCE_HOME, 'Products')
 ippart = 0
 ppath = Products.__path__
 if os.path.isdir(ip) and ip not in ppath:
-    disallow=os.environ.get('DISALLOW_LOCAL_PRODUCTS','').lower()
+    disallow = os.environ.get('DISALLOW_LOCAL_PRODUCTS', '').lower()
     if disallow in ('no', 'off', '0', ''):
         ppath.insert(0, ip)
         ippart = 1
