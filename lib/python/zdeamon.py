@@ -109,13 +109,13 @@ import os, sys, time, signal
 
 pyth = sys.executable
 
-class KidDiedOnMeError:
+class KidDiedOnMeError(Exception):
     pass
 
-class ExecError:
+class ExecError(Exception):
     pass
 
-class ForkError:
+class ForkError(Exception):
     pass
 
 FORK_ATTEMPTS = 2
@@ -140,7 +140,7 @@ VERBOSE = 1
 
 
 def pstamp(message):
-    print "zinit: %s: %s" % (time.ctime(time.time()), message)
+    print "zdeamon: %s: %s" % (time.ctime(time.time()), message)
 
 def heartbeat():
     print 'tha-thump'
