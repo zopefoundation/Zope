@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.27 1998/03/26 14:59:29 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.28 1998/03/26 16:05:46 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -119,7 +119,7 @@ def careful_getslice(md, seq, *indexes):
 
     return v
 
-import string, math
+import string, math, rand, whrand
 
 class expr_globals: pass
 expr_globals=expr_globals()
@@ -329,6 +329,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.28  1998/03/26 16:05:46  jim
+# *** empty log message ***
+#
 # Revision 1.27  1998/03/26 14:59:29  jim
 # Fixed bug in exporting rand modules.
 #
