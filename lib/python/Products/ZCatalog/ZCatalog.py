@@ -102,12 +102,12 @@ import IOBTree
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
 def manage_addZCatalog(self,id,title,REQUEST=None):
-	"""Add a ZCatalog object
-	"""
-	c=ZCatalog(id,title)
-	self._setObject(id,c)
-	if REQUEST is not None:
-		return self.manage_main(self,REQUEST)
+        """Add a ZCatalog object
+        """
+        c=ZCatalog(id,title)
+        self._setObject(id,c)
+        if REQUEST is not None:
+                return self.manage_main(self,REQUEST)
 
 
 class ZCatalog(Folder, FindSupport, Persistent, Implicit):
@@ -117,7 +117,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     icon='misc_/ZCatalog/ZCatalog.gif'
     
     manage_options=(
-	    
+            
         {'label': 'Contents', 'action': 'manage_main',
          'target': 'manage_main'},
         {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
@@ -128,30 +128,30 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
          'target':'manage_main'},
         {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
          'target':'manage_main'},
-	{'label': 'Status', 'action': 'manage_catalogStatus', 
+        {'label': 'Status', 'action': 'manage_catalogStatus', 
          'target':'manage_main'},
-	)
+        )
 
     
     __ac_permissions__=(
 
         ('Manage ZCatalog Entries',
          ['manage_catalogObject', 'manage_uncatalogObject',
-	  'catalog_object', 'uncatalog_object',
-	  
+          'catalog_object', 'uncatalog_object',
+          
           'manage_catalogView', 'manage_catalogFind',
-	  'manage_catalogSchema', 'manage_catalogIndexes',
-	  'manage_catalogStatus',
-	  
+          'manage_catalogSchema', 'manage_catalogIndexes',
+          'manage_catalogStatus',
+          
           'manage_catalogReindex', 'manage_catalogFoundItems',
-	  'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
-	  'manage_addIndex', 'manage_delIndexs', 'manage_main',], 
+          'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
+          'manage_addIndex', 'manage_delIndexs', 'manage_main',], 
          ['Manager']),
 
          ('Search ZCatalog',
           ['searchResults', '__call__', 'uniqueValuesFor',
-	   'getpath', 'schema', 'indexes', 'index_objects',
-	   'all_meta_types', 'valid_roles', 'resolve_url',],
+           'getpath', 'schema', 'indexes', 'index_objects',
+           'all_meta_types', 'valid_roles', 'resolve_url',],
           ['Anonymous', 'Manager']), 
         )
 
@@ -171,36 +171,36 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         self._v_total = 0
         self._catalog = Catalog()
 
-	self._catalog.addColumn('id')
-	self._catalog.addIndex('id', 'FieldIndex')
+        self._catalog.addColumn('id')
+        self._catalog.addIndex('id', 'FieldIndex')
 
-	self._catalog.addColumn('title')
-	self._catalog.addIndex('title', 'TextIndex')
+        self._catalog.addColumn('title')
+        self._catalog.addIndex('title', 'TextIndex')
 
-	self._catalog.addColumn('meta_type')
-	self._catalog.addIndex('meta_type', 'FieldIndex')
+        self._catalog.addColumn('meta_type')
+        self._catalog.addIndex('meta_type', 'FieldIndex')
 
-	self._catalog.addColumn('bobobase_modification_time')
-	self._catalog.addIndex('bobobase_modification_time', 'FieldIndex')
+        self._catalog.addColumn('bobobase_modification_time')
+        self._catalog.addIndex('bobobase_modification_time', 'FieldIndex')
 
-	self._catalog.addColumn('summary')
-	self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
-	
-	
+        self._catalog.addColumn('summary')
+        self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
+        
+        
     def manage_edit(self, threshold=1000, REQUEST=None):
         """ edit the catalog """
-	self.threshold = threshold
+        self.threshold = threshold
 
-	message = "Object changed"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        message = "Object changed"
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
-	
+        
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
-	""" index all Zope objects that 'urls' point to """
-	if urls:
-	    for url in urls:
+        """ index all Zope objects that 'urls' point to """
+        if urls:
+            for url in urls:
                 try:
                     # if an error happens here, the catalog will be in
                     # an unstable state.  If this happens, ignore the
@@ -209,57 +209,57 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                 except:
                     continue
                 
-		self.catalog_object(obj, url)
+                self.catalog_object(obj, url)
 
-	message = "Objects Cataloged"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        message = "Objects Cataloged"
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
 
     def manage_uncatalogObject(self, REQUEST, urls=None):
-	""" removes Zope object 'urls' from catalog """
+        """ removes Zope object 'urls' from catalog """
 
-	if urls:
-	    for url in urls:
+        if urls:
+            for url in urls:
                 try:
                     obj = self.resolve_url(url, REQUEST)
                 except:
                     continue
-		self.uncatalog_object(url)
+                self.uncatalog_object(url)
 
-	message = "Object UnCataloged"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        message = "Object UnCataloged"
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
 
     def manage_catalogReindex(self, REQUEST):
-	""" iterate over the whole catalog, deleting inexistent
-	references and refreshing objects"""
-	items = tuple(self._catalog.uids.items())
+        """ iterate over the whole catalog, deleting inexistent
+        references and refreshing objects"""
+        items = tuple(self._catalog.uids.items())
 
 #        self._catalog.clear()
 
-	for path, i in items:
-	    try:
-		obj = self.resolve_url(path, REQUEST)
-	    except:
-		self.uncatalog_object(path)
-	    else:
-		self.uncatalog_object(path)
-		self.catalog_object(obj, path)
+        for path, i in items:
+            try:
+                obj = self.resolve_url(path, REQUEST)
+            except:
+                self.uncatalog_object(path)
+            else:
+                self.uncatalog_object(path)
+                self.catalog_object(obj, path)
 
-	message = "Catalog Reindexed"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        message = "Catalog Reindexed"
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
 
     def manage_catalogClear(self, REQUEST):
-	""" clears the whole enchelada """
-	self._catalog.clear()
+        """ clears the whole enchelada """
+        self._catalog.clear()
 
-	message = "Catalog Cleared"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        message = "Catalog Cleared"
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
 
     def manage_catalogFoundItems(self, REQUEST, obj_metatypes=None,
@@ -286,85 +286,85 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             self.catalog_object(n[1], n[0])
 
         message = "Objects Cataloged"
-	return self.manage_main(self, REQUEST,
-				manage_tabs_message=message)
+        return self.manage_main(self, REQUEST,
+                                manage_tabs_message=message)
 
 
     def manage_addColumn(self, name, REQUEST):
-	""" add a column """
-	self._catalog.addColumn(name)
+        """ add a column """
+        self._catalog.addColumn(name)
 
-	message = "Column added"
-	return self.manage_catalogSchema(self, REQUEST,
-					  manage_tabs_message=message)
+        message = "Column added"
+        return self.manage_catalogSchema(self, REQUEST,
+                                          manage_tabs_message=message)
 
     def manage_delColumns(self, names, REQUEST):
-	""" del a column """
-	for name in names:
-	    self._catalog.delColumn(name)
-	    
-	message = "Columns deleted"
-	return self.manage_catalogSchema(self, REQUEST,
-					  manage_tabs_message=message)
+        """ del a column """
+        for name in names:
+            self._catalog.delColumn(name)
+            
+        message = "Columns deleted"
+        return self.manage_catalogSchema(self, REQUEST,
+                                          manage_tabs_message=message)
 
     def manage_addIndex(self, name, type, REQUEST):
-	""" add an index """
-	self._catalog.addIndex(name, type)
-	
-	message = "Index added"
-	return self.manage_catalogIndexes(self, REQUEST,
-					  manage_tabs_message=message)
+        """ add an index """
+        self._catalog.addIndex(name, type)
+        
+        message = "Index added"
+        return self.manage_catalogIndexes(self, REQUEST,
+                                          manage_tabs_message=message)
 
     def manage_delIndexes(self, names, REQUEST):
-	""" del an index """
-	for name in names:
-	    self._catalog.delIndex(name)
+        """ del an index """
+        for name in names:
+            self._catalog.delIndex(name)
 
-	message = "Indexes deleted"
-	return self.manage_catalogIndexes(self, REQUEST,
-					  manage_tabs_message=message)
+        message = "Indexes deleted"
+        return self.manage_catalogIndexes(self, REQUEST,
+                                          manage_tabs_message=message)
     
 
     def catalog_object(self, obj, uid):
-	""" wrapper around catalog """
-	if not hasattr(self, '_v_total'):
-	    self._v_total = 0
-	self._v_total = (self._v_total +
-			 self._catalog.catalogObject(obj, uid, self.threshold))
-	
+        """ wrapper around catalog """
+        if not hasattr(self, '_v_total'):
+            self._v_total = 0
+        self._v_total = (self._v_total +
+                         self._catalog.catalogObject(obj, uid, self.threshold))
+        
         if self._v_total > self.threshold:
             get_transaction().commit(1)
             self._v_total = 0
 
 
     def uncatalog_object(self, uid):
-	""" wrapper around catalog """
-	    
-	self._catalog.uncatalogObject(uid)
+        """ wrapper around catalog """
+            
+        self._catalog.uncatalogObject(uid)
 
 
     def uniqueValuesFor(self, name):
-	""" returns the unique values for a given FieldIndex """
-	return self._catalog.uniqueValuesFor(name)
+        """ returns the unique values for a given FieldIndex """
+        return self._catalog.uniqueValuesFor(name)
 
 
     def getpath(self, rid):
-	return self._catalog.paths[rid]
+        return self._catalog.paths[rid]
 
 
     def schema(self):
-	return self._catalog.schema.keys()
+        return self._catalog.schema.keys()
 
 
     def indexes(self):
-	return self._catalog.indexes.keys()
+        return self._catalog.indexes.keys()
 
     def index_objects(self):
-	return self._catalog.indexes.values()
+        return self._catalog.indexes.values()
 
 
     def _searchable_arguments(self):
-	r = {}
+        r = {}
         n={'optional':1}
         for name in self._catalog.indexes.keys():
             r[name]=n
@@ -372,31 +372,31 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 
     def _searchable_result_columns(self):
-	r = []
-	for name in self._catalog.indexes.keys():
-	    i = {}
-	    i['name'] = name
-	    i['type'] = 's'
-	    i['parser'] = str
-	    i['width'] = 8
-	    r.append(i)
-	return r
+        r = []
+        for name in self._catalog.indexes.keys():
+            i = {}
+            i['name'] = name
+            i['type'] = 's'
+            i['parser'] = str
+            i['width'] = 8
+            r.append(i)
+        return r
 
 
     def searchResults(self, REQUEST=None, used=None,
-		      query_map={
-			  type(regex.compile('')): Query.Regex,
-			  type([]): orify,
-			  type(''): Query.String,
-			  }, **kw):
-	"""
-	Search the catalog according to the ZTables search interface.
-	Search terms can be passed in the REQUEST or as keyword
-	arguments. 
-	"""
-	
-	return apply(self._catalog.searchResults,
-		     (REQUEST,used, query_map), kw)
+                      query_map={
+                          type(regex.compile('')): Query.Regex,
+                          type([]): orify,
+                          type(''): Query.String,
+                          }, **kw):
+        """
+        Search the catalog according to the ZTables search interface.
+        Search terms can be passed in the REQUEST or as keyword
+        arguments. 
+        """
+        
+        return apply(self._catalog.searchResults,
+                     (REQUEST,used, query_map), kw)
 
     __call__=searchResults
 
