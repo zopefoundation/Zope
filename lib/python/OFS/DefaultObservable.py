@@ -87,9 +87,9 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.1 2000/06/09 16:46:37 tseaver Exp $"""
+$Id: DefaultObservable.py,v 1.2 2000/06/11 19:08:35 tseaver Exp $"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string
 from types import StringType
@@ -146,7 +146,10 @@ class DefaultObservable:
                 bozos.append( observer )
             
         for bozo in bozos:
-            self._observers.remove( bozo )
+            try: # avoid race condition if unregister() called before now
+                self._observers.remove( bozo )
+            except:
+                pass
         
 
 #
