@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -198,14 +198,15 @@ class _cache:
 
 
 class DateTime:
-    """DateTime objects represent instants in time and provide a
-       rich interface for controlling its representation without
+    """DateTime objects represent instants in time and provide
+       interfaces for controlling its representation without
        affecting the absolute value of the object. 
 
        DateTime objects may be created from a wide variety of string 
        or numeric data, or may be computed from other DateTime objects.
-       DateTimes support conversion to and from most major timezones
-       without affecting the absolute value of the object.
+       DateTimes support the ability to convert their representations
+       to many major timezones, as well as the ablility to create a
+       DateTime object in the context of a given timezone.
 
        DateTime objects provide partial numerical behavior:
 
@@ -226,9 +227,13 @@ class DateTime:
             object.
 
         DateTime objects may be converted to integer, long, or float
-        numbers of days since January 1, 1900, using the standard int, 
-        long, and float functions, and provide access to the objects value 
-        in a float format usable with the python time module.
+        numbers of days since January 1, 1901, using the standard int, 
+        long, and float functions (Compatibility Note: int, long and
+        float return the number of days since 1901 in GMT rather than
+	local machine timezone). DateTime objects also provide access
+        to their value in a float format usable with the python time
+        module, provided that the value of the object falls in the
+        range of the epoch-based time module.
 
         A DateTime object should be considered immutable; all conversion
         and numeric operations return a new DateTime object rather than
@@ -239,24 +244,27 @@ class DateTime:
 
         A DateTime object always maintains its value as an absolute 
 	UTC time, and is represented in the context of some timezone
-	based on the arguments used to create the object. Most of a
-	DateTime object's methods return values based on the timezone
-	context: if a DateTime was created using the local machine\'s
-	timezone, calling DayOfWeek() on the object will return the
-        day of the week in the context of the local machine\'s timezone.
+	based on the arguments used to create the object. A DateTime
+	object's methods return values based on the timezone context.
+
+	Note that in all cases the local machine timezone is used for
+	representation if no timezone is specified.
 
 	DateTimes may be created with from zero to seven arguments.
-	Note that in all cases the local machine timezone is used for
-	representation if no timezone is specified. 
+
 
 	  - If the function is called with no arguments, then the 
-            current date/time is returned, represented in the timezone
-	    of the local machine.
+            current date/time is returned, represented in the 
+            timezone of the local machine.
 
-	  - If the function is invoked with a single string argument,
-            it should be either a string naming the timezone representation
-            the object should use, or a string representing a valid
-            date/time value.
+          - If the function is invoked with a single string argument
+            which is a recognized timezone name, an object representing
+            the current time is returned, represented in the specified
+            timezone.
+
+	  - If the function is invoked with a single string argument
+            representing a valid date/time, an object representing
+            that date/time will be returned.
 
             As a general rule, any date-time representation that is 
             recognized and unambigous to a resident of North America is
@@ -276,14 +284,14 @@ class DateTime:
             that timezone)
             <PRE>
 
-                e=DateTime('US/Eastern')
-                # returns current date/time, represented in US/Eastern.
+            e=DateTime('US/Eastern')
+            # returns current date/time, represented in US/Eastern.
 
-                x=DateTime('1997/3/9 1:45pm')
-                # returns specified time, represented in local machine zone.
+            x=DateTime('1997/3/9 1:45pm')
+            # returns specified time, represented in local machine zone.
 
-                y=DateTime('Mar 9, 1997 13:45:00')
-                # y is equal to x
+            y=DateTime('Mar 9, 1997 13:45:00')
+            # y is equal to x
 
             </PRE>
 
@@ -316,24 +324,26 @@ class DateTime:
 	  - If the DateTime function is invoked with a single
             Numeric argument, the number is assumed to be either
             a floating point value such as that returned by 
-            time.time() , or a number of days after 
-	    January 1, 1901 00:00:00 UTC.
+            time.time() , or a number of days after January 1, 1901 
+            00:00:00 UTC.
 
             A DateTime object is returned that represents either
-            the value of the time.time() float, or that is that 
-            number of days after January 1, 1900 00:00:00 UTC,
-	    represented in the timezone of the local machine. A 
-	    negative argument will yield a date-time value before 1900.
+            the gmt value of the time.time() float represented in
+            the local machine's timezone, or that number of days 
+            after January 1, 1901. Note that the number of days 
+            after 1901 need to be expressed from the viewpoint of
+            the local machine's timezone. A negative argument will 
+	    yield a date-time value before 1901.
 	
           - If the function is invoked with two numeric arguments,
             then the first is taken to be an integer year and the
             second argument is taken to be an offset in days from
-            the beginning of the year (in UTC).
+            the beginning of the year, in the context of the local
+            machine timezone.
             The date-time value returned is the given offset number of 
 	    days from the beginning of the given year, represented in
 	    the timezone of the local machine. The offset may be positive
-            or negative. This form of the function is commonly used
-            to convert a year and julean day to a date-time value.
+            or negative.
             Two-digit years are assumed to be in the twentieth
             century.
 
@@ -344,17 +354,17 @@ class DateTime:
             with a value of that gmt time will be returned, represented
             in the given timezone.
             <PRE>
-                import time
-                t=time.time()
+            import time
+            t=time.time()
 
-                now_east=DateTime(t,'US/Eastern')
-                # Time t represented as US/Eastern
+            now_east=DateTime(t,'US/Eastern')
+            # Time t represented as US/Eastern
 
-                now_west=DateTime(t,'US/Pacific')
-                # Time t represented as US/Pacific
+            now_west=DateTime(t,'US/Pacific')
+            # Time t represented as US/Pacific
 
-                # now_east == now_west
-                # only their representations are different
+            # now_east == now_west
+            # only their representations are different
 
             </PRE>
 
@@ -368,11 +378,9 @@ class DateTime:
             sixth arguments are floating point, positive or
             negative offsets in units of hours, minutes, and days,
             and default to zero if not given. An optional string may
-            be given as the final argument to indicate timezone.
-            A DateTime object corresponding to the given year, month
-            and day, offset by the given hours, minutes, and seconds
-            in context of either the indicated timezone or the timezone
-            of the local machine if no timezone is given.
+            be given as the final argument to indicate timezone (the
+            effect of this is as if you had taken the value of time.time()
+            at that time on a machine in the specified timezone).
 
         In all cases, invalid date, time, or timezone components will
         raise a DateTimeError. 
@@ -794,7 +802,7 @@ class DateTime:
 	   in the format used by the python time module.
 	   Note that it is possible to create date/time values
 	   with DateTime that have no meaningful value to the
-	   time module, and in such cases a DateTimeError is
+	   time module, and in such cases a DateTimeError is 
 	   raised. A DateTime object\'s value must generally be
 	   between Jan 1, 1970 (or your local machine epoch) and
 	   Jan 2038 to produce a valid time.time() style value."""
