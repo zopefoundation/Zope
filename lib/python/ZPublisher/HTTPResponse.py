@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.41 2001/01/22 16:58:30 brian Exp $'''
-__version__='$Revision: 1.41 $'[11:-2]
+$Id: HTTPResponse.py,v 1.42 2001/02/12 16:24:40 brian Exp $'''
+__version__='$Revision: 1.42 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -302,9 +302,23 @@ class HTTPResponse(BaseResponse):
                 body=body.asHTML()
 
         body=str(body)
- 
-        isHTML=self.isHTML(body)
+        l=len(body)
+        if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
+            bogus_str_search(body) > 0):
+            self.notFoundError(body[1:-1])
+        else:
+            if(title):
+                title=str(title)
+                if not is_error:
+                    self.body=self._html(title, body)
+                else:
+                    self.body=self._error_html(title, body)
+            else:
+                self.body=body
+
+
         if not self.headers.has_key('content-type'):
+            isHTML=self.isHTML(body)
             if isHTML: c='text/html'
             else:      c='text/plain'
             self.setHeader('content-type', c)
@@ -318,21 +332,6 @@ class HTTPResponse(BaseResponse):
             body = join(split(body,'\213'),'&lt;')
             body = join(split(body,'\233'),'&gt;')
 
-        l=len(body)
-            
-        if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
-            bogus_str_search(body) > 0):
-            
-            self.notFoundError(body[1:-1])
-                
-        else:
-            if(title):
-                if not is_error:
-                    self.body=self._html(str(title), str(body))
-                else:
-                    self.body=self._error_html(str(title), str(body))
-            else:
-                self.body=str(body)
         self.setHeader('content-length', len(self.body))
         self.insertBase()
         return self
