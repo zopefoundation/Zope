@@ -42,6 +42,9 @@ Zope changes
           image tag that is XHTML compatible; a space and a slash have been
           added.
 
+        - SQLMethods can now be edited via FTP and WebDAV tools. Thanks to 
+          Anthony Baxter for his FTP support patches.
+
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
