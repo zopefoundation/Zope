@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.59 1999/06/24 19:27:25 jim Exp $'''
-__version__='$Revision: 1.59 $'[11:-2]
+$Id: SimpleItem.py,v 1.60 1999/07/19 05:58:34 amos Exp $'''
+__version__='$Revision: 1.60 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -101,6 +101,7 @@ from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from urllib import quote
+import App.Common
 
 import marshal
 
@@ -286,6 +287,15 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     def manage_FTPlist(self,REQUEST):
         """Directory listing for FTP. In the case of non-Foldoid objects,
         the listing should contain one object, the object itself."""
+        # check to see if we are being acquiring or not
+        ob=self
+        while 1:
+            if App.Common.is_acquired(ob):
+                raise ValueError('FTP List not supported on acquired objects')
+            if not hasattr(ob,'aq_parent'):
+                break
+            ob=ob.aq_parent
+            
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
         if callable(self.id): id=self.id()
         else: id=self.id

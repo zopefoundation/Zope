@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.77 1999/07/15 16:49:02 jim Exp $"""
+$Id: ObjectManager.py,v 1.78 1999/07/19 05:58:34 amos Exp $"""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -97,6 +97,7 @@ from webdav.Collection import Collection
 from urllib import quote
 from cStringIO import StringIO
 import marshal
+import App.Common
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match #TS
 
@@ -475,11 +476,16 @@ class ObjectManager(
     def manage_FTPlist(self,REQUEST):
         "Directory listing for FTP"
         out=()
-        # check to see if we are acquiring our objectValues or not
-        if len(REQUEST.PARENTS) > 1 and \
-                self.objectValues()==REQUEST.PARENTS[1].objectValues():
-                raise ValueError, 'FTP List not supported on acquired objects'
-                # XXX what type of error to raise?  
+        
+        # check to see if we are being acquiring or not
+        ob=self
+        while 1:
+            if App.Common.is_acquired(ob):
+                raise ValueError('FTP List not supported on acquired objects')
+            if not hasattr(ob,'aq_parent'):
+                break
+            ob=ob.aq_parent
+        
         files=self.objectItems()
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
