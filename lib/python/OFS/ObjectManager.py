@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.140 2001/07/05 15:44:50 andreas Exp $"""
+$Id: ObjectManager.py,v 1.141 2001/07/06 18:06:57 brian Exp $"""
 
-__version__='$Revision: 1.140 $'[11:-2]
+__version__='$Revision: 1.141 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -109,7 +109,7 @@ customImporters={
     XMLExportImport.magic: XMLExportImport.importXML,
     }
 
-bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$ ]').search #TS
+bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$# ]').search #TS
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
