@@ -35,10 +35,10 @@ Zope Changes
         boolean.  -Z1 means use a daemon.  -Z0 means dont.  The
         default is -Z1.
 
-    Bugs Fixed
-
       - Collector #670: applied patch from Dieter Maurer to enhance
         the Zope profiling support
+
+    Bugs Fixed
 
       - Collector #651: WebDAV Lock Manager was broken.
 
