@@ -1,0 +1,260 @@
+<schema prefix="Zope.Startup.datatypes"
+        datatype=".root_config"
+        handler="root_handler">
+
+  <!-- type definitions -->
+
+  <import package="zLOG"/>
+  <import package="ZODB"/>
+  <import package="ZServer"/>
+
+  <sectiontype name="logger" datatype=".LoggerFactory">
+    <description>
+      This "logger" type only applies to access and request ("trace")
+      logging; event logging is handled by the zLOG package, which
+      provides the loghandler type used here.
+    </description>
+    <key name="level" datatype="zLOG.datatypes.logging_level" default="info"/>
+    <multisection type="loghandler" attribute="handlers" name="*"
+                  required="yes"/>
+  </sectiontype>
+
+  <sectiontype name="cgi-environment"
+               datatype=".cgi_environment"
+               keytype="identifier">
+    <key name="+" attribute="environ"/>
+  </sectiontype>
+
+  <sectiontype name="zoperunner">
+    <description>
+      This section describes the options for zopectl.  These options
+      have no default value specified in the schema; in some cases,
+      zopectl calculates a dynamic default, in others, the feature
+      associated with the option is disabled.
+
+      For those options that also have corresponding command-line
+      options, the command line option (short and long form) are given
+      here too.
+    </description>
+
+    <key name="daemon" datatype="boolean"
+	 required="no" default="false">
+      <description>
+        Command-line option: -d or --daemon.
+
+        If this option is true, zdrun.py runs in the background as a
+        true daemon.  It forks an child process which becomes the
+        subprocess manager, while the parent exits (making the shell
+        that started it believe it is done).  The child process also
+        does the following:
+
+        - if the directory option is set, change into that directory
+
+        - redirect stdin, stdout and stderr to /dev/null
+
+        - call setsid() so it becomes a session leader
+
+        - call umask(022)
+      </description>
+    </key>
+
+    <key name="backoff-limit" datatype="integer"
+	 required="no" default="10">
+      <description>
+        Command-line option: -b or --backoff-limit.
+
+        When the subprocess crashes, zdrun.py inserts a one-second
+        delay before it restarts it.  When the subprocess crashes
+        again right away, the delay is incremented by one second, and
+        so on.  What happens when the delay has reached the value of
+        backoff-limit (in seconds), depends on the value of the
+        forever option.  If forever is false, zdrun.py gives up at
+        this point, and exits.  An always-crashing subprocess will
+        have been restarted exactly backoff-limit times in this case.
+        If forever is true, zdrun.py continues to attempt to restart
+        the process, keeping the delay at backoff-limit seconds.
+
+        If the subprocess stays up for more than backoff-limit
+        seconds, the delay is reset to 1 second.
+      </description>
+    </key>
+
+    <key name="forever" datatype="boolean"
+	 required="no" default="false">
+      <description>
+        Command-line option: -f or --forever.
+
+        If this option is true, zdrun.py will keep restarting a
+        crashing subprocess forever.  If it is false, it will give up
+        after backoff-limit crashes in a row.  See the description of
+        backoff-limit for details.
+      </description>
+    </key>
+
+    <key name="hang-around" datatype="boolean"
+	 required="no" default="false">
+      <description>
+        If this option is true, the zdrun.py process will remain even
+        when the daemon subprocess is stopped.  In this case, zopectl
+        will restart zdrun.py as necessary.  If this option is false,
+        zdrun.py will exit when the daemon subprocess is stopped
+        (unless zdrun.py intends to restart it).
+      </description>
+    </key>
+
+    <key name="default-to-interactive" datatype="boolean"
+	 required="no" default="true">
+      <description>
+        If this option is true, zopectl enters interactive mode
+        when it is invoked without a positional command argument.  If
+        it is false, you must use the -i or --interactive command line
+        option to zopectl to enter interactive mode.
+      </description>
+    </key>
+
+    <key name="prompt" datatype="string"
+         required="no" default="zopectl>">
+       <description>
+         The prompt shown by zopectl program.
+       </description>
+    </key>
+
+  </sectiontype>
+
+  <!-- end of type definitions -->
+
+  <!-- schema begins  -->
+
+  <key name="instancehome" datatype="existing-directory"
+       required="yes">
+    <description>
+      The top-level directory which contains the "instance" of the
+      application server.
+    </description>
+  </key>
+
+  <key name="clienthome" datatype="existing-directory">
+    <description>
+      The directory used to store the file-storage used to back the
+      ZODB database by default, as well as other files used by the
+      Zope application server to control the run-time behavior.
+    </description>
+    <metadefault>$INSTANCE_HOME/var</metadefault>
+  </key>
+
+  <key name="pid-filename" datatype="existing-dirpath"/>
+
+  <key name="lock-filename" datatype="existing-dirpath"/>
+
+  <key name="debug-mode" datatype="boolean" default="on"
+       handler="debug_mode"/>
+
+  <key name="effective-user"/>
+
+  <key name="enable-product-installation" datatype="boolean" default="on"
+       handler="enable_product_installation"/>
+
+  <key name="locale" datatype="locale" handler="locale"/>
+
+  <key name="zserver-threads" datatype="integer" default="4"/>
+
+  <key name="python-check-interval" datatype="integer" default="500">
+    <description>
+      Value passed to Python's sys.setcheckinterval() function.  The
+      higher this is, the less frequently the Python interpreter
+      checks for keyboard interrupts.  Setting this to higher values
+      also reduces the frequency of potential thread switches, which
+      can improve the performance of a busy server.
+    </description>
+  </key>
+
+  <key name="zserver-read-only-mode" datatype="boolean" default="off"
+       handler="zserver_read_only_mode">
+    <description>
+      If this variable is set, then the database is opened in read
+      only mode.  If this variable is set to a string parsable by
+      DateTime.DateTime, then the database is opened read-only as of
+      the time given.  Note that changes made by another process after
+      the database has been opened are not visible.
+    </description>
+  </key>
+
+  <key name="structured-text-header-level" datatype="integer" default="3"
+       handler="structured_text_header_level"/>
+
+  <key name="maximum-security-manager-stack-size" datatype="integer"
+       default="100" handler="maximum_security_manager_stack_size"/>
+
+  <key name="publisher-profile-file" handler="publisher_profile_file"/>
+
+  <section type="cgi-environment" attribute="cgi_environment" name="*"/>
+
+  <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver"/>
+
+  <key name="ip-address" datatype="ipaddr-or-hostname"/>
+
+  <key name="http-realm" default="Zope" handler="http_realm"/>
+
+  <key name="automatically-quote-dtml-request-data" datatype="boolean"
+       default="on" handler="automatically_quote_dtml_request_data"/>
+
+  <key name="security-policy-implementation"
+       datatype=".security_policy_implementation"
+       default="C" handler="security_policy_implementation"/>
+
+  <key name="skip-authentication-checking" datatype="boolean"
+       default="off" handler="skip_authentication_checking"/>
+
+  <key name="skip-ownership-checking" datatype="boolean"
+       default="off" handler="skip_ownership_checking"/>
+
+  <key name="maximum-number-of-session-objects" datatype="integer"
+       default="1000" handler="maximum_number_of_session_objects"/>
+
+  <key name="session-add-notify-script-path"
+       handler="session_add_notify_script_path"/>
+
+  <key name="session-delete-notify-script-path"
+       handler="session_add_notify_script_path"/>
+
+  <key name="session-timeout-minutes" datatype="integer"
+       default="20" handler="session_timeout_minutes"/>
+
+  <key name="suppress-all-access-rules" datatype="boolean"
+       default="off" handler="suppress_all_access_rules"/>
+
+  <key name="suppress-all-site-roots" datatype="boolean"
+       default="off" handler="suppress_all_site_roots"/>
+
+  <key name="database-quota-size" datatype="byte-size"
+       handler="database_quota_size"/>
+
+  <key name="read-only-database" datatype="boolean"
+       handler="read_only_database"/>
+
+  <key name="zeo-client-name"
+       handler="zeo_client_name"/>
+
+  <section type="eventlog" name="*" attribute="eventlog">
+    <description>
+      Describes the logging performed by zLOG.LOG() calls.
+    </description>
+  </section>
+
+  <section type="logger" name="access"/>
+
+  <section type="logger" name="trace"/>
+
+  <multisection type="server" name="*" attribute="servers"/>
+  <key name="port-base" datatype="integer" default="0">
+    <description>
+      Base port number that gets added to the specific port numbers
+      specified for the individual servers.
+    </description>
+  </key>
+
+  <multisection type="database" name="*" attribute="databases"/>
+
+  <section type="zoperunner" name="*" attribute="runner"/>
+
+</schema>
