@@ -43,9 +43,14 @@ Building Zope
       ./configure
       make instance
 
-    This set of commands builds binary files and creates the files
-    necessary for a Zope instance to be run directly within the build
-    directory (e.g. 'in-place').  You may now start Zope by running::
+    WARNING: "make instance" doesn't work on FreeBSD 5.0 and
+    presumably other platforms. You should either use GNU make
+    (gmake instance), or use "make install" instead.
+
+    Making an "In-Place" instance builds the binary files and creates
+    the files necessary for a Zope instance to be run directly
+    within the build directory (e.g. 'in-place').  You may start
+    Zope by running::
 
       ./bin/runzope
 
@@ -75,7 +80,7 @@ Creating a Zope Instance Home
   process.  The instance home is created using the 'mkzopeinstance.py'
   script::
 
-    /where/to/install/zope/bin/mkzopeinstance.py /location/of/zope/instance
+    /where/to/install/zope/bin/mkzopeinstance.py
 
   You will be asked to provide a user name and password for an
   administrator's account during 'mkzopeinstance'.  Command-line
