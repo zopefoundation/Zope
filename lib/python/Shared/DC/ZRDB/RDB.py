@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.11 1998/01/16 20:24:49 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: RDB.py,v 1.12 1998/01/16 21:43:47 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol, find
@@ -43,16 +43,17 @@ record_classes={}
 
 class NoBrains: pass
 
-class File:
+class DatabaseResults:
     """Class for reading RDB files
     """
     _index=None
 
-    def __init__(self,file,brains=NoBrains):
+    def __init__(self,file,brains=NoBrains, parent=None):
 
 	self._file=file
 	readline=file.readline
 	line=readline()
+	self._parent=parent
 
 	comment_pattern=regex.compile('#')
 	while line and comment_pattern.match(line) >= 0: line=readline()
@@ -130,9 +131,9 @@ class File:
 	    if hasattr(brains, '__init__'):
 		binit=brains.__init__
 		if hasattr(binit,'im_func'): binit=binit.im_func
-		def __init__(self, data, binit=binit):
+		def __init__(self, data, parent, binit=binit):
 		    Record.__init__(self,data)
-		    binit(self)
+		    binit(self.__of__(parent))
 
 		r.__dict__['__init__']=__init__
 		    
@@ -185,14 +186,19 @@ class File:
                 else: v=MV
             fields[i]=v
 
-	fields=self._class(fields)
+	fields=self._class(fields, self._parent)
 	self._index=index
 	self._row=fields
 	return fields
 
+File=DatabaseResults
+
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.12  1998/01/16 21:43:47  jim
+# Added parent to constructor so init can acquire
+#
 # Revision 1.11  1998/01/16 20:24:49  jim
 # Added the abilility to define constructors in brains.
 #
