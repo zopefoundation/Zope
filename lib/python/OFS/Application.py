@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.154 2001/06/19 23:21:18 andreas Exp $'''
-__version__='$Revision: 1.154 $'[11:-2]
+$Id: Application.py,v 1.155 2001/06/26 13:45:48 andreas Exp $'''
+__version__='$Revision: 1.155 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -678,6 +678,7 @@ def install_product(app, product_dir, product_name, meta_types,
                     if pname is not None:
                         meta_type['permission']=pname
                     meta_type['product']=productObject.id
+                    meta_type['visibility'] = 'Global'
                     meta_types.append(meta_type)
 
                 for name,method in pgetattr(

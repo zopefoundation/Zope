@@ -4,6 +4,16 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+    Changes since Zope 2.4 beta 1
+
+      Bugs fixed
+
+        - Collector #2335: older products like GadflyDA that did not
+          use registerClass() were registered but their visibility
+          flag has not been set  to Global. So these  products did not
+          appear in the ZMF.
+
+
     Zope 2.4 beta 1
 
       Features Added
