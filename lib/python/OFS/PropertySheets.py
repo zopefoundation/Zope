@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -430,9 +430,6 @@ class DAVProperties(Virtual, PropertySheet):
         {'id':'source',           'mode':'r'},
         )
 
-    def hasProperty(self, id):
-        return self.dav__propmap.has_key(id)
-
     def getProperty(self, id, default=None):
         method='dav__%s' % id
         if not hasattr(self, method):
@@ -440,13 +437,13 @@ class DAVProperties(Virtual, PropertySheet):
         return getattr(self, method)()
 
     def _setProperty(self, id, value, type='string', meta=None):
-        raise ValueError, 'Property cannot be set.'
+        raise ValueError, '%s cannot be set.' % id
 
     def _updateProperty(self, id, value):
-        raise ValueError, 'Property cannot be set.'
+        raise ValueError, '%s cannot be updated.' % id
 
     def _delProperty(self, id):
-        raise ValueError, 'Property cannot be deleted.'
+        raise ValueError, '%s cannot be deleted.' % id
 
     def propertyMap(self):
         return self.pm
