@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.5 1997/09/26 22:17:37 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: RDB.py,v 1.6 1997/09/30 16:41:06 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -128,7 +128,7 @@ class File:
 	file.seek(self._lines[index])
 	line=file.readline()
 	line=line[:-1]
-	if line[-1:] in '\r\n': line=line[:-1]
+	if line and line[-1:] in '\r\n': line=line[:-1]
 	fields=split(line,'\t')
 	l=len(fields)
 	nv=self._nv
@@ -159,6 +159,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.6  1997/09/30 16:41:06  jim
+# Fixed bug in handling empty lines.
+#
 # Revision 1.5  1997/09/26 22:17:37  jim
 # more
 #
