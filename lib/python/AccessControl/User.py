@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.161 $'[11:-2]
+__version__='$Revision: 1.162 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -874,7 +874,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         return AuthEncoding.pw_encrypt(pw, 'SSHA')
 
 
-    def domainSpecValidate(spec):
+    def domainSpecValidate(self,spec):
 
         for ob in spec:
 
