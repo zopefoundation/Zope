@@ -12,7 +12,7 @@
 ##############################################################################
 """ ZCatalog product
 
-$Id: ZCatalog.py,v 1.128 2003/12/07 16:12:40 yuppie Exp $
+$Id: ZCatalog.py,v 1.129 2003/12/31 21:17:28 poster Exp $
 """
 
 from Globals import DTMLFile, MessageDialog
@@ -55,8 +55,6 @@ def manage_addZCatalog(self, id, title,
 
 
 class ZCatalog(Folder, Persistent, Implicit):
-    __implements__ = IZCatalog
-
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -75,6 +73,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     Python program to catalog objects.
 
     """
+    
+    __implements__ = IZCatalog
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
