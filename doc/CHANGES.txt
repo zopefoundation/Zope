@@ -43,7 +43,11 @@ Zope changes
           wrappers* .  Fixed to unrwap the object (both, if needed)
           before comparing identities.
 
-
-
-
-
+        - (Collector #1687 Products which register base classes
+          for ZClasses typically defer creating them until product
+          registration;  the derived ZClass needs them to be available
+          immediately after import.  Deprecated
+          'ProductContext.registerZClass' and
+          'ProductContext.registerBaseClass' in favor of a new function,
+          'ZClasses.createZClassForBase' (because none of the machinery
+          needed a ProductContext instance anyway).

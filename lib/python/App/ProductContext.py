@@ -85,7 +85,7 @@
 """Objects providing context for product initialization
 """
 from AccessControl.PermissionRole import PermissionRole
-import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
+import Globals, os, OFS.ObjectManager, OFS.misc_, Products
 import AccessControl.Permission
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
@@ -93,6 +93,8 @@ from FactoryDispatcher import FactoryDispatcher
 import string, os.path
 import stat
 from DateTime import DateTime
+
+import ZClasses # to enable 'PC.registerBaseClass()'
 
 if not hasattr(Products, 'meta_types'): Products.meta_types=()
 if not hasattr(Products, 'meta_classes'):
@@ -235,6 +237,12 @@ class ProductContext:
 
 
     def registerZClass(self, Z, meta_type=None):
+        #
+        #   Convenience method, now deprecated -- clients should
+        #   call 'ZClasses.createZClassForBase()' themselves at
+        #   module import time, passing 'globals()', so that the
+        #   ZClass will be available immediately.
+        #
         base_class=Z._zclass_
         if meta_type is None:
             if hasattr(base_class, 'meta_type'): meta_type=base_class.meta_type
@@ -253,20 +261,17 @@ class ProductContext:
         Products.meta_class_info[key]=info # meta_type
         Products.meta_classes[key]=Z
         
+        
 
     def registerBaseClass(self, base_class, meta_type=None):
-
-        d={}
-        zname='_ZClass_for_'+base_class.__name__
-        exec 'class %s: pass' % zname in d
-        Z=d[zname]
-        Z.propertysheets=OFS.PropertySheets.PropertySheets()
-        Z._zclass_=base_class
-        Z.manage_options=()
-        pack=self.__pack
-        Z.__module__=pack.__name__
-        setattr(pack, zname, Z)
-        return self.registerZClass(Z, meta_type)
+        #
+        #   Convenience method, now deprecated -- clients should
+        #   call 'ZClasses.createZClassForBase()' themselves at
+        #   module import time, passing 'globals()', so that the
+        #   ZClass will be available immediately.
+        #
+        Z = ZClasses.createZClassForBase( base_class, self.__pack )
+        return Z
 
 
     def getProductHelp(self):

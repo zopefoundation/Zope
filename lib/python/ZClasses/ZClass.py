@@ -91,6 +91,69 @@ from ZPublisher.mapply import mapply
 from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
+import OFS.PropertySheets
+
+if not hasattr(Products, 'meta_types'):
+    Products.meta_types=()
+
+if not hasattr(Products, 'meta_classes'):
+    Products.meta_classes={}
+    Products.meta_class_info={}
+
+def createZClassForBase( base_class, pack, nice_name=None, meta_type=None ):
+    """
+      * Create a ZClass for 'base_class' in 'pack' (before a ProductContext
+        is available).  'pack' may be either the module which is to
+        contain the ZClass or its 'globals()'.  If 'nice_name' is
+        passed, use it as the name for the created class, and create
+        the "ugly" '_ZClass_for_...' name as an alias;  otherwise,
+        just use the "ugly" name.
+
+      * Register the ZClass under its meta_type in the Products registries.
+    """
+    d                 = {}
+    zname             = '_ZClass_for_' + base_class.__name__
+
+    if nice_name is None:
+        nice_name = zname
+
+    exec 'class %s: pass' % nice_name in d
+
+    Z                 = d[nice_name]
+    Z.propertysheets  = OFS.PropertySheets.PropertySheets()
+    Z._zclass_        = base_class
+    Z.manage_options  = ()
+
+    try:
+        Z.__module__  = pack.__name__
+        setattr( pack, nice_name, Z )
+        setattr( pack, zname, Z )
+    except AttributeError: # we might be passed 'globals()'
+        Z.__module__      = pack[ '__name__' ]
+        pack[ nice_name ] = Z
+        pack[ zname ]     = Z
+
+    if meta_type is None:
+        if hasattr(base_class, 'meta_type'): meta_type=base_class.meta_type
+        else:                                meta_type=base_class.__name__
+
+    base_module = base_class.__module__
+    base_name   = base_class.__name__
+        
+    key         = "%s/%s" % (base_module, base_name)
+
+    if base_module[:9] == 'Products.':
+        base_module = string.split( base_module,'.' )[1]
+    else:
+        base_module = string.split( base_module,'.' )[0]
+        
+    info="%s: %s" % ( base_module, base_name )
+
+    Products.meta_class_info[key] = info # meta_type
+    Products.meta_classes[key]    = Z
+
+    return Z
+
 from OFS.misc_ import p_
 
 p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())

@@ -83,11 +83,29 @@
 # 
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.34 2000/06/09 01:22:13 amos Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: __init__.py,v 1.35 2000/11/01 22:59:30 tseaver Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
-import OFS.DTMLMethod, OFS.DTMLDocument, ZClasses.ObjectManager
+import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
+import ZClasses.ObjectManager
+
+from ZClasses import createZClassForBase
+
+createZClassForBase( OFS.DTMLMethod.DTMLMethod, globals()
+                   , 'ZDTMLMethod', 'DTML Method' )
+createZClassForBase( OFS.DTMLDocument.DTMLDocument, globals()
+                   , 'ZDTMLDocument', 'DTML Document' )
+createZClassForBase( OFS.Image.Image, globals()
+                   , 'ZImage', 'Image' )
+createZClassForBase( OFS.Image.File, globals()
+                   , 'ZFile', 'File' )
+createZClassForBase( OFS.Folder.Folder, globals()
+                   , 'ZFolder', 'Folder' )
+createZClassForBase( AccessControl.User.UserFolder, globals()
+                   , 'ZUserFolder', 'User Folder' )
+createZClassForBase( AccessControl.User.User, globals()
+                   , 'ZUser', 'User' )
 
 # This is the new way to initialize products.  It is hoped
 # that this more direct mechanism will be more understandable.
@@ -105,8 +123,6 @@ def initialize(context):
             ('manage_addDTMLMethod', OFS.DTMLMethod.addDTMLMethod),
             )
         )
-    context.registerBaseClass(OFS.DTMLMethod.DTMLMethod, 'DTML Method')
-
 
     context.registerClass(
         OFS.DTMLDocument.DTMLDocument,
@@ -116,7 +132,6 @@ def initialize(context):
         icon='images/dtmldoc.gif',
         legacy=(('manage_addDTMLDocument', OFS.DTMLDocument.addDTMLDocument),),
         )
-    context.registerBaseClass(OFS.DTMLDocument.DTMLDocument, 'DTML Document')
 
 
     context.registerClass(
@@ -127,7 +142,6 @@ def initialize(context):
         icon='images/Image_icon.gif',
         legacy=(OFS.Image.manage_addImage,),
         )
-    context.registerBaseClass(OFS.Image.Image, 'Image')
 
 
     context.registerClass(
@@ -138,7 +152,6 @@ def initialize(context):
         icon='images/File_icon.gif',
         legacy=(OFS.Image.manage_addFile,),
         )
-    context.registerBaseClass(OFS.Image.File, 'File')
     
     context.registerClass(
         OFS.Folder.Folder,
@@ -147,7 +160,6 @@ def initialize(context):
         icon='images/Folder_icon.gif',
         legacy=(OFS.Folder.manage_addFolder,),
         )
-    context.registerBaseClass(OFS.Folder.Folder, 'Folder')
     
 
     context.registerClass(
@@ -156,10 +168,6 @@ def initialize(context):
         icon='images/UserFolder_icon.gif',
         legacy=(AccessControl.User.manage_addUserFolder,),
         )
-
-    context.registerBaseClass(AccessControl.User.UserFolder, 'User Folder')
-    context.registerBaseClass(AccessControl.User.User)
-
 
 
     context.registerClass(

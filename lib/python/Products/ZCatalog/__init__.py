@@ -85,9 +85,13 @@
 
 """ZCatalog product"""
 
-import ZCatalog, Catalog, CatalogAwareness, Vocabulary
+import ZCatalog, Catalog, CatalogAwareness, Vocabulary, ZClasses
+from ZClasses import createZClassForBase
 
-
+createZClassForBase( ZCatalog.ZCatalog , globals()
+                   , 'ZCatalogBase', 'ZCatalog' )
+createZClassForBase( CatalogAwareness.CatalogAware, globals()
+                   , 'CatalogAwareBase', 'CatalogAware' )
 
 def initialize(context):
     context.registerClass(
@@ -106,9 +110,6 @@ def initialize(context):
         icon='www/Vocabulary.gif',
         )
     
-    context.registerBaseClass(ZCatalog.ZCatalog)
-    context.registerBaseClass(CatalogAwareness.CatalogAware)
-
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
 

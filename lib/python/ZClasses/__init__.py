@@ -14,11 +14,13 @@ needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.5 2000/01/10 03:36:05 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 2000/11/01 22:59:34 tseaver Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import ZClass
 import ZClassOwner
+
+createZClassForBase = ZClass.createZClassForBase
 
 # Names of objects added by this product:
 meta_types=(
