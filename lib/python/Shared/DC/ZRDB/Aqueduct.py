@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.40 2000/05/12 15:06:23 brian Exp $'''
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: Aqueduct.py,v 1.41 2000/06/13 22:10:01 amos Exp $'''
+__version__='$Revision: 1.41 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -214,7 +214,9 @@ def default_input_form(id,arguments,action='query',
         items=arguments.items()
         return (
             "%s\n%s%s" % (
-                '<html><head><title>%s Input Data</title></head><body>\n%s\n'
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">\n'
+                '<html lang="en"><head><title>%s Input Data</title></head>\n'
+                '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">\n%s\n'
                 '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
                 'method="get">\n'
                 '<h2>%s Input Data</h2>\n'
@@ -251,7 +253,9 @@ def default_input_form(id,arguments,action='query',
             )
     else:
         return (
-            '<html><head><title>%s Input Data</title></head><body>\n%s\n'
+            '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">\n'
+            '<html lang="en"><head><title>%s Input Data</title></head>\n'
+            '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">\n%s\n'
             '<form action="<dtml-var URL2>/<dtml-var id>/%s" '
             'method="get">\n'
             '<h2>%s Input Data</h2>\n'
