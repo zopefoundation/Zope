@@ -115,8 +115,8 @@ sdist: clobber sdist_tgz
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
 sdist_tgz:
-	echo Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG} \
-          > "${BASE_DIR}/lib/python/version.txt"
+	echo -n "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
+          "${BASE_DIR}/lib/python/version.txt"
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tar.gz ${PACKAGE_NAME} \
