@@ -1,0 +1,222 @@
+The following is a TODO list dealing with installation and startup
+changes proposed for the Zope trunk.  It is organized into these
+categories:
+
+  "BEFORE RELEASE OF ZOPE 2.7A" (items to do before the first alpha
+  release of Zope 2.7)
+
+  "BEFORE 2.7 FINAL" (things that need to be done before we're
+  finished, but not currently on the critical path)
+
+  "MAYBE NEVER BUT NICE TO HAVE" (items that are not on any critical
+  path)
+
+--------------------------------
+  BEFORE RELEASE OF ZOPE 2.7A
+--------------------------------
+
+Config file needs better inline docs
+
+  The Zope ZConfig config file has some inline docs.  They need to be
+  completed.  Additional docs may come as a result of writing a schema-to-HTML
+  translator.
+
+Make as many things defaultable as feasible
+
+  Maybe we can allow a config file in which everything is commented
+  out. We'll see.
+
+Write some more unit tests
+
+  Write unit tests for Zope.Startup packages.
+
+Update Zope distribution creation machinery
+
+  The current distribution-creation machinery will almost certainly
+  fail if it's not updated with knowledge of the new Zope installation
+  regime.
+
+Beautify output of "make install".
+
+  The output of make install includes some spurious warnings from
+  distutils.
+
+Zope.Startup.nt.NTService.py and INSTANCE_HOME/bin/ntservice.py need
+testing
+
+  These modules allow you to associate an NT service with a Zope
+  INSTANCE_HOME.  Success means being able to invoke the ntservice.py
+  module to create an NT service which can successfully start and stop
+  a Zope instance on a per-instance-home basis.
+
+  Update: As of Jan. 13, this fails -- instance-home-based services
+  report failure on start (even though they start) and cannot be
+  stopped.
+
+What to do about envvars?
+
+  Envvars are still used "under the hood" in ZConfig handlers as the
+  result of particular configuration declarations in order to make
+  Zope do the right thing (e.g. INSTANCE_HOME, SOFTWARE_HOME,
+  DTML_REQUEST_AUTOQUOTE, SESSION_TIMEOUT_MINUTES and other envvars
+  are set in ZConfig handlers for their respective keys).  But envvars
+  should not be used to try to configure Zope, as the handlers
+  overwrite existing envvars with prejudice.  We need to come down on
+  one side or the other about envvars.. either they should be
+  respected at startup as they always have been or they should be
+  explicitly not respected.  Currently they are not respected.
+
+  We need to communicate this decision to developers and update
+  doc/ENVIRONMENT.txt as necessary.
+
+win32-eventlog needs testing
+
+  The "win32-eventlog" log handler (which is creatable via the config
+  file) needs to be tested.
+
+Server construction errors need to be better
+
+  When a server is constructed, it attempts to bind to a port.  If the
+  port cannot be bound, an error is raised.  The error currently doesn't
+  include the port number, and should.
+
+Review impact of missing Data.fs.in
+
+  The branch install process doesn't copy the "Data.fs.in" file to an
+  instancehome/var directory.  This file is the "initial" filestorage
+  for Zope that gets copied to "Data.fs" during installation in every
+  prior branch of Zope.  This file is evil and must die at some point,
+  and most of the necessary code to set things up properly in the face
+  of an empty Data.fs already exists in OFS.Application.initialize.
+  Things seem to work fine without Data.fs.in but we should just give
+  it a bit of review to see what gets left out, if anything.
+
+  When we find that Data.fs.in isn't necessary, we need to remove it
+  from the HEAD.
+
+  XXX What is actually needed to verify that it isn't needed?
+
+  AAA The best way to do this is to write a unit test which verifies
+      that the default objects installed into a "new" ZODB when Zope
+      starts are present and working, and their content either matches
+      the content of what would have come from Data.fs.in or is "close
+      enough".  The code that installs these default objects exists in
+      the initialize function within lib/python/OFS/Application.
+
+-----------------
+BEFORE 2.7 FINAL
+-----------------
+
+Review the Zope Book 2.6 Edition chapters and come up with revisions
+or at least create a Zope Trunk Install HowTo
+
+  The 2.6 edition Zope Book at
+  http://www.zope.org/Documentation/Books/ZopeBook/2_6Edition has
+  three chapters which detail installation (Installing and Starting
+  Zope), maintenance (Maintaining Zope) and ZEO (Scalability and ZEO).
+  These chapters should be reviewed for inaccuracies with respect to
+  the forthcoming trunk changes and changes should be made "offline"
+  to allow a Zope Book 2.7 edition.
+
+  At least create a HowTo which summarizes the differences between
+  installing 2.6 and installing the trunk.
+
+------------------------------
+ MAYBE NEVER BUT NICE TO HAVE
+------------------------------
+
+ZConfig defaults
+
+  We deferred several issues that we recognized as areas for
+  improvement in ZConfig that might make it possible to avoid writing
+  nasty procedural code for default handling unnecessary
+  (e.g. Zope.Startup.handlers.root_handler).  See
+  http://my.zope.com/CPM/CPM/issues/4 and
+  http://my.zope.com/CPM/CPM/issues/3.  Not necessary for merge, but
+  useful to think about for future.
+
+
+RPM install should recompile .pycs
+
+  The RPM spec file (inst/Zope.spec.in) should delete and recompile
+  .pycs/.pyos during an RPM install to make sure tracebacks contain
+  real Zope filenames instead of filenames relative to the build
+  directory.  Alternately the RPM install should not contain .pycs or
+  .pyos.
+
+  XXX Not clear why this is actually needed; importing a module causes
+  the __file__ to be updated with the right filename.  A nice touch,
+  but not required.
+
+  AAA Is this a new Python feature or has it always been this way?
+  Tracebacks used to show the location of the .pyc where it had been
+  compiled, not where it actually lived.
+
+RPM install versioning scheme needs to be documented
+
+  The RPM builder has a versioning scheme via the generated Makefile
+  in order to allow for the install of multiple simultaneous versions
+  of Zope on a single system.  This versioning scheme should be
+  documented.
+
+----------------------------------
+COMMUNITY CONCERNS (uncategorized)
+----------------------------------
+
+Status:  Request for comment sent to the community:
+http://mail.zope.org/pipermail/zope-dev/2003-March/018999.html
+Lots of discussion!
+
+ - need to be able to specify PRODUCTS_PATH (to extend the
+   path Zope looks for Products within)
+
+ - ZConfig is too complex when compared with envvar parsing.
+
+ - Somewhat unrelated, but the features of "debug mode" should be
+   disentangled from one another and specifiable individually.
+
+ - Need to support arbitrary storage types.
+
+ - ZOPE_TRUSTED_PROXIES envvar is not configureable via config file.
+
+ - REST_INPUT_ENCODING and REST_OUTPUT_ENCODING are not config-file
+   configurable
+
+ - DATETIME_FORMAT is not config-file configurable.
+
+ - Is ZEO_CACHE_TRACE configurable?
+
+ - Provide --swhome and ---with-python switch to mkzopeinstance, which will
+   allow folks to create an instance that points to particular (known)
+   Python versions and software homes.
+
+   XXX This doesn't make sense.  mkzopeinstance is part of the
+   software home; if you want to use a different one, use the
+   mkzopeinstance from the software home you want to use.  The same
+   goes for the Python to use; that's "built-in" to a software home.
+   Using a different Python doesn't make sense given that the software
+   home includes compiled modules.
+
+   AAA This is to service to-be-chrooted installs.
+
+ - zopectl debug (opens up a Python interpreter shell with the app
+   name bound to the root application object) and zopectl run
+   (execfiles a module with the app name bound to the root application
+   object).
+
+ - Explain how to set up and use a ZEO server using mkzeoinst
+   included in 2.7's ZEO.
+
+   (Use the installed bin/mkzeoinstance script; use --help for more
+   information.)
+
+ - Give ZConfig replacement access to the environment or shell
+   somehow.  For instance, some folks use the same 'start' script in
+   all of their instances right now (under 2.6).  The script does
+   things based on the value of an envvar that can be used to
+   distinguish the config values of the instance from other instances.
+   We could allow for the same sort of behavior E.g.:
+
+   %define HOSTNAME `hostname`  (assuming `hostname` resolves to a hostname)
+
+   lockfile-name /var/lock/$HOSTNAME-lockfile
