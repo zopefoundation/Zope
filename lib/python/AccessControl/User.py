@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -71,7 +71,7 @@ class SuperUser:
     def __repr__(self):
         return self._name
 
-su=SuperUser()
+super=SuperUser()
 
 
 class UserFolder(Implicit, Persistent, Item):
@@ -94,8 +94,6 @@ class UserFolder(Implicit, Persistent, Item):
     manage_options=(
     {'icon':'AccessControl/UserFolder_icon.gif', 'label':'Contents',
      'action':'manage_main',   'target':'manage_main'},
-#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-#     'action':'manage_help',   'target':'_new'},
     )
 
     def _init(self):
@@ -108,6 +106,11 @@ class UserFolder(Implicit, Persistent, Item):
 	try:    return (self.aq_parent,)
 	except: return ()
 
+    def _isTop(self):
+	try:    t=self.aq_parent.aq_parent.acl_users
+	except: return 1
+	return 0
+
     def userNames(self):
 	return self._data.keys()
 
@@ -118,8 +121,11 @@ class UserFolder(Implicit, Persistent, Item):
 	if lower(auth[:6])!='basic ':
 	    return None
 	[name,password]=split(decodestring(split(auth)[-1]), ':')
-	if (name==su._name) and (password==su._password):
-	    return su
+
+	if self._isTop() and (name==super._name) and \
+	   (password==super._password):
+	    return super
+
 	try:    user=self._data[name]
 	except: return None
 	if password!=user._password:
@@ -133,7 +139,7 @@ class UserFolder(Implicit, Persistent, Item):
 
     def manage_addUser(self,REQUEST,name,password,confirm,roles=[]):
         """ """
-	if self._data.has_key(name):
+	if self._data.has_key(name) or (name==super._name):
             return MessageDialog(title='Illegal value', 
                    message='An item with the specified name already exists',
                    action='%s/manage' % REQUEST['PARENT_URL'])
@@ -228,6 +234,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.13  1997/09/19 17:52:04  brian
+# Changed UFs so that only the top UF validates god.
+#
 # Revision 1.12  1997/09/17 14:59:42  brian
 # *** empty log message ***
 #
