@@ -48,7 +48,7 @@ Options:
     Set the interpreter check interval. This integer value
     determines how often the interpreter checks for periodic things
     such as thread switches and signal handlers. The Zope default
-    is 120, but you may want to experiment with other values that
+    is 500, but you may want to experiment with other values that
     may increase performance in your particular environment.
 
   -D
@@ -244,7 +244,7 @@ import os, sys, getopt, codecs, string
 # workaround to allow unicode encoding conversions in DTML
 dummy = codecs.lookup('iso-8859-1')
 
-sys.setcheckinterval(120)
+sys.setcheckinterval(500)
 
 program=sys.argv[0]
 here=os.path.join(os.getcwd(), os.path.split(program)[0])
