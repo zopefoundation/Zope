@@ -29,8 +29,8 @@
 	     <option></option>
                <dtml-in "getProductHelp().helpValues()">
 		 <option
-		   <dtml-if "_.has_key('help') and _.getitem('sequence-item').id() == help[1]">SELECTED
-		   </dtml-if>><dtml-var id></option>
+		   <dtml-if "_.has_key('help') and (_.len(help) >= 2) and _.getitem('sequence-item').id() == help[1]">SELECTED</dtml-if>><dtml-var 
+                   id></option>
 	       </dtml-in>
 	   </select>
 	 </td>
