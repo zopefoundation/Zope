@@ -13,7 +13,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -44,6 +44,7 @@ data_dir = _cfg.clienthome
 INSTANCE_HOME = _cfg.instancehome
 SOFTWARE_HOME = _cfg.softwarehome
 ZOPE_HOME = _cfg.zopehome
+del _cfg, _getConfiguration
 
 opened=[]
 
