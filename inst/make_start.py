@@ -96,7 +96,7 @@ def sh(home, user, group):
             "#! /bin/sh\n"
             "PYTHONHOME=%s\n"
             "export PYTHONHOME\n"
-            "exec %s \\\n  %s \\\n  -D $*\n"
+            'exec %s \\\n  %s \\\n  -D "$@"\n'
             % (home, sys.executable, z2))
         ch(start,user,group,0711)
 
