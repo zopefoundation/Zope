@@ -5,6 +5,18 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
+<p>The Subtransaction threshold is the number of words the catalog
+will index before it commits a subtransaction.  If this number is low, 
+the Catalog will take much longer to index but consume much less
+memory.  If this number is higher, the Catalog will index quickly but
+consume much more memory.</p>
+<form action="manage_edit" method=POST>
+Subtransaction threshold: <input name=threshold value="<!--#var
+threshold-->"><br>
+<input type=submit value=" Change ">
+</form>
+
+
 <ul>
 <!--#in index_objects-->
  <li>
