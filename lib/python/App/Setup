@@ -1,9 +1,13 @@
 # install ApplicationManager.py
+# install CacheManager.py
 # install Dialogs.py
 # install Management.py
+# install Undo.py
 # install appMain.dtml
 # install manage.dtml
 # install menu.dtml
 # install pack.dtml
 # install undo.dtml
+# install cache.dtml
+# install copyright.dtml
 # install www www/%(package)s

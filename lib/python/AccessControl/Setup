@@ -1,5 +1,11 @@
 # install ACL.py
+# install Role.py
+# install User.py
 # install groupForm.dtml
 # install groupsForm.dtml
 # install memberForm.dtml
+# install RoleManager_manage_rolesForm.dtml
+# install UserFolder_manage_editForm.dtml
+# install UserFolder_manage_main.dtml
+# install smallRolesWidget.dtml
 # install www www/%(package)s
