@@ -371,6 +371,25 @@ class Tests(unittest.TestCase):
        r=list(r[0].keys())
        assert  r == [0], r
 
+   def checkNonExistentWord(self):
+       """ Check for nonexistent word """
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'zop'})
+       r=list(r[0].keys())
+       assert  r == [], r
+       
+
 def test_suite():
    return unittest.makeSuite(Tests, 'check')
 
