@@ -117,75 +117,75 @@ class HTMLTests(unittest.TestCase):
 
    def check1(self):
       laf = self.folder.laf
-      laf.write(open('input/TeeShopLAF.html').read())
-      expect = open('output/TeeShopLAF.html').read()
+      laf.write(read_input('TeeShopLAF.html'))
+      expect = read_output('TeeShopLAF.html')
       util.check_html(expect, laf())
 
    def check2(self):
-      self.folder.laf.write(open('input/TeeShopLAF.html').read())
+      self.folder.laf.write(read_input('TeeShopLAF.html'))
 
       t = self.folder.t
-      t.write(open('input/TeeShop2.html').read())
-      expect = open('output/TeeShop2.html').read()
+      t.write(read_input('TeeShop2.html'))
+      expect = read_output('TeeShop2.html')
       out = t(getProducts=self.getProducts)
       util.check_html(expect, out)
       
 
    def check3(self):
-      self.folder.laf.write(open('input/TeeShopLAF.html').read())
+      self.folder.laf.write(read_input('TeeShopLAF.html'))
 
       t = self.folder.t
-      t.write(open('input/TeeShop1.html').read())
-      expect = open('output/TeeShop1.html').read()
+      t.write(read_input('TeeShop1.html'))
+      expect = read_output('TeeShop1.html')
       out = t(getProducts=self.getProducts)
       util.check_html(expect, out)
 
    def checkSimpleLoop(self):
       t = self.folder.t
-      t.write(open('input/Loop1.html').read())
-      expect = open('output/Loop1.html').read()
+      t.write(read_input('Loop1.html'))
+      expect = read_output('Loop1.html')
       out = t()
       util.check_html(expect, out)
 
    def checkGlobalsShadowLocals(self):
       t = self.folder.t
-      t.write(open('input/GlobalsShadowLocals.html').read())
-      expect = open('output/GlobalsShadowLocals.html').read()
+      t.write(read_input('GlobalsShadowLocals.html'))
+      expect = read_output('GlobalsShadowLocals.html')
       out = t()
       util.check_html(expect, out)
 
    def checkStringExpressions(self):
       t = self.folder.t
-      t.write(open('input/StringExpression.html').read())
-      expect = open('output/StringExpression.html').read()
+      t.write(read_input('StringExpression.html'))
+      expect = read_output('StringExpression.html')
       out = t()
       util.check_html(expect, out)
       
    def checkReplaceWithNothing(self):
       t = self.folder.t
-      t.write(open('input/CheckNothing.html').read())
-      expect = open('output/CheckNothing.html').read()
+      t.write(read_input('CheckNothing.html'))
+      expect = read_output('CheckNothing.html')
       out = t()
       util.check_html(expect, out)
 
    def checkWithXMLHeader(self):
       t = self.folder.t
-      t.write(open('input/CheckWithXMLHeader.html').read())
-      expect = open('output/CheckWithXMLHeader.html').read()
+      t.write(read_input('CheckWithXMLHeader.html'))
+      expect = read_output('CheckWithXMLHeader.html')
       out = t()
       util.check_html(expect, out)
 
    def checkNotExpression(self):
       t = self.folder.t
-      t.write(open('input/CheckNotExpression.html').read())
-      expect = open('output/CheckNotExpression.html').read()
+      t.write(read_input('CheckNotExpression.html'))
+      expect = read_output('CheckNotExpression.html')
       out = t()
       util.check_html(expect, out)
       
    def checkPathNothing(self):
       t = self.folder.t
-      t.write(open('input/CheckPathNothing.html').read())
-      expect = open('output/CheckPathNothing.html').read()
+      t.write(read_input('CheckPathNothing.html'))
+      expect = read_output('CheckPathNothing.html')
       out = t()
       util.check_html(expect, out)
       

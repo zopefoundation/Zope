@@ -120,18 +120,18 @@ class DTMLTests(unittest.TestCase):
       </body></html>
       """
 
-      tal = open('input/DTML1.html').read()
+      tal = read_input('DTML1.html')
       self.t.write(tal)
 
       aa=util.argv(('one', 'two', 'three', 'cha', 'cha', 'cha'))
       o=self.t.__of__(aa)()
-      expect = open('output/DTML1a.html').read()
+      expect = read_output('DTML1a.html')
 
       util.check_xml(expect, o)
 
       aa=util.argv(())
       o=self.t.__of__(aa)()
-      expect = open('output/DTML1b.html').read()
+      expect = read_output('DTML1b.html')
       util.check_xml(expect, o)
 
    def check3(self):
@@ -164,7 +164,7 @@ class DTMLTests(unittest.TestCase):
         </body></html>
       """
 
-      tal = open('input/DTML3.html').read()
+      tal = read_input('DTML3.html')
       self.t.write(tal)
 
       aa=util.argv(('one', 'two', 'three', 'four', 'five',
@@ -175,7 +175,7 @@ class DTMLTests(unittest.TestCase):
       import batch        
       o=self.t.__of__(aa)(batch=batch.batch(aa.args, 5))
 
-      expect = open('output/DTML3.html').read()
+      expect = read_output('DTML3.html')
       util.check_xml(expect, o)
 
 def test_suite():

@@ -1,4 +1,4 @@
-<html metal:use-macro="container/laf/macros/page">
+<html>
 <head>
 <title>Zope Stuff</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -28,7 +28,7 @@
 </table>
 <br>
 <br>
-<div metal:fill-slot="body">
+<div>
 <table width="500" border="0" cellspacing="0" cellpadding="0" align="center">
   <tr> 
     <td bgcolor="#0000CC">
@@ -36,7 +36,7 @@
         <tr bgcolor="#FFFFFF" align="center"> 
           <td><img src="/images/welcome.gif" width="293" height="28"></td>
         </tr>
-        <tr bgcolor="#FFFFFF" align="center" valign="top" tal:repeat="product options/getProducts"> 
+        <tr bgcolor="#FFFFFF" align="center" valign="top"> 
           <td> 
             <table width="100%" border="0" cellspacing="0" cellpadding="6">
               <tr> 
@@ -44,8 +44,7 @@
                   </b>This is the tee for those who LOVE Zope. Show your heart on your tee.</td>
                 <td align="right" width="1%" rowspan="2"> 
                   <p><img src="/images/smlatee.jpg"
-                          width="200" height="200"
-                          tal:attributes="src string:/images/${product/image}"></p>
+                          width="200" height="200"></p>
                 </td>
               </tr>
               <tr> 
@@ -55,7 +54,7 @@
             </table>
           </td>
         </tr>
-        <tr bgcolor="#FFFFFF" align="center" valign="top" tal:repeat="product options/getProducts"> 
+        <tr bgcolor="#FFFFFF" align="center" valign="top"> 
           <td> 
             <table width="100%" border="0" cellspacing="0" cellpadding="6">
               <tr> 
@@ -63,8 +62,7 @@
                   </b>This is the tee for Jim Fulton. He's the Zope Pope!</td>
                 <td align="right" width="1%" rowspan="2"> 
                   <p><img src="/images/smpztee.jpg"
-                          width="200" height="200"
-                          tal:attributes="src string:/images/${product/image}"></p>
+                          width="200" height="200"></p>
                 </td>
               </tr>
               <tr> 

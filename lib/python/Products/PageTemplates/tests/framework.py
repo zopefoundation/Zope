@@ -98,12 +98,13 @@
 
 import string
 
-if sys.modules.has_key('unittest'):
-    # The framework should already be set up
-    pass
-else:
-    scriptdir = sys.path[0]
-    if scriptdir == '':
+scriptdir = sys.path[0]
+input_dir = os.path.join(scriptdir, 'input')
+output_dir = os.path.join(scriptdir, 'output')
+
+if not sys.modules.has_key('unittest'):
+    if os.path.abspath(scriptdir) == os.path.abspath('.'):
+        # We're in the tests directory, and need to find unittest.
         cwd = os.getcwd()
         while 1:
             for ext in 'py', 'pyc', 'pyo', 'pyd':
@@ -116,16 +117,27 @@ else:
             break
         sys.path.insert(1, cwd)
     else:
+        # We must be in the same directory as unittest
         sys.path.insert(1, '')
-    import unittest
+
+import unittest
 
 TestRunner = unittest.TextTestRunner
 
+def read_input(filename):
+    filename = os.path.join(input_dir, filename)
+    return open(filename, 'r').read()
+
+def read_output(filename):
+    filename = os.path.join(output_dir, filename)
+    return open(filename, 'r').read()
+
 def main():
    if len(sys.argv) > 1:
-       globals()[sys.argv[1]]()
+       errs = globals()[sys.argv[1]]()
    else:
-       TestRunner().run(test_suite())
+       errs = TestRunner().run(test_suite())
+   sys.exit(errs and 1 or 0)
 
 def debug():
    test_suite().debug()
