@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -91,7 +91,6 @@ class UserFolder(Implicit, Persistent, Item):
     id       ='acl_users'
     title    ='User Folder'
     icon     ='AccessControl/UserFolder_icon.gif'
-    _data    ={}
 
     isAUserFolder=1
 
@@ -123,7 +122,10 @@ class UserFolder(Implicit, Persistent, Item):
 	return 0
 
     def userNames(self):
-	return self._data.keys()
+	try: return self._data.keys()
+	except AttributeError:
+	    self._init()
+	    return ()
 
     def roleNames(self):
 	return self.validRoles()
@@ -259,6 +261,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.19  1997/11/20 13:39:54  jim
+# Added logic to check for a broken user folder.
+#
 # Revision 1.18  1997/11/11 22:38:26  brian
 # Added copy logic to UF
 #
