@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -232,3 +232,11 @@ class UserFolderHandler:
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
+
+
+
+
+# $Log: User.py,v $
+# Revision 1.4  1997/08/27 13:16:27  brian
+# Added cvs log!
+#
