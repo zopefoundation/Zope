@@ -37,6 +37,7 @@ probably need to manage Zope using its raw IP address to fix things.
   </dtml-if>
             rows="&dtml-rows;"><dtml-in lines>&dtml-sequence-item;
 </dtml-in></textarea>
+  </dtml-let>
   </div>
   </td>
 </tr>
