@@ -99,7 +99,7 @@ sys.path.insert(0, SOFTWARE_HOME)
 
 from nt_svcutils.service import Service
 
-servicename = 'Zope_%s' % str(hash(INSTANCE_HOME))
+servicename = 'Zope_%s' % str(hash(INSTANCE_HOME.lower()))
 
 class InstanceService(Service):
     start_cmd = '"%s" "%s" -C "%s"' % (PYTHONW, ZOPE_RUN, CONFIG_FILE)
