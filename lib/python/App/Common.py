@@ -13,9 +13,12 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, os, time
+
+# Legacy API for this module; 3rd party code may use this.
+from os.path import realpath
 
 
 # These are needed because the various date formats below must
@@ -128,32 +131,3 @@ def attrget(o,name,default):
     return default
 
 def Dictionary(**kw): return kw # Sorry Guido
-
-try:
-    # Python 2.2. already has a realpath function, while 2.1 doesn't
-    realpath = os.path.realpath
-except:
-    if os.name == 'posix':
-        def realpath(filename):
-            """
-            Return the canonical path of the specified filename,
-            eliminating any symbolic links encountered in the path
-            (this is ripped off from Python 2.2).
-            """
-            filename = os.path.abspath(filename)
-
-            bits = ['/'] + filename.split('/')[1:]
-            for i in range(2, len(bits)+1):
-                component = os.path.join(*bits[0:i])
-                if os.path.islink(component):
-                    resolved = os.readlink(component)
-                    (dir, file) = os.path.split(component)
-                    resolved = os.path.normpath(os.path.join(dir, resolved))
-                    newpath = os.path.join(*([resolved] + bits[i:]))
-                    return realpath(newpath)
-
-            return filename
-    else:
-        # other platforms are assumed to not have symlinks, so we alias
-        # realpath to abspath
-        realpath = os.path.abspath
