@@ -60,7 +60,7 @@ class SecurityManager:
     def getUser(self):
         """
         Get the current authenticated user. See the
-        "AuthenticatedUser":AuthenticatedUser.py class.
+        'AuthenticatedUser' class.
 
         permission -- Always available
         """
