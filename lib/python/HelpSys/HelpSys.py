@@ -278,12 +278,11 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
     def __init__(self, id='Help', title=''):
         self.id=id
         self.title=title
-        self.catalog=ZCatalog('catalog')
-        c=self.catalog._catalog
+        c=self.catalog=ZCatalog('catalog')
         # clear catalog
-        for index in c.indexes.keys():
+        for index in c.indexes():
             c.delIndex(index)
-        for col in c.schema.keys():
+        for col in c.schema():
             c.delColumn(col)
         c.addIndex('SearchableText', 'TextIndex')
         c.addIndex('categories', 'KeywordIndex')

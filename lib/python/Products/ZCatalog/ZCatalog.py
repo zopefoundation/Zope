@@ -86,20 +86,24 @@
 
 from Globals import DTMLFile, MessageDialog
 import Globals
+
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
+from OFS.ObjectManager import ObjectManager
 from DateTime import DateTime
-import string, urlparse, urllib, os, sys, time
-import Products
 from Acquisition import Implicit
 from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Catalog import Catalog, CatalogError
-from Vocabulary import Vocabulary
 from AccessControl import getSecurityManager, full_read_guard
 from zLOG import LOG, ERROR
+from ZCatalogIndexes import ZCatalogIndexes
+from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
+from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
+from Products.PluginIndexes.TextIndex import Splitter
+import string,  urllib, os, sys, time
 
 StringType=type('')
 
@@ -157,9 +161,8 @@ class ZCatalog(Folder, Persistent, Implicit):
          'action': 'manage_propertiesForm',
          'help': ('OFSP','Properties.stx')},
         {'label': 'Indexes',            # TAB: Indexes
-         'action': 'manage_catalogIndexes', 
-         'target': 'manage_main',
-         'help':('ZCatalog','ZCatalog_Indexes.stx')},
+         'action': 'Indexes/manage_workspace',
+         'help': ('ZCatalog','ZCatalog_Indexes.stx')},
         {'label': 'Metadata',           # TAB: Metadata
          'action': 'manage_catalogSchema', 
          'target':'manage_main',
@@ -216,6 +219,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     manage_objectInformation = DTMLFile('dtml/catalogObjectInformation',
                                         globals())
 
+    Indexes = ZCatalogIndexes()
+
     threshold=10000
     _v_total=0
     _v_transaction = None
@@ -228,6 +233,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             self=self.__of__(container)
         self.id=id
         self.title=title
+
+        self.vocabulary = None
+        self.availableSplitters = Splitter.availableSplitters
         
         self.threshold = 10000
         self._v_total = 0
@@ -235,26 +243,30 @@ class ZCatalog(Folder, Persistent, Implicit):
         if vocab_id is None:
             v = Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
             self._setObject('Vocabulary', v)
+            self.vocabulary = v
             self.vocab_id = 'Vocabulary'
         else:
             self.vocab_id = vocab_id
 
+
         self._catalog = Catalog(vocabulary=self.vocab_id)
 
-        self._catalog.addColumn('id')
-        self._catalog.addIndex('id', 'FieldIndex')
+        self.addColumn('id')
+        self.addIndex('id', 'FieldIndex')
 
-        self._catalog.addColumn('title')
-        self._catalog.addIndex('title', 'TextIndex')
+        self.addColumn('title')
+        self.addIndex('title', 'TextIndex')
 
-        self._catalog.addColumn('meta_type')
-        self._catalog.addIndex('meta_type', 'FieldIndex')
+        self.addColumn('meta_type')
+        self.addIndex('meta_type', 'FieldIndex')
 
-        self._catalog.addColumn('bobobase_modification_time')
-        self._catalog.addIndex('bobobase_modification_time', 'FieldIndex')
+        self.addColumn('bobobase_modification_time')
+        self.addIndex('bobobase_modification_time', 'FieldIndex')
 
-        self._catalog.addColumn('summary')
-        self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
+        self.addColumn('summary')
+        self.addIndex('PrincipiaSearchSource', 'TextIndex')
+
+        self.addIndex('path','PathIndex')
 
     def __len__(self): return len(self._catalog)
 
@@ -380,7 +392,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
         """ add a column """
-        self._catalog.addColumn(name)
+        self.addColumn(name)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
@@ -388,28 +400,73 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_delColumns(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ del a column """
         for name in names:
-            self._catalog.delColumn(name)
+            self.delColumn(name)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
 
     def manage_addIndex(self, name, type, REQUEST=None, RESPONSE=None, URL1=None):
         """ add an index """
-        self._catalog.addIndex(name, type)
-        
+        self.addIndex(name, type)
+
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Added')
         
-    def manage_delIndexes(self, names, REQUEST=None, RESPONSE=None, URL1=None):
+
+    def manage_deleteIndex(self, ids=None, REQUEST=None, RESPONSE=None,
+        URL1=None):
         """ del an index """
-        for name in names:
-            self._catalog.delIndex(name)
+        if not ids:
+            return MessageDialog(title='No items specified',
+                message='No items were specified!',
+                action = "./manage_main",)
+
+        for name in ids:
+            self.delIndex(name)
         
         if REQUEST and RESPONSE:
-            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Deleted')
+
+    def manage_clearIndex(self, ids=None, REQUEST=None, RESPONSE=None,
+        URL1=None):
+        """ del an index """
+        if not ids:
+            return MessageDialog(title='No items specified',
+                message='No items were specified!',
+                action = "./manage_main",)
+
+        for name in ids:
+            self.clearIndex(name)
+        
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Index%20Cleared')
 
 
-    def catalog_object(self, obj, uid=None):
+    def reindexIndex(self,name,REQUEST):
+        
+        paths = tuple(self._catalog.paths.values())
+
+        for p in paths:
+            obj = self.resolve_path(p)
+            if not obj:
+                obj = self.resolve_url(p, REQUEST)
+            if obj is not None:
+                self.catalog_object(obj, p, idxs=[name])             
+
+    def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None, URL1=None):
+        """ Reindex indexes from a ZCatalog"""
+        if not ids:
+            return MessageDialog(title='No items specified',
+                message='No items were specified!',
+                action = "./manage_main",)
+
+        for id in ids:
+            self.reindexIndex(id, REQUEST)
+
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Reindexing%20Performed')
+
+    def catalog_object(self, obj, uid=None, idxs=[]):
         """ wrapper around catalog """
 
         if uid is None:
@@ -423,7 +480,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         elif type(uid) is not StringType:
             raise CatalogError('The object unique id must be a string.')
 
-        self._catalog.catalogObject(obj, uid, None)
+        self._catalog.catalogObject(obj, uid, None,idxs)
         # None passed in to catalogObject as third argument indicates
         # that we shouldn't try to commit subtransactions within any
         # indexing code.  We throw away the result of the call to
@@ -530,13 +587,14 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     meta_types=() # Sub-object types that are specific to this object
     
-    def all_meta_types(self):
-        pmt=()
-        if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
-        elif hasattr(self, 'aq_acquire'):
-            try: pmt=self.aq_acquire('_product_meta_types')
-            except AttributeError:  pass
-        return self.meta_types+Products.meta_types+pmt
+    # Dont need this anymore -- we inherit from object manager
+    #def all_meta_types(self):
+    #    pmt=()
+    #    if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
+    #    elif hasattr(self, 'aq_acquire'):
+    #        try: pmt=self.aq_acquire('_product_meta_types')
+    #        except AttributeError:  pass
+    #    return self.meta_types+Products.meta_types+pmt
 
     def valid_roles(self):
         "Return list of valid roles"
@@ -728,6 +786,54 @@ class ZCatalog(Folder, Persistent, Implicit):
         tt=time.time()-tt
         ct=time.clock()-ct
         return 'Finished conversion in %s seconds (%s cpu)' % (tt, ct)
+
+    #
+    # Indexing methods 
+    #
+
+    def addIndex(self, name, type):
+
+        # Convert the type by finding an appropriate product which supports
+        # this interface by that name.  Bleah
+
+        products = ObjectManager.all_meta_types(self, interfaces=(
+            PluggableIndexInterface,))
+
+        p = None
+
+        for prod in products:
+            if prod['name'] == type: 
+                p = prod
+                break
+
+        if p is None:
+            raise ValueError, "Index of type %s not found" % type
+
+        base = p['instance']
+
+        if base is None:
+            raise ValueError, "Index type %s does not support addIndex" % type
+
+        index = base(name, self)
+
+        self._catalog.addIndex(name,index)
+
+
+    def delIndex(self, name ):
+
+        self._catalog.delIndex(name)
+
+    def clearIndex(self, name):
+
+        self._catalog.indexes[name].clear()
+
+
+    def addColumn(self, name, default_value=None):
+        return self._catalog.addColumn(name, default_value)
+
+    def delColumn(self, name):
+        return self._catalog.delColumn(name)
+
     
 Globals.default__class_init__(ZCatalog)
 
@@ -787,6 +893,3 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
         if not (role in pr):
             return 0
     return 1
-
-
-

@@ -1,0 +1,39 @@
+ZCatalog - searchResults: specifying parameters for a search query
+  
+    The searchResults() method of the ZCatalog takes parameters to be passed 
+    to an index XXX of the ZCatalog. A query can either be passed as keyword
+    argument XXX of the searchResults() call or as key of the REQUEST object.
+    The value to be passed must be a mapping object (usually a dictionary or
+    or Record). 
+
+    Keys of mapping object
+  
+      'query' -- either a sequence of objects or a single value to be passed 
+      as query to the index (mandatory)
+
+      'operator' -- specifies the combination of search results when query
+      is a sequence of values. (optional, default: 'or'). Allowed values:
+
+        'and','or' -- for Keyword Indexes  and Path Indexes
+        
+        'and', 'or', 'andnot', 'near' -- for Text Indexes
+
+
+
+      'range'  -- defines a range search on a Field Index (optional, default: not set).
+      Allowed values:
+
+        'min' -- Searches for all objects with values larger than the minimum of the 
+        values passed in the 'query' parameter.
+    
+        'max' -- Searches for all objects with values smaller than the maximum of the 
+        values passed in the 'query' parameter.
+    
+        'minmax' -- Searches for all objects with values smaller than the maximum of the 
+        values passed in the 'query' parameter and larger than the minimum of the values
+        passwd in the 'query' parameter.
+
+
+
+     'level'  -- only applies to Path Index. Specifies the directory level to 
+     start searching. (optional, default: 0)

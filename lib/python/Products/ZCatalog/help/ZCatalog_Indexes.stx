@@ -36,3 +36,6 @@ ZCatalog - Indexes: Manage Catalog Indexes
         'KeywordIndex' -- Index a sequence of objects that act as 'keywords' for an object. A Keyword 
         Index will return any objects that have one or more keywords specified in a 
         search query.
+
+        'PathIndex' -- Index the physical path of a sequence of objects. A Path Index will return 
+        all objects that match a partitial path specified  in a search query.

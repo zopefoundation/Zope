@@ -1,0 +1,73 @@
+CHANGE
+	
+	010529-2.4-dropinindex	
+
+DEVELOPMENT BRANCH TAG
+
+	ajung-dropin-registry
+
+DESCRIPTION
+
+	This change modifies the catalog and ZCatalog to support dropin
+	index types.
+
+AFFECTED MODULES
+
+	- Products/ZCatalog/Catalog
+
+	- Products/ZCatalog/ZCatalog
+
+	- Products/ZCatalog/ZCatalogIndexes
+
+	- Products/PluginIndexes/PluggableIndex
+
+	- Help/HelpSys.py
+
+
+API CHANGES
+
+	Catalogs no longer have any knowledge of index types.
+
+	The Catalog base class had the method 'addIndex()' modified to
+	change the 'index_type' parameter from a string to an index object.
+	The signature of 'addIndex()' remains the same; 'addIndex(name,
+	index_type)'.  'addIndex()' will now raise an error if it is called
+	with a string argument for 'index_type'.  
+
+	ZCatalogs now perform more work as a Catalog would; in particular,
+	it is not appropriate for another class to obtain the base Catalog
+	object and manipulate it directly without being closely related
+	to ZCatalog (ie ZCatalogIndexes and PluginIndexes).
+
+	The 'all_meta_types()' method of ZCatalog was removed.  ZCatalog
+	will use ObjectManager's 'all_meta_types()' method.
+
+	ZCatalog gained new methods:
+
+		- addIndex(name, type)
+
+		- delIndex(name)
+
+		- clearIndex(name)
+
+		- addColumn(name, default_value)
+
+		- delColumn(name)
+
+	These methods call the underlying method of the same name on the
+	Catalog, with the exception of 'addIndex()'.  The ZCatalog 'addIndex()'
+	performs as the old Catalog's 'addIndex()' in that the 'type' parameter
+	is the *name* of the index type to add.  This type is found using
+	the 'meta_type' of an object which supports the interface
+	'Products.PluginIndexes.common.PluggableIndex.PluggableIndexInterface'.
+
+NONAPI CHANGES
+
+	ZCatalog's "Index" tab now goes to an object manager view of the
+	Indexes provided by a new class, ZCatalogIndexes.  The ZCatalogIndexes
+	view of the indexes allows adding, removing, and reindexing, and 
+	clearing of indexes through object-manager forms.
+
+	The help system initialization method now calls the ZCatalog
+	methods for manipulating indexes and columns rather than the underlying
+	Catalog's.

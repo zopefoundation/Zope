@@ -85,7 +85,8 @@
 
 """ZCatalog product"""
 
-import ZCatalog, Catalog, CatalogAwareness, Vocabulary, ZClasses
+import ZCatalog, Catalog, CatalogAwareness,  ZClasses
+from Products.PluginIndexes.TextIndex import Vocabulary
 from ZClasses import createZClassForBase
 
 createZClassForBase( ZCatalog.ZCatalog , globals()

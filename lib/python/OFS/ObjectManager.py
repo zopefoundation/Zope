@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.136 2001/04/27 18:07:12 andreas Exp $"""
+$Id: ObjectManager.py,v 1.137 2001/05/30 15:57:31 andreas Exp $"""
 
-__version__='$Revision: 1.136 $'[11:-2]
+__version__='$Revision: 1.137 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -159,6 +159,7 @@ def checkValidId(self, id, allow_dup=0):
 
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
+class BreakoutException ( Exception ): pass  # raised to break out of loops
 
 _marker=[]
 class ObjectManager(
@@ -197,6 +198,7 @@ class ObjectManager(
     _objects   =()
 
     manage_main=DTMLFile('dtml/main', globals())
+    manage_index_main=DTMLFile('dtml/index_main', globals())
 
     manage_options=(
         {'label':'Contents', 'action':'manage_main',
@@ -222,13 +224,32 @@ class ObjectManager(
         
         default__class_init__(self)
 
-    def all_meta_types(self):
+    def all_meta_types(self, interfaces=None):
         pmt=()
         if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
         elif hasattr(self, 'aq_acquire'):
             try: pmt=self.aq_acquire('_product_meta_types')
             except:  pass
-        return self.meta_types+Products.meta_types+pmt
+            
+        gmt = []
+
+        for entry in Products.meta_types:
+            if interfaces is None:
+                if entry.get("visibility", None) == "Global":
+                    gmt.append(entry)
+            else:
+                try:
+                    eil = entry.get("interfaces", None)
+                    if eil is not None:
+                        for ei in eil:
+                            for i in interfaces: 
+                                if ei is i or ei.extends(i):
+                                    gmt.append(entry) 
+                                    raise BreakoutException # only append 1ce
+                except BreakoutException:   
+                    pass
+
+        return list(self.meta_types)+gmt+list(pmt)
 
     def _subobject_permissions(self):
         return (Products.__ac_permissions__+
@@ -689,5 +710,17 @@ def findChilds(obj,dirname=''):
             lst.append( (dirname + obj.id + "/" + name,child) )
 
     return lst
+
+class IFAwareObjectManager:
+    def all_meta_types(self, interfaces=None):
+
+        if interfaces is None:
+            if hasattr(self, '_product_interfaces'):
+                interfaces=self._product_interfaces
+            elif hasattr(self, 'aq_acquire'):
+                try: interfaces=self.aq_acquire('_product_interfaces')
+                except: pass    # Bleah generic pass is bad
+
+        return ObjectManager.all_meta_types(self, interfaces)
 
 Globals.default__class_init__(ObjectManager)

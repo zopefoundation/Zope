@@ -84,9 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-
-$Id: Application.py,v 1.148 2001/05/23 19:31:36 evan Exp $'''
-__version__='$Revision: 1.148 $'[11:-2]
+$Id: Application.py,v 1.149 2001/05/30 15:57:31 andreas Exp $'''
+__version__='$Revision: 1.149 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -511,6 +510,13 @@ def import_products():
         product_names=os.listdir(product_dir)
         product_names.sort()
 
+        # Hack !!!
+        # We must initialize the PluginIndexes first before
+        # all other products (ajung)
+
+        product_names.remove("PluginIndexes")
+        product_names.insert(0,"PluginIndexes")
+
         for product_name in product_names:
 
             if done.has_key(product_name): continue
@@ -575,6 +581,14 @@ def install_products(app):
 
         product_names=os.listdir(product_dir)
         product_names.sort()
+
+        # Hack !!!
+        # We must initialize the PluginIndexes first before
+        # all other products (ajung)
+
+        product_names.remove("PluginIndexes")
+        product_names.insert(0,"PluginIndexes")
+
 
         for product_name in product_names:
             # For each product, we will import it and try to call the

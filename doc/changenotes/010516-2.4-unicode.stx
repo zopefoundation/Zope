@@ -1,0 +1,30 @@
+CHANGE
+	
+	010516-2.4-unicode	
+
+DEVELOPMENT BRANCH TAG
+
+	(trunk)
+
+DESCRIPTION
+
+	This change adds the unicode functions 'unichr()' and 'unicode()' 
+	to the list of restricted python methods allowed from '_' and other
+	places.
+
+AFFECTED MODULES
+
+	- RestrictedPython/Guards.py
+
+	- Products/OFSP/help/dtml-funcs.stx
+
+API CHANGES
+
+	The namespace '_' will now allow the methods 'unichr(num)' and
+	'unicode(string, encoding, error)' as methods.  These are
+	base python functions for creating unicode strings.
+
+NONAPI CHANGES
+
+	The Python manual descriptons of these two functions was added
+	to the Help file for dtml functions.

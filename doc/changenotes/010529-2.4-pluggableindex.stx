@@ -1,0 +1,41 @@
+CHANGE
+	
+	010529-2.4-pluggableindex	
+
+DEVELOPMENT BRANCH TAG
+
+	ajung-dropin-registry
+
+DESCRIPTION
+
+	This change provides a base class for pluggable indexes,  
+	providing the Interface object which they support.
+
+AFFECTED MODULES
+
+	- Products/PluginIndexes/common/PluggableIndex
+
+API CHANGES
+
+	The 'PluggableIndexInterface' is described in this module.
+	
+	All pluggable indexes must implement the following methods:
+
+		- 'getEntryForObject(documentId, default=None)'
+
+		- 'index_object(documentId, obj, threshold=None)'
+
+		- 'unindex_object(documentId)'
+
+		- 'uniqueValues(name=None, withLengths=0)'
+
+		- '_apply_index(request, cid="")'
+
+	These are, respectively, the equivalent of get(), add(), remove(),
+	values() and search() on indexes.
+
+	When pluggable indexes are registered with the product registry,
+	they must declare themselves to support the PluggableIndexInterface.
+	The most straighforward way to do this is with a class attribute:
+
+		- '__implements__ = Products.PluginIndexes.common.PluggableIndex.PluggableIndexInterface'

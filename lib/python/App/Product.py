@@ -216,7 +216,15 @@ class Product(Folder, PermissionManager):
     def __init__(self, id, title):
         self.id=id
         self.title=title
-        self._setObject('Help', ProductHelp('Help', id))
+
+        # Workaround for unknown problem with help system and PluginIndexes product
+        # NEEDS to be fixed for 2.4 ! (ajung)
+
+        try:
+            self._setObject('Help', ProductHelp('Help', id))
+        except:
+            print 'Warning: self._setObject() failed for %s/%s' % (id,title)
+            pass
         
     def Destination(self):
         "Return the destination for factory output"

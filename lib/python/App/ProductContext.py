@@ -94,6 +94,7 @@ from zLOG import LOG, WARNING
 import string, os.path, re
 import stat
 from DateTime import DateTime
+from types import ListType, TupleType
 
 import ZClasses # to enable 'PC.registerBaseClass()'
 
@@ -109,9 +110,25 @@ class ProductContext:
         self.__app=app
         self.__pack=package
 
+    def _flattenInterfaces(self, interfaces):
+        """Flatten an interface description into a list"""
+
+        list = []
+        ti = type(interfaces)
+        if ti == ListType or ti == TupleType:
+            for entry in interfaces:
+                for item in self._flattenInterfaces(entry):
+                    list.append(item)
+        else:
+            list.append(interfaces)
+        return list
+
+    __marker__ = []
+
     def registerClass(self, instance_class=None, meta_type='', 
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
+                      visibility="Global",interfaces=__marker__
         ):
         """Register a constructor
 
@@ -150,6 +167,10 @@ class ProductContext:
         
         legacy -- A list of legacy methods to be added to ObjectManager
                   for backward compatibility
+
+        visibility -- "Global" if the object is globally visible, None else
+
+        interfaces -- a list of the interfaces the object supports
 
         """
         app=self.__app
@@ -220,11 +241,17 @@ class ProductContext:
         if not hasattr(pack, '_m'): pack._m=fd.__dict__
         m=pack._m
 
+        if interfaces is self.__marker__:
+            interfaces = getattr(instance_class, "__implements__", None)
+
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
               'product': pid,
               'permission': permission,
+              'visibility': visibility,
+              'interfaces': interfaces,
+              'instance': instance_class,
               },)
 
         m[name]=initial

@@ -1,0 +1,59 @@
+CHANGE
+	
+	010529-2.4-exreg	
+
+DEVELOPMENT BRANCH TAG
+
+	ajung-dropin-registry
+
+DESCRIPTION
+
+	This change modifies the product registry to support additional
+	customizable object managers.  This change allows ZCatalog to
+	support pluggable indexes.
+
+AFFECTED MODULES
+
+	- App/ProductContext
+
+	- OFS/ObjectManager
+
+API CHANGES
+
+	Product registration now accepts two additional arguments
+	to the 'context.registerClass()' method.  These two arguments
+	are:
+
+		- visibility -- default is "Global"
+
+		- interfaces
+
+	Where visibility is a signal to object managers as to the applicability
+	of the object to be put in generic locations.  The default visibility
+	is "Global".  None should be specified if the object is not to
+	be globally visible.  This parameter may gain other values in
+	the future.
+
+	Interfaces specifies the interface list that the class being registered
+	supports.  If interfaces is not specified, it will be inspected from
+	the '__implements__' attribute of the 'instance_class' parameter, if
+	possible.
+
+	When an object manager constructs a list of objects that are eligible
+	to be inserted into the manager, it calls the 'all_meta_types()' method
+	of the object manager.  The default 'all_meta_types()' method of
+	the base ObjectManager class has been modified to respect the
+	visibility setting of objects, and to accept one new parameter:
+
+		- interfaces
+
+	which is a list of interfaces to be searched for and objects which
+	support them will be included in the list, regardless of their
+	visibility, but *only* those objects which support the interfaces
+	will be included in the result set. 
+
+	Additionally, the class 'IFAwareObjectManager' contains a single
+	method of 'all_meta_types()' which will aquire the attribute
+	'_product_interfaces' to determine the interface list, and then
+	call ObjectManager's 'all_meta_types()'.
+

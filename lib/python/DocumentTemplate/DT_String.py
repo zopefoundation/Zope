@@ -82,10 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.44 2001/04/30 14:46:00 shane Exp $"
+"$Id: DT_String.py,v 1.45 2001/05/30 15:57:30 andreas Exp $"
 
 from string import split, strip
-import thread,re
+import thread,re,exceptions,os
 
 from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment
@@ -582,6 +582,9 @@ class FileMixin:
     read_raw__roles__=()
     def read_raw(self):
         if self.edited_source: return self.edited_source
+        if not os.path.exists(self.raw):
+            print 'file not found: %s' % self.raw
+ 
         if self.raw: return open(self.raw,'r').read()
         return ''
 

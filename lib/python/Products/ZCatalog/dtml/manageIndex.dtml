@@ -1,0 +1,272 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+
+<p class="form-help"> 
+This list defines what indexes the Catalog will contain.  When objects 
+get cataloged, the values of any attributes they may have which match 
+an index in this list will get indexed.  Indexes come in four flavors, 
+Text Indexes, Field Indexes, Keyword Indexes and Path Indexes.
+</p>
+
+<p class="form-help">
+<strong>Text Indexes</strong> break text up into individual words, and 
+are often referred to as full-text indexes. Text indexes 
+sort results by score meaning they return hits in order 
+from the most relevant to the lest relevant.
+</p>
+
+<p class="form-help">
+<strong>Field Indexes</strong> treat the value of an objects attributes 
+atomically, and can be used, for example, to track only a certain subset 
+of object values, such as 'meta_type'.
+</p>
+
+<p class="form-help">
+<strong>Keyword Indexes</strong> index a sequence of objects that act as 
+'keywords' for an object.  A Keyword Index will return any objects 
+that have one or more keywords specified in a search query.
+</p>
+
+<p class="form-help">
+<strong>Path Indexes</strong> index the physical path of a sequence
+of objects. A Path Index will return all objects that match 
+a partital path specified in a search query.
+</p>
+
+
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<dtml-unless skey><dtml-call expr="REQUEST.set('skey', 'id')"></dtml-unless>
+<dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
+
+<!-- Add object widget -->
+<br />
+<dtml-if filtered_meta_types>
+  <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+  <td align="left" valign="top">&nbsp;</td>
+  <td align="right" valign="top">
+  <div class="form-element">
+  <form action="addIndexForm" method="get">
+  <dtml-if "_.len(filtered_meta_types) > 1">
+    <select class="form-element" name="index_type" 
+     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
+    <option value="manage_workspace" disabled>Select type to add...</option>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <option value="&dtml.url_quote-action;">&dtml-name;</option>
+    </dtml-in>
+    </select>
+    <input class="form-element" type="submit" name="submit" value=" Add " />
+  <dtml-else>
+    <dtml-in filtered_meta_types mapping sort=name>
+    <input type="hidden" name=":method" value="&dtml.url_quote-action;" />
+    <input class="form-element" type="submit" name="submit" value=" Add &dtml-name;" />
+    </dtml-in>
+  </dtml-if>
+  </form>
+  </div>
+  </td>
+  </tr>
+  </table>
+</dtml-if>
+
+
+
+<form action="&dtml-URL1;/" name="objectItems" method="post">
+<dtml-if objectItems>
+<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<tr class="list-header">
+  <td>&nbsp;
+  </td>
+  <td width="50%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=id<dtml-if 
+   "rkey == ''">&rkey=id</dtml-if>"
+   onMouseOver="window.status='Sort objects by name'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'id' or rkey == 'id'"
+   ><strong>Name</strong><dtml-else>Name</dtml-if></a></div>
+  </td>
+  <td width="29%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=meta_type<dtml-if 
+   "rkey == ''">&rkey=meta_type</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by type'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'meta_type' or rkey == 'meta_type'"
+   ><strong>Index type</strong><dtml-else>Index type</dtml-if></a></div>
+  </td>
+
+  <td width="29%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=numObjects<dtml-if 
+   "rkey == ''">&rkey=numObjects</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by number of indexed objects'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'numObjects' or rkey == 'numObjects'"
+   ><strong># objects</strong><dtml-else># objects</dtml-if></a></div>
+  </td>
+
+  <td width="29%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=bobobase_modification_time<dtml-if 
+   "rkey == ''">&rkey=bobobase_modification_time</dtml-if
+   >"
+   onMouseOver="window.status='Sort objects by modification time'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
+   ><strong>Last Modified</strong><dtml-else>Last Modified</dtml-if></a></div>
+  </td>
+
+</tr>
+<dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
+  <td align="left" valign="top" width="16">
+  <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
+  </td>
+  <td align="left" valign="top">
+  <div class="list-item">
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
+  </a>
+  <dtml-if locked_in_version>
+    <dtml-if modified_in_version>
+      <img src="&dtml-BASEPATH1;/p_/locked"
+       alt="This item has been modified in this version" />
+    <dtml-else>
+      <img src="&dtml-BASEPATH1;/p_/lockedo"
+       alt="This item has been modified in another version" />
+       (<em>&dtml-locked_in_version;</em>)
+    </dtml-if>
+  </dtml-if>
+  </div>
+
+   </td>
+
+  <dtml-with sequence-key>
+  <td>
+  <div class="list-item">
+    <dtml-var meta_type>
+    <dtml-try>
+     <dtml-let xx=numObjects></dtml-let>
+    <dtml-except> 
+     (pre-2.4 index)
+    </dtml-try>
+  </div>
+  </td>
+  <td>
+  <div class="list-item">
+  <dtml-try>
+  <dtml-var numObjects>
+  <dtml-except>n/a
+  </dtml-try>
+  </div>
+  </td>
+
+  <td>
+  <div class="list-item">
+  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+  </div>
+  </td>
+  </dtml-with>
+</tr>
+</dtml-in>
+</table>
+
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+
+  <input class="form-element" type="submit" name="manage_deleteIndex:method"  value="Remove index">
+  <input class="form-element" type="submit" name="manage_reindexIndex:method" value="Reindex">
+  <input class="form-element" type="submit" name="manage_clearIndex:method"   value="Clear index">
+
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
+  </div>
+  </td>
+</tr>
+</table>
+
+<dtml-else>
+<table cellspacing="0" cellpadding="2" border="0">
+<tr>
+<td>
+<div class="std-text">
+There are currently no items in <em>&dtml-title_or_id;</em>
+<br /><br />
+</div>
+<dtml-unless dontAllowCopyAndPaste>
+<dtml-if cb_dataValid>
+<div class="form-element">
+<input class="form-element" type="submit" name="manage_pasteObjects:method" 
+ value="Paste" />
+</div>
+</dtml-if>
+</dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+<input class="form-element" type="submit"
+  name="manage_importExportForm:method" value="Import/Export" />
+</dtml-if>
+</td>
+</tr>
+</table>
+</dtml-if>
+</form>
+
+<dtml-if update_menu>
+<script type="text/javascript">
+<!--
+window.parent.update_menu();
+//-->
+</script>
+</dtml-if>
+
+<dtml-var manage_page_footer>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -86,8 +86,7 @@
 from Persistence import Persistent
 import Acquisition
 import ExtensionClass
-from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex
-from SearchIndex.Lexicon import Lexicon
+from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
 from MultiMapping import MultiMapping
 from string import lower
 import Record
@@ -101,7 +100,7 @@ from BTrees.IIBTree import intersection, weightedIntersection
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 import BTrees.Length
-from SearchIndex.randid import randid
+from Products.PluginIndexes.common.randid import randid
 
 import time
 
@@ -321,9 +320,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.data[key] = tuple(rec)
 
     def addIndex(self, name, index_type):
-        """Create a new index, of one of the following index_types
+        """Create a new index, given a name and a index_type.  
 
-        Types: 'FieldIndex', 'TextIndex', 'KeywordIndex'.
+        Old format: index_type was a string, 'FieldIndex' 'TextIndex' or
+        'KeywordIndex' is no longer valid; the actual index must be instantiated
+        and passed in to addIndex.
+
+        New format: index_type is the actual index object to be stored.
+
         """
 
         if self.indexes.has_key(name):
@@ -336,21 +340,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # pluggable and managable
 
         indexes = self.indexes
-        if index_type == 'FieldIndex':
-            indexes[name] = UnIndex.UnIndex(name)
-        elif index_type == 'TextIndex':
-            lexicon=self.lexicon
-            if type(lexicon) is type(''):
-                lexicon=getattr(self, lexicon).getLexicon()
-                
-            indexes[name] = UnTextIndex.UnTextIndex(name, None, None, lexicon)
-        elif index_type == 'KeywordIndex':
-            indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
-        else:
-            raise 'Unknown Index Type', (
-                "%s invalid - must be one of %s"
-                % (index_type, ['FieldIndex', 'TextIndex', 'KeywordIndex'])
-                )
+
+        if type(index_type) == type(''):
+            raise TypeError,"""Catalog addIndex now requires the index type to
+            be resolved prior to adding; create the proper index in the caller."""
+
+        indexes[name] = index_type;
 
         self.indexes = indexes
 
@@ -364,9 +359,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         del indexes[name]
         self.indexes = indexes
 
+
+    def reindexIndex(self,name):
+
+        for p in self.paths.items():
+            print p
+
     # the cataloging API
 
-    def catalogObject(self, object, uid, threshold=None):
+    def catalogObject(self, object, uid, threshold=None,idxs=[]):
         """ 
         Adds an object to the Catalog by iteratively applying it
         all indexes.
@@ -425,7 +426,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.paths[index] = uid
             
         total = 0
-        for x in self.indexes.values():
+
+        if idxs==[]: use_indexes = self.indexes.keys()
+        else:        use_indexes = idxs
+
+        for item in use_indexes:
+            x = self.indexes[item]
+            
             ## tricky!  indexes need to acquire now, and because they
             ## are in a standard dict __getattr__ isn't used, so
             ## acquisition doesn't kick in, we must explicitly wrap!
@@ -512,25 +519,36 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     
 ## Searching engine.  You don't really have to worry about what goes
 ## on below here...  Most of this stuff came from ZTables with tweaks.
+## But I worry about :-)
 
-    def _indexedSearch(self, args, sort_index, append, used):
+    def _indexedSearch(self, request , sort_index, append, used):
         """
         Iterate through the indexes, applying the query to each one.
         """
 
-        rs=None
-        data=self.data
+        rs   = None             # resultset
+        data = self.data
         
         if used is None: used={}
         for i in self.indexes.keys():
+
             index = self.indexes[i].__of__(self)
             if hasattr(index,'_apply_index'):
-                r=index._apply_index(args)
+
+                r = None
+
+                # Optimization: we check if there is some work for the index.
+                # 
+                if request.has_key(index.id) :
+                    if len(request[index.id])>0:
+                        r=index._apply_index(request)
+
                 if r is not None:
                     r, u = r
-                    for name in u:
-                        used[name]=1
+                    for name in u: used[name]=1
                     w, rs = weightedIntersection(rs, r)
+
+
                         
         #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
@@ -594,6 +612,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return used
 
     def searchResults(self, REQUEST=None, used=None, **kw):
+        
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST
@@ -634,6 +653,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
         # Perform searches with indexes and sort_index
         r=[]
+        
         used=self._indexedSearch(kw, sort_index, r.append, used)
         if not r:
             return LazyCat(r)
