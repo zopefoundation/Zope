@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.39 1997/04/04 15:32:11 jim Exp $"""
+$Id: Publish.py,v 1.40 1997/04/09 21:06:20 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.39 1997/04/04 15:32:11 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 def main():
@@ -587,6 +587,7 @@ from CGIResponse import Response
 from Realm import Realm, allow_group_composition
 from urllib import quote
 from cgi import FieldStorage, MiniFieldStorage
+from string import lower
 
 try:
     from ExtensionClass import Base
@@ -696,11 +697,10 @@ class ModulePublisher:
 	except: request_params=None
 
 	# Get initial group data:
-	default_inherited_groups={None:None}
-	inherited_groups=default_inherited_groups
+	inherited_groups=[]
 	try:
-	    groups=theModule.__allow_groups__
-	    inherited_groups=allow_group_composition(inherited_groups,groups)
+	    groups=module.__allow_groups__
+	    inherited_groups.append(groups)
 	except: groups=None
 
 	web_objects=None
@@ -708,6 +708,10 @@ class ModulePublisher:
 	try:
 	    object=module.bobo_application
 	    find_object=new_find_object
+	    try:
+		groups=object.__allow_groups__
+		inherited_groups.append(groups)
+	    except: groups=None
 	except: 
 	    try:
 		web_objects=module.web_objects
@@ -721,7 +725,7 @@ class ModulePublisher:
 	    else: doc=None
 	
 	return (bobo_before, bobo_after, realm, realm_name, request_params,
-		default_inherited_groups, inherited_groups, groups,
+		inherited_groups, groups,
 		object, doc, published, find_object)
 		
 
@@ -745,7 +749,7 @@ class ModulePublisher:
 
 	try:
 	    (bobo_before, bobo_after, realm, realm_name, request_params,
-	     default_inherited_groups, inherited_groups, groups,
+	     inherited_groups, groups,
 	     object, doc, published, find_object
 	     ) = info = module_dicts[server_name, module_name]
 	except:
@@ -756,7 +760,7 @@ class ModulePublisher:
 					  info[module_name])
 		module_dicts[server_name, module_name]=info
 		(bobo_before, bobo_after, realm, realm_name, request_params,
-		 default_inherited_groups, inherited_groups, groups,
+		 inherited_groups, groups,
 		 object, doc, published, find_object
 		 ) = info
 	    except: raise ImportError, (
@@ -795,7 +799,20 @@ class ModulePublisher:
 	
 	# Do authorization checks
 	if groups is not None:
-	    groups=allow_group_composition(groups,inherited_groups)
+
+	    # Do composition, if we've got a named group:
+	    try: 
+		try: groups.keys  # See if we've got a mapping
+		except: groups().keys
+		g={None:None}
+		for i in inherited_groups[:-1]:
+		    g=allow_group_composition(g,i)
+		groups=allow_group_composition(groups,g)
+	    except:
+		# groups was not a mapping (or a function returning a
+		# mapping), so no point in composing.
+		pass 
+
 	    if not groups: self.forbiddenError()
 	    try:
 		if realm.name is None:
@@ -908,14 +925,11 @@ def attr_meta_data(object, subobject, entry_name,
 		   realm, realm_name, default_realm_name):
     try:
         groups=subobject.__allow_groups__
-        inherited_groups=allow_group_composition(
-            inherited_groups,groups)
+        inherited_groups.append(groups)
     except:
         try:
-            groups=getattr(object,
-			   entry_name+'__allow_groups__')
-            inherited_groups=allow_group_composition(
-                inherited_groups,groups)
+            groups=getattr(object, entry_name+'__allow_groups__')
+            inherited_groups.append(groups)
         except: pass
     try: doc=subobject.__doc__
     except:
@@ -937,8 +951,7 @@ def item_meta_data(subobject,
 		   realm, realm_name, default_realm_name):
     try:
         groups=subobject.__allow_groups__
-        inherited_groups=allow_group_composition(
-            inherited_groups,groups)
+        inherited_groups.append(groups)
     except: pass
     try: doc=subobject.__doc__
     except: doc=None
@@ -952,10 +965,11 @@ def item_meta_data(subobject,
 
 def new_find_object(self, info, path): 
     (bobo_before, bobo_after, realm, realm_name, request_params,
-     default_inherited_groups, inherited_groups, groups,
+     inherited_groups, groups,
      object, doc, published, ignore) = info
 
     default_realm_name=realm_name
+    inherited_groups=inherited_groups[:]
 
     request=self.request
 
@@ -972,7 +986,7 @@ def new_find_object(self, info, path):
         URL="%s/%s" % (URL,quote(entry_name))
         default_realm_name="%s.%s" % (entry_name,default_realm_name)
         if entry_name:
-	    try: traverse=object.traverse
+	    try: traverse=object.bobo_traverse
 	    except: traverse=None
 	    if traverse is not None:
 		request['URL']=URL
@@ -982,34 +996,34 @@ def new_find_object(self, info, path):
 		    subobject,
 		    inherited_groups, groups,
 		    realm, realm_name, default_realm_name)
-		continue
-            try:
-                subobject=getattr(object,entry_name)
-		(inherited_groups, groups,
-		 realm, realm_name, doc) = attr_meta_data(
-		    object, subobject, entry_name,
-		    inherited_groups, groups,
-		    realm, realm_name, default_realm_name)
-            except AttributeError:
-                try:
-                    subobject=object[entry_name]
+	    else:
+            	try:
+            	    subobject=getattr(object,entry_name)
 		    (inherited_groups, groups,
-		     realm, realm_name, doc) = item_meta_data(
-			 subobject,
-			 inherited_groups, groups,
-			 realm, realm_name, default_realm_name)
-                except (TypeError,AttributeError,KeyError), mess:
-                    if not path and entry_name=='help' and doc:
-                        object=doc
-                        entry_name, subobject = (
-			'__doc__', self.html
-			('Documentation for ' +
-			 ((self.env('PATH_INFO') or
-			   ('/'+self.module_name))[1:]),
-			 '<pre>\n%s\n</pre>' % doc)
-			)
-                    else:
-                        self.notFoundError("%s: %s" % (entry_name,mess))
+		     realm, realm_name, doc) = attr_meta_data(
+			object, subobject, entry_name,
+			inherited_groups, groups,
+			realm, realm_name, default_realm_name)
+            	except AttributeError:
+            	    try:
+            		subobject=object[entry_name]
+			(inherited_groups, groups,
+			 realm, realm_name, doc) = item_meta_data(
+			     subobject,
+			     inherited_groups, groups,
+			     realm, realm_name, default_realm_name)
+            	    except (TypeError,AttributeError,KeyError), mess:
+            		if not path and entry_name=='help' and doc:
+            		    object=doc
+            		    entry_name, subobject = (
+			    '__doc__', self.html
+			    ('Documentation for ' +
+			     ((self.env('PATH_INFO') or
+			       ('/'+self.module_name))[1:]),
+			     '<pre>\n%s\n</pre>' % doc)
+			    )
+            		else:
+            		    self.notFoundError("%s: %s" % (entry_name,mess))
 
             # Perform simple checks
             if (entry_name != '__doc__' and
@@ -1032,10 +1046,11 @@ def new_find_object(self, info, path):
 
 def old_find_object(self, info, path):
     (bobo_before, bobo_after, realm, realm_name, request_params,
-     default_inherited_groups, inherited_groups, groups,
+     inherited_groups, groups,
      object, doc, published, ignore) = info
 
     default_realm_name=realm_name
+    inherited_groups=inherited_groups[:]
 
     URL=self.script
     parents=[]
@@ -1410,13 +1425,13 @@ class Request:
 	
 	""" #"
 
+	other=self.other
+	try: return other[key]
+	except: pass
 
 	if self.special_names.has_key(key) or key[:5] == 'HTTP_':
 	    try: return self.environ[key]
 	    except: return ''
-
-	try: return self.other[key]
-	except: pass
 
 	if key=='REQUEST': return self
 
@@ -1443,21 +1458,22 @@ class Request:
 		    try: converter=self.__type_converters[t]
 		    except: pass
 		v=flatten_field(v,converter)
+		other[key]=v
 		return v
 	    except (KeyError,AttributeError,IndexError): pass
 
 	if not self.__dict__.has_key('cookies'):
-	    cookies=self.cookies={}
 	    if self.environ.has_key('HTTP_COOKIE'):
-		for cookie in string.split(self.environ['HTTP_COOKIE'],';'):
-		    try:
-			[k,v]=map(string.strip,string.split(cookie,'='))
-			cookies[k]=v
-		    except: pass
+		cookies=parse_cookie(self.environ['HTTP_COOKIE'])
+	    else: cookies={}
+	    self.cookies=cookies
 	
 	if key=='cookies': return self.cookies
 
-	try: return self.cookies[key]
+	try:
+	    r=self.cookies[key]
+	    other[key]=v
+	    return r
 	except: pass
 
 	try:
@@ -1472,6 +1488,7 @@ class Request:
 			break
 		base=URL[:baselen]
 		if base[-1:]=='/': base=base[:-1]
+		other[key]=base
 		return base
 	    if regex.match('URL[0-9]$',key) >= 0:
 		n=ord(key[3])-ord('0')
@@ -1481,6 +1498,7 @@ class Request:
 		    l=string.rfind(URL,'/')
 		    if l >= 0: URL=URL[:l]
 		    else: raise KeyError, key
+		other[key]=URL
 		return URL
 	except: pass
 
@@ -1508,6 +1526,40 @@ class Request:
 	'CONTENT_LENGTH' : 1, 
 	}
 		
+
+def parse_cookie(text,
+		 result=None,
+		 parmre=regex.compile(
+		     '\([\0- ]*'
+		     '\([^\0- ;,=\"]+\)=\([^\0- =\"]+\)'
+		     '\([\0- ]*[;,]\)?[\0- ]*\)'
+		     ),
+		 qparmre=regex.compile(
+		     '\([\0- ]*'
+		     '\([^\0- ;,=\"]+\)="\([^"]*\)\"'
+		     '\([\0- ]*[;,]\)?[\0- ]*\)'
+		     ),
+		 ):
+
+    result=result or {}
+
+    if parmre.match(text) >= 0:
+	name=lower(parmre.group(2))
+	value=parmre.group(3)
+	l=len(parmre.group(1))
+    elif qparmre.match(text) >= 0:
+	name=lower(qparmre.group(2))
+	value=qparmre.group(3)
+	l=len(qparmre.group(1))
+    else:
+	if not text or not strip(text): return result
+	raise InvalidParameter, text
+    
+    result[name]=value
+
+    return apply(parse_cookie,(text[l:],result))
+
+
 
 class CGIModulePublisher(ModulePublisher):
 
@@ -1567,6 +1619,14 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.40  1997/04/09 21:06:20  jim
+# Changed the way allow groups are composed to avoid unnecessary
+# composition.
+#
+# Added a little value caching in requests.
+#
+# Changed the way cookies are parsed to support quoted cookie values.
+#
 # Revision 1.39  1997/04/04 15:32:11  jim
 # *Major* changes to:
 #
