@@ -636,7 +636,7 @@ def test_join():
     """
 
 def test_suite():
-    from doctest import DocTestSuite
+    from zope.testing.doctest import DocTestSuite
     return unittest.TestSuite((
         DocTestSuite(),
         unittest.makeSuite(TransactionTests),

@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import doctest
+from zope.testing import doctest
 import os
 import sys
 import unittest
@@ -25,30 +25,5 @@ class P(Persistent):
     def inc(self):
         self.x += 1
 
-try:
-    DocFileSuite = doctest.DocFileSuite # >= Python 2.4.0a2
-except AttributeError:
-    # <= Python 2.4.0a1
-    def DocFileSuite(path, globs=None):
-        # It's not entirely obvious how to connection this single string
-        # with unittest.  For now, re-use the _utest() function that comes
-        # standard with doctest in Python 2.3.  One problem is that the
-        # error indicator doesn't point to the line of the doctest file
-        # that failed.
-
-        path = os.path.join(persistent.tests.__path__[0], path)
-
-        source = open(path).read()
-        if globs is None:
-            globs = sys._getframe(1).f_globals
-        t = doctest.Tester(globs=globs)
-        def runit():
-            doctest._utest(t, path, source, path, 0)
-        f = unittest.FunctionTestCase(runit,
-                                      description="doctest from %s" % path)
-        suite = unittest.TestSuite()
-        suite.addTest(f)
-        return suite
-
 def test_suite():
-    return DocFileSuite("persistent.txt", globs={"P": P})
+    return doctest.DocFileSuite("persistent.txt", globs={"P": P})

@@ -66,7 +66,7 @@ def test_wrapper_support():
     """
 
 import unittest
-from doctest import DocTestSuite
+from zope.testing.doctest import DocTestSuite
 from ExtensionClass import Base
 from ComputedAttribute import ComputedAttribute
 

@@ -276,7 +276,7 @@ def test_pickling_w_slots_w_empty_dict():
 
     """
 
-from doctest import DocTestSuite
+from zope.testing.doctest import DocTestSuite
 import unittest
 
 def test_suite():

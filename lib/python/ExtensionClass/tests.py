@@ -737,7 +737,7 @@ def test___of___w_metaclass_instance():
     """
 
 
-from doctest import DocTestSuite
+from zope.testing.doctest import DocTestSuite
 import unittest
 
 def test_suite():
