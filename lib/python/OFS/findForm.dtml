@@ -75,6 +75,18 @@ function show_opt()
   <TD ALIGN="LEFT" VALIGN="TOP">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="0"> 
+  Search only in this folder
+  <BR>
+  <INPUT TYPE="RADIO" NAME="search_sub:int" VALUE="1" CHECKED> 
+  Search all subfolders
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find"> 
   <INPUT TYPE="BUTTON" NAME="btn_opt" VALUE="Options..."
    onClick="show_opt()">

@@ -12,14 +12,24 @@ function new_wnd()
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <P>
 
-<!--#in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles')"-->
+<!--#in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')"-->
 <!--#else expr="_.hasattr(REQUEST, _['sequence-item'])"-->
 <!--#call expr="REQUEST.set(_['sequence-item'], _.None)"-->
 <!--#/else-->
 <!--#/in-->
 
 <!--#if btn_submit-->
-<!--#call expr="REQUEST.set('results', PrincipiaFind(this(), obj_ids=obj_ids, obj_metatypes=obj_metatypes, obj_searchterm=obj_searchterm, obj_expr=obj_expr, obj_mtime=obj_mtime, obj_mspec=obj_mspec, obj_permission=obj_permission, obj_roles=obj_roles, REQUEST=REQUEST))"-->
+<!--#call expr="REQUEST.set('results', PrincipiaFind(this(), 
+                                       obj_ids=obj_ids, 
+                                       obj_metatypes=obj_metatypes, 
+                                       obj_searchterm=obj_searchterm, 
+                                       obj_expr=obj_expr, 
+                                       obj_mtime=obj_mtime, 
+                                       obj_mspec=obj_mspec, 
+                                       obj_permission=obj_permission, 
+                                       obj_roles=obj_roles, 
+                                       search_sub=search_sub, 
+                                       REQUEST=REQUEST))"-->
 <!--#call expr="REQUEST.set('result_len', _.len(results))"-->
 
 <!--#if results-->
