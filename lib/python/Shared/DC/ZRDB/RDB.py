@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.12 1998/01/16 21:43:47 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: RDB.py,v 1.13 1998/02/06 22:41:48 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol, find
@@ -23,7 +23,7 @@ from Record import Record
 from Acquisition import Implicit
 
 def parse_text(s):
-    if find('\\') < 0 or (find('\\t') < 0 and find('\\n') < 0): return s
+    if find(s,'\\') < 0 or (find(s,'\\t') < 0 and find(s,'\\n') < 0): return s
     r=[]
     for x in split(s,'\\\\'):
 	x=join(split(x,'\\n'),'\n')
@@ -196,6 +196,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.13  1998/02/06 22:41:48  jim
+# Stupid bug I fixed at hway.
+#
 # Revision 1.12  1998/01/16 21:43:47  jim
 # Added parent to constructor so init can acquire
 #
