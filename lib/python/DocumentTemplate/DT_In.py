@@ -228,7 +228,7 @@
 
           'orphan'  -- The desired minimum number of objects to be
                        displayed.  The default value for this
-                       parameter is 3.
+                       parameter is 0.
 
           'overlap' -- The desired overlap between batches. The
                        default is no overlap.     
@@ -402,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.53 2001/07/02 16:30:46 shane Exp $'
-__version__='$Revision: 1.53 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.54 2001/08/14 17:23:58 andreasjung Exp $'
+__version__='$Revision: 1.54 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -435,7 +435,7 @@ class InClass:
     def __init__(self, blocks):
         tname, args, section = blocks[0]
         args=parse_params(args, name='', start='1',end='-1',size='10',
-                          orphan='3',overlap='1',mapping=1,
+                          orphan='0',overlap='1',mapping=1,
                           skip_unauthorized=1,
                           previous=1, next=1, expr='', sort='',
                           reverse=1, sort_expr='', reverse_expr='',
@@ -543,7 +543,7 @@ class InClass:
         end=int_param(params,md,'end',0)
         size=int_param(params,md,'size',0)
         overlap=int_param(params,md,'overlap',0)
-        orphan=int_param(params,md,'orphan','3')
+        orphan=int_param(params,md,'orphan','0')
         start,end,sz=opt(start,end,size,orphan,sequence)
         if params.has_key('next'): next=1
         if params.has_key('previous'): previous=1

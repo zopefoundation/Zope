@@ -49,7 +49,7 @@ in: Loops over sequences
       items since splitting the items into two batches would result in
       a batch smaller than the orphan size.
 
-      The default value is 3.
+      The default value is 0.
 
     overlap=int -- The number of items to overlap between batches. The
     default is no overlap.
