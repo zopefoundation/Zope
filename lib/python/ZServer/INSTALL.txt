@@ -99,18 +99,19 @@ Using ZServer
   to a directory where you have permissions before you can do
   anything. See above for more information about logging into FTP.
 
-Advanced Usage: zdeamon.py and the Zope NT service.
+Advanced Usage: zdaemon.py and the Zope NT service.
 
   One problem you may notice with ZServer is that once the server is
   shutdown, either through the web management interface, or by some
   other means, it will not automatically be restarted.
   
-  On windows you can use zdeamon.py to keep Zope running. Specifying
-  the '-Z' switch when starting Zope runs zdeamon.py on Unix. Zdeamon
+  On Unix you can use zdeamon.py to keep Zope running. Specifying
+  the '-Z' switch when starting Zope runs zdaemon.py. Zdeamon
   will restart Zope when it Zope is restarted through the web, and in
   case of an unexpected error.
   
-  On NT, use the Zope service for the same functionality.
+  On NT, use the Zope service for the same functionality. See ZServer.py
+  for more information on running ZServer as a service.
 
 Where to go from here
 

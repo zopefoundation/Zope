@@ -149,7 +149,7 @@ ZServer monitor server
   To connect to the monitor server use the 'ZServer/medusa/monitor_client.py'
   or 'ZServer/medusa/monitor_client_win32.py' script. For example::
   
-    $ python1.5.2 ZServer/medusa/monitor_client.py
+    $ python1.5.2 ZServer/medusa/monitor_client.py localhost 9999
 	
   You will then be asked to enter a password. This is the Zope super manager
   password which is stored in the 'access' file.
@@ -158,13 +158,18 @@ ZServer monitor server
   the Zope module::
   
     >>> import Zope
-	
+
   The Zope top level Zope object is available via the 'Zope.app' function::
   
     >>> a=Zope.app()
-	
+
   From this object you can reach all other Zope objects as subobjects.
   
+  Remember if you make changes to Zope objects and want those changes to be
+  saved you need to commmit the transaction::
+  
+    >>> get_transaction().commit()
+	
 ZServer WebDAV support
 
   WebDAV is a new protocol for managing web resources. WebDAV operates
