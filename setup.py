@@ -165,7 +165,7 @@ class ZopeDistribution(distutils.core.Distribution):
         self.cmdclass["install"] = ZopeInstall
         self.cmdclass["install_data"] = ZopeInstallData
         
-# presumes this script lives in the 'inst' subdirectory of the base dir
+# presumes this script lives in the base dir
 BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
 
 AUTHOR = 'Zope Corporation and Contributors'
@@ -1095,12 +1095,9 @@ installed_data_files = [
     ["../../doc", ['doc/*.txt']],
     ["../../doc/changenotes", ['doc/changenotes/*.stx']],
     ["../../import", ['import/*.zexp']],
-    # These may change in the future:
-    ["../../utilities", ['utilities/README.txt',
-                         'utilities/check_catalog.py',
-                         'utilities/load_site.py',
-                         'utilities/requestprofiler.py']],
+    ["../../bin", ['utilities/README.txt',]],
     ]
+
 os.path.walk("skel", skel_visit, installed_data_files)
 
 distutils.core.setup(
@@ -1108,7 +1105,10 @@ distutils.core.setup(
     author=AUTHOR,
 
     data_files=installed_data_files,
-    scripts=["utilities/mkzeoinstance.py", "utilities/mkzopeinstance.py"],
+    scripts=["utilities/mkzeoinstance.py", "utilities/mkzopeinstance.py",
+             "utilities/check_catalog.py", "utilities/load_site.py",
+             "utilities/requestprofiler.py", "utilities/zpasswd.py",
+             "utilities/testrunner.py"],
     distclass=ZopeDistribution,
     )
 
