@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -70,6 +70,12 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 	""" """
 	kw['document_id']   =self.id
         kw['document_title']=self.title
+        if client is None:
+            # Called as subtemplate, so don't need error propigation!
+            r=apply(HTML.__call__, (self, client, REQUEST), kw)
+            if RESPONSE is None: return r
+            return decapitate(r, RESPONSE)
+
 	try:
 	    try: r=apply(HTML.__call__, (self, client, REQUEST), kw)
 	    except:
@@ -78,7 +84,7 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
 		error_type=sys.exc_type
 		error_value=sys.exc_value
 		tb=sys.exc_traceback
-		if lower(error_type) in ('redirect',):
+                if lower(error_type) in ('redirect',):
 		    raise error_type, error_value, tb
 		if (type(error_value) is type('') and
 		    regex.search('[a-zA-Z]>', error_value) > 0):
