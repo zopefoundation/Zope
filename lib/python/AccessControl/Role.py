@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -363,6 +363,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             value=tuple(dict[key])
             info.append((key, value))
         return tuple(info)
+
+    def users_with_local_role(self, role):
+        got = {}
+        for user, roles in self.get_local_roles():
+            if role in roles:
+                got[user] = 1
+        return got.keys()
 
     def get_valid_userids(self):
         item=self
