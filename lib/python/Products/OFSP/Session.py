@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -36,9 +36,6 @@ class Session(Persistent,Implicit,RoleManager,Item):
     ('Join/leave session', ['enter','leave','leave_another']),
     ('Save/discard session', ['save','discard']),
     )
-   
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		 )
 
     def __init__(self, id, title, REQUEST):
 	self.id=id
@@ -108,6 +105,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.18  1998/05/20 17:58:17  jim
+# Got rid of ac_types.
+#
 # Revision 1.17  1998/05/20 17:57:40  jim
 # Included '' in permission settings.
 #
