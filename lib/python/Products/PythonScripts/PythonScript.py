@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -220,11 +220,13 @@ class PythonScript(Script, Historical, Cacheable):
         else:
             self._newfun(marshal.loads(self._code))
 
-    def _compiler(self, *args):
-        return RestrictedPython.compile_restricted_function(*args)
+    def _compiler(self, *args, **kw):
+        return RestrictedPython.compile_restricted_function(*args, **kw)
     def _compile(self):
+        bind_names = self.getBindingAssignments().getAssignedNamesInOrder()
         r = self._compiler(self._params, self._body or 'pass',
-                           self.id, self.meta_type)
+                           self.id, self.meta_type,
+                           globalize=bind_names)
         code = r[0]
         errors = r[1]
         self.warnings = tuple(r[2])
