@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.6 1996/07/25 16:44:24 jfulton Exp $'''
+$Id: Response.py,v 1.7 1996/08/05 11:27:59 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,11 @@ $Id: Response.py,v 1.6 1996/07/25 16:44:24 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.7  1996/08/05 11:27:59  jfulton
+# Added check for asHTML method.
+# Added traceback comment quoting.
+# Added code to add header of response doesn't contain one.
+#
 # Revision 1.6  1996/07/25 16:44:24  jfulton
 # - Fixed bug in recognizing HTML exception values.
 # - Added transaction support.
@@ -89,9 +94,9 @@ $Id: Response.py,v 1.6 1996/07/25 16:44:24 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
-import string, types, sys, regex
+import string, types, sys, regex, regsub
 
 status_reasons={
     200: 'OK',
@@ -261,8 +266,13 @@ class Response:
 	If the body is a 2-element tuple, then it will be treated
 	as (title,body)
 	'''
-	if type(body)==types.TupleType:
+	if type(body) is types.TupleType:
 	    title,body=body
+
+	if type(body) is not types.StringType:
+	    if hasattr(body,'asHTML'):
+		body=body.asHTML()
+	    
 	if(title):
 	    self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
 		       '<body>\n%s\n</body>\n</html>'
@@ -370,11 +380,23 @@ class Response:
 	return (string.lower(string.strip(str)[:6]) == '<html>' or
 		string.find(str,'</') > 0)
 
+    def quoteHTML(self,text,
+		  character_entities=(
+		      (regex.compile('&'), '&amp;'),
+		      (regex.compile("<"), '&lt;' ),
+		      (regex.compile(">"), '&gt;' ),
+		      (regex.compile('"'), '&quote;'))): #"
+	for re,name in character_entities:
+	    text=regsub.gsub(re,name,text)
+	return text
+         
+		      
+
     def _traceback(self,t,v,tb):
 	import traceback
-	return ("\n<!--\n%s\n-->" %
-		string.joinfields(traceback.format_exception(t,v,tb,200),'\n')
-		)
+	tb=string.joinfields(traceback.format_exception(t,v,tb,200),'\n')
+	tb=self.quoteHTML(tb)
+	return "\n<!--\n%s\n-->" % tb
 
     def exception(self):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
@@ -428,14 +450,27 @@ class Response:
 	headers=self.headers
 	body=self.body
 	if body:
+	    isHTML=self.isHTML(body)
 	    if not headers.has_key('content-type'):
-		if self.isHTML(body):
+		if isHTML:
 		    c='text/html'
 		else:
 		    c='text/plain'
 		self.setHeader('content-type',c)
+	    if isHTML and end_of_header_re.search(self.body) < 0:
+		htmlre=regex.compile('<html>',regex.casefold)
+		lhtml=htmlre.search(body)
+		if lhtml >= 0:
+		    lhtml=lhtml+6
+		    body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
+		else:
+		    body='<html><head></head>\n' + body
+		self.setBody(body)
+		body=self.body
+		    
 	    if not headers.has_key('content-length'):
 		self.setHeader('content-length',len(body))
+		
 
 	if not headers.has_key('content-type') and self.status == 200:
 	    self.setStatus('nocontent')
