@@ -85,7 +85,7 @@ Transient Objects
 
     - TransientItemContainer
 
-  In particular, one uses the 'new_&nbsp;_or_&nbsp;_existing' method on
+  In particular, one uses the 'new__or__existing' method on
   TransientObjectContainers to retrieve or create a TransientObject based
   on a given string key.  
 
