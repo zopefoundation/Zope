@@ -100,6 +100,10 @@ provides a hook that logging management systems could use to collect information
 
 The module defines several standard severities:
 
+  TRACE=-300   -- Trace messages
+
+  DEBUG=-200   -- Debugging messages
+
   BLATHER=-100 -- Somebody shut this app up.
 
   INFO=0       -- For things like startup and shutdown.
@@ -144,24 +148,31 @@ There is a default stupid logging facility that:
 
   - outputs to file if the environment variable
     STUPID_LOG_FILE is set to a file name.
-    
+
+  - Ignores errors that have a severity < 0 by default. This
+    can be overridden with the environment variable STUPID_LOG_SEVERITY
 
 """
 import time, sys, string
 
 # Standard severities
-BLATHER=-100
-INFO=0      
-PROBLEM=WARNING=100             
-ERROR=200   
-PANIC=300
+TRACE   = -300
+DEBUG   = -200
+BLATHER = -100
+INFO    =    0      
+PROBLEM =  100
+WARNING =  100             
+ERROR   =  200   
+PANIC   =  300
 
 def severity_string(severity, mapping={
+    -300: 'TRACE',
+    -200: 'DEBUG',
     -100: 'BLATHER',
-    0: 'INFO',       
-    100: 'PROBLEM', 
-    200: 'ERROR',    
-    300: 'PANIC', 
+       0: 'INFO',       
+     100: 'PROBLEM', 
+     200: 'ERROR',    
+     300: 'PANIC', 
     }):
     """Convert a severity code to a string
     """
@@ -215,10 +226,9 @@ def log_time():
             % time.gmtime(time.time())[:6])
     
 _stupid_dest=None
+_stupid_severity=None
 _no_stupid_log=[]
 def stupid_log_write(subsystem, severity, summary, detail, error):
-
-    if severity < 0: return
     
     global _stupid_dest
     if _stupid_dest is None:
@@ -233,6 +243,13 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
             _stupid_dest=_no_stupid_log
             
     if _stupid_dest is _no_stupid_log: return
+
+    global _stupid_severity
+    if _stupid_severity is None:
+        try: _stupid_severity=string.atoi(os.environ['STUPID_LOG_SEVERITY'])
+        except: _stupid_severity=0
+        
+    if severity < _stupid_severity: return
                
     _stupid_dest.write(
         "------\n"
