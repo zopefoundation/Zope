@@ -39,6 +39,8 @@ Zope Changes
 
         - DateTime constructor now accepts ISO 8601 compliant dates
 
+        - Collector #2254: added hook for webdav/ftp MKCOL
+
 
     Zope 2.4 alpha 1
 
