@@ -92,6 +92,9 @@ from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
 
+from OFS.misc_ import p_
+p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
+
 builtins=(
     ('ObjectManager ObjectManager', 'Object Manager',
      ObjectManager.ZObjectManager),
@@ -155,7 +158,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     """Zope Class
     """
     meta_type="Z Class"
-    icon=""
+    icon="p_/ZClass_Icon"
     instance__meta_type='instance'
     instance__icon=''
     __propsets__=()
