@@ -1,0 +1,10 @@
+#!/usr/local/bin/pcgi-wrapper
+
+# example pcgi info file - JeffBauer@bigfoot.com
+# substitute 'BogusDirectory' with appropriate path
+# To invoke from browser:  http://.../cgi-bin/pcgitest/getTime
+
+PCGI_PUBLISHER=/BogusDirectory/pcgi_publisher.py
+PCGI_MODULE_PATH=/BogusDirectory/pcgitime.py
+PCGI_SOCKET_FILE=/tmp/pcgitest.socket
+PCGI_PID_FILE=/tmp/pcgitest.pid

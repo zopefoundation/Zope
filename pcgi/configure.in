@@ -1,0 +1,61 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(pcgi.h)
+AC_PROG_CC
+AC_PROG_CPP
+
+# Set VERSION here so we only need to edit it in one place
+AC_SUBST(VERSION)
+VERSION=2.0a4
+
+# Set name for machine-dependent library files
+AC_SUBST(MACHDEP)
+AC_MSG_CHECKING(MACHDEP)
+if test -z "$MACHDEP"
+then
+	ac_sys_system=`uname -s`
+	if test "$ac_sys_system" = "AIX" ; then
+		ac_sys_release=`uname -v`
+	else
+		ac_sys_release=`uname -r`
+	fi
+	ac_md_system=`echo $ac_sys_system | tr -d '[/ ]' | tr '[[A-Z]]' '[[a-z]]'`
+	ac_md_release=`echo $ac_sys_release | tr -d '[/ ]' | sed 's/\..*//'`
+	MACHDEP="$ac_md_system$ac_md_release"
+
+	case $MACHDEP in
+	'')	MACHDEP="unknown";;
+	esac
+fi
+AC_MSG_RESULT($MACHDEP)
+
+dnl Checks for programs.
+
+dnl Checks for libraries.
+
+case $ac_sys_system in
+hp*|HP*)
+    case $CC in
+    cc|*/cc) CC="$CC -Aa -D_HPUX_SOURCE";;
+    esac;;
+esac
+
+if test "$ac_sys_system" != IRIX
+then
+AC_CHECK_LIB(nsl, inet_addr, [LIBS="-lnsl $LIBS"]) # SVR4
+AC_CHECK_LIB(socket, socket, [LIBS="-lsocket $LIBS"], [], $LIBS) # SVR4 sockets
+fi
+
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS(unistd.h)
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_PID_T
+
+dnl Checks for library functions.
+AC_TYPE_SIGNAL
+AC_CHECK_FUNCS(putenv socket strerror)
+
+AC_OUTPUT(Makefile)
