@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.8 1998/02/09 17:25:41 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: __init__.py,v 1.9 1998/02/10 18:41:40 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -25,11 +25,12 @@ meta_types=(
     {'name':'Image', 'action':'manage_addImageForm'},
     {'name':'Folder', 'action':'manage_addFolderForm'},
     {'name':'Document', 'action':'manage_addDocumentForm'},
+    {'name':'User Folder', 'action':'manage_addUserFolder'},
     )
 
 methods={
-    'manage_addSessionForm': Session.addForm,
-    'manage_addSession': Session.add,
+    'manage_addSessionForm': Session.manage_addSessionForm,
+    'manage_addSession': Session.manage_addSession,
 #    'manage_addDraftFolderForm': DraftFolder.addForm,
 #    'manage_addDraftFolder': DraftFolder.add,
     }
@@ -40,9 +41,22 @@ misc_={
     'session': ImageFile('images/session.gif', globals()),
     }
 
+__ac_permissions__=(
+    ('Add Sessions',('manage_addSessionForm', 'manage_addSession')),
+    #('Add DraftFolders',
+    # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
+    )
+
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.9  1998/02/10 18:41:40  jim
+# Changed session creation method names for latest security scheme.
+#
+# Added User Folder.
+#
+# Added permissions info for sessions.
+#
 # Revision 1.8  1998/02/09 17:25:41  jim
 # *** empty log message ***
 #
