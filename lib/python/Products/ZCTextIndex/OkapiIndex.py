@@ -29,7 +29,6 @@ from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
 import ZODB
-from Persistence import Persistent
 
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024
