@@ -157,8 +157,6 @@ class HTMLParser(markupbase.ParserBase):
                     k = self.parse_starttag(i)
                 elif endtagopen.match(rawdata, i): # </
                     k = self.parse_endtag(i)
-                    if k >= 0:
-                        self.clear_cdata_mode()
                 elif _contains_at(rawdata, "<!--", i): # <!--
                     k = self.parse_comment(i)
                 elif _contains_at(rawdata, "<!", i): # <!
@@ -349,6 +347,7 @@ class HTMLParser(markupbase.ParserBase):
             self.handle_data(match.group(0))
         else:
             self.handle_endtag(tag)
+            self.clear_cdata_mode()
         return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>
