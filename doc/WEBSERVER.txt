@@ -14,26 +14,28 @@ Using Zope with an existing web server
   Zope is a long running process, which means that it does not start
   up and die on each request like traditional CGI programs (if it did, 
   each request would take far too long due to the time to start and
-  stop an application as large as Zope).  In order to gateway 
+  stop an application as large as Zope).  In order to gateway from the 
+  separate CGI processes to the Zope long running Process, PCGI must
+  be used.
 
 Using Zope in multi threaded mode with ZServer
 ----------------------------------------------
 
   ZServer is a general purpose TCP server for publishing Zope objects
-  over various transport protcols.  For Zope to run multi-threaded,
+  over various transport protocols.  For Zope to run multi-threaded,
   you must run ZServer.
 
   ZServer is based on Sam Rushing's medusa software.  The benefit of
   using medusa as the ZServer core is that it is not protocol specific 
   (medusa provides libraries to program for any protocol) and it is
-  easily extensible.  Because medusa is written in Pyhton, is extremly 
+  easily extensible.  Because medusa is written in Python, is extremely 
   high performance by design, and comes with an HTTP and FTP server,
   we chose it for the Zope core.
 
-  It is not necesary, however, for ZServer to actually listen for
-  incomming HTTP requests.  If you want Apache to do the actual
+  It is not necessary, however, for ZServer to actually listen for
+  incoming HTTP requests.  If you want Apache to do the actual
   listening and serving, then you can use ZServer's PCGI component to
-  communcate with Apache.
+  communicate with Apache.
 
   To run ZServer with PCGI, you must specify the -p option to the
   z2.py startup script.  From the top level Zope directory, you can:
@@ -52,7 +54,7 @@ Using Zope in multi threaded mode with ZServer
     bash% python.1.5.2 z2.py -p /path/to/PCGI/resource/file
 
   Now the Zope long running process is started up, and the PCGI
-  component is loaded and ready to recieve CGI requests from your
+  component is loaded and ready to receive CGI requests from your
   webserver.  
 
   The installation process should create a 'Zope.cgi' PCGI file. Copy the
