@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.3 $ '[11:-2]
+__version__='$Revision: 1.4 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -135,7 +135,7 @@ def write_access(home, user='', group=''):
         You can change the superuser name and password with the
         zpasswd script.  To find out more, type:
 
-        %s zpasswd
+        %s zpasswd.py
         """ % (pw, sys.executable)
 
         import do; do.ch(ac_path, user, group)
