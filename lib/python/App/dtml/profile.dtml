@@ -5,6 +5,12 @@
           limit="REQUEST.get('limit', 100)" 
           stats="manage_profile_stats(sort, limit)">
 <dtml-if stats>
+<p class="form-help">
+Profiling information is generated using the standard Python 
+profiler. To learn how to interpret the profiler statistics, 
+see the <a href="http://www.python.org/doc/current/lib/module-profile.html">
+Python profiler documentation</a>.
+</p>
 <br />
 <form action="<dtml-var URL>" method="POST">
 <table>
