@@ -4,7 +4,7 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-# $Revision: 1.7 $
+# $Revision: 1.8 $
 __version__ = '0.1'
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
@@ -51,11 +51,6 @@ class Minimal(BerkeleyBase):
             # files in that directory.
             self._commitlog = PacklessLog(dir=self._env.db_home)
         self._commitlog.start()
-
-    def _vote(self, transaction):
-        # From here on out, we promise to commit all the registered changes,
-        # so rewind and put our commit log in the PROMISED state.
-        self._commitlog.promise()
 
     def _finish(self, tid, u, d, e):
         # This is called from the storage interface's tpc_finish() method.
