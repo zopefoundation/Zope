@@ -140,49 +140,57 @@ class BasicTests(unittest.TestCase):
             
 
     def testUnderline(self):
-        """underline"""
         self._test("xx _this is html_ xx",
                    "xx <u>this is html</u> xx")
 
     def testUnderline1(self):
-        """underline 1"""
         self._test("xx _this is html_",
                    "<u>this is html</u>")
         
     def testEmphasis(self):
-        """ emphasis """
         self._test("xx *this is html* xx",
                    "xx <em>this is html</em> xx")
 
     def testStrong(self):
-        """ strong """
         self._test("xx **this is html** xx",
                    "xx <strong>this is html</strong> xx")
         
     def testUnderlineThroughoutTags(self):
-        """Underlined text containing tags should not be transformed"""
         self._test('<a href="index_html">index_html</a>', 
                    '<a href="index_html">index_html</a>')
 
     
     def testUnderscoresInLiteral1(self):
-        """ underscores in literals shouldn't do underlining (1)"""
 
         self._test("def __init__(self)",
                    "def __init__(self)")
 
     def testUnderscoresInLiteral2(self):
-        """ underscores in literals shouldn't do underlining (2)"""
 
         self._test("this is '__a_literal__' eh",
                    "<code>__a_literal__</code>")
 
 
     def testUnderlinesWithoutWithspaces(self):
-        """ underscores in literals shouldn't do underlining (3)"""
 
         self._test("Zopes structured_text is sometimes a night_mare",
                    "Zopes structured_text is sometimes a night_mare")
+
+
+    def testAsterisksInLiteral(self):
+        self._test("this is a '*literal*' eh",
+        "<code>*literal*</code>")
+
+
+    def testDoubleAsterisksInLiteral(self):
+        self._test("this is a '**literal**' eh",
+        "<code>**literal**</code>")
+
+
+    def testLinkInLiteral(self):
+        self._test("this is a '\"literal\":http://www.zope.org/.' eh",
+        '<code>"literal":http://www.zope.org/.</code>') 
+
 
 def test_suite():
     suite = unittest.TestSuite()
