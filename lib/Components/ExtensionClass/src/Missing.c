@@ -53,7 +53,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.5 1997/09/23 15:17:12 jim Exp $"
+"\n$Id: Missing.c,v 1.6 1997/09/23 16:06:03 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -295,7 +295,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -320,6 +320,7 @@ initMissing()
 
   PyDict_SetItemString(d, "Value", theValue);
   PyDict_SetItemString(d, "V", theValue); 
+  PyDict_SetItemString(d, "MV", theValue); 
 	
   /* Check for errors */
   if (PyErr_Occurred())
@@ -330,6 +331,9 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.6  1997/09/23 16:06:03  jim
+  Added MV member.
+
   Revision 1.5  1997/09/23 15:17:12  jim
   Added cmp.
 
