@@ -4,7 +4,7 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.1 1997/08/06 14:24:41 jim Exp $'''
+$Id: dbi_db.py,v 1.2 1997/08/06 14:26:45 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -56,6 +56,9 @@ $Id: dbi_db.py,v 1.1 1997/08/06 14:24:41 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: dbi_db.py,v $
+# Revision 1.2  1997/08/06 14:26:45  jim
+# *** empty log message ***
+#
 # Revision 1.1  1997/08/06 14:24:41  jim
 # *** empty log message ***
 #
@@ -67,7 +70,7 @@ $Id: dbi_db.py,v 1.1 1997/08/06 14:24:41 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string, sys
 
@@ -89,7 +92,7 @@ class DB:
 	raise 'ImplementedBySubclass', (
 	    'attempt to create a database connection for an abstract dbi')
 
-    database_error='Should be overriden by subclass'
+    Database_Error='Should be overriden by subclass'
 
     def __init__(self,connection):
 	self.connection=connection
@@ -129,7 +132,7 @@ class DB:
 	    failures=0
 	    c.close()
 	    self.db.commit()
-	except self.database_error, mess:
+	except self.Database_Error, mess:
 	    c.close()
 	    self.db.rollback()
 	    failures=failures+1
