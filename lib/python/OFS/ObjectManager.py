@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.27 1997/12/19 19:11:17 jim Exp $"""
+$Id: ObjectManager.py,v 1.28 1997/12/31 19:17:18 jim Exp $"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -264,7 +264,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	raise 'BadRequest', 'Unknown object type: %s' % type
 
     def manage_delObjects(self,ids=[],submit='',clip_id='',
-			  clip_data='',REQUEST):
+			  clip_data='',REQUEST=None):
 	"""Delete a subordinate object"""
 	if submit=='Copy':
 	    c=len(ids)
@@ -455,6 +455,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.28  1997/12/31 19:17:18  jim
+# Fixed buglet in signature of manage_delObjects.
+#
 # Revision 1.27  1997/12/19 19:11:17  jim
 # updated icon management strategy
 #
