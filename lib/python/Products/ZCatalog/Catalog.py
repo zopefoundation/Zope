@@ -118,7 +118,8 @@ class Catalog(Persistent, Acquisition.Implicit):
             else:
                 schema[name] = 0
             names.append(name)
-            self.useBrains(self._v_brains)
+
+
 
         if default_value is None or default_value == '':
             default_value = MV
@@ -131,6 +132,8 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.names = tuple(names)
         self.schema = schema
 
+        self.useBrains(self._v_brains)
+            
         self.__changed__(1)    #why?
 
             
@@ -152,6 +155,8 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         self.schema = schema
         self.names = tuple(names)
+
+        self.useBrains(self._v_brains)
 
         # remove the column value from each record
         for key in self.data.keys():
