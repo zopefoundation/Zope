@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.6 1997/04/03 15:53:48 jim Exp $"
+"\n$Id: Trie.c,v 1.7 1997/04/22 00:13:58 jim Exp $"
 ;
 
 
@@ -141,39 +141,18 @@ Trie___getstate__(TrieObject *self, PyObject *args)
 static PyObject *
 Trie__p___reinit__(TrieObject *self, PyObject *args)
 {
-  PyObject *oid, *jar, *copy;
+  int oid;
+  PyObject *jar, *copy;
 
-  if(PyArg_ParseTuple(args, ""))
-    {
-      if(self->state==cPersistent_UPTODATE_STATE)
-	{
-	  Py_XDECREF(self->bins);
-	  Py_XDECREF(self->value);
-	  self->bins=NULL;
-	  self->value=NULL;
-	  self->min=0;
-	  self->state=cPersistent_GHOST_STATE;
-	}
-    }
-  else
-    {
-      UNLESS(PyArg_ParseTuple(args, "OOO", &oid, &jar, &copy)) return NULL;
-      UNLESS(self->oid)
-	{
-	  Py_INCREF(oid);
-	  ASSIGN(self->oid, oid);
-	}
-      if((self->oid==oid || PyObject_Compare(self->oid, oid)==0)
-	 && self->state==cPersistent_UPTODATE_STATE)
-	{
-	  Py_XDECREF(self->bins);
-	  Py_XDECREF(self->value);
-	  self->bins=NULL;
-	  self->value=NULL;
-	  self->min=0;
-	  self->state=cPersistent_GHOST_STATE;
-	}
-    }
+  /* Note that this implementation is broken, in that it doesn't
+     account for subclass needs. */
+  Py_XDECREF(self->bins);
+  Py_XDECREF(self->value);
+  self->bins=NULL;
+  self->value=NULL;
+  self->min=0;
+  self->state=cPersistent_GHOST_STATE;
+  /*printf("r");*/
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -576,6 +555,7 @@ Trie_dealloc(TrieObject *self)
   Py_XDECREF(self->bins);
   Py_XDECREF(self->value);
   PyMem_DEL(self);
+  /*printf("d");*/
 }
 
 static PyObject *
@@ -662,7 +642,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -702,6 +682,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.7  1997/04/22 00:13:58  jim
+  Changed to use new cPersistent header.
+
   Revision 1.6  1997/04/03 15:53:48  jim
   Fixed bug in reinitialization code.
 
