@@ -53,17 +53,21 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.9 1997/05/19 17:49:35 jim Exp $"
+"\n$Id: Trie.c,v 1.10 1997/06/06 19:36:36 jim Exp $"
 ;
 
 
-#define PERSISTENT
+#define PERSISTENT 1
 /* Note that I haven't put ifdefs everywhere they apply yet. */
 
 #ifdef PERSISTENT
 #  include "cPersistence.h"
 #else
 #  include "ExtensionClass.h"
+#  define PER_PREVENT_DEACTIVATION(SELF)
+#  define PER_ALLOW_DEACTIVATION(SELF)
+#  define PER_CHANGED(O) 0
+#  define PER_USE_OR_RETURN(O,R)
 #endif
 
 static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
@@ -92,6 +96,8 @@ staticforward PyExtensionClass TrieType;
 
 /* ---------------------------------------------------------------- */
 
+#ifdef PERSISTENT
+
 static PyObject *
 PER_RETURN(TrieObject *self, PyObject *r)
 {
@@ -106,6 +112,11 @@ PER_INT_RETURN(TrieObject *self, int r)
   return r;
 }
 
+#else
+#define PER_RETURN(SELF,R) R
+#define PER_INT_RETURN(SELF,R) R
+#endif
+
 static PyObject *
 Trie___setstate__(TrieObject *self, PyObject *args)
 {
@@ -113,9 +124,7 @@ Trie___setstate__(TrieObject *self, PyObject *args)
 
   UNLESS(PyArg_ParseTuple(args, "O", &state)) return NULL;
 
-#ifdef PERSISTENT
   PER_PREVENT_DEACTIVATION(self); 
-#endif
 
   if(state != Py_None)
     {
@@ -142,10 +151,7 @@ Trie___getstate__(TrieObject *self, PyObject *args)
 
   UNLESS(PyArg_ParseTuple(args, "")) return NULL;
 
-#ifdef PERSISTENT
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) PER_RETURN(self, NULL);
-#endif
+  PER_USE_OR_RETURN(self, NULL);
 
   if(self->value)
     if(self->bins)
@@ -194,10 +200,7 @@ getiork(TrieObject *self, PyObject * r, keybuf *buf, int l, int dokeys)
   int i;
   PyObject *item=0;
   
-#ifdef PERSISTENT
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
-#endif
+  PER_USE_OR_RETURN(self, NULL);
 
   if(self->value)
     {
@@ -280,10 +283,7 @@ Trie_keys(TrieObject *self, PyObject *args)
 static PyObject *
 Trie_cvalues(TrieObject *self, PyObject *r)
 {
-#ifdef PERSISTENT
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
-#endif
+  PER_USE_OR_RETURN(self, NULL);
 
   if(self->value)
     if(PyList_Append(r,self->value) < 0) return PER_RETURN(self, NULL);
@@ -335,11 +335,9 @@ Trie_cclear(TrieObject *self)
 {
 #ifdef PERSISTENT
   int changed=0;
-
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
-    return PER_INT_RETURN(self, -1);
 #endif
+
+  PER_USE_OR_RETURN(self, -1);
 
   if(self->value)
     {
@@ -380,8 +378,7 @@ Trie_cclear(TrieObject *self)
     }
 
 #ifdef PERSISTENT
-  if(changed && cPersistenceCAPI->changed(PyOb(self)) < 0)
-    return PER_INT_RETURN(self, -1);
+  if(changed && PER_CHANGED(self) < 0) return PER_INT_RETURN(self, -1);
 #endif
 
   return PER_INT_RETURN(self, 0);
@@ -430,39 +427,48 @@ Trie_cget(TrieObject *self, char *word, PyObject *oword)
 {
   int c;
   char *k;
-  PyObject *bins;
+  PyObject *bins, *bin;
   PyTypeObject *typ;
   PyObject *key;
 
-#ifdef PERSISTENT
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return PER_RETURN(self, NULL);
-#endif
+  PER_USE_OR_RETURN(self, NULL);
 
   typ=self->ob_type;
+  Py_INCREF(self);
   while(c=*word++)
     {
-      if(! (bins=self->bins) || c < self->min)
-	return PER_RETURN(self, NotFoundError(oword));
+      if(! (bins=self->bins) || c < self->min) goto not_found;
       c-=self->min;
-      if(c >= PyList_SIZE(bins)) return PER_RETURN(self, NotFoundError(oword));
-      self=(TrieObject *)PyList_GET_ITEM(LIST(bins), c);
-      if(self->ob_type != typ)
-	if(PyTuple_Check(PyOb(self)) &&
-	   PyString_Check((key=PyTuple_GET_ITEM(PyOb(self),0))) &&
-	   strcmp(word,PyString_AS_STRING(STRING(key)))==0)
-	  return PER_RETURN(self, PySequence_GetItem(PyOb(self),1));
-	else
-	  return PER_RETURN(self, NotFoundError(oword));
-	  
-#ifdef PERSISTENT
-      if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
-	return PER_RETURN(self, NULL);
-#endif
+      if(c >= PyList_SIZE(bins)) goto not_found;
+      bin=PyList_GET_ITEM(LIST(bins), c);
+      Py_INCREF(bin);
+      PER_ALLOW_DEACTIVATION(self);
+      Py_DECREF(self);
+      if(bin->ob_type != typ)
+	{
+	  if(PyTuple_Check(bin) &&
+	     PyString_Check((key=PyTuple_GET_ITEM(bin,0))) &&
+	     strcmp(word,PyString_AS_STRING(STRING(key)))==0
+	     )
+	    ASSIGN(bin,PySequence_GetItem(bin,1));
+	  else
+	    ASSIGN(bin,NotFoundError(oword));
+	  return bin;
+	}
+
+      self=(TrieObject *)bin;
+      PER_USE_OR_RETURN(self, NULL);
+
     }
   if(! self->value) return PER_RETURN(self, NotFoundError(oword));
-  Py_INCREF(self->value);
-  return PER_RETURN(self, self->value);
+  bin=self->value;
+  Py_INCREF(bin);
+  return PER_RETURN(self, bin);
+
+not_found:
+  PER_ALLOW_DEACTIVATION(self);
+  Py_DECREF(self);
+  return NotFoundError(oword);
 }
 
 static int
@@ -472,10 +478,9 @@ Trie_cset(TrieObject *self, char *word, PyObject *v, PyObject *oword)
   int c, r, max;
 #ifdef PERSISTENT
   int ch=0;
-
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) goto err;
 #endif
+
+  PER_USE_OR_RETURN(self, -1);
 
   c=*word++;
   if(! c)
@@ -488,7 +493,7 @@ Trie_cset(TrieObject *self, char *word, PyObject *v, PyObject *oword)
       Py_XINCREF(v);
       ASSIGN(self->value, v);
 #ifdef PERSISTENT
-      if(cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+      if(PER_CHANGED(self) < 0) goto err;
       PER_ALLOW_DEACTIVATION(self);
 #endif
       return 0;
@@ -574,7 +579,7 @@ Trie_cset(TrieObject *self, char *word, PyObject *v, PyObject *oword)
       r=PyList_SetItem(self->bins, c, bin);
 
 #ifdef PERSISTENT
-      if(cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+      if(PER_CHANGED(self) < 0) goto err;
       PER_ALLOW_DEACTIVATION(self);
 #endif
 
@@ -584,16 +589,14 @@ Trie_cset(TrieObject *self, char *word, PyObject *v, PyObject *oword)
   r=Trie_cset((TrieObject*)bin,word,v,oword);
 
 #ifdef PERSISTENT
-  if(ch && cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+  if(ch && PER_CHANGED(self) < 0) goto err;
   PER_ALLOW_DEACTIVATION(self);
 #endif
 
   return r;
 err:
   Py_XDECREF(bin);
-#ifdef PERSISTENT
   PER_ALLOW_DEACTIVATION(self);
-#endif
   return -1;
 }
 
@@ -603,11 +606,7 @@ Trie_length(TrieObject *self)
   int i, li, l=0;
   PyObject *bin;
 
-#ifdef PERSISTENT
-  PER_PREVENT_DEACTIVATION(self); 
-  if(cPersistenceCAPI->setstate(PyOb(self)) < 0)
-    return PER_INT_RETURN(self, -1);
-#endif
+  PER_USE_OR_RETURN(self, -1);
 
   if(self->bins)
     for(i=PyList_SIZE(self->bins); --i >= 0; )
@@ -617,20 +616,7 @@ Trie_length(TrieObject *self)
 	  {
 	    li=Trie_length((TrieObject*)bin);
 	    if(li < 0) return PER_INT_RETURN(self, li);
-	    if(li)
-	      l+=li;
-	    else
-	      {      
-#ifdef PERSISTENT
-		if(cPersistenceCAPI->changed(PyOb(self)) < 0)
-		  return PER_INT_RETURN(self, -1);
-#endif
-		/* Database management concerns make us leery of this
-		Py_INCREF(Py_None);
-		if(PyList_SetItem(self->bins, i, Py_None) < 1)
-		  return PER_INT_RETURN(self, -1);
-		*/
-	      }
+	    l+=li;
 	  }
 	else if(PyTuple_Check(bin)) l++;
       }
@@ -763,7 +749,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -803,6 +789,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.10  1997/06/06 19:36:36  jim
+  Fixed major bug in (de)activation control logic.
+
   Revision 1.9  1997/05/19 17:49:35  jim
   Added logic to disable deactivation during methods.  This sort of
   logic will be needed for any C-based persistent object.
