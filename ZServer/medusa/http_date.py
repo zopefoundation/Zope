@@ -5,13 +5,13 @@ import string
 import time
 
 def concat (*args):
-	return string.joinfields (args, '')
+    return string.joinfields (args, '')
 
 def join (seq, field=' '):
-	return string.joinfields (seq, field)
+    return string.joinfields (seq, field)
 
 def group (s):
-	return '\\(' + s + '\\)'
+    return '\\(' + s + '\\)'
 
 short_days = ['sun','mon','tue','wed','thu','fri','sat']
 long_days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday']
@@ -21,8 +21,8 @@ long_day_reg = group (join (long_days, '\\|'))
 
 daymap = {}
 for i in range(7):
-	daymap[short_days[i]] = i
-	daymap[long_days[i]] = i
+    daymap[short_days[i]] = i
+    daymap[long_days[i]] = i
 
 hms_reg = join (3 * [group('[0-9][0-9]')], ':')
 
@@ -30,7 +30,7 @@ months = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec
 
 monmap = {}
 for i in range(12):
-	monmap[months[i]] = i+1
+    monmap[months[i]] = i+1
 
 months_reg = group (join (months, '\\|'))
 
@@ -41,83 +41,91 @@ months_reg = group (join (months, '\\|'))
 
 # rfc822 format
 rfc822_date = join (
-	[concat (short_day_reg,','),	# day
-	 group('[0-9][0-9]?'),			# date
-	 months_reg,					# month
-	 group('[0-9]+'),				# year
-	 hms_reg,						# hour minute second
-	 'gmt'
-	 ],
-	' '
-	)
+    [concat (short_day_reg,','),    # day
+     group('[0-9][0-9]?'),          # date
+     months_reg,                    # month
+     group('[0-9]+'),               # year
+     hms_reg,                       # hour minute second
+     'gmt'
+     ],
+    ' '
+    )
 
 rfc822_reg = regex.compile (rfc822_date)
 
 def unpack_rfc822 ():
-	g = rfc822_reg.group
-	a = string.atoi
-	return (
-		a(g(4)),	   	# year
-		monmap[g(3)],	# month
-		a(g(2)),		# day
-		a(g(5)),		# hour
-		a(g(6)),		# minute
-		a(g(7)),		# second
-		0,
-		0,
-		0
-		)
+    g = rfc822_reg.group
+    a = string.atoi
+    return (
+        a(g(4)),        # year
+        monmap[g(3)],   # month
+        a(g(2)),        # day
+        a(g(5)),        # hour
+        a(g(6)),        # minute
+        a(g(7)),        # second
+        0,
+        0,
+        0
+        )
 
 # rfc850 format
 rfc850_date = join (
-	[concat (long_day_reg,','),
-	 join (
-		 [group ('[0-9][0-9]?'),
-		  months_reg,
-		  group ('[0-9]+')
-		  ],
-		 '-'
-		 ),
-	 hms_reg,
-	 'gmt'
-	 ],
-	' '
-	)
+    [concat (long_day_reg,','),
+     join (
+         [group ('[0-9][0-9]?'),
+          months_reg,
+          group ('[0-9]+')
+          ],
+         '-'
+         ),
+     hms_reg,
+     'gmt'
+     ],
+    ' '
+    )
 
 rfc850_reg = regex.compile (rfc850_date)
 # they actually unpack the same way
 def unpack_rfc850 ():
-	g = rfc850_reg.group
-	a = string.atoi
-	return (
-		a(g(4)),	   	# year
-		monmap[g(3)],	# month
-		a(g(2)),		# day
-		a(g(5)),		# hour
-		a(g(6)),		# minute
-		a(g(7)),		# second
-		0,
-		0,
-		0
-		)
+    g = rfc850_reg.group
+    a = string.atoi
+    return (
+        a(g(4)),        # year
+        monmap[g(3)],   # month
+        a(g(2)),        # day
+        a(g(5)),        # hour
+        a(g(6)),        # minute
+        a(g(7)),        # second
+        0,
+        0,
+        0
+        )
 
-# parsdate.parsedate	- ~700/sec.
-# parse_http_date    	- ~1333/sec.
+# parsdate.parsedate    - ~700/sec.
+# parse_http_date       - ~1333/sec.
+
+weekdayname = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+monthname = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 def build_http_date (when):
-	return time.strftime ('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(when))
+    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(when)
+    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+            weekdayname[wd],
+            day, monthname[month], year,
+            hh, mm, ss)
 
 def parse_http_date (d):
-	d = string.lower (d)
-	tz = time.timezone
-	if rfc850_reg.match (d) == len(d):
-		retval = int (time.mktime (unpack_rfc850()) - tz)
-	elif rfc822_reg.match (d) == len(d):
-		retval = int (time.mktime (unpack_rfc822()) - tz)
-	else:
-		return 0
-	# Thanks to Craig Silverstein <csilvers@google.com> for pointing
-	# out the DST discrepancy
-	if time.daylight and time.localtime(retval)[-1] == 1: # DST correction
-		retval = retval + (tz - time.altzone)
-	return retval
+    d = string.lower (d)
+    tz = time.timezone
+    if rfc850_reg.match (d) == len(d):
+        retval = int (time.mktime (unpack_rfc850()) - tz)
+    elif rfc822_reg.match (d) == len(d):
+        retval = int (time.mktime (unpack_rfc822()) - tz)
+    else:
+        return 0
+    # Thanks to Craig Silverstein <csilvers@google.com> for pointing
+    # out the DST discrepancy
+    if time.daylight and time.localtime(retval)[-1] == 1: # DST correction
+        retval = retval + (tz - time.altzone)
+    return retval
