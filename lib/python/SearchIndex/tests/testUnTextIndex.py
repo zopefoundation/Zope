@@ -272,6 +272,83 @@ class Tests(unittest.TestCase):
        r=list(r[0].keys())
        assert  r == [0,1,6], r
 
+   def checkNearQuery(self):
+       """Check a NEAR query.. (NOTE:ACTUALLY AN 'OR' TEST!!)"""
+       # NEAR never worked, so Zopes post-2.3.1b3 define near to mean OR
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'time near country'})
+       r=list(r[0].keys())
+       assert  r == [0,1,6], r
+
+   def checkAndNotQuery(self):
+       "Check an ANDNOT query"
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'time and not country'})
+       r=list(r[0].keys())
+       assert  r == [6], r
+
+   def checkParenMatchingQuery(self):
+       "Check a query with parens"
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'(time and country) men'})
+       r=list(r[0].keys())
+       assert  r == [0], r
+
+       r = index._apply_index({'text':'(time and not country) or men'})
+       r=list(r[0].keys())
+       assert  r == [0, 6], r
+
+   def checkTextIndexOperatorQuery(self):
+       "Check a query with 'textindex_operator' in the request"
+       index=self.dbopen()
+       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+
+       for i in range(len(self.sample_texts)):
+           self.doc.text=self.sample_texts[i]
+           index.index_object(i, self.doc)
+           get_transaction().commit()
+
+       self.dbclose()
+
+       index=self.dbopen()
+
+       r = index._apply_index({'text':'time men','textindex_operator':'and'})
+       r=list(r[0].keys())
+       assert  r == [0], r
+
 def test_suite():
    return unittest.makeSuite(Tests, 'check')
 
