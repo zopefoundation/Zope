@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.41 2000/12/26 15:20:23 jim Exp $
+  $Id: ExtensionClass.c,v 1.42 2001/01/10 18:49:16 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.41 2000/12/26 15:20:23 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.42 2001/01/10 18:49:16 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1708,8 +1708,12 @@ ExtensionClass_FindInstanceAttribute(PyObject *inst, PyObject *oname,
     }
   UNLESS(r)
     {
-      if (*name=='_' && name[1]=='_' && name[2]=='b' &&
-	 strcmp(name+2,"bases__")==0)
+      if (*name=='_' && name[1]=='_' 
+          && 
+          (   (name[2]=='b' && strcmp(name+2,"bases__")==0) 
+           || (name[2]=='d' && strcmp(name+2,"dict__")==0)
+              )
+          )
 	{
 	  PyErr_SetObject(PyExc_AttributeError, oname);
 	  return NULL;
@@ -3523,7 +3527,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.41 $";
+  char *rev="$Revision: 1.42 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
