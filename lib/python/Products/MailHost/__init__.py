@@ -83,37 +83,21 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.14 1999/04/29 19:21:31 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: __init__.py,v 1.15 1999/07/27 21:08:53 amos Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
-import MailHost, SendMailTag
-from App.ImageFile import ImageFile
+import MailHost
 
-classes=('MailHost.MailHost',)
-
-meta_types=({'name':'Mail Host',
-            'action':'manage_addMailHost_form'
-            },)
-
-methods={
-    'manage_addMailHost_form': MailHost.addForm,
-    'manage_addMailHost':     MailHost.add,
-    }
-
-misc_={
-    'MHIcon': ImageFile("www/MailHost_icon.gif", globals())
-    }
-
-__ac_permissions__=(
-    ('Add MailHost objects', ('manage_addMailHost_form', 'manage_addMailHost')),
-    ('Change configuration', ()),
-    ('Use mailhost services',()),
+def initialize(context):
+    context.registerClass(
+        MailHost.MailHost,
+        permission='Add MailHost objects',
+        constructors=(MailHost.addForm, MailHost.add),
+        icon='www/MailHost_icon.gif',
+        legacy=(
+            ('manage_addMailHost_form', MailHost.addForm),
+            ('manage_addMailHost', MailHost.add),
+        )
     )
-
-
-
-
-
-
 
 
