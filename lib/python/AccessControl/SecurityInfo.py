@@ -178,8 +178,8 @@ class SecurityInfo(Acquisition.Implicit):
         """Declare the object to be associated with a permission."""
         self._setaccess((), permission_name)
 
-    setDefaultRoles__roles__=ACCESS_PRIVATE
-    def setDefaultRoles(self, permission_name, roles):
+    setPermissionDefault__roles__=ACCESS_PRIVATE
+    def setPermissionDefault(self, permission_name, roles):
         """Declare default roles for a permission"""
         rdict = {}
         for role in roles:
