@@ -24,12 +24,12 @@ values and click "Save Changes".
 <tr>
   <td align="left" valign="top" width="16">
   <!--#if "'d' in _['sequence-item'].get('mode', 'awd')"-->
-  <input type="checkbox" name="ids:list" value="<!--#var id-->">
+  <input type="checkbox" name="ids:list" value="<!--#var id-->" ID="cb-<!--#var id-->">
   <!--#else-->
   <!--#endif-->
   </td>
   <td align="left" valign="top">
-  <strong><!--#var id--></strong>
+  <strong><LABEL FOR="cb-<!--#var id-->"><!--#var id--></LABEL></strong>
   </td>
   <td align="left" valign="top">
   <!--#if "'w' in _['sequence-item'].get('mode', 'awd')"-->
