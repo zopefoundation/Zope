@@ -209,7 +209,7 @@ class ZDOptions:
         if progname is None:
             try:
                 progname = sys.argv[0]
-            except AttributeError:
+            except (AttributeError, IndexError):
                 progname = 'zope'
 
         if doc is None:
