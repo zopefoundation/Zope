@@ -39,8 +39,7 @@ def html_quote(s):
 
     See Also
 
-      "Python 'cgi'
-      module':http://www.python.org/doc/current/lib/Functions_in_cgi_module.html
+      "Python 'cgi' module":http://www.python.org/doc/current/lib/Functions_in_cgi_module.html
       'escape' function.
       
     """
