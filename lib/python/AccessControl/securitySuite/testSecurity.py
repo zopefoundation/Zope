@@ -196,7 +196,7 @@ class SecurityTests(unittest.TestCase) :
 
 
     def testPublicFuncWithWrongAuth(self):
-        """ testing PublicFunc"""
+        """ testing PublicFunc with wrong auth"""
 
         path = "/folder1/object1/public_func" 
 
@@ -216,7 +216,7 @@ class SecurityTests(unittest.TestCase) :
 
 
     def testProtectedFunc(self):
-        """ testing PrivateFunc"""
+        """ testing ProtectedFunc"""
 
         path = "/folder1/object1/protected_func" 
 
@@ -264,15 +264,14 @@ class SecurityTests(unittest.TestCase) :
 
 
 
+    _reg = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)
+
     def _request(self,*args,**kw):
-
-        reg = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
-
         io =cStringIO.StringIO()
         kw['s']=io
         ZPublisher.Zope(*args,**kw)
         outp = io.getvalue()
-        mo = reg.search(outp)
+        mo = self._reg.search(outp)
 
         code,txt = mo.groups()
 
