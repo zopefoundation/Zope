@@ -63,7 +63,12 @@ change because the object hasn't been saved.
     >>> C._p_changed
     False
 
-Now, we can store the class in a database:
+Now, we can store the class in a database. We have to be careful,
+however, to use the ZClass-aware class factory so that we can find
+ZClasses, which are stored in the database, rather than in modules:
+
+    >>> import Zope2.App.ClassFactory
+    >>> some_database.classFactory = Zope2.App.ClassFactory.ClassFactory
 
     >>> connection = some_database.open()
     >>> connection.root()['C'] = C
