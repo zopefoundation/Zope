@@ -951,8 +951,8 @@ class DocumentClass:
 
     ## Some constants to make the doc_href() regex easier to read.
     _DQUOTEDTEXT = r'("[ %s0-9\n\r\-\.\,\;\(\)\/\:\/\*\']+")' % letters ## double quoted text
-    _ABSOLUTE_URL=r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
-    _ABS_AND_RELATIVE_URL=r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
+    _ABSOLUTE_URL=r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~\=\?]+)' % letters
+    _ABS_AND_RELATIVE_URL=r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~\=\?]+)' % letters
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
