@@ -2080,8 +2080,13 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
   int i;
 
   /* if name[:1] != '_': */
-  if ( (PyString_Check(name) || PyUnicode_Check(name)) && 
-       PyString_AsString(name)[0] != '_')
+  if (PyString_Check(name) || PyUnicode_Check(name)) {
+    char *name_s = PyString_AsString(name);
+
+    if (name_s == NULL)
+        return NULL;
+
+    if (name_s[0] != '_')
     {
 
       /*
@@ -2107,31 +2112,27 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
         }
 
       /*
-            assertion = Containers(type(inst))
-            if type(assertion) is DictType:
-                # We got a table that lets us reason about individual
-                # attrs
-                assertion = assertion.get(name)
-                if assertion:
-                    # There's an entry, but it may be a function.
-                    if callable(assertion):
-                        return assertion(inst, name)
 
-                    # Nope, it's boolean
-                    return v
-                raise Unauthorized, name
-            
-            elif assertion:
-                # So the entry in the outer table is not a dict 
-                # It's allowed to be a vetoing function:
-                if callable(assertion):
-                    assertion(name, v)
-                # No veto, so we can return
-                return v
+        assertion = Containers(type(inst))
       */
       t = PyDict_GetItem(ContainerAssertions, OBJECT(inst->ob_type));
       if (t != NULL)
         {
+
+      /*
+        if isinstance(assertion, dict):
+            # We got a table that lets us reason about individual
+            # attrs
+            assertion = assertion.get(name)
+            if assertion:
+                # There's an entry, but it may be a function.
+                if callable(assertion):
+                    return assertion(inst, name)
+
+                # Nope, it's boolean
+                return v
+            raise Unauthorized, name
+      */
           if (PyDict_Check(t))
             {
               PyObject *attrv;
@@ -2155,43 +2156,59 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
               Py_DECREF(v);
               goto unauth;
             }
-          
-          i = PyObject_IsTrue(t);
-          if (i < 0) goto err;
-          if (i)
-            {
-              if (t->ob_type->tp_call)
-                {
-                  PyObject *ignored;
-                  ignored = callfunction2(t, name, v);
-                  if (ignored == NULL)
-                    {
-                      /* veto */
-                      Py_DECREF(v);
-                      return NULL;
-                    }
-                  Py_DECREF(ignored);
-                }
-              return v;
-            }
-        }
 
       /*
-        if validate(inst, inst, name, v):
+        if assertion:
+            if callable(assertion):
+                factory = assertion(name, v)
+                if callable(factory):
+                    return factory(inst, name)
+                assert factory == 1
+            assert callable == 1
             return v
-       */
-      validate=callfunction4(validate, inst, inst, name, v);
-      if (validate==NULL) goto err;
-      i=PyObject_IsTrue(validate);
-      Py_DECREF(validate);
-      if (i < 0) goto err;
-      if (i > 0) return v;
-      
+
+      */
+          if (PyCallable_Check(t))
+            {
+              PyObject *factory;
+
+              factory = callfunction2(t, name, v);
+              if (factory == NULL) 
+                goto err;
+
+              if (PyCallable_Check(factory))
+                {
+                  Py_DECREF(v);
+                  v = callfunction2(factory, inst, name);
+                }
+              Py_DECREF(factory);
+            }
+          return v;
+        }
+
+      /* 
+        # See if we can get the value doing a filtered acquire.
+        # aq_acquire will either return the same value as held by
+        # v or it will return an Unauthorized raised by validate.
+        validate = SecurityManagement.getSecurityManager().validate
+        aq_acquire(inst, name, aq_validate, validate)
+        
+        return v
+      */
+
+      t = aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
+      if (t == NULL)
+        return NULL;
+      Py_DECREF(t);
+
+      return v;
+            
       unauthErr(name, v);
     err:
       Py_DECREF(v);
       return NULL;
     }
+  }
 
  unauth:
   /* raise Unauthorized, name */
