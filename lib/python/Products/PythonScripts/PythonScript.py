@@ -89,10 +89,10 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os, traceback, re
-from Globals import DTMLFile, package_home
+from Globals import DTMLFile
 import AccessControl, OFS, Guarded
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
@@ -104,7 +104,6 @@ from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from zLOG import LOG, ERROR, INFO
 
-_www = os.path.join(package_home(globals()), 'www')
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 
 _marker = []  # Create a new marker object
