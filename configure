@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.4 2003/03/22 17:02:12 chrism Exp $
-# $Revision: 1.4 $
+# $Id: configure,v 1.5 2003/06/10 17:26:03 gvanrossum Exp $
+# $Revision: 1.5 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -13,13 +13,13 @@ ZOPE_VERS=2.7
 
 # Place the optimal target version number for Zope (as returned by sys.version)
 # below
-TARGET="2.2.2"
+TARGET="2.2.3"
 
 # Order a list of "acceptable" python version numbers (as returned by
 # sys.version) below in "best" to "worst" order.  Up to six
 # acceptable python versions are allowed.  Do not include the target
 # version number in this list.
-ACCEPTABLE="2.3 2.3a1 2.3a0"
+ACCEPTABLE="2.3 1.2b1 2.3a1 2.3a0 2.2.2"
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
@@ -67,7 +67,9 @@ get_python() {
         for EXECUTABLE in $EXENAMES; do
             FULL="$DIR/$EXECUTABLE"
             if [ -x "$FULL" ]; then
-                CMD="import string,sys;print string.split(sys.version)[0]"
+                CMD="import string,sys;a=string.split(sys.version)[0]"
+		# Strip trailing + from version number
+		CMD="$CMD;a=(a[-1]=='+')and(a[:-1])or(a);print a"
                 VERSION=`$FULL -c "$CMD"`
                 echo "  Python version $VERSION found at $FULL"
                 if [ "$VERSION" = "$TARGET" ]; then
