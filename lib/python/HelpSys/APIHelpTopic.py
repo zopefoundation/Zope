@@ -10,13 +10,19 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""
-API documentation help topics
+""" API documentation help topics.
+
+$Id: APIHelpTopic.py,v 1.17 2004/05/04 19:09:29 yuppie Exp $
 """
 
 import types
+
+from AccessControl import ClassSecurityInfo
+from Globals import DTMLFile
+from Globals import InitializeClass
+from Globals import Persistent
+
 import HelpTopic
-from Globals import DTMLFile, Persistent
 
 _ignore_objects = {}
 
@@ -26,9 +32,9 @@ try:
 except ImportError:
     pass
 
+
 class APIHelpTopic(HelpTopic.HelpTopic):
-    """
-    Provides API documentation.
+    """ Provides API documentation.
     """
 
     isAPIHelpTopic=1
@@ -85,9 +91,13 @@ class APIHelpTopic(HelpTopic.HelpTopic):
 
 
 class APIDoc(Persistent):
+    """ Describes an API.
     """
-    Describes an API.
-    """
+
+    security = ClassSecurityInfo()
+    security.setDefaultAccess( {'attributes': True, 'constructor': True,
+                                'doc': True, 'extends': True, 'name': True,
+                                'methods': True} )
 
     extends=()
 
@@ -172,11 +182,15 @@ class APIDoc(Persistent):
 
     view=DTMLFile('dtml/APIView', globals())
 
+InitializeClass(APIDoc)
+
 
 class AttributeDoc(Persistent):
+    """ Describes an attribute of an API.
     """
-    Describes an attribute of an API.
-    """
+
+    security = ClassSecurityInfo()
+    security.setDefaultAccess( {'name': True, 'value': True} )
 
     def __init__(self, name, value):
         self.name=name
@@ -184,16 +198,22 @@ class AttributeDoc(Persistent):
 
     view=DTMLFile('dtml/attributeView', globals())
 
+InitializeClass(AttributeDoc)
+
 
 class MethodDoc(Persistent):
-    """
-    Describes a method of an API.
+    """ Describes a method of an API.
 
     required - a sequence of required arguments
     optional - a sequence of tuples (name, default value)
     varargs - the name of the variable argument or None
     kwargs - the name of the kw argument or None
     """
+
+    security = ClassSecurityInfo()
+    security.setDefaultAccess( {'doc': True, 'kwargs': True, 'name': True,
+                                'optional': True, 'required': True,
+                                'varargs': True} )
 
     varargs=None
     kwargs=None
@@ -249,6 +269,8 @@ class MethodDoc(Persistent):
             self.kwargs=names[ix]
 
     view=DTMLFile('dtml/methodView', globals())
+
+InitializeClass(MethodDoc)
 
 
 def trim_doc_string(text):
