@@ -99,7 +99,8 @@ def setup(me):
 
 def main(me):
     home=setup(me)
-
+    import walkandscrub
+    walkandscrub.walkandscrub(home)
     import compilezpy
     import build_extensions
     user=group=''
