@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.48 1998/05/22 22:28:33 jim Exp $"""
+$Id: Folder.py,v 1.49 1998/08/03 13:30:57 jim Exp $"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -70,15 +70,22 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	('View', ()),
 	('View management screens',
 	 ('manage','manage_menu','manage_main','manage_copyright',
-	 'manage_tabs','manage_propertiesForm','manage_UndoForm',)),
+          'manage_tabs','manage_propertiesForm','manage_UndoForm',
+          'manage_copyObject', 'manage_pasteObject'
+          )),
 	('Access contents information',
 	 ('objectIds', 'objectValues', 'objectItems','hasProperty',
 	  'propertyIds', 'propertyValues','propertyItems',''),
 	 ('Anonymous', 'Manager'),
 	 ),
 	('Undo changes',       ('manage_undo_transactions',)),
-	('Change permissions', ('manage_access',)),
-	('Delete objects',     ('manage_delObjects',)),
+	('Change permissions',
+         ('manage_access','manage_changePermissions', 'manage_role',
+          'manage_permission', 'manage_defined_roles',
+          'manage_acquiredForm','manage_acquiredPermissions',
+          'manage_permissionForm','manage_roleForm'
+          )),
+	('Delete objects',     ('manage_delObjects','manage_cutObject')),
 	('Manage properties',
          ('manage_addProperty', 'manage_editProperties',
           'manage_delProperties', 'manage_changeProperties',)),
