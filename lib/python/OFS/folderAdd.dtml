@@ -23,7 +23,19 @@
   <INPUT TYPE="TEXT" NAME="title" SIZE="40">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
+<TR><TD COLSPAN=2><BR></TD></TR>
+
+<TR>
+ <TD ALIGN=TOP COLSPAN=2><INPUT TYPE=CHECKBOX NAME="createPublic:int" VALUE="1">
+  <STRONG>Create public interface</STRONG>
+ </TD>
+</TR>
+<TR>
+ <TD ALIGN=TOP COLSPAN=2><INPUT TYPE=CHECKBOX NAME="createUserF:int" VALUE="1">
+  <STRONG>Create user folder</STRONG>
+ </TD>
+</TR>
+
 <TR>
 <TD></TD>
 <TD>
