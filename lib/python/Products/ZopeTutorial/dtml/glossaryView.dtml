@@ -29,10 +29,7 @@ PRE {
 
 <h2><dtml-var title></h2>
 
-<dtml-var obj>
-
-<hr>
-<dtml-var tutorialNavigation>
+<dtml-var expr="formatted_content(REQUEST)">
 
 <p class="feedback">Comments on this lesson?
 <a href="mailto:docs@digicool.com?subject=<dtml-var title>">Email feedback</a>.

@@ -172,6 +172,31 @@ onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
 >Show lesson examples</a> in another window.
 </p>""" % (url, url, url)
 
+
+    tutorialNavigation=DTMLFile('dtml/tutorialNav', globals())
+
+
+class GlossaryTopic(TutorialTopic):
+    """
+    A Tutorial Glossary Help Topic
+    """
+
+    def __init__(self, id, title, text):
+        self.id=id
+        self.title=title
+        self.obj=HTML(text)
+
+    index_html=DTMLFile('dtml/glossaryView', globals())
+        
+    def formatted_content(self, REQUEST):
+        """
+        Custom stx formatting for tutorial topics
+        """
+        text=self.obj(self, REQUEST)
+        text=str(StructuredText.HTML(text))
+        pre_pat.sub(clean_pre, text)
+        return text
+
     def apiLink(self, klass, REQUEST):
         """
         Returns the URL to a API documentation for a given class.
@@ -187,8 +212,6 @@ onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
         """
         url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['SCRIPT_NAME'], tag)
         return '<a href="%s">DTML Reference</a>' % url
-
-    tutorialNavigation=DTMLFile('dtml/tutorialNav', globals())
 
 
 addTutorialForm=DTMLFile('dtml/tutorialAdd', globals())

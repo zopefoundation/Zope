@@ -123,7 +123,8 @@ def initialize(context):
     text=open(glossary_path).read()
     text=term_pat.sub(defineTerm, text)
     
-    glossary=TutorialTopic.TutorialTopic('tutorialGlossary', 'Zope Tutorial Glossary', text)
+    glossary=TutorialTopic.GlossaryTopic('tutorialGlossary',
+                                         'Zope Tutorial Glossary', text)
     context.registerHelpTopic('tutorialGlossary', glossary)
 
     # create lessons

@@ -1,11 +1,13 @@
 Glossary
 
   For general information about Zope <a
-  href="http://www.zope.org/SiteIndex/searchForm" target="_blank">search</a> Zope.org.
+  href="http://www.zope.org/SiteIndex/searchForm"
+  target="_blank">search</a> Zope.org.
 
-  For Zope documentation try the <a href="http://zdp.zope.org" target="_blank">Zope
-  Documentation Project</a> site and the <a
-  href="http://www.zope.org/Documentation" target="_blank">documentation area</a> on Zope.org.
+  For Zope documentation try the <a href="http://zdp.zope.org"
+  target="_blank">Zope Documentation Project</a> site and the <a
+  href="http://www.zope.org/Documentation"
+  target="_blank">documentation area</a> on Zope.org.
 
   [DateTime] -- A DTML function to get the current time or to create a
   date time object given a string.
@@ -17,8 +19,8 @@ Glossary
   results in web pages.
 
     For more information on DTML see the <a
-    href="http://www.zope.org/Members/michel/ZB/DTML.dtml" target="_blank">DTML
-    chapter</a> of The Zope Book.
+    href="http://www.zope.org/Members/michel/ZB/DTML.dtml"
+    target="_blank">DTML chapter</a> of The Zope Book.
 
   [DTML Document] -- A Zope object for a web page.
   You can use DTML tags in a DTML document.
@@ -27,7 +29,7 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
-    <dtml-var "apiLink('OFSP'+'.DTMLDocument.DTMLDocument', REQUEST)">
+    <dtml-var "apiLink('OFSP.DTMLDocument.DTMLDocument', REQUEST)">
 
   [DTML Method] -- A Zope object that holds a piece of content that can
   be inserted into a web page. You can use DTML tags in a DTML Method.
@@ -36,7 +38,7 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
-    <dtml-var "apiLink('OFSP'+'.DTMLMethod.DTMLMethod', REQUEST)">
+    <dtml-var "apiLink('OFSP.DTMLMethod.DTMLMethod', REQUEST)">
     
   [Delete] -- Remove an object from the current Folder. Unlike Cut, this
   does not place a copy of the object in the clipboard.
@@ -105,7 +107,7 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
-    <dtml-var "apiLink('OFSP'+'.Folder.Folder', REQUEST)">
+    <dtml-var "apiLink('OFSP.Folder.Folder', REQUEST)">
 
   [HTTP Cookies] -- Cookies allow you to record information in a visitor's
   browser. This is commonly used to provide personalization for a web site. 
@@ -121,7 +123,7 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
     
-    <dtml-var "apiLink('OFSP'+'.Image.Image', REQUEST)"> 
+    <dtml-var "apiLink('OFSP.Image.Image', REQUEST)"> 
    
   [index_html] -- The name of the default Zope object in a Folder.
   When you view a Folder the index_html object will be displayed
@@ -131,7 +133,7 @@ Glossary
   [Mail Host] -- A Zope object that allows you to send email.
   Use the &lt;dtml-sendmail&gt; tag to send email.
 
-    <dtml-var "apiLink('MailHost'+'.MailHost.MailHost', REQUEST)">
+    <dtml-var "apiLink('MailHost.MailHost.MailHost', REQUEST)">
   
   [Paste] -- Insert the objects from the clipboard into the current Folder.
   
@@ -145,7 +147,7 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
-      <dtml-var "apiLink('OFSP'+'.PropertyManager.PropertyManager', REQUEST)">
+    <dtml-var "apiLink('OFSP.PropertyManager.PropertyManager', REQUEST)">
 
   [standard_html_header] -- The standard Zope header object. By
   convention this object displays an HTML header.
@@ -166,5 +168,5 @@ Glossary
     href="http://www.zope.org/Members/michel/ZB/RelationalDatabases.dtml"
     target="_blank">Relational Database chapter</a> of The Zope Book.
 
-    <dtml-var "apiLink('ZSQLMethods'+'.ZSQLMethod.ZSQLMethod', REQUEST)">
+    <dtml-var "apiLink('ZSQLMethods.ZSQLMethod.ZSQLMethod', REQUEST)">
 
