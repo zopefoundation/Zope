@@ -35,7 +35,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.3 1996/12/03 17:44:21 chris Exp $'''
+$Id: InvertedIndex.py,v 1.4 1996/12/03 18:11:57 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -87,6 +87,9 @@ $Id: InvertedIndex.py,v 1.3 1996/12/03 17:44:21 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.4  1996/12/03 18:11:57  chris
+# Went back to returning empty ResultLists for failed searches.
+#
 # Revision 1.3  1996/12/03 17:44:21  chris
 # Added pack() methods to Persistent and Transactional.
 # Disabled autosave on Persistent.
@@ -101,7 +104,7 @@ $Id: InvertedIndex.py,v 1.3 1996/12/03 17:44:21 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -410,19 +413,25 @@ class Index:
       Lists = dict.keys()
 
       if (not len(Lists)):
-        raise KeyError
+        return List()
 
       return reduce(lambda x, y: x | y, Lists)
 
     key = string.lower(key)
 
-    key = index[key]
+    try:
+      key = index[key]
+    except KeyError:
+      return List()
 
     while (type(key) == StringType):
-      key = index[key]
+      try:
+        key = index[key]
+      except KeyError:
+        return List()
 
     if (key is None):
-      raise KeyError
+      return List()
 
     return key
 
