@@ -18,7 +18,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.42 $'.split()[-2:][0]
+__version__ = '$Revision: 1.43 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -463,8 +463,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     # We've already dealt with this oid...
                     continue
                 serial, tid = self._getSerialAndTid(oid)
-                revid = tid
-                meta = self._metadata[oid+revid]
+                meta = self._metadata[oid+tid]
                 curvid, nvrevid = struct.unpack('>8s8s', meta[:16])
                 # Make sure that the vid in the metadata record is the same as
                 # the vid we sucked out of the vids table.
@@ -484,7 +483,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 # Write the object id, live revision id, the current revision
                 # id (which serves as the previous revid to this transaction)
                 # to the commit log.
-                self._commitlog.write_nonversion_object(oid, lrevid, revid)
+                self._commitlog.write_nonversion_object(oid, lrevid, tid)
                 # Remember to return the oid...
                 oids[oid] = 1
             # We've now processed all the objects on the discarded version, so
@@ -534,8 +533,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if oids.has_key(oid):
                     continue
                 serial, tid = self._getSerialAndTid(oid)
-                revid = tid
-                meta = self._metadata[oid+revid]
+                meta = self._metadata[oid+tid]
                 curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', meta[:24])
                 # Our database better be consistent.
                 if curvid <> svid:
@@ -548,7 +546,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if not dest:
                     nvrevid = ZERO
                 self._commitlog.write_moved_object(
-                    oid, dvid, nvrevid, lrevid, revid)
+                    oid, dvid, nvrevid, lrevid, tid)
                 # Remember to return the oid...
                 oids[oid] = 1
             # Now that we're done, we can discard this version
@@ -567,8 +565,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         try:
             # Let KeyErrors percolate up
             serial, tid = self._getSerialAndTid(oid)
-            revid = tid
-            vid = self._metadata[oid+revid][:8]
+            vid = self._metadata[oid+tid][:8]
             if vid == ZERO:
                 # Not in a version
                 return ''
@@ -596,11 +593,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Get the current revid for the object.  As per the protocol, let
             # any KeyErrors percolate up.
             serial, tid = self._getSerialAndTid(oid)
-            revid = tid
             # Get the metadata associated with this revision of the object.
             # All we really need is the vid, the non-version revid and the
             # pickle pointer revid.
-            rec = self._metadata[oid+revid]
+            rec = self._metadata[oid+tid]
             vid, nvrevid, lrevid = struct.unpack('>8s8s8s', rec[:24])
             if lrevid == DNE:
                 raise KeyError, 'Object does not exist'
@@ -1060,15 +1056,14 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # the transaction records backwards until we find enough records.
             history = []
             serial, tid = self._getSerialAndTid(oid)
-            revid = tid
             # BAW: Again, let KeyErrors percolate up
             while len(history) < size:
                 # Some information comes out of the revision metadata...
                 vid, nvrevid, lrevid, previd = struct.unpack(
-                    '>8s8s8s8s', self._metadata[oid+revid])
+                    '>8s8s8s8s', self._metadata[oid+tid])
                 # ...while other information comes out of the transaction
                 # metadata.
-                txnmeta = self._txnMetadata[revid]
+                txnmeta = self._txnMetadata[tid]
                 userlen, desclen = struct.unpack('>II', txnmeta[1:9])
                 user = txnmeta[9:9+userlen]
                 desc = txnmeta[9+userlen:9+userlen+desclen]
@@ -1082,7 +1077,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 else:
                     retvers = self._versions[vid]
                 # The HistoryEntry object
-                d = {'time'       : TimeStamp(revid).timeTime(),
+                d = {'time'       : TimeStamp(tid).timeTime(),
                      'user_name'  : user,
                      'description': desc,
                      'serial'     : serial,
@@ -1095,7 +1090,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 # revision, stopping when we've reached the end.
                 if previd == ZERO:
                     break
-                serial = revid = previd
+                serial = tid = previd
             return history
         finally:
             self._lock_release()
@@ -1119,12 +1114,11 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             reachables[oid] = 1
             # Get the pickle data for the object's current version
             serial, tid = self._getSerialAndTidMissingOk(oid)
-            revid = tid
-            if revid is None:
+            if tid is None:
                 # BAW: how can this happen?!  This means that an object is
                 # holding references to an object that we know nothing about.
                 continue
-            lrevid = self._metadata[oid+revid][16:24]
+            lrevid = self._metadata[oid+tid][16:24]
             pickle = self._pickles[oid+lrevid]
             refdoids = []
             referencesf(pickle, refdoids)
