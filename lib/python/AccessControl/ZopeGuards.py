@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -178,8 +178,8 @@ safe_builtins['filter'] = guarded_filter
 
 def guarded_map(f, *seqs):
     safe_seqs = []
-    for seqno in len(seqs):
-        seq = guarded_getitem(f, seqno)
+    for seqno in range(len(seqs)):
+        seq = guarded_getitem(seqs, seqno)
         safe_seqs.append(seq)
     return map(f, *safe_seqs)
 safe_builtins['map'] = guarded_map
