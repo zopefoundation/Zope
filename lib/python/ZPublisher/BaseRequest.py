@@ -10,7 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.51 $'[11:-2]
+""" Basic ZPublisher request management.
+
+$Id: BaseRequest.py,v 1.52 2003/10/14 09:08:44 yuppie Exp $
+"""
 
 from urllib import quote
 import xmlrpc
@@ -269,13 +272,13 @@ class BaseRequest:
                         request['TraversalRequestNameStack'] = path
                         continue
                     else:
-                        method = default_path[0]
-                        entry_name = method
+                        entry_name = default_path[0]
                 elif (method and hasattr(object,method)
                       and entry_name != method
                       and getattr(object, method) is not None):
                     request._hacked_path=1
                     entry_name = method
+                    method = 'index_html'
                 else:
                     if (hasattr(object, '__call__') and
                         hasattr(object.__call__,'__roles__')):
@@ -284,7 +287,6 @@ class BaseRequest:
                         i=URL.rfind('/')
                         if i > 0: response.setBase(URL[:i])
                     break
-                if not entry_name: continue
                 step = quote(entry_name)
                 _steps.append(step)
                 request['URL'] = URL = '%s/%s' % (request['URL'], step)
