@@ -16,7 +16,8 @@ class FactoryDispatcher(Acquisition.Implicit):
     " "
 
     def __init__(self, product, dest, REQUEST):
-        self._product=product.__dict__
+        if hasattr(product,'aq_base'): product=product.aq_base
+        self._product=product
         self._d=dest
         v=REQUEST['URL']
         v=v[:rfind(v,'/')]
@@ -33,7 +34,11 @@ class FactoryDispatcher(Acquisition.Implicit):
     DestinationURL__roles__=None
 
     def __getattr__(self, name):
-        d=self._product
-        if d.has_key(name):  return d[name].__of__(self)
+        p=self.__dict__['_product']
+        d=p.__dict__
+        if hasattr(p,name) and d.has_key(name):
+            return d[name]
         raise AttributeError, name
+
+
 
