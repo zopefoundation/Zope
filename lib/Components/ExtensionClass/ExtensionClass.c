@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.15 1997/09/26 14:35:11 jim Exp $
+  $Id: ExtensionClass.c,v 1.16 1997/10/22 15:09:43 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.15 1997/09/26 14:35:11 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.16 1997/10/22 15:09:43 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -196,6 +196,7 @@ typedef struct {
   PyCFunction	meth;
   int		flags;
   char		*doc;
+  PyObject	*dict;
 } CMethod;
 
 staticforward PyTypeObject CMethodType;
@@ -360,6 +361,7 @@ newCMethod(PyExtensionClass *type, PyObject *inst,
   self->meth=meth;
   self->flags=flags;
   self->doc=doc;
+  self->dict=NULL;
   return (PyObject*)self;
 }
 
@@ -387,6 +389,8 @@ bindCMethod(CMethod *m, PyObject *inst)
   self->meth=m->meth;
   self->flags=m->flags;
   self->doc=m->doc;
+  self->dict=m->dict;
+  Py_XINCREF(self->dict);
   return self;
 }
 
@@ -398,6 +402,7 @@ CMethod_dealloc(CMethod *self)
 #endif
   Py_XDECREF(self->type);
   Py_XDECREF(self->self);
+  Py_XDECREF(self->dict);
   PyMem_DEL(self);
 }
 
@@ -503,41 +508,57 @@ CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
 }
 
 static PyObject *
-CMethod_getattr(CMethod *self, char *name)
+CMethod_getattro(CMethod *self, PyObject *oname)
 {
   PyObject *r;
+  
+  if(PyString_Check(oname))
+    {
+      char *name;
 
-  if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
-    return PyString_FromString(self->name);
-  if(strcmp(name,"func_code")==0 ||
-     strcmp(name,"im_func")==0)
-    {
-      Py_INCREF(self);
-      return (PyObject *)self;
+      UNLESS(name=PyString_AsString(oname)) return NULL;
+      if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
+	return PyString_FromString(self->name);
+      if(strcmp(name,"func_code")==0 ||
+	 strcmp(name,"im_func")==0)
+	{
+	  Py_INCREF(self);
+	  return (PyObject *)self;
+	}
+      if(strcmp(name,"__doc__")==0 ||
+	 strcmp(name,"func_doc")==0)
+	{
+	  if(self->doc)
+	    return PyString_FromString(self->doc);
+	  else
+	    return PyString_FromString("");
+	}
+      if(strcmp(name,"im_class")==0)
+	{
+	  Py_INCREF(self->type);
+	  return (PyObject *)self->type;
+	}
+      if(strcmp(name,"im_self")==0)
+	{
+	  if(self->self) r=self->self;
+	  else           r=Py_None;
+	  Py_INCREF(r);
+	  return r;
+	}
     }
-  if(strcmp(name,"__doc__")==0 ||
-     strcmp(name,"func_doc")==0 ||
-     strcmp(name,"func_doc")==0)
-    {
-      if(self->doc)
-	return PyString_FromString(self->doc);
-      else
-	return PyString_FromString("");
-    }
-  if(strcmp(name,"im_class")==0)
-    {
-      Py_INCREF(self->type);
-      return (PyObject *)self->type;
-    }
-  if(strcmp(name,"im_self")==0)
-    {
-      if(self->self) r=self->self;
-      else           r=Py_None;
-      Py_INCREF(r);
-      return r;
-    }
-  PyErr_SetString(PyExc_AttributeError, name);
+
+  if(self->dict && (r=PyObject_GetItem(self->dict, oname))) return r;
+
+  PyErr_SetObject(PyExc_AttributeError, oname);
   return NULL;
+}
+
+static int
+CMethod_setattro(CMethod *self, PyObject *oname, PyObject *v)
+{
+        if(! self->dict && ! (self->dict=PyDict_New())) return -1;
+  
+	return PyDict_SetItem(self->dict, oname, v);
 }
 
 static PyTypeObject CMethodType = {
@@ -549,7 +570,7 @@ static PyTypeObject CMethodType = {
   /* methods */
   (destructor)CMethod_dealloc,	/*tp_dealloc*/
   (printfunc)0,			/*tp_print*/
-  (getattrfunc)CMethod_getattr,	/*tp_getattr*/
+  0,				/*tp_getattr*/
   (setattrfunc)0,		/*tp_setattr*/
   (cmpfunc)0,			/*tp_compare*/
   (reprfunc)0,			/*tp_repr*/
@@ -559,9 +580,11 @@ static PyTypeObject CMethodType = {
   (hashfunc)0,			/*tp_hash*/
   (ternaryfunc)CMethod_call,	/*tp_call*/
   (reprfunc)0,			/*tp_str*/
+  (getattrofunc)CMethod_getattro, 	/* tp_getattro */
+  (setattrofunc)CMethod_setattro, 	/* tp_setattro */
   
   /* Space for future expansion */
-  0L,0L,0L,0L,
+  0L,0L,
   "Storage manager for unbound C function PyObject data"
   /* Documentation string */
 };
@@ -736,59 +759,64 @@ PMethod_call(PMethod *self, PyObject *args, PyObject *kw)
 }
 
 static PyObject *
-PMethod_getattr(PMethod *self, char *name)
+PMethod_getattro(PMethod *self, PyObject *oname)
 {
   PyObject *r;
 
-  if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
-    return PyObject_GetAttrString(self->meth,"__name__");
-  if(strcmp(name,"im_func")==0)
+  if(PyString_Check(oname))
     {
-      Py_INCREF(self->meth);
-      return self->meth;
+      char *name;
+
+      UNLESS(name=PyString_AsString(oname)) return NULL;
+
+      if(*name++=='i' && *name++=='m' && *name++=='_')
+	{
+	  if(strcmp(name,"func")==0)
+	    {
+	      Py_INCREF(self->meth);
+	      return self->meth;
+	    }
+	  if(strcmp(name,"class")==0)
+	    {
+	      Py_INCREF(self->type);
+	      return (PyObject *)self->type;
+	    }
+	  if(strcmp(name,"self")==0)
+	    {
+	      if(self->self) r=self->self;
+	      else           r=Py_None;
+	      Py_INCREF(r);
+	      return r;
+	    }
+	}
     }
-  if(strcmp(name,"__doc__")==0 ||
-     strcmp(name,"func_doc")==0 ||
-     strcmp(name,"func_doc")==0)
-    return PyObject_GetAttrString(self->meth,"__doc__");
-  if(strcmp(name,"im_class")==0)
-    {
-      Py_INCREF(self->type);
-      return (PyObject *)self->type;
-    }
-  if(strcmp(name,"im_self")==0)
-    {
-      if(self->self) r=self->self;
-      else           r=Py_None;
-      Py_INCREF(r);
-      return r;
-    }
-  PyErr_SetString(PyExc_AttributeError, name);
-  return NULL;
+
+  return PyObject_GetAttr(self->meth, oname);
 }
 
 static PyTypeObject PMethodType = {
   PyObject_HEAD_INIT(NULL)
-  0,				/*ob_size*/
-  "Python Method",		/*tp_name*/
-  sizeof(PMethod),		/*tp_basicsize*/
-  0,				/*tp_itemsize*/
+  0,					/*ob_size*/
+  "Python Method",			/*tp_name*/
+  sizeof(PMethod),			/*tp_basicsize*/
+  0,					/*tp_itemsize*/
   /* methods */
-  (destructor)PMethod_dealloc,	/*tp_dealloc*/
-  (printfunc)0,			/*tp_print*/
-  (getattrfunc)PMethod_getattr,	/*tp_getattr*/
-  (setattrfunc)0,		/*tp_setattr*/
-  (cmpfunc)0,			/*tp_compare*/
-  (reprfunc)0,			/*tp_repr*/
-  0,				/*tp_as_number*/
-  0,				/*tp_as_sequence*/
-  0,				/*tp_as_mapping*/
-  (hashfunc)0,			/*tp_hash*/
-  (ternaryfunc)PMethod_call,	/*tp_call*/
-  (reprfunc)0,			/*tp_str*/
+  (destructor)PMethod_dealloc,		/*tp_dealloc*/
+  (printfunc)0,				/*tp_print*/
+  0,					/*tp_getattr*/
+  (setattrfunc)0,			/*tp_setattr*/
+  (cmpfunc)0,				/*tp_compare*/
+  (reprfunc)0,				/*tp_repr*/
+  0,					/*tp_as_number*/
+  0,					/*tp_as_sequence*/
+  0,					/*tp_as_mapping*/
+  (hashfunc)0,				/*tp_hash*/
+  (ternaryfunc)PMethod_call,		/*tp_call*/
+  (reprfunc)0,				/*tp_str*/
+  (getattrofunc)PMethod_getattro,	/*tp_getattro*/
   
   /* Space for future expansion */
-  0L,0L,0L,0L,
+  0L,0L,0L,
   "Storage manager for unbound C function PyObject data"
   /* Documentation string */
 };
@@ -3043,7 +3071,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.15 $";
+  char *rev="$Revision: 1.16 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3082,6 +3110,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.16  1997/10/22 15:09:43  jim
+  Added support for function and method attributes.
+
   Revision 1.15  1997/09/26 14:35:11  jim
   Fixed awful bug in handling of sequence subclasses.
 
