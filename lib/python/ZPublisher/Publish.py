@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.62 1997/10/30 19:35:38 jim Exp $"""
+$Id: Publish.py,v 1.63 1997/11/05 14:48:07 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.62 1997/10/30 19:35:38 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 
 def main():
@@ -547,11 +547,10 @@ class ModulePublisher:
 
 	cookies={}
 	if environ.has_key('HTTP_COOKIE'):
-	    d=parse_cookie(self.environ['HTTP_COOKIE'])
-	    for k,item in d.items():
-		cookies[k]=item
-		if not form.has_key(k):
-		    form[k]=item
+	    parse_cookie(self.environ['HTTP_COOKIE'],cookies)
+	    for k,item in cookies.items():
+		if not other.has_key(k):
+		    other[k]=item
 
         request=self.request=Request(environ,other,stdin)
 	request.form=form
@@ -1362,6 +1361,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.63  1997/11/05 14:48:07  jim
+# Fixed bug that broke cookies.
+#
 # Revision 1.62  1997/10/30 19:35:38  jim
 # Fixed bug in cookie handling. :-(
 #
