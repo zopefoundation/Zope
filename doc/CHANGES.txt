@@ -25,6 +25,16 @@ Principia Changes
 	   'var/export.bbe' in the Principia installation
            directory. 
 
+    Bugs Fixed
+
+      - Document Titles were not being saved.
+
+      - ImageFile objects (used by Principia developers)
+        did not work correctly with new permission scheme.
+ 
+      - Direct roles settings (made by Programmers without
+        permissions) on Python methods did not work properly.
+
   Principia 1.4.0
   
     Bugs Fixed
