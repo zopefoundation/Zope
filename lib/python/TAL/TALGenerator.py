@@ -657,7 +657,7 @@ class TALGenerator:
             else:
                 repldict = {}
             if i18nattrs:
-                i18nattrs = _parseI18nAttributes(i18nattrs, self.position,
+                i18nattrs = _parseI18nAttributes(i18nattrs, attrlist, repldict, self.position,
                                                  self.xml)
             else:
                 i18nattrs = {}
@@ -796,27 +796,52 @@ class TALGenerator:
             self.emitDefineMacro(defineMacro)
 
 
-def _parseI18nAttributes(i18nattrs, position, xml):
+def _parseI18nAttributes(i18nattrs, attrlist, repldict, position, xml):
     d = {}
-    for spec in i18nattrs.split(";"):
-        parts = spec.split()
-        if len(parts) > 2:
-            raise TALError("illegal i18n:attributes specification: %r" % spec,
-                           position)
-        if len(parts) == 2:
-            attr, msgid = parts
-        else:
-            # len(parts) == 1
-            attr = parts[0]
-            msgid = None
-        if not xml:
-            attr = attr.lower()
-        if attr in d:
-            raise TALError(
-                "attribute may only be specified once in i18n:attributes: %r"
-                % attr,
-                position)
-        d[attr] = msgid
+    if ';' in i18nattrs:
+        i18nattrlist = i18nattrs.split(';')
+        i18nattrlist = [attr.strip().split() for attr in i18nattrlist if attr.strip()]
+        for parts in i18nattrlist:
+            if len(parts) > 2:
+                raise TALError("illegal i18n:attributes specification: %r" % spec,
+                               position)
+            if len(parts) == 2:
+                attr, msgid = parts
+            else:
+                # len(parts) == 1
+                attr = parts[0]
+                msgid = None
+            if not xml:
+                attr = attr.lower()
+            if attr in d:
+                raise TALError(
+                    "attribute may only be specified once in i18n:attributes: %r"
+                    % attr,
+                    position)
+            d[attr] = msgid
+    else:
+        i18nattrlist = i18nattrs.split()
+        if len(i18nattrlist) == 2:
+            staticattrs = [attr[0] for attr in attrlist if len(attr) == 2]
+            if (not i18nattrlist[1] in staticattrs) and (not i18nattrlist[1] in repldict):
+              attr, msgid = i18nattrlist
+              d[attr] = msgid    
+            else:
+                import warnings
+                warnings.warn('Space separated attributes in i18n:attributes'
+                + ' are deprecated (i18n:attributes="value title"). Please use'
+                + ' semicolon to separate attributes'
+                + ' (i18n:attributes="value; title").', DeprecationWarning)
+                for attr in i18nattrlist:
+                    d[attr] = None
+        else:    
+            import warnings
+            warnings.warn('Space separated attributes in i18n:attributes'
+            + ' are deprecated (i18n:attributes="value title"). Please use'
+            + ' semicolon to separate attributes'
+            + ' (i18n:attributes="value; title").', DeprecationWarning)
+            for attr in i18nattrlist:
+                d[attr] = None
     return d
 
 def test():
