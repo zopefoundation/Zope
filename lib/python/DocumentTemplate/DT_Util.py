@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.59 1999/09/27 13:14:15 jim Exp $''' 
-__version__='$Revision: 1.59 $'[11:-2]
+'''$Id: DT_Util.py,v 1.60 1999/10/20 21:56:43 klm Exp $''' 
+__version__='$Revision: 1.60 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -320,6 +320,7 @@ class Eval(VSEval.Eval):
         code=self.code
         globals=self.globals
         for name in self.used:
+            __traceback_info__ = name
             try: d[name]=mapping.getitem(name,0)
             except KeyError:
                 if name=='_getattr':
