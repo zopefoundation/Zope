@@ -86,7 +86,10 @@ Zope Changes
 
         - Adopted ZCatalog to new indexing infrastructure. 
                                   
-
+        - added text() method to HTTPRequest object to provide a plain 
+          text representation of the request (Collector #2264)
+        
+            
 
     Zope 2.3.0 beta 3
 
