@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: gparse.py,v 1.4 1998/09/02 14:35:57 jim Exp $"
+"$Id: gparse.py,v 1.5 1998/09/14 20:48:44 jim Exp $"
 import sys, parser, symbol, token
 from symbol import *
 from token import *

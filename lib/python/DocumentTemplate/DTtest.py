@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -55,8 +55,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.7 1998/09/02 21:06:06 jim Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: DTtest.py,v 1.8 1998/09/14 20:48:42 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -567,46 +567,3 @@ if __name__ == "__main__":
     except: command='main'
     globals()[command]()
 
-############################################################################
-# $Log: DTtest.py,v $
-# Revision 1.7  1998/09/02 21:06:06  jim
-# many changes for thread safety, bug fixes, and faster import
-#
-# Revision 1.6  1998/09/02 14:35:55  jim
-# open source copyright
-#
-# Revision 1.5  1998/05/14 16:24:34  jim
-# Add method to test automatic rendering of vars.
-#
-# Revision 1.4  1998/04/02 17:37:38  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.3  1997/11/11 18:39:00  jim
-# Added test for:
-# Made sequence-items work when iterating over mapping items.
-#
-# Revision 1.2  1997/10/27 17:40:02  jim
-# Removed old validation machinery.
-#
-# Revision 1.1  1997/08/27 18:55:44  jim
-# initial
-#

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -65,8 +65,8 @@
     <!--#/if-->
 
 ''' 
-__rcs_id__='$Id: DT_Raise.py,v 1.7 1998/09/08 15:05:31 jim Exp $'
-__version__='$Revision: 1.7 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.8 1998/09/14 20:48:40 jim Exp $'
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DT_Util import parse_params, name_param, render_blocks, str
 
@@ -99,28 +99,3 @@ class Raise:
 
     __call__=render
 
-
-##########################################################################
-#
-# $Log: DT_Raise.py,v $
-# Revision 1.7  1998/09/08 15:05:31  jim
-# added str to DT_Util import to address pickling lamosities
-#
-# Revision 1.6  1998/09/02 21:06:04  jim
-# many changes for thread safety, bug fixes, and faster import
-#
-# Revision 1.5  1998/09/02 14:35:53  jim
-# open source copyright
-#
-# Revision 1.4  1998/05/14 15:07:17  jim
-# Finished adding with and raise docs.
-#
-# Revision 1.3  1998/04/02 19:05:53  jim
-# Updated rendering code.
-#
-# Revision 1.2  1998/03/04 18:50:39  jim
-# *** empty log message ***
-#
-# Revision 1.1  1998/03/04 18:19:56  jim
-# added comment and raise tags
-#

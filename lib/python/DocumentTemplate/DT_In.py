@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -349,8 +349,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.28 1998/09/08 15:05:31 jim Exp $'
-__version__='$Revision: 1.28 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.29 1998/09/14 20:48:40 jim Exp $'
+__version__='$Revision: 1.29 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict
@@ -688,117 +688,3 @@ def int_param(params,md,name,default=0, st=type('')):
 	    if type(v) is st: v=atoi(v)
     return v
 
-############################################################################
-# $Log: DT_In.py,v $
-# Revision 1.28  1998/09/08 15:05:31  jim
-# added str to DT_Util import to address pickling lamosities
-#
-# Revision 1.27  1998/09/02 21:06:04  jim
-# many changes for thread safety, bug fixes, and faster import
-#
-# Revision 1.26  1998/09/02 14:35:52  jim
-# open source copyright
-#
-# Revision 1.25  1998/08/11 19:34:48  jim
-# Made use (or non-use) of regex thread safe.
-#
-# Revision 1.24  1998/04/08 17:45:59  jim
-# Now check security of items, and new skip_unauthorized attr.
-#
-# Revision 1.23  1998/04/02 17:37:36  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.22  1998/03/20 17:52:29  jim
-# Added new meaning for else tag when next or previous are used.
-#
-# Revision 1.21  1998/02/18 15:17:54  jim
-# Added sequence-step-start-index and sequence-step-end-index and
-# their documentation.
-#
-# Note that I decided not to document sequence-step-start,
-# sequence-step-end, sequence-step-orphan, and sequence-step-overlap.
-# These will probably be depricated.
-#
-# Revision 1.20  1998/01/22 20:31:47  jim
-# Fixed a bug in generation of sequence-query.
-#
-# Revision 1.19  1998/01/16 19:08:55  jim
-# Fixed some documentation.
-#
-# Revision 1.18  1998/01/15 21:06:21  jim
-# More of the same. :-)
-#
-# Revision 1.17  1998/01/15 20:36:05  jim
-# More of the same. :-)
-#
-# Revision 1.16  1998/01/15 20:22:44  jim
-# Made batch processing more robust.  Now don't need to specify
-# '?' or & when constructing query strings.
-#
-# Revision 1.15  1998/01/14 18:26:47  jim
-# Added name caching to in tag.
-#
-# Revision 1.14  1998/01/12 16:48:12  jim
-# Updated documentation.
-#
-# Revision 1.13  1997/12/15 17:34:40  jeffrey
-# added sequence-index-[is-]even and odd variables for testing in
-# sequences
-#
-# Revision 1.12  1997/11/19 15:42:46  jim
-# added _ prefix to push and pop methods to make them private
-#
-# Revision 1.11  1997/11/12 23:25:56  jim
-# Fixed bug in expr handling.
-#
-# Revision 1.10  1997/11/11 18:38:03  jim
-# Made sequence-items work when iterating over mapping items.
-#
-# Revision 1.9  1997/11/07 17:08:33  jim
-# Changed so exception is raised if a sequence cannot be gotten during
-# rendering.
-#
-# Revision 1.8  1997/10/28 16:33:49  paul
-# Small change to docstring.
-#
-# Revision 1.7  1997/10/05 19:50:58  jim
-# Made sort work with methods.
-#
-# Revision 1.6  1997/10/05 19:41:59  jim
-# Added sort option.
-#
-# Revision 1.5  1997/09/25 20:58:24  jim
-# Added sequence-query to *vastly* simplify browse by batch!
-#
-# Revision 1.4  1997/09/25 18:56:38  jim
-# fixed problem in reporting errors
-#
-# Revision 1.3  1997/09/22 14:42:50  jim
-# added expr
-#
-# Revision 1.2  1997/09/02 19:04:24  jim
-# Got rid of ^Ms
-#
-# Revision 1.1  1997/08/27 18:55:42  jim
-# initial
-#
-#

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@
 __doc__='''short description
 
 
-$Id: DTtestExpr.py,v 1.2 1998/09/02 14:35:55 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DTtestExpr.py,v 1.3 1998/09/14 20:48:42 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -94,14 +94,3 @@ if __name__ == "__main__":
     try: command=sys.argv[1]
     except: command='main'
     globals()[command]()
-
-############################################################################## 
-#
-# $Log: DTtestExpr.py,v $
-# Revision 1.2  1998/09/02 14:35:55  jim
-# open source copyright
-#
-# Revision 1.1  1997/09/22 15:13:17  jim
-# *** empty log message ***
-#
-#

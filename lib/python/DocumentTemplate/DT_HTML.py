@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.11 1998/09/08 16:12:23 jim Exp $"""
+$Id: DT_HTML.py,v 1.12 1998/09/14 20:48:39 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex

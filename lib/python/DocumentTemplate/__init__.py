@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -56,8 +56,8 @@ __doc__='''Package wrapper for Document Template
 This wrapper allows the (now many) document template modules to be
 segregated in a separate package.
 
-$Id: __init__.py,v 1.9 1998/09/02 21:17:14 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: __init__.py,v 1.10 1998/09/14 20:48:43 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DocumentTemplate import String, File, HTML, HTMLDefault, HTMLFile
 from DocumentTemplate import html_quote

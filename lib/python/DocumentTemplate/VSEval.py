@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.17 1998/09/08 16:03:00 jim Exp $'
-__version__='$Revision: 1.17 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.18 1998/09/14 20:48:43 jim Exp $'
+__version__='$Revision: 1.18 $'[11:-2]
 
 from string import translate
 import string

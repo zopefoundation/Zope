@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -75,8 +75,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.4 1998/09/08 15:05:32 jim Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.5 1998/09/14 20:48:42 jim Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 

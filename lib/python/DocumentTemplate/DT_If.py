@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -117,8 +117,8 @@ __doc__='''Conditional insertion
          variable is not reevaluated.
 
 ''' 
-__rcs_id__='$Id: DT_If.py,v 1.12 1998/09/08 15:05:31 jim Exp $'
-__version__='$Revision: 1.12 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.13 1998/09/14 20:48:39 jim Exp $'
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 
@@ -180,63 +180,3 @@ class Else(Unless):
     # The else tag is included for backward compatibility and is deprecated.
     name='else'
 
-
-##########################################################################
-#
-# $Log: DT_If.py,v $
-# Revision 1.12  1998/09/08 15:05:31  jim
-# added str to DT_Util import to address pickling lamosities
-#
-# Revision 1.11  1998/09/02 21:06:03  jim
-# many changes for thread safety, bug fixes, and faster import
-#
-# Revision 1.10  1998/09/02 14:35:52  jim
-# open source copyright
-#
-# Revision 1.9  1998/04/02 17:37:35  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.8  1998/01/14 18:23:42  jim
-# Added expr to unless.
-#
-# Revision 1.7  1998/01/14 18:03:25  jim
-# Added Unless tag as replacement for else tag.
-#
-# Revision 1.6  1997/12/31 20:32:11  jim
-# If and else blocks now cache variables.
-#
-# Revision 1.5  1997/11/07 17:08:11  jim
-# Changed so exception is raised if a sequence cannot be gotten during
-# rendering.
-#
-# Revision 1.4  1997/09/25 18:56:38  jim
-# fixed problem in reporting errors
-#
-# Revision 1.3  1997/09/22 14:42:49  jim
-# added expr
-#
-# Revision 1.2  1997/09/08 15:35:40  jim
-# Fixed bug that caused else blocks to render if blocks.
-#
-# Revision 1.1  1997/08/27 18:55:42  jim
-# initial
-#

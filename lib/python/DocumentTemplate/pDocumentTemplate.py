@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.16 1998/09/02 21:06:07 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.17 1998/09/14 20:48:44 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import string, sys, types
 from string import join

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@
 
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.5 1998/09/02 14:35:54 jim Exp $''' 
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DT_UI.py,v 1.6 1998/09/14 20:48:41 jim Exp $''' 
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -128,21 +128,3 @@ HTML.editConfirmation=HTML(
     	 <em><!--#var dt_edit_name--></em><br>has been changed.
       </center>
     <!--#/if CANCEL_ACTION-->""")
-
-############################################################################
-# $Log: DT_UI.py,v $
-# Revision 1.5  1998/09/02 14:35:54  jim
-# open source copyright
-#
-# Revision 1.4  1997/11/05 15:11:26  paul
-# Changed header to be more Principia-compliant in a way that does not break Bobo.
-#
-# Revision 1.3  1997/10/27 17:37:13  jim
-# Removed old validation machinery.
-#
-# Revision 1.2  1997/09/02 19:04:52  jim
-# Got rid of ^Ms
-#
-# Revision 1.1  1997/08/27 18:55:43  jim
-# initial
-#

@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -51,8 +51,8 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.45 1998/09/08 16:12:23 jim Exp $''' 
-__version__='$Revision: 1.45 $'[11:-2]
+'''$Id: DT_Util.py,v 1.46 1998/09/14 20:48:41 jim Exp $''' 
+__version__='$Revision: 1.46 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find

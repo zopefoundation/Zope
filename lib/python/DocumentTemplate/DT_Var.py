@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -164,8 +164,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.21 1998/09/11 15:04:51 jim Exp $'
-__version__='$Revision: 1.21 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.22 1998/09/14 20:48:42 jim Exp $'
+__version__='$Revision: 1.22 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -390,93 +390,3 @@ class Comment:
 
     __call__=render
 
-############################################################################
-# $Log: DT_Var.py,v $
-# Revision 1.21  1998/09/11 15:04:51  jim
-# Removed gsub from spacify.
-#
-# Revision 1.20  1998/09/08 16:12:24  jim
-# cleaned up some imports
-#
-# Revision 1.19  1998/09/08 15:55:46  jim
-# Added atoi to string import.
-#
-# Revision 1.18  1998/09/08 15:05:32  jim
-# added str to DT_Util import to address pickling lamosities
-#
-# Revision 1.17  1998/09/02 21:06:05  jim
-# many changes for thread safety, bug fixes, and faster import
-#
-# Revision 1.16  1998/09/02 14:35:54  jim
-# open source copyright
-#
-# Revision 1.15  1998/08/11 19:36:54  jim
-# Made use (or non-use) of regex thread safe.
-#
-# Revision 1.14  1998/04/14 11:58:21  jim
-# Fixed bug in handling: %(foo)d
-# and in handling <!--#var foo--> where foo is a tuple.
-#
-# Revision 1.13  1998/04/02 19:06:21  jim
-# *** empty log message ***
-#
-# Revision 1.12  1998/04/02 17:37:38  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.11  1998/03/24 20:21:39  jim
-# Added 'call' tag.
-#
-# Revision 1.10  1998/03/10 20:32:32  jim
-# Fixed miss-spelling of newline_to_br
-#
-# Revision 1.9  1998/01/12 16:47:34  jim
-# Changed a number of custom formats to modifiers, since they can
-# be applies cumulatively.
-# Updated documentation.
-#
-# Revision 1.8  1998/01/08 20:57:34  jim
-# *** empty log message ***
-#
-# Revision 1.7  1998/01/05 21:23:01  jim
-# Added support for fmt="" to allow vars with side effects.
-#
-# Revision 1.6  1997/12/12 16:19:06  jim
-# Added additional special formats, structured-text and sql-quote.
-# Also changed the way formats are handled.  This has (and will)
-# reveal now hidden fmt=invalid-thing errors.
-#
-# Revision 1.5  1997/10/27 17:39:27  jim
-# removed a comment burp.
-#
-# Revision 1.4  1997/10/23 14:27:47  jim
-# Added truncation support via size and etc attributes.
-#
-# Revision 1.3  1997/10/23 13:30:16  jim
-# Added comma-numeric format.
-#
-# Revision 1.2  1997/09/22 14:42:51  jim
-# added expr
-#
-# Revision 1.1  1997/08/27 18:55:44  jim
-# initial
-#
-#

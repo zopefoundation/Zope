@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.17 1998/09/08 15:05:32 jim Exp $"
+"$Id: DT_String.py,v 1.18 1998/09/14 20:48:41 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex

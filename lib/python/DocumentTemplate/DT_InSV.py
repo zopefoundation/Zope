@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
@@ -54,8 +54,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.6 1998/09/08 16:06:09 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: DT_InSV.py,v 1.7 1998/09/14 20:48:40 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from string import lower, rfind
 from math import sqrt
@@ -401,44 +401,3 @@ def opt(start,end,size,orphan,sequence):
 	# if l - end < orphan: end=l
     return start,end,size
 
-############################################################################## 
-#
-# $Log: DT_InSV.py,v $
-# Revision 1.6  1998/09/08 16:06:09  jim
-# Got rid of some extra imports.
-#
-# Revision 1.5  1998/09/02 14:35:53  jim
-# open source copyright
-#
-# Revision 1.4  1998/05/08 14:54:40  jim
-# Fixed bug in handling of sequence-query.
-#
-# Revision 1.3  1998/04/20 15:16:56  jim
-# Fixed bug in backward support for sequence-index-even etc.
-#
-# Revision 1.2  1998/04/03 19:28:41  jim
-# Fixed statistics bug.
-#
-# Revision 1.1  1998/04/02 17:37:36  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-#
