@@ -517,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.16 1996/08/29 22:20:26 jfulton Exp $"""
+$Id: Publish.py,v 1.17 1996/08/30 17:08:53 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +570,9 @@ $Id: Publish.py,v 1.16 1996/08/29 22:20:26 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.17  1996/08/30 17:08:53  jfulton
+# Disallowed index_html/index_html.
+#
 # Revision 1.16  1996/08/29 22:20:26  jfulton
 # *** empty log message ***
 #
@@ -644,7 +647,7 @@ $Id: Publish.py,v 1.16 1996/08/29 22:20:26 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 def main():
@@ -911,7 +914,8 @@ class ModulePublisher:
 		object=subobject
 
 		# Check for index_html:
-		if not path and hasattr(object,'index_html'):
+		if (not path and hasattr(object,'index_html') and
+		    entry_name != 'index_html'):
 		    path=['index_html']
 
 	# Do authorization checks
