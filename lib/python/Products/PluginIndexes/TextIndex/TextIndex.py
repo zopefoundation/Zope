@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.7 $'[11:-2]
+__version__ = '$Revision: 1.8 $'[11:-2]
 
 
 import string, re
@@ -588,6 +588,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         ## various languages.
         q = self.getLexicon().query_hook(q)
         # do some more parsing
+
         q = parse2(q, default_operator)
 
         ## evalute the final 'expression'
@@ -669,6 +670,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
                 val = left.near(right)
                 query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
+
 
         if (len(query) != 1): raise QueryError, "Malformed query"
 
