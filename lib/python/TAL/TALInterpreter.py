@@ -116,7 +116,7 @@ EMPTY_HTML_TAGS = [
     # rendered in minimized form, e.g. <img />.
     # From http://www.w3.org/TR/xhtml1/#dtds
     "base", "meta", "link", "hr", "br", "param", "img", "area",
-    "input", "col", "basefont", "isindex", "frame", 
+    "input", "col", "basefont", "isindex", "frame",
 ]
 
 class AltTALGenerator(TALGenerator):
@@ -170,8 +170,8 @@ class TALInterpreter:
         self.strictinsert = strictinsert
         self.html = 0
         self.endsep = "/>"
-        self.slots = {}
-        self.currentMacro = None
+        self.macroStack = []
+        self.definingMacro = None
         self.position = None, None  # (lineno, offset)
         self.col = 0
         self.level = 0
@@ -246,47 +246,21 @@ class TALInterpreter:
     def do_startTag(self, name, attrList):
         self.startTagCommon(name, attrList, ">")
 
-    actionIndex = ["replace", "insert", "metal", "tal", "xmlns"].index
     def startTagCommon(self, name, attrList, end):
         if not attrList:
             self.stream_write("<%s%s" % (name, end))
             return
         self.stream_write("<" + name)
         align = self.col+1
+        if align >= self.wrap/2:
+            align = 4 # Avoid a narrow column far to the right
         for item in attrList:
-            name, value = item[:2]
-            if len(item) > 2:
-                try:
-                    action = self.actionIndex(item[2])
-                except ValueError:
-                    raise TALError, ('Error in TAL program', self.position)
-                if not self.showtal and action > 1:
+            if len(item) == 2:
+                name, value = item[:2]
+            else:
+                ok, name, value = self.attrAction(item)
+                if not ok:
                     continue
-                if action <= 1 and self.tal:
-                    if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
-                        evalue = self.engine.evaluateBoolean(item[3])
-                        if evalue is self.Default:
-                            if action == 1: # Cancelled insert
-                                continue
-                        elif not evalue:
-                            continue
-                        else:
-                            value = None
-                    else:
-                        evalue = self.engine.evaluateText(item[3])
-                        if evalue is self.Default:
-                            if action == 1: # Cancelled insert
-                                continue
-                        else:
-                            value = evalue
-                            if value is None:
-                                continue
-                elif (action == 2 and self.currentMacro and
-                      name[-13:] == ":define-macro" and self.metal):
-                    name = name[:-13] + ":use-macro"
-                    value = self.currentMacro
-                elif action == 1:
-                    continue # Unexecuted insert
             if value is None:
                 s = name
             else:
@@ -298,6 +272,63 @@ class TALInterpreter:
             else:
                 self.stream_write(" " + s)
         self.stream_write(end)
+
+    actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4}
+    def attrAction(self, item):
+        name, value = item[:2]
+        try:
+            action = self.actionIndex[item[2]]
+        except KeyError:
+            raise TALError, ('Error in TAL program', self.position)
+        if not self.showtal and action > 1:
+            return 0, name, value
+        ok = 1
+        if action <= 1 and self.tal:
+            if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
+                evalue = self.engine.evaluateBoolean(item[3])
+                if evalue is self.Default:
+                    if action == 1: # Cancelled insert
+                        ok = 0
+                elif not evalue:
+                    ok = 0
+                else:
+                    value = None
+            else:
+                evalue = self.engine.evaluateText(item[3])
+                if evalue is self.Default:
+                    if action == 1: # Cancelled insert
+                        ok = 0
+                else:
+                    value = evalue
+                    if value is None:
+                        ok = 0
+        elif action == 2 and self.macroStack:
+            i = string.rfind(name, ":") + 1
+            prefix, suffix = name[:i], name[i:]
+            if suffix == "define-macro":
+                if len(self.macroStack) == 1:
+                    macroName, slots = self.macroStack[-1]
+                    name = prefix + "use-macro"
+                    value = macroName
+                else:
+                    ok = 0
+            if suffix == "fill-slot":
+                macroName, slots = self.macroStack[0]
+                if not slots.has_key(value):
+                    ok = 0
+            if suffix == "define-slot" and not self.definingMacro:
+                name = prefix + "fill-slot"
+        elif action == 1: # Unexecuted insert
+            ok = 0
+        return ok, name, value
+
+##    def dumpMacroStack(self, prefix, suffix, value):
+##        sys.stderr.write("+-- %s%s = %s\n" % (prefix, suffix, value))
+##        for i in range(len(self.macroStack)):
+##            macroName, slots = self.macroStack[i]
+##            sys.stderr.write("|   %3d. %-20s %s\n" %
+##                             (i, macroName, slots.keys()))
+##        sys.stderr.write("+--------------------------------------\n")
 
     def do_endTag(self, name):
         self.stream_write("</%s>" % name)
@@ -392,7 +423,10 @@ class TALInterpreter:
             self.interpret(block)
 
     def do_defineMacro(self, macroName, macro):
+        save = self.definingMacro
+        self.definingMacro = macroName
         self.interpret(macro)
+        self.definingMacro = save
 
     def do_useMacro(self, macroName, macroExpr, compiledSlots, block):
         if not self.metal:
@@ -410,19 +444,19 @@ class TALInterpreter:
         if mode != (self.html and "html" or "xml"):
             raise METALError("macro %s has incompatible mode %s" %
                              (`macroName`, `mode`), self.position)
-        save = self.slots, self.currentMacro
-        self.slots = compiledSlots
-        self.currentMacro = macroName
+        self.macroStack.append((macroName, compiledSlots))
         self.interpret(macro)
-        self.slots, self.currentMacro = save
+        self.macroStack.pop()
 
     def do_fillSlot(self, slotName, block):
         self.interpret(block)
 
     def do_defineSlot(self, slotName, block):
-        compiledSlot = self.metal and self.slots.get(slotName)
-        if compiledSlot:
-            self.interpret(compiledSlot)
+        slot = None
+        for macroName, slots in self.macroStack:
+            slot = slots.get(slotName) or slot
+        if slot:
+            self.interpret(slot)
         else:
             self.interpret(block)
 
