@@ -49,7 +49,8 @@ should print "<file> OK" for each one.
 
 In addition, there are unit test suites in the test subdirectory;
 these can be run with test/run.py.  This should print a number of
-testcase names, ending with a line saying "OK".
+testcase names plus progress info, ending with a line saying "OK".
+It requires that ../unittest.py exists.
 
 What's Here
 -----------
@@ -79,14 +80,6 @@ redistributed under the Zope Public License.
 TO DO
 -----
 
-- Implement on-error.  Assume that the evaluation engine's evaluate()
-  functions raise TALESError (defined where???) on all exceptions.
-
-- Reject input with TAL or METAL statements on tags whose end tag is
-  implied.
-
-- Bring DummyEngine.py up to specs.  (string: instead of str:, etc.)
-
 - Finish implementing insertStructure(): attribute replacement isn't
   implemented yet.
 
@@ -101,3 +94,10 @@ TO DO
 
 - Do we still need the HTML mode for TALInterpreter, which tries to
   generate HTML from an XML template?
+
+- If use-macro fails, it seems to omit the entire macro except for
+  slots, instead of leaving the existing text alone.
+
+- We shouldn't be adding slashes to empty tags ('<br>' => '<br />'),
+  and we definitely should not be abbreviating non-empty tags
+  ('<td></td>' => '<td />').
