@@ -39,9 +39,8 @@
              value="<!--#var arguments_src-->"></td>
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
-	    <textarea name="template:text" rows=10 cols=50>
-<!--#var src fmt=html-quote-->
-</textarea></td></tr>
+	    <textarea name="template:text" rows=10 cols=50><!--#var
+               src fmt=html-quote--></textarea></td></tr>
 
 <tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Change"></td></tr>
 </table>

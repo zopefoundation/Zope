@@ -24,10 +24,8 @@
 <tr>    <th align='LEFT'><em>Arguments<em></th>
         <td align='LEFT'><input name="arguments" size="40"></td></tr>
 <tr>    <td colspan=2 align='LEFT'><strong>Query template</strong><br>
-            <textarea name="template:text" rows=9 cols=50>
-select *
-from data
-</textarea></td></tr>
+            <textarea name="template:text" rows=9 cols=50>select *
+from data</textarea></td></tr>
 
 <tr><td><input type="hidden" name="key" value=""></td><td>
 <input type="SUBMIT" name="SUBMIT" value="Add">
