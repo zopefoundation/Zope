@@ -10,7 +10,11 @@ user to edit that user.
 
 <table cellspacing="0" cellpadding="2" border="0">
 <dtml-in user_names>
-<tr>
+<dtml-if sequence-odd>
+<tr class="row-normal">
+<dtml-else>
+<tr class="row-hilite">
+</dtml-if>
   <td align="left" valign="top">
   <input type="checkbox" name="names:list" value="<dtml-var 
    sequence-item html_quote>" />
@@ -27,7 +31,7 @@ user to edit that user.
 </tr>
 </dtml-in user_names>
 <tr>
-  <td align="left" valign="top">
+  <td align="left" valign="top">&nbsp;
   </td>
   <td align="left" valign="top">
   <div class="form-element">
