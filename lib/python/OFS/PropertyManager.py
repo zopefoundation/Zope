@@ -1,4 +1,4 @@
-##############################################################################
+
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -94,7 +94,6 @@ from Globals import DTMLFile, MessageDialog
 from string import find,join,lower,split
 from Acquisition import Implicit, aq_base
 from Globals import Persistent
-from DateTime import DateTime
 
 
 
