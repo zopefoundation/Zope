@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -118,16 +118,13 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
                     {'label':'Security', 'action':'manage_access'},
                    )
     __ac_permissions__=(
-    ('View management screens', ('manage', 'manage_main', 'manage_editForm',
-                                 'manage_tabs', 'manage_uploadForm',
-                                 'manage_workspace', 'document_src')),
-    ('Access contents information', ('PROPFIND',)),
+    ('View management screens',
+     ('manage_editForm', 'manage', 'manage_main', 'manage_uploadForm',
+      'document_src')),
     ('Change DTML Methods',     ('manage_edit', 'manage_upload', 'PUT')),
     ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-    ('View', ('__call__', 'HEAD', '')),
+    ('View', ('__call__', '')),
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-    ('Manage properties', ('PROPPATCH',)),
-    ('Delete objects',     ('DELETE',)),
     )
     _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1,
                  '_proxy_roles':1, 'title':1}.has_key
