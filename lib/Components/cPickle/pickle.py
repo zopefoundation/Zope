@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.12 1997/03/04 23:11:38 chris Exp $
+#     $Id: pickle.py,v 1.13 1997/06/25 19:30:25 jim Exp $
 #
 #     Copyright 
 #
@@ -199,6 +199,7 @@ UnpicklingError = "pickle.UnpicklingError"
 MARK            = '('
 STOP            = '.'
 POP             = '0'
+POP_MARK        = '1'
 DUP             = '2'
 FLOAT           = 'F'
 INT             = 'I'
@@ -434,7 +435,11 @@ class Pickler:
             save(element)
 
         if (len(object) and memo.has_key(d)):
-            write(POP * len(object) + self.get(memo[d][0]))
+	    if (self.bin):
+                write(POP_MARK + self.get(memo[d][0]))
+                return
+           
+            write(POP * (len(object) + 1) + self.get(mem[d][0]))
             return
 
         memo_len = len(memo)
@@ -457,6 +462,10 @@ class Pickler:
         else:
             write(MARK + LIST)
 
+        memo_len = len(memo)
+        write(self.put(memo_len))
+        memo[d] = (memo_len, object)
+
         using_appends = (self.bin and (len(object) > 1))
 
         if (using_appends):
@@ -470,10 +479,6 @@ class Pickler:
 
         if (using_appends):
             write(APPENDS)
-
-        memo_len = len(memo)
-        write(self.put(memo_len))
-        memo[d] = (memo_len, object)
     dispatch[ListType] = save_list
 
     def save_dict(self, object):
@@ -487,6 +492,10 @@ class Pickler:
             write(EMPTY_DICT)
         else:
             write(MARK + DICT)
+
+        memo_len = len(memo)
+        self.write(self.put(memo_len))
+        memo[d] = (memo_len, object)
 
         using_setitems = (self.bin and (len(object) > 1))
 
@@ -504,9 +513,6 @@ class Pickler:
         if (using_setitems):
             write(SETITEMS)
 
-        memo_len = len(memo)
-        self.write(self.put(memo_len))
-        memo[d] = (memo_len, object)
     dispatch[DictionaryType] = save_dict
 
     def save_inst(self, object):
@@ -585,7 +591,8 @@ def whichmodule(cls, clsname):
     import sys
 
     for name, module in sys.modules.items():
-        if hasattr(module, clsname) and \
+	if name != '__main__' and \
+	    hasattr(module, clsname) and \
             getattr(module, clsname) is cls:
             break
     else:
@@ -724,9 +731,6 @@ class Unpickler:
         module = self.readline()[:-1]
         name = self.readline()[:-1]
         klass = self.find_class(module, name)
-	if (type(klass) is not ClassType):
-            raise SystemError, "Imported object %s from module %s is " \
-                               "not a class" % (name, module)
 
         value = apply(klass, args)
         self.append(value)
@@ -787,6 +791,11 @@ class Unpickler:
     def load_pop(self):
         del self.stack[-1]
     dispatch[POP] = load_pop
+
+    def load_pop_mark(self):
+        k = self.marker()
+	del self.stack[k:]
+    dispatch[POP_MARK] = load_pop_mark
 
     def load_dup(self):
         self.append(stack[-1])
