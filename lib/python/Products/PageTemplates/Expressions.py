@@ -86,10 +86,10 @@
 """Page Template Expression Engine
 
 Page Template-specific implementation of TALES, with handlers
-for Python expressions, Python string literals, and paths.
+for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -113,28 +113,18 @@ def installHandlers(engine):
     reg('string', StringExpr)
     reg('python', PythonExpr)
     reg('not', NotExpr)
-    reg('import', ImportExpr)
 
 if sys.modules.has_key('Zope'):
+    import AccessControl
     from AccessControl import getSecurityManager
-    from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
-    def validate(accessed, container, name, value, dummy):
-        return getSecurityManager().validate(accessed, container, name, value)
-    def call_with_ns(f, ns, arg=1):
-        td = TemplateDict()
-        td.validate = validate
-        td.this = None
-        td._push(ns['request'])
-        td._push(InstanceDict(ns['here'], td))
-        td._push(ns['var'])
-        try:
-            if arg==2:
-                return f(None, td)
-            else:
-                return f(td)
-        finally:
-            td._pop(3)
+    if hasattr(AccessControl, 'full_read_guard'):
+        from ZRPythonExpr import PythonExpr, _SecureModuleImporter, \
+             call_with_ns
+    else:
+        from ZPythonExpr import PythonExpr, _SecureModuleImporter, \
+             call_with_ns
 else:
+    from PythonExpr import getSecurityManager, PythonExpr
     def call_with_ns(f, ns, arg=1):
         if arg==2:
             return f(None, ns)
@@ -279,114 +269,6 @@ class NotExpr:
     def __repr__(self):
         return '<NotExpr %s>' % `self._s`
 
-
-class ExprTypeProxy:
-    '''Class that proxies access to an expression type handler'''
-    def __init__(self, name, handler, econtext):
-        self._name = name
-        self._handler = handler
-        self._econtext = econtext
-    def __call__(self, text):
-        return self._handler(self._name, text,
-                             self._econtext._engine)(self._econtext)
-
-if sys.modules.has_key('Zope'):
-    from AccessControl import getSecurityManager
-    from Products.PythonScripts.Guarded import _marker, \
-      GuardedBlock, theGuard, safebin, WriteGuard, ReadGuard, UntupleFunction
-
-    class PythonExpr:
-        def __init__(self, name, expr, engine):
-            self.expr = expr = replace(strip(expr), '\n', ' ')
-            blk = GuardedBlock('def f():\n return %s\n' % expr)
-            if blk.errors:
-                raise CompilerError, ('Python expression error:\n%s' %
-                                      join(blk.errors, '\n') )
-            guards = {'$guard': theGuard, '$write_guard': WriteGuard,
-                      '$read_guard': ReadGuard, '__debug__': __debug__}
-            self._f = UntupleFunction(blk.t, guards, __builtins__=safebin)
-            self._f_varnames = vnames = []
-            for vname in self._f.func_code.co_names:
-                if vname[0] not in '$_':
-                    vnames.append(vname)
-
-        def __call__(self, econtext):
-            f = self._f
-
-            # Bind template variables
-            var = econtext.contexts['var']
-            getType = econtext._engine.getTypes().get
-            for vname in self._f_varnames:
-                has, val = var.has_get(vname)
-                if not has:
-                    has = val = getType(vname)
-                    if has:
-                        val = ExprTypeProxy(vname, val, econtext)
-                if has:
-                    f.func_globals[vname] = val
-
-            # Execute the function in a new security context.
-            template = econtext.contexts['template']
-            security = getSecurityManager()
-            security.addContext(template)
-            try:
-                __traceback_info__ = self.expr
-                return f()
-            finally:
-                security.removeContext(template)
-
-        def __str__(self):
-            return 'Python expression "%s"' % self.expr
-        def __repr__(self):
-            return '<PythonExpr %s>' % self.expr
-
-else:
-    class getSecurityManager:
-        '''Null security manager'''
-        def validate(self, *args, **kwargs):
-            return 1
-        validateValue = validate
-    _marker = []
-
-    class PythonExpr:
-        def __init__(self, name, expr, engine):
-            self.expr = expr = replace(strip(expr), '\n', ' ')
-            try:
-                d = {}
-                exec 'def f():\n return %s\n' % strip(expr) in d
-                self._f = d['f']
-            except:
-                raise CompilerError, ('Python expression error:\n'
-                                      '%s: %s') % sys.exc_info()[:2]
-            self._f_varnames = vnames = []
-            for vname in self._f.func_code.co_names:
-                if vname[0] not in '$_':
-                    vnames.append(vname)
-
-        def __call__(self, econtext):
-            f = self._f
-
-            # Bind template variables
-            var = econtext.contexts['var']
-            for vname in self._f_varnames:
-                has, val = var.has_get(vname)
-                if has:
-                    f.func_globals[vname] = val
-
-            return f()
-
-        def __str__(self):
-            return 'Python expression "%s"' % self.expr
-        def __repr__(self):
-            return '<PythonExpr %s>' % self.expr
-    
-class ImportExpr:
-    def __init__(self, name, expr, engine):
-        self._s = expr
-    def __call__(self, econtext):
-        return safebin['__import__'](self._s)
-    def __repr__(self):
-        return '<ImportExpr %s>' % `self._s`
 
 def restrictedTraverse(self, path):
 
