@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -318,7 +318,8 @@ class HTTPRequest(BaseRequest):
              
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
-        self.base="%s/%s" % (server_url,b)
+        if b: self.base="%s/%s" % (server_url,b)
+        else: self.base=server_url
         while script[:1]=='/': script=script[1:]
         if script: script="%s/%s" % (server_url,script)
         else:      script=server_url
