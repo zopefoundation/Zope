@@ -11,9 +11,8 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.39 2003/11/09 19:02:23 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.40 2004/01/24 15:48:38 andreasjung Exp $'
 
-import warnings
 from types import StringType, ListType, TupleType
 
 from Globals import Persistent, DTMLFile
@@ -222,12 +221,6 @@ class PathIndex(Persistent, SimpleItem):
 
         record = parseIndexRequest(request,self.id,self.query_options)
         if record.keys==None: return None
-
-        if request.has_key('%s_level' % cid):
-            warnings.warn("The usage of the '%s_level' "
-                          "is no longer recommended.\n"
-                          "Please use a mapping object and the "
-                          "'level' key to specify the operator." % cid)
 
         level    = record.get("level",0)
         operator = record.get('operator',self.useOperator).lower()
