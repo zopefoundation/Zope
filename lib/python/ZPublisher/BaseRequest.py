@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -300,33 +300,30 @@ class BaseRequest:
                                     "Cannot locate object at: %s" %URL) 
                             else: return response.notFoundError(URL)
     
-                if subobject is object and entry_name=='.':
-                    URL=URL[:rfind(URL,'/')]
+                try:
+                    try: doc=subobject.__doc__
+                    except: doc=getattr(object, entry_name+'__doc__')
+                    if not doc: raise AttributeError, entry_name
+                except:
+                    if debug_mode:
+                        return response.debugError("Missing doc string at: %s"
+                                                   % URL)
+                    else: return response.notFoundError("%s" % (URL))
+
+                if hasattr(subobject,'__roles__'):
+                    roles=subobject.__roles__
                 else:
-                    try:
-                        try: doc=subobject.__doc__
-                        except: doc=getattr(object, entry_name+'__doc__')
-                        if not doc: raise AttributeError, entry_name
-                    except:
-                        if debug_mode:
-                            return response.debugError("Missing doc string at: %s"
-                                                       % URL)
-                        else: return response.notFoundError("%s" % (URL))
-    
-                    if hasattr(subobject,'__roles__'):
-                        roles=subobject.__roles__
-                    else:
-                        if not got:
-                            roleshack=entry_name+'__roles__'
-                            if hasattr(object, roleshack):
-                                roles=getattr(object, roleshack)
-    
-                    # Promote subobject to object
-                
-                    parents.append(object)
-                    object=subobject
-    
-                    steps.append(entry_name)
+                    if not got:
+                        roleshack=entry_name+'__roles__'
+                        if hasattr(object, roleshack):
+                            roles=getattr(object, roleshack)
+
+                # Promote subobject to object
+            
+                parents.append(object)
+                object=subobject
+
+                steps.append(entry_name)
     
                 # Check for method:
                 if not path:
