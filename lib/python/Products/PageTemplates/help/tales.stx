@@ -1,0 +1,105 @@
+TALES Overview
+
+  The *Template Attribute Language Expression Syntax* (TALES) standard
+  describes expressions that suppy "TAL":tal.stx and "METAL":metal.stx
+  with data.  TALES is *one* possible expression syntax for these
+  languages, but they are not bound to this definition.  Similarly,
+  TALES could be used in a context having nothing to do with TAL or
+  METAL.
+
+  TALES expressions are described below with any delimiter or quote
+  markup from higher language layers removed.  Here is the basic
+  definition of TALES syntax::
+
+    Expression  ::= [type_prefix ':'] String
+    type_prefix ::= Name
+
+  Here are some simple examples::
+  
+    a/b/c
+    path:a/b/c
+    nothing
+    path:nothing
+    python: 1 + 2
+    string:Hello, ${user/getUserName}
+
+  The optional *type prefix* determines the semantics and syntax of
+  the *expression string* that follows it.  A given implementation of
+  TALES can define any number of expression types, with whatever
+  syntax you like. It also determines which expression type is
+  indicated by omitting the prefix.
+
+  If you do not specify a prefix, Zope assumes that the expression is
+  a *path* expression.
+
+  TALES Expression Types
+
+    These are the TALES expression types supported by Zope:
+
+    * "no-call":tales-no-call.stx expression - don't call a value
+
+    * "not:tales-not.stx expressions - negate a value
+  
+    * "string":tales-string.stx expressions - format a string
+
+    * "path":tales-path.stx expressions - locate an object
+
+    * "python":tales-python.stx expressions - execute a Python
+      expression
+
+  Built-in Names
+
+   These are the names that are built-in the TALES in Zope:
+
+   - *nothing* - special singleton value used by TAL to represent 
+      a *non-value* (e.g. void, None, Nil, NULL).
+
+   - *default* - special singleton value used by TAL to specify that
+     existing text should not be replaced.
+
+   - *options* - the *keyword* arguments passed to the template.
+
+   - *repeat* - the 'repeat' variables (see RepeatVariable).
+
+   - *attrs* - a dictionary containing the initial values of the
+     attributes of the current statement tag.
+
+   - *CONTEXTS* - the list of standard names (this list).  This can be
+     used to access a builtin variable that has been hidden by a local
+     or global variable with the same name.
+
+   - *root* - the system's top-most object.
+
+   - *here* - the object to which the template is being applied.
+
+   - *container* - the template's container object.
+
+   - *template* - the template itself.
+
+   - *request* - the publishing request object.
+
+   - *user* - the authenticated user object.
+
+   - *modules* - a collection through which all Python modules and
+     packages can be accessed.  Some or many of these may not be
+     usable in TALES, however, depending on the security policies
+     of the template's implementation.
+
+    Note the names 'root', 'here', 'container', 'template', 'request',
+    'user', and 'modules' are optional names supported by Zope, but
+    are not required by the TALES standard.
+
+  See Also
+
+    "TAL overview":tal.stx
+
+    "no-call":tales-no-call.stx expression
+
+    "not:tales-not.stx expressions
+  
+    "string":tales-string.stx expressions
+
+    "path":tales-path.stx expressions
+
+    "python":tales-python.stx expressions
+  

@@ -1,8 +1,8 @@
 TAL Overview
 
-  The *Template Attribute Language* is an attribute language used to
-  create dynamic templates.  It allows elements of a document to be
-  replaced, repeated, or omitted.
+  The *Template Attribute Language* (TAL) standard is an attribute
+  language used to create dynamic templates.  It allows elements of a
+  document to be replaced, repeated, or omitted.
 
   The statements of TAL are XML attributes from the TAL namespace.
   These attributes can be applied to an XML or HTML document in order
@@ -16,21 +16,45 @@ TAL Overview
   expressions are not part of TAL. TALES is recommended for this
   purpose.
 
-  The TAL namespace URI and recommended alias are currently defined
-  as::
+  TAL Namespace
 
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    The TAL namespace URI and recommended alias are currently defined
+    as::
 
-  This is not a URL, but merely a unique identifier.  Do not expect a
-  browser to resolve it successfully.
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+
+    This is not a URL, but merely a unique identifier.  Do not expect
+    a browser to resolve it successfully.
 
   TAL Statements   
+
+    These are the tal statements:
+
+    - "tal:attributes":tal-attributes.stx - dynamically change
+      element attributes.
+
+    - "tal:define":tal-define.stx - define variables.
+
+    - "tal:condition":tal-condition.stx - test conditions.
+
+    - "tal:content":tal-content.stx - replace the content of an
+      element.
+
+    - "tal:omit-tag":tal-omit-tag.stx - remove an element, leaving
+      the content of the element.
+
+    - "tal:on-error":tal-on-error.stx - handle errors.
+
+    - "tal:repeat":tal-repeat.stx - repeat an element.
+
+    - "tal:replace":tal-replace.stx - replace the content of an
+      element and remove the element leaving the content.
 
     Expressions used in statements may return values of any type,
     although most statements will only accept strings, or will convert
     values into a string representation.  The expression language must
-    define a value named *nothing* (see [TALES]) that is not a string.
-    In particular, this value is useful for deleting elements or
+    define a value named *nothing* that is not a string.  In
+    particular, this value is useful for deleting elements or
     attributes.
 
   Order of Operations
@@ -47,17 +71,17 @@ TAL Overview
     When an element has multiple statements, they are executed in this
     order:
 
-	- 'define'
+    1. 'define'
 
-	- 'condition'
+    2. 'condition'
 
-	- 'repeat'
+    3. 'repeat'
 
-	- 'content' or 'replace'
+    4. 'content' or 'replace'
 
-	- 'attributes'
+    5. 'attributes'
 
-	- 'omit-tag'
+    6. 'omit-tag'
 
     Since the 'on-error' statement is only invoked when an error occurs,
     it does not appear in the list.  
@@ -77,4 +101,20 @@ TAL Overview
   See Also
 
     "TALES Overview":tales.stx
+
+    "tal:attributes":tal-attributes.stx
+
+    "tal:define":tal-define.stx
+
+    "tal:condition":tal-condition.stx
+
+    "tal:content":tal-content.stx
+
+    "tal:omit-tag":tal-omit-tag.stx
+
+    "tal:on-error":tal-on-error.stx
+
+    "tal:repeat":tal-repeat.stx
+
+    "tal:replace":tal-replace.stx
 
