@@ -224,7 +224,7 @@ Options:
 
 Environment settings are of the form: NAME=VALUE.
 
-Note: you *must* use Python 2.1 or later!
+Note: you *must* use Python 2.2 or later!
 """
 
 
@@ -364,24 +364,23 @@ def server_info(old, v, offset=0):
 
 try:
     python_version = sys.version.split()[0]
-    if python_version < '2.1':
+    if python_version < '2.2':
         raise 'Invalid python version', python_version
-    if python_version[:3] == '2.1':
-        if python_version[4:5] < '3':
+    if python_version[:3] == '2.2':
+        if python_version[4:5] < '2':
             import warnings
             err = ('You are running Python version %s.  This Python version '
                    'has known bugs that may cause Zope to run improperly. '
-                   'Consider upgrading to a Python in the 2.1 series '
-                   'with at least version number 2.1.3.  (Note that Zope does '
-                   'not yet run under any Python 2.2 version).' %
+                   'Consider upgrading to a Python in the 2.2 series '
+                   'with at least version number 2.2.2.' %
                    python_version)
             warnings.warn(err)
-    if python_version[:3] == '2.2':
+    if python_version[:3] == '2.3':
         import warnings
         err = ('You are running Python version %s.  This Python version '
                'has not yet been tested with Zope and you may experience '
                'operational problems as a result.  Consider using '
-               'Python 2.1.3 instead.' % python_version)
+               'Python 2.2.2 instead.' % python_version)
         warnings.warn(err)
 
 
