@@ -109,16 +109,17 @@ def main():
     global use_minidom
     noVersionTest = use_minidom
     macros = 0
-    compile = 0
+    compile = 1
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "Mcmn")
+        opts, args = getopt.getopt(sys.argv[1:], "Mcmnv")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
-        sys.stderr.write("usage: driver.py [-M] [-c] [-m] [-n] [file]\n")
+        sys.stderr.write("usage: driver.py [-M] [-c] [-m] [-n] [-v] [file]\n")
         sys.stderr.write("-M -- force using minidom\n")
-        sys.stderr.write("-c -- compiled mode (faster)\n")
+        sys.stderr.write("-c -- compiled mode (default)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
+        sys.stderr.write("-v -- visiting mode (slower)\n")
         sys.exit(2)
     for o, a in opts:
         if o == '-M':
@@ -129,6 +130,8 @@ def main():
             macros = 1
         if o == '-n':
             noVersionTest = 1
+        if o == '-v':
+            compile = 0
     if not noVersionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
@@ -201,7 +204,7 @@ def interpretit(it, engine=None, stream=None):
     program, macros = it
     if engine is None:
         engine = DummyEngine(macros)
-    TALInterpreter(program, macros, engine, stream)()
+    TALInterpreter(program, macros, engine, stream, wrap=0)()
 
 if __name__ == "__main__":
     main()
