@@ -82,14 +82,16 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.78 2001/06/18 18:13:09 chrism Exp $''' 
-__version__='$Revision: 1.78 $'[11:-2]
+'''$Id: DT_Util.py,v 1.79 2001/06/18 18:44:45 chrism Exp $''' 
+__version__='$Revision: 1.79 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
+
+test = utility_builtins['test'] # for backwards compatibility, dont remove!
 
 LIMITED_BUILTINS = 1
 
