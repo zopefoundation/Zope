@@ -441,6 +441,16 @@ setup(
                      'StructuredText/regressions/*.stx']]],
     )
 
+# reStructuredText
+setup(
+    name='reStructuredText',
+    author=AUTHOR,
+
+    packages=['reStructuredText'],
+    data_files=[['reStructuredText', ['reStructuredText/*.txt']],
+               ],
+    )
+
 # Signals
 setup(
     name='Signals',
