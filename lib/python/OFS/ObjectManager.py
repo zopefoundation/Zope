@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.65 1999/04/12 23:56:27 amos Exp $"""
+$Id: ObjectManager.py,v 1.66 1999/04/16 13:54:23 brian Exp $"""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -187,10 +187,14 @@ class ObjectManager(
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
     def _getOb(self, id, default=_marker):
-        if hasattr(self, 'aq_base'): self=self.aq_base
-        if default is _marker: return getattr(self, id)
-        try: return getattr(self, id)
-        except: return default
+        if hasattr(self, 'aq_base'):
+            base=self.aq_base
+        else: base=self
+        if not hasattr(base, id):
+            if default is _marker:
+                raise AttributeError, id
+            return default
+        return getattr(self, id)
 
     def _setObject(self,id,object,roles=None,user=None):
         v=self._checkId(id)
