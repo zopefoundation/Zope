@@ -16,5 +16,5 @@ class syslogLogger:
             self.on = 0
 
     def __call__(self, sub, sev, sum, det, err):
-        if on:
+        if self.on:
             self.client.log(sum)
