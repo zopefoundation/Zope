@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.13 2003/10/24 20:16:08 evan Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Zope.py,v 1.14 2004/01/27 14:39:34 tseaver Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -36,11 +36,7 @@ except ImportError:
 else:
     from AccessControl import Unauthorized
 
-# Support pre-Python 2.3 :-(
-try:
-    from types import BooleanType
-except ImportError:
-    BooleanType = None
+from types import BooleanType
 
 class LazyFilter(Lazy):
     # A LazyFilter that checks with the security policy
@@ -261,7 +257,7 @@ def complex_marshal(pairs):
 def simple_marshal(v):
     if isinstance(v, StringType):
         return ''
-    if BooleanType and isinstance(v, BooleanType):
+    if isinstance(v, BooleanType):
         return ':boolean'
     if isinstance(v, IntType):
         return ':int'
