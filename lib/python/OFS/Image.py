@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -66,7 +66,7 @@ class Image(Persistent,RoleManager,SimpleItem.Item_w__name__):
 
 class ImageHandler:
     """Image object handler mixin"""
-    meta_types=({'name':'Image', 'action':'manage_addImageForm'},)
+    #meta_types=({'name':'Image', 'action':'manage_addImageForm'},)
 
     manage_addImageForm=HTMLFile('OFS/imageAdd')
 
