@@ -100,7 +100,7 @@ class PersistentClass(Base):
 
 manage_addZClassForm=Globals.HTMLFile(
     'addZClass', globals(), default_class_='OFS.SimpleItem Item',
-    CreateFactory=1)
+    CreateAFactory=1)
 
 
 def find_class(ob, name):
@@ -140,7 +140,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
     if meta_type: Z._zclass_.meta_type=meta_type
     self._setObject(id, Z)
 
-    if CreateFactory and meta_type:
+    if CreateAFactory and meta_type:
         self.manage_addDTMLMethod(
             id+'_addForm', 
             id+' constructor input form', 
