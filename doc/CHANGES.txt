@@ -86,6 +86,15 @@ Zope Changes
 
       Bugs fixed
 
+        - The ZService.py used to implement Zope as a Win32 service 
+          on NT has been updated to handle a difference in the way
+          .dll files are found on internationalized versions of NT.
+
+        - The configure.in file used to build PCGI has been updated.
+
+        - Several fixes to DateTime were added to provide better
+          behavior on machines with unrecognized time zone names.
+
         - Conflict errors, which occur when simultanious writes occur
           to the same object in multiple database connections, are now
           handled correctly by re-executing (up to three times)
