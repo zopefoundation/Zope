@@ -6,7 +6,11 @@ Zope Changes
 
     Bugs Fixed
     
-    
+   
+      - Browser ids can now be encoded in the URL and Zope can be
+        instructed to automatically include the browser id in its
+        generated URLs.
+ 
       - Collector #510: When Python scripts and other "Script" objects were
         acquired during URL traversal, the __before_publishing_traverse__ code
         did not properly stop traversal at the script and populate
