@@ -444,7 +444,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.9 1996/07/23 19:59:29 jfulton Exp $"""
+$Id: Publish.py,v 1.10 1996/07/23 20:48:55 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -497,6 +497,13 @@ $Id: Publish.py,v 1.9 1996/07/23 19:59:29 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.10  1996/07/23 20:48:55  jfulton
+# Changed authorization model so that sub-object allow_groups override,
+# rather than augment (tighten) parent groups.
+#
+# Note that now a valid group is None, which makes a subobject public,
+# even a parent is protected.
+#
 # Revision 1.9  1996/07/23 19:59:29  jfulton
 # Fixed bugs:
 #
@@ -535,7 +542,7 @@ $Id: Publish.py,v 1.9 1996/07/23 19:59:29 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 def main():
@@ -638,9 +645,7 @@ class ModulePublisher:
 	except: realm=None
 
 	# Do authorization check, if need be:
-	try:
-	    groups=theModule.__allow_groups__
-	    if groups: self.validate(groups,realm)	
+	try: groups=theModule.__allow_groups__
 	except: groups=None
 
 	# Get a nice clean path list:
@@ -670,7 +675,7 @@ class ModulePublisher:
 	    if not path: path = ['help']
     
 	while path:
-	    entry_name,path,groups=path[0], path[1:], None
+	    entry_name,path=path[0], path[1:]
 	    if entry_name:
 		try:
 		    subobject=getattr(object,entry_name)
@@ -725,11 +730,12 @@ class ModulePublisher:
 			):
 			raise 'Forbidden',object
 
-		# Do authorization checks
-		if groups: self.validate(groups, realm)
-
 		# Promote subobject to object
 		object=subobject
+
+
+	# Do authorization checks
+	if groups: self.validate(groups,realm)
 
 	object_as_function=object	
 	if type(object_as_function) is types.ClassType:
@@ -1007,5 +1013,4 @@ def publish_module(module_name,
 	response.exception()
     if response: response=str(response)
     if response: stdout.write(response)
-
 
