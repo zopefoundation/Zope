@@ -477,6 +477,7 @@ setup(
 PYEXPAT_DIR=os.path.join(PACKAGES_ROOT, 'Shared', 'DC', 'xml', 'pyexpat')
 DCPYEXPAT_INCLUDEDIRS=[os.path.join(PYEXPAT_DIR, 'expat', 'xmlparse'),
                        os.path.join(PYEXPAT_DIR, 'expat', 'xmltok')]
+DCPYEXPAT_DIR='Shared/DC/xml/pyexpat'
 
 setup(
     name='dcpyexpat',
@@ -488,11 +489,11 @@ setup(
         Extension(name='Shared.DC.xml.pyexpat.dcpyexpat',
                   include_dirs=DCPYEXPAT_INCLUDEDIRS,
                   define_macros=[('XML_NS', None)],
-                  sources=[PYEXPAT_DIR + '/expat/xmlparse/xmlparse.c',
-                           PYEXPAT_DIR + '/expat/xmlparse/hashtable.c',
-                           PYEXPAT_DIR + '/expat/xmltok/xmlrole.c',
-                           PYEXPAT_DIR + '/expat/xmltok/xmltok.c',
-                           PYEXPAT_DIR + '/dcpyexpat.c'])]
+                  sources=[DCPYEXPAT_DIR + '/expat/xmlparse/xmlparse.c',
+                           DCPYEXPAT_DIR + '/expat/xmlparse/hashtable.c',
+                           DCPYEXPAT_DIR + '/expat/xmltok/xmlrole.c',
+                           DCPYEXPAT_DIR + '/expat/xmltok/xmltok.c',
+                           DCPYEXPAT_DIR + '/dcpyexpat.c'])]
     )
 
 # TAL
