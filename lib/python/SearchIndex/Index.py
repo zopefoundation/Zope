@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 from Persistence import Persistent
 from BTrees.OOBTree import OOBTree
@@ -36,6 +36,8 @@ def nonEmpty(s):
 
 class Index(Persistent):
     """Index object interface"""
+    
+    isDeprecatedIndex = 1
 
     def __init__(self, data=None, schema=None, id=None,
                  ignore_ex=None, call_methods=None):

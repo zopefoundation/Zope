@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -36,6 +36,8 @@ class UnIndex(Persistent, Implicit):
     """UnIndex object interface"""
 
     meta_type = 'Field Index'
+    
+    isDeprecatedIndex = 1
 
     def __init__(self, id, ignore_ex=None, call_methods=None):
         """Create an unindex

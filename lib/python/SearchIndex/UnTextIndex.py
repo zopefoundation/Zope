@@ -19,7 +19,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.53 $'[11:-2]
+__version__ = '$Revision: 1.54 $'[11:-2]
 
 
 import string, re
@@ -64,6 +64,8 @@ class UnTextIndex(Persistent, Implicit):
 
     This isn't exactly how things are represented in memory, many
     optimizations happen along the way."""
+    
+    isDeprecatedIndex = 1
 
     meta_type = 'Text Index'
 

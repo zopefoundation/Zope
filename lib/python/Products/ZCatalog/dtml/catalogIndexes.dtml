@@ -151,12 +151,10 @@ function toggleSelect() {
 
     <td>
     <div class="list-item">
-      <dtml-if "_.string.find(_.str(_.getattr(this(),'__implements__','old')),'PluggableIndex')>-1">
-        &dtml-meta_type;
-      <dtml-else>
+      <dtml-var meta_type>
+      <dtml-if isDeprecatedIndex>
          <dtml-call "REQUEST.set('oldidx',1)">
          (pre-2.4 index)
-         &dtml-meta_type;
       </dtml-if>
     </div>
     </td>

@@ -130,7 +130,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 #XXX I strongly suspect that this is broken, but I'm not going to fix it. :(
 
@@ -146,6 +146,8 @@ from Lexicon import Lexicon, stop_word_dict
 from ResultList import ResultList
 
 class TextIndex(Persistent):
+    
+    isDeprecatedIndex = 1
 
     def __init__(self, data=None, schema=None, id=None,
                  ignore_ex=None, call_methods=None):
