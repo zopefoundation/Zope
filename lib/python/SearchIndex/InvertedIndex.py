@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.10 1997/01/29 16:48:40 chris Exp $'''
+$Id: InvertedIndex.py,v 1.11 1997/02/12 18:11:54 cici Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -66,7 +66,7 @@ $Id: InvertedIndex.py,v 1.10 1997/01/29 16:48:40 chris Exp $'''
 #
 #     Limitation Of Liability 
 #
-3#       In no event will DCLC be liable for direct, indirect, special,
+#       In no event will DCLC be liable for direct, indirect, special,
 #       incidental, economic, cover, or consequential damages arising
 #       out of the use of or inability to use this software even if
 #       advised of the possibility of such damages. Some states do not
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.10 1997/01/29 16:48:40 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.11  1997/02/12 18:11:54  cici
+# *** empty log message ***
+#
 # Revision 1.10  1997/01/29 16:48:40  chris
 # added list_class argument to Index __init__
 #
@@ -119,7 +122,7 @@ $Id: InvertedIndex.py,v 1.10 1997/01/29 16:48:40 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -567,14 +570,14 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
 class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
 
-  def addentry(self, freq, key):
+  def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
     ResultList.addentry(self, key, info)
     self.__changed__(1)
 
 
-class Persistent(Index):
+class Persistent(Index, PickleDictionary.Persistent):
   '''\
   An inverted index.
 
@@ -708,8 +711,12 @@ class Persistent(Index):
     Recover wasted space in the index file.'''
     self._index_object.pack()
 
+
+  def __getinitargs__(self):
+      return (self.picklefile,)
+
     
-class Transactional(Index):
+class Transactional(Index, SingleThreadedTransaction.Persistent):
   '''\
   An inverted index.
 
@@ -816,6 +823,8 @@ class Transactional(Index):
     self._index_object.pack()
 
 
+  def __getinitargs__(self):
+      return (self.picklefile,)
 
 
 
