@@ -1,8 +1,8 @@
 """Document object"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
-from STPDocumentTemplate import HTML
+from Globals import HTML
 from Globals import HTMLFile
 from string import join, split, strip, rfind
 from AccessControl.Role import RoleManager

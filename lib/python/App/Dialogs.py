@@ -1,3 +1,4 @@
+
 """Common HTML dialog boxes
 
     MessageDialog(title, message, action, [target])
@@ -18,10 +19,10 @@
 	                 target='_top')
     </PRE>"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
  
-from STPDocumentTemplate import HTML
+from Globals import HTML
 
 MessageDialog = HTML("""
 <HTML>
