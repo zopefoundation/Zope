@@ -1,25 +1,33 @@
 <HTML>
 <HEAD>
-<TITLE><!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></TITLE>
+<TITLE>
+<!--#if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
+</TITLE>
 </HEAD>
 <BODY>
-<FONT SIZE="+2" COLOR="#77003B">
+<FONT SIZE="+2">
 <!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title-->
+<!--#var title-->
+<!--#else title-->
+<!--#var id-->
+<!--#/if title-->
 </FONT>
-<BR>
+<P>
 
 <!--#if parentObject-->
   <!--#in parentObject-->
      <A HREF="<!--#var URL2-->/manage" target="_top">
      <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
      </A>
-     Go up to <!--#if title-->
-     <!--#var title--><!--#else title-->
-     <!--#var id--><!--#/if title-->
+     Return to <!--#if title-->
+               <!--#var title-->
+               <!--#else title-->
+               <!--#var id-->
+               <!--#/if title-->
      <BR>
   <!--#/in parentObject-->
 <!--#/if parentObject-->
@@ -43,9 +51,8 @@
     <!--#var title--> (<!--#var id-->)<!--#else title-->
     <!--#var id--><!--#/if title--></A><BR>
   <!--#/in objectValues-->
-  <P>
 <!--#/if objectValues-->
-
+<P>
 <TABLE>
 <TR>
   <TD VALIGN="TOP">
@@ -62,7 +69,6 @@
   </FORM>
   </TD>
 </TR>
-
 <!--#if objectValues-->
   <TR>
     <TD VALIGN="TOP">

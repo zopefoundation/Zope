@@ -3,7 +3,7 @@
 <TITLE>Edit Image</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<FONT SIZE="+2" COLOR="#77003B">New Image</FONT>
+<FONT SIZE="+2">New Image</FONT>
 <P>
  You can update image in the system using the form below. 
  Select an image from your local computer by clicking the <I>Browse</I> 

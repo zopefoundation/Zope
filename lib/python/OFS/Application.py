@@ -11,18 +11,19 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.5 1997/08/15 22:24:12 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Application.py,v 1.6 1997/08/27 13:30:19 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Folder, regex
 import Globals
 from string import lower, find
+from AccessControl.User import UserFolder
 
 class Application(Folder.Folder):
 
-    id='Your Place'
+    title='DC Web Environment'
+    id   =title
     __roles__=None
-    title=''
     web__form__method='GET'
     manage_options=Folder.Folder.manage_options+(
 	{'icon':'App/arrow.jpg', 'label':'Application Management',
@@ -37,6 +38,9 @@ class Application(Folder.Folder):
 	if find(destination,'//') >= 0: raise 'Redirect', destination
 	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
 
+    __allow_groups__=UserFolder()
+
+
 def open_bobobase():
     # Open the application database
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
@@ -45,7 +49,11 @@ def open_bobobase():
 	import initial_products
 	initial_products.install(Bobobase)
 	get_transaction().commit()
-    
+
+    if not Bobobase.has_key('roles'):
+	Bobobase['roles']=('manage',)
+	get_transaction().commit()
+
     products=Bobobase['products']
     
     install_products(products)
@@ -57,6 +65,7 @@ def install_products(products):
     # that all folders know about top-level objects, aka products
 
     meta_types=list(Folder.Folder.dynamic_meta_types)
+    role_names=list(Globals.Bobobase['roles'])
 
     for product in products:
 	product=__import__(product)
@@ -101,8 +110,16 @@ def install_products(products):
 	for name,method in product.methods.items():
 	    setattr(Folder.Folder, name, method)
 
+	# Try to install role names
+	try:
+	    for n in product.role_names:
+		if n not in role_names: role_names.append(n)
+	except: pass
+
     Folder.Folder.dynamic_meta_types=tuple(meta_types)
-    
+    Globals.Bobobase['roles']=tuple(role_names)
+
+
 
 ############################################################################## 
 # Test functions:
@@ -119,6 +136,30 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.6  1997/08/27 13:30:19  brian
+# Changes for UserFolder support:
+#   o Added support for role registration to Application.py
+#     Products may define a __.role_names in their __init__.py
+#     which may be a tuple of role names which will be added to
+#     the global list of role names which appears in the role
+#     assignment select box when defining/editing a user.
+#
+#   o Application.Application now has a default __allow_groups__
+#     attribute which is a UserFolder with no members defined.
+#     This default top-level UF is not visible in the UI, and
+#     the user can create a new UF at the top level (in the
+#     Application object) at a later time which will simply
+#     override the default and be visible in the UI. Since the
+#     default UF has no users, an out-of-the-box application's
+#     management interfaces will effectively be available to the
+#     superuser alone.
+#
+#   o Removed the __init__ in Folder which created a default ACL.
+#     This is no longer needed.
+#
+#   o Made some minor (but controversial!) style consistency fixes
+#     to some of the OFS templates.
+#
 # Revision 1.5  1997/08/15 22:24:12  jim
 # Added Redirect
 #

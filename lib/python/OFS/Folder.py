@@ -1,16 +1,16 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.6 1997/08/18 15:14:53 brian Exp $"""
+$Id: Folder.py,v 1.7 1997/08/27 13:30:20 brian Exp $"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
-from Image import Image, ImageHandler
-from Document import Document, DocumentHandler
-from AccessControl.ACL import ACL
+from Image import ImageHandler
+from Document import DocumentHandler
+from AccessControl.User import UserFolderHandler
 
 
 class FolderHandler:
@@ -19,9 +19,6 @@ class FolderHandler:
     meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
 
     manage_addFolderForm=HTMLFile('OFS/folderAdd')
-
-    def __init__(self):
-	self.__allow_groups__=self.AccessControlLists=ACL()
 
     def folderClass(self):
 	return Folder
@@ -56,28 +53,27 @@ class FolderHandler:
 	return t
 
 
-class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
+class Folder(ObjectManager,DocumentHandler,ImageHandler,
+	     FolderHandler,UserFolderHandler):
     """Folder object"""
-    meta_type  ='Folder'
+    meta_type='Folder'
     id       ='folder'
-    title='Folder object'
-    icon       ='OFS/Folder_icon.gif'
+    title    ='Folder object'
+    icon     ='OFS/Folder_icon.gif'
 
     _properties=({'id':'title', 'type': 'string'},)
 
-    meta_types=(
-	DocumentHandler.meta_types+
-	ImageHandler.meta_types+
-	FolderHandler.meta_types
-	)
+    meta_types=(DocumentHandler.meta_types+
+		ImageHandler.meta_types+
+		FolderHandler.meta_types+
+		UserFolderHandler.meta_types
+	       )
 
     manage_options=(
     {'icon':icon, 'label':'Contents',
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
-     'action':'AccessControlLists/manage_main', 'target':'manage_main'},
     {'icon':'OFS/Help_icon.gif', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )
