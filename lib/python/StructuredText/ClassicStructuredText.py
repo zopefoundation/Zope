@@ -229,9 +229,9 @@ def structure(list):
 
 
 class Table:
-    CELL='  <TD ALIGN=CENTER COLSPAN=%i>%s</TD>\n'
-    ROW=' <TR>\n%s </TR>\n'
-    TABLE='\n<TABLE BORDER=1 CELLPADDING=2>\n%s</TABLE>'
+    CELL='  <td align="center" colspan="%i">%s</td>\n'
+    ROW=' <tr>\n%s </tr>\n'
+    TABLE='\n<table border="1" cellpadding="2">\n%s</table>'
     def create(self,aPar,
         td_reg=re.compile(r'[ \t\n]*\|\|([^\0|]*)')
         ):
@@ -399,10 +399,10 @@ class HTML(StructuredText):
         if tagged:
             r=''
         else:
-            r='<PRE>\n'
+            r='<pre>\n'
         for s in structure:
             r="%s%s\n\n%s" % (r,html_quote(s[0]),self.pre(s[1],1))
-        if not tagged: r=r+'</PRE>\n'
+        if not tagged: r=r.rstrip()+'\n</pre>\n'
         return r
 
     def table(self,before,table,after):
