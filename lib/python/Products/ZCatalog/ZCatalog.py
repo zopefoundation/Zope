@@ -27,6 +27,8 @@ from AccessControl.Permission import name_trans
 from Catalog import Catalog, CatalogError
 from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
+from AccessControl.Permissions import \
+    manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
 from zLOG import LOG, ERROR
 from ZCatalogIndexes import ZCatalogIndexes
 from Products.PluginIndexes.common.PluggableIndex \
@@ -113,7 +115,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     __ac_permissions__=(
 
-        ('Manage ZCatalog Entries',
+        (manage_zcatalog_entries,
          ['manage_catalogObject', 'manage_uncatalogObject',
           'catalog_object', 'uncatalog_object', 'refreshCatalog',
 
@@ -131,12 +133,16 @@ class ZCatalog(Folder, Persistent, Implicit):
           ],
          ['Manager']),
 
-        ('Search ZCatalog',
+        (search_zcatalog,
          ['searchResults', '__call__', 'uniqueValuesFor',
-          'getpath', 'schema', 'indexes', 'index_objects', 'getIndexObjects'
+          'getpath', 'schema', 'indexes', 'index_objects', 
           'all_meta_types', 'valid_roles', 'resolve_url',
           'getobject'],
          ['Anonymous', 'Manager']),
+         
+        (manage_zcatalog_indexes, 
+         ['getIndexObjects'], 
+         ['Manager']),
         )
 
 
@@ -440,7 +446,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
 
 
-    def reindexIndex(self,name,REQUEST):
+    def reindexIndex(self, name, REQUEST):
         paths = self._catalog.uids.keys()
 
         for p in paths:
@@ -568,8 +574,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def getIndexObjects(self):
         # Return a list of wrapped(!) indexes
-        catalog = self._catalog
-        return [index.__of__(catalog) for index in catalog.indexes.values()]
+        getIndex = self._catalog.getIndex
+        return [getIndex(name) for name in self.indexes()]
 
     def _searchable_arguments(self):
         r = {}
