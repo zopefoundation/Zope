@@ -43,7 +43,7 @@ sequence: DTML Sequence Functions
       <dtml-in expr="_.sequence.sort(objectValues(),
                                      (('title', 'nocase'),
                                       ('bobobase_modification_time',
-                                      'cmp', desc')
+                                      'cmp', 'desc')
                                      ))">
         <dtml-var title> <dtml-var bobobase_modification_time> <br>
       </dtml-in>
