@@ -6,15 +6,15 @@ Zope Changes
 
   Releases
 
-    Zope  x.x.x
-
-      New Features
+    Zope  1.10.2
 
       Bugs Fixed
 
         - Fixed a permission problem with DTMLMethod objects that caused
           errors when attempting to commit permission changes.
 
+        - Factories could not determine the available methods
+	  when they were being edited, making them uneditable.
 
     Zope  1.10.1
 
