@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -182,6 +182,7 @@ class HTTPRequest(BaseRequest):
                          environ=self._orig_env,
                          response=self.response.retry()
                          )
+        r.retry_count=self.retry_count
         return r
 
 
