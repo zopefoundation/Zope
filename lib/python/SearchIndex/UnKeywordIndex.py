@@ -6,6 +6,8 @@ class UnKeywordIndex(UnIndex):
     Like an UnIndex only it indexs sequences of items
     
     Searches match any keyword.
+
+    This should have an _apply_index that returns a relevance score
     """
 
     def index_object(self, i, obj, threshold=None):
