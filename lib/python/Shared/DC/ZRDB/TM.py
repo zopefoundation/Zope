@@ -128,5 +128,5 @@ class Surrogate:
 
     def __init__(self, db):
         self._p_jar=db
-        self.__inform_commit__=db.tpc_commit
+        self.__inform_commit__=db.tpc_finish
         self.__inform_abort__=db.tpc_abort
