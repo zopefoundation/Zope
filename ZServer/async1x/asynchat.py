@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.12 2000/06/02 14:22:48 brian Exp $
+#	$Id: asynchat.py,v 1.1 2001/04/05 23:38:16 jim Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
