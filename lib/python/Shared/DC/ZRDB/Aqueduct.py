@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.17 1998/01/09 13:58:14 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Aqueduct.py,v 1.18 1998/01/12 19:18:34 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -194,7 +194,7 @@ custom_default_report_src=DocumentTemplate.File(
 def custom_default_report(id, result, action='', no_table=0):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
-    heading=('<tr>\n%s</tr>' %
+    heading=('<tr>\n%s\t</tr>' %
 		 string.joinfields(
 		     map(lambda c:
 			 '\t<th>%s</th>\n' % nicify(c['name']),
@@ -365,6 +365,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.18  1998/01/12 19:18:34  jim
+# *** empty log message ***
+#
 # Revision 1.17  1998/01/09 13:58:14  jim
 # added option for tabular vs record reports
 #

@@ -8,7 +8,8 @@
         </a>
       <!--#/if previous-sequence-->
       %(else no_table)[<table border>
-      %(heading)s%(else)]
+	%(heading)
+      s%(else)]
    <!--#/if sequence-start-->
 
    %(row)s
