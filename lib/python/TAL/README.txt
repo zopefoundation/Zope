@@ -41,15 +41,16 @@ defaults to tests/input/test01.xml.
 Regression test
 ---------------
 
+There are unit test suites in the 'tests' subdirectory; these can be
+run with tests/run.py.  This should print the testcase names plus
+progress info, followed by a final line saying "OK".  It requires that
+../unittest.py exists.
+
 There are a number of test files in the 'tests' subdirectory, named
 tests/input/test<number>.xml and tests/input/test<number>.html.  The
 Python script ./runtest.py calls driver.main() for each test file, and
-should print "<file> OK" for each one.
-
-In addition, there are unit test suites in the 'tests' subdirectory;
-these can be run with tests/run.py.  This should print a number of
-testcase names plus progress info, ending with a line saying "OK".
-It requires that ../unittest.py exists.
+should print "<file> OK" for each one.  These tests are also run as
+part of the unit test suites, so tests/run.py is all you need.
 
 What's Here
 -----------
@@ -65,9 +66,10 @@ driver.py		script to demonstrate TAL expansion
 timer.py		script to time various processing phases
 setpath.py		hack to set sys.path and import ZODB
 __init__.py		empty file that makes this directory a package
-runtest.py		Python script to run regression tests
+runtest.py		Python script to run file-comparison tests
 ndiff.py		helper for runtest.py to produce diffs
 tests/			drectory with test files and output
+tests/run.py		Python script to run all tests
 
 Author and License
 ------------------

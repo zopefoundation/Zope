@@ -118,8 +118,12 @@ def main():
     opts = []
     args = sys.argv[1:]
     quiet = 0
+    unittesting = 0
     if args and args[0] == "-q":
         quiet = 1
+        del args[0]
+    if args and args[0] == "-Q":
+        unittesting = 1
         del args[0]
     while args and args[0][:1] == '-':
         opts.append(args[0])
@@ -136,8 +140,9 @@ def main():
              sys.exit(1)
     errors = 0
     for arg in args:
-        print arg,
-        sys.stdout.flush()
+        if not unittesting:
+            print arg,
+            sys.stdout.flush()
         save = sys.stdout, sys.argv
         try:
             try:
@@ -154,8 +159,11 @@ def main():
                 print sys.exc_type
                 sys.stdout.flush()
             else:
-                print "Failed:"
-                sys.stdout.flush()
+                if unittesting:
+                    print
+                else:
+                    print "Failed:"
+                    sys.stdout.flush()
                 traceback.print_exc()
             continue
         head, tail = os.path.split(arg)
@@ -176,9 +184,13 @@ def main():
         else:
             actual = readlines(stdout)
         if actual == expected:
-            print "OK"
+            if not unittesting:
+                print "OK"
         else:
-            print "not OK"
+            if unittesting:
+                print
+            else:
+                print "not OK"
             errors = 1
             if not quiet and expected is not None:
                 showdiff(expected, actual)
