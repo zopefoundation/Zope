@@ -198,7 +198,7 @@ def changeOwner(obj, owner):
         if 'Owner' in roles:
             obj.manage_delLocalRoles([user])
             break
-    obj.manage_setLocalRoles(owner.getUserName(), ['Owner'])
+    obj.manage_setLocalRoles(owner.getId(), ['Owner'])
     for subobj in obj.objectValues():
         changeOwner(subobj, owner)
 

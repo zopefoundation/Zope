@@ -67,7 +67,7 @@ No exceptions logged.
 <table tal:condition="entries">
  <tr>
   <th align="left">Time</th>
-  <th align="left">User</th>
+  <th align="left">Username (User Id)</th>
   <th align="left">Exception</th>
  </tr>
  <tr tal:repeat="entry entries">
@@ -75,7 +75,9 @@ No exceptions logged.
    <span tal:content="python: DateTime(entry['time']).Time()">13:04:41</span>
   </td>
   <td>
-   <span tal:content="entry/username">joe</span>
+   <span tal:content="string: ${entry/username} (${entry/userid})">
+      joe (joe)
+   </span>
   </td>
   <td valign="top">
    <a href="showEntry" tal:attributes="href string:showEntry?id=${entry/id}"

@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.11 2002/08/21 14:23:24 shane Exp $
+$Id: SiteErrorLog.py,v 1.12 2002/10/16 21:14:42 chrism Exp $
 """
 
 import os
@@ -149,10 +149,13 @@ class SiteErrorLog (SimpleItem):
                 request = getattr(self, 'REQUEST', None)
                 url = None
                 username = None
+                userid   = None
                 req_html = None
                 if request:
                     url = request.get('URL', '?')
-                    username = getSecurityManager().getUser().getUserName()
+                    usr = getSecurityManager().getUser()
+                    username = usr.getUserName()
+                    userid = usr.getUserId()
                     try:
                         req_html = str(request)
                     except:
@@ -173,6 +176,7 @@ class SiteErrorLog (SimpleItem):
                     'tb_text': tb_text,
                     'tb_html': tb_html,
                     'username': username,
+                    'userid': userid,
                     'url': url,
                     'req_html': req_html,
                     })

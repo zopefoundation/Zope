@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.171 $'[11:-2]
+__version__='$Revision: 1.172 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -85,7 +85,7 @@ class BasicUser(Implicit):
         """Return the list of roles assigned to the user,
            including local roles assigned in context of
            the passed in object."""
-        name=self.getUserName()
+        userid=self.getId()
         roles=self.getRoles()
         local={}
         object=getattr(object, 'aq_inner', object)
@@ -95,7 +95,7 @@ class BasicUser(Implicit):
                 if callable(local_roles):
                     local_roles=local_roles()
                 dict=local_roles or {}
-                for r in dict.get(name, []):
+                for r in dict.get(userid, []):
                     local[r]=1
             inner = getattr(object, 'aq_inner', object)
             parent = getattr(inner, 'aq_parent', None)
@@ -207,14 +207,14 @@ class BasicUser(Implicit):
         # this manually rather than call getRolesInContext so that
         # we can incur only the overhead required to find a match.
         inner_obj = getattr(object, 'aq_inner', object)
-        user_name = self.getUserName()
+        userid = self.getId()
         while 1:
             local_roles = getattr(inner_obj, '__ac_local_roles__', None)
             if local_roles:
                 if callable(local_roles):
                     local_roles = local_roles()
                 dict = local_roles or {}
-                local_roles = dict.get(user_name, [])
+                local_roles = dict.get(userid, [])
                 for role in object_roles:
                     if role in local_roles:
                         if self._check_context(object):

@@ -13,20 +13,17 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.5 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: testUserFolder.py,v 1.6 2002/10/16 21:14:41 chrism Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 import os, sys, unittest
 
 import ZODB
-from DocumentTemplate import HTML
-from DocumentTemplate.tests.testDTML import DTMLTests
-from Products.PythonScripts.standard import DTML
 from AccessControl import User, Unauthorized
-from AccessControl.User import BasicUserFolder
+from AccessControl.User import BasicUserFolder, UserFolder, User
 from ExtensionClass import Base
 
-class SecurityTests (DTMLTests):
+class UserFolderTests(unittest.TestCase):
 
     def testMaxListUsers(self):
         # create a folder-ish thing which contains a roleManager,
@@ -67,10 +64,38 @@ class SecurityTests (DTMLTests):
         except OverflowError:
             assert 0, "Raised overflow error erroneously"
 
+class UserTests(unittest.TestCase):
+
+    def testGetUserName(self):
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f.getUserName(), 'chris')
+        
+    def testGetUserId(self):
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f.getId(), 'chris')
+
+    def testBaseUserGetIdEqualGetName(self):
+        # this is true for the default user type, but will not
+        # always be true for extended user types going forward (post-2.6)
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f.getId(), f.getUserName())
+
+    def testGetPassword(self):
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f._getPassword(), '123')
+
+    def testGetRoles(self):
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f.getRoles(), ('Manager', 'Authenticated'))
+
+    def testGetDomains(self):
+        f = User('chris', '123', ['Manager'], [])
+        self.assertEqual(f.getDomains(), ())
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( SecurityTests ) )
+    suite.addTest(unittest.makeSuite(UserFolderTests))
+    suite.addTest(unittest.makeSuite(UserTests))
     return suite
 
 def main():

@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.87 $'[11:-2]
+__version__='$Revision: 1.88 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -558,7 +558,7 @@ class DAVProperties(Virtual, PropertySheet, View):
 
     def dav__lockdiscovery(self):
         security = getSecurityManager()
-        user = security.getUser().getUserName()
+        user = security.getUser().getId()
 
 
         vself = self.v_self()
