@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -33,7 +33,7 @@ def _isNotBeingUsedAsAMethod(self):
     return not aq_get(self, '_isBeingUsedAsAMethod_', 0)
 
 class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
-    """An obect that has configurable permissions"""
+    """An object that has configurable permissions"""
 
     __ac_permissions__=(
         ('Change permissions',
