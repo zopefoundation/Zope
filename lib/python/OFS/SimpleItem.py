@@ -89,16 +89,17 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.40 1999/03/10 00:15:16 klm Exp $'''
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: SimpleItem.py,v 1.41 1999/03/22 17:38:12 jim Exp $'''
+__version__='$Revision: 1.41 $'[11:-2]
 
-import regex, sys, Globals, App.Management
+import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
 from ExtensionClass import Base
 from DateTime import DateTime
 from CopySupport import CopySource
-from string import join, lower
+from string import join, lower, find
 from types import InstanceType, StringType
+from ComputedAttribute import ComputedAttribute
 
 import marshal
 
@@ -109,15 +110,25 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
 
+    # The name of this object and the name used to traverse to thie
+    # object in a URL:
+    id=''
+
+    # Alias id to __name__, which will make tracebacks a good bit nicer:
+    __name__=ComputedAttribute(lambda self: self.id)
+
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
-    icon='Product/icon'
+    icon=''
 
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
 
     # Default title.  
     title=''
+
+    # Default propertysheet info:
+    __propsets__=()
 
     manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=()
@@ -128,7 +139,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         try:
             m=self.manage_options[0]['action']
             if m=='manage_workspace': raise TypeError
-        except: return 'This object has no management interface'
+	except: return 'This object has no management interface'
+
+        if find(m,'/'):
+            raise 'Redirect', (
+                "%s/%s" % (REQUEST['URL1'], m))
         
         return getattr(self, m)(self, REQUEST)
 
@@ -279,6 +294,18 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     def __len__(self):
         return 1
             
+    def _isBeingUsedAsAMethod(self, REQUEST =None, wannaBe=0):
+        try:
+            if hasattr(self, 'aq_self'):
+                r=self.aq_acquire('_isBeingUsedAsAMethod_')
+            else:
+                r=self._isBeingUsedAsAMethod_
+        except: r=0
+
+        if REQUEST is not None:
+            if not r != (not wannaBe): REQUEST.response.notFoundError()
+
+        return r
 
 
 class Item_w__name__(Item):
@@ -331,3 +358,23 @@ def pretty_tb(t,v,tb):
     tb=format_exception(t,v,tb,200)
     tb=join(tb,'\n')
     return tb
+
+
+import AccessControl.Role
+class SimpleItem(Item, Globals.Persistent,
+                 Acquisition.Implicit,
+                 AccessControl.Role.RoleManager,
+                 ):
+    # Blue-plate special, Zope Masala
+    """Mix-in class combining the most common set of basic mix-ins
+    """
+
+    manage_options=(
+	{'label':'Security',   'action':'manage_access'},
+	)
+ 
+    __ac_permissions__=(
+	('View management screens', ('manage_tabs', 'manage_workspace')),
+	('Change permissions',      ('manage_access',)                 ),
+	('View',                    ()                                 ),
+	)
