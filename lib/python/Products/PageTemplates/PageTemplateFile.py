@@ -69,6 +69,10 @@ class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
             filename = filename + '.zpt'
         self.filename = os.path.join(_prefix, filename)
 
+    def getId(self):
+        """return the ID of this object"""
+        return self.__name__
+    
     def pt_getContext(self):
         root = self.getPhysicalRoot()
         context = self._getContext()
