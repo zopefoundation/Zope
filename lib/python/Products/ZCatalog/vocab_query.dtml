@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>Edit <dtml-var title_or_id></title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+
+<dtml-var manage_tabs>
+
+<form action="query" method=POST>
+  <input name=pattern>
+  <input type="submit" value="bob"
+</form>
+
+</body>
+</html>

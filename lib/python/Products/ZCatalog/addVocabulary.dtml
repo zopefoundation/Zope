@@ -1,14 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <HTML lang="en">
 <HEAD>
-<TITLE>Add Catalog</TITLE>
+<TITLE>Add Vocabulary</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Add Catalog</H2>
+<H2>Add Vocabulary</H2>
 
-<dtml-var "HelpSys.HelpButton('ZCatalog_Add.dtml', 'ZCatalog')">
-
-<FORM ACTION="manage_addZCatalog" METHOD="POST">
+<FORM ACTION="manage_addVocabulary" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -25,24 +23,14 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="title" SIZE="40">
   </TD>
-</TR>
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <EM><STRONG>Vocabulary</STRONG></EM>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <em>Select Vocabulary?</em> <input type="checkbox" name="vocab">
-  <select name="vocab_id">
-    <dtml-in VocabularyIDs>
-      <option value="<dtml-var sequence-item html_quote>">
-        <dtml-var sequence-item>
-      </option>
-    </dtml-in>
-  </select><br>
-  <em>If you do not select a vocabulary, one will be created</em>
-  </TD>
-
 </tr>
+<tr>
+  <td align="left" valign="top">
+  <em><strong>Globbing?</strong></em>
+  </td>
+  <td align="left" valign="top">
+  <input type="checkbox" name="globbing">
+  </td>
 </TR>
 <TR>
 <TD></TD>
