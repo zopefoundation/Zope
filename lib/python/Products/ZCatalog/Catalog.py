@@ -547,11 +547,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     for k, intset in sort_index._index.items():
                         if type(rs) is IIBType:
                             intset=rs.intersection(intset)
+                            # Since we still have an IIBucket, let's convert
+                            # it to its set of keys
+                            intset=intset.keys()
                         else:
                             intset=intset.intersection(rs)
                         if intset: 
                             append((k,LazyMap(self.__getitem__, intset)))
                 else:
+                    if type(rs) is IIBType:
+                        rs=rs.keys()
                     for r in rs:
                         append((sort_index._unindex[r],
                                LazyMap(self.__getitem__,[r])))
