@@ -382,8 +382,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.45 2001/02/13 11:58:26 mj Exp $'
-__version__='$Revision: 1.45 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.46 2001/03/08 18:35:39 brian Exp $'
+__version__='$Revision: 1.46 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
@@ -577,29 +577,31 @@ class InClass:
                 append=result.append
                 validate=md.validate
                 for index in range(first,end):
-                    if index==first and index > 0:
-                        pstart,pend,psize=opt(0,index+overlap,
-                                              sz,orphan,sequence)
-                        kw['previous-sequence']=1
-                        kw['previous-sequence-start-index']=pstart-1
-                        kw['previous-sequence-end-index']=pend-1
-                        kw['previous-sequence-size']=pend+1-pstart
-                    else:
-                        kw['previous-sequence']=0
-                        if index==last:
-                            try:
-                                # The following line is a sneaky way to
-                                # test whether there are more items,
-                                # without actually computing a length:
-                                sequence[end]
-                                pstart,pend,psize=opt(end+1-overlap,0,
-                                                      sz,orphan,sequence)
-                                kw['previous-sequence']=0
-                                kw['next-sequence']=1
-                                kw['next-sequence-start-index']=pstart-1
-                                kw['next-sequence-end-index']=pend-1
-                                kw['next-sequence-size']=pend+1-pstart
-                            except: pass
+                    # preset
+                    kw['previous-sequence']= 0
+                    kw['next-sequence']= 0 # now more often defined then previously
+                    #
+                    if index==first or index==last:
+                        # provide batching information
+                        if first > 0:
+                            pstart,pend,psize=opt(0,first+overlap,
+                                                  sz,orphan,sequence)
+                            if index==first: kw['previous-sequence']=1
+                            kw['previous-sequence-start-index']=pstart-1
+                            kw['previous-sequence-end-index']=pend-1
+                            kw['previous-sequence-size']=pend+1-pstart
+                        try:
+                            # The following line is a sneaky way to
+                            # test whether there are more items,
+                            # without actually computing a length:
+                            sequence[end]
+                            pstart,pend,psize=opt(end+1-overlap,0,
+                                                  sz,orphan,sequence)
+                            if index==last: kw['next-sequence']=1
+                            kw['next-sequence-start-index']=pstart-1
+                            kw['next-sequence-end-index']=pend-1
+                            kw['next-sequence-size']=pend+1-pstart
+                        except: pass
         
                     if index==last: kw['sequence-end']=1
 
