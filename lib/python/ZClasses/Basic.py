@@ -97,17 +97,22 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
     def manage_edit(self, meta_type='', icon='', file='', REQUEST=None):
         """Set basic item properties.
         """
-        klass=self.aq_inner.aq_parent.aq_parent._zclass_
         if meta_type: self.setClassAttr('meta_type', meta_type)
+
         if file: # and hasattr(file, 'content_type'):
-            if hasattr(klass, 'ziconImage'):
-                klass.ziconImage.manage_upload(file)
-            else:
+            __traceback_info__=file
+            image=self.getClassAttr('ziconImage', None)
+            if image is None:
                 self.setClassAttr('ziconImage',
                                   OFS.Image.Image('ziconImage','',file))
-                
-            if not icon:
-                self.setClassAttr('icon', REQUEST['URL1']+'/ziconImage')
+            else:
+                image.manage_upload(file)
+                        
+            if (not icon) and REQUEST:
+                icon=(REQUEST['URL3'][len(REQUEST['BASE1'])+1:]
+                      +'/ziconImage')
+            
+
 
         if icon: self.setClassAttr('icon', icon)
 
@@ -116,22 +121,12 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                 self, REQUEST,
                 manage_tabs_message='Basic properties changed')
 
-        
-    class ziconImage(ExtensionClass.Base):
-        "Computed icon attribute"
-        def __of__(self, parent):
-            return _ziconImage()
 
-    ziconImage=ziconImage()
+    def icon(self):
+        return self.getClassAttr('icon','')
 
-    def icon_(self):
-        icon=self.aq_inner.aq_parent.aq_parent._zclass_.icon
-
-class _ziconImage(ExtensionClass.Base):
-    "The real Computed icon attribute"
-    def __of__(self, ps):
-        klass=ps.aq_inner.aq_parent.aq_parent._zclass_
-        return klass.ziconImage
+    def meta_type(self):
+        return self.getClassAttr('meta_type','')
 
 class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
                        OFS.PropertySheets.View):
