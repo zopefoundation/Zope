@@ -117,7 +117,7 @@ class ZServerConfigurationTestCase(BaseTest):
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.WebDAVSourceServerFactory))
         self.assert_(factory.force_connection_close)
-        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
         self.assertEqual(factory.port, 82)
         self.check_prepare(factory)
         server = factory.create()
@@ -177,7 +177,7 @@ class ZServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.ICPServerFactory))
-        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
         self.assertEqual(factory.port, 86)
         self.check_prepare(factory)
         factory.create().close()
