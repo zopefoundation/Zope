@@ -24,6 +24,7 @@ the script from a local file by typing the file name or using the
 <strong>File:</strong> <input type="file" name="file" size="25">
 </p>
 <p>
+<input type="submit" value="Add" name="addedit">
 <input type="submit" value="Add and Edit" name="addedit">
 <input type="submit" value="Cancel" name="manage_workspace:method">
 </p>
