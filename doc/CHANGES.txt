@@ -31,6 +31,11 @@ Zope Changes
       - Collector #227: improved handling of unicode string in TextIndex.py
         with unmodified default encoding in site.py.
 
+      - Collector #227: z2.py, TextIndex/dtml/manage_vocab.dtml modified 
+        to display unicode strings in the vocabulary properly (now using
+        UTF-8 encoding for display purposes)
+
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
