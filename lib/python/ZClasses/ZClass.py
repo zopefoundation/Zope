@@ -179,8 +179,6 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     isPrincipiaFolderish=1
  
     __ac_permissions__=(
-	('View management screens', ('manage_tabs', 'manage_workspace')),
-	('Change permissions',      ('manage_access',)                 ),
 	('View',                    ('', '__call__', 'index_html')     ),
 	)
 
@@ -269,7 +267,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             self._p_jar.exchange(self.propertysheets.__class__,
                                  copy.propertysheets.__class__)
 
-        self._zbases=bases
+        self._zbases=copy._zbases
 
     def manage_options(self):
         r=[]
@@ -285,7 +283,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
     manage_options=ComputedAttribute(manage_options)
 
-    def index_html(self, id, REQUEST, RESPONSE=None):
+    def createInObjectManager(self, id, REQUEST, RESPONSE=None):
         """
         Create Z instance. If called with a RESPONSE,
         the RESPONSE will be redirected to the management
@@ -313,8 +311,16 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         else:
             return getattr(folder, id)
         
+    index_html=createInObjectManager
 
-    __call__=index_html
+    def fromRequest(self, id=None, REQUEST={}):
+        i=mapply(self._zclass_, (), REQUEST)
+        if id is not None and (not hasattr(i, 'id') or not i.id): i.id=id
+
+        return i
+        
+    def __call__(self, *args, **kw):
+        return apply(self._zclass_, args, kw)
 
     def zclass_candidate_view_actions(self):
         r={}
@@ -462,7 +468,7 @@ addDefault="""<HTML>
                 to initialize the object.
 <!--#/comment-->
 
-<!--#with "%(id)s(REQUEST['id'], REQUEST)"-->
+<!--#with "%(id)s.createInObjectManager(REQUEST['id'], REQUEST)"-->
 
   <!--#comment-->
 
