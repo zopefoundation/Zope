@@ -518,7 +518,7 @@ class FCGIChannel(asynchat.async_chat):
         if self.addr:
             self.server.logger.log (
                 self.addr[0],
-                '%d - - [%s] "%s %s" %d %d' % (
+                '%s - - [%s] "%s %s" %d %d' % (
                     self.addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
