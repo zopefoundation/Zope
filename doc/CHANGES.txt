@@ -6,6 +6,13 @@ Zope Changes
 
   Releases
 
+    Zope 1.9
+
+      Bugs Fixed
+
+        - ZPublisher.Client used the obsolete rand module.
+
+
     Zope 1.9 beta 3
 
       New Features
