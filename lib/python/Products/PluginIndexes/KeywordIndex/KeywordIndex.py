@@ -19,11 +19,12 @@ from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
 
 from Products.PluginIndexes import PluggableIndex 
+
 from Products.PluginIndexes.common.UnIndex import UnIndex 
 
 _marker = []
 
-class KeywordIndex(UnIndex,Persistent, Implicit):
+class KeywordIndex(UnIndex):
 
     __implements__ = (PluggableIndex.PluggableIndexInterface,)
 

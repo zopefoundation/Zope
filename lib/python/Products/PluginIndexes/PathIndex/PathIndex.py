@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.21 2002/04/25 12:32:13 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.22 2002/04/25 12:44:02 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -23,12 +23,13 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree,OOSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet,difference,intersection,union
+from OFS.SimpleItem import SimpleItem
 from types import StringType, ListType, TupleType
 import re,warnings
 
 _marker = []
 
-class PathIndex(Persistent, Implicit):
+class PathIndex(Persistent, Implicit, SimpleItem):
     """ A path index stores all path components of the physical 
     path of an object: 
 

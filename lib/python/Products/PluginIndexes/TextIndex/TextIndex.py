@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.30 $'[11:-2]
+__version__ = '$Revision: 1.31 $'[11:-2]
 
 
 import  re
@@ -26,6 +26,7 @@ from Products.PluginIndexes.common.ResultList import ResultList
 from Products.PluginIndexes import PluggableIndex       
 from Products.PluginIndexes.common.util import parseIndexRequest
 
+from OFS.SimpleItem import SimpleItem
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IIBTree, IIBucket, IISet, IITreeSet
@@ -51,7 +52,7 @@ operator_dict = {'andnot': AndNot, 'and': And, 'or': Or,
                  '...': Near, 'near': Near,
                  AndNot: AndNot, And: And, Or: Or, Near: Near}
 
-class TextIndex(Persistent, Implicit):
+class TextIndex(Persistent, Implicit, SimpleItem):
     """Full-text index.
 
     There is a ZCatalog UML model that sheds some light on what is

@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -25,6 +25,7 @@ from types import StringType, ListType, IntType, TupleType
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IITreeSet, IISet, union, intersection
+from OFS.SimpleItem import SimpleItem
 import BTrees.Length
 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -32,7 +33,7 @@ import sys
 
 _marker = []
 
-class UnIndex(Persistent, Implicit):
+class UnIndex(Persistent, Implicit, SimpleItem):
     """UnIndex object interface"""
 
 
