@@ -34,7 +34,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."
-	lines = split(map_text, '\n')
+        lines = split(map_text, '\n')
         self.fixed_map = fixed_map = {}
         self.sub_map = sub_map = {}
         new_lines = []
@@ -49,7 +49,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     host, path = map(strip, split(line, '/', 1))
                 except:
                     raise 'LineError', 'Needs a slash between host and path'
-	        pp = filter(None, split(path, '/'))
+                pp = filter(None, split(path, '/'))
                 if pp:
                     obpath = pp[:]
                     if obpath[0] == 'VirtualHostBase':
@@ -158,7 +158,6 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
                     if at_end:
-                        pp = filter(None, pp)
                         request.setVirtualRoot(pp)
                         del stack[-2:]
                     break
@@ -203,7 +202,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
         parents.pop() # I don't belong there
 
         if len(name) > 1:
-            request.setVirtualRoot(split(name[1:], '/'))
+            request.setVirtualRoot(name)
         else:
             request.setVirtualRoot([])
         return parents.pop() # He'll get put back on

@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import re, sys, os,  urllib, time, whrandom, cgi
 from BaseRequest import BaseRequest
@@ -158,8 +158,8 @@ class HTTPRequest(BaseRequest):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
         if type(path) is type(''):
-            path = filter(None, path.split( '/'))
-        self._script[:] = map(quote, path)
+            path = path.split( '/')
+        self._script[:] = map(quote, filter(None, path))
         del self._steps[:]
         parents = other['PARENTS']
         if hard:
