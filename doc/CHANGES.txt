@@ -7,6 +7,10 @@ Zope Changes
   after Zope 2.5.1
 
     new Features:
+
+      - The getElementsByTagName method of STDOM (used by Structured Text)
+        would croak on most documents, especially those containing
+        unwrapped text nodes.  Fixed.
     
       - FileUpload objects now evaluate false when the have an empty file
         name. Making it easier to check for omitted file upload form fields.
