@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.11 1999/03/10 00:15:08 klm Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: DTtest.py,v 1.12 1999/03/22 23:19:42 jim Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -360,7 +360,7 @@ def test5():
         Select an affiliate to visit:<br>
         <UL>
         <!--#in affiliates-->
-           <LI><A HREF="<!--#var PARENT_URL-->/<!--#var ID-->/">
+           <LI><A HREF="<!--#var URL1-->/<!--#var ID-->/">
                <!--#var name--></A></LI>
            <!--#/in affiliates-->
         </UL>
@@ -368,10 +368,10 @@ def test5():
         <!--#/if affiliates-->
 
         <p>
-        <A HREF="<!--#var PARENT_URL-->/add_affiliate_form">Add an affiliate</A>
+        <A HREF="<!--#var URL1-->/add_affiliate_form">Add an affiliate</A>
         
         <!--#if affiliates-->
-        * <A HREF="<!--#var PARENT_URL-->/delete_affiliates_form">
+        * <A HREF="<!--#var URL1-->/delete_affiliates_form">
         Delete affiliates</A>
         <!--#/if affiliates-->
 
@@ -381,7 +381,7 @@ def test5():
         
         </html>''')
 
-    print html(affiliates=[], PARENT_URL='www')
+    print html(affiliates=[], URL1='www')
 
 def test6():
     def d(**kw): return kw

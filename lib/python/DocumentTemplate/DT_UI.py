@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.9 1999/03/10 00:15:07 klm Exp $''' 
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: DT_UI.py,v 1.10 1999/03/22 23:19:21 jim Exp $''' 
+__version__='$Revision: 1.10 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -108,7 +108,7 @@ HTML._manage_editForm = HTML(
     <BODY bgcolor="#FFFFFF">
     <!--#var document_template_edit_header-->
     
-    <FORM name="editform" ACTION="<!--#var PARENT_URL-->/manage_edit" METHOD="POST">
+    <FORM name="editform" ACTION="<!--#var URL1-->/manage_edit" METHOD="POST">
     <!--#var document_template_form_header-->
     Document template source:
     <center>
@@ -130,10 +130,10 @@ HTML._manage_editForm = HTML(
          <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" 
                 VALUE="<!--#var HTTP_REFERER-->">
       <!--#else HTTP_REFERER-->
-         <!--#if PARENT_URL-->
+         <!--#if URL1-->
            <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-                  VALUE="<!--#var PARENT_URL-->">
-         <!--#/if PARENT_URL-->
+                  VALUE="<!--#var URL1-->">
+         <!--#/if URL1-->
       <!--#/if HTTP_REFERER-->
     </center>
     </FORM>

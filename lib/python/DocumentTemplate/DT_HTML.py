@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.16 1999/03/18 15:07:03 brian Exp $"""
+$Id: DT_HTML.py,v 1.17 1999/03/22 23:18:56 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -222,14 +222,14 @@ class HTML(DT_String.String):
         everything else private.'''
         return self
 
-    def manage_editForm(self, PARENT_URL, REQUEST):
+    def manage_editForm(self, URL1, REQUEST):
         '''Display doc template editing form''' #"
         
         return self._manage_editForm(
             self,
             mapping=REQUEST,
             __str__=str(self),
-            PARENT_URL=PARENT_URL
+            URL1=URL1
             )
 
     manage_editDocument=manage=manage_editForm
@@ -268,7 +268,7 @@ class HTMLFile(FileMixin, HTML):
             self.cooked=self.cook()
         if REQUEST: return self.editConfirmation(self,REQUEST)
 
-    def manage_editForm(self, PARENT_URL, REQUEST):
+    def manage_editForm(self, URL1, REQUEST):
         '''Display doc template editing form'''
 
         return self._manage_editForm(mapping=REQUEST,
@@ -280,7 +280,7 @@ class HTMLFile(FileMixin, HTML):
                                      self.document_template_form_header,
                                      document_template_edit_footer=
                                      self.document_template_edit_footer,
-                                     PARENT_URL=PARENT_URL,
+                                     URL1=URL1,
                                      __str__=str(self),
                                      FactoryDefaultString=FactoryDefaultString,
                                      )

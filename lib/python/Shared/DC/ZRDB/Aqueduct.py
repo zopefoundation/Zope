@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.31 1999/03/10 00:15:44 klm Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: Aqueduct.py,v 1.32 1999/03/22 23:20:16 jim Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -178,9 +178,9 @@ class Searchable(BaseQuery):
         report=HTML(custom_default_report(self.id, result))
         return apply(report,(self,REQUEST),{self.id:result})
 
-    def index_html(self, PARENT_URL):
+    def index_html(self, URL1):
         " "
-        raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
+        raise 'Redirect', ("%s/manage_testForm" % URL1)
 
 class Composite:    
 
