@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.12 1997/09/26 22:17:36 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Aqueduct.py,v 1.13 1997/10/09 15:10:37 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -21,6 +21,8 @@ from cStringIO import StringIO
 from OFS import SimpleItem
 from AccessControl.Role import RoleManager
 from DocumentTemplate import HTML
+
+from string import strip
 
 dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
 
@@ -37,10 +39,17 @@ class BaseQuery(Persistent, SimpleItem.Item, Acquisition.Implicit, RoleManager):
 
     MissingArgumentError='Bad Request'
 
+    def _convert(self): self._arg=parse(self.arguments_src)
+
     def _argdata(self, REQUEST):
 
 	r={}
-	args=self._arg
+
+	try: args=self._arg
+	except:
+	    self._convert()
+	    args=self._arg
+
 	id=self.id
 	missing=[]
 
@@ -68,14 +77,20 @@ class BaseQuery(Persistent, SimpleItem.Item, Acquisition.Implicit, RoleManager):
 
 class Searchable(BaseQuery):
 
-    def _searchable_arguments(self): return self._arg
+    def _searchable_arguments(self):
+
+	try: return self._arg
+	except:
+	    self._convert()
+	    return self._arg
 
     def _searchable_result_columns(self): return self._col
 
     def manage_testForm(self, REQUEST):
 	"""Provide testing interface"""
 	input_src=default_input_form(self.title_or_id(),
-				     self._arg, 'manage_test')
+				     self._searchable_arguments(),
+				     'manage_test')
 	return HTML(input_src)(self, REQUEST)
 
     def manage_test(self, REQUEST):
@@ -224,7 +239,7 @@ def parse(text,
 	     parmre=regex.compile(
 		 '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
 	     qparmre=regex.compile(
-		 '\([\0- ]*\([^\0- =\"]+\)="\([^"]+\)\"\)'),
+		 '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
 	     ):
 
     if result is None: result = {}
@@ -343,6 +358,12 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.13  1997/10/09 15:10:37  jim
+# Added some attempts to provide backward compatibility with earlier
+# Principia version.
+#
+# Added support for empty string as default.
+#
 # Revision 1.12  1997/09/26 22:17:36  jim
 # more
 #
