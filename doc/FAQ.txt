@@ -1,6 +1,20 @@
 Zope Installation Frequently Asked Questions
 --------------------------------------------
 
+  Installing Zope
+
+    1. I am trying to build Zope on my BSD based system, but I
+       keep getting "symbol not found" errors and the build
+       scripts stop. What do I do?
+
+       On some BSD based systems (BSDI, BSD/OS), you need to edit
+       the Makefile.pre.in files in your Zope installation to add
+       -rdynamic to the LDSHARED makefile variable. On some systems
+       it may also be necessary to change the file named 'do.py'
+       located in the 'inst' directory of your Zope installation,
+       changing the line: do('make')  to: do('make -k').
+
+
   Starting/Accessing your Zope installation
 
     1. After installing Zope, I go to the URL in my web browser
