@@ -12,13 +12,29 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
 from time import time, gmtime, localtime, asctime
 from time import daylight, timezone, altzone, strftime
 from types import InstanceType, IntType, FloatType, StringType, UnicodeType
+
+from App.config import getConfiguration
+
+default_datefmt = None
+
+def getDefaultDateFormat():
+    global default_datefmt
+    if default_datefmt is None:
+        try:
+            default_datefmt = getConfiguration().datetime_format
+            return default_datefmt
+        except:
+            return 'us'
+    else:
+        return default_datefmt
+
 
 try:
     from time import tzname
@@ -37,9 +53,6 @@ class DateError( DateTimeError ):
 class TimeError( DateTimeError ):
     pass
 
-_default_datefmt = os.environ.get('DATETIME_FORMAT', "us").lower()
-if not _default_datefmt in ('us', 'international'):
-    raise ValueError, "DATETIME_FORMAT must be either 'us' or 'international'"
 
 # To control rounding errors, we round system time to the nearest
 # millisecond.  Then delicate calculations can rely on that the
@@ -648,9 +661,8 @@ class DateTime:
         timezones recognized by the DateTime module. Recognition of
         timezone names is case-insensitive.""" #'
 
-        datefmt = kw.get('datefmt', _default_datefmt)
-        assert datefmt in ('us', 'international')
-
+        datefmt = kw.get('datefmt', getDefaultDateFormat())
+        print datefmt
         d=t=s=None
         ac=len(args)
         millisecs = None
@@ -899,7 +911,7 @@ class DateTime:
         tz = self.localZone(ltm)
         return tz
 
-    def _parse(self,st, datefmt=_default_datefmt):
+    def _parse(self,st, datefmt=getDefaultDateFormat()):
         # Parse date-time components from a string
         month=year=tz=tm=None
         spaces        =self.space_chars
