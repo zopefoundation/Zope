@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.13 $
+# $Revision: 1.14 $
 __version__ = '0.1'
 
 import struct
@@ -16,7 +16,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB import utils
 from ZODB.referencesf import referencesf
-from ZODB import TimeStamp
+from ZODB.TimeStamp import TimeStamp
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
 # the Full and Minimal implementations.  It in turn inherits from
@@ -34,14 +34,9 @@ UNDOABLE_TRANSACTION = 'Y'
 PROTECTED_TRANSACTION = 'N'
 
 ZERO = '\0'*8
-DNE = '\377'*8                                    # does not exist
-
-
-
-class ObjectDoesNotExist(KeyError):
-    def __init__(self, msg, revid):
-        POSException.VersionError.__init__(self, msg, revid)
-        self.revid = revid
+#DNE = '\377'*8
+# DEBUGGING
+DNE = 'nonexist'                                  # does not exist
 
 
 
@@ -164,6 +159,8 @@ class Full(BerkeleyBase):
             self.__nextvid = utils.U64(vid[0])
         else:
             self.__nextvid = 0L
+        # DEBUGGING
+        self._nextserial = 0L
         
     def close(self):
         self._serials.close()
@@ -179,6 +176,9 @@ class Full(BerkeleyBase):
         BerkeleyBase.close(self)
 
     def _begin(self, tid, u, d, e):
+        # DEBUGGING
+        self._nextserial += 1
+        self._serial = utils.p64(self._nextserial)
         # Begin the current transaction.  Currently, this just makes sure that
         # the commit log is in the proper state.
         if self._commitlog is None:
@@ -187,11 +187,6 @@ class Full(BerkeleyBase):
             # files in that directory.
             self._commitlog = FullLog(dir=self._env.db_home)
         self._commitlog.start()
-
-    def _vote(self, transaction):
-        # From here on out, we promise to commit all the registered changes,
-        # so rewind and put our commit log in the PROMISED state.
-        self._commitlog.promise()
 
     def _finish(self, tid, u, d, e):
         # This is called from the storage interface's tpc_finish() method.
@@ -263,6 +258,9 @@ class Full(BerkeleyBase):
                         # changed for Zope 2.4, to make it more convenient to
                         # use.  Gotta stick with the backwards compatible
                         # version for now.
+                        #
+                        # FIXME: need to watch for two object revisions in the
+                        # same transaction and only bump the refcount once.
                         refdoids = []
                         referencesf(pickle, refdoids)
                         for roid in refdoids:
@@ -327,6 +325,9 @@ class Full(BerkeleyBase):
         c = None                                  # the currentVersions cursor
         self._lock_acquire()
         try:
+            # We can't abort the empty version, 'cause it ain't a version! :)
+            if not version:
+                raise POSException.VersionError
             # Let KeyErrors percolate up.  This is how we ensure that the
             # version we're aborting is not the empty string.
             vid = self._vids[version]
@@ -485,27 +486,15 @@ class Full(BerkeleyBase):
             # pickle pointer revid.
             rec = self._metadata[oid+revid]
             vid, nvrevid, lrevid = struct.unpack('>8s8s8s', rec[:24])
-            # If the object isn't living in a version, or if the version the
-            # object is living in is equal to the version that's being
-            # requested, then we can simply return the pickle referenced by
-            # the revid.
-            if vid == ZERO and version:
-                raise POSException.VersionError(
-                    'Object not found in version: %s' % version)
             if lrevid == DNE:
-                raise ObjectDoesNotExist('Object no longer exists', revid)
-            if vid == ZERO or self._versions[vid] == version:
+                raise KeyError, 'Object does not exist'
+            # If the object isn't living in a version, or if the version the
+            # object is living in is the one that was requested, we simply
+            # return the current revision's pickle.
+            if vid == ZERO or self._versions.get(vid) == version:
                 return self._pickles[oid+lrevid], revid
-            # Otherwise, we recognize that an object cannot be stored in more
-            # than one version at a time (although this may change if/when
-            # "Unlocked" versions are added).  So we return the non-version
-            # revision of the object.  Make sure the version is empty though.
-            if version:
-                if not self._vids.has_key(version):
-                    errmsg = 'Undefined version: %s' % version
-                else:
-                    errmsg = 'Object not found in version: %s' % version
-                raise POSException.VersionError(errmsg)
+            # The object was living in a version, but not the one requested.
+            # Semantics here are to return the non-version revision.
             lrevid = self._metadata[oid+nvrevid][16:24]
             return self._pickles[oid+lrevid], nvrevid
         finally:
@@ -613,13 +602,12 @@ class Full(BerkeleyBase):
             raise POSException.StorageTransactionError(self, transaction)
 
         newrevs = []
-        oids = []
         c = None
         self._lock_acquire()
         try:
             # First, make sure the transaction isn't protected by a pack.
-            status = self._txnMetadata[tid][1]
-            if status == PROTECTED_TRANSACTION:
+            status = self._txnMetadata[tid][0]
+            if status <> UNDOABLE_TRANSACTION:
                 raise POSException.UndoError, 'Transaction cannot be undone'
 
             # Calculate all the oids modified in the transaction
@@ -647,8 +635,10 @@ class Full(BerkeleyBase):
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
                         '>8s8s8s8s', self._metadata[oid+tid])
                     if prevrevid == ZERO:
-                        # We're undoing the object's creation
-                        newrevs.append((oid, vid+nvrevid+DNE+tid))
+                        # We're undoing the object's creation.  The only thing
+                        # to undo from there is the zombification of the
+                        # object, i.e. restore the current revision.
+                        newrevs.append((oid, vid+nvrevid+DNE+revid))
                     else:
                         newrevs.append((oid, self._metadata[oid+prevrevid]))
                 else:
@@ -656,35 +646,59 @@ class Full(BerkeleyBase):
                     # transaction previous to the current one, and the
                     # transaction previous to the one we want to undo.  If
                     # their lrevids are the same, it's undoable.
-                    target_prevrevid = self._metadata[oid+tid][24:]
-                    if target_prevrevid == ZERO:
-                        raise POSException.UndoError, 'Nothing to undo'
-                    target_metadata  = self._metadata[oid+target_prevrevid]
-                    target_lrevid    = target_metadata[16:24]
                     last_prevrevid = self._metadata[oid+revid][24:]
-                    last_lrevid    = self._metadata[oid+last_prevrevid][16:24]
-                    # BAW: Here's where application level conflict resolution,
-                    # or pickle equivalence testing would go.
-                    if target_lrevid <> last_lrevid:
+                    target_prevrevid = self._metadata[oid+tid][24:]
+                    if target_prevrevid == last_prevrevid == ZERO:
+                        # We're undoing the object's creation, so the only
+                        # thing to undo from there is the zombification of the
+                        # object, i.e. the last transaction for this object.
+                        vid, nvrevid = struct.unpack(
+                            '>8s8s', self._metadata[oid+tid][:16])
+                        newrevs.append((oid, vid+nvrevid+DNE+revid))
+                        continue
+                    elif target_prevrevid == ZERO or last_prevrevid == ZERO:
+                        # The object's revision is in it's initial creation
+                        # state but we're asking for an undo of something
+                        # other than the initial creation state.  No, no.
+                        raise POSException.UndoError, 'Undoing mismatch'
+                    last_lrevid     = self._metadata[oid+last_prevrevid][16:24]
+                    target_metadata = self._metadata[oid+target_prevrevid]
+                    target_lrevid   = target_metadata[16:24]
+                    # If the pickle pointers of the object's last revision
+                    # and the undo-target revision are the same, then the
+                    # transaction can be undone.  Note that we take a short
+                    # cut here, since we really want to test pickle equality,
+                    # but this is good enough for now.
+                    if target_lrevid == last_lrevid:
+                        newrevs.append((oid, target_metadata))
+                    # They weren't equal, but let's see if there are undos
+                    # waiting to be committed.
+                    elif target_lrevid == self._commitlog.get_prevrevid(oid):
+                        newrevs.append((oid, target_metadata))
+                    else:
                         raise POSException.UndoError, 'Cannot undo transaction'
-                    # So far so good
-                    newrevs.append((oid, target_metadata))
             # Okay, we've checked all the objects affected by the transaction
             # we're about to undo, and everything looks good.  So now we'll
             # write to the log the new object records we intend to commit.
+            oids = {}
             for oid, metadata in newrevs:
                 vid, nvrevid, lrevid, prevrevid = struct.unpack(
                     '>8s8s8s8s', metadata)
-                self._commitlog.write_moved_object(oid, vid, nvrevid, lrevid,
-                                                   prevrevid)
-                oids.append(oid)
-            return oids
+                self._commitlog.write_object_undo(oid, vid, nvrevid, lrevid,
+                                                  prevrevid)
+                # We're slightly inefficent here: if we make two undos to the
+                # same object during the same transaction, we'll write two
+                # records to the commit log.  This works because the last one
+                # will always overwrite previous ones, but it also means we'll
+                # see duplicate oids in this iteration.
+                oids[oid] = 1
+            return oids.keys()
         finally:
             if c:
                 c.close()
             self._lock_release()
 
-    def undoLog(self, first, last, filter=None):
+    def undoLog(self, first=0, last=-20, filter=None):
         # Get a list of transaction ids that can be undone, based on the
         # determination of the filter.  filter is a function which takes a
         # transaction description and returns true or false.
@@ -694,6 +708,11 @@ class Full(BerkeleyBase):
         # to implement undoInfo() because BaseStorage (which we eventually
         # inherit from) mixes in the UndoLogCompatible class which provides an
         # implementation written in terms of undoLog().
+        #
+        # Interface specifies that if last is < 0, its absolute value is the
+        # maximum number of transactions to return.
+        if last < 0:
+            last = abs(last)
         c = None                                  # tnxMetadata cursor
         txnDescriptions = []                      # the return value
         i = 0                                     # first <= i < last
@@ -704,16 +723,17 @@ class Full(BerkeleyBase):
             # can stop early if we find a transaction that is earlier than a
             # pack.  We still have the potential to scan through all the
             # transactions.
-            rec = c.get_last()
+            rec = c.last()
             while rec and i < last:
                 tid, data = rec
+                rec = c.prev()
                 status = data[0]
                 if status == PROTECTED_TRANSACTION:
                     break
-                userlen, desclen = struct.unpack('>II', data[1:17])
-                user = data[17:17+userlen]
-                desc = data[17+userlen:17+userlen+desclen]
-                ext = data[17+userlen+desclen:]
+                userlen, desclen = struct.unpack('>II', data[1:9])
+                user = data[9:9+userlen]
+                desc = data[9+userlen:9+userlen+desclen]
+                ext = data[9+userlen+desclen:]
                 # Create a dictionary for the TransactionDescription
                 txndesc = {'id'         : tid,
                            'time'       : TimeStamp(tid).timeTime(),
@@ -737,8 +757,6 @@ class Full(BerkeleyBase):
                     if i >= first:
                         txnDescriptions.append(txndesc)
                     i = i + 1
-                # And get the previous record
-                rec = c.get_prev()
             return txnDescriptions
         finally:
             if c:
