@@ -1,17 +1,61 @@
+##############################################################################
+#
+# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#   o Redistributions of source code must retain the above copyright
+#     notice, this list of conditions, and the disclaimer that follows.
+# 
+#   o Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions, and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+# 
+#   o All advertising materials mentioning features or use of this
+#     software must display the following acknowledgement:
+# 
+#       This product includes software developed by Digital Creations
+#       and its contributors.
+# 
+#   o Neither the name of Digital Creations nor the names of its
+#     contributors may be used to endorse or promote products derived
+#     from this software without specific prior written permission.
+# 
+# 
+# THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS AND CONTRIBUTORS *AS IS*
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL
+# CREATIONS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+# OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+# TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+# DAMAGE.
+#
+# 
+# If you have questions regarding this software, contact:
+#
+#   Digital Creations, L.C.
+#   910 Princess Ann Street
+#   Fredericksburge, Virginia  22401
+#
+#   info@digicool.com
+#
+#   (540) 371-6909
+#
+##############################################################################
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.14 1998/05/13 21:46:51 jim Exp $'
-
-############################################################################
-#     Copyright 
-#
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.  
-#
-############################################################################ 
-__version__='$Revision: 1.14 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.15 1998/09/02 14:35:56 jim Exp $'
+__version__='$Revision: 1.15 $'[11:-2]
 
 from string import join, find, split, translate
 import sys, gparse, string
@@ -128,70 +172,3 @@ class Eval:
 compiled_getattr=compile(
     'def _getattr(o,n): return __guarded_getattr__(_vars,o,n)',
     '<string>','exec')
-
-############################################################################
-#
-# $Log: VSEval.py,v $
-# Revision 1.14  1998/05/13 21:46:51  jim
-# The last change shouldn't have been made here.  It should have been in DT_Util.
-#
-# Revision 1.13  1998/05/13 21:10:30  jim
-# Changed the way that '_' is handled.  It is now an alias for the template dict.
-#
-# Revision 1.12  1998/04/02 17:37:39  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.11  1998/03/12 21:37:01  jim
-# Added _getattr.
-#
-# Revision 1.10  1998/03/10 17:30:41  jim
-# Newlines (and carriage-returns are now allowed in expressions.
-#
-# Revision 1.9  1997/11/21 16:47:11  jim
-# Got rid of non-needed and non-portable import of new.
-#
-# Revision 1.8  1997/11/11 18:13:49  jim
-# updated expr machinery to use parse-tree manipulation
-#
-# Revision 1.7  1997/11/05 22:42:31  jim
-# Changed careful_mul to be compatible with recent changes.
-#
-# Revision 1.6  1997/10/29 21:31:02  jim
-# Changed namespace name to _vars.
-#
-# Revision 1.5  1997/10/29 17:00:11  jim
-# Made namespace, __env__ public.
-#
-# Revision 1.4  1997/10/29 16:17:27  jim
-# Added support for overriding getslice.
-#
-# Revision 1.3  1997/10/28 21:51:20  jim
-# Removed validate attribute.
-# Added template dict to override arguments.
-#
-# Revision 1.2  1997/10/27 17:40:35  jim
-# Added some new experimental validation machinery.
-# This is, still a work in progress.
-#
-# Revision 1.1  1997/09/22 14:41:13  jim
-# Initial revision.
-#

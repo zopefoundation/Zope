@@ -1,49 +1,45 @@
-#!/bin/env python
-############################################################################## 
+##############################################################################
 #
-#     Copyright 
+# Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are
+# met:
+# 
+#   o Redistributions of source code must retain the above copyright
+#     notice, this list of conditions, and the disclaimer that follows.
+# 
+#   o Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions, and the following disclaimer in
+#     the documentation and/or other materials provided with the
+#     distribution.
+# 
+#   o All advertising materials mentioning features or use of this
+#     software must display the following acknowledgement:
+# 
+#       This product includes software developed by Digital Creations
+#       and its contributors.
+# 
+#   o Neither the name of Digital Creations nor the names of its
+#     contributors may be used to endorse or promote products derived
+#     from this software without specific prior written permission.
+# 
+# 
+# THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS AND CONTRIBUTORS *AS IS*
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+# TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+# PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL
+# CREATIONS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+# OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+# TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+# DAMAGE.
 #
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.  Copyright in this software is owned by DCLC,
-#       unless otherwise indicated. Permission to use, copy and
-#       distribute this software is hereby granted, provided that the
-#       above copyright notice appear in all copies and that both that
-#       copyright notice and this permission notice appear. Note that
-#       any product, process or technology described in this software
-#       may be the subject of other Intellectual Property rights
-#       reserved by Digital Creations, L.C. and are not licensed
-#       hereunder.
-#
-#     Trademarks 
-#
-#       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-#       All other trademarks are owned by their respective companies. 
-#
-#     No Warranty 
-#
-#       The software is provided "as is" without warranty of any kind,
-#       either express or implied, including, but not limited to, the
-#       implied warranties of merchantability, fitness for a particular
-#       purpose, or non-infringement. This software could include
-#       technical inaccuracies or typographical errors. Changes are
-#       periodically made to the software; these changes will be
-#       incorporated in new editions of the software. DCLC may make
-#       improvements and/or changes in this software at any time
-#       without notice.
-#
-#     Limitation Of Liability 
-#
-#       In no event will DCLC be liable for direct, indirect, special,
-#       incidental, economic, cover, or consequential damages arising
-#       out of the use of or inability to use this software even if
-#       advised of the possibility of such damages. Some states do not
-#       allow the exclusion or limitation of implied warranties or
-#       limitation of liability for incidental or consequential
-#       damages, so the above limitation or exclusion may not apply to
-#       you.
-#  
-#
+# 
 # If you have questions regarding this software, contact:
 #
 #   Digital Creations, L.C.
@@ -54,12 +50,12 @@
 #
 #   (540) 371-6909
 #
-############################################################################## 
+##############################################################################
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.14 1998/08/04 13:54:04 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.15 1998/09/02 14:35:58 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import string, sys
 from string import join
@@ -232,80 +228,3 @@ def render_blocks(blocks, md):
     elif l==1: return rendered[0]
     return join(rendered, '')
     return rendered
-
-
-############################################################################## 
-#
-# $Log: pDocumentTemplate.py,v $
-# Revision 1.14  1998/08/04 13:54:04  jim
-# Added has_key
-#
-# Revision 1.13  1998/05/14 16:27:49  jim
-# Optimized TemplateDict __getitem__ by removing some exception usage
-# and by adding test to short circuit rendering of common simple objects
-# like strings and numbers.
-#
-# Revision 1.12  1998/05/13 20:36:02  jim
-# Slightly simpler solution to exception dilema.
-#
-# Revision 1.11  1998/05/13 20:28:02  jim
-# Fixed bug in handling conditional tags.
-#
-# Revision 1.10  1998/04/08 17:47:48  jim
-# Fixed bug in calling validation method.
-#
-# Revision 1.9  1998/04/02 19:06:39  jim
-# *** empty log message ***
-#
-# Revision 1.8  1998/04/02 17:37:40  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.7  1997/11/19 15:42:48  jim
-# added _ prefix to push and pop methods to make them private
-#
-# Revision 1.6  1997/11/11 18:39:29  jim
-# Added a little compatibility with cDocumentTemplate.
-#
-# Revision 1.5  1997/10/29 16:59:28  jim
-# Changed name of get to getitem.
-#
-# Revision 1.4  1997/10/28 21:52:06  jim
-# Changed to not call document templates if not calling other functions.
-#
-# Revision 1.3  1997/10/27 17:42:07  jim
-# Removed old validation machinery.
-#
-# Made some changes to synchonize with cDocumentTemplate.
-#
-# Added a get method on TemplateDicts to do lookup without
-# (non-DocumentTemplate) method calls.
-#
-# Revision 1.2  1997/09/02 19:02:51  jim
-# *** empty log message ***
-#
-# Revision 1.1  1997/08/27 18:55:47  jim
-# initial
-#
-# Revision 1.1  1997/08/13 13:24:58  jim
-# *** empty log message ***
-#
-#
