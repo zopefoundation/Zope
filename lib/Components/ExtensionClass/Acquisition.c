@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.40 2000/06/12 17:22:28 brian Exp $
+  $Id: Acquisition.c,v 1.41 2000/08/18 15:02:02 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -167,7 +167,8 @@ __of__(PyObject *inst, PyObject *parent)
   PyTuple_SET_ITEM(t,0,NULL);
   Py_DECREF(t);
 
-  if (r->ob_refcnt==1
+  if (r 
+      && r->ob_refcnt==1
       && isWrapper(r) 
       && WRAPPER(r)->container && isWrapper(WRAPPER(r)->container)
       )
@@ -1383,7 +1384,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.40 $";
+  char *rev="$Revision: 1.41 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1402,7 +1403,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.40 2000/06/12 17:22:28 brian Exp $\n",
+	   "$Id: Acquisition.c,v 1.41 2000/08/18 15:02:02 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
