@@ -25,7 +25,7 @@ function toggleSelect() {
 //-->
 </script>
 
-<dtml-let lockedobjs="findLockedObjects(frompath=REQUEST.get('frompath',''))">
+<dtml-let lockedobjs="REQUEST.form.has_key('frompath','') and findLockedObjects(frompath=REQUEST.get('frompath','')) or []">
 
 <dtml-if lockedobjs>
  <p class="std-text">All locked objects
