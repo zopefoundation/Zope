@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -298,7 +298,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
 
         raise 'Forbidden', (
             'You are not authorized to change <em>%s</em> because you '
-            'do not have proxy roles.\n<!--%s, %s>' % (self.__name__, u, roles))
+            'do not have proxy roles.\n<!--%s, %s-->' % (self.__name__, u, roles))
             
 
     def manage_proxy(self, roles=(), REQUEST=None):

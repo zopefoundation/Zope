@@ -38,7 +38,7 @@ td {
   font-size: 10pt;
   color: black;
 }
->
+-->
 </style>
 
 <dtml-with expr="_.namespace(valid_roles=valid_roles())">

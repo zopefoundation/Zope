@@ -15,7 +15,7 @@ and will be accessible again if the product is reinstalled.
 
 <!-- 
   <dtml-var info> 
-  >
+-->
 
 </BODY>
 </HTML>
