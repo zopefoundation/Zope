@@ -10,15 +10,16 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''short description
+"""
+$Id: Undo.py,v 1.32 2002/10/03 18:28:54 jeremy Exp $"""
+__version__='$Revision: 1.32 $'[11:-2]
 
-$Id: Undo.py,v 1.31 2002/08/14 21:31:40 mj Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
-
-import Globals, ExtensionClass
-from DateTime import DateTime
-from AccessControl import getSecurityManager
 import base64
+
+from AccessControl import getSecurityManager
+from DateTime import DateTime
+import Globals, ExtensionClass
+from ZopeUndo.Prefix import Prefix
 
 class UndoSupport(ExtensionClass.Base):
 
@@ -126,21 +127,6 @@ class UndoSupport(ExtensionClass.Base):
         return ''
 
 Globals.default__class_init__(UndoSupport)
-
-
-class Prefix:
-
-    __no_side_effects__=1
-
-    def __init__(self, path):
-        self.value = len(path), path
-
-    def __cmp__(self, o):
-        l,v = self.value
-        rval = cmp(o[:l],v)
-        return rval
-
-
 
 ########################################################################
 # Blech, need this cause binascii.b2a_base64 is too pickly
