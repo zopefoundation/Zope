@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -169,12 +169,22 @@ class _cache:
            'US/Arizona','US/Central','US/Eastern','US/East-Indiana',
            'US/Hawaii','US/Indiana-Starke','US/Michigan',
            'US/Mountain','US/Pacific','US/Samoa','UTC','UCT','GMT',
+
            'GMT+0100','GMT+0200','GMT+0300','GMT+0400','GMT+0500',
            'GMT+0600','GMT+0700','GMT+0800','GMT+0900','GMT+1000',
            'GMT+1100','GMT+1200','GMT+1300','GMT-0100','GMT-0200',
            'GMT-0300','GMT-0400','GMT-0500','GMT-0600','GMT-0700',
            'GMT-0800','GMT-0900','GMT-1000','GMT-1100','GMT-1200',
            'GMT+1',
+
+           'GMT+0130', 'GMT+0230', 'GMT+0330', 'GMT+0430', 'GMT+0530',
+           'GMT+0630', 'GMT+0730', 'GMT+0830', 'GMT+0930', 'GMT+1030',
+           'GMT+1130', 'GMT+1230',
+
+           'GMT-0130', 'GMT-0230', 'GMT-0330', 'GMT-0430', 'GMT-0530',
+           'GMT-0630', 'GMT-0730', 'GMT-0830', 'GMT-0930', 'GMT-1030',
+           'GMT-1130', 'GMT-1230',
+
            'UT','BST','CDT','MEST','SST','FST','WADT','EADT','NZDT',
            'WET','WAT','AT','AST','NT','IDLW','CET','MET',
            'MEWT','SWT','FWT','EET','BT','ZP4','ZP5','ZP6',
@@ -212,7 +222,7 @@ class _cache:
            'gb-eire':'GB-Eire','gmt':'GMT',
 
            'gmt+0000':'GMT+0', 'gmt+0':'GMT+0',
-           'gmt+0930':'GMT+0930',
+
 
            'gmt+0100':'GMT+1', 'gmt+0200':'GMT+2', 'gmt+0300':'GMT+3',
            'gmt+0400':'GMT+4', 'gmt+0500':'GMT+5', 'gmt+0600':'GMT+6',
@@ -233,6 +243,32 @@ class _cache:
            'gmt-4': 'GMT-4', 'gmt-5': 'GMT-5', 'gmt-6': 'GMT-6',
            'gmt-7': 'GMT-7', 'gmt-8': 'GMT-8', 'gmt-9': 'GMT-9',
            'gmt-10':'GMT-10','gmt-11':'GMT-11','gmt-12':'GMT-12',
+
+           'gmt+130':'GMT+0130',  'gmt+0130':'GMT+0130',
+           'gmt+230':'GMT+0230',  'gmt+0230':'GMT+0230',
+           'gmt+330':'GMT+0330',  'gmt+0330':'GMT+0330',
+           'gmt+430':'GMT+0430',  'gmt+0430':'GMT+0430',           
+           'gmt+530':'GMT+0530',  'gmt+0530':'GMT+0530',
+           'gmt+630':'GMT+0630',  'gmt+0630':'GMT+0630',
+           'gmt+730':'GMT+0730',  'gmt+0730':'GMT+0730',
+           'gmt+830':'GMT+0830',  'gmt+0830':'GMT+0830',           
+           'gmt+930':'GMT+0930',  'gmt+0930':'GMT+0930',
+           'gmt+1030':'GMT+1030',
+           'gmt+1130':'GMT+1130',
+           'gmt+1230':'GMT+1230',      
+
+           'gmt-130':'GMT-0130',  'gmt-0130':'GMT-0130',
+           'gmt-230':'GMT-0230',  'gmt-0230':'GMT-0230',
+           'gmt-330':'GMT-0330',  'gmt-0330':'GMT-0330',
+           'gmt-430':'GMT-0430',  'gmt-0430':'GMT-0430',           
+           'gmt-530':'GMT-0530',  'gmt-0530':'GMT-0530',
+           'gmt-630':'GMT-0630',  'gmt-0630':'GMT-0630',
+           'gmt-730':'GMT-0730',  'gmt-0730':'GMT-0730',
+           'gmt-830':'GMT-0830',  'gmt-0830':'GMT-0830',           
+           'gmt-930':'GMT-0930',  'gmt-0930':'GMT-0930',
+           'gmt-1030':'GMT-1030',
+           'gmt-1130':'GMT-1130',
+           'gmt-1230':'GMT-1230',
 
            'greenwich':'Greenwich','hongkong':'Hongkong',
            'iceland':'Iceland','iran':'Iran','israel':'Israel',
