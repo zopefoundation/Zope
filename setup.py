@@ -1081,6 +1081,20 @@ setup(
     )
 
 
+setup(
+    name='Five',
+    author='Martijn Faassen',
+
+    packages=['Products.Five', 'Products.Five.tests'],
+    data_files=[['Products/Five', ['Products/Five/*']],
+                ['Products/Five/demo', ['Products/Five/demo/*']],
+                ['Products/Five/doc', ['Products/Five/doc/*']],
+                ['Products/Five/skel', ['Products/Five/skel/*']],
+                ['Products/Five/tests', ['Products/Five/tests/*']],
+                ],
+    )
+
+
 
 # Zope 3 / Five integration layer support. Note that in addition to the
 # Five package itself, we also pull in several modules from the Zope 3
@@ -1278,21 +1292,6 @@ setup(name="zopex30",
       packages = packages,
       distclass = MyDistribution,
       )
-
-
-#setup(
-#    name='Five',
-#    author='Martijn Faassen',
-#
-#    packages=['Products.Five'],
-#    data_files=[['Products/Five', ['Products/Five/*']],
-#                ['Products/Five/demo', ['Products/Five/demo/*']],
-#                ['Products/Five/doc', ['Products/Five/doc/*']],
-#                ['Products/Five/skel', ['Products/Five/skel/*']],
-#                ['Products/Five/tests', ['Products/Five/tests/*']],
-#                ],
-#    )
-
 
 
 
