@@ -101,6 +101,13 @@ Zope Changes
           Images. As a by product, RESPONSE.write now works better in
           ZServer.
 
+	- DTML entity references can now include dot-separated
+          var tag *options*, as in: '&dtml.url_quote-foo;'
+
+        - There is a new 'url' option on the DTML var tag that causes
+          absolute_url to be called on the displayed value.  This
+          allows entity references like: '&dtml.url-foo;'
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low

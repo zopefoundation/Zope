@@ -174,6 +174,9 @@ __doc__='''Variable insertion parameters
        'newline_to_br' -- Convert newlines and carriage-return and
        newline combinations to break tags.
 
+       'url' -- Get the absolute URL of the object by calling it\'s
+       'absolute_url' method, if it has one.
+
     Truncation
 
        The attributes 'size' and 'etc'  can be used to truncate long
@@ -195,8 +198,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.30 1999/08/03 16:40:27 jim Exp $'
-__version__='$Revision: 1.30 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.31 1999/10/22 17:32:25 jim Exp $'
+__version__='$Revision: 1.31 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -212,7 +215,7 @@ class Var:
                             capitalize=1, spacify=1, null='', fmt='s',
                             size=0, etc='...', thousands_commas=1,
                             html_quote=1, url_quote=1, sql_quote=1,
-                            newline_to_br=1)
+                            newline_to_br=1, url=1)
         self.args=args
         
         self.modifiers=tuple(
@@ -248,6 +251,7 @@ class Var:
             # Treat None as special case wrt null
             return args['null']
             
+        if have_arg('url'): val=val.absolute_url()
 
         # handle special formats defined using fmt= first
         if have_arg('fmt'):
