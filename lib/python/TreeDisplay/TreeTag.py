@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.18 1997/12/11 15:28:24 jeffrey Exp $'
-__version__='$Revision: 1.18 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.19 1997/12/18 16:45:43 jeffrey Exp $'
+__version__='$Revision: 1.19 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -463,9 +463,9 @@ def tpValuesIds(self, branches):
     return r
     
 
-icoSpace='<IMG SRC="%s/TreeDisplay/Blank_icon.gif" BORDER="0">' % SOFTWARE_URL
-icoPlus ='<IMG SRC="%s/TreeDisplay/Plus_icon.gif" BORDER="0">' % SOFTWARE_URL
-icoMinus='<IMG SRC="%s/TreeDisplay/Minus_icon.gif" BORDER="0">' % SOFTWARE_URL
+icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
+icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'
+icoMinus='<IMG SRC="Minus_icon" BORDER="0">'
 
 
 

@@ -16,13 +16,13 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.8 1997/12/12 21:49:44 brian Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: SimpleItem.py,v 1.9 1997/12/18 16:45:42 jeffrey Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
 from CopySupport import CopySource
-
+from ImageFile import ImageFile
 
 class Item(CopySource):
 
@@ -30,13 +30,18 @@ class Item(CopySource):
 
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
-    icon='App/arrow.jpg'
+    icon='ItemIcon'
+    ItemIcon=ImageFile('App/www/arrow.jpg')
 
     # Meta type used for selecting all objects of a given type.
     meta_type='simple item'
 
     # Default title.  
     title=''
+
+    # cute little tab images
+    tabs_rtab=ImageFile('App/www/rtab.gif')
+    tabs_ltab=ImageFile('App/www/ltab.gif')
 
     manage_tabs   =Globals.HTMLFile('App/manage_tabs')
     manage_info   =Globals.HTMLFile('App/manage_info')
@@ -76,7 +81,7 @@ class Item(CopySource):
 
     def tpValues(self): return ()
 
-    _manage_editedDialog=Globals.HTMLFile('OFS/editedDialog')
+    _manage_editedDialog=Globals.HTMLFile('editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
 	return apply(self._manage_editedDialog,(self, REQUEST), args)
 
@@ -119,6 +124,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.9  1997/12/18 16:45:42  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.8  1997/12/12 21:49:44  brian
 # ui update
 #

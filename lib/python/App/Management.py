@@ -1,21 +1,26 @@
 """Standard management interface support
 
-$Id: Management.py,v 1.7 1997/12/05 17:10:46 brian Exp $"""
+$Id: Management.py,v 1.8 1997/12/18 16:45:30 jeffrey Exp $"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys,Globals
 from Dialogs import MessageDialog
 from Globals import HTMLFile
 from Undo import UndoSupport
-
-
+from ImageFile import ImageFile
 
 
 class Management(UndoSupport):
     """Management support"""
-    manage          =HTMLFile('App/manage')
-    manage_menu     =HTMLFile('App/menu')
-    manage_tabs     =HTMLFile('App/manage_tabs')
-    manage_copyright=HTMLFile('App/copyright')
+    # cute little tab images
+    tabs_rtab=ImageFile('www/rtab.gif', globals())
+    tabs_ltab=ImageFile('www/ltab.gif', globals())
+
+    manage          =HTMLFile('manage', globals())
+    manage_menu     =HTMLFile('menu', globals())
+    manage_tabs     =HTMLFile('manage_tabs', globals())
+    manage_copyright=HTMLFile('copyright', globals())
     manage_options  =()
+
+    PyPoweredSmall_Gif=ImageFile('www/PythonPoweredSmall.gif', globals())

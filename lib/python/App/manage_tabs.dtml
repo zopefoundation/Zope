@@ -6,8 +6,8 @@
   <!--#if expr="_vars['PATH_INFO'][-(_.len(action)):]==action"-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
   <FONT SIZE="-1">
-  <IMG ALIGN="LEFT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/ltab.gif">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/rtab.gif">
+  <IMG ALIGN="LEFT" HSPACE="0" SRC="tabs_ltab">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="tabs_rtab">
   <STRONG>
     <!--#if action-->
     <A HREF="<!--#var action-->"><!--#var label--></A>
@@ -21,8 +21,8 @@
   <!--#else-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
   <FONT SIZE="-1">
-  <IMG ALIGN="LEFT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/ltab.gif">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/rtab.gif">
+  <IMG ALIGN="LEFT" HSPACE="0" SRC="tabs_ltab">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="tabs_rtab">
   <!--#if action-->
     <A HREF="<!--#var action-->"><!--#var label--></A>
     <!--#else action-->
@@ -40,7 +40,7 @@
 <TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" 
+  <IMG SRC="<!--#var icon-->" 
        ALT="<!--#var meta_type-->" BORDER="0">
   <STRONG>
   <!--#if meta_type-->

@@ -1,18 +1,20 @@
 """Document object"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
 import SimpleItem, regex
 import Acquisition
+from ImageFile import ImageFile
 
 class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	       Acquisition.Explicit):
     """Document object"""
     meta_type      ='Document'
-    icon           ='OFS/Document_icon.gif'
+    icon='DocumentIcon'
+    DocumentIcon=ImageFile('www/Document_icon.gif', globals())
     __state_names__=HTML.__state_names__+('title','__roles__')
 
     # Documents masquerade as functions:
@@ -58,8 +60,8 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	try: return md.AUTHENTICATED_USER.hasRole(roles)
 	except AttributeError: return 0
 
-    manage_editForm=HTMLFile('OFS/documentEdit')
-    manage_uploadForm=HTMLFile('OFS/documentUpload')
+    manage_editForm=HTMLFile('documentEdit', globals())
+    manage_uploadForm=HTMLFile('documentUpload', globals())
     manage=manage_main=manage_editDocument=manage_editForm
 
     def manage_edit(self,data,title,acl_type='A',acl_roles=[],SUBMIT='Change',
@@ -117,7 +119,7 @@ class DocumentHandler:
     """Document object handler mixin"""
     #meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
 
-    manage_addDocumentForm=HTMLFile('OFS/documentAdd')
+    manage_addDocumentForm=HTMLFile('documentAdd', globals())
 
     def manage_addDocument(self,id,title='',file='',
 			   acl_type='A',acl_roles=[],REQUEST=None):

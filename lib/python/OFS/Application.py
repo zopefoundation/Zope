@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.26 1997/12/17 16:45:26 jim Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: Application.py,v 1.27 1997/12/18 16:45:38 jeffrey Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -42,7 +42,7 @@ class Application(Folder.Folder):
 #     'action':'manage_help',   'target':'_new'},
     )
 
-    manage_rolesForm=Globals.HTMLFile('OFS/rolesForm')
+    manage_rolesForm=Globals.HTMLFile('rolesForm', globals())
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
@@ -235,6 +235,9 @@ def install_products():
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.27  1997/12/18 16:45:38  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.26  1997/12/17 16:45:26  jim
 # initial_products is dead!
 #

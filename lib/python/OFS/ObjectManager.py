@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.24 1997/12/16 20:04:43 jim Exp $"""
+$Id: ObjectManager.py,v 1.25 1997/12/18 16:45:41 jeffrey Exp $"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -16,6 +16,7 @@ from urllib import quote
 from DocumentTemplate import html_quote
 from cgi_module_publisher import type_converters
 from DateTime import DateTime
+from ImageFile import ImageFile
 
 class ObjectManager(Acquirer,Management,Persistent):
     """Generic object manager
@@ -27,12 +28,17 @@ class ObjectManager(Acquirer,Management,Persistent):
     meta_types = dynamic_meta_types = ()
     id       ='default'
     title=''
-    icon       ='OFS/Folder_icon.gif'
+    icon='FolderIcon'
+    FolderIcon=ImageFile('www/Folder_icon.gif', globals())
     _objects   =()
     _properties =({'id':'title', 'type': 'string'},)
 
-    manage_main          =HTMLFile('OFS/main')
-    manage_propertiesForm=HTMLFile('OFS/properties')
+    manage_main          =HTMLFile('main', globals())
+    manage_propertiesForm=HTMLFile('properties', globals())
+
+    Blank_icon=ImageFile('TreeDisplay/www/Blank_icon.gif')
+    Plus_icon=ImageFile('TreeDisplay/www/Plus_icon.gif')
+    Minus_icon=ImageFile('TreeDisplay/www/Minus_icon.gif')
 
     manage_options=(
     {'icon':icon,              'label':'Objects',
@@ -455,6 +461,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.25  1997/12/18 16:45:41  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.24  1997/12/16 20:04:43  jim
 # Modified copying code to set validClipData in manage_main so that
 # the paste button shows up after copy.

@@ -31,7 +31,7 @@
   <!--#/if title-->
   </A> 
   <!--#if modified_in_session-->
-  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/modified.gif"
+  <IMG SRC="Modified_Gif"
    ALT="This item has been modified in a session">
   <!--#/if modified_in_session-->
   </TD>

@@ -5,13 +5,14 @@ import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
+from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.19 1997/12/12 22:05:18 brian Exp $ 
-__version__ = "$Revision: 1.19 $"[11:-2]
+#$Id: MailHost.py,v 1.20 1997/12/18 16:45:37 jeffrey Exp $ 
+__version__ = "$Revision: 1.20 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
-addForm=HTMLFile('MailHost/addMailHost_form',localhost=gethostname())
+addForm=HTMLFile('addMailHost_form', globals(), localhost=gethostname())
 def add(self, id='aMailHost', title='Some mail thing', smtp_host=None, 
         localhost='localhost', smtp_port=25, acl_type='A',acl_roles=[], 
         REQUEST=None):
@@ -29,9 +30,10 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
                RoleManager):
     'a mailhost...?'
     meta_type='Mail Host'
-    manage=manage_main=HTMLFile('MailHost/manageMailHost')
+    manage=manage_main=HTMLFile('manageMailHost', globals())
     index_html=None
-    icon="MailHost/MailHost_icon.gif"
+    icon='MHIcon'
+    MHIcon=ImageFile("www/MailHost_icon.gif", globals())
 
     manage_options=({'icon':'', 'label':'Edit',
 		     'action':'manage_main', 'target':'manage_main',
@@ -225,6 +227,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.20  1997/12/18 16:45:37  jeffrey
+#changeover to new ImageFile and HTMLFile handling
+#
 #Revision 1.19  1997/12/12 22:05:18  brian
 #ui update
 #

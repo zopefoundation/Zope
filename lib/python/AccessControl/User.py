@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -12,7 +12,7 @@ from DocumentTemplate import HTML
 from Globals import MessageDialog
 from base64 import decodestring
 from string import join,strip,split,lower
-
+from ImageFile import ImageFile
 
 
 class SafeDtml(HTML):
@@ -93,13 +93,14 @@ class UserFolder(Persistent, Item, Implicit, Management):
     meta_type='User Folder'
     id       ='acl_users'
     title    ='User Folder'
-    icon     ='AccessControl/UserFolder_icon.gif'
+    icon='UserFolderIcon'
+    UserFolderIcon=ImageFile('www/UserFolder_icon.gif', globals())
 
     isPrincipiaFolderish=1
     isAUserFolder=1
 
-    manage_main=Globals.HTMLFile('AccessControl/UserFolder_manage_main')
-    _editForm  =Globals.HTMLFile('AccessControl/UserFolder_manage_editForm')
+    manage_main=Globals.HTMLFile('UserFolder_manage_main', globals())
+    _editForm  =Globals.HTMLFile('UserFolder_manage_editForm', globals())
     manage=manage_main
     #index_html =manage_main
 
@@ -265,6 +266,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.22  1997/12/18 16:45:28  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.21  1997/12/18 13:34:04  jim
 # Changed PersistentMapping import
 #

@@ -1,6 +1,6 @@
 """Access control objects"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 from Persistence import Persistent
@@ -8,7 +8,7 @@ from DocumentTemplate import HTML
 from Globals import MessageDialog
 from Acquisition import Acquirer
 from string import join, strip, split
-
+from ImageFile import ImageFile
 
 
 class SafeDtml(HTML):
@@ -42,7 +42,8 @@ class ACL(Persistent, Acquirer):
 
     id         ='AccessControl'
     title      ='Access Control'
-    icon       ='AccessControl/AccessControl_icon.gif'
+    icon='AccessControlIcon'
+    AccessControlIcon=ImageFile('www/AccessControl_icon.gif', globals())
 
     _groupsForm=SafeDtml('groupsForm')
     _groupForm =SafeDtml('groupForm')

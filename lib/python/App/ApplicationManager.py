@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -7,7 +7,7 @@ from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
 from OFS import SimpleItem
-
+from ImageFile import ImageFile
 
 
 
@@ -15,9 +15,9 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     """System management"""
     __roles__=['manage',]
 
-    manage=manage_main=HTMLFile('App/appMain')
-    manage_packForm=HTMLFile('App/pack')
-    manage_undoForm=HTMLFile('App/undo')
+    manage=manage_main=HTMLFile('appMain', globals())
+    manage_packForm=HTMLFile('pack', globals())
+    manage_undoForm=HTMLFile('undo', globals())
     manage=manage_main
 
     manage_options=(
@@ -34,7 +34,9 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     id        ='Control_Panel'
     name=title='Control Panel'
     meta_type ='Control Panel'
-    icon      ='OFS/ControlPanel_icon.gif'
+    icon='Icon'
+    Icon      =ImageFile('OFS/www/ControlPanel_icon.gif')
+
     process_id=os.getpid()
     process_start=int(time.time())
 

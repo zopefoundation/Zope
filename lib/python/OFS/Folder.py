@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.24 1997/12/12 21:53:05 brian Exp $"""
+$Id: Folder.py,v 1.25 1997/12/18 16:45:40 jeffrey Exp $"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -17,7 +17,7 @@ import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
 import Image
-
+from ImageFile import ImageFile
 
 
 
@@ -26,7 +26,7 @@ class FolderHandler:
 
     # meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
 
-    manage_addFolderForm=HTMLFile('OFS/folderAdd')
+    manage_addFolderForm=HTMLFile('folderAdd', globals())
 
     def folderClass(self):
 	return Folder
@@ -77,7 +77,10 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     meta_type='Folder'
     id       ='folder'
     title    ='Folder object'
-    icon     ='OFS/Folder_icon.gif'
+    icon='FolderIcon'
+    FolderIcon=ImageFile('www/Folder_icon.gif', globals())
+
+    Modified_Gif=ImageFile('www/modified.gif', globals())
 
     _properties=({'id':'title', 'type': 'string'},)
 

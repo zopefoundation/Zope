@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -15,7 +15,7 @@ class CopyContainer:
     # Interface for containerish objects which allow
     # objects to be copied into them.
 
-    pasteDialog=Globals.HTMLFile('OFS/pasteDialog')
+    pasteDialog=Globals.HTMLFile('pasteDialog', globals())
 
     def _getMoniker(self):
         # Ask an object to return a moniker for itself.

@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -8,15 +8,17 @@ from Globals import MessageDialog
 from AccessControl.Role import RoleManager
 import SimpleItem
 import Acquisition
+from ImageFile import ImageFile
 
 class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	   Acquisition.Implicit):
     """Image object"""
     meta_type='File'
-    icon     ='OFS/File_icon.gif'
+    icon='FileIcon'
+    FileIcon=ImageFile('www/File_icon.gif', globals())
 
-    manage_editForm   =HTMLFile('OFS/imageEdit', Kind='File', kind='file')
-    manage_uploadForm =HTMLFile('OFS/imageUpload', Kind='File', kind='file')
+    manage_editForm   =HTMLFile('imageEdit', globals(), Kind='File', kind='file')
+    manage_uploadForm =HTMLFile('imageUpload', globals(), Kind='File', kind='file')
     manage=manage_main=manage_editForm
 
     manage_options=({'icon':'', 'label':'Edit',
@@ -92,10 +94,11 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 class Image(File):
 
     meta_type='Image'
-    icon     ='OFS/Image_icon.gif'
+    icon='ImageIcon'
+    ImageIcon=ImageFile('www/Image_icon.gif', globals())
 
-    manage_editForm   =HTMLFile('OFS/imageEdit', Kind='Image', kind='image')
-    manage_uploadForm =HTMLFile('OFS/imageUpload', Kind='Image', kind='image')
+    manage_editForm   =HTMLFile('imageEdit', globals(), Kind='Image', kind='image')
+    manage_uploadForm =HTMLFile('imageUpload', globals(), Kind='Image', kind='image')
     manage=manage_main=manage_editForm
 
     def __str__(self):
@@ -106,8 +109,8 @@ class ImageHandler:
     """Image object handler mixin"""
     #meta_types=({'name':'Image', 'action':'manage_addImageForm'},)
 
-    manage_addFileForm=HTMLFile('OFS/imageAdd', Kind='File', kind='file')
-    manage_addImageForm=HTMLFile('OFS/imageAdd', Kind='Image', kind='image')
+    manage_addFileForm=HTMLFile('imageAdd', globals(),  Kind='File', kind='file')
+    manage_addImageForm=HTMLFile('imageAdd', globals(), Kind='Image', kind='image')
 
     def manage_addImage(self,id,file,title='',acl_type='A',acl_roles=[],
 			REQUEST=None):

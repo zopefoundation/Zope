@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.4 1997/11/07 17:06:28 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Undo.py,v 1.5 1997/12/18 16:45:30 jeffrey Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -20,7 +20,7 @@ from string import atof, find, atoi, split, rfind
 
 class UndoSupport:
 
-    manage_UndoForm=Globals.HTMLFile('App/undo')
+    manage_UndoForm=Globals.HTMLFile('undo', globals())
 
     def undoable_transactions(self, AUTHENTICATION_PATH=None,
 			      first_transaction=None,
@@ -87,6 +87,9 @@ class UndoSupport:
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.5  1997/12/18 16:45:30  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.4  1997/11/07 17:06:28  jim
 # Added session support.
 #

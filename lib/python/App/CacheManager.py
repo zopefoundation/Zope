@@ -58,8 +58,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.3 1997/11/19 20:11:48 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: CacheManager.py,v 1.4 1997/12/18 16:45:29 jeffrey Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
 import time
@@ -70,7 +70,7 @@ class CacheManager:
     _cache_age=60
     _cache_size=2000
 
-    manage_cacheForm=Globals.HTMLFile('App/cache')
+    manage_cacheForm=Globals.HTMLFile('cache', globals())
 
     def cache_length(self): return len(Globals.Bobobase._jar.cache)
 
@@ -136,6 +136,9 @@ class CacheManager:
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.4  1997/12/18 16:45:29  jeffrey
+# changeover to new ImageFile and HTMLFile handling
+#
 # Revision 1.3  1997/11/19 20:11:48  jim
 # Fixed bugs in check for working in a session.
 #
