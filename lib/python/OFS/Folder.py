@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.72 1999/03/24 18:44:29 jim Exp $"""
+$Id: Folder.py,v 1.73 1999/03/25 15:36:54 jim Exp $"""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -98,7 +98,6 @@ from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
-from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
 from App.Dialogs import MessageDialog
@@ -117,7 +116,7 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
     value, an 'index_html' and a 'UserFolder' objects are created respectively
     in the new folder.
     """
-    i=self.folderClass()()
+    i=Folder()
     i.id=id
     i.title=title
     self._setObject(id,i)
@@ -126,7 +125,7 @@ def manage_addFolder(self,id,title='',createPublic=0,createUserF=0,
     if REQUEST is not None: return self.manage_main(self,REQUEST,update_menu=1)
 
 class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
-             SimpleItem.Item, CopyContainer, FindSupport):
+             SimpleItem.Item, FindSupport):
     """
     The basic container object in Principia.  Folders can hold almost all
     other Principia objects.
@@ -151,229 +150,20 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     )
 
     __ac_permissions__=(
-        ('View', ('HEAD',)),
         ('View management screens',
-         ('manage','manage_menu','manage_main','manage_workspace',
-          'manage_copyright',
-          'manage_tabs','manage_propertiesForm','manage_UndoForm',
+         ('manage_main',
           'manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
-          'manage_renameForm', 'manage_renameObject',
-          'manage_findFrame', 'manage_findForm', 'manage_findAdv',
-          'manage_findResult')),
+          'manage_renameForm', 'manage_renameObject',)),
         ('Access contents information',
          ('objectIds', 'objectValues', 'objectItems','hasProperty',
-          'propertyIds', 'propertyValues','propertyItems',
-          'PROPFIND',''),
+          'propertyIds', 'propertyValues','propertyItems',''),
          ('Anonymous', 'Manager'),
          ),
-        ('Undo changes',       ('manage_undo_transactions',)),
-        ('Change permissions',
-         ('manage_access','manage_changePermissions', 'manage_role',
-          'manage_permission', 'manage_defined_roles',
-          'manage_acquiredForm','manage_acquiredPermissions',
-          'manage_permissionForm','manage_roleForm'
-          )),
-        ('Delete objects',     ('manage_delObjects', 'DELETE')),
-        ('Manage properties',
-         ('manage_addProperty', 'manage_editProperties',
-          'manage_delProperties', 'manage_changeProperties',
-          'PROPPATCH')),
+        ('Delete objects',     ('manage_delObjects',)),
         ('FTP access',         ('manage_FTPstat','manage_FTPlist')),
         ('Import/Export objects',
          ('manage_importObject','manage_importExportForm',
           'manage_exportObject')
          ),
-
     )
 
-    manage_addObject__roles__=None
-
-    def tpValues(self):
-        """Returns a list of the folder's sub-folders, used by tree tag."""
-        r=[]
-        if hasattr(self.aq_base,'tree_ids'):
-            for id in self.aq_base.tree_ids:
-                if hasattr(self, id): r.append(getattr(self, id))
-        else:
-            for id in self._objects:
-                o=getattr(self, id['id'])
-                try:
-                    if o.isPrincipiaFolderish: r.append(o)
-#                   if subclass(o.__class__, Folder): r.append(o)
-                except: pass
-
-        return r
-
-    def __getitem__(self, key):
-        v=self._getOb(key, None)
-        if v is not None: return v
-        
-        if hasattr(self, 'REQUEST'):
-            request=self.REQUEST
-            method=request.get('REQUEST_METHOD', 'GET')
-            if not method in ('GET', 'POST'):
-                return NullResource(self, key, request).__of__(self)
-        raise KeyError, key
-
-    def folderClass(self):
-        return Folder
-        return self.__class__
-
-    test_url___allow_groups__=None
-    def test_url_(self):
-        """Test connection"""
-        return 'PING'
-
-
-    # The Following methods are short-term measures to get Paul off my back;)
-    def manage_exportHack(self, id=None):
-        """Exports a folder and its contents to /var/export.bbe
-        This file can later be imported by using manage_importHack"""
-        if id is None: o=self
-        else: o=getattr(self.o)
-        f=Globals.data_dir+'/export.bbe'
-        o._p_jar.export_file(o,f)
-        return f
-
-    def manage_importHack(self, REQUEST=None):
-        "Imports a previously exported object from /var/export.bbe"
-        f=Globals.data_dir+'/export.bbe'
-        o=self._p_jar.import_file(f)
-        id=o.id
-        if hasattr(id,'im_func'): id=id()
-        self._setObject(id,o)
-        return 'OK, I imported %s' % id
-
-    # These methods replace manage_importHack and manage_exportHack
-
-    def manage_exportObject(self, id='', download=None, RESPONSE=None):
-        """Exports an object to a file and returns that file."""        
-        if not id:
-            id=self.id
-            if callable(id): id=id()
-            ob=self
-        else: ob=getattr(self,id)
-        if download:
-            f=StringIO()
-            ob._p_jar.export_file(ob, f)
-            RESPONSE.setHeader('Content-type','application/data')
-            RESPONSE.setHeader('Content-Disposition',
-                'inline;filename=%s.bbe' % id)
-            return f.getvalue()
-        f=Globals.data_dir+'/%s.bbe' % id
-        ob._p_jar.export_file(ob, f)
-        if RESPONSE is not None:
-            return MessageDialog(
-                    title="Object exported",
-                    message="<EM>%s</EM> sucessfully\
-                    exported to <pre>%s</pre>." % (id, f),
-                    action="manage_main")
-
-    manage_importExportForm=HTMLFile('importExport',globals())
-
-    def manage_importObject(self, file, REQUEST=None):
-        """Import an object from a file"""
-        dirname, file=os.path.split(file)
-        if dirname:
-            raise 'Bad Request', 'Invalid file name %s' % file
-        file=os.path.join(INSTANCE_HOME, 'import', file)
-        if not os.path.exists(file):
-            raise 'Bad Request', 'File does not exist: %s' % file
-        ob=self._p_jar.import_file(file)
-        if REQUEST: self._verifyObjectPaste(ob, REQUEST)
-        id=ob.id
-        if hasattr(id, 'im_func'): id=id()
-        self._setObject(id, ob)
-        if REQUEST is not None:
-            return MessageDialog(
-                title='Object imported',
-                message='<EM>%s</EM> sucessfully imported' % id,
-                action='manage_main'
-                )
-
-    # FTP support methods
-    
-    def manage_FTPlist(self,REQUEST):
-        "Directory listing for FTP"
-        out=()
-        # check to see if we are acquiring our objectValues or not
-        if len(REQUEST.PARENTS) > 1 and \
-                self.objectValues()==REQUEST.PARENTS[1].objectValues():
-                raise ValueError, 'FTP List not supported on acquired objects'
-                # XXX what type of error to raise?  
-        files=self.objectItems()
-        if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
-                self.isTopLevelPrincipiaApplicationObject):
-            files.insert(0,('..',self.aq_parent))
-        for k,v in files:
-            stat=marshal.loads(v.manage_FTPstat(REQUEST))
-            out=out+((k,stat),)
-        return marshal.dumps(out)   
-
-    def manage_FTPstat(self,REQUEST):
-        "Psuedo stat used for FTP listings"
-        mode=0040000
-        from AccessControl.User import nobody
-        # check to see if we are acquiring our objectValues or not
-        if not (len(REQUEST.PARENTS) > 1 and
-                self.objectValues() == REQUEST.PARENTS[1].objectValues()):
-            if REQUEST['AUTHENTICATED_USER'].allowed(
-                        self.manage_FTPlist,
-                        self.manage_FTPlist.__roles__):
-                mode=mode | 0770
-            if nobody.allowed(
-                        self.manage_FTPlist,
-                        self.manage_FTPlist.__roles__):
-                mode=mode | 0007
-        mtime=self.bobobase_modification_time().timeTime()
-        return marshal.dumps((mode,0,0,1,0,0,0,mtime,mtime,mtime))
-
-
-class PUTer(Acquisition.Explicit):
-    """Class to support the HTTP PUT protocol."""
-
-    def __init__(self, parent, id):
-        self.id=id
-        self.__parent__=parent
-        self.__roles__ =parent.PUT__roles__
-        
-    def PUT(self, REQUEST, RESPONSE):
-        """Adds a document, image or file to the folder when a PUT
-        request is received."""
-        name=self.id
-        type=REQUEST.get_header('content-type', None)
-        body=REQUEST.get('BODY', '')
-        if type is None:
-            type, enc=mimetypes.guess_type(name)
-        if type is None:
-            if content_types.find_binary(body) >= 0:
-                type='application/octet-stream'
-            else: type=content_types.text_type(body)
-        type=lower(type)
-        if type in ('text/html', 'text/xml', 'text/plain'):
-            self.__parent__.manage_addDTMLDocument(name, '', body)
-        elif type[:6]=='image/':
-            ob=Image(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
-        else:
-            ob=File(name, '', body, content_type=type)
-            self.__parent__._setObject(name, ob)
-        RESPONSE.setStatus(201)
-        RESPONSE.setBody('')
-        return RESPONSE
-
-    def __str__(self):
-        return self.id
-
-
-
-
-
-
-def subclass(c,super):
-    if c is super: return 1
-    try:
-        for base in c.__bases__:
-            if subclass(base,super): return 1
-    except: pass
-    return 0
