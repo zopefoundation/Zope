@@ -139,7 +139,7 @@ class TestCase( unittest.TestCase ):
     def _populateIndex( self ):
         for k, v in self._values:
             self._index.index_object( k, v )
-    
+
     def _checkApply( self, req, expectedValues ):
         result, used = self._index._apply_index( req )
         assert used == ( 'foo', )
@@ -150,6 +150,24 @@ class TestCase( unittest.TestCase ):
         if hasattr(result, 'keys'): result=result.keys()
         for k, v in expectedValues:
             assert k in result
+
+    def testAddObjectWOKeywords(self):
+
+
+        import zLOG
+
+        def log_write(subsystem, severity, summary, detail, error,
+                      PROBLEM=zLOG.PROBLEM):
+            if severity >= PROBLEM:
+                assert 0, "%s(%s): %s" % (subsystem, severity, summary)
+
+        old_log_write=zLOG.log_write
+        zLOG.log_write=log_write
+        try:
+            self._populateIndex()
+            self._index.index_object(999, None)
+        finally:
+            zLOG.log_write=old_log_write
     
     def testEmpty( self ):
         assert len( self._index ) == 0
