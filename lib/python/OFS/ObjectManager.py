@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.104 2000/08/07 18:45:56 shane Exp $"""
+$Id: ObjectManager.py,v 1.105 2000/08/07 19:22:41 brian Exp $"""
 
-__version__='$Revision: 1.104 $'[11:-2]
+__version__='$Revision: 1.105 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -94,6 +94,7 @@ from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
 from webdav.Collection import Collection
+from Acquisition import aq_base
 from urllib import quote
 from cStringIO import StringIO
 import marshal
@@ -230,8 +231,7 @@ class ObjectManager(
                 if flag == UNIQUE:
                     raise 'Bad Request', \
                           ('The id "%s" is reserved by another object.' % id)
-                base = getattr(self, 'aq_base', self)
-                if hasattr(base, id):
+                if hasattr(aq_base(self), id):
                     # The object is located in this ObjectManager.
                     if flag != REPLACEABLE:
                         raise 'Bad Request', ('The id "%s" is invalid - ' \
@@ -246,10 +246,7 @@ class ObjectManager(
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
     def _getOb(self, id, default=_marker):
-        if hasattr(self, 'aq_base'):
-            base=self.aq_base
-        else: base=self
-        if not hasattr(base, id):
+        if not hasattr(aq_base(self), id):
             if default is _marker:
                 raise AttributeError, id
             return default
@@ -292,14 +289,16 @@ class ObjectManager(
         for object in self.objectValues():
             try: s=object._p_changed
             except: s=0
-            object.manage_afterAdd(item, container)
+            if hasattr(aq_base(object), 'manage_afterAdd'):
+                object.manage_afterAdd(item, container)
             if s is None: object._p_deactivate()
 
     def manage_afterClone(self, item):
         for object in self.objectValues():
             try: s=object._p_changed
             except: s=0
-            object.manage_afterClone(item)
+            if hasattr(aq_base(object), 'manage_afterClone'):
+                object.manage_afterClone(item)
             if s is None: object._p_deactivate()
 
     def manage_beforeDelete(self, item, container):
@@ -307,7 +306,8 @@ class ObjectManager(
             try: s=object._p_changed
             except: s=0
             try:
-                 object.manage_beforeDelete(item, container)
+                if hasattr(aq_base(object), 'manage_beforeDelete'):
+                    object.manage_beforeDelete(item, container)
             except BeforeDeleteException, ob:
                 raise
             except:
@@ -461,9 +461,10 @@ class ObjectManager(
     def tpValues(self):
         # Return a list of subobjects, used by tree tag.
         r=[]
-        if hasattr(self.aq_base,'tree_ids'):
-            for id in self.aq_base.tree_ids:
-                if hasattr(self, id): r.append(self._getOb(id))
+        if hasattr(aq_base(self), 'tree_ids'):
+            for id in self.tree_ids:
+                if hasattr(self, id):
+                    r.append(self._getOb(id))
         else:
             for id in self._objects:
                 o=self._getOb(id['id'])
@@ -498,7 +499,6 @@ class ObjectManager(
             XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
         else:
             ob._p_jar.exportFile(ob._p_oid, f)
-
         if RESPONSE is not None:
             return MessageDialog(
                     title="Object exported",
