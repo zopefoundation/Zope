@@ -609,7 +609,7 @@ class Server:
 
         # get the url
         type, uri = urllib.splittype(uri)
-        if type != "http":
+        if type not in ("http", "https"):
             raise IOError, "unsupported XML-RPC protocol"
         self.__host, self.__handler = urllib.splithost(uri)
         if not self.__handler:
