@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -46,7 +46,11 @@ def installHandlers(engine):
 
 if sys.modules.has_key('Zope'):
     import AccessControl
-    from AccessControl import getSecurityManager, Unauthorized
+    from AccessControl import getSecurityManager
+    try:
+        from AccessControl import Unauthorized
+    except ImportError:
+        Unauthorized = "Unauthorized"
     if hasattr(AccessControl, 'full_read_guard'):
         from ZRPythonExpr import PythonExpr, _SecureModuleImporter, \
              call_with_ns

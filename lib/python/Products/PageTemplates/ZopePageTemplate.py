@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -25,7 +25,11 @@ from DateTime.DateTime import DateTime
 from string import join, strip, rstrip, split, replace, lower
 from Shared.DC.Scripts.Script import Script, BindingsUI
 from Shared.DC.Scripts.Signature import FuncCode
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
+try:
+    from AccessControl import Unauthorized
+except ImportError:
+    Unauthorized = "Unauthorized"
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
