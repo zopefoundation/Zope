@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.7 1999/07/26 07:08:43 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.8 1999/11/15 21:53:56 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -174,6 +174,7 @@ class ftp_channel (asynchat.async_chat):
 				self.passive_acceptor.close()
 			if self.client_dc:
 				self.client_dc.close()
+			self.server.closed_sessions.increment()
 			asynchat.async_chat.close (self)
 
 	# --------------------------------------------------
@@ -334,13 +335,6 @@ class ftp_channel (asynchat.async_chat):
 		else:
 			self.current_mode = t
 			self.respond ('200 Type set to %s.' % self.type_map[t])
-
-	closed = 0
-	def close (self):
-		if not self.closed:
-			self.closed = 1
-			asynchat.async_chat.close (self)
-			self.server.closed_sessions.increment()
 
 	def cmd_quit (self, line):
 		'terminate session'
@@ -857,7 +851,7 @@ class xmit_channel (asynchat.async_chat):
 	def readable (self):
 		return 0
 
-	def handle_connect(self):
+	def log(self, *args):
 		pass
 
 	def writable (self):

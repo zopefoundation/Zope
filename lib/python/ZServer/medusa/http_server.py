@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.12 1999/09/22 22:06:42 petrilli Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.13 1999/11/15 21:53:56 amos Exp $'
 
 # python modules
 import os
@@ -448,6 +448,18 @@ class http_channel (asynchat.async_chat):
 			# --------------------------------------------------
 			# crack the request header
 			# --------------------------------------------------
+			
+			while lines and not lines[0]:
+				# as per the suggestion of http-1.1 section 4.1, (and
+				# Eric Parker <eparker@zyvex.com>), ignore a leading
+				# blank lines (buggy browsers tack it onto the end of
+				# POST requests)
+				lines = lines[1:]
+
+			if not lines:
+				self.close_when_done()
+				return
+
 			request = lines[0]
 			try:
 				command, uri, version = crack_request (request)
