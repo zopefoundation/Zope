@@ -48,7 +48,7 @@ from cgi import escape
 _marker = []
 
 DEBUG = os.environ.get('Z_TOC_DEBUG', '')
-LOG = getLogger('Zope.Transience')
+LOG = logging.getLogger('Zope.Transience')
 
 class MaxTransientObjectsExceeded(Exception): pass
 
