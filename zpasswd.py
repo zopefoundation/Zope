@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.2 $ '[11:-2]
+__version__='$Revision: 1.3 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -124,7 +124,7 @@ def write_access(home, user='', group=''):
         pw = ''
         for i in range(8):
             pw = pw + whrandom.choice(pw_choices)
-        acfile.write('superuser:' + zpasswd.generate_passwd(pw, 'SHA'))
+        acfile.write('superuser:' + generate_passwd(pw, 'SHA'))
         acfile.close()
         os.system('chmod 644 access')
 

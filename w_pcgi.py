@@ -102,8 +102,10 @@ def main(me):
     home=setup(me)
     
     import build_pcgi
-    import make_resource; make_resource.main(home)
+    user=group=''
+    pcgi=os.path.join(home, 'Zope.cgi')
+    import make_resource; make_resource.main(home, pcgi, user, group)
     os.chdir(home) # Just making sure
-    import wo_pcgi
+    import wo_pcgi; wo_pcgi.main(me)
 
 if __name__=='__main__': main(sys.argv[0])
