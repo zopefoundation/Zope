@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.2 1999/04/07 20:00:30 michel Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.3 1999/05/20 01:54:02 michel Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -152,7 +152,6 @@ class MIMETag:
                 inner.addheader('Content-Disposition', d)
 
             inner.addheader('Content-Transfer-Encoding', e)
-            print 'hi'
             if n:
                 plist = [('name', n)]
             else:
@@ -164,8 +163,8 @@ class MIMETag:
             if e == '7bit':
                 innerfile.write(render_blocks(b, md))
             else:
-                mimetools.encode(StringIO(render_blocks(b, md)), output,
-                             e)
+                mimetools.encode(StringIO(render_blocks(b, md)), 
+                                 output, e)
                 output.seek(0)
                 innerfile.write(output.read())
 
