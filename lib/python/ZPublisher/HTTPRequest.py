@@ -11,9 +11,10 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
+from types import StringType, UnicodeType
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
@@ -162,8 +163,8 @@ class HTTPRequest(BaseRequest):
     def setVirtualRoot(self, path, hard=0):
         """ Treat the current publishing object as a VirtualRoot """
         other = self.other
-        if type(path) is type(''):
-            path = path.split( '/')
+        if isinstance(path, StringType) or isinstance(path, UnicodeType):
+            path = path.split('/')
         self._script[:] = map(quote, filter(None, path))
         del self._steps[:]
         parents = other['PARENTS']
