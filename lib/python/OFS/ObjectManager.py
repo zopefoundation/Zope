@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.93 2000/05/17 20:56:27 brian Exp $"""
+$Id: ObjectManager.py,v 1.94 2000/05/24 20:53:34 shane Exp $"""
 
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -295,6 +295,9 @@ class ObjectManager(
             pass
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
+        # Indicate to the object that it has been deleted.
+        # Necessary for mount points.
+        object._v__object_deleted__ = 1
 
     def objectIds(self, spec=None):
         """Returns a list of subobject ids of the current object.

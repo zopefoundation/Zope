@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.124 2000/05/17 00:18:54 jim Exp $'''
-__version__='$Revision: 1.124 $'[11:-2]
+$Id: Application.py,v 1.125 2000/05/24 20:53:34 shane Exp $'''
+__version__='$Revision: 1.125 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -282,6 +282,14 @@ class Application(Globals.ApplicationDefaultPermissions,
         has been acquired."""
         if relative: return ''
         return self.aq_acquire('REQUEST').script
+
+    def getPhysicalPath(self):
+        '''Returns a path that can be used to access this object again
+        later, for example in a copy/paste operation.  Designed to
+        be used with getPhysicalRoot().
+        '''
+        # We're at the base of the path.
+        return ''
 
     def getPhysicalRoot(self): return self
 

@@ -85,8 +85,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.2 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.3 2000/05/24 20:53:33 shane Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=[]
@@ -157,7 +157,7 @@ class ZopeSecurityPolicy:
 
             if not p:
                 if (containerbase is accessedbase):
-                    raise 'Unauthorized', name
+                    raise 'Unauthorized', cleanupName(name, value)
                 else:
                     return 0
                         
@@ -182,7 +182,8 @@ class ZopeSecurityPolicy:
                 # get an unacquired!
                 if accessed is container:
                     raise 'Unauthorized', (
-                        'You are not authorized to access <em>%s</em>.' % name)
+                        'You are not authorized to access <em>%s</em>.' \
+                        % cleanupName(name, value))
                 return 0
 
             # Proxy roles, which are alot safer now.
@@ -194,7 +195,8 @@ class ZopeSecurityPolicy:
                 # Proxy roles actually limit access!
                 if accessedbase is containerbase:
                     raise 'Unauthorized', (
-                        'You are not authorized to access <em>%s</em>.' % name)
+                        'You are not authorized to access <em>%s</em>.' \
+                        % cleanupName(name, value))
                 
                 return 0
                 
@@ -206,7 +208,8 @@ class ZopeSecurityPolicy:
         # We don't want someone to acquire if they can't get an unacquired!
         if accessedbase is containerbase:
             raise 'Unauthorized', (
-                'You are not authorized to access <em>%s</em>.' % name)
+                'You are not authorized to access <em>%s</em>.' \
+                % cleanupName(name, value))
 
         return 0
 
@@ -215,3 +218,11 @@ class ZopeSecurityPolicy:
         if roles is _what_not_even_god_should_do: return 0
         return context.user.has_role(roles, object)
     
+
+def cleanupName(name, value):
+    # If name is not available, tries to get it from the value.
+    _name = name
+    if _name is None and value is not None:
+        try: _name = value.__name__
+        except: pass
+    return _name

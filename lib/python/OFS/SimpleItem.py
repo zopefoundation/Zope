@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.70 2000/05/17 18:50:29 brian Exp $'''
-__version__='$Revision: 1.70 $'[11:-2]
+$Id: SimpleItem.py,v 1.71 2000/05/24 20:53:34 shane Exp $'''
+__version__='$Revision: 1.71 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -347,6 +347,20 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
             
         return id
 
+    def getPhysicalPath(self):
+        '''Returns a path that can be used to access this object again
+        later, for example in a copy/paste operation.  getPhysicalRoot()
+        and getPhysicalPath() are designed to operate together.
+        '''
+        id=quote(self.id)
+        
+        p=getattr(self,'aq_inner', None)
+        if p is not None: 
+            url=p.aq_parent.getPhysicalPath()
+            if url: id=url+'/'+id
+            
+        return id
+
     unrestrictedTraverse__roles__=()
     def unrestrictedTraverse(self, path, default=_marker):
 
@@ -373,6 +387,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
                     if o is not M:
                         object=o
                         continue
+                if name[0] == '_':
+                    # Never allowed in a URL.
+                    raise 'NotFound', name
 
                 t=get(object, '__bobo_traverse__', N)
                 if t is not N:
@@ -415,6 +432,20 @@ class Item_w__name__(Item):
         p=getattr(self,'aq_inner', None)
         if p is not None: 
             url=p.aq_parent.absolute_url(relative)
+            if url: id=url+'/'+id
+            
+        return id
+
+    def getPhysicalPath(self):
+        '''Returns a path that can be used to access this object again
+        later, for example in a copy/paste operation.  getPhysicalRoot()
+        and getPhysicalPath() are designed to operate together.
+        '''
+        id=quote(self.__name__)
+        
+        p=getattr(self,'aq_inner', None)
+        if p is not None: 
+            url=p.aq_parent.getPhysicalPath()
             if url: id=url+'/'+id
             
         return id

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -118,7 +118,7 @@ class CopyContainer(ExtensionClass.Base):
 
 
     def manage_CopyContainerFirstItem(self, REQUEST):
-        return self._getOb(REQUEST['ids'][0])        
+        return self._getOb(REQUEST['ids'][0])
 
     def manage_CopyContainerAllItems(self, REQUEST):
         return map(lambda i, s=self: s._getOb(i), tuple(REQUEST['ids']))
@@ -133,7 +133,7 @@ class CopyContainer(ExtensionClass.Base):
             if not ob.cb_isMoveable():
                 raise CopyError, eNotSupported % id
             m=Moniker.Moniker(ob)
-            oblist.append((m.jar, m.ids))
+            oblist.append(m.dump())
         cp=(1, oblist)
         cp=_cb_encode(cp)
         if REQUEST is not None:
@@ -152,7 +152,7 @@ class CopyContainer(ExtensionClass.Base):
             if not ob.cb_isCopyable():
                 raise CopyError, eNotSupported % id
             m=Moniker.Moniker(ob)
-            oblist.append((m.jar, m.ids))
+            oblist.append(m.dump())
         cp=(0, oblist)
         cp=_cb_encode(cp)
         if REQUEST is not None:
@@ -193,12 +193,12 @@ class CopyContainer(ExtensionClass.Base):
         except: raise CopyError, eInvalid
 
         oblist=[]
-        m=Moniker.Moniker()
         op=cp[0]
-        for j, d in cp[1]:
-            m.jar=j
-            m.ids=d
-            try: ob=m.bind(self._p_jar)
+        app = self.getPhysicalRoot()
+
+        for mdata in cp[1]:
+            m = Moniker.loadMoniker(mdata)
+            try: ob = m.bind(app)
             except: raise CopyError, eNotFound
             self._verifyObjectPaste(ob, REQUEST)
             oblist.append(ob)
@@ -207,7 +207,12 @@ class CopyContainer(ExtensionClass.Base):
             # Copy operation
             for ob in oblist:
                 if not ob.cb_isCopyable():
-                     raise CopyError, eNotSupported % absattr(ob.id)
+                    raise CopyError, eNotSupported % absattr(ob.id)
+                try:    ob._notifyOfCopyTo(self, op=0)
+                except: raise CopyError, MessageDialog(
+                    title='Copy Error',
+                    message=sys.exc_value,
+                    action ='manage_main')
                 ob=ob._getCopy(self)
                 ob.manage_afterClone(ob)
                 id=self._get_id(absattr(ob.id))
@@ -224,6 +229,11 @@ class CopyContainer(ExtensionClass.Base):
                 id=absattr(ob.id)
                 if not ob.cb_isMoveable():
                     raise CopyError, eNotSupported % id
+                try:    ob._notifyOfCopyTo(self, op=1)
+                except: raise CopyError, MessageDialog(
+                    title='Move Error',
+                    message=sys.exc_value,
+                    action ='manage_main')
                 if not sanity_check(self, ob):
                     raise CopyError, 'This object cannot be pasted into itself'
                 ob.aq_parent._delObject(id)
@@ -299,7 +309,7 @@ class CopyContainer(ExtensionClass.Base):
         self._verifyObjectPaste(ob, REQUEST)
         try:    ob._notifyOfCopyTo(self, op=0)
         except: raise CopyError, MessageDialog(
-                      title='Rename Error',
+                      title='Clone Error',
                       message=sys.exc_value,
                       action ='manage_main')
         ob=ob._getCopy(self)
@@ -320,12 +330,11 @@ class CopyContainer(ExtensionClass.Base):
         try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return []
         oblist=[]
-        m=Moniker.Moniker()
-        op=cp[0]
-        for j, d in cp[1]:
-            m.jar=j
-            m.ids=d
-            oblist.append(m.bind(self._p_jar))
+
+        app = self.getPhysicalRoot()
+        for mdata in cp[1]:
+            m = Moniker.loadMoniker(mdata)
+            oblist.append(m.bind(app))
         return oblist
 
     validClipData=cb_dataValid
@@ -355,11 +364,12 @@ class CopyContainer(ExtensionClass.Base):
             REQUEST=getattr(self, 'REQUEST', None)
 
         if method_name is not None:
-
             meth=self.unrestrictedTraverse(method_name)
-
             if getSecurityManager().validateValue(meth):
-                return
+                # Ensure the user is allowed to access the object on the
+                # clipboard.
+                if getSecurityManager().validateValue(ob):
+                    return
 
         raise CopyError, MessageDialog(
               title='Not Supported',
