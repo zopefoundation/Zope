@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -296,7 +296,7 @@ class BaseRequest:
         steps=self.steps
         self._steps = _steps = map(quote, steps)
         path.reverse()
-        pop = path.pop
+
         request['TraversalRequestNameStack'] = request.path = path
 
         entry_name = ''
@@ -307,9 +307,11 @@ class BaseRequest:
                 bpth = getattr(object, '__before_publishing_traverse__', None)
                 if bpth is not None:
                     bpth(object, self)
+
+                path = request.path = request['TraversalRequestNameStack']
                 # Check for method:
                 if path:
-                    entry_name = pop()
+                    entry_name = path.pop()
                 elif (method and hasattr(object,method)
                       and entry_name != method
                       and getattr(object, method) is not None):
