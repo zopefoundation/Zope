@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.6 $
+# $Revision: 1.7 $
 __version__ = '0.1'
 
 import struct
@@ -134,12 +134,6 @@ class Full(BerkeleyBase):
         # refcounts -- {oid -> count}
         #     Maps objects to their reference counts.
         #
-        # references -- {oid+tid -> [oid]}
-        #     Maps the concrete object referenced by oid+tid to the list of
-        #     objects it references.  This is essentially a cache, since we
-        #     could look up the pickle associated with oid+tid and "sniff" the
-        #     pickle for its references.
-        #
         # pickleRefcounts -- {oid+tid -> count}
         #     Maps the concrete object referenced by oid+tid to the reference
         #     count of its pickle.
@@ -155,7 +149,6 @@ class Full(BerkeleyBase):
         self._txnMetadata     = self._setupDB('txnMetadata')
         self._txnOids         = self._setupDB('txnOids', db.DB_DUP)
         self._refcounts       = self._setupDB('refcounts')
-        self._references      = self._setupDB('references', db.DB_DUP)
         self._pickleRefcounts = self._setupDB('pickleRefcounts')
         # Initialize our cache of the next available version id.
         record = self._versions.cursor().last()
@@ -177,7 +170,6 @@ class Full(BerkeleyBase):
         self._txnMetadata.close()
         self._txnOids.close()
         self._refcounts.close()
-        self._references.close()
         self._pickleRefcounts.close()
         BerkeleyBase.close(self)
 
@@ -583,54 +575,103 @@ class Full(BerkeleyBase):
         # Return our cached serial number for the object.
         return self._serial
 
-    def _decref(self, oid, lrevid, txn):
+    def _zaprevision(self, key, txn):
+        # Delete the metadata record pointed to by the key, decrefing the
+        # reference counts of the pickle pointed to by this record, and
+        # perform cascading decrefs on the referenced objects.
+        #
+        # We need the lrevid which points to the pickle for this revision...
+        vid, nvrevid, lrevid = self._metadata.get(key, txn=txn)[16:24]
+        # ...and now delete the metadata record for this object revision
+        self._metadata.delete(key, txn=txn)
         # Decref the reference count of the pickle pointed to by oid+lrevid.
         # If the reference count goes to zero, we can garbage collect the
-        # pickle, and decref all the object pointed to by the pickle (with of
+        # pickle, and decref all the objects pointed to by the pickle (with of
         # course, cascading garbage collection).
-        key = oid + lrevid
-        refcount = self._pickleRefcounts.get(key, txn=txn)
+        pkey = key[:8] + lrevid
+        refcount = self._pickleRefcounts.get(pkey, txn=txn)
+        # It's possible the pickleRefcounts entry for this oid has already
+        # been deleted by a previous pass of _zaprevision().  If so, we're
+        # done.
+        if refcount is None:
+            return
         refcount = utils.U64(refcount) - 1
         if refcount > 0:
-            self._pickleRefcounts.put(key, utils.p64(refcount), txn=txn)
+            self._pickleRefcounts.put(pkey, utils.p64(refcount), txn=txn)
             return
         # The refcount of this pickle has gone to zero, so we need to garbage
         # collect it, and decref all the objects it points to.
-        self._pickleRefcounts.delete(key, txn=txn)
-        pickle = self._pickles.get(key, txn=txn)
-        collectedOids = []
-        refdoids = []
-        referencesf(pickle, refdoids)
-        for roid in refdoids:
-            refcount = self._refcounts.get(roid, txn=txn)
+        self._pickleRefcounts.delete(pkey, txn=txn)
+        pickle = self._pickles.get(pkey, txn=txn)
+        # Sniff the pickle to get the objects it refers to
+        collectables = []
+        refoids = []
+        referencesf(pickle, oids)
+        # Now decref the reference counts for each of those objects.  If it
+        # goes to zero, remember the oid so we can recursively zap its
+        # metadata too.
+        for oid in refoids:
+            refcount = self._refcounts.get(oid, txn=txn)
             refcount = utils.U64(refcount) - 1
             if refcount > 0:
-                self._refcounts.put(roid, utils.p64(refcount), txn=txn)
+                self._refcounts.put(oid, utils.p64(refcount), txn=txn)
             else:
-                # This sucker gets garbage collected itself.
-                self._refcounts.delete(roid, txn=txn)
-                collectedOids.append(roid)
-        # Now, for all the objects whose refcounts just went to zero, we need
-        # to recursively decref their pickles.
-        for roid in collectedOids:
-            serial = self._serials.get(roid, txn=txn)
-            # The pickle for this metadata record is pointed to by lrevid
-            lrevid = self._metadata.get(roid+serial, txn=txn)[16:24]
-            # Now recurse...
-            self._decref(roid, lrevid, txn)
+                collectables.append(oid)
+        # Now for all objects whose refcounts just went to zero, we want to
+        # delete any records that pertain to this object.  When we get to
+        # deleting the metadata record, we'll do it recursively so as to
+        # decref any pickles it points to.  For everything else, we'll do it
+        # in the most efficient manner possible.
+        tids = []
+        for oid in collectables:
+            self._serials.delete(oid, txn=txn)
+            self._refcounts.delete(oid, txn=txn)
+            # To delete all the metadata records associated with this object
+            # id, we use a trick of Berkeley cursor objects to only partially
+            # specify the key.  This works because keys are compared
+            # lexically, with shorter keys collating before longer keys.
+            c = self._metadata.cursor()
+            try:
+                rec = c.set(oid)
+                while rec and rec[0][:8] == oid:
+                    # Remember the transaction ids so we can clean up the
+                    # txnOids table below.  Note that we don't record the vids
+                    # because now that we don't have destructive undo,
+                    # _zaprevisions() can only be called during a pack() and
+                    # it is impossible to pack current records (and hence
+                    # currentVersions).
+                    tids.append(rec[0][8:])       # second 1/2 of the key
+                    self._zaprevision(rec[0], txn)
+                    rec = c.next()
+            finally:
+                c.close()
+            # Delete all the txnOids entries that referenced this oid
+            for tid in tids:
+                c = self._txnOids.cursor(txn=txn)
+                try:
+                    rec = c.set_both(tid, oid)
+                    while rec:
+                        # Although unlikely, it is possible that an object got
+                        # modified more than once in a transaction.
+                        c.delete()
+                        rec = c.next_dup()
+                finally:
+                    c.close()
+            
 
     def transactionalUndo(self, tid, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
-        oids=[]
+        oids = []
         self._lock_acquire()
         try:
             return oids
         finally:
             self._lock_release()
 
-
+    # REMOVE ME -- DON'T IMPLEMENT UNDO SINCE WE'RE GOING TO IMPLEMENT
+    # transactionalUndo() INSTEAD
     def undo(self, tid):
         # Attempt to undo transaction.  NOTE: the current storage interface
         # documentation says that this method takes a third argument, which is
@@ -638,17 +679,17 @@ class Full(BerkeleyBase):
         # the third argument."
         c = None                                  # txnOids cursor
         oids = []
+        zero = '\0'*8
         self._lock_acquire()
+        txn = self._env.txn_begin()
         try:
             # Make sure the transaction is undoable.  If this transaction
             # occurred earlier than a pack operation, it is no longer
             # undoable.  The status flag indicates its undoability.
-            status = self._txnMetadata[tid][1]
+            status = self._txnMetadata.get(tid, txn=txn)[1]
             if status == PROTECTED_TRANSACTION:
                 raise POSException.UndoError, 'Transaction cannot be undone'
             # Create the cursor and begin the transaction
-            zero = '\0'*8
-            txn = self._env.txn_begin()
             c = self._txnOids.cursor()
             try:
                 rec = c.set(tid)
@@ -660,12 +701,17 @@ class Full(BerkeleyBase):
                         # BAW: we can only undo the most current revision of
                         # the object???
                         raise POSException.UndoError(
-                            "Not object's current transaction")
+                            "Not object's current revision")
+                    # Get rid of the metadata record for this object revision
+                    # and perform cascading decrefs
+                    self._zaprevision(oid, tid, txn)
+
                     key = oid + tid
                     # Get the metadata for this object revision, and then
                     # delete the metadata record.
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
                         '8s8s8s8s', self._metadata.get(key, txn=txn))
+                    # Delete the metadata record for this object revision
                     self._metadata.delete(key, txn=txn)
                     # Decref the reference count of the pickle that we're
                     # pointing to and garbage collect it if the refcount falls
