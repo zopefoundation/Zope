@@ -20,6 +20,7 @@ Options:
 -h/--help -- print this help text
 -d/--dir  -- the dir in which the instance home should be created
 -u/--user NAME:PASSWORD -- set the user name and password of the initial user
+-s/--skelsrc -- the dir from which skeleton files should be copied
 
 When run without arguments, this script will ask for the information necessary
 to create a Zope instance home.
@@ -34,8 +35,8 @@ import copyzopeskel
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:],
-            "hu:z:d:s:z:l:i:o:g:c:",
-            ["help", "user=", "dir="]
+            "hu:d:s:",
+            ["help", "user=", "dir=", "skelsrc="]
             )
     except getopt.GetoptError, msg:
         usage(sys.stderr, msg)
@@ -45,12 +46,18 @@ def main():
     user = None
     password = None
     skeltarget = None
+    skelsrc = None
 
     for opt, arg in opts:
         if opt in ("-d", "--dir"):
             skeltarget = os.path.abspath(os.path.expanduser(arg))
             if not skeltarget:
                 usage(sys.stderr, "dir must not be empty")
+                sys.exit(2)
+        if opt in ("-s", "--skelsrc"):
+            skelsrc = os.path.abspath(os.path.expanduser(arg))
+            if not skelsrc:
+                usage(sys.stderr, "skelsrc must not be empty")
                 sys.exit(2)
         if opt in ("-h", "--help"):
             usage(sys.stdout)
@@ -76,7 +83,9 @@ def main():
     zopehome = os.path.dirname(os.path.dirname(script))
     softwarehome = os.path.join(zopehome, "lib", "python")
     configfile = os.path.join(instancehome, 'etc', 'zope.conf')
-    skelsrc = os.path.join(zopehome, "skel")
+    if skelsrc is None:
+        # default to using stock Zope skeleton source
+        skelsrc = os.path.join(zopehome, "skel")
 
     inituser = os.path.join(instancehome, "inituser")
     if not (user or os.path.exists(inituser)):
