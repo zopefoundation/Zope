@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.13 1997/10/29 14:49:29 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: DA.py,v 1.14 1997/10/29 18:45:33 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -181,7 +181,7 @@ class Query(Aqueduct.Aqueduct.Searchable):
 	    RESPONSE['Content-Length']=len(result)
 	    RESPONSE.write(result)
 	except:
-	    t,v,tb=sys.exc_type, sys.exc_value, sys.exc_traceback
+	    t,v=sys.exc_type, sys.exc_value
 	    result=str(RESPONSE.exception())
 	    serial=str(DateTime.now())
 	    if log_file:
@@ -201,6 +201,9 @@ class Query(Aqueduct.Aqueduct.Searchable):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.14  1997/10/29 18:45:33  jim
+# Fixed leak in query exception handling.
+#
 # Revision 1.13  1997/10/29 14:49:29  jim
 # Updated to inherit testing methods from Aqueduct.Aqueduct.Searchable.
 # Updated __call__ so queries can be used in documents.
