@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.7 2002/10/03 21:08:40 mj Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Tree.py,v 1.8 2002/10/03 21:50:17 mj Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -189,7 +189,7 @@ def encodeExpansion(nodes):
         dd = last_depth - node.depth + 1
         last_depth = node.depth
         if dd > 0:
-            steps.append('.' * dd)
+            steps.append('_' * dd)
         steps.append(node.id)
         node.expansion_number = n
         n = n + 1
@@ -207,7 +207,7 @@ def decodeExpansion(s, nth=None):
     if nth is not None:
         nth_pair = (None, None)
     for step in s.split(':'):
-        if step[:1] == '.':
+        if step == len(step) * '_':
             pop = len(step) - 1
             continue
         if pop < 0:
