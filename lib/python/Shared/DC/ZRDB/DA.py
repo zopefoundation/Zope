@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.76 1999/12/06 15:31:36 jim Exp $'''
-__version__='$Revision: 1.76 $'[11:-2]
+$Id: DA.py,v 1.77 1999/12/29 15:05:53 petrilli Exp $'''
+__version__='$Revision: 1.77 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -312,7 +312,7 @@ class DA(
                 if result._searchable_result_columns():
                     r=custom_default_report(self.id, result)
                 else:
-                    r='This was not a query.'
+                    r='This statement returned no results.'
             except:
                 t, v, tb = sys.exc_info()
                 r='<strong>Error, <em>%s</em>:</strong> %s' % (t, v)
