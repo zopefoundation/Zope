@@ -110,7 +110,8 @@ def main(args):
     where options are:
 
        -p   -- Supply the path to the PCGI resource file.
-               This defaults to %s.
+               This defaults to %s. Note that this path
+               must include the file name.
     
        -g   -- Supply the name of the unix group to which
                the user that runs your web server belongs.
