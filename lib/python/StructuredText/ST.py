@@ -169,7 +169,7 @@ def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
                 run = insert(struct,level,currentlevel)
             else:
                 run = struct
-                currentindet = indent
+                currentindent = indent
             run.append(StructuredTextParagraph(paragraph, indent=indent, level=currentlevel))
     
     return StructuredTextDocument(struct)
