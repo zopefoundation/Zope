@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.32 1999/02/19 20:52:23 jim Exp $
+  $Id: ExtensionClass.c,v 1.33 1999/05/12 15:49:55 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.32 1999/02/19 20:52:23 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.33 1999/05/12 15:49:55 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1773,6 +1773,13 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 		  return self->class_dictionary;
 		}
 	      break;
+	    case 'c':
+	      if (strcmp(n,"class__")==0)
+		{
+		  Py_INCREF(self->ob_type);
+		  return OBJECT(self->ob_type);
+		}
+	      break;
 	    }
 	}
     }
@@ -3391,7 +3398,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.32 $";
+  char *rev="$Revision: 1.33 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
