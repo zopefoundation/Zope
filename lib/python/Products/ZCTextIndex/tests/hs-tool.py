@@ -26,8 +26,11 @@ def basename(path, cache={}):
 
 def print_results(results):
     for info, place in results:
-        if not place:
-            print 'Bad unpack:', info, place
+        if place is None:
+            # This is the startup time for the profiler, and only
+            # occurs at the very beginning.  Just ignore it, since it
+            # corresponds to frame setup of the outermost call, not
+            # anything that's actually interesting.
             continue
         filename, line, funcname = place
         print '%8d %8d' % info, basename(filename), line
