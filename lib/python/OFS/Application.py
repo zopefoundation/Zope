@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.197 2003/12/10 17:52:46 evan Exp $'''
-__version__='$Revision: 1.197 $'[11:-2]
+$Id: Application.py,v 1.198 2003/12/11 19:50:27 evan Exp $'''
+__version__='$Revision: 1.198 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -148,7 +148,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     def absolute_url_path(self):
         '''The absolute URL path of the root object is BASEPATH1 or "/".'''
         try:
-            return self.REQUEST['BASEPATH1']
+            return self.REQUEST['BASEPATH1'] or '/'
         except (AttributeError, KeyError):
             return '/'
 

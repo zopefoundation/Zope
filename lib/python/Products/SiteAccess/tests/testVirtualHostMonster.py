@@ -7,7 +7,7 @@ Also see http://zope.org/Collectors/Zope/809
 
 Note: Tests require Zope >= 2.7
 
-$Id: testVirtualHostMonster.py,v 1.2 2003/12/10 17:52:47 evan Exp $
+$Id: testVirtualHostMonster.py,v 1.3 2003/12/11 19:50:27 evan Exp $
 """
 
 from Testing.makerequest import makerequest
@@ -73,17 +73,21 @@ def gen_cases():
             yield '/'.join(vparts), vr, _vh, p, ubase
 
 for i, (vaddr, vr, _vh, p, ubase) in enumerate(gen_cases()):
-    def test(self):
+    def test(self, vaddr=vaddr, vr=vr, _vh=_vh, p=p, ubase=ubase):
         ob = self.traverse('%s/%s/' % (vaddr, p))
-        vhp = '/' + '/'.join([x for x in _vh, p if x])
-        self.assertEqual(ob.absolute_url(), ubase + vhp)
-        self.assertEqual(ob.absolute_url_path(), vhp)
+        sl_vh = (_vh and ('/' + _vh))
+        aup = sl_vh + (p and ('/' + p))
+        self.assertEqual(ob.absolute_url_path(), aup)
+        self.assertEqual(self.app.REQUEST['BASEPATH1'] + '/' + p, aup)
+        self.assertEqual(ob.absolute_url(), ubase + aup)
         self.assertEqual(ob.absolute_url(relative=1), p)
         self.assertEqual(ob.virtual_url_path(), p)
         self.assertEqual(ob.getPhysicalPath(), ('', 'folder', 'doc'))
 
         app = ob.aq_parent.aq_parent
-        self.assertEqual(app.absolute_url(), ubase + '/' + _vh)
+        # The absolute URL doesn't end with a slash
+        self.assertEqual(app.absolute_url(), ubase + sl_vh)
+        # The absolute URL path always begins with a slash
         self.assertEqual(app.absolute_url_path(), '/' + _vh)
         self.assertEqual(app.absolute_url(relative=1), '')
         self.assertEqual(app.virtual_url_path(), '')
