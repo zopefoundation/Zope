@@ -86,9 +86,12 @@ class BaseIndex(Persistent):
     def index_doc(self, docid, text):
         raise NotImplementedError
 
-    # Subclass must override.
+    # A subclass may wish to extend or override this.
     def unindex_doc(self, docid):
-        raise NotImplementedError
+        for wid in self.get_words(docid):
+            self._del_wordinfo(wid, docid)
+        del self._docwords[docid]
+        del self._docweight[docid]
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)

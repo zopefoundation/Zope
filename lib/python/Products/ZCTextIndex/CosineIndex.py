@@ -81,12 +81,6 @@ class CosineIndex(BaseIndex):
         self._add_undoinfo(docid, wids)
         return len(wids)
 
-    def unindex_doc(self, docid):
-        for wid in self.get_words(docid):
-            self._del_wordinfo(wid, docid)
-        del self._docwords[docid]
-        del self._docweight[docid]
-
     def _search_wids(self, wids):
         if not wids:
             return []

@@ -72,14 +72,8 @@ class OkapiIndex(BaseIndex):
         return len(wids)
 
     def unindex_doc(self, docid):
-        for wid in WidCode.decode(self._docwords[docid]):
-            self._del_wordinfo(wid, docid)
-
-        del self._docwords[docid]
-
-        count = self._docweight[docid]
-        del self._docweight[docid]
-        self._totaldoclen -= count
+        self._totaldoclen -= self._docweight[docid]
+        BaseIndex.unindex_doc(self, docid)
 
     # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
     # for each wid t in wids.  The IIBucket, times the weight, maps D to
