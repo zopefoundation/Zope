@@ -12,6 +12,13 @@ Zope Changes
        objects to allow gathering of permission names for products like
        DocFinder and VerboseSecurity.
 
+     - Added a new REQUEST method, getClientAddr(), to determine a clients
+       IP address. Address restrictions in the user folder have been changed
+       to use this method. By default the value returned by this method is the
+       same as the initial value of REQUEST['REMOTE_ADDR']. Zope also has
+       support for obtaining a more useful value from other headers if a
+       front-end proxy is in use. See doc/ENVIRONMENT.txt for details.
+
     Bugs Fixed
 
      - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path 

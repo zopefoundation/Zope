@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.174 $'[11:-2]
+__version__='$Revision: 1.175 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -1113,8 +1113,7 @@ def domainSpecMatch(spec, request):
     if request.has_key('REMOTE_HOST'):
         host=request['REMOTE_HOST']
 
-    if request.has_key('REMOTE_ADDR'):
-        addr=request['REMOTE_ADDR']
+    addr=request.getClientAddr()
 
     if not host and not addr:
         return 0

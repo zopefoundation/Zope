@@ -78,6 +78,15 @@ SiteAccess
         If set, all site access rules are suppressed (used by SiteAccess
         products).
 
+ZPublisher
+
+    ZOPE_TRUSTED_PROXIES
+
+	A colon seperated list of IP addresses which run trusted
+        proxy servers. If a connection comes from an address listed
+        here, Zope will trust any X-Forwarded-For header to contain
+        the users real IP address for the purposes of address-based
+        authentication limits.
 
 ZEO
 
