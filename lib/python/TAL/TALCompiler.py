@@ -101,7 +101,7 @@ class METALCompiler(DOMVisitor, TALGenerator):
         TALGenerator.__init__(self, expressionCompiler)
 
     def __call__(self):
-        self.namespaceDict = {}
+        self.namespaceDict = {"xml": XML_NS}
         self.namespaceStack = [self.namespaceDict]
         DOMVisitor.__call__(self)
         assert not self.stack
