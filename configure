@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.21 2004/03/09 05:25:14 chrism Exp $
-# $Revision: 1.21 $
+# $Id: configure,v 1.22 2004/04/13 20:52:06 fdrake Exp $
+# $Revision: 1.22 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -149,7 +149,7 @@ get_python() {
         out "  manually by rerunning the ./configure script with the "
         out "  '--with-python' option."
     fi
-out ""
+    out ""
 }
 
 out() {
