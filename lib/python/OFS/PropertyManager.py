@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -199,7 +199,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     def _delProperty(self, id):
         if not self.hasProperty(id):
             raise ValueError, 'The property %s does not exist' % escape(id)
-        delattr(self,id)
+        self._delPropValue(id)
         self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
                                       self._properties))
 
@@ -289,7 +289,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 self._updateProperty(name, value)
         if REQUEST:
             message="Saved changes."
-            return self.manage_propertiesForm(self,REQUEST,manage_tabs_message=message)
+            return self.manage_propertiesForm(self,REQUEST,
+                                              manage_tabs_message=message)
 
     # Note - this is experimental, pending some community input.
 
