@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os
 from string import atof, rfind
@@ -23,7 +23,11 @@ except:
 
 from SingleThreadedTransaction import PickleDictionary, Persistent
 import DocumentTemplate, MethodObject
+from AccessControl.PermissionRole import PermissionRole
 
+class ApplicationDefaultPermissions:
+    _View_Permission='Manager', 'Anonymous'
+    
 def default__class_init__(self):
     dict=self.__dict__
     have=dict.has_key
@@ -37,6 +41,20 @@ def default__class_init__(self):
 	elif name=='manage' or name[:7]=='manage_' and type(v) is ft:
 	    name=name+'__roles__'
 	    if not have(name): dict[name]='Manager',
+
+    if hasattr(self, '__ac_permissions__'):
+	for acp in self.__ac_permissions__:
+	    pname, mnames = acp[:2]
+	    pr=PermissionRole(pname)
+	    for mname in mnames:
+		try: getattr(self, mname).__roles__=pr
+		except: dict[mname+'__roles__']=pr
+	    pname=pr._p
+	    if not hasattr(ApplicationDefaultPermissions, pname):
+		if len(acp) > 2:
+		    setattr(ApplicationDefaultPermissions, pname, acp[2])
+		else:
+		    setattr(ApplicationDefaultPermissions, pname, ('Manager',))
 
 Persistent.__dict__['__class_init__']=default__class_init__
 
@@ -90,6 +108,9 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.13  1998/05/08 14:52:20  jim
+# Modified default class init to work with new permission machinery.
+#
 # Revision 1.12  1998/01/08 17:38:03  jim
 # Added class initialization machinery to:
 #
