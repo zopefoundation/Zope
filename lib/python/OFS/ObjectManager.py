@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.167 2003/12/15 22:09:25 fdrake Exp $"""
+$Id: ObjectManager.py,v 1.168 2003/12/16 01:38:18 fdrake Exp $"""
 
-__version__='$Revision: 1.167 $'[11:-2]
+__version__='$Revision: 1.168 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -598,11 +598,7 @@ class ObjectManager(
 
             files = all_files
 
-        try:
-            files.sort()
-        except AttributeError:
-            files=list(files)
-            files.sort()
+        files = list(files)
 
         # Perform globbing on list of files (ajung)
 
@@ -610,11 +606,7 @@ class ObjectManager(
         if globbing :
             files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g), files)
 
-        try:
-            files.sort()
-        except AttributeError:
-            files=list(files)
-            files.sort()
+        files.sort()
 
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
