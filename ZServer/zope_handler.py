@@ -237,7 +237,7 @@ class header_scanning_producer:
             return self.pipe.ready()
         elif self.pipe.ready():
             self.buffer=self.buffer+self.pipe.read()
-            if string.find(self.buffer,"\n\n"):
+            if string.find(self.buffer,"\n\n") != -1:
                 [headers,html]=string.split(self.buffer,"\n\n",1)
                 headers=string.split(headers,"\n")
                 for line in headers:
