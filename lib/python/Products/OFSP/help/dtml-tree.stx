@@ -70,6 +70,11 @@ tree: Inserts a tree widget
     expanding and contracting widget links. This attribute is for
     advanced usage only.
 
+    prefix=string -- Provide versions of the tag variables that start
+    with this prefix instead of "tree", and that use underscores
+    (_) instead of hyphens (-).  The prefix must start with a letter and
+    contain only alphanumeric characters and underscores (_).
+
   Tag Variables
 
     tree-item-expanded -- True if the current node is expanded.

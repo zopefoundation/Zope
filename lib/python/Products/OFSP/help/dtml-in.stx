@@ -50,6 +50,11 @@ in: Loops over sequences
     next -- Iterates once if there is a next batch. Sets batch variables
     for the next sequence.
 
+    prefix=string -- Provide versions of the tag variables that start
+    with this prefix instead of "sequence", and that use underscores
+    (_) instead of hyphens (-).  The prefix must start with a letter and
+    contain only alphanumeric characters and underscores (_).
+
   Tag Variables
 
     Current Item Variables
@@ -202,6 +207,19 @@ in: Loops over sequences
       <dtml-in objectValues>
         title: <dtml-var title><br>
       </dtml-in>
+
+    Looping over two sets of objects, using prefixes::
+
+      <dtml-let rows="(1,2,3)" cols="(4,5,6)">
+        <dtml-in rows prefix="row">
+          <dtml-in cols prefix="col">
+            <dtml-var expr="row_item * col_item"><br>
+            <dtml-if col_end>
+              <dtml-var expr="col_total_item * row_mean_item">
+            </dtml-if>
+          </dtml-in>
+        </dtml-in>
+      </dtml-let>
 
     Looping over a list of '(key, value)' tuples::
 

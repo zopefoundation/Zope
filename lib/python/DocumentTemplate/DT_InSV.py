@@ -85,10 +85,9 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.19 2001/04/27 18:07:10 andreas Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: DT_InSV.py,v 1.20 2001/05/16 19:07:02 evan Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
-from string import lower, rfind, split, join
 from math import sqrt
 import re
 TupleType=type(())
@@ -100,11 +99,16 @@ except: mv=None
 
 class sequence_variables:
 
-    def __init__(self,items=None,query_string='',start_name_re=None):
+    alt_prefix = None
+    
+    def __init__(self,items=None,query_string='',start_name_re=None,
+                 alt_prefix=''):
         
         self.items=items
         self.query_string=query_string
         self.start_name_re=start_name_re
+        if alt_prefix:
+            self.alt_prefix = alt_prefix + '_'
 
         self.data=data={
             'previous-sequence': 0,
@@ -126,7 +130,7 @@ class sequence_variables:
         if type(i) is tt and len(i)==2: return i[1]
         return i
 
-    def roman(self,index): return lower(self.Roman(index))
+    def roman(self,index): return self.Roman(index).lower()
 
     def Roman(self,num):
         # Force number to be an integer value
@@ -165,12 +169,12 @@ class sequence_variables:
 
         # Replaces special cases in Roman Numerals
         
-        roman = sub('DCCCC', 'CM', roman)
-        roman = sub('CCCC', 'CD', roman)
-        roman = sub('LXXXX', 'XC', roman)
-        roman = sub('XXXX', 'XL', roman)
-        roman = sub('VIIII', 'IX', roman)
-        roman = sub('IIII', 'IV', roman)
+        roman = roman.replace('DCCCC', 'CM')
+        roman = roman.replace('CCCC', 'CD')
+        roman = roman.replace('LXXXX', 'XC')
+        roman = roman.replace('XXXX', 'XL')
+        roman = roman.replace('VIIII', 'IX')
+        roman = roman.replace('IIII', 'IV')
 
         return roman
 
@@ -196,7 +200,7 @@ class sequence_variables:
         return self.value(index,name) != self.value(index+1,name)
 
     def length(self, ignored):
-        l=self.data['sequence-length']=len(self.items)
+        l=self['sequence-length']=len(self.items)
         return l
 
     def query(self, *ignored):
@@ -227,7 +231,7 @@ class sequence_variables:
 
             query_string='?'+query_string[1:]
         else: query_string='?'
-        self.data['sequence-query']=query_string
+        self['sequence-query']=query_string
         
         return query_string
         
@@ -249,7 +253,11 @@ class sequence_variables:
         for item in items:
             try:
                 if mapping: item=item[name]
-                else: item=getattr(item,name)
+                else:
+                    try: item=getattr(item,name)
+                    except:
+                        if name != 'item':
+                            raise
                 try:
                     if item is mv:
                         item = None
@@ -389,6 +397,12 @@ class sequence_variables:
         }
     for n in statistic_names: special_prefixes[n]=statistics
 
+    def __setitem__(self, key, value):
+        self.data[key] = value
+        if self.alt_prefix:
+            if key.startswith('sequence-'): key = key[9:]
+            self.data[self.alt_prefix + key] = value
+
     def __getitem__(self,key,
                     special_prefixes=special_prefixes,
                     special_prefix=special_prefixes.has_key
@@ -396,11 +410,21 @@ class sequence_variables:
         data=self.data
         if data.has_key(key): return data[key]
 
-        l=rfind(key,'-')
-        if l < 0: raise KeyError, key
+        l=key.rfind('-')
+        if l < 0:
+            alt_prefix = self.alt_prefix
+            if not (alt_prefix and key.startswith(alt_prefix)):
+                raise KeyError, key
 
-        suffix=key[l+1:]
-        prefix=key[:l]
+            suffix = key[len(alt_prefix):].replace('_', '-')
+            if '-' in suffix:
+                try: return self[suffix]
+                except KeyError: pass
+            prefix = 'sequence'
+            key = 'sequence-' + suffix
+        else:
+            suffix=key[l+1:]
+            prefix=key[:l]
 
         if hasattr(self, suffix):
             try: v=data[prefix+'-index']
@@ -419,11 +443,6 @@ class sequence_variables:
             
         raise KeyError, key
 
-
-
-
-def sub(s1, s2, src):
-    return join(split(src, s1), s2)
 
 def opt(start,end,size,orphan,sequence):
     if size < 1:

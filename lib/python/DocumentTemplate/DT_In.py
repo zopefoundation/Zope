@@ -402,13 +402,13 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.50 2001/04/27 20:27:39 shane Exp $'
-__version__='$Revision: 1.50 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.51 2001/05/16 19:07:02 evan Exp $'
+__version__='$Revision: 1.51 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, Eval
-from string import find, atoi, join, split, lower
+from DT_Util import simple_name, add_with_prefix
 import re
 from DT_InSV import sequence_variables, opt
 TupleType=type(())
@@ -437,7 +437,8 @@ class InClass:
                           orphan='3',overlap='1',mapping=1,
                           skip_unauthorized=1,
                           previous=1, next=1, expr='', sort='',
-                          reverse=1, sort_expr='', reverse_expr='')
+                          reverse=1, sort_expr='', reverse_expr='',
+                          prefix='')
         self.args=args
         has_key=args.has_key
 
@@ -458,6 +459,11 @@ class InClass:
         for n in 'start', 'size', 'end':
             if has_key(n): self.batch=1
 
+        prefix = args.get('prefix')
+        if prefix and not simple_name(prefix):
+            raise ParseError, _tm(
+                'prefix is not a simple name', 'in')
+        
         for n in 'orphan','overlap','previous','next':
             if has_key(n) and not self.batch:
                 raise ParseError, (
@@ -470,12 +476,12 @@ class InClass:
         if has_key('start'):
             v=args['start']
             if type(v)==type(''):
-                try: atoi(v)
+                try: int(v)
                 except:
 
                     self.start_name_re=re.compile(
                         '&+'+
-                        join(map(lambda c: "[%s]" % c, v),'')+
+                        ''.join(["[%s]" % c for c in v])+
                         '=[0-9]+&+')
                    
         name,expr=name_param(args,'in',1)
@@ -546,17 +552,22 @@ class InClass:
 
         try: query_string=md['QUERY_STRING']
         except: query_string=''
-
-        vars=sequence_variables(sequence,'?'+query_string,self.start_name_re)
+        prefix = params.get('prefix')
+        vars = sequence_variables(sequence, '?'+query_string,
+                                  self.start_name_re, prefix)
         kw=vars.data
+        pkw = add_with_prefix(kw, 'sequence', prefix)
+        for k, v in kw.items():
+            pkw[k] = v
+        pkw['sequence-step-size']=sz
+        pkw['sequence-step-overlap']=overlap
+        pkw['sequence-step-start']=start
+        pkw['sequence-step-end']=end
+        pkw['sequence-step-start-index']=start-1
+        pkw['sequence-step-end-index']=end-1
+        pkw['sequence-step-orphan']=orphan
+
         kw['mapping']=mapping
-        kw['sequence-step-size']=sz
-        kw['sequence-step-overlap']=overlap
-        kw['sequence-step-start']=start
-        kw['sequence-step-end']=end
-        kw['sequence-step-start-index']=start-1
-        kw['sequence-step-end-index']=end-1
-        kw['sequence-step-orphan']=orphan
 
         push=md._push
         pop=md._pop
@@ -569,10 +580,10 @@ class InClass:
                 if first > 0:
                     pstart,pend,psize=opt(0,first+overlap,
                                           sz,orphan,sequence)
-                    kw['previous-sequence']=1
-                    kw['previous-sequence-start-index']=pstart-1
-                    kw['previous-sequence-end-index']=pend-1
-                    kw['previous-sequence-size']=pend+1-pstart
+                    pkw['previous-sequence']=1
+                    pkw['previous-sequence-start-index']=pstart-1
+                    pkw['previous-sequence-end-index']=pend-1
+                    pkw['previous-sequence-size']=pend+1-pstart
                     result=render(section,md)
 
                 elif self.elses: result=render(self.elses, md)
@@ -589,10 +600,10 @@ class InClass:
                 else:
                     pstart,pend,psize=opt(end+1-overlap,0,
                                           sz,orphan,sequence)
-                    kw['next-sequence']=1
-                    kw['next-sequence-start-index']=pstart-1
-                    kw['next-sequence-end-index']=pend-1
-                    kw['next-sequence-size']=pend+1-pstart
+                    pkw['next-sequence']=1
+                    pkw['next-sequence-start-index']=pstart-1
+                    pkw['next-sequence-end-index']=pend-1
+                    pkw['next-sequence-size']=pend+1-pstart
                     result=render(section,md)
             else:
                 result = []
@@ -600,18 +611,18 @@ class InClass:
                 read_guard = md.read_guard
                 for index in range(first,end):
                     # preset
-                    kw['previous-sequence']= 0
-                    kw['next-sequence']= 0 # now more often defined then previously
+                    pkw['previous-sequence']= 0
+                    pkw['next-sequence']= 0 # now more often defined then previously
                     #
                     if index==first or index==last:
                         # provide batching information
                         if first > 0:
                             pstart,pend,psize=opt(0,first+overlap,
                                                   sz,orphan,sequence)
-                            if index==first: kw['previous-sequence']=1
-                            kw['previous-sequence-start-index']=pstart-1
-                            kw['previous-sequence-end-index']=pend-1
-                            kw['previous-sequence-size']=pend+1-pstart
+                            if index==first: pkw['previous-sequence']=1
+                            pkw['previous-sequence-start-index']=pstart-1
+                            pkw['previous-sequence-end-index']=pend-1
+                            pkw['previous-sequence-size']=pend+1-pstart
                         try:
                             # The following line is a sneaky way to
                             # test whether there are more items,
@@ -619,20 +630,20 @@ class InClass:
                             sequence[end]
                             pstart,pend,psize=opt(end+1-overlap,0,
                                                   sz,orphan,sequence)
-                            if index==last: kw['next-sequence']=1
-                            kw['next-sequence-start-index']=pstart-1
-                            kw['next-sequence-end-index']=pend-1
-                            kw['next-sequence-size']=pend+1-pstart
+                            if index==last: pkw['next-sequence']=1
+                            pkw['next-sequence-start-index']=pstart-1
+                            pkw['next-sequence-end-index']=pend-1
+                            pkw['next-sequence-size']=pend+1-pstart
                         except: pass
         
-                    if index==last: kw['sequence-end']=1
+                    if index==last: pkw['sequence-end']=1
 
                     if read_guard is not None:
                         try: client = read_guard(sequence)[index]
                         except ValidationError, vv:
                             if (params.has_key('skip_unauthorized') and
                                 params['skip_unauthorized']):
-                                if index==first: kw['sequence-start']=0
+                                if index==first: pkw['sequence-start']=0
                                 continue
                             tb = sys.exc_info()[2]
                             raise ValidationError, '(item %s): %s' % (
@@ -640,7 +651,7 @@ class InClass:
                     else:
                         client = sequence[index]
 
-                    kw['sequence-index']=index
+                    pkw['sequence-index']=index
                     if type(client)==TupleType and len(client)==2:
                         client=client[1]
 
@@ -650,10 +661,10 @@ class InClass:
                     try: append(render(section, md))
                     finally: pop(1)
 
-                    if index==first: kw['sequence-start']=0
+                    if index==first: pkw['sequence-start']=0
 
 
-                result=join(result, '')
+                result = ''.join(result)
 
         finally:
             tb = None
@@ -696,8 +707,12 @@ class InClass:
         elif self.reverse is not None:
             sequence=self.reverse_sequence(sequence)
 
-        vars=sequence_variables(sequence)
+        prefix = self.args.get('prefix')
+        vars=sequence_variables(sequence, alt_prefix=prefix)
         kw=vars.data
+        pkw = add_with_prefix(kw, 'sequence', prefix)
+        for k, v in kw.items():
+            pkw[k] = v
         kw['mapping']=mapping
 
         l=len(sequence)
@@ -714,13 +729,13 @@ class InClass:
                 append=result.append
                 read_guard = md.read_guard
                 for index in range(l):
-                    if index==last: kw['sequence-end']=1
+                    if index==last: pkw['sequence-end']=1
                     if read_guard is not None:
                         try: client = read_guard(sequence)[index]
                         except ValidationError, vv:
                             if (self.args.has_key('skip_unauthorized') and
                                 self.args['skip_unauthorized']):
-                                if index==1: kw['sequence-start']=0
+                                if index==1: pkw['sequence-start']=0
                                 continue
                             tb = sys.exc_info()[2]
                             raise ValidationError, '(item %s): %s' % (
@@ -728,7 +743,7 @@ class InClass:
                     else:
                         client = sequence[index]
 
-                    kw['sequence-index']=index
+                    pkw['sequence-index']=index
                     if type(client)==TupleType and len(client)==2:
                         client=client[1]
 
@@ -737,9 +752,9 @@ class InClass:
 
                     try: append(render(section, md))
                     finally: pop()
-                    if index==0: kw['sequence-start']=0
+                    if index==0: pkw['sequence-start']=0
 
-                result=join(result, '')
+                result = ''.join(result)
 
         finally:
             tb = None
@@ -759,9 +774,9 @@ class InClass:
         # eg <dtml-in "foo" sort="akey/nocase,anotherkey/cmp/desc">
 
         sort=self.sort
-        need_sortfunc = find(sort, '/') >= 0
+        need_sortfunc = sort.find('/') >= 0
 
-        sortfields = split(sort, ',')   # multi sort = key1,key2 
+        sortfields = sort.split(',')   # multi sort = key1,key2 
         multsort = len(sortfields) > 1 # flag: is multiple sort
 
         if need_sortfunc:
@@ -834,23 +849,23 @@ def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
-        try: v=atoi(v)
+        try: v=int(v)
         except:
             v=md[v]
-            if type(v) is st: v=atoi(v)
+            if type(v) is st: v=int(v)
     return v
 
 
 # phd: Advanced sort support
 
 def nocase(str1, str2):
-    return cmp(lower(str1), lower(str2))
+    return cmp(str1.lower(), str2.lower())
 
 if sys.modules.has_key("locale"): # only if locale is already imported
     from locale import strcoll
 
     def strcoll_nocase(str1, str2):
-        return strcoll(lower(str1), lower(str2))
+        return strcoll(str1.lower(), str2.lower())
 
 
 def make_sortfunctions(sortfields, md):
@@ -859,7 +874,7 @@ def make_sortfunctions(sortfields, md):
 
     sf_list = []
     for field in sortfields:
-        f = split(field, '/')
+        f = field.split('/')
         l = len(f)
 
         if l == 1:
@@ -886,7 +901,7 @@ def make_sortfunctions(sortfields, md):
         else: # no - look it up in the namespace
             func = md.getitem(f_name, 0)
 
-        sort_order = lower(f[2])
+        sort_order = f[2].lower()
 
         if sort_order == "asc":
             multiplier = +1

@@ -84,16 +84,17 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.46 2001/04/27 20:27:57 shane Exp $'
-__version__='$Revision: 1.46 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.47 2001/05/16 19:07:06 evan Exp $'
+__version__='$Revision: 1.47 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
 
-from string import join, split, rfind, find, translate
+from string import join, split, rfind, find, translate, replace
 from urllib import quote, unquote
 from zlib import compress, decompress
 from binascii import b2a_base64, a2b_base64
+import re
 
 tbl=join(map(chr, range(256)),'')
 tplus=tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
@@ -116,7 +117,7 @@ class Tree:
                           # closed_decoration=None,
                           # childless_decoration=None,
                           assume_children=1,
-                          urlparam=None)
+                          urlparam=None, prefix=None)
         has_key=args.has_key
 
         if has_key('') or has_key('name') or has_key('expr'):
@@ -137,6 +138,11 @@ class Tree:
         if not has_key('url'): args['url']='tpURL'
         if not has_key('childless_decoration'):
             args['childless_decoration']=''
+
+        prefix = args.get('prefix')
+        if prefix and not simple_name(prefix):
+            raise ParseError, _tm(
+                'prefix is not a simple name', 'tree')
         
         self.__name__ = name
         self.section=section.blocks
@@ -251,6 +257,11 @@ def tpRender(self, md, section, args,
     treeData={'tree-root-url': root,
               'tree-colspan': colspan,
               'tree-state': state }
+
+    prefix = args.get('prefix')
+    if prefix:
+        for k, v in treeData.items():
+            treeData[prefix + replace(k[4:], '-', '_')] = v
     
     md._push(InstanceDict(self, md))
     md._push(treeData)
@@ -283,9 +294,10 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
             root_url = root_url or tpUrl
 
-    treeData['tree-item-url']=url
-    treeData['tree-level']=level
-    treeData['tree-item-expanded']=0
+    ptreeData = add_with_prefix(treeData, 'tree', args.get('prefix'))
+    ptreeData['tree-item-url']=url
+    ptreeData['tree-level']=level
+    ptreeData['tree-item-expanded']=0
     idattr=args['id']
 
     output=data.append
@@ -404,7 +416,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 param = ""
 
             if exp:
-                treeData['tree-item-expanded']=1
+                ptreeData['tree-item-expanded']=1
                 output('<A NAME="%s" HREF="%s?%stree-c=%s#%s">'
                        '<IMG SRC="%s/p_/mi" ALT="-" BORDER=0></A>' %
                        (id, root_url, param, s, id, script))
@@ -463,7 +475,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 else: doc=None
                 if doc is not None:
                     treeData['-tree-substate-']=sub
-                    treeData['tree-level']=level
+                    ptreeData['tree-level']=level
                     md._push(treeData)
                     try: output(doc(
                         None,md,
@@ -482,7 +494,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             else: doc=None
             if doc is not None:
                 treeData['-tree-substate-']=sub
-                treeData['tree-level']=level
+                ptreeData['tree-level']=level
                 md._push(treeData)
                 try: output(doc(
                     None,md,

@@ -82,11 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.76 2001/04/30 14:46:00 shane Exp $''' 
-__version__='$Revision: 1.76 $'[11:-2]
+'''$Id: DT_Util.py,v 1.77 2001/05/16 19:07:02 evan Exp $''' 
+__version__='$Revision: 1.77 $'[11:-2]
 
 import re, os
-from string import lower
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
@@ -223,6 +222,25 @@ class Eval(RestrictionCapableEval):
         md._push(kw)
         return self.eval(md)
 
+simple_name = re.compile('[a-z][a-z0-9_]*', re.I).match
+
+class Add_with_prefix:
+    def __init__(self, map, defprefix, prefix):
+        self.map = map
+        self.defprefix = defprefix
+        self.prefix = prefix
+    def __setitem__(self, name, value):
+        map = self.map
+        map[name] = value
+        dp = self.defprefix
+        if name.startswith(dp + '-'):
+            map[self.prefix + name[len(dp):].replace('-', '_')] = value
+        else:
+            map['%s_%s' % (self.prefix, name)] = value
+
+def add_with_prefix(map, defprefix, prefix):
+    if not prefix: return map
+    return Add_with_prefix(map, defprefix, prefix)
 
 def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     used=params.has_key
@@ -377,11 +395,11 @@ def parse_params(text,
     mo_unq = qunparmre.match(text)
 
     if mo_p:
-        name=lower(mo_p.group(2))
+        name=mo_p.group(2).lower()
         value=mo_p.group(3)
         l=len(mo_p.group(1))
     elif mo_q:
-        name=lower(mo_q.group(2))
+        name=mo_q.group(2).lower()
         value=mo_q.group(3)
         l=len(mo_q.group(1))
     elif mo_unp:
