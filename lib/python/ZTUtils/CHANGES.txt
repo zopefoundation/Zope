@@ -11,6 +11,7 @@ ZTUtils changes
         - Orphans defaulted to 3, which was confusing and out of sync
           with DTML-In.
 
+        - Orphan batches were broken.
 
 
 

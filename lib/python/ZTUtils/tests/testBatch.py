@@ -33,11 +33,11 @@ class BatchTests(unittest.TestCase):
             b = Batch(range(bsize), 5, orphan=3)
             assert b.next is None
             assert len(b) == bsize
+            assert b[bsize - 1] == bsize - 1
         b = Batch(range(8), 5)
         assert len(b) == 5
         assert len(b.next) == 3
-        
-        
+
 def test_suite():
     return unittest.makeSuite(BatchTests)
 

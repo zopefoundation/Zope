@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.3 2001/10/02 18:34:30 amos Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Batch.py,v 1.4 2001/10/02 20:54:49 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -135,7 +135,7 @@ class Batch(Base):
             if index + self.end < self.first: raise IndexError, index
             return self._sequence[index + self.end]
         
-        if index >= self.size: raise IndexError, index
+        if index >= self.length: raise IndexError, index
         return self._sequence[index+self.first]
 
     def __len__(self):
