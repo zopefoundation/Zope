@@ -127,7 +127,7 @@
       <dtml-else>
         <img src="&dtml-BASEPATH1;/p_/lockedo"
          alt="This item has been modified in another version" />
-              (<em><dtml-var locked_in_version></em>)
+              (<em><dtml-var locked_in_version html_quote></em>)
       </dtml-if>
     </dtml-if>
     <dtml-if wl_isLocked>
