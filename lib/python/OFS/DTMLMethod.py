@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -180,7 +180,11 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
         security=getSecurityManager()
         security.addContext(self)
-        self.__dict__['validate'] = security.DTMLValidate
+        if self.__dict__.has_key('validate'):
+            first_time_through = 0
+        else:
+            self.__dict__['validate'] = security.DTMLValidate
+            first_time_through = 1
         try:
         
             if client is None:
@@ -200,8 +204,8 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
 
         finally:
             security.removeContext(self)
-            try: del self.__dict__['validate']
-            except: pass
+            if first_time_through:
+                del self.__dict__['validate']
 
         have_key=RESPONSE.headers.has_key
         if not (have_key('content-type') or have_key('Content-Type')):
