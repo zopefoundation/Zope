@@ -63,45 +63,45 @@ Zope Changes
         In ZODB 2, you could access the top-level application object
         with::
 
-	  import Main
-	  app=Main.app
+          import Main
+          app=Main.app
 
-	You could then navigate from the top-level object by getting
-	attributes, calling methods, etc..
+        You could then navigate from the top-level object by getting
+        attributes, calling methods, etc..
 
-	In ZODB 3, you get the top-level object like this::
+        In ZODB 3, you get the top-level object like this::
 
-	  import Zope
-	  app=Zope.app()
+          import Zope
+          app=Zope.app()
 
-	  ... do stuff with objects
+          ... do stuff with objects
 
-	  # and when you're done:
-	  app._p_jar.close()
+          # and when you're done:
+          app._p_jar.close()
 
-	You have to import the Zope application module, which uses
-	ZODB 2 rather than ZODB 2.  In ZODB 3, you have to get a
-	connection to a database before you access an object.  The
-	'app()' function combines opening a connection and getting the
-	top level object.  When your done using the top-level object
-	(or any objects accessible from it) you can close the database
-	connection by calling the 'close' method on the '_p_jar'
-	attribute, which is the database connection.  You don't need
-	to close the connection if you are going to exit Python
-	without doing any more work.
+        You have to import the Zope application module, which uses
+        ZODB 2 rather than ZODB 2.  In ZODB 3, you have to get a
+        connection to a database before you access an object.  The
+        'app()' function combines opening a connection and getting the
+        top level object.  When your done using the top-level object
+        (or any objects accessible from it) you can close the database
+        connection by calling the 'close' method on the '_p_jar'
+        attribute, which is the database connection.  You don't need
+        to close the connection if you are going to exit Python
+        without doing any more work.
 
-	Don't forget to::
+        Don't forget to::
 
-	  get_transaction().commit()
+          get_transaction().commit()
 
-	If you want any changes to made to be saved.
+        If you want any changes to made to be saved.
 
       Note: Converting ZODB 2 (aka BoboPOS) data files to ZODB 3.
 
         The bbb.py script in utilities can be used to convert data
         files from ZODB 2 to ZODB 3 format::
 
-	  utilities/bbb.py -f output_file input_file
+          utilities/bbb.py -f output_file input_file
 
         Here's a example::
 
@@ -113,7 +113,7 @@ Zope Changes
 
         - Multiple database support isn't done yet,
 
-	- OPTIMIZATION: FileStorage will get a more efficient data
+        - OPTIMIZATION: FileStorage will get a more efficient data
           structure for maintaining index information and key methods
           in the ZODB framework will move to C.
 
@@ -122,7 +122,7 @@ Zope Changes
           thread-safe. (Well, only one thread accesses any particular
           copy of a persistent object.)  The biggest issue here is
           mutable global variables, mutable objects stored in classes, 
-	  mutable default Python function arguments, and global
+          mutable default Python function arguments, and global
           variables in extensions.
 
         - Most database adapters are likely to be problematic unless
@@ -133,10 +133,10 @@ Zope Changes
             - are thread safe,
 
             - give up the Python global interpreter lock when
-	      making database calls.
+              making database calls.
 
           This is only a problem when running Zope 2 with multiple
-	  threads.
+          threads.
 
     ZClasses
 
@@ -176,8 +176,8 @@ Zope Changes
 
         - The let and return tags were added to DTML.
 
-	- The startup script, z2.py, has additional documentation on
-	  providing empty strings as arguments.
+        - The startup script, z2.py, has additional documentation on
+          providing empty strings as arguments.
 
         - Added a -P option to the startup script, z2.py, to specify a
           base port for the various servers. For example::
@@ -192,18 +192,44 @@ Zope Changes
           instances running.
 
         - Added an -l option to the startup script, z2.py, to specify
-          the location of the ZServer hit log.
+          the location of the ZServer hit log. If the location is a
+          relative path, then it is assumed to be rooted in the 'var'
+          directory.
 
         - A progress indicator was added to the database conversion
           utility, utilities/bbb.py.
 
-	- Cookie support was added to the ZServer FTP server to make
-          FTP access more compatible with cookie-based authentication.
+        - Cookie support was added to the ZServer FTP server to make
+          FTP access compatible with cookie-based authentication.
 
+        - ZServer now includes a NT Server, 'ZServer.py' This service
+		  requires the Python win32 extensions. It is not yet complete
+		  and not yet integrated with the Zope installer. It does however
+		  include a large doc string.
+
+		- ZServer is offically using the z2.py start script now. The old
+		  start.py and zinit.py were removed. Note: z2.py will call zdaemon.py
+		  for you, if you want to use ZServer in daemon mode.
+
+		- Added a 'has_permission' method to user objects. This facilitates
+		  finding out if a user has access to a given object. For example::
+		  
+		    <!--#if "AUTHENTICATED_USER.has_permissions('View',someObject)"-->
+
+		- The product add list is now filtered. This should keep objects out of
+		  the product add list for which the user does not have adequite
+		  permissions. This is implemented with a new method,
+		  'filtered_meta_types' which returns all the meta_types for which a
+		  given user has permissions. Note: Right now ZClasses do not associate
+		  permissions with Products. Thus all Control Panel Products appear in
+		  the product add list, no matter what roles the user has.
+		
       Bugs fixed
 
         - Got rid of some DOS line-endings in xmlrpclib.py that caused
           install-time module compilation to fail.
+
+        - Fixed DOS line-endings in medusa/max_sockets.py
 
         - Fixed a NameError (missing TupleType) definition in
           the export/import (copy/paste) machinery.
@@ -213,8 +239,12 @@ Zope Changes
 
         - ZServer crashed when the number of simultaneous connections
           exceeded a system limit, especially on Windows. ZServer now
-          stops accepting new connections when the number of active
-          connections exceeds a threshold.
+          figures out what the system limit is and stops accepting new
+          connections when the number of active connections exceeds the
+          limit.
+          
+        - Fixed ZServer HTTP zombie killing. Now hung connections are
+          successfully closed.
 
     Zope 2.0 alpha 3
 
@@ -227,11 +257,11 @@ Zope Changes
         - ZODB 2 (aka BoboPOS) to ZODB 3 FileStorage database conversion
 
           An option has been added to the bbb.py script in the
-	  utilities directory to convert ZODB 2 database files to ZODB
-	  3 format. The bbb.py script now accepts an '-f' option that
-	  takes an argument specifying an output file name.  For
-	  example, to convert the ZODB 2 data file, Data.bbb, in the
-	  var directory, to ZODB 3 FileStorage format::
+          utilities directory to convert ZODB 2 database files to ZODB
+          3 format. The bbb.py script now accepts an '-f' option that
+          takes an argument specifying an output file name.  For
+          example, to convert the ZODB 2 data file, Data.bbb, in the
+          var directory, to ZODB 3 FileStorage format::
 
             python utilities/bbb.py -f var/Data.fs var/Data.bbb
 
@@ -265,59 +295,59 @@ Zope Changes
           (or packages) had been removed were not handled properly as
           broken objects when ZODB 3 was used.
 
-	- The DTML Python string format did not allow expressions for 
-	  simple variable insertion.  Expression insertion is now
-	  allowed if the var tag name if the var tag name is supplied,
-	  as in::
+        - The DTML Python string format did not allow expressions for 
+          simple variable insertion.  Expression insertion is now
+          allowed if the var tag name if the var tag name is supplied,
+          as in::
 
-	    %(var expr="x+1")s
+            %(var expr="x+1")s
 
-	  Note that, because of this change, the var tag name must
-	  also be supplied when a variable named 'var' is inserted, as
-	  in::
+          Note that, because of this change, the var tag name must
+          also be supplied when a variable named 'var' is inserted, as
+          in::
 
-	    %(var var)s
+            %(var var)s
 
     Zope 2.0 alpha 2
 
       Features added
 
         - There is a new optional EXPERIMENTAL HTML DTML syntax.  As
-	  an alternative to SSI syntax, you can now use ordinary HTML
-	  syntax, as in:
+          an alternative to SSI syntax, you can now use ordinary HTML
+          syntax, as in:
 
-	    <dtml-in objectIds>
-	      <dtml-var sequence-item>
-	    </dtml-in>
+            <dtml-in objectIds>
+              <dtml-var sequence-item>
+            </dtml-in>
 
-	  You can also use an entity-reference syntax for the var tag
-	  as an alternative to the tag syntax.  For example::
+          You can also use an entity-reference syntax for the var tag
+          as an alternative to the tag syntax.  For example::
 
-	    &dtml-foo;
+            &dtml-foo;
 
           is equivalent to::
 
-	    <dtml-var foo>
+            <dtml-var foo>
 
-	  and is especially handy in attributes::
+          and is especially handy in attributes::
 
-	    <a href="&dtml-foo;">
+            <a href="&dtml-foo;">
 
-	  Both the new syntax and the SSI syntax are allowed in the
-	  same document.  In fact, if you were really twisted, you
-	  could:
+          Both the new syntax and the SSI syntax are allowed in the
+          same document.  In fact, if you were really twisted, you
+          could:
 
-	    <dtml-in objectIds>
-	      <dtml-var sequence-item>
-	    <!--#/in-->
+            <dtml-in objectIds>
+              <dtml-var sequence-item>
+            <!--#/in-->
 
-	  IMPORTANT
+          IMPORTANT
 
- 	    This feature really is EXPERIMENTAL.  It could disappear
-	    someday, depending on how people like it.  We'd really like
-	    to get feedback on how useful this feature is.
+             This feature really is EXPERIMENTAL.  It could disappear
+            someday, depending on how people like it.  We'd really like
+            to get feedback on how useful this feature is.
 
-	- reverse options were added to the in and tree tags.
+        - reverse options were added to the in and tree tags.
 
         - The startup script, z2.py, has a -D option to turn on
           debugging mode.
@@ -328,38 +358,38 @@ Zope Changes
           override the normal SCRIPT_NAME. This is Useful for using ZServer
           behind a proxy.
 
-	- Added support for the Medusa monitor server.
+        - Added support for the Medusa monitor server.
 
-	- There's a first cut at a ZServer NT service. This is Zope on
+        - There's a first cut at a ZServer NT service. This is Zope on
           NT's answer to zdeamon.py
 
-	  It actually seems to work, though there's still a fair
-	  amount missing.
+          It actually seems to work, though there's still a fair
+          amount missing.
 
-	- The error messages for missing or miss-formatted access
+        - The error messages for missing or miss-formatted access
           files was improved.
 
         - A new debugging method, manage_debug, has been added to
           Control_Panel to monitor the Zope process for possible
           memory leaks.
 
-	- The name, 'this', has been added to the namespace available
+        - The name, 'this', has been added to the namespace available
           to construction methods to provide a function for computing
           the destination object.  The name, 'this' is essentially
           equivalent to 'Destination' and 'Destination' will be
           depricated eventially.
 
-	- The title of the main Zope management interface now includes
+        - The title of the main Zope management interface now includes
           a full URL.
 
-	- Folders that have (or acquire) index_html methods now have
+        - Folders that have (or acquire) index_html methods now have
           view tabs for viewing index_html.
 
-	- On browsers that support Java Script, the "Add" button is
+        - On browsers that support Java Script, the "Add" button is
           ommitted and the add form is visited as soon as a selection
           is made from the select list.
 
-	- The python-pickle format used to export data from ZODB 2 was
+        - The python-pickle format used to export data from ZODB 2 was
           updated to handle string data differently.
 
       Bugs fixed
@@ -368,79 +398,79 @@ Zope Changes
           release notes for Zope 2.0 alpha 1.  The notes for
           Zope 2.0 alpha 1 have been updated substantially.
 
-	- There was a serious memory leak introduced when a security
+        - There was a serious memory leak introduced when a security
           bug was fixed in 1.10.0.
 
-	- There was a memory leak in ZODB 3 persistent objects, which
+        - There was a memory leak in ZODB 3 persistent objects, which
           now manage object IDs as persistent objects.
 
-	- The Python 1.5.2 cgi module didn't work with Zope.  
-	  Zope now includes its own fixed version of the module.
+        - The Python 1.5.2 cgi module didn't work with Zope.  
+          Zope now includes its own fixed version of the module.
 
-	  This bug caused FTP, Netscape Publishing and WebDAV to fail.
+          This bug caused FTP, Netscape Publishing and WebDAV to fail.
 
-	- A bug in transaction management caused Gadfly requests to
+        - A bug in transaction management caused Gadfly requests to
           fail. Other database adapters need to be updated.
 
-	- Running ZServer as nobody failed due to the order in which
-	  the log file was opened.
-	  
-	- Added fix contributed by Brian Hooper for HTTP Clients which
+        - Running ZServer as nobody failed due to the order in which
+          the log file was opened.
+          
+        - Added fix contributed by Brian Hooper for HTTP Clients which
           don't always spell their HTTP headers correctly.
 
-	- A number of classes didn't get there reference-counts
+        - A number of classes didn't get there reference-counts
           reduced when instances were destroyed.  This confused the
           new memory allocation monitoring tool.
 
-	- New user folders had no effect because they did not get
+        - New user folders had no effect because they did not get
           properly registered in their containing folders.
 
-	- Changes made to factory objects were lost when a process was
+        - Changes made to factory objects were lost when a process was
           restarted. 
-	  
-	- Clicking on the 'Help' caused the help information to be
+          
+        - Clicking on the 'Help' caused the help information to be
           displayed in the current frame, rather than in a new
           window. 
 
-	- Shutting down Zope attempted to save the database index even
+        - Shutting down Zope attempted to save the database index even
           when Zope was run in read-only mode.
 
-	- A number of fixes were made in the Date-Time support.
+        - A number of fixes were made in the Date-Time support.
 
-	- Batch processing in the in tag sometimes failed.
+        - Batch processing in the in tag sometimes failed.
 
         - Sites with custom roles in the top-level application
-	  object did not pick up the new 'Owner' role.
-	  
-	- Content-type detection had problems in DTML documents and
+          object did not pick up the new 'Owner' role.
+          
+        - Content-type detection had problems in DTML documents and
           methods. 
 
-	- Some cookie expiration dates used 2-digit years.
+        - Some cookie expiration dates used 2-digit years.
 
-	- Error values for errors raised by ExternalMethods were lost.
+        - Error values for errors raised by ExternalMethods were lost.
 
-	- Values returned bu absolute_url were not URL quoted.
+        - Values returned bu absolute_url were not URL quoted.
 
-	- Extra newlines were prepended to documents when they were
+        - Extra newlines were prepended to documents when they were
           edited.
 
         - Objects ids were not properly quoted in a number of places,
           because id quoting was unnecessary until recent relaxation
           of the rules for ids.
-	  
-	- ExternalMethods are now automatically reloaded when running
+          
+        - ExternalMethods are now automatically reloaded when running
           in debug mode.
 
-	- Search interfaces generated by the search interface wizard
+        - Search interfaces generated by the search interface wizard
           no longer include a "Cancel" button.
 
         - Errors were masked by a bug in handling ZODB3 transaction
           aborts. 
 
-	- The ZODB 3 cache manager deactivated objects too quickly,
+        - The ZODB 3 cache manager deactivated objects too quickly,
           causing performance to degrade.
 
-	- BASEx request variables were not computed correctly when
+        - BASEx request variables were not computed correctly when
           SCRIPT_NAME was not empty.
 
         - The URLx variables couldn't be computed in some cases when
@@ -453,23 +483,23 @@ Zope Changes
 
         - A change was made to the way ZClasses are constructed.
 
-	  Previously, the __call__ method was an alias for the
-	  index_html method which took took an id and a request
-	  and created a new instance and added the instance to
-	  the destination.
-	  
-	  Now, the __call__ method simply calls the underlying
-	  managed class with the supplied arguments to create and
-	  return an instance.  The instance is not added to a
-	  folder.
-	  
-	  The index_html method is now an alias for the
-	  createInObjectManager method, which does what the
-	  index_html method did before.
-	  
-	  There is a new method, fromRequest, that takes an id
-	  and a request and creates a new instance.  It does not
-	  at the instance to a destination.
+          Previously, the __call__ method was an alias for the
+          index_html method which took took an id and a request
+          and created a new instance and added the instance to
+          the destination.
+          
+          Now, the __call__ method simply calls the underlying
+          managed class with the supplied arguments to create and
+          return an instance.  The instance is not added to a
+          folder.
+          
+          The index_html method is now an alias for the
+          createInObjectManager method, which does what the
+          index_html method did before.
+          
+          There is a new method, fromRequest, that takes an id
+          and a request and creates a new instance.  It does not
+          at the instance to a destination.
 
       Features Added
 
@@ -494,7 +524,7 @@ Zope Changes
         - When the new startup script is used, then the control panel
           shows a "Restart" button which causes the Zope process to
           exit and be restarted and a "Shutdown" button that causes Zope 
-	  to exit and not be restarted.
+          to exit and not be restarted.
 
         - There is a *very* rough cut at a centralized version manager
           in the control panel.  This is only functional when the
@@ -505,32 +535,32 @@ Zope Changes
           has been updated.
 
         - Made DTMLDocuments, DTMLMethods, Images, Files and Folders
-	  subclassable by ZClasses.
+          subclassable by ZClasses.
 
-	- ZClass property sheets can now have read and modify
+        - ZClass property sheets can now have read and modify
           permissions.
 
-	- An "add list" name can be specified when creating a ZClass.
-	  If specified, then construction methods and a factory are
-	  created. This makes the class immediately instantiatable and
-	  provides construction method examples.
+        - An "add list" name can be specified when creating a ZClass.
+          If specified, then construction methods and a factory are
+          created. This makes the class immediately instantiatable and
+          provides construction method examples.
 
         - The ZClass basic property sheet now shows base classes.
 
-	- Changed the string representation of HTTPRequest so that
+        - Changed the string representation of HTTPRequest so that
           <!--#var REQUEST--> is a lot friendlier.
  
         - Added a Zope debugging short cut.  
 
-	  Now::
+          Now::
 
-	    import ZPublisher
-	    ZPublisher.Zope(path)
+            import ZPublisher
+            ZPublisher.Zope(path)
 
-	  is a shortcut for::
+          is a shortcut for::
 
-	    import ZPublisher
-	    ZPublisher.test('Zope', path)
+            import ZPublisher
+            ZPublisher.test('Zope', path)
 
       Bugs Fixed
 
@@ -538,21 +568,21 @@ Zope Changes
           permissions.
 
         - A number of bugs arising from attempts to set 
-	  caching headers were fixed.
+          caching headers were fixed.
 
         - Some default permissions were not set correctly.
 
         - The unused non-functioning resource-consuming Scheduler has
-	  been removed.
+          been removed.
 
         - Access was given to objects without roles even if access
           would be denied to the container.
 
         - Fix submitted by Martijn Pieters:
 
-	  Any property type int or long, set to 0, showed up in the
-	  Properties Management tab as blank. This resulted in errors
-	  when trying to change values of other properties, etc.
+          Any property type int or long, set to 0, showed up in the
+          Properties Management tab as blank. This resulted in errors
+          when trying to change values of other properties, etc.
 
         - Version names were computed incorrectly.
 
@@ -568,8 +598,8 @@ Zope Changes
         - Generated property view and edit forms for ZClass property
           sheets had a number of problems.
 
-	- The propertysheets property sheet should only allow addition of
-	  property sheets.
+        - The propertysheets property sheet should only allow addition of
+          property sheets.
 
     Zope 1.11.0 pr1, which should have been named Zope 2.0.0 alpha 0.
       
@@ -713,7 +743,7 @@ Zope Changes
         - Fixed a bug that prevented validate() from working if the top-level
           object were accessed and no default object (index_html) existed.
 
-	- Fixed a logic bug in security validation that allowed access to
+        - Fixed a logic bug in security validation that allowed access to
           unacquired objects that didn't have __roles__ even if the
           containing object was protected.
 
