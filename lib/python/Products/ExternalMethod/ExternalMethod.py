@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -24,6 +24,7 @@ from OFS.SimpleItem import pretty_tb
 from App.Extensions import getObject, getPath, FuncCode
 from Globals import DevelopmentMode
 from App.Management import Navigation
+from ComputedAttribute import ComputedAttribute
 
 manage_addExternalMethodForm=DTMLFile('dtml/methodAdd', globals())
 
@@ -78,8 +79,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
     """
 
     meta_type = 'External Method'
-    _v_func_defaults = ()
-    _v_func_code = None
+
+    func_defaults = ComputedAttribute(lambda self: self._v_func_defaults)
+    func_code = ComputedAttribute(lambda self: self._v_func_code)
 
     ZopeTime=Acquisition.Acquired
     HelpSys=Acquisition.Acquired
@@ -126,12 +128,12 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         elif module[-4:]=='.pyc': module=module[:-4]
         self._module=module
         self._function=function
-        self.getFunction(1,1)
+        self.getFunction(1)
         if REQUEST:
             message="External Method Uploaded."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
 
-    def getFunction(self, check=0, reload=0):
+    def getFunction(self, reload=0):
 
         f=getObject(self._module, self._function, reload)
         if hasattr(f,'im_func'): ff=f.im_func
@@ -182,12 +184,13 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
             ts=os.stat(self.filepath())[stat.ST_MTIME]
             if (not hasattr(self, '_v_last_read') or 
                 (ts != self._v_last_read)):
-                self._v_f=self.getFunction(1,1)
+                self._v_f=self.getFunction(1)
                 self._v_last_read=ts
 
         if hasattr(self, '_v_f'):
             f=self._v_f
-        else: f=self.getFunction()
+        else:
+            f=self.getFunction()
 
         __traceback_info__=args, kw, self._v_func_defaults
 

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testExternalMethod.py,v 1.2 2002/04/22 21:54:48 jim Exp $
+$Id: testExternalMethod.py,v 1.3 2002/04/23 13:04:20 jim Exp $
 """
 
 import math, os
@@ -45,6 +45,16 @@ class Test(TestCase):
         em2.__setstate__(state)
         self.assertEqual(em2(9), math.sqrt(9))
         self.failIf(state.has_key('func_defaults'))
+
+    def test_mapply(self):
+        from ZPublisher.mapply import mapply
+        
+        em1 = ExternalMethod('em', 'test method', 'Test', 'testf')
+        self.assertEqual(mapply(em1, (), {'arg1': 4}), math.sqrt(4))
+        state = em1.__getstate__()
+        em2 = ExternalMethod.__basicnew__()
+        em2.__setstate__(state)
+        self.assertEqual(mapply(em1, (), {'arg1': 9}), math.sqrt(9))
         
         
 
