@@ -12,13 +12,10 @@
 </p>
 </dtml-if Principia-Version>
 
-<P>
-Properties allow you to assign simple values to Zope objects.
-</P>
-
 <form action="<dtml-var URL1>" method="POST">
 <dtml-if propertyMap>
 <p>
+Properties allow you to assign simple values to Zope objects. 
 The following properties are defined for this item. 
 <dtml-if property_extensible_schema__>
 To <a href="#addpropform">
@@ -131,6 +128,7 @@ values and click "Save Changes".
 
 <dtml-else>
 <p>
+Properties allow you to assign simple values to Zope objects. 
 There are currently no properties defined for this item. 
 <dtml-if property_extensible_schema__>
 To add a property, click the &quot;Add...&quot; button.
