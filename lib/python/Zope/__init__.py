@@ -258,7 +258,8 @@ class TransactionsManager:
                 to_append = (object.__name__,)
                 object = object.im_self
                 
-            while object and not hasattr(object, 'getPhysicalPath'):
+            while object is not None and \
+                  not hasattr(object, 'getPhysicalPath'):
                 if not hasattr(object, '__name__'):
                     object = None
                     break
@@ -266,7 +267,7 @@ class TransactionsManager:
                 object = getattr(object, 'aq_inner', object)
                 object = getattr(object, 'aq_parent', None)
 
-            if object:
+            if object is not None:
                 path = join(object.getPhysicalPath() + to_append, '/')
             else:
                 # As Jim would say, "Waaaaaaaa!"
