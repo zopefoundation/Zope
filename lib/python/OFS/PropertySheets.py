@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -780,6 +780,8 @@ class FixedSchema(PropertySheet):
     def property_extensible_schema__(self):
         return 0
         return self._base._extensible
+
+Globals.default__class_init__(FixedSchema)
     
 
 
