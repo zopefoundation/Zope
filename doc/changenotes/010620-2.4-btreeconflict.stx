@@ -1,0 +1,38 @@
+CHANGE
+	
+	010620-2.4-btreeconflict
+
+DEVELOPMENT BRANCH TAG
+
+	(trunk)
+
+DESCRIPTION
+
+	This change makes BTree conflict resolutions raise ConflictError
+	when persistence is active at compile time.
+
+AFFECTED MODULES
+
+	- BTrees/MergeTemplate.c
+
+	- BTrees/BTreeModuleTemplate.c
+
+	- BTrees/BucketTemplate.c
+
+	- BTrees/BTreeTemplate.c
+
+API CHANGES
+
+	None.
+
+NONAPI CHANGES
+
+	The master module template BTreeModuleTemplate will now import
+	ConflictError from ZODB.POSException.
+
+	ConflictError is raised in merge_error instead of ValueError.
+	(arguably redundant with the below)
+
+	bucket_p_resolveConflict and BTree_p_resolveConflict will 
+	replace any error that is raised if they return NULL with a Conflict
+	Error.
