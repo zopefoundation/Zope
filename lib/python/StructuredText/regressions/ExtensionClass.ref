@@ -308,11 +308,13 @@
 
 <li><p>The extension class must be initialized and exported to the module
       with::</p>
-<p>          PyExtensionClass_Export(d,"name",type);</p>
+<PRE>
+          PyExtensionClass_Export(d,&quot;name&quot;,type);
 
-<p>      where <code>name</code> is the module name and <code>type</code> is the extension class
-      type object.</p>
+      where 'name' is the module name and 'type' is the extension class
+      type object.
 
+</PRE>
 
 </ul>
 <h3>Attribute lookup</h3>
@@ -327,6 +329,16 @@
          v = Py_FindAttrString(self,name);
 
 </PRE>
+
+<p>      Attribute lookup is performed by calling the base extension class
+      <code>getattr</code> operation for the base extension class that includes C
+      data, or for the first base extension class, if none of the base
+      extension classes include C data.  <code>ExtensionClass.h</code> defines a
+      macro <code>Py_FindAttrString</code> that can be used to find an object's
+      attributes that are stored in the object's instance dictionary or
+      in the object's class or base classes::</p>
+<p>         v = Py_FindAttrString(self,name);</p>
+
 
 <p>      where <code>name</code> is a C string containing the attribute name.</p>
 
@@ -393,6 +405,22 @@
 
 </PRE>
 
+<p>    A problem occurs when trying to overide methods inherited from
+    Python base classes.  Consider the following example::</p>
+<p>      from ExtensionClass import Base</p>
+
+<p>      class Spam:</p>
+<p>        def __init__(self, name):
+          self.name=name</p>
+
+
+<p>      class ECSpam(Base, Spam):</p>
+<p>        def __init__(self, name, favorite_color):
+          Spam.__init__(self,name)
+          self.favorite_color=favorite_color</p>
+
+
+
 <p>    This implementation will fail when an <code>ECSpam</code> object is
     instantiated.  The problem is that <code>ECSpam.__init__</code> calls
     <code>Spam.__init__</code>, and <code>Spam.__init__</code> can only be called with a
@@ -420,6 +448,25 @@
           self.favorite_color=favorite_color
 
 </PRE>
+
+<p>    To overcome this problem, extension classes provide a class method
+    <code>inheritedAttribute</code> that can be used to obtain an inherited
+    attribute that is suitable for calling with an extension class
+    instance.  Using the <code>inheritedAttribute</code> method, the above
+    example can be rewritten as::</p>
+<p>      from ExtensionClass import Base</p>
+
+<p>      class Spam:</p>
+<p>        def __init__(self, name):
+          self.name=name</p>
+
+
+<p>      class ECSpam(Base, Spam):</p>
+<p>        def __init__(self, name, favorite_color):
+          ECSpam.inheritedAttribute(<code>__init__</code>)(self,name)
+          self.favorite_color=favorite_color</p>
+
+
 
 <p>    This isn't as pretty but does provide the desired result.</p>
 
@@ -481,6 +528,29 @@
           hi=x.hi()
 
 </PRE>
+
+<p>        Consider the following example::</p>
+<p>          import ExtensionClass</p>
+
+<p>          class CustomMethod(ExtensionClass.Base):</p>
+<p>            def __call__(self,ob): 
+              print <code>a %s was called</code> % ob.__class__.__name__</p>
+
+<p>            class wrapper:</p>
+<p>              def __init__(self,m,o): self.meth, self.ob=m,o</p>
+
+<p>              def __call__(self): self.meth(self.ob)</p>
+
+
+<p>            def __of__(self,o): return self.wrapper(self,o)</p>
+
+
+<p>          class bar(ExtensionClass.Base):
+            hi=CustomMethod()</p>
+
+<p>          x=bar()
+          hi=x.hi()</p>
+
 
 <p>        Note that <code>ExtensionClass.Base</code> is a base extension class that
         provides very basic ExtensionClass behavior. </p>
@@ -580,6 +650,23 @@
         print C.f.__roles__ # fails, unbound method
 
 </PRE>
+
+<p>      For example::</p>
+<p>        class C(ExtensionClass.Base):</p>
+<p>          def get_secret(self):
+            "Get a secret"
+            ....</p>
+
+
+<p>        c=C()</p>
+
+<p>        c.f.__roles__=['Trusted People']</p>
+
+<p>        print c.f.__roles__ # outputs ['Trusted People']
+        print c.f__roles__  # outputs ['Trusted People']</p>
+
+<p>        print C.f.__roles__ # fails, unbound method</p>
+
 
 <p>      A bound method attribute is set by setting an attribute in it's
       instance with a name consisting of the concatination of the

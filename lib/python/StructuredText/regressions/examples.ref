@@ -27,9 +27,27 @@ should contain a reference to this footnote, footnote "[1]".)</p>
 <dt>  <u>W protocol implicit</u><dd><p><a href="locallink">locallink</a></p>
 
 
-<dt>  <u>W protocol implicit</u>, alternate<dd><p><a href="locallink">locallink</a>
-</p>
+<dt>  <u>W protocol implicit</u>, alternate<dd><p><a href="locallink">locallink</a></p>
 
 </dl>
+<p>
+<TABLE BORDER=1 CELLPADDING=2>
+ <TR>
+  <TD ALIGN=CENTER COLSPAN=2> A Simple Two-column Table </TD>
+ </TR>
+ <TR>
+  <TD ALIGN=CENTER COLSPAN=1> Column A </TD>
+  <TD ALIGN=CENTER COLSPAN=1> Column B </TD>
+ </TR>
+ <TR>
+  <TD ALIGN=CENTER COLSPAN=1> Apples   </TD>
+  <TD ALIGN=CENTER COLSPAN=1> Oranges  </TD>
+ </TR>
+</TABLE></p>
+
+<p>
+<TABLE BORDER=1 CELLPADDING=2>
+</TABLE></p>
+
 
 
