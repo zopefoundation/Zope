@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import HTMLFile
@@ -94,8 +94,8 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
-    def manage_addDocument(self,REQUEST,id,title,file='',
-			   acl_type='A',acl_roles=[]):
+    def manage_addDocument(self,id,title,file='',
+			   acl_type='A',acl_roles=[],REQUEST=None):
 	"""Add a new Document object"""
 	if not file: file=default_html
         i=Document(file, __name__=id)
