@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -171,12 +171,32 @@ class PropertyManager:
         if self.hasProperty(id):
             return getattr(self, id)
         return d
-        
+
+    def getPropertyType(self, id):
+        """Get the type of property 'id', returning None if no
+           such property exists"""
+        for md in self._properties:
+            if md['id']==id:
+                return md.get('type', 'string')
+        return None
+
     def _setProperty(self, id, value, type='string'):
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
         self._properties=self._properties+({'id':id,'type':type},)
         setattr(self,id,value)
+
+    def _updateProperty(self, id, value):
+        # Update the value of an existing property. If value
+        # is a string, an attempt will be made to convert
+        # the value to the type of the existing property.
+        if not self.hasProperty(id):
+            raise 'Bad Request', 'The property %s does not exist' % id
+        if type(value)==type(''):
+            proptype=self.getPropertyType(id) or 'string'
+            if type_converters.has_key(proptype):
+                value=type_converters[proptype](value)
+        setattr(self, id, value)
 
     def hasProperty(self, id):
         """Return true if object has a property 'id'"""
