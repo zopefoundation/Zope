@@ -90,6 +90,7 @@ import AccessControl.Permission
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
+from zLOG import LOG, WARNING
 import string, os.path
 import stat
 from DateTime import DateTime
@@ -313,18 +314,26 @@ class ProductContext:
         .py              -- APIHelpTopic
         """
         help=self.getProductHelp()
-        path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
-        
+        path=os.path.join(Globals.package_home(self.__pack.__dict__),
+                          directory)
+
+        # If help directory does not exist, log a warning and return.
+        try:
+            dir_mod_time=DateTime(os.stat(path)[stat.ST_MTIME])
+        except OSError, (errno, text):
+            LOG("Zope", WARNING, '%s: %s' % (text, path))
+            return
+
         # test to see if nothing has changed since last registration
         if help.lastRegistered is not None and \
-                help.lastRegistered >= DateTime(os.stat(path)[stat.ST_MTIME]):
+                help.lastRegistered >= dir_mod_time:
             return
         help.lastRegistered=DateTime()
-        
+
         if clear:
             for id in help.objectIds('Help Topic'):
                 help._delObject(id)
-       
+
         for file in os.listdir(path):
             ext=os.path.splitext(file)[1]
             ext=string.lower(ext)
@@ -344,3 +353,4 @@ class ProductContext:
             elif ext in ('.py',):
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
+            
