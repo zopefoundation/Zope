@@ -111,16 +111,18 @@ KNOWN_TAL_ATTRIBUTES = [
     ]
 
 class TALError(Exception):
-    def __init__(self, msg, position=None):
+    def __init__(self, msg, position=(None, None)):
+        assert msg != ""
         self.msg = msg
-        self.position = position    # (line, offset) pair
+        self.lineno = position[0]
+        self.offset = position[1]
 
     def __str__(self):
-        if self.position:
-            result = "%s, at line %d, column %d" % (
-                self.msg, self.position[0], self.position[1]+1)
-        else:
-            result = self.msg
+        result = self.msg
+        if self.lineno is not None:
+            result = result + ", at line %d" % self.lineno
+        if self.offset is not None:
+            result = result + ", column %d" % (self.offset + 1)
         return result
 
 class METALError(TALError):
