@@ -1,11 +1,10 @@
-import ST
-import DocumentClass
-import ClassicDocumentClass
-import unittest
-import StructuredText
-import HTMLClass
-
+from StructuredText import ST
+from StructuredText import DocumentClass
+from StructuredText import ClassicDocumentClass
+from StructuredText import StructuredText
+from StructuredText import HTMLClass
 from string import join
+import sys, os, unittest
 
 """
 This tester first ensures that all regression files
@@ -15,9 +14,13 @@ StructuredText and ClassicDocumentClass->HTMLClass
 to help ensure backwards compatability.
 """
 
+package_dir=os.path.split(ST.__file__)[0]
+regressions=os.path.join(package_dir, 'regressions')
+
+
 class StructuredTextIndexTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/index.stx","r")
+        myfile  = open(os.path.join(regressions, 'index.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -28,7 +31,7 @@ class StructuredTextIndexTestCase(unittest.TestCase):
 
 class StructuredTextAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/Acquisition.stx","r")
+        myfile  = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -39,7 +42,7 @@ class StructuredTextAcquisitionTestCase(unittest.TestCase):
 
 class StructuredTextExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/index.stx","r")
+        myfile  = open(os.path.join(regressions, 'index.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -50,7 +53,7 @@ class StructuredTextExtensionClassTestCase(unittest.TestCase):
 
 class StructuredTextMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/MultiMapping.stx","r")
+        myfile  = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -61,7 +64,7 @@ class StructuredTextMultiMappingTestCase(unittest.TestCase):
 
 class StructuredTextExamplesTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/examples.stx","r")
+        myfile  = open(os.path.join(regressions, 'examples.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -72,7 +75,7 @@ class StructuredTextExamplesTestCase(unittest.TestCase):
         
 class STNGIndexTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/index.stx","r")
+        myfile  = open(os.path.join(regressions, 'index.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -83,7 +86,7 @@ class STNGIndexTestCase(unittest.TestCase):
 
 class STNGAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/Acquisition.stx","r")
+        myfile  = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -94,7 +97,7 @@ class STNGAcquisitionTestCase(unittest.TestCase):
 
 class STNGExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/ExtensionClass.stx","r")
+        myfile  = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -105,7 +108,7 @@ class STNGExtensionClassTestCase(unittest.TestCase):
 
 class STNGMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/MultiMapping.stx","r")
+        myfile  = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -116,7 +119,7 @@ class STNGMultiMappingTestCase(unittest.TestCase):
 
 class STNGExamplesTestCase(unittest.TestCase):
     def setUp(self):
-        myfile  = open("regressions/examples.stx","r")
+        myfile  = open(os.path.join(regressions, 'examples.stx'),"r")
         lines   = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -128,7 +131,7 @@ class STNGExamplesTestCase(unittest.TestCase):
 class DocumentClassIndexTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
-        myfile      = open("regressions/index.stx","r")
+        myfile      = open(os.path.join(regressions, 'index.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -140,7 +143,7 @@ class DocumentClassIndexTestCase(unittest.TestCase):
 class DocumentClassAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
-        myfile      = open("regressions/Acquisition.stx","r")
+        myfile      = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -152,7 +155,7 @@ class DocumentClassAcquisitionTestCase(unittest.TestCase):
 class DocumentClassExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
-        myfile      = open("regressions/ExtensionClass.stx","r")
+        myfile      = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -164,7 +167,7 @@ class DocumentClassExtensionClassTestCase(unittest.TestCase):
 class DocumentClassMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
-        myfile      = open("regressions/MultiMapping.stx","r")
+        myfile      = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -176,7 +179,7 @@ class DocumentClassMultiMappingTestCase(unittest.TestCase):
 class DocumentClassExamplesTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
-        myfile      = open("regressions/examples.stx","r")
+        myfile      = open(os.path.join(regressions, 'examples.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -188,7 +191,7 @@ class DocumentClassExamplesTestCase(unittest.TestCase):
 class ClassicDocumentClassIndexTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
-        myfile      = open("regressions/index.stx","r")
+        myfile      = open(os.path.join(regressions, 'index.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -200,7 +203,7 @@ class ClassicDocumentClassIndexTestCase(unittest.TestCase):
 class ClassicDocumentClassAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
-        myfile      = open("regressions/Acquisition.stx","r")
+        myfile      = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -212,7 +215,7 @@ class ClassicDocumentClassAcquisitionTestCase(unittest.TestCase):
 class ClassicDocumentClassExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
-        myfile      = open("regressions/ExtensionClass.stx","r")
+        myfile      = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -224,7 +227,7 @@ class ClassicDocumentClassExtensionClassTestCase(unittest.TestCase):
 class ClassicDocumentClassMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
-        myfile      = open("regressions/MultiMapping.stx","r")
+        myfile      = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -236,7 +239,7 @@ class ClassicDocumentClassMultiMappingTestCase(unittest.TestCase):
 class ClassicDocumentClassExamplesTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
-        myfile      = open("regressions/examples.stx","r")
+        myfile      = open(os.path.join(regressions, 'examples.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -249,7 +252,7 @@ class ClassicHtmlIndexTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/index.stx","r")
+        myfile      = open(os.path.join(regressions, 'index.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -262,7 +265,7 @@ class ClassicHtmlAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/Acquisition.stx","r")
+        myfile      = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -275,7 +278,7 @@ class ClassicHtmlExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/ExtensionClass.stx","r")
+        myfile      = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -288,7 +291,7 @@ class ClassicHtmlMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/MultiMapping.stx","r")
+        myfile      = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -301,7 +304,7 @@ class ClassicHtmlExamplesTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = ClassicDocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/examples.stx","r")
+        myfile      = open(os.path.join(regressions, 'examples.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -315,7 +318,7 @@ class HtmlIndexTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/index.stx","r")
+        myfile      = open(os.path.join(regressions, 'index.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -328,7 +331,7 @@ class HtmlAcquisitionTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/Acquisition.stx","r")
+        myfile      = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -341,7 +344,7 @@ class HtmlExtensionClassTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/ExtensionClass.stx","r")
+        myfile      = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -354,7 +357,7 @@ class HtmlMultiMappingTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/MultiMapping.stx","r")
+        myfile      = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -367,7 +370,7 @@ class HtmlExamplesTestCase(unittest.TestCase):
     def setUp(self):
         self.Doc    = DocumentClass.DocumentClass()
         self.HTML   = HTMLClass.HTMLClass()
-        myfile      = open("regressions/examples.stx","r")
+        myfile      = open(os.path.join(regressions, 'examples.stx'),"r")
         lines       = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -381,7 +384,7 @@ class IndexRegressionTestCase(unittest.TestCase):
         self.Doc            = ClassicDocumentClass.DocumentClass()
         self.HTML           = HTMLClass.HTMLClass()
         self.ST = StructuredText.StructuredText
-        myfile = open("regressions/index.stx","r")
+        myfile = open(os.path.join(regressions, 'index.stx'),"r")
         lines = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -396,7 +399,7 @@ class AcquisitionRegressionTestCase(unittest.TestCase):
         self.Doc            = ClassicDocumentClass.DocumentClass()
         self.HTML           = HTMLClass.HTMLClass()
         self.ST = StructuredText.StructuredText
-        myfile = open("regressions/Acquisition.stx","r")
+        myfile = open(os.path.join(regressions, 'Acquisition.stx'),"r")
         lines = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -410,7 +413,7 @@ class ExtensionClassRegressionTestCase(unittest.TestCase):
         self.Doc            = ClassicDocumentClass.DocumentClass()
         self.HTML           = HTMLClass.HTMLClass()
         self.ST = StructuredText.StructuredText
-        myfile = open("regressions/ExtensionClass.stx","r")
+        myfile = open(os.path.join(regressions, 'ExtensionClass.stx'),"r")
         lines = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -424,7 +427,7 @@ class MultiMappingRegressionTestCase(unittest.TestCase):
         self.Doc            = ClassicDocumentClass.DocumentClass()
         self.HTML           = HTMLClass.HTMLClass()
         self.ST = StructuredText.StructuredText
-        myfile = open("regressions/MultiMapping.stx","r")
+        myfile = open(os.path.join(regressions, 'MultiMapping.stx'),"r")
         lines = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -439,7 +442,7 @@ class ExamplesRegressionTestCase(unittest.TestCase):
         self.ST             = ST.StructuredText
         self.HTML           = HTMLClass.HTMLClass()
         self.ST = StructuredText.StructuredText
-        myfile = open("regressions/examples.stx","r")
+        myfile = open(os.path.join(regressions, 'examples.stx'),"r")
         lines = myfile.readlines()
         myfile.close()
         lines = join(lines)
@@ -509,3 +512,21 @@ runner.run(DocumentClassTestSuite)
 runner.run(STNGTestSuite)
 runner.run(StructuredTextTestSuite)
 #runner.run(RegressionTestSuite)
+
+
+def test_suite():
+    suite=unittest.TestSuite((
+        ClassicHTMLTestSuite,
+        HTMLTestSuite,
+        ClassicDocumentClassTestSuite,
+        DocumentClassTestSuite,
+        STNGTestSuite,
+        StructuredTextTestSuite,
+#        RegressionTestSuite,
+        ))
+    return suite
+
+
+if __name__=='__main__':
+    # Run tests if run as a standalone script
+    unittest.TextTestRunner().run(test_suite())
