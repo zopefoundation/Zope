@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.196 2003/11/28 16:45:25 jim Exp $'''
-__version__='$Revision: 1.196 $'[11:-2]
+$Id: Application.py,v 1.197 2003/12/10 17:52:46 evan Exp $'''
+__version__='$Revision: 1.197 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -137,21 +137,24 @@ class Application(Globals.ApplicationDefaultPermissions,
     test_url=ZopeAttributionButton
 
     def absolute_url(self, relative=0):
-        '''Return a canonical URL for this object based on its
-        physical containment path, possibly modified by virtual hosting.
-        If the optional 'relative' argument is true, only return the
-        path portion of the URL.'''
+        '''The absolute URL of the root object is BASE1 or "/".'''
+        if relative: return ''
         try:
-            # We need a REQUEST that uses physicalPathToURL to create
-            # BASE1 and BASEPATH1, so probe for it.
-            req = self.REQUEST
-            req.physicalPathToURL
-        except AttributeError:
-            return ''
-        # Take advantage of computed URL cache
-        if relative:
-            return req['BASEPATH1'][1:]
-        return req['BASE1']
+            # Take advantage of computed URL cache
+            return self.REQUEST['BASE1']
+        except (AttributeError, KeyError):
+            return '/'
+
+    def absolute_url_path(self):
+        '''The absolute URL path of the root object is BASEPATH1 or "/".'''
+        try:
+            return self.REQUEST['BASEPATH1']
+        except (AttributeError, KeyError):
+            return '/'
+
+    def virtual_url_path(self):
+        '''The virtual URL path of the root object is empty.'''
+        return ''
 
     def getPhysicalPath(self):
         '''Returns a path that can be used to access this object again

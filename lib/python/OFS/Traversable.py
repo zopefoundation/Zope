@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.22 2003/11/28 16:45:44 jim Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Traversable.py,v 1.23 2003/12/10 17:52:46 evan Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -31,19 +31,62 @@ class Traversable:
 
     absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
-        '''Return a canonical URL for this object based on its
-        physical containment path, possibly modified by virtual hosting.
-        If the optional 'relative' argument is true, only return the
-        path portion of the URL.'''
+        """
+        Return the absolute URL of the object.
+
+        This a canonical URL based on the object's physical
+        containment path.  It is affected by the virtual host
+        configuration, if any, and can be used by external
+        agents, such as a browser, to address the object.
+
+        If the relative argument is provided, with a true value, then
+        the value of virtual_url_path() is returned.
+
+        Some Products incorrectly use '/'+absolute_url(1) as an
+        absolute-path reference.  This breaks in certain virtual
+        hosting situations, and should be changed to use
+        absolute_url_path() instead.
+        """
+        if relative:
+            return self.virtual_url_path()
+
         spp = self.getPhysicalPath()
         try:
             toUrl = self.REQUEST.physicalPathToURL
         except AttributeError:
-            return '/'.join(map(quote, spp[1:]))
-        if relative:
-            # Remove leading slash for backward compatibility sake.
-            return toUrl(spp, relative)[1:]
+            return path2url(spp[1:])
         return toUrl(spp)
+
+    absolute_url_path__roles__=None # Public
+    def absolute_url_path(self):
+        """
+        Return the path portion of the absolute URL of the object.
+
+        This includes the leading slash, and can be used as an
+        'absolute-path reference' as defined in RFC 2396.
+        """
+        spp = self.getPhysicalPath()
+        try:
+            toUrl = self.REQUEST.physicalPathToURL
+        except AttributeError:
+            return path2url(spp) or '/'
+        return toUrl(spp, relative=1) or '/'
+
+    virtual_url_path__roles__=None # Public
+    def virtual_url_path(self):
+        """
+        Return a URL for the object, relative to the site root.
+
+        If a virtual host is configured, the URL is a path relative to
+        the virtual host's root object.  Otherwise, it is the physical
+        path.  In either case, the URL does not begin with a slash.
+        """
+        spp = self.getPhysicalPath()
+        try:
+            toVirt = self.REQUEST.physicalPathToVirtualPath
+        except AttributeError:
+            return path2url(spp[1:])
+        return path2url(toVirt(spp))
 
     getPhysicalRoot__roles__=() # Private
     getPhysicalRoot=Acquired
@@ -159,4 +202,7 @@ class Traversable:
 
     restrictedTraverse__roles__=None # Public
     def restrictedTraverse(self, path, default=_marker):
+
+def path2url(path):
+    return '/'.join(map(quote, path))
         return self.unrestrictedTraverse(path, default, restricted=1)

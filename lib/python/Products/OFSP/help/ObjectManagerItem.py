@@ -94,12 +94,43 @@ class ObjectManagerItem:
 
     def absolute_url(relative=None):
         """
-        Return the absolute url to the object.
+        Return the absolute URL of the object.
 
-        If the relative argument is provided with a true value, then
-        the URL returned is relative to the site object. Note, if
-        virtual hosts are being used, then the path returned is a
-        logical, rather than a physical path.
+        This a canonical URL based on the object's physical
+        containment path.  It is affected by the virtual host
+        configuration, if any, and can be used by external
+        agents, such as a browser, to address the object.
+
+        If the relative argument is provided, with a true value, then
+        the value of virtual_url_path() is returned.
+
+        Some Products incorrectly use '/'+absolute_url(1) as an
+        absolute-path reference.  This breaks in certain virtual
+        hosting situations, and should be changed to use
+        absolute_url_path() instead.
+
+        Permission -- Always available
+        """
+
+    def absolute_url_path():
+        """
+        Return the path portion of the absolute URL of the object.
+
+        This includes the leading slash, and can be used as an
+        'absolute-path reference' as defined in RFC 2396.
+
+        Permission -- Always available
+        """
+
+    def virtual_url_path():
+        """
+        Return a URL for the object, relative to the site root.
+
+        If a virtual host is configured, the URL is a path relative to
+        the virtual host's root object.  Otherwise, it is the physical
+        path.  In either case, the URL does not begin with a slash.
+
+        
 
         Permission -- Always available
         """
