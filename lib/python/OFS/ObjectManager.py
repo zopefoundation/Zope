@@ -1,14 +1,15 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.43 1998/07/23 17:16:52 jim Exp $"""
+$Id: ObjectManager.py,v 1.44 1998/08/03 13:32:00 jim Exp $"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
+import App.FactoryDispatcher
 from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog, default__class_init__
-from string import find,join,lower
+from string import find,join,lower,split
 from urllib import quote
 from DocumentTemplate import html_quote
 from cgi_module_publisher import type_converters
@@ -64,7 +65,12 @@ class ObjectManager(
 	default__class_init__(self)
 
     def all_meta_types(self):
-	return self.meta_types+self.dynamic_meta_types
+        pmt=()
+        if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
+        elif hasattr(self, 'aq_acquire'):
+            try: pmt=self.aq_acquire('_product_meta_types')
+            except:  pass
+	return self.meta_types+self.dynamic_meta_types+pmt
 
     def _checkId(self,id):
 
@@ -275,57 +281,52 @@ class ObjectManager(
 	    x=x+1
 	return vals
 
-    def manage_addObject(self,type,REQUEST):
-	"""Add a subordinate object"""
-	for t in self.meta_types:
-	    if t['name']==type:
-		return getattr(self,t['action'])(
-		    self,REQUEST,
-		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked=''
-		    )
-	for t in self.dynamic_meta_types:
-	    if t['name']==type:
-		return getattr(self,t['action'])(
-		    self,REQUEST,
-		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked='')
-	raise 'BadRequest', 'Unknown object type: %s' % type
+
+    manage_addProduct=App.FactoryDispatcher.ProductDispatcher()
+
+    def manage_cutObject(self, ids, REQUEST=None):
+        """Put a reference to an object, with the given id, in the clip board
+
+        The object is marked for deletion on paste.  This is essentially
+        the first step in a move.
+        """
+        if type(ids) is not type(''):
+            if len(ids) != 1:
+                return MessageDialog(
+                    title='Invalid Selection',
+                    message='Please select one and only one item to move',
+                    action ='./manage_main',)
+            ids=ids[0]
+        obj=getattr(self, ids)
+        err=obj.cutToClipboard(REQUEST)
+        return err or self.manage_main(self, REQUEST, validClipData=1)
+
+    def manage_copyObject(self, ids, REQUEST=None):
+        """Put a reference to an object, with the given id, in the clip board
+        """
+        if type(ids) is not type(''):
+            if len(ids) != 1:
+                return MessageDialog(
+                    title='Invalid Selection',
+                    message='Please select one and only one item to move',
+                    action ='./manage_main',)
+            ids=ids[0]
+        obj=getattr(self, ids)
+        err=obj.copyToClipboard(REQUEST)
+        return err or self.manage_main(self, REQUEST, validClipData=1)
+
+    def manage_pasteObject(self,clip_id='',clip_data='',REQUEST=None):
+        """Paste from the clip board into the current object."""
+        return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
 
 
-    def manage_delObjects(self,ids=[],submit='',clip_id='',
-			  clip_data='',REQUEST=None):
-	"""Copy/Paste/Delete a subordinate object
+    def manage_delObjects(self, ids=[], submit='Delete',
+                          clip_id='', clip_data='',REQUEST=None):
+	"""Delete a subordinate object
 	
-	Based on the value of 'submit', the objects specified in 'ids' get
-	copied, pasted, or deleted.  'Copy' can only work on one object id.
-	'Paste' uses the parameters 'clip_id' and 'clip_data' to paste.
-	'Delete' removes the objects specified in 'ids'.
+	The objects specified in 'ids' get deleted.
 	"""
-	if submit=='Cut':
-	    c=len(ids)
-	    if (c <= 0) or (c > 1):
-		return MessageDialog(
-		       title='Invalid Selection',
-		       message='Please select one and only one item to move',
-		       action ='./manage_main',)
-	    obj=getattr(self, ids[0])
-	    err=obj.cutToClipboard(REQUEST)
-	    return err or self.manage_main(self, REQUEST, validClipData=1)
-
-	if submit=='Copy':
-	    c=len(ids)
-	    if (c <= 0) or (c > 1):
-		return MessageDialog(
-		       title='Invalid Selection',
-		       message='Please select one and only one item to copy',
-		       action ='./manage_main',)
-	    obj=getattr(self, ids[0])
-	    err=obj.copyToClipboard(REQUEST)
-	    return err or self.manage_main(self, REQUEST, validClipData=1)
-
-	if submit=='Paste':
-	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
-
-
+        if type(ids) is type(''): ids=[ids]
 	if submit=='Delete':
 	    if not ids:
 		return MessageDialog(title='No items specified',
@@ -340,11 +341,22 @@ class ObjectManager(
 			   message='<EM>%s</EM> cannot be deleted.' % n,
 			   action ='./manage_main',)
 	    while ids:
-		try:    self._delObject(ids[-1])
-		except: raise 'BadRequest', ('%s does not exist' % ids[-1])
+                id=ids[-1]
+                if not hasattr(self, id) or not self.__dict__.has_key(id):
+                    raise 'BadRequest', '%s does not exist' % ids[-1]
+		self._delObject(id)
 	        del ids[-1]
 	    if REQUEST is not None:
 		return self.manage_main(self, REQUEST, update_menu=1)
+
+ 	elif submit=='Cut': return self.manage_cutObject(id,REQURST)
+ 
+ 	elif submit=='Copy': return self.manage_copyObject(id,REQURST)
+
+	elif submit=='Paste': 
+	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
+
+
 
 
     def _setProperty(self,id,value,type='string'):
@@ -526,6 +538,19 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.44  1998/08/03 13:32:00  jim
+#       - Revamped folder security:
+#
+#          - No longer a separate "add objects" permission.
+#
+#          - Must have "view management screens" to copy.
+#
+#          - Must have "delete objects" to cut ot delete.
+#
+#          - Must be able to add an object of the type being pasted.
+#
+#       - Through-the-web creation of products and factories.
+#
 # Revision 1.43  1998/07/23 17:16:52  jim
 # Fixed ornery bug in objectItems.
 #

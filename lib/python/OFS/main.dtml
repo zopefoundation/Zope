@@ -10,8 +10,8 @@
 <P>
 <!--#/if Principia-Session-->
 
-<FORM ACTION="manage_delObjects" METHOD="POST">
-<!--#if objectValues-->
+<FORM ACTION="." METHOD="POST">
+<!--#if objectItems-->
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
 <!--#in objectItems sort-->
 <TR>
@@ -28,7 +28,7 @@
   <!--#var sequence-key--> 
   <!--#if title-->
   (<!--#var title-->)
-  <!--#/if title-->
+  <!--#/if-->
   </A>
   <!--#if locked_in_session-->
     <!--#if modified_in_session-->
@@ -41,32 +41,32 @@
   <!--#/if-->
   </TD>
 </TR>
-<!--#/in objectValues-->
+<!--#/in-->
 <TR>
 <TD></TD>
 
 <TD COLSPAN="2">
-<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Cut"> 
-<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Copy">
+<INPUT TYPE="SUBMIT" NAME="manage_cutObject:method" VALUE="Cut"> 
+<INPUT TYPE="SUBMIT" NAME="manage_copyObject:method" VALUE="Copy">
 <!--#if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
+<INPUT TYPE="SUBMIT" NAME="manage_pasteObject:method" VALUE="Paste">
 <!--#/if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete">
+<INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
 </TD>
 </TR>
 </TABLE>
-<!--#else objectValues-->
+<!--#else-->
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
 <TR>
 <TD>
 There are currently no items in <EM><!--#var title_or_id--></EM>
 <P>
 <!--#if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
+<INPUT TYPE="SUBMIT" NAME="manage_pasteObject:method" VALUE="Paste">
 <!--#/if validClipData-->
 </TD>
 </TABLE>
-<!--#/if objectValues-->
+<!--#/if-->
 </FORM>
 
 <TABLE>
@@ -75,10 +75,10 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   To add a new item, select an item type and click &quot;Add&quot;.
 </TD>
 <TD VALIGN="TOP">
-  <FORM ACTION="manage_addObject" METHOD="GET">
-  <SELECT NAME="type">
+  <FORM ACTION="." METHOD="GET">
+  <SELECT NAME=":method">
   <!--#in all_meta_types mapping-->
-    <OPTION><!--#var name-->
+    <OPTION value="<!--#var action-->"><!--#var name-->
   <!--#/in all_meta_types-->
   </SELECT><BR>
   <INPUT TYPE="SUBMIT" VALUE=" Add ">
