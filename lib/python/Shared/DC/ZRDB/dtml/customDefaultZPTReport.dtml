@@ -1,6 +1,6 @@
 <html>
   <body tal:define="results  here/%(id)s;
-                    start python:path('request/start') or 0;
+                    start request/start|python:0;
                     batch python:modules['ZTUtils'].Batch(results, 
                                                           size=20, 
                                                           start=start);
