@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.101 $'[11:-2]
+__version__='$Revision: 1.102 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -102,7 +102,7 @@ from AuthEncoding import pw_validate
 ListType=type([])
 NotImplemented='NotImplemented'
 
-
+_marker=[]
 
 class BasicUser(Implicit):
     """Base class for all User objects"""
@@ -117,6 +117,14 @@ class BasicUser(Implicit):
     def getUserName(self):
         """Return the username of a user"""
         raise NotImplemented
+
+    def getId(self):
+        
+        """Get the ID of the user. The ID can be used, at least from
+        Python, to get the user from the user's
+        UserDatabase"""
+
+        return self.getUserName()        
 
     def _getPassword(self):
         """Return the password of the user."""
@@ -250,10 +258,10 @@ class BasicUser(Implicit):
     __repr__=__str__
 
 
+class SimpleUser(BasicUser):
+    """A very simple user implementation
 
-
-class User(BasicUser, Persistent):
-    """Standard User object"""
+    that doesn't make a database commitment"""
 
     def __init__(self,name,password,roles,domains):
         self.name   =name
@@ -277,8 +285,14 @@ class User(BasicUser, Persistent):
         """Return the list of domain restrictions for a user"""
         return self.domains
 
+class SpecialUser(SimpleUser):
+    """Class for special users, like super and nobody"""
+    def getId(self): pass
 
-class Super(User):
+class User(SimpleUser, Persistent):
+    """Standard User object"""
+
+class Super(SpecialUser):
     """Super user
     """
     def allowed(self,parent,roles=None):
@@ -309,7 +323,7 @@ except:
     raise 'InstallError', 'Invalid format for access file - see INSTALL.txt'
 
 
-nobody=User('Anonymous User','',('Anonymous',), [])
+nobody=SpecialUser('Anonymous User','',('Anonymous',), [])
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
@@ -355,6 +369,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def getUser(self, name):
         """Return the named user object or None"""
         raise NotImplemented
+
+    def getUserById(self, id, default=_marker):
+        """Return the user corresponding to the given id.
+        """
+        try: return self.getUser(id)
+        except:
+           if default is _marker: raise
+           return default
 
     def _doAddUser(self, name, password, roles, domains):
         """Create a new user"""
