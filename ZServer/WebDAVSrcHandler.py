@@ -102,6 +102,11 @@ class WebDAVSrcHandler( zhttp_handler ):
             Munge the request to ensure that we call manage_FTPGet.
         """
         env = zhttp_handler.get_environment( self, request )
+
+        # Set a flag to indicate this request came through the WebDAV source
+        # port server.
+        env['WEBDAV_SOURCE_PORT'] = 1
+        
         if env['REQUEST_METHOD'] == 'GET':
             path_info = env['PATH_INFO']
             path_info = os.path.join( path_info, 'manage_FTPget' )
