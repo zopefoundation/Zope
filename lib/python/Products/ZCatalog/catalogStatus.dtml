@@ -12,7 +12,7 @@ memory.  If this number is higher, the Catalog will index quickly but
 consume much more memory.</p>
 <form action="manage_edit" method=POST>
 Subtransaction threshold: <input name=threshold value="<!--#var
-threshold-->"><br>
+threshold html_quote-->"><br>
 <input type=submit value=" Change ">
 </form>
 

@@ -15,13 +15,13 @@
 
 <tr><th valign=top align=left>Target size</th><td>
 <form action="<!--#var URL1-->/manage_cache_size" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_size-->" size=6>
+<input type="text" name="value:int" value="<!--#var cache_size html_quote-->" size=6>
 <input type="submit" value="Change">
 </form></td></tr>
 
 <tr><th valign=top align=left>Target maximum time between accesses</th><td>
 <form action="<!--#var URL1-->/manage_cache_age" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_age-->" size=6>
+<input type="text" name="value:int" value="<!--#var cache_age html_quote-->" size=6>
 <input type="submit" value="Change">
 </form></td></tr>
 

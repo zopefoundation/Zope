@@ -23,7 +23,7 @@ the original object.
   <SELECT NAME=baseid size=7>
   <!--#in objectValues sort=title_or_id-->
     <!--#unless "meta_type in ('Version', 'Principia Draft', 'User Folder')"-->
-      <OPTION VALUE="<!--#var id-->">
+      <OPTION VALUE="<!--#var id html_quote-->">
       <!--#if title-->
 	<!--#var title size=25--> (<!--#var id-->)
       <!--#else-->

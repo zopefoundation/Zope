@@ -9,7 +9,7 @@
 <p>This element controls which Catalog this object will try index and
 unindex itself to.</p>
 Edit default Catalog: 
-<input name="default" value="<!--#var default_catalog-->"> <br>
+<input name="default" value="<!--#var default_catalog html_quote-->"> <br>
 <input type=submit value=" Change ">
 </form>
 

@@ -20,7 +20,7 @@ find option.
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
 <!--#in all_meta_types mapping-->
-  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
 <!--#/in-->
   </SELECT>
   </TD>

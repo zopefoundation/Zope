@@ -19,7 +19,7 @@ on the server.
   <TH ALIGN="LEFT" VALIGN="TOP">Export object id</TH>
   <TD ALIGH="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="id" SIZE="25" VALUE="<!--#if ids--><!--#var 
-  "ids[0]"--><!--#/if-->">
+  "ids[0]" html_quote--><!--#/if-->">
   </TD>
 </TR>
 <TR>

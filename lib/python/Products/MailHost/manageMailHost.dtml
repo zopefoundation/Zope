@@ -14,31 +14,31 @@
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT"><EM>Title</EM></TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">Local Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<!--#var localHost-->">
+    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<!--#var localHost html_quote-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<!--#var smtpHost-->">
+    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<!--#var smtpHost html_quote-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Port</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort-->">
+    <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort html_quote-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">
  <TH ALIGN="LEFT">Max. Timeout</TH>
  <TD ALIGN="LEFT">
-   <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="<!--#var timeout-->">
+   <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="<!--#var timeout html_quote-->">
  </TD>
 </TR>
 

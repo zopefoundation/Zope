@@ -65,7 +65,7 @@ which the user is allowed to login.
   <!--#in valid_roles-->
   <!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
   <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
-  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
   <!--#/if-->
   <!--#/if-->
   <!--#/in valid_roles-->

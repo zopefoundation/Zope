@@ -14,7 +14,7 @@ that user.
 <!--#in user_names-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<!--#var sequence-item-->">
+  <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<!--#var sequence-item html_quote-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="manage_users?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">

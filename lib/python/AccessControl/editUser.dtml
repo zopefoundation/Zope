@@ -17,15 +17,15 @@
 </TR>
 
 <!--#if remote_user_mode__-->
-  <INPUT TYPE="HIDDEN" NAME="password" value="<!--#var password-->">
-  <INPUT TYPE="HIDDEN" NAME="confirm"  value="<!--#var password-->">
+  <INPUT TYPE="HIDDEN" NAME="password" value="<!--#var password html_quote-->">
+  <INPUT TYPE="HIDDEN" NAME="confirm"  value="<!--#var password html_quote-->">
 <!--#else-->
 <TR>
 <TD VALIGN="TOP">
 <STRONG>Password</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="password" VALUE="<!--#var password-->" SIZE="40">
+<INPUT TYPE="PASSWORD" NAME="password" VALUE="<!--#var password html_quote-->" SIZE="40">
 </TD>
 </TR>
 <TR>
@@ -33,7 +33,7 @@
 <STRONG>(Confirm)</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="PASSWORD" NAME="confirm" VALUE="<!--#var password-->" SIZE="40">
+<INPUT TYPE="PASSWORD" NAME="confirm" VALUE="<!--#var password html_quote-->" SIZE="40">
 </TD>
 </TR>
 <!--#/if-->
@@ -43,7 +43,8 @@
 <STRONG>Domains</STRONG>
 </TD>
 <TD VALIGN="TOP">
-<INPUT TYPE="TEXT" NAME="domains:tokens" VALUE="<!--#if expr="user.domains"--><!--#in expr="user.domains"--><!--#var sequence-item--> <!--#/in--><!--#/if-->" SIZE="40">
+<INPUT TYPE="TEXT" NAME="domains:tokens" SIZE="40"
+  VALUE="<!--#if expr="user.domains"--><!--#in expr="user.domains"--><!--#var sequence-item html_quote--> <!--#/in--><!--#/if-->">
 </TD>
 </TR>
 
@@ -57,15 +58,15 @@
 <!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
 <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
 <!--#if expr="_vars['sequence-item'] in user.roles"-->
-<OPTION VALUE="<!--#var sequence-item-->" SELECTED><!--#var sequence-item-->
+<OPTION VALUE="<!--#var sequence-item html_quote-->" SELECTED><!--#var sequence-item-->
 <!--#else-->
-<OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+<OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
 <!--#/if-->
 <!--#/if-->
 <!--#/if-->
 <!--#/in valid_roles-->
 </SELECT>
-<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--#var expr="user.name"-->">
+<INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--#var expr="user.name" html_quote-->">
 <BR>
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Change">
 </TD>

@@ -14,7 +14,7 @@
 <tr>
   <th align="left" valign="top"><em>Title</em></th>
   <td align="left" valign="top" colspan="3">
-    <input type="text" name="title" size="40" value="<!--#var title-->">
+    <input type="text" name="title" size="40" value="<!--#var title html_quote-->">
   </td>
 </tr>
 
@@ -23,8 +23,8 @@
   <td align="left" valign="top" colspan="3">
     <select name=":method">
        <!--#in "propertysheets.common.objectValues()"-->
-          <option value="<!--#var id-->/manage_createView"
-             ><!--#var title_and_id--></option>
+          <option value="<!--#var id html_quote-->/manage_createView"
+             ><!--#var title_and_id html_quote--></option>
        <!--#/in-->
     </select>
   </td>

@@ -19,7 +19,7 @@ subset of object values, such as 'meta_type'.</p>
 <ul>
 <!--#in indexes-->
  <li>
-  <input type="checkbox" name="names:list" value="<!--#var sequence-item-->">
+  <input type="checkbox" name="names:list" value="<!--#var sequence-item html_quote-->">
 <!--#var sequence-item--></li>
 <!--#/in-->
 </ul>

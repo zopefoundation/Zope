@@ -13,13 +13,13 @@
   <tr>
     <th align="LEFT" valign="TOP">Title</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="title"
-     size="40" value="<!--#var title-->"></td>
+     size="40" value="<!--#var title html_quote-->"></td>
     </tr>
   
   <tr>
     <th align="LEFT" valign="TOP">Name</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="name"
-     size="40" value="&dtml-name;"></td>
+     size="40" value="<dtml-var name html_quote>"></td>
     </tr>
 
   <tr><td></td><td><br><input type="SUBMIT" value="Change"></td></tr>

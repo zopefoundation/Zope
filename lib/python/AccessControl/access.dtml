@@ -133,7 +133,7 @@ td {
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="roles:list">
   <!--#in userdefined_roles-->
-  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <OPTION VALUE="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
   <!--#/in userdefined_roles-->
   </SELECT>
   </TD>

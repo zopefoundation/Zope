@@ -17,7 +17,7 @@
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
 	  <td align="LEFT" valign="TOP">
 	    <input type="TEXT" name="title" size="40"
-                   value="<!--#var title-->">
+                   value="<!--#var title html_quote-->">
 	  </td>
 	</tr>
 
@@ -25,7 +25,7 @@
 	  <th align="LEFT" valign="TOP">Database Connection String</th>
 	  <td align="LEFT" valign="TOP">
 	    <input type="TEXT" name="connection_string" size="40"
-                   value="<!--#var connection_string-->">
+                   value="<!--#var connection_string html_quote-->">
 	  </td>
 	</tr>
 	<tr>

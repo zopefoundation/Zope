@@ -7,7 +7,7 @@
 <FORM ACTION="manage_permission" METHOD="POST">
 
 <input type=hidden name=permission_to_manage
-       value="<!--#var permission_to_manage-->">
+       value="<!--#var permission_to_manage html_quote-->">
 Roles assigned to permission
 <strong><em><!--#var permission_to_manage--></em></strong>:<br>
 <select name=roles:list multiple size=10>

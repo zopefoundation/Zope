@@ -24,11 +24,11 @@
         <td align='LEFT'><!--#var id--></td></tr>
 <tr>	<th align='LEFT'><em>Title</em></th>
         <td align='LEFT'><input name="title" size="40"
-             value="<!--#var title-->"></td></tr>
+             value="<!--#var title html_quote-->"></td></tr>
 <tr>	<th align='LEFT'>Connection id</th>
         <td align='LEFT'><select name="connection_id">
               <!--#in SQLConnectionIDs-->
-                <option value="<!--#var sequence-item-->"
+                <option value="<!--#var sequence-item html_quote-->"
                  <!--#if expr="connection_id==_vars['sequence-item']"-->
                  SELECTED<!--#/if-->>
                 <!--#var sequence-key--></option>

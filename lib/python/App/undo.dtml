@@ -35,7 +35,7 @@
     <!--#in undoable_transactions mapping-->
       <tr>
       <td valign=top><input type=checkbox name="transaction_info:list"
-	  value="<!--#var id-->"></td>
+	  value="<!--#var id html_quote-->"></td>
       <td valign=top>
 	  <strong><!--#var description--></strong> by <strong>
           <!--#if user_name-->

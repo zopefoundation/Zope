@@ -30,7 +30,7 @@ which the SQL Method will execute.
 <tr>	<th align='LEFT'>Connection id</th>
         <td align='LEFT'><select name="connection_id">
               <!--#in SQLConnectionIDs-->
-                <option value="<!--#var sequence-item-->">
+                <option value="<!--#var sequence-item html_quote-->">
                 <!--#var sequence-key--></option>
               <!--#/in-->
             </select></td></tr>

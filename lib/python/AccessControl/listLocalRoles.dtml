@@ -29,7 +29,7 @@ and click the <em>Remove</em> button.
 <!--#in get_local_roles-->
 <tr>
   <td align="left" valign="top">
-  <input type="checkbox" name="userids:list" value="<!--#var sequence-key-->">
+  <input type="checkbox" name="userids:list" value="<!--#var sequence-key html_quote-->">
   </td>
   <td align="left" valign="top">
   <a href="manage_editLocalRoles?userid=<!--#var sequence-key 
@@ -63,7 +63,7 @@ roles that should be given to that user from the <em>Roles</em> list.
   <br>
   <select name="userid" size="5">
   <!--#in get_valid_userids-->
-  <option value="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <option value="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
   <!--#endin-->
   </select>
   </td>
@@ -74,7 +74,7 @@ roles that should be given to that user from the <em>Roles</em> list.
   <select name="roles:list" size="5" multiple>
 <!--#in valid_roles--><!--#if 
 "_vars['sequence-item'] not in ('Anonymous', 'Shared')"-->
-<option value="<!--#var sequence-item-->"><!--#var sequence-item-->
+<option value="<!--#var sequence-item html_quote-->"><!--#var sequence-item-->
 <!--#endif-->
 <!--#endin-->
   </select>

@@ -27,14 +27,14 @@
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
-    <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<!--#var id-->">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="40" VALUE="<!--#var id html_quote-->">
   </TD>
 </TR>
 
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
   </TD>
 </TR>
 
@@ -43,7 +43,7 @@
     Meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40" 
-       VALUE="<!--#var meta_type-->">
+       VALUE="<!--#var meta_type html_quote-->">
   </TD>
 </TR>
 
@@ -62,7 +62,7 @@
      Unselected:<BR>
      <SELECT NAME="unselected:list" size=9 multiple>
        <!--#in unselected-->
-         <OPTION VALUE="<!--#var sequence-key-->"
+         <OPTION VALUE="<!--#var sequence-key html_quote-->"
 	 ><!--#var sequence-item--></OPTION>
        <!--#/in-->
      </SELECT>
@@ -70,7 +70,7 @@
   <TD ALIGN="LEFT" VALIGN="MIDDLE">
      <!--#in selected-->
         <input type=hidden name="baseclasses:list"
-	       value="<!--#var sequence-key-->"><br>
+	       value="<!--#var sequence-key html_quote-->"><br>
      <!--#/in-->
      <INPUT TYPE="SUBMIT" NAME="manage_addZClassForm:method" 
             VALUE="    -> ">
@@ -82,7 +82,7 @@
      Selected:<br>
      <SELECT NAME="selected:list" size=9 multiple>
        <!--#in selected-->
-         <OPTION VALUE="<!--#var sequence-key-->"
+         <OPTION VALUE="<!--#var sequence-key html_quote-->"
          ><!--#var sequence-item--></OPTION>
        <!--#/in-->
      </SELECT>

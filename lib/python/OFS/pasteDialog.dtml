@@ -22,7 +22,7 @@ Please specify the id to use for this <!--#var sequence-var-mtype-->.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="TEXT" NAME="clip_id" SIZE="40"
-   VALUE="<!--#var sequence-var-id-->">
+   VALUE="<!--#var sequence-var-id html_quote-->">
   </TD>
 </TR>
 <TR>

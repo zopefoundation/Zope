@@ -13,7 +13,7 @@
 	  <td align="LEFT" valign="TOP">
              <select name="tables:list" size=9 multiple>
                <!--#in table_info-->
-                 <option value="<!--#var sequence-key-->">
+                 <option value="<!--#var sequence-key html_quote-->">
                    <!--#var sequence-key--> <!--#var sequence-item-->
                  </option>
                <!--#/in-->

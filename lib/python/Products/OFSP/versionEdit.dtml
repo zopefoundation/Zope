@@ -20,7 +20,7 @@
   <EM><STRONG>Title</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
   </TD>
 </TR>
 <TR>

@@ -15,7 +15,7 @@
     you may work in this version.
 
     <form action=leave_another>
-    <input type=submit value="Quit Working in <!--#var Zope-Version-->">
+    <input type=submit value="Quit Working in <!--#var Zope-Version html_quote-->">
     </form>
 
   <!--#else-->
@@ -26,7 +26,7 @@
         You <strong>are</strong> currently working in the
         <!--#var Zope-Version--> version.  To
         <strong>quit</strong> working in this version click on this button: 
-        <input type=submit value="Quit Working in <!--#var Zope-Version-->">
+        <input type=submit value="Quit Working in <!--#var Zope-Version html_quote-->">
       </form>
   <!--#/if-->
 <!--#else-->
@@ -37,7 +37,7 @@
       <!--#var title_and_id-->
       version.  To <strong>start</strong> working in this version click
       on this button: 
-      <input type=submit value="Start Working in <!--#var title_or_id-->">
+      <input type=submit value="Start Working in <!--#var title_or_id html_quote-->">
     </form>
 <!--#endif-->
 </body> </html>

@@ -14,14 +14,14 @@
     <TR>
       <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
       <TD ALIGN="LEFT" VALIGN="TOP">
-        <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+        <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title html_quote-->">
       </TD>
     </TR>
     <TR>
       <TH ALIGN="LEFT" VALIGN="TOP">Content Type</TH>
       <TD ALIGN="LEFT" VALIGN="TOP">
         <INPUT TYPE="TEXT" NAME="content_type:required" SIZE="40"
-           VALUE="<!--#var content_type-->">
+           VALUE="<!--#var content_type html_quote-->">
       </TD>
     </TR>
     <TR>

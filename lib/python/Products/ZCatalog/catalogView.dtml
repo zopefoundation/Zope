@@ -43,7 +43,7 @@ can also remove or update individual catalog records.
     <dtml-in searchResults size=20 start=query_start >
     <tr valign=top>
       <td valign="middle" align="center">
-	<INPUT TYPE="checkbox" NAME="urls:list" VALUE="<dtml-var "getpath(data_record_id_)">"
+	<INPUT TYPE="checkbox" NAME="urls:list" VALUE="<dtml-var "getpath(data_record_id_)" html_quote>"
       </TD>
       <td valign="top"><dtml-var meta_type></td>
       <td valign="top" align="left">

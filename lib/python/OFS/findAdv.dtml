@@ -16,7 +16,7 @@
   <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
 <!--#in all_meta_types mapping-->
-  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
 <!--#/in-->
   </SELECT>
   </TD>
@@ -69,7 +69,7 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
 <!--#in valid_roles-->
-  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+  <OPTION VALUE="<!--#var sequence-item html_quote-->"> <!--#var sequence-item-->
 <!--#/in-->
   </SELECT>
   </TD>
@@ -82,7 +82,7 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="obj_permission">
 <!--#in permission_settings mapping-->
-  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+  <OPTION VALUE="<!--#var name html_quote-->"> <!--#var name-->
 <!--#/in-->
   </SELECT>
   </TD>

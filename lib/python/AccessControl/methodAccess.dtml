@@ -15,7 +15,7 @@
       <th align=left><!--#var permission_name--></th>
       <td>
          <input type=hidden name="permission_names:list" 
-	        value="<!--#var permission_name-->">
+	        value="<!--#var permission_name html_quote-->">
          <select name="class_permissions:list">
 	    <option value="" <!--#unless class_permission
                 -->selected<!--#/unless-->>(disabled)</option>

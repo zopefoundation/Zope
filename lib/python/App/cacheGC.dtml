@@ -19,7 +19,7 @@ accessed in the number of seconds given in the input box to the right
 of this text.
 </td><td>
 <form action="<!--#var URL1-->/manage_full_sweep" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_age-->" size=6><br>
+<input type="text" name="value:int" value="<!--#var cache_age html_quote-->" size=6><br>
 <input type="submit" value="Full Sweep">
 </form></td></tr>
 
@@ -31,7 +31,7 @@ accessed in the number of seconds given in the input box to the right
 of this text.
 </td><td>
 <form action="<!--#var URL1-->/manage_minimize" method=GET>
-<input type="text" name="value:int" value="<!--#var cache_age-->" size=6><br>
+<input type="text" name="value:int" value="<!--#var cache_age html_quote-->" size=6><br>
 <input type="submit" value="Minimize">
 </form></td></tr>
 

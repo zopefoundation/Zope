@@ -17,7 +17,7 @@
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
 	  <td align="LEFT" valign="TOP">
 	    <input type="TEXT" name="title" size="40"
-                   value="<!--#var title-->">
+                   value="<!--#var title html_quote-->">
 	  </td>
 	</tr>
 
@@ -31,7 +31,7 @@
           </td>
 	  <td align="LEFT" valign="TOP"><select name=connection_string size=5>
             <!--#in data_sources-->
-              <option value="<!--#var sequence-key-->"
+              <option value="<!--#var sequence-key html_quote-->"
                 <!--#if "_['sequence-key']==connection_string"-->SELECTED
 		<!--#/if-->>
                 <!--#var sequence-key--><!--#if 

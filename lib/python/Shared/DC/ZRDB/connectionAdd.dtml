@@ -11,14 +11,14 @@
 	  <th align="LEFT" valign="TOP">Id</th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="id" size="40"
-                value="<!--#var default_id-->">
+                value="<!--#var default_id html_quote-->">
           </td>
 	</tr>
 	<tr>
 	  <th align="LEFT" valign="TOP"><em>Title</em></th>
 	  <td align="LEFT" valign="TOP">
             <input type="TEXT" name="title" size="40"
-                value="<!--#var default_title-->">
+                value="<!--#var default_title html_quote-->">
           </td>
 	</tr>
 	<tr>

@@ -17,7 +17,7 @@
     <!--#in version_info mapping-->
       <tr>
       <td valign=top><input type=checkbox name="versions:list"
-	  value="<!--#var id-->"></td>
+	  value="<!--#var id html_quote-->"></td>
       <td valign=top>
          <a href="<!--#var SCRIPT_NAME-->/<!--#var id-->/manage_workspace"><!--#var id--></a>
       </td>

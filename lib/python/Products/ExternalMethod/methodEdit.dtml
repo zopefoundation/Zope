@@ -16,15 +16,15 @@
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>Title</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title-->">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="50" VALUE="<!--#var title html_quote-->">
   </TD>
 </TR>
 <tr>	<th ALIGN="LEFT">Function name</th>
 	<td ALIGN="LEFT"><input name="function" size="30"
-             value="<!--#var function-->"></td></tr>
+             value="<!--#var function html_quote-->"></td></tr>
 <tr>	<th ALIGN="LEFT">Python module file (without suffix)</th>
 	<td ALIGN="LEFT"><input name="module" size="30"
-             value="<!--#var module-->"></td></tr>
+             value="<!--#var module html_quote-->"></td></tr>
 <TR>
 <TR>
 <TD></TD>

@@ -27,7 +27,7 @@ tab).  This way, the summary data may be shown in the search results.</p>
 <ul>
 <!--#in schema-->
  <li>
-  <input type="checkbox" name="names:list" value="<!--#var sequence-item-->">
+  <input type="checkbox" name="names:list" value="<!--#var sequence-item html_quote-->">
 <!--#var sequence-item--></li>
 <!--#/in-->
 </ul>

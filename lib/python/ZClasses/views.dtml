@@ -8,8 +8,8 @@
 <!--#in data mapping-->
   <tr>
      <td><input type=checkbox name="selected:list"
-                value="<!--#var label-->"></td>
-     <th align=left valign=top><!--#var label--></th>
+                value="<!--#var label html_quote-->"></td>
+     <th align=left valign=top><!--#var label html_quote--></th>
      <td align=left valign=top>
        <select name="actions:list">
          <!--#in zclass_candidate_view_actions-->

@@ -37,7 +37,7 @@ when trying to send mail.
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">Local Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<!--#var localhost-->">
+    <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<!--#var localhost html_quote-->">
   </TD>
 </TR>
 <TR VALIGN="TOP">

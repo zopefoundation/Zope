@@ -21,14 +21,14 @@ will need to be adjusted if the class is moved.</p>
   <TH ALIGN="LEFT" VALIGN="TOP">title</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="title" SIZE="40"
-     value="<!--#var zClassTitle-->">
+     value="<!--#var zClassTitle html_quote-->">
   </TD>
 </TR>
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
-     value="<!--#var classMetaType-->">
+     value="<!--#var classMetaType html_quote-->">
   </TD>
 </TR>
 <!--#if show_class_id-->
@@ -36,7 +36,7 @@ will need to be adjusted if the class is moved.</p>
   <TH ALIGN="LEFT" VALIGN="TOP">class id</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="class_id" SIZE="40"
-     value="<!--#var class_id-->">
+     value="<!--#var class_id html_quote-->">
   </TD>
 </TR>
 <!--#/if-->
@@ -44,7 +44,7 @@ will need to be adjusted if the class is moved.</p>
   <TH ALIGN="LEFT" VALIGN="TOP"><EM>icon</EM></TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="icon" SIZE="40"
-     value="<!--#var classIcon-->">
+     value="<!--#var classIcon html_quote-->">
   </TD>
 </TR>
 <TR>

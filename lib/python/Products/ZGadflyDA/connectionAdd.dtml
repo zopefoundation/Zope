@@ -35,7 +35,7 @@
           </td>
 	  <td align="LEFT" valign="TOP"><select name=connection size=5>
             <!--#in data_sources-->
-              <option value="<!--#var sequence-key-->">
+              <option value="<!--#var sequence-key html_quote-->">
                 <!--#var sequence-key--><!--#if 
                    sequence-item-->, <!--#var sequence-item--><!--#/if-->
               </option-->

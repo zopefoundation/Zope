@@ -8,14 +8,14 @@
 <form action="manage_distribute"><table>
   <tr><th align="LEFT" valign="TOP">Version</th>
       <td align="LEFT" valign="TOP">
-        <input type=text name="version" value="<!--#var new_version-->">
+        <input type=text name="version" value="<!--#var new_version html_quote-->">
       </td>
   </tr>
   <tr><th align="LEFT" valign="TOP">Configurable objects</th>
       <td align="LEFT" valign="TOP">
         <select name="configurable_objects:list" size=10 multiple>
         <!--#in objectItems-->
-           <option value="<!--#var sequence-key-->" <!--#
+           <option value="<!--#var sequence-key html_quote-->" <!--#
               if "_['sequence-key'] in configurable_objects_"
                 -->SELECTED<!--#/if-->><!--#
             var title_and_id--></option>
