@@ -47,6 +47,7 @@ bobo_application=app=Bobobase['Application']
 
 if os.environ.has_key('PRINCIPIA_HIDE_TRACEBACKS'):
     __bobo_hide_tracebacks__=os.environ['PRINCIPIA_HIDE_TRACEBACKS']
+    Globals.DevelopmentMode=1
 
 if os.environ.has_key('PRINCIPIA_REALM'):
     __bobo_realm__=os.environ['PRINCIPIA_REALM']
@@ -55,6 +56,9 @@ if os.environ.has_key('PRINCIPIA_REALM'):
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.19  1998/10/21 14:52:34  jim
+# Added development mode flag.
+#
 # Revision 1.18  1998/08/03 14:39:30  jim
 # *** empty log message ***
 #
