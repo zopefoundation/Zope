@@ -134,16 +134,8 @@ class ZopeCmd(ZDCmd):
         ZDCmd.do_start(self, arg)
 
     def get_startup_cmd(self, python, more):
-        cmdline = ( '%s -c "from Zope.Startup.options import ZopeOptions; '
-                    'from Zope.Startup import handlers as h; '
-                    'from App import config; '
-                    'opts=ZopeOptions(); '
-                    'opts.configfile=\'%s\'; '
-                    'opts.realize(); '
-                    'h.handleConfig(opts.configroot,opts.confighandlers);'
-                    'config.setConfiguration(opts.configroot); '
-                    'from Zope.Startup import dropPrivileges; '
-                    'dropPrivileges(opts.configroot); '%
+        cmdline = ( '%s -c "from Zope import configure;'
+                    'configure(\'%s\');' %
                     (python, self.options.configfile)
                     )
         return cmdline + more + '\"'

@@ -12,16 +12,38 @@
 #
 ##############################################################################
 
-# this function will actually start up a Zope instance
 def run():
-    import App.config
-    from Zope.Startup import handlers, options, start_zope
-
-    opts = options.ZopeOptions()
-    opts.realize(doc="Sorry, no option docs yet.")
-    handlers.handleConfig(opts.configroot, opts.confighandlers)
-    App.config.setConfiguration(opts.configroot)
+    """ Start a Zope instance """
+    from Zope.Startup import start_zope
+    opts = _setconfig()
     start_zope(opts.configroot)
+
+def configure(configfile):
+    """ Provide an API which allows scripts like zopectl to configure
+    Zope before attempting to do 'app = Zope.app(). Should be used as
+    follows:  from Zope.Startup.run import configure;
+    configure('/path/to/configfile'); import Zope; app = Zope.app() """
+    from Zope.Startup import dropPrivileges
+    opts = _setconfig(configfile)
+    dropPrivileges(opts.configroot)
+
+def _setconfig(configfile=None):
+    """ Configure a Zope instance based on ZopeOptions.  Optionally
+    accept a configfile argument (string path) in order to specify
+    where the configuration file exists. """
+    from Zope.Startup import options, handlers
+    from App import config
+    opts = options.ZopeOptions()
+    if configfile:
+        opts.configfile=configfile
+        opts.realize(doc="Sorry, no option docs yet.", raise_getopt_errs=0)
+    else:
+        opts.realize(doc="Sorry, no option docs yet.")
+        
+    handlers.handleConfig(opts.configroot, opts.confighandlers)
+    import App.config
+    App.config.setConfiguration(opts.configroot)
+    return opts
 
 if __name__ == '__main__':
     run()

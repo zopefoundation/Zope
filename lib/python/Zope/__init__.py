@@ -56,6 +56,7 @@ def debug(*args, **kw):
     import ZPublisher
     return ZPublisher.test('Zope', *args, **kw)
 
+from Zope.Startup.run import configure
 
 # Zope.App.startup.startup() sets the following variables in this module.
 DB = None
