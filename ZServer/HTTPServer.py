@@ -233,6 +233,8 @@ class zhttp_handler:
                         ):
 
         (path, params, query, fragment) = request.split_uri()
+
+        if params: path = path + params # undo medusa bug!
     
         while path and path[0] == '/':
             path = path[1:]
