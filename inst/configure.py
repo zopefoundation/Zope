@@ -43,7 +43,7 @@ def main():
     DISTUTILS_OPTS = ''
     try:
         longopts = ['help', 'ignore-largefile', 'ignore-zlib',
-                    '--ignore-pyexpat', 'prefix=',
+                    'ignore-pyexpat', 'prefix=',
                     'build-base=', 'optimize', 'no-compile', 'quiet']
         opts, args = getopt.getopt(sys.argv[1:], 'h', longopts)
     except getopt.GetoptError, v:
