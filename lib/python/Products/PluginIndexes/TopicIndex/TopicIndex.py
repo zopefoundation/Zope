@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.9 2002/08/14 22:19:34 mj Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.10 2002/11/28 16:32:02 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -21,6 +21,7 @@ from OFS.SimpleItem import SimpleItem
 from Acquisition import Implicit
 from BTrees.OOBTree import OOBTree
 from BTrees.IIBTree import IISet,intersection,union
+from zLOG import ERROR, LOG
 import FilteredSet
 
 _marker = []
@@ -75,8 +76,13 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
         """ hook for (Z)Catalog """
 
         for fs in self.filteredSets.values():
-            fs.unindex_object(documentId)
 
+            try:
+                fs.unindex_object(documentId)
+            except KeyError:
+                LOG(self.__class__.__name__, ERROR,
+                    'Attempt to unindex document'
+                    ' with id %s failed' % documentId)
         return 1
 
 

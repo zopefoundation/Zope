@@ -12,10 +12,9 @@
 ##############################################################################
 
 
-import Zope
+import ZODB
 import os,sys,re,unittest
 from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex
-from Products.ZCatalog.ZCatalog import ZCatalog
 
 
 class Obj:
@@ -84,57 +83,11 @@ class TestTopicIndex(TestBase):
         self._searchAnd(['doc1','doc2'],[])
 
 
-class ZCatalogTopicTests(TestBase):
-
-
-    def setUp(self):
-
-        self.cat = ZCatalog('catalog')
-        self.cat.addColumn('id')
-        self.cat.addIndex('topic','TopicIndex')
-        self.TI = self.cat._catalog.indexes['topic']
-
-        self.TI.addFilteredSet("doc1","PythonFilteredSet","o.meta_type=='doc1'")
-        self.TI.addFilteredSet("doc2","PythonFilteredSet","o.meta_type=='doc2'")
-
-        self.cat.catalog_object(Obj('0'))
-        self.cat.catalog_object(Obj('1','doc1'))
-        self.cat.catalog_object(Obj('2','doc1'))
-        self.cat.catalog_object(Obj('3','doc2'))
-        self.cat.catalog_object(Obj('4','doc2'))
-        self.cat.catalog_object(Obj('5','doc3'))
-        self.cat.catalog_object(Obj('6','doc3'))
-
-    def testOr(self):
-
-        self._searchOr('doc1',[1,2])
-        self._searchOr('doc2',[3,4])
-        self._searchOr(['doc1','doc2'],[1,2,3,4])
-
-    def testAnd(self):
-
-        self._searchAnd('doc1',[1,2])
-        self._searchAnd('doc2',[3,4])
-        self._searchAnd(['doc1','doc2'],[])
-
-    def _search(self,query,operator,expected):
-
-        res = self.cat.searchResults({'topic':{'query':query,'operator':operator}})
-
-        rows = [int(x.id)  for x in res ]
-        rows.sort()
-        expected.sort()
-
-        self.assertEqual(rows,expected,query)
-
-        return rows,res
-
 
 def test_suite():
 
     return unittest.TestSuite( (
         unittest.makeSuite(TestTopicIndex),
-        unittest.makeSuite(ZCatalogTopicTests),
         ))
 
 
