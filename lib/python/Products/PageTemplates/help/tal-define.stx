@@ -39,7 +39,7 @@ define - Define variables
 
       tal:define="global company_name string:Zope Corp, Inc."
 
-    Defining two varibles, where the second depends on the first::
+    Defining two variables, where the second depends on the first::
 
       tal:define="mytitle template/title; tlen python:len(mytitle)"
 

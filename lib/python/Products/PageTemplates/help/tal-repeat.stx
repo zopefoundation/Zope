@@ -9,7 +9,7 @@ repeat - Repeat an element
 
   Description
 
-    The 'tal:repeat' statement replicates a subtree of your document
+    The 'tal:repeat' statement replicates a sub-tree of your document
     once for each item in a sequence. The expression should evaluate
     to a sequence. If the sequence is empty, then the statement
     element is deleted, otherwise it is repeated for each value in the
@@ -26,7 +26,7 @@ repeat - Repeat an element
     You use repeat variables to access information about the current
     repetition (such as the repeat index).  The repeat variable has
     the same name as the local variable, but is only accessible
-    through the builtin variable named 'repeat'.
+    through the built-in variable named 'repeat'.
     
     The following information is available from the repeat variable:
 
@@ -61,7 +61,7 @@ repeat - Repeat an element
 
   Examples
 
-    Iterating over a sequece of strings::    
+    Iterating over a sequence of strings::    
 
       <p tal:repeat="txt python:'one', 'two', 'three'">
          <span tal:replace="txt" />
