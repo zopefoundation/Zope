@@ -19,11 +19,6 @@ from ZODB.tests import ConflictResolution
 
 
 class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
-    def checkLoadSerial(self):
-        # This storage doesn't support versions, so we should get an exception
-        self.assertRaises(POSException.Unsupported,
-                          RevisionStorage.checkLoadSerial,
-                          self)
 
     def checkVersionedStoreAndLoad(self):
         # This storage doesn't support versions, so we should get an exception
@@ -33,9 +28,11 @@ class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
                           oid, data=11, version='a version')
 
 
-class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage, VersionStorage,
-               TransactionalUndoStorage, TransactionalUndoVersionStorage,
-               PackableStorage, HistoryStorage, IteratorStorage,
+class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage,
+               RevisionStorage, VersionStorage,
+               TransactionalUndoStorage,
+               TransactionalUndoVersionStorage, PackableStorage,
+               HistoryStorage, IteratorStorage,
                ConflictResolution.ConflictResolvingStorage,
                ConflictResolution.ConflictResolvingTransUndoStorage):
     pass
