@@ -1,11 +1,11 @@
 """Session object"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
 from Globals import MessageDialog
-from Persistence import Persistent
+from Globals import Persistent
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from string import rfind
@@ -129,6 +129,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.22  1998/11/20 18:16:37  jim
+# First crack at new layout and 1.5 support
+#
 # Revision 1.21  1998/09/24 20:13:40  jim
 # Added checks to prevent moving uncommitted sessions and drafts
 #

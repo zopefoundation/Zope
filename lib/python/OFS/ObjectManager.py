@@ -1,25 +1,25 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.45 1998/08/14 16:46:36 brian Exp $"""
+$Id: ObjectManager.py,v 1.46 1998/11/20 18:16:37 jim Exp $"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
-import Persistence, App.Management, Acquisition, App.Undo, Globals
+import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
-from Globals import HTMLFile, HTMLFile
+from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from string import find,join,lower,split
 from urllib import quote
 from DocumentTemplate import html_quote
-from cgi_module_publisher import type_converters
+from HTTP_ORB.Converters import type_converters
 from DateTime import DateTime
 
 class ObjectManager(
     App.Management.Navigation,
     App.Management.Tabs,
     Acquisition.Implicit,
-    Persistence.Persistent,
+    Persistent,
     App.Undo.UndoSupport,
     ):
     """Generic object manager
@@ -505,6 +505,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.46  1998/11/20 18:16:37  jim
+# First crack at new layout and 1.5 support
+#
 # Revision 1.45  1998/08/14 16:46:36  brian
 # Added multiple copy, paste, rename
 #

@@ -7,25 +7,13 @@
 #       rights reserved.
 #
 ############################################################################## 
-import sys, dcdb, ni
+import sys, dcdb
 
 dcdb.debug() # Make it easy to set a breakpoint near here.
 
-import SimpleDB, Sync, TJar, SingleThreadedTransaction, os
-
-class SyncDB(SimpleDB.Default, Sync.Synchronized):
-    pass
-
-SimpleDB.Default=SyncDB
-
+import os
+from BoboPOS2 import SimpleDB, TJar, SingleThreadedTransaction
 import Globals
-
-try:
-    import thread
-    Globals.application_lock=thread.allocate_lock()
-    __bobo_before__=Globals.application_lock.acquire
-    __bobo_after__ =Globals.application_lock.release
-except: pass
 
 import OFS.Application
 
@@ -33,19 +21,12 @@ import TreeDisplay.TreeTag
 import Scheduler.Scheduler
 
 # Setup support for broken objects:
-import OFS.Uninstalled, PickleJar
-PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
+import OFS.Uninstalled, BoboPOS2.PickleJar
+BoboPOS2.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
-
-# hack Python __str__ method into the record class.
-# This needs to be done better in the future.
-import Record, string
-Record.Record.__str__=lambda r, j=string.join, m=map, s=str: j(m(s,r),', ')
-del Record
-del string
 
 SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
@@ -57,71 +38,3 @@ if os.environ.has_key('PRINCIPIA_HIDE_TRACEBACKS'):
 
 if os.environ.has_key('PRINCIPIA_REALM'):
     __bobo_realm__=os.environ['PRINCIPIA_REALM']
-
-##############################################################################
-# Revision Log
-#
-# $Log: Main.py,v $
-# Revision 1.20  1998/10/21 14:54:37  jim
-# Added __str__ method to Record.Record
-#
-# Revision 1.19  1998/10/21 14:52:34  jim
-# Added development mode flag.
-#
-# Revision 1.18  1998/08/03 14:39:30  jim
-# *** empty log message ***
-#
-# Revision 1.17  1998/08/03 14:31:45  jim
-# *** empty log message ***
-#
-# Revision 1.16  1998/05/08 14:51:32  jim
-# Added support for uninstalled products.
-#
-# Revision 1.15  1998/03/18 20:22:45  jim
-# Added support for PRINCIPIA_HIDE_TRACEBACKS and PRINCIPIA_REALM.
-#
-# Revision 1.14  1997/11/19 20:04:23  brian
-# Hmm, removed create flag for TM - seems only to be an issue with old bobobases.
-#
-# Revision 1.13  1997/11/19 19:59:31  brian
-# Added create flag to force creation of .trans file when transaction manager is created.
-#
-# Revision 1.12  1997/11/11 22:56:33  jim
-# Added logic to that causes transaction commits to notify LRT managers.
-#
-# Revision 1.11  1997/11/07 18:29:06  jim
-# Added app alias.
-#
-# Revision 1.10  1997/11/07 17:32:30  jim
-# Moved bobobase open to OFS.Application.
-#
-# Revision 1.9  1997/11/07 17:13:49  jim
-# Added SessionBase.
-#
-# Revision 1.8  1997/10/31 17:04:18  brian
-# *** empty log message ***
-#
-# Revision 1.7  1997/10/31 15:01:33  brian
-# Fixed bug that could cause startup failure: when the bobobase failed to
-# find 'Application' it would (on bsdi, anyway) raise AttributeError and
-# only KeyError was being caught...
-#
-# Revision 1.6  1997/09/19 18:23:36  brian
-# App nicification
-#
-# Revision 1.5  1997/09/17 16:17:00  jim
-# Added scheduler hook.
-#
-# Revision 1.4  1997/09/10 15:55:50  jim
-# Changed to use title_or_id.
-#
-# Revision 1.3  1997/09/02 21:22:06  jim
-# Added import of TreeDisplay.TreeTag to enable tree tag.
-# Changed document creation call.
-#
-# Revision 1.2  1997/08/28 19:32:36  jim
-# Jim told Paul to do it
-#
-# Revision 1.1  1997/08/13 18:58:39  jim
-# initial
-#

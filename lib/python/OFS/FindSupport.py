@@ -1,12 +1,12 @@
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import sys, os, string, time, Globals
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
 from Globals import HTMLFile
-from cDocumentTemplate import *
+from DocumentTemplate.cDocumentTemplate import *
 from DateTime import DateTime
 from string import find
 
@@ -180,6 +180,9 @@ def p_name(name):
 ############################################################################## 
 #
 # $Log: FindSupport.py,v $
+# Revision 1.4  1998/11/20 18:16:37  jim
+# First crack at new layout and 1.5 support
+#
 # Revision 1.3  1998/08/14 20:54:44  brian
 # Readded Find support that got overwritten somehow
 #

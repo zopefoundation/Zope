@@ -6,7 +6,7 @@
    and aquisition relationships via a simple interface.
 
 """
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import Globals
@@ -31,15 +31,6 @@ class Moniker:
 
     def mtype(self):
 	return absattr(self.bind().meta_type)
-
-    def assert(self):
-	# Return true if the named object exists
-	if self.jar is None: jar=Globals.Bobobase._jar
-	else: jar=Globals.SessionBase[self.jar].jar
-	for n in self.ids:
-	    if not jar.has_key(n):
-		return 0
-	return 1
 
     def bind(self):
 	# Return the real object named by this moniker
@@ -71,6 +62,9 @@ def absattr(attr):
 ############################################################################## 
 #
 # $Log: Moniker.py,v $
+# Revision 1.6  1998/11/20 18:16:37  jim
+# First crack at new layout and 1.5 support
+#
 # Revision 1.5  1998/08/14 16:46:36  brian
 # Added multiple copy, paste, rename
 #

@@ -1,11 +1,9 @@
 """Access control package"""
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
-from PersistentMapping import PersistentMapping
-from Persistence import Persistent
-from Globals import HTMLFile, MessageDialog
+from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
 from string import join,strip,split,lower
 from App.Management import Navigation, Tabs
 from Acquisition import Implicit

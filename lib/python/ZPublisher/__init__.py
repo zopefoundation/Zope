@@ -1,1 +1,1 @@
-from publish import publish_module
+from Publish import publish_module

@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -8,9 +8,9 @@ from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__, pretty_tb
 from Acquisition import Explicit
 import regex, Globals, sys
-import cDocumentTemplate
+import DocumentTemplate.cDocumentTemplate
 
-class Document(cDocumentTemplate.cDocument, HTML, Explicit,
+class Document(DocumentTemplate.cDocumentTemplate.cDocument, HTML, Explicit,
 	       RoleManager, Item_w__name__,
 	       ):
     """ """

@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.73 1998/11/17 22:24:50 brian Exp $'''
-__version__='$Revision: 1.73 $'[11:-2]
+$Id: Application.py,v 1.74 1998/11/20 18:16:37 jim Exp $'''
+__version__='$Revision: 1.74 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -21,7 +21,7 @@ from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
-from Persistence import Persistent
+from Globals import Persistent
 from FindSupport import FindSupport
 from ImageFile import ImageFile
 from urllib import quote
@@ -288,10 +288,6 @@ def install_products(app):
 
 	product=getattr(__import__("Products.%s" % product_name), product_name)
 
-	if (pgetattr(product, 'need_license', None, 1) and
-	    not lic_check(product_name)):
-	    continue
-
 	permissions={}
 	new_permissions={}
 	for permission, names in pgetattr(product, '__ac_permissions__', ()):
@@ -361,53 +357,6 @@ def lcd(e):
     return dat
 
 
-
-def lic_check(product_name):
-    default_license=30
-
-    path_join  =os.path.join
-    product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
-    package_dir=path_join(product_dir, product_name)
-    bobobase   =Globals.Bobobase
-    try: f=open(path_join(package_dir,'%s.lic' % product_name), 'rb')
-    except: f, val = None, default_license
-
-    if f is not None:
-	dat=lcd(f.read())
-	f.close()
-	if dat is None: name, val = '', default_license
-	else: [name, val]=dat[:2]
-
-	if name != product_name: val=default_license
-	elif val is None: return 1
-
-    if not bobobase.has_key('_t_'): t=bobobase['_t_']={}
-    else: t=bobobase['_t_']
-
-    if not t.has_key(product_name):
-	t[product_name]=time.time()
-	bobobase['_t_']=t
-
-    if (t[product_name] + (86400.0 * val)) <= time.time():
-        # License has expired!
-	product=getattr(__import__("Products.%s" % product_name),
-			product_name)
-	for s in pgetattr(product, 'classes', ()):
-	    p=rfind(s,'.')
-	    m='Products.%s.%s' % (product_name, s[:p])
-	    c=s[p+1:]
-	    try: __import__(m)
-	    except:
-		m=s[:p]
-		__import__(m)
-	    setattr(sys.modules[m], c, Expired)
-	return 0
-
-    return 1
-
-
-
-
 def pgetattr(product, name, default=install_products, __init__=0):
     if not __init__ and hasattr(product, name): return getattr(product, name)
     if hasattr(product, '__init__'):
@@ -433,6 +382,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.74  1998/11/20 18:16:37  jim
+# First crack at new layout and 1.5 support
+#
 # Revision 1.73  1998/11/17 22:24:50  brian
 # Fixed b/w compatibility test to ensure Product folder is installed so that an
 # existing Products folder wont be found via acquisition

@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -23,8 +23,8 @@ except:
     SOFTWARE_URL=sys.modules['__builtin__'].SOFTWARE_URL=''
 
 
-
-from SingleThreadedTransaction import PickleDictionary, Persistent
+from BoboPOS2 import Persistent, PickleDictionary
+from BoboPOS2.PersistentMapping import PersistentMapping
 import DocumentTemplate, MethodObject
 from AccessControl.PermissionRole import PermissionRole
 
@@ -170,76 +170,3 @@ def getitems(o,names):
 	r.append(v)
     return r
         
-
-##########################################################################
-#
-# Log
-#
-# $Log: Globals.py,v $
-# Revision 1.19  1998/11/13 20:23:45  jeffrey
-# and fixed the getitems() function
-#
-# Revision 1.18  1998/11/13 20:22:34  jeffrey
-# added jim's "attrget", and Selector/MultipleSelector classes
-#
-# Revision 1.17  1998/10/02 15:00:22  jim
-# Added "DevelopmentMode" that auto-reloads HTMLFile objects.
-#
-# Revision 1.16  1998/09/29 19:22:03  jim
-# Added Acquisition
-#
-# Revision 1.15  1998/05/26 22:28:14  jim
-# Fixed stupid bug in bobobase_modification_time
-#
-# Revision 1.14  1998/05/22 22:25:42  jim
-# Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
-# right into Persistent here.
-#
-# Revision 1.13  1998/05/08 14:52:20  jim
-# Modified default class init to work with new permission machinery.
-#
-# Revision 1.12  1998/01/08 17:38:03  jim
-# Added class initialization machinery to:
-#
-#   - Make sure HTMLFile instances got a __name__ that matched the name
-#     they were assigned to in the class, and
-#
-#   - Give HTMLFile and Python methods whos names are 'manage' or
-#     begin with 'manage_' a __roles__ of ('Manager',)
-#
-# Revision 1.11  1997/12/23 15:08:20  jim
-# Changed HTMLFile to use method protocol rather than acquisition
-# protocol.
-#
-# Revision 1.10  1997/12/17 16:36:50  jim
-# Changed HTML file to support passing in globals()
-#
-# Revision 1.9  1997/11/21 19:33:45  brian
-# Fixed out-of-date debugger support to add correct SH, CH, SU
-#
-# Revision 1.8  1997/11/07 17:12:15  jim
-# Added SesionNameName.
-#
-# Revision 1.7  1997/09/15 17:03:53  jim
-# Got rid of private.
-#
-# Revision 1.6  1997/09/02 21:39:43  jim
-# Moved MessageDialog to end to deal with recursion in module imports.
-#
-# Revision 1.5  1997/08/28 19:32:36  jim
-# Jim told Paul to do it
-#
-# Revision 1.4  1997/08/13 22:14:04  jim
-# *** empty log message ***
-#
-# Revision 1.3  1997/08/13 21:42:45  jim
-# Added back specialized HTMLFile
-#
-# Revision 1.2  1997/08/13 19:04:00  jim
-# *** empty log message ***
-#
-# Revision 1.1  1997/08/13 18:58:39  jim
-# initial
-#
-#
-

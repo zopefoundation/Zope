@@ -54,446 +54,16 @@
 
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-Introduction
-
-  The Python object publisher provides a simple mechanism for publishing a
-  collection of Python objects as World-Wide-Web (Web) resources without any
-  plumbing (e.g. CGI) specific code.
-
-Benefits
-
-  - Applications do not have to include code for interfacing with the
-    web server.
-
-  - Applications can be moved from one publishing mechanism, such as
-    CGI, to another mechanism, such as Fast CGI or COM, with no change.
-
-  - Python objects are published as Python objects.  The web server
-    "calls" the objects in much the same way that other Python objects
-    would.
-
-  - Automatic conversion of URL to object/sub-object traversal.
-
-  - Automatic marshaling of form data, cookie data, and request
-    meta-data to Python function arguments.
-
-  - Automated exception handling.
-
-  - Automatic generation of CGI headers.
-
-  - Automated authentication and authorization.
-
-Published objects
-
-  Objects are published by including them in a published module.
-  When a module is published, any objects that:
-
-    - can be found in the module's global name space,
-
-    - that do not have names starting with an underscore, 
-
-    - that have non-empty documentation strings, and 
-
-    - that are not modules
-
-  are published.
-
-  Sub-objects (or sub-sub objects, ...) of published objects are
-  also published, as long as the sub-objects:
-   
-    - have non-empty doc strings,
-
-    - have names that do not begin with an underscore, and
-
-    - are not modules.
-
-  Note that object methods are considered to be subobjects.
-
-  Object-to-subobject traversal is done by converting steps in the URI
-  path to get attribute or get item calls.  For example, in traversing
-  from 'http://some.host/some_module/object' to
-  'http://some.host/some_module/object/subobject', the module
-  publisher will try to get 'some_module.object.subobject'.  If the
-  access fails with other than an attribute error, then the object
-  publisher raises a "NotFound" exception.  If the access fails with
-  an attribute error, then the object publisher will try to obtain the
-  subobject with: 'some_module.object["subobject"]'.  If this access
-  fails, then the object publisher raises a '"Not Found"' exception.  If
-  either of the accesses suceeds, then, of course, processing continues.
-
-  During object traversal, the names '.' and '..' have special meaning
-  if the application does not provide meaning for them.  If the name
-  '.' is encountered and the application does not provide a value,
-  then the name is effectively skipped.  For example, the path 'x/./y'
-  is equivalent to 'x/y'. If the name '..' is encountered and the
-  application does not provide a value, then the parent of the object
-  being traversed is used.  For example, 'x/y/../z' is almost
-  equivalent to 'x/z', except that 'y' is considered to be part of the
-  path to 'z'.  If 'y' has a user folder, it will be consulted when
-  validadting access to 'z' before a user folder in 'x' is consulted.
-
-  Normally, URL traversal begins with the published module.  If the
-  Published module has a global variable named 'bobo_application',
-  then traversal begins with this object instead.
-
-  If the final object encountered when traversing the URL has an
-  'index_html' attribute, the object traversal will continue to this
-  attribute.   This is useful for providing default methods for objects.
-
-Access Control
-
-  Object access can be further controlled via
-  *roles* and *user databases*.
-
-  The Bobo authorization model uses roles to control access to
-  objects.  As Bobo traverses URLs, it checked for '__roles__'
-  attributes in the objects it encounters.  The last value found
-  controls access to the published object.
-
-  If found, '__roles__' should be None or a sequence of role names.  If
-  '__roles__' is 'None', then the published object is public.  If
-  '__roles__' is not 'None', then the user must provide a user name and
-  password that can be validated by a user database.
-
-  User Databases
-
-     If an object has a '__roles__' attribute that is not empty and not
-     'None', Bobo tries to find a user database to authenticate the user.
-     It searches for user databases by looking for an '__allow_groups__'
-     attribute, first in the published object, then in it's container,
-     and so on until a user database is found.  When a user database
-     is found, Bobo attempts to validate the user against the user
-     database.  If validation fails, then Bobo will continue searching
-     for user databases until the user can be validated or until no
-     more user databases can be found.
-   
-     User database objects
-   
-       The user database may be an object that provides a validate method::
-   
-         validate(request, http_authorization, roles)
-   
-       where:
-   
-          'request' -- a mapping object that contains request information,
-   
-          'http_authorization' -- the value of the HTTP Authorization header
-                   or 'None' if no authorization header was provided, and 
-   
-          'roles' -- a list of user role names
-   
-       The validate method returns 'None' if it cannot validate a user and
-       a user object if it can.  Normally, if the validate method returns
-       'None', Bobo will try to use other user databases, however, a user
-       database can prevent this by raising an exception.
-
-       If validation succeeds Bobo assigns the user object to the
-       request variable, 'AUTHENTICATED_USER'.  Bobo currently places
-       no restriction on user objects.
-
-     Mapping user databases
-
-       If the user database is a mapping object, then the keys of the
-       object are role names and values are the associated user groups for
-       the roles.   Bobo attempts to validate the user by searching
-       for a user name and password matching the user name and
-       password given in the HTTP Authorization header in a groups for
-       role names matching the roles in the published object's
-       __roles__ attribute.
-
-       If validation succeeds Bobo assigns the user name to the
-       request variable, 'AUTHENTICATED_USER'.
-    
-     Authentication user interface
-
-       When a user first accesses a protected object, Bobo returns an
-       error response to the web browser that causes a password dialog
-       to be displayed. 
-
-     Specifying a realm name for basic authentication
-
-       You can control the realm name used for Bobo's Basic
-       authentication by providing a module variable named
-       '__bobo_realm__'.
-
-     Using the web server to perform authentication
-
-       Some web servers cannot be coaxed into passing authentication
-       information to applications.  In this case, Bobo applications
-       cannot perform authentication.  If the web server is configured
-       to authenticate access to a Bobo application, then the Bobo
-       application can still perform authorization using the
-       'REMOTE_USER' variable.  Bobo does this automatically when
-       mapping user databases are used, and custom user databases may
-       do this too.
-
-       In this case, it may be necessary to provide more than one path
-       to an application, one that is authenticated, and one that
-       isn't, if public methods and non-public methods are
-       interspursed.
-
-  Fixed-attribute objects
-
-      For some interesting objects, such as functions, and methods,
-      it may not be possible for applications to set
-      '__roles__' attributes.  In these cases, the
-      object's parent object may contain attribute
-      'object_name__roles__', which
-      will be used as surrogates for the object's
-      '__role__' attribute.
-
-Function, method, and class objects
-  
-  If a published object is a function, method, or class, then the
-  object will be called and the return value of the call will be
-  returned as the HTTP resonse.  Calling arguments will be supplied
-  from "environment variables", from URL-encoded form data, if any,
-  and from HTTP cookies by matching argument names defined for the
-  object with variable names.
-
-  Accessing request data directly
-
-    If the object being called has an argument named 'REQUEST', then
-    a request object will be passed.  Request objects encapsulate
-    request meta data and provide full access to all environment
-    data, form data, cookies, and the input data stream (i.e. body
-    data as a stream).
-
-  Providing finer control over responses and stream output
-
-    If the object being called has an argument named 'RESPONSE',
-    then a response object will be passed.  This object can be used
-    to specify HTTP headers and to perform stream-oriented output.
-    Rather than returning a result, data may be output by calling
-    the write and flush methods of the response object one or more
-    times.  This is useful, for example, when outputing results from
-    a time-consuming task, since partial results may be displayed
-    long before complete results are available.
-
-  Argument Types and File upload
-
-    Normally, string arguments are passed to called objects. The
-    called object must be prepared to convert string arguments to
-    other data types, such as numbers.
-    
-    If file upload fields are used, however, then FileUpload objects
-    will be passed instead for these fields.  FileUpload objects
-    bahave like file objects and provide attributes for inspecting the
-    uploaded file's source name and the upload headers, such as
-    content-type. 
-
-    If field names in form data are of the form: name:type, then an
-    attempt will be to convert data from from strings to the indicated
-    type.  The data types currently supported are: 
-
-        float -- Python floating point numbers
-    
-        int -- Python integers
-    
-        long -- Python long integers
-    
-        string -- python strings
-    
-        required -- non-blank python strings
-
-        date -- Date-time values
-
-        list -- Python list of values, even if there is only
-                one value.
-
-        lines -- Python list of values entered as multiple lines
-                 in a single field
-
-        tokens -- Python list of values entered as multiple space-separated
-                  tokens in a single field
-
-        tuple -- Python tuple of values, even if there is only one.
-
-        method -- Augment PATH_INFO with information from the form field.
-                  (See "Method Arguments" blow.)
-                  
-
-    For example, if the name of a field in an input
-    form is 'age:int', then the field value will be passed in argument,
-    age, and an attempt will be made to convert the argument value to
-    an integer.  This conversion also works with file upload, so using
-    a file upload field with a name like myfile:string will cause the
-    UploadFile to be converted to a string before being passed to the
-    object.  
-
-  Method Arguments
-
-    Sometimes, it is desireble to control which method is called based
-    on form data.  For example, one might have a form with a select
-    list and want to choose which method to call depening on the item
-    chosen. Similarly, one might have multiple submit buttons and want
-    to invoke a different method for each button.
-
-    Bobo provides a way to select methods using form variables through
-    use of the "method" argument type.  The method type allows the
-    request 'PATH_INFO' to be augmented using information from a
-    form item name or value.
-
-    If the name of a form field is ':method', then the value of the
-    field is added to 'PATH_INFO'.  For example, if the original
-    'PATH_INFO' is 'foo/bar' and the value of a ':method' field is
-    'x/y', then 'PATH_INFO' is transformed to 'foo/bar/x/y'.  This is
-    useful when presenting a select list.  Method names can be
-    placed in the select option values.
-
-    If the name of a form field ends in ':method' and is longer than 7
-    characters, then the part of the name before ':method' is added to
-    'PATH_INFO'.  For example, if the original 'PATH_INFO' is
-    'foo/bar' and there is a 'x/y:method' field, then 'PATH_INFO' is
-    transformed to 'foo/bar/x/y'.  In this case, the form value is
-    ignored.  This is useful for mapping submit buttons to methods,
-    since submit button values are displayed and should, therefore,
-    not contain method names.
-
-    Only one method field should be provided.  If more than one method
-    field is included in the request, the behavior is undefined.
-
-    If the name of a form field is ':default_method', then the value
-    of the field is added to 'PATH_INFO' *if and only if* there are no
-    form fields with names ending in ':method'.
-
-    The base HREF is set when method fields are provided.  In the
-    above examples, the base HREF is set to '.../foo/bar/x'.  Of
-    course, if, in this example, 'y' was an object with an index_html
-    method, then the base HREF would be reset to '.../foo/bar/x/y'.
-
-Published objects that are not functions, methods, or classes
-
-  If a published object that is not a function, method, or class
-  is accessed, then the object itself will be returned.
-
-Return types
-
-  A published object, or the returned value of a called published
-  object can be of any Python type.  If the returned value has an
-  'asHTML' method, then this method will be called to convert the
-  object to HTML, otherwise the returned value will be converted to a
-  string and examined to see if it appears to be an HTML document.  If
-  it appears to be an HTML document, then the response content-type
-  will be set to 'text/html'.  Otherwise the content-type will be set
-  to 'text/plain'.
-
-  If the returned object is None or the string representation of the
-  returned object is an empty string, then the HTTP return status will
-  be set to "No Content", and no body will be returned.  On some
-  browsers, this will cause the displayed document to be unchanged.
-
-Base References
-
-  In general, in Bobo, relative URL references should be interpreted
-  relative to the parent of the published object, to make it easy for
-  objects to provide links to siblings.
-
-  If 
-
-   - the result of a request is HTML text,
-
-   - the text does not define a 'base' tag in the 'head' portion of
-     the HTML, and
-
-   - The published object had an 'index_html' attribute that was not included
-     in the request URL, 
-
-  then a base reference will be inserted that is the URL of the
-  published object.
-      
-Exception handling
-
-  Unhandled exceptions are caught by the object publisher
-  and are translated automatically to nicely formatted HTTP output.
-
-  When an exception is raised, the exception type is mapped to an HTTP
-  code by matching the value of the exception type with a list of
-  standard HTTP status names.  Any exception types that do not match
-  standard HTTP status names are mapped to "Internal Error" (500).
-  The standard HTTP status names are: '"OK"', '"Created"',
-  '"Accepted"', '"No Content"', '"Multiple Choices"', '"Redirect"',
-  '"Moved Permanently"', '"Moved Temporarily"', '"Not Modified"',
-  '"Bad Request"', '"Unauthorized"', '"Forbidden"', '"Not Found"',
-  '"Internal Error"', '"Not Implemented"', '"Bad Gateway"', and
-  '"Service Unavailable"', Variations on these names with different
-  cases and without spaces are also valid.
-
-  An attempt is made to use the exception value as the body of the
-  returned response.  The object publisher will examine the exception
-  value.  If the value is a string that contains some white space,
-  then it will be used as the body of the return error message.  It it
-  appears to be HTML, the the error content type will be set to
-  'text/html', otherwise, it will be set to 'text/plain'.  If the
-  exception value is not a string containing white space, then the
-  object publisher will generate it's own error message.
-
-  There are two exceptions to the above rule:
-
-    1. If the exception type is: '"Redirect"', '"Multiple Choices"'
-       '"Moved Permanently"', '"Moved Temporarily"', or
-       '"Not Modified"', and the exception value is an absolute URI,
-       then no body will be provided and a 'Location' header will be
-       included in the output with the given URI.
-
-    2. If the exception type is '"No Content"', then no body will be
-       returned.
-
-  When a body is returned, traceback information will be included in a
-  comment in the output.  The module variable
-  '__bobo_hide_tracebacks__' can be used to control how tracebacks are
-  included.  If this variable and false, then tracebacks are included
-  in PRE tags, rather than in comments.  This is very handy during
-  debugging. 
-
-Redirection
-
-  Automatic redirection may be performed by a published object
-  by raising an exception with a type and value of "Redirect" and
-  a string containing an absolute URI.
-
-The default object
-
-  If no object is specified in a URI, then the publisher will try to
-  publish the object 'index_html', if it exists, otherwise the module's
-  doc string will be published.
-
-Pre- and post-call hooks
-
-  If a published module defines objects '__bobo_before__' or
-  '__bobo_after__', then these functions will be called before 
-  or after a request is processed.  One possible use for this is to
-  acquire and release application locks in applications with
-  background threads.
-
-Publishing a module using CGI
-
-    o Do not copy the module to be published to the cgi-bin
-      directory.
-
-    o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc
-      to the directory containing the module to be published, or to a
-      directory in the standard (compiled in) Python search path.
-
-    o Copy the file cgi-module-publisher to the directory containing the
-      module to be published.
-
-    o Create a symbolic link from cgi-module-publisher (in the directory
-      containing the module to be published) to the module name in the
-      cgi-bin directory.
-
-$Id: Publish.py,v 1.105 1998/11/14 02:48:34 amos Exp $"""
-#'
-#
-##########################################################################
-__version__='$Revision: 1.105 $'[11:-2]
+$Id: Publish.py,v 1.106 1998/11/20 18:16:36 jim Exp $"""
+__version__='$Revision: 1.106 $'[11:-2]
 
 import sys, os, string, cgi, regex
-from string import *
-import CGIResponse
-from CGIResponse import Response
+from string import lower, atoi, rfind, split, strip, join, upper, find
+from Response import Response
 from urllib import quote, unquote
 from cgi import FieldStorage
+from Request import Request, isCGI_NAME
+from Converters import type_converters
 
 # Waaaa, I wish I didn't have to work this hard.
 try: from thread import allocate_lock
@@ -505,7 +75,6 @@ except:
 
 ListType=type([])
 StringType=type('')
-TupleType=type(())
 
 UNSPECIFIED_ROLES=''
 
@@ -719,30 +288,7 @@ class ModulePublisher:
         (bobo_before, bobo_after, request_params,
          inherited_groups, groups, roles,
          object, doc, published, realm, module_name,
-         hide_tracebacks, debug_mode)= get_module_info(module_name)
-        
-        # optinally get info from the environment
-        if request.environ.has_key('BOBO_DEBUG_MODE'):
-            debug_mode=request.environ['BOBO_DEBUG_MODE']
-            try: debug_mode=atoi(debug_mode)
-            except: pass
-            if debug_mode: debug_mode=1
-            else: debug_mode=None
-        
-        if request.environ.has_key('BOBO_HIDE_TRACEBACKS'):
-            hide_tracebacks=request.environ['BOBO_HIDE_TRACEBACKS']
-            try: hide_tracebacks=atoi(hide_tracebacks)
-            except: pass
-            if hide_tracebacks: hide_tracebacks=1
-            else: hide_tracebacks=None
-            
-        if request.environ.has_key('BOBO_REALM'):
-            realm=request.environ['BOBO_REALM']
-        
-        # set traceback display mode
-        if debug_mode or not hide_tracebacks:
-            # is this safe for concurrent usage?
-            CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
+         debug_mode)= get_module_info(module_name)
  
         after_list[0]=bobo_after
 
@@ -752,8 +298,20 @@ class ModulePublisher:
 
         # Get a nice clean path list:
         path=strip(request_get('PATH_INFO'))
-        if path[:1]=='/': path=path[1:]
-        if path[-1:]=='/': path=path[:-1]
+
+        __traceback_info__=path
+
+        if path[:1] != '/': path='/'+path
+        if path[-1:] != '/': path=path+'/'
+        if find(path,'/.') >= 0:
+            path=join(split(path,'/./'),'/')
+            l=find(path,'/../',1)
+            while l > 0:
+                p1=path[:l]
+                path=path[:rfind(p1,'/')+1]+path[l+4:]
+                l=find(path,'/../',1)
+        path=path[1:-1]
+
         path=split(path,'/')
         while path and not path[0]: path = path[1:]
 
@@ -761,6 +319,13 @@ class ModulePublisher:
         if method=='GET' or method=='POST': method='index_html'
 
         URL=self.script
+
+        # if the top object has a __bobo_traverse__ method, then use it
+        # to possibly traverse to an alternate top-level object.
+        if hasattr(object,'__bobo_traverse__'):
+            request['URL']=URL
+            try: object=object.__bobo_traverse__(request)
+            except: pass            
 
         # Get default object if no path was specified:
         if not path:
@@ -779,13 +344,6 @@ class ModulePublisher:
 
         # Traverse the URL to find the object:
         request['PARENTS']=parents=[]
-
-        # if the top object has a __bobo_traverse__ method, then use it
-        # to possibly traverse to an alternate top-level object.
-        if hasattr(object,'__bobo_traverse__'):
-            request['URL']=URL
-            try: object=object.__bobo_traverse__(request)
-            except: pass            
     
         if hasattr(object, '__of__'): 
             # Try to bind the top-level object to the request
@@ -862,7 +420,7 @@ class ModulePublisher:
                             hasattr(object.__call__,'__roles__')):
                             roles=object.__call__.__roles__
                         if self._hacked_path:
-                            i=string.rfind(URL,'/')
+                            i=rfind(URL,'/')
                             if i > 0: response.setBase(URL[:i])
     
         if entry_name != method and method != 'index_html':
@@ -1021,21 +579,47 @@ def get_module_info(module_name, modules={},
         realm=module_name
                 
         # Let the app specify a realm
-        if hasattr(module,'__bobo_realm__'): realm=module.__bobo_realm__
+        if hasattr(module,'__bobo_realm__'):
+            realm=module.__bobo_realm__
+        elif os.environ.has_key('BOBO_REALM'):
+            realm=request.environ['BOBO_REALM']
         else: realm=module_name
 
         # Check for debug mode
-        if (hasattr(module,'__bobo_debug_mode__')
-            and module.__bobo_debug_mode__):
-            debug_mode=1
+        if hasattr(module,'__bobo_debug_mode__'):
+            debug_mode=not not module.__bobo_debug_mode__
+        elif os.environ.has_key('BOBO_DEBUG_MODE'):
+            debug_mode=lower(request.environ['BOBO_DEBUG_MODE'])
+            if debug_mode=='y' or debug_mode=='yes':
+                debug_mode=1
+            else:
+                try: debug_mode=atoi(debug_mode)
+                except: debug_mode=None
         else: debug_mode=None
 
         # Check whether tracebacks should be hidden:
-        if (hasattr(module,'__bobo_hide_tracebacks__')
-            and not module.__bobo_hide_tracebacks__): hide_tracebacks=None
-        else: hide_tracebacks=1
+        if hasattr(module,'__bobo_hide_tracebacks__'):
+            hide_tracebacks=not not module.__bobo_hide_tracebacks__
+        elif os.environ.has_key('BOBO_HIDE_TRACEBACKS'):
+            hide_tracebacks=lower(request.environ['BOBO_HIDE_TRACEBACKS'])
+            if hide_tracebacks=='y' or hide_tracebacks=='yes':
+                hide_tracebacks=1
+            else:
+                try: hide_tracebacks=atoi(hide_tracebacks)
+                except: hide_tracebacks=None
+        else: hide_tracebacks=None
+
+        # Reset response handling of tracebacks, if necessary:
+        if debug_mode or not hide_tracebacks:
+            def hack_response():
+                import Response
+                Response._tbopen  = '<PRE>'
+                Response._tbclose = '</PRE>'
+
+            hack_response()
  
-        if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
+        if hasattr(module,'__bobo_before__'):
+            bobo_before=module.__bobo_before__
         else: bobo_before=None
                 
         if hasattr(module,'__bobo_after__'): bobo_after=module.__bobo_after__
@@ -1077,7 +661,7 @@ def get_module_info(module_name, modules={},
         info= (bobo_before, bobo_after, request_params,
                 inherited_groups, groups, roles,
                 object, doc, published, realm, module_name,
-                hide_tracebacks, debug_mode)
+                debug_mode)
     
         modules[module_name]=modules[module_name+'.cgi']=info
 
@@ -1132,285 +716,6 @@ class FileUpload:
         self.filename=aFieldStorage.filename
     
 
-def field2string(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    return v
-
-def field2text(v, nl=regex.compile('\r\n\|\n\r').search):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    l=nl(v)
-    if l < 0: return v
-    r=[]
-    s=0
-    while l >= s:
-        r.append(v[s:l])
-        s=l+2
-        l=nl(v,s)
-    r.append(v[s:])
-        
-    return join(r,'\n')
-
-def field2required(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    if strip(v): return v
-    raise ValueError, 'No input for required field<p>'
-
-def field2int(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
-    if v: return atoi(v)
-    raise ValueError, 'Empty entry when <strong>integer</strong> expected'
-
-def field2float(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
-    if v: return atof(v)
-    raise ValueError, (
-        'Empty entry when <strong>floating-point number</strong> expected')
-
-def field2long(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
-    if v: return atol(v)
-    raise ValueError, 'Empty entry when <strong>integer</strong> expected'
-
-def field2tokens(v):
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    return split(v)
-
-def field2lines(v):
-    return split(field2text(v),'\n')
-
-def field2date(v):
-    from DateTime import DateTime
-    if hasattr(v,'read'): v=v.read()
-    else: v=str(v)
-    return DateTime(v)
-
-def field2list(v):
-    if type(v) is not ListType: v=[v]
-    return v
-
-def field2tuple(v):
-    if type(v) is not ListType: v=(v,)
-    return tuple(v)
-
-
-type_converters = {
-    'float':    field2float,
-    'int':      field2int,
-    'long':     field2long,
-    'string':   field2string,
-    'date':     field2date,
-    'list':     field2list,
-    'tuple':    field2tuple,
-    'required': field2required,
-    'tokens':   field2tokens,
-    'lines':    field2lines,
-    'text':     field2text,
-    }
-
-
-class Request:
-    """\
-    Model HTTP request data.
-    
-    This object provides access to request data.  This includes, the
-    input headers, form data, server data, and cookies.
-
-    Request objects are created by the object publisher and will be
-    passed to published objects through the argument name, REQUEST.
-
-    The request object is a mapping object that represents a
-    collection of variable to value mappings.  In addition, variables
-    are divided into four categories:
-
-      - Environment variables
-
-        These variables include input headers, server data, and other
-        request-related data.  The variable names are as <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        in the <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
-        specification</a>
-
-      - Form data
-
-        These are data extracted from either a URL-encoded query
-        string or body, if present.
-
-      - Cookies
-
-        These are the cookie data, if present.
-
-      - Other
-
-        Data that may be set by an application object.
-
-    The form attribute of a request is actually a Field Storage
-    object.  When file uploads are used, this provides a richer and
-    more complex interface than is provided by accessing form data as
-    items of the request.  See the FieldStorage class documentation
-    for more details.
-
-    The request object may be used as a mapping object, in which case
-    values will be looked up in the order: environment variables,
-    other variables, form data, and then cookies.
-    """
-
-    def __init__(self,environ,form,stdin):
-        self.environ=environ
-        self.other=form
-        self.stdin=stdin
-        have_env=environ.has_key
-
-        b=script=strip(environ['SCRIPT_NAME'])
-        while b and b[-1]=='/': b=b[:-1]
-        p = rfind(b,'/')
-        if p >= 0: b=b[:p+1]
-        else: b=''
-        while b and b[0]=='/': b=b[1:]
-        
-
-        if have_env('SERVER_URL'):
-             server_url=strip(environ['SERVER_URL'])
-        else:
-             if have_env('HTTPS') and (
-                 environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
-                 server_url='https://'
-             elif (have_env('SERVER_PORT_SECURE') and 
-                   environ['SERVER_PORT_SECURE'] == "1"):
-                 server_url='https://'
-             else: server_url='http://'
-
-             if have_env('HTTP_HOST'):
-                 server_url=server_url+strip(environ['HTTP_HOST'])
-             else:
-                 server_url=server_url+strip(environ['SERVER_NAME'])
-                 server_port=environ['SERVER_PORT']
-                 if server_port!='80': server_url=server_url+':'+server_port
-
-        if server_url[-1:]=='/': server_url=server_url[:-1]
-                        
-        self.base="%s/%s" % (server_url,b)
-        while script[:1]=='/': script=script[1:]
-        if script: self.script="%s/%s" % (server_url,script)
-        else:  self.script=server_url
-
-    def __setitem__(self,key,value):
-        """Set application variables
-
-        This method is used to set a variable in the requests "other"
-        category.
-        """
-        
-        self.other[key]=value
-
-    set=__setitem__
-
-    def __str__(self):
-
-        def str(self,name):
-            dict=getattr(self,name)
-            return "%s:\n\t%s\n\n" % (
-                name,
-                join(
-                    map(lambda k, d=dict: "%s: %s" % (k, `d[k]`), dict.keys()),
-                    "\n\t"
-                    )
-                )
-            
-        return "%s\n%s\n" % (
-            str(self,'form'),str(self,'environ'))
-
-    __repr__=__str__
-
-    def __getitem__(self,key,
-                    default=field2list, # Any special internal marker will do
-                    URLmatch=regex.compile('URL[0-9]$').match,
-                    BASEmatch=regex.compile('BASE[0-9]$').match,
-                    ):
-        """Get a variable value
-
-        Return a value for the required variable name.
-        The value will be looked up from one of the request data
-        categories. The search order is environment variables,
-        other variables, form data, and then cookies. 
-        
-        """ #"
-
-        other=self.other
-        if other.has_key(key):
-            if key=='REQUEST': return self
-            return other[key]
-
-        if key[:1]=='U' and URLmatch(key) >= 0 and other.has_key('URL'):
-            n=ord(key[3])-ord('0')
-            URL=other['URL']
-            for i in range(0,n):
-                l=rfind(URL,'/')
-                if l >= 0: URL=URL[:l]
-                else: raise KeyError, key
-            other[key]=URL
-            return URL
-
-        if isCGI_NAME(key) or key[:5] == 'HTTP_':
-            environ=self.environ
-            if environ.has_key(key): return environ[key]
-            return ''
-
-        if key=='REQUEST': return self
-
-        if key[:1]=='B' and BASEmatch(key) >= 0 and other.has_key('URL'):
-            n=ord(key[4])-ord('0')
-            if n:
-                v=self.script
-                while v[-1:]=='/': v=v[:-1]
-                v=join([v]+self.steps[:n-1],'/')
-            else:
-                v=self.base
-                while v[-1:]=='/': v=v[:-1]
-            other[key]=v
-            return v
-
-        if default is not field2list: return default
-
-        raise KeyError, key
-
-    __getattr__=get=__getitem__
-
-    def has_key(self,key):
-        return self.get(key, field2tuple) is not field2tuple
-
-isCGI_NAME = {
-        'SERVER_SOFTWARE' : 1, 
-        'SERVER_NAME' : 1, 
-        'GATEWAY_INTERFACE' : 1, 
-        'SERVER_PROTOCOL' : 1, 
-        'SERVER_PORT' : 1, 
-        'REQUEST_METHOD' : 1, 
-        'PATH_INFO' : 1, 
-        'PATH_TRANSLATED' : 1, 
-        'SCRIPT_NAME' : 1, 
-        'QUERY_STRING' : 1, 
-        'REMOTE_HOST' : 1, 
-        'REMOTE_ADDR' : 1, 
-        'AUTH_TYPE' : 1, 
-        'REMOTE_USER' : 1, 
-        'REMOTE_IDENT' : 1, 
-        'CONTENT_TYPE' : 1, 
-        'CONTENT_LENGTH' : 1, 
-        }.has_key
-
-                
-
 parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
                  result=None,
@@ -1462,7 +767,7 @@ def old_validation(groups, request, HTTP_AUTHORIZATION,
         if lower(HTTP_AUTHORIZATION[:6]) != 'basic ':
             if roles is None: return ''
             return None
-        [name,password] = string.splitfields(
+        [name,password] = split(
             base64.decodestring(
                 split(HTTP_AUTHORIZATION)[-1]), ':')
     elif request.environ.has_key('REMOTE_USER'):

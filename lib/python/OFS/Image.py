@@ -1,12 +1,12 @@
 """Image object"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
-from Persistence import Persistent
+from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
 import string

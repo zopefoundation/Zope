@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.41 1998/11/10 21:45:13 amos Exp $'''
+$Id: Response.py,v 1.42 1998/11/20 18:16:36 jim Exp $'''
 #
 # Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.41 1998/11/10 21:45:13 amos Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -600,7 +600,7 @@ class Response:
         return join(headersl,'\n')
 
     def __repr__(self):
-        return 'CGIResponse(%s)' % `self.body`
+        return 'Response(%s)' % `self.body`
         
 
     def flush(self): pass
