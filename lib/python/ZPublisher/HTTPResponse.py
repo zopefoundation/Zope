@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.17 1999/08/04 18:05:27 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: HTTPResponse.py,v 1.18 1999/08/04 20:50:22 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -572,14 +572,14 @@ class HTTPResponse(BaseResponse):
         try:
             # Try to capture exception info for bci calls
             et=translate(str(t),nl2sp)
+            self.setHeader('bobo-exception-type',et)
             ev=translate(str(v),nl2sp)
+            if find(ev,'<html>') >= 0: ev='bobo exception'
+            self.setHeader('bobo-exception-value',ev[:255])
             # Get the tb tail, which is the interesting part:
             while tb.tb_next is not None: tb=tb.tb_next
             el=str(tb.tb_lineno)
             ef=str(tb.tb_frame.f_code.co_filename)
-            if find(ev,'<html>') >= 0: ev='bobo exception'
-            self.setHeader('bobo-exception-type',et)
-            self.setHeader('bobo-exception-value',ev[:255])
             self.setHeader('bobo-exception-file',ef)
             self.setHeader('bobo-exception-line',el)
 
@@ -609,7 +609,6 @@ class HTTPResponse(BaseResponse):
 
         b=v
         if isinstance(b,Exception): b=str(b)
-
         
         if fatal and t is SystemExit and v.code==0:
                 tb=self.setBody(
