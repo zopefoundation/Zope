@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.5 1997/09/12 14:18:04 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Index.py,v 1.6 1997/09/12 14:46:51 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -124,7 +124,7 @@ class Index:
 	try: keys=request[id]
 	except: return None
 
-	if type(keys) is ListType: keys=[keys]
+	if type(keys) is not ListType: keys=[keys]
 	index=self._index
 	r=None
 	anyTrue=0
@@ -146,6 +146,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.6  1997/09/12 14:46:51  jim
+# *** empty log message ***
+#
 # Revision 1.5  1997/09/12 14:18:04  jim
 # Added logic to allow "blank" inputs.
 #
