@@ -83,10 +83,9 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.1 2000/11/30 22:18:03 evan Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 2000/12/05 21:41:16 evan Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
-import ModuleSecurity
 import PythonScript
 import standard
 
