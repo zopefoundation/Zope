@@ -46,7 +46,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.6 1998/09/04 20:45:02 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.7 1998/09/10 18:38:19 brian Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,8 +56,9 @@ __rcs_id__='$Id: sqltest.py,v 1.6 1998/09/04 20:45:02 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
+import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 str=__builtins__['str']
 
@@ -141,6 +142,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqltest.py,v $
+# Revision 1.7  1998/09/10 18:38:19  brian
+# Fixed missing sys import in sqltest
+#
 # Revision 1.6  1998/09/04 20:45:02  jim
 # fixed namespace screw up due to from DT_Util import *
 #
