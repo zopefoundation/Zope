@@ -17,10 +17,10 @@ MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage and it does rudimentary conflict resolution.  This is a
 ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.1 2003/08/17 20:53:50 chrism Exp $
+$Id: TemporaryStorage.py,v 1.2 2003/11/28 16:46:50 jim Exp $
 """
 
-__version__ ='$Revision: 1.1 $'[11:-2]
+__version__ ='$Revision: 1.2 $'[11:-2]
 
 from zLOG import LOG, BLATHER
 from ZODB.referencesf import referencesf
@@ -128,10 +128,13 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
             if self._index.has_key(oid):
                 oserial=self._index[oid]
                 if serial != oserial:
-                    data=self.tryToResolveConflict(oid, oserial, serial, data)
-                    if not data:
-                        raise POSException.ConflictError(oid=oid,
-                                                    serials=(oserial, serial))
+                    rdata = self.tryToResolveConflict(oid, oserial,
+                                                      serial, data)
+                    if rdata is None:
+                        raise POSException.ConflictError(
+                            oid=oid, serials=(oserial, serial), data=data)
+                    else:
+                        data = rdata
             else:
                 oserial = serial
             newserial=self._serial
