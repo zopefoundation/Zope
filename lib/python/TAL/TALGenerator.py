@@ -158,17 +158,26 @@ class TALGenerator:
         if not attrlist:
             collect.append("<%s%s" % (name, end))
             return 1
+        opt = 1
         new = ["<" + name]
-        for item in attrlist:
+        for i in range(len(attrlist)):
+            item = attrlist[i]
             if len(item) > 2:
-                return 0
+                opt = 0
+            else:
+                if item[1] is None:
+                    s = item[0]
+                else:
+                    s = "%s=%s" % (item[0], quote(item[1]))
+                attrlist[i] = item[0], s
             if item[1] is None:
                 new.append(" " + item[0])
             else:
                 new.append(" %s=%s" % (item[0], quote(item[1])))
-        new.append(end)
-        collect.extend(new)
-        return 1
+        if opt:
+            new.append(end)
+            collect.extend(new)
+        return opt
 
     def todoPush(self, todo):
         self.todoStack.append(todo)
