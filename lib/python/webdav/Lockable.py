@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 from WriteLockInterface import WriteLockInterface, LockItemInterface
 from EtagSupport import EtagSupport
@@ -120,7 +120,7 @@ class LockableItem(EtagSupport):
     security.setPermissionDefault('WebDAV Unlock items',('Manager','Owner',))
 
 
-    def wl_lockmapping(self, killinvalids=0):
+    def wl_lockmapping(self, killinvalids=0, create=0):
         """ if 'killinvalids' is 1, locks who are no longer valid
         will be deleted """
 
@@ -128,7 +128,11 @@ class LockableItem(EtagSupport):
         except: locks = None
 
         if locks is None:
-            locks = self._dav_writelocks = PersistentMapping()
+            if create:
+                locks = self._dav_writelocks = PersistentMapping()
+            else:
+                # Don't generate a side effect transaction.
+                locks = {}
             return locks
         elif killinvalids:
             # Delete invalid locks
@@ -165,7 +169,7 @@ class LockableItem(EtagSupport):
         else: return 0
 
     def wl_setLock(self, locktoken, lock):
-        locks = self.wl_lockmapping()
+        locks = self.wl_lockmapping(create=1)
         if LockItemInterface.isImplementedBy(lock):
             if locktoken == lock.getLockToken():
                 locks[locktoken] = lock
