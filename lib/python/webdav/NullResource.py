@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import sys, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -63,6 +63,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     # Most methods return 404 (Not Found) for null resources.
     DELETE=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
+    index_html = HEAD
 
     def _default_PUT_factory( self, name, typ, body ):
         # Return DTMLDoc/PageTemplate/Image/File, based on sniffing.
