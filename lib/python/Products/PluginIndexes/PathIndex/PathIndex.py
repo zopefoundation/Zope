@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.27 2002/10/03 13:10:49 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.28 2002/10/03 13:42:22 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -201,6 +201,9 @@ class PathIndex(Persistent, Implicit, SimpleItem):
             path  = path[0]
 
         comps = self.splitPath(path)
+
+        if len(comps) == 0:
+            return IISet(self._unindex.keys())
 
         if level >=0:
 

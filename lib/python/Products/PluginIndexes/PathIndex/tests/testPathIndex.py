@@ -79,6 +79,29 @@ class TestCase( unittest.TestCase ):
         assert len(self._index._unindex)==0
 
 
+    def testRoot(self):
+
+        self._populateIndex()
+
+        tests = [
+            ("/",0, range(1,19)),
+        ]
+
+        for comp,level,results in tests:
+            for path in [comp,"/"+comp,"/"+comp+"/"]:
+                res = self._index._apply_index(
+                                    {"path":{'query':path,"level":level}})
+                lst = list(res[0].keys())
+                self.assertEqual(lst,results)
+
+        for comp,level,results in tests:
+            for path in [comp,"/"+comp,"/"+comp+"/"]:
+                res = self._index._apply_index(
+                                    {"path":{'query':( (path,level),)}})
+                lst = list(res[0].keys())
+                self.assertEqual(lst,results)
+
+
     def testSimpleTests(self):
 
         self._populateIndex()
@@ -98,7 +121,6 @@ class TestCase( unittest.TestCase ):
             ("18.html", -1, [18] ),
             ("cc/18.html", -1, [18] ),
             ("cc/18.html", 2, [18] ),
-
         ]
 
         for comp,level,results in tests:
