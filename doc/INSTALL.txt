@@ -52,8 +52,8 @@ Quick Start
   If you are impatient, the following commands should get you up and
   running with Zope 2 using ZServer and ZODB 3 on Unix::
 
-    python wo_pcgi.py  # Note, this mst be Python 1.5.2
-    python z2.py -d <your dns server>
+    python wo_pcgi.py  # Note, this must be Python 1.5.2
+    python z2.py 
 
   where you need to supply the IP address of your dns server to the -d
   option.  If you get errors indicating that addresses are in use,
@@ -71,6 +71,19 @@ Quick Start
 
   You will be prompted for a user name and password, which may
   be found in the 'access' file in the Zope installation directory.
+
+  Now you're off and running! You should be looking at the Zope management
+  screen which is divided into two frames. On the left you can navigate
+  between Zope object and on the right you can edit them by selecting
+  different management functions with the tabs at the top of the frame.
+  
+  If you haven't used Zope before, you should head to the Zope web site
+  and read some documentation. The Zope Manager's Guide is a good place
+  to start. You can access the Zope site at:
+  
+    'http://www.zope.org/'
+  
+  Have fun!
 
 Building Zope
   
@@ -185,9 +198,6 @@ Using ZServer
   approach is preferred to avoid having to reconfigure the z2.py script
   after a software update. 
 
-  You *must* specify a DNS server in z2.py or via command-line
-  options.
-
   Notes
 
     * 'start.py' is now depricated, use 'z2.py' instead.
@@ -204,6 +214,11 @@ Using Zope with ZopeHTTPServer
 
     ./start
 
+  Now you should be able to access Zope through the web, just like with
+  ZServer::
+
+    http://localhost:9673/manage
+
 Starting Zope with an existing web server
 
   See the WEBSERVERS.txt file for more information about configuring Zope
@@ -214,33 +229,3 @@ Starting Zope with an existing web server
     * If you wish to use ZServer with PCGI use z2.py's '-p' switch to specify
       a PCGI info file.
   
-Accessing Zope through the web
-  
-  After you either start ZopeHTTPServer or set up Zope with your web server
-  you should be able to start using Zope through the web. Point your browser
-  to either:
-  
-    'http://localhost:9673/manage'
-  
-  if you are using ZopeHTTPServer or whatever the relevant URL is, if
-  you are using PCGI. If you're using PCGI make sure to tack '/manage'
-  on after the name of the Zope CGI script so that you go to the
-  management screen. For example the URL may be something like:
- 
-    'http://localhost/cgi-bin/Zope.cgi/manage' 
- 
-  You will be prompted to enter a user name and a password. Enter the
-  super user name and password you specified in the access file.
-  
-  Now you're off and running! You should be looking at the Zope management
-  screen which is divided into two frames. On the left you can navigate
-  between Zope object and on the right you can edit them by selecting
-  different management functions with the tabs at the top of the frame.
-  
-  If you haven't used Zope before, you should head to the Zope web site
-  and read some documentation. The Zope Manager's Guide is a good place
-  to start. You can access the Zope site at:
-  
-    'http://www.zope.org/'
-  
-  Have fun!
