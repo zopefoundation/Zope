@@ -13,7 +13,6 @@
 <!--
 
 <dtml-var manage_page_style.css>
-<dtml-call "RESPONSE.setHeader('Content-Type','text/html')">
 -->
 </style>
 <dtml-else>
