@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Cookie values are now quoted before being sent to the
+        browser and unquoted on receipt.
+
       - Added 'url_unquote' and 'url_unquote_plus' modifiers
         to DTML (also fmt=url-unquote and fmt=url-unquote-plus),
         and made the same functions available in the PythonScripts.standard
