@@ -68,6 +68,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, AccessControl.Role.RoleMan
 	
 	try: m=modules[module]
 	except:
+	    d,n = os.path.split(module)
+	    if d: raise ValueError, (
+	    'The file name, %s, should be a simple file name' % module)
 	    m={}
 	    exec open("%s/%s.py" % (braindir, module)) in m
 	    modules[module]=m
