@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.99 2002/04/12 19:15:27 Torped Exp $'''
-__version__='$Revision: 1.99 $'[11:-2]
+$Id: SimpleItem.py,v 1.100 2002/06/12 18:34:17 shane Exp $'''
+__version__='$Revision: 1.100 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -33,7 +33,7 @@ from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from DocumentTemplate.ustr import ustr
 from zExceptions.ExceptionFormatter import format_exception
 import time
-from zLOG import LOG, ERROR
+from zLOG import LOG, BLATHER
 
 import marshal
 import ZDOM
@@ -209,7 +209,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)
             except:
-                LOG('OFS', ERROR, 'Exception while rendering an error message',
+                LOG('OFS', BLATHER,
+                    'Exception while rendering an error message',
                     error=sys.exc_info())
                 try:
                     strv = str(error_value)
