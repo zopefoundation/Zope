@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.118 $'[11:-2]
+__version__='$Revision: 1.119 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -252,6 +252,8 @@ class File(Persistent, Implicit, PropertyManager,
         """
         raise 'Redirect', URL1
 
+    # private
+    update_data__roles__=()
     def update_data(self, data, content_type=None, size=None):
         if content_type is not None: self.content_type=content_type
         if size is None: size=len(data)
@@ -491,6 +493,8 @@ class Image(File):
                                kind='image')
     manage=manage_main=manage_editForm
 
+    # private
+    update_data__roles__=()
     def update_data(self, data, content_type=None, size=None):
         if size is None: size=len(data)
 
