@@ -201,7 +201,7 @@ function toggleSelect() {
 if (document.forms[0]) {
   document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
   }
--->
+//-->
 </script>
   </dtml-if>
   </div>
