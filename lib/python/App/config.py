@@ -48,6 +48,15 @@ def setConfiguration(cfg):
     __builtin__.SOFTWARE_HOME = FindHomes.SOFTWARE_HOME = cfg.softwarehome
     __builtin__.ZOPE_HOME = FindHomes.ZOPE_HOME = cfg.zopehome
 
+    # XXX make sure the environment variables, if set, don't get out
+    # of sync.  This is needed to support 3rd-party code written to
+    # support Zope versions prior to 2.7.
+    import os
+    os.environ["CLIENT_HOME"] = cfg.clienthome
+    os.environ["INSTANCE_HOME"] = cfg.instancehome
+    os.environ["SOFTWARE_HOME"] = cfg.softwarehome
+    os.environ["ZOPE_HOME"] = cfg.zopehome
+
     import sys
     if "Globals" in sys.modules:
         # XXX We *really* want to avoid this if Globals hasn't already
