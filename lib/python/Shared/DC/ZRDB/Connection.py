@@ -10,12 +10,13 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.2 1997/12/05 21:33:12 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Connection.py,v 1.3 1997/12/18 13:35:09 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
+from ImageFile import ImageFile
 
 connection_page=Globals.HTMLFile('AqueductDA/connection')
 
@@ -41,7 +42,8 @@ class Connection(
     OFS.SimpleItem.Item,
     Acquisition.Implicit,
     ):    
-    icon     ='AqueductDA/DBAdapterFolder_icon.gif'
+    icon     ='Icon'
+    Icon=ImageFile('www/DBAdapterFolder_icon.gif',globals())
     meta_type='Aqueduct Database Adapter Folder'
     _v_connected=''
     connection_string=''
@@ -120,6 +122,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.3  1997/12/18 13:35:09  jim
+# Added ImageFile usage.
+#
 # Revision 1.2  1997/12/05 21:33:12  jim
 # major overhall to add record addressing, brains, and support for new interface
 #

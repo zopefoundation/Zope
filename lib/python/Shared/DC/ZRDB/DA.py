@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.16 1997/12/05 21:33:13 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: DA.py,v 1.17 1997/12/18 13:35:31 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -31,6 +31,7 @@ from zlib import compress, decompress
 md5new=md5.new
 
 addForm=HTMLFile('AqueductDA/daAdd')
+from ImageFile import ImageFile
 
 def add(self,klass,id,title,key,arguments,template,REQUEST=None):
     'Add a query'
@@ -48,7 +49,8 @@ class DA(
     ):
     'Database Adapter'
 
-    icon       ='AqueductDA/DBAdapter_icon.gif'
+    icon       ='Icon'
+    Icon=ImageFile('www/DBAdapter_icon.gif',globals())
     _col=None
     sql_delimiter='\0'
     max_rows_=1000
@@ -321,6 +323,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.17  1997/12/18 13:35:31  jim
+# Added ImageFile usage.
+#
 # Revision 1.16  1997/12/05 21:33:13  jim
 # major overhall to add record addressing, brains, and support for new interface
 #
