@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.57 2002/03/08 18:34:23 jeremy Exp $
+  $Id: Acquisition.c,v 1.58 2002/06/10 22:31:30 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -216,8 +216,9 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
     {
       self=freeWrappers;
       freeWrappers=(Wrapper*)self->obj;
+      _Py_NewReference((PyObject *)self);
+      assert(self->ob_refcnt == 1);
       self->ob_type=Wrappertype;
-      self->ob_refcnt=1;
       nWrappers--;
     }
   else
@@ -1546,7 +1547,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.57 2002/03/08 18:34:23 jeremy Exp $\n",
+	   "$Id: Acquisition.c,v 1.58 2002/06/10 22:31:30 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
