@@ -29,10 +29,8 @@ Example usage:
     # perform a test search
     print i['blah']
 
-InvertedIndex provides three types of indexes: one non-persistent
-index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.13 1997/02/13 17:28:32 chris Exp $'''
+$Id: InvertedIndex.py,v 1.14 1997/02/19 16:37:39 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +82,9 @@ $Id: InvertedIndex.py,v 1.13 1997/02/13 17:28:32 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.14  1997/02/19 16:37:39  chris
+# Removed Transactional and Persistent classes
+#
 # Revision 1.13  1997/02/13 17:28:32  chris
 # *** empty log message ***
 #
@@ -128,11 +129,10 @@ $Id: InvertedIndex.py,v 1.13 1997/02/13 17:28:32 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
-import regex, regsub, string, marshal
-import SingleThreadedTransaction, PickleDictionary
+import regex, regsub, string, SingleThreadedTransaction, copy
 
 from types import *
 
@@ -155,8 +155,8 @@ class ResultList:
     sorted_items()
   '''
 
-  def __init__(self, d = {}):
-      self._dict = d
+  def __init__(self, d = None):
+      self._dict = d or {}
 
 
   def addentry(self, document_key, *info):
@@ -225,7 +225,7 @@ class ResultList:
       except KeyError:
         pass
 
-    return ResultList(result)
+    return self.__class__(result)
 
   
   def __or__(self, x):
@@ -245,7 +245,7 @@ class ResultList:
       except KeyError:
         result[key] = ( x[key][0], None )
 
-    return ResultList(result)
+    return self.__class__(result)
 
 
   def Not(self, index):
@@ -273,19 +273,19 @@ class ResultList:
           if (res):
             res = res | { key : index_val[key] }
           else:
-            res = ResultList({ key : index_val[key] })
+            res = self.__class__({ key : index_val[key] })
 
     if (res):
       return res
 
-    return ResultList()
+    return self.__class__()
 
 
   def near(self, x, distance = 1):
     '''\
        near(rl, distance = 1)
   
-       Returns a ResultList containing documents which contain
+       Returns a ResultList containing documents which contain'''
               
     result = {}
 
@@ -319,7 +319,7 @@ class ResultList:
 
         break
 
-    return ResultList(result)
+    return self.__class__(result)
 
 
   def __getstate__(self):
@@ -334,7 +334,29 @@ RegexType = type(regex.compile(''))
 
 IndexingError = 'InvertedIndex.IndexingError'
 
-class Index:
+_default_stop_words = [
+    'also', 'an', 'and', 'are', 'at', 'be', 'been', 'being', 'but', 'by',
+    'can', 'cannot', 'did', 'do', 'doing', 'either', 'else', 'even', 'for',
+    'from', 'get', 'got', 'had', 'has', 'have', 'he', 'her', 'hers', 'herself',
+    'him', 'himself', 'his', 'if', 'in', 'it', 'its', 'me', 'my', 'myself',
+    'no', 'not', 'of', 'only', 'or', 'our', 'ourselves', 'she', 'so', 'some',
+    'than', 'that', 'the', 'their', 'them', 'themselves', 'then', 'there',
+    'these', 'they', 'this', 'those', 'to', 'too', 'unless', 'until', 'us',
+    'very', 'was', 'we', 'were', 'what', 'when', 'where', 'which', 'while',
+    'who', 'whoever', 'whom', 'whomever', 'whose', 'why', 'with', 'without',
+    'would', 'yes', 'your', 'yours', 'yourself', 'yourselves',
+    ]
+
+default_stop_words = {}
+
+for w in _default_stop_words: 
+  default_stop_words[w] = None
+
+for w in string.letters: 
+  default_stop_words[w] = None
+
+
+class Index(SingleThreadedTransaction.Persistent):
   '''\
   An inverted index.
 
@@ -385,6 +407,9 @@ class Index:
     if (list_class is not None):
         self.list_class = list_class
 
+    if (index_dictionary is None):
+        index_dictionary = copy.copy(default_stop_words)
+
     self.set_index(index_dictionary)
 
  
@@ -420,20 +445,14 @@ class Index:
     index = self._index_object
 
     src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
-    src = self.split_words(src)
-
-    while (1):
-      try: 
-        src.remove('')
-      except ValueError:
-        break
+    src = filter(None,self.split_words(src))
 
     if (len(src) < 2):
       raise IndexingError, 'cannot index document with fewer than two keywords'
 
     nwords = math.log(len(src))
 
-    d = {}    
+    d = {}
     for i in range(len(src)):
       s = src[i]
       s = string.lower(s)
@@ -569,8 +588,20 @@ class Index:
 
     return d.keys()
 
+  
+  def __getstate__(self):
+    return None
 
-class PersistentResultList(ResultList, PickleDictionary.Persistent):
+
+  def __setstate__(self, state):
+    pass
+
+
+  def __getinitargs__(self):
+    return (self._index_object,)
+
+
+class PersistentResultList(ResultList, SingleThreadedTransaction.Persistent):
 
   def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
@@ -578,264 +609,6 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
     apply(ResultList.addentry, (self, key) + info)
     self.__changed__(1)
 
-
-class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
-
-  def addentry(self, key, *info):
-    '''Add a frequency/key pair to this object'''
-
-    apply(ResultList.addentry, (self, key) + info)
-    self.__changed__(1)
-
-
-class Persistent(Index, PickleDictionary.Persistent):
-  '''\
-  An inverted index.
-
-  This class handles indexing and searching; it differs from the
-  Index class in that it provides for persistent indexes.
-
-  Persistent takes four arguments at instantiation: picklefile, 
-  index_dictionary, create, and cache_size.  The first argument,
-  picklefile, is the name of the file that will be used to
-  store the index.  The second, optional argument is a dictionary
-  dictionary specifying stems, synonyms, and stopwords.  The 
-  dictionary may also be used to initialize the index with 
-  previously indexed values.  Within the dictionary, stopwords 
-  should be keywords (string values) mapped to the Python value 
-  None; stems and synonyms should be keywords mapped to their
-  corresponding keywords, and previously indexed values should
-  map a keyword to a PersistentResultList object.  Note that all
-  of this dictionary, including stopwords, stems, and synonyms 
-  is saved in the picklefile, so index_dictionary should only be
-  used when first creating a new index.  The third, optional
-  argument simply specifies whether or not we are creating a
-  new index.  The fourth, optional argument specifies the cache
-  size to be used for the index's PickleDictionary.  For searching
-  purposes, this can be a small number (default), but for indexing,
-  a large cache_size is recommended.
-
-  Indexing is performed using the index() method.
-
-  Searching is performed using the Persistent object's mapping
-  behaviour.  
-
-  Example usage:
-
-    Creating a new index:
-
-      d = { 
-            'and'     : None,    # Stopword
-            'or'      : None,    # Stopword
-            'not'     : None,    # Stopword
-            'running' : 'run',   # Stem
-          }
-
-      doc = open('/usr/users/chris/doc.txt', 'r').read()
-      key = '/usr/users/chris/doc.txt'
-
-      # instantiate a Persistent index.
-      # The first argument is the file in which to save the index.
-      # The second argument is the dictionary from which to
-      # get stopwords, stems, synonyms, etc.
-      # The third argument indicates that this is a new index.
-      # The fourth argument is the cache size for the PickleDicionary
-      i = InvertedIndex.Persistent('index_file', d, 1, 30000)
-
-      # index the document, doc, with key, key.
-      i.index(doc, key)
-
-      # perform a test search
-      print i['blah']
- 
-    Using an existing index:
-
-      doc = open('/usr/users/chris/doc2.txt', 'r').read()
-      key = '/usr/users/chris/doc2.txt'
-
-      # instantiate a Persistent index.
-      # The first argument is the file from which to restore the
-      # index.
-      i = InvertedIndex.Persistent('index_file')
-
-      # index the document, doc, with key, key.
-      i.index(doc, key)
-
-      # perform a test search
-      print i['blah']
-  '''
-
-  list_class = PersistentResultList
-
-
-  def __init__(self, picklefile, index_dictionary = None, create = None, 
-      cache_size = 100):
-
-    pickledict = PickleDictionary.PickleDictionary(
-	picklefile, create, cache_size = cache_size)
-
-    pickledict.autosave(0)
-
-    if (index_dictionary is not None):
-      for key in index_dictionary.keys():
-        pickledict[key] = index_dictionary[key]
-
-      self.save()
-
-    Index.__init__(self, pickledict)
-
-
-  def index(self, src, srckey, dont_save = 0):
-    '''\
-    index(src, srckey, dont_save = 0)
-
-    Update the index by indexing the words in src to the key, srckey
-
-    The source object, src, will be converted to a string and the
-    words in the string will be used as indexes to retrieve the objects 
-    key, srckey.  For simple objects, the srckey may be the object itself,
-    or it may be a key into some other data structure, such as a table.
-
-    If the fourth, optional argument, dont_save, is true, the index
-    will not be saved immediately after indexing.
-    '''
-
-    Index.index(self, src, srckey)
-
-    if (dont_save):
-      return
-
-    self.save()
-
-
-  def save(self):
-    '''\
-    save()
-    Save changes to the index.'''
-
-    self._index_object.save()
-
-
-  def pack(self):
-    '''\
-    pack()
-    Recover wasted space in the index file.'''
-    self._index_object.pack()
-
-
-  def __getinitargs__(self):
-      return (self.picklefile,)
-
-    
-class Transactional(Index, SingleThreadedTransaction.Persistent):
-  '''\
-  An inverted index.
-
-  This class handles indexing and searching; it provides support
-  for persistent indexes, taking advantage of a transaction
-  manager.
-
-  Transactional takes four arguments at instantiation: picklefile, 
-  index_dictionary, create, and cache_size.  The first argument,
-  picklefile, is the name of the file that will be used to
-  store the index.  The second, optional argument is a dictionary
-  dictionary specifying stems, synonyms, and stopwords.  The 
-  dictionary may also be used to initialize the index with 
-  previously indexed values.  Within the dictionary, stopwords 
-  should be keywords (string values) mapped to the Python value 
-  None; stems and synonyms should be keywords mapped to their
-  corresponding keywords, and previously indexed values should
-  map a keyword to a STPResultList object.  Note that all
-  of this dictionary, including stopwords, stems, and synonyms 
-  is saved in the picklefile, so index_dictionary should only be
-  used when first creating a new index.  The third, optional
-  argument simply specifies whether or not we are creating a
-  new index.  The fourth, optional argument specifies the cache
-  size to be used for the index's PickleDictionary.  For searching
-  purposes, this can be a small number (default), but for indexing,
-  a large cache_size is recommended.
-
-  Indexing is performed using the index() method.
-
-  Searching is performed using the Transactional object's mapping
-  behaviour.  
-
-  Example usage:
-
-    Creating a new index:
-
-      d = { 
-            'and'     : None,    # Stopword
-            'or'      : None,    # Stopword
-            'not'     : None,    # Stopword
-            'running' : 'run',   # Stem
-          }
-
-      doc = open('/usr/users/chris/doc.txt', 'r').read()
-      key = '/usr/users/chris/doc.txt'
-
-      # instantiate a Transactional index.
-      # The first argument is the file in which to save the index.
-      # The second argument is the dictionary from which to
-      # get stopwords, stems, synonyms, etc.
-      # The third argument indicates that this is a new index.
-      # The fourth argument is the cache size for the PickleDicionary
-      i = InvertedIndex.Transactional('index_file', d, 1, 30000)
-
-      # index the document, doc, with key, key.
-      i.index(doc, key)
-
-      # commit the changes made to the index
-      get_transaction().commit()
-
-      # perform a test search
-      print i['blah']
-
-    Using an existing index:
-
-      doc = open('/usr/users/chris/doc2.txt', 'r').read()
-      key = '/usr/users/chris/doc2.txt'
-
-      # instantiate a Transactional index.
-      # The first argument is the file from which to restore the
-      # index.
-      i = InvertedIndex.Transactional('index_file')
-
-      # index the document, doc, with key, key.
-      i.index(doc, key)
-
-      # perform a test search
-      print i['blah']
-  '''
-
-  list_class = STPResultList
-
-  def __init__(self, picklefile, index_dictionary = None, create = None, 
-      cache_size = 100):
-
-    self.picklefile = picklefile
-    pickledict = SingleThreadedTransaction.PickleDictionary(
-	picklefile, create, cache_size = cache_size)
-
-    if (index_dictionary is not None):
-      for key in index_dictionary.keys():
-        pickledict[key] = index_dictionary[key]
-
-      pickledict.__changed__(1)
- 
-    Index.__init__(self, pickledict)
-
-
-  def pack(self):
-    '''\
-    pack()
-    Recover wasted space in the index file.'''
-
-    self._index_object.pack()
-
-
-  def __getinitargs__(self):
-      return (self.picklefile,)
 
 
 
