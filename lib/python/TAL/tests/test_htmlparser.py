@@ -33,13 +33,13 @@ class EventCollector(HTMLParser.HTMLParser):
 
     # structure markup
 
-    def finish_starttag(self, tag, attrs):
+    def handle_starttag(self, tag, attrs):
         self.append(("starttag", tag, attrs))
 
-    def finish_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):
         self.append(("startendtag", tag, attrs))
 
-    def finish_endtag(self, tag):
+    def handle_endtag(self, tag):
         self.append(("endtag", tag))
 
     # all other markup

@@ -296,9 +296,9 @@ class HTMLParser:
                                  (lineno, offset))
         if end[-2:] == '/>':
             # XHTML-style empty tag: <span attr="value" />
-            self.finish_startendtag(tag, attrs)
+            self.handle_startendtag(tag, attrs)
         else:
-            self.finish_starttag(tag, attrs)
+            self.handle_starttag(tag, attrs)
         return endpos
 
     # Internal -- parse endtag, return end or -1 if incomplete
@@ -312,122 +312,47 @@ class HTMLParser:
         tag = string.lower(string.strip(rawdata[i+2:j-1]))
         if not tag:
             raise HTMLParseError("empty start tag", self.getpos())
-        self.finish_endtag(tag)
+        self.handle_endtag(tag)
         return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>
-    def finish_startendtag(self, tag, attrs):
-        self.finish_starttag(tag, attrs)
-        self.finish_endtag(tag)
-
-    # Overridable -- finish processing of start tag
-    def finish_starttag(self, tag, attrs):
-        try:
-            method = getattr(self, 'start_' + tag)
-        except AttributeError:
-            try:
-                method = getattr(self, 'do_' + tag)
-            except AttributeError:
-                self.unknown_starttag(tag, attrs)
-            else:
-                self.handle_starttag(tag, method, attrs)
-        else:
-            self.stack.append(tag)
-            self.handle_starttag(tag, method, attrs)
-
-    # Overridable -- finish processing of end tag
-    def finish_endtag(self, tag):
-        if not tag:
-            found = len(self.stack) - 1
-            if found < 0:
-                self.unknown_endtag(tag)
-                return
-        else:
-            if tag not in self.stack:
-                try:
-                    method = getattr(self, 'end_' + tag)
-                except AttributeError:
-                    self.unknown_endtag(tag)
-                else:
-                    self.report_unbalanced(tag)
-                return
-            found = len(self.stack)
-            for i in range(found):
-                if self.stack[i] == tag: found = i
-        while len(self.stack) > found:
-            tag = self.stack[-1]
-            try:
-                method = getattr(self, 'end_' + tag)
-            except AttributeError:
-                method = None
-            if method:
-                self.handle_endtag(tag, method)
-            else:
-                self.unknown_endtag(tag)
-            del self.stack[-1]
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
 
     # Overridable -- handle start tag
-    def handle_starttag(self, tag, method, attrs):
-        method(attrs)
+    def handle_starttag(self, tag, attrs):
+        pass
 
     # Overridable -- handle end tag
-    def handle_endtag(self, tag, method):
-        method()
+    def handle_endtag(self, tag):
+        pass
 
-    # Example -- report an unbalanced </...> tag.
-    def report_unbalanced(self, tag):
-        if self.verbose:
-            print '*** Unbalanced </' + tag + '>'
-            print '*** Stack:', self.stack
-
-    # Example -- handle character reference, no need to override
+    # Overridable -- handle character reference
     def handle_charref(self, name):
-        try:
-            n = int(name)
-        except ValueError:
-            self.unknown_charref(name)
-            return
-        if not 0 <= n <= 255:
-            self.unknown_charref(name)
-            return
-        self.handle_data(chr(n))
+        pass
 
-    # Definition of entities -- derived classes may override
-    entitydefs = \
-            {'lt': '<', 'gt': '>', 'amp': '&', 'quot': '"', 'apos': '\''}
-
-    # Example -- handle entity reference, no need to override
+    # Overridable -- handle entity reference
     def handle_entityref(self, name):
-        table = self.entitydefs
-        if table.has_key(name):
-            self.handle_data(table[name])
-        else:
-            self.unknown_entityref(name)
-            return
+        pass
 
-    # Example -- handle data, should be overridden
+    # Overridable -- handle data
     def handle_data(self, data):
         pass
 
-    # Example -- handle comment, could be overridden
+    # Overridable -- handle comment
     def handle_comment(self, data):
         pass
 
-    # Example -- handle declaration, could be overridden
+    # Overridable -- handle declaration
     def handle_decl(self, decl):
         pass
 
-    # Example -- handle processing instruction, could be overridden
+    # Overridable -- handle processing instruction
     def handle_pi(self, data):
         pass
 
-    # To be overridden -- handlers for unknown objects
-    def unknown_starttag(self, tag, attrs): pass
-    def unknown_endtag(self, tag): pass
-    def unknown_charref(self, ref): pass
-    def unknown_entityref(self, ref): pass
-
-    # Helper to remove special character quoting
+    # Internal -- helper to remove special character quoting
     def unescape(self, s):
         if '&' not in s:
             return s
@@ -437,94 +362,3 @@ class HTMLParser:
         s = string.replace(s, "&quot;", '"')
         s = string.replace(s, "&amp;", "&") # Must be last
         return s
-
-
-class TestHTMLParser(HTMLParser):
-
-    def __init__(self, verbose=0):
-        self.testdata = ""
-        HTMLParser.__init__(self, verbose)
-
-    def handle_data(self, data):
-        self.testdata = self.testdata + data
-        if len(`self.testdata`) >= 70:
-            self.flush()
-
-    def flush(self):
-        data = self.testdata
-        if data:
-            self.testdata = ""
-            print 'data:', `data`
-
-    def handle_comment(self, data):
-        self.flush()
-        r = `data`
-        if len(r) > 68:
-            r = r[:32] + '...' + r[-32:]
-        print 'comment:', r
-
-    def unknown_starttag(self, tag, attrs):
-        self.flush()
-        if not attrs:
-            print 'start tag: <' + tag + '>'
-        else:
-            print 'start tag: <' + tag,
-            for name, value in attrs:
-                print name + '=' + '"' + value + '"',
-            print '>'
-
-    def unknown_endtag(self, tag):
-        self.flush()
-        print 'end tag: </' + tag + '>'
-
-    def unknown_entityref(self, ref):
-        self.flush()
-        print '*** unknown entity ref: &' + ref + ';'
-
-    def unknown_charref(self, ref):
-        self.flush()
-        print '*** unknown char ref: &#' + ref + ';'
-
-    def close(self):
-        HTMLParser.close(self)
-        self.flush()
-
-
-def test(args = None):
-    import sys
-
-    if not args:
-        args = sys.argv[1:]
-
-    if args and args[0] == '-s':
-        args = args[1:]
-        klass = HTMLParser
-    else:
-        klass = TestHTMLParser
-
-    if args:
-        file = args[0]
-    else:
-        file = 'test.html'
-
-    if file == '-':
-        f = sys.stdin
-    else:
-        try:
-            f = open(file, 'r')
-        except IOError, msg:
-            print file, ":", msg
-            sys.exit(1)
-
-    data = f.read()
-    if f is not sys.stdin:
-        f.close()
-
-    x = klass()
-    for c in data:
-        x.feed(c)
-    x.close()
-
-
-if __name__ == '__main__':
-    test()

@@ -175,7 +175,7 @@ class HTMLTALParser(HTMLParser):
 
     # Overriding HTMLParser methods
 
-    def finish_starttag(self, tag, attrs):
+    def handle_starttag(self, tag, attrs):
         self.close_para_tags(tag)
         self.tagstack.append(tag)
         self.scan_xmlns(attrs)
@@ -185,7 +185,7 @@ class HTMLTALParser(HTMLParser):
         if tag in EMPTY_HTML_TAGS:
             self.implied_endtag(tag, -1)
 
-    def finish_startendtag(self, tag, attrs):
+    def handle_startendtag(self, tag, attrs):
         self.close_para_tags(tag)
         self.scan_xmlns(attrs)
         attrlist, taldict, metaldict = self.extract_attrs(attrs)
@@ -198,7 +198,7 @@ class HTMLTALParser(HTMLParser):
                                       self.getpos(), isend=1)
         self.pop_xmlns()
 
-    def finish_endtag(self, tag):
+    def handle_endtag(self, tag):
         if tag in EMPTY_HTML_TAGS:
             # </img> etc. in the source is an error
             raise NestingError(tag, self.getpos())
