@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.133 2001/04/09 19:31:27 andreas Exp $"""
+$Id: ObjectManager.py,v 1.134 2001/04/21 18:34:51 andreas Exp $"""
 
-__version__='$Revision: 1.133 $'[11:-2]
+__version__='$Revision: 1.134 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -618,7 +618,7 @@ class ObjectManager(
         # Perform globbing on list of files (ajung)
            
         globbing = REQUEST.environ.get('GLOBBING','')
-        if globbing is not None:
+        if globbing :
             files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g) , files)
 
         try:
