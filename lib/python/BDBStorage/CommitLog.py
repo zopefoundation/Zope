@@ -276,7 +276,7 @@ class CommitLog:
         """
         if self._fp:
             self._fp.close()
-            if unlink or self._unlink:
+            if (unlink or self._unlink) and os.path.exists(self._fp.name):
                 os.unlink(self._fp.name)
                 self._fp = None
 
