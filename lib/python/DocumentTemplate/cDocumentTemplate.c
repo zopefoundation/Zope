@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.18 1998/12/04 20:15:28 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.19 1999/02/08 16:51:28 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -99,7 +99,7 @@ static PyObject *py__push, *py__pop, *py_aq_base;
 
 static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
 #define ASSIGN(V,E) PyVar_Assign(&(V),(E))
-#define UNLESS(E) if(!(E))
+#define UNLESS(E) if (!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 
 typedef struct {
@@ -123,7 +123,7 @@ InstanceDict___init__(InstanceDictobject *self, PyObject *args)
     return NULL;
   Py_INCREF(self->inst);
   Py_INCREF(self->namespace);
-  if(self->validate)
+  if (self->validate)
     Py_INCREF(self->validate);
   else
     UNLESS(self->validate=PyObject_GetAttr(self->namespace, py_validate))
@@ -180,21 +180,25 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
   char *name;
   
   /* Try to get value from the cache */
-  if(r=PyObject_GetItem(self->cache, key)) return r;
+  if (r=PyObject_GetItem(self->cache, key)) return r;
   PyErr_Clear();
   
   /* Check for __str__ */
   UNLESS(name=PyString_AsString(key)) return NULL;
-  if(*name=='_')
+  if (*name=='_')
     {
       UNLESS(strcmp(name,"__str__")==0) goto KeyError;
       return PyObject_Str(self->inst);
     }
   
   /* Do explicit acquisition with "roles" rule */
-  if(r=PyObject_GetAttr(self->inst, py_acquire))
+  if (r=PyObject_GetAttr(self->inst, py_acquire))
     {
-      if(self->validate != Py_None)
+      /* Sanity check in case of explicit Aq */
+      if (v=PyObject_GetAttr(self->inst, key)) Py_DECREF(v);  
+      else goto KeyError;
+
+      if (self->validate != Py_None)
 	{
 	  UNLESS_ASSIGN(r,PyObject_CallFunction(
 		 r, "OOO", key, self->validate, self->namespace))
@@ -202,7 +206,7 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
 	      PyObject *tb;
 
 	      PyErr_Fetch(&r, &v, &tb);
-	      if(r != PyExc_AttributeError || PyObject_Compare(v,key))
+	      if (r != PyExc_AttributeError || PyObject_Compare(v,key))
 		{
 		  PyErr_Restore(r,v,tb);
 		  return NULL;
@@ -224,7 +228,7 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
       /* OK, use getattr */
       UNLESS(r=PyObject_GetAttr(self->inst, key)) goto KeyError;
 
-      if(self->validate != Py_None)
+      if (self->validate != Py_None)
 	{
 	  UNLESS(v=PyObject_CallFunction(
 	    self->validate,"OOOOO",
@@ -234,7 +238,7 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
 	}
     }
   
-  if(r && PyObject_SetItem(self->cache, key, r) < 0) PyErr_Clear();
+  if (r && PyObject_SetItem(self->cache, key, r) < 0) PyErr_Clear();
   
   return r;
   
@@ -321,11 +325,11 @@ MM_pop(self, args)
   int i=1, l;
   PyObject *r;
 
-  if(args) UNLESS(PyArg_Parse(args, "i", &i)) return NULL;
-  if((l=PyList_Size(self->data)) < 0) return NULL;
+  if (args) UNLESS(PyArg_Parse(args, "i", &i)) return NULL;
+  if ((l=PyList_Size(self->data)) < 0) return NULL;
   i=l-i;
   UNLESS(r=PySequence_GetItem(self->data,l-1)) return NULL;
-  if(PyList_SetSlice(self->data,i,l,NULL) < 0) goto err;
+  if (PyList_SetSlice(self->data,i,l,NULL) < 0) goto err;
   return r;
 err:
   Py_DECREF(r);
@@ -353,27 +357,27 @@ MM_cget(MM *self, PyObject *key, int call)
   PyObject *e, *t, *rr, *tb;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return NULL;
-  while(--i >= 0)
+  while (--i >= 0)
     {
       e=PyList_GetItem(self->data,i);
-      if(e=PyObject_GetItem(e,key))
+      if (e=PyObject_GetItem(e,key))
 	{
 	  dt=0;
 
-	  if(PyCallable_Check(e))
+	  if (PyCallable_Check(e))
 	    {
 	      /* Decide whether we have a document template */
-	      if(rr=PyObject_GetAttr(e,py_isDocTemp))
+	      if (rr=PyObject_GetAttr(e,py_isDocTemp))
 		{
-		  if(PyObject_IsTrue(rr)) dt=1;
+		  if (PyObject_IsTrue(rr)) dt=1;
 		  Py_DECREF(rr);
 		}
 	      else PyErr_Clear();
 
 	      /* Try calling the object */
-	      if(call)
+	      if (call)
 		{
-		  if(dt)
+		  if (dt)
 		    {
 		      ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
 		      UNLESS(e)
@@ -382,11 +386,11 @@ MM_cget(MM *self, PyObject *key, int call)
 		  else
 		    {
 		      rr=PyObject_CallObject(e,NULL);
-		      if(rr) ASSIGN(e,rr);
+		      if (rr) ASSIGN(e,rr);
 		      else
 			{
 			  PyErr_Fetch(&t, &rr, &tb);
-			  if(t!=PyExc_AttributeError ||
+			  if (t!=PyExc_AttributeError ||
 			     PyObject_Compare(rr,py___call__) != 0)
 			    {
 			      PyErr_Restore(t,rr,tb);
@@ -401,7 +405,7 @@ MM_cget(MM *self, PyObject *key, int call)
 	  return e;
 	}
       PyErr_Fetch(&e, &rr, &tb);
-      if(dt || e != PyExc_KeyError)
+      if (dt || e != PyExc_KeyError)
 	{
 	  PyErr_Restore(e,rr,tb);
 	  return NULL;
@@ -429,7 +433,7 @@ MM_has_key(MM *self, PyObject *args)
   PyObject *key;
 
   UNLESS(PyArg_ParseTuple(args,"O",&key)) return NULL;
-  if((key=MM_cget(self, key, 0)))
+  if ((key=MM_cget(self, key, 0)))
     {
       Py_DECREF(key);
       return PyInt_FromLong(1);
@@ -469,17 +473,17 @@ MM_dealloc(self)
 static PyObject *
 MM_getattro(MM *self, PyObject *name)
 {
-  if(PyString_Check(name))
+  if (PyString_Check(name))
     {
-      if(strcmp(PyString_AsString(name),"level")==0)
+      if (strcmp(PyString_AsString(name),"level")==0)
 	return PyInt_FromLong(self->level);
     }
   
-  if(self->dict)
+  if (self->dict)
     {
       PyObject *v;
 
-      if(v=PyDict_GetItem(self->dict, name))
+      if (v=PyDict_GetItem(self->dict, name))
 	{
 	  Py_INCREF(v);
 	  return v;
@@ -492,19 +496,19 @@ MM_getattro(MM *self, PyObject *name)
 static int
 MM_setattro(MM *self, PyObject *name, PyObject *v)
 {
-  if(v && PyString_Check(name))
+  if (v && PyString_Check(name))
     {
-      if(strcmp(PyString_AsString(name),"level")==0)
+      if (strcmp(PyString_AsString(name),"level")==0)
 	{
 	  self->level=PyInt_AsLong(v);
-	  if(PyErr_Occurred()) return -1;
+	  if (PyErr_Occurred()) return -1;
 	  return 0;
 	}
     }
 
-  if(! self->dict && ! (self->dict=PyDict_New())) return -1;
+  if (! self->dict && ! (self->dict=PyDict_New())) return -1;
   
-  if(v) return PyDict_SetItem(self->dict, name, v);
+  if (v) return PyDict_SetItem(self->dict, name, v);
   else  return PyDict_DelItem(self->dict, name);
 }
 
@@ -516,7 +520,7 @@ MM_length(self)
   PyObject *e=0;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return -1;
-  while(--i >= 0)
+  while (--i >= 0)
     {
       e=PyList_GetItem(self->data,i);
       UNLESS(-1 != (el=PyObject_Length(e))) return -1;
@@ -584,14 +588,14 @@ if_finally(PyObject *md, int err)
 {
   PyObject *t, *v, *tb;
 
-  if(err) PyErr_Fetch(&t, &v, &tb);
+  if (err) PyErr_Fetch(&t, &v, &tb);
 
   md=PyObject_GetAttr(md,py__pop);
-  if(md) ASSIGN(md, PyObject_CallObject(md,NULL));
+  if (md) ASSIGN(md, PyObject_CallObject(md,NULL));
   
-  if(err) PyErr_Restore(t,v,tb);
+  if (err) PyErr_Restore(t,v,tb);
   
-  if(md)
+  if (md)
     {
       Py_DECREF(md);
       return -1;
@@ -607,25 +611,25 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
   PyObject *block;
   int l, i, k=0, append;
 
-  if((l=PyList_Size(blocks)) < 0) return -1;
-  for(i=0; i < l; i++)
+  if ((l=PyList_Size(blocks)) < 0) return -1;
+  for (i=0; i < l; i++)
     {
       block=PyList_GET_ITEM(((PyListObject*)blocks), i);
       append=1;
 
-      if(PyTuple_Check(block))
+      if (PyTuple_Check(block))
 	{
 	  int bs;
 
 	  bs=((PyTupleObject*)block)->ob_size;
 	  
-	  if(bs==1)
+	  if (bs==1)
 	    {
 	      /* Simple var */
 	      block=PyTuple_GET_ITEM(block,0);
-	      if(PyString_Check(block)) block=PyObject_GetItem(md,block);
+	      if (PyString_Check(block)) block=PyObject_GetItem(md,block);
 	      else block=PyObject_CallObject(block,mda);
-	      if(block) ASSIGN(block, PyObject_Str(block));
+	      if (block) ASSIGN(block, PyObject_Str(block));
 	      UNLESS(block) return -1;
 	    }
 	  else
@@ -636,23 +640,23 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 
 	      UNLESS(cache=PyDict_New()) return -1;
 	      cond=PyObject_GetAttr(md,py__push);
-	      if(cond) ASSIGN(cond, PyObject_CallFunction(cond,"O",cache));
+	      if (cond) ASSIGN(cond, PyObject_CallFunction(cond,"O",cache));
 	      Py_DECREF(cache);
-	      if(cond) Py_DECREF(cond);
+	      if (cond) Py_DECREF(cond);
 	      else return -1;
 	      
 	      append=0;
 	      m=bs-1;
-	      for(icond=0; icond < m; icond += 2)
+	      for (icond=0; icond < m; icond += 2)
 		{
 		  cond=PyTuple_GET_ITEM(block,icond);
-		  if(PyString_Check(cond))
+		  if (PyString_Check(cond))
 		    {
 		      /* We have to be careful to handle key errors here */
 		      n=cond;
-		      if(cond=PyObject_GetItem(md,cond))
+		      if (cond=PyObject_GetItem(md,cond))
 			{
-			  if(PyDict_SetItem(cache, n, cond) < 0)
+			  if (PyDict_SetItem(cache, n, cond) < 0)
 			    {
 			      Py_DECREF(cond);
 			      return if_finally(md,1);
@@ -663,7 +667,7 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 			  PyObject *t, *v, *tb;
 
 			  PyErr_Fetch(&t, &v, &tb);
-			  if(t != PyExc_KeyError || PyObject_Compare(v,n))
+			  if (t != PyExc_KeyError || PyObject_Compare(v,n))
 			    {
 			      PyErr_Restore(t,v,tb);
 			      return if_finally(md,1);
@@ -679,11 +683,11 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 		    UNLESS(cond=PyObject_CallObject(cond,mda))
 		       return if_finally(md,1);
 
-		  if(PyObject_IsTrue(cond))
+		  if (PyObject_IsTrue(cond))
 		    {
 		      Py_DECREF(cond);
 		      block=PyTuple_GET_ITEM(block,icond+1);
-		      if(block!=Py_None &&
+		      if (block!=Py_None &&
 			 render_blocks_(block, rendered, md, mda) < 0)
 			return if_finally(md,1);
 		      m=-1;
@@ -691,18 +695,18 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 		    }
 		  else Py_DECREF(cond);
 		}
-		if(icond==m)
+		if (icond==m)
 		  {
 		    block=PyTuple_GET_ITEM(block,icond);
-		    if(block!=Py_None &&
+		    if (block!=Py_None &&
 		       render_blocks_(block, rendered, md, mda) < 0)
 		      return if_finally(md,1);
 		  }
 
-		if(if_finally(md,0) == -2) return -1;
+		if (if_finally(md,0) == -2) return -1;
 	    }
 	}
-      else if(PyString_Check(block))
+      else if (PyString_Check(block))
 	{
 	  Py_INCREF(block);
 	}
@@ -711,11 +715,11 @@ render_blocks_(PyObject *blocks, PyObject *rendered,
 	  UNLESS(block=PyObject_CallObject(block,mda)) return -1;
 	}
 
-      if(append && PyObject_IsTrue(block))
+      if (append && PyObject_IsTrue(block))
 	{
 	  k=PyList_Append(rendered,block);
 	  Py_DECREF(block);
-	  if(k < 0) return -1;
+	  if (k < 0) return -1;
 	}
     }
 
@@ -732,17 +736,17 @@ render_blocks(PyObject *self, PyObject *args)
   UNLESS(rendered=PyList_New(0)) goto err;
   UNLESS(mda=Py_BuildValue("(O)",md)) goto err;
   
-  if(render_blocks_(blocks, rendered, md, mda) < 0) goto err;
+  if (render_blocks_(blocks, rendered, md, mda) < 0) goto err;
 
   Py_DECREF(mda);
 
   l=PyList_Size(rendered);
-  if(l==0)
+  if (l==0)
     {
       Py_INCREF(py_);
       ASSIGN(rendered, py_);
     }
-  else if(l==1)
+  else if (l==1)
     ASSIGN(rendered, PySequence_GetItem(rendered,0));
   else
     ASSIGN(rendered, PyObject_CallFunction(join,"OO",rendered,py_));
@@ -786,7 +790,7 @@ validate(PyObject *self, PyObject *args)
   UNLESS(__roles__=PyObject_GetAttr(value,py___roles__))
     {
       PyErr_Clear();
-      if(inst==parent) return PyInt_FromLong(1);
+      if (inst==parent) return PyInt_FromLong(1);
 
       /* Waaaa, check for wrapped objects, waaaaa! */
       UNLESS(i=PyObject_GetAttr(inst, py_aq_base))
@@ -801,7 +805,7 @@ validate(PyObject *self, PyObject *args)
 	  Py_INCREF(parent);
 	  p=parent;
 	}
-      if(i==p)
+      if (i==p)
 	{
 	  Py_DECREF(i);
 	  Py_DECREF(p);
@@ -819,7 +823,7 @@ validate(PyObject *self, PyObject *args)
     }
 
   /* if roles is None: return 1 */
-  if(__roles__==Py_None)
+  if (__roles__==Py_None)
     {
       Py_DECREF(__roles__);
       return PyInt_FromLong(1);
@@ -831,13 +835,13 @@ validate(PyObject *self, PyObject *args)
 	    
 	except AttributeError: pass
    */
-  if(md=PyObject_GetAttr(md,py_AUTHENTICATED_USER))
+  if (md=PyObject_GetAttr(md,py_AUTHENTICATED_USER))
     {
       ASSIGN(md,PyObject_GetAttr(md,py_hasRole));
-      if(md) ASSIGN(md,PyObject_CallFunction(md,"OO",value,__roles__));
-      if(md)
+      if (md) ASSIGN(md,PyObject_CallFunction(md,"OO",value,__roles__));
+      if (md)
 	{
-	  if(PyObject_IsTrue(md))
+	  if (PyObject_IsTrue(md))
 	    {
 	      Py_DECREF(__roles__);
 	      return md;
@@ -851,16 +855,16 @@ validate(PyObject *self, PyObject *args)
   /*    for r in self._proxy_roles:
 	    if r in roles: return 1
    */
-  if(PyObject_IsTrue(__roles__))
-     if((md=PyObject_GetAttr(self, py__proxy_roles)))
+  if (PyObject_IsTrue(__roles__))
+     if ((md=PyObject_GetAttr(self, py__proxy_roles)))
      {
        int i,l, isIn;
        PyObject *role;
        
-       if((l=PyObject_Length(md)) < 0) PyErr_Clear();
+       if ((l=PyObject_Length(md)) < 0) PyErr_Clear();
        else
 	 {
-	   for(i=0; i < l; i++)
+	   for (i=0; i < l; i++)
 	     {
 	       UNLESS(role=PySequence_GetItem(md,i))
 		 {
@@ -869,12 +873,12 @@ validate(PyObject *self, PyObject *args)
 		 }
 	       isIn=PySequence_In(__roles__,role);
 	       Py_DECREF(role);
-	       if(isIn < 0)
+	       if (isIn < 0)
 		 {
 		   PyErr_Clear();
 		   break;
 		 }
-	       if(isIn)
+	       if (isIn)
 		 {
 		   Py_DECREF(md);
 		   return __roles__; /* Any true object would do. */
@@ -890,7 +894,7 @@ validate(PyObject *self, PyObject *args)
   /*     raise 'Unauthorized', (
 		'You are not authorized to access <em>%s</em>.' % name)
    */
-  if(name=PyString_Format(py_Unauthorized_fmt, name))
+  if (name=PyString_Format(py_Unauthorized_fmt, name))
     {
       PyErr_SetObject(py_Unauthorized, name);
       Py_DECREF(name);
@@ -912,7 +916,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.18 $";
+  char *rev="$Revision: 1.19 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
