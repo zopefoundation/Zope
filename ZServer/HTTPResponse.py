@@ -89,14 +89,14 @@ The HTTPResponse class takes care of server headers, response munging
 and logging duties.
 
 """
-import time, regex, string
+import time, regex, string, sys
 from cStringIO import StringIO
 
 from ZPublisher.HTTPResponse import HTTPResponse, end_of_header_search
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
-from medusa import http_server
+from medusa import http_server, asyncore
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer
 
 
@@ -239,18 +239,26 @@ class ChannelPipe:
         self._channel.push(LoggingProducer(self._request, self._bytes), 0)
         self._channel.push(CallbackProducer(self._channel.done), 0)
         if self._shutdown:
+            try: r=self._shutdown[0]
+            except: r=0
+            sys.ZServerExitCode=r
             self._channel.push(ShutdownProducer(), 0)
+            Wakeup(lambda: asyncore.close_all())
         elif self._close:
             self._channel.push(None, 0)
-        Wakeup()
-        
+            Wakeup()
+
         self._channel=None #need to break cycles?
         self._request=None
     
     def finish(self, response):
         if response.headers.get('bobo-exception-type', '') == \
                 'exceptions.SystemExit':
-            self._shutdown=1
+
+            r=response.headers.get('bobo-exception-value','0')
+            try: r=string.atoi(r)
+            except: r = r and 1 or 0
+            self._shutdown=r,
         if response.headers.get('connection','') == 'close' or \
                 response.headers.get('Connection','') == 'close':
             self._close=1
