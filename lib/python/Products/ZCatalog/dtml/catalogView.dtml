@@ -1,7 +1,9 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
-<dtml-if searchResults>
+    <dtml-let filterpath="REQUEST.get('filterpath', '/')"
+              results="searchResults(path=filterpath)">
+<dtml-if results>
 
 <script type="text/javascript">
 <!-- 
@@ -28,25 +30,40 @@ function toggleSelect() {
 //-->
 </script>
 
-<form action="&dtml-URL1;" name="objectItems">
+<h1 class="form-label section-bar">Path filter</h1>
+<dtml-if "'path' in this().Indexes.objectIds()">
+<form action="&dtml-URL;">
+    <p class="form-text">
+        Path: <input type="text" name="filterpath" value="&dtml-filterpath;"/> <input type="submit" value="Set Filter"/>
+    </p>
+</form>
+<dtml-else>
+    <p class="form-text">
+    The path filter is <span style="color:red;">disabled</span>. To enable the path filter, add a PathIndex called "path" to this catalog.
+    </p>
+</dtml-if>
 
+<h1 class="form-label section-bar">Objects in this catalog</h1>
+
+<form action="&dtml-URL1;" name="objectItems">
 <p class="form-text">
-&dtml-id; contains <dtml-var searchResults fmt=collection-length thousands_commas> record(s).
+The catalog "&dtml-id;" contains <dtml-var results fmt=collection-length thousands_commas> record(s) in the path "&dtml-filterpath;".
 </p>
-  <div class="form-text">
-  <dtml-in searchResults previous size=20 start=query_start >
-    <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
+<div class="form-text">
+  <dtml-in results previous size=20 start=query_start >
+      <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;&filterpath=&dtml-filterpath;">
       [Previous <dtml-var previous-sequence-size> entries]
     </a>
   </dtml-in>
-  <dtml-in searchResults next size=20 start=query_start >
-    <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
+  <dtml-in results next size=20 start=query_start >
+    <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;&filterpath=&dtml-filterpath;">
       [Next <dtml-var next-sequence-size> entries]
     </a>
   </dtml-in>
   </div>
+
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
-<dtml-in searchResults size=20 start=query_start >
+<dtml-in results size=20 start=query_start >
   <dtml-if name="sequence-start">
   <tr class="list-header">
     <td width="5%" align="right" colspan="2" valign="top">&nbsp;</td>
@@ -100,7 +117,7 @@ if (document.forms[0]) {
 There are no objects in the Catalog.
 </p>
 </dtml-if>
-
+</dtml-let>
 <dtml-var manage_page_footer>
 
 

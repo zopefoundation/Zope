@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+     - UI improvement for the ZCatalog. The "catalog contents" allow
+       you to filter the cataloged objects by path now.
+
      - Made test.py follow symbolic links on POSIX systems.
 
      - added utilities/reindex_catalog.py to perform ZCatalog maintenance
