@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -216,16 +216,8 @@ class UnIndex(Persistent, Implicit):
         returnStatus = 0
 
         # First we need to see if there's anything interesting to look at
-        # self.id is the name of the index, which is also the name of the
-        # attribute we're interested in.  If the attribute is callable,
-        # we'll do so.
-        try:
-            datum = getattr(obj, self.id)
-            if callable(datum):
-                datum = datum()
-        except AttributeError:
-            datum = _marker
- 
+        datum = self._get_object_datum(obj)
+
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
         oldDatum = self._unindex.get(documentId, _marker)
@@ -240,6 +232,18 @@ class UnIndex(Persistent, Implicit):
             returnStatus = 1
 
         return returnStatus
+
+    def _get_object_datum(self,obj):
+        # self.id is the name of the index, which is also the name of the
+        # attribute we're interested in.  If the attribute is callable,
+        # we'll do so.
+        try:
+            datum = getattr(obj, self.id)
+            if callable(datum):
+                datum = datum()
+        except AttributeError:
+            datum = _marker
+        return datum
 
     def numObjects(self):
         """ return number of indexed objects """

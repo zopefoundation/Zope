@@ -62,12 +62,7 @@ class KeywordIndex(UnIndex,PluggableIndex.PluggableIndex,Persistent,
         # attribute we're interested in.  If the attribute is callable,
         # we'll do so.
 
-        newKeywords = getattr(obj, self.id, ())
-        if callable(newKeywords):
-            newKeywords = newKeywords()
-
-        if type(newKeywords) is StringType:
-            newKeywords = (newKeywords, )
+        newKeywords = self._get_object_keywords(obj)
 
         oldKeywords = self._unindex.get(documentId, None)
 
@@ -96,6 +91,14 @@ class KeywordIndex(UnIndex,PluggableIndex.PluggableIndex,Persistent,
                         self.insertForwardIndexEntry(kw, documentId)
         return 1
 
+    def _get_object_keywords(self,obj):
+        newKeywords = getattr(obj, self.id, ())
+        if callable(newKeywords):
+            newKeywords = newKeywords()
+        if hasattr(newKeywords,'capitalize'): # is it string-like ?
+            newKeywords = (newKeywords, )
+        return newKeywords
+            
     def unindex_objectKeywords(self, documentId, keywords):
         """ carefully unindex the object with integer id 'documentId'"""
 
