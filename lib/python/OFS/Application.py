@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.145 2001/05/17 18:37:40 shane Exp $'''
-__version__='$Revision: 1.145 $'[11:-2]
+$Id: Application.py,v 1.146 2001/05/21 17:57:57 chrism Exp $'''
+__version__='$Revision: 1.146 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -419,6 +419,13 @@ def initialize(app):
         app.__ac_roles__=app.__ac_roles__ + ('Owner',)
         get_transaction().note('Added Owner role')
         get_transaction().commit()
+
+    # ensure the Authenticated role exists.
+    if hasattr(app, '__ac_roles__'):
+        if not 'Authenticated' in app.__ac_roles__:
+            app.__ac_roles__=app.__ac_roles__ + ('Authenticated',)
+            get_transaction().note('Added Authenticated role')
+            get_transaction().commit()
 
     # Make sure we have Globals
     root=app._p_jar.root()

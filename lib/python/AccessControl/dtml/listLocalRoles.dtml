@@ -86,7 +86,7 @@ roles that should be given to that user from the <em>Roles</em> list.
   <div class="form-element">
   <select name="roles:list" size="5" multiple>
 <dtml-in valid_roles><dtml-if 
-"_vars['sequence-item'] not in ('Anonymous', 'Shared')">
+"_vars['sequence-item'] not in ('Anonymous', 'Shared', 'Authenticated')">
 <option value="<dtml-var sequence-item html_quote>"><dtml-var 
  sequence-item></option>
 </dtml-if>

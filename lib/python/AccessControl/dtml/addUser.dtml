@@ -73,10 +73,12 @@ Domains
   <div class="form-element">
   <select name="roles:list" size="5" multiple>
   <dtml-in valid_roles>
+  <dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
   <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
   <dtml-if expr="_vars['sequence-item'] != 'Shared'">
   <option value="<dtml-var sequence-item html_quote>"><dtml-var 
    sequence-item>
+  </dtml-if>
   </dtml-if>
   </dtml-if>
   </dtml-in valid_roles>

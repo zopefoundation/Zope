@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.149 $'[11:-2]
+__version__='$Revision: 1.150 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -249,6 +249,12 @@ class BasicUser(Implicit):
         if object_roles is None or 'Anonymous' in object_roles:
             return 1
 
+        # Provide short-cut access if object is protected by 'Authenticated'
+        # role and user is not nobody
+        if 'Authenticated' in object_roles and (
+            self.getUserName() != 'Anonymous User'):
+            return 1
+
         # Check for ancient role data up front, convert if found.
         # This should almost never happen, and should probably be
         # deprecated at some point.
@@ -343,7 +349,8 @@ class SimpleUser(BasicUser):
 
     def getRoles(self):
         """Return the list of roles assigned to a user."""
-        return tuple(self.roles)
+        if self.name == 'Anonymous User': return tuple(self.roles)
+        else: return tuple(self.roles) + ('Authenticated',)
 
     def getDomains(self):
         """Return the list of domain restrictions for a user"""

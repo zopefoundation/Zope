@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -117,7 +117,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
           'manage_defined_roles', 'userdefined_roles',
           'manage_listLocalRoles', 'manage_editLocalRoles',
           'manage_setLocalRoles', 'manage_addLocalRoles',
-          'manage_delLocalRoles',
+          'manage_delLocalRoles'
           )),
         )
 
@@ -132,7 +132,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
          },
         )
    
-    __ac_roles__=('Manager', 'Owner', 'Anonymous')
+    __ac_roles__=('Manager', 'Owner', 'Anonymous', 'Authenticated')
 
     permissionMappingPossibleValues=Acquired
 

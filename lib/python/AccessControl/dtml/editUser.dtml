@@ -70,6 +70,7 @@ Roles
 <div class="form-element">
 <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
 <dtml-in valid_roles>
+<dtml-if expr="_vars['sequence-item'] != 'Authenticated'">
 <dtml-if expr="_vars['sequence-item'] != 'Anonymous'">
 <dtml-if expr="_vars['sequence-item'] != 'Shared'">
 <dtml-if expr="_vars['sequence-item'] in user.roles">
@@ -77,6 +78,7 @@ Roles
  sequence-item>
 <dtml-else>
 <OPTION VALUE="<dtml-var sequence-item html_quote>"><dtml-var sequence-item>
+</dtml-if>
 </dtml-if>
 </dtml-if>
 </dtml-if>
