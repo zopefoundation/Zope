@@ -279,11 +279,5 @@ setup(name = "Other libraries",
                   ]
       )
 
-stopper = Extension(name = "Products.ZCTextIndex.stopper",
-                    sources = ["Products/ZCTextIndex/stopper.c"])
-
-setup(name = "Products.ZCTextIndex",
-      ext_modules = [stopper])
-
 os.chdir(top_dir)
 
