@@ -230,7 +230,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         ' '
         return self._settings.copy()  # Don't let DTML modify it.
 
-    manage_main = HTMLFile('propsAccel', globals())
+    manage_main = HTMLFile('dtml/propsAccel', globals())
 
     def manage_editProps(self, title, settings=None, REQUEST=None):
         ' '
@@ -247,7 +247,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
             return self.manage_main(
                 self, REQUEST, manage_tabs_message='Properties changed.')
 
-    manage_stats = HTMLFile('statsAccel', globals())
+    manage_stats = HTMLFile('dtml/statsAccel', globals())
 
     def _getSortInfo(self):
         """
@@ -295,7 +295,8 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
 Globals.default__class_init__(AcceleratedHTTPCacheManager)
 
 
-manage_addAcceleratedHTTPCacheManagerForm = HTMLFile('addAccel', globals())
+manage_addAcceleratedHTTPCacheManagerForm = HTMLFile('dtml/addAccel',
+                                                     globals())
 
 def manage_addAcceleratedHTTPCacheManager(self, id, REQUEST=None):
     ' '

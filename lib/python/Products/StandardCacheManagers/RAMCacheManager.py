@@ -412,7 +412,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
         'Returns the current cache settings.'
         return self._settings.copy()
 
-    manage_main = HTMLFile('propsRCM', globals())
+    manage_main = HTMLFile('dtml/propsRCM', globals())
 
     def manage_editProps(self, title, settings=None, REQUEST=None):
         'Changes the cache settings.'
@@ -431,7 +431,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
             return self.manage_main(
                 self, REQUEST, manage_tabs_message='Properties changed.')
 
-    manage_stats = HTMLFile('statsRCM', globals())
+    manage_stats = HTMLFile('dtml/statsRCM', globals())
 
     def _getSortInfo(self):
         """
@@ -473,7 +473,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
 Globals.default__class_init__(RAMCacheManager)
 
 
-manage_addRAMCacheManagerForm = HTMLFile('addRCM', globals())
+manage_addRAMCacheManagerForm = HTMLFile('dtml/addRCM', globals())
 
 def manage_addRAMCacheManager(self, id, REQUEST=None):
     'Adds a RAM cache manager to the folder.'
