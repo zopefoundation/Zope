@@ -139,6 +139,10 @@ with a callable object that takes 5 arguments:
                traceback.  If provided, then a summary of the error
                is added to the detail.
 
+The callable object can provide a reinitialize method that may be
+called with no arguments to reopen the log files (if any) as part of a
+log-rotation facility. 
+
 There is a default stupid logging facility that:
 
   - swallows logging information by default,
@@ -228,53 +232,59 @@ def log_time():
 _stupid_dest=None
 _stupid_severity=None
 _no_stupid_log=[]
-def stupid_log_write(subsystem, severity, summary, detail, error):
+class stupid_log_write:
+
+    def reinitialize(self):
+        global _stupid_dest
+        _stupid_dest = None        
     
-    global _stupid_dest
-    if _stupid_dest is None:
-        import os
-        if os.environ.has_key('STUPID_LOG_FILE'):
-            f=os.environ['STUPID_LOG_FILE']
-            if f: _stupid_dest=open(f,'a')
+    def __call__(self, subsystem, severity, summary, detail, error):
+
+        global _stupid_dest
+        if _stupid_dest is None:
+            import os
+            if os.environ.has_key('STUPID_LOG_FILE'):
+                f=os.environ['STUPID_LOG_FILE']
+                if f: _stupid_dest=open(f,'a')
+                else:
+                    import sys
+                    _stupid_dest=sys.stderr
             else:
-                import sys
-                _stupid_dest=sys.stderr
-        else:
-            _stupid_dest=_no_stupid_log
-            
-    if _stupid_dest is _no_stupid_log: return
+                _stupid_dest=_no_stupid_log
 
-    global _stupid_severity
-    if _stupid_severity is None:
-        try: _stupid_severity=string.atoi(os.environ['STUPID_LOG_SEVERITY'])
-        except: _stupid_severity=0
-        
-    if severity < _stupid_severity: return
-               
-    _stupid_dest.write(
-        "------\n"
-        "%s %s %s %s\n%s"
-        %
-        (log_time(),
-         severity_string(severity),
-         subsystem,
-         summary,
-         detail,
-         )
-        )
-    _stupid_dest.flush()
+        if _stupid_dest is _no_stupid_log: return
 
-    if error:
-        try:
-            _stupid_dest.write(format_exception(
-                error[0], error[1], error[2],
-                trailer='\n', limit=100))
-        except:
-            _stupid_dest.write("%s: %s\n" % error[:2])
-    _stupid_dest.flush()
+        global _stupid_severity
+        if _stupid_severity is None:
+            try: _stupid_severity=string.atoi(os.environ['STUPID_LOG_SEVERITY'])
+            except: _stupid_severity=0
+
+        if severity < _stupid_severity: return
+
+        _stupid_dest.write(
+            "------\n"
+            "%s %s %s %s\n%s"
+            %
+            (log_time(),
+             severity_string(severity),
+             subsystem,
+             summary,
+             detail,
+             )
+            )
+        _stupid_dest.flush()
+
+        if error:
+            try:
+                _stupid_dest.write(format_exception(
+                    error[0], error[1], error[2],
+                    trailer='\n', limit=100))
+            except:
+                _stupid_dest.write("%s: %s\n" % error[:2])
+        _stupid_dest.flush()
 
 
-log_write=stupid_log_write
+log_write=stupid_log_write()
 
 format_exception_only=None
 def format_exception(etype,value,tb,limit=None, delimiter='\n',
