@@ -1,0 +1,36 @@
+# Common setup
+# The following name are globally available:
+#
+# modules: sys, os, socket, time, string
+# functions: isfile, isdir, abspath
+# HERE = the INSTANCE_HOME in which the running zctl.py lives
+# CLIENT_HOME = the directory in which this zconfig.py file lives
+
+# ZOPE_HOME is the directory containing the Zope software.  Required.
+ZOPE_HOME = '/usr/local/zope_soft'
+
+# ZOPE_OPTS may be used to provide additional z2.py command-line arguments.
+#ZOPE_OPTS = '-u zope -M %s/var/details.log' % HERE
+
+# ZOPE_PORT may be used to specify the z2.py "-P" base services port
+#ZOPE_PORT = 8000
+
+# ZOPE_LOG may be used to specify a STUPID_LOG file
+#ZOPE_LOG = pjoin(HERE, 'var', 'debug.log')
+
+# ZOPE_ENV may be used to provide additional environment variables to Zope
+#ZOPE_ENV['TMPDIR'] = '/tmp'
+
+
+# ZEO
+
+# If ZEO is installed, then ZEO_SERVER_NAME and ZEO_SERVER_PORT are required
+#ZEO['ZEO_SERVER_NAME'] = '10.0.0.1'
+#ZEO['ZEO_SERVER_PORT'] = 2221
+
+# ZEO_WAIT_BAILOUT may be used to specify how many seconds zctl.py
+# should wait for ZEO to start before giving up
+ZEO_WAIT_BAILOUT = 60 # Don't try for more than num seconds
+
+# ZEO_ENV may be used to provide additional environment variables to ZEO
+#ZEO_ENV['FOO'] = 'BAR'
