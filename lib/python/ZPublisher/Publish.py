@@ -517,7 +517,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.15 1996/08/07 19:37:54 jfulton Exp $"""
+$Id: Publish.py,v 1.16 1996/08/29 22:20:26 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +570,9 @@ $Id: Publish.py,v 1.15 1996/08/07 19:37:54 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.16  1996/08/29 22:20:26  jfulton
+# *** empty log message ***
+#
 # Revision 1.15  1996/08/07 19:37:54  jfulton
 # Added:
 #
@@ -641,7 +644,7 @@ $Id: Publish.py,v 1.15 1996/08/07 19:37:54 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 def main():
@@ -683,16 +686,25 @@ class ModulePublisher:
 
 	raise 'BadRequest',self.html(
 	    "Invalid request",
-	    "The parameter, %s, was ommitted from the request." % name)
+	    "The parameter, %s, was ommitted from the request."
+	    "<!--%s-->"
+	    % (name,self.request))
 
-    def forbiddenError(self):
+    def forbiddenError(self,object=None):
 	raise 'NotFound',self.html(
 	    "Resource not found",
-	    "Sorry, the requested document does not exist.")
+	    "Sorry, the requested document does not exist.\n"
+	    "<!--%s-->" % object)
     
     def env(self,key):
 	try: return self.environ[key]
-	except: return ''
+	except:
+          if key == 'HTTP_AUTHORIZATION':
+            try:
+              return self.environ['HTTP_CGI_AUTHORIZATION']
+            except:
+              return ''
+          return ''
 
 
     def validate(self,groups,realm=None):
@@ -721,6 +733,15 @@ class ModulePublisher:
     def publish(self, module_name, published='web_objects',
 		imported_modules={}, module_dicts={}):
 
+        # First check for "cancel" redirect:
+	cancel=''
+	try:
+	    if string.lower(self.request['SUBMIT'])=='cancel':
+		cancel=self.request['CANCEL_ACTION']
+	except: pass
+	if cancel:
+	    raise 'Redirect', cancel
+
 	if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 	self.module_name=module_name
 	response=self.response
@@ -732,7 +753,9 @@ class ModulePublisher:
 	try:
 	    theModule, object, published = module_dicts[module_name]
 	except:
-	    exec 'import %s' % module_name in dict
+	    try: exec 'import %s' % module_name in dict
+	    except: raise ImportError, (
+		sys.exc_type, sys.exc_value, sys.exc_traceback)
 	    theModule=object=dict[module_name]
 	    if hasattr(theModule,published):
 		object=getattr(theModule,published)
@@ -760,6 +783,7 @@ class ModulePublisher:
 	# Get a nice clean path list:
 	path=(string.strip(self.env('PATH_INFO')))
 	if path[:1]=='/': path=path[1:]
+	if path[-1:]=='/': path=path[:-1]
 	path=string.splitfields(path,'/')
 	while path and not path[0]: path = path[1:]
  
@@ -771,22 +795,22 @@ class ModulePublisher:
 
 	# Get default object if no path was specified:
 	if not path:
-	    for entry_name in 'index_html', 'index.html':
-		try:
-		    if hasattr(object,entry_name):
-			path=[entry_name]
-			break
-		except: pass
-		try:
-		    if object.has_key(entry_name):
-			path=[entry_name]
-			break
-		except: pass
+	    entry_name='index_html'
+	    try:
+		if hasattr(object,entry_name):
+		    path=[entry_name]
+		else:
+		    try:
+			if object.has_key(entry_name):
+			    path=[entry_name]
+		    except: pass
+	    except: pass
 	    if not path: path = ['help']
 
-	URL=self.base
+	URL=self.script
 	parents=[]
 	while path:
+	    sad_pathetic_persistence_hack(object)
 	    entry_name,path=path[0], path[1:]
 	    URL="%s/%s" % (URL,entry_name)
 	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
@@ -817,9 +841,23 @@ class ModulePublisher:
 			    realm=getattr(object,entry_name+'__realm__')
 			    realm_name=default_realm_name
 			except: pass
+		    try:
+			request_params=getattr(subobject,'__request_data__')
+			try: request_params=request_params()
+			except: pass
+			for key in request_params.keys():
+			    self.request[key]=request_params[key]
+		    except: pass
 		except AttributeError:
 		    try:
 			subobject=object[entry_name]
+			try:
+			    request_params=getattr(subobject,'__request_data__')
+			    try: request_params=request_params()
+			    except: pass
+			    for key in request_params.keys():
+				self.request[key]=request_params[key]
+			except: pass
 			try:
 			    groups=subobject.__allow_groups__
 			    inherited_groups=allow_group_composition(
@@ -844,7 +882,7 @@ class ModulePublisher:
 				realm=object[entry_name+'__realm__']
 				realm_name=default_realm_name
 			    except: pass
-		    except (TypeError,AttributeError):
+		    except (TypeError,AttributeError,KeyError):
 			if not path and entry_name=='help' and doc:
 			    object=doc
 			    entry_name, subobject = (
@@ -865,7 +903,8 @@ class ModulePublisher:
 			entry_name != '__doc__' and
 			(not doc or entry_name[0]=='_')
 			):
-			raise 'Forbidden',object
+		        if not doc: entry_name=str(subobject)
+			self.forbiddenError(entry_name)
 
 		# Promote subobject to object
 		parents.append(object)
@@ -924,6 +963,7 @@ class ModulePublisher:
 	query=self.request
 	query['RESPONSE']=response
 	query['URL']=URL
+	query['PARENT_URL']=URL[:string.rfind(URL,'/')]
 	if parents:
 	    parents.reverse()
 	    query['self']=parents[0]
@@ -953,6 +993,11 @@ class ModulePublisher:
 	if transaction: transaction.commit()
 
 	return response
+
+def sad_pathetic_persistence_hack(object):
+    try: setstate=object.__dict__['_p_setstate']
+    except: return
+    setstate(object)
 
 def str_field(v):
     if type(v) is types.ListType:
@@ -1110,6 +1155,34 @@ class Request:
 	self.stdin=stdin
 	self.other={}
 
+	def env(key,d=environ):
+	    try: return d[key]
+	    except:
+                if string.upper(key) == 'HTTP_AUTHORIZATION':
+                    try: return d['HTTP_CGI_AUTHORIZATION']
+                    except: return ''
+                return ''
+
+	b=script=string.strip(environ['SCRIPT_NAME'])
+	while b and b[-1]=='/': b=b[:-1]
+	p = string.rfind(b,'/')
+	if p >= 0: b=b[:p+1]
+	else: b=''
+	while b and b[0]=='/': b=b[1:]
+	try:
+	    server_url=string.strip(environ['SERVER_URL'])
+	    if server_url[-1:]=='/': server_url=server_url[:-1]
+	except:
+	    server_port=env('SERVER_PORT')
+	    server_url=('http://'+
+			string.strip(environ['SERVER_NAME']) +
+			(server_port and ':'+server_port)
+			)
+			
+	self.base="%s/%s" % (server_url,b)
+	while script[:1]=='/': script=script[1:]
+	self.script="%s/%s" % (server_url,script)
+
     def __setitem__(self,key,value):
 	"""Set application variables
 
@@ -1133,6 +1206,12 @@ class Request:
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
 
+    def __str__(self):
+	return "%s\n%s\n%s\n%s" % (
+	    str(self.other),str(self.form),str(self.environ),str(self.cookies))
+
+    __repr__=__str__
+
     def __getitem__(self,key):
 	"""Get a variable value
 
@@ -1142,11 +1221,11 @@ class Request:
 	other variables, form data, and then cookies. 
 	
 	""" #"
-	try:
-	    v= self.environ[key]
-	    if self.special_names.has_key(key) or key[:5] == 'HTTP_':
-		return v
-	except: pass
+
+
+	if self.special_names.has_key(key) or key[:5] == 'HTTP_':
+	    try: return self.environ[key]
+	    except: return ''
 
 	try: return self.other[key]
 	except: pass
@@ -1191,7 +1270,33 @@ class Request:
 	if key=='cookies': return self.cookies
 
 	try: return self.cookies[key]
-	except: raise AttributeError, key
+	except: pass
+
+	try:
+	    if regex.match('BASE[0-9]$',key) >= 0:
+		n=ord(key[4])-ord('0')
+		URL=self['URL']
+		baselen=len(self.base)
+		for i in range(0,n):
+		    baselen=string.find(URL,'/',baselen+1)
+		    if baselen < 0:
+			baselen=len(URL)
+			break
+		base=URL[:baselen]
+		if base[-1:]=='/': base=base[:-1]
+		return base
+	    if regex.match('URL[0-9]$',key) >= 0:
+		n=ord(key[3])-ord('0')
+		URL=self['URL']
+		if URL[-1:]=='/': URL=URL[:-1]
+		for i in range(0,n):
+		    l=string.rfind(URL,'/')
+		    if l >= 0: URL=URL[:l]
+		    else: raise KeyError, key
+		return URL
+	except: pass
+
+	raise KeyError, key
 
     __getattr__=__getitem__
 
@@ -1228,41 +1333,34 @@ class CGIModulePublisher(ModulePublisher):
 	except: pass
 	
 	form=newcgi.FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-        self.request=Request(environ,form,stdin)
+        request=self.request=Request(environ,form,stdin)
 	self.response=Response(stdout=stdout, stderr=stderr)
 	self.stdin=stdin
 	self.stdout=stdout
 	self.stderr=stderr
-	b=string.strip(self.environ['SCRIPT_NAME'])
-	while b and b[-1]=='/': b=b[:-1]
-	p = string.rfind(b,'/')
-	if p >= 0: b=b[:p+1]
-	else: b=''
-	while b and b[0]=='/': b=b[1:]
-	try:
-	    server_url=string.strip(self.environ['SERVER_URL'])
-	except:
-	    server_port=self.env('SERVER_PORT')
-	    server_url=('http://'+
-			string.strip(self.environ['SERVER_NAME']) +
-			(server_port and ':'+server_port)
-			)
-			
-	self.base="%s/%s" % (server_url,b)
-	
-	
+	self.base=request.base
+	self.script=request.script
 
 def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
 		   environ=os.environ):
+    must_die=0
     try:
+	response=Response(stdout=stdout, stderr=stderr)
 	publisher = CGIModulePublisher(stdin=stdin, stdout=stdout,
 				       stderr=stderr,
 				       environ=environ)
 	response = publisher.response
 	response = publisher.publish(module_name)
+    except ImportError, v:
+	sys.exc_type, sys.exc_value, sys.exc_traceback = v
+	must_die=1
+	response.exception(must_die)
     except:
 	response.exception()
     if response: response=str(response)
     if response: stdout.write(response)
+    if must_die:
+	raise sys.exc_type, sys.exc_value, sys.exc_traceback
+    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
 
