@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.20 1997/11/07 17:33:09 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Application.py,v 1.21 1997/11/20 13:40:28 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -48,8 +48,6 @@ class Application(Folder.Folder):
 		     'standard_html_footer',
 		     'acl_users')
 
-    __allow_groups__=UserFolder()
-
     def _init(self):
         self.manage_addDocument('standard_html_header',
 	                        'Standard Html Header',
@@ -58,6 +56,8 @@ class Application(Folder.Folder):
         self.manage_addDocument('standard_html_footer',
 				'Standard Html Footer',
 				'</BODY></HTML>')
+	self.__allow_groups__=UserFolder()
+	self.__allow_groups__._init()
 	self._setObject('acl_users', self.__allow_groups__)
 
     def folderClass(self): return Folder.Folder
@@ -235,6 +235,10 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.21  1997/11/20 13:40:28  jim
+# Added logic to make sure that the top-level user folder gets
+# initialized correctly.
+#
 # Revision 1.20  1997/11/07 17:33:09  jim
 # Added code to add Application key to Bobobase if necessary.
 #
