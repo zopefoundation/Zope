@@ -1,0 +1,25 @@
+External Method
+
+  Description
+  
+  	External Methods allow you to add functionality to Zope by writing
+  	Python functions which are exposed as callable Zope objects.
+  	
+  	External Methods do not reside in the ZODB. They 
+  	reside in the Zope Extension directory, which is by default
+  	'ZOPE2/Extensions'. Zope will find only the Python modules
+  	that are in this directory. The Python module should also have 
+  	the ending '.py'.
+  	
+  	How can an External Method be used? There are two common ways.
+  	
+  	* HTML output - You can save all the HTML output of the method
+  	into one string variable and return it at the end. You can
+  	display the HTML using '&lt;dtml-var ExtMethodName&gt;'
+  	
+  	* Variable output - You can simply return a variable, that 
+  	Zope uses later on, like a number.
+
+  See Also
+
+    "Using External Methods": http://www.zope.org/Documentation/How-To/ExternalMethods
