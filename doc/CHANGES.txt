@@ -52,6 +52,9 @@ Zope Changes
 
         - Collector #2290: better handling of subject header in Mailhost.py
 
+        - Collector #2291: fixed cookie path in Zope Version Control 
+          
+
     Zope 2.4 alpha 1
 
       Features Added
