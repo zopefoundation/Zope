@@ -28,7 +28,11 @@ in: Loops over sequences
 
     sort=string -- Sorts the sequence by the given attribute name.
 
-    start=int -- Begins the batch with the given index number.
+    start=int -- The number of the first item to be shown, where
+    items are numbered from 1.
+
+    end=int -- The number of the last item to be shown, where items
+    are numbered from 1.
 
     size=int -- The size of the batch.
 
@@ -37,7 +41,8 @@ in: Loops over sequences
 
     orphan=int -- The desired minimum batch size.
 
-    overlap=int -- The number of items to overlap between batches.
+    overlap=int -- The number of items to overlap between batches. The
+    default value is 3.
 
     previous -- Iterates once if there is a previous batch. Sets batch
     variables for previous sequence. 
@@ -147,8 +152,16 @@ in: Loops over sequences
       previous-sequence-start-index -- The starting index of the
       previous batch.
 
+      previous-sequence-start-number -- The starting number of the
+      previous batch. Note, this is the same as
+      'previous-sequence-start-index' + 1.
+
       previous-sequence-end-index -- The ending index of the previous
       batch. 
+
+      previous-sequence-end-number -- The ending number of the
+      previous batch. Note, this is the same as
+      'previous-sequence-end-index' + 1.
 
       previous-sequence-size -- The size of the previous batch.
 
@@ -164,8 +177,16 @@ in: Loops over sequences
       next-sequence-start-index -- The starting index of the next
       sequence. 
 
+      next-sequence-start-number -- The starting number of the next
+      sequence. Note, this is the same as 'next-sequence-start-index'
+      + 1.
+
       next-sequence-end-index -- The ending index of the next
       sequence. 
+
+      next-sequence-end-number -- The ending number of the next
+      sequence. Note, this is the same as 'next-sequence-end-index'
+      + 1.
 
       next-sequence-size -- The size of the next index.
 
@@ -203,11 +224,11 @@ in: Loops over sequences
 
       <p>
       <dtml-in largeSequence size=10 start=start previous>
-        <a href="<dtml-var absolute_url>?start=<dtml-var previous-sequence-start-index>">Previous</a>
+        <a href="<dtml-var absolute_url><dtml-var sequence-query>start=<dtml-var previous-sequence-start-number>">Previous</a>
       </dtml-in>
 
       <dtml-in largeSequence size=10 start=start next>
-        <a href="<dtml-var absolute_url>?start=<dtml-var next-sequence-start-index>">Next</a>
+        <a href="<dtml-var absolute_url><dtml-var sequence-query>start=<dtml-var next-sequence-start-number>">Next</a>
       </dtml-in>
       </p>
 
@@ -218,7 +239,8 @@ in: Loops over sequences
       </p>
 
     This example creates *Previous* and *Next* links to navigate
-    between batches.
+    between batches. Note, by using 'sequence-query', you do not lose
+    any GET variables as you navigate between batches.
 
 
 
