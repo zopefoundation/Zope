@@ -14,3 +14,4 @@ from Method import Method
 from Exceptions import BrokenImplementation
 
 from pprint import interface_as_stx
+from verify import verify_class_implementation
