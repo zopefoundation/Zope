@@ -156,7 +156,21 @@ class TALInterpreter:
 
     def do_insertText(self, expr):
         text = self.engine.evaluateText(expr)
-        self.stream.write(str(text))
+        if text is None:
+            return
+        self.stream.write(text)
+
+    def do_insertStructure(self, expr):
+        structure = self.engine.evaluateStructure(expr)
+        if structure is None:
+            return
+        program, macros = TALCompiler(structure)()
+        saveMacros = self.macros
+        if macros:
+            self.macros = saveMacros.copy()
+            self.macros.update(macros)
+        self.interpret(program)
+        self.macros = saveMacros
 
     def do_loop(self, name, expr, block):
         iterator = self.engine.setupLoop(name, expr)
