@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.158 2002/08/14 21:42:56 mj Exp $"""
+$Id: ObjectManager.py,v 1.159 2003/01/06 13:40:34 andreasjung Exp $"""
 
-__version__='$Revision: 1.158 $'[11:-2]
+__version__='$Revision: 1.159 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -336,23 +336,21 @@ class ObjectManager(
                 if ob['meta_type'] in spec:
                     set.append(ob['id'])
             return set
-        return map(lambda i: i['id'], self._objects)
+        return [ o['id']  for o in self._objects ]
+
 
     def objectValues(self, spec=None):
         # Returns a list of actual subobjects of the current object.
         # If 'spec' is specified, returns only objects whose meta_type
         # match 'spec'.
-        return map(self._getOb, self.objectIds(spec))
+        return [ self._getOb(id) for id in self.objectIds(spec) ]
+
 
     def objectItems(self, spec=None):
         # Returns a list of (id, subobject) tuples of the current object.
         # If 'spec' is specified, returns only objects whose meta_type match
         # 'spec'
-        r=[]
-        a=r.append
-        g=self._getOb
-        for id in self.objectIds(spec): a((id, g(id)))
-        return r
+        return [ (id, self._getOb(id)) for id in self.objectIds(spec) ]
 
     def objectMap(self):
         # Return a tuple of mappings containing subobject meta-data
