@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.82 1998/12/19 15:43:46 jim Exp $'''
-__version__='$Revision: 1.82 $'[11:-2]
+$Id: Application.py,v 1.83 1998/12/30 01:43:22 amos Exp $'''
+__version__='$Revision: 1.83 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -180,6 +180,8 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         ProductFolder_icon=ImageFile('App/www/productFolder.gif')
         PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 
+        ZopeButton=ImageFile('App/www/zope_button.gif')
+
         #up=ImageFile('www/UpFolder_icon.gif', globals())
         #help=ImageFile('www/Help_icon.gif', globals())
 
@@ -247,7 +249,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         """Utility function to allow user-controlled redirects"""
         if find(destination,'//') >= 0: raise 'Redirect', destination
         raise 'Redirect', ("%s/%s" % (URL1, destination))
-    Redirect=PrincipiaRedirect
+    Redirect=ZopeRedirect=PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
         if name is None and REQUEST.has_key(Globals.SessionNameName):
@@ -271,7 +273,15 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""
         return apply(DateTime, args)
+    ZopeTime=PrincipiaTime
 
+    def ZopeAttributionButton(self):
+        """Returns an HTML fragment that displays the 'powered by zope'
+        button along with a link to the Zope site. Use this method to
+        easily comply with the Zope attribute requirement."""
+        return '<a href="http://www.zope.org/Credits"><img ' \
+               'src="%s/p_/ZopeButton" width="60" height="82" ' \
+               'border="0" alt="Powered by Zope"></a>' % self.REQUEST.BASE1
 
 class Expired(Persistent):
     icon='p_/broken'
