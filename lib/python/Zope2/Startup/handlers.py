@@ -150,7 +150,7 @@ def root_handler(config):
     for factory in config.servers:
         factory.prepare(config.ip_address or '',
                         config.dns_resolver,
-                        "Zope",
+                        "Zope2",
                         config.cgi_environment,
                         config.port_base)
 

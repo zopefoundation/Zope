@@ -183,7 +183,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         starter = self.get_starter(conf)
         # do the job the 'handler' would have done (call prepare)
         for server in conf.servers:
-            server.prepare('', None, 'Zope', {}, None)
+            server.prepare('', None, 'Zope2', {}, None)
         try:
             starter.setupServers()
             import ZServer
@@ -213,7 +213,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
         ## starter = self.get_starter(conf)
         ## # do the job the 'handler' would have done (call prepare)
         ## for server in conf.servers:
-        ##     server.prepare('', None, 'Zope', {}, None)
+        ##     server.prepare('', None, 'Zope2', {}, None)
         ## try:
         ##     self.assertRaises(ZConfig.ConfigurationError, starter.setupServers)
         ## finally:
