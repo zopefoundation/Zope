@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.15 2002/11/13 17:45:53 jeremy Exp $"
+"\n$Id: Missing.c,v 1.16 2002/11/18 22:53:22 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -294,64 +294,3 @@ initMissing(void)
   PyDict_SetItemString(d, "MV", theValue); 
 }
 
-/*****************************************************************************
-Revision Log:
-
-  $Log: Missing.c,v $
-  Revision 1.15  2002/11/13 17:45:53  jeremy
-  Remove unused Sync module.
-  Remove unnecessary Py_FatalError() calls on failed module import.
-
-  Revision 1.14  2002/11/12 20:06:00  jeremy
-  Remove bogus include.
-
-  #include <string.h> is implied by ExtensionClass.h, because it includes
-  Python.h.  Also, it is an error to include standard headers before
-  Python.h.
-
-  Revision 1.13  2002/06/10 22:48:46  jeremy
-  Update ExtensionClass to ZPL 2.0.
-
-  Revision 1.12  2002/01/25 15:34:06  gvanrossum
-  Get rid of __version__, as Jim recommends.  Use $ from docstring instead.
-
-  Revision 1.11  2001/03/28 14:06:51  jeremy
-  gcc -Wall cleanup
-      - make function decls prototypes
-      - remove unreferenced functions
-
-  Revision 1.10  1999/08/25 20:15:29  jim
-  Made getattr a bit pickler to prevent getting attributes like "%f5.3".
-
-  Revision 1.9  1999/06/10 20:09:47  jim
-  Updated to use new ExtensionClass destructor protocol.
-
-  Revision 1.8  1998/11/17 19:54:33  jim
-  new copyright.
-
-  Revision 1.7  1997/10/03 14:43:27  jim
-  Fixed comparison bug, again :-(
-
-  Revision 1.6  1997/09/23 16:06:03  jim
-  Added MV member.
-
-  Revision 1.5  1997/09/23 15:17:12  jim
-  Added cmp.
-
-  Revision 1.4  1997/09/18 21:01:33  jim
-  Added check to getattr to fail on methods that begin with underscore.
-  Note that Missing really defeats testing from protocols by testing for
-  attributes.
-
-  Revision 1.3  1997/09/17 22:49:35  jim
-  Fixed refcount bug.
-  Added logic so:  Missing.Value.spam() returns Missing.Value.
-  Added logic to make Missing.Value picklable.
-
-  Revision 1.2  1997/07/02 20:19:37  jim
-  Got rid of unused macros and ErrorObject.
-
-  Revision 1.1  1997/07/01 21:36:34  jim
-
-
-*****************************************************************************/
