@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.6 2002/08/14 22:10:12 mj Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Tree.py,v 1.7 2002/10/03 21:08:40 mj Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -106,8 +106,6 @@ class TreeMaker:
             node.state = -1 # collapsed
         if not subtree:
             node.depth = 0
-            if hasattr(self, 'markRoot'):
-                self.markRoot(node)
         return node
 
     def node(self, object):
@@ -143,8 +141,8 @@ def simple_type(ob,
                            type(0L):1, type(None):1 }.has_key):
     return is_simple(type(ob))
 
-def aqcallback(self, inst, parent, name, value, filter):
-    return filter(self, inst, parent, name, value)
+def aqcallback(self, inst, name, value, filter):
+    return filter(self, inst, name, value)
 
 from binascii import b2a_base64, a2b_base64
 from string import translate, maketrans

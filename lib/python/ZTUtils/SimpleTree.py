@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Simple Tree classes
 
-$Id: SimpleTree.py,v 1.3 2002/08/14 22:10:12 mj Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: SimpleTree.py,v 1.4 2002/10/03 21:08:40 mj Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Tree import TreeMaker, TreeNode, b2a
 
@@ -52,6 +52,9 @@ class SimpleTreeMaker(TreeMaker):
         node.id = b2a(self.getId(object))
         return node
 
-    def markRoot(self, node):
-        node.tree_pre = self.tree_pre
-        node.baseURL = node.object.REQUEST['BASEPATH1']
+    def tree(self, root, expanded=None, subtree=0):
+        node = TreeMaker.tree(self, root, expanded, subtree)
+        if not subtree:
+            node.tree_pre = self.tree_pre
+            node.baseURL = root.REQUEST['BASEPATH1']
+        return node
