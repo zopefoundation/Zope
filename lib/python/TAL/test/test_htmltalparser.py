@@ -33,7 +33,7 @@ class TestCaseBase(unittest.TestCase):
         self.assert_(got_program == program, got_program)
         self.assert_(got_macros == macros, got_macros)
 
-    def _get_check(self, source, xxx=None):
+    def _get_check(self, source, program=[], macros={}):
         parser = HTMLTALParser.HTMLTALParser()
         parser.parseString(source)
         got_program, got_macros = parser.getCode()
@@ -122,6 +122,61 @@ class HTMLTALParserTestCases(TestCaseBase):
     def check_code_short_endtags(self):
         self._run_check("""<html><img/></html>""", [
             ('rawtext', '<html><img/></html>'),
+            ])
+
+
+class METALGeneratorTestCases(TestCaseBase):
+
+    def check_null(self):
+        self._run_check("", [])
+
+    def check_define_macro(self):
+        macro = [('startTag', 'p',
+                  [('metal:define-macro', 'M', 'macroHack')]),
+                 ('rawtext', 'booh</p>')]
+        program = [
+            ('setPosition', (1, 0)),
+            ('defineMacro', 'M', macro),
+            ]
+        macros = {'M': macro}
+        self._run_check('<p metal:define-macro="M">booh</p>', program, macros)
+
+    def check_use_macro(self):
+        self._run_check('<p metal:use-macro="M">booh</p>', [
+            ('setPosition', (1, 0)),
+            ('useMacro',
+             'M', '$M$', {},
+             [('rawtext', '<p metal:use-macro="M">booh</p>')]),
+            ])
+
+    def check_define_slot(self):
+        macro = [
+            ('startTag', 'p', [('metal:define-macro', 'M', 'macroHack')]),
+            ('rawtext', 'foo'),
+            ('setPosition', (1, 29)),
+            ('defineSlot', 'S',
+             [('rawtext', '<span metal:define-slot="S">spam</span>')]),
+            ('rawtext', 'bar</p>'),
+            ]
+        program = [('setPosition', (1, 0)),
+                   ('defineMacro', 'M', macro)]
+        macros = {'M': macro}
+        self._run_check('<p metal:define-macro="M">foo'
+                        '<span metal:define-slot="S">spam</span>bar</p>',
+                        program, macros)
+
+    def check_fill_slot(self):
+        self._run_check('<p metal:use-macro="M">foo'
+                        '<span metal:fill-slot="S">spam</span>bar</p>', [
+            ('setPosition', (1, 0)),
+            ('useMacro',
+             'M', '$M$',
+             {'S': [('rawtext', '<span metal:fill-slot="S">spam</span>')]},
+             [('rawtext', '<p metal:use-macro="M">foo'),
+              ('setPosition', (1, 26)),
+              ('fillSlot', 'S',
+               [('rawtext', '<span metal:fill-slot="S">spam</span>')]),
+              ('rawtext', 'bar</p>')]),
             ])
 
 
@@ -298,6 +353,7 @@ class TALGeneratorTestCases(TestCaseBase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(HTMLTALParserTestCases, "check_"))
+    suite.addTest(unittest.makeSuite(METALGeneratorTestCases, "check_"))
     suite.addTest(unittest.makeSuite(TALGeneratorTestCases, "check_"))
     return suite
 
