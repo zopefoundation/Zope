@@ -22,6 +22,8 @@ Zope Changes
      - Change acquisition wrappers to implement the descr get slot
        directly, this speeding the use of the slot.
 
+     - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
+
     Features added
 
      - Recataloging a ZCatalog instance is now more safe and predictable.
