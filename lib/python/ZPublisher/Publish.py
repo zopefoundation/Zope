@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.131 1999/06/30 12:48:34 jim Exp $"""
-__version__='$Revision: 1.131 $'[11:-2]
+$Id: Publish.py,v 1.132 1999/07/14 15:09:12 jim Exp $"""
+__version__='$Revision: 1.132 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -152,7 +152,7 @@ def publish(request, module_name, after_list, debug=0,
             
             info=("%s %s" %
                   (request_get('AUTHENTICATION_PATH'), auth_user))+info
-        transaction.note(info)
+        get_transaction().note(info)
 
     result=mapply(object, request.args, request,
                   call_object,1,
@@ -162,7 +162,7 @@ def publish(request, module_name, after_list, debug=0,
 
     if result is not response: response.setBody(result)
 
-    if transaction: transaction.commit()
+    if transaction: get_transaction().commit()
 
     return response
 
