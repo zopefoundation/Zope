@@ -46,7 +46,11 @@ named .testinfo, it will not be searched for tests.  Really.)
     In Python < 2.3 the -q flag is added to the setup.py command
     line.)
 
--c  use pychecker
+-c  
+    Use pychecker
+
+--config-file filename
+    Configure Zope by loading the specified configuration file (zope.conf).
 
 -d
     Instead of the normal test harness, run a debug version which
@@ -78,6 +82,10 @@ named .testinfo, it will not be searched for tests.  Really.)
     Set the garbage collection debugging flags.  The argument must be one
     of the DEBUG_ flags defined bythe Python gc module.  Multiple options
     can be specified by using "-G OPTION1 -G OPTION2."
+
+--import-testing
+    Import the Testing module to setup the test ZODB.  Useful for running
+    tests that forgot to "import Testing".
 
 --libdir test_root
     Search for tests starting in the specified start directory
@@ -349,23 +357,25 @@ class ImmediateTestRunner(unittest.TextTestRunner):
 # setup list of directories to put on the path
 class PathInit:
     def __init__(self, build, libdir=None):
-        # Calculate which directories we're going to add to sys.path, and cd
-        # to the appropriate working directory
-        org_cwd = os.getcwd()
+        # Calculate which directories we're going to add to sys.path.
         self.libdir = "lib/python"
         # Hack sys.path
-        self.cwd = os.getcwd()
-        sys.path.insert(0, os.path.join(self.cwd, self.libdir))
+        self.home = os.path.dirname(os.path.realpath(sys.argv[0]))
+        # test.py lives in bin directory when installed ...
+        dir, file = os.path.split(self.home)
+        if file == 'bin': self.home = dir
+        sys.path.insert(0, os.path.join(self.home, self.libdir))
+        self.cwd = os.path.realpath(os.getcwd())
         # Hack again for external products.
         global functional
         kind = functional and "functional" or "unit"
         if libdir:
-            extra = os.path.join(org_cwd, libdir)
-            print "Running %s tests from %s" % (kind, extra)
-            self.libdir = extra
-            sys.path.insert(0, extra)
+            self.libdir = os.path.realpath(os.path.join(self.cwd, libdir))
         else:
-            print "Running %s tests from %s" % (kind, self.cwd)
+            self.libdir = os.path.realpath(os.path.join(self.cwd, self.libdir))
+        if self.libdir not in sys.path:
+            sys.path.insert(0, self.libdir)
+        print "Running %s tests from %s" % (kind, self.libdir)
         # Make sure functional tests find ftesting.zcml
         if functional:
             config_file = 'ftesting.zcml'
@@ -456,7 +466,10 @@ class TestFileFinder:
 def find_tests(rx):
     global finder
     finder = TestFileFinder(pathinit.libdir)
-    walkdir = test_dir or pathinit.libdir
+    if test_dir:
+        walkdir = os.path.realpath(os.path.join(pathinit.cwd, test_dir))
+    else:
+        walkdir = pathinit.libdir
     os.path.walk(walkdir, finder.visit, rx)
     return finder.files
 
@@ -602,15 +615,27 @@ def remove_stale_bytecode(arg, dirname, names):
                 os.unlink(fullname)
 
 def main(module_filter, test_filter, libdir):
-    if not keepStaleBytecode:
-        os.path.walk(os.curdir, remove_stale_bytecode, None)
-
     global pathinit
+    global config_file
 
     configure_logging()
 
     # Initialize the path and cwd
     pathinit = PathInit(build, libdir)
+
+    if not keepStaleBytecode:
+        os.path.walk(pathinit.home, remove_stale_bytecode, None)
+    
+    # Load configuration
+    if config_file:
+        config_file = os.path.realpath(config_file)
+        print "Parsing %s" % config_file
+        import Zope
+        Zope.configure(config_file)
+
+    # Import Testing module to setup the test ZODB
+    if import_testing:
+        import Testing
 
     files = find_tests(module_filter)
     files.sort()
@@ -640,7 +665,7 @@ def configure_logging():
     """Initialize the logging module."""
     import logging.config
 
-    # Get the log.ini file from the current directory instead of possibly
+    # Get the log.ini file from the current directory instead of possibly                                      
     # buried in the build directory.  XXX This isn't perfect because if
     # log.ini specifies a log file, it'll be relative to the build directory.
     # Hmm...
@@ -676,6 +701,8 @@ def process_args(argv=None):
     global keepStaleBytecode
     global functional
     global test_dir
+    global config_file
+    global import_testing
 
     if argv is None:
         argv = sys.argv
@@ -701,11 +728,14 @@ def process_args(argv=None):
     keepStaleBytecode = 0
     functional = False
     test_dir = None
+    config_file = None
+    import_testing = False
 
     try:
         opts, args = getopt.getopt(argv[1:], "a:bcdDfg:G:hLmprtTuv",
                                    ["all", "help", "libdir=", "times=",
-                                    "keepbytecode", "dir="])
+                                    "keepbytecode", "dir=", 
+                                    "config-file=", "import-testing"])
     except getopt.error, msg:
         print msg
         print "Try `python %s -h' for more information." % argv[0]
@@ -772,6 +802,10 @@ def process_args(argv=None):
                 timesfn = v
         elif k == '--dir':
             test_dir = v
+        elif k == '--config-file':
+            config_file = v
+        elif k == '--import-testing':
+            import_testing = True
 
     if gcthresh is not None:
         if gcthresh == 0:
