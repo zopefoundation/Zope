@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.92 1998/09/03 14:50:17 jim Exp $"""
+$Id: Publish.py,v 1.93 1998/09/03 16:59:11 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -646,7 +646,7 @@ class ModulePublisher:
         raise 'NotFound',self.html(
             "Resource not found",
             "Sorry, the requested document does not exist.<p>"
-            "\n<!--\n%s\n-->" % entry), sys.exc_traceback
+            "\n<!--\n%s\n-->" % entry)
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
@@ -953,6 +953,7 @@ def get_module_info(module_name, modules={},
     if module_name[-4:]=='.cgi': module_name=module_name[:-4]
 
     acquire()
+    tb=None
     try:
       try:
         module=__import__(module_name)
@@ -1015,9 +1016,13 @@ def get_module_info(module_name, modules={},
 
         return info
       except:
-        raise ImportError, (
-            sys.exc_type, sys.exc_value, sys.exc_traceback)
-    finally: release()
+          if hasattr(sys, 'exc_info'): t,v,tb=sys.exc_info()
+          else: t, v, tb = sys.exc_type, sys.exc_value, sys.exc_traceback
+          v=str(v)
+          raise ImportError, (t, v), tb
+    finally:
+        tb=None
+        release()
 
 def str_field(v):
     if type(v) is ListType:
@@ -1448,14 +1453,15 @@ def publish_module(module_name,
                 pass
             response = publisher.publish(module_name,after_list,
                                          debug=debug)
-        except SystemExit:
-            must_die=1
+        except SystemExit, v:
+            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
             response.exception(must_die)
         except ImportError, v:
-            if type(v)==TupleType and len(v)==3:
-                sys.exc_type, sys.exc_value, sys.exc_traceback = v
-            must_die=1
-            response.exception(must_die)
+            if type(v) is tyoe(()) and len(v)==3: must_die=v
+            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
+            else: must_die = SystemExit, v, sys.exc_traceback
+            response.exception(1, v)
         except:
             response.exception()
             status=response.getStatus()
@@ -1469,8 +1475,7 @@ def publish_module(module_name,
     finally:
         if request is not None: request.other={}
 
-    if must_die:
-        raise sys.exc_type, sys.exc_value, sys.exc_traceback
+    if must_die: raise must_die[0], must_die[1], must_die[2]
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
     return status
 

@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.36 1998/09/03 14:50:16 jim Exp $'''
+$Id: Response.py,v 1.37 1998/09/03 16:59:10 jim Exp $'''
 #
 # Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.36 1998/09/03 14:50:16 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -412,7 +412,6 @@ class Response:
                 n = n+1
         result.append(join(traceback.format_exception_only(etype, value),
                            ' '))
-        sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
         return result
 
     def _traceback(self,t,v,tb):
@@ -429,13 +428,16 @@ class Response:
         headers['location']=location
         return location
 
-    def exception(self, fatal=0,
+    def exception(self, fatal=0, info=None,
                   absuri_match=regex.compile(
                       "[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?"
                       ).match,
                   tag_search=regex.compile('[a-zA-Z]>').search,
                   ):
-        t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
+        if type(info) is type(()) and len(info)==3: t,v,tb = info
+        elif hasattr(sys, 'exc_info'): t,v,tb = sys.exc_info()
+        else: t,v,tb = sys.exc_type, sys.exc_value, sys.exc_traceback
+
         stb=tb
 
         # Abort running transaction, if any:

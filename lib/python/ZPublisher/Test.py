@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.18 1998/09/03 14:50:17 jim Exp $
+$Id: Test.py,v 1.19 1998/09/03 16:59:11 jim Exp $
 '''
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys,traceback, profile, os
 repeat_count=100
@@ -229,6 +229,11 @@ def publish_module_pm(module_name,
         except: pass
         if after_list[0] is not None: after_list[0]()
 
+try: from codehack import getlineno
+except:
+    def getlineno(code):
+        return code.co_firstlineno
+
 def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
 
     import sys, os, getopt, string
@@ -307,14 +312,13 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
                     self.do_c('')
                     self.done_ob=1
 
-        import codehack
         db=Pdb()
 
-        def fbreak(db,meth,codehack=codehack):
+        def fbreak(db,meth):
             try: meth=meth.im_func
             except AttributeError: pass
             code=meth.func_code
-            lineno = codehack.getlineno(code)
+            lineno = getlineno(code)
             filename = code.co_filename
             db.set_break(filename,lineno)
 
