@@ -219,6 +219,35 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._zero_req, values[ -1: ] )
         assert 0 in self._index.uniqueValues( 'foo' )
 
+    def testReindexChange(self):
+        self._populateIndex()
+        expected = Dummy(['x', 'y'])
+        self._index.index_object(6, expected)
+        result, used = self._index._apply_index({'foo': ['x', 'y']})
+        result=result.keys()
+        assert len(result) == 1
+        assert result[0] == 6
+        result, used = self._index._apply_index(
+            {'foo': ['a', 'b', 'c', 'e', 'f']}
+            )
+        result = result.keys()
+        assert 6 not in result
+        
+    def testReindexNoChange(self):
+        self._populateIndex()
+        expected = Dummy(['foo', 'bar'])
+        self._index.index_object(8, expected)
+        result, used = self._index._apply_index(
+            {'foo': ['foo', 'bar']})
+        result = result.keys()
+        assert len(result) == 1
+        assert result[0] == 8
+        self._index.index_object(8, expected)
+        result, used = self._index._apply_index(
+            {'foo': ['foo', 'bar']})
+        result = result.keys()
+        assert len(result) == 1
+        assert result[0] == 8
 
 def test_suite():
     return unittest.makeSuite( TestCase )
