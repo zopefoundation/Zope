@@ -98,6 +98,9 @@ from BindingsUI import BindingsUI
 from Bindings import defaultBindings
 from DocumentTemplate.DT_Util import TemplateDict
 
+# Temporary:
+from Signature import FuncCode
+
 class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin
     """
