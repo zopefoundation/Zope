@@ -125,8 +125,14 @@ Access Control
   objects in a module.
 
   If multiple objects in the URI path have '__allow_groups__'
-  attributes, then the effect will be that of intersecting all of the
-  groups.
+  attributes, then the '__allow_groups__' attribute from the last
+  object in the path that has this attribute will be used.  The
+  '__allow_groups__' attribute for a subobject overides
+  '__allow_groups__' attributes for containing objects.
+
+  Note that an object may have an '__allow_groups__' attribute that is
+  set to None, in which case the object will be public, even if
+  containing objects are not.
 
   Realms
 
@@ -301,6 +307,12 @@ Redirection
   by raising an exception with a type and value of "Redirect" and
   a string containing an absolute URI.
 
+The default object
+
+  If no object is specified in a URI, then the publisher will try to
+  publish the object 'index_html', if it exists, otherwise the module
+  doc string will be published.
+
 Examples
 
   Consider the following example:
@@ -444,7 +456,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.10 1996/07/23 20:48:55 jfulton Exp $"""
+$Id: Publish.py,v 1.11 1996/07/23 20:56:40 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -497,6 +509,9 @@ $Id: Publish.py,v 1.10 1996/07/23 20:48:55 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.11  1996/07/23 20:56:40  jfulton
+# Updated the documentation.
+#
 # Revision 1.10  1996/07/23 20:48:55  jfulton
 # Changed authorization model so that sub-object allow_groups override,
 # rather than augment (tighten) parent groups.
@@ -542,7 +557,7 @@ $Id: Publish.py,v 1.10 1996/07/23 20:48:55 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 def main():
