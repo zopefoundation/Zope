@@ -9,6 +9,9 @@ Credits
     o Sam Rushing worked with us at Digital Creations to make Medusa
       the publishing platform for ZServer and the concurrency of Zope2.
 
+    o A subset of windows guru Mark Hammond's win32 extensions are
+      bundled with win32 binary distributions of Zope.
+
     o Martijn Pieters and Brian Hooper contributed the #in reverse
       attribute.
 

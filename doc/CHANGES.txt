@@ -179,6 +179,10 @@ Zope Changes
     
       Features added
       
+        - The default ports used by ZServer have been changed. The
+          new default ports are: 8080 for HTTP, 8021 for FTP and
+          8099 for the monitor server.
+
         - ZServer now uses the zLOG logging mechanism for informational and
           warning messages.
       
