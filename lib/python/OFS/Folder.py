@@ -1,15 +1,17 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.2 1997/08/06 18:26:13 jim Exp $"""
+$Id: Folder.py,v 1.3 1997/08/08 13:40:01 jim Exp $"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from Image import Image, ImageHandler
 from Document import Document, DocumentHandler
+from AccessControl.ACL import ACL
+
 
 class FolderHandler:
     """Folder object handler"""
@@ -72,9 +74,13 @@ class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/properties.jpg', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
+    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
+     'action':'ACL/manage_main',                    'target':'manage_main'},
     {'icon':'App/help.jpg', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )
+
+    ACL=ACL()
 
 
 
