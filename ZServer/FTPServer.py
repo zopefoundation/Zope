@@ -486,7 +486,7 @@ class zope_ftp_channel(ftp_channel):
                 self.respond ('230 Login successful.')
                 self.authorized = 1
                 self.anonymous = 1
-                self.log ('Successful login.')
+                self.log_info ('Successful login.')
             else:
                 self.respond('421 User limit reached. Closing connection.')
                 self.close_when_done()
@@ -516,7 +516,7 @@ class zope_ftp_channel(ftp_channel):
             self.authorized = 1
             if self.userid=='anonymous':
                 self.anonymous=1
-            self.log('Successful login.')           
+            self.log_info('Successful login.')           
             self.respond('230 Login successful.')
         else:
             self.respond('530 Unauthorized.')
@@ -616,7 +616,7 @@ class FTPServer(ftp_server):
     def handle_accept (self):
         conn, addr = self.accept()
         self.total_sessions.increment()
-        print 'Incoming connection from %s:%d' % (addr[0], addr[1])
+        self.log_info('Incoming connection from %s:%d' % (addr[0], addr[1]))
         self.ftp_channel_class (self, conn, addr, self.module)  
 
     def readable(self):

@@ -287,7 +287,7 @@ class PCGIServer(asyncore.dispatcher):
            f.write(str(os.getpid()))
            f.close()
         except IOError:
-            self.log("Error, cannot write PID file.")
+            self.log_info("Cannot write PID file.", 'error')
         
         # setup sockets
         if self.port:
@@ -335,7 +335,7 @@ class PCGIServer(asyncore.dispatcher):
         try:
             conn, addr = self.accept()
         except socket.error:
-            sys.stderr.write('warning: server accept() threw an exception\n')
+            self.log_info('Server accept() threw an exception', 'warning')
             return
         self.channel_class(self, conn, addr)
    

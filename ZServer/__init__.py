@@ -86,6 +86,7 @@
 from medusa import max_sockets
 
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
+
 ZSERVER_VERSION='1.1b1'
 try:
     import App.version_txt
@@ -93,10 +94,30 @@ try:
 except:
     ZOPE_VERSION='experimental'
 
+
+# Try to poke zLOG default logging into asyncore
+# XXX We should probably should do a better job of this,
+#     however that would mean that ZServer required zLOG.
+try:
+    from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
+    register_subsystem('ZServer')
+    severity={'info':INFO, 'warning':WARNING, 'error': ERROR}
+
+    def log_info(self, message, type='info'):
+        if message[:14]=='adding channel' or \
+                message[:15]=='closing channel':
+            LOG('ZServer', BLATHER, message)
+        else:
+            LOG('ZServer', severity[type], message)     
+
+    from medusa import asyncore
+    asyncore.dispatcher.log_info=log_info
+except:
+    pass
+
 from medusa import resolver, logger, asyncore
 from HTTPServer import zhttp_server, zhttp_handler
 from PCGIServer import PCGIServer
 from FTPServer import FTPServer
 from PubCore import setNumberOfThreads
 from medusa.monitor import secure_monitor_server
-

@@ -122,6 +122,10 @@ from medusa.default_handler import split_path, unquote, get_header
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
 
+from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
+
+register_subsystem('ZServer HTTPServer')
+
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
 CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
 
@@ -194,9 +198,6 @@ class zhttp_handler:
             self.continue_request(sin,request)
 
     def get_environment(self,request):
-    
-        # XXX add env overriding
-        
         [path, params, query, fragment] = split_path(request.uri)
         while path and path[0] == '/':
             path = path[1:]
