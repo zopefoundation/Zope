@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.16 2001/11/08 21:20:41 matt Exp $
+$Id: Transience.py,v 1.17 2001/11/08 22:05:29 matt Exp $
 """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -109,6 +109,7 @@ import math
 import time
 import sys
 import random
+from types import InstanceType
 
 _notfound = []
 _marker = []
@@ -519,7 +520,10 @@ class TransientObjectContainer(SimpleItem):
     security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
     def has_key(self, k):
         v = self.get(k, _notfound) 
-        if v is _notfound or not v.isValid(): return 0
+        if v is _notfound: return 0
+        # Grr, test suite uses ints all over the place
+        if (type(v) is InstanceType and issubclass(v.__class__, TransientObject)
+            and not v.isValid()): return 0
         return 1
 
     def values(self):
