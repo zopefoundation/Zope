@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.9 1999/04/27 17:26:47 amos Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: HTTPResponse.py,v 1.10 1999/04/27 17:59:53 amos Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -451,11 +451,47 @@ class HTTPResponse(BaseResponse):
 
     def _error_html(self,title,body):
         # XXX could this try to use standard_error_message somehow?
-        return ("<html>\n"
-                "<head>\n<title>Zope Error %s</title>\n</head>\n"
-                "<body><h2>Zope Error %s</h2>\n%s\n"
-                "<p>(View HTML source for more information.)</body>\n"
-                "</html>\n" % (title,title,body))
+        return ("""\
+<HTML>
+<HEAD><TITLE>Zope Error</TITLE></HEAD>
+<BODY>
+
+<TABLE BORDER="0" WIDTH="100%">
+<TR VALIGN="TOP">
+
+<TD WIDTH="10%" ALIGN="CENTER">
+<STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
+</TD>
+
+<TD WIDTH="90%">
+  <H2>Zope Error</H2>
+  <P>Zope has encountered an error while publishing this resource.
+  </P>""" + \
+  """
+  <P><STRONG>%s</STRONG></P>
+  
+  %s""" %(title,body) + \
+  """
+  <P>Troubleshooting Suggestions</P>
+
+  <UL>
+  <LI>The URL may be incorrect.</LI>
+  <LI>The parameters passed to this resource may be incorrect.</LI>
+  <LI>A resource that this resource relies on may be encountering an error.</LI>
+  </UL>
+
+  <P>For more detailed information about the error, please
+  refer to the HTML source for this page.
+  </P>
+
+  <P>If the error persists please contact the site maintainer.
+  Thank you for your patience.
+  </P>
+</TD></TR>
+</TABLE>
+
+</BODY>
+</HTML>""")
 
     def notFoundError(self,entry='who knows!'):
         raise 'NotFound',self._error_html(
