@@ -9,8 +9,8 @@
 ############################################################################## 
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.1 1998/04/15 15:10:39 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1998/05/21 14:57:45 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals, ImageFile
 
@@ -65,10 +65,19 @@ methods={
     manage_addAqueductGadflyConnectionForm,
     }
 
+__ac_permissions__=(
+    ('Add Aqueduct Gadfly Database Connections',
+     ('manage_addAqueductGadflyConnectionForm',
+      'manage_addAqueductGadflyConnection')),
+    )
+
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1998/05/21 14:57:45  jim
+# Updated permissions.
+#
 # Revision 1.1  1998/04/15 15:10:39  jim
 # initial
 #
