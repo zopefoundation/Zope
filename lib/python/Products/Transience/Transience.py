@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.31 2003/01/09 16:38:03 chrism Exp $
+$Id: Transience.py,v 1.32 2003/01/21 07:55:22 chrism Exp $
 """
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -449,15 +449,20 @@ class TransientObjectContainer(SimpleItem):
             if self._data is None:
                 self._upgrade()
 
+            # data is the mapping from timeslice to bucket
+            data = self._data
+
+            # period == number of seconds in a slice
+            period = self._period
+            
             # pnow == the current timeslice
             pnow = self._getCurrentTimeslice()
 
+            # pprev = the true previous timeslice in relation to pnow
+            pprev = pnow - period
+
             # plast == the last timeslice under which we did housekeeping
             plast = self._last_timeslice()
-            plast = pnow - self._period
-
-            # data is the mapping from timeslice to bucket
-            data = self._data
 
             if not data.has_key(pnow):
                 # we were asleep a little too long, we don't even have a
@@ -477,30 +482,12 @@ class TransientObjectContainer(SimpleItem):
             # anything.
             DEBUG and TLOG('_getCurrentBucket: new timeslice (pnow) %s' % pnow)
 
-            # period == number of seconds in a slice
-            period = self._period
-
             # pmax == the last timeslice integer kept by _data as a key.
             pmax = data.maxKey()
-
-            # housekeep_elected indicates that this thread was elected to do
-            # housekeeping.  We set it off initially and only set it true if
-            # we "win the roll". The "roll" is necessary to avoid a conflict
-            # scenario where more than one thread tries to do housekeeping at
-            # the same time.
-            housekeep_elected = 0
-
-            # We ask this thread to "roll the dice." If it wins, it gets
-            # elected to do housekeeping
-            housekeep_elected = self._roll(pnow, pmax)
-            housekeep_elected and DEBUG and TLOG('housekeep elected')
 
             # t_slices == this TOC's timeout expressed in slices
             # (fewest number of timeslices that's >= t_secs)
             t_slices = self._timeout_slices
-
-            # pprev = the truly previous timeslice in relation to pnow
-            pprev = pnow - period
 
             # deindex_next == the timeslice of the bucket we need to start
             # deindexing from
@@ -533,7 +520,7 @@ class TransientObjectContainer(SimpleItem):
 
                 # slices_since == the number of slices elapsed since the
                 # timeslice implied by k
-                slices_since = pthen / period
+                slices_since = pthen / self._period
 
                 # if the number of slices since 'k' is less than the number of
                 # slices that make up the timeout, break out of this loop.
@@ -574,15 +561,27 @@ class TransientObjectContainer(SimpleItem):
                 deindex_next = k+period
                 self._deindex_next.set(deindex_next)
 
-            # available_spares == the number of "spare" ("clean", "future")
-            # buckets that exist in "_data"
-            available_spares = (pmax-pnow) / period
-            DEBUG and TLOG(
-                '_getCurrentBucket: available_spares %s' % available_spares
-                )
+            # housekeep_elected indicates that this thread was elected to do
+            # housekeeping.  We set it off initially and only set it true if
+            # we "win the roll". The "roll" is necessary to avoid a conflict
+            # scenario where more than one thread tries to do housekeeping at
+            # the same time.
+            housekeep_elected = 0
+
+            # We ask this thread to "roll the dice." If it wins, it gets
+            # elected to do housekeeping
+            housekeep_elected = self._roll(pnow, pmax)
+            housekeep_elected and DEBUG and TLOG('housekeep elected')
 
             # if we were elected to do housekeeping, do it now.
             if housekeep_elected:
+
+                # available_spares == the number of "spare" ("clean", "future")
+                # buckets that exist in "_data"
+                available_spares = (pmax-pnow) / period
+                DEBUG and TLOG(
+                    '_getCurrentBucket: available_spares %s' % available_spares
+                    )
 
                 # delete_end == the last bucket we want to destroy
                 delete_end = deindex_next - period

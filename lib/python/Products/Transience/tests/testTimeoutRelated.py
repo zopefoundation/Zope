@@ -96,9 +96,9 @@ class TestNotifications(TestBase):
         timeout = self.timeout * 60
         fauxtime.sleep(timeout + (timeout * .75))
         sdo1 = self.app.sm.get('TempObject')
-        for x in range(1, 100):
-            # force the sdm to do housekeeping
-            self.app.sm._getCurrentBucket()
+        # force the sdm to do housekeeping
+        self.app.sm._housekeep(self.app.sm._deindex_next() -
+                                   self.app.sm._period)
         now = fauxtime.time()
         k = sdo.get('endtime')
         assert (type(k) == type(now)), type(k)
