@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.6 1997/11/07 17:09:40 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.7 1997/11/07 18:51:47 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -293,8 +293,6 @@ MM_cget(MM *self, PyObject *key, int call)
 			      Py_DECREF(e);
 			      return NULL;
 			    }
-
-		      if((rr=PyObject_CallObject(e,NULL))) ASSIGN(e,rr);
 			}
 		    }
 		}
@@ -531,7 +529,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
@@ -563,6 +561,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.7  1997/11/07 18:51:47  jim
+  Fixed bug in new call logic.
+
   Revision 1.6  1997/11/07 17:09:40  jim
   Changed so exception is raised if a callable object raises an
   exception when called and the exception type and value are not
