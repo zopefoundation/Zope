@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.13 1998/05/13 21:10:30 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.14 1998/05/13 21:46:51 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -11,7 +11,7 @@ __rcs_id__='$Id: VSEval.py,v 1.13 1998/05/13 21:10:30 jim Exp $'
 #       rights reserved.  
 #
 ############################################################################ 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from string import join, find, split, translate
 import sys, gparse, string
@@ -110,7 +110,7 @@ class Eval:
 	self.used=tuple(used.keys())
 
     def eval(self, mapping):
-        d={'_vars': mapping, '_': mapping}
+        d={'_vars': mapping}
 	code=self.code
 	globals=self.globals
 	for name in self.used:
@@ -132,6 +132,9 @@ compiled_getattr=compile(
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.14  1998/05/13 21:46:51  jim
+# The last change shouldn't have been made here.  It should have been in DT_Util.
+#
 # Revision 1.13  1998/05/13 21:10:30  jim
 # Changed the way that '_' is handled.  It is now an alias for the template dict.
 #
