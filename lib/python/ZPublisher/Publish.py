@@ -1,8 +1,5 @@
-#!/usr/local/bin/python 
-# $What$
 
-__doc__="""\
-Python Object Publisher -- Publish Python objects on web servers
+"""Python Object Publisher -- Publish Python objects on web servers
 
 Introduction
 
@@ -386,7 +383,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.80 1998/03/24 14:15:24 jim Exp $"""
+$Id: Publish.py,v 1.81 1998/03/24 14:18:47 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -441,7 +438,7 @@ $Id: Publish.py,v 1.80 1998/03/24 14:15:24 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 
 def main():
