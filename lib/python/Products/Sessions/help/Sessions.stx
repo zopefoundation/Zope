@@ -14,6 +14,10 @@ Session Administration
 
   Setup
 
+    By default, Zope will create the following components for you on startup.
+    You only need to create these components yourself if you wish to alter
+    the default configuration.
+
     To set up sessions on a Zope system, you must add:
 
     	- A Browser ID Manager named "browser_id_manager"
@@ -28,102 +32,44 @@ Session Administration
     The session data manager will begin automatically adding a SESSION
     object to the REQUEST in the default configuration. 
 
+  Session Assignment
+
+    The browser ID manager will by default assign a cookie to each browser
+    which visits Zope, using the cookie name _ZopeId.  The browser ID manager
+    keeps track of the "uniqueness" of visitors, so that sessions are not
+    commingled.  
+
+    **Note:** Browser ID management is not cryptographically secure; the
+    data communicated to Zope by the browser is subject to interception or
+    modification without detection by Zope. 
+
+  Session Data Creation
+
+    When Zope traverses a URL past a session data manager, the session
+    data manager has the opportunity to create and insert a SESSION object
+    into the REQUEST object.  This is done in a lazy fashion, so that if
+    the application does not use the SESSION object, it will not actually
+    be created.
+
+    Session data is created as transient objects in a transient object
+    container.  The transient object container will destroy its contents
+    after a certain period of time elapses.  Transient objects act as
+    dictionaries; one may use the traditional dictionary methods to access
+    their contents.
+
   Session Data Object Expiration
 
     Session data objects expire after the period between their last
     access and "now" exceeds the timeout value provided to the
     transient object container which hold them.  No special action need
-    be taken to expire session data objects.![1]
+    be taken to expire session data objects.
 
-      ![1] See "Session Data Object Expiration Considerations" in the
-      Concepts and Caveats section below for details on session data
-      expiration.
-
-  Importing And Exporting Session Data Objects
-
-    In some circumstances, it is useful to be able to "export" all
-    the session data from a specific transient object container in order
-    to "import" it to another.  This may be necessary when migrating
-    data between containers or when upgrading the session tracking
-    implementation to a more recent version.
-
-    You can export data from a transient object container by visiting
-    its "Advanced" tab, and choosing "Export Session Data".  A file
-    will be written to the hard disk of the Zope server you're
-    talking to in the 'var' directory of the Zope instance named
-    "sessiondata.zexp".
-
-    To import exported session data, choose "Import Session Data"
-    from the Advanced tab of the transient object container you're
-    migrating to.  The "sessiondata.zexp" file containing the
-    exported session data will be read from disk and placed into the
-    transient object container.
-
-    The contents of RAM-based (internal) transient object containers
-    cannot be exported, and you may not import session data into an
-    internal transient object container.
+    It is worth noting however, that the transient object container may
+    not be precise about destruction of session data; i.e. session data which
+    is to expire after 20 minutes of inactivity may expire later than 20
+    minutes.
 
 Concepts and Caveats
-
-  Session Id (Non-)Expiration
-
-    Unlike many other sessioning implementations, core session
-    tracking session tokens (ids) do not actually themselves expire.
-    They persist for as long as their conveyance mechanism allows.
-    For example, a session token will last for as long as the session
-    token cookie persists on the client, or for as long as someone
-    uses a bookmarked URL with a session token in it.  The same id
-    will be obtained by a browser id manager on every visit by that
-    client to a site - potentially indefinitely depending on which
-    conveyance mechanisms you use and your configuration for cookie
-    persistence.  It may be useful to think of a Zope browser id as
-    a "browser id" for this reason.
-
-    In lieu of exipry of browser ids, the transient object container
-    which holds session data objects implements a policy for data
-    object expiration.  If asked for a session data object related
-    to a particular browser id which has been expired by a transient
-    object container, a session data manager will a return a new
-    session data object.
-
-  Session Data Object Expiration Considerations
-
-    Because Zope has no scheduling facility, the sessioning
-    machinery depends on the continual exercising of itself to
-    expire session data objects.  If the sessioning machinery is not
-    exercised continually, it's possible that session data
-    objects will stick around longer than the time specified by
-    their transient object container timeout value.  For example:
-
-      - User A exercises application machinery that generates a
-      session data object.  It is inserted into a transient object
-      container which advertises a 20-minute timeout.
-
-      - User A "leaves" the site.
-
-      - 40 minutes go by with no visitors to the site.
-
-      - User B visits 60 minutes after User A first generated his
-      session data object, and exercises app code which hands out
-      session data objects.  *User A's session is expired at this
-      point, 40 minutes "late".*
-
-  Sessioning and Transactions
-
-    The existing transient object container implementations interact
-    with Zope's transaction system.  If a transaction is aborted,
-    the changes made to session data objects during the transaction
-    will be rolled back.
-
-  Acquisition-Wrapped Objects
-
-    The sessioning machinery unwraps acquisition-wrapped objects
-    before storing them during a session_data_object.set or
-    session_data_object.__setitem__ operation.  Practically, this
-    means you can safely pass acquisition-wrapped objects in to the
-    sessioning machinery (for example, a DTML Document obtained via
-    traversal) as values within a session data object.  The stored
-    reference will be to the bare unwrapped object. (new in 0.9)
 
   Mutable Data Stored Within Session Data Objects
 
@@ -132,7 +78,7 @@ Concepts and Caveats
     object has changed by calling 'set' or '__setitem__' on the
     session data object with the new object value.  For example::
 
-       session = self.session_data_manager.getSessionData()
+       session = context.REQUEST.SESSION
        foo = {}
        foo['before'] = 1
        session.set('foo', foo)
@@ -148,7 +94,7 @@ Concepts and Caveats
     an example that makes the intent of the last example work by
     doing so::
 
-       session = self.session_data_manager.getSessionData()
+       session = context.REQUEST.SESSION
        foo = {}
        foo['before'] = 1
        session.set('foo', foo)
@@ -164,58 +110,6 @@ Concepts and Caveats
     session storage whenever you change it.  For further reference,
     see the "Persistent Components" chapter of the Zope Developer's
     Guide at http://www.zope.org/Documentation/ZDG.
-
-  Session Data Object Keys
-
-    A session data object has essentially the same restrictions as a
-    Python dictionary.  Keys within a session data object must be
-    hashable (strings, tuples, and other immutable basic Python
-    types; or instances which have a __hash__ method).  This is a
-    requirement of all Python objects that are to be used as keys to
-    a dictionary.  For more information, see the associated Python
-    documentation at
-    http://www.python.org/doc/current/ref/types.html (Mappings ->
-    Dictionaries).
-
-  In-Memory Session Data Container RAM Utilization
-
-    Each session data object which is added to an "internal"
-    (RAM-based) transient object container will consume at least 2K of
-    RAM.
-
-  Mounted Database-Based Session Data Container/Internal Session
-  Data Container Caveats
-
-    Persistent objects which have references to other persistent
-    objects in the same database cannot be committed into a mounted
-    database because the ZODB does not currently handle
-    cross-database references.
-
-    "Internal" (RAM-based) transient object containers are currently
-    implemented as objects within (automatically) mounted ZODB
-    databases.  For this reason, they are equivalent in operation to
-    external transient object containers which are placed in a manually
-    mounted database.
-
-    If you use an internal transient object container or an external
-    transient object container that is accessed via a "mounted"
-    database, you cannot store persistent object instances which
-    have already been stored in the "main" database as keys or
-    values in a session data object.  If you try to do so, it is
-    likely that an 'InvalidObjectReference' exception will be raised
-    by the ZODB when the transaction involving the object attempts
-    to commit.  As a result, the transaction will fail and the
-    session data object (and other objects touched in the same
-    transaction) will fail to be committed to storage.
-
-    If your "main" ZODB database is backed by a nonundoing storage,
-    you can avoid this condition by storing session data objects in
-    an external data container instantiated within the "main" ZODB
-    database.  If this is not an option, you should ensure that
-    objects you store as values or keys in a session data object
-    held in a mounted transient object container are instantiated "from
-    scratch" (via their constructors), as opposed to being "pulled
-    out" of the main ZODB.
 
   Networking with ZEO
 
