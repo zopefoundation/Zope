@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.60 1999/04/01 16:13:26 jim Exp $"""
+$Id: ObjectManager.py,v 1.61 1999/04/02 02:09:52 amos Exp $"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -94,6 +94,7 @@ from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
 from urllib import quote
+from cStringIO import StringIO
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match
 
