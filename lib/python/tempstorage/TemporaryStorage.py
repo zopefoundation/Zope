@@ -23,7 +23,7 @@ $Id: TemporaryStorage.py,v 1.1.2.2 2004/05/16 01:41:34 chrism Exp $
 __version__ ='$Revision: 1.1.2.2 $'[11:-2]
 
 from zLOG import LOG, BLATHER
-from ZODB.referencesf import referencesf
+from ZODB.serialize import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
@@ -146,13 +146,18 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
             if self._index.has_key(oid):
                 oserial=self._index[oid]
                 if serial != oserial:
-                    data=self.tryToResolveConflict(oid, oserial, serial, data)
-                    if not data:
-                        raise POSException.ConflictError(oid=oid,
-                                                    serials=(oserial, serial))
+                    newdata = self.tryToResolveConflict(
+                        oid, oserial, serial, data)
+                    if not newdata:
+                        raise POSException.ConflictError(
+                            oid=oid,
+                            serials=(oserial, serial),
+                            data=data)
+                    else:
+                        data = newdata
             else:
                 oserial = serial
-            newserial=self._serial
+            newserial=self._tid
             self._tmp.append((oid, data))
             now = time.time()
             self._conflict_cache[(oid, newserial)] = data, now
@@ -165,7 +170,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         referenceCount=self._referenceCount
         referenceCount_get=referenceCount.get
         oreferences=self._oreferences
-        serial=self._serial
+        serial=self._tid
         index=self._index
         opickle=self._opickle
 
