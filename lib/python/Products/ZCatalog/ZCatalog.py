@@ -206,7 +206,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                     # if an error happens here, the catalog will be in
                     # an unstable state.  If this happens, ignore the
                     # object.
-                    obj = self.resolve_url(url, REQUEST)
+                    obj = REQUEST.resolve_url(url, REQUEST)
                 except:
                     continue
                 
@@ -223,7 +223,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         if urls:
             for url in urls:
                 try:
-                    obj = self.resolve_url(url, REQUEST)
+                    obj = REQUEST.resolve_url(url, REQUEST)
                 except:
                     continue
                 self.uncatalog_object(url)
@@ -236,13 +236,11 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def manage_catalogReindex(self, REQUEST):
         """ iterate over the whole catalog, deleting inexistent
         references and refreshing objects"""
-        items = tuple(self._catalog.uids.items())
+	items = tuple(self._catalog.uids.items())
 
-#        self._catalog.clear()
-
-        for path, i in items:
+	for path, i in items:
             try:
-                obj = self.resolve_url(path, REQUEST)
+                obj = self.getobject(i, REQUEST)
             except:
                 self.uncatalog_object(path)
             else:
@@ -250,7 +248,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                 self.catalog_object(obj, path)
 
         message = "Catalog Reindexed"
-        return self.manage_main(self, REQUEST,
+        return self.manage_catalogView(self, REQUEST,
                                 manage_tabs_message=message)
 
 
@@ -287,7 +285,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             self.catalog_object(n[1], n[0])
 
         message = "Objects Cataloged"
-        return self.manage_main(self, REQUEST,
+        return self.manage_catalogView(self, REQUEST,
                                 manage_tabs_message=message)
 
 
@@ -362,7 +360,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         if REQUEST is None:
             REQUEST=self.REQUEST
         url='%s/%s' %(REQUEST.script, self.getpath(rid))
-        return REQUEST.clone().resolve_url(url)
+	obj = REQUEST.resolve_url(url)
+        return obj
 
     def schema(self):
         return self._catalog.schema.keys()
@@ -451,6 +450,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 
     def resolve_url(self, path, REQUEST):
+	""" The use of this function is depricated """
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
         # method will return the requested object if it is found
@@ -487,8 +487,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
                 
             if name != os.path.split(path)[-1]:
-                return req.PARENTS[0]
+		result = req.PARENTS[0]
+		req.close()
+                return result
+	    req.close()
             return object
+	req.close()
         raise rsp.errmsg, sys.exc_value
 
 
