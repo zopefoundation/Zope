@@ -79,6 +79,10 @@ Zope Changes
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
 
+        - Fixed a remaining '.' form target that we missed in the Zope
+          rename form. This caused rename to fail for Zope installations 
+          running behind Netscape servers.
+
     Zope 2.1.1
 
       Bugs Fixed 
