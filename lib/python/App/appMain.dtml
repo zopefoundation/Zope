@@ -2,7 +2,7 @@
 <HEAD>
 <TITLE><!--#var title--></TITLE>
 </HEAD> 
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2><!--#var title--></H2>
 <P>
 <!--#if parentObject-->

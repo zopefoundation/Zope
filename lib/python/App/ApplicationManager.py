@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -16,8 +16,8 @@ class ApplicationManager(Acquirer,Management):
     manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
-    {'icon':'App/arrow.jpg', 'label':'Application',
-     'action':'manage_app',   'target':'_top'},
+    {'icon':'App/arrow.jpg', 'label':'Application Management',
+     'action':'manage_main',   'target':'manage_main'},
     )
     title        ='Application Manager'
     name         ='application manager'
