@@ -217,6 +217,23 @@ class DateTimeTests (unittest.TestCase):
         isoDt = DateTime('2002-05-02T08:00:00Z-04:00')
         self.assertEqual( ref1, isoDt)
 
+    def testJulianWeek(self):
+        """ check JulianDayWeek function """
+
+        try:
+            import gzip
+        except ImportError:
+            print "Warning: testJulianWeek disabled: module gzip not found"
+            return 0
+
+        lines  = gzip.GzipFile(os.path.join(__basedir__,
+                                'julian_testdata.txt.gz')).readlines()
+
+        for line in lines:
+            d = DateTime(line[:10])
+            result_from_mx=tuple(map(int, line[12:-2].split(',')))
+            self.assertEqual(result_from_mx[1], d.week())
+
     def testRFC822(self):
         '''rfc822 conversion'''
         isDST = time.localtime(time.time())[8]
@@ -235,11 +252,7 @@ class DateTimeTests (unittest.TestCase):
         # Create a non-local date time and test
         dt = DateTime('2002-05-02T08:00:00Z'+wrongzone)
         self.assertEqual(dt.rfc822(),  'Thu, 02 May 2002 08:00:00 -0000')
-
         
-        
-        #print dt.rfc822()
-
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
