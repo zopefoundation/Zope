@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -101,7 +101,7 @@ from BTrees.IIBTree import IITreeSet, IISet, union, intersection
 import BTrees.Length
 
 from Products.PluginIndexes.common.util import parseIndexRequest
-import sys,exceptions
+import sys
 
 _marker = []
 
@@ -389,7 +389,7 @@ class UnIndex(Persistent, Implicit):
         # experimental code for specifing the operator
         operator = record.get('operator',self.useOperator)
         if not operator in self.operators :
-           raise exepctions.RuntimeError,"operator not valid: %s" % operator
+           raise RuntimeError,"operator not valid: %s" % operator
 
         # depending on the operator we use intersection or union
         if operator=="or":  set_func = union
