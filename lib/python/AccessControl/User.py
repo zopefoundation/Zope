@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.129 $'[11:-2]
+__version__='$Revision: 1.130 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -101,6 +101,7 @@ from AuthEncoding import pw_validate
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl.ZopeSecurityPolicy import _noroles
 
 ListType=type([])
 NotImplemented='NotImplemented'
@@ -487,9 +488,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         else:
             return None
 
-    def authorize(self, user, accessed, container, name, value):
+    def authorize(self, user, accessed, container, name, value, roles):
         newSecurityManager(None, user)
-        if getSecurityManager().validate(accessed, container, name, value):
+        security=getSecurityManager()
+        if security.validate(accessed, container, name, value, roles):
             return 1
         else:
             noSecurityManager()
@@ -514,15 +516,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                     request.set('REMOTE_ADDR', addr)
                 except: pass
 
-    def validate(self, request, auth='', roles=None):
+    def validate(self, request, auth='', roles=_noroles):
         """
         this method performs identification, authentication, and
         authorization
-        we ignore the roles argument in this method purposely due
-        to the availability of Zope 2.2+ security machinery
-        that makes its gathering superfluous, though we still need
-        to put it in the signature because it's part of the defacto
-        interface
         v is the object (value) we're validating access to
         n is the name used to access the object
         a is the object the object was accessed through
@@ -546,7 +543,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 for user in self.getUsers():
                     if user.getDomains():
                         if self.authenticate(user.getUserName(), '', request):
-                            if self.authorize(user, a, c, n, v):
+                            if self.authorize(user, a, c, n, v, roles):
                                 return user.__of__(self)
 
         name, password = self.identify(auth)
@@ -565,7 +562,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         elif user is None:
             # either we didn't find the username, or the user's password
             # was incorrect.  try to authorize and return the anonymous user.
-            if self._isTop() and self.authorize(self._nobody, a, c, n, v):
+            if self._isTop() and self.authorize(self._nobody,a,c,n,v,roles):
                 return self._nobody.__of__(self)
             else:
                 # anonymous can't authorize or we're not top-level user folder
@@ -574,10 +571,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # We found a user, his password was correct, and the user
             # wasn't the emergency user.  We need to authorize the user
             # against the published object.
-            if self.authorize(user, a, c, n, v):
+            if self.authorize(user, a, c, n, v, roles):
                 return user.__of__(self)
             # That didn't work.  Try to authorize the anonymous user.
-            elif self._isTop() and self.authorize(self._nobody, a, c, n, v):
+            elif self._isTop() and self.authorize(self._nobody,a,c,n,v,roles):
                 return self._nobody.__of__(self)
             else:
                 # we can't authorize the user, and we either can't authorize
@@ -586,7 +583,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             
     if _remote_user_mode:
         
-        def validate(self, request, auth='', roles=None):
+        def validate(self, request, auth='', roles=_noroles):
             if self._do_dns_lookup_caching:
                 self._setRemote(request)
             v = request['PUBLISHED']
@@ -599,7 +596,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                             if self.authenticate(
                                 user.getUserName(), '', request
                                 ):
-                                if self.authorize(user, a, c, n, v):
+                                if self.authorize(user, a, c, n, v, roles):
                                     return user.__of__(self)
 
             user = self.getUser(name)
@@ -617,7 +614,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             elif user is None:
                 # we didn't find the username in this database
                 # try to authorize and return the anonymous user.
-                if self._isTop() and self.authorize(self._nobody, a, c, n, v):
+                if self._isTop() and self.authorize(self._nobody,
+                                                    a, c, n, v, roles):
                     return self._nobody.__of__(self)
                 else:
                     # anonymous can't authorize or we're not top-level user
@@ -626,11 +624,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             else:
                 # We found a user and the user wasn't the emergency user.
                 # We need to authorize the user against the published object.
-                if self.authorize(user, a, c, n, v):
+                if self.authorize(user, a, c, n, v, roles):
                     return user.__of__(self)
                 # That didn't work.  Try to authorize the anonymous user.
                 elif self._isTop() and self.authorize(
-                    self._nobody, a, c, n, v):
+                    self._nobody, a, c, n, v, roles):
                     return self._nobody.__of__(self)
                 else:
                     # we can't authorize the user, and we either can't
@@ -649,13 +647,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # default to accessed and container as v.aq_parent
         a = c = request['PARENTS'][0]
         # try to find actual container
-        if hasattr(v, 'aq_inner'):
+        inner = getattr(v, 'aq_inner', v)
+        innerparent = getattr(inner, 'aq_parent', None)
+        if innerparent is not None:
             # this is not a method, we needn't treat it specially
-            c = v.aq_inner.aq_parent
+            c = innerparent
         elif hasattr(v, 'im_self'):
             # this is a method, we need to treat it specially
-            try: c = v.im_self.aq_inner.aq_parent
-            except: pass
+            c = v.im_self
+            c = getattr(v, 'aq_inner', v)
         request_container = getattr(request['PARENTS'][-1], 'aq_parent', [])
         # if pub's aq_parent or container is the request container, it
         # means pub was accessed from the root
