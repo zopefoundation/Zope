@@ -56,7 +56,7 @@ text type and small enough to be edited in a text area.
    dtpref_cols> cols="<dtml-var dtpref_cols>"<dtml-else
    > cols="50"</dtml-if><dtml-if dtpref_rows> rows="<dtml-var 
    dtpref_rows>"<dtml-else> rows="20"</dtml-if>><dtml-var 
-   __str__></textarea>
+   __str__ html_quote></textarea>
   </div>
   </td>
 </tr>
