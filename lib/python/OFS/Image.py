@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -44,7 +44,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
     ('Change permissions', ['manage_access']),
     ('Change', ['manage_edit','manage_upload','PUT']),
-    ('View', ['index_html','view_image_or_file','getSize','getContentType']),
+    ('View', ['index_html','view_image_or_file','getSize','getContentType', '']),
     )
    
 
@@ -93,11 +93,11 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	RESPONSE['content-type'] =self.content_type
         return self.data
 
-    def view_image_or_file(self,REQUEST,RESPONSE):
+    def view_image_or_file(self,URL1):
 	"""
 	The default view of the contents of the File or Image.
 	"""
-	return self.index_html(REQUEST,RESPONSE)
+	raise 'Redirect', URL1
 
     def manage_edit(self,title,content_type,precondition='',REQUEST=None):
 	"""
