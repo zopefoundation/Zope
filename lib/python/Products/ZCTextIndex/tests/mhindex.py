@@ -1,6 +1,34 @@
 #! /usr/bin/env python2.1
 
-"""MH mail indexer."""
+"""MH mail indexer.
+
+To index messages from a single folder (messages defaults to 'all'):
+  mhindex.py [options] -u +folder [messages ...]
+
+To bulk index all messages from several folders:
+  mhindex.py [options] -b folder ...
+
+To execute a single query:
+  mhindex.py [options] query
+
+To enter interactive query mode:
+  mhindex.py [options]
+
+Common options:
+  -d FILE -- specify the Data.fs to use (default ~/.Data.fs)
+  -w -- dump the word list in alphabetical order and exit
+  -W -- dump the word list ordered by word id and exit
+
+Indexing options:
+  -O -- do a prescan on the data to compute optimal word id assignments;
+        this is only useful the first time the Data.fs is used
+  -t N -- commit a transaction after every N messages (default 20000)
+  -p N -- pack after every N commits (by default no packing is done)
+
+Querying options:
+  -m N -- show at most N matching lines from the message (default 3)
+  -n N -- show the N best matching messages (default 3)
+"""
 
 import os
 import re
@@ -36,10 +64,11 @@ MAXLINES = 3
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "bd:m:n:Op:t:u")
+        opts, args = getopt.getopt(sys.argv[1:], "bd:hm:n:Op:t:uwW")
     except getopt.error, msg:
         print msg
-        sys.exit(2)
+        print "use -h for help"
+        return 2
     update = 0
     bulk = 0
     optimize = 0
@@ -48,11 +77,15 @@ def main():
     datafs = os.path.expanduser(DATAFS)
     pack = 0
     trans = 20000
+    dumpwords = dumpwids = 0
     for o, a in opts:
         if o == "-b":
             bulk = 1
         if o == "-d":
             datafs = a
+        if o == "-h":
+            print __doc__
+            return
         if o == "-m":
             maxlines = int(a)
         if o == "-n":
@@ -65,7 +98,17 @@ def main():
             trans = ont(a)
         if o == "-u":
             update = 1
+        if o == "-w":
+            dumpwords = 1
+        if o == "-W":
+            dumpwids = 1
     ix = Indexer(datafs, writable=update or bulk, trans=trans, pack=pack)
+    if dumpwords:
+        ix.dumpwords()
+    if dumpwids:
+        ix.dumpwids()
+    if dumpwords or dumpwids:
+        return
     if bulk:
         if optimize:
             ix.optimize(args)
@@ -127,6 +170,17 @@ class Indexer:
             self.maxdocid = 0
         print len(self.docpaths), "Document ids"
         print len(self.path2docid), "Pathnames"
+        print self.index.lexicon.length(), "Words"
+
+    def dumpwids(self):
+        lexicon = self.index.lexicon
+        for wid in lexicon.wids():
+            print "%10d %s" % (wid, lexicon.get_word(wid))
+
+    def dumpwords(self):
+        lexicon = self.index.lexicon
+        for word in lexicon.words():
+            print "%10d %s" % (lexicon.get_wid(word), word)
 
     def close(self):
         self.root = None
@@ -162,6 +216,8 @@ class Indexer:
                     continue
             try:
                 results, n = self.timequery(text, top + nbest)
+            except KeyboardInterrupt:
+                raise
             except:
                 reportexc()
                 text = ""
@@ -367,6 +423,8 @@ class Indexer:
             self.getheaders(m, L)
         try:
             self.getmsgparts(m, L, 0)
+        except KeyboardInterrupt:
+            raise
         except:
             print "(getmsgparts failed:)"
             reportexc()
@@ -471,4 +529,4 @@ def reportexc():
     traceback.print_exc()
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
