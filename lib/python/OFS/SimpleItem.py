@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.75 2000/06/01 17:29:37 jim Exp $'''
-__version__='$Revision: 1.75 $'[11:-2]
+$Id: SimpleItem.py,v 1.76 2000/06/09 23:57:46 evan Exp $'''
+__version__='$Revision: 1.76 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -143,7 +143,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
 
     # Default propertysheet info:
     __propsets__=()
-
+ 
     manage_options=(
         App.Undo.UndoSupport.manage_options
         +AccessControl.Owned.Owned.manage_options
@@ -338,14 +338,19 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         return 1
 
     def absolute_url(self, relative=0):
-        id=quote(self.id)
-        
-        p=getattr(self,'aq_inner', None)
-        if p is not None: 
-            url=p.aq_parent.absolute_url(relative)
-            if url: id=url+'/'+id
-            
-        return id
+        req = self.REQUEST
+        rpp = req.get('VirtualRootPhysicalPath', ('',))
+        spp = self.getPhysicalPath()
+        i = 0
+        for name in rpp[:len(spp)]:
+            if spp[i] == name:
+                i = i + 1
+            else:
+                break
+        path = map(quote, spp[i:])
+        if relative: # Deprecated - use getPhysicalPath
+            return join(path, '/')
+        return join([req['SERVER_URL']] + req._script + path, '/')
 
     def getPhysicalPath(self):
         '''Returns a path (an immutable sequence of strings)
@@ -462,14 +467,20 @@ class Item_w__name__(Item):
         self.__name__=id
 
     def absolute_url(self, relative=0):
-        id=quote(self.__name__)
-        
-        p=getattr(self,'aq_inner', None)
-        if p is not None: 
-            url=p.aq_parent.absolute_url(relative)
-            if url: id=url+'/'+id
-            
-        return id
+        req = self.REQUEST
+        rpp = req.get('VirtualRootPhysicalPath', ('',))
+        spp = self.getPhysicalPath()
+        i = 0
+        for name in rpp[:len(spp)]:
+            if spp[i] == name:
+                i = i + 1
+            else:
+                break
+        path = map(quote, spp[i:])
+        if relative:
+            # This is useful for physical path relative to a VirtualRoot
+            return join(path, '/')
+        return join([req['SERVER_URL']] + req._script + path, '/')
 
     def getPhysicalPath(self):
         '''Returns a path (an immutable sequence of strings)

@@ -83,14 +83,14 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
-import regex, sys, os, string
+import regex, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage
-from urllib import quote, unquote
+from urllib import quote, unquote, splittype, splitport
 from Converters import get_converter
 from maybe_lock import allocate_lock
 xmlrpc=None # Placeholder for module that we'll import if we have to.
@@ -119,6 +119,8 @@ isCGI_NAME = {
 hide_key={'HTTP_AUTHORIZATION':1,
           'HTTP_CGI_AUTHORIZATION': 1,
           }.has_key
+
+default_port={'http': '80', 'https': '443'}
 
 _marker=[]
 class HTTPRequest(BaseRequest):
@@ -186,19 +188,46 @@ class HTTPRequest(BaseRequest):
         return r
 
 
-    def setSite(self, base=None):
-        """ blah """
-        if base is not None:
-            self.script = self.base = base
+    def setServerURL(self, protocol=None, hostname=None, port=None):
+        """ Set the parts of generated URLs. """
+        other = self.other
+        server_url = other.get('SERVER_URL', '')
+        if protocol is None and hostname is None and port is None:
+            return server_url
+        oldprotocol, oldhost = splittype(server_url)
+        oldhostname, oldport = splitport(oldhost[2:])
+        if protocol is None: protocol = oldprotocol
+        if hostname is None: hostname = oldhostname
+        if port is None: port = oldport
+        
+        if (port is None or default_port[protocol] == port):
+            host = hostname
+        else:
+            host = hostname + ':' + port
+        server_url = other['SERVER_URL'] = '%s://%s' % (protocol, host)
+        self._resetURLS()
+        return server_url
 
-        # reset the URL
-        self.other['URL'] = self.script
-        # clear the 'cache' of URLx and BASEx
+    def setVirtualRoot(self, path, hard=0):
+        """ Treat the current publishing object as a VirtualRoot """
+        other = self.other
+        if type(path) is type(''):
+            path = filter(None, split(path, '/'))
+        self._script[:] = map(quote, path)
+        del self._steps[:]
+        parents = other['PARENTS']
+        if hard:
+            del parents[:-1]
+        other['VirtualRootPhysicalPath'] = parents[-1].getPhysicalPath()
+        self._resetURLS()
+
+    def _resetURLS(self):
+        other = self.other
+        other['URL'] = join([other['SERVER_URL']] + self._script +
+                            self._steps, '/')
         for x in self._urls:
             del self.other[x]
-            
-        del self.other['PARENTS'][:]
-
+        self._urls = ()
 
     def __init__(self, stdin, environ, response, clean=0):
         self._orig_env=environ
@@ -221,11 +250,16 @@ class HTTPRequest(BaseRequest):
         other=self.other={'RESPONSE': response}
         self.form={}
         self.steps=[]
+        self._steps=[]
 
         ################################################################
         # Get base info first. This isn't likely to cause
         # errors and might be useful to error handlers.
         b=script=strip(get_env('SCRIPT_NAME',''))
+
+        # _script and the other _names are meant for URL construction
+        self._script = map(quote, filter(None, split(script, '/')))
+        
         while b and b[-1]=='/': b=b[:-1]
         p = rfind(b,'/')
         if p >= 0: b=b[:p+1]
@@ -234,23 +268,24 @@ class HTTPRequest(BaseRequest):
 
         server_url=get_env('SERVER_URL',None)
         if server_url is not None:
-             server_url=strip(server_url)
+             other['SERVER_URL'] = server_url = strip(server_url)
         else:
              if have_env('HTTPS') and (
                  environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
-                 server_url='https://'
+                 protocol = 'https'
              elif (have_env('SERVER_PORT_SECURE') and 
                    environ['SERVER_PORT_SECURE'] == "1"):
-                 server_url='https://'
-             else: server_url='http://'
+                 protocol = 'https'
+             else: protocol = 'http'
 
              if have_env('HTTP_HOST'):
-                 server_url=server_url+strip(environ['HTTP_HOST'])
+                 host = strip(environ['HTTP_HOST'])
+                 hostname, port = splitport(host)
              else:
-                 server_url=server_url+strip(environ['SERVER_NAME'])
-                 server_port=environ['SERVER_PORT']
-                 if server_port!='80': server_url=server_url+':'+server_port
-             other['SERVER_URL']=server_url
+                 hostname = strip(environ['SERVER_NAME'])
+                 port = environ['SERVER_PORT']
+             self.setServerURL(protocol=protocol, hostname=hostname, port=port)
+             server_url = other['SERVER_URL']
              
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
@@ -437,7 +472,7 @@ class HTTPRequest(BaseRequest):
                            reclist.reverse()
                            if not hasattr(x,attr):
                                #If the attribute does not
-                               #exist, set it
+                               #exist, setit
                                if flags&SEQUENCE: item=[item]
                                reclist.remove(x)
                                setattr(x,attr,item)
@@ -722,13 +757,11 @@ class HTTPRequest(BaseRequest):
             return other[key]
 
         if key[:1]=='U' and URLmatch(key) >= 0:
-            n=atoi(key[3:])
-            URL=other['URL']
-            for i in range(0,n):
-                l=rfind(URL,'/')
-                if l >= 0: URL=URL[:l]
-                else: raise KeyError, key
-                if len(URL) < len(self.base) and n > 1: raise KeyError, key
+            path = self._script + self._steps
+            n = len(path) - atoi(key[3:])
+            if n < 0:
+                raise KeyError, key
+            URL=join([other['SERVER_URL']] + path[:n], '/')
             other[key]=URL
             self._urls = self._urls + (key,)
             return URL
@@ -743,20 +776,17 @@ class HTTPRequest(BaseRequest):
 
         if key[:1]=='B':
             if BASEmatch(key) >= 0:
-                n=atoi(key[4:])
+                path = self._steps
+                n = atoi(key[4:])
                 if n:
-                    n=n-1
-                    
-                    if len(self.steps) < n:
+                    n = n - 1
+                    if len(path) < n:
                         raise KeyError, key
 
-                    v=self.script
-                    while v[-1:]=='/': v=v[:-1]
-                    v=join([v]+self.steps[:n],'/')
+                    v = self._script + path[:n]
                 else:
-                    v=self.base
-                    while v[-1:]=='/': v=v[:-1]
-                other[key]=v
+                    v = self._script[:-1]
+                other[key] = v = join([other['SERVER_URL']] + v, '/')
                 self._urls = self._urls + (key,)
                 return v
 
@@ -976,8 +1006,6 @@ def parse_cookie(text,
     if not already_have(name): result[name]=value
 
     return apply(parse_cookie,(text[l:],result))
-
-import sys
 
 # add class
 class record:
