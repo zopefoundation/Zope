@@ -106,7 +106,7 @@ class Transaction:
         serial=self.serial
         oid=self._oid
         here=tfile.tell()+pos+self._thl
-        self._tindex.append(self._oid, here)
+        self._tindex.append((self._oid, here))
         serial=self.serial
         write(struct.pack(">8s8s8s8sH8s", oid, serial, p64(old), p64(pos),
                    len(version), p64(len(data))))
