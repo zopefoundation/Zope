@@ -129,7 +129,39 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-$Id: StructuredText.py,v 1.9 1998/12/04 20:15:31 jim Exp $'''
+- Text encloded by double quotes followed by a colon, a URL, and punctuation 
+  is treated as a hyper link. For example:
+
+    "Zope site":http://www.zope.org/. 
+
+  Is interpreted as '<a href="http://www.zope.oprg/">Zope site</a>.' Note:
+  This works for relative as well as absolute URLs.
+
+- Text enclosed by double quotes followed by a comma, one or more spaces,
+  an absolute URL and punctuation is treated as a hyper link. For example:
+
+    "mail me", mailto:amos@digicool.com.
+
+  Is interpreted as '<a href="mailto:amos@digicool.com">mail me</a>.' 
+
+- Text enclosed in brackets which consists only of letters, digits,
+  underscores and dashes is treated as hyper links within the document.
+  For example:
+    
+    As demonstrated by Smith [12] this technique is quite effective.
+
+  Is interpreted as '... by Smith <a href="#12">[12]</a> this ...'. Together
+  with the next rule this allows easy coding of references or end notes.
+
+- Text enclosed in brackets which is preceeded by the start of a line, two
+  periods and a space is treated as a named link. For example:
+
+    .. [12] "Effective Techniques" Smith, Joe ... 
+
+  Is interpreted as '<a name="12">[12]</a> "Effective ...'. Together with
+  the previous rule this allows easy coding of references or end notes.
+
+$Id: StructuredText.py,v 1.10 1998/12/29 22:30:43 amos Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -181,6 +213,9 @@ $Id: StructuredText.py,v 1.9 1998/12/04 20:15:31 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.10  1998/12/29 22:30:43  amos
+# Improved doc string to describe hyper link and references capabilities.
+#
 # Revision 1.9  1998/12/04 20:15:31  jim
 # Detabification and new copyright.
 #
