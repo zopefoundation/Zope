@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -77,9 +77,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
     """
 
-    meta_type='External Method'
-    func_defaults=()
-    func_code=None
+    meta_type = 'External Method'
+    _v_func_defaults = ()
+    _v_func_code = None
 
     ZopeTime=Acquisition.Acquired
     HelpSys=Acquisition.Acquired
@@ -136,17 +136,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         f=getObject(self._module, self._function, reload)
         if hasattr(f,'im_func'): ff=f.im_func
         else: ff=f
-           
-        if check:
-            # Check to make sure function signature is the same.
-            # Otherwise, we may end up causing an unwanted change.
 
-            if self.func_defaults != ff.func_defaults:
-                self.func_defaults  = ff.func_defaults
-            
-            func_code=FuncCode(ff,f is not ff)
-            if func_code != self.func_code: self.func_code=func_code
-    
+        self._v_func_defaults  = ff.func_defaults
+        self._v_func_code = FuncCode(ff,f is not ff)
+          
         self._v_f=f
 
         return f
@@ -196,15 +189,15 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
             f=self._v_f
         else: f=self.getFunction()
 
-        __traceback_info__=args, kw, self.func_defaults
+        __traceback_info__=args, kw, self._v_func_defaults
 
         try: return apply(f,args,kw)
         except TypeError, v:
             tb=sys.exc_info()[2]
             try:
-                if ((self.func_code.co_argcount-
-                     len(self.func_defaults or ()) - 1 == len(args))
-                    and self.func_code.co_varnames[0]=='self'):
+                if ((self._v_func_code.co_argcount-
+                     len(self._v_func_defaults or ()) - 1 == len(args))
+                    and self._v_func_code.co_varnames[0]=='self'):
                     return apply(f,(self.aq_parent.this(),)+args,kw)
                 
                 raise TypeError, v, tb
