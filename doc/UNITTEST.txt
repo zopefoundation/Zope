@@ -298,6 +298,7 @@ Zope Unit Testing
   found unit tests a way to speed development and produce
   higher-quality code.
 
-
-
+  There is a testing support package in lib/python/Testing that might
+  be useful to you for writing unit tests. See the README.txt in that 
+  directory for details.
 
