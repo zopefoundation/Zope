@@ -24,7 +24,16 @@ def security_policy_implementation(value):
     ok = ('PYTHON', 'C')
     if value not in ok:
         raise ValueError, (
-            "security_policy_implementation must be one of %s" % ok
+            "security-policy-implementation must be one of %s" % repr(ok)
+            )
+    return value
+
+def datetime_format(value):
+    value = value.lower()
+    ok = ('us', 'international')
+    if value not in ok:
+        raise ValueError, (
+            "datetime-format must be one of %r" % repr(ok)
             )
     return value
 

@@ -28,6 +28,10 @@ def locale(value):
     locale.setlocale(locale.LC_ALL, value)
     return value
 
+def datetime_format(value):
+    value and _setenv('DATETIME_FORMAT', value)
+    return value
+
 def zserver_read_only_mode(value):
     value and _setenv('ZOPE_READ_ONLY', '1')
     return value
@@ -86,6 +90,14 @@ def structured_text_header_level(value):
     value is not None and _setenv('STX_DEFAULT_LEVEL', value)
     return value
 
+def rest_input_encoding(value):
+    value and _setenv('REST_INPUT_ENCODING' , value)
+    return value
+
+def rest_output_encoding(value):
+    value and _setenv('REST_OUTPUT_ENCODING' , value)
+    return value
+
 def maximum_security_manager_stack_size(value):
     value is not None and _setenv('Z_MAX_STACK_SIZE', value)
     return value
@@ -138,6 +150,10 @@ def root_handler(config):
                         config.cgi_environment,
                         config.port_base)
 
+    # set up trusted proxies
+    if config.trusted_proxies:
+        import ZPublisher.HTTPRequest
+        ZPublisher.HTTPRequest.trusted_proxies = tuple(config.trusted_proxies)
 
 class _DummyServerConfig:
     class _Thing:

@@ -18,8 +18,6 @@
 #     The path to the data files, local product files, import directory,
 #     and Extensions directory used by Zope.
 #
-# Influences: INSTANCE_HOME environment variable
-#
 # Required (no default)
 #
 # Example:
@@ -34,8 +32,6 @@ instancehome $INSTANCE
 #     The directory in which a running Zope's process identifier files are
 #     placed.
 #
-# Influences: CLIENT_HOME environment variable
-#
 # Default: $INSTANCE/var
 #
 # Example:
@@ -46,34 +42,44 @@ instancehome $INSTANCE
 # Directive: products
 #
 # Description:
-#     Name of a directory that contains product packages.  This
+
+#     Name of a directory that contains additional Product packages.  This
 #     directive may be used as many times as needed to add additional
 #     collections of products.  Each directory identified will be
-#     added to the __path__ of the Products package.
+#     added to the __path__ of the Products package.  All Products are
+#     initialized in ascending alphabetical order by product name.  If
+#     two products with the same name exist in two Products directories,
+#     the order in which the packages appear here defines the load
+#     order.  The master Products directory exists in Zope's software home,
+#     and cannot be removed from the products path (and should not be added
+#     to it here).
 #
-# Default: (none)
+# Default: $INSTANCE/Products
 #
 # Example:
 #
 #    products /home/chrism/projects/myproducts
 
-products $INSTANCE/Products
-
 
 # Directive: debug-mode
 #
 # Description:
-#     If this directive is set to 'on', it causes the Zope process to not
-#     detach from the controlling terminal after it is run. It also
-#     influences the behavior of some Zope objects at runtime (for example,
-#     when debug mode is "on", you are able to view changes made to
-#     DTMLFile and PageTemplateFile objects immediately; When it is 'off',
-#     you must restart the server to see the changes. Additionally, event
-#     log and other log output will not be sent to the console when this
-#     directive is set to 'off'. Setting this to 'off' when Zope is in a
-#     production environment is encouraged, as it speeds execution.
+#     A switch which controls several aspects of Zope operation useful for
+#     developing under Zope.  When debug mode is on:
 #
-# Influences: Z_DEBUG_MODE environment variable
+#     - The process will not detach from the controlling terminal
+#
+#     - Errors in product initialization will cause startup to fail
+#       (instead of writing error messages to the event log file).
+#
+#     - Filesystem-based scripts such as skins, PageTemplateFiles, and
+#       DTMLFiles can be edited while the server is running and the server
+#       will detect these changes in real time.  When this switch is
+#       off, you must restart the server to see the changes.
+#
+#     Setting this to 'off' when Zope is in a
+#     production environment is encouraged, as it speeds execution (sometimes
+#     dramatically).
 #
 # Default: on
 #
@@ -88,9 +94,7 @@ products $INSTANCE/Products
 #     If you intend to run Zope as the "root" user, you must supply this
 #     directive with an effective username or userid number to which Zope
 #     will 'suid' after the server ports are bound. This directive only
-#     works under UNIX and if Zope is started as the root user.
-#
-# Influences: Zope configuration
+#     has effect under UNIX and if Zope is started as the root user.
 #
 # Default: unset
 #
@@ -102,15 +106,25 @@ products $INSTANCE/Products
 # Directive: enable-product-installation
 #
 # Description:
-#     If this directive is turned on, Zope performs 'product installation'
-#     (the registration of Python modules in various Products directories)
-#     at startup. Turning this off can speed Zope startup time, but it can
-#     also cause your Control_Panel Product list to become desynchronized
-#     with the contents of your Products directories. If the
-#     'zeo-client-name' directive is set, and this directive is unset, this
-#     directive will be implicitly turned off By default, it is on.
+#     If this directive is turned on and the 'zeo-client-name' setting
+#     is also set, Zope performs 'product installation' (the
+#     registration of Python modules in various Products directories)
+#     at startup. Turning this off can speed Zope/ZEO startup time,
+#     but it can also cause your Control_Panel Product list to become
+#     desynchronized with the contents of your Products
+#     directories. If the 'zeo-client-name' directive is set, and this
+#     directive is unset, this directive will be implicitly turned off
+#     By default, it is on.  A table explaining how the effective
+#     combinations of 'enable-product-installation' and
+#     'zeo-client-name' effect the behavior of product loading is
+#     below:
 #
-# Influences: FORCE_PRODUCT_LOAD environment variable
+#     'enable-product-installation' 'zeo-client-name'  result
+#     -------------------------------------------------------
+#      on                            unset             Products are loaded
+#      on                            set               Products are loaded
+#      off                           unset             Products are loaded
+#      off                           set               Products are not loaded
 #
 # Default: on
 #
@@ -129,22 +143,34 @@ products $INSTANCE/Products
 #     supported by your system, an error will be raised and Zope will not
 #     start.
 #
-# Influences: Zope configuration
-#
 # Default: unset
 #
 # Example:
 #
 #    locale fr_FR
 
+# Directive: datetime-format
+#
+# Description:
+#     Set this variable either to "us" or "international" to force the
+#     DateTime module to parse date strings either with
+#     month-before-days-before-year ("us") or
+#     days-before-month-before-year ("international").  The default
+#     behaviour of DateTime (when this setting is left unset) is to
+#     parse dates as US dates.
+#
+# Default: us
+#
+# Example:
+#
+#    datetime-format international
+
 
 # Directive: zserver-threads
 #
 # Description:
-#     Specify the number of threads that Zope's Zserver web server will use
+#     Specify the number of threads that Zope's ZServer web server will use
 #     to service requests. The default is 4.
-#
-# Influences: Zope configuration
 #
 # Default: 4
 #
@@ -163,8 +189,6 @@ products $INSTANCE/Products
 #     in order to attempt to increae performance in your particular
 #     environment.
 #
-# Influences: Zope configuration
-#
 # Default: 500
 #
 # Example:
@@ -180,8 +204,6 @@ products $INSTANCE/Products
 #     be presented on standard output. Setting this directive 'on' causes
 #     pcgi, fastcgi, and daemon-related directives to have no effect.
 #
-# Influences: Zope configuration
-#
 # Default: off
 #
 # Example:
@@ -194,8 +216,6 @@ products $INSTANCE/Products
 # Description:
 #     The path to the file in which the Zope process id(s) will be written.
 #     This defaults to client-home/Z2.pid.
-#
-# Influences: Zope configuration
 #
 # Default: CLIENT_HOME/Z2.pid
 #
@@ -210,8 +230,6 @@ products $INSTANCE/Products
 #     The path to a "lock file" which will be locked by Zope while it's
 #     running.  This file is used by zopectl.py to determine if Zope is
 #     currently running.  This defaults to CLIENT_HOME/Z2.lock.
-#
-# Influences: Zope configuration
 #
 # Default: CLIENT_HOME/Z2.lock
 #
@@ -228,7 +246,18 @@ products $INSTANCE/Products
 #     documents. The default is 3, which implies that top-level headers
 #     will be created with an <H3> tag.
 #
-# Influences: STX_DEFAULT_LEVEL environment variable
+# Default: 3
+#
+# Example:
+#
+#    structured-text-header-level 1
+
+# Directive: structured-text-header-level
+#
+# Description:
+#     Set the default starting HTML header level for structured text
+#     documents. The default is 3, which implies that top-level headers
+#     will be created with an <H3> tag.
 #
 # Default: 3
 #
@@ -237,33 +266,40 @@ products $INSTANCE/Products
 #    structured-text-header-level 1
 
 
-# Directive: publisher-profile-file
+# Directive: rest-input-encoding
 #
 # Description:
-#     Causing this directive to point to a file on the filesystem will
-#     cause Zope's profiling capabilities to be enabled. For more
-#     information, see the Debug -> Profiling tab of the Control_Panel.
+#    Specifies the input encoding of re-StructuredText documents
+#    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
+#    by Python).  The default is your Python's default encoding.
 #
-# Influences: PROFILE_PUBLISHER environment variable
-#
-# Default: unset
+# Default: unset (uses system default)
 #
 # Example:
 #
-#    publisher-profile-file /home/chrism/projects/sessions/var/profile.dat
+#    rest-input-encoding iso-8859
 
+# Directive: rest-output-encoding
+#
+# Description:
+#    Specifies the output encoding of re-StructuredText documents
+#    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
+#    by Python).  The default is your Python's default encoding.
+#
+# Default: unset (uses system default)
+#
+# Example:
+#
+#    rest-output-encoding iso-8859
 
 # Directive: cgi-environment
 #
 # Description:
-#     A key which allows a user to define arbitrary key-value pairs for
+#     A section which allows a user to define arbitrary key-value pairs for
 #     use as the initial CGI environment variables. This is useful
 #     when you want to proxy requests from another web server to Zserver,
 #     and would like Zserver's CGI environment to reflect the CGI
-#     environment of the other web server.  This key may be defined
-#     multiple times to indicate more than one envvar.
-#
-# Influences: Zope configuration
+#     environment of the other web server.
 #
 # Default: unset
 #
@@ -275,14 +311,13 @@ products $INSTANCE/Products
 # </cgi-environment>
 
 
+
 # Directive: dns-server
 #
 # Description:
 #     Specify the IP address of your DNS server in order to cause resolved
 #     hostnames to be written to Zope's access log. By default, Zope will
 #     not resolve hostnames unless this is set.
-#
-# Influences: Zope configuration
 #
 # Default: unset
 #
@@ -300,8 +335,6 @@ products $INSTANCE/Products
 #     directive can be overridden on a per-server basis in the servers
 #     section.
 #
-# Influences: Zope configuration
-#
 # Default: unset
 #
 # Example:
@@ -314,8 +347,6 @@ products $INSTANCE/Products
 # Description:
 #     The HTTP "Realm" header value sent by this Zope instance. This value
 #     often shows up in basic authentication dialogs.
-#
-# Influences: Z_REALM environment variable
 #
 # Default: Zope
 #
@@ -336,14 +367,29 @@ products $INSTANCE/Products
 #     mitigates the possibility that DTML programmers will leave their
 #     sites open to a "client-side trojan" attack.
 #
-# Influences: ZOPE_DTML_REQUEST_AUTOQUOTE environment variable
-#
 # Default: on
 #
 # Example:
 #
 #    automatically-quote-dtml-request-data on
 
+# Directive: trusted-proxy
+#
+# Description:
+#     Define one or more 'trusted-proxies' directives, each of which is a
+#     hostname or an IP address.  The set of definitions comprises a list
+#     of front-end proxies that are trusted to supply an accurate
+#     X-Forwarded-For header to Zope.  If a connection comes from
+#     a trusted proxy, Zope will trust any X-Forwarded header to contain
+#     the user's real IP address for the purposes of address-based
+#     authentication restriction.
+#
+# Default: unset
+#
+# Example:
+#
+#    trusted-proxy www.example.com
+#    trusted-proxy 192.168.1.1
 
 # Directive: maximum-security-manager-stack-size
 #
@@ -351,8 +397,6 @@ products $INSTANCE/Products
 #     This variable allows you to customize the size of the Zope
 #     SecurityManager stack. You shouldn't change this unless you know what
 #     it means.
-#
-# Influences: Z_MAX_STACK_SIZE environment variable
 #
 # Default: 100
 #
@@ -371,8 +415,6 @@ products $INSTANCE/Products
 #     VerboseSecurity, which need to "monkey-patch" the security
 #     machinery.
 #
-# Influences: ZOPE_SECURITY_POLICY environment variable
-#
 # Default: C
 #
 # Example:
@@ -382,11 +424,9 @@ products $INSTANCE/Products
 # Directive: skip-authentication-checking
 #
 # Description:
-#     Set this directive to 'on' to cause Zope to allow unauthenticated
-#     access to all resources. DANGEROUS. Only works if
-#     security-policy-implementation is C
-#
-# Influences: ZSP_AUTHENTICATED_SKIP environment variable
+#     Set this directive to 'on' to cause Zope to skip checks related
+#     to authentication, for servers which serve only anonymous content.
+#     Only works if security-policy-implementation is 'C'.
 #
 # Default: off
 #
@@ -404,8 +444,6 @@ products $INSTANCE/Products
 #     whereby a user with less privilege can cause a user with more
 #     privilege to execute dangerous code.
 #
-# Influences: ZSP_OWNEROUS_SKIP environment variable
-#
 # Default: off
 #
 # Example:
@@ -419,8 +457,6 @@ products $INSTANCE/Products
 #     An integer value representing the number of items to use as a
 #     "maximum number of subobjects" value of the
 #     '/temp_folder/session_data' transient object container.
-#
-# Influences: ZSESSION_OBJECT_LIMIT environment variable
 #
 # Default: 1000
 #
@@ -436,8 +472,6 @@ products $INSTANCE/Products
 #     "script to call on object addition" of the sessioN_data transient
 #     object container created in the /temp_folder folder at startup.
 #
-# Influences: ZSESSION_ADD_NOTIFY environment variable
-#
 # Default: unset
 #
 # Example:
@@ -451,8 +485,6 @@ products $INSTANCE/Products
 #     An optional fill Zope path name of a callable object to be set as the
 #     "script to call on object deletion" of the sessioN_data transient
 #     object container created in the /temp_folder folder at startup.
-#
-# Influences: ZSESSION_DEL_NOTIFY environment variable
 #
 # Default: unset
 #
@@ -468,8 +500,6 @@ products $INSTANCE/Products
 #     "data object timeout" of the '/temp_folder/session_data' transient
 #     object container.
 #
-# Influences: ZSESSION_TIMEOUT_MINS environment variable
-#
 # Default: 20
 #
 # Example:
@@ -484,8 +514,6 @@ products $INSTANCE/Products
 #     will be executed. This is useful if you "lock yourself out" of a
 #     particular part of your site by setting an improper access rule.
 #
-# Influences: SUPPRESS_ACCESRULE environment variable
-#
 # Default: off
 #
 # Example:
@@ -499,8 +527,6 @@ products $INSTANCE/Products
 #     If this directive is set to on, no site roots in your Zope site will
 #     be effective. This is useful if you "lock yourself out" of a
 #     particular part of your site by setting an improper site root.
-#
-# Influences: SUPPRESS_SITEROOT environment variable
 #
 # Default: off
 #
@@ -517,8 +543,6 @@ products $INSTANCE/Products
 #     can grow. Additions to the database will not be permitted once this
 #     filesize is exceeded.
 #
-# Influences: ZOPE_DATABASE_QUOTA environment variable
-#
 # Default: unset
 #
 # Example:
@@ -532,8 +556,6 @@ products $INSTANCE/Products
 #     This causes the main Zope FileStorage-backed ZODB to be opened in
 #     read-only mode.
 #
-# Influences: ZOPE_READ_ONLY environment variable
-#
 # Default: off
 #
 # Example:
@@ -544,12 +566,14 @@ products $INSTANCE/Products
 # Directive: zeo-client-name
 #
 # Description:
-#     Provide a string value to uniquely identify the local cache files
-#     created if this Zope is a ZEO client. Setting this directive implies
-#     setting 'inhibit-product-installation' to 'on' if
-#     'inhibit-product-installation' is left unset.
-#
-# Influences: ZEO_CLIENT environment variable
+#     If you want a persistent ZEO client cache which retains cache
+#     contents across ClientStorage restarts, you need to define a
+#     zeo-client-name.  If you use ZEO and you don't set a
+#     zeo-client-name, the client cache is stored in temporary files
+#     which are removed when the ClientStorage shuts down.  The value
+#     of zeo-client-name is used to uniquely identify the local cache
+#     files created if this Zope is a ZEO client.  See also
+#     'enable-product-installation'.
 #
 # Default: unset
 #
@@ -582,11 +606,9 @@ products $INSTANCE/Products
 #     level but overrides the logger's level for the handler it's
 #     defined upon.  XXXX much more detail necessary here
 #
-# Influences: Zope configuration
-#
 # Default:
 #
-#     The access log will log to the file <isntancehome>/log/Z2.log at
+#     The access log will log to the file <instancehome>/log/Z2.log at
 #     level INFO, the event log will log to the file
 #     <instancehome>/log/event.log at level INFO, and the trace log
 #     will not be written anywhere.
@@ -636,8 +658,6 @@ products $INSTANCE/Products
 #
 #     Port numbers are offset by the setting of port-base, which
 #     defaults to 8000.
-#
-# Influences: Zope configuration
 #
 # Default:
 #
@@ -694,8 +714,6 @@ products $INSTANCE/Products
 #     This makes it easy to change the complete set of ports used by a
 #     Zope server process
 #
-# Influences: Zope configuration
-#
 # Default:
 #
 #     0
@@ -711,11 +729,10 @@ products $INSTANCE/Products
 #     A database section allows the definition of custom database and
 #     storage types.
 #
-# Influences: Zope configuration
-#
 # Default:
 #   If a database is not specified, a FileStorage in client-home is
-#   used.
+#   used for the main storage, and a TemporaryStorage is used for
+#   the mounted storage which backs the '/temp_folder'.
 #
 # Example:
 #

@@ -237,7 +237,7 @@
      If you intend to run Zope as the "root" user, you must supply this
      directive with an effective username or userid number to which Zope
      will 'suid' after the server ports are bound. This directive only
-     works under UNIX and if Zope is started as the root user.
+     has effect under UNIX and if Zope is started as the root user.
     </description>
     <metadefault>unset</metadefault>
   </key>
@@ -266,6 +266,19 @@
      start.
     </description>
     <metadefault>unset</metadefault>
+  </key>
+
+  <key name="datetime-format" datatype=".datetime_format"
+       handler="datetime_format" default="us">
+    <description>
+     Set this variable either to "us" or "international" to force the
+     DateTime module to parse date strings either with
+     month-before-days-before-year ("us") or
+     days-before-month-before-year ("international").  The default
+     behaviour of DateTime (when this setting is left unset) is to
+     parse dates as US dates.
+    </description>
+    <metadefault>us</metadefault>
   </key>
 
   <key name="zserver-threads" datatype="integer" default="4">
@@ -314,6 +327,24 @@
      will be created with an H3 HTML tag.
     </description>
     <metadefault>3</metadefault>
+  </key>
+
+  <key name="rest-input-encoding" handler="rest_input_encoding">
+    <description>
+    Specifies the input encoding of re-StructuredText documents
+    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
+    by Python).  The default is your Python's default encoding.
+    </description>
+    <metadefault>unset</metadefault>
+  </key>
+
+  <key name="rest-output-encoding" handler="rest_output_encoding">
+    <description>
+    Specifies the output encoding of re-StructuredText documents
+    (e.g. 'utf-8', 'iso-8859' or any other valid encoding recognized
+    by Python).  The default is your Python's default encoding.
+    </description>
+    <metadefault>unset</metadefault>
   </key>
 
   <key name="maximum-security-manager-stack-size" datatype="integer"
@@ -383,6 +414,17 @@
      </description>
      <metadefault>on</metadefault>
   </key>
+
+  <multikey name="trusted-proxy" datatype="ipaddr-or-hostname"
+       attribute="trusted_proxies">
+     <description>
+     Define one or more 'trusted-proxies' keys, each of which is a
+     hostname or an IP address.  The set of definitions comprises a list
+     of front-end proxies that are trusted to supply an accurate
+     X_FORWARDED_FOR header to Zope (security-related).
+     </description>
+     <metadefault>unset</metadefault>
+  </multikey>
 
   <key name="security-policy-implementation"
        datatype=".security_policy_implementation"
@@ -527,7 +569,6 @@
     </description>
   </section>
 
-
   <section type="logger" name="trace">
      <description>
       Describes the logging performed to capture the 'trace log,
@@ -535,6 +576,17 @@
       Zope debugging.
     </description>
   </section>
+
+  <!-- max-listen-sockets should really go into the ZServer package, but
+       I can't quite figure out how to put it there -->
+
+  <key name="max-listen-sockets" datatype="integer"
+       handler="max_listen_sockets" default="1000">
+     <description>
+       The maximum number of sockets that ZServer will attempt to open
+       in order to service incoming connections.
+     </description>
+  </key>
 
   <multisection type="ZServer.server" name="*" attribute="servers"/>
   <key name="port-base" datatype="integer" default="0">
@@ -558,15 +610,5 @@
 
   <section type="zoperunner" name="*" attribute="runner"/>
 
-  <!-- the below should go into the ZServer package, but I can't quite
-   figure out how to put it there -->
-
-  <key name="max-listen-sockets" datatype="integer"
-       handler="max_listen_sockets" default="1000">
-     <description>
-       The maximum number of sockets that ZServer will attempt to open
-       in order to service incoming connections.
-     </description>
-  </key>
 
 </schema>

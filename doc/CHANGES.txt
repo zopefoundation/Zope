@@ -8,6 +8,19 @@ Zope Changes
 
     Features added
 
+     - The ReST input and output encodings are now configured via the
+       'rest-input-encoding' and 'rest-output-encoding' config file
+       directives rather than the REST_INPUT_ENCODING and
+       REST_OUTPUT_ENCODING environment variables.
+
+     - Datetime-format settings are now configured via the
+       'datetime-format' configuration file directive rather than the
+       DATETIME_FORMAT environment variable.
+
+     - Trusted proxies are now configured via the 'trusted-proxy'
+       configuration file directive rather than the
+       ZOPE_TRUSTED_PROXIES environment variable.
+
      - The maximum number of sockets that ZServer will open in order to
        service incoming connections can now be specified via the
        max-listen-sockets conf file parameter.
