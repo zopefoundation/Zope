@@ -81,5 +81,13 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 </TR>
 </TABLE>
 
+<!--#if update_menu-->
+<SCRIPT LANGUAGE="javascript">
+<!--
+window.parent.update_menu();
+//-->
+</SCRIPT>
+<!--#/if-->
+
 </BODY>
 </HTML>

@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -289,7 +289,7 @@ class UserFolderHandler:
                        message='This object already contains a User Folder',
                        action ='%s/manage_main' % REQUEST['PARENT_URL'])
         self.__allow_groups__=self.acl_users
-	if REQUEST: return self.manage_main(self,REQUEST)
+	if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
     def UserFolderIds(self):
 	t=[]

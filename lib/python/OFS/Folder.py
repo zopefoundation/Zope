@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.35 1998/01/13 23:04:55 brian Exp $"""
+$Id: Folder.py,v 1.36 1998/01/26 21:01:33 brian Exp $"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -35,7 +35,7 @@ class FolderHandler:
 	self._setObject(id,i)
 	if createUserF:  i.manage_addUserFolder()
 	if createPublic: i.manage_addDocument(id='index_html',title='')
-	if REQUEST: return self.manage_main(self,REQUEST)
+	if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
     def folderIds(self):
 	t=[]

@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.33 1998/01/26 16:33:13 brian Exp $"""
+$Id: ObjectManager.py,v 1.34 1998/01/26 21:01:31 brian Exp $"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
@@ -303,7 +303,7 @@ class ObjectManager(
 		except: raise 'BadRequest', ('%s does not exist' % ids[-1])
 	        del ids[-1]
 	    if REQUEST is not None:
-		return self.manage_main(self, REQUEST)
+		return self.manage_main(self, REQUEST, update_menu=1)
 
     def _setProperty(self,id,value,type='string'):
         self._checkId(id)
@@ -472,6 +472,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.34  1998/01/26 21:01:31  brian
+# Added menu update support
+#
 # Revision 1.33  1998/01/26 16:33:13  brian
 # Added confirmation to property editing
 #

@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -52,7 +52,7 @@ class CopyContainer:
         obj._setId(clip_id)
 	self._setObject(clip_id, obj)
 	obj._postCopy(self)
-	return self.manage_main(self, REQUEST)
+	return self.manage_main(self, REQUEST, update_menu=1)
 
 
 
