@@ -6,11 +6,10 @@ import unittest
 
 
 
-class DBHomeTest(unittest.TestCase):
+class BaseFramework(unittest.TestCase):
     def setUp(self):
         import Minimal
         from ZODB import DB
-        from BTree import BTree
 
         self._dbhome = 'test-db'
         os.mkdir(self._dbhome)
@@ -25,6 +24,9 @@ class DBHomeTest(unittest.TestCase):
             os.unlink(os.path.join(self._dbhome, file))
         os.removedirs(self._dbhome)
 
+
+
+class DBHomeTest(BaseFramework):
     def checkDBHomeExists(self):
         """Database creation with an explicit db_home create the directory"""
         assert os.path.isdir(self._dbhome)
