@@ -395,14 +395,15 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.5 1997/12/10 20:51:51 jim Exp $\n"
+"$Id: Splitter.c,v 1.6 1997/12/10 20:55:11 jim Exp $\n"
 ;
+
 
 void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
