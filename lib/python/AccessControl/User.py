@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -250,7 +250,7 @@ class BasicUser(Implicit):
 
 
 class User(BasicUser, Persistent):
-    """Standard Principia User object"""
+    """Standard User object"""
 
     def __init__(self,name,password,roles,domains):
         self.name   =name
@@ -629,7 +629,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
 class UserFolder(BasicUserFolder):
-    """Standard Principia UserFolder object
+    """Standard UserFolder object
 
     A UserFolder holds User objects which contain information
     about users including name, password domain, and roles.
