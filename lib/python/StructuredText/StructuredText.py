@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.25 2000/02/17 00:53:24 klm Exp $'''
+$Id: StructuredText.py,v 1.26 2000/03/14 17:22:04 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,9 @@ $Id: StructuredText.py,v 1.25 2000/02/17 00:53:24 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.26  2000/03/14 17:22:04  brian
+# Allow ~ in hrefs.
+#
 # Revision 1.25  2000/02/17 00:53:24  klm
 # HTML._str(): We were getting preformatted examples rendered twice,
 # second time without preformatting.  Problem was a missing 'continue'
@@ -571,7 +574,7 @@ class StructuredText:
 
         aStructuredString = gsub(
             '\"\([^\"\0]+\)\":'         # title: <"text":>
-            + ('\([-:a-zA-Z0-9_,./?=@#]+%s\)'
+            + ('\([-:a-zA-Z0-9_,./?=@#~]+%s\)'
                % not_punctuation_or_whitespace)
             + optional_trailing_punctuation
             + trailing_space,
@@ -580,7 +583,7 @@ class StructuredText:
 
         aStructuredString = gsub(
             '\"\([^\"\0]+\)\",[\0- ]+'            # title: <"text", >
-            + ('\([a-zA-Z]*:[-:a-zA-Z0-9_,./?=@#]*%s\)'
+            + ('\([a-zA-Z]*:[-:a-zA-Z0-9_,./?=@#~]*%s\)'
                % not_punctuation_or_whitespace)
             + optional_trailing_punctuation
             + trailing_space,
