@@ -1,241 +1,170 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2003 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""
-ZServer as a NT service.
 
-The serice starts up and monitors a ZServer process.
+""" Zope Windows NT/2K service installer/controller for 2.7+ instance homes """
 
-Features:
+import win32serviceutil
+import win32service
+import win32event
+import win32process
+import pywintypes
+import time
 
-  * When you start the service it starts ZServer
-  * When you stop the serivice it stops ZServer
-  * It monitors ZServer and restarts it if it exits abnormally
-  * If ZServer is shutdown from the web, the service stops.
-  * If ZServer cannot be restarted, the service stops.
+# the max seconds we're allowed to spend backing off
+BACKOFF_MAX = 300
+# if the process runs successfully for more than BACKOFF_CLEAR_TIME
+# seconds, we reset the backoff stats to their initial values
+BACKOFF_CLEAR_TIME = 30
+# the initial backoff interval (the amount of time we wait to restart
+# a dead process)
+BACKOFF_INITIAL_INTERVAL = 5
 
-Usage:
+class ZopeService(win32serviceutil.ServiceFramework):
+    """ A class representing a Windows NT service that can manage an
+    Zope 2.7+ instance-home-based Zope process """
 
-  Installation
+    # The PythonService model requires that an actual on-disk class declaration
+    # represent a single service.  Thus, the below definition of start_cmd,
+    # must be overridden in a subclass in a file within the instance home for
+    # each Zope instance.  The below-defined start_cmd is just an example.
 
-    The ZServer service should be installed by the Zope Windows
-    installer. You can manually install, uninstall the service from
-    the commandline.
+    _svc_name_ = r'Zope-Instance'
+    _svc_display_name_ = r'Zope instance at C:\Zope-Instance'
 
-      ZService.py [options] install|update|remove|start [...]
-          |stop|restart [...]|debug [...]
-
-    Options for 'install' and 'update' commands only:
-
-     --username domain\username : The Username the service is to run
-                                  under
-
-     --password password : The password for the username
-
-     --startup [manual|auto|disabled] : How the service starts,
-                                        default = manual
-
-    Commands
-
-      install : Installs the service
-
-      update : Updates the service, use this when you change
-               ZServer.py
-
-      remove : Removes the service
-
-      start : Starts the service, this can also be done from the
-              services control panel
-
-      stop : Stops the service, this can also be done from the
-             services control panel
-
-      restart : Restarts the service
-
-      debug : Runs the service in debug mode
-
-    You can view the usage options by running ZServer.py without any
-    arguments.
-
-    Note: you may have to register the Python service program first,
-
-      win32\pythonservice.exe /register
-
-  Starting Zope
-
-    Start Zope by clicking the 'start' button in the services control
-    panel. You can set Zope to automatically start at boot time by
-    choosing 'Auto' startup by clicking the 'statup' button.
-
-  Stopping Zope
-
-    Stop Zope by clicking the 'stop' button in the services control
-    panel. You can also stop Zope through the web by going to the
-    Zope control panel and by clicking 'Shutdown'.
-
-  Event logging
-
-    Zope events are logged to the NT application event log. Use the
-    event viewer to keep track of Zope events.
-
-  Registry Settings
-
-    You can change how the service starts ZServer by editing a registry
-    key.
-
-      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\
-        <Service Name>\Parameters\start
-
-    The value of this key is the command which the service uses to
-    start ZServer. For example:
-
-      "C:\Program Files\Zope\bin\python.exe"
-        "C:\Program Files\Zope\z2.py" -w 8888
-
-
-TODO:
-
-  * Integrate it into the Windows installer.
-  * Add ZLOG logging in addition to event log logging.
-  * Make it easier to run multiple Zope services with one Zope install
-
-This script does for NT the same sort of thing zdaemon.py does for UNIX.
-Requires Python win32api extensions.
-"""
-__version__ = '$Revision: 1.4 $'[11:-2]
-import sys, os,  time, imp, getopt
-import win32api
-def magic_import(modulename, filename):
-    # by Mark Hammond
-    try:
-        # See if it does import first!
-        return __import__(modulename)
-    except ImportError:
-        pass
-    # win32 can find the DLL name.
-    h = win32api.LoadLibrary(filename)
-    found = win32api.GetModuleFileName(h)
-    # Python can load the module
-    mod = imp.load_module(modulename, None, found, ('.dll', 'rb',
-                                                    imp.C_EXTENSION))
-    # inject it into the global module list.
-    sys.modules[modulename] = mod
-    # And finally inject it into the namespace.
-    globals()[modulename] = mod
-    win32api.FreeLibrary(h)
-
-magic_import('pywintypes','pywintypes21.dll')
-
-import win32serviceutil, win32service, win32event, win32process
-# servicemanager comes as a builtin if we're running via PythonService.exe,
-# but it's not available outside
-try:
-    import servicemanager
-except:
-    pass
-
-class NTService(win32serviceutil.ServiceFramework):
-
-    # Some trickery to determine the service name. The WISE
-    # installer will write an svcname.txt to the ZServer dir
-    # that we can use to figure out our service name.
-
-    restart_min_time=5 # if ZServer restarts before this many
-                       # seconds then we have a problem, and
-                       # need to stop the service.
-
-    _svc_name_= 'Zope'
-    _svc_display_name_ = _svc_name_
+    start_cmd = (
+        r'"C:\Program Files\Zope-2.7.0-a1\bin\pythonw.exe" '
+        '"C:\Program Files\Zope-2.7.0-a1\lib\python\Zope\Startup\run.py" '
+        '-C "C:\Zope-Instance\etc\zope.conf"'
+        )
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
+        # Create an event which we will use to wait on.
+        # The "service stop" request will set this event.
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
 
-    def SvcDoRun(self):
-        self.start_zserver()
-        while 1:
-            rc=win32event.WaitForMultipleObjects(
-                    (self.hWaitStop, self.hZServer), 0, win32event.INFINITE)
-            if rc - win32event.WAIT_OBJECT_0 == 0:
-                break
-            else:
-                self.restart_zserver()
-        self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING, 5000)
-
     def SvcStop(self):
-        servicemanager.LogInfoMsg('Stopping Zope.')
-        try:
-            self.stop_zserver()
-        except:
-            pass
+        # Before we do anything, tell the SCM we are starting the stop process.
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+        # stop the process if necessary
+        try:
+            win32process.TerminateProcess(self.hZope, 0)
+        except pywintypes.error:
+            # the process may already have been terminated
+            pass
+        # And set my event.
         win32event.SetEvent(self.hWaitStop)
 
-    def restart_zserver(self):
-        if time.time() - self.last_start_time < self.restart_min_time:
-            servicemanager.LogErrorMsg('Zope died and could not be restarted.')
-            self.SvcStop()
-        code=win32process.GetExitCodeProcess(self.hZServer)
-        if code == 0:
-            # Exited with a normal status code,
-            # assume that shutdown is intentional.
-            self.SvcStop()
-        else:
-            servicemanager.LogWarningMsg('Restarting Zope.')
-            self.start_zserver()
+    def createProcess(self, cmd):
+        return win32process.CreateProcess(
+            None, cmd, None, None, 0, 0, None, None,
+            win32process.STARTUPINFO())
 
-    def start_zserver(self):
-        sc=self.get_start_command()
-        result=win32process.CreateProcess(None, sc,
-                None, None, 0, 0, None, None, win32process.STARTUPINFO())
-        self.hZServer=result[0]
-        self.last_start_time=time.time()
-        servicemanager.LogInfoMsg('Starting Zope.')
+    def SvcDoRun(self):
+        # daemon behavior:  we want to to restart the process if it
+        # dies, but if it dies too many times, we need to give up.
 
-    def stop_zserver(self):
-        try:
-            win32process.TerminateProcess(self.hZServer,0)
-        except:
-            pass
-        result=win32process.CreateProcess(None, self.get_stop_command(),
-                None, None, 0, 0, None, None, win32process.STARTUPINFO())
-        return result
+        # we use a simple backoff algorithm to determine whether
+        # we should try to restart a dead process:  for each
+        # time the process dies unexpectedly, we wait some number of
+        # seconds to restart it, as determined by the backoff interval,
+        # which doubles each time the process dies.  if we exceed
+        # BACKOFF_MAX seconds in cumulative backoff time, we give up.
+        # at any time if we successfully run the process for more thab
+        # BACKOFF_CLEAR_TIME seconds, the backoff stats are reset.
 
-    def get_start_command(self):
-        return win32serviceutil.GetServiceCustomOption(self,'start', None)
+        # the initial number of seconds between process start attempts
+        backoff_interval = BACKOFF_INITIAL_INTERVAL
+        # the cumulative backoff seconds counter
+        backoff_cumulative = 0
 
-    def get_stop_command(self):
-        cmd =  win32serviceutil.GetServiceCustomOption(self,'stop', None)
+        import servicemanager
+        
+        # log a service started message
+        servicemanager.LogMsg(
+            servicemanager.EVENTLOG_INFORMATION_TYPE,
+            servicemanager.PYS_SERVICE_STARTED,
+            (self._svc_name_, ' (%s)' % self._svc_display_name_))
+            
 
-def set_start_command(value):
-    "sets the ZServer start command if the start command is not already set"
-    current=win32serviceutil.GetServiceCustomOption(NTService,
-                                                    'start', None)
-    if current is None:
-        win32serviceutil.SetServiceCustomOption(NTService,'start',value)
+        while 1:
+            start_time = time.time()
+            info = self.createProcess(self.start_cmd)
+            self.hZope = info[0] # the pid
+            if backoff_interval > BACKOFF_INITIAL_INTERVAL:
+                # if we're in a backoff state, log a message about
+                # starting a new process
+                servicemanager.LogInfoMsg(
+                    '%s (%s): recovering from died process, new process '
+                    'started' % (self._svc_name_, self._svc_display_name_)
+                    )
+            rc = win32event.WaitForMultipleObjects(
+                (self.hWaitStop, self.hZope), 0, win32event.INFINITE)
+            if rc == win32event.WAIT_OBJECT_0:
+                # user sent a stop service request
+                self.SvcStop()
+                break
+            else:
+                # user did not send a service stop request, but
+                # the process died; this may be an error condition
+                status = win32process.GetExitCodeProcess(self.hZope)
+                if status != 0:
+                    # this was an abormal shutdown.  if we can, we want to
+                    # restart the process but if it seems hopeless,
+                    # don't restart an infinite number of times.
+                    if backoff_cumulative > BACKOFF_MAX:
+                        # it's hopeless
+                        servicemanager.LogErrorMsg(
+                          '%s (%s): process could not be restarted due to max '
+                          'restart attempts exceeded' % (
+                            self._svc_display_name_, self._svc_name_
+                          ))
+                        self.SvcStop()
+                        break
+                    servicemanager.LogWarningMsg(
+                       '%s (%s): process died unexpectedly.  Will attempt '
+                       'restart after %s seconds.' % (
+                            self._svc_name_, self._svc_display_name_,
+                            backoff_interval
+                            )
+                       )
+                    # if BACKOFF_CLEAR_TIME seconds have elapsed since we last
+                    # started the process, reset the backoff interval
+                    # and the cumulative backoff time to their original
+                    # states
+                    if time.time() - start_time > BACKOFF_CLEAR_TIME:
+                        backoff_interval = BACKOFF_INITIAL_INTERVAL
+                        backoff_cumulative = 0
+                    # we sleep for the backoff interval.  since this is async
+                    # code, it would be better done by sending and
+                    # catching a timed event (a service
+                    # stop request will need to wait for us to stop sleeping),
+                    # but this works well enough for me.
+                    time.sleep(backoff_interval)
+                    # update backoff_cumulative with the time we spent
+                    # backing off.
+                    backoff_cumulative = backoff_cumulative + backoff_interval
+                    # bump the backoff interval up by 2* the last interval
+                    backoff_interval = backoff_interval * 2
 
-def set_stop_command(value):
-    "sets the ZServer start command if the start command is not already set"
-    current=win32serviceutil.GetServiceCustomOption(NTService,
-                                                    'stop', None)
-    if current is None:
-        win32serviceutil.SetServiceCustomOption(NTService,'stop',value)
+                    # loop and try to restart the process
+
+        # log a service stopped message
+        servicemanager.LogMsg(
+            servicemanager.EVENTLOG_INFORMATION_TYPE, 
+            servicemanager.PYS_SERVICE_STOPPED,
+            (self._svc_name_, ' (%s) ' % self._svc_display_name_))
 
 if __name__=='__main__':
-    dn = os.path.dirname
-    zope_home = dn(dn(dn(dn(sys.argv[0]))))
-    win32serviceutil.HandleCommandLine(ZServerService)
-    if 'install' in args:
-        command='"%s" "%s"' % (sys.executable,
-                               os.path.join(zope_home, 'bin', 'zope.py'))
-        set_start_command(command)
-        print "Setting Zope start command to:", command
+    win32serviceutil.HandleCommandLine(ZopeInstanceService)
