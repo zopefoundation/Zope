@@ -112,22 +112,20 @@ Zope Changes
 
            utilities/bbb.py -x -f output.zexp input.bbe
 
-      ZODB 3 and 
+      ZODB 3 and Zope Database Adapters
 
-        There are still a number of things to get working:
-
-        - Most database adapters are likely to be problematic unless
-          the underlying extensions and libraries:
-
-            - allow multiple simultaneous database connections,
-
-            - are thread safe,
-
-            - give up the Python global interpreter lock when
-              making database calls.
-
-          This is only a problem when running Zope 2 with multiple
-          threads.
+        Most database adapters are *currently* likely to be problematic unless
+        the underlying extensions and libraries:
+	
+          - allow multiple simultaneous database connections,
+	
+          - are thread safe,
+	
+          - give up the Python global interpreter lock when
+            making database calls.
+	
+        This is only a problem when running Zope 2 with multiple
+        threads.
 
       ZODB 3 Futures
 
@@ -170,8 +168,20 @@ Zope Changes
 
       Backward incompatibility
 
-        ZODB 2 is no longer supported or included!
+        - ZODB 2 is no longer supported or included!
+
+        - The utility script bbb.py, no longer supports
+          xml output.
     
+      Known problems
+
+        - Handling of conflict errors hasn't been implemented.  When
+          two threads try to update the same object, one will get a
+          conflict error. By beta release 2, requests that get conflct
+          errors will be retried until they succeed (or fail without a
+          conflict error) or until a maximum number of retries is
+          exceeded.
+
       Features added
       
         - The default ports used by ZServer have been changed. The
@@ -228,6 +238,45 @@ Zope Changes
 
           In this scenario, we created a ZClass and made it addable
           only by users (roles) that have the "Manage Containers" permission.
+
+        - There is a new module, Shared.DC.THUNK
+          (lib/python/Shared/DC/THUNK.py) that provides a mix-in class
+          that implements ZODB 3 transaction protocols and that
+          provides course-grained locking logic that should allow many
+          non-thread-safe database adapters to be usable in
+          multi-threaded Zope applications.  The Gadfly database
+          adapter has been updated to use this mix-in class.
+
+        - The transaction management mix-in classes (Shared.DC.TM.TM
+          and Shared.DC.THUNK.THUNKED_TM) now provide a lower-level
+          transaction management protocol.  Database adapters that mix
+          these in should:
+
+            - Call 'self._register()' when performing database
+              queries, and
+
+            - If necessary, override methods:
+
+                _begin() -- Which is called to begin a transaction,
+
+                _finish() -- Which is called to finish a transaction,
+                             and save changes, or
+
+                _abort() -- Which is called to abort (rollback) a transaction,
+                            and discard changes, or
+
+        - Object export now provides an XML export option and import
+          files may be in Zope export format or XML format.
+
+        - Zope objects that suport the Zope management framework now
+          support the DOM 1.0 read interfaces.  This allows DOM read
+          methods and attributes to be usable with Zope objects and
+          Python DOM tools, like FourThought's 4XSL to work with Zope
+          objects.  
+
+          Note that DOM-defined attributes are defined with "get"
+          methods. For example, to get the DOM-defined "parentNode"
+          attribute, use: 'object.getParentNode()'.
 
         - The pyexpat extension module for using James Clark's 
           expat library for parsing XML is included in the
