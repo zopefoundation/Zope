@@ -19,9 +19,9 @@ import os
 # This should point to your Zope directory
 SOFTWARE_HOME = '/projects/users/zs_zope'
 
-# This should point at the directory where your var directory is located
-# Most of the time this is the same as SOFTWARE_HOME/var
-INSTANCE_HOME = SOFTWARE_HOME + '/var'
+# This should point at the directory that contains your var directory.
+# Most of the time this is the same as SOFTWARE_HOME
+# INSTANCE_HOME = SOFTWARE_HOME
 
 ### ZServer configuration 
 ###
@@ -35,14 +35,14 @@ IP_ADDRESS=''
 
 # Host name of the server machine. You may use 'localhost' if your server 
 # doesn't have a host name.
-HOSTNAME='tarzan.digicool.com'
+HOSTNAME='localhost'
 
 # IP address of your DNS server. If you have DNS service on your local machine
 # then you can set this to '127.0.0.1'
-DNS_IP='216.164.72.2'
+DNS_IP='127.0.0.1'
 
 # Port for HTTP Server. The standard port for HTTP services is 80.
-HTTP_PORT=9222
+HTTP_PORT=9673
 
 # Module to publish. If you are not using the Zope management framework,
 # this should be the name of your published module. Note that this module
@@ -140,7 +140,6 @@ pf.close()
 # Start Medusa
 
 asyncore.loop()
-
 
 
 
