@@ -22,6 +22,8 @@ Zope Changes
 
    - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
+   - Fix the FTP server: Collector #1628
+
   after Zope 2.8a1
 
     Features added
