@@ -117,17 +117,22 @@ from urllib import quote
 
 def do(db, f, args, returnf=None):
     """Do something and measure it's impact"""
-    size=db.getSize()
-    mem=VmSize()
-    t=time.time()
-    c=time.clock()
-    r=apply(f, args)
-    t=time.time() - t
-    c=time.clock() - c
-    size=db.getSize()-size
-    mem=VmSize()-mem
-    if returnf is not None: returnf(t, c, size, mem, r)
-    else: return t, c, size, mem, r
+    t = c = size = mem = r = None
+    try:
+        size=db.getSize()
+        mem=VmSize()
+        t=time.time()
+        c=time.clock()
+        r=apply(f, args)
+        t=time.time() - t
+        c=time.clock() - c
+        size=db.getSize()-size
+        mem=VmSize()-mem
+    finally:
+        if returnf is not None:
+            returnf(t, c, size, mem, r)
+        else:
+            return t, c, size, mem, r
 
 def loadmessage(dest, message, i, body=None, headers=None):
     if body is None: body=message.fp.read()
@@ -189,7 +194,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
     print
     get_transaction().commit()
 
-def loadinc(name, mb, printstat=0, max=99999999, wait=1):
+def loadinc(name, mb, f, printstat=0, max=99999999, wait=1):
     from ZODB.POSException import ConflictError
     from time import sleep
     from whrandom import uniform
@@ -351,7 +356,8 @@ def inc():
         amin=min+i*count
         dest='maili%s' % amin
         initmaili(dest)
-        mb=mailbox.UnixMailbox(open(mbox))
+        f = open(mbox)
+        mb=mailbox.UnixMailbox(f)
         j=0
         while j < amin:
             mb.next()
@@ -361,7 +367,7 @@ def inc():
         def returnf(t, c, size, mem, r, lock=lock):
             print c, r
             lock.release()
-        argss.append((lock, (dest, mb, 0, count, wait), returnf))
+        argss.append((lock, (dest, mb, f, 1, count, wait), returnf))
 
     for lock, args, returnf in argss:
         thread.start_new_thread(do, (Zope.DB, loadinc, args, returnf))
