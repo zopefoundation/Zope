@@ -457,7 +457,14 @@ class ZCatalog(Folder, Persistent, Implicit):
                          search_sub=0,
                          REQUEST=None, result=None, pre='',
                          apply_func=None, apply_path=''):
-        """Zope Find interface and apply"""
+        """Zope Find interface and apply
+
+        This is a *great* hack.  Zope find just doesn't do what we
+        need here; the ability to apply a method to all the objects
+        *as they're found* and the need to pass the object's path into 
+        that method.
+
+        """
 
         if result is None:
             result=[]
