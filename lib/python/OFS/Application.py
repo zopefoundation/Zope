@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.118 1999/12/14 19:49:58 jim Exp $'''
-__version__='$Revision: 1.118 $'[11:-2]
+$Id: Application.py,v 1.119 2000/03/14 19:54:09 brian Exp $'''
+__version__='$Revision: 1.119 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -255,7 +255,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     def ZopeAttributionButton(self):
         """Returns an HTML fragment that displays the 'powered by zope'
         button along with a link to the Zope site."""
-        return '<a href="http://www.zope.org/Credits"><img ' \
+        return '<a href="http://www.zope.org/Credits" target="_top"><img ' \
                'src="%s/p_/ZopeButton" width="115" height="50" ' \
                'border="0" alt="Powered by Zope"></a>' % self.REQUEST.BASE1
 
