@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -278,7 +278,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if roles is None: roles=self._proxy_roles
         if not roles: return
         user=u=getSecurityManager().getUser()
-        user=user.hasRole
+        user=user.allowed
         for r in roles:
             if r and not user(self, (r,)):
                 user=None

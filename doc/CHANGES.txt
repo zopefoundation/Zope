@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Setting proxy roles on DTMLMethods and Documents has been broken
+
       - Collector #99: items(), keys() and values() methods
         of IIBucket objects has been broken when called with
         min/max parameters.
