@@ -2,7 +2,7 @@
 #----------------------------------------------------------------------
 # Unit tests for SQLAlias objects
 #----------------------------------------------------------------------
-# __version__ = "$Revision: 1.1 $"[11:-2]
+# __version__ = "$Revision: 1.2 $"[11:-2]
 
 from unittest import TestSuite, TestCase
 from Shared.DC.ZRDB.RDB import SQLAlias, NoBrains
@@ -87,33 +87,11 @@ class RecordMemLeakTest(TestCase):
         'SQLAlias leaked after access through a Record instance!'
 
 
-class RecordMemLeakTest2(TestCase):
-    """Test for memory leak of SQLAliases accessed through a
-       Record instance."""
-    
-    def runTest(self):
-        # get starting refcount
-        start_refs=refcount()
-        
-        # set up the instance with an alias, access through the
-        # alias, then delete the instance; refcount should be
-        # back to start_refs after the delete.
-        object=make_record()
-        value=object.realname
-        object.__dict__.clear()
-        del object
-
-        # check the refcount
-        assert start_refs == refcount(), \
-        'SQLAlias leaked after access through a Record instance!'
-
-
 
 def test_suite():
     suite=TestSuite()
     suite.addTest(ClassMemLeakTest())
     suite.addTest(RecordMemLeakTest())
-    suite.addTest(RecordMemLeakTest2())
     return suite
 
 
