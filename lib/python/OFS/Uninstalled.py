@@ -127,8 +127,8 @@ def Broken(self, oid, klass):
         if len(module) > 2 and module[0]=='Products':
             klass.product_name= module[1]
         klass.title=(
-            'This object from the <strong>%s</strong> product '
-            'is <strong><font color=red>broken</font></strong>!' %
+            'This object from the %s product '
+            'is broken!' %
             klass.product_name)
         klass.info=(
             'This object\'s class was %s in module %s.' %
