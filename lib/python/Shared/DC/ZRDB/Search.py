@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.11 1999/05/26 15:35:48 brian Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Search.py,v 1.12 1999/08/11 19:21:11 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -124,7 +124,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
                 it\'s output schema is unknown, and a report
                 cannot be generated.  Before creating a report
                 from this query, you must try out the query.  To
-                try out the query, <a href="%s">click hear</a>.
+                try out the query, <a href="%s">click here</a>.
                 """ % (q.title_and_id(), id))
 
     if input_id:
