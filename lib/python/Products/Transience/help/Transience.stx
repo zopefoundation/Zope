@@ -1,243 +1,63 @@
-Transient Object Documentation
-
-  This is the documentation to the Transience product.
+Transient Object Containers
 
   Transient Object Overview
 
     A transient object persists, but for a limited period of time.
     To facilitate persistence of items for a limited duration, the
     TransientObjectContainer provides a container which stores
-    TransientObjects.  A TransientObject is dictionary-like; it 
-    accepts string keys only.  The TransientObjectContainer 
+    TransientObjects.  A TransientObject is dictionary like; it 
+    will respond to dictionary semantics.  The TransientObjectContainer 
     maintains a time-out mechanism to flush out expired entries.
     The container also has a notification mechanism whereby it can
     notify a script or method that an object has been added or removed
     from the container.
 
-  Adding a TransientObjectContainer
+  Using Transient Objects
 
-    id
+    One uses the 'new_or_existing' or 'new' methods of a
+    TransientObjectContainer to obtain a TransientObject.  The
+    TransientObjectContainer only accepts string keys to name objects;
+    you may not use objects as keys.
 
-      The ID of the TransientObjectContainer is the container's name.
+    When a new item is created, the add notification target on the
+    container is notified about the object via a callback.  Similarly,
+    when the item is deleted, either explicitly or by timeout, the
+    delete notification target is called back.
 
-    title (optional)
+    TransientObjects, since they behave as a dictionary, may contain
+    any arbitrarily keyed data.  However, the TransientObject cannot inspect
+    the contents of what it stores to determine if it has been changed,
+    thus, it is important to explicitly set data on the TransientObject
+    itself in the event some nested data has changed and requires saving.
 
-      The title of the object.
+    For example, consider the following python script::
 
-    timeout_minutes
+       # Create a transientObject
+       t = container.transient_container.new_or_existing('Foobar')
 
-      The minimum number of minutes that objects in the container will
-      persist for.  Objects in the container are passively deleted, so
-      they may not be deleted exactly after timeout_minutes elapses.
+       # Create a dictionary
+       d = {}
 
-    addNotification (optional)
+       # Store the dictionary in the transientObject
+       t['d'] = d
 
-      The name of an object to receive notifications when objects are
-      added to the TransientObjectContainer.  See NotificationTargets.
+    And a similar python script::
 
-    delNotification (optional)
+       # Retrieve our transientObject
+       t = container.transient_container.new_or_existing('Foobar')
 
-      The name of an object to receive notifications when objects are
-      deleted from the TransientObjectContainer.  See NotificationTargets.
-  
-  Implementation
+       # Retreive the dictionary
+       d = t['d']
 
-   TransientObjectContainer
+       # Update the dictionary
+       d[1] = 1
 
-    Interfaces:
+    In this second example, the contents of the transientObject will not
+    be saved, because the transientObject itself was not modified.  It
+    is important to update the object to signal it that it must save its
+    state.
 
-      - ItemWithId
 
-      - StringKeyedHomogenousItemContainer
+  See Also
 
-      - TransientItemContainer
-
-    Constructors
-
-      manage_addTransientObjectContainer(id, title="", timeoutMinutes=20,
-		addNotification=None, delNotification=None)
-	
-	Creates a TransientObjectContainer with the given id and title, which
-	will contain objects for at least timeout_minutes.  If addNotification
-	or delNotification are provided, they are callables (either bound
-	methods, functions, or names of objects in Zope).
-
-    Interface ItemWithID
-
-      getId()
-
-	Returns the ID of the TransientObjectContainer.
-
-    Interface StringKeyedHomogenousItemContainer
-
-      new(name)
-
-        Creates a new TransientObject in the container with the specified
-	name.  Will raise a KeyError if the name already exists in the
-	container.  Returns the TransientObject.
-
-      new_ _or_ _existing(name)
-
-        Returns a TransientObject from the container with the given name,
-	creating it if it does not exist.
-
-    Interface TransientItemContainer
-
-      setTimeoutMinutes(timeoutMinutes)
-
-        Sets the timeout of all objects in the container to timeoutMinutes.
-	If this time is not the same as the prior timeoutMinutes, all items
-	in the container are flushed.
-
-      getTimeoutMinutes(timeoutMinutes)
-
-        Returns the number of minutes after which objects in the container
-	will expire.
-
-      getAddNotificationTarget()
-
-        Returns the notification target to be informed when new objects
-	are added to the container.  The result may be a string, which
-	indicates a path to an object in Zope, or may be a function or
-	bound method.
-
-      setAddNotificationTarget(target)
-
-        Sets the notification target to be informed when new objects are
-	added to the container.  The target may be a string, which indicates
-	a path to an object in Zope, or may be a function or bound method.
-	See NotifcationTargets for more information.
-      
-      getDelNotificationTarget()
-
-        Returns the notification target to be informed when objects
-	are deleted from the container.  The result may be a string, which
-	indicates a path to an object in Zope, or may be a function or
-	bound method.
-
-      setDelNotificationTarget(target)
-
-        Sets the notification target to be informed when objects are
-	delted from the container.  The target may be a string, which indicates
-	a path to an object in Zope, or may be a function or bound method.
-	See NotifcationTargets for more information.
-
-   Notification Targets
-
-   	A NotificationTarget is a callable (a bound method, function, or
-	named Zope object) which is called when an object is added or removed
-	from a TransientObjectContainer. 
-
-	NotificationTargets are called with two arguments, the first being
-	the item being added or removed from the container, and the second
-	being the container itself.  Within Zope, the container will be
-	acquisition wrapped, allowing the container to be used as a context
-	to reference other Zope objects.
-
-   TransientObject
-
-    Interfaces:
-
-      - ItemWithId
-
-      - Transient
-
-      - DictionaryLike
-
-      - TTWDictionary
-
-      - ImmutablyValuedMappingOfPickleableObjects
-
-    Constructors
-
-      Transient Objects are constructed by their TransientObjectContainer's
-      new or new_or_existing methods.
-
-
-    Interface ItemWithID
-
-      getId()
-
-      	Returns the ID of the TransientObject.
-
-    Interface Transient
-
-      invalidate()
-
-      	Marks the object as being invalidated -- this causes the parent to
-	call the delete notification for the object.
-
-      getLastAccessed()
-
-        Returns a last accessed timestamp.
-
-      setLastAccessed()
-
-        Updates the object's last accessed timestamp, subject to a timer
-	granularity (currently 30 seconds).  Thus, multiple rapid calls to
-	setLastAccessed() will only update the timestamp once.
-
-      getCreated()
-
-        Returns the object's creation timestamp.  This timestamp is set
-	when the object is created in its container.
-
-    Interface DictionaryLike
-
-      keys()
-
-      	Returns a list of keys in the object.
-
-      values()
-
-        Returns a list of values in the object.
-
-      items()
-
-        Returns a list of (key, value) pairs for all keys in the object.
-
-      get(key, default=None)
-
-        Returns the value corresponding to the given key.  If the key does
-	not exist, and a default is specified, the default is returned,
-	otherwise a KeyError will be raised.
-
-      has_key(key)
-
-        Tests to see if the given key exists in the TransientObject. If the
-	key exists, a 1 will be returned, otherwise a 0 will be returned.
-
-      clear()
-
-        Removes all values from the TransientObject.
-
-      update(dict)
-
-        Updates the TransientObject from the dictionary provided, copying
-	keys and values from the dictionary into the TransientObject.
-
-    Interface TTWDictionary
-
-      set(key, value)
-
-      	Sets the value for a specific key in the TransientObject.
-
-      delete(key)
-
-        Removes a key/value pair from the TransientObject.
-
-    Interface ImmutablyValuedMappingOfPickleableObjects
-
-      _&nbsp;&nbsp;_setitem_&nbsp;&nbsp;_(key, value)
-
-        Sets the value for a specific key in the TransientObject.  If
-	the key or value is acquisition wrapped, it is unwrapped prior
-	to storage.
-
-      _&nbsp;&nbsp;_getitem_&nbsp;&nbsp;_(key)
-
-        Retrieves the value for the given key in the TransientObject.
-
-      _&nbsp;&nbsp;_delitem_&nbsp;&nbsp;_(key)
-
-        Deletes the given key from the TransientObject.
+     - "Transient Object API":TransienceInterfaces.py

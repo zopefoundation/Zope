@@ -85,7 +85,7 @@
 """
 Transience initialization routines
 
-$Id: __init__.py,v 1.2 2001/10/22 16:23:51 matt Exp $
+$Id: __init__.py,v 1.3 2001/11/02 20:44:22 matt Exp $
 """
 
 import Transience
@@ -99,3 +99,4 @@ def initialize(context):
                       Transience.constructTransientObjectContainer)
         )
     context.registerHelp()
+    context.registerHelpTitle('Zope Help')

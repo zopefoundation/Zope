@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.7 2001/10/23 20:29:27 matt Exp $
+$Id: Transience.py,v 1.8 2001/11/02 20:44:22 matt Exp $
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -103,6 +103,8 @@ from BTrees import OOBTree
 import os.path
 import math
 import time
+import sys
+import random
 
 _notfound = []
 _marker = []
@@ -605,7 +607,8 @@ class TransientObject(Persistent, Implicit):
     #
 
     def __init__(self, id, parent=None):
-        self.id = id
+        self.name = id
+        self.id = self._generateUniqueId()
         self._parent = parent
         self._container = {}
         self._created = self._last_accessed = time()
@@ -723,7 +726,19 @@ class TransientObject(Persistent, Implicit):
         # other objects (eliminates read conflicts).
         return 1
 
-    getName = getId
+    def getName(self):
+        return self.name
+
+    def _generateUniqueId(self):
+        return str(time())+str(random.randint(0,sys.maxint-1))
+
+    def __str__(self):
+        result = "<table>\n"
+        for (key, value) in self.items():
+            result = result + "<tr><th>%s</th><td>%s</td></tr>\n" % (key, value)
+
+        result= result + "</table>"
+        return result
 
 Globals.InitializeClass(TransientObjectContainer)
 Globals.InitializeClass(TransientObject)
