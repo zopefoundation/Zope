@@ -15,6 +15,8 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #1065: bin/ scripts didn't export HOME envars.
+
      - Collector #572: WebDAV GET protected by 'FTP Access' permission.
        Two new methods have been added to WebDAV resources, "manage_DAVget"
        and "listDAVObjects". These are now used by WebDAV instead of the
