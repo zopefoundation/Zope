@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -368,14 +368,14 @@ def decapitate(html, RESPONSE=None):
         headers.append(header)
         spos = m.end() + 1
         while spos < len(html) and html[spos] in ' \t':
-            eol = find(html, '\r\n', spos)
+            eol = html.find('\r\n', spos)
             if eol <> -1:
                 eolen = 2
             else:
-                eol = find(html, '\n', spos)
+                eol = html.find( '\n', spos)
                 if eol < 0: return html
                 eolen = 1
-            header.append(strip(html[spos:eol]))
+            header.append(html[spos:eol].strip())
             spos = eol + eolen
     if RESPONSE is not None:
         for header in headers:
