@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.14 1997/01/27 22:00:55 chris Exp $
+     $Id: cPickle.c,v 1.15 1997/02/03 17:27:06 jim Exp $
 
      Copyright 
 
@@ -66,13 +66,12 @@ static char cPickle_module_documentation[] =
 static PyObject *ErrorObject;
 
 
-
-
 #define UNLESS(E) if (!(E))
 
 #define DEL_LIST_SLICE(list, from, to) (PyList_SetSlice(list, from, to, NULL))
 
 #define WRITE_BUF_SIZE 256
+
 
 #define MARK        '('
 #define STOP        '.'
@@ -270,7 +269,7 @@ read_file(Unpicklerobject *self, char **s, int  n) {
         self->buf_size = size;
     }
     else if (n > self->buf_size) {
-        UNLESS(self->buf = (char *)realloc(self->buf, n * sizeof(char))) {     
+        UNLESS(self->buf = (char *)realloc(self->buf, n * sizeof(char))) {
             PyErr_NoMemory();
             return -1;
         }
@@ -534,11 +533,13 @@ whichmodule(PyObject *global, PyObject *global_name) {
     PyObject *module = 0, *modules_dict = 0,
         *global_name_attr = 0, *name = 0;
 
-    if ((has_key = PyMapping_HasKey(class_map, global)) < 0)
-        return NULL;
-
-    if (has_key) {
-        return ((module = PyDict_GetItem(class_map, global)) ? module : NULL);
+    if (module = PyDict_GetItem(class_map, global))
+    {
+        return module;
+    }
+    else
+    {
+        PyErr_Clear();
     }
 
     UNLESS(modules_dict = PySys_GetObject("modules"))
@@ -914,7 +915,7 @@ save_inst(Picklerobject *self, PyObject *args) {
     PyObject *class = 0, *module = 0, *name = 0, *state = 0, 
              *getinitargs_func = 0, *getstate_func = 0, *class_args = 0;
     char *module_str, *name_str;
-    int module_size, name_size, inst_class, res = -1;
+    int module_size, name_size, res = -1;
 
     static char inst = INST, obj = OBJ, build = BUILD;
     static PyObject *__class__str = 0, *__getinitargs__str = 0, 
@@ -930,9 +931,7 @@ save_inst(Picklerobject *self, PyObject *args) {
     UNLESS(class = PyObject_GetAttr(args, __class__str))
         goto finally;
 
-    class_inst = PyClass_Check(class);
-
-    if (self->bin && class_inst) {
+    if (self->bin) {
         if (save(self, class, 0) < 0)
             goto finally;
     }
@@ -945,75 +944,63 @@ save_inst(Picklerobject *self, PyObject *args) {
         PyObject *element = 0;
         int i, len;
 
-        UNLESS(class_args = PyObject_CallObject(getinitargs_func, empty_tuple))
+        UNLESS(class_args = 
+            PyObject_CallObject(getinitargs_func, empty_tuple))
             goto finally;
 
-        if (class_inst)
-        {
-            if ((len = PyObject_Length(class_args)) < 0)  
+        if ((len = PyObject_Length(class_args)) < 0)  
+            goto finally;
+
+        for (i = 0; i < len; i++) {
+            UNLESS(element = PySequence_GetItem(class_args, i)) 
                 goto finally;
 
-            for (i = 0; i < len; i++) {
-                UNLESS(element = PySequence_GetItem(class_args, i)) 
-                    goto finally;
-
-                if (save(self, element, 0) < 0) {
-                    Py_DECREF(element);
-                    goto finally;
-                }
-
+            if (save(self, element, 0) < 0) {
                 Py_DECREF(element);
+                goto finally;
             }
+
+            Py_DECREF(element);
         }
     }
     else {
         PyErr_Clear();
     }
 
-    if (!class_inst)
-    {
-        if (!class_args)
-            UNLESS(class_args = PyTuple_New(0));
-                goto finally;
-    
-        UNLESS(save_global(class, class_args))
-            goto finally;
-    }
-    else {
-        if (!self->bin) {
-            UNLESS(name = ((PyClassObject *)class)->cl_name) {
-                PyErr_SetString(PicklingError, "class has no name");
-                goto finally;
-            }
-
-            UNLESS(module = whichmodule(class, name))
-                goto finally;
-    
-            module_str = PyString_AS_STRING((PyStringObject *)module);
-            module_size = PyString_Size(module);
-            name_str   = PyString_AS_STRING((PyStringObject *)name);
-            name_size = PyString_Size(name);
-
-            if ((*self->write_func)(self, &inst, 1) < 0)
-                goto finally;
-
-            if ((*self->write_func)(self, module_str, module_size) < 0)
-                goto finally;
-
-            if ((*self->write_func)(self, "\n", 1) < 0)
-                goto finally;
-
-            if ((*self->write_func)(self, name_str, name_size) < 0)
-                goto finally;
-
-             if ((*self->write_func)(self, "\n", 1) < 0)
-                goto finally;
-        }
-        else if ((*self->write_func)(self, &obj, 1) < 0) {
+    if (!self->bin) {
+        UNLESS(name = ((PyClassObject *)class)->cl_name) {
+            PyErr_SetString(PicklingError, "class has no name");
             goto finally;
         }
+
+        UNLESS(module = whichmodule(class, name))
+            goto finally;
+    
+        module_str = PyString_AS_STRING((PyStringObject *)module);
+        module_size = PyString_Size(module);
+        name_str   = PyString_AS_STRING((PyStringObject *)name);
+        name_size = PyString_Size(name);
+
+        if ((*self->write_func)(self, &inst, 1) < 0)
+            goto finally;
+
+        if ((*self->write_func)(self, module_str, module_size) < 0)
+            goto finally;
+
+        if ((*self->write_func)(self, "\n", 1) < 0)
+            goto finally;
+
+        if ((*self->write_func)(self, name_str, name_size) < 0)
+            goto finally;
+
+        if ((*self->write_func)(self, "\n", 1) < 0)
+            goto finally;
     }
-    else if (put(self, args) < 0)
+    else if ((*self->write_func)(self, &obj, 1) < 0) {
+        goto finally;
+    }
+
+    if (put(self, args) < 0)
     {
          goto finally;
     }
@@ -1060,8 +1047,8 @@ finally:
 
 
 static int
-save_global(Picklerobject *self, PyObject *args) {
-    PyObject *name = 0, *module = 0;
+save_global(Picklerobject *self, PyObject *args, PyObject *name) {
+    PyObject *global_name = 0, *module = 0;
     char *name_str, *module_str, *c_str; 
     int module_size, name_size, size, res = -1;
 
@@ -1072,16 +1059,24 @@ save_global(Picklerobject *self, PyObject *args) {
         UNLESS(__name__str = PyString_FromString("__name__"))
             return -1;
 
-    UNLESS(name = PyObject_GetAttr(args, __name__str))
-        goto finally;
+    if (name)
+    {
+        global_name = name;
+        Py_INCREF(global_name);
+    }
+    else
+    {
+        UNLESS(global_name = PyObject_GetAttr(args, __name__str))
+            goto finally;
+    }
 
-    UNLESS(module = whichmodule(args, name))
+    UNLESS(module = whichmodule(args, global_name))
         goto finally;
 
     module_str = PyString_AS_STRING((PyStringObject *)module);
     module_size = PyString_Size(module);
-    name_str   = PyString_AS_STRING((PyStringObject *)name);
-    name_size = PyString_Size(name);
+    name_str   = PyString_AS_STRING((PyStringObject *)global_name);
+    name_size = PyString_Size(global_name);
 
     if ((*self->write_func)(self, &global, 1) < 0)
         goto finally;
@@ -1104,7 +1099,7 @@ save_global(Picklerobject *self, PyObject *args) {
     res = 0;
 
 finally:
-    Py_XDECREF(name);
+    Py_XDECREF(global_name);
 
     return res;
 }
@@ -1171,8 +1166,9 @@ finally:
 
 
 static int 
-save_reduce(Picklerobject *self, PyObject *callable, PyObject *tup) {
-    static char reduce = REDUCE;
+save_reduce(Picklerobject *self, PyObject *callable,
+            PyObject *tup, PyObject *state) {
+    static char reduce = REDUCE, build = BUILD;
 
     if (save(self, callable, 0) < 0)
         return -1;
@@ -1180,7 +1176,19 @@ save_reduce(Picklerobject *self, PyObject *callable, PyObject *tup) {
     if (save(self, tup, 0) < 0)
         return -1;
 
-    return (*self->write_func)(self, &reduce, 1);
+    if ((*self->write_func)(self, &reduce, 1) < 0)
+        return -1;
+
+    if (state)
+    {
+        if (save(self, state, 0) < 0)
+            return -1;
+
+        if ((*self->write_func)(self, &build, 1) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
 
@@ -1188,8 +1196,8 @@ static int
 save(Picklerobject *self, PyObject *args, int  pers_save) {
     PyTypeObject *type;
     PyObject *py_ob_id = 0, *__reduce__ = 0, *t = 0, *arg_tup = 0,
-             *callable = 0;
-    int res = -1, tmp;
+             *callable = 0, *state = 0, *junk = 0;
+    int res = -1, tmp, size;
 
     static PyObject *__reduce__str = 0;
 
@@ -1285,19 +1293,19 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
 
         case 'c':
             if (type == &PyClass_Type) {
-                res = save_global(self, args);
+                res = save_global(self, args, NULL);
                 goto finally;
             }
 
         case 'f':
             if (type == &PyFunction_Type) {
-                res = save_global(self, args);
+                res = save_global(self, args, NULL);
                 goto finally;
             }
 
         case 'b':
             if (type == &PyCFunction_Type) {
-                res = save_global(self, args);
+                res = save_global(self, args, NULL);
                 goto finally;
             }
     }
@@ -1340,17 +1348,31 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
     }
 
     if (t) {
+        if (PyString_Check(t)) {
+            res = save_global(self, args, t);
+            goto finally;
+        }
+ 
         if (!PyTuple_Check(t)) {
-            PyErr_Format(PicklingError, "Value returned by %s must be a tuple", "O",
-                __reduce__);
+            PyErr_Format(PicklingError, "Value returned by %s must "
+                "be a tuple", "O", __reduce__);
             goto finally;
         }
 
-        UNLESS(callable = PyTuple_GetItem(t, 0))
-            goto finally;
+        size = PyTuple_Size(t);
+        
+        if ((size != 3) && (size != 2)) {
+            PyErr_Format(PicklingError, "tuple returned by %s must "     
+                "contain only two or three elements", "O", __reduce__);
+                goto finally;
+        }
+        
+        callable = PyTuple_GET_ITEM(t, 0);
+        arg_tup = PyTuple_GET_ITEM(t, 1);
 
-        UNLESS(arg_tup = PyTuple_GetItem(t, 1))
-            goto finally;
+        if (size > 2) {
+            state = PyTuple_GET_ITEM(t, 2);
+        }
 
         UNLESS(PyTuple_Check(arg_tup)) {
             PyErr_Format(PicklingError, "Second element of tuple "
@@ -1358,14 +1380,16 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
             goto finally;
         }
 
-        res = save_reduce(self, callable, arg_tup);
+        res = save_reduce(self, callable, arg_tup, state);
         goto finally;
     }
 
+    /*
     if (PyObject_HasAttrString(args, "__class__")) {
         res = save_inst(self, args);
         goto finally;
     }
+    */
 
     PyErr_Format(PicklingError, "Cannot pickle %s objects.", 
         "O", (PyObject *)type);
@@ -1404,9 +1428,9 @@ static PyObject *
 dump_special(Picklerobject *self, PyObject *args) {
     static char stop = STOP;
 
-    PyObject *callable = 0, *arg_tup = 0;
+    PyObject *callable, *arg_tup, *state = NULL;
     
-    UNLESS(PyArg_ParseTuple(args, "OO", &callable, &arg_tup))
+    UNLESS(PyArg_ParseTuple(args, "OO|O", &callable, &arg_tup, &state))
         return NULL;
 
     UNLESS(PyTuple_Check(arg_tup)) {
@@ -1415,7 +1439,7 @@ dump_special(Picklerobject *self, PyObject *args) {
         return NULL;
     }
 
-    if (save_reduce(self, callable, arg_tup) < 0)
+    if (save_reduce(self, callable, arg_tup, state) < 0)
         return NULL;
 
     if ((*self->write_func)(self, &stop, 1) < 0)
@@ -1640,8 +1664,8 @@ PyImport_ImportModuleNi(char *module_name)
         UNLESS(eval_dict = Py_BuildValue("{sO}", "__builtins__", builtins))
             return NULL;
 
-    if (!(import = PyRun_String(import_str, eval_input, eval_dict, eval_dict)))
-    {
+    if (!(import = 
+        PyRun_String(import_str, eval_input, eval_dict, eval_dict))) {
         free(import_str);
         return NULL;
     }
@@ -1818,7 +1842,7 @@ load_binint2(Unpicklerobject *self, PyObject *args) {
     if ((*self->read_func)(self, &s, 2) < 0)
         return -1;
 
-    return load_binintx(self, self->buf, 2);
+    return load_binintx(self, s, 2);
 }
 
 
@@ -1893,7 +1917,8 @@ load_float(Unpicklerobject *self, PyObject *args) {
     d = strtod(s, &endptr);
 
     if (errno || (endptr[0] != '\n') || (endptr[1] != '\0')) {
-        PyErr_SetString(PyExc_ValueError, "could not convert string to float");
+        PyErr_SetString(PyExc_ValueError, 
+        "could not convert string to float");
         goto finally;
     }
 
@@ -1982,7 +2007,7 @@ load_short_binstring(Unpicklerobject *self, PyObject *args) {
     if ((*self->read_func)(self, &s, 1) < 0)
         return -1;
 
-    l = (unsigned char)self->buf[0];
+    l = (unsigned char)s[0];
 
     if ((*self->read_func)(self, &s, l) < 0)
         goto finally;
@@ -2266,7 +2291,8 @@ load_persid(Unpicklerobject *self, PyObject *args) {
         if (PyTuple_SetItem(self->arg, 0, pid) < 0)
             goto finally;
       
-        UNLESS(pers_load_val = PyObject_CallObject(self->pers_func, self->arg))
+        UNLESS(pers_load_val = 
+            PyObject_CallObject(self->pers_func, self->arg))
             goto finally;
 
         if (PyList_Append(self->stack, pers_load_val) < 0)
@@ -2306,7 +2332,8 @@ load_binpersid(Unpicklerobject *self, PyObject *args) {
         if (PyTuple_SetItem(self->arg, 0, pid) < 0)
             goto finally;
 
-        UNLESS(pers_load_val = PyObject_CallObject(self->pers_func, self->arg))
+        UNLESS(pers_load_val = 
+            PyObject_CallObject(self->pers_func, self->arg))
             goto finally;
 
         if (PyList_Append(self->stack, pers_load_val) < 0)
@@ -2692,13 +2719,9 @@ load_setitems(Unpicklerobject *self, PyObject *args) {
 static int
 load_build(Unpicklerobject *self, PyObject *args) {
     PyObject *value = 0, *inst = 0, *instdict = 0, *d_key = 0, *d_value = 0, 
-             *junk = 0;
-    static PyObject *py_string__dict__ = 0;
+             *junk = 0, *__setstate__ = 0;
+    static PyObject *__dict__str, *__setstate__str = 0;
     int len, i, res = -1;
-
-    UNLESS(py_string__dict__)
-        UNLESS(py_string__dict__ = PyString_FromString("__dict__"))
-            goto finally;
 
     if ((len = PyList_Size(self->stack)) < 0)
         goto finally;
@@ -2713,8 +2736,19 @@ load_build(Unpicklerobject *self, PyObject *args) {
     UNLESS(inst = PyList_GetItem(self->stack, len - 2))
         goto finally;
 
-    UNLESS(PyObject_HasAttrString(inst, "__setstate__")) {
-        UNLESS(instdict = PyObject_GetAttr(inst, py_string__dict__))
+    UNLESS(__setstate__str)
+        UNLESS(__setstate__str = PyString_FromString("__setstate__"))
+            goto finally;
+
+    UNLESS(__setstate__ = PyObject_GetAttr(inst, __setstate__str)) 
+    {
+        PyErr_Clear();
+
+        UNLESS(__dict__str)
+            UNLESS(__dict__str = PyString_FromString("__dict__"))
+                goto finally;
+
+        UNLESS(instdict = PyObject_GetAttr(inst, __dict__str))
             goto finally;
 
         i = 0;
@@ -2724,7 +2758,15 @@ load_build(Unpicklerobject *self, PyObject *args) {
         }
     }
     else {
-        UNLESS(junk = PyObject_CallMethod(inst, "__setstate__", "O", value))
+        UNLESS(self->arg)
+            UNLESS(self->arg = PyTuple_New(1))
+                goto finally;
+
+        Py_INCREF(value);
+        if (PyTuple_SetItem(self->arg, 0, value) < 0)
+            goto finally;
+
+        UNLESS(junk = PyObject_CallObject(__setstate__, self->arg))
             goto finally;
         Py_DECREF(junk);
     }
@@ -2734,6 +2776,7 @@ load_build(Unpicklerobject *self, PyObject *args) {
 finally:
   Py_XDECREF(value);
   Py_XDECREF(instdict);
+  Py_XDECREF(__setstate__);
   
   return res;
 }
@@ -2775,6 +2818,8 @@ load_reduce(Unpicklerobject *self, PyObject *args) {
     PyObject *callable = 0, *arg_tup = 0, *ob = 0, *safe = 0;
     int len, has_key, res = -1;
 
+    static PyObject *__safe_for_unpickling__str;
+
     if ((len = PyList_Size(self->stack)) < 0)
         goto finally;
 
@@ -2789,10 +2834,15 @@ load_reduce(Unpicklerobject *self, PyObject *args) {
             goto finally;
 
         if (!has_key) {
-            if (!(safe = PyObject_GetAttrString(callable, 
-                "__safe_for_unpickling__")) || !PyObject_IsTrue(safe)) {
-                PyErr_Format(UnpicklingError, "%s is not safe for unpickling", 
-                    "O", callable);
+            UNLESS(__safe_for_unpickling__str)
+                UNLESS(__safe_for_unpickling__str =
+                    PyString_FromString("__safe_for_unpickling__"))
+                    goto finally;
+
+            if (!(safe = PyObject_GetAttr(callable, 
+                __safe_for_unpickling__str)) || !PyObject_IsTrue(safe)) {
+                PyErr_Format(UnpicklingError, 
+                    "%s is not safe for unpickling", "O", callable);
                 goto finally;
 	    }
         }
@@ -3011,7 +3061,7 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
 
             default: 
                 PyErr_Format(UnpicklingError, "invalid load key, '%s'.", 
-                    "c", self->buf[0]);
+                    "c", s[0]);
                 return NULL;
         }
 
