@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -130,7 +130,7 @@ class Function:
         self.url=url
         self.headers=headers
         if not headers.has_key('Host') and not headers.has_key('host'):
-            headers['Host']=split(urlparse(url)[1],':')[0]
+            headers['Host']=urlparse(url)[1]
         self.func_name=url[rfind(url,'/')+1:]
         self.__dict__['__name__']=self.func_name
         self.func_defaults=()
@@ -315,7 +315,7 @@ class Object:
         self.url=url
         self.headers=headers
         if not headers.has_key('Host') and not headers.has_key('host'):
-            headers['Host']=split(urlparse(url)[1],':')[0]
+            headers['Host']=urlparse(url)[1]
         if method is not None: self.method=method
         if username is not None: self.username=username
         if password is not None: self.password=password
