@@ -416,8 +416,11 @@ class TALGenerator:
             self.pushProgram()
             todo["defineSlot"] = defineSlot
         if taldict:
-            self.emit("beginScope")
-            self.emit("rawAttrs", self.makeAttrDict(attrlist))
+            dict = {}
+            for item in attrlist:
+                key, value = item[:2]
+                dict[key] = value
+            self.emit("beginScope", dict)
             todo["scope"] = 1
         if onError:
             self.pushProgram() # handler
@@ -457,13 +460,6 @@ class TALGenerator:
         self.todoPush(todo)
         if isend:
             self.emitEndElement(name, isend)
-
-    def makeAttrDict(self, attrlist):
-        dict = {}
-        for item in attrlist:
-            key, value = item[:2]
-            dict[key] = value
-        return dict
 
     def emitEndElement(self, name, isend=0, implied=0):
         todo = self.todoPop()

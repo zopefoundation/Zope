@@ -389,9 +389,11 @@ class TALInterpreter:
         self.col = self.col + len(s)
     bytecode_handlers["endTag"] = do_endTag
 
-    def do_beginScope(self):
+    def do_beginScope(self, dict):
         self.engine.beginScope()
         self.scopeLevel = self.scopeLevel + 1
+        if self.tal:
+            self.engine.setLocal("attrs", dict)
     bytecode_handlers["beginScope"] = do_beginScope
 
     def do_endScope(self):
@@ -410,11 +412,6 @@ class TALInterpreter:
             value = self.engine.evaluateValue(expr)
             self.engine.setGlobal(name, value)
     bytecode_handlers["setGlobal"] = do_setGlobal
-
-    def do_rawAttrs(self, dict):
-        if self.tal:
-            self.engine.setLocal("attrs", dict)
-    bytecode_handlers["rawAttrs"] = do_rawAttrs
 
     def do_insertText(self, expr, block):
         if not self.tal:
