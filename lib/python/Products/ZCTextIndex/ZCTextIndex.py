@@ -64,6 +64,22 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         self._index_factory = index_factory
         self.clear()
 
+    def query(self, query, nbest=10):
+        """Return pair (mapping from docids to scores, num results).
+
+        The num results is the total number of results before trimming
+        to the nbest results.
+        """
+        tree = QueryParser().parseQuery(query)
+        results = tree.executeQuery(self.index)
+        chooser = NBest(nbest)
+        chooser.addmany(results.items())
+        return chooser.getbest(), len(results)
+
+    def numObjects(self):
+        """Return number of object indexed"""
+        return self.index.length()
+
     ## Pluggable Index APIs ##
 
     def index_object(self, docid, obj, threshold=None):
@@ -92,22 +108,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         tree = QueryParser().parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
-
-    def query(self, query, nbest=10):
-        """Return pair (mapping from docids to scores, num results).
-
-        The num results is the total number of results before trimming
-        to the nbest results.
-        """
-        tree = QueryParser().parseQuery(query)
-        results = tree.executeQuery(self.index)
-        chooser = NBest(nbest)
-        chooser.addmany(results.items())
-        return chooser.getbest(), len(results)
-
-    def numObjects(self):
-        """Return number of object indexed"""
-        return self.index.length()
 
     def getEntryForObject(self, documentId, default=None):
         """Return the list of words indexed for documentId"""
