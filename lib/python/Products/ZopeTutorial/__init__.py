@@ -135,7 +135,7 @@ def initialize(context):
             # new topic
             if lines:
                 id = id + 1
-                topic_id = 'topic_%d' % id
+                topic_id = 'topic_%02d' % id
                 text=string.join(lines[1:], '')
                 text=term_pat.sub(glossaryTerm, text)
                 topic=TutorialTopic.TutorialTopic(topic_id, string.strip(lines[0]), text)
