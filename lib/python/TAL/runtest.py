@@ -94,6 +94,9 @@ from cStringIO import StringIO
 import glob
 import traceback
 
+if __name__ == "__main__":
+    import setpath                      # Local hack to tweak sys.path etc.
+
 import driver
 
 def showdiff(a, b):
