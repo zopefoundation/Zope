@@ -8,18 +8,19 @@ TupleType=type(())
 
 class OutputPipe:
 
-    def __init__(self):
+    def __init__(self,callback=None):
         lock=thread.allocate_lock()
         self._r=lock.release
-        self._a=lock.acquite
+        self._a=lock.acquire
         self._buf=[]
+        self._callback=callback
 
     def write(self, text):
         self._a()
         try:
             self._buf.append(text)
         finally: self._r()
-        Wakeup()
+        Wakeup(self._callback)
 
     def close(self):
         self._a()
@@ -35,7 +36,7 @@ class OutputPipe:
         Return None if the pipe is open but has no data.
         Return an empty string if the pipe is closed.
         """
-
+        print "read from pipe"
         self._a()
         try:
             b=self._buf
