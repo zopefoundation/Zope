@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.7 2000/01/14 02:35:56 amos Exp $
+# 	$Id: asyncore.py,v 1.8 2000/04/06 22:49:28 petrilli Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -400,9 +400,9 @@ def compact_traceback ():
 	tbinfo = []
 	while 1:
 		tbinfo.append (
-			tb.tb_frame.f_code.co_filename,
-			tb.tb_frame.f_code.co_name,				
-			str(tb.tb_lineno)
+				( tb.tb_frame.f_code.co_filename,
+				  tb.tb_frame.f_code.co_name,				
+				  str(tb.tb_lineno) )
 			)
 		tb = tb.tb_next
 		if not tb:

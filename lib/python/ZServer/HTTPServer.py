@@ -282,7 +282,7 @@ class zhttp_handler:
         zresponse=make_response(request,env)
         zrequest=HTTPRequest(sin, env, zresponse)
         request.channel.current_request=None
-        request.channel.queue.append(self.module_name, zrequest, zresponse)
+        request.channel.queue.append((self.module_name, zrequest, zresponse))
         request.channel.work()
 
     def status(self):
