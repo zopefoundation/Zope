@@ -233,15 +233,23 @@ class SessionDataManagerTraverser(NameCaller):
     def __init__(self, requestSessionName, sdm):
         self._requestSessionName = requestSessionName
         self._sessionDataManager = sdm
+        self._v_errors=0
 
     def __call__(self, container, request):
         sdm = self._sessionDataManager.__of__(container)
         # Yank our session & stuff into request
         try:
             session = sdm.getSessionData()
+            self._v_errors = 0
         except:
-            LOG('Session Tracking', WARNING, 'Session automatic traversal '
-                'failed to get session data', error=sys.exc_info())
+            errors = getattr(self,"_v_errors", 0)
+            if errors < 4:
+                LOG('Session Tracking', WARNING, 'Session automatic traversal '
+                    'failed to get session data', error=sys.exc_info())
+            if errors == 3:
+                LOG('Session Tracking', WARNING, 'Suppressing further '
+                    'automatic session failure error messages on this thread')
+            self._v_errors = errors + 1
             return    # Throw our hands up but dont fail 
         if self._requestSessionName is not None:
             request[self._requestSessionName] = session
