@@ -21,7 +21,7 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var sequence-key-->/manage_main">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
-   ALT="Click to open this item" BORDER="0"></A>
+   ALT="[<!--#var meta_type-->]" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var sequence-key-->/manage_main">

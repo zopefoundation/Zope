@@ -6,8 +6,8 @@
   <!--#if expr="_vars['PATH_INFO'][-(_.len(action)):]==action"-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
   <FONT SIZE="-1">
-  <IMG ALIGN="LEFT" HSPACE="0"  SRC="<!--#var SCRIPT_NAME-->/p_/ltab">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab">
+  <IMG ALIGN="LEFT" HSPACE="0"  SRC="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
   <STRONG>
     <!--#if action-->
     <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
@@ -15,14 +15,13 @@
     <A HREF="<!--#var URL1-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#/if action-->
   </STRONG>
-
   </FONT>
   </TD>
   <!--#else-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
   <FONT SIZE="-1">
-  <IMG ALIGN="LEFT"  HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/ltab">
-  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab">
+  <IMG ALIGN="LEFT"  HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
   <!--#if action-->
     <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#else action-->
@@ -36,8 +35,8 @@
 
   <td align="center" valign="top" bgcolor="#efefef">
   <font size="-1">
-  <img align="left"  hspace="0" src="<!--#var SCRIPT_NAME-->/p_/ltab">
-  <img align="right" hspace="0" src="<!--#var SCRIPT_NAME-->/p_/rtab">
+  <img align="left"  hspace="0" src="<!--#var SCRIPT_NAME-->/p_/ltab" ALT="">
+  <img align="right" hspace="0" src="<!--#var SCRIPT_NAME-->/p_/rtab" ALT="">
   <a href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="z_help_wnd">
   Help</a>
   </font>
