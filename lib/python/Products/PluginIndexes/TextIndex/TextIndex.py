@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.16 $'[11:-2]
+__version__ = '$Revision: 1.17 $'[11:-2]
 
 
 import string, re
@@ -189,12 +189,12 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         # Default text index operator (should be visible to ZMI)
         self.useOperator  = 'or'
 
-        self.clear()
 
         if extra:   self.vocabulary_id = extra.vocabulary
         else:       self.vocabulary_id = "Vocabulary"
 
         self._lexicon = None
+        self.clear()
 
         if lexicon is not None:
 
@@ -228,7 +228,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         """Reinitialize the text index."""
         self._index   = IOBTree()
         self._unindex = IOBTree()
-        self.getLexicon().clear()
+        if self.getLexicon():
+            self.getLexicon().clear()
         self._lexicon = None
 
     def _convertBTrees(self, threshold=200):
