@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -182,16 +182,23 @@ class PropertySheet(Persistent, Implicit):
         self._properties=self._properties+(prop,)
         setattr(self, id, value)
 
-    def _updateProperty(self, id, value):
+    def _updateProperty(self, id, value, meta=None):
         # Update the value of an existing property. If value is a string,
         # an attempt will be made to convert the value to the type of the
-        # existing property.
+        # existing property. If a mapping containing meta-data is passed,
+        # it will used to _replace_ the properties meta data.
         if not self.hasProperty(id):
             raise 'Bad Request', 'The property %s does not exist.' % id
         if type(value)==type(''):
             proptype=self.propertyInfo(id).get('type', 'string')
             if type_converters.has_key(proptype):
                 value=type_converters[proptype](value)
+        if meta is not None:
+            props=[]
+            for prop in self.v_self()._properties:
+                if prop['id']==id: prop['meta']=meta
+                props.append(prop)
+            self.v_self()._properties=props
         setattr(self.v_self(), id, value)
 
     def _delProperty(self, id):
