@@ -100,9 +100,8 @@ def optimizeRanges(ranges, size):
     """Optimize Range sets, given those sets and the length of the resource.
 
     Optimisation is done by first expanding relative start values and open
-    ends, then sorting and combining overlapping or adjacent ranges. We also
-    remove unsatisfiable ranges (where the start lies beyond the size of the
-    resource).
+    ends, then sorting and combining overlapping ranges. We also remove
+    unsatisfiable ranges (where the start lies beyond the size of the resource).
 
     """
 
@@ -126,8 +125,8 @@ def optimizeRanges(ranges, size):
     
     while ranges:
         nextstart, nextend = ranges.pop()
-        # If the next range overlaps or is adjacent
-        if nextstart <= end:
+        # If the next range overlaps
+        if nextstart < end:
             # If it falls within the current range, discard
             if nextend <= end:
                 continue

@@ -113,10 +113,10 @@ class TestOptimizeRanges(unittest.TestCase):
 
     def testAdjacentInOrder(self):
         self.expectSets([(1, 10), (10, 20), (25, 50)], 5000,
-            [(1, 20), (25, 50)])
+            [(1, 10), (10, 20), (25, 50)])
 
     def testAdjacentOutOfOrder(self):
-        self.expectSets([(-5, None), (40, 45)], 50, [(40, 50)])
+        self.expectSets([(-5, None), (40, 45)], 50, [(40, 45), (45, 50)])
 
     def testOverLapAndOverflow(self):
         # Note that one endpoint lies beyond the end.

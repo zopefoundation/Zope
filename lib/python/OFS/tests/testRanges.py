@@ -274,9 +274,6 @@ class TestRequestRange(unittest.TestCase):
         # A satisfiable and an unsatisfiable range
         self.expectSingleRange('-0,3-23', 3, 24)
 
-    def testAdjacentRanges(self):
-        self.expectSingleRange('21-25,10-20', 10, 26)
-
     def testEndOverflow(self):
         l = len(self.data)
         start, end = l - 10, l + 10
@@ -301,6 +298,9 @@ class TestRequestRange(unittest.TestCase):
         self.expectSingleRange(range, start, len(self.data))
 
     # Multiple ranges
+    def testAdjacentRanges(self):
+        self.expectMultipleRanges('21-25,10-20', [(10, 21), (21, 26)])
+
     def testMultipleRanges(self):
         self.expectMultipleRanges('3-7,10-15', [(3, 8), (10, 16)])
 
@@ -320,10 +320,10 @@ class TestRequestRange(unittest.TestCase):
     def testIllegalIfRange(self):
         # We assume that an illegal if-range is to be ignored, just like an
         # illegal if-modified since.
-        self.expectSingleRange('21-25,10-20', 10, 26, if_range='garbage')
+        self.expectSingleRange('21-25,10-21', 10, 26, if_range='garbage')
 
     def testEqualIfRangeDate(self):
-        self.expectSingleRange('21-25,10-20', 10, 26,
+        self.expectSingleRange('21-25,10-21', 10, 26,
             if_range=self.createLastModifiedDate())
 
     def testIsModifiedIfRangeDate(self):
@@ -331,11 +331,11 @@ class TestRequestRange(unittest.TestCase):
             if_range=self.createLastModifiedDate(offset=-100))
 
     def testIsNotModifiedIfRangeDate(self):
-        self.expectSingleRange('21-25,10-20', 10, 26,
+        self.expectSingleRange('21-25,10-21', 10, 26,
             if_range=self.createLastModifiedDate(offset=100))
 
     def testEqualIfRangeEtag(self):
-        self.expectSingleRange('21-25,10-20', 10, 26,
+        self.expectSingleRange('21-25,10-21', 10, 26,
             if_range=self.file.http__etag())
 
     def testNotEqualIfRangeEtag(self):
