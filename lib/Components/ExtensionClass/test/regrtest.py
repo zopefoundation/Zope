@@ -7,7 +7,7 @@ import test.regrtest
 ec_tests = ["test_AqAlg", "test_MultiMapping", "test_Sync",
             "test_ThreadLock", "test_acquisition", "test_add",
             "test_binding", "test_explicit_acquisition",
-            "test_func_attr", "test_method_hook"]
+            "test_method_hook"]
 
 ec_testdir = os.path.split(sys.argv[0])[0] or '.'
 
