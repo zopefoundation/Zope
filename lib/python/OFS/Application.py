@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.112 1999/07/23 14:03:29 cathi Exp $'''
-__version__='$Revision: 1.112 $'[11:-2]
+$Id: Application.py,v 1.113 1999/10/07 14:07:32 jim Exp $'''
+__version__='$Revision: 1.113 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -237,17 +237,6 @@ class Application(Globals.ApplicationDefaultPermissions,
     Redirect=ZopeRedirect=PrincipiaRedirect
 
     def __bobo_traverse__(self, REQUEST, name=None):
-        if hasattr(Globals,'VersionBase'):
-            # BoboPOS 2
-            if name is None and REQUEST.has_key(Globals.VersionNameName):
-                pd=Globals.VersionBase[REQUEST[Globals.VersionNameName]]
-                alternate_self=pd.jar[self._p_oid]
-                if hasattr(self, 'aq_parent'):
-                    alternate_self=alternate_self.__of__(self.aq_parent)
-                return alternate_self
-
-            try:    self._p_jar.cache.incrgc() # Perform incremental GC
-            except: pass
 
         try: return getattr(self, name)
         except AttributeError: pass
@@ -349,14 +338,12 @@ def initialize(app):
         get_transaction().commit()
 
     # Make sure we have Globals
-    try: root=app._p_jar.root()
-    except: pass # BoboPOS 2
-    else:        
-        if not root.has_key('ZGlobals'):
-            import BTree
-            app._p_jar.root()['ZGlobals']=BTree.BTree()
-            get_transaction().note('Added Globals')
-            get_transaction().commit()
+    root=app._p_jar.root()
+    if not root.has_key('ZGlobals'):
+        import BTree
+        app._p_jar.root()['ZGlobals']=BTree.BTree()
+        get_transaction().note('Added Globals')
+        get_transaction().commit()
 
     install_products(app)
 
