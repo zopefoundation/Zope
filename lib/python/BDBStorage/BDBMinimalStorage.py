@@ -15,7 +15,9 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.28 $'[-2:][0]
+__version__ = '$Revision: 1.29 $'[-2:][0]
+
+from __future__ import nested_scopes
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -383,6 +385,12 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
+        # Before setting the packing flag to true, acquire the storage lock
+        # and clear out the packmark table, in case there's any cruft left
+        # over from the previous pack.
+        def clear_packmark(txn):
+            self._packmark.truncate(txn=txn)
+        self._withlock(self._withtxn, clear_packmark)
         self._packing = True
         try:
             # We don't wrap this in _withtxn() because we're going to do the
@@ -403,25 +411,13 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # objects reachable from the root.  Anything else is a candidate for
         # having all their revisions packed away.  The set of reachable
         # objects lives in the _packmark table.
-        self._lock_acquire()
-        try:
-            self._withtxn(self._mark)
-        finally:
-            self._lock_release()
+        self._withlock(self._withtxn, self._mark)
         # Now perform a sweep, using oidqueue to hold all object ids for
         # objects which are not root reachable as of the pack time.
-        self._lock_acquire()
-        try:
-            self._withtxn(self._sweep)
-        finally:
-            self._lock_release()
+        self._withlock(self._withtxn, self._sweep)
         # Once again, collect any objects with refcount zero due to the mark
         # and sweep garbage collection pass.
-        self._lock_acquire()
-        try:
-            self._withtxn(self._collect_objs)
-        finally:
-            self._lock_release()
+        self._withlock(self._withtxn, self._collect_objs)
 
     def _mark(self, txn):
         # Find the oids for all the objects reachable from the root.  To
