@@ -53,11 +53,13 @@
 
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.2 1997/07/02 20:21:02 jim Exp $"
+"\n$Id: ThreadLock.c,v 1.3 1997/10/30 15:29:21 jim Exp $"
 ;
 
 #include "Python.h"
+#ifdef WITH_THREAD
 #include "thread.h"
+#endif
 
 static PyObject *ErrorObject;
 
@@ -71,7 +73,9 @@ typedef struct {
   PyObject_HEAD
   int count;
   long id;
+#ifdef WITH_THREAD
   type_lock lock;
+#endif
 } ThreadLockObject;
 
 staticforward PyTypeObject ThreadLockType;
@@ -81,7 +85,11 @@ staticforward PyTypeObject ThreadLockType;
 static int
 cacquire(ThreadLockObject *self)
 {
+#ifdef WITH_THREAD
   long id = get_thread_ident();
+#else
+  long id = 1;
+#endif
   if(self->count >= 0 && self->id==id)
     {
       /* Somebody has locked me.  It is either the current thread or
@@ -93,9 +101,11 @@ cacquire(ThreadLockObject *self)
     }
   else
     {
+#ifdef WITH_THREAD
       Py_BEGIN_ALLOW_THREADS
       acquire_lock(self->lock, 1);
       Py_END_ALLOW_THREADS
+#endif
       self->count=0;
       self->id=id;
     }
@@ -113,7 +123,11 @@ acquire(ThreadLockObject *self, PyObject *args)
 static int
 crelease(ThreadLockObject *self)
 {
+#ifdef WITH_THREAD
   long id = get_thread_ident();
+#else
+  long id = 1;
+#endif
   if(self->count >= 0 && self->id==id)
     {
       /* Somebody has locked me.  It is either the current thread or
@@ -122,7 +136,9 @@ crelease(ThreadLockObject *self)
 	 if another thread had the lock, then the id would not be this
 	 one. */
       self->count--;
+#ifdef WITH_THREAD
       if(self->count < 0) release_lock(self->lock);
+#endif
     }
   else
     {
@@ -177,7 +193,9 @@ static struct PyMethodDef ThreadLock_methods[] = {
 static void
 ThreadLock_dealloc(ThreadLockObject *self)
 {
+#ifdef WITH_THREAD
   free_lock(self->lock);
+#endif
   PyMem_DEL(self);
 }
 
@@ -238,20 +256,26 @@ newThreadLockObject(ThreadLockObject *self, PyObject *args)
 	
   UNLESS(PyArg_ParseTuple(args,"")) return NULL;
   UNLESS(self = PyObject_NEW(ThreadLockObject, &ThreadLockType)) return NULL;
-  self->lock = allocate_lock();
   self->count=-1;
+#ifdef WITH_THREAD
+  self->lock = allocate_lock();
   if (self->lock == NULL) {
     PyMem_DEL(self);
     self = NULL;
     PyErr_SetString(ErrorObject, "can't allocate lock");
   }
+#endif
   return (PyObject*)self;
 }
 
 static PyObject *
 ident(PyObject *self, PyObject *args)
 {
+#ifdef WITH_THREAD
   return PyInt_FromLong(get_thread_ident());
+#else
+  return PyInt_FromLong(0);
+#endif
 }
 
 /* List of methods defined in the module */
@@ -272,7 +296,7 @@ void
 initThreadLock()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
 
   /* Create the module and add the functions */
   m = Py_InitModule4("ThreadLock", Module_methods,
@@ -290,7 +314,12 @@ initThreadLock()
 
   PyDict_SetItemString(d, "__version__",
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
+
+#ifdef WITH_THREAD
+  PyDict_SetItemString(d, "WITH_THREAD", PyInt_FromLong(1));
+#else
+  PyDict_SetItemString(d, "WITH_THREAD", Py_None);
+#endif  
 	
   /* Check for errors */
   if (PyErr_Occurred())
@@ -301,6 +330,10 @@ initThreadLock()
 Revision Log:
 
   $Log: ThreadLock.c,v $
+  Revision 1.3  1997/10/30 15:29:21  jim
+  Added conditional compilation logic to allow compilation in
+  non-threaded environments.
+
   Revision 1.2  1997/07/02 20:21:02  jim
   Added stupid parens and other changes to make 'gcc -Wall -pedantic'
   happy.  Got rid of unused macros.
