@@ -32,6 +32,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Removed the signal handler hung off USR1 for packing the database.
+        This feature proved dangerous as the pack operation would happen in
+        the main thread, causing all asyncore operations to stop until it
+        was finished.
+
       - Collector #372: tal:attributes failed when combined with tal:replace.
 
       - Don't try to close network connections in the signal handler
