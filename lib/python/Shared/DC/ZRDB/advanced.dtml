@@ -20,7 +20,16 @@
 	<td align='LEFT'><input name="cache_time:int" size="10"
              value="<!--#var cache_time_ html_quote-->"></td></tr>
 <!--#if da_has_single_argument-->
-<tr>	<th align='LEFT'>Allow direct traversal</th>
+<tr>    <td colspan=2><br><br>
+Note that "simple" direct traversal is different 
+than normal direct traversal.  Please note the missing "argument id":<BR>
+<table border=0 cellspacing=2>
+<tr>    <td>Normal</td><td>&nbsp;&nbsp;</td>
+        <td><pre>http://www.acme.com/Sales/sqlGetEntry/item_id/12/view</pre></td></tr>
+<tr>    <td>Simple</td><td>&nbsp;&nbsp;</td>
+        <td><pre>http://www.acme.com/Sales/sqlGetEntry/12/view</pre></td></tr>
+</table>
+<tr>	<th align='LEFT'>Allow "simple" direct traversal</th>
 	<td align='LEFT'><input name="direct" type=checkbox
             <!--#if allow_simple_one_argument_traversal-->CHECKED
             <!--#/if-->></td></tr>
