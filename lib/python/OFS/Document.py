@@ -1,9 +1,11 @@
 """Document object"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import shared_dt_globals,HTMLFile
+from string import join, split, strip
+import AccessControl.ACL
 
 class Document(HTML):
     """A Document object"""
@@ -11,18 +13,23 @@ class Document(HTML):
     title=''
     icon       ='OFS/Document_icon.gif'
 
-    __state_names__=HTML.__state_names__+('title',)
+    __state_names__=HTML.__state_names__+('title','__roles__')
     shared_globals =shared_dt_globals
-    manage_edit__allow_groups__    =None
+    manage_edit__allow_groups__    ={None:None}
 
     def document_template_form_header(self):
+	try: roles=join(self.__roles__)
+	except: roles=''
 	return ("""<br>Title: 
                    <input type=text name=title SIZE="50" value="%s">
-                   <P>""" % self.title)
+		   <br>Roles:
+                   <input type=text name=roles SIZE="50" value="%s">
+                   <P>""" % (self.title, roles))
 
-    def manage_edit(self,data,title,REQUEST=None):
+    def manage_edit(self,data,title,roles,REQUEST=None):
 	"""Edit method"""
 	self.title=title
+	AccessControl.ACL.parse_roles_string(self, roles)
 	return HTML.manage_edit(self,data,REQUEST)
 
 
@@ -44,11 +51,12 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
-    def manage_addDocument(self,id,title,REQUEST,file=''):
+    def manage_addDocument(self,id,title,roles,REQUEST,file=''):
 	"""Add a new Document object"""
 	if not file: file=default_html
         i=Document(file, __name__=id)
 	i.title=title
+	AccessControl.ACL.parse_roles_string(i, roles)
 	self._setObject(id,i)
 	return self.manage_main(self,REQUEST)
 

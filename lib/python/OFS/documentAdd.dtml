@@ -23,6 +23,12 @@
   </TD>
 </TR>
 <TR>
+  <TD ALIGN="LEFT" VALIGN="TOP"><B>Roles of authorized users</B></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="roles" SIZE="50">
+  </TD>
+</TR>
+<TR>
   <TD ALIGN="LEFT" VALIGN="TOP"><B>File</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="file" NAME="file:string" SIZE="30" VALUE="">

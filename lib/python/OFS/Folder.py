@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.3 1997/08/08 13:40:01 jim Exp $"""
+$Id: Folder.py,v 1.4 1997/08/08 15:51:28 jim Exp $"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -19,6 +19,9 @@ class FolderHandler:
     meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
 
     manage_addFolderForm=HTMLFile('OFS/folderAdd')
+
+    def __init__(self):
+	self.__allow_groups__=self.AccessControlLists=ACL()
 
     def folderClass(self):
 	return Folder
@@ -75,12 +78,10 @@ class Folder(ObjectManager,DocumentHandler,ImageHandler,FolderHandler):
     {'icon':'OFS/properties.jpg', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
     {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
-     'action':'ACL/manage_main',                    'target':'manage_main'},
+     'action':'AccessControlLists/manage_main',                    'target':'manage_main'},
     {'icon':'App/help.jpg', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
     )
-
-    ACL=ACL()
 
 
 

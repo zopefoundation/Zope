@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.3 1997/08/06 18:26:12 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Application.py,v 1.4 1997/08/08 15:51:27 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Folder, regex, string
 import Globals
@@ -20,6 +20,7 @@ import Globals
 class Application(Folder.Folder):
 
     id='Your Place'
+    __roles__=None
     title=''
     web__form__method='GET'
     manage_options=Folder.Folder.manage_options+(
@@ -112,6 +113,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.4  1997/08/08 15:51:27  jim
+# Added access control support
+#
 # Revision 1.3  1997/08/06 18:26:12  jim
 # Renamed description->title and name->id and other changes
 #
