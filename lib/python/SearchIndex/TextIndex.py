@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -210,32 +210,43 @@ BTree=BTree.BTree
 IIBTree=IIBTree.Bucket
 from intSet import intSet
 import operator
-getitem=operator.__getitem__
 from Splitter import Splitter
 from string import strip
 import string, regex, regsub
 
 class TextIndex(Persistent):
 
-    def __init__(self,data=None,schema=None,id=None):
+    def __init__(self, data=None, schema=None, id=None,
+                 ignore_ex=None, call_methods=None):
         """Create an index
 
         The arguments are:
 
-          'data' -- a mapping from integer object ids to objects or records,
+          'data' -- a mapping from integer object ids to objects or
+          records,
 
-          'schema' -- a mapping from item name to index into data records.
-              If 'data' is a mapping to objects, then schema should ne 'None'.
+          'schema' -- a mapping from item name to index into data
+          records.  If 'data' is a mapping to objects, then schema
+          should ne 'None'.
 
-          'id' -- the name of the item attribute to index.  This is either
-              an attribute name or a record key.
+          'id' -- the name of the item attribute to index.  This is
+          either an attribute name or a record key.
+
+          'ignore_ex' -- Tells the indexer to ignore exceptions that
+          are rasied when indexing an object.
+
+          'call_methods' -- Tells the indexer to call methods instead
+          of getattr or getitem to get an attribute.
+
         """
         ######################################################################
         # For b/w compatability, have to allow __init__ calls with zero args
-        if not data==schema==id==None:
+        if not data==schema==id==ignore_ex==call_methods==None:
             self._data=data
             self._schema=schema
             self.id=id
+            self.ignore_ex=ignore_ex
+            self.call_methods=call_methods
             self._index=BTree()
             self._syn=stop_word_dict
             self._reindex()
@@ -245,46 +256,66 @@ class TextIndex(Persistent):
     # for backwards compatability
     _init = __init__
 
+
     def clear(self):
-        self._index=BTree()
+        self._index = BTree()
+
 
     def positions(self, docid, words):
         """Return the positions in the document for the given document
         id of the word, word."""
-        id=self.id
-        if self._schema is None:
-            f=getattr
-        else:
-            f=getitem
-            id=self._schema[id]
+        id = self.id
 
-        row=self._data[docid]
-        doc=str(f(row,id))
-        r=[]
+        if self._schema is None:
+            f = getattr
+        else:
+            f = operator.__getitem__
+            id = self._schema[id]
+
+
+        row = self._data[docid]
+
+        if self.call_methods:
+            doc = str(f(row, id)())
+        else:
+            doc = str(f(row, id))
+
+        r = []
         for word in words:
-            r=r+Splitter(doc, self._syn).indexes(word)
+            r = r+Splitter(doc, self._syn).indexes(word)
         return r
 
-    def index_item(self,i,un=0):
-        """Recompute index data for data with ids >= start."""
 
-        id=self.id
+    def index_item(self, i, obj=None, un=0):
+        """Recompute index data for data with ids >= start.
+        if 'obj' is passed in, it is indexed instead of _data[i]"""
+
+        id = self.id
         if self._schema is None:
-            f=getattr
+            f = getattr
         else:
-            f=getitem
-            id=self._schema[id]
+            f = operator.__getitem__
+            id = self._schema[id]
 
-        row=self._data[i]
-        k=str(f(row,id))
+        if obj is None:
+            obj = self._data[i]
 
-        self._index_document(k,i,un)
+        if self.call_methods:
+            k = str(f(obj, id)())
+        else:
+            k = str(f(obj, id))
 
-    def unindex_item(self, i): return self.index_item(i,1)
+        self._index_document(k, i ,un)
 
-    def _reindex(self,start=0):
+
+    def unindex_item(self, i, obj=None): 
+        return self.index_item(i, obj, 1)
+
+
+    def _reindex(self, start=0):
         """Recompute index data for data with ids >= start."""
         for i in self._data.keys(start): self.index_item(i)
+
 
     def _index_document(self, document_text, id, un=0,
                         tupleType=type(()),
@@ -293,21 +324,21 @@ class TextIndex(Persistent):
         src = Splitter(document_text, self._syn)  
 
         d = {}
-        old=d.has_key
-        last=None
+        old = d.has_key
+        last = None
         
         for s in src:
-            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
+            if s[0] == '\"': last=self.subindex(s[1:-1], d, old, last)
             else:
                 if old(s):
-                    if s != last: d[s]=d[s]+1
-                else: d[s]=1
+                    if s != last: d[s] = d[s]+1
+                else: d[s] = 1
 
-        index=self._index
-        get=index.get
+        index = self._index
+        get = index.get
         if un:
             for word,score in d.items():
-                r=get(word)
+                r = get(word)
                 if r is not None:
                     if type(r) is tupleType: del index[word]
                     else:
@@ -315,27 +346,28 @@ class TextIndex(Persistent):
                         if type(r) is dictType:
                             if len(r) < 2:
                                 if r:
-                                    for k, v in r.items(): index[word]=k,v
+                                    for k, v in r.items(): index[word] = k,v
                                 else: del index[word]
-                            else: index[word]=r
+                            else: index[word] = r
         else:
             for word,score in d.items():
-                r=get(word)
+                r = get(word)
                 if r is not None:
-                    r=index[word]
+                    r = index[word]
                     if type(r) is tupleType:
-                        r={r[0]:r[1]}
-                        r[id]=score
-                        index[word]=r
+                        r = {r[0]:r[1]}
+                        r[id] = score
+                        index[word] = r
                     elif type(r) is dictType:
                         if len(r) > 4:
-                            b=IIBTree()
-                            for k, v in r.items(): b[k]=v
-                            r=b
-                        r[id]=score
-                        index[word]=r
-                    else: r[id]=score
-                else: index[word]=id,score
+                            b = IIBTree()
+                            for k, v in r.items(): b[k] = v
+                            r = b
+                        r[id] = score
+                        index[word] = r
+                    else: r[id] = score
+                else: index[word] = id, score
+
 
     def _subindex(self, isrc, d, old, last):
 
@@ -345,69 +377,72 @@ class TextIndex(Persistent):
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
             else:
                 if old(s):
-                    if s != last: d[s]=d[s]+1
-                else: d[s]=1
+                    if s != last: d[s] = d[s]+1
+                else: d[s] = 1
 
         return last
+
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
         """
         src = tuple(Splitter(word, self._syn))
-        if not src: return ResultList({},(word,),self)
+        if not src: return ResultList({}, (word,), self)
         if len(src) == 1:
             src=src[0]
             if src[:1]=='"' and src[-1:]=='"': return self[src]
-            r=self._index.get(word,None)
-            if r is None: r={}
-            return ResultList(r,(word,),self)
+            r = self._index.get(word,None)
+            if r is None: r = {}
+            return ResultList(r, (word,), self)
             
-        r=None
+        r = None
         for word in src:
-            rr=self[word]
-            if r is None: r=rr
-            else: r=r.near(rr)
+            rr = self[word]
+            if r is None: r = rr
+            else: r = r.near(rr)
 
         return r
 
-    def _apply_index(self, request, cid='', ListType=[]):
-        """Apply the index to query parameters given in the argument, request
+
+    def _apply_index(self, request, cid='', ListType=[]): 
+        """ Apply the index to query parameters given in the argument,
+        request
 
         The argument should be a mapping object.
 
-        If the request does not contain the needed parameters, then None is
-        returned.
+        If the request does not contain the needed parameters, then
+        None is returned.
 
         Otherwise two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
         records.  The second object is a tuple containing the names of
-        all data fields used.
+        all data fields used.  
         """
 
-        id=self.id
+        id = self.id
 
-        cidid="%s/%s" % (cid,id)
-        has_key=request.has_key
-        if has_key(cidid): keys=request[cidid]
-        elif has_key(id): keys=request[id]
+        cidid = "%s/%s" % (cid, id)
+        has_key = request.has_key
+        if has_key(cidid): keys = request[cidid]
+        elif has_key(id): keys =request[id]
         else: return None
 
         if type(keys) is type(''):
             if not keys or not strip(keys): return None
-            keys=[keys]
-        r=None
+            keys = [keys]
+        r = None
         for key in keys:
-            key=strip(key)
+            key = strip(key)
             if not key: continue
-            rr=intSet()
+            rr = intSet()
             try:
                 for i,score in query(key,self).items():
                     if score: rr.insert(i)
             except KeyError: pass
-            if r is None: r=rr
+            if r is None: r = rr
             else:
                 # Note that we *and*/*narrow* multiple search terms.
-                r=r.intersection(rr) 
+                r = r.intersection(rr) 
 
         if r is not None: return r, (id,)
         return intSet(), (id,)
@@ -415,74 +450,78 @@ class TextIndex(Persistent):
 class ResultList:
   
     def __init__(self, d, words, index, TupleType=type(())):
-        self._index=index
-        self._words=words
+        self._index = index
+        self._words = words
         if (type(d) is TupleType): self._dict = { d[0] : d[1] }
         else: self._dict = d
     
     def __len__(self): return len(self._dict)
+
     def __getitem__(self, key): return self._dict[key]
+
     def keys(self): return self._dict.keys()
+
     def has_key(self, key): return self._dict.has_key(key)
+
     def items(self): return self._dict.items()  
 
     def __and__(self, x):
         result = {}
-        dict=self._dict
-        xdict=x._dict
-        xhas=xdict.has_key
+        dict = self._dict
+        xdict = x._dict
+        xhas = xdict.has_key
         for id, score in dict.items():
-            if xhas(id): result[id]=xdict[id]+score
+            if xhas(id): result[id] = xdict[id]+score
     
         return self.__class__(result, self._words+x._words, self._index)
 
     def and_not(self, x):
         result = {}
-        dict=self._dict
-        xdict=x._dict
-        xhas=xdict.has_key
+        dict = self._dict
+        xdict = x._dict
+        xhas = xdict.has_key
         for id, score in dict.items():
-            if not xhas(id): result[id]=xdict[id]+score
+            if not xhas(id): result[id] = xdict[id]+score
     
         return self.__class__(result, self._words, self._index)
   
     def __or__(self, x):
         result = {}
-        dict=self._dict
-        has=dict.has_key
-        xdict=x._dict
-        xhas=xdict.has_key
+        dict = self._dict
+        has = dict.has_key
+        xdict = x._dict
+        xhas = xdict.has_key
         for id, score in dict.items():
-            if xhas(id): result[id]=xdict[id]+score
-            else: result[id]=score
+            if xhas(id): result[id] = xdict[id]+score
+            else: result[id] = score
 
         for id, score in xdict.items():
-            if not has(id): result[id]=score
+            if not has(id): result[id] = score
     
         return self.__class__(result, self._words+x._words, self._index)
 
     def near(self, x):
         result = {}
-        dict=self._dict
-        xdict=x._dict
-        xhas=xdict.has_key
-        positions=self._index.positions
+        dict = self._dict
+        xdict = x._dict
+        xhas = xdict.has_key
+        positions = self._index.positions
         for id, score in dict.items():
             if not xhas(id): continue
             p=(map(lambda i: (i,0), positions(id,self._words))+
                map(lambda i: (i,1), positions(id,x._words)))
             p.sort()
-            d=lp=9999
-            li=None
-            lsrc=None
+            d = lp = 9999
+            li = None
+            lsrc = None
             for i,src in p:
                 if i is not li and src is not lsrc and li is not None:
-                    d=min(d,i-li)
-                li=i
-                lsrc=src
-            if d==lp: score=min(score,xdict[id]) # synonyms
-            else: score=(score+xdict[id])/d
-            result[id]=score
+                    d = min(d,i-li)
+                li = i
+                lsrc = src
+            if d==lp: score = min(score,xdict[id]) # synonyms
+            else: score = (score+xdict[id])/d
+            result[id] = score
     
         return self.__class__(result, self._words+x._words, self._index)
 

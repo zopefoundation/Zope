@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -96,6 +96,7 @@ import string
 ListType=type([])
 StringType=type('s')
 
+
 def nonEmpty(s):
     "returns true if a non-empty string or any other (nonstring) type"
     if type(s) is StringType:
@@ -104,29 +105,37 @@ def nonEmpty(s):
     else:
         return 1
 
+
 class Index(Persistent):
     """Index object interface"""
 
-    def __init__(self,data=None,schema=None,id=None):
+    def __init__(self, data=None, schema=None, id=None,
+                 ignore_ex=None, call_methods=None):
         """Create an index
 
         The arguments are:
 
-          'data' -- a mapping from integer object ids to objects or records,
+          'data' -- a mapping from integer object ids to objects or
+          records,
 
-          'schema' -- a mapping from item name to index into data records.
-              If 'data' is a mapping to objects, then schema should ne 'None'.
+          'schema' -- a mapping from item name to index into data
+          records.  If 'data' is a mapping to objects, then schema
+          should ne 'None'.
 
-          'id' -- the name of the item attribute to index.  This is either
-              an attribute name or a record key.
+          'id' -- the name of the item attribute to index.  This is
+          either an attribute name or a record key.
+
         """
 	######################################################################
 	# For b/w compatability, have to allow __init__ calls with zero args
-        if not data==schema==id==None:
-            self._data=data
-            self._schema=schema
-            self.id=id
-            self._index=BTree()
+
+        if not data==schema==id==ignore_ex==call_methods==None:
+            self._data = data
+            self._schema = schema
+            self.id = id
+            self.ignore_ex=ignore_ex
+            self.call_methods=call_methods
+            self._index = BTree()
             
             self._reindex()
         else:
@@ -135,12 +144,14 @@ class Index(Persistent):
     # for b/w compatability
     _init = __init__
 
+
     def dpHasUniqueValuesFor(self, name):
         ' has unique values for column NAME '
         if name == self.id:
             return 1
         else:
             return 0
+
 
     def dpUniqueValues(self, name=None, withLengths=0):
         """\
@@ -163,10 +174,12 @@ class Index(Persistent):
                 else: rl.append((i, len(self._index[i])))
             return tuple(rl)
 
-    def clear(self):
-        self._index=BTree()
 
-    def _reindex(self,start=0):
+    def clear(self):
+        self._index = BTree()
+
+
+    def _reindex(self, start=0):
         """Recompute index data for data with ids >= start."""
 
         index=self._index
@@ -174,12 +187,12 @@ class Index(Persistent):
         
         if not start: index.clear()
 
-        id=self.id
+        id = self.id
         if self._schema is None:
             f=getattr
         else:
-            f=operator.__getitem__
-            id=self._schema[id]
+            f = operator.__getitem__
+            id = self._schema[id]
 
         for i,row in self._data.items(start):
             k=f(row,id)
@@ -187,59 +200,73 @@ class Index(Persistent):
             if k is None or k == MV: continue
 
             set=get(k)
-            if set is None: index[k]=set=intSet()
+            if set is None: index[k] = set = intSet()
             set.insert(i)
 
-    def index_item(self,i):
+
+    def index_item(self, i, obj=None):
         """Recompute index data for data with ids >= start."""
 
-        index=self._index
+        index = self._index
 
-        id=self.id
+        id = self.id
         if self._schema is None:
-            f=getattr
+            f = getattr
         else:
-            f=operator.__getitem__
-            id=self._schema[id]
+            f = operator.__getitem__
+            id = self._schema[id]
 
-        row=self._data[i]
-        k=f(row,id)
+        if obj is None:
+            obj = self._data[i]
+
+        if self.call_methods:
+            k = f(obj, id)()
+        else:
+            k = f(obj, id)
 
         if k is None or k == MV: return
 
-        set=index.get(k)
-        if set is None: index[k]=set=intSet()
+        set = index.get(k)
+        if set is None: index[k] = set = intSet()
         set.insert(i)
 
-    def unindex_item(self,i):
+
+    def unindex_item(self, i, obj=None):
         """Recompute index data for data with ids >= start."""
 
-        index=self._index
+        index = self._index
 
-        id=self.id
+        id = self.id
         if self._schema is None:
-            f=getattr
+            f = getattr
         else:
-            f=operator.__getitem__
-            id=self._schema[id]
+            f = operator.__getitem__
+            id = self._schema[id]
 
-        row=self._data[i]
-        k=f(row,id)
+        if obj is None:
+            obj = self._data[i]
+
+        if self.call_methods:
+            k = f(obj, id)()
+        else:
+            k = f(obj, id)        
         
-        set=index.get(k)
+        set = index.get(k)
         if set is not None: set.remove(i)
 
-    def _apply_index(self, request, cid=''):
-        """Apply the index to query parameters given in the argument, request
+
+    def _apply_index(self, request, cid=''): 
+        """Apply the index to query parameters given in the argument,
+        request
 
         The argument should be a mapping object.
 
-        If the request does not contain the needed parameters, then None is
-        returned.
+        If the request does not contain the needed parameters, then
+        None is returned.
 
-        If the request contains a parameter with the name of the column
-        + '_usage', it is sniffed for information on how to handle applying
-        the index.
+        If the request contains a parameter with the name of the
+        column + '_usage', it is sniffed for information on how to
+        handle applying the index.
 
         Otherwise two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
@@ -247,19 +274,19 @@ class Index(Persistent):
         all data fields used.
 
         """
-        id=self.id              #name of the column
+        id = self.id              #name of the column
 
-        cidid="%s/%s" % (cid,id)
-        has_key=request.has_key
-        if has_key(cidid): keys=request[cidid]
-        elif has_key(id): keys=request[id]
+        cidid = "%s/%s" % (cid,id)
+        has_key = request.has_key
+        if has_key(cidid): keys = request[cidid]
+        elif has_key(id): keys = request[id]
         else: return None
 
         if type(keys) is not ListType: keys=[keys]
-        index=self._index
-        r=None
-        anyTrue=0
-        opr=None
+        index = self._index
+        r = None
+        anyTrue = 0
+        opr = None
 
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
@@ -267,26 +294,26 @@ class Index(Persistent):
             opr, opr_args=opr[0], opr[1:]
 
         if opr=="range":
-            if 'min' in opr_args: lo=min(keys)
-            else: lo=None
-            if 'max' in opr_args: hi=max(keys)
-            else: hi=None
+            if 'min' in opr_args: lo = min(keys)
+            else: lo = None
+            if 'max' in opr_args: hi = max(keys)
+            else: hi = None
 
             anyTrue=1
             try:
-                if hi: setlist=index.items(lo,hi)
-                else:  setlist=index.items(lo)
+                if hi: setlist = index.items(lo,hi)
+                else:  setlist = index.items(lo)
                 for k,set in setlist:
-                    if r is None: r=set
-                    else: r=r.union(set)
+                    if r is None: r = set
+                    else: r = r.union(set)
             except KeyError: pass
         else:           #not a range
-            get=index.get
+            get = index.get
             for key in keys:
-                if key: anyTrue=1
+                if key: anyTrue = 1
                 set=get(key)
                 if set is not None:
-                    if r is None: r=set
+                    if r is None: r = set
                     else: r = r.union(set)
 
         if r is None:
@@ -294,3 +321,19 @@ class Index(Persistent):
             else: return None
 
         return r, (id,)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
