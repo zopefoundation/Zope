@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''Base Principia
-$Id: __init__.py,v 1.14 1998/05/20 22:07:41 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: __init__.py,v 1.15 1998/05/21 13:52:23 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -78,6 +78,7 @@ __ac_permissions__=(
     ('Change Sessions', ()),
     ('Join/leave Sessions', ()),
     ('Save/discard Session changes', ()),
+    ('Manage users', ()),
     #('Add DraftFolders',
     # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
     )
@@ -85,6 +86,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.15  1998/05/21 13:52:23  jim
+# Updated permissions.
+#
 # Revision 1.14  1998/05/20 22:07:41  jim
 # Updated permissions.
 #
