@@ -126,10 +126,14 @@ class HTMLParser(markupbase.ParserBase):
         """Return full source of start tag: '<...>'."""
         return self.__starttag_text
 
-    def set_cdata_mode(self):
+    cdata_endtag = None
+
+    def set_cdata_mode(self, endtag=None):
+        self.cdata_endtag = endtag
         self.interesting = interesting_cdata
 
     def clear_cdata_mode(self):
+        self.cdata_endtag = None
         self.interesting = interesting_normal
 
     # Internal -- handle data as far as reasonable.  May leave state
@@ -290,7 +294,7 @@ class HTMLParser(markupbase.ParserBase):
         else:
             self.handle_starttag(tag, attrs)
             if tag in self.CDATA_CONTENT_ELEMENTS:
-                self.set_cdata_mode()
+                self.set_cdata_mode(tag)
         return endpos
 
     # Internal -- check to see if we have a complete starttag; return end
@@ -336,8 +340,15 @@ class HTMLParser(markupbase.ParserBase):
         match = endtagfind.match(rawdata, i) # </ + tag + >
         if not match:
             self.error("bad end tag: %s" % `rawdata[i:j]`)
-        tag = match.group(1)
-        self.handle_endtag(tag.lower())
+        tag = match.group(1).lower()
+        if (  self.cdata_endtag is not None
+              and tag != self.cdata_endtag):
+            # Should be a mismatched end tag, but we'll treat it
+            # as text anyway, since most HTML authors aren't
+            # interested in the finer points of syntax.
+            self.handle_data(match.group(0))
+        else:
+            self.handle_endtag(tag)
         return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>
