@@ -1,11 +1,11 @@
 """Document object"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
 from AccessControl.Role import RoleManager
-from SimpleItem import Item_w__name__
+from SimpleItem import Item_w__name__, pretty_tb
 from Acquisition import Explicit
 import regex, Globals, sys
 import cDocumentTemplate
@@ -310,38 +310,4 @@ def decapitate(html, RESPONSE=None,
 	RESPONSE.setHeader(k,v)
 
     return html
-
-def format_exception(etype,value,tb,limit=None):
-    import traceback
-    result=['Traceback (innermost last):']
-    if limit is None:
-	    if hasattr(sys, 'tracebacklimit'):
-		    limit = sys.tracebacklimit
-    n = 0
-    while tb is not None and (limit is None or n < limit):
-	    f = tb.tb_frame
-	    lineno = tb.tb_lineno
-	    co = f.f_code
-	    filename = co.co_filename
-	    name = co.co_name
-	    locals=f.f_locals
-	    result.append('  File %s, line %d, in %s'
-			  % (filename,lineno,name))
-	    try: result.append('    (Object: %s)' %
-			       locals[co.co_varnames[0]].__name__)
-	    except: pass
-	    try: result.append('    (Info: %s)' %
-			       str(locals['__traceback_info__']))
-	    except: pass
-	    tb = tb.tb_next
-	    n = n+1
-    result.append(join(traceback.format_exception_only(etype, value),
-		       ' '))
-#    sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
-    return result
-
-def pretty_tb(t,v,tb):
-    tb=format_exception(t,v,tb,200)
-    tb=join(tb,'\n')
-    return tb
 
