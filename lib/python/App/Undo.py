@@ -12,12 +12,13 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.28 2002/02/07 17:37:10 andreasjung Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: Undo.py,v 1.29 2002/02/08 17:16:57 matt Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
 from AccessControl import getSecurityManager
+from string import join
 import base64
 
 class UndoSupport(ExtensionClass.Base):
