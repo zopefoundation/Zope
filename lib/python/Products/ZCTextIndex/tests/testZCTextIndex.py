@@ -12,9 +12,14 @@
 #
 ##############################################################################
 
+from Interface import verify_class_implementation
+
+from Products.PluginIndexes.common.PluggableIndex import \
+     PluggableIndexInterface
+
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
-from Products.ZCTextIndex.tests \
-     import testIndex, testQueryEngine, testQueryParser
+from Products.ZCTextIndex.tests import \
+     testIndex, testQueryEngine, testQueryParser
 from Products.ZCTextIndex.BaseIndex import \
      scaled_int, SCALE_FACTOR, inverse_doc_frequency
 from Products.ZCTextIndex.CosineIndex import CosineIndex
@@ -182,6 +187,9 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     # an example set of documents in queries in Managing
     # Gigabytes, pp. 180-188.  This test peeks into many internals of the
     # cosine indexer.
+
+    def testInterface(self):
+        verify_class_implementation(PluggableIndexInterface, ZCTextIndex)
 
     def testRanking(self):
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
