@@ -12,7 +12,7 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, ExtensionClass, difflib
 from DateTime import DateTime
@@ -36,7 +36,7 @@ class HystoryJar:
 
     def commit(self, object, transaction):
         if object._p_changed:
-            raise TemporalParadox, "You can\'t change history!"
+            raise TemporalParadox, "You can't change history!"
 
     def abort(*args, **kw): pass
 
@@ -53,7 +53,7 @@ def historicalRevision(self, serial):
     return rev
 
 class Historian(Implicit):
-    """An Historian\'s job is to find hysterical revisions of
+    """An Historian's job is to find hysterical revisions of
     objects, given a time."""
 
     def __getitem__(self, key):
@@ -68,7 +68,7 @@ class Historian(Implicit):
         return rev.__of__(self.aq_parent)
 
     def manage_workspace(self, REQUEST):
-        "We aren\'t real, so we delegate to that that spawned us!"
+        "We aren't real, so we delegate to that that spawned us!"
         raise 'Redirect', REQUEST['URL2']+'/manage_change_history_page'
 
 class Historical(ExtensionClass.Base):
