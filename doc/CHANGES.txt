@@ -19,9 +19,14 @@ Zope Changes
 
         - Default bobobase now includes a Zope button along with a link
           to the Zope site. This satisfies the ZPL attribution requirement.
-          The button is created by a new builtin method 'ZopeAttributionButton'.
-          Also, both the source and the binary distributions now have the
-          same default bobobase.
+          The button is created by a new builtin method
+	  'ZopeAttributionButton'. Also, both the source and the binary
+	  distributions now have the same default bobobase.
+
+        - Made the logic for getting SOFTWARE_HOME a bit more robust, so that 
+          it handles relative paths and paths starting with '.' and '..'.
+          This is useful when simply importing Main from the Python
+          prompt in the lib/python directory.
 
       Bugs Fixed
  
