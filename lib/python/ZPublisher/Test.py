@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.24 1998/09/21 23:58:25 jim Exp $
+$Id: Test.py,v 1.25 1998/10/23 17:59:07 jim Exp $
 '''
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -144,8 +144,9 @@ def main():
 
     try:
         optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:s')
-        if len(args) > 2 or len(args) < 2: raise TypeError, None
-        if len(args) == 2: path_info=args[1]
+        if len(args) < 1 or len(args) > 2: raise TypeError, None
+        elif len(args)==1: args=args[0],'/'
+        path_info=args[1]
     except:
         sys.stderr.write(__doc__)
         sys.exit(-1)
@@ -233,7 +234,9 @@ except:
     def getlineno(code):
         return code.co_firstlineno
 
-def publish(script,path_info,u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
+defaultModule='Main'
+def publish(script=None,path_info='/',
+            u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
 
     profile=p
     debug=d
@@ -241,7 +244,7 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
     silent=s
     if e is None: e={}
 
-    if not script: script='+Main'
+    if script is None: script=defaultModule
     if script[0]=='+': script='../../lib/python/'+script[1:]
 
     env=e
