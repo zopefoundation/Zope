@@ -178,7 +178,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
         ob = container.new_or_existing(key)
-        if hasattr(ob, '__of__') and hasattr(ob, 'aq_parent'):
+        # hasattr hides conflicts
+        if getattr(ob, '__of__', None) and getattr(ob, 'aq_parent', None):
             # splice ourselves into the acquisition chain
             return ob.__of__(self.__of__(ob.aq_parent))
         return ob.__of__(self)
@@ -188,7 +189,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         container = self._getSessionDataContainer()
         ob = container.get(key)
         if ob is not None:
-            if hasattr(ob, '__of__') and hasattr(ob, 'aq_parent'):
+            # hasattr hides conflicts
+            if getattr(ob, '__of__', None) and getattr(ob, 'aq_parent', None):
                 # splice ourselves into the acquisition chain
                 return ob.__of__(self.__of__(ob.aq_parent))
             return ob.__of__(self)
@@ -205,7 +207,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # currently fails for mounted storages.  This might
             # be construed as a security hole, albeit a minor one.
             # unrestrictedTraverse is also much faster.
-            if DEBUG and not hasattr(self, '_v_wrote_dc_type'):
+            # hasattr hides conflicts
+            if DEBUG and not getattr(self, '_v_wrote_dc_type', None):
                 args = string.join(self.obpath, '/')
                 LOG('Session Tracking', BLATHER,
                     'External data container at %s in use' % args)
