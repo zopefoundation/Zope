@@ -32,7 +32,9 @@ Zope Changes
 
           - index creation
 
-
+      - The last entry in the breadcrumb path in the ZMI is now an
+        underlined hyperlink.
+  
     Bugs Fixed
     
       - STXNG: added '+' as allowed character inside URLs
