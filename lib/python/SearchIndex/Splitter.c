@@ -178,7 +178,7 @@ check_synstop(Splitter *self, PyObject *word)
     /*************************************************************
       Test whether a word has any letters.                       *
                                                                  */    
-    for (; --len >= 0 && ! isalpha(cword[len]); );
+    for (; --len >= 0 && ! isalpha((unsigned char)cword[len]); );
     if (len < 0)
     {
         Py_INCREF(Py_None);
@@ -234,7 +234,7 @@ next_word(Splitter *self, char **startpos, char **endpos)
       c=tolower(*here);
       
       /* Check to see if this character is part of a word */
-      if(isalnum(c) || c=='/')
+      if(isalnum((unsigned char)c) || c=='/')
         { /* Found a word character */
 	  if(startpos && i==0) *startpos=here;
 	  if(i++ < MAX_WORD) *b++ = c;
@@ -480,7 +480,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.12 1999/03/10 00:15:36 klm Exp $\n"
+"$Id: Splitter.c,v 1.13 2000/09/13 14:54:15 brian Exp $\n"
 ;
 
 
@@ -488,7 +488,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.12 $";
+  char *rev="$Revision: 1.13 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
