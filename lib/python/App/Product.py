@@ -169,22 +169,23 @@ class Product(Folder):
         pp=id+'.'
         lpp=len(pp)
         ed=os.path.join(SOFTWARE_HOME,'Extensions')
-        for name in os.listdir(ed):
-            suffix=''
-            if name[:lpp]==pp:
-                path=os.path.join(ed, name)
-                try:
-                    f=open(path)
-                    data=f.read()
-                    f.close()
-                    if name[-3:]=='.py':
-                        data=rot.encrypt(zlib.compress(data))
-                        suffix='p'
-                except: data=None
-                if data:
-                    ar.add("%sExtensions/%s%s" %
-                           (prefix,name[lpp:],suffix),
-                           data)
+        if os.path.exists(ed):
+            for name in os.listdir(ed):
+                suffix=''
+                if name[:lpp]==pp:
+                    path=os.path.join(ed, name)
+                    try:
+                        f=open(path)
+                        data=f.read()
+                        f.close()
+                        if name[-3:]=='.py':
+                            data=rot.encrypt(zlib.compress(data))
+                            suffix='p'
+                    except: data=None
+                    if data:
+                        ar.add("%sExtensions/%s%s" %
+                               (prefix,name[lpp:],suffix),
+                               data)
 
         # version.txt
         ar.add(prefix+'version.txt', self.version)
