@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 import sys, os, math, regex, DateTimeZone
@@ -636,7 +636,7 @@ class DateTime:
     SyntaxError  ='Invalid Date-Time String'
     DateError    ='Invalid Date Components'
     int_pattern  =regex.compile('\([0-9]+\)')
-    flt_pattern  =regex.compile('\([0-9]+\.[0-9]+\)')
+    flt_pattern  =regex.compile(':\([0-9]+\.[0-9]+\)')
     name_pattern =regex.compile('\([a-z][a-z]+\)', regex.casefold)
     space_chars  =' \t\n'
     delimiters   ='-/.:,'
@@ -707,12 +707,18 @@ class DateTime:
             else: d=''
             while i < l and string[i] in spaces    : i=i+1
 
-            if fltpat.match(string,i) >= 0:
+            # The float pattern needs to look back 1 character, because it
+            # actually looks for a preceding colon like ':33.33'. This is
+            # needed to avoid accidentally matching the date part of a
+            # dot-separated date string such as '1999.12.31'.
+            if i > 0: b=i-1
+            else: b=i
+            if fltpat.match(string, b) >= 0:
                 s=fltpat.group(1)
                 i=i+len(s)
                 ints.append(atof(s))
                 continue
-
+            
             if intpat.match(string,i) >= 0:
                 s=intpat.group(1)
                 ls=len(s)
