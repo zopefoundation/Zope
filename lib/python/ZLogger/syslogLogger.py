@@ -85,7 +85,7 @@
 from syslog import syslog_client, LOG_ALERT, LOG_ERR, LOG_WARNING, LOG_NOTICE
 from syslog import LOG_INFO, LOG_DEBUG
 
-import os, string
+import os, string, traceback
 
 pid_str='[%s]: ' % os.getpid()
 
@@ -122,6 +122,10 @@ class syslogLogger:
                 sev=LOG_INFO
             else:
                 sev=LOG_DEBUG
-        
+        if err:
+            try: sum = sum + ' : ' + traceback.format_exception_only(
+                                                     err[0], err[1]
+                                                     )[0]
+            except: pass
         if self.on:
             self.client.log(sub + pid_str + sum, priority=sev)
