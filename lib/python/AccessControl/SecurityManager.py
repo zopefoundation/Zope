@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.8 2001/10/26 16:07:50 matt Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: SecurityManager.py,v 1.9 2001/10/26 22:50:22 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -269,7 +269,7 @@ class SecurityManager:
 
 
 try:
-    #raise ImportError
+    raise ImportError # disable C optimization
     import os
     if os.environ.get("ZOPE_SECURITY_POLICY", None) == "PYTHON":
         raise ImportError # :)
