@@ -13,7 +13,7 @@
 <tr>
   <td align="left" valign="top">
   <p class="form-help"> Updating the catalog will update all catalog
-  records and remove invalid records. It does this by deleting all
+  records and remove invalid records. It does this by clearing all
   indexes and re-cataloging all currently indexed objects.
   </p>
   </td>
