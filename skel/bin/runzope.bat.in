@@ -1,6 +1,7 @@
-set PYTHON=<<PYTHON>>
-set ZOPE_HOME=<<ZOPE_HOME>>
-set INSTANCE_HOME=<<INSTANCE_HOME>>
-set CONFIG_FILE=%INSTANCE_HOME%\etc\zope.conf
-set PYTHONPATH=%ZOPE_HOME%\lib\python
-"%PYTHON%" "%ZOPE_HOME%\bin\runzope.py" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5 %6 %7
+@set PYTHON=<<PYTHON>>
+@set ZOPE_HOME=<<ZOPE_HOME>>
+@set INSTANCE_HOME=<<INSTANCE_HOME>>
+@set CONFIG_FILE=%INSTANCE_HOME%\etc\zope.conf
+@set PYTHONPATH=%ZOPE_HOME%\lib\python
+@set ZOPE_RUN=%ZOPE_HOME%\lib\python\Zope\Startup\run.py
+"%PYTHON%" "%ZOPE_RUN%" -C "%CONFIG_FILE%" %1 %2 %3 %4 %5 %6 %7
