@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#!/usr/bin/env python2.3
+
 ##############################################################################
 #
 # Copyright (c) 2002 Zope Corporation and Contributors. All Rights Reserved.
@@ -375,7 +376,9 @@ setup(
 
     packages=['OFS', 'OFS.tests'],
     data_files=[['OFS', ['OFS/mime.types']],
-                ['OFS/tests', ['OFS/tests/mime.types-?']],
+                ['OFS/tests',
+                    ['OFS/tests/mime.types-?',
+                     'OFS/tests/*.gif']],
                 ['OFS/dtml', ['OFS/dtml/*']],
                 ['OFS/standard', ['OFS/standard/*']],
                 ['OFS/www', ['OFS/www/*']]],
@@ -1141,4 +1144,3 @@ distutils.core.setup(
              "utilities/compilezpy.py", "utilities/decompilezpy.py"],
     distclass=ZopeDistribution,
     )
-
