@@ -117,10 +117,11 @@ from PubCore import handle
 from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
 
-from medusa.http_server import http_server, http_channel, VERSION_STRING
+from medusa.http_server import http_server,get_header, http_channel, VERSION_STRING
 import asyncore
-from medusa import counter, producers, max_sockets
-from medusa.default_handler import split_path, unquote, get_header
+from medusa import counter, producers
+from medusa.test import  max_sockets
+from medusa.default_handler import unquote
 from asyncore import compact_traceback, dispatcher
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
@@ -141,13 +142,6 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
             'connection'        : 'CONNECTION_TYPE',
             }
 
-
-# stolen from Medusa
-def get_header (head_reg, lines, group=1):
-    for line in lines:
-        if head_reg.match (line):
-            return head_reg.group(group)
-    return ''
 
 class zhttp_collector:
     def __init__(self, handler, request, size):
@@ -243,7 +237,9 @@ class zhttp_handler:
                         workdir=os.getcwd(),
                         ospath=os.path,
                         ):
-        [path, params, query, fragment] = split_path(request.uri)
+
+        (path, params, query, fragment) = request.split_uri()
+    
         while path and path[0] == '/':
             path = path[1:]
         if '%' in path:
