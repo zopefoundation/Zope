@@ -186,7 +186,7 @@ class ZClassMethodsSheet(
     def _delOb(self, id):
         self.delClassAttr(strip(id))
 
-    def _delObject(self,id):
+    def _delObject(self, id, dp=1):
         # Ick!  This is necessary to deal with spaces. Waaa!
         id=strip(id)
         if id=='acl_users':
