@@ -17,7 +17,7 @@ def userdeffn(str):
     from string import upper
     return upper(str)
     
-charstre = "'[^\n']*'"
+charstre = "'[^']*'"
 
 def charstfn(str):
     return str[1:-1]
