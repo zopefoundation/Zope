@@ -155,7 +155,8 @@ class SessionDataManagerInterface:
     def hasSessionData(self):
         """
         Returns true if a Session Data Object associated with the
-        current browser id is found in the Session Data Container.  Does
+        current browser id is found in the Session Data Container.
+        If there is no current browser id, returns false.  Does
         not create a Session Data Object if one does not exist.
 
         Permission required: Access session data
