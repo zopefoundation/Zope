@@ -107,7 +107,15 @@ function toggleSelect() {
   <td align="left" valign="top" width="16">
   <input type="checkbox" name="ids:list" value="&dtml-sequence-key;" />
   </td>
-  <td align="left" valign="top">
+  <td align="left" valign="top" nowrap="1">
+
+  <dtml-if om_icons>
+  <a href="&dtml.url_quote-sequence-key;/manage_workspace">
+  <dtml-in om_icons mapping>
+  <img src="&dtml-BASEPATH1;/&dtml.url_quote-path;" alt="&dtml.missing-alt;" 
+   title="&dtml.missing-title;" border="0" /></dtml-in></a>
+  <dtml-else>
+
   <dtml-if icon>
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
   <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" 
@@ -115,6 +123,9 @@ function toggleSelect() {
   <dtml-else>
   &nbsp;
   </dtml-if>
+
+  </dtml-if>
+
   </td>
   <td align="left" valign="top">
   <div class="list-item">

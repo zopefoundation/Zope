@@ -87,8 +87,12 @@ __doc__='''Package wrapper for Page Templates
 This wrapper allows the Page Template modules to be segregated in a
 separate package.
 
-$Id: __init__.py,v 1.1 2001/03/23 17:19:07 evan Exp $'''
+$Id: __init__.py,v 1.2 2001/10/15 19:52:03 evan Exp $'''
 __version__='$$'[11:-2]
+
+
+# Placeholder for Zope Product data
+misc_ = {}
 
 def initialize(context):
     # Import lazily, and defer initialization to the module

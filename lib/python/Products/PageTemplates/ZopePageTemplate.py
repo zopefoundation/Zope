@@ -87,10 +87,10 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
-from Globals import DTMLFile, MessageDialog, package_home
+from Globals import DTMLFile, ImageFile, MessageDialog, package_home
 from zLOG import LOG, ERROR, INFO
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
@@ -322,6 +322,16 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             return self._text
         return self.read()
 
+    def om_icons(self):
+        """Return a list of icon URLs to be displayed by an ObjectManager"""
+        icons = ({'path': 'misc_/PageTemplates/zpt.gif',
+                  'alt': self.meta_type, 'title': self.meta_type},)
+        if self._v_errors:
+            icons = icons + ({'path': 'misc_/PageTemplates/exclamation.gif',
+                              'alt': 'Error',
+                              'title': 'This template has an error'},)
+        return icons
+
     def __setstate__(self, state):
         ZopePageTemplate.inheritedAttribute('__setstate__')(self, state)
         self._cook()
@@ -374,6 +384,9 @@ def manage_addPageTemplate(self, id, title=None, text=None,
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
+
+from Products.PageTemplates import misc_
+misc_['exclamation.gif'] = ImageFile('www/exclamation.gif', globals())
 
 def initialize(context):
     context.registerClass(
