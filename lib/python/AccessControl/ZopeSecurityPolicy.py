@@ -85,11 +85,11 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.7 2000/07/05 13:51:21 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.8 2001/01/10 20:22:18 chrism Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import SimpleObjectPolicies
-_noroles=[]
+_noroles=SimpleObjectPolicies._noroles
 
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 
@@ -97,8 +97,9 @@ from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 class ZopeSecurityPolicy:
     
     def validate(self, accessed, container, name, value, context,
-                 None=None, type=type, IntType=type(0), DictType=type({}),
-                 getattr=getattr, _noroles=_noroles, StringType=type(''),
+                 roles=_noroles, None=None, type=type, IntType=type(0),
+                 DictType=type({}), getattr=getattr, _noroles=_noroles,
+                 StringType=type(''),
                  Containers=SimpleObjectPolicies.Containers,
                  valid_aq_=('aq_parent','aq_explicit')):
 
@@ -113,14 +114,21 @@ class ZopeSecurityPolicy:
         accessedbase=getattr(accessed, 'aq_base', container)
 
         ############################################################
-        # Try to get roles
-        roles=getattr(value, '__roles__', _noroles)
+        # If roles weren't passed in, we'll try to get them from the object
+
+        if roles is _noroles:
+            roles=getattr(value, '__roles__', _noroles)
+
+        ############################################################
+        # We still might not have any roles
 
         if roles is _noroles:
 
             ############################################################
-            # We have an object without roles. Presumabely, it's
-            # some simple object, like a string or a list.
+            # We have an object without roles and we didn't get a list
+            # of roles passed in. Presumably, the value is some simple
+            # object like a string or a list.  We'll try to get roles
+            # from its container.
             if container is None: return 0 # Bail if no container
 
             roles=getattr(container, '__roles__', _noroles)
