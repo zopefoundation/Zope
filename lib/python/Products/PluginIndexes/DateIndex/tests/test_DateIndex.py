@@ -72,7 +72,7 @@ class DI_Tests(unittest.TestCase):
             result = result.keys()
         self.failUnlessEqual(used, ('date',))
         self.failUnlessEqual(len(result), len(expectedValues),
-            '%s | %s' % (map(None, result), expectedValues))
+            '%s | %s' % (result, expectedValues))
         for k, v in expectedValues:
             self.failUnless(k in result)
 
