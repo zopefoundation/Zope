@@ -45,6 +45,15 @@ Zope changes
         - SQLMethods can now be edited via FTP and WebDAV tools. Thanks to 
           Anthony Baxter for his FTP support patches.
 
+        - The Catalog has been slightly overhauled to manage object
+          paths instead of URLs in its tables.  This should not cause
+          any backward compatability concern, but everyone upgrading
+          should read the web pages on the zope.org site at:
+          http://dev.zope.org/Wikis/DevSite/Projects/ZCatalogVirtualHostFix/UpgradeFAQ
+          this will provide information about how to upgrade and new
+          features on the result sets, like getObject and
+          getPath. These are very important.
+     
       Bugs Fixed
 
         - A misspelled function name which prevented the addition of
