@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -227,6 +227,11 @@ class PropertyManager:
     def propertyMap(self):
         """Return a tuple of mappings, giving meta-data for properties """
         return self._properties
+
+    def propertyLabel(self, id):
+        """Return a label for the given property id
+        """
+        return id
 
     def propdict(self):
         dict={}
