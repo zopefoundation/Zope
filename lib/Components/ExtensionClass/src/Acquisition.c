@@ -346,6 +346,16 @@ static int
 apply_filter(PyObject *filter, PyObject *inst, PyObject *oname, PyObject *r,
 	     PyObject *extra, PyObject *orig)
 {
+  /* Calls the filter, passing arguments.
+
+  Returns 1 if the filter accepts the value, 0 if not, -1 if an
+  exception occurred.
+
+  Note the special reference counting rule: This function decrements
+  the refcount of 'r' when it returns 0 or -1.  When it returns 1, it
+  leaves the refcount unchanged.
+  */
+
   PyObject *fr;
   int ir;
 
@@ -518,12 +528,11 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
       else
 	{
 	  if ((r=PyObject_GetAttr(self->container,oname))) {
-	    if (r == Acquired)
-	      {
-		Py_DECREF(r);
-	      }
+	    if (r == Acquired) {
+	      Py_DECREF(r);
+	    }
 	    else {
-	      if (filter)
+	      if (filter) {
 		switch(apply_filter(filter,self->container,oname,r,
 				    extra,orig))
 		  {
@@ -533,12 +542,16 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 		    if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
 		    return r;
 		  }
-	      else 
-		{
-		  if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
-		  return r;
-		}
+	      }
+	      else {
+		if (has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
+		return r;
+	      }
 	    }
+	  }
+	  else {
+	    /* May be AttributeError or some other kind of error */
+	    return NULL;
 	  }
 	}
     }
@@ -1515,7 +1528,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.60 2002/11/13 17:45:53 jeremy Exp $\n",
+	   "$Id: Acquisition.c,v 1.61 2003/06/10 15:28:46 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
