@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.56 2002/04/03 20:43:59 shane Exp $'''
-__version__='$Revision: 1.56 $'[11:-2]
+$Id: HTTPResponse.py,v 1.57 2002/04/05 16:00:17 htrd Exp $'''
+__version__='$Revision: 1.57 $'[11:-2]
 
 import types, os, sys, re
 from string import translate, maketrans
@@ -264,7 +264,7 @@ class HTTPResponse(BaseResponse):
 
 
         if not self.headers.has_key('content-type'):
-            isHTML=self.isHTML(body)
+            isHTML=self.isHTML(self.body)
             if isHTML: c='text/html'
             else:      c='text/plain'
             self.setHeader('content-type', c)
