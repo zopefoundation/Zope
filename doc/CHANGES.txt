@@ -32,11 +32,6 @@ Zope Changes
         the whole request in memory or just a chunk inside
         webdav.NullResource.PUT().
 
-      - Stitch newly-created object into it's container *before*
-        calling it's PUT() method. This fixes an issue with
-        OFS.File/OFS.Image that would result into reading the whole
-        file in memory and wrapping it into a *single* Pdata object.
-
     Bugs fixed
 
       - docutils: updated to V 0.3.5. The Zope core now contains a full copy of
@@ -85,6 +80,15 @@ Zope Changes
       - Collector #1523: replace the text field for importing .zexp/.xml
         files with a selection list
 
+      - Stitch newly-created object into it's container *before*
+        calling it's PUT() method. This fixes an issue with
+        OFS.File/OFS.Image that would result into reading the whole
+        file in memory and wrapping it into a *single* Pdata object.
+
+      - Import ZServer.CONNECTION_LIMIT variable *inside* the method
+        that uses it. Before this, the variable was imported at the
+        module level, thus binding it too early which would cause the
+        ZConfig handler to have no real effect.
 
   Zope 2.8a1
 
