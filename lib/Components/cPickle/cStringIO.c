@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.16 1997/02/17 22:17:43 jim Exp $
+  $Id: cStringIO.c,v 1.17 1997/04/17 18:02:46 chris Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.17  1997/04/17 18:02:46  chris
+  getvalue() now returns entire string, not just the string up to current position
+
   Revision 1.16  1997/02/17 22:17:43  jim
   *** empty log message ***
 
@@ -337,7 +340,7 @@ O_write(Oobject *self, PyObject *args) {
 
 static PyObject *
 O_getval(Oobject *self, PyObject *args) {
-  return PyString_FromStringAndSize(self->buf, self->pos);
+  return PyString_FromStringAndSize(self->buf, self->string_size);
 }
 
 static PyObject *
