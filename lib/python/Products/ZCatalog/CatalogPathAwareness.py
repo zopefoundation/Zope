@@ -121,6 +121,18 @@ class CatalogAware:
                 reindex_all(self, item)
         return 'done!'
 
+class CatalogPathAware(CatalogAware):
+    """
+    This is a stub class that gets registered in __init__.py as a
+    ZClass base class.  Its reason for existance is to make the name
+    that shows up in the ZClass Product list different than 'ZCatalog:
+    CatalogAware', which is the name registered by
+    CatalogAwareness.CatalogAware.  The fix should *really* be to
+    change the product registry to keep the whole module/class path
+    and to make the ZClass add UI show the whole path, but this is
+    nontrivial, we don't want to spend a lot of time on ZClasses, and
+    this works.
+    """
 
 
 
