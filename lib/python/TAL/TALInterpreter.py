@@ -96,7 +96,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from TALDefs import quote, TAL_VERSION, METALError
+from TALDefs import quote, TAL_VERSION, TALError, METALError
 from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 
@@ -157,6 +157,7 @@ class TALInterpreter:
         self.macros = macros
         self.engine = engine
         self.TALESError = engine.getTALESError()
+        self.CancelAction = engine.getCancelAction()
         self.stream = stream or sys.stdout
         self.debug = debug
         self.wrap = wrap
@@ -245,6 +246,7 @@ class TALInterpreter:
     def do_startTag(self, name, attrList):
         self.startTagCommon(name, attrList, ">")
 
+    actionIndex = ["replace", "insert", "metal", "tal", "xmlns"].index
     def startTagCommon(self, name, attrList, end):
         if not attrList:
             self.stream_write("<%s%s" % (name, end))
@@ -254,21 +256,32 @@ class TALInterpreter:
         for item in attrList:
             name, value = item[:2]
             if len(item) > 2:
-                action = item[2]
-                if not self.showtal and action in ("tal", "metal", "xmlns"):
+                try:
+                    action = self.actionIndex(item[2])
+                except ValueError:
+                    raise TALError, ('Error in TAL program', self.position)
+                if not self.showtal and action > 1:
                     continue
-                if action == "replace" and len(item) > 3 and self.tal:
+                if action <= 1 and self.tal:
                     if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
-                        ok = self.engine.evaluateBoolean(item[3])
-                        if not ok:
+                        evalue = self.engine.evaluateBoolean(item[3])
+                        if evalue is self.CancelAction:
+                            if action == 1: # Cancelled insert
+                                continue
+                        elif not evalue:
                             continue
                         else:
                             value = None
                     else:
-                        value = self.engine.evaluateText(item[3])
-                        if value is None:
-                            continue
-                elif (action == "metal" and self.currentMacro and
+                        evalue = self.engine.evaluateText(item[3])
+                        if evalue is self.CancelAction:
+                            if action == 1: # Cancelled insert
+                                continue
+                        else:
+                            value = item[1]
+                            if value is None:
+                                continue
+                elif (action == 2 and self.currentMacro and
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
@@ -314,6 +327,9 @@ class TALInterpreter:
         text = self.engine.evaluateText(expr)
         if text is None:
             return
+        if text is self.CancelAction:
+            self.interpret(block)
+            return
         text = cgi.escape(text)
         self.stream_write(text)
 
@@ -323,6 +339,9 @@ class TALInterpreter:
             return
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
+            return
+        if structure is self.CancelAction:
+            self.interpret(block)
             return
         text = str(structure)
         if not repldict and not self.strictinsert:
@@ -378,6 +397,9 @@ class TALInterpreter:
             self.interpret(block)
             return
         macro = self.engine.evaluateMacro(macroExpr)
+        if macro is self.CancelAction:
+            self.interpret(block)
+            return
         if not isCurrentVersion(macro):
             raise METALError("macro %s has incompatible version %s" %
                              (`macroName`, `getProgramVersion(macro)`),

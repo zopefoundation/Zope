@@ -332,7 +332,7 @@ class TALGeneratorTestCases(TestCaseBase):
               ('name', 'bar'),
               ('tal:attributes',
                'href string:http://www.zope.org; x string:y', 'tal'),
-              ('x', '', 'replace', '$string:y$')]),
+              ('x', None, 'insert', '$string:y$')]),
             ('rawtext', 'link</a>'),
             ])
         self._run_check("<p tal:replace='structure string:<img>' "

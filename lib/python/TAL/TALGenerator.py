@@ -347,7 +347,7 @@ class TALGenerator:
                 del repldict[key]
             newlist.append(item)
         for key, value in repldict.items(): # Add dynamic-only attributes
-            item = (key, "", "replace", value)
+            item = (key, None, "insert", value)
             newlist.append(item)
         return newlist
 
