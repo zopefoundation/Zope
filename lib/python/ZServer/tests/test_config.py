@@ -26,7 +26,7 @@ import ZServer.datatypes
 TEMPFILENAME = tempfile.mktemp()
 
 
-class ZServerConfigurationTestCase(unittest.TestCase):
+class BaseTest(unittest.TestCase):
     schema = None
 
     def get_schema(self):
@@ -40,7 +40,7 @@ class ZServerConfigurationTestCase(unittest.TestCase):
             </schema>
             """)
             schema = ZConfig.loadSchemaFile(sio)
-            ZServerConfigurationTestCase.schema = schema
+            BaseTest.schema = schema
         return self.schema
 
     def load_factory(self, text):
@@ -48,6 +48,24 @@ class ZServerConfigurationTestCase(unittest.TestCase):
                                            StringIO.StringIO(text))
         self.assertEqual(len(conf.servers), 1)
         return conf.servers[0]
+
+    def check_prepare(self, factory):
+        port = factory.port
+        o = object()
+        factory.prepare("127.0.0.1", o, "module",
+                        {"key": "value"}, portbase=9300)
+        self.assert_(factory.dnsresolver is o)
+        self.assertEqual(factory.module, "module")
+        self.assertEqual(factory.cgienv.items(), [("key", "value")])
+        if port is None:
+            self.assert_(factory.host is None)
+            self.assert_(factory.port is None)
+        else:
+            self.assertEqual(factory.host, "127.0.0.1")
+            self.assertEqual(factory.port, 9300 + port)
+
+
+class ZServerConfigurationTestCase(BaseTest):
 
     def load_unix_domain_factory(self, text):
         fn = TEMPFILENAME
@@ -144,19 +162,6 @@ class ZServerConfigurationTestCase(unittest.TestCase):
         self.check_prepare(factory)
         factory.create().close()
 
-    def test_monitor_factory(self):
-        factory = self.load_factory("""\
-            <monitor-server>
-              address 85
-            </monitor-server>
-            """)
-        self.assert_(isinstance(factory,
-                                ZServer.datatypes.MonitorServerFactory))
-        self.assertEqual(factory.host, '')
-        self.assertEqual(factory.port, 85)
-        self.check_prepare(factory)
-        factory.create().close()
-
     def test_icp_factory(self):
         factory = self.load_factory("""\
             <icp-server>
@@ -170,24 +175,54 @@ class ZServerConfigurationTestCase(unittest.TestCase):
         self.check_prepare(factory)
         factory.create().close()
 
-    def check_prepare(self, factory):
-        port = factory.port
-        o = object()
-        factory.prepare("127.0.0.1", o, "module",
-                        {"key": "value"}, portbase=9300)
-        self.assert_(factory.dnsresolver is o)
-        self.assertEqual(factory.module, "module")
-        self.assertEqual(factory.cgienv.items(), [("key", "value")])
-        if port is None:
-            self.assert_(factory.host is None)
-            self.assert_(factory.port is None)
-        else:
-            self.assertEqual(factory.host, "127.0.0.1")
-            self.assertEqual(factory.port, 9300 + port)
+
+class MonitorServerConfigurationTestCase(BaseTest):
+
+    def setUp(self):
+        from AccessControl import User
+        self.__emergency_user = User.emergency_user
+
+    class FakeUser:
+        def _getPassword(self):
+            return "foo"
+
+    def tearDown(self):
+        from AccessControl import User
+        User.emergency_user = self.__emergency_user
+
+    def setUser(self, null):
+        from AccessControl import User
+        u = self.FakeUser()
+        if null:
+            u.__null_user__ = True
+        User.emergency_user = u
+
+    def create(self):
+        factory = self.load_factory("""\
+            <monitor-server>
+              address 85
+            </monitor-server>
+            """)
+        self.assert_(isinstance(factory,
+                                ZServer.datatypes.MonitorServerFactory))
+        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.port, 85)
+        self.check_prepare(factory)
+        return factory.create()
+
+    def test_monitor_factory_without_emergency_user(self):
+        self.setUser(True)
+        self.assert_(self.create() is None)
+
+    def test_monitor_factory_with_emergency_user(self):
+        self.setUser(False)
+        self.create().close()
 
 
 def test_suite():
-    return unittest.makeSuite(ZServerConfigurationTestCase)
+    suite = unittest.makeSuite(ZServerConfigurationTestCase)
+    suite.addTest(unittest.makeSuite(MonitorServerConfigurationTestCase))
+    return suite
 
 if __name__ == "__main__":
     unittest.main(defaultTest="test_suite")
