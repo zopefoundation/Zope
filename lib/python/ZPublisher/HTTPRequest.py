@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import re, sys, os,  urllib, time, whrandom, cgi
 from BaseRequest import BaseRequest
@@ -961,7 +961,7 @@ class HTTPRequest(BaseRequest):
             if auth[:6].lower() == 'basic ':
                 if base64 is None: import base64
                 [name,password] = \
-                    base64.decodestring(split(auth)[-1]).split(':')
+                    base64.decodestring(auth.split()[-1]).split(':')
                 return name, password
 
 
