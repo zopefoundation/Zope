@@ -86,12 +86,13 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.5 1998/12/11 21:09:19 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Extensions.py,v 1.6 1999/03/03 19:22:20 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
 path_split=os.path.split
+path_join=os.path.join
 exists=os.path.exists
     
 class FuncCode:
@@ -107,6 +108,60 @@ class FuncCode:
         except: return 1
 
 
+def _getPath(home, prefix, name, suffixes):
+    d=path_join(home, prefix)
+    if d==prefix: raise ValueError, (
+        'The prefix, %s, should be a relative path' % prefix)
+    d=path_join(d,name)
+    if d==name: raise ValueError, ( # Paranoia
+        'The file name, %s, should be a simple file name' % name)
+    for s in suffixes:
+        if s: s="%s.%s" % (d, s)
+        else: s=d
+        if exists(s): return s
+
+def getPath(prefix, name, checkProduct=1, suffixes=('',)):
+    """Find a file in one of several relative locations
+
+    Arguments:
+
+      prefix -- The location, relative to some home, to look for the
+                file
+
+      name -- The name of the file.  This must not be a path.
+
+      checkProduct -- a flag indicating whether product directories
+        should be used as additional hope ares to be searched. This
+        defaults to a true value.
+
+        If this is true and the name contains a dot, then the
+        text before the dot is treated as a product name and
+        the product package directory is used as anothe rhome.
+
+      suffixes -- a sequences of file suffixes to check.
+        By default, the name is used without a suffix.
+
+    The search takes on multiple homes which are INSTANCE_HOME,
+    the directory containing the directory containing SOFTWARE_HOME, and
+    possibly product areas.     
+    """
+    d,n = path_split(name)
+    if d: raise ValueError, (
+        'The file name, %s, should be a simple file name' % name)
+
+    sw=path_split(path_split(SOFTWARE_HOME)[0])[0]
+    for home in (INSTANCE_HOME, sw):
+        if checkProduct:
+            l=find(name, '.')
+            if l > 0:
+                p=name[:l]
+                n=name[l+1:]
+                r=_getPath(home, "Products/%s/%s/" % (p,prefix),
+                           n, suffixes)
+                if r is not None: return r
+        r=_getPath(home, prefix, name, suffixes)
+        if r is not None: return r
+
 def getObject(module, name, reload=0, modules={}):
 
     if modules.has_key(module):
@@ -114,26 +169,24 @@ def getObject(module, name, reload=0, modules={}):
         if old.has_key(name) and not reload: return old[name]
     else:
         old=None
-    
-    d,n = path_split(module)
-    if d: raise ValueError, (
-        'The file name, %s, should be a simple file name' % module)
 
-    execsrc=None
+    if module[-3:]=='.py': p=module[:-3]
+    elif module[-4:]=='.pyp': p=module[:-4]
+    else: p=module
+    p=getPath('Extensions', p, suffixes=('','py','pyp'))
+    if p is None:
+        raise "Module Error", (
+            "The specified module, <em>%s</em>, couldn't be found.")
 
-    d=find(n,'.')
-    if d > 0:
-        d,n=n[:d],n[d+1:]
-        n=("%s/Products/%s/Extensions/%s.pyp" % (SOFTWARE_HOME,d,n))
-        __traceback_info__=n, module
-        if exists(n):
-            data=zlib.decompress(
-                rotor.newrotor(d+' shshsh').decrypt(open(n).read())
-                )
-            execsrc=compile(data,module,'exec')
+    __traceback_info__=p, module
 
-    if execsrc is None:
-        try: execsrc=open("%s/Extensions/%s.py" % (INSTANCE_HOME, module))
+    if p[-4:]=='.pyp':
+        data=zlib.decompress(
+            rotor.newrotor(d+' shshsh').decrypt(open(p).read())
+            )
+        execsrc=compile(data,module,'exec')
+    else:
+        try: execsrc=open(p)
         except: raise "Module Error", (
             "The specified module, <em>%s</em>, couldn't be opened."
             % module)
