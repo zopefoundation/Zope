@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 from Globals import Persistent
@@ -249,7 +249,7 @@ class UnIndex(Persistent, Implicit):
         else:
             return None
 
-        if not type(keys) in (ListType, TupleType):
+        if type(keys) not in (ListType, TupleType):
             keys = [keys]
 
         print "XXX,"
