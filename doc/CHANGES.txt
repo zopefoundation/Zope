@@ -11,6 +11,28 @@ Zope Changes
       - added doc/ENVIRONMENT.txt to document all used environment
         variables Zope is using
 
+      - Provided a much more robust tool for recovering data from
+        damaged FileStorage files:
+
+        Allow recovery of data when:
+
+          - either transaction or data records are damaged and when
+
+          - multiple parts of a file are damaged
+
+        The interface has changed to not modify in place.
+
+        Other features:
+
+          - Progress indicator
+
+          - Verbose output
+
+          - optional packing
+
+          - index creation
+
+
     Bugs Fixed
     
       - STXNG: added '+' as allowed character inside URLs
