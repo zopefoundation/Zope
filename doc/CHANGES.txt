@@ -32,6 +32,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #651: WebDAV Lock Manager was broken.
+
       - Collector #646: metal:slot was lost during the I18n merge.
 
       - Removed the signal handler hung off USR1 for packing the database.
