@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.181 $'[11:-2]
+__version__='$Revision: 1.182 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -592,8 +592,17 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         security = getSecurityManager()
         try:
             try:
-                if security.validate(accessed, container, name, value, roles):
-                    return 1
+                # This is evil: we cannot pass _noroles directly because
+                # it is a special marker, and that special marker is not
+                # the same between the C and Python policy implementations.
+                # We __really__ need to stop using this marker pattern!
+                if roles is _noroles:
+                    if security.validate(accessed, container, name, value):
+                        return 1
+                else:
+                    if security.validate(accessed, container, name, value,
+                                         roles):
+                        return 1
             except:
                 noSecurityManager()
                 raise
