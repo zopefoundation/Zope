@@ -158,25 +158,21 @@ def main(args):
     filename=None
     test_all=None
 
-    try:
-        options, arg=getopt.getopt(args, 'ahd:f:')
-        if not options:
-            err_exit(usage_msg)
-        for name, value in options:
-            name=name[1:]
-            if name == 'a':
-                test_all=1
-            elif name == 'd':
-                pathname=string.strip(value)
-            elif name == 'f':
-                filename=string.strip(value)
-            elif name == 'h':
-                err_exit(usage_msg)
-            else:
-                err_exit(usage_msg)
-
-    except:
+    options, arg=getopt.getopt(args, 'ahd:f:')
+    if not options:
         err_exit(usage_msg)
+    for name, value in options:
+        name=name[1:]
+        if name == 'a':
+            test_all=1
+        elif name == 'd':
+            pathname=string.strip(value)
+        elif name == 'f':
+            filename=string.strip(value)
+        elif name == 'h':
+            err_exit(usage_msg, 0)
+        else:
+            err_exit(usage_msg)
 
     testrunner=TestRunner(os.getcwd())
     if test_all:
@@ -188,9 +184,9 @@ def main(args):
     sys.exit(0)
 
 
-def err_exit(message):
+def err_exit(message, rc=2):
     sys.stderr.write("\n%s\n" % message)
-    sys.exit(1)
+    sys.exit(rc)
 
 
 if __name__ == '__main__':
