@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.77 1998/12/03 20:08:42 jim Exp $'''
-__version__='$Revision: 1.77 $'[11:-2]
+$Id: Application.py,v 1.78 1998/12/03 21:55:37 brian Exp $'''
+__version__='$Revision: 1.78 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -39,8 +39,8 @@ _standard_error_msg='''\
   <STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
   </TD>
   <TD WIDTH="90%"><BR>
-  <FONT SIZE="+2">Principia Unavailable</FONT>
-  <P>This Principia site is currently experiencing technical difficulties. 
+  <FONT SIZE="+2">System Unavailable</FONT>
+  <P>This site is currently experiencing technical difficulties. 
 Please contact the site administrator for more information.  For
 additional technical information, please refer to the HTML source for this
 page.  Thank you for your patience.</P>
@@ -61,14 +61,14 @@ page.  Thank you for your patience.</P>
 
 class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
-    "Top-level object in a Principia installation"
+    """Top-level system object"""
     title    ='Principia'
     __roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous')
     web__form__method='GET'
     isTopLevelPrincipiaApplicationObject=1
 
-
+    # Create the help system object
     HelpSys=HelpSys()
     
     class misc_:
@@ -76,7 +76,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 	__roles__=None
 
     class p_:
-	"Shared Principia information"
+	"Shared system information"
 	__roles__=None
 
 	folder=ImageFile('www/Folder_icon.gif', globals())
@@ -388,279 +388,3 @@ class Misc_:
 
     def __str__(self): return self.__name__
     def __getitem__(self, name): return self._d[name]
-
-############################################################################## 
-#
-# $Log: Application.py,v $
-# Revision 1.77  1998/12/03 20:08:42  jim
-# Fixed the way __import__ is called.
-#
-# Revision 1.76  1998/12/03 15:29:20  jim
-# rearranged SOFTWARE_HOME and INSTANCE_HOME
-#
-# Revision 1.75  1998/12/01 17:28:24  brian
-# Added Help support
-#
-# Revision 1.74  1998/11/20 18:16:37  jim
-# First crack at new layout and 1.5 support
-#
-# Revision 1.73  1998/11/17 22:24:50  brian
-# Fixed b/w compatibility test to ensure Product folder is installed so that an
-# existing Products folder wont be found via acquisition
-#
-# Revision 1.72  1998/09/22 16:42:13  jim
-# Added doc string to allow trversal from "..".
-#
-# Revision 1.71  1998/08/24 20:30:48  jim
-# Made PrincipiaTime accept arguments.
-#
-# Revision 1.70  1998/08/17 19:13:03  brian
-# Added fix for ProductFolder with old bobobases.
-#
-# Revision 1.69  1998/08/05 21:04:04  brian
-# Added Find
-#
-# Revision 1.68  1998/08/03 13:58:32  jim
-# Took out debugging code.
-#
-# Revision 1.67  1998/08/03 13:28:24  jim
-#       - New folderish control panel that separates database and
-#         product management into separate interfaces.
-#
-#       - Through-the-web creation of products and factories.
-#
-# Revision 1.66  1998/07/13 12:11:34  jim
-# Added PrincipiaFind.
-#
-# Revision 1.65  1998/05/12 19:06:18  jim
-# Changed to allow defaults in permission definitions.
-#
-# Revision 1.64  1998/05/11 14:55:32  jim
-# Added logic to recognize empty permissions so that folders can control
-# sub-object permissions.
-#
-# Revision 1.63  1998/05/08 14:55:18  jim
-# Rearranged permission user interface machinery, alot.
-#
-# Revision 1.62  1998/04/20 19:48:14  jim
-# Fixed default license timeout.
-#
-# Revision 1.61  1998/04/20 16:44:53  jim
-# Simplified and changed lic_check so that a 30-day license is assumed
-# if a license file cannot be read or is for the wrong product.
-#
-# Revision 1.60  1998/04/08 16:55:35  jim
-# Added error type and value as comment in standard error message.
-#
-# Revision 1.59  1998/04/08 16:52:56  jim
-# Added error type and value as comment in standard error message.
-#
-# Revision 1.58  1998/03/24 18:08:51  jeffrey
-# Added standard_error_message to reserved names
-#
-# Revision 1.57  1998/03/23 20:18:17  jeffrey
-# Made friendlier default Standard Error Message
-#
-# Revision 1.56  1998/03/23 15:01:22  jeffrey
-# Added custom error message support
-#
-# Revision 1.55  1998/03/09 19:37:09  jim
-# Check for true need_license before doing license check.
-#
-# Revision 1.54  1998/03/04 17:13:16  jim
-# Added new image to mark objects that were modified in another session
-# and are therefore locked.
-#
-# Revision 1.53  1998/02/25 19:40:47  jim
-# Got rid of xxxItems methods.
-#
-# Revision 1.52  1998/02/23 17:49:01  brian
-# Fixed bug that kept rotor from being able to decode licenses with > 7 bit rotor keys
-#
-# Revision 1.51  1998/02/17 14:23:50  brian
-# *** empty log message ***
-#
-# Revision 1.50  1998/02/14 21:24:31  brian
-# Fixed the licensing code to not call get_transaction().commit() during the
-# initial request that creates a new bobobase.
-#
-# Revision 1.49  1998/02/12 23:03:29  brian
-# *** empty log message ***
-#
-# Revision 1.48  1998/02/12 16:24:52  brian
-# Fixed eval mode bug ;(
-#
-# Revision 1.47  1998/02/10 18:25:42  jim
-# Re-did the way permissions are handled in install_products, once
-# again.
-#
-# Revision 1.46  1998/02/06 00:25:28  jim
-# Fixed bug in handling product permissions.
-#
-# Revision 1.45  1998/02/05 23:33:46  jim
-# Added logic to product installation machinery to handle product
-# permissions.
-#
-# Revision 1.44  1998/02/05 15:17:16  jim
-# Added code to tickle cache.
-#
-# Revision 1.43  1998/01/29 20:52:20  brian
-# Fixed up eval support
-#
-# Revision 1.42  1998/01/28 23:39:02  brian
-# Added licensing logic
-#
-# Revision 1.41  1998/01/22 00:15:00  jim
-# Added machinery to handle broken objects
-#
-# Revision 1.40  1998/01/16 16:02:32  brian
-# Fixed bug: install_products only recognized __init__.py files, not .pycs
-#
-# Revision 1.39  1998/01/15 15:16:45  brian
-# Fixed Setup, cleaned up SimpleItem
-#
-# Revision 1.38  1998/01/13 23:04:54  brian
-# Removed __ac_types__
-#
-# Revision 1.37  1998/01/12 21:31:13  jim
-# Made application default Manager, Anonymous
-#
-# Revision 1.36  1998/01/08 17:40:21  jim
-# Modified __class_init__ to use default class init defined in Globals.
-#
-# Revision 1.35  1998/01/02 17:39:48  jim
-# Got rid of old commented line.
-#
-# Revision 1.34  1997/12/31 16:53:41  brian
-# Added security info
-#
-# Revision 1.33  1997/12/19 19:11:15  jim
-# updated icon management strategy
-#
-# Revision 1.32  1997/12/19 17:04:21  jim
-# Make Products a Package.
-#
-# Revision 1.31  1997/12/19 15:37:34  jim
-# Now product __init__s can omit __ foolishness.
-# Now products can define misc objects.
-#
-# Revision 1.30  1997/12/18 18:42:07  jim
-# Rearranged things to make fixup "products" work.
-#
-# Revision 1.29  1997/12/18 17:17:46  jim
-# Added rule: only treat a directory in Products as a product if it
-# has __init__.py
-#
-# Revision 1.28  1997/12/18 17:10:40  jim
-# Added check for CVS directory.
-#
-# Revision 1.27  1997/12/18 16:45:38  jeffrey
-# changeover to new ImageFile and HTMLFile handling
-#
-# Revision 1.26  1997/12/17 16:45:26  jim
-# initial_products is dead!
-#
-# Revision 1.25  1997/12/12 21:53:05  brian
-# ui support
-#
-# Revision 1.24  1997/12/12 21:49:41  brian
-# ui update
-#
-# Revision 1.23  1997/12/05 20:33:02  brian
-# *** empty log message ***
-#
-# Revision 1.22  1997/12/05 17:13:48  brian
-# New UI
-#
-# Revision 1.21  1997/11/20 13:40:28  jim
-# Added logic to make sure that the top-level user folder gets
-# initialized correctly.
-#
-# Revision 1.20  1997/11/07 17:33:09  jim
-# Added code to add Application key to Bobobase if necessary.
-#
-# Revision 1.19  1997/11/07 17:11:48  brian
-# Added role mgmt to Application object
-#
-# Revision 1.18  1997/11/07 16:09:59  jim
-# Added __bobo_traverse__ machinery in support of sessions.
-# Updated product installation logic to give OFS special treatment.
-#
-# Revision 1.17  1997/11/06 22:43:39  brian
-# Added global roles to app
-#
-# Revision 1.16  1997/11/05 15:06:56  paul
-# Renamed Redirect to PrincipiaRedirect, leaving Redirect for
-# compatibility.  Added PrincipiaTime which returns a DateTime object.
-#
-# Revision 1.15  1997/10/27 15:21:22  jim
-# Fixed bug in assigning role names that caused roles record to be
-# rewritten on every start up.
-#
-# Revision 1.14  1997/09/25 14:04:56  brian
-# Added default __roles__ of None, custom roles form
-#
-# Revision 1.13  1997/09/24 22:16:43  brian
-# Style update
-#
-# Revision 1.12  1997/09/23 10:30:44  jim
-# added undo to menu
-#
-# Revision 1.11  1997/09/19 18:22:29  brian
-# Nicified Application
-#
-# Revision 1.10  1997/09/10 18:42:35  jim
-# Added SimpleItem mix-in and new title/id methods.
-#
-# Revision 1.9  1997/09/09 14:21:07  brian
-# Fixed Image editing
-#
-# Revision 1.8  1997/09/08 23:38:58  brian
-# Style mods
-#
-# Revision 1.7  1997/08/29 18:39:30  brian
-# Added role management and fixed a few bugs:
-#   o images/manage went nowhere
-#   o text on document add form talked about adding images...
-#   o added role mgmgt to add forms for Folder,Document,Image
-#
-# Revision 1.6  1997/08/27 13:30:19  brian
-# Changes for UserFolder support:
-#   o Added support for role registration to Application.py
-#     Products may define a __.role_names in their __init__.py
-#     which may be a tuple of role names which will be added to
-#     the global list of role names which appears in the role
-#     assignment select box when defining/editing a user.
-#
-#   o Application.Application now has a default __allow_groups__
-#     attribute which is a UserFolder with no members defined.
-#     This default top-level UF is not visible in the UI, and
-#     the user can create a new UF at the top level (in the
-#     Application object) at a later time which will simply
-#     override the default and be visible in the UI. Since the
-#     default UF has no users, an out-of-the-box application's
-#     management interfaces will effectively be available to the
-#     superuser alone.
-#
-#   o Removed the __init__ in Folder which created a default ACL.
-#     This is no longer needed.
-#
-#   o Made some minor (but controversial!) style consistency fixes
-#     to some of the OFS templates.
-#
-# Revision 1.5  1997/08/15 22:24:12  jim
-# Added Redirect
-#
-# Revision 1.4  1997/08/08 15:51:27  jim
-# Added access control support
-#
-# Revision 1.3  1997/08/06 18:26:12  jim
-# Renamed description->title and name->id and other changes
-#
-# Revision 1.2  1997/07/28 21:33:08  jim
-# Changed top name.
-#
-# Revision 1.1  1997/07/25 20:03:22  jim
-# initial
-#
-#
