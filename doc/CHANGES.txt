@@ -163,6 +163,12 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 beta 2
+
+      Note:
+
+        The section for Zope 2.0 alpha 4 did not mention that ZCatalog 
+        is now shipped with the Zope core.
 
     Zope 2.0 beta 1
 
