@@ -169,13 +169,13 @@ class CodeBlock:
             self.munge(subcode, depth+1)
         # Make the current recursion depth accessible
         self.depth = depth
-	code = fc.co_code
+        code = fc.co_code
         warnings, errors = self.warnings, self.errors
         # Initialize the Munge objects
-	mungers = []
+        mungers = []
         window = Munge_window(code, 1)
-	margs = (self, window, fc)
-	for M in self.Mungers:
+        margs = (self, window, fc)
+        for M in self.Mungers:
             try:
                 mungers.append(apply(M, margs))
             except Exception, e:
@@ -569,15 +569,15 @@ def test(p, c):
     return sb
 
 if __name__ == '__main__':    
-	sb = test('x', '''\
+        sb = test('x', '''\
 print x
 def plus1(x):
   print x+1
 plus1(x)
 return printed''')
         f = UntupleFunction(sb.t, {})
-	#from dis import dis
-	#dis(f)
-	print f(2),
-	print f(3),
+        #from dis import dis
+        #dis(f)
+        print f(2),
+        print f(3),
 

@@ -14,7 +14,7 @@ from cyclehandle import CycleHandle
 
 class CodeString(CycleHandle):
     def __init__(self,cs=None,bytecodes=None):
-	self._set_workers(CodeStringWorker(cs, bytecodes))
+        self._set_workers(CodeStringWorker(cs, bytecodes))
         
 class CodeStringWorker:
     def __init__(self,cs,bytecodes):
@@ -159,7 +159,7 @@ class CodeStringWorker:
 
 class EditableCode(CycleHandle):
     def __init__(self,code=None):
-	self._set_workers(EditableCodeWorker(code))    
+        self._set_workers(EditableCodeWorker(code))    
 
 class EditableCodeWorker:
     # bits for co_flags
@@ -276,8 +276,8 @@ class EditableCodeWorker:
 
 class Function(CycleHandle):
     def __init__(self,func=None):
-	self._set_workers(FunctionWorker(func))
-	    
+        self._set_workers(FunctionWorker(func))
+            
 class FunctionWorker:
     def __init__(self,func):
         if func is None:
