@@ -85,8 +85,8 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.10 1999/03/10 00:15:07 klm Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: DT_InSV.py,v 1.11 1999/06/21 21:29:53 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from string import lower, rfind
 from math import sqrt
@@ -317,7 +317,7 @@ class sequence_variables:
         except: AttributeError, 'next-batches'
         r=[]
         while end < l:
-            start,end,spam=opt(end+1-overlap,None,sz,orphan,sequence)
+            start,end,spam=opt(end+1-overlap,0,sz,orphan,sequence)
             v=sequence_variables(self.items,
                                  self.query_string,self.start_name_re)
             d=v.data
@@ -344,7 +344,7 @@ class sequence_variables:
         except: AttributeError, 'previous-batches'
         r=[]
         while start > 1:
-            start,end,spam=opt(None,start-1+overlap,sz,orphan,sequence)
+            start,end,spam=opt(0,start-1+overlap,sz,orphan,sequence)
             v=sequence_variables(self.items,
                                  self.query_string,self.start_name_re)
             d=v.data
@@ -405,6 +405,7 @@ def opt(start,end,size,orphan,sequence):
         if start > 0 and end > 0 and end >= start:
             size=end+1-start
         else: size=7
+
     if start > 0:
 
         try: sequence[start-1]

@@ -381,8 +381,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.36 1999/06/14 14:04:33 brian Exp $'
-__version__='$Revision: 1.36 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.37 1999/06/21 21:29:42 jim Exp $'
+__version__='$Revision: 1.37 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
@@ -531,7 +531,7 @@ class InClass:
         try:
             if previous:
                 if first > 0:
-                    pstart,pend,psize=opt(None,first+overlap,
+                    pstart,pend,psize=opt(0,first+overlap,
                                           sz,orphan,sequence)
                     kw['previous-sequence']=1
                     kw['previous-sequence-start-index']=pstart-1
@@ -547,7 +547,7 @@ class InClass:
                     # there are more items, without actually
                     # computing a length:
                     sequence[end]
-                    pstart,pend,psize=opt(end+1-overlap,None,
+                    pstart,pend,psize=opt(end+1-overlap,0,
                                           sz,orphan,sequence)
                     kw['next-sequence']=1
                     kw['next-sequence-start-index']=pstart-1
@@ -563,7 +563,7 @@ class InClass:
                 validate=md.validate
                 for index in range(first,end):
                     if index==first and index > 0:
-                        pstart,pend,psize=opt(None,index+overlap,
+                        pstart,pend,psize=opt(0,index+overlap,
                                               sz,orphan,sequence)
                         kw['previous-sequence']=1
                         kw['previous-sequence-start-index']=pstart-1
@@ -577,7 +577,7 @@ class InClass:
                                 # test whether there are more items,
                                 # without actually computing a length:
                                 sequence[end]
-                                pstart,pend,psize=opt(end+1-overlap,None,
+                                pstart,pend,psize=opt(end+1-overlap,0,
                                                       sz,orphan,sequence)
                                 kw['previous-sequence']=0
                                 kw['next-sequence']=1
