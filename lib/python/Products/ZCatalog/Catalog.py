@@ -437,7 +437,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         rs = None             # resultset
         data = self.data
 
-        # Indexes fulfil a fairly large contract here. We hand each
+        # Indexes fulfill a fairly large contract here. We hand each
         # index the request mapping we are given (which may be composed 
         # of some combination of web request, kw mappings or plain old dicts)
         # and the index decides what to do with it. If the index finds work
@@ -453,6 +453,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
+
+        # If sort_index is None, this method should pass sequences of
+        # catalog records to append().  The sequences will be concatenated
+        # together to generate the result set.
+        # If sort_index is not None, this method should instead pass pairs
+        # to append(), each pair containing a sort key and a sequence of
+        # catalog records.
+        # In either case, the sequences may be lazified.
 
         if used is None:
             used = {}
@@ -479,8 +487,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             else:
                 self._build_sorted_results(data, sort_index, append)
         elif rs:
-            # We got some results from the indexes
-            # now we need to sort and lazify them
+            # We got some results from the indexes.
+            # Sort and convert to sequences.
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
@@ -515,10 +523,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             else:
                 # sort.  If there are scores, then this block is not
                 # reached, therefore 'sort-on' does not happen in the
-                # context of text index query.  This should probably
+                # context of a text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
                 self._build_sorted_results(rs,sort_index,append)
 
+        #print 'ZCatalog search used', used.keys()
         return used
 
     def _build_sorted_results(self,rs,sort_index,append):
@@ -537,16 +546,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         _intersection = intersection
         _self__getitem__ = self.__getitem__
         _None = None
-        if ((len(rs) / 4) > len(sort_index)):
-            # if the sorted index has a quarter as many keys as
-            # the result set
+        if (len(rs) > (len(sort_index) * 4)):
+            # The result set is much larger than the sorted index,
+            # so iterate over the sorted index for speed.
             for k, intset in sort_index.items():
                 # We have an index that has a set of values for
                 # each sort key, so we interset with each set and
                 # get a sorted sequence of the intersections.
-
-                # This only makes sense if the number of
-                # keys is much less then the number of results.
                 intset = _intersection(rs, intset)
                 if intset:
                     keys = getattr(intset, 'keys', _None)
@@ -556,6 +562,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     append((k, _lazymap(_self__getitem__, intset)))
                     # Note that sort keys are unique.
         else:
+            # Iterate over the result set.
             if hasattr(rs, 'keys'):
                 rs = rs.keys()
             _sort_index_keyForDocument = sort_index.keyForDocument
@@ -620,6 +627,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             return LazyCat(r)
 
         # Sort/merge sub-results
+
+        # The contents of r depend on whether sort_index is set.
+        # If sort_index is None, r contains sequences of records.
+        # If sort_index is not None, r contains pairs of (sort_key, sequence)
+        # and now we have to sort the results.
         if len(r) == 1:
             if sort_index is None:
                 r = r[0]
