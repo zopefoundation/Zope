@@ -1,17 +1,90 @@
-############################################################################## 
+##############################################################################
 #
-#     Copyright 
-#
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved. 
-#
-############################################################################## 
-__doc__='''Simple column indexes
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
 
-
-$Id: Index.py,v 1.16 1998/12/14 16:32:55 jeffrey Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+"""Simple column indices"""
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -26,244 +99,190 @@ StringType=type('s')
 def nonEmpty(s):
     "returns true if a non-empty string or any other (nonstring) type"
     if type(s) is StringType:
-	if s: return 1
-	else: return 0
+        if s: return 1
+        else: return 0
     else:
-	return 1
+        return 1
 
 class Index(Persistent):
     """Index object interface"""
 
     def _init(self,data,schema,id):
-	"""Create an index
+        """Create an index
 
-	The arguments are:
+        The arguments are:
 
-	  'data' -- a mapping from integer object ids to objects or records,
+          'data' -- a mapping from integer object ids to objects or records,
 
-	  'schema' -- a mapping from item name to index into data records.
+          'schema' -- a mapping from item name to index into data records.
               If 'data' is a mapping to objects, then schema should ne 'None'.
 
-	  'id' -- the name of the item attribute to index.  This is either
-	      an attribute name or a record key.
-	"""
-	self._data=data
-	self._schema=schema
-	self.id=id
-	self._index=BTree()
-	
-	self._reindex()
+          'id' -- the name of the item attribute to index.  This is either
+              an attribute name or a record key.
+        """
+        self._data=data
+        self._schema=schema
+        self.id=id
+        self._index=BTree()
+        
+        self._reindex()
 
     def dpHasUniqueValuesFor(self, name):
-	' has unique values for column NAME '
-	if name == self.id:
-	    return 1
-	else:
-	    return 0
+        ' has unique values for column NAME '
+        if name == self.id:
+            return 1
+        else:
+            return 0
 
     def dpUniqueValues(self, name=None, withLengths=0):
-	"""\
-	returns the unique values for name
+        """\
+        returns the unique values for name
 
-	if withLengths is true, returns a sequence of
-	tuples of (value, length)
-	"""
-	if name is None:
-	    name = self.id
-	elif name != self.id:
-	    return []
-	if not withLengths: return tuple(
-	    filter(nonEmpty,self._index.keys())
-	    )
-	else: 
-	    rl=[]
-	    for i in self._index.keys():
-		if not nonEmpty(i): continue
-		else: rl.append((i, len(self._index[i])))
-	    return tuple(rl)
+        if withLengths is true, returns a sequence of
+        tuples of (value, length)
+        """
+        if name is None:
+            name = self.id
+        elif name != self.id:
+            return []
+        if not withLengths: return tuple(
+            filter(nonEmpty,self._index.keys())
+            )
+        else: 
+            rl=[]
+            for i in self._index.keys():
+                if not nonEmpty(i): continue
+                else: rl.append((i, len(self._index[i])))
+            return tuple(rl)
 
     def clear(self):
-	self._index=BTree()
+        self._index=BTree()
 
     def _reindex(self,start=0):
-	"""Recompute index data for data with ids >= start."""
+        """Recompute index data for data with ids >= start."""
 
-	index=self._index
-	get=index.get
-	
-	if not start: index.clear()
+        index=self._index
+        get=index.get
+        
+        if not start: index.clear()
 
-	id=self.id
-	if self._schema is None:
-	    f=getattr
-	else:
-	    f=operator.__getitem__
-	    id=self._schema[id]
+        id=self.id
+        if self._schema is None:
+            f=getattr
+        else:
+            f=operator.__getitem__
+            id=self._schema[id]
 
-	for i,row in self._data.items(start):
-	    k=f(row,id)
+        for i,row in self._data.items(start):
+            k=f(row,id)
 
-	    if k is None or k == MV: continue
+            if k is None or k == MV: continue
 
-	    set=get(k)
-	    if set is None: index[k]=set=intSet()
-	    set.insert(i)
+            set=get(k)
+            if set is None: index[k]=set=intSet()
+            set.insert(i)
 
     def index_item(self,i):
-	"""Recompute index data for data with ids >= start."""
+        """Recompute index data for data with ids >= start."""
 
-	index=self._index
+        index=self._index
 
-	id=self.id
-	if self._schema is None:
-	    f=getattr
-	else:
-	    f=operator.__getitem__
-	    id=self._schema[id]
+        id=self.id
+        if self._schema is None:
+            f=getattr
+        else:
+            f=operator.__getitem__
+            id=self._schema[id]
 
-	row=self._data[i]
-	k=f(row,id)
+        row=self._data[i]
+        k=f(row,id)
 
-	if k is None or k == MV: return
+        if k is None or k == MV: return
 
-	set=index.get(k)
-	if set is None: index[k]=set=intSet()
-	set.insert(i)
+        set=index.get(k)
+        if set is None: index[k]=set=intSet()
+        set.insert(i)
 
     def unindex_item(self,i):
-	"""Recompute index data for data with ids >= start."""
+        """Recompute index data for data with ids >= start."""
 
-	index=self._index
+        index=self._index
 
-	id=self.id
-	if self._schema is None:
-	    f=getattr
-	else:
-	    f=operator.__getitem__
-	    id=self._schema[id]
+        id=self.id
+        if self._schema is None:
+            f=getattr
+        else:
+            f=operator.__getitem__
+            id=self._schema[id]
 
-	row=self._data[i]
-	k=f(row,id)
-	
-	set=index.get(k)
-	if set is not None: set.remove(i)
+        row=self._data[i]
+        k=f(row,id)
+        
+        set=index.get(k)
+        if set is not None: set.remove(i)
 
     def _apply_index(self, request, cid=''):
-	"""Apply the index to query parameters given in the argument, request
+        """Apply the index to query parameters given in the argument, request
 
-	The argument should be a mapping object.
+        The argument should be a mapping object.
 
-	If the request does not contain the needed parameters, then None is
-	returned.
+        If the request does not contain the needed parameters, then None is
+        returned.
 
-	If the request contains a parameter with the name of the column
-	+ '_usage', it is sniffed for information on how to handle applying
-	the index.
+        If the request contains a parameter with the name of the column
+        + '_usage', it is sniffed for information on how to handle applying
+        the index.
 
-	Otherwise two objects are returned.  The first object is a
-	ResultSet containing the record numbers of the matching
-	records.  The second object is a tuple containing the names of
-	all data fields used.
+        Otherwise two objects are returned.  The first object is a
+        ResultSet containing the record numbers of the matching
+        records.  The second object is a tuple containing the names of
+        all data fields used.
 
-	"""
-	id=self.id		#name of the column
+        """
+        id=self.id              #name of the column
 
-	cidid="%s/%s" % (cid,id)
-	has_key=request.has_key
-	if has_key(cidid): keys=request[cidid]
-	elif has_key(id): keys=request[id]
-	else: return None
+        cidid="%s/%s" % (cid,id)
+        has_key=request.has_key
+        if has_key(cidid): keys=request[cidid]
+        elif has_key(id): keys=request[id]
+        else: return None
 
-	if type(keys) is not ListType: keys=[keys]
-	index=self._index
-	r=None
-	anyTrue=0
-	opr=None
+        if type(keys) is not ListType: keys=[keys]
+        index=self._index
+        r=None
+        anyTrue=0
+        opr=None
 
-	if request.has_key(id+'_usage'):
-	    # see if any usage params are sent to field
-	    opr=string.split(string.lower(request[id+"_usage"]),':')
-	    opr, opr_args=opr[0], opr[1:]
+        if request.has_key(id+'_usage'):
+            # see if any usage params are sent to field
+            opr=string.split(string.lower(request[id+"_usage"]),':')
+            opr, opr_args=opr[0], opr[1:]
 
-	if opr=="range":
-	    if 'min' in opr_args: lo=min(keys)
-	    else: lo=None
-	    if 'max' in opr_args: hi=max(keys)
-	    else: hi=None
+        if opr=="range":
+            if 'min' in opr_args: lo=min(keys)
+            else: lo=None
+            if 'max' in opr_args: hi=max(keys)
+            else: hi=None
 
-	    anyTrue=1
-	    try:
-		if hi: setlist=index.items(lo,hi)
-		else:  setlist=index.items(lo)
-		for k,set in setlist:
-		    if r is None: r=set
-		    else: r=r.union(set)
-	    except KeyError: pass
-	else:		#not a range
-	    get=index.get
-	    for key in keys:
-		if key: anyTrue=1
-		set=get(key)
-		if set is not None:
-		    if r is None: r=set
-		    else: r = r.union(set)
+            anyTrue=1
+            try:
+                if hi: setlist=index.items(lo,hi)
+                else:  setlist=index.items(lo)
+                for k,set in setlist:
+                    if r is None: r=set
+                    else: r=r.union(set)
+            except KeyError: pass
+        else:           #not a range
+            get=index.get
+            for key in keys:
+                if key: anyTrue=1
+                set=get(key)
+                if set is not None:
+                    if r is None: r=set
+                    else: r = r.union(set)
 
-	if r is None:
-	    if anyTrue: r=intSet()
-	    else: return None
+        if r is None:
+            if anyTrue: r=intSet()
+            else: return None
 
-	return r, (id,)
-	
-
-############################################################################## 
-#
-# $Log: Index.py,v $
-# Revision 1.16  1998/12/14 16:32:55  jeffrey
-# unique values listing now won't return empty strings
-#
-# Revision 1.15  1998/10/13 21:07:17  jeffrey
-# added dpUniqueValues and dpHasUniqueValuesFor methods
-#
-# Revision 1.14  1998/02/25 22:38:34  jeffrey
-# made the Index persistent, just as it should be
-#
-# Revision 1.13  1998/02/05 19:02:37  jim
-# Replaced try/except with get
-#
-# Revision 1.12  1997/12/02 19:34:39  jeffrey
-# fixed buglet in .clear() method
-#
-# Revision 1.11  1997/10/10 19:25:03  jeffrey
-# fixed min:max buglet
-#
-# Revision 1.10  1997/10/10 18:34:56  jeffrey
-# Added range searching/indexing
-#
-# Revision 1.9  1997/09/26 22:21:43  jim
-# added protocol needed by searchable objects
-#
-# Revision 1.8  1997/09/23 16:46:48  jim
-# Added logic to handle missing data.
-#
-# Revision 1.7  1997/09/17 18:58:08  brian
-# Fixed a booboo in unindex_item
-#
-# Revision 1.6  1997/09/12 14:46:51  jim
-# *** empty log message ***
-#
-# Revision 1.5  1997/09/12 14:18:04  jim
-# Added logic to allow "blank" inputs.
-#
-# Revision 1.4  1997/09/10 21:46:18  jim
-# Fixed bug that caused return of None when there were no matches.
-#
-# Revision 1.3  1997/09/10 17:25:26  jim
-# Changed to use regular old BTree.
-#
-# Revision 1.2  1997/09/08 18:53:24  jim
-# *** empty log message ***
-#
-# Revision 1.1  1997/09/08 18:52:04  jim
-# *** empty log message ***
-#
-#
+        return r, (id,)

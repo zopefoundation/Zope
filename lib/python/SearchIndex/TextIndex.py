@@ -1,13 +1,89 @@
-############################################################################## 
+##############################################################################
 #
-#     Copyright 
-#
-#       Copyright 1997 Digital Creations, L.C., 910 Princess Anne
-#       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.
-#
-############################################################################## 
-__doc__='''Text Index
+# Zope Public License (ZPL) Version 0.9.4
+# ---------------------------------------
+# 
+# Copyright (c) Digital Creations.  All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or
+# without modification, are permitted provided that the following
+# conditions are met:
+# 
+# 1. Redistributions in source code must retain the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer.
+# 
+# 2. Redistributions in binary form must reproduce the above
+#    copyright notice, this list of conditions, and the following
+#    disclaimer in the documentation and/or other materials
+#    provided with the distribution.
+# 
+# 3. Any use, including use of the Zope software to operate a
+#    website, must either comply with the terms described below
+#    under "Attribution" or alternatively secure a separate
+#    license from Digital Creations.
+# 
+# 4. All advertising materials, documentation, or technical papers
+#    mentioning features derived from or use of this software must
+#    display the following acknowledgement:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 5. Names associated with Zope or Digital Creations must not be
+#    used to endorse or promote products derived from this
+#    software without prior written permission from Digital
+#    Creations.
+# 
+# 6. Redistributions of any form whatsoever must retain the
+#    following acknowledgment:
+# 
+#      "This product includes software developed by Digital
+#      Creations for use in the Z Object Publishing Environment
+#      (http://www.zope.org/)."
+# 
+# 7. Modifications are encouraged but must be packaged separately
+#    as patches to official Zope releases.  Distributions that do
+#    not clearly separate the patches from the original work must
+#    be clearly labeled as unofficial distributions.
+# 
+# Disclaimer
+# 
+#   THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND
+#   ANY EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+#   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+#   FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT
+#   SHALL DIGITAL CREATIONS OR ITS CONTRIBUTORS BE LIABLE FOR ANY
+#   DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+#   DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+#   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+#   LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+#   THE POSSIBILITY OF SUCH DAMAGE.
+# 
+# Attribution
+# 
+#   Individuals or organizations using this software as a web site
+#   must provide attribution by placing the accompanying "button"
+#   and a link to the accompanying "credits page" on the website's
+#   main entry point.  In cases where this placement of
+#   attribution is not feasible, a separate arrangment must be
+#   concluded with Digital Creations.  Those using the software
+#   for purposes other than web sites must provide a corresponding
+#   attribution in locations that include a copyright using a
+#   manner best suited to the application environment.
+# 
+# This software consists of contributions made by Digital
+# Creations and many individuals on behalf of Digital Creations.
+# Specific attributions are listed in the accompanying credits
+# file.
+# 
+##############################################################################
+
+"""Text Index
 
 Notes on a new text index design
 
@@ -40,9 +116,9 @@ Notes on a new text index design
 
         - Does the system save word positions as we do?
 
-	- What is the index indexing?
+        - What is the index indexing?
 
-	- What was the vocabulary of the system?
+        - What was the vocabulary of the system?
 
       Let\'s see.  Assume a 10,000 word vocabulary.  Then we use
       25-bytes per entry.  Hm.....
@@ -98,26 +174,26 @@ Notes on a new text index design
 
         InvertedIndex -- word -> idSet
 
-	ResultIndex -- id -> docData
+        ResultIndex -- id -> docData
 
         where:
 
-	  word -- is a token, typically a word, but could be a name or a
-		  number
+          word -- is a token, typically a word, but could be a name or a
+                  number
 
-	  textSearchResult -- id -> (score, positions)
+          textSearchResult -- id -> (score, positions)
 
-	  id -- integer, say 4-byte.
-	  
-	  positions -- sequence of integers.
+          id -- integer, say 4-byte.
+          
+          positions -- sequence of integers.
 
-	  score -- numeric measure of relevence, f(numberOfWords, positions)
+          score -- numeric measure of relevence, f(numberOfWords, positions)
 
-	  numberOfWords -- number of words in source document.
+          numberOfWords -- number of words in source document.
 
-	  idSet -- set of ids
+          idSet -- set of ids
 
-	  docData -- numberOfWords, word->positions
+          docData -- numberOfWords, word->positions
 
        Note that ids and positions are ints.  We will build C
        extensions for efficiently storing and pickling structures
@@ -125,10 +201,8 @@ Notes on a new text index design
        overhead and storage/retrieveal times, as well as storeage
        space.
 
-
-
-$Id: TextIndex.py,v 1.11 1998/09/28 20:43:22 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+"""
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -144,197 +218,197 @@ import string, regex, regsub
 class TextIndex(Persistent):
 
     def _init(self,data,schema,id):
-	"""Create an index
+        """Create an index
 
-	The arguments are:
+        The arguments are:
 
-	  'data' -- a mapping from integer object ids to objects or records,
+          'data' -- a mapping from integer object ids to objects or records,
 
-	  'schema' -- a mapping from item name to index into data records.
+          'schema' -- a mapping from item name to index into data records.
               If 'data' is a mapping to objects, then schema should ne 'None'.
 
-	  'id' -- the name of the item attribute to index.  This is either
-	      an attribute name or a record key.
-	"""
-	self._data=data
-	self._schema=schema
-	self.id=id
-	self._index=BTree()
-	self._syn=stop_word_dict
-	self._reindex()
+          'id' -- the name of the item attribute to index.  This is either
+              an attribute name or a record key.
+        """
+        self._data=data
+        self._schema=schema
+        self.id=id
+        self._index=BTree()
+        self._syn=stop_word_dict
+        self._reindex()
 
     def clear(self):
-	self._index=BTree()
+        self._index=BTree()
 
     def positions(self, docid, words):
-	"""Return the positions in the document for the given document
-	id of the word, word."""
-	id=self.id
-	if self._schema is None:
-	    f=getattr
-	else:
-	    f=getitem
-	    id=self._schema[id]
+        """Return the positions in the document for the given document
+        id of the word, word."""
+        id=self.id
+        if self._schema is None:
+            f=getattr
+        else:
+            f=getitem
+            id=self._schema[id]
 
-	row=self._data[docid]
-	doc=str(f(row,id))
-	r=[]
-	for word in words:
-	    r=r+Splitter(doc, self._syn).indexes(word)
-	return r
+        row=self._data[docid]
+        doc=str(f(row,id))
+        r=[]
+        for word in words:
+            r=r+Splitter(doc, self._syn).indexes(word)
+        return r
 
     def index_item(self,i,un=0):
-	"""Recompute index data for data with ids >= start."""
+        """Recompute index data for data with ids >= start."""
 
-	id=self.id
-	if self._schema is None:
-	    f=getattr
-	else:
-	    f=getitem
-	    id=self._schema[id]
+        id=self.id
+        if self._schema is None:
+            f=getattr
+        else:
+            f=getitem
+            id=self._schema[id]
 
-	row=self._data[i]
-	k=str(f(row,id))
+        row=self._data[i]
+        k=str(f(row,id))
 
-	self._index_document(k,i,un)
+        self._index_document(k,i,un)
 
     def unindex_item(self, i): return self.index_item(i,1)
 
     def _reindex(self,start=0):
-	"""Recompute index data for data with ids >= start."""
-	for i in self._data.keys(start): self.index_item(i)
+        """Recompute index data for data with ids >= start."""
+        for i in self._data.keys(start): self.index_item(i)
 
     def _index_document(self, document_text, id, un=0,
-			tupleType=type(()),
-			dictType=type({}),
-			):
+                        tupleType=type(()),
+                        dictType=type({}),
+                        ):
         src = Splitter(document_text, self._syn)  
 
         d = {}
-	old=d.has_key
-	last=None
-	
-	for s in src:
-	    if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
-	    else:
-		if old(s):
-		    if s != last: d[s]=d[s]+1
-		else: d[s]=1
+        old=d.has_key
+        last=None
+        
+        for s in src:
+            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
+            else:
+                if old(s):
+                    if s != last: d[s]=d[s]+1
+                else: d[s]=1
 
-	index=self._index
-	get=index.get
-	if un:
-	    for word,score in d.items():
-		r=get(word)
-		if r is not None:
-		    if type(r) is tupleType: del index[word]
-		    else:
-			if r.has_key(id): del r[id]
-			if type(r) is dictType:
-			    if len(r) < 2:
-				if r:
-				    for k, v in r.items(): index[word]=k,v
-				else: del index[word]
-			    else: index[word]=r
-	else:
-	    for word,score in d.items():
-		r=get(word)
-		if r is not None:
-		    r=index[word]
-		    if type(r) is tupleType:
-			r={r[0]:r[1]}
-			r[id]=score
-			index[word]=r
-		    elif type(r) is dictType:
-			if len(r) > 4:
-			    b=IIBTree()
-			    for k, v in r.items(): b[k]=v
-			    r=b
-			r[id]=score
-			index[word]=r
-		    else: r[id]=score
-		else: index[word]=id,score
+        index=self._index
+        get=index.get
+        if un:
+            for word,score in d.items():
+                r=get(word)
+                if r is not None:
+                    if type(r) is tupleType: del index[word]
+                    else:
+                        if r.has_key(id): del r[id]
+                        if type(r) is dictType:
+                            if len(r) < 2:
+                                if r:
+                                    for k, v in r.items(): index[word]=k,v
+                                else: del index[word]
+                            else: index[word]=r
+        else:
+            for word,score in d.items():
+                r=get(word)
+                if r is not None:
+                    r=index[word]
+                    if type(r) is tupleType:
+                        r={r[0]:r[1]}
+                        r[id]=score
+                        index[word]=r
+                    elif type(r) is dictType:
+                        if len(r) > 4:
+                            b=IIBTree()
+                            for k, v in r.items(): b[k]=v
+                            r=b
+                        r[id]=score
+                        index[word]=r
+                    else: r[id]=score
+                else: index[word]=id,score
 
     def _subindex(self, isrc, d, old, last):
 
         src = Splitter(isrc, self._syn)  
 
-	for s in src:
-	    if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
-	    else:
-		if old(s):
-		    if s != last: d[s]=d[s]+1
-		else: d[s]=1
+        for s in src:
+            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
+            else:
+                if old(s):
+                    if s != last: d[s]=d[s]+1
+                else: d[s]=1
 
-	return last
+        return last
 
     def __getitem__(self, word):
-	"""Return an InvertedIndex-style result "list"
-	"""
+        """Return an InvertedIndex-style result "list"
+        """
         src = tuple(Splitter(word, self._syn))
         if not src: return ResultList({},(word,),self)
-	if len(src) == 1:
-	    src=src[0]
-	    if src[:1]=='"' and src[-1:]=='"': return self[src]
-	    r=self._index.get(word,None)
-	    if r is None: r={}
-	    return ResultList(r,(word,),self)
-	    
-	r=None
-	for word in src:
-	    rr=self[word]
-	    if r is None: r=rr
-	    else: r=r.near(rr)
+        if len(src) == 1:
+            src=src[0]
+            if src[:1]=='"' and src[-1:]=='"': return self[src]
+            r=self._index.get(word,None)
+            if r is None: r={}
+            return ResultList(r,(word,),self)
+            
+        r=None
+        for word in src:
+            rr=self[word]
+            if r is None: r=rr
+            else: r=r.near(rr)
 
-	return r
+        return r
 
     def _apply_index(self, request, cid='', ListType=[]):
-	"""Apply the index to query parameters given in the argument, request
+        """Apply the index to query parameters given in the argument, request
 
-	The argument should be a mapping object.
+        The argument should be a mapping object.
 
-	If the request does not contain the needed parameters, then None is
-	returned.
+        If the request does not contain the needed parameters, then None is
+        returned.
 
-	Otherwise two objects are returned.  The first object is a
-	ResultSet containing the record numbers of the matching
-	records.  The second object is a tuple containing the names of
-	all data fields used.
-	"""
+        Otherwise two objects are returned.  The first object is a
+        ResultSet containing the record numbers of the matching
+        records.  The second object is a tuple containing the names of
+        all data fields used.
+        """
 
-	id=self.id
+        id=self.id
 
-	cidid="%s/%s" % (cid,id)
-	has_key=request.has_key
-	if has_key(cidid): keys=request[cidid]
-	elif has_key(id): keys=request[id]
-	else: return None
+        cidid="%s/%s" % (cid,id)
+        has_key=request.has_key
+        if has_key(cidid): keys=request[cidid]
+        elif has_key(id): keys=request[id]
+        else: return None
 
         if type(keys) is type(''):
             if not keys or not strip(keys): return None
             keys=[keys]
-	r=None
-	for key in keys:
-	    key=strip(key)
-	    if not key: continue
-	    rr=intSet()
-	    try:
-		for i,score in query(key,self).items():
-		    if score: rr.insert(i)
-	    except KeyError: pass
-	    if r is None: r=rr
-	    else:
-		# Note that we *and*/*narrow* multiple search terms.
-		r=r.intersection(rr) 
+        r=None
+        for key in keys:
+            key=strip(key)
+            if not key: continue
+            rr=intSet()
+            try:
+                for i,score in query(key,self).items():
+                    if score: rr.insert(i)
+            except KeyError: pass
+            if r is None: r=rr
+            else:
+                # Note that we *and*/*narrow* multiple search terms.
+                r=r.intersection(rr) 
 
-	if r is not None: return r, (id,)
-	return intSet(), (id,)
+        if r is not None: return r, (id,)
+        return intSet(), (id,)
 
 class ResultList:
   
     def __init__(self, d, words, index, TupleType=type(())):
-	self._index=index
-	self._words=words
+        self._index=index
+        self._words=words
         if (type(d) is TupleType): self._dict = { d[0] : d[1] }
         else: self._dict = d
     
@@ -346,61 +420,61 @@ class ResultList:
 
     def __and__(self, x):
         result = {}
-	dict=self._dict
-	xdict=x._dict
-	xhas=xdict.has_key
+        dict=self._dict
+        xdict=x._dict
+        xhas=xdict.has_key
         for id, score in dict.items():
-	    if xhas(id): result[id]=xdict[id]+score
+            if xhas(id): result[id]=xdict[id]+score
     
         return self.__class__(result, self._words+x._words, self._index)
 
     def and_not(self, x):
         result = {}
-	dict=self._dict
-	xdict=x._dict
-	xhas=xdict.has_key
+        dict=self._dict
+        xdict=x._dict
+        xhas=xdict.has_key
         for id, score in dict.items():
-	    if not xhas(id): result[id]=xdict[id]+score
+            if not xhas(id): result[id]=xdict[id]+score
     
         return self.__class__(result, self._words, self._index)
   
     def __or__(self, x):
         result = {}
-	dict=self._dict
-	has=dict.has_key
-	xdict=x._dict
-	xhas=xdict.has_key
+        dict=self._dict
+        has=dict.has_key
+        xdict=x._dict
+        xhas=xdict.has_key
         for id, score in dict.items():
-	    if xhas(id): result[id]=xdict[id]+score
-	    else: result[id]=score
+            if xhas(id): result[id]=xdict[id]+score
+            else: result[id]=score
 
-	for id, score in xdict.items():
-	    if not has(id): result[id]=score
+        for id, score in xdict.items():
+            if not has(id): result[id]=score
     
         return self.__class__(result, self._words+x._words, self._index)
 
     def near(self, x):
         result = {}
-	dict=self._dict
-	xdict=x._dict
-	xhas=xdict.has_key
-	positions=self._index.positions
+        dict=self._dict
+        xdict=x._dict
+        xhas=xdict.has_key
+        positions=self._index.positions
         for id, score in dict.items():
-	    if not xhas(id): continue
-	    p=(map(lambda i: (i,0), positions(id,self._words))+
-	       map(lambda i: (i,1), positions(id,x._words)))
-	    p.sort()
-	    d=lp=9999
-	    li=None
-	    lsrc=None
-	    for i,src in p:
-		if i is not li and src is not lsrc and li is not None:
-		    d=min(d,i-li)
-		li=i
-		lsrc=src
-	    if d==lp: score=min(score,xdict[id]) # synonyms
-	    else: score=(score+xdict[id])/d
-	    result[id]=score
+            if not xhas(id): continue
+            p=(map(lambda i: (i,0), positions(id,self._words))+
+               map(lambda i: (i,1), positions(id,x._words)))
+            p.sort()
+            d=lp=9999
+            li=None
+            lsrc=None
+            for i,src in p:
+                if i is not li and src is not lsrc and li is not None:
+                    d=min(d,i-li)
+                li=i
+                lsrc=src
+            if d==lp: score=min(score,xdict[id]) # synonyms
+            else: score=(score+xdict[id])/d
+            result[id]=score
     
         return self.__class__(result, self._words+x._words, self._index)
 
@@ -413,7 +487,7 @@ Near = '...'
 QueryError='TextIndex.QueryError'
 
 def query(s, index, default_operator = Or,
-	  ws = (string.whitespace,)):
+          ws = (string.whitespace,)):
     # First replace any occurences of " and not " with " andnot "
     s = regsub.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
     q = parse(s)
@@ -444,9 +518,9 @@ def parse(s):
     return l
 
 def parse2(q, default_operator,
-	   operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near},
-	   ListType=type([]),
-	   ):
+           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near},
+           ListType=type([]),
+           ):
     '''Find operators and operands'''
     i = 0
     isop=operator_dict.has_key
@@ -457,8 +531,8 @@ def parse2(q, default_operator,
         if ((i % 2) != 0):
             # This word should be an operator; if it is not, splice in
             # the default operator.
-	    
-	    if isop(q[i]): q[i] = operator_dict[q[i]]
+            
+            if isop(q[i]): q[i] = operator_dict[q[i]]
             else: q[i : i] = [ default_operator ]
 
         i = i + 1
@@ -471,17 +545,17 @@ def parens(s, parens_regex = regex.compile("(\|)")):
     if (parens_regex.search(s) < 0): return None
 
     if (parens_regex.group(0) == ")"):
-	raise QueryError, "Mismatched parentheses"
+        raise QueryError, "Mismatched parentheses"
 
     open = parens_regex.regs[0][0] + 1
     start = parens_regex.regs[0][1]
     p = 1
 
     while (parens_regex.search(s, start) >= 0):
-	if (parens_regex.group(0) == ")"): p = p - 1
+        if (parens_regex.group(0) == ")"): p = p - 1
         else: p = p + 1
 
-	start = parens_regex.regs[0][1]
+        start = parens_regex.regs[0][1]
   
         if (p == 0): return (open, parens_regex.regs[0][0])
 
@@ -496,16 +570,16 @@ def quotes(s, ws = (string.whitespace,)):
          if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
     
          for i in range(1,len(splitted),2):
-	     # split the quoted region into words
-	     splitted[i] = filter(None, split(splitted[i]))
+             # split the quoted region into words
+             splitted[i] = filter(None, split(splitted[i]))
 
-	     # put the Proxmity operator in between quoted words
-	     for j in range(1, len(splitted[i])):
-		 splitted[i][j : j] = [ Near ]
+             # put the Proxmity operator in between quoted words
+             for j in range(1, len(splitted[i])):
+                 splitted[i][j : j] = [ Near ]
 
          for i in range(len(splitted)-1,-1,-2):
-	     # split the non-quoted region into words
-	     splitted[i:i+1] = filter(None, split(splitted[i]))
+             # split the non-quoted region into words
+             splitted[i:i+1] = filter(None, split(splitted[i]))
 
          splitted = filter(None, splitted)
      else:
@@ -535,8 +609,8 @@ def evaluate(q, index,ListType=type([])):
     '''Evaluate a parsed query'''
 
     if (len(q) == 1):
-	if (type(q[0]) is ListType):
-	    return evaluate(q[0], index)
+        if (type(q[0]) is ListType):
+            return evaluate(q[0], index)
 
         return index[q[0]]
       
@@ -551,25 +625,25 @@ def evaluate(q, index,ListType=type([])):
     i = 0
     while (i < len(q)):
         if q[i] is And:
-	    left, right = get_operands(q, i, index)
-	    val = left & right
-	    q[(i - 1) : (i + 2)] = [ val ]
+            left, right = get_operands(q, i, index)
+            val = left & right
+            q[(i - 1) : (i + 2)] = [ val ]
         else: i = i + 1
 
     i = 0
     while (i < len(q)):
         if q[i] is Or:
-	    left, right = get_operands(q, i, index)
-	    val = left | right
-	    q[(i - 1) : (i + 2)] = [ val ]
-	else: i = i + 1
+            left, right = get_operands(q, i, index)
+            val = left | right
+            q[(i - 1) : (i + 2)] = [ val ]
+        else: i = i + 1
 
     i = 0
     while (i < len(q)):
         if q[i] is Near:
-	    left, right = get_operands(q, i, index)
-	    val = left.near(right)
-	    q[(i - 1) : (i + 2)] = [ val ]
+            left, right = get_operands(q, i, index)
+            val = left.near(right)
+            q[(i - 1) : (i + 2)] = [ val ]
         else: i = i + 1
 
     if (len(q) != 1): raise QueryError, "Malformed query"
@@ -624,46 +698,3 @@ stop_words=(
     )
 stop_word_dict={}
 for word in stop_words: stop_word_dict[word]=None
-
-
-############################################################################## 
-#
-# $Log: TextIndex.py,v $
-# Revision 1.11  1998/09/28 20:43:22  jim
-# Fixed bug in searches on stop words.
-#
-# Revision 1.10  1998/02/05 19:02:09  jim
-# Changed to use get method.
-#
-# Revision 1.9  1998/02/05 15:24:22  jim
-# Got rid of most try/excepts.
-#
-# Revision 1.8  1997/12/02 19:36:19  jeffrey
-# fixed bug in .clear() method
-#
-# Revision 1.7  1997/12/01 22:58:48  jeffrey
-# Allow indexing of non-text fields
-#
-# Revision 1.6  1997/11/03 18:59:59  jim
-# Fixed several bugs in handling query parsing and proximity search.
-#
-# Revision 1.5  1997/11/03 15:17:12  jim
-# Updated to use new indexing strategy.  Now, no longer store positions
-# in index, but get them on demand from doc.
-#
-# Removed vestiges of InvertedIndex.
-#
-# Revision 1.4  1997/09/26 22:21:44  jim
-# added protocol needed by searchable objects
-#
-# Revision 1.3  1997/09/17 17:53:32  jim
-# Added unindex_item.
-# This thing needs an overhaul; already. :-(
-#
-# Revision 1.2  1997/09/12 14:25:40  jim
-# Added logic to allow "blank" inputs.
-#
-# Revision 1.1  1997/09/11 22:19:09  jim
-# *** empty log message ***
-#
-#
