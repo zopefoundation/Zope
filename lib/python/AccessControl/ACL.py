@@ -1,6 +1,6 @@
 """Access control objects"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 from Persistence import Persistent
@@ -250,9 +250,10 @@ class RoleManager:
     def parse_roles_string(self, roles):
 	"""Utility routine for parsing roles given as a string
 	"""
-	roles=map(strip,split(strip(roles)))
 	try: del self.__roles__
 	except: pass
+	if not roles: return
+	roles=map(strip,split(strip(roles)))
 	if roles=='public':
 	    self.__roles__=None
 	elif roles: self.__roles__=roles

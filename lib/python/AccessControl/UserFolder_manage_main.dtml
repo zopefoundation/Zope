@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var title--></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2"><!--#var title--></FONT>
+<P>
+
+<!--#if parentObject-->
+  <!--#in parentObject-->
+  <A HREF="<!--#var URL2-->/manage" target="_top">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
+  </A>
+  Return to <!--#if title-->
+            <!--#var title-->
+            <!--#else title-->
+            <!--#var id-->
+            <!--#/if title-->
+  <BR>
+  <!--#/in parentObject-->
+<!--#/if parentObject-->
+<P>
+<TABLE>
+<!--#if userNames-->
+<TR>
+  <TD VALIGN="TOP">
+  The following users have been defined. To edit a user, select a user
+  from the list and click the <I>Edit User</I> button.
+  </TD>
+  <TD VALIGN="TOP">
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_editForm" METHOD="POST">
+  <SELECT NAME="name">
+  <!--#in userNames-->
+  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+  <!--#/in userNames-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" VALUE="Edit User">
+  </FORM>
+  </TD>
+</TR>
+<!--#else userNames-->
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  There are no users defined.
+  </TD>
+</TR>
+<!--#/if userNames-->
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  <BR>
+  To add a new user, enter the name, password, confirmation and 
+  roles for the new user and click the <I>Add User</I> button.
+  </TD>
+</TR>
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_addUser" METHOD="POST">
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">Name</TD>
+  <TD VALIGN="TOP"><INPUT TYPE="TEXT" NAME="name" SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">Password</TD>
+  <TD VALIGN="TOP"><INPUT TYPE="PASSWORD" NAME="password" SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">(Confirm)</TD>
+  <TD VALIGN="TOP"><INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">Roles</TD>
+  <TD VALIGN="TOP">
+  <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
+  <!--#if roleNames-->
+  <!--#in roleNames-->
+  <OPTION><!--#var sequence-item-->
+  <!--#/in roleNames-->
+  <!--#/if roleNames-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" VALUE="Add User">
+  </TD>
+  </TR>
+  </TABLE>
+  </FORM>
+  </TD>
+</TR>
+<!--#if userNames-->
+<TR>
+  <TD VALIGN="TOP">
+  <BR>
+  To delete one or more users, select the users
+  you wish to delete and click the <I>Delete Users</I> button.
+  </TD>
+  <TD VALIGN="TOP">
+  <BR>
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_deleteUser" METHOD="POST">
+  <SELECT NAME="names:list" MULTIPLE SIZE="5" >
+  <!--#in userNames-->
+  <OPTION><!--#var sequence-item-->
+  <!--#/in userNames-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="SUBMIT" VALUE="Delete Users">
+  </FORM>
+  </TD>
+</TR>
+<!--#/if userNames-->
+</TABLE>
+</BODY>
+</HTML>
