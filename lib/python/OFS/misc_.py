@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-from Globals import ImageFile
+from ImageFile import ImageFile
 
 class misc_:
     "Miscellaneous product information"
