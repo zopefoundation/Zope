@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.50 2001/07/17 15:05:44 andreas Exp $'''
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
+$Id: Aqueduct.py,v 1.51 2001/08/10 15:39:26 andreasjung Exp $'''
 
 import Globals, os
 from Globals import Persistent
@@ -147,7 +147,9 @@ class BaseQuery(Persistent, SimpleItem.Item,
                         except: missing.append(name)
                     
         if missing:
-            raise self.MissingArgumentError, missing
+            raise self.MissingArgumentError,  \
+                "The following arguments were omitted " \
+                " from the ZSQL method call: %s" % str(missing)
 
         return r
 
