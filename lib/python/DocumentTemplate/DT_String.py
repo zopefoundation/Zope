@@ -408,3 +408,9 @@ class File(FileMixin, String):
     template is used the first time.
     """
     def manage_edit(self,data): raise TypeError, 'cannot edit files'
+
+
+class func_code:
+    def __init__(self,varnames=('self','REQUEST')):
+	self.co_varnames=varnames
+	self.co_argcount=len(varnames)
