@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -180,21 +180,7 @@ class UserFolder(Implicit, Persistent):
             del self._data[n]
         return self.manage_main(self, REQUEST)
 
-    def manage_addRole(self,REQUEST,role):
-	""" """
-	roles=Globals.Bobobase['roles']
-	if role not in roles:
-	    Globals.Bobobase['roles']=tuple(roles)+(role,)
-	return self.manage_main(self, REQUEST)
 
-    def manage_deleteRole(self,REQUEST,role):
-	""" """
-	roles=Globals.Bobobase['roles']
-	if role in roles:
-	    roles=list(roles)
-	    del roles[roles.index(role)]
-	    Globals.Bobobase['roles']=tuple(roles)
-	return self.manage_main(self, REQUEST)
 
 
 
@@ -240,6 +226,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.7  1997/08/27 19:49:48  brian
+# Added forgotten dtml
+#
 # Revision 1.6  1997/08/27 13:44:00  brian
 # Added a nicer dialog to return if users try to create more than one
 # UserFolder in an object.

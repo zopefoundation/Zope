@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<TITLE>Management Menu</TITLE>
+</HEAD>
+<BODY BACKGROUND="<!--#var SOFTWARE_URL-->/App/background.jpg"
+      BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+
+<TABLE BORDER="0">
+<TR>
+  <TD ALIGN="LEFT" COLSPAN="2" VALIGN="TOP">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/logo.jpg"
+       WIDTH="90" HEIGHT="90">
+  <BR>
+  </TD>
+</TR>
+<TR><TD></TD><TD></TD></TR>
+
+<!--#if manage_options-->
+<!--#in manage_options mapping-->
+<!--#if sequence-item-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var PARENT_URL-->/<!--#var action-->"
+     TARGET="<!--#var target-->"><IMG BORDER="0" HEIGHT="16"
+     WIDTH="16" ALT="<!--#var label-->"
+     SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"></A>
+  </TD>
+  <TD ALIGN="LEFT">
+  <FONT SIZE="-1">
+  <A HREF="<!--#var PARENT_URL-->/<!--#var action-->"
+     TARGET="<!--#var target-->">
+  <!--#var label-->
+  </A></FONT>
+  </TD>
+</TR>
+<!--#else sequence-item-->
+<TR><TD COLSPAN="2"><HR></TD></TR>
+<!--#/if sequence-item-->
+<!--#/in manage_options-->
+<!--#/if manage_options-->
+</TABLE>
+</BODY>
+</HTML>
+
