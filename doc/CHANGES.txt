@@ -118,6 +118,9 @@ Zope Changes
       - #178: Don't compile PythonScripts in skins directories
 
     Features Added
+    
+      - Collector #186: Added urlencode to the standard importables for
+        Python scripts.
 
       - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
         unsafe data taken implictly from the REQUEST object. Data taken

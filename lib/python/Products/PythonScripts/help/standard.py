@@ -51,12 +51,11 @@ def url_quote(s):
 
     See Also
 
-       "Python 'urllib'
-       module":http://www.python.org/doc/current/lib/module-urllib.html
+       "Python 'urllib' module":http://www.python.org/doc/current/lib/module-urllib.html
        'quote' function.
 
     """
-
+    
 def url_quote_plus(s):
     """
     Like url_quote but also replace blank space characters with
@@ -64,8 +63,7 @@ def url_quote_plus(s):
 
     See Also
 
-      "Python 'urllib'
-      module":http://www.python.org/doc/current/lib/module-urllib.html
+      "Python 'urllib' module":http://www.python.org/doc/current/lib/module-urllib.html
       'quote_plus' function.
 
     """
@@ -77,8 +75,7 @@ def url_unquote(s):
 
     See Also
 
-       "Python 'urllib'
-       module":http://www.python.org/doc/current/lib/module-urllib.html
+       "Python 'urllib' module":http://www.python.org/doc/current/lib/module-urllib.html
        'unquote' function.
 
     """
@@ -89,10 +86,21 @@ def url_unquote_plus(s):
 
     See Also
 
-      "Python 'urllib'
-      module":http://www.python.org/doc/current/lib/module-urllib.html
+      "Python 'urllib' module":http://www.python.org/doc/current/lib/module-urllib.html
       'unquote_plus' function.
 
+    """
+    
+def urlencode(query, doseq=0):
+    """
+    Convert a mapping object (such as a dictionary) or a sequence of 
+    two-element  tuples to a URL encoded query string. Useful for generating 
+    query strings programmatically.
+
+    See Also
+
+      "Python 'urllib' module":http://www.python.org/doc/current/lib/module-urllib.html
+      'urlencode' function.
     """
 
 def newline_to_br(s):
