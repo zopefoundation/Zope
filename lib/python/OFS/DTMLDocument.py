@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -187,6 +187,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         if self._size_changes.has_key(SUBMIT):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
         self.title=title
+        if type(data) is not type(''): data=data.read()
         self.munge(data)
         self.on_update()
         if REQUEST: return MessageDialog(
@@ -197,8 +198,8 @@ class DTMLDocument(DTMLMethod, PropertyManager):
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
         self._validateProxy(REQUEST)
-        data=file.read()
-        self.munge(data)
+        if type(file) is not type(''): file=file.read()
+        self.munge(file)
         self.on_update()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
@@ -307,3 +308,5 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
         if submit==" Add and Edit ": u="%s/%s" % (u,id)
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
+
+
