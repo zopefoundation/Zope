@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.32 1998/01/28 18:13:48 jim Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: DA.py,v 1.33 1998/01/28 18:14:40 jim Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -96,6 +96,7 @@ class DA(
 	self._arg=parse(arguments)
 	self.src=template
 	self.template=DocumentTemplate.HTML(template)
+	self._v_cache={}, IOBTree.Bucket()
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
     def manage_advanced(self, key, max_rows, max_cache, cache_time,
@@ -337,6 +338,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.33  1998/01/28 18:14:40  jim
+# Added logic to clear cache on edit.
+#
 # Revision 1.32  1998/01/28 18:13:48  jim
 # Fixed bug in clearing cache.
 #
