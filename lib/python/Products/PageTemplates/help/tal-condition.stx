@@ -21,9 +21,13 @@ condition: Conditionally insert or remove an element
 
   Examples
 
-    Test for variable before inserting it::
+    Test a variable before inserting it (the first example tests for
+    existence and truth, while the second only tests for existence)::
 
-      <p tal:condition="request/message"
+      <p tal:condition="request/message | nothing"
+	 tal:content="request/message">message goes here</p>
+
+      <p tal:condition="exists:request/message"
 	 tal:content="request/message">message goes here</p>
 
     Test for alternate conditions::
