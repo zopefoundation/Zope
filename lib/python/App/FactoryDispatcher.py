@@ -88,10 +88,10 @@
 import Acquisition, sys, Products
 from string import rfind
 from AccessControl.PermissionMapping import aqwrap
+from AccessControl.Owned import UnownableOwner
 
 class ProductDispatcher(Acquisition.Implicit):
     " "
-
     # Allow access to factory dispatchers
     __allow_access_to_unprotected_subobjects__=1
 
@@ -106,12 +106,12 @@ class ProductDispatcher(Acquisition.Implicit):
             getattr(Products, name, None),
             '__FactoryDispatcher__',
             FactoryDispatcher)
-        
+
         dispatcher=dispatcher_class(product, self.aq_parent, REQUEST)
         return dispatcher.__of__(self)
 
 class FactoryDispatcher(Acquisition.Implicit):
-    """Provide a namspace for product "methods"
+    """Provide a namespace for product "methods"
     """
 
     def __init__(self, product, dest, REQUEST=None):
@@ -158,6 +158,9 @@ class FactoryDispatcher(Acquisition.Implicit):
 
     # Provide acquired indicators for critical OM methods:
     _setObject=_getOb=Acquisition.Acquired
+
+    # Make sure factory methods are unowned:
+    _owner=UnownableOwner
 
     # Provide a replacement for manage_main that does a redirection:
     def manage_main(trueself, self, REQUEST, update_menu=0):
