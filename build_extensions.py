@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
