@@ -1,7 +1,7 @@
 
 """Tree Protocol
 
-$Id: TreeItem.py,v 1.1 1997/09/02 20:39:52 jim Exp $"""
+$Id: TreeItem.py,v 1.2 1998/06/08 13:34:01 brian Exp $"""
        
 
 from string import join, split, rfind
@@ -22,4 +22,15 @@ class TreeProtocol:
 	
 
     def tpURL(self):
+        """Return string to be used as URL relative to parent.
+        The tree tag accumulates the tpURL of objects as it
+        traverses the tree. At any given point during dtml
+        rendering within the tree tag, you can use::
+        <!--#var tree-item-url-->
+        to get the url up to the point of the current object
+        being rendered.
+        """
+
+        
+	root=md['tree-root-url']
 	"""Return string to be used as URL relative to parent."""
