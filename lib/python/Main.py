@@ -101,6 +101,7 @@ from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
 
 import sys, os, string, Globals, OFS.Application
 Globals.BobobaseName = '%s/Data.bbb' % Globals.data_dir
+Globals.DatabaseVersion='2'
 
 # Setup support for broken objects:
 import OFS.Uninstalled, BoboPOS.PickleJar
