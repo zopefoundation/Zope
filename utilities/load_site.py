@@ -173,16 +173,127 @@ def upload_dir(object, f):
     for n in os.listdir(f):
         upload_file(object, os.path.join(f,n))
 
+# ----- phd -----
+# Modified by Oleg Broytmann <phd2@earthling.net>
+
+from sgmllib import SGMLParser
+
+def join_attrs(attrs):
+   attr_list = []
+   for attrname, value in attrs:
+      attr_list.append('%s="%s"' % (attrname, string.strip(value)))
+
+   if attr_list:
+      s = " " + string.join(attr_list, " ")
+   else:
+      s = ""
+
+   return s
+
+
+class HeadParser(SGMLParser):
+   def __init__(self):
+      SGMLParser.__init__(self)
+
+      self.seen_starthead = 0
+      self.seen_endhead   = 0
+      self.seen_startbody = 0
+
+      self.head = ""
+      self.title = ""
+      self.accumulator = ""
+
+
+   def handle_data(self, data):
+      if data:
+         self.accumulator = self.accumulator + data
+
+   def handle_comment(self, data):
+      if data:
+         self.accumulator = self.accumulator + "<!--%s-->" % data
+
+
+   def start_head(self, attrs):
+      if not self.seen_starthead:
+         self.seen_starthead = 1
+         self.head = ""
+         self.title = ""
+         self.accumulator = ""
+
+   def end_head(self):
+      if not self.seen_endhead:
+         self.seen_endhead = 1
+         self.head = self.head + self.accumulator
+         self.accumulator = ""
+
+
+   def start_title(self, attrs):
+      self.head = self.head + self.accumulator
+      self.accumulator = ""
+
+   def end_title(self):
+      self.title = self.accumulator
+      self.accumulator = ""
+
+
+   def start_body(self, attrs):
+      if not self.seen_startbody:
+         self.seen_startbody = 1
+         self.accumulator = ""
+
+   def end_body(self): pass # Do not put </BODY> and </HTML>
+   def end_html(self): pass # into output stream
+
+
+   # Pass other tags unmodified
+   def unknown_starttag(self, tag, attrs):
+      self.accumulator = self.accumulator + "<%s%s>" % (string.upper(tag), join_attrs(attrs))
+
+   def unknown_endtag(self, tag):
+      self.accumulator = self.accumulator + "</%s>" % string.upper(tag)
+
+
+
+def parse_html(infile):
+   parser = HeadParser()
+
+   while 1:
+      line = infile.readline()
+      if not line: break
+      parser.feed(line)
+
+   parser.close()
+   infile.close()
+
+   return string.strip(parser.title), string.strip(parser.head), \
+"""<!--#var standard_html_header-->
+
+""" + string.strip(parser.accumulator) + """
+
+<!--#var standard_html_footer-->"""
+
+
 def upload_html(object, f):
     dir, name = os.path.split(f)
     f=open(f)
     # There is a Document bugs that causes file uploads to fail.
     # Waaa.  This will be fixed in 1.10.2.
-    f=f.read()
+    #f=f.read()
+
+    title, head, body = parse_html(f)
+
     if old:
-        call(object.manage_addDocument, id=name, file=f)
+        call(object.manage_addDocument, id=name, file=body)
     else:
-        call(object.manage_addDTMLDocument, id=name, file=f)
+        call(object.manage_addDTMLDocument, id=name, title=title, file=body)
+
+    # Now add META and other tags as property
+    if head:
+      object=object.__class__(object.url+'/'+name,
+                            username=object.username,
+                            password=object.password)
+      call(object.manage_addProperty, id="loadsite-head", type="text", value=head)
+# ----- /phd -----
     
 upload_htm=upload_html
 
