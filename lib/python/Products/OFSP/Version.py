@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Version.py,v 1.3 1997/11/07 18:51:13 jim Exp $'''
+$Id: Version.py,v 1.4 1997/11/11 19:25:48 jim Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -59,6 +59,11 @@ class Session(Persistence.Persistent,
     manage=Globals.HTMLFile('OFS/sessionEdit')
     index_html=Globals.HTMLFile('OFS/session')
 
+    def title_and_id(self):
+	r=Session.inheritedAttribute('title_and_id')(self)
+	if Globals.SessionBase[self.cookie].nonempty(): return '%s *' % r
+	return r
+
     def manage_edit(self, title, acl_type='A',acl_roles=[], REQUEST=None):
 	'Modify a session'
 	self._setRoles(acl_type,acl_roles)
@@ -104,7 +109,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 
@@ -112,6 +117,10 @@ __version__='$Revision: 1.3 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.4  1997/11/11 19:25:48  jim
+# Changed title_and_id method to include a flag to indicate whether a
+# session has unsaved changes.
+#
 # Revision 1.3  1997/11/07 18:51:13  jim
 # Made an implicit acquirer.
 #
