@@ -329,7 +329,7 @@ class TALInterpreter:
 
     def attrAction(self, item):
         name, value, action = item[:3]
-        if action > 1 and not self.showtal:
+        if action == 1 or (action > 1 and not self.showtal):
             return 0, name, value
         ok = 1
         if action == 2 and self.metal:

@@ -10,4 +10,5 @@ TAL changes
 
       Bugs Fixed
 
-
+        - tal:atributes was creating stray attributes in METAL
+          expansion, and there was no unit test for this behavior.
