@@ -478,6 +478,8 @@ class TALGeneratorTestCases(TestCaseBase):
         self._should_error("<p tal:foobar='x' />")
         self._should_error("<p tal:replace='x' tal:content='x' />")
         self._should_error("<p tal:replace='x'>")
+        for tag in HTMLTALParser.EMPTY_HTML_TAGS:
+            self._should_error("<%s tal:content='string:foo'>" % tag)
 
     def check_metal_errors(self):
         exc = METALError
