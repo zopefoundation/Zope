@@ -41,6 +41,7 @@ def tearDown(test):
     del sys.modules['ZClasses.example']
 
 def tearDown27(test):
+    transaction.abort()
     test.globs['db'].close()
     indexname = os.path.join(os.path.dirname(__file__), '27.fs.index')
     os.remove(indexname)
