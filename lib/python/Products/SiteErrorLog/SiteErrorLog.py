@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.3 2002/04/04 16:25:43 shane Exp $
+$Id: SiteErrorLog.py,v 1.4 2002/04/05 16:01:55 htrd Exp $
 """
 
 import os
@@ -130,10 +130,15 @@ class SiteErrorLog (SimpleItem):
                     except:
                         pass
 
+                try:
+                    strv = str(info[1])
+                except:
+                    strv = '<unprintable %s object>' % str(type(info[1]).__name__)
+
                 log = self._getLog()
                 log.append({
                     'type': str(getattr(info[0], '__name__', info[0])),
-                    'value': str(info[1]),
+                    'value': strv,
                     'time': now,
                     'id': str(now) + str(random()), # Low chance of collision
                     'tb_text': tb_text,

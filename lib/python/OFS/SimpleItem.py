@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.96 2002/04/04 16:24:32 shane Exp $'''
-__version__='$Revision: 1.96 $'[11:-2]
+$Id: SimpleItem.py,v 1.97 2002/04/05 16:01:55 htrd Exp $'''
+__version__='$Revision: 1.97 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -210,7 +210,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             except:
                 LOG('OFS', ERROR, 'Exception while rendering an error message',
                     error=sys.exc_info())
-                v = str(error_value) + (
+                try:
+                    strv = str(error_value)
+                except:
+                    strv = '<unprintable %s object>' % str(type(error_value).__name__)
+                v = strv + (
                     " (Also, an error occurred while attempting "
                     "to render the standard error message.)")
             raise error_type, v, tb
