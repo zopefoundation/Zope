@@ -101,7 +101,7 @@ except ImportError:
 
 # Import local classes
 import TALDefs
-from DummyEngine import DummyEngine
+import DummyEngine
 
 FILE = "tests/input/test01.xml"
 
@@ -160,7 +160,7 @@ def interpretit(it, engine=None, stream=None, tal=1, showtal=-1,
     program, macros = it
     assert TALDefs.isCurrentVersion(program)
     if engine is None:
-        engine = DummyEngine(macros)
+        engine = DummyEngine.DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream, wrap=0,
                    tal=tal, showtal=showtal, strictinsert=strictinsert)()
 
