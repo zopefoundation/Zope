@@ -34,32 +34,25 @@ function toggleSelect() {
 <dtml-if filtered_meta_types>
   <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
-  <td align="left" valign="top">
-  <span class="std-text">
-  <dtml-if "_.len(filtered_meta_types) > 1">
-  To add an item, select an item type:
-  <dtml-else>
-  To add an item click &quot;Add&quot;:
-  </dtml-if>  
-  </span>
-  </td>
+  <td align="left" valign="top">&nbsp;</td>
   <td align="right" valign="top">
   <div class="form-element">
   <form action="&dtml-URL1;/" method="get">
   <dtml-if "_.len(filtered_meta_types) > 1">
     <select class="form-element" name=":action" 
      onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value" />
-    <option value="manage_workspace" disabled />Select Type...
+    <option value="manage_workspace" disabled />Select type to add...
     <dtml-in filtered_meta_types mapping sort=name>
-    <option value="&dtml.url_quote-action;" />&dtml-name;
+    <option value="&dtml.url_quote-action;">&dtml-name;</option>
     </dtml-in>
     </select>
+    <input class="form-element" type="submit" name="submit" value=" Add " />
   <dtml-else>
     <dtml-in filtered_meta_types mapping sort=name>
     <input type="hidden" name=":method" value="&dtml.url_quote-action;" />
+    <input class="form-element" type="submit" name="submit" value=" Add &dtml-name;" />
     </dtml-in>
   </dtml-if>
-  <input class="form-element" type="submit" name="submit" value=" Add " />
   </form>
   </div>
   </td>
