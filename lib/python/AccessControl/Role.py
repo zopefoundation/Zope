@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -353,6 +353,8 @@ class Permission:
     def __init__(self,name,data,obj):
 	self.name=name
 	self.data=data
+	if hasattr(obj, 'aq_self'):
+	    obj=obj.aq_self
 	self.obj =obj
 
     def getRoles(self):
@@ -411,7 +413,11 @@ class Permission:
 		if role in data:
 		    data.remove(role)
 	    if data: attr.__roles__=data
-	    else:    del attr.__roles__
+	    else:
+		# The hasattr above will find __roles__ defined
+		# in the class, but we wont be able to delete it.
+		try:    del attr.__roles__
+		except: pass
 
     def __len__(self): return 1
     def __str__(self): return self.name
@@ -427,7 +433,9 @@ class AccessType:
     def __init__(self,name,data,obj):
 	self.name=name
 	self.data=data
-	self.obj =obj
+	if hasattr(obj, 'aq_self'):
+	    obj=obj.aq_self
+	self.obj=obj
 
     def getRoles(self):
 	# Return the list of role names which have been given
