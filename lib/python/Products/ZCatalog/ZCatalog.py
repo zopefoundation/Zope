@@ -82,10 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Catalog 
-
-A Catalog object provides an inteface to index objects.
-"""
+"""ZCatalog product"""
 
 from Globals import HTMLFile, MessageDialog
 import Globals
@@ -115,7 +112,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     """ZCatalog object"""
 
     meta_type = "ZCatalog"
-
+    icon='misc_/ZCatalog/ZCatalog.gif'
+    
     manage_options=(
 	    
         {'label': 'Contents', 'action': 'manage_main',
