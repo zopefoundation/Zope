@@ -7,6 +7,7 @@
   <import package="zLOG"/>
   <import package="ZODB"/>
   <import package="ZServer"/>
+  <import package="Products.TemporaryFolder"/>
 
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>
