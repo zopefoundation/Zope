@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.37 1998/03/10 21:18:03 jim Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: DA.py,v 1.38 1998/03/17 19:29:05 jim Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -20,15 +20,21 @@ from Aqueduct.Aqueduct import decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
-import sys, traceback
-from DocumentTemplate import HTML
-import Globals, OFS.SimpleItem, AccessControl.Role, Persistence
+import sys, Globals, OFS.SimpleItem, AccessControl.Role, Persistence
 from string import atoi, find
-import IOBTree
+import IOBTree, DocumentTemplate, sqlvar, sqltest, sqlgroup
 from time import time
 from zlib import compress, decompress
 md5new=md5.new
 import ExtensionClass
+
+class SQL(DocumentTemplate.HTML):
+    commands={}
+    for k, v in DocumentTemplate.HTML.commands.items(): commands[k]=v
+    commands['sqlvar' ]=sqlvar.SQLVar
+    commands['sqltest']=sqltest.SQLTest
+    commands['sqlgroup' ]=sqlgroup.SQLGroup
+
 
 class DA(
     Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
@@ -39,7 +45,6 @@ class DA(
     'Database Adapter'
 
     _col=None
-    sql_delimiter='\0'
     max_rows_=1000
     cache_time_=0
     max_cache_=100
@@ -96,7 +101,8 @@ class DA(
 	self.arguments_src=arguments
 	self._arg=parse(arguments)
 	self.src=template
-	self.template=DocumentTemplate.HTML(template)
+	self.template=t=SQL(template)
+	t.cook()
 	self._v_cache={}, IOBTree.Bucket()
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
@@ -118,7 +124,7 @@ class DA(
 	input_src=default_input_form(self.title_or_id(),
 				     self._arg, 'manage_test',
 				     '<!--#var manage_tabs-->')
-	return HTML(input_src)(self, REQUEST, HTTP_REFERER='')
+	return DocumentTemplate.HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     def manage_test(self, REQUEST):
 	'Perform an actual query'
@@ -134,7 +140,7 @@ class DA(
 		'<strong>Error, <em>%s</em>:</strong> %s'
 		% (sys.exc_type, sys.exc_value))
 
-	report=HTML(
+	report=DocumentTemplate.HTML(
 	    '<html><BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">\n'
 	    '<!--#var manage_tabs-->\n<hr>\n%s\n\n'
 	    '<hr><strong>SQL used:</strong><br>\n<pre>\n%s\n</pre>\n<hr>\n'
@@ -196,10 +202,13 @@ class DA(
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
-	if hasattr(REQUEST,'PARENTS'): self=self.__of__(REQUEST['PARENTS'][0])
+	if hasattr(REQUEST,'PARENTS'): p=REQUEST['PARENTS'][1]
+	elif hasattr(self, 'aq_parent'): p=self.aq_parent
+	else: p=None
 
 	argdata=self._argdata(REQUEST)
-	query=apply(self.template, (self,), argdata)
+	argdata['sql_delimiter']='\0'
+	query=apply(self.template, (p,), argdata)
 
 	if src__: return query
 
@@ -228,9 +237,14 @@ class DA(
 	    if md5new(argdata).digest() != digest:
 		raise 'Bad Request', 'Corrupted Data'
 	    argdata=marshal.loads(argdata)
-	    if hasattr(REQUEST,'PARENTS'):
-		self=self.__of__(REQUEST['PARENTS'][0])
-	    query=apply(self.template,(self,),argdata)
+	    
+	    if hasattr(REQUEST,'PARENTS'): p=REQUEST['PARENTS'][1]
+	    elif hasattr(self, 'aq_parent'): p=self.aq_parent
+	    else: p=None
+
+	    argdata['sql_delimiter']='\0'
+
+	    query=apply(self.template,(p,),argdata)
 	    if self.cache_time_:
 		result=self._cached_result(DB__, query, 1)
 	    else:
@@ -355,6 +369,12 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.38  1998/03/17 19:29:05  jim
+# Added support for sqlvar, sqltest, and sqlgroup tags.
+#
+# Changed the way template is invoked, so that the 'self' is the
+# folder containing the method.
+#
 # Revision 1.37  1998/03/10 21:18:03  jim
 # Traversal not stops when all arguments have been given.
 #
