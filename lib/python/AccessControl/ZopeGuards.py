@@ -1,4 +1,4 @@
-##############################################################################
+#############################################################################
 # 
 # Zope Public License (ZPL) Version 1.0
 # -------------------------------------
@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -109,7 +109,7 @@ def guarded_getattr(inst, name, default=_marker):
         except AttributeError:
             if default is not _marker:
                 return default
-            raise AttributeError
+            raise
         validate = getSecurityManager().validate
         # Filter out the objects we can't access.
         if hasattr(inst, 'aq_acquire'):
