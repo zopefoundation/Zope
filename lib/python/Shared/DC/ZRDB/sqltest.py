@@ -46,7 +46,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.2 1998/03/18 13:44:51 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.3 1998/04/15 14:56:13 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: sqltest.py,v 1.2 1998/03/18 13:44:51 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 
@@ -85,7 +85,12 @@ class SQLTest:
     def render(self, md):
 	name=self.__name__
 	t=self.type
-	v = md[name]
+	try: v = md[name]
+	except KeyError, key:
+	    if key==name and self.optional: return ''
+	    raise KeyError, key, sys.exc_traceback
+	    
+	
 	if type(v) in (ListType, TupleType):
 	    if len(v) > 1 and not self.multiple:
 		raise 'Multiple Values', (
@@ -134,6 +139,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqltest.py,v $
+# Revision 1.3  1998/04/15 14:56:13  jim
+# Fixed problem in handling optional tests.
+#
 # Revision 1.2  1998/03/18 13:44:51  jim
 # Fixed bug in rendering SQL in tests.
 #
