@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.25 2000/06/19 14:26:12 shane Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.26 2000/12/19 16:20:44 evan Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -203,21 +203,15 @@ class TemplateDict:
                     isFunctionType=isFunctionType,
                     ):
 
-        v=self.dicts[key]
-        if call and not simple(type(v)):
-            if hasattr(v,'isDocTemp') and v.isDocTemp: return v(None, self)
-            elif isFunctionType(type(v)): return v()
-            else:
-                try: return v()
-                except AttributeError, ev:
-                    try:
-                        tb=sys.exc_traceback
-                        if hasattr(sys, 'exc_info'): tb=sys.exc_info()[2]
-                        if hasattr(v,'__call__'):
-                            raise AttributeError, ev, tb
-                    finally: tb=None
-                except TypeError: pass
-                        
+        v = self.dicts[key]
+        if call:
+            if hasattr(v, '__render_with_namespace__'):
+                return v.__render_with_namespace__(self)
+            vbase = getattr(v, 'aq_base', v)
+            if callable(vbase):
+                if getattr(vbase, 'isDocTemp', None):
+                    return v(None, self)
+                return v()
         return v
 
     def has_key(self,key):
