@@ -15,10 +15,9 @@
 __version__='$Revision: 1.99 $'[11:-2]
 
 
-import os, re, math,  DateTimeZone
-from time import time, gmtime, localtime, asctime
+import re, math,  DateTimeZone
+from time import time, gmtime, localtime
 from time import daylight, timezone, altzone, strftime
-from types import InstanceType, IntType, FloatType, StringType, UnicodeType
 
 from App.config import getConfiguration
 
@@ -689,7 +688,7 @@ class DateTime:
             if arg=='':
                 raise SyntaxError, arg
 
-            if type(arg) in [StringType,UnicodeType] and arg.lower() in self._tzinfo._zidx:
+            if isinstance(arg, (unicode, str)) and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
                 t,tz=time(),self._tzinfo._zmap[arg.lower()]
                 ms=(t-math.floor(t))
@@ -698,7 +697,7 @@ class DateTime:
                 x = _calcDependentSecond(tz, t)
                 yr,mo,dy,hr,mn,sc = _calcYMDHMS(x, ms)
 
-            elif type(arg) in [StringType,UnicodeType]:
+            elif isinstance(arg, (unicode, str)):
                 # Date/time string
 
                 if arg.find(' ')==-1 and arg[4]=='-':
@@ -735,7 +734,7 @@ class DateTime:
                 sc=sc+ms
 
         elif ac==2:
-            if type(args[1])==StringType:
+            if isinstance(args[1], str):
                 # Seconds from epoch (gmt) and timezone
                 t,tz=args
                 ms = (t - math.floor(t))
