@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -169,10 +169,17 @@ class UnIndex(Persistent, Implicit):
         _index=self._index
         self._index=OOBTree()
         
-        def convertSet(s, IITreeSet=IITreeSet):
+        def convertSet(s,
+                       IITreeSet=IITreeSet, IntType=type(0),
+                       type=type, len=len,
+                       doneTypes = (IntType, IITreeSet)):
+
+            if type(s) in doneTypes: return s
+
             if len(s) == 1:
                 try: return s[0]  # convert to int
                 except: pass # This is just an optimization.
+
             return IITreeSet(s)
     
         convert(_index, self._index, threshold, convertSet)
@@ -181,7 +188,7 @@ class UnIndex(Persistent, Implicit):
         self._unindex=IOBTree()
         convert(_unindex, self._unindex, threshold)
 
-        self.__len__=BTrees.Length.Length()
+        self.__len__=BTrees.Length.Length(len(_index))
 
     def __nonzero__(self):
         return not not self._unindex
