@@ -17,7 +17,15 @@ Edit View: Edit A Page Template
         'Title' -- Allows you to specify the Zope title of the template.
         
         'Content-Type' -- Allows you to specify the content-type that
-        will be given to renderings of this template.
+        will be given to renderings of this template.  Also, if the
+        content type is 'text/html' (the default) then the template is
+        assumed to contain HTML, not XML.  This affects both parsing
+        and rendering of the template, and can be overridden by giving
+        the template an 'is_html' property.
+
+        'Expand macros when editing' -- Allows you to turn the expansion
+        of METAL macros on or off.  This only affects viewing of the
+        source code, not rendering.
         
     Buttons and Other Form Elements
 
