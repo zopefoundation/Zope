@@ -821,6 +821,9 @@ instancehome $INSTANCE
 #
 #     Port numbers are offset by the setting of port-base.
 #
+#     To run the monitor-server an emergency user must be defined 
+#     (through an 'access' file).
+#
 # Default:
 #
 #     An HTTP server starts on port 8080, an FTP server starts on port
