@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -270,7 +270,7 @@ class Function:
             c=replace(encodestring('%s:%s' % (self.username,self.password)),'\012','')
             rq.append('Authorization: Basic %s' % c)
         rq.append(MultiPart(d).render())
-        rq=join(rq,'\n')
+        rq=join(rq,'\r\n')   
 
         try:
             sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -524,7 +524,7 @@ class MultiPart:
                     s.append('%s: %s' % (n,v['_v']))
                     for k in v.keys():
                         if k != '_v': s.append('; %s=%s' % (k, v[k]))
-                    s.append('\n')
+                    s.append('\r\n')
             p=[]
             t=[]
             b=self._boundary
@@ -533,7 +533,7 @@ class MultiPart:
             t.append(join(p,'\n--%s\n' % b))
             t.append('\n--%s--\n' % b)
             t=join(t,'')
-            s.append('Content-Length: %s\n\n' % len(t))
+            s.append('Content-Length: %s\r\n\r\n' % len(t))
             s.append(t)
             return join(s,'')
 
@@ -543,8 +543,8 @@ class MultiPart:
                     s.append('%s: %s' % (n,v['_v']))
                     for k in v.keys():
                         if k != '_v': s.append('; %s=%s' % (k, v[k]))
-                    s.append('\n')
-            s.append('\n')
+                    s.append('\r\n')
+            s.append('\r\n')
 
             if self._boundary:
                 p=[]
