@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.177 $'[11:-2]
+__version__='$Revision: 1.178 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -1020,11 +1020,7 @@ class UserFolder(BasicUserFolder):
         data=self.data
         names=data.keys()
         names.sort()
-        users=[]
-        f=users.append
-        for n in names:
-            f(data[n])
-        return users
+        return [data[n] for n in names]
 
     def getUser(self, name):
         """Return the named user object or None"""
