@@ -53,6 +53,8 @@
 
 __version__ = "2.0a4"
 
+import string, sys, os
+
 class PCGIPublisher:
     def __init__(self, resource=None):
         ### resources passed from the environment, info file or pcgi-wrapper
@@ -326,8 +328,9 @@ class PCGIPublisher:
             return self.fatalError("no socket available")
 
         self.sock.listen(512)
-        try: sys.stderr.close()
-        except: pass
+
+        stdlog('stderr')
+        stdlog('stdout')
 
         while not self.error:
             conn, accept = self.sock.accept()
@@ -335,6 +338,17 @@ class PCGIPublisher:
                 self.handler(conn)
             except socket.error:
                 pass
+
+def stdlog(name):
+    NAME=string.upper(name)+'_LOG'
+    if os.environ.has_key(NAME):
+        f=os.environ[NAME]
+    else:
+        f='/dev/null'
+    try: f=open(f,'w')
+    except: f=None
+    getattr(sys, name).close()
+    if f is not None: setattr(sys, name, f)
 
 def main():
     try:
