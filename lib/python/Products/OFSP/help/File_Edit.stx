@@ -23,3 +23,8 @@ File - Edit: File Properties.
     File. A precondition is a method or document which is executed
     before the File is viewed or downloaded. If the precondition
     raises an exception then the File cannot be viewed.
+
+    'File Data' -- The file to upload. Use the 'Browse...' button to
+    select a local file.
+
+    'Upload' -- Uploads the file.

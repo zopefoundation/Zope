@@ -6,9 +6,18 @@ ObjectManager - Contents: Edit contained objects.
     delete and change them.
 
     Each contained object is displayed on a line and is identified by
-    an icon, an id and a title in parenthesis.  You can manage an
-    object by clicking on its identifying link.
+    an icon, an id and a title in parenthesis. Additionally, the size
+    (if applicable) and the date during which the object was last modified
+    are displayed.  You can manage an object by clicking on its identifying
+    link.
 
+    Sorting
+
+      You can sort contained objects by type, name (id), size, or modification
+      date. To do so, click on the appropriate column heading. Clicking
+      a second time on any column heading will reverse the sort on that
+      field.
+ 
     Versions
 
       If you are currently working in a version there will be a
@@ -39,15 +48,19 @@ ObjectManager - Contents: Edit contained objects.
     objects can be pasted in a new location.
 
     'Paste' -- Allows you to paste objects from the clipboard into
-    this object **Note: This option will only appear if objects have
+    this object. **Note: This option will only appear if objects have
     previously been copied or cut.**
 
     'Delete' -- Deletes the selected objects. Deleted objects are
     *not* placed in the clipboard.
 
-    'Export...' -- Exports an object from the Zope.
+    'Import/Export' -- Imports or exports a Zope object.
 
     'Available Objects' -- Selects a type of object to add.
 
     'Add' -- Adds an object specified in 'Available Objects'.
  
+    'Select All (Deselect All)' -- Toggles between selecting and
+    deselecting each item currently displayed in the contents view.
+    **Note: This control will only appear if your browser is
+    javascript-enabled.**

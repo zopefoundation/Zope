@@ -197,15 +197,18 @@ function toggleSelect() {
   <input class="form-element" type="submit" 
    name="manage_importExportForm:method" 
    value="Import/Export" />
-  <input class="form-element" type="submit" name="selectButton" 
-   value="Select All" onClick="toggleSelect(); return false" />
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+-->
+</script>
   </dtml-if>
   </div>
   </td>
 </tr>
 </table>
-
-<form onSubmit="return false;"></form>
 
 <dtml-else>
 <table cellspacing="0" cellpadding="2" border="0">

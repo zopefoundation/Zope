@@ -25,8 +25,14 @@ DTML Document/Method - Edit: Edit contents.
     'Wider' and 'Narrower' -- Allows to adjust the width of the
     contents text area.
 
-    'Change' -- Changes the contents.
+    'Save Changes' -- Changes the contents.
 
       **Note: When you change the contents it is parsed for correct
       DTML syntax. If there is a syntax error, the contents will not
       be changed.**
+
+    'File' -- Indicates a file to be uploaded to replace the contents
+    of the current object. Use the 'Browse ...' button to select a
+    local file.
+
+    'Upload File' -- Upload the file and change the contents.
