@@ -202,7 +202,12 @@ def xmlstr(v):
 
 class Int(Scalar): pass
 class Long(Scalar): 
-    def value(self): return str(self._v)[:-1]
+    def value(self):
+        result = str(self._v)
+        if result[-1:] == 'L':
+            return result[:-1]
+        return result
+
 class Float(Scalar): pass
 class String(Scalar):
     def __init__(self, v, encoding=''):
