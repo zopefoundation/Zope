@@ -46,6 +46,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     _v_brains = NoBrainer
 
     def __init__(self, vocabulary=None, brains=None):
+        # Catalogs no longer care about vocabularies and lexicons
+        # so the vocabulary argument is ignored. (Casey)
 
         self.schema = {}    # mapping from attribute name to column number
         self.names = ()     # sequence of column names
@@ -62,15 +64,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         self.__len__=BTrees.Length.Length()
         self.clear()
-
-        # indexes can share a lexicon or have a private copy.  Here,
-        # we instantiate a lexicon to be shared by all text indexes.
-        # This may change.
-
-        if isinstance(vocabulary, types.StringType):
-            self.lexicon = vocabulary
-        else:
-            self.lexicon = Lexicon()
 
         if brains is not None:
             self._v_brains = brains
@@ -115,11 +108,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if hasattr(index, '__of__'): index=index.__of__(self)
             index._convertBTrees(threshold)
 
-        lexicon=self.lexicon
-        if isistance(lexicon, types.StringType):
-           lexicon=getattr(self, lexicon).lexicon
-        lexicon._convertBTrees(threshold)
-
     def __len__(self):
         # NOTE, this is never called for new catalogs, since
         # each instance overrides this.
@@ -153,8 +141,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         catalog is first activated (from the persistent storage) """
         Persistent.__setstate__(self, state)
         self.updateBrains()
-        if not hasattr(self, 'lexicon'):
-            self.lexicon = Lexicon()
 
     def useBrains(self, brains):
         """ Sets up the Catalog to return an object (ala ZTables) that

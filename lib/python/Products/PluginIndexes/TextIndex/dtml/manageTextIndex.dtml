@@ -12,11 +12,15 @@
 
   <td align="left">
     <select name="vocabulary">  
-      <dtml-in "aq_parent.aq_parent.objectItems('Vocabulary')">
-        <dtml-if "_['sequence-key']==vocabulary_id">
-          <option value="&dtml-sequence-key;" selected>&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">) 
+      <dtml-in "superValues('Vocabulary')">
+        <dtml-if "getId()==vocabulary_id">
+          <option value="&dtml-id;" selected>
+            &dtml-id; <dtml-var title fmt="(%s)" null>
+          </option> 
         <dtml-else>
-          <option value="&dtml-sequence-key;">&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">)
+          <option value="&dtml-id;">
+            &dtml-id; <dtml-var title fmt="(%s)" null>
+          </option> 
         </dtml-if>
       </dtml-in>
     </select>

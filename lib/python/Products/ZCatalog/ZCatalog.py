@@ -39,16 +39,12 @@ import string
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
 def manage_addZCatalog(self, id, title,
-                       vocab_id='create_default_catalog_',
+                       vocab_id=None, # Deprecated
                        REQUEST=None):
     """Add a ZCatalog object
     """
     id=str(id)
-    title=str(title)
-    vocab_id=str(vocab_id)
-    if vocab_id == 'create_default_catalog_':
-        vocab_id = None
-        
+    title=str(title)        
     c=ZCatalog(id, title, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
@@ -156,52 +152,32 @@ class ZCatalog(Folder, Persistent, Implicit):
     _v_transaction = None
     
     def __init__(self, id, title='', vocab_id=None, container=None):
-        if vocab_id is not None and container is None:
-            raise CatalogError, ("You cannot specify a vocab_id without "
-                                     "also specifying a container.")
+        # ZCatalog no longer cares about vocabularies
+        # so the vocab_id argument is ignored (Casey)
+        
         if container is not None:
             self=self.__of__(container)
         self.id=id
         self.title=title
-
+        
+        # vocabulary and vocab_id are left for backwards 
+        # compatibility only, they are not used anymore
         self.vocabulary = None
+        self.vocab_id = ''        
         
         self.threshold = 10000
         self._v_total = 0
 
-        if vocab_id is None:
-            v = Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-            self._setObject('Vocabulary', v)
-            self.vocabulary = v
-            self.vocab_id = 'Vocabulary'
-        else:
-            self.vocab_id = vocab_id
+        self._catalog = Catalog()
 
-
-        self._catalog = Catalog(vocabulary=self.vocab_id)
-
-        self.addColumn('id')
-        self.addIndex('id', 'FieldIndex')
-
-        self.addColumn('title')
-        self.addIndex('title', 'TextIndex')
-
-        self.addColumn('meta_type')
-        self.addIndex('meta_type', 'FieldIndex')
-
-        self.addColumn('bobobase_modification_time')
-        self.addIndex('bobobase_modification_time', 'FieldIndex')
-
-        self.addColumn('summary')
-        self.addIndex('PrincipiaSearchSource', 'TextIndex')
-
-        self.addIndex('path','PathIndex')
-
-    def __len__(self): return len(self._catalog)
-
-    def getVocabulary(self):
-        """ more ack! """
-        return getattr(self, self.vocab_id)
+    def __len__(self):
+        return len(self._catalog)
+    
+    
+    # getVocabulary method is no longer supported
+    # def getVocabulary(self):
+    #   """ more ack! """
+    #   return getattr(self, self.vocab_id)
 
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):

@@ -92,6 +92,7 @@ class ZCatalogTopicTests(TestBase):
     def setUp(self):
         
         self.cat = ZCatalog('catalog')
+        self.cat.addColumn('id')
         self.cat.addIndex('topic','TopicIndex')
         self.TI = self.cat._catalog.indexes['topic']
 

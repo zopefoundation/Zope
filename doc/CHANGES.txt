@@ -7,6 +7,13 @@ Zope Changes
   after Zope 2.5.1
 
     new Features:
+    
+      - ZCatalog no longer has a hand in managing text index vocabularies.
+        The cruft associated with this functionality has been exorcised.
+        No default indexes or metadata elements are defined for you when
+        you create a new ZCatalog. Since we now have many new kinds of
+        plug-in indexes it no longer maked sense to do this
+        anymore.        
 
       - A new permission "Copy or Move" was added.  This permission
         may be used respective to an object to prevent objects

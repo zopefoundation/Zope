@@ -30,23 +30,6 @@
   </tr>
   <tr>
     <td align="left" valign="top">
-    <div class="form-optional">
-    Vocabulary
-    </div>
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
-  <select name="vocab_id">
-      <option value="create_default_catalog_">Create one for me</option>
-    <dtml-in "superValues('Vocabulary')">
-      <option value="<dtml-var id html_quote>"><dtml-var id></option>
-    </dtml-in>
-  </select>
-    </div>
-    </td>
-  </tr>
-  <tr>
-    <td align="left" valign="top">
     </td>
     <td align="left" valign="top">
     <div class="form-element">

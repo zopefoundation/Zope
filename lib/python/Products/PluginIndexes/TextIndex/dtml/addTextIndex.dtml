@@ -6,6 +6,12 @@
 
 
 <p class="form-help">
+  <strong>Note:</strong>
+  TextIndex is deprecated. It has been replaced by ZCTextIndex. Consider
+  using it instead
+</p>
+
+<p class="form-help">
 <strong>Text Indexes</strong> break text up into individual words, and 
 are often referred to as full-text indexes. Text indexes 
 sort results by score meaning they return hits in order 
@@ -33,12 +39,20 @@ from the most relevant to the lest relevant.
     </div>
     </td>
     <td>
-
-    <select name="extra.vocabulary:record">  
-      <dtml-in "this().aq_parent.objectItems('Vocabulary')">
-        <option value="&dtml-sequence-key;">&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">)
-      </dtml-in>
-    </select>
+    
+    <dtml-let vocabs="superValues('Vocabulary')">
+      <dtml-if vocabs>
+        <select name="extra.vocabulary:record">  
+          <dtml-in expr="superValues('Vocabulary')">
+            <option value="&dtml-id;">
+              &dtml-id; <dtml-var title fmt="(%s)" null>
+            </option>
+          </dtml-in>
+        </select>
+      <dtml-else>
+        <em class="std-text">Create a Vocabulary object first.</em>
+      </dtml-if>
+    </dtml-let>
     
     </td> 
   </tr>

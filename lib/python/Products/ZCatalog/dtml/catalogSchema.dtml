@@ -37,17 +37,24 @@ tab).  This way, the summary data may be shown in the search results.
     </div>
     </td>
   </tr>
-</dtml-in>
+  <dtml-if sequence-end>
+    <tr>
+      <td align="left" valign="top">
+      </td>
+      <td align="left" valign="top">
+      <div class="form-element">
+      <input class="form-element" type="submit" name="manage_delColumn:method" 
+       value="Delete" /> 
+      </div>
+      </td>
+    </tr>
+  </dtml-if>
+<dtml-else>
   <tr>
-    <td align="left" valign="top">
-    </td>
-    <td align="left" valign="top">
-    <div class="form-element">
-    <input class="form-element" type="submit" name="manage_delColumns:method" 
-     value="Delete" /> 
-    </div>
-    </td>
+    <td></td>
+    <td><em class="std-text">There are currently no metadata elements.</em></td>
   </tr>
+</dtml-in>
 </table>
 
 <br />

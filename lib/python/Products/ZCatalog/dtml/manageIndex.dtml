@@ -4,36 +4,9 @@
 
 <p class="form-help"> 
 This list defines what indexes the Catalog will contain.  When objects 
-get cataloged, the values of any attributes they may have which match 
-an index in this list will get indexed.  Indexes come in four flavors, 
-Text Indexes, Field Indexes, Keyword Indexes and Path Indexes.
+get cataloged, the values of any attributes which match 
+an index in this list will get indexed.
 </p>
-
-<p class="form-help">
-<strong>Text Indexes</strong> break text up into individual words, and 
-are often referred to as full-text indexes. Text indexes 
-sort results by score meaning they return hits in order 
-from the most relevant to the lest relevant.
-</p>
-
-<p class="form-help">
-<strong>Field Indexes</strong> treat the value of an objects attributes 
-atomically, and can be used, for example, to track only a certain subset 
-of object values, such as 'meta_type'.
-</p>
-
-<p class="form-help">
-<strong>Keyword Indexes</strong> index a sequence of objects that act as 
-'keywords' for an object.  A Keyword Index will return any objects 
-that have one or more keywords specified in a search query.
-</p>
-
-<p class="form-help">
-<strong>Path Indexes</strong> index the physical path of a sequence
-of objects. A Path Index will return all objects that match 
-a partital path specified in a search query.
-</p>
-
 
 <script type="text/javascript">
 <!-- 
@@ -224,21 +197,9 @@ if (document.forms[0]) {
 <tr>
 <td>
 <div class="std-text">
-There are currently no items in <em>&dtml-title_or_id;</em>
+<em>There are currently no indexes</em>
 <br /><br />
 </div>
-<dtml-unless dontAllowCopyAndPaste>
-<dtml-if cb_dataValid>
-<div class="form-element">
-<input class="form-element" type="submit" name="manage_pasteObjects:method" 
- value="Paste" />
-</div>
-</dtml-if>
-</dtml-unless>
-<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
-<input class="form-element" type="submit"
-  name="manage_importExportForm:method" value="Import/Export" />
-</dtml-if>
 </td>
 </tr>
 </table>

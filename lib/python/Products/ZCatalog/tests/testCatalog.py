@@ -122,38 +122,8 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         self._catalog.delIndex('id')
         assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
 
-class TestZCatalogObject(unittest.TestCase):
-    def setUp(self):
-        class dummy(ExtensionClass.Base):
-            pass
-        self.dummy = dummy()
-        newSecurityManager( None, DummyUser( 'phred' ) )
-
-    def tearDown(self):
-        noSecurityManager()
-        self.dummy = None
-
-    def testInstantiateWithoutVocab(self):
-        v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-        zc = ZCatalog.ZCatalog('acatalog')
-        assert hasattr(zc, 'Vocabulary')
-        assert zc.getVocabulary().__class__ == v.__class__
-
-    def testInstantiateWithGlobbingVocab(self):
-        dummy = self.dummy
-        v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-        dummy.v = v
-        zc = ZCatalog.ZCatalog('acatalog', vocab_id='v', container=dummy)
-        zc = zc.__of__(dummy)
-        assert zc.getVocabulary() == v
-
-    def testInstantiateWithNormalVocab(self):
-        dummy = self.dummy
-        v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=0)
-        dummy.v = v
-        zc = ZCatalog.ZCatalog('acatalog', vocab_id='v', container=dummy)
-        zc = zc.__of__(dummy)
-        assert zc.getVocabulary() == v
+# Removed unittests dealing with catalog instantiation and vocabularies
+# since catalog no longer creates/manages vocabularies automatically (Casey)
 
 class TestCatalogObject(unittest.TestCase):
     def setUp(self):
@@ -376,7 +346,6 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
     suite.addTest( unittest.makeSuite( TestAddDelIndexes ) )
-    suite.addTest( unittest.makeSuite( TestZCatalogObject ) )
     suite.addTest( unittest.makeSuite( TestCatalogObject ) )
     suite.addTest( unittest.makeSuite( testRS ) )
     return suite
