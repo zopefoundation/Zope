@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
+from DateTime import DateTime
 from cgi import escape
 
 def field2string(v):
@@ -47,7 +48,7 @@ def field2required(v):
     raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
-    if type(v) in (ListType, TupleType):
+    if isinstance(v, (ListType, TupleType)):
         return map(field2int, v)
     v = field2string(v)
     if v:
@@ -59,7 +60,7 @@ def field2int(v):
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2float(v):
-    if type(v) in (ListType, TupleType):
+    if isinstance(v, (ListType, TupleType)):
         return map(field2float, v)
     v = field2string(v)
     if v:
@@ -73,7 +74,7 @@ def field2float(v):
         'Empty entry when <strong>floating-point number</strong> expected')
 
 def field2long(v):
-    if type(v) in (ListType, TupleType):
+    if isinstance(v, (ListType, TupleType)):
         return map(field2long, v)
     v = field2string(v)
     # handle trailing 'L' if present.
@@ -92,7 +93,7 @@ def field2tokens(v):
     return v.split()
 
 def field2lines(v):
-    if type(v) in (ListType, TupleType):
+    if isinstance(v, (ListType, TupleType)):
         result=[]
         for item in v:
             result.append(str(item))
@@ -100,10 +101,18 @@ def field2lines(v):
     return field2text(v).split('\n')
 
 def field2date(v):
-    from DateTime import DateTime
+
     v = field2string(v)
     try:
         v = DateTime(v)
+    except DateTime.SyntaxError, e:
+        raise DateTime.SyntaxError, escape(e)
+    return v
+
+def field2date_international(v):
+    v = field2string(v)
+    try:
+        v = DateTime(v, datefmt="international")
     except DateTime.SyntaxError, e:
         raise DateTime.SyntaxError, escape(e)
     return v
@@ -152,6 +161,7 @@ type_converters = {
     'long':               field2long,
     'string':             field2string,
     'date':               field2date,
+    'date_international': field2date_international,
     'required':           field2required,
     'tokens':             field2tokens,
     'lines':              field2lines,
