@@ -92,6 +92,7 @@ from do import *
 
 def main(cwd=os.getcwd(), name='Zope', user='', group=''):
     python=sys.executable
+    print '-'*78
     print 'Writing the pcgi resource file (ie cgi script), %s' % name
     cwd=os.environ.get('ZDIR',cwd)
 

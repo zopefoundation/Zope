@@ -82,8 +82,18 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+
+import compileall, os, sys
+
+class Shutup:
+    def write(*args): pass # :)
+
 print
 print '-'*78
 print 'Compiling py files'
-import compileall, os
-compileall.compile_dir(os.getcwd())
+stdout=sys.stdout
+try:
+    sys.stdout=Shutup()
+    compileall.compile_dir(os.getcwd())
+finally:
+    sys.stdout=stdout
