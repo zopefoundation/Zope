@@ -9,5 +9,6 @@ test:
 	$(PYTHON) utilities/testrunner.py $(TESTOPTS)
 
 clean:
-	find . -name '*.o' -o -name '*.so' -o -name '*.py[co]' \
-	    -o -name 'core*' | xargs rm -f
+	find . \( -name '*.o' -o -name '*.so' -o -name '*.py[co]' \
+	          -o -name 'core*' \) \
+	       -exec rm {} \;
