@@ -15,9 +15,11 @@
 
     <p z:repeat="car python:['honda', 'subaru', 'acura']">
       honda
-    </p><p z:repeat="car python:['honda', 'subaru', 'acura']">
+    </p>
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
       subaru
-    </p><p z:repeat="car python:['honda', 'subaru', 'acura']">
+    </p>
+    <p z:repeat="car python:['honda', 'subaru', 'acura']">
       acura
     </p>
 
@@ -28,9 +30,11 @@
     <ul>
     <span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">honda</li>
-    </span><span z:repeat="car python:['honda', 'subaru', 'acura']">
+    </span>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">subaru</li>
-    </span><span z:repeat="car python:['honda', 'subaru', 'acura']">
+    </span>
+    <span z:repeat="car python:['honda', 'subaru', 'acura']">
       <li z:insert="var:car">acura</li>
     </span>
     </ul>

@@ -4,7 +4,6 @@
   <body xmlns:m="http://xml.zope.org/namespaces/metal" xmlns:z="http://xml.zope.org/namespaces/tal" m:define-macro="body" z:define="global count python:0">
 
     <ul m:define-macro="whoops">
-        
     </ul>
 
     <span z:define="global count python:2; global message str:hello world"/>
@@ -13,7 +12,8 @@
         <li z:repeat="item python:range(count)">
           0
           hello world
-        </li><li z:repeat="item python:range(count)">
+        </li>
+        <li z:repeat="item python:range(count)">
           1
           hello world
         </li>
@@ -25,7 +25,8 @@
         <li z:repeat="item python:range(count)">
           0
           goodbye cruel world
-        </li><li z:repeat="item python:range(count)">
+        </li>
+        <li z:repeat="item python:range(count)">
           1
           goodbye cruel world
         </li>
