@@ -25,23 +25,37 @@ def sh(home, user, group):
     if not os.path.exists(start):
         print '-'*78
         print 'Creating start script, start'
-        open(start,'w').write(
-            "#! /bin/sh\n"
-            "umask 077\n"
-            "reldir=`dirname $0`\n"
-            "%s=`cd $reldir; pwd`\n"
-            "export %s\n"
-            'exec %s \\\n     $%s/z2.py \\\n     -D "$@"\n'
-            % (varname, varname, sys.executable, varname))
+        f = open(start,'w')
+        f.write(START_SCRIPT % (varname, varname, sys.executable, varname))
         ch(start,user,group,0711)
+        f.close()
 
     stop=os.path.join(home, 'stop')
     if not os.path.exists(stop):
         print '-'*78
         print 'Creating stop script, stop'
-        open(stop,'w').write(
-            "#! /bin/sh\n"
-            "kill `cat %s`" 
-            % os.path.join(home,'var','Z2.pid'))
+        f = open(stop,'w')
+        f.write(STOP_SCRIPT % os.path.join(home,'var','Z2.pid'))
         ch(stop,user,group,0711)
+        f.close()
 
+START_SCRIPT="""#!/bin/sh
+umask 077
+reldir=`dirname $0`
+# Zope's event logger is controlled by the "EVENT_LOG_FILE" environment
+# variable.  If you don't have a "EVENT_LOG_FILE" environment variable
+# (or its older alias "STUPID_LOG_FILE") set, Zope will log to the standard
+# output.  For more information on EVENT_LOG_FILE, see doc/ENVIRONMENT.txt.
+ZLOGFILE=$EVENT_LOG_FILE
+if [ -z "$ZLOGFILE" ]; then
+ZLOGFILE=$STUPID_LOG_FILE
+fi
+if [ -z "$ZLOGFILE" ]; then
+        EVENT_LOG_FILE=""
+        export EVENT_LOG_FILE
+fi
+%s=`cd $reldir; pwd`
+export %s
+exec %s $%s/z2.py -D "$@" """
+
+STOP_SCRIPT="#! /bin/sh\nkill `cat %s`" 

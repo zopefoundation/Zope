@@ -6,6 +6,13 @@ Zope Changes
 
     Bugs Fixed
 
+      - The default "start" script now causes the event log to be sent to
+        standard output unless the "EVENT_LOG_FILE" or "STUPID_LOG_FILE"
+        environment variable is found in the environment.
+
+      - The much-hated name "STUPID_LOG_FILE" now has a preferred
+        alias:  "EVENT_LOG_FILE".
+
       - Collector 454: The "default" session_data transient object
         container was not created if an object named "session_data"
         existed in the root.

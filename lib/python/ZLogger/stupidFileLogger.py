@@ -31,17 +31,24 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
     # Check where to log
     global _stupid_dest, _stupid_format
     if _stupid_dest is None:
-        if os.environ.has_key('STUPID_LOG_FILE'):
-            f=os.environ['STUPID_LOG_FILE']
+        # EVENT_LOG_FILE is the preferred environment variable, but
+        # we accept STUPID_LOG_FILE as well
+        eget = os.environ.get
+        f = eget('EVENT_LOG_FILE') or eget('STUPID_LOG_FILE')
+        if f is not None: # if the envvar exists (might still be null)
             if f: _stupid_dest=open(f,'a')
             else: _stupid_dest=sys.stderr
-        elif os.environ.get('Z_DEBUG_MODE',0):
+        elif eget('Z_DEBUG_MODE'):
             _stupid_dest=sys.stderr
         else:
             _stupid_dest=_no_stupid_log
 
-        if os.environ.has_key('STUPID_LOG_FORMAT'):
-            _stupid_format = os.environ['STUPID_LOG_FORMAT']
+        # EVENT_LOG_FORMAT is the preferred environment variable, but
+        # we accept STUPID_LOG_FORMAT as well
+        fmt = eget('EVENT_LOG_FORMAT') or eget('STUPID_LOG_FORMAT')
+
+        if fmt is not None:
+            _stupid_format = fmt
 
 
     # Check id to log
@@ -49,7 +56,11 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
 
     global _stupid_severity
     if _stupid_severity is None:
-        try: _stupid_severity=int(os.environ['STUPID_LOG_SEVERITY'])
+        eget = os.environ.get
+        # EVENT_LOG_SEVERITY is the preferred environment variable, but
+        # we accept STUPID_LOG_SEVERITY as well
+        envvar = eget('EVENT_LOG_SEVERITY') or eget('STUPID_LOG_SEVERITY')
+        try: _stupid_severity=int(envvar)
         except: _stupid_severity=0
         
     if severity < _stupid_severity: return
@@ -67,8 +78,8 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
         except:
             failedf, _stupid_format = _stupid_format, None
             _stupid_dest.write("------\n%s %s zLOG Format string error\n"
-                               "The STUPID_LOG_FORMAT string '%s' "
-                               "caused an error, so we won't use it.\n" %
+                               "The EVENT_LOG_FORMAT or STUPID_LOG_FORMAT"
+                               "string '%s' caused an error, it wont be used."%
                                (fmap['time'],
                                 severity_string(100),
                                 failedf)

@@ -71,30 +71,31 @@ ZEO
         the client cache is stored in temporary files which are removed
         when the ClientStorage shuts down.
 
-        
-
 Debugging and Logging
 
-    STUPID_LOG_FORMAT
+    EVENT_LOG_FORMAT or STUPID_LOG_FORMAT
         
         Set this variable if you like to customize the output format of
-        Zope stupid logger.
+        Zope event logger.  EVENT_LOG_FORMAT is the preferred envvar
+        but STUPID_LOG_FORMAT also works.
         
 
-    STUPID_LOG_FILE="path"
+    EVENT_LOG_FILE="path" or STUPID_LOG_FILE="path"
 
-        The stupid file logger writes Zope logging information to a file.
+        The event file logger writes Zope logging information to a file.
         It is not very smart about it - it just dumps it to a file and the
-        format is not very configurable - hence the name.
+        format is not very configurable - hence the name STUPID_LOG_FILE.
+        EVENT_LOG_FILE is the preferred envvar but STUPID_LOG_FILE
+        also works.
 
         See also: LOGGING.txt
 
 
-    STUPID_LOG_SEVERITY <number>
+    EVENT_LOG_SEVERITY <number> or STUPID_LOG_SEVERITY <number>
 
-        If set, Zope logs only messages whose severity is level
-        is higher than the specified one.
-
+        If set, Zope logs only messages whose severity is level is
+        higher than the specified one.  EVENT_LOG_SEVERITY is the
+        preferred envvar but STUPID_LOG_SEVERITY also works.
 
 
     ZSYSLOG="/dev/log"
