@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -52,7 +52,7 @@ class TALESError(Exception):
             s = "%s, column %d" % (s, self.offset + 1)
         return s
     def __nonzero__(self):
-        return 0
+        return 1
 
 class Undefined(TALESError):
     '''Exception raised on traversal of an undefined path'''
@@ -245,10 +245,6 @@ class Context:
             expression = self._engine.compile(expression)
         try:
             v = expression(self)
-            if isinstance(v, Exception):
-                if isinstance(v, TALESError):
-                    raise v, None, v.takeTraceback()
-                raise v
         except TALESError, err:
             err.setPosition(self.position)
             raise err, None, sys.exc_info()[2]
