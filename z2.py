@@ -88,16 +88,16 @@ Usage: %(program)s [options] [environment settings]
 
 Options:
 
-  h
+  -h
 
     Output this text.
 
-  z path
+  -z path
 
     The location of the Zope installation.
     The default is the location of this script, %(here)s.
 
-  Z path
+  -Z path
 
     Unix only! This option is ignored on windows.
 
@@ -107,47 +107,52 @@ Options:
     process id in. The path may be relative, in which case it will be
     relative to the Zope location.
 
-  t n
+  -t n
 
     The number of threads to use, if ZODB3 is used. The default is
     %(NUMBER_OF_THREADS)s.
 
-  a ipaddress
+  -D
+
+    Run in Zope debug mode.  This is equivalent to
+    supplying the environment variable setting Z_DEBUG_MODE=1
+
+  -a ipaddress
 
     The IP address to listen on.  If this is an empty string, then all
     addresses on the machine are used. The default is %(IP_ADDRESS)s.
 
-  d ipaddress
+  -d ipaddress
 
     IP address of your DNS server. If this is an empty string, then
     IP addresses will not be logged. If you have DNS service on your
     local machine then you can set this to 127.0.0.1.
     The default is: %(DNS_IP)s.
     
-  u username or uid number
+  -u username or uid number
   
     The username to run ZServer as. You may want to run ZServer as 'nobody'
     or some other user with limited resouces. The only works under Unix, and
     if ZServer is started by root. The default is: %(UID)s
     
-  w port
+  -w port
   
     The Web server (HTTP) port.  This defaults to %(HTTP_PORT)s. The
     standard port for HTTP services is 80.  If this is an empty
     string, then HTTP is disabled.
 
-  f port
+  -f port
   
     The FTP port.  If this is an empty string, then FTP is disabled.
     The standard port for FTP services is 21.  The default is %(FTP_PORT)s.
 
-  p path
+  -p path
 
     Path to the PCGI resource file.  The default value is
     %(PCGI_FILE)s, relative to the Zope location.  If this is an empty
     string or the file does not exist, then PCGI is disabled.
 
-  m port
+  -m port
   
     The secure monitor server port. If this is an empty string, then the
     monitor server is disabled. The monitor server allows interactive
@@ -156,7 +161,7 @@ Options:
     server password is the same as the Zope super manager password set in
     the 'access' file. The default is %(MONITOR_PORT)s.
 
-  2
+  -2
 
     Use ZODB 2 (aka BoboPOS) rather than ZODB 3
 
@@ -233,7 +238,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:2')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:2D')
 
     # Get environment variables
     for a in args:
@@ -257,6 +262,7 @@ try:
         elif o=='-a': IP_ADDRESS=v
         elif o=='-d': DNS_IP=v
         elif o=='-u': UID=v
+        elif o=='-D': os.environ['Z_DEBUG_MODE']='1'
         elif o=='-m':
             if v:
                 try: v=string.atoi(v)
