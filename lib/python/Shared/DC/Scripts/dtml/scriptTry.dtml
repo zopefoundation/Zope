@@ -32,7 +32,7 @@ click <em>run script</em> to view the result of the call.
   </td>
 </tr>
 <dtml-else>
-  <dtml-raise type="Redirect">&dtml-URL1;</dtml-raise>
+  <dtml-raise type="Redirect"><dtml-var URL1></dtml-raise>
 </dtml-in>
 
 <tr>

@@ -14,6 +14,7 @@
 __version__='$Revision$'[11:-2]
 
 import Globals
+from AccessControl import getSecurityManager
 from Persistence import Persistent
 from string import join, strip
 import re
@@ -217,6 +218,10 @@ class Bindings:
         while 1:
             self = self.aq_parent
             if not getattr(self, '_is_wrapperish', None):
+                parent = getattr(self, 'aq_parent', None)
+                inner = getattr(self, 'aq_inner', None)
+                container = getattr(inner, 'aq_parent', None)
+                getSecurityManager().validate(parent, container, '', self)
                 return self
 
     def _getContainer(self):
@@ -224,6 +229,10 @@ class Bindings:
         while 1:
             self = self.aq_inner.aq_parent
             if not getattr(self, '_is_wrapperish', None):
+                parent = getattr(self, 'aq_parent', None)
+                inner = getattr(self, 'aq_inner', None)
+                container = getattr(inner, 'aq_parent', None)
+                getSecurityManager().validate(parent, container, '', self)
                 return self
 
     def _getTraverseSubpath(self):
