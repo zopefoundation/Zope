@@ -19,7 +19,7 @@
     Transient Object Container Path
     </div>
     <div class="form-help">
-    e.g. '/tempFolder/transientObjectContainer'
+    e.g. '/temp_folder/transient_container'
     </div>
   </td>
   <td align="left" valign="top">

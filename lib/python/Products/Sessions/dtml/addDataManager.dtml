@@ -43,10 +43,10 @@ user obtained from a Transient Object Container.
     <div class="form-label">
     Transient Object Container Path
     </div>
-    <div class="form-help">e.g. '/tempFolder/transientObjectContainer'.</div>
+    <div class="form-help">e.g. '/temp_folder/transient_container'.</div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="path" SIZE="60" value="/tempFolder/transientObjectContainer">
+    <INPUT TYPE="TEXT" NAME="path" SIZE="60" value="/temp_folder/transient_container">
   </TD>
 </TR>
 

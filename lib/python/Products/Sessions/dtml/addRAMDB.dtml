@@ -24,7 +24,7 @@ initialization of Zope.  They are useful for storing temporary objects in.
     </div>
   </td>
   <td align="LEFT" valign="TOP">
-    <input type="TEXT" name="id" size="20" value="tempFolder" />
+    <input type="TEXT" name="id" size="20" value="temp_folder" />
   </td>
 </tr>
 

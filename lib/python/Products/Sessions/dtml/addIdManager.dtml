@@ -6,14 +6,14 @@
 	   )">
 
 <FORM ACTION="constructBrowserIdManager" METHOD="POST">
-<input type=hidden name="id" value="browser_id_mgr">
+<input type=hidden name="id" value="browser_id_manager">
 <TABLE CELLSPACING="2">
 <tr>
 <div class="form-help">
 Zope Browser Id Manager objects perform the task of setting and retrieving
 Zope browser ids for remote users.  They are used primarily by Session
 Data Manager objects.  A Browser Id Manager's 'id' must always be
-'browser_id_mgr' in order for it to be found by Session Data Managers.
+'browser_id_manager' in order for it to be found by Session Data Managers.
 </div>
 </tr>
 <TR>
@@ -24,7 +24,7 @@ Data Manager objects.  A Browser Id Manager's 'id' must always be
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">This object's Zope id will be<br>
-    "browser_id_mgr"
+    "browser_id_manager"
     </div>
   </TD>
 </TR>

@@ -15,7 +15,7 @@ from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse, NameCaller
 import traceback
 
-BID_MGR_NAME = 'browser_id_mgr'
+BID_MGR_NAME = 'browser_id_manager'
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 
