@@ -37,7 +37,7 @@ import ZPublisher
 
 
 def startup():
-    global ZODB, app
+    global app
 
     Globals.DatabaseVersion='3'
 
