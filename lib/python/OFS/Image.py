@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -68,39 +68,19 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	self.__name__=id
 	self.title=title
 	self.size=len(self.data)
-	self.setLastModifiedHeader()
 
     def id(self): return self.__name__
 
-    def getLastModifiedHeader(self):
-	"""Return a timestamp string representing the last
-	   modification time, in a format that can used in
-           an HTTP header."""
-	if hasattr(self, 'hmod'):
-	    return self.hmod
-	self.hmodified=DateTime().toZone('GMT').rfc822()
-	return self.hmodified
-
-    def setLastModifiedHeader(self, ts=None):
-	"""Set the timestamp string representing the last
-	   modification time to the given string. The time
-           stamp string must be expressed in GMT, in rfc822
-	   format. If no string is specified, a timestamp
-	   representing the current time will be used."""
-	if ts: self.hmodified=ts
-	else:  self.hmodified=DateTime().toZone('GMT').rfc822()	    
 
     def index_html(self, RESPONSE):
 	""" """
 	RESPONSE['content-type'] =self.content_type
-	RESPONSE['last-modified']=self.getLastModifiedHeader()
         return self.data
 
     def manage_edit(self,title,content_type,REQUEST=None):
 	""" """
 	self.title=title
 	self.content_type=content_type
-	self.setLastModifiedHeader()
 	if REQUEST: return MessageDialog(
 		    title  ='Success!',
 		    message='Your changes have been saved',
@@ -112,7 +92,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	data=file.read()
 	self.data=Pdata(data)
 	self.size=len(data)
-	self.setLastModifiedHeader()
 	if REQUEST: return MessageDialog(
 		    title  ='Success!',
 		    message='Your changes have been saved',
@@ -122,7 +101,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     def HEAD(self, REQUEST, RESPONSE):
 	""" """
 	RESPONSE['content-type'] =self.content_type
-	RESPONSE['last-modified']=self.getLastModifiedHeader()
 	return ''
 
     PUT__roles__=['Manager']
@@ -130,7 +108,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	'handle PUT requests'
 	self.data=Pdata(BODY)
 	self.size=len(BODY)
-	self.setLastModifiedHeader()
 	try:
 	    type=REQUEST['CONTENT_TYPE']
 	    if type: self.content_type=type
