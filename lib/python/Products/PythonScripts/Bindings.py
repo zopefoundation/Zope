@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from Globals import Persistent, HTMLFile, package_home
@@ -329,6 +329,7 @@ class Bindings (Persistent):
         if caller_namespace is not None:
             # Include the caller's namespace.
             my_namespace._push(caller_namespace)
+            my_namespace.level = caller_namespace.level
         return my_namespace
 
     def __call__(self, *args, **kw):
