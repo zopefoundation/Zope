@@ -38,7 +38,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.2 1998/04/27 18:58:14 jim Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.3 1998/07/29 15:09:14 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -48,7 +48,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.2 1998/04/27 18:58:14 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from string import find, split, join, atoi, atof
@@ -58,8 +58,13 @@ class SQLVar:
     name='sqlvar'
 
     def __init__(self, args):
-	args = parse_params(args, name='', type=None, optional=1)
-	self.__name__ = name_param(args,'sqlvar')
+	args = parse_params(args, name='', expr='', type=None, optional=1)
+
+	name,expr=name_param(args,'sqlvar',1)
+	if expr is None: expr=name
+	else: expr=expr.eval
+	self.__name__, self.expr = name, expr
+
 	self.args=args
 	if not args.has_key('type'):
 	    raise ParseError, ('the type attribute is required', 'dtvar')
@@ -71,10 +76,14 @@ class SQLVar:
 	name=self.__name__
 	args=self.args
 	t=args['type']
-	try: v = md[name]
+	try:
+            expr=self.expr
+            if type(expr) is type(''): v=md[expr]
+            else: v=expr(md)
 	except:
 	    if args.has_key('optional') and args['optional']: return 'null'
 	    raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
+
 	if t=='int':
 	    try:
 		if type(v) is StringType: atoi(v)
@@ -111,6 +120,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqlvar.py,v $
+# Revision 1.3  1998/07/29 15:09:14  jim
+# Added expr to sqlvar
+#
 # Revision 1.2  1998/04/27 18:58:14  jim
 # Now use exported sql_quote__ function to quote strings.
 #
