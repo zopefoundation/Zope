@@ -137,20 +137,24 @@ facility_names = {
 import socket
 
 class syslog_client:
+
     def __init__ (self, address='/dev/log'):
         self.address = address
         if type (address) == type(''):
-            self.socket = socket.socket (socket.AF_UNIX, socket.SOCK_STREAM)
-            self.socket.connect (address)
+            try: # APUE 13.4.2 specifes /dev/log as datagram socket
+                self.socket = socket.socket( socket.AF_UNIX
+                                                       , socket.SOCK_DGRAM)
+                self.socket.connect (address)
+            except: # older linux may create as stream socket
+                self.socket = socket.socket( socket.AF_UNIX
+                                                       , socket.SOCK_STREAM)
+                self.socket.connect (address)
             self.unix = 1
         else:
-            self.socket = socket.socket (socket.AF_INET, socket.SOCK_DGRAM)
+            self.socket = socket.socket( socket.AF_INET
+                                                   , socket.SOCK_DGRAM)
             self.unix = 0
-            
-            # curious: when talking to the unix-domain '/dev/log' socket, a
-            #   zero-terminator seems to be required.  this string is placed
-            #   into a class variable so that it can be overridden if
-            #   necessary.
+
             
     log_format_string = '<%d>%s\000'
     
