@@ -911,7 +911,7 @@ setup(
     name='SiteAccess',
     author=AUTHOR,
 
-    packages=['Products.SiteAccess'],
+    packages=['Products.SiteAccess', 'Products.SiteAccess.tests'],
     data_files=[['Products/SiteAccess', ['Products/SiteAccess/*.txt']],
                 ['Products/SiteAccess/doc', ['Products/SiteAccess/doc/*']],
                 ['Products/SiteAccess/Extensions',
