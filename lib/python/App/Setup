@@ -10,5 +10,4 @@
 # install undo.dtml
 # install cache.dtml
 # install copyright.dtml
-# install Setup
 # install www www/%(package)s
