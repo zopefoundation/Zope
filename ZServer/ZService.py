@@ -183,7 +183,8 @@ TODO:
 This script does for NT the same sort of thing zdaemon.py does for UNIX.
 Requires Python win32api extensions.
 """
-
+import sys
+sys.path.append('./lib/win32')
 import win32api, win32serviceutil, win32service, win32event, win32process
 try: import servicemanager
 except: pass
