@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.120 2000/04/04 22:35:23 jim Exp $'''
-__version__='$Revision: 1.120 $'[11:-2]
+$Id: Application.py,v 1.121 2000/04/24 23:59:55 amos Exp $'''
+__version__='$Revision: 1.121 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -104,7 +104,7 @@ from App.ProductContext import ProductContext
 from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR
-from HelpSys.HelpSystem import HelpSystem
+from HelpSys.HelpSys import HelpSys
 
 
 _standard_error_msg='''\
@@ -176,7 +176,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     _isBeingUsedAsAMethod_=0
 
     # Create the help system object
-    HelpSys=HelpSystem('HelpSys')
+    HelpSys=HelpSys('HelpSys')
 
     p_=misc_.p_
     misc_=misc_.misc_
