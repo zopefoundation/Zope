@@ -525,8 +525,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 rs=data.items()
                 append(LazyMap(self.instantiate, rs))
             else:
-                for k, intset in sort_index._index.items():
-                    append((k,LazyMap(self.__getitem__, intset)))
+                try:
+                    for k, intset in sort_index._index.items():
+                        append((k,LazyMap(self.__getitem__, intset)))
+                except AttributeError:
+                    raise ValueError, "Incorrect index name passed as " \
+                          "'sort_on' parameter.  Note that you may only " \
+                          "sort on values for which there is a matching " \
+                          "index available."
         elif rs:
             if sort_index is None and type(rs) is IIBType:
                 # then there is score information.  Build a new result 
