@@ -45,8 +45,8 @@ class TestAutopackBase(BerkeleyTestBase):
     def _wait_for_next_autopack(self):
         storage = self._storage
         # BAW: this uses a non-public interface
-        packtime = storage._autopacker._nextpack
-        while packtime == storage._autopacker._nextpack:
+        packtime = storage._autopacker._nextcheck
+        while packtime == storage._autopacker._nextcheck:
             time.sleep(1)
         
     def _mk_dbhome(self, dir):
