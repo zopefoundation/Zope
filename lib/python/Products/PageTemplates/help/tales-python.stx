@@ -100,7 +100,7 @@ TALES Python expressions
 
   Examples
 
-    Basic module usage::
+    Using a module usage (pick a random choice from a list)::
 
       <span tal:replace="python:modules['random'].choice(['one', 
                            'two', 'three', 'four', 'five'])">
