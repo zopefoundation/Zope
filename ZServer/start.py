@@ -52,7 +52,8 @@ MODULE='Main'
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
 # medusa/logger.py for more information.
-LOG_FILE=os.path.join(INSTANCE_HOME, 'ZServer.log')
+
+LOG_FILE=os.path.join(INSTANCE_HOME, 'var', 'ZServer.log')
 
 ## FTP configuration
 ##
@@ -132,7 +133,7 @@ zftp = FTPServer(
 
 # if it hasn't failed at this point, create a .pid file.
 
-pf = open(INSTANCE_HOME + '/ZServer.pid', 'w+')  # truncate it if it exists
+pf = open(os.path.join(INSTANCE_HOME, 'var', 'ZServer.pid'), 'w+')
 pf.write(("%s" % os.getpid()))
 pf.close()
 
