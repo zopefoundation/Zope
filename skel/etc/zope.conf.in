@@ -295,7 +295,7 @@ products $INSTANCE/Products
 #
 # Description:
 #     The default IP address on which Zope's various server protocol
-#     iimplementations will listen for requests. If this is unset, Zope
+#     implementations will listen for requests. If this is unset, Zope
 #     will listen on all IP addresses supported by the machine. This
 #     directive can be overridden on a per-server basis in the servers
 #     section.
