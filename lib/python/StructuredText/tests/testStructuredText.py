@@ -212,12 +212,23 @@ class BasicTests(unittest.TestCase):
         self._test("xx _this is html_ xx","xx <u>this is html</u> xx")
         
     def testEmphasis(self):
-        """underline"""
+        """ emphasis """
         self._test("xx *this is html* xx","xx <em>this is html</em> xx")
 
     def testStrong(self):
-        """underline"""
+        """ strong """
         self._test("xx **this is html** xx","xx <strong>this is html</strong> xx")
         
+    def testUnderlineThroughoutTags(self):
+        """Underlined text containing tags should not be transformed"""
+        self._test('<a href="index_html">index_html</a>', \
+                   '<a href="index_html">index_html</a>')
+
+
+def test_suite():
+    return unittest.TestSuite( (
+        unittest.makeSuite(StructuredTextTests),
+        unittest.makeSuite(BasicTests)
+        ))
 
 framework()
