@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.58 $'.split()[-2:][0]
+__version__ = '$Revision: 1.59 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
@@ -1816,7 +1816,10 @@ class _RecordsIterator(_GetItemBase):
             self.status = ' '
         self.user = user
         self.description = desc
-        self._extension = ext
+        try:
+            self._extension = pickle.loads(ext)
+        except EOFError:
+            self._extension = {}
         # Internal pointer
         self._oids = self._storage._alltxnoids(self.tid)
         # To make .pop() more efficient
@@ -1867,7 +1870,6 @@ class _Autopack(_WorkThread):
         self._packtime = packtime
         self._classicpack = classicpack
         # Bookkeeping
-        self._stop = False
         self._lastclassic = 0
 
     def _dowork(self):
