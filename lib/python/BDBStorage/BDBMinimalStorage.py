@@ -4,7 +4,7 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-# $Revision: 1.6 $
+# $Revision: 1.7 $
 __version__ = '0.1'
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
@@ -183,7 +183,7 @@ class Minimal(BerkeleyBase):
                 # number.  Raise a ConflictError.
                 raise POSException.ConflictError(
                     'serial number mismatch (was: %s, has: %s)' %
-                    (oserial, utils.U64(serial)))
+                    (utils.U64(oserial), utils.U64(serial)))
             # Our serial number is updated in BaseStorage's tpc_begin() call,
             # which sets the serial number to the current timestamp.
             serial = self._serial
