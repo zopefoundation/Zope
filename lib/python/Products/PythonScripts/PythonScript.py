@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -153,7 +153,11 @@ class PythonScript(Script, Historical, Cacheable):
         """Replace the body of the script with the text in file."""
         if self.wl_isLocked():
             raise ResourceLockedError, "The script is locked via WebDAV."
-        if type(file) is not type(''): file = file.read()
+            
+        if type(file) is not type(''): 
+            if not file: raise ValueError, 'File not specified'
+            file = file.read()
+            
         self.write(file)
         message = 'Saved changes.'
         return self.ZPythonScriptHTML_editForm(self, REQUEST,

@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -1054,6 +1054,12 @@ class FileUpload:
         # self.headers so that managed code can access them.
         try:    self.headers.__allow_access_to_unprotected_subobjects__ = 1
         except: pass
+        
+    def __nonzero__(self):
+        """FileUpload objects are considered false if their 
+           filename is empty.
+        """
+        return not not self.filename
 
 
 parse_cookie_lock=allocate_lock()

@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -87,7 +87,12 @@ class DTMLDocument(PropertyManager, DTMLMethod):
         if self.wl_isLocked():
             raise ResourceLockedError, (
                 'This document has been locked via WebDAV.')
-        if type(file) is not type(''): file=file.read()
+                
+        if type(file) is not type(''): 
+            if REQUEST and not file: 
+                raise ValueError, 'No file specified'
+            file=file.read()
+        
         self.munge(file)
         self.ZCacheable_invalidate()
         if REQUEST:

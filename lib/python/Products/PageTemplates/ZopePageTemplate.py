@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -128,7 +128,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Replace the document with the text in file."""
         if SUPPORTS_WEBDAV_LOCKS and self.wl_isLocked():
             raise ResourceLockedError, "File is locked via WebDAV"
-        if type(file) is not type(''): file = file.read()
+            
+        if type(file) is not type(''): 
+            if not file: raise ValueError, 'File not specified'
+            file = file.read()
+            
         self.write(file)
         message = 'Saved changes.'
         return self.pt_editForm(manage_tabs_message=message)

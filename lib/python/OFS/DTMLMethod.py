@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -262,7 +262,11 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         if self.wl_isLocked():
             raise ResourceLockedError, 'This DTML Method is locked via WebDAV'
 
-        if type(file) is not type(''): file=file.read()
+        if type(file) is not type(''): 
+            if REQUEST and not file: 
+                raise ValueError, 'No file specified'
+            file=file.read()
+            
         self.munge(file)
         self.ZCacheable_invalidate()
         if REQUEST:

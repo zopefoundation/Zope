@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.136 $'[11:-2]
+__version__='$Revision: 1.137 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -30,6 +30,7 @@ from DateTime import DateTime
 from Cache import Cacheable
 from mimetools import choose_boundary
 from ZPublisher import HTTPRangeSupport
+from ZPublisher.HTTPRequest import FileUpload
 
 StringType=type('')
 manage_addFileForm=DTMLFile('dtml/imageAdd', globals(),Kind='File',kind='file')
@@ -437,6 +438,8 @@ class File(Persistent, Implicit, PropertyManager,
             size=len(file)
             if size < n: return file, size
             return Pdata(file), size
+        elif isinstance(file, FileUpload) and not file:
+            raise ValueError, 'File not specified'
 
         if hasattr(file, '__class__') and file.__class__ is Pdata:
             size=len(file)

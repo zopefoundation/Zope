@@ -8,6 +8,9 @@ Zope Changes
 
     new Features:
     
+      - FileUpload objects now evaluate false when the have an empty file
+        name. Making it easier to check for omitted file upload form fields.
+    
       - ZClasses now use a python script as their constructor method
         instead of a DTML method. Also, ZClasses inherit from 
         CatalogPathAwareness now instead of CatalogAwareness.
@@ -72,6 +75,10 @@ Zope Changes
 
     Bugs:
 
+      - Fixed bug #144: Upload button on dtml, py scripts, images, files and
+        pts now raises an error if the file is not specified rather than
+        clearing the source.
+        
       - Fixed bug #275: setPermissionDefault didn't actually set the
         right permission -> role mappings.
 
