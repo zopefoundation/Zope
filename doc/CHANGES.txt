@@ -52,6 +52,7 @@ Zope Changes
       - Selecting "Clear Catalog" from the ZCatalog "Advanced" did not clear
         the vocabulary associated with a TextIndex. 
 
+      - Added updated and enhanced testsuite for STXNG.
 
     Bugs fixed
 
