@@ -262,7 +262,8 @@ try:
         raise 'Invalid python version', string.split(sys.version)[0]
     
     opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:')
-
+    DEBUG=0
+    
     # Get environment variables
     for a in args:
         if string.find(a,'='):
@@ -285,7 +286,9 @@ try:
         elif o=='-a': IP_ADDRESS=v
         elif o=='-d': DNS_IP=v
         elif o=='-u': UID=v
-        elif o=='-D': os.environ['Z_DEBUG_MODE']='1'
+        elif o=='-D':
+            os.environ['Z_DEBUG_MODE']='1'
+            DEBUG=1
         elif o=='-S': sys.ZMANAGED=1
         elif o=='-m':
             if v:
@@ -322,6 +325,7 @@ try:
         elif o=='-2': MODULE='Main'
         elif o=='-l': LOG_FILE=v
 
+    __builtins__.__debug__=DEBUG
 
 except SystemExit: sys.exit(0)
 except:
@@ -346,6 +350,10 @@ sys.path=[os.path.join(here,'lib','python'),here
 
 # from this point forward we can use the zope logger
 
+# Import ZServer before we open the database or get at interesting
+# application code so that ZServer's asyncore gets to be the
+# official one.
+import ZServer
 
 if Zpid:
     import zdaemon, App.FindHomes, posix
