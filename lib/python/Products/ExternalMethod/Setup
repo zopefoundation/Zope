@@ -1,1 +1,6 @@
-*shared*
+# install ExternalMethod.py
+# install __init__.py
+# install addForm.dtml
+# install methodAdd.dtml
+# install methodEdit.dtml
+# install www www/%(package)s
