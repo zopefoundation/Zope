@@ -825,7 +825,8 @@ try:
                 raise SystemExit, 'initgroups is required to safely setuid'
             if UID == None:
                 raise SystemExit, ('A user was not specified to setuid '
-                                   'to; fix this to start as root')
+                                   'to; fix this to start as root (see '
+                                   'doc/SETUID.txt)')
             import stat
             client_home_stat = os.stat(CLIENT_HOME)
             client_home_faults = []
@@ -834,7 +835,8 @@ try:
             if client_home_stat[stat.ST_UID] != 0:
                 client_home_faults.append('is not owned by root')
             if client_home_faults:
-                client_home_faults.append('fix this to start as root.')
+                client_home_faults.append('fix this to start as root (see '
+                                          'doc/SETUID.txt)')
                 err = '%s %s' % (CLIENT_HOME, ', '.join(client_home_faults))
                 raise SystemExit, err
 

@@ -1,0 +1,30 @@
+ZServer 'setuid()' support
+
+  ZServer (Zope's server) supports 'setuid()' on POSIX systems in order to
+  be able to listen on low ports such as 21 (FTP) and 80 (HTTP) but drop
+  root privileges when running; on most POSIX systems only the 'root' user
+  can do this.  Versions of Zope prior to 2.6 had less robust versions
+  of this support.  Several problems were corrected for the 2.6 release.
+
+  The most important thing to remember about this support is that you
+  don't *have* to start ZServer as root unless you want to listen for
+  requests on low ports.  In fact, if you don't have this need, you are
+  much better off just starting ZServer as a user account dedicated to
+  running Zope.  'nobody' is not a good idea for this user account;
+  see below.
+
+  If you do need to have ZServer listening on low ports, you will need to
+  start 'z2.py' as the 'root' user, and also specify what user ZServer
+  should 'setuid()' to.  Do this by specifying the '-u' option followed
+  by a username or UID, either in the 'start' script or on the 'z2.py'
+  command line.  The default used to be 'nobody'; however if any other
+  daemon on a system that ran as 'nobody' was compromised, this would
+  have opened up your Zope object data to compromise.
+
+  You must also make sure the var directory is owned by root, and that
+  it has the sticky bit set.  This is done by the command 'chmod o+t
+  var' on most systems.  When the sticky bit is set on a directory,
+  anyone can write files, but nobody can delete others' files in order
+  to rewrite them.  This is necessary to keep others from overwriting
+  the PID file, tricking root into killing processes when 'stop' is run.
+
