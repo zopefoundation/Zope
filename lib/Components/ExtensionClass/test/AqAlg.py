@@ -85,21 +85,34 @@
 __doc__='''Examples from the Acquisition Algebra Presentation
 
 
-$Id: AqAlg.py,v 1.1 2000/05/17 13:57:51 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: AqAlg.py,v 1.2 2000/06/19 20:30:52 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import Acquisition
+
+def pretty(self, indent=0):
+    context=getattr(self, 'aq_parent', None)
+    if context is None: return self.__name__
+    return "\n%s(%s \n%sof %s\n%s)" % (
+        '  '*indent,
+        pretty(self.aq_self, indent+1),
+        '  '*indent,
+        pretty(context, indent+1),
+        '  '*indent,
+        )
 
 class I(Acquisition.Implicit):
 
     def __init__(self, name):
         self.__name__=name
 
+        
+
     def __str__(self):
         context=getattr(self, 'aq_parent', None)
         if context is None: return self.__name__
-        return "(%s of %s)" % (self.aq_self, context)
+        return "(%s: %s of %s)" % (id(self), self.aq_self, context)
 
     __repr__=__str__
 
@@ -109,8 +122,8 @@ A.B.color='red'
 A.C=I('C')
 A.C.D=I('D')
 
-def show(s):
-    print s, '-->', eval(s)
+def show(s, globals=globals()):
+    print s, '-->', eval(s, globals)
 
 def main():
     show('A')
