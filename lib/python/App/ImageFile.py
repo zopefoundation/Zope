@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -34,11 +34,11 @@ class ImageFile(Acquisition.Explicit):
         path = os.path.join(_prefix, path)
         self.path=path
         if Globals.DevelopmentMode:
-            # In development mode, shorter is handy
-            max_age = 60
+            # In development mode, a shorter time is handy
+            max_age = 60 # One minute 
         else:
-            # In production mode, longer reduces latency
-            max_age = 600
+            # A longer time reduces latency in production mode
+            max_age = 3600 # One hour
         self.cch = 'public,max-age=%d' % max_age
 
         file=open(path, 'rb')
