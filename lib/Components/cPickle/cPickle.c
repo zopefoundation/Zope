@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.49 1998/03/06 14:23:08 jim Exp $
+     $Id: cPickle.c,v 1.50 1998/03/25 12:39:28 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.49 1998/03/06 14:23:08 jim Exp $\n"
+"$Id: cPickle.c,v 1.50 1998/03/25 12:39:28 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -923,7 +923,7 @@ save_float(Picklerobject *self, PyObject *args) {
     {
         char c_str[250];
         c_str[0] = FLOAT;
-        sprintf(c_str + 1, "%f\n", x);
+        sprintf(c_str + 1, "%.12g\n", x);
 
         if ((*self->write_func)(self, c_str, strlen(c_str)) < 0)
             return -1;
@@ -4308,7 +4308,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.49 $";
+    char *rev="$Revision: 1.50 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
