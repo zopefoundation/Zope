@@ -103,6 +103,7 @@ Note that ZServer can operate multiple PCGI servers.
 from medusa import asynchat, asyncore, logger
 from medusa.counter import counter
 from medusa.http_server import compute_timezone_for_log
+from medusa.asyncore import compact_traceback
 
 from ZServer import CONNECTION_LIMIT
 

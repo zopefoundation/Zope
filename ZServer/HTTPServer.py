@@ -119,6 +119,7 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from medusa.http_server import http_server, http_channel
 from medusa import counter, producers, asyncore, max_sockets
 from medusa.default_handler import split_path, unquote, get_header
+from medusa.asyncore import compact_traceback
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
 
