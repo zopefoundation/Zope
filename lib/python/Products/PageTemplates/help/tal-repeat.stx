@@ -45,10 +45,16 @@ repeat: Repeat an element
       o *length* - length of the sequence, which will be the total number
         of repetitions.
 
-      o *letter* - count reps with lower-case letters: "a" - "z", "aa" - "az",
-        "ba" - "bz", ..., "za" - "zz", "aaa" - "aaz", and so forth.
+      o *letter* - repetition number as a lower-case letter: "a" -
+        "z", "aa" - "az", "ba" - "bz", ..., "za" - "zz", "aaa" - "aaz",
+        and so forth.
 
       o *Letter* - upper-case version of *letter*.
+
+      o *roman* - repetition number as a lower-case roman numeral:
+        "i", "ii", "iii", "iv", "v", etc.
+
+      o *Roman* - upper-case version of *roman*.
 
     You can access the contents of the repeat variable using path
     expressions or Python expressions.  In path expressions, you write
