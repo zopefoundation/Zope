@@ -183,15 +183,6 @@ Lots of discussion!
 
  - Need to support arbitrary storage types.
 
- - ZOPE_TRUSTED_PROXIES envvar is not configureable via config file.
-
- - REST_INPUT_ENCODING and REST_OUTPUT_ENCODING are not config-file
-   configurable
-
- - DATETIME_FORMAT is not config-file configurable.
-
- - Is ZEO_CACHE_TRACE configurable?
-
  - Provide --swhome and ---with-python switch to mkzopeinstance, which will
    allow folks to create an instance that points to particular (known)
    Python versions and software homes.
