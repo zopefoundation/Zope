@@ -16,7 +16,8 @@
  *
  *	The inner scoring loop of OkapiIndex._search_wids() coded in C.
  *
- * With the Python scoring loop,
+ * Example from an indexed Python-Dev archive, where "python" shows up in all
+ * but 2 of the 19,058 messages.  With the Python scoring loop,
  *
  *      query: python
  *      # results: 10 of 19056 in 534.77 ms
@@ -24,7 +25,7 @@
  *      # results: 10 of 19056 in 277.52 ms
  *
  * The first timing is cold, the second timing from an immediate repeat of
- * the same query.  With the timing loop here in C:
+ * the same query.  With the scoring loop here in C:
  *
  *     query: python
  *     # results: 10 of 19056 in 380.74 ms  -- 40% speedup
