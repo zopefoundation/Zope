@@ -8,7 +8,7 @@ Object Reference
 
 <a name="top">
 
-<h2><a href="../index_html">Object Reference</a></h2>
+<h2><a href="../hs_index">Object Reference</a></h2>
 
 
 
@@ -64,15 +64,15 @@ Object Reference
 <!--#else-->
     <p>No documentation for this method</p>
 <!--#endif-->
-    <a href="#top"><img src="<!--#var SCRIPT_NAME-->/HelpSys/u_arrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
+    <a href="#top"><img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_uarrow" height="9" width="9" border="0" valign="bottom" alt=""> top</a><br><br>
     </code>
 </dd>
 <!--#endin-->
 </dl>
 
 <p>
-<a href="../index_html">
-<img src="<!--#var SCRIPT_NAME-->/HelpSys/l_arrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Object Reference</a>
+<a href="../hs_index">
+<img src="<!--#var SCRIPT_NAME-->/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Object Reference</a>
 </p>
 </body>
 </html>

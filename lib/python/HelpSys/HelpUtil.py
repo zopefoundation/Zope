@@ -1,6 +1,6 @@
-"""Help system and documentation support"""
+"""Help system support module"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import Globals, Acquisition
@@ -9,6 +9,20 @@ import sys, os, string, ts_regex
 
 
 stx_class=StructuredText.StructuredText.HTML
+
+
+class HelpBase(Acquisition.Implicit):
+    """ """
+    def __bobo_traverse__(self, REQUEST, name=None):
+        # A sneaky trick - we cant really _have_ an index_html
+        # because that would often hide the index_html of a
+        # wrapped object ;(
+        if name=='index_html':
+            return self.hs_index
+        return getattr(self, name)
+
+    def __len__(self):
+        return 1
 
 
 class object(Acquisition.Implicit):
