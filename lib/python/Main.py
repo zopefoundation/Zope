@@ -86,7 +86,7 @@ import sys, dcdb
 
 dcdb.debug() # Make it easy to set a breakpoint near here.
 
-import os
+import os, string
 from BoboPOS import SimpleDB, TJar, SingleThreadedTransaction
 import Globals
 
@@ -107,5 +107,10 @@ SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
 bobo_application=app=Bobobase['Application']
 
-if os.environ.has_key('BOBO_DEBUG_MODE'):
-    Globals.DevelopmentMode=1
+for n in 'Z', 'BOBO':
+    if os.environ.has_key('%s_DEBUG_MODE' % n):
+        n=string.lower(os.environ['%s_DEBUG_MODE' % n])
+        if n=='no' or n=='off': continue
+        try: n=string.atoi(n)
+        except: pass
+        if n: Globals.DevelopmentMode=1
