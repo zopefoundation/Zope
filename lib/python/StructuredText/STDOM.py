@@ -456,6 +456,7 @@ class Element(Node):
       """
       nodeList = []
       for child in self.getChildren():
+         if not hasattr(child, 'getNodeType'): continue
          if (child.getNodeType()==ELEMENT_NODE and \
              child.getTagName()==tagname or tagname== '*'):
                 
