@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -11,11 +11,12 @@ from Acquisition import Implicit
 from DateTime import DateTime
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
-def manage_addFile(self,id,file,title='',REQUEST=None):
+def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
     """Add a new File object.
 
     Creates a new file object 'id' with the contents of 'file'"""
-    self._setObject(id, File(id,title,file))
+
+    self._setObject(id, File(id,title,file,precondition))
     return self.manage_main(self,REQUEST)
 
 
@@ -27,8 +28,9 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     
     meta_type='File'
     icon='p_/file'
+    precondition=''
 
-    manage_editForm  =HTMLFile('imageEdit',globals(),Kind='File',kind='file')
+    manage_editForm  =HTMLFile('fileEdit',globals(),Kind='File',kind='file')
     manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='File',kind='file')
     manage=manage_main=manage_editForm
 
@@ -47,7 +49,8 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     )
    
 
-    def __init__(self,id,title,file,content_type='application/octet-stream'):
+    def __init__(self,id,title,file,
+		 precondition='',content_type='application/octet-stream'):
 	try:    headers=file.headers
 	except: headers=None
 	if headers is None:
@@ -65,33 +68,46 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	    self.data=Pdata(file.read())
 	self.__name__=id
 	self.title=title
+	if precondition: self.precondition=precondition
 	self.size=len(self.data)
 
     def id(self): return self.__name__
 
 
-    def index_html(self, RESPONSE):
+    def index_html(self, REQUEST,RESPONSE):
 	"""
 	The default view of the contents of the File or Image.
 
 	Returns the contents of the file or image.  Also, sets the
 	'content-type' HTTP header to the objects content type.
 	"""
+
+	if self.precondition and hasattr(self,self.precondition):
+	    # Grab whatever precondition was defined and then 
+	    # execute it.  The precondition will raise an exception 
+	    # if something violates its terms.
+	    c=getattr(self,self.precondition)
+	    if hasattr(c,'isDocTemp') and c.isDocTemp:
+		c(REQUEST['PARENTS'][1],REQUEST)
+	    else:
+		c()
 	RESPONSE['content-type'] =self.content_type
         return self.data
 
-    def view_image_or_file(self, RESPONSE):
+    def view_image_or_file(self,REQUEST,RESPONSE):
 	"""
 	The default view of the contents of the File or Image.
 	"""
-	return self.index_html(RESPONSE)
+	return self.index_html(REQUEST,RESPONSE)
 
-    def manage_edit(self,title,content_type,REQUEST=None):
+    def manage_edit(self,title,content_type,precondition='',REQUEST=None):
 	"""
 	Changes the title and content type attributes of the File or Image.
 	"""
 	self.title=title
 	self.content_type=content_type
+	if precondition: self.precondition=precondition
+	elif self.precondition: del self.precondition
 	if REQUEST: return MessageDialog(
 		    title  ='Success!',
 		    message='Your changes have been saved',
