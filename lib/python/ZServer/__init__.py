@@ -122,6 +122,8 @@ except:
 from medusa import resolver, logger, asyncore
 from HTTPServer import zhttp_server, zhttp_handler
 from PCGIServer import PCGIServer
+from FCGIServer import FCGIServer
 from FTPServer import FTPServer
 from PubCore import setNumberOfThreads
 from medusa.monitor import secure_monitor_server
+

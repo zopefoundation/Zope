@@ -165,6 +165,13 @@ Options:
     %(PCGI_FILE)s, relative to the Zope location.  If this is an empty
     string (-p '') or the file does not exist, then PCGI is disabled.
 
+  -F path_or_port
+
+    Either a port number (for inet sockets) or a path name (for unix
+    domain sockets) for the FastCGI Server.  If the flag and value are
+    not specified then the FastCGI Server is disabled.
+
+
   -m port
   
     The secure monitor server port. If this is an empty string
@@ -268,9 +275,14 @@ MODULE='Zope'
 # The size of the thread pool, if ZODB3 is used.
 NUMBER_OF_THREADS=4
 
+
 # Localization support
 LOCALE_ID=None
 
+
+
+# Socket path or port for the FastCGI Server
+FCGI_PORT=None
 
 
 #
@@ -282,8 +294,9 @@ LOCALE_ID=None
 try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
-    
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rL:')
+
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:')
+
     DEBUG=0
     READ_ONLY=0
     
@@ -351,6 +364,8 @@ try:
         elif o=='-L':
             if v: LOCALE_ID=v
             else: LOCALE_ID=''
+        elif o=='-F': FCGI_PORT=v
+
 
     __builtins__.__debug__=DEBUG
 
@@ -373,6 +388,7 @@ if sys.platform=='win32': Zpid=''
 # Jigger path:
 sys.path=[os.path.join(here,'lib','python'),here
           ]+filter(None, sys.path)
+
 
 
 # Try to set the locale if specified on the command
@@ -401,7 +417,6 @@ def set_locale(val):
             )
 if LOCALE_ID is not None:
     set_locale(LOCALE_ID)
-
 
 
 # from this point forward we can use the zope logger
@@ -450,7 +465,9 @@ if MODULE=='Zope':
     setNumberOfThreads(NUMBER_OF_THREADS)
 
 from ZServer import resolver, logger, asyncore
-from ZServer import zhttp_server, zhttp_handler, PCGIServer,FTPServer
+
+from ZServer import zhttp_server, zhttp_handler, PCGIServer,FTPServer,FCGIServer
+
 from ZServer import secure_monitor_server
 
 ## ZServer startup
@@ -507,6 +524,23 @@ if PCGI_FILE and not READ_ONLY:
             pcgi_file=PCGI_FILE,
             resolver=rs,
             logger_object=lg)
+
+
+# FastCGI Server
+if FCGI_PORT and not READ_ONLY:
+    fcgiPort = None
+    fcgiPath = None
+    try:
+        fcgiPort = string.atoi(FCGI_PORT)
+    except ValueError:
+        fcgiPath = FCGI_PORT
+    zfcgi = FCGIServer(module=MODULE,
+                       ip=IP_ADDRESS,
+                       port=fcgiPort,
+                       socket_file=fcgiPath,
+                       resolver=rs,
+                       logger_object=lg)
+
 
 # Monitor Server
 if MONITOR_PORT:
