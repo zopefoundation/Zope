@@ -31,14 +31,13 @@ CD=cd
 XCOPY=xcopy /i /s /e /y
 COPY=copy
 
-.PHONY: clean install uninstall instance untestinst testinst build unbuild
+.PHONY: clean install uninstall build unbuild
 .PHONY: default
 
 default: build
 # default:     The default step (invoked when make is called without a target)
 	@ echo.
-	@ echo Zope built.  Next, do 'nmake install' (or 'nmake instance'
-	@ echo to run a Zope instance directly from the build directory\).
+	@ echo Zope built.  Next, do 'nmake install'.
 	@ echo
 
 # build:       Do whatever 'setup.py build' implies
@@ -62,43 +61,11 @@ install: build
 uninstall:
 	$(RMRF) "$(PREFIX)"
 
-# inplace:     Install a software home into to the source directory.
-#
-# Note: We used to run 'build_ext -i' for 'inplace', but that was
-# suboptimal because it had a tendency to try to rebuild all of the
-# (possibly  already-built) extensions that might be built during a
-# previous 'make' step.  built_ext doesn't understand '--build-base'
-# and friends so we can't stop it from doing this easily.  So instead,
-# we rely on the stock install step and name the prefix as the current
-# directory.  This is a little less efficient than just building the
-# extensions because it also compiles bytecode, but it's more intuitive and
-# less expensive in the common case than letting distutils
-# potentially rebuild the binaries when we've done that already.
-inplace: PREFIX=$(BASE_DIR)
-inplace: install
-
-# instance:    Do an inplace build and create an instance home in the resulting
-#              software home.
-instance: inplace
-	$(PYTHON) "$(BASE_DIR)\bin\mkzopeinstance" $(MKZ_FLAGS) "$(BASE_DIR)"
-
-# testinst:    Perform an inplace build and create an instance home in the
-#              resulting software home without asking questions.  Useful when
-#              performing automated testing.
-testinst: MKZ_FLAGS=--user=admin:admin
-testinst: instance
-
-# test:        Do an inplace build and run the Zope test suite.
-test: inplace
-	$(PYTHON) "$(BASE_DIR)\utilities\testrunner.py" $(TESTOPTS)
-
 # clean:       Delete the build files and any binaries/bytecode files in
 #              the source directory for good measure.
 clean: unbuild
 	$(CD) "$(BASE_DIR)
 	$(RM) /s *.pyc *.pyo *.dll *.o *.obj *.pyd
 
-# clobber:     Make the source tree 'pristine' again.
-clobber: clean uninstance
 
 
