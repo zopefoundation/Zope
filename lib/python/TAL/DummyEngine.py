@@ -218,6 +218,9 @@ class DummyEngine:
         seq = self.evaluateSequence(expr)
         return Iterator(name, seq, self)
 
+    def getTALESError(self):
+        return TALESError
+
 class Iterator:
 
     def __init__(self, name, seq, engine):

@@ -96,7 +96,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from TALDefs import TALError, TALESError, quote, TAL_VERSION
+from TALDefs import TALError, quote, TAL_VERSION
 from TALGenerator import TALGenerator
 
 BOOLEAN_HTML_ATTRS = [
@@ -154,6 +154,7 @@ class TALInterpreter:
         self.program = program
         self.macros = macros
         self.engine = engine
+        self.TALESError = engine.getTALESError()
         self.stream = stream or sys.stdout
         self.debug = debug
         self.wrap = wrap
@@ -385,9 +386,15 @@ class TALInterpreter:
         self.stream = stream = StringIO()
         try:
             self.interpret(block)
-        except TALESError, err:
+        except self.TALESError, err:
             self.restoreState(state)
+            engine = self.engine
+            engine.beginScope()
+            err.lineno = self.position[0]
+            err.offset = self.position[1]
+            engine.setLocal('error', err)
             self.interpret(handler)
+            engine.endScope()
         else:
             self.restoreOutputState(state)
             self.stream_write(stream.getvalue())

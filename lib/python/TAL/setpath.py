@@ -5,9 +5,9 @@ import os
 import sys
 
 home = os.path.expanduser("~")
-projects = os.path.join(home, 'projects')
-zope2 = os.path.join(projects, 'Zope2')
-libPython = os.path.join(zope2, 'lib', 'python')
+Zopes = os.path.join(home, 'Zope')
+pt = os.path.join(Zopes, 'pt')
+libPython = os.path.join(pt, 'lib', 'python')
 
 sys.path.append(libPython)
 
