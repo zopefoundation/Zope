@@ -716,13 +716,10 @@ instancehome $INSTANCE
 
 # <logger trace>
 #   level WARN
-#   <syslog-handler>
-#     host localhost
-#     port 514
-#   </syslog-handler>
-#   <nteventlog-handler>
-#     appname Zope
-#   </nteventlog-handler>
+#   <logfile>
+#     path $INSTANCE/log/trace.log
+#     format %(message)s
+#   </logfile>
 # </logger>
 
 # Directive: warnfilter
