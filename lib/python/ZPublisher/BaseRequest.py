@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -244,8 +244,9 @@ class BaseRequest:
         if path[-1:]=='/': path=path[:-1]
         clean=[]
         for item in split(path, '/'):
-            # Make sure that REQUEST cannot be traversed.
-            if item == 'REQUEST':
+            # Make sure that certain things that dont make sense
+            # cannot be traversed.
+            if item in ('REQUEST', 'aq_self', 'aq_base'):
                 return response.notFoundError(path) 
             if not item or item=='.':
                 continue
