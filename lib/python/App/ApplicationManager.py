@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 
-import sys,os,time,string,Globals, Acquisition
+import sys,os,time,string,Globals, Acquisition, os
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
@@ -113,7 +113,18 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
         {'label':'Flush Cache', 'action':'manage_cacheGC'},
         {'label':'Undo', 'action':'manage_UndoForm'},
         )
-    
+
+class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
+    """Version management"""
+    manage=manage_main=HTMLFile('versionManager', globals())
+    id        ='Versions'
+    name=title='Version Management'
+    meta_type ='Version Management'
+    icon='p_/VersionManagement_icon'
+
+    manage_options=(
+        {'label':'Version', 'action':'manage_main'},
+        )
 
 class ApplicationManager(Folder,CacheManager):
     """System management"""
@@ -121,6 +132,7 @@ class ApplicationManager(Folder,CacheManager):
     __roles__=['Manager']
     isPrincipiaFolderish=1
     Database=DatabaseManager()
+    Versions=VersionManager()
 
     manage=manage_main=HTMLFile('cpContents', globals())
     manage_undoForm=HTMLFile('undo', globals())
@@ -137,6 +149,8 @@ class ApplicationManager(Folder,CacheManager):
     _objects=(
         {'id': 'Database',
          'meta_type': Database.meta_type},
+        {'id': 'Versions',
+         'meta_type': Versions.meta_type},
         {'id': 'Products',
          'meta_type': 'Product Management'},
         )
@@ -218,6 +232,19 @@ class ApplicationManager(Folder,CacheManager):
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
+    if hasattr(sys, 'ZMANAGED'):
+        
+        manage_restartable=1
+        def manage_restart(self, URL1):
+            """Shut down the application"""
+            for db in Globals.opened: db.close()
+            raise SystemExit, """<html>
+            <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
+            </head>
+            <body>Zope is restarting</body></html>
+            """ % URL1
+            sys.exit(1)
+
     def manage_shutdown(self):
         """Shut down the application"""
         for db in Globals.opened: db.close()
@@ -277,4 +304,30 @@ class ApplicationManager(Folder,CacheManager):
             file.close()
             info.append(strip(data))
         return info
+
+
+    def version_info(self):
+        r=[]
+        db=self._p_jar.db()
+        for v in db.versions():
+            if db.versionEmpty(v): continue
+            r.append({'id': v})
+        return r
+
+    def manage_saveVersions(self, versions, REQUEST=None):
+        "Commit some versions"
+        db=self._p_jar.db()
+        for v in versions:
+            db.commitVersion(v)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
+
+    def manage_discardVersions(self, versions, REQUEST=None):
+        "Discard some versions"
+        db=self._p_jar.db()
+        for v in versions:
+            db.abortVersion(v)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
+            
 
