@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.153 2002/06/12 18:17:46 shane Exp $"""
+$Id: ObjectManager.py,v 1.154 2002/07/02 21:00:00 chrism Exp $"""
 
-__version__='$Revision: 1.153 $'[11:-2]
+__version__='$Revision: 1.154 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -52,7 +52,7 @@ def checkValidId(self, id, allow_dup=0):
     # set to false before the object is added.
 
     if not id or (type(id) != type('')):
-        raise BadRequestException, 'Empty or invalid id specified.'
+        raise BadRequestException, ('Empty or invalid id specified', id)
     if bad_id(id) is not None:
         raise BadRequestException, (
             'The id "%s" contains characters illegal in URLs.' % id)
