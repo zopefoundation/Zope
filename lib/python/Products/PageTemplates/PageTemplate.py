@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -98,6 +98,8 @@ from Expressions import getEngine
 from string import join, strip, rstrip, split, replace, lower, find
 from cStringIO import StringIO
 from ExtensionClass import Base
+
+Z_DEBUG_MODE = os.environ.get('Z_DEBUG_MODE') == '1'
 
 class MacroCollection(Base):
     def __of__(self, parent):
@@ -145,7 +147,7 @@ class PageTemplate:
         output = StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
-        if __debug__:
+        if Z_DEBUG_MODE:
             __traceback_info__ = pprint.pformat(c)
 
         TALInterpreter(self._v_program, self._v_macros,
