@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.4 2002/04/05 16:01:55 htrd Exp $
+$Id: SiteErrorLog.py,v 1.5 2002/04/15 10:52:30 htrd Exp $
 """
 
 import os
@@ -97,6 +97,11 @@ class SiteErrorLog (SimpleItem):
             temp_logs[self._p_oid] = log
         return log
 
+    # Exceptions that happen all the time, so we dont need
+    # to log them. Eventually this should be configured
+    # through-the-web.
+    _ignored_exceptions = ( 'Unauthorized', )
+
     security.declarePrivate('raising')
     def raising(self, info):
         """Log an exception.
@@ -109,6 +114,10 @@ class SiteErrorLog (SimpleItem):
                 tb_text = None
                 tb_html = None
 
+                strtype = str(getattr(info[0], '__name__', info[0]))
+                if strtype in self._ignored_exceptions:
+                    return
+                                
                 if not isinstance(info[2], StringType) and not isinstance(
                     info[2], UnicodeType):
                     tb_text = ''.join(
@@ -137,7 +146,7 @@ class SiteErrorLog (SimpleItem):
 
                 log = self._getLog()
                 log.append({
-                    'type': str(getattr(info[0], '__name__', info[0])),
+                    'type': strtype,
                     'value': strv,
                     'time': now,
                     'id': str(now) + str(random()), # Low chance of collision
