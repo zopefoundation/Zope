@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -68,15 +68,16 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         {'label': 'Ownership', 'action':'manage_owner'}
         )
 
-    security = ClassSecurityInfo()
-    security.setDefaultAccess('deny')
-    security.setPermissionDefault(MGMT_SCREEN_PERM, ['Manager'])
-    security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
-    security.setPermissionDefault(CHANGE_IDMGR_PERM, ['Manager'])
-
     __implements__ = (SessionInterfaces.BrowserIdManagerInterface, )
 
     icon = 'misc_/Sessions/idmgr.gif'
+
+    security = ClassSecurityInfo()
+    ok = {'meta_type':1, 'id':1, 'icon':1, 'bobobase_modification_time':1 }
+    security.setDefaultAccess(ok)
+    security.setPermissionDefault(MGMT_SCREEN_PERM, ['Manager'])
+    security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
+    security.setPermissionDefault(CHANGE_IDMGR_PERM, ['Manager'])
 
     def __init__(self, id, title='', idname='_ZopeId',
                  location='cookiesthenform', cookiepath=('/'),

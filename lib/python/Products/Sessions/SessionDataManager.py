@@ -65,7 +65,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     security = ClassSecurityInfo()
 
-    security.setDefaultAccess('deny')
+    ok = {'meta_type':1, 'id':1, 'icon':1, 'bobobase_modification_time':1 }
+    security.setDefaultAccess(ok)
     security.setPermissionDefault(CHANGE_DATAMGR_PERM, ['Manager'])
     security.setPermissionDefault(MGMT_SCREEN_PERM, ['Manager'])
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])

@@ -13,10 +13,10 @@
 """
 Transient Object Container class.
 
-$Id: Transience.py,v 1.23 2001/11/28 15:51:08 matt Exp $
+$Id: Transience.py,v 1.24 2002/01/11 14:55:22 chrism Exp $
 """
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -87,8 +87,8 @@ class TransientObjectContainer(SimpleItem):
     )
 
     security = ClassSecurityInfo()
-    security.setDefaultAccess('deny')
-
+    ok = {'meta_type':1, 'id':1, 'icon':1, 'bobobase_modification_time':1 }
+    security.setDefaultAccess(ok)
     security.setPermissionDefault(ACCESS_TRANSIENTS_PERM,
                                 ['Manager','Anonymous'])
     security.setPermissionDefault(MANAGE_CONTAINER_PERM,['Manager',])

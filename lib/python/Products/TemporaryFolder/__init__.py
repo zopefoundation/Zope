@@ -13,13 +13,13 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.4 2001/11/28 15:51:08 matt Exp $
+$Id: __init__.py,v 1.5 2002/01/11 14:53:38 chrism Exp $
 """
 
 import ZODB # for testrunner to be happy
-import TemporaryFolder
 
 def initialize(context):
+    import TemporaryFolder
     context.registerClass(
         TemporaryFolder.MountedTemporaryFolder,
         permission=TemporaryFolder.ADD_TEMPORARY_FOLDER_PERM,
