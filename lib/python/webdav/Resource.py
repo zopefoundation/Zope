@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -350,8 +350,8 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if not dest:
             raise 'Bad Request', 'Invalid Destination header.'
 
-        path, (bad1, bad2, pct) = REQUEST.physicalPathFromURL(dest)
-        if pct < 1 or bad2:
+        try: path = REQUEST.physicalPathFromURL(dest)
+        except ValueError:
             raise 'Bad Request', 'Invalid Destination header'
 
         name = path.pop()
@@ -434,9 +434,11 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             raise 'Method Not Allowed', 'This object may not be moved.'
 
         dest=REQUEST.get_header('Destination', '')
-        path, (bad1, bad2, pct) = REQUEST.physicalPathFromURL(dest)
-        if pct < 1 or bad2:
+
+        try: path = REQUEST.physicalPathFromURL(dest)
+        except ValueError:
             raise 'Bad Request', 'No destination given'
+
         flag=REQUEST.get_header('Overwrite', 'F')
         flag=string.upper(flag)
 
