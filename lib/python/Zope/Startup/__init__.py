@@ -14,10 +14,11 @@
 
 """ Startup package.  Responsible for startup configuration of Zope """
 
+import logging
 import os
+import re
 import sys
 import socket
-import re
 
 import ZConfig
 
@@ -103,7 +104,6 @@ class ZopeStarter:
         import zLOG
 
         from zLOG.LogHandlers import StartupHandler
-        import logging
 
         if self.cfg.eventlog is not None:
             # get the lowest handler level.  This is the effective level
@@ -208,7 +208,6 @@ class ZopeStarter:
             self.cfg.trace()
 
     def flushStartupHandlerBuffer(self):
-        import logging
         logger = logging.getLogger('event')
         self.startup_handler.flushBufferTo(logger)
 
