@@ -89,6 +89,8 @@ import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
 from HelpSys import HelpTopic
 from HelpSys.HelpSystem import ProductHelp
 import string, os.path
+import stat
+from DateTime import DateTime
 
 if not hasattr(Products, 'meta_types'): Products.meta_types=()
 if not hasattr(Products, 'meta_classes'):
@@ -267,27 +269,37 @@ class ProductContext:
         Register a Help Topic for a product.
         """
         self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()._setObject(id, topic)
-         
+
     def registerHelp(self, directory='help', clear=1):
         """
         Registers Help Topics for all objects in a directory.
 
+        Nothing will be done if the files in the directory haven't
+        changed since the last registerHelp call.
+
         'clear' indicates whether or not to delete all existing
         Topics from the Product.
-        
+
         HelpTopics are created for these kind of files
-        
+
         .dtml            -- DTMLHelpTopic
         .html .htm .txt  -- TextHelpTopic        
         .stx .txt        -- STXHelpTopic
         .jpg .png .gif   -- ImageHelpTopic
         """
+        help=self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
+        path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
+        
+        # test to see if nothing has changed since last registration
+        if help.lastRegistered is not None and \
+                help.lastRegistered >= DateTime(os.stat(path)[stat.ST_MTIME]):
+            return
+        help.lastRegistered=DateTime()
+        
         if clear:
-            help=self.__prod.__of__(self.__app.Control_Panel.Products).getProductHelp()
             for id in help.objectIds('Help Topic'):
                 help._delObject(id)
-
-        path=os.path.join(Globals.package_home(self.__pack.__dict__), directory)
+       
         for file in os.listdir(path):
             ext=os.path.splitext(file)[1]
             ext=string.lower(ext)
@@ -299,8 +311,7 @@ class ProductContext:
                 self.registerHelpTopic(file, ht)
             elif ext in ('.stx', '.txt'):
                 ht=HelpTopic.STXTopic(file, '', os.path.join(path, file))
-                self.registerHelpTopic(file,ht)
+                self.registerHelpTopic(file, ht)
             elif ext in ('.jpg', '.gif', '.png'):
                 ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
-                self.registerHelpTopic(file,ht)
-                
+                self.registerHelpTopic(file, ht)
