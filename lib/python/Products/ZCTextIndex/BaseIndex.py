@@ -95,8 +95,7 @@ class BaseIndex(Persistent):
             return self._reindex_doc(docid, text)
         wids = self._lexicon.sourceToWordIds(text)
         wid2weight, docweight = self._get_frequencies(wids)
-        for wid, weight in wid2weight.items():
-            self._add_wordinfo(wid, weight, docid)
+        self._mass_add_wordinfo(wid2weight, docid)
         self._docweight[docid] = docweight
         self._docwords[docid] = WidCode.encode(wids)
         return len(wids)
@@ -239,6 +238,26 @@ class BaseIndex(Persistent):
                 doc2score = IIBTree(doc2score)
         doc2score[docid] = f
         self._wordinfo[wid] = doc2score # not redundant:  Persistency!
+
+    #    self._mass_add_wordinfo(wid2weight, docid)
+    #
+    # is the same as
+    #
+    #    for wid, weight in wid2weight.items():
+    #        self._add_wordinfo(wid, weight, docid)
+    #
+    # except that _mass_add_wordinfo doesn't require so many function calls.
+    def _mass_add_wordinfo(self, wid2weight, docid):
+        get_doc2score = self._wordinfo.get
+        for wid, weight in wid2weight.items():
+            doc2score = get_doc2score(wid)
+            if doc2score is None:
+                doc2score = {}
+            else:
+                if len(doc2score) == self.DICT_CUTOFF:
+                    doc2score = IIBTree(doc2score)
+            doc2score[docid] = weight
+            self._wordinfo[wid] = doc2score # not redundant:  Persistency!
 
     def _del_wordinfo(self, wid, docid):
         doc2score = self._wordinfo[wid]
