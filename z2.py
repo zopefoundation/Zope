@@ -356,7 +356,7 @@ try:
         raise 'Invalid python version', sys.version.split()[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:'
+                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:',
                                ['icp=',
                                ])
 
