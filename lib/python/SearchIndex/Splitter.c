@@ -89,8 +89,6 @@
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E) UNLESS(V)
 
-static PyObject *next_word();
-
 typedef struct 
 {
     PyObject_HEAD
@@ -99,6 +97,8 @@ typedef struct
     int index;
 } Splitter;
  
+static PyObject *next_word(Splitter *, char **, char **);
+
 static void
 Splitter_reset(Splitter *self)
 {
@@ -478,15 +478,15 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.16 2001/03/21 22:06:32 jim Exp $\n"
+"$Id: Splitter.c,v 1.17 2001/05/23 18:18:45 shane Exp $\n"
 ;
 
 
 void
-initSplitter() 
+initSplitter(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
