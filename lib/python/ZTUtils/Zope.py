@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.3 2001/08/16 17:42:53 evan Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Zope.py,v 1.4 2001/09/24 20:13:14 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -292,8 +292,9 @@ def complex_marshal(pairs):
     addition to their simple marshal string.  Dictionaries will be
     flattened and marshalled using ":record".
     '''
-
-    for i in range(len(pairs)):
+    i = len(pairs)
+    while i > 0:
+        i = i - 1
         k, v = pairs[i]
         m = ''
         sublist = None
