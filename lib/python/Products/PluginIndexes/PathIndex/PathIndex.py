@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.41 2004/04/20 14:30:44 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.42 2004/04/22 03:35:39 fdrake Exp $'
 
 from types import StringType, ListType, TupleType
 from logging import getLogger
@@ -125,8 +125,8 @@ class PathIndex(Persistent, SimpleItem):
         """ hook for (Z)Catalog """
 
         if not self._unindex.has_key(docid):
-            LOG.error('Attempt to unindex nonexistent document'
-                     ' with id %s' % docid)
+            LOG.error('Attempt to unindex nonexistent document with id %s'
+                      % docid)
             return
 
         comps =  self._unindex[docid].split('/')
@@ -143,9 +143,8 @@ class PathIndex(Persistent, SimpleItem):
                 if not self._index[comp]:
                     del self._index[comp]
             except KeyError:
-                LOG(self.__class__.__name__, ERROR,
-                    'Attempt to unindex document'
-                    ' with id %s failed' % docid)
+                LOG.error('Attempt to unindex document with id %s failed'
+                          % docid)
 
         self._migrate_length()
         self._length.change(-1)
