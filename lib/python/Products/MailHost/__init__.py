@@ -83,10 +83,11 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.15 1999/07/27 21:08:53 amos Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: __init__.py,v 1.16 1999/07/29 21:58:12 amos Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import MailHost
+import SendMailTag
 
 def initialize(context):
     context.registerClass(
