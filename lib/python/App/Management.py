@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.28 1999/08/16 20:52:38 jim Exp $"""
+$Id: Management.py,v 1.29 1999/08/25 22:29:19 jim Exp $"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -151,7 +151,7 @@ class Tabs(ExtensionClass.Base):
                         o=o.aq_parent
                         continue
                     if hasattr(o, '__bobo_traverse__'):
-                        o=o.__bobo_traverse__(o, a)
+                        o=o.__bobo_traverse__(REQUEST, a)
                     elif hasattr(o,a):
                         o=getattr(o,a)
                     else:
