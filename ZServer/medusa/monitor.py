@@ -5,13 +5,14 @@
 # python REPL channel.
 #
 
-RCS_ID = '$Id: monitor.py,v 1.4 1999/07/21 16:50:57 klm Exp $'
+RCS_ID = '$Id: monitor.py,v 1.5 1999/07/21 17:15:53 klm Exp $'
 
 import md5
 import socket
 import string
 import sys
 import time
+import traceback
 
 VERSION = string.split(RCS_ID)[2]
 
@@ -120,8 +121,11 @@ class monitor_channel (asynchat.async_chat):
             except:
                 method = 'exception'
                 self.multi_line = []
+                t, v, tb = sys.exc_info()
                 (file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
                 self.log_info('%s %s %s' %(t, v, tbinfo), 'warning')
+                traceback.print_exception(t, v, tb)
+                del tb
         finally:
             sys.stdout = oldout
             sys.stderr = olderr
