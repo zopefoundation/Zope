@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.90 $'[11:-2]
+__version__='$Revision: 1.91 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -101,7 +101,7 @@ from DateTime import DateTime
 StringType=type('')
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
-def manage_addFile(self,id,file,title='',precondition='', content_type='',
+def manage_addFile(self,id,file='',title='',precondition='', content_type='',
                    REQUEST=None):
     """Add a new File object.
 
