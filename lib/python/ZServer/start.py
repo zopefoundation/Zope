@@ -136,8 +136,8 @@ zftp = FTPServer(
 
 # if it hasn't failed at this point, create a .pid file.
 
-pf = open(PID_FILE), 'w+')
-pf.write(("%s" % os.getpid()))
+pf = open(PID_FILE, 'w')
+pf.write(str(os.getpid()))
 pf.close()
 
 
