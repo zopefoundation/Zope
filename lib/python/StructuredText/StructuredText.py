@@ -141,7 +141,7 @@ if __name__=='__main__':
     opts,args = getopt.getopt(sys.argv[1:],'',[])
 
     for k,v in opts:
-	pass
+        pass
 
 
     for f in args:
