@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.3 1997/03/17 23:17:30 jim Exp $"
+"\n$Id: Trie.c,v 1.4 1997/03/17 23:23:09 jim Exp $"
 ;
 
 
@@ -146,6 +146,9 @@ Trie__p___reinit__(TrieObject *self, PyObject *args)
     {
       Py_XDECREF(self->bins);
       Py_XDECREF(self->value);
+      self->bins=NULL;
+      self->value=NULL;
+      self->min=0
       self->state=cPersistent_GHOST_STATE;
     }
   Py_INCREF(Py_None);
@@ -522,7 +525,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -562,6 +565,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.4  1997/03/17 23:23:09  jim
+  Fixed reinit bug.
+
   Revision 1.3  1997/03/17 23:17:30  jim
   Added reinit method.  Need something better than this.
   Fixed dealloc bug.
