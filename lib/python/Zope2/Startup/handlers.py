@@ -124,6 +124,20 @@ def cgi_maxlen(value):
 def http_header_max_length(value):
     return value
 
+def catalog_getObject_raises(value):
+
+    if value is not None:
+
+        import warnings
+        warnings.warn(
+        "'catalog-getObject-raises' option will be removed in Zope 2.10:\n",
+        DeprecationWarning)
+
+        from Products.ZCatalog import CatalogBrains 
+        CatalogBrains.GETOBJECT_RAISES = bool(value)
+
+    return value
+
 # server handlers
 
 def root_handler(config):

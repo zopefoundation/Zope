@@ -21,7 +21,7 @@ from AccessControl.ZopeGuards import guarded_getattr
 from ZODB.POSException import ConflictError
 from urllib import quote
 
-NotFound = 'NotFound'
+from zExceptions import NotFound
 
 _marker = object()
 
