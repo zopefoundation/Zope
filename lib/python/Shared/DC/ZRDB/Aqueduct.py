@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.20 1998/01/12 20:36:26 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Aqueduct.py,v 1.21 1998/04/14 15:20:39 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -133,7 +133,7 @@ def default_input_form(id,arguments,action='query',
 		       tabs=''):
     if arguments:
 	items=arguments.items()
-	items.sort()
+	# items.sort()
 	return (
 	    "%s\n%s%s" % (
 		'<html><head><title>%s Input Data</title></head><body>\n%s\n'
@@ -366,6 +366,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.21  1998/04/14 15:20:39  jim
+# No longer sort items in input form.
+#
 # Revision 1.20  1998/01/12 20:36:26  jim
 # Fixed bug in report generation.
 #
