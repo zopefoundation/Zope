@@ -4,10 +4,11 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.18 $
+# $Revision: 1.19 $
 __version__ = '0.1'
 
 import struct
+import time
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net
@@ -34,9 +35,9 @@ UNDOABLE_TRANSACTION = 'Y'
 PROTECTED_TRANSACTION = 'N'
 
 ZERO = '\0'*8
-#DNE = '\377'*8
+DNE = '\377'*8
 # DEBUGGING
-DNE = 'nonexist'                                  # does not exist
+#DNE = 'nonexist'                                  # does not exist
 
 
 
@@ -160,7 +161,7 @@ class Full(BerkeleyBase):
         else:
             self.__nextvid = 0L
         # DEBUGGING
-        self._nextserial = 0L
+        #self._nextserial = 0L
         
     def close(self):
         self._serials.close()
@@ -177,8 +178,8 @@ class Full(BerkeleyBase):
 
     def _begin(self, tid, u, d, e):
         # DEBUGGING
-        self._nextserial += 1
-        self._serial = utils.p64(self._nextserial)
+        #self._nextserial += 1
+        #self._serial = utils.p64(self._nextserial)
         # Begin the current transaction.  Currently, this just makes sure that
         # the commit log is in the proper state.
         if self._commitlog is None:
@@ -845,7 +846,7 @@ class Full(BerkeleyBase):
         # perform cascading decrefs on the referenced objects.
         #
         # We need the lrevid which points to the pickle for this revision...
-        vid, nvrevid, lrevid = self._metadata.get(key)[16:24]
+        lrevid = self._metadata.get(key)[16:24]
         # ...and now delete the metadata record for this object revision
         self._metadata.delete(key)
         # Decref the reference count of the pickle pointed to by oid+lrevid.
@@ -870,7 +871,7 @@ class Full(BerkeleyBase):
         # Sniff the pickle to get the objects it refers to
         collectables = []
         refoids = []
-        referencesf(pickle, oids)
+        referencesf(pickle, refoids)
         # Now decref the reference counts for each of those objects.  If it
         # goes to zero, remember the oid so we can recursively zap its
         # metadata too.
@@ -923,18 +924,23 @@ class Full(BerkeleyBase):
                     c.close()
 
     def pack(self, t, referencesf):
+        # t is a TimeTime, or time float, convert this to a TimeStamp object,
+        # using an algorithm similar to what's used in FileStorage.  The
+        # TimeStamp can then be used as a key in the txnMetadata table, since
+        # we know our revision id's are actually TimeStamps.
+        t0 = TimeStamp(*(time.gmtime(t)[:5] + (t%60,)))
         self._lock_acquire()
         c = None
         tidmarks = {}
         try:    
             # Figure out when to pack to.  We happen to know that our
             # transaction ids are really timestamps.
-            t0 = TimeStamp(t)
             c = self._txnoids.cursor()
-            rec = c.set(`t0`)
+            # Need to use the repr of the TimeStamp so we get a string
+            rec = c.set_range(`t0`)
             while rec:
                 tid, oid = rec
-                rec = c.prev_dup()
+                rec = c.prev()
                 # We need to mark this transaction as having participated in a
                 # pack, so that undo will not create a temporal anomaly.
                 if not tidmarks.has_key(tid):
