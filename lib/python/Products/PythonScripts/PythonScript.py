@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile
@@ -132,7 +132,7 @@ class PythonScript(Script, Historical, Cacheable):
     not attempt to use the "exec" statement or certain restricted builtins.
     """
 
-    meta_type='Python Script'
+    meta_type='Script (Python)'
     _proxy_roles = ()
 
     _params = _body = ''
