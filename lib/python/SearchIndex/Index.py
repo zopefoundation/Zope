@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -206,9 +206,7 @@ class Index(Persistent):
 
     def index_item(self, i, obj=None):
         """Recompute index data for data with ids >= start."""
-
         index = self._index
-
         id = self.id
         if (self._schema is None) or (obj is not None):
             f = getattr
@@ -219,16 +217,12 @@ class Index(Persistent):
         if obj is None:
             obj = self._data[i]
 
-        try:
-            if self.call_methods:
-                k = f(obj, id)()
-            else:
-                k = f(obj, id)
-        except:
-            pass
-
-
-        if k is None or k == MV: return
+        try:    k=f(obj, id)
+        except: return
+        if self.call_methods:
+            k=k()
+        if k is None or k == MV:
+            return
 
         set = index.get(k)
         if set is None: index[k] = set = intSet()
@@ -237,24 +231,23 @@ class Index(Persistent):
 
     def unindex_item(self, i, obj=None):
         """Recompute index data for data with ids >= start."""
-
         index = self._index
-
         id = self.id
         if self._schema is None:
             f = getattr
         else:
             f = operator.__getitem__
             id = self._schema[id]
-
         if obj is None:
             obj = self._data[i]
 
+        try:    k=f(obj, id)
+        except: return
         if self.call_methods:
-            k = f(obj, id)()
-        else:
-            k = f(obj, id)        
-        
+            k=k()
+        if k is None or k == MV:
+            return
+
         set = index.get(k)
         if set is not None: set.remove(i)
 
