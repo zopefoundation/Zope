@@ -147,7 +147,10 @@ instancehome $INSTANCE
 #     at startup. Turning this off can speed Zope/ZEO startup time,
 #     but it can also cause your Control_Panel Product list to become
 #     desynchronized with the contents of your Products
-#     directories. 
+#     directories.  NOTE: Zope *must* be started at least once with
+#     this directive set to "on" or you will receive an error.  If using ZEO,
+#     at least one ZEO client must be run with this directive set to "on"
+#     once, the others can have it turned off.
 #
 # Default: on
 #
