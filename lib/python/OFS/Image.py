@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -309,6 +309,7 @@ def manage_addImage(self,id,file,title='',REQUEST=None):
     id, title = cookId(id, title, file)
     self._setObject(id, Image(id,title,file))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
+    return id
 
 class Image(File):
     """Principia object for *Images*, can be GIF, PNG or JPEG.  Has the
