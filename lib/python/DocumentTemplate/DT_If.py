@@ -110,8 +110,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.2 1997/09/08 15:35:40 jim Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.3 1997/09/22 14:42:49 jim Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DT_Util import *
 
@@ -119,19 +119,22 @@ class If:
     blockContinuations='else','elif'
     name='if'
     elses=None
+    expr=''
 
     def __init__(self, blocks):
+
 	tname, args, section = blocks[0]
-	args=parse_params(args, name='')
-	name=name_param(args)
-	self.__name__ = name
-	self.sections=[(name, section)]
+	args=parse_params(args, name='', expr='')
+	name,expr=name_param(args,'if',1)
+	self.__name__= name
+	self.sections=[(name, expr, section)]
+
 	if blocks[-1][0]=='else':
 	    tname, args, section = blocks[-1]
 	    blocks=blocks[:-1]
 	    args=parse_params(args, name='')
 	    if args:
-		ename=name_param(args)
+		ename,expr=name_param(args,'else',1)
 		if ename != name:
 		    raise ParseError, 'name in else does not match if'
 	    self.elses=section
@@ -139,16 +142,22 @@ class If:
 	for tname, args, section in blocks[1:]:
 	    if tname=='else':
 		raise ParseError, 'more than one else tag for a single if tag'
-	    name=name_param(args)
-	    self.sections.append((name, section))
+	    args=parse_params(args, name='', expr='')
+	    name,expr=name_param(args,'elif',1)
+	    self.sections.append((name, expr, section))
 
     def render(self,md):
-	for name, section in self.sections:
-	    try: v=md[name]
-	    except: v=None
+	for name, expr, section in self.sections:
+	    if expr is None:
+		try: v=md[name]
+		except: v=None
+	    else:
+		v=expr.eval(md)
+
 	    if v: return section(None,md)
 
 	if self.elses: return self.elses(None, md)
+
 	return ''
 
     __call__=render
@@ -175,6 +184,9 @@ class Else:
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.3  1997/09/22 14:42:49  jim
+# added expr
+#
 # Revision 1.2  1997/09/08 15:35:40  jim
 # Fixed bug that caused else blocks to render if blocks.
 #

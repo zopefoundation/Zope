@@ -212,7 +212,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.2 1997/09/02 19:04:24 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.3 1997/09/22 14:42:50 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,7 +266,7 @@ __rcs_id__='$Id: DT_In.py,v 1.2 1997/09/02 19:04:24 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DT_Util import *
 
@@ -274,15 +274,16 @@ class In:
     blockContinuations=('else',)
     name='in'
     elses=None
+    expr=None
     
     def __init__(self, blocks):
 	tname, args, section = blocks[0]
 	args=parse_params(args, name='', start='1',end='-1',size='10',
 			  orphan='3',overlap='1',mapping=1,
-			  previous=1, next=1)
+			  previous=1, next=1, expr='')
 	self.args=args
-	name=name_param(args)
-	self.__name__ = name
+	name,expr=name_param(args,'in',1)
+	self.__name__, expr = name, expr
 	self.section=section
 	if len(blocks) > 1:
 	    if len(blocks) != 2: raise ParseError, 'too many else blocks'
@@ -296,8 +297,11 @@ class In:
 	    
 
     def render(self, md):
-	try: sequence=md[self.__name__] or None
-	except: sequence=None
+	expr=self.expr
+	if expr is None:
+	    try: sequence=md[self.__name__] or None
+	    except: sequence=None
+	else: sequence=expr.eval(md)
 
 	if not sequence:
 	    if self.elses: return self.elses(None, md)
@@ -714,6 +718,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.3  1997/09/22 14:42:50  jim
+# added expr
+#
 # Revision 1.2  1997/09/02 19:04:24  jim
 # Got rid of ^Ms
 #

@@ -83,7 +83,7 @@ __doc__='''Variable insertion parameters
        The parameter 'spacify' may be provided to cause underscores in
        the inserted value to be converted to spaces.
 '''
-__rcs_id__='$Id: DT_Var.py,v 1.1 1997/08/27 18:55:44 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.2 1997/09/22 14:42:51 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -137,33 +137,33 @@ __rcs_id__='$Id: DT_Var.py,v 1.1 1997/08/27 18:55:44 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DT_Util import *
 
 class Var: 
     name='var'
+    expr=None
 
     def __init__(self, args, fmt=''):
-	args = parse_params(args, name='', lower=1, upper=1,
+	args = parse_params(args, name='', lower=1, upper=1, expr='',
 			    capitalize=1, spacify=1, null='', fmt='s')
 	self.args=args
+	used=args.has_key
 
-	if args.has_key('name'):
-	    name=args
-	    if args.has_key(''):
-		raise ParseError, 'Two named given in var'
-	elif args.has_key(''):
-	    name=args['']
-	else:
-	    raise ParseError, 'No name given in var'
+	name, expr = name_param(args,'var',1)
 
-	self.__name__ = name
+	self.__name__, self.expr = name, expr
 	self.fmt = fmt
 
     def render(self, md):
 	name=self.__name__
-	val = md[name]
+	val=self.expr
+	if val is None:
+	    val = md[name]
+	else:
+	    val=val.eval(md)
+
 	__traceback_info__=name, val
 
 	# handle special formats defined using fmt= first
@@ -243,6 +243,12 @@ def dollars_and_cents_with_commas(v):
     except: v= ''
     return commatify(v)
 
+def len_format(v):
+    return str(len(v))
+
+def len_comma(v):
+    return commatify(str(len(v)))
+
 special_formats={
     'html-quote': html_quote,
     'url-quote': url_quote,
@@ -251,10 +257,15 @@ special_formats={
     'dollars-and-cents': dollars_and_cents,
     'dollars-with-commas': whole_dollars_with_commas,
     'dollars-and-cents-with-commas': dollars_and_cents_with_commas,
+    'collection-length': len_format,
+    'collection-length-with-commas': len_comma,
     }
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.2  1997/09/22 14:42:51  jim
+# added expr
+#
 # Revision 1.1  1997/08/27 18:55:44  jim
 # initial
 #

@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.2 1997/09/02 20:35:09 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.3 1997/09/22 14:42:50 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,13 +52,14 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
 from types import *
 from regsub import gsub, sub, split
 from __builtin__ import *
+import VSEval
 
 ParseError='Document Template Parse Error'
 
@@ -78,13 +79,28 @@ class func_code:
 	self.co_varnames=varnames
 	self.co_argcount=len(varnames)
 
-def name_param(params):
-    if params.has_key(''):
-	if params.has_key('name'):
-	    raise ParseError, 'Name given twice'
-	return params['']
-    elif params.has_key('name'): return params['name']
+def _tm(m, tag):
+    return m + tag and (' in %s' % tag)
 
+def name_param(params,tag='',expr=0):
+    used=params.has_key
+    if used(''):
+	if used('name'):
+	    raise ParseError, _tm('Two names were given', tag)
+	if expr:
+	    if used('expr'): raise ParseError, _tm('name and expr given', tag)
+	    return params[''],None
+	return params['']
+    elif used('name'):
+	if expr:
+	    if used('expr'): raise ParseError, _tm('name and expr given', tag)
+	    return params['name'],None
+	return params['name']
+    elif expr and used('expr'):
+	name=params['expr']
+	expr=VSEval.Eval(name, __mul__=VSEval.careful_mul, __getattr__=None)
+	return name, expr
+	
     raise ParseError, 'No name given'
 
 def parse_params(text,
@@ -157,6 +173,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.3  1997/09/22 14:42:50  jim
+# added expr
+#
 # Revision 1.2  1997/09/02 20:35:09  jim
 # Various fixes to parsing code.
 #
