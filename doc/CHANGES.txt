@@ -6,6 +6,18 @@ Zope Changes
 
   after Zope 2.5.1
 
+    new Features:
+
+      - added TopicIndexes: a TopicIndex is a container for
+        so-called FilteredSet. A FilteredSet consists of an
+        expression and a set of internal ZCatalog document
+        identifiers that represent a pre-calculated result list for
+        performance reasons. Instead of executing the same query on
+        a ZCatalog multiple times it is much faster to use a
+        TopicIndex instead.
+
+    Bugs:
+
       - Collector #32: Use difflib instead of ndiff
 
       - Fixed long standing bug in PythonScript where get_size returned
