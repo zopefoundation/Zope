@@ -98,6 +98,7 @@ if __name__ == "__main__":
     import setpath                      # Local hack to tweak sys.path etc.
 
 import driver
+import tests.utils
 
 def showdiff(a, b):
     import ndiff
@@ -133,8 +134,11 @@ def main():
         del args[0]
     if not args:
         prefix = os.path.join("tests", "input", "test*.")
-        xmlargs = glob.glob(prefix + "xml")
-        xmlargs.sort()
+        if tests.utils.skipxml:
+            xmlargs = []
+        else:
+            xmlargs = glob.glob(prefix + "xml")
+            xmlargs.sort()
         htmlargs = glob.glob(prefix + "html")
         htmlargs.sort()
         args = xmlargs + htmlargs
@@ -149,6 +153,9 @@ def main():
         if not unittesting:
             print arg,
             sys.stdout.flush()
+        if tests.utils.skipxml and arg[-4:] == ".xml":
+            print "SKIPPED (XML parser not available)"
+            continue
         save = sys.stdout, sys.argv
         try:
             try:

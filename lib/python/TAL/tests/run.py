@@ -6,7 +6,6 @@ import utils
 import unittest
 import test_htmlparser
 import test_htmltalparser
-import test_xmlparser
 import test_talinterpreter
 import test_files
 
@@ -14,7 +13,9 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(test_htmlparser.test_suite())
     suite.addTest(test_htmltalparser.test_suite())
-    suite.addTest(test_xmlparser.test_suite())
+    if not utils.skipxml:
+        import test_xmlparser
+        suite.addTest(test_xmlparser.test_suite())
     suite.addTest(test_talinterpreter.test_suite())
     suite.addTest(test_files.test_suite())
     return suite

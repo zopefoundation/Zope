@@ -47,8 +47,11 @@ def test_suite():
     dir = os.path.abspath(dir)
     parentdir = os.path.dirname(dir)
     prefix = os.path.join(dir, "input", "test*.")
-    xmlargs = glob.glob(prefix + "xml")
-    xmlargs.sort()
+    if utils.skipxml:
+        xmlargs = []
+    else:
+        xmlargs = glob.glob(prefix + "xml")
+        xmlargs.sort()
     htmlargs = glob.glob(prefix + "html")
     htmlargs.sort()
     args = xmlargs + htmlargs
