@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.47 2001/11/09 18:52:21 andreasjung Exp $'
-__version__='$Revision: 1.47 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.48 2001/11/09 19:13:52 andreasjung Exp $'
+__version__='$Revision: 1.48 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
@@ -425,7 +425,7 @@ def structured_text(v, name='(Unknown name)', md={}):
     if isinstance(v,StringType): txt = v
 
     elif aq_base(v).meta_type in ['DTML Document','DTML Method']:
-        txt = aq_base(v).raw
+        txt = aq_base(v).read_raw()
 
     else: txt = str(v)
         
