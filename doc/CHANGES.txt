@@ -71,6 +71,25 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 beta 7 / final
+
+      Features Added
+
+        - None
+
+      Features Changed
+
+        - None
+
+      Bugs Fixed
+
+        - 'reverse' option for the 'in' tag as well as the 'tree' tag
+          has been changed to deal with a copy of the data, rather
+          than the original.  The database was being modified in
+          place. The side effect is that in large list situations
+          (with ZCatalog for example), sizable memory usage may
+          result. 
+
     Zope 2.0 beta 6
 
       Features Added
