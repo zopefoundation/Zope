@@ -86,7 +86,6 @@
 import string, sys, traceback
 from cStringIO import StringIO
 from DT_Util import parse_params, render_blocks, namespace, InstanceDict
-from DT_Return import DTReturn
 
 class Try:
     """Zope DTML Exception handling
@@ -144,8 +143,6 @@ class Try:
         # first we try to render the first block
         try:
             return render_blocks(self.section, md)
-        except DTReturn:
-            raise # pass through returns
         except:
             # but an error occurs.. save the info.
             t,v = sys.exc_info()[:2]
