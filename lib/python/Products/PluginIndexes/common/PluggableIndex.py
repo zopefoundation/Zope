@@ -11,8 +11,8 @@
 #
 ##############################################################################
 
-"""Pluggable Index Base Class """
-__version__='$Revision: 1.7 $'[11:-2]
+"""Pluggable Index Interface"""
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Interface
 
@@ -35,14 +35,6 @@ class PluggableIndexInterface(Interface.Base):
 
     def unindex_object(documentId):
         """Remove the documentId from the index."""
-
-    # XXX TextIndex does not implement uniqueValues().
-    def uniqueValues(name=None, withLengths=0):
-        """Returns the unique values for name.
-
-        If 'withLengths' is true, returns a sequence of tuples of
-        (value, length).
-        """
 
     def _apply_index(request, cid=''):
         """Apply the index to query parameters given in 'request'.
@@ -67,3 +59,34 @@ class PluggableIndexInterface(Interface.Base):
         records.  The second object is a tuple containing the names of
         all data fields used.
         """
+    
+    def numObjects():
+        """Return the number of indexed objects"""
+    
+    def clear():
+        """Empty the index"""
+        
+class UniqueValueIndex(PluggableIndexInterface):
+    """An index which can return lists of unique values contained in it"""
+    
+    def hasUniqueValuesFor(name):
+        """Return true if the index can return the unique values for name"""
+        
+    def uniqueValues(name=None, withLengths=0):
+        """Return the unique values for name.
+
+        If 'withLengths' is true, returns a sequence of tuples of
+        (value, length)."""
+
+class SortIndex(PluggableIndexInterface):
+    """An index which may be used to sort a set of document ids"""
+    
+    def keyForDocument(documentId):
+        """Return the sort key that cooresponds to the specified document id
+        
+        This method is no longer used by ZCatalog, but is left for backwards 
+        compatibility."""
+        
+    def documentToKeyMap():
+        """Return an object that supports __getitem__ and may be used to quickly
+        lookup the sort key given a document id"""

@@ -21,7 +21,8 @@ from Products.PluginIndexes.common.UnIndex import UnIndex
 
 class KeywordIndex(UnIndex):
 
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    __implements__ = (PluggableIndex.UniqueValueIndex,
+                      PluggableIndex.SortIndex)
 
     meta_type="KeywordIndex"
 

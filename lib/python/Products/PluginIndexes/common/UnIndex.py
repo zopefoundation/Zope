@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -383,7 +383,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
             return r, (self.id,)
 
     def hasUniqueValuesFor(self, name):
-        ' has unique values for column NAME '
+        """has unique values for column name"""
         if name == self.id:
             return 1
         else:
@@ -413,11 +413,15 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 else:
                     l = len(set)
                 rl.append((i, l))
-            return tuple(rl)
+            return tuple(rl)        
 
     def keyForDocument(self, id):
+        # This method is superceded by documentToKeyMap
         return self._unindex[id]
-
+    
+    def documentToKeyMap(self):
+        return self._unindex
+    
     def items(self):
         items = []
         for k,v in self._index.items():

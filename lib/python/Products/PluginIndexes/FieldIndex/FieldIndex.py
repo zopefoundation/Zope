@@ -13,7 +13,7 @@
 
 """Simple column indices
 
-$Id: FieldIndex.py,v 1.10 2002/08/14 22:19:29 mj Exp $
+$Id: FieldIndex.py,v 1.11 2002/12/05 21:35:52 caseman Exp $
 """
 
 from Products.PluginIndexes import PluggableIndex
@@ -24,7 +24,8 @@ from Globals import DTMLFile
 class FieldIndex(UnIndex):
     """Field Indexes"""
 
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    __implements__ = (PluggableIndex.UniqueValueIndex,
+                      PluggableIndex.SortIndex)
 
     meta_type="FieldIndex"
 

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.4 2002/08/14 22:19:28 mj Exp $
+"""$Id: DateRangeIndex.py,v 1.5 2002/12/05 21:35:52 caseman Exp $
 """
 
 from Products.PluginIndexes import PluggableIndex
@@ -52,7 +52,9 @@ class DateRangeIndex(UnIndex):
 
         - Objects which match only during a specific interval.
     """
-    __implements__ = ( PluggableIndex.PluggableIndexInterface, )
+
+    __implements__ = (PluggableIndex.UniqueValueIndex,
+                      PluggableIndex.SortIndex)
 
     security = ClassSecurityInfo()
 

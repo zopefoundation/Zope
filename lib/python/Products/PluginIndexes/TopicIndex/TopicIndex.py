@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.10 2002/11/28 16:32:02 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.11 2002/12/05 21:35:53 caseman Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -94,7 +94,8 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
         return n
 
 
-    numObjects = "does not apply"
+    def numObjects(self):
+        return "N/A"
 
 
     def keys(self):   pass

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.29 2002/11/28 13:03:11 beacon Exp $'
+__version__ = '$Id: PathIndex.py,v 1.30 2002/12/05 21:35:53 caseman Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -44,7 +44,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
     """
 
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    __implements__ = (PluggableIndex.UniqueValueIndex,)
 
     meta_type="PathIndex"
 
@@ -328,6 +328,12 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         else:
             return IISet(), (self.id,)
 
+    def hasUniqueValuesFor(self, name):
+        """has unique values for column name"""
+        if name == self.id:
+            return 1
+        else:
+            return 0
 
     def uniqueValues(self,name=None,withLength=0):
         """ needed to be consistent with the interface """

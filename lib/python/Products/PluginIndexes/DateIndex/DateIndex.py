@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.8 2002/10/01 14:09:47 gvanrossum Exp $
+"""$Id: DateIndex.py,v 1.9 2002/12/05 21:35:52 caseman Exp $
 """
 
 from DateTime.DateTime import DateTime
@@ -32,7 +32,8 @@ _marker = []
 class DateIndex(UnIndex):
     """ Index for Dates """
 
-    __implements__ = (PluggableIndex.PluggableIndexInterface,)
+    __implements__ = (PluggableIndex.UniqueValueIndex,
+                      PluggableIndex.SortIndex)
 
     meta_type = 'DateIndex'
     query_options = ['query', 'range']
