@@ -99,10 +99,11 @@ class PersistentClass(Base):
     def __class_init__(self): pass
 
 manage_addZClassForm=Globals.HTMLFile(
-    'addZClass', globals(), default_class_='OFS.SimpleItem Item')
+    'addZClass', globals(), default_class_='OFS.SimpleItem Item',
+    CreateFactory=1)
 
 def manage_addZClass(self, id, title='', baseclasses=[],
-                     meta_type='', REQUEST=None):
+                     meta_type='', CreateFactory=1, REQUEST=None):
     """Add a Z Class
     """
     bases=[]
@@ -116,7 +117,7 @@ def manage_addZClass(self, id, title='', baseclasses=[],
     if meta_type: Z._zclass_.meta_type=meta_type
     self._setObject(id, Z)
 
-    if meta_type:
+    if CreateFactory and meta_type:
         self.manage_addDTMLMethod(
             id+'_addForm', 
             id+' constructor input form', 
