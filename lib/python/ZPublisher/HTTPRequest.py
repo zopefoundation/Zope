@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import  re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -959,6 +959,34 @@ class HTTPRequest(BaseRequest):
         return result+"</table>"
 
     __repr__=__str__
+
+    def text(self):
+        result="FORM\n\n"
+        row='%-20s %s\n'
+        for k,v in self.form.items():
+            result=result + row % (k, repr(v))
+        result=result+"\nCOOKIES\n\n"
+        for k,v in self.cookies.items():
+            result=result + row % (k, repr(v))
+        result=result+"\nOTHER\n\n"
+        for k,v in self.other.items():
+            if k in ('PARENTS','RESPONSE'): continue
+            result=result + row % (k, repr(v))
+    
+        for n in "0123456789":
+            key = "URL%s"%n
+            try: result=result + row % (key, self[key]) 
+            except KeyError: pass
+        for n in "0123456789":
+            key = "BASE%s"%n
+            try: result=result + row % (key, self[key]) 
+            except KeyError: pass
+
+        result=result+"\nENVIRON\n\n"
+        for k,v in self.environ.items():
+            if not hide_key(k):
+                result=result + row % (k, v)
+        return result
 
     def _authUserPW(self):
         global base64
