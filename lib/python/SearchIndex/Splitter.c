@@ -166,8 +166,6 @@ check_synstop(Splitter *self, PyObject *word)
     int len;
     
     cword = PyString_AsString(word);
-    len = PyString_Size(word) - 1;
-
     len = PyString_Size(word);
     if(len < 2)	/* Single-letter words are stop words! */
     {
@@ -480,7 +478,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.13 2000/09/13 14:54:15 brian Exp $\n"
+"$Id: Splitter.c,v 1.14 2000/11/01 14:20:02 jim Exp $\n"
 ;
 
 
@@ -488,7 +486,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
+  char *rev="$Revision: 1.14 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
