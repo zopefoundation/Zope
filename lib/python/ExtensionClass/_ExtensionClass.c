@@ -143,7 +143,7 @@ Base_getattro(PyObject *obj, PyObject *name)
                              then call it. */
 
                           if (PyObject_TypeCheck(res->ob_type,
-                                                     &ExtensionClassType)
+                                                 &ExtensionClassType)
                               && res->ob_type->tp_descr_get != NULL)
                             res = res->ob_type->tp_descr_get(
                                                  res, obj, 
