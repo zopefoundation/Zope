@@ -6,7 +6,7 @@
 <link rel="stylesheet" type="text/css" href="<dtml-var 
  BASEPATH1>/manage_page_style.css">
 </head>
-<body bgcolor="#000000" link="#000099" alink="#000099" vlink="#000099" 
+<body bgcolor="#6699cc" link="#000099" alink="#000099" vlink="#000099" 
  topmargin="0" bottommargin="0" leftmargin="0" rightmargin="0" 
  marginwidth="0" marginheight="0">
 
@@ -18,13 +18,11 @@ BASEPATH1>/p_/zopelogo_jpg" height="32" width="75" border="0"
 alt="" />
 </td>
 <td valign="top" align="right" width="70%">
-<div class="small-tx">
-<font color="#ffffff">
+<div class="normal-tx">
 Logged in as <strong><dtml-var 
 AUTHENTICATED_USER></strong> 
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">
- | <a href="<dtml-var BASEPATH1>/manage_logout" target="_top">
-<font color="#ffffff">Logout</font></a>
+ | <a href="<dtml-var BASEPATH1>/manage_logout" target="_top">Logout</a>
 </dtml-if>
 &nbsp;&nbsp;
 </div>
