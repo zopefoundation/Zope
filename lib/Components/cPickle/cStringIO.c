@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.6 1996/10/15 18:42:07 jim Exp $
+  $Id: cStringIO.c,v 1.7 1996/12/23 15:22:35 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,12 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.7  1996/12/23 15:22:35  jim
+  Finished implementation, adding full compatibility with StringIO, and
+  then some.
+
+  We still need to take out some cStringIO oddities.
+
   Revision 1.6  1996/10/15 18:42:07  jim
   Added lots of casts to make warnings go away.
 
@@ -150,9 +156,7 @@ static char O_reset__doc__[] =
 ;
 
 static PyObject *
-O_reset(self, args)
-	Oobject *self;
-	PyObject *args;
+O_reset(Oobject *self, PyObject *args)
 {
   self->pos = 0;
 
@@ -165,9 +169,7 @@ static char O_tell__doc__[] =
 "tell() -- get the current position.";
 
 static PyObject *
-O_tell(self, args)
-       Oobject *self;
-       PyObject *args;
+O_tell(Oobject *self, PyObject *args)
 {
   return PyInt_FromLong(self->pos);
 }
@@ -178,9 +180,7 @@ static char O_seek__doc__[] =
 "seek(position, mode) -- mode 0: absolute; 1: relative; 2: relative to EOF";
 
 static PyObject *
-O_seek(self, args)
-       Oobject *self;
-       PyObject *args;
+O_seek(Oobject *self, PyObject *args)
 {
   int position, mode = 0;
 
@@ -208,16 +208,10 @@ static char O_read__doc__[] =
 "read([s]) -- Read s characters, or the rest of the string"
 ;
 
-
-static PyObject *
-O_read(self, args)
-	Oobject *self;
-	PyObject *args;
+static int
+O_cread(Oobject *self, char **output, int n)
 {
-  int l, n = -1;
-  PyObject *s;
-
-  UNLESS(PyArg_ParseTuple(args, "|i", &n)) return NULL;
+  int l;
 
   l = self->string_size - self->pos;  
   if (n < 0 || n > l)
@@ -225,9 +219,22 @@ O_read(self, args)
     n = l;
   }
 
-  s = PyString_FromStringAndSize(self->buf + self->pos, n);
+  *output=self->buf + self->pos;
   self->pos += n;
-  return s;
+  return n;
+}
+
+static PyObject *
+O_read(Oobject *self, PyObject *args)
+{
+  int n = -1;
+  char *output;
+
+  UNLESS(PyArg_ParseTuple(args, "|i", &n)) return NULL;
+
+  n=O_cread(self,&output,n);
+
+  return PyString_FromStringAndSize(output, n);
 }
 
 
@@ -235,12 +242,9 @@ static char O_readline__doc__[] =
 "readline() -- Read one line"
 ;
 
-static PyObject *
-O_readline(self, args)
-	Oobject *self;
-	PyObject *args;
+static int
+O_creadline(Oobject *self, char **output)
 {
-  PyObject *r;
   char *n, *s;
   int l;
 
@@ -248,12 +252,21 @@ O_readline(self, args)
        n < s && *n != '\n'; n++);
   if (n < s) n++;
  
-  r = PyString_FromStringAndSize(self->buf + self->pos, 
-      n - self->buf - self->pos);
-  self->pos = n - self->buf;
-  return r;
+  *output=self->buf + self->pos;
+  l = n - self->buf - self->pos;
+  self->pos += l;
+  return l;
 }
 
+static PyObject *
+O_readline(Oobject *self, PyObject *args)
+{
+  int n;
+  char *output;
+
+  n=O_creadline(self,&output);
+  return PyString_FromStringAndSize(output, n);
+}
 
 static char O_write__doc__[] = 
 "write(s) -- Write a string to the file"
@@ -261,10 +274,40 @@ static char O_write__doc__[] =
 ;
 
 
+static int
+O_cwrite(Oobject *self, char *c, int l)
+{
+  PyObject *s;
+  char *b;
+  int newl, space_needed;
+
+  newl=self->pos+l;
+  if(newl > self->buf_size)
+    {
+      self->buf_size*=2;
+      if(self->buf_size < newl) self->buf_size=newl;
+      UNLESS(self->buf=(char*)realloc(self->buf, self->buf_size*sizeof(char)))
+	{
+	  PyErr_SetString(PyExc_MemoryError,"out of memory");
+	  self->buf_size=self->pos=0;
+	  return -1;
+	}
+    }
+
+  memcpy(self->buf+self->pos,c,l);
+
+  self->pos += l;
+
+  if (self->string_size < self->pos)
+    {
+      self->string_size = self->pos;
+    }
+
+  return l;
+}
+
 static PyObject *
-O_write(self, args)
-	Oobject *self;
-	PyObject *args;
+O_write(Oobject *self, PyObject *args)
 {
   PyObject *s;
   char *c, *b;
@@ -275,27 +318,7 @@ O_write(self, args)
     {
       UNLESS(-1 != (l=PyString_Size(s))) return NULL;
       UNLESS(c=PyString_AsString(s)) return NULL;
-      newl=self->pos+l;
-	if(newl > self->buf_size)
-	  {
-	    self->buf_size*=2;
-	    if(self->buf_size < newl) self->buf_size=newl;
-	    UNLESS(self->buf=(char*)realloc(self->buf, self->buf_size*sizeof(char)))
-	      {
-		PyErr_SetString(PyExc_MemoryError,"out of memory");
-		self->buf_size=self->pos=0;
-		return NULL;
-	      }
-	  }
-
-      memcpy(self->buf+self->pos,c,l);
-
-      self->pos += l;
-
-      if (self->string_size < self->pos)
-      {
-        self->string_size = self->pos;
-      }
+      UNLESS(-1 != O_cwrite(self,c,l)) return NULL;
     }
   else
     {
@@ -632,24 +655,31 @@ static struct PyMethodDef IO_methods[] = {
 void
 initcStringIO()
 {
-	PyObject *m, *d;
+  PyObject *m, *d;
 
-	/* Create the module and add the functions */
-	m = Py_InitModule4("cStringIO", IO_methods,
-		cStringIO_module_documentation,
-		(PyObject*)NULL,PYTHON_API_VERSION);
+  /* Create the module and add the functions */
+  m = Py_InitModule4("cStringIO", IO_methods,
+		     cStringIO_module_documentation,
+		     (PyObject*)NULL,PYTHON_API_VERSION);
 
-	/* Add some symbolic constants to the module */
-	d = PyModule_GetDict(m);
-	ErrorObject = PyString_FromString("cStringIO.error");
-	PyDict_SetItemString(d, "error", ErrorObject);
+  /* Add some symbolic constants to the module */
+  d = PyModule_GetDict(m);
+  ErrorObject = PyString_FromString("cStringIO.error");
+  PyDict_SetItemString(d, "error", ErrorObject);
+  
+  PyDict_SetItemString(d,"cread", PyCObject_FromVoidPtr(O_cread,NULL));
+  PyDict_SetItemString(d,"creadline", PyCObject_FromVoidPtr(O_creadline,NULL));
+  PyDict_SetItemString(d,"cwrite", PyCObject_FromVoidPtr(O_cwrite,NULL));
+  PyDict_SetItemString(d,"cgetvalue", PyCObject_FromVoidPtr(O_getval,NULL));
+  PyDict_SetItemString(d,"NewInput", PyCObject_FromVoidPtr(newIobject,NULL));
+  PyDict_SetItemString(d,"NewOutput", PyCObject_FromVoidPtr(newOobject,NULL));
+  
+  PyDict_SetItemString(d,"InputType",  (PyObject*)&Itype);
+  PyDict_SetItemString(d,"OutputType", (PyObject*)&Otype);
+  
 
-	/* XXXX Add constants here */
-
-
-
-	/* Check for errors */
-	if (PyErr_Occurred())
-		Py_FatalError("can't initialize module cStringIO");
+  /* Check for errors */
+  if (PyErr_Occurred())
+    Py_FatalError("can't initialize module cStringIO");
 }
 
