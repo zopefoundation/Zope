@@ -26,9 +26,6 @@ function toggleSelect() {
 //-->
 </script>
 
-<dtml-unless skey><dtml-call expr="REQUEST.set('skey', 'id')"></dtml-unless>
-<dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
-
 <!-- Add object widget -->
 <br />
 <dtml-if filtered_meta_types>
@@ -62,11 +59,22 @@ function toggleSelect() {
 
 <form action="&dtml-URL1;/" name="objectItems" method="post">
 <dtml-if objectItems>
+  <dtml-let hasOrderSupport="_.hasattr(this().aq_self, 'has_order_support')">
+  <dtml-unless skey>
+    <dtml-if hasOrderSupport>
+      <dtml-call expr="REQUEST.set('skey', getDefaultSorting()[0])">
+      <dtml-call expr="REQUEST.set('rkey', getDefaultSorting()[1])">
+    <dtml-else>
+      <dtml-call expr="REQUEST.set('skey', 'id')">
+    </dtml-if>
+  </dtml-unless>
+  <dtml-unless rkey><dtml-call expr="REQUEST.set('rkey', '')"></dtml-unless>
+
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class="list-header">
   <td width="5%" align="right" colspan="2"><div 
    class="list-item"><a href="./manage_main?skey=meta_type<dtml-if 
-   "rkey == ''">&rkey=meta_type</dtml-if>"
+   "skey == 'meta_type' and not rkey">&rkey=meta_type</dtml-if>"
    onMouseOver="window.status='Sort objects by type'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'meta_type' or rkey == 'meta_type'"
@@ -74,7 +82,7 @@ function toggleSelect() {
   </td>
   <td width="50%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=id<dtml-if 
-   "rkey == ''">&rkey=id</dtml-if>"
+   "skey == 'id' and not rkey">&rkey=id</dtml-if>"
    onMouseOver="window.status='Sort objects by name'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'id' or rkey == 'id'"
@@ -82,23 +90,33 @@ function toggleSelect() {
   </td>
   <td width="15%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=get_size<dtml-if 
-   "rkey == ''">&rkey=get_size</dtml-if>"
+   "skey == 'get_size' and not rkey">&rkey=get_size</dtml-if>"
    onMouseOver="window.status='Sort objects by size'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'get_size' or rkey == 'get_size'"
    ><strong>Size</strong><dtml-else>Size</dtml-if></a></div>
   </td>
-  <td width="29%" align="left"><div class="list-item"><a 
+  <td width="19%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=bobobase_modification_time<dtml-if 
-   "rkey == ''">&rkey=bobobase_modification_time</dtml-if
-   >"
+   "skey == 'bobobase_modification_time' and not rkey"
+   >&rkey=bobobase_modification_time</dtml-if>"
    onMouseOver="window.status='Sort objects by modification time'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
    ><strong>Last Modified</strong><dtml-else>Last Modified</dtml-if></a></div>
   </td>
+  <dtml-if hasOrderSupport>
+  <td width="10%" align="left"><div class="list-item"><a 
+   href="./manage_main?skey=position"
+   onMouseOver="window.status='Sort objects by position'; return true"
+   onMouseOut="window.status=''; return true"><dtml-if 
+   "skey == 'position'"
+   ><strong>Position</strong><dtml-else>Position</dtml-if></a></div>
+  </td>
+  </dtml-if>
 </tr>
-<dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
+
+<dtml-in objectItems sort_expr="skey+'/cmp/asc'" reverse_expr="rkey">
 <dtml-if sequence-odd>
 <tr class="row-normal">
 <dtml-else>
@@ -182,6 +200,18 @@ function toggleSelect() {
   </div>
   </td>
   </dtml-with>
+
+  <dtml-if hasOrderSupport>
+  <td>
+  <div class="list-item">
+  <dtml-if "skey == 'position'">
+  <dtml-var sequence-number>
+  <dtml-else>
+  ...
+  </dtml-if>
+  </div>
+  </td>
+  </dtml-if>
 </tr>
 </dtml-in>
 </table>
@@ -222,8 +252,48 @@ if (document.forms[0]) {
   </div>
   </td>
 </tr>
+<dtml-if "_.len(objectItems)>1">
+  <dtml-if "hasOrderSupport and
+            _.SecurityCheckPermission( 'Manage properties', this() )">
+<tr>
+  <td align="left" valign="top" width="16"></td>
+  <td align="left" valign="top">
+  <div class="form-element">
+  <dtml-if expr="skey == 'position'">
+  <input class="form-element" type="submit"
+         name="manage_move_objects_up:method" value="Up" />
+  /
+  <input class="form-element" type="submit"
+         name="manage_move_objects_down:method" value="Down" />
+  by
+  <select name="delta:int">
+  <dtml-in "_.range(1,_.min(5,_.len(objectIds())))">
+  <option><dtml-var sequence-item></option>
+  </dtml-in>
+  <dtml-in "_.range(5,_.len(objectIds()),5)">
+  <option><dtml-var sequence-item></option>
+  </dtml-in>
+  </select>
+  <input class="form-element" type="submit"
+         name="manage_move_objects_to_top:method" value="Top" />
+  <input class="form-element" type="submit"
+         name="manage_move_objects_to_bottom:method" value="Bottom" />
+  </dtml-if>
+  <dtml-unless expr="(skey, rkey and 1 or 0) == getDefaultSorting()">
+  <input type="hidden" name="key" value="<dtml-var skey>">
+  <input type="hidden" name="reverse" value="<dtml-var rkey>">
+  <input class="form-element" type="submit"
+         name="manage_set_default_sorting:method"
+         value="Set View as Default" />
+  </dtml-unless>
+  </div>
+  </td>
+</tr>
+  </dtml-if>
+</dtml-if>
 </table>
 
+  </dtml-let>
 <dtml-else>
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>
@@ -259,16 +329,3 @@ window.parent.update_menu();
 </dtml-if>
 
 <dtml-var manage_page_footer>
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -12,7 +12,7 @@
 ##############################################################################
 """Constant definitions for built-in Zope permissions"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 access_contents_information='Access contents information'
@@ -21,6 +21,7 @@ add_documents_images_and_files='Add Documents, Images, and Files'
 add_external_methods='Add External Methods'
 add_folders='Add Folders'
 add_mailhost_objects='Add MailHost objects'
+add_page_templates='Add Page Templates'
 add_python_scripts='Add Python Scripts'
 add_user_folders='Add User Folders'
 add_versions='Add Versions'

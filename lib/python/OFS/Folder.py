@@ -15,17 +15,18 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.101 2002/08/14 21:42:56 mj Exp $"""
+$Id: Folder.py,v 1.102 2003/06/12 10:20:59 yuppie Exp $"""
 
-__version__='$Revision: 1.101 $'[11:-2]
+__version__='$Revision: 1.102 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
 from webdav.WriteLockInterface import WriteLockInterface
-from AccessControl import Unauthorized
-
-from Globals import DTMLFile
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
+from AccessControl.Permissions import add_page_templates
+from AccessControl.Permissions import add_user_folders
+from Globals import DTMLFile
 
 
 manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
@@ -40,23 +41,22 @@ def manage_addFolder(self, id, title='',
     value, an 'index_html' and a 'UserFolder' objects are created respectively
     in the new folder.
     """
-    ob=Folder()
-    ob.id=str(id)
-    ob.title=title
+    ob = Folder(id)
+    ob.title = title
     self._setObject(id, ob)
-    ob=self._getOb(id)
+    ob = self._getOb(id)
 
     checkPermission=getSecurityManager().checkPermission
 
     if createUserF:
-        if not checkPermission('Add User Folders', ob):
+        if not checkPermission(add_user_folders, ob):
             raise Unauthorized, (
                   'You are not authorized to add User Folders.'
                   )
         ob.manage_addUserFolder()
 
     if createPublic:
-        if not checkPermission('Add Page Templates', ob):
+        if not checkPermission(add_page_templates, ob):
             raise Unauthorized, (
                   'You are not authorized to add Page Templates.'
                   )
@@ -65,7 +65,6 @@ def manage_addFolder(self, id, title='',
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
-
 
 
 class Folder(
@@ -100,5 +99,8 @@ class Folder(
 
     __ac_permissions__=()
 
+    def __init__(self, id=None):
+        if id is not None:
+            self.id = str(id)
 
 Globals.default__class_init__(Folder)

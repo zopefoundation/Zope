@@ -8,6 +8,14 @@ Zope Changes
 
     Features added
  
+     - OFS: OrderSupport and OrderedFolder added. OrderSupport is a mixin class
+       that adds the IOrderedContainer interface to ObjectManagers.
+       OrderedFolder - meta_type 'Folder (Ordered)' - is a new Folder class
+       using OrderSupport.
+       (thanks to Stephan Richter for inspiration and some code)
+
+     - Folder: Constructor now takes an optional 'id' argument.
+
      - Show known medusa servers in Control_Panel.
 
      - New startup and installation regime (./configure; make; make install

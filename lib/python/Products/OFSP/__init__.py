@@ -11,13 +11,16 @@
 #
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.37 2002/08/14 22:16:04 mj Exp $'''
-__version__='$Revision: 1.37 $'[11:-2]
+$Id: __init__.py,v 1.38 2003/06/12 10:21:01 yuppie Exp $'''
+__version__='$Revision: 1.38 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument, OFS.PropertySheets
+import OFS.OrderedFolder
 import ZClasses.ObjectManager
 
+from AccessControl.Permissions import add_documents_images_and_files
+from AccessControl.Permissions import add_folders
 from ZClasses import createZClassForBase
 
 createZClassForBase( OFS.DTMLMethod.DTMLMethod, globals()
@@ -30,6 +33,7 @@ createZClassForBase( OFS.Image.File, globals()
                    , 'ZFile', 'File' )
 createZClassForBase( OFS.Folder.Folder, globals()
                    , 'ZFolder', 'Folder' )
+createZClassForBase( OFS.OrderedFolder.OrderedFolder, globals() )
 createZClassForBase( AccessControl.User.UserFolder, globals()
                    , 'ZUserFolder', 'User Folder' )
 createZClassForBase( AccessControl.User.User, globals()
@@ -39,11 +43,9 @@ createZClassForBase( AccessControl.User.User, globals()
 # that this more direct mechanism will be more understandable.
 def initialize(context):
 
-    perm='Add Documents, Images, and Files'
-
     context.registerClass(
         OFS.DTMLMethod.DTMLMethod,
-        permission=perm,
+        permission=add_documents_images_and_files,
         constructors=(OFS.DTMLMethod.addForm, OFS.DTMLMethod.addDTMLMethod,),
         icon='images/dtmlmethod.gif',
         legacy=(
@@ -54,27 +56,25 @@ def initialize(context):
 
     context.registerClass(
         OFS.DTMLDocument.DTMLDocument,
-        permission=perm,
+        permission=add_documents_images_and_files,
         constructors=(OFS.DTMLDocument.addForm,
                       OFS.DTMLDocument.addDTMLDocument),
         icon='images/dtmldoc.gif',
         legacy=(('manage_addDTMLDocument', OFS.DTMLDocument.addDTMLDocument),),
         )
 
-
     context.registerClass(
         OFS.Image.Image,
-        permission=perm,
+        permission=add_documents_images_and_files,
         constructors=(('imageAdd',OFS.Image.manage_addImageForm),
                       OFS.Image.manage_addImage),
         icon='images/Image_icon.gif',
         legacy=(OFS.Image.manage_addImage,),
         )
 
-
     context.registerClass(
         OFS.Image.File,
-        permission=perm,
+        permission=add_documents_images_and_files,
         constructors=(('fileAdd',OFS.Image.manage_addFileForm),
                       OFS.Image.manage_addFile),
         icon='images/File_icon.gif',
@@ -89,6 +89,14 @@ def initialize(context):
         legacy=(OFS.Folder.manage_addFolder,),
         )
 
+    context.registerClass(
+        OFS.OrderedFolder.OrderedFolder,
+        permission=add_folders,
+        constructors=(OFS.OrderedFolder.manage_addOrderedFolderForm,
+                      OFS.OrderedFolder.manage_addOrderedFolder),
+        icon='images/Folder_icon.gif',
+        legacy=(OFS.OrderedFolder.manage_addOrderedFolder,),
+        )
 
     context.registerClass(
         AccessControl.User.UserFolder,
