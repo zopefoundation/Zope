@@ -384,7 +384,7 @@ class HTTPRequest(BaseRequest):
         if not hasattr(fs,'list') or fs.list is None:
             # Hm, maybe it's an XML-RPC
             if (fs.headers.has_key('content-type') and
-                fs.headers['content-type'] == 'text/xml' and
+                'text/xml' in fs.headers['content-type'] and
                 method == 'POST'):
                 # Ye haaa, XML-RPC!
                 global xmlrpc

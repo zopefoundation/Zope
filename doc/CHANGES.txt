@@ -58,6 +58,9 @@ Zope Changes
 
     Bugs fixed
 
+      - ZPublisher would fail to recognize a XML-RPC request if the
+        content-type header included a 'charset' parameter.
+
       - Forward-ported 'aq_acquire'-related fix and associated tests
         from Zope 2.7.4.
 
