@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -373,7 +373,7 @@ class Resource(ExtensionClass.Base):
         RESPONSE.setBody(self.fake_lock_xml % token)
         return RESPONSE
 
-    def UNLOCK(self):
+    def UNLOCK(self, REQUEST, RESPONSE):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
         self._v_dav_lock=None
