@@ -195,8 +195,8 @@ def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
-class PLexicon(Lexicon, Persistent, Acquisition.Implicit, SimpleItem):
-    """Persistent Lexicon for ZCTextIndex"""
+class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
+    """Lexicon for ZCTextIndex"""
 
     meta_type = 'ZCTextIndex Lexicon'
     
