@@ -12,15 +12,15 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.6 2001/11/28 15:51:22 matt Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Batch.py,v 1.7 2002/02/15 16:26:56 evan Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from ExtensionClass import Base
 
 class LazyPrevBatch(Base):
     def __of__(self, parent):
         return Batch(parent._sequence, parent._size,
-                     -1, parent.first + parent.overlap,
+                     parent.first - parent._size + parent.overlap, 0,
                      parent.orphan, parent.overlap)
 
 class LazyNextBatch(Base):
@@ -40,6 +40,20 @@ class Batch(Base):
     
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=0, overlap=0):
+        '''Encapsulate "sequence" in batches of "size".
+
+        Arguments: "start" and "end" are 0-based indexes into the
+        sequence.  If the next batch would contain no more than
+        "orphan" elements, it is combined with the current batch.
+        "overlap" is the number of elements shared by adjacent
+        batches.  If "size" is not specified, it is computed from
+        "start" and "end".  Failing that, it is 7.
+
+        Attributes: Note that the "start" attribute, unlike the
+        argument, is a 1-based index (I know, lame).  "first" is the
+        0-based index.  "length" is the actual number of elements in
+        the batch.
+        '''
 
         start = start + 1
 

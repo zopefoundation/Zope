@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.7 2001/11/28 15:51:22 matt Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Zope.py,v 1.8 2002/02/15 16:26:56 evan Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -141,7 +141,7 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
 _Batch = Batch
 class Batch(Batch):
     def __init__(self, sequence, size, start=0, end=0,
-                 orphan=3, overlap=0, skip_unauthorized=None):
+                 orphan=0, overlap=0, skip_unauthorized=None):
         sequence = LazyFilter(sequence, skip=skip_unauthorized)
         _Batch.__init__(self, sequence, size, start, end,
                         orphan, overlap)
