@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.2 2002/02/28 15:31:41 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.3 2002/03/11 14:54:36 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -19,9 +19,8 @@ from Products.PluginIndexes.common.util import parseIndexRequest
 from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
 from OFS.SimpleItem import SimpleItem
-from BTrees.OOBTree import OOBTree,OOSet
-from BTrees.IIBTree import IISet,difference,intersection,union
-from types import StringType, ListType, TupleType
+from BTrees.OOBTree import OOBTree
+from BTrees.IIBTree import IISet,intersection,union
 import FilteredSet
 
 _marker = []
