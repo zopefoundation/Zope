@@ -31,8 +31,8 @@
   <EM><STRONG>Vocabulary</STRONG></EM>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <em>Select Vocabulary?</em> <input type="checkbox" name="vocab">
   <select name="vocab_id">
+      <option value="create_default_catalog_">Create one for me</option>
     <dtml-in "superValues('Vocabulary')">
       <option value="<dtml-var id html_quote>">
         <dtml-var id>
