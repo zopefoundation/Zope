@@ -21,14 +21,12 @@ Oh well.
 
 import string
 from pickle import *
-import xmllib
 
-class XYap:
+class xyap:
     start_handlers={}
     end_handlers={}
 
-    def __init__(self, parser):
-        parser.__init__(self)
+    def __init__(self):
         top=[]
         self._stack=_stack=[top]
         self.push=_stack.append
@@ -37,6 +35,13 @@ class XYap:
     def handle_data(self, data): self.append(data)
 
     def unknown_starttag(self, tag, attrs):
+        if type(attrs) is ListType:
+            x=0
+            temp={}
+            while x<len(attrs):
+                temp[attrs[x]]=attrs[x+1]
+                x=x+2
+            attrs=temp
         start=self.start_handlers
         if start.has_key(tag): tag = start[tag](self, tag, attrs)
         else:                  tag = [tag, attrs]
@@ -53,10 +58,11 @@ class XYap:
         append(top)
 
 class NoBlanks:
-
+    
     def handle_data(self, data):
         if string.strip(data): self.append(data)
-    
+
+import xmllib
 
 def struct(self, tag, data):
     r={}
@@ -68,6 +74,13 @@ def name(self, tag, data, join=string.join, strip=string.strip):
 
 def tuplef(self, tag, data): return tuple(data[2:])
 
+class XYap(xyap, xmllib.XMLParser):
+        def __init__(self):
+            xmllib.XMLParser.__init__(self)
+            top=[]
+            self._stack=_stack=[top]
+            self.push=_stack.append
+            self.append=top.append
 
 class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
     end_handlers={
@@ -78,7 +91,7 @@ class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
         'value': lambda self, tag, data: data[2],
         'i4':
         lambda self, tag, data, atoi=string.atoi, name=name:
-            atoi(name(self, tag, data)),
+        atoi(name(self, tag, data)),
         'int':
         lambda self, tag, data, atoi=string.atoi, name=name:
             atoi(name(self, tag, data)),
@@ -101,6 +114,7 @@ class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
         }
 
 def test():
+    
     data="""<?xml version="1.0"?>
     <methodCall>
              <methodName>examples.getStateName
@@ -137,15 +151,11 @@ def test():
                 </params>
              </methodCall>
              """
-                 
-          
-    data=string.split(data,'\n')
     
-    class xyap(XYap, xmllib.XMLParser): pass
-
+    data=string.split(data,'\n')
     r=[]
-    for C in xyap, xmlrpc:
-        p=C(xmllib.XMLParser)
+    for C in XYap, xmlrpc:
+        p=C()
         for l in data:
             p.feed(l)
         p.close()
