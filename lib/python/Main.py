@@ -25,8 +25,7 @@ try:
     __bobo_after__ =Globals.application_lock.release
 except: pass
 
-import Globals, OFS.Folder, OFS.Application, App.ApplicationManager
-import OFS.Document
+import OFS.Application
 
 import TreeDisplay.TreeTag
 import Scheduler.Scheduler
@@ -34,22 +33,16 @@ import Scheduler.Scheduler
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
-    
-try: app=Bobobase['Application']
-except KeyError:
-    app=OFS.Application.Application()
-    app._init()
-    app.app=App.ApplicationManager.ApplicationManager()
 
-    Bobobase['Application']=app
-    get_transaction().commit()
-
-bobo_application=app
+bobo_application=Bobobase['Application']
 
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.10  1997/11/07 17:32:30  jim
+# Moved bobobase open to OFS.Application.
+#
 # Revision 1.9  1997/11/07 17:13:49  jim
 # Added SessionBase.
 #
