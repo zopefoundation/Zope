@@ -86,10 +86,6 @@
 Common definitions used by TAL and METAL compilation an transformation.
 """
 
-import string
-import re
-from xml.dom import Node
-
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
 
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
@@ -97,10 +93,15 @@ ZOPE_METAL_NS = "http://xml.zope.org/namespaces/metal"
 
 NAME_RE = "[a-zA-Z_][a-zA-Z0-9_]*"
 
+import re
+_attr_re = re.compile(r"\s*([^\s]+)\s*(.*)")
+_subst_re = re.compile(r"\s*(?:(text|structure)\s+)?(.*)")
+del re
+
 def parseAttributeReplacements(arg):
     dict = {}
     for part in splitParts(arg):
-        m = re.match(r"\s*([^\s]+)\s*(.*)", part)
+        m = _attr_re.match(part)
         if not m:
             print "Bad syntax in z:attributes:", `part`
             continue
@@ -112,7 +113,7 @@ def parseAttributeReplacements(arg):
     return dict
 
 def parseSubstitution(arg):
-    m = re.match(r"\s*(?:(text|structure)\s+)?(.*)", arg)
+    m = _subst_re.match(arg)
     if not m:
         print "Bad syntax in z:insert/replace:", `arg`
         return None, None
@@ -124,9 +125,10 @@ def parseSubstitution(arg):
 def splitParts(arg):
     # Break in pieces at undoubled semicolons and
     # change double semicolons to singles:
+    import string
     arg = string.replace(arg, ";;", "\0")
     parts = string.split(arg, ';')
-    parts = map(lambda s: string.replace(s, "\0", ";;"), parts)
+    parts = map(lambda s, repl=string.replace: repl(s, "\0", ";;"), parts)
     return parts
 
 
@@ -139,6 +141,8 @@ def macroIndexer(document):
     macroIndex = {}
     _macroVisitor(document.documentElement, macroIndex)
     return macroIndex
+
+from xml.dom import Node
 
 def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
     # Internal routine to efficiently recurse down the tree of elements
@@ -176,3 +180,5 @@ def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
     for child in node.childNodes:
         if child.nodeType == __elementNodeType:
             _slotVisitor(child, slotIndex)
+
+del Node
