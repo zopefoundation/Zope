@@ -12,7 +12,7 @@
 ##############################################################################
 """Support for owned objects
 
-$Id: Owned.py,v 1.23 2004/01/29 19:33:03 Brian Exp $
+$Id: Owned.py,v 1.24 2004/03/12 18:12:11 tseaver Exp $
 """
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
@@ -117,7 +117,7 @@ class Owned(ExtensionClass.Base):
         """
         owner = self.getOwnerTuple()
 
-        if owner is None:
+        if owner is None or owner is UnownableOwner:
             return None
 
         udb_path, oid = owner

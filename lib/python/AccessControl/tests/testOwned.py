@@ -1,6 +1,6 @@
 """Unit tests for AccessControl.Owned
 
-$Id: testOwned.py,v 1.2 2004/01/27 16:59:23 tseaver Exp $
+$Id: testOwned.py,v 1.3 2004/03/12 18:12:11 tseaver Exp $
 """
 
 import unittest
@@ -113,6 +113,15 @@ class OwnedTests(unittest.TestCase):
     def test_getWrappedOwner_unowned(self):
 
         owned = self._makeOne()
+
+        wrapped_owner = owned.getWrappedOwner()
+
+        self.assertEqual(wrapped_owner, None)
+
+    def test_getWrappedOwner_unownable(self):
+        from AccessControl.Owned import UnownableOwner
+        owned = self._makeOne()
+        owned._owner = UnownableOwner
 
         wrapped_owner = owned.getWrappedOwner()
 
