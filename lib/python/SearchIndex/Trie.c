@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.10 1997/06/06 19:36:36 jim Exp $"
+"\n$Id: Trie.c,v 1.11 1997/07/17 14:50:57 jim Exp $"
 ;
 
 
@@ -147,8 +147,6 @@ Trie___setstate__(TrieObject *self, PyObject *args)
 static PyObject *
 Trie___getstate__(TrieObject *self, PyObject *args)
 {
-  PyObject *r;
-
   UNLESS(PyArg_ParseTuple(args, "")) return NULL;
 
   PER_USE_OR_RETURN(self, NULL);
@@ -172,9 +170,6 @@ Trie___getstate__(TrieObject *self, PyObject *args)
 static PyObject *
 Trie__p___reinit__(TrieObject *self, PyObject *args)
 {
-  int oid;
-  PyObject *jar, *copy;
-
   /* Note that this implementation is broken, in that it doesn't
      account for subclass needs. */
   Py_XDECREF(self->bins);
@@ -387,8 +382,6 @@ Trie_cclear(TrieObject *self)
 static PyObject *
 Trie_clear(TrieObject *self, PyObject *args)
 {
-  PyObject *r;
-
   UNLESS(PyArg_ParseTuple(args, "")) return NULL;
   if(Trie_cclear(self) < 0) return NULL;
   Py_INCREF(Py_None);
@@ -426,7 +419,6 @@ static PyObject *
 Trie_cget(TrieObject *self, char *word, PyObject *oword)
 {
   int c;
-  char *k;
   PyObject *bins, *bin;
   PyTypeObject *typ;
   PyObject *key;
@@ -749,7 +741,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -789,6 +781,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.11  1997/07/17 14:50:57  jim
+  Got  rid of some unreferenced vars.
+
   Revision 1.10  1997/06/06 19:36:36  jim
   Fixed major bug in (de)activation control logic.
 
