@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.27 1997/12/23 21:19:04 jeffrey Exp $"""
+$Id: Folder.py,v 1.28 1997/12/31 16:29:44 brian Exp $"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -101,6 +101,23 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
 #     'action':'manage_help',   'target':'_new'},
     )
+
+    __ac_permissions__=(
+    ('View management screens',
+     ['manage','manage_menu','manage_main','manage_copyright',
+      'manage_tabs','manage_propertiesForm','manage_UndoForm']),
+    ('Undo changes',       ['manage_undo_transactions']),
+    ('Change permissions', ['manage_access']),
+    ('Add objects',        ['manage_addObject']),
+    ('Delete objects',     ['manage_delObjects']),
+    ('Add properties',     ['manage_addProperty']),
+    ('Change properties',  ['manage_editProperties']),
+    ('Delete properties',  ['manage_delProperties']),
+    ('Default permission', ['']),
+    )
+   
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		 )
 
     def tpValues(self):
 	r=[]
