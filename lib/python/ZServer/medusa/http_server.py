@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.18 2000/06/27 17:59:04 brian Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.19 2000/08/23 20:39:26 brian Exp $'
 
 # python modules
 import os
@@ -260,7 +260,7 @@ class http_request:
 	def log_date_string (self, when):
 		return time.strftime (
 			'%d/%b/%Y:%H:%M:%S ',
-			time.gmtime(when)
+			time.localtime(when)
 			) + tz_for_log
 
 	def log (self, bytes):
