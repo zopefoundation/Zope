@@ -95,6 +95,7 @@ import string, os.path, re
 import stat
 from DateTime import DateTime
 from types import ListType, TupleType
+from Interface import instancesOfObjectImplements
 
 import ZClasses # to enable 'PC.registerBaseClass()'
 
@@ -103,6 +104,8 @@ if not hasattr(Products, 'meta_classes'):
     Products.meta_classes={}
     Products.meta_class_info={}
 
+_marker = []  # Create a new marker object
+
 class ProductContext:
 
     def __init__(self, product, app, package):
@@ -110,25 +113,10 @@ class ProductContext:
         self.__app=app
         self.__pack=package
 
-    def _flattenInterfaces(self, interfaces):
-        """Flatten an interface description into a list"""
-
-        list = []
-        ti = type(interfaces)
-        if ti == ListType or ti == TupleType:
-            for entry in interfaces:
-                for item in self._flattenInterfaces(entry):
-                    list.append(item)
-        else:
-            list.append(interfaces)
-        return list
-
-    __marker__ = []
-
     def registerClass(self, instance_class=None, meta_type='', 
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
-                      visibility="Global",interfaces=__marker__
+                      visibility="Global",interfaces=_marker
         ):
         """Register a constructor
 
@@ -241,8 +229,8 @@ class ProductContext:
         if not hasattr(pack, '_m'): pack._m=fd.__dict__
         m=pack._m
 
-        if interfaces is self.__marker__:
-            interfaces = getattr(instance_class, "__implements__", None)
+        if interfaces is _marker:
+            interfaces = instancesOfObjectImplements(instance_class)
 
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,
