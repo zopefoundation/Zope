@@ -12,13 +12,21 @@
 ##############################################################################
 """Python implementations of document template some features
 
-$Id: pDocumentTemplate.py,v 1.41 2002/09/24 22:25:57 jeremy Exp $"""
-__version__='$Revision: 1.41 $'[11:-2]
+XXX This module is no longer actively used, but is left as an
+XXX implementation reference for cDocumentTemplate
+
+$Id: pDocumentTemplate.py,v 1.42 2004/04/29 21:17:08 caseman Exp $"""
+__version__='$Revision: 1.42 $'[11:-2]
 
 import sys, types
 from types import StringType, UnicodeType, TupleType
 from ustr import ustr
 
+import warnings
+warnings.warn('pDocumentTemplate is not longer in active use. '
+              'It remains only as an implementation reference.',
+              DeprecationWarning)
+              
 ClassTypes = [types.ClassType]
 
 try:

@@ -10,8 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.91 2003/12/26 23:43:11 jeremy Exp $'''
-__version__='$Revision: 1.91 $'[11:-2]
+"""DTML Utilities
+
+$Id: DT_Util.py,v 1.92 2004/04/29 21:17:08 caseman Exp $"""
 
 import re
 
@@ -19,6 +20,8 @@ from html_quote import html_quote, ustr # for import by other modules, dont remo
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
 from RestrictedPython.Eval import RestrictionCapableEval
+from cDocumentTemplate import InstanceDict, TemplateDict, \
+         render_blocks, safe_callable, join_unicode
 
 test = utility_builtins['test'] # for backwards compatibility, dont remove!
 
@@ -39,13 +42,6 @@ def int_param(params,md,name,default=0, st=type('')):
             if isinstance(v, str):
                 v = int(v)
     return v or 0
-
-try:
-    from cDocumentTemplate import InstanceDict, TemplateDict, \
-         render_blocks, safe_callable, join_unicode
-except:
-    from pDocumentTemplate import InstanceDict, TemplateDict, \
-         render_blocks, safe_callable, join_unicode
 
 functype = type(int_param)
 class NotBindable:

@@ -13,8 +13,8 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.9 2004/01/30 16:58:45 Brian Exp $'
-__version__='$Revision: 1.9 $'[11:-2]
+__rcs_id__='$Id: testUserFolder.py,v 1.10 2004/04/29 21:17:06 caseman Exp $'
+__version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, base64, unittest
 
@@ -26,7 +26,7 @@ Zope.startup()
 from AccessControl import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
-from AccessControl.User import BasicUserFolder
+from AccessControl.User import BasicUserFolder, UserFolder
 from AccessControl.User import User
 
 
@@ -37,7 +37,7 @@ class UserFolderTests(unittest.TestCase):
         self.app = makerequest(Zope.app())
         try:
             # Set up a user and role
-            self.uf = self.app.acl_users    
+            self.uf = UserFolder().__of__(self.app)    
             self.uf._doAddUser('user1', 'secret', ['role1'], [])
             self.app._addRole('role1')
             self.app.manage_role('role1', ['View'])
