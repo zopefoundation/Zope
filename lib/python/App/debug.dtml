@@ -74,7 +74,12 @@ Delta
 <a href="<!--#var URL-->?update_snapshot=1">Update Snapshot</a> | 
 <a href="<!--#var URL-->">Refresh</a>
 
-
+<li>Connections:
+<table border="1">
+<tr><th>opened</th><th>info</th><th>version</th></tr>
+<dtml-in dbconnections mapping>
+  <tr><td>&dtml-opened;</td><td>&dtml-info;</td><td>&dtml-version;</td></tr>
+</dtml-in></table>
 
 </ul>
 </p>
