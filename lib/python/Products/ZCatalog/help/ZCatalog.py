@@ -7,7 +7,7 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
 
@@ -229,7 +229,23 @@ class ZCatalog:
         queries (even across catalogs) and merge and sort the combined results.
         """
 
-    def refreshCatalog():
+    def refreshCatalog(clear=0, pghandler=None):
         """Reindex every object we can find, removing the unreachable
         ones from the index.
+
+        clear -- values: 1|0  clear the catalog before reindexing
+
+        pghandler -- optional Progresshandler as defined in ProgressHandler.py
+        (see also README.txt)
+        """
+
+    def reindexIndex(name, REQUEST, pghandler=None):
+        """Reindex a single index.
+
+        name -- id of index
+
+        REQUEST -- REQUEST object
+
+        pghandler -- optional Progresshandler as defined in ProgressHandler.py
+        (see also README.txt)
         """

@@ -1,24 +1,41 @@
-#!/usr/bin/env python, unittest
+##############################################################################
+#
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+##############################################################################
+""" Unittests for Catalog.
 
-# Unittests for Catalog
+$Id:$
+"""
 
-import os
-import random
 import unittest
-from itertools import chain
+import Testing
+import Zope
+Zope.startup()
+from Interface.Verify import verifyClass
 
-import ZODB, OFS.Application
-from ZODB.DemoStorage import DemoStorage
-from ZODB.DB import DB
-from Products import ZCatalog
-from Products.ZCatalog import ZCatalog,Vocabulary
-from Products.ZCatalog.Catalog import Catalog, CatalogError
+from itertools import chain
+import random
+
 import ExtensionClass
+import OFS.Application
+from Products.ZCatalog import Vocabulary
+from Products.ZCatalog.Catalog import Catalog
+from Products.ZCatalog.Catalog import CatalogError
+from ZODB.DB import DB
+from ZODB.DemoStorage import DemoStorage
 
 from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
-from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
-from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
+from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
+from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
 
 
 def createDatabase():
@@ -129,7 +146,8 @@ class zdummy(ExtensionClass.Base):
 
 class TestZCatalog(unittest.TestCase):
     def setUp(self):
-        self._catalog = ZCatalog.ZCatalog('Catalog')
+        from Products.ZCatalog.ZCatalog import ZCatalog
+        self._catalog = ZCatalog('Catalog')
         self._catalog.resolve_path = self._resolve_num
         self._catalog.addIndex('title', 'KeywordIndex')
         self._catalog.addColumn('title')
@@ -183,6 +201,13 @@ class TestZCatalog(unittest.TestCase):
         self._catalog.reindexIndex('title', {})
         data = self._catalog.getMetadataForUID('0')
         self.assertEqual(data['title'], '0')
+
+    def test_interface(self):
+        from Products.ZCatalog.IZCatalog import IZCatalog
+        from Products.ZCatalog.ZCatalog import ZCatalog
+
+        verifyClass(IZCatalog, ZCatalog)
+
 
 class dummy(ExtensionClass.Base):
     att1 = 'att1'
@@ -425,7 +450,7 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.catalogObject(ob, `9999`)
         brain = self._catalog(num=9999)[0]
         self.assertEqual(brain.att1, 'foobar')
-        
+
 
 class objRS(ExtensionClass.Base):
 
@@ -461,7 +486,7 @@ class TestRS(unittest.TestCase):
 
 class TestMerge(unittest.TestCase):
     # Test merging results from multiple catalogs
-    
+
     def setUp(self):
         vocabulary = Vocabulary.Vocabulary(
             'Vocabulary','Vocabulary', globbing=1)
@@ -478,7 +503,7 @@ class TestMerge(unittest.TestCase):
                 obj.big = i > 5
                 cat.catalogObject(obj, str(i))
             self.catalogs.append(cat)
-    
+
     def testNoFilterOrSort(self):
         from Products.ZCatalog.Catalog import mergeResults
         results = [cat.searchResults(_merge=0) for cat in self.catalogs]
@@ -486,20 +511,20 @@ class TestMerge(unittest.TestCase):
             results, has_sort_keys=False, reverse=False)]
         expected = [r.getRID() for r in chain(*results)]
         self.assertEqual(sort(merged_rids), sort(expected))
-    
+
     def testSortedOnly(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', _merge=0) 
+        results = [cat.searchResults(sort_on='num', _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
         expected = sort(chain(*results))
         expected = [rid for sortkey, rid, getitem in expected]
         self.assertEqual(merged_rids, expected)
-    
+
     def testSortReverse(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', _merge=0) 
+        results = [cat.searchResults(sort_on='num', _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=True)]
@@ -507,38 +532,39 @@ class TestMerge(unittest.TestCase):
         expected.reverse()
         expected = [rid for sortkey, rid, getitem in expected]
         self.assertEqual(merged_rids, expected)
-    
+
     def testLimitSort(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='num', sort_limit=2, _merge=0) 
+        results = [cat.searchResults(sort_on='num', sort_limit=2, _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
         expected = sort(chain(*results))
         expected = [rid for sortkey, rid, getitem in expected]
         self.assertEqual(merged_rids, expected)
-    
+
     def testScored(self):
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(title='4 or 5 or 6', _merge=0) 
+        results = [cat.searchResults(title='4 or 5 or 6', _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
         expected = sort(chain(*results))
         expected = [rid for sortkey, (nscore, score, rid), getitem in expected]
         self.assertEqual(merged_rids, expected)
-        
+
     def testSmallIndexSort(self):
         # Test that small index sort optimization is not used for merging
         from Products.ZCatalog.Catalog import mergeResults
-        results = [cat.searchResults(sort_on='big', _merge=0) 
+        results = [cat.searchResults(sort_on='big', _merge=0)
                    for cat in self.catalogs]
         merged_rids = [r.getRID() for r in mergeResults(
             results, has_sort_keys=True, reverse=False)]
         expected = sort(chain(*results))
         expected = [rid for sortkey, rid, getitem in expected]
         self.assertEqual(merged_rids, expected)
-    
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
