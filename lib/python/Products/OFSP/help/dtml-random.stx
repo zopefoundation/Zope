@@ -4,25 +4,14 @@ random: DTML Pseudo-Random Number Functions
   it, you can generate random numbers and select random elements from
   sequences. This module is a standard Python module.
 
-  Functions
-
-    choice(seq) -- Chooses a random element from the non-empty sequence
-    'seq' and returns it.
-
-    randint(a, b) -- Returns a random integer 'N' such that 'a<=N<=b'.
-
-    random() -- Returns the next random floating point number in the range
-    [0.0 ... 1.0).
-
-    seed(x, y, z) -- Initializes the random number generator from the
-    integers 'x', 'y' and 'z'. When the module is first imported, the random
-    number is initialized using values derived from the current time.
-
-    uniform(a, b) -- Returns a random real number 'N' such that 'a<=N<b'.
+  Since Zope 2.4 requires Python 2.1, make sure to consult the Python
+  2.1 documentation.
 
   See Also
 
-    "Python 'random' module":http://www.python.org/doc/current/lib/module-whrandom.html
+    "Python 'random'
+    module":http://www.python.org/doc/current/lib/module-whrandom.html
+    documentation at Python.org
 
 
 

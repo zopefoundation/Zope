@@ -3,68 +3,14 @@ math: DTML Math Functions
   The 'math' module provides trigonometric and other math
   functions. It is a standard Python module.
 
-  Functions
-
-    acos(x) -- Return the arc cosine of *x*.
-
-    asin(x) -- Return the arc sine of *x*.
-
-    atan(x) -- Return the arc tangent of *x*
-
-    atan2(x, y) -- Return 'atan(y / x)'. 
-
-    ceil(x) -- Return the ceiling of *x* as a real.
-
-    cos(x) -- Return the cosine of *x*
-
-    cosh(x) -- Return the hyperbolic cosine of *x*.
-
-    exp(x) -- Return 'e**x'
-
-    fabs(x) -- Return the absolute value of the real *x*.
-
-    floor(x) -- Return the floor of *x* as a real.
-
-    fmod(x, y) -- Return 'fmod(x, y)', as defined by the platform C
-      library. Note that the Python expression 'x % y' may not return
-      the same result.
-
-    fexp(x) -- Return the mantissa and exponent of *x* as the pair '(m, e)'. *m*
-      is a float and *e* is an integer such that 'x == m * 2**e'. If
-      *x* is zero, returns '(0.0, 0)', otherwise '0.5 <= abs(m) < 1'.
-
-    hypot(x, y) -- Return the Euclidean distance, 'sqrt(x*x + y*y)'. 
-
-    ldexp(x, y) -- Return 'x * (2**i)'. 
-
-    log(x) -- Return the natural logarithm of *x*.
-
-    log10(x) -- Return the base-10 logarithm of *x*.
-
-    modf(x) -- Return the fractional and integer parts of *x*. Both results
-      carry the sign of *x*. The integer part is returned as a real.
-
-    pow(x, y) -- Return *x* to the power of *y*.
-
-    sin(x) -- Return the sine of *x*.
-
-    sinh(x) -- Return the hyperbolic sine of *x*.
-
-    sqrt(x) -- Return the square root of *x*.
-
-    tan(x) -- Return the tangent of *x*.
-
-    tanh(x) -- Return the hyperbolic tangent of *x*.
-
-  Attributes
-
-    e -- The mathematical constant *e*.
-
-    pi -- The mathematical constant *pi*.
+  Since Zope 2.4 requires Python 2.1, make sure to consult the Python
+  2.1 documentation.
 
   See Also
 
-    "Python 'math' module":http://www.python.org/doc/current/lib/module-math.html
+    "Python 'math'
+    module":http://www.python.org/doc/current/lib/module-math.html
+    documentation at Python.org
 
 
 
