@@ -175,7 +175,8 @@ class ZopeStarterTestCase(unittest.TestCase):
                 address 18092
             </http-server>
             <ftp-server>
-               address 18092 # conflict
+               # conflict
+               address 18092
             </ftp-server>""")
         starter = ZopeStarter(conf)
         # do the job the 'handler' would have done (call prepare)
