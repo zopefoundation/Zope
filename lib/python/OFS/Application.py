@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.93 1999/03/24 20:26:29 jim Exp $'''
-__version__='$Revision: 1.93 $'[11:-2]
+$Id: Application.py,v 1.94 1999/03/25 15:29:55 jim Exp $'''
+__version__='$Revision: 1.94 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -293,6 +293,11 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         """Move a resource to a new location."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Forbidden', 'This resource cannot be moved.'
+    
+    test_url___allow_groups__=None
+    test_url=ZopeAttributionButton
+
+
 
 
 
