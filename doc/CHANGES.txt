@@ -8,6 +8,10 @@ Zope Changes
 
       Bugs fixed
 
+        - Some of the import shenanigans in ZService.py were still 
+          trying to load Python 1.5 versions of support dlls for running 
+          as a service under win32 (meaning you effectively couldn't).
+
         - Collector #2335: older products like GadflyDA that did not
           use registerClass() were registered but their visibility
           flag has not been set  to Global. So these  products did not
