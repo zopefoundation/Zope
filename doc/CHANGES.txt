@@ -36,6 +36,9 @@ Zope Changes
      - Integration of reStructuredText (reST) and the ZReST product
        by Richard Jones.  See doc/RESTRUCTUREDTEXT.txt for details.
 
+     - Objects locked through WebDAV are now marked with a lock icon
+       inside the ZMI.
+
     Bugs Fixed
 
      - Collector #771: ZCatalog failed to index DTML Document if the name
