@@ -72,6 +72,8 @@ Zope Changes
           spurious errors in Python Scripts.  It turned out the compiler
           module was in error.  Fixed.
 
+        - Collector #2306:  Fixed broken glossary of Zope Tutorial
+
 
     Zope 2.4 alpha 1
 
