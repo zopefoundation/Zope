@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -121,7 +121,32 @@ def text_type(s):
 # This gives us a hook to add content types that
 # aren't currently listed in the mimetypes module.
 _addtypes=(
+    ('.cdf', 'application-x-cdf'),
+    ('.doc', 'application/msword'),
+    ('.dot', 'application/msword'),
+    ('.wiz', 'application/msword'),
+    ('.xlb', 'application/vnd.ms-excel'),
+    ('.xls', 'application/vnd.ms-excel'),
+    ('.ppa', 'application/vnd.ms-powerpoint'),
+    ('.ppt', 'application/vnd.ms-powerpoint'),
+    ('.pps', 'application/vnd.ms-powerpoint'),
+    ('.pot', 'application/vnd.ms-powerpoint'),
+    ('.pwz', 'application/vnd.ms-powerpoint'),
+    ('.eml',   'message/rfc822'),
+    ('.nws',   'message/rfc822'),
+    ('.mht',   'message/rfc822'),
+    ('.mhtml', 'message/rfc822'),
     ('.css', 'text/css'),
+    ('.p7c', 'application/pkcs7-mime'),
+    ('.p12', 'application/x-pkcs12'),
+    ('.pfx', 'application/x-pkcs12'),
+    ('.js',  'application/x-javascript'),
+    ('.pct', 'image/pict'),
+    ('.pic', 'image/pict'),
+    ('.pict', 'image/pict'),
+    ('.m1v', 'video/mpeg'),
+    ('.mpa', 'video/mpeg'),
+    ('.vcf', 'text/x-vcard'),
     ('.xml', 'text/xml'),
     ('.xsl', 'text/xsl'),
     ('.xul', 'text/xul'),
