@@ -85,11 +85,11 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, time, urllib
 from Acquisition import aq_base
-
+from App.Common import iso8601_date, rfc850_date, rfc1123_date
 
 def absattr(attr):
     if callable(attr):
@@ -114,44 +114,6 @@ def is_acquired(ob):
             ob.isTopLevelPrincipiaApplicationObject:
         return 0
     return 1
-
-# These are needed because the various date formats below must
-# be in english per the RFCs. That means we can't use strftime,
-# which is affected by different locale settings.
-weekday_abbr = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-weekday_full = ['Monday', 'Tuesday', 'Wednesday', 'Thursday',
-                'Friday', 'Saturday', 'Sunday']
-monthname    = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
-
-def iso8601_date(ts=None, format='%Y-%m-%dT%H:%M:%SZ'):
-    # Return an ISO 8601 formatted date string, required
-    # for certain DAV properties.
-    # '2000-11-10T16:21:09-08:00
-    if ts is None: ts=time.time()
-    return time.strftime(format, time.gmtime(ts))
-
-def rfc850_date(ts=None, format='%A, %d-%b-%y %H:%M:%S GMT'):
-    # Return an HTTP-date formatted date string.
-    # 'Friday, 10-Nov-00 16:21:09 GMT'
-    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(ts)
-    return "%s, %02d-%3s-%2s %02d:%02d:%02d GMT" % (
-            weekday_full[wd],
-            day, monthname[month],
-            str(year)[2:],
-            hh, mm, ss)
-
-def rfc1123_date(ts=None, format='%a, %d %b %Y %H:%M:%S GMT'):
-    # Return an RFC 1123 format date string, required for
-    # use in HTTP Date headers per the HTTP 1.1 spec.
-    # 'Fri, 10 Nov 2000 16:21:09 GMT'
-    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(ts)
-    return "%s, %02d-%3s-%4d %02d:%02d:%02d GMT" % (
-            weekday_abbr[wd],
-            day, monthname[month],
-            year,
-            hh, mm, ss)
 
 def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
     # Return a '/' based url such as '/foo/bar', removing
