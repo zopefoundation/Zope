@@ -19,9 +19,11 @@
   <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if icon-->
   <A HREF="<!--#var sequence-key-->/manage_main">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="[<!--#var meta_type-->]" BORDER="0"></A>
+  <!--#/if icon-->
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var sequence-key-->/manage_main">

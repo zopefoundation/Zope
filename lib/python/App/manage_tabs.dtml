@@ -49,9 +49,11 @@
 <TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if icon-->
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" 
        ALT="<!--#var meta_type-->" BORDER="0">
   <STRONG>
+  <!--#/if-->
   <!--#if meta_type-->
   <!--#var meta_type-->
   <!--#else-->
