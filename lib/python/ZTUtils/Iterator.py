@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.4 2001/12/12 02:21:56 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Iterator.py,v 1.5 2001/12/13 18:35:32 evan Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string
 
@@ -31,12 +31,12 @@ class Iterator:
     nextIndex = 0
     def __init__(self, seq):
         self.seq = seq
-        if hasattr(seq, 'next'):
-            inner = iterInner
-        else:
-            inner = seqInner
-        self._inner = inner
-        self._prep_next = inner.prep_next
+        for inner in seqInner, iterInner:
+            if inner._supports(seq):
+                self._inner = inner
+                self._prep_next = inner.prep_next
+                return
+        raise TypeError, "Iterator does not support %s" % `seq`
 
     def __getattr__(self, name):
         try:
@@ -134,6 +134,13 @@ class InnerBase:
 
 class SeqInner(InnerBase):
     '''Inner class for sequence Iterators'''
+
+    def _supports(self, ob):
+        try: ob[0]
+        except TypeError: return 0
+        except: pass
+        return 1
+
     def prep_next(self, it):
         i = it.nextIndex
         try:
@@ -156,6 +163,13 @@ except NameError:
 
 class IterInner(InnerBase):
     '''Iterator inner class for Python iterators'''
+
+    def _supports(self, ob):
+        try:
+            if hasattr(ob, 'next') and (ob is iter(ob)):
+                return 1
+        except:
+            return 0
 
     def prep_next(self, it):
         try:
