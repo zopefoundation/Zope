@@ -89,15 +89,15 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.50 1999/05/07 19:54:38 klm Exp $'''
-__version__='$Revision: 1.50 $'[11:-2]
+$Id: SimpleItem.py,v 1.51 1999/05/10 16:32:04 jim Exp $'''
+__version__='$Revision: 1.51 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
 from ExtensionClass import Base
 from DateTime import DateTime
 from CopySupport import CopySource
-from string import join, lower, find
+from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 
@@ -138,28 +138,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
     # Default propertysheet info:
     __propsets__=()
 
- 
-    __ac_permissions__=(
-        ('View management screens', ('manage_workspace',)),
-        )
-
-
     manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=()
-
-    def manage_workspace(self, REQUEST):
-        """Dispatch to first interface in manage_options
-        """
-        try:
-            m=self.manage_options[0]['action']
-            if m=='manage_workspace': raise TypeError
-        except: return 'This object has no management interface'
-
-        if find(m,'/'):
-            raise 'Redirect', (
-                "%s/%s" % (REQUEST['URL1'], m))
-        
-        return getattr(self, m)(self, REQUEST)
 
     def title_or_id(self, st=type('')):
         """
@@ -339,7 +319,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
             if not r != (not wannaBe): REQUEST.response.notFoundError()
 
         return r
-
+        
+        
 
 Globals.default__class_init__(Item)
 
