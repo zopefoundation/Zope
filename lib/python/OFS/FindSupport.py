@@ -109,7 +109,6 @@ class FindSupport(ExtensionClass.Base):
             if hasattr(ob, 'aq_base'):
                 bs=ob.aq_base
             else: bs=ob
-
             if (
                 (not obj_ids or absattr(bs.getId()) in obj_ids)
                 and
@@ -119,7 +118,11 @@ class FindSupport(ExtensionClass.Base):
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
                   ob.PrincipiaSearchSource().find(str(obj_searchterm)) >= 0
-                  ))
+                  )
+                 or
+                 (hasattr(ob, 'SearchableText') and
+                  ob.SearchableText().find(str(obj_searchterm)) >= 0)
+                 )
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
                 and
