@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, time
 
@@ -64,31 +64,49 @@ def absattr(attr, c=callable):
         return attr()
     return attr
 
-def aq_base(ob, hasattr=hasattr):
+def aq_base(ob, getattr=getattr):
     # Return the aq_base of an object.
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob
+    return getattr(ob, 'aq_base', ob)
 
 def is_acquired(ob, hasattr=hasattr, aq_base=aq_base, absattr=absattr):
-    # Return true if this object is not a direct
-    # subobject of its aq_parent object.
+    # Return true if this object is not considered to be
+    # a direct subobject of its acquisition parent
+    # Used to prevent acquisition side-affects in FTP traversal
+    # Note that this method is misnamed since parents can (and do)
+    # spoof it. It is not a true measure of whether something is
+    # acquired, it relies on the parent's parent-ness exclusively
     if not hasattr(ob, 'aq_parent'):
+        # We can't be acquired if we don't have an aq_parent
         return 0
 
     parent = aq_base(ob.aq_parent)
     absId  = absattr(ob.id)
+
+    if hasattr(parent, absId):
+        # Consider direct attributes not acquired
+        return 0
+        
+    if hasattr(parent, '__getitem__'):
+        # Use __getitem__ as opposed to has_key to avoid TTW namespace
+        # issues, and to support the most minimal mapping objects
+        try:
+            if aq_base(parent[absId]) is aq_base(ob):
+                # This object is an item of the aq_parent, its not acquired
+                return 0
+        except KeyError:
+            pass 
     
     if hasattr(parent,'_objects'):
+        # XXX This is really icky
+        # This ugly mess is for ZClass methods I think
         if absId+' ' in parent.objectIds():
             return 0
 
-    if hasattr(parent, absId):
-        return 0
     if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
             ob.isTopLevelPrincipiaApplicationObject:
+        # This object the top level
         return 0
-    return 1
+    return 1 # This object is acquired by our measure
 
 
 def package_home(globals_dict):
