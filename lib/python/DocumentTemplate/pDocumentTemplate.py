@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.5 1997/10/29 16:59:28 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.6 1997/11/11 18:39:29 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import regex, string
 
@@ -79,6 +79,8 @@ except: pass
 isFunctionType=isFunctionType.has_key
 
 class InstanceDict:
+
+    validate=None
 
     def __init__(self,o,namespace,validate=None):
 	self.self=o
@@ -138,6 +140,9 @@ class TemplateDict:
 
     level=0
 
+    def pop(self, n): return self.dicts.pop(n)
+    def push(self, d): return self.dicts.push(d)
+
     def __init__(self):
 	m=self.dicts=MultiMapping()
 	self.pop=m.pop
@@ -172,6 +177,9 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.6  1997/11/11 18:39:29  jim
+# Added a little compatibility with cDocumentTemplate.
+#
 # Revision 1.5  1997/10/29 16:59:28  jim
 # Changed name of get to getitem.
 #
