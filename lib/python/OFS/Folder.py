@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.26 1997/12/19 19:11:16 jim Exp $"""
+$Id: Folder.py,v 1.27 1997/12/23 21:19:04 jeffrey Exp $"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -30,13 +30,18 @@ class FolderHandler:
 	return self.__class__
 
     def manage_addFolder(self,id,title='',acl_type='A',acl_roles=[],
-			 REQUEST=None):
+			 createPublic=0, createUserF=0,REQUEST=None):
 	"""Add a new Folder object"""
 	i=self.folderClass()()
 	i.id=id
 	i.title=title
 	i._setRoles(acl_type,acl_roles)
 	self._setObject(id,i)
+
+	if createUserF: i.manage_addUserFolder()
+	if createPublic:
+	    i.manage_addDocument(id='index_html', title='')
+
 	if REQUEST is not None:
 	    return self.manage_main(self,REQUEST)
 
