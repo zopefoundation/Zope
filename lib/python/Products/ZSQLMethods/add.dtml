@@ -4,6 +4,8 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add a SQL Method</H2>
 
+<dtml-var "HelpSys.HelpButton('Z-SQL-Method_Add.dtml','ZSQLMethods')">
+
 <dtml-if SQLConnectionIDs>
 <P>
 A SQL Method allows you to access a SQL database. For more
@@ -38,7 +40,7 @@ which the SQL Method will execute.
 <tr valign="top">    <th align='LEFT'><em>Arguments<em></th>
         <td align='LEFT'>
 	  <textarea name="arguments" cols="40" rows="4"></textarea>
-<!--<input name="arguments" size="40">></td></tr>
+        </td></tr>
 <tr>    <td colspan=2 align='LEFT'><strong>Query template</strong><br>
             <textarea name="template:text" rows=9 cols=50 wrap="off">select *
 from data</textarea></td></tr>
