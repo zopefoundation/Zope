@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.89 2000/06/26 19:30:30 brian Exp $'''
-__version__='$Revision: 1.89 $'[11:-2]
+$Id: DA.py,v 1.90 2000/07/26 15:48:19 brian Exp $'''
+__version__='$Revision: 1.90 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -155,8 +155,8 @@ class DA(
         {'label':'Advanced', 'action':'manage_advancedForm',
          'help':('ZSQLMethods','Z-SQL-Method_Advanced.stx')},
         )
-        +OFS.SimpleItem.Item.manage_options
         +AccessControl.Role.RoleManager.manage_options
+        +OFS.SimpleItem.Item.manage_options
         )
  
     # Specify how individual operations add up to "permissions":

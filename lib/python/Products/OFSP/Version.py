@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -123,8 +123,8 @@ class Version(Persistent,Implicit,RoleManager,Item):
         {'label':'Properties', 'action':'manage_editForm',
          'help':('OFSP','Version_Properties.stx')},
         )
-        +Item.manage_options
         +RoleManager.manage_options
+        +Item.manage_options
         )
 
     __ac_permissions__=(
