@@ -380,8 +380,8 @@ class AppInitializer:
             default_period_secs = 20
             default_timeout_mins = 20
 
-            limit = (getattr(config, 'maximum_number_of_session_objects', None)
-                     or default_limit)
+            limit = getattr(config, 'maximum_number_of_session_objects', 
+                            default_limit)
             timeout_spec = getattr(config, 'session_timeout_minutes',
                                    default_timeout_mins)
             period_spec = getattr(config, 'session_resolution_seconds',

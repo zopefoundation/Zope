@@ -51,6 +51,11 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1667: allow 'max-number-of-session-objects 0' to have
+        the same effect as setting the value via the web interface (i.e.,
+        make the number of session objects unlimited, rather than falling
+        back to the default).
+
       - Collector: #1651: removed compiler warning 
 
       - Collector #1661: make 'python-check-interval' setting in zope.conf

@@ -121,6 +121,18 @@ class TestInitialization( unittest.TestCase ):
         status = i.install_tempfolder_and_sdc()
         self.failIf(status)
 
+    def test_install_tempfolder_and_sdc_unlimited_sessions(self):
+        unlimited_cfg = good_cfg + """
+        maximum-number-of-session-objects 0
+        """
+        self.configure(unlimited_cfg)
+        i = self.getOne()
+        status = i.install_tempfolder_and_sdc()
+        self.failUnless(status)
+
+        sdc = i.getApp().temp_folder.session_data
+        self.assertEqual(sdc.getSubobjectLimit(), 0)
+
     def test_install_browser_id_manager(self):
         self.configure(good_cfg)
         i = self.getOne()
