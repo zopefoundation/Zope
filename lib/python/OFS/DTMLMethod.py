@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -139,8 +139,6 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
                                  'manage_tabs', 'manage_uploadForm']),
     ('Change DTML Methods',     ['manage_edit', 'manage_upload', 'PUT']),
     ('Change proxy roles', ['manage_proxyForm', 'manage_proxy']),
-    ('Manage properties',  ['manage_addProperty', 'manage_editProperties',
-                            'manage_delProperties','manage_changeProperties']),
     ('View', ['__call__', '']),
     ('FTP access', ['manage_FTPstat','manage_FTPget','manage_FTPlist']),
     )
