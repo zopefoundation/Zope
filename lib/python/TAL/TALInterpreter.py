@@ -264,11 +264,6 @@ class TALInterpreter:
         text = cgi.escape(text)
         self.stream_write(text)
 
-    def do_comment(self, text):
-        self.stream_write("<!--")
-        self.stream_write(text)
-        self.stream_write("-->")
-
     def do_rawtext(self, text):
         self.stream_write(text)
 
