@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.24 1998/01/14 16:32:56 jim Exp $'''
+$Id: Response.py,v 1.25 1998/01/15 20:20:03 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.24 1998/01/14 16:32:56 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -273,7 +273,7 @@ class Response:
 	self.insertBase()
 
     def insertBase(self,
-		   base_re=regex.compile('<base[\0- ]+[^>]+>\)',
+		   base_re=regex.compile('\(<base[\0- ]+[^>]+>\)',
 					 regex.casefold)
 		   ):
         if (self.headers.has_key('content-type') and
