@@ -120,10 +120,10 @@ class Catalog(Item):
                   ('url', 'FieldIndex', 's', 1),
                   ('title', 'TextIndex', 's', None),
                   ('meta_type', 'FieldIndex', 's', None),
-                  ('last_modified', 'TextIndex', 'd', None),
+                  ('last_modified', 'FieldIndex', 'd', None),
                   ('subject', 'TextIndex', 's', None),
                   ('description', 'TextIndex', 's', None),
-                  ('date', 'TextIndex', 'd', None),
+                  ('date', 'FieldIndex', 'd', None),
                   ('reviewed', 'FieldIndex', 'i', None),
                   ]
 
@@ -142,7 +142,13 @@ class Catalog(Item):
         self._ztable._data.setOrphanIndex('text_content', 'TextIndex',
         call_methods=1)
 
+        self._ztable._data.addComputedField('modified_since',
+                                            '(_.DateTime() - 1)',
+                                            index_type='FieldIndex',
+                                            type='d')
+
         self._ztable.update_database_schema(uindex, utype, call)
+
 
     def searchResults(self, REQUEST=None, used=None,
                       query_map={
@@ -161,6 +167,7 @@ class Catalog(Item):
     __call__ = searchResults
 
     
+
     def uniqueValuesFor(self, id):
         """ return unique values for field index id """
         return apply(self._ztable.uniqueValuesFor, (id,))
