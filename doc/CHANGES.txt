@@ -4,12 +4,25 @@ Zope changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-    Zope 2.3.0 ???
+    Zope 2.3.0 beta 1
 
       Features Added
 
         - Added a hook that allows user folders to provide a logout
           action.
+
+        - Added a browser preferences screen to allow people to 
+          tweak the management UI to their liking. For the folks who 
+          complained that they didn't like the new top frame, they 
+          can (among other things) turn it off from the browser 
+          preferences screen.
+
+        - Added Michel's new QuickStart material. I haven't quite 
+          decided whether the old QuickStart should go away or 
+          stay around as a source of examples.
+
+        - The logout function has been implemented in a fairly minimal 
+          way. We may try to make this nicer by final if we get time.
 
 	- The ZCatalog interface is now cleaned up and matches the new 
 	  interface look and feel better. In addition some logical
