@@ -91,19 +91,19 @@ Usage:
     import makerequest
     app = makerequest.makerequest(Zope.app())
 
-$Id: makerequest.py,v 1.2 2001/03/15 13:16:25 jim Exp $
+$Id: makerequest.py,v 1.3 2001/04/18 23:02:04 mj Exp $
 
 """
 
 import os
 from os import environ
-from sys import stdin
+from sys import stdin, stdout
 from ZPublisher.HTTPRequest import HTTPRequest
 from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.BaseRequest import RequestContainer
 
-def makerequest(app):
-    resp = HTTPResponse()
+def makerequest(app, stdout=stdout):
+    resp = HTTPResponse(stdout=stdout)
     environ['SERVER_NAME']='foo'
     environ['SERVER_PORT']='80'
     environ['REQUEST_METHOD'] = 'GET'
