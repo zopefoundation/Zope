@@ -220,13 +220,23 @@ class TestTransientObjectContainer(TestBase):
 
     def testPathologicalRightBranching(self):
         r = range(10, 1010)
+        # NOTE:  If the process running this test swaps out inside the loop,
+        # it can easily cause the test to fail, with a prefix of the expected
+        # keys missing (the keys added before the interruption expire by the
+        # time they're checked).  This can happen with interruptions of less
+        # than 1 wall-clock second, so can and does happen.
         for x in r:
             self.t[x] = 1
         assert list(self.t.keys()) == r, (self.t.keys(), r)
+        # NOTE:  The next line may fail even if the line above succeeds:  if
+        # the key age is such that keys *start* to expire right after
+        # list(self.t.keys()) completes, keys can vanish before __delitem__
+        # gets to them.
         map(self.t.__delitem__, r)
         assert list(self.t.keys()) == [], self.t.keys()
 
     def testPathologicalLeftBranching(self):
+        # See notes for testPathologicalRightBranching.
         r = range(10, 1010)
         revr = r[:]
         revr.reverse()
