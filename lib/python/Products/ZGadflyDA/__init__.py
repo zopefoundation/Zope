@@ -96,8 +96,8 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.7 1998/12/16 15:28:47 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: __init__.py,v 1.8 1998/12/19 15:41:18 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals, ImageFile, os
 
@@ -106,7 +106,6 @@ database_type='Gadfly'
 
 misc_={'conn':
        ImageFile.ImageFile('Shared/DC/ZRDB/www/DBAdapterFolder_icon.gif')}
-
 
 for icon in ('table', 'view', 'stable', 'what',
              'field', 'text','bin','int','float',
@@ -130,6 +129,10 @@ def getDA():
     return DA
 
 getDA()
+
+__module_aliases__=(
+    ('Products.AqueductGadfly.DA', DA),
+    )
 
 def manage_addZGadflyConnectionForm(self, REQUEST, *args, **kw):
     " "
