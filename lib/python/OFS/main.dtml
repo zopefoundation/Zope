@@ -12,10 +12,10 @@
 
 <FORM ACTION="." METHOD="POST">
 <!--#if objectItems-->
-<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <!--#in objectItems sort-->
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
   <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -42,28 +42,31 @@
   </TD>
 </TR>
 <!--#/in-->
-<TR>
-<TD></TD>
+</TABLE>
 
-<TD COLSPAN="2">
-<INPUT TYPE="SUBMIT" NAME="manage_cutObject:method" VALUE="Cut"> 
-<INPUT TYPE="SUBMIT" NAME="manage_copyObject:method" VALUE="Copy">
-<!--#if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="manage_pasteObject:method" VALUE="Paste">
-<!--#/if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
-</TD>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="manage_renameForm:method" VALUE="Rename">
+  <INPUT TYPE="SUBMIT" NAME="manage_cutObjects:method" VALUE="Cut"> 
+  <INPUT TYPE="SUBMIT" NAME="manage_copyObjects:method" VALUE="Copy">
+  <!--#if cb_dataValid-->
+  <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
+  <!--#/if-->
+  <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
+  </TD>
 </TR>
 </TABLE>
 <!--#else-->
-<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
 <TD>
 There are currently no items in <EM><!--#var title_or_id--></EM>
 <P>
-<!--#if validClipData-->
-<INPUT TYPE="SUBMIT" NAME="manage_pasteObject:method" VALUE="Paste">
-<!--#/if validClipData-->
+<!--#if cb_dataValid-->
+<INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
+<!--#/if-->
 </TD>
 </TABLE>
 <!--#/if-->

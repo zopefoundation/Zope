@@ -1,63 +1,218 @@
-"""Copy interface"""
+__doc__="""Copy interface"""
+__version__='$Revision: 1.18 $'[11:-2]
 
-__version__='$Revision: 1.17 $'[11:-2]
-
-import Globals, Moniker, rPickle, tempfile
+import sys, Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
 from urllib import quote, unquote
 from App.Dialogs import MessageDialog
 
-rPickle.register('OFS.Moniker', 'Moniker', Moniker.Moniker)
+
+CopyError='Copy Error'
 
 class CopyContainer:
-    # Interface for containerish objects which allow
-    # objects to be copied into them.
+    # Interface for containerish objects which allow cut/copy/paste
 
-    pasteDialog=Globals.HTMLFile('pasteDialog', globals())
+    def manage_cutObjects(self, ids, REQUEST=None):
+        """Put a reference to the objects named in ids in the clip board"""
+        if type(ids) is type(''):
+            ids=[ids]
+        oblist=[]
+        for id in ids:
+            ob=getattr(self, id)
+            if not ob.cb_isMoveable():
+                raise CopyError, eNotSupported % id
+            m=Moniker.Moniker(ob)
+            oblist.append((m.jar, m.ids))
+        cp=(1, oblist)
+        cp=quote(dumps(cp))
+        if REQUEST is not None:
+            resp=REQUEST['RESPONSE']
+            resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
+            return self.manage_main(self, REQUEST, cb_dataValid=1)
+        return cp
+    
+    def manage_copyObjects(self, ids, REQUEST=None, RESPONSE=None):
+        """Put a reference to the objects named in ids in the clip board"""
+        if type(ids) is type(''):
+            ids=[ids]
+        oblist=[]
+        for id in ids:
+            ob=getattr(self, id)
+            if not ob.cb_isCopyable():
+                raise CopyError, eNotSupported % id
+            m=Moniker.Moniker(ob)
+            oblist.append((m.jar, m.ids))
+        cp=(0, oblist)
+        cp=quote(dumps(cp))
+        if REQUEST is not None:
+            resp=REQUEST['RESPONSE']
+            resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
+            return self.manage_main(self, REQUEST, cb_dataValid=1)
+        return cp
 
-    def _getMoniker(self):
-        # Ask an object to return a moniker for itself.
-	return Moniker.Moniker(self)
+    def manage_pasteObjects(self, cb_copy_data=None, REQUEST=None):
+        """Paste previously copied objects into the current object.
+           If calling manage_pasteObjects from python code, pass
+           the result of a previous call to manage_cutObjects or
+           manage_copyObjects as the first argument."""
+        cp=None
+        if cb_copy_data is not None:
+            cp=cb_copy_data
+        else:
+            if REQUEST and REQUEST.has_key('__cp'):
+                cp=REQUEST['__cp']
+	if cp is None:
+            raise CopyError, eNoData
+        
+	try:    cp=rPickle.loads(unquote(cp))
+        except: raise CopyError, eInvalid
 
-    def validClipData(self):
-	# Return true if clipboard data is valid.
-	try:    moniker=rPickle.loads(unquote(self.REQUEST['clip_data']))
+        oblist=[]
+        m=Moniker.Moniker()
+        op=cp[0]
+        for j, d in cp[1]:
+            m.jar=j
+            m.ids=d
+            try: ob=m.bind()
+            except: raise CopyError, eNotFound
+            self._verifyObjectPaste(ob, REQUEST)
+            try:    ob._notifyOfCopyTo(self, op=op)
+            except: raise CopyError, MessageDialog(
+                          title='Copy Error',
+                          message=sys.exc_value,
+                          action ='manage_main')
+            oblist.append(ob)
+
+        if op==0:
+            # Copy operation
+            for ob in oblist:
+                if not ob.cb_isCopyable():
+                    raise CopyError, eNotSupported % absattr(ob.id)
+                id=_get_id(self, absattr(ob.id))
+                ob=ob._getCopy(self)
+                ob._setId(id)
+                self._setObject(id, ob)
+                ob=ob.__of__(self)
+                ob._postCopy(self, op=0)
+
+            if REQUEST is not None:
+                return self.manage_main(self, REQUEST, update_menu=1,
+					cb_dataValid=1)
+
+	if op==1:
+	    # Move operation
+            for ob in oblist:
+                id=absattr(ob.id)
+                if not ob.cb_isMoveable():
+                    raise CopyError, eNotSupported % id
+	        ob.aq_parent._delObject(id)
+                if hasattr(ob, 'aq_base'):
+                    ob=ob.aq_base
+                id=_get_id(self, id)
+                self._setObject(id, ob)
+                ob=ob.__of__(self)            
+                ob._setId(id)
+                ob._postCopy(self, op=1)
+
+            if REQUEST is not None:
+                REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
+                                    path='%s' % REQUEST['SCRIPT_NAME'],
+				    expires='Wed, 31-Dec-97 23:59:59 GMT')
+                return self.manage_main(self, REQUEST, update_menu=1,
+					cb_dataValid=0)
+        return ''
+
+
+    manage_renameForm=Globals.HTMLFile('renameForm', globals())
+
+    def manage_renameObject(self, id, new_id, REQUEST=None):
+        """Rename a particular sub-object"""
+        try: self._checkId(new_id)
+        except: raise CopyError, MessageDialog(
+                      title='Invalid Id',
+                      message=sys.exc_value,
+                      action ='manage_main')
+        ob=getattr(self, id)
+        if not ob.cb_isMoveable():
+            raise CopyError, eNotSupported % id            
+        self._verifyObjectPaste(ob, REQUEST)
+        try:    ob._notifyOfCopyTo(self, op=1)
+        except: raise CopyError, MessageDialog(
+                      title='Rename Error',
+                      message=sys.exc_value,
+                      action ='manage_main')
+        self._delObject(id)
+        if hasattr(ob, 'aq_base'):
+            ob=ob.aq_base
+        self._setObject(new_id, ob)
+        ob=ob.__of__(self)            
+        ob._setId(new_id)
+        ob._postCopy(self, op=1)
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST, update_menu=1)
+        return None
+
+    def manage_clone(self, ob, id, REQUEST=None):
+        """Clone an object, creating a new object with the given id."""
+        if not ob.cb_isCopyable():
+            raise CopyError, eNotSupported % absattr(ob.id)            
+        try: self._checkId(id)
+        except: raise CopyError, MessageDialog(
+                      title='Invalid Id',
+                      message=sys.exc_value,
+                      action ='manage_main')
+        self._verifyObjectPaste(ob, REQUEST)
+        try:    ob._notifyOfCopyTo(self, op=0)
+        except: raise CopyError, MessageDialog(
+                      title='Rename Error',
+                      message=sys.exc_value,
+                      action ='manage_main')
+        ob=ob._getCopy(self)
+        ob._setId(id)
+        self._setObject(id, ob)
+        ob=ob.__of__(self)
+        ob._postCopy(self, op=0)
+        return ob
+
+    def cb_dataValid(self):
+	# Return true if clipboard data seems valid.
+	try:    data=rPickle.loads(unquote(self.REQUEST['__cp']))
 	except: return 0
+        return 1
 
-	# Check for old versions of cookie so users dont need to
-	# restart browser after upgrading - just expire the old
-	# cookie.
-	if not hasattr(moniker, 'op'):
-	    self.REQUEST['RESPONSE'].setCookie('clip_data', 'deleted',
-				     path='%s' % self.REQUEST['SCRIPT_NAME'],
-				     expires='Wed, 31-Dec-97 23:59:59 GMT')
-	    self.REQUEST['validClipData']=0
-	    return 0
+    def cb_dataItems(self):
+	try:    cp=rPickle.loads(unquote(self.REQUEST['__cp']))
+        except: return []
+        oblist=[]
+        m=Moniker.Moniker()
+        op=cp[0]
+        for j, d in cp[1]:
+            m.jar=j
+            m.ids=d
+            oblist.append(m.bind())
+        return oblist
 
-	v=self.REQUEST['validClipData']=moniker.assert()
-	return v
+    validClipData=cb_dataValid
 
-    def _verifyCopySource(self, src, REQUEST):
-
-        if not hasattr(src, 'meta_type'):
-            raise 'Invalid copy source', (
-                '''You cannot copy this object, because
-                the typ of the source object is unknown.<p>
-                ''')
-        mt=src.meta_type
+    def _verifyObjectPaste(self, ob, REQUEST):
+        if not hasattr(ob, 'meta_type'):
+            raise CopyError, MessageDialog(
+                  title='Not Supported',
+                  message='The object <EM>%s</EM> does not support this ' \
+                          'operation' % absattr(ob.id),
+                  action='manage_main')
+        mt=ob.meta_type
         if not hasattr(self, 'all_meta_types'):
-            raise 'Invalid Copy Destination', (
-                '''You cannot copy objects to this destination because
-                it is an invalid destination.<p>
-                ''')
-
+            raise CopyError, MessageDialog(
+                  title='Not Supported',
+                  message='Cannot paste into this object.',
+                  action='manage_main')
         method_name=None
-        meta_types=self.all_meta_types()
+        meta_types=absattr(self.all_meta_types)
         for d in meta_types:
             if d['name']==mt:
                 method_name=d['action']
                 break
-
         if method_name is not None:
             if hasattr(self, method_name):
                 meth=getattr(self, method_name)
@@ -68,180 +223,156 @@ class CopyContainer:
                     if (not hasattr(user, 'hasRole') or
                         not user.hasRole(None, roles)):
                         raise 'Unauthorized', (
-                            '''You are not authorized to perform this
-                            operation.<p>
-                            ''')
+                              """You are not authorized to perform this
+                                 operation."""
+                              )
                     return
-                    
-        raise 'Invalid copy source', (
-            '''You cannot copy this object, because
-            the type of the source object is unrecognized.<p>
-            ''')
-                
-
-    def pasteFromClipboard(self, clip_id='', clip_data='', REQUEST=None):
-	""" """
-	if not clip_data: return eNoData
-
-	try:    moniker=rPickle.loads(unquote(clip_data))
-	except: return eInvalid
-
-	if not clip_id:
-	    return self.pasteDialog(self,REQUEST,bad=0,moniker=(moniker,))
-
-	try:    self._checkId(clip_id)
-	except: return self.pasteDialog(self,REQUEST,bad=1,moniker=(moniker,))
-
-	return self.manage_paste(moniker, clip_id, REQUEST)
-
-
-    def manage_paste(self, moniker, clip_id, REQUEST=None):
-	try:    obj=moniker.bind()
-	except: return eNotFound
-
-        self._verifyCopySource(obj, REQUEST)
-
-	if moniker.op == 0:
-	    # Copy operation
-
-	    obj=obj._getCopy(self)
-	    obj._setId(clip_id)
-	    self._setObject(clip_id, obj)
-            obj=obj.__of__(self)
-            obj._postCopy(self)
-
-	    if REQUEST is not None:
-		return self.manage_main(self, REQUEST, update_menu=1)
-	    return ''
-
-	if moniker.op==1:
-	    # Move operation
-	    prev_id=Moniker.absattr(obj.id)
-
-            # Check for special object!
-	    try:    r=obj.aq_parent._reserved_names
-	    except: r=()
-            if prev_id in r:
-                raise 'NotSupported', Globals.MessageDialog(
-                      title='Not Supported',
-                      message='This item cannot be cut and pasted',
-                      action ='manage_main')
-            
-	    obj.aq_parent._delObject(prev_id)
-            if hasattr(obj, 'aq_base'):
-                obj=obj.aq_base
-	    self._setObject(clip_id, obj)
-	    obj=obj.__of__(self)            
-            obj._setId(clip_id)
-            obj._postMove(self)
-	    if REQUEST is not None:
-		# Remove cookie after a move
-		REQUEST['RESPONSE'].setCookie('clip_data', 'deleted',
-				    path='%s' % REQUEST['SCRIPT_NAME'],
-				    expires='Wed, 31-Dec-97 23:59:59 GMT')
-		return self.manage_main(self, REQUEST, update_menu=1,
-					validClipData=0)
-	    return ''
-
-    def manage_clone(self, obj, clip_id, REQUEST=None):
-        """Clone an object
-
-        By creating a new object with a different given id.
-        """
-        self._verifyCopySource(obj, REQUEST)
-        obj=obj._getCopy(self)
-        obj._setId(clip_id)
-        self._setObject(clip_id, obj)
-        obj=obj.__of__(self)
-        obj._postCopy(self)
-        return obj
-
+        raise CopyError, MessageDialog(
+              title='Not Supported',
+              message='The object <EM>%s</EM> does not support this ' \
+                      'operation' % absattr(ob.id),
+              action='manage_main')
 
 Globals.default__class_init__(CopyContainer)
 
 
+
 class CopySource:
     # Interface for objects which allow themselves to be copied.
+    
+    def _canCopy(self, op=0):
+        # Called to make sure this object is copyable. The op var
+        # is 0 for a copy, 1 for a move.
+        return 1
 
-    def _getMoniker(self):
-        # Ask an object to return a moniker for itself.
-	return Moniker.Moniker(self)
-
-    def _notifyOfCopyTo(self, container):
-        # Overide this to be pickly about where you go!
-        # If you don't want to go there, then raise an exception.
+    def _notifyOfCopyTo(self, container, op=0):
+        # Overide this to be pickly about where you go! If you dont
+        # want to go there, raise an exception. The op variable is
+        # 0 for a copy, 1 for a move.
         pass
 
     def _getCopy(self, container):
 	# Ask an object for a new copy of itself.
-        self._notifyOfCopyTo(container)
-            
 	f=tempfile.TemporaryFile()
 	self._p_jar.export_file(self,f)
 	f.seek(0)
-	r=container._p_jar.import_file(f)
+	ob=container._p_jar.import_file(f)
 	f.close()
-	return r
+	return ob
 
-    def _postCopy(self, container):
-	# Called after the copy is finished to accomodate special cases
+    def _postCopy(self, container, op=0):
+	# Called after the copy is finished to accomodate special cases.
+        # The op var is 0 for a copy, 1 for a move.
 	pass
-
-    def _postMove(self, container):
-        # Called after a move is finished to accomodate special cases
-        pass
     
     def _setId(self, id):
 	# Called to set the new id of a copied object.
 	self.id=id
 
-    def copyToClipboard(self, REQUEST):
-        """ """
-	# Set a cookie containing pickled moniker
-	try:    m=self._getMoniker()
-	except: return eNotSupported
-	m.op=0
-	REQUEST['RESPONSE'].setCookie('clip_data',
-			    quote(dumps(m, 1)),
-			    path='%s' % REQUEST['SCRIPT_NAME'])
+    def cb_isCopyable(self):
+        if not (hasattr(self, '_canCopy') and self._canCopy(0)):
+            return 0
+        if hasattr(self, '_p_jar') and self._p_jar is None:
+            return 0
+        return 1
 
-    def cutToClipboard(self, REQUEST):
-        """ """
-	# Set a cookie containing pickled moniker
-	try:    m=self._getMoniker()
-	except: return eNotSupported
-	m.op=1
-	REQUEST['RESPONSE'].setCookie('clip_data',
-			    quote(dumps(m, 1)),
-			    path='%s' % REQUEST['SCRIPT_NAME'])
+    def cb_isMoveable(self):
+        if not (hasattr(self, '_canCopy') and self._canCopy(1)):
+            return 0
+        if hasattr(self, '_p_jar') and self._p_jar is None:
+            return 0
+        try:    n=self.aq_parent._reserved_names
+        except: n=()
+        if absattr(self.id) in n:
+            return 0
+        return 1
 
 
+def absattr(attr):
+    if callable(attr): return attr()
+    return attr
+
+def _get_id(ob, id):
+    try: ob=ob.aq_base
+    except: pass
+    n=0
+    if id[8:]=='copy_of_':
+        n=1
+    while (hasattr(ob, id)):
+        id='copy%s_of_%s' % (n and n+1 or '', id)
+        n=n+1
+    return id
 
 
 
-# Predefined errors
+fMessageDialog=Globals.HTML("""
+<HTML>
+<HEAD>
+<TITLE><!--#var title--></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<FORM ACTION="<!--#var action-->" METHOD="GET" 
+      <!--#if target-->
+      TARGET="<!--#var target-->"
+      <!--#/if target-->>
+<TABLE BORDER="0" WIDTH="100%%" CELLPADDING="10">
+<TR>
+  <TD VALIGN="TOP">
+  <BR>
+  <CENTER><B><FONT SIZE="+6" COLOR="#77003B">!</FONT></B></CENTER>
+  </TD>
+  <TD VALIGN="TOP">
+  <BR><BR>
+  <CENTER>
+  <!--#var message-->
+  </CENTER>
+  </TD>
+</TR>
+<TR>
+  <TD VALIGN="TOP">
+  </TD>
+  <TD VALIGN="TOP">
+  <CENTER>
+  <INPUT TYPE="SUBMIT" VALUE="   Ok   ">
+  </CENTER>
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY></HTML>""", target='', action='manage_main', title='Changed')
 
-eNoData=Globals.MessageDialog(
+
+eNoData=MessageDialog(
         title='No Data',
-	message='No clipboard data to be pasted',
-	action ='./manage_main',)
+	message='No clipboard data found.',
+	action ='manage_main',)
 
-eInvalid=Globals.MessageDialog(
+eInvalid=MessageDialog(
 	 title='Clipboard Error',
-	 message='Clipboard data could not be read ' \
-		 'or is not supported in this installation',
-	 action ='./manage_main',)
+         message='The data in the clipboard could not be read, possibly due ' \
+         'to cookie data being truncated by your web browser. Try copying ' \
+         'fewer objects.',
+	 action ='manage_main',)
 
-eNotFound=Globals.MessageDialog(
-	  title='Clipboard Error',
-	  message='The item referenced by the ' \
-	          'clipboard data was not found',
-	  action ='./manage_main',)
+eNotFound=MessageDialog(
+	  title='Item Not Found',
+	  message='One or more items referred to in the clipboard data was ' \
+          'not found. The item may have been moved or deleted after you ' \
+          'copied it.',
+	  action ='manage_main',)
 
-eNotSupported=Globals.MessageDialog(
+eNotSupported=fMessageDialog(
 	      title='Not Supported',
-	      message='Operation not supported for the selected item',
-	      action ='./manage_main',)
+	      message='The item <EM>%s</EM> does not support this operation.',
+	      action ='manage_main',)
 
 
+
+
+############################################################################## 
+#
+# $Log: CopySupport.py,v $
+# Revision 1.18  1998/08/14 16:46:35  brian
+# Added multiple copy, paste, rename
+#
 

@@ -1,0 +1,64 @@
+<HTML>
+<HEAD>
+<TITLE>Rename Item</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#if expr="_.hasattr(REQUEST, 'ids') and REQUEST['ids']"-->
+<!--#with expr="_.getattr(this(), REQUEST['ids'][0])"-->
+<!--#if cb_isMoveable-->
+<H2>Rename <!--#var meta_type--></H2>
+<P>
+<FORM ACTION="." METHOD="POST">
+<TABLE CELLSPACING="0">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" ALT="" BORDER="0">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var id-->
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>to:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="new_id" SIZE="20">
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD>
+  <INPUT TYPE="HIDDEN" NAME="id" VALUE="<!--#var id-->">
+  <INPUT TYPE="submit" NAME="manage_renameObject:method" VALUE=" Ok ">
+  <INPUT TYPE="submit" NAME="manage_main:method" VALUE="Cancel">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+<!--#else-->
+<FORM ACTION="manage_main" METHOD="GET">
+<CENTER>
+<BR><BR>
+The item <EM><!--#var id--></EM> does not support this operation.
+<P>
+<INPUT TYPE="submit" NAME="submit" VALUE=" Ok ">
+</CENTER>
+</FORM>
+<!--#/if-->
+
+<!--#/with-->
+<!--#else-->
+<FORM ACTION="manage_main" METHOD="GET">
+<CENTER>
+<BR><BR>
+You must select an item to rename.
+<P>
+<INPUT TYPE="submit" NAME="submit" VALUE=" Ok ">
+</CENTER>
+</FORM>
+
+<!--#/if-->
+</BODY>
+</HTML>
+

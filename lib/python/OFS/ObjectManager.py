@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.44 1998/08/03 13:32:00 jim Exp $"""
+$Id: ObjectManager.py,v 1.45 1998/08/14 16:46:36 brian Exp $"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
@@ -106,15 +106,29 @@ class ObjectManager(
         return ()
 
     def _setObject(self,id,object,roles=None,user=None):
-
 	self._checkId(id)
 	setattr(self,id,object)
 	try:    t=object.meta_type
 	except: t=None
 	self._objects=self._objects+({'id':id,'meta_type':t},)
 
+        # This is a nasty hack that provides a workaround for any
+        # existing customers with the acl_users/__allow_groups__
+        # bug. Basically when you add an object, we'll do the check
+        # an make the fix if necessary.
+        have=self.__dict__.has_key
+        if have('__allow_groups__') and (not have('acl_users')):
+            delattr(self, '__allow_groups__')
+
+
+
     def _delObject(self,id):
         delattr(self,id)
+        if id=='acl_users':
+            # Yikes - acl_users is referred to by two names and
+            # must be treated as a special case!
+            try:    delattr(self, '__allow_groups__')
+            except: pass
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
 
     def objectIds(self, spec=None):
@@ -284,79 +298,32 @@ class ObjectManager(
 
     manage_addProduct=App.FactoryDispatcher.ProductDispatcher()
 
-    def manage_cutObject(self, ids, REQUEST=None):
-        """Put a reference to an object, with the given id, in the clip board
 
-        The object is marked for deletion on paste.  This is essentially
-        the first step in a move.
-        """
-        if type(ids) is not type(''):
-            if len(ids) != 1:
-                return MessageDialog(
-                    title='Invalid Selection',
-                    message='Please select one and only one item to move',
-                    action ='./manage_main',)
-            ids=ids[0]
-        obj=getattr(self, ids)
-        err=obj.cutToClipboard(REQUEST)
-        return err or self.manage_main(self, REQUEST, validClipData=1)
-
-    def manage_copyObject(self, ids, REQUEST=None):
-        """Put a reference to an object, with the given id, in the clip board
-        """
-        if type(ids) is not type(''):
-            if len(ids) != 1:
-                return MessageDialog(
-                    title='Invalid Selection',
-                    message='Please select one and only one item to move',
-                    action ='./manage_main',)
-            ids=ids[0]
-        obj=getattr(self, ids)
-        err=obj.copyToClipboard(REQUEST)
-        return err or self.manage_main(self, REQUEST, validClipData=1)
-
-    def manage_pasteObject(self,clip_id='',clip_data='',REQUEST=None):
-        """Paste from the clip board into the current object."""
-        return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
-
-
-    def manage_delObjects(self, ids=[], submit='Delete',
-                          clip_id='', clip_data='',REQUEST=None):
+    def manage_delObjects(self, ids=[], REQUEST=None):
 	"""Delete a subordinate object
 	
 	The objects specified in 'ids' get deleted.
 	"""
         if type(ids) is type(''): ids=[ids]
-	if submit=='Delete':
-	    if not ids:
-		return MessageDialog(title='No items specified',
-		       message='No items were specified!',
-		       action ='./manage_main',)
-
-	    try:    p=self._reserved_names
-	    except: p=()
-	    for n in ids:
-		if n in p:
-		    return MessageDialog(title='Not Deletable',
-			   message='<EM>%s</EM> cannot be deleted.' % n,
-			   action ='./manage_main',)
-	    while ids:
-                id=ids[-1]
-                if not hasattr(self, id) or not self.__dict__.has_key(id):
-                    raise 'BadRequest', '%s does not exist' % ids[-1]
-		self._delObject(id)
-	        del ids[-1]
-	    if REQUEST is not None:
+        if not ids:
+            return MessageDialog(title='No items specified',
+                   message='No items were specified!',
+                   action ='./manage_main',)
+        try:    p=self._reserved_names
+        except: p=()
+        for n in ids:
+            if n in p:
+                return MessageDialog(title='Not Deletable',
+                       message='<EM>%s</EM> cannot be deleted.' % n,
+                       action ='./manage_main',)
+        while ids:
+            id=ids[-1]
+            if not hasattr(self, id) or not self.__dict__.has_key(id):
+                raise 'BadRequest', '%s does not exist' % ids[-1]
+            self._delObject(id)
+            del ids[-1]
+        if REQUEST is not None:
 		return self.manage_main(self, REQUEST, update_menu=1)
-
- 	elif submit=='Cut': return self.manage_cutObject(id,REQURST)
- 
- 	elif submit=='Copy': return self.manage_copyObject(id,REQURST)
-
-	elif submit=='Paste': 
-	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
-
-
 
 
     def _setProperty(self,id,value,type='string'):
@@ -538,6 +505,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.45  1998/08/14 16:46:36  brian
+# Added multiple copy, paste, rename
+#
 # Revision 1.44  1998/08/03 13:32:00  jim
 #       - Revamped folder security:
 #
