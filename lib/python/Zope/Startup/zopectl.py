@@ -45,6 +45,9 @@ from zdaemon.zdoptions import ZDOptions
 from zLOG.datatypes import FileHandlerFactory
 
 
+def string_list(arg):
+    return arg.split()
+
 class ZopeCtlOptions(ZDOptions):
     """Zope controller options.
 
@@ -65,6 +68,8 @@ class ZopeCtlOptions(ZDOptions):
 
     def __init__(self):
         ZDOptions.__init__(self)
+        self.add("program", "runner.program", "p:", "program=",
+                 handler=string_list)
         self.add("backofflimit", "runner.backoff_limit",
                  "b:", "backoff-limit=", int, default=10)
         self.add("daemon", "runner.daemon", "d", "daemon", flag=1, default=1)
@@ -82,7 +87,10 @@ class ZopeCtlOptions(ZDOptions):
         config = self.configroot
         self.directory = config.instancehome
         self.clienthome = config.clienthome
-        self.program = [os.path.join(self.directory, "bin", "runzope")]
+        if config.runner and config.runner.program:
+            self.program = config.runner.program
+        else:
+            self.program = [os.path.join(self.directory, "bin", "runzope")]
         self.sockname = os.path.join(self.clienthome, "zopectlsock")
         self.user = None
         self.python = sys.executable
@@ -133,12 +141,14 @@ class ZopeCmd(ZDCmd):
                     'opts.configfile=\'%s\'; '
                     'opts.realize(); '
                     'h.handleConfig(opts.configroot,opts.confighandlers);'
-                    'config.setConfiguration(opts.configroot); ' %
+                    'config.setConfiguration(opts.configroot); '
+                    'from Zope.Startup import do_posix_stuff; '
+                    'do_posix_stuff(opts.configroot); '%
                     (python, self.options.configfile)
                     )
         return cmdline + more + '\"'
 
-    def do_debug( self, arg ):
+    def do_debug(self, arg):
         cmdline = self.get_startup_cmd(self.options.python + ' -i',
                                        'import Zope; app=Zope.app()')
         print ('Starting debugger (the name "app" is bound to the top-level '
@@ -149,7 +159,8 @@ class ZopeCmd(ZDCmd):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
 
-    def do_run( self, arg ):
+    def do_run(self, arg):
+        self.setuid()
         cmdline = self.get_startup_cmd(self.options.python,
             'import Zope; app=Zope.app(); execfile(\'%s\')' % arg)
         os.system(cmdline)
@@ -158,6 +169,23 @@ class ZopeCmd(ZDCmd):
         print "run <script> -- run a Python script with the Zope environment"
         print "                set up.  The script can use the name 'app' to"
         print "                access the top-level Zope object"
+
+    def do_adduser(self, arg):
+        try:
+            name, password = arg.split()
+        except:
+            print "usage: adduser <name> <password>"
+            return
+        cmdline = self.get_startup_cmd(
+            self.options.python ,
+            'import Zope; app=Zope.app();'
+            'app.acl_users._doAddUser(\'%s\', \'%s\', [\'Manager\'], []);'
+            'get_transaction().commit()'
+            ) % (name, password)
+        os.system(cmdline)
+
+    def help_adduser(self):
+        print "adduser <name> <password> -- add a Zope management user"
 
 
 def main(args=None):
