@@ -174,7 +174,6 @@ class Vocabulary(Item, Persistent, Implicit,
             else:
                 result.append(pattern)
 
-
         return str(result)
             
 
