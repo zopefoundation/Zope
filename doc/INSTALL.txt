@@ -21,7 +21,7 @@ Building Zope:
 
   Notes:
   
-  * You should be using Python 1.5 to run the build scripts.
+  * You should be using Python 1.5.1 to run the build scripts.
   * If you just want to use Zope components it's not necessary to build Zope
     but it's a good idea since it will compile Python C extensions for you.
 	
@@ -36,15 +36,31 @@ Using Zope with ZopeHTTPServer:
 
 Setting the Zope super user name and password: 
 
-  The ZOpe super user has full access to Zope online management
-  facilities. Zope defaults to 'superuser' and '123' as the super
-  user name and password. You can change this by creating a file
+  The Zope super user has full access to Zope online management
+  facilities. You must create a super user account before you can do anything
+  else.  You define the super user account by creating a file
   named 'access' in the Zope directory. The file should contain one
-  line that has the user name followed by a colon followed by the
+  line that has the super user name followed by a colon followed by the
   password. For example:
 
     mario:nintendoRulez
-  
+ 
+  When you first start managing your Zope installation you will need to
+  enter the user name and password.
+
+Setting permissions ons on the var directory.
+
+  Zope needs to read and write data from its var directory. Before
+  running Zope you should insure that you give adequate permissions
+  to the Zope var directory. For example to give full read/write
+  permissions to the Zope var directory cd to the Zope directory and
+  then type:
+
+    chmod 0777 var
+
+  Note: Zope normally runs as nobody, so full read and write permissions
+  on the var directory is normally needed.
+ 
 Using Zope with PCGI:
 
   PCGI is the traditional way of running Zope. PCGI mediates
@@ -54,6 +70,9 @@ Using Zope with PCGI:
   For example:
 
     ln -s /home/amos/Zope/Zope.cgi /usr/local/apache/cgi-bin/Zope
+
+  At this point you should perform any other steps you web server
+  requires to install and configure a cgi script.
 
   If you are using Apache you will need to trick Apache into passing
   authentication headers to Zope. The easiest way to do this is to
