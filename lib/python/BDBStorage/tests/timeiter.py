@@ -26,6 +26,10 @@ Options:
     --max=txncount
         Stop after committing txncount transactions.
 
+    -k txncount
+    --skip=txncount
+        Skip the first txncount transactions.
+
     -p/--profile
         Turn on specialized profiling.
 
@@ -64,10 +68,10 @@ def usage(code, msg=''):
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hs:d:qo:l:pm:',
+        opts, args = getopt.getopt(sys.argv[1:], 'hs:d:qo:l:pm:k:',
                                    ['help', 'source=', 'dest=', 'quiet',
                                     'output=', 'logfile=', 'profile',
-                                    'max='])
+                                    'max=', 'skip='])
     except getopt.error, msg:
         usage(1, msg)
 
@@ -79,6 +83,7 @@ def main():
         logfile = None
         profilep = 0
         maxtxn = -1
+        skiptxn = -1
 
     options = Options()
 
@@ -99,35 +104,14 @@ def main():
             options.profilep = 1
         elif opt in ('-m', '--max'):
             options.maxtxn = int(arg)
+        elif opt in ('-k', '--skip'):
+            options.skiptxn = int(arg)
 
     if args:
         usage(1)
 
     if not options.source or not options.dest:
         usage(1, 'Source and destination databases must be provided')
-
-    print >>sys.stderr, 'Opening source FileStorage...'
-    t0 = time.time()
-    srcdb = FileStorage(options.source, read_only=1)
-    t1 = time.time()
-    print >>sys.stderr, 'Opening source FileStorage done. %s seconds' % (t1-t0)
-#
-# Uncomment this section to do a FS->BDB migration
-#
-    print >>sys.stderr, 'Opening destination BDB...'
-    t0 = time.time()
-    dstdb = Full(options.dest)
-    t1 = time.time()
-    print >>sys.stderr, 'Opening destination BDB done. %s seconds' % (t1-t0)
-#
-# Uncomment this section to do a FS->FS migration
-#
-##    print >>sys.stderr, 'Opening destination FileStorage...'
-##    t0 = time.time()
-##    dstdb = FileStorage(dest)
-##    t1 = time.time()
-##    print >>sys.stderr, 'Opening destination FileStorage done. %s seconds' % (
-##        t1-t0)
 
     # Open the output file
     if options.outfile is None:
@@ -148,6 +132,30 @@ def main():
     # Print a comment, this is a hack
     print >> options.outfp, '# FS->BDB 3.3.11'
     print >> options.outfp, '#', time.ctime()
+
+    print >>sys.stderr, 'Opening source FileStorage...'
+    t0 = time.time()
+    srcdb = FileStorage(options.source, read_only=1)
+    t1 = time.time()
+    print >>sys.stderr, 'Opening source FileStorage done. %s seconds' % (t1-t0)
+#
+# Uncomment this section to do a FS->BDB migration
+#
+    print >>sys.stderr, 'Opening destination BDB...'
+    t0 = time.time()
+    dstdb = Full(options.dest)
+    t1 = time.time()
+    print >>sys.stderr, 'Opening destination BDB done. %s seconds' % (t1-t0)
+
+#
+# Uncomment this section to do a FS->FS migration
+#
+##    print >>sys.stderr, 'Opening destination FileStorage...'
+##    t0 = time.time()
+##    dstdb = FileStorage(dest)
+##    t1 = time.time()
+##    print >>sys.stderr, 'Opening destination FileStorage done. %s seconds' % (
+##        t1-t0)
 
     try:
         t0 = time.time()
@@ -179,7 +187,11 @@ def doit(srcdb, dstdb, options):
     ok = 1
     prevrevids = {}
     counter = 0
+    skipper = 0
     for txn in srcdb.iterator():
+        skipper += 1
+        if skipper <= options.skiptxn:
+            continue
         counter += 1
         if counter > options.maxtxn > 0:
             break
