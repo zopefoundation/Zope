@@ -86,10 +86,12 @@
 Objects for packages that have been uninstalled.
 """
 import string, SimpleItem, Globals, Acquisition
+import Persistence
 
 broken_klasses={}
 
-class BrokenClass(SimpleItem.Item, Acquisition.Explicit):
+class BrokenClass(Acquisition.Explicit, SimpleItem.Item, 
+                  Persistence.Persistent):
     _p_changed=0
     meta_type='Broken Because Product is Gone'
     icon='p_/broken'
@@ -102,7 +104,13 @@ class BrokenClass(SimpleItem.Item, Acquisition.Explicit):
             is no longer installed.  It cannot be updated.
             """)
 
+    def __getattr__(self, name):
+        if name[:3]=='_p_':
+            return BrokenClass.inheritedAttribute('__getattr__')(self, name)
+        raise AttributeError, name
+
     manage=manage_main=Globals.HTMLFile('brokenEdit',globals())
+    manage_workspace=manage
     
 
 def Broken(self, oid, klass):
@@ -125,7 +133,8 @@ def Broken(self, oid, klass):
         klass.info=(
             'This object\'s class was %s in module %s.' %
             (klass.__name__, klass.__module__))
-        
+
+    if oid is None: return klass
     i=klass()
     i._p_oid=oid
     i._p_jar=self
