@@ -383,7 +383,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         else:
             LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
                                    'attempted to uncatalog an object '
-                                   'with a uid of %s. ' % uid))
+                                   'with a uid of %s. ' % str(uid)))
 
 
     def uniqueValuesFor(self, name):
