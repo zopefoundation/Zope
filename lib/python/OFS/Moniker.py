@@ -8,41 +8,10 @@ Object monikers
 
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import Globals
-
-
-class OldMoniker:
-    """ """
-    def __init__(self, obj=None, p=1):
-	if obj is None: return
-	self.id   =absattr(obj.id)
-	self.title=absattr(obj.title)
-	self.mtype=absattr(obj.meta_type)
-	self.oid  =obj._p_oid
-	self.jar  =obj._p_jar.name
-	self.aqp  =None
-	if p:
-	    try:    self.aqp=Moniker(obj.aq_parent, 0)
-	    except: self.aqp=None
-
-    def assert(self):
-	# Return true if the named object exists
-	if self.jar is None: jar=Globals.Bobobase._jar
-	else: jar=Globals.SessionBase[self.jar].jar
-	return jar.has_key(self.oid)
-
-    def bind(self):
-	# Return the real object named by this moniker
-	if self.jar is None: jar=Globals.Bobobase._jar
-	else: jar=Globals.SessionBase[self.jar].jar
-	obj=jar[self.oid]
-	if self.aqp is not None:
-	    obj=obj.__of__(self.aqp.bind())
-	return obj
-
 
 class Moniker:
     """ """
