@@ -101,7 +101,8 @@ def error(message, fatal=0, exc=0):
     sys.stderr.write("\n%s\n" % message)
     if fatal: sys.exit(fatal)
 
-def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
+def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
+                     forgive=0, export=0):
     """\
     Read a file's index up to the given time.
     """
@@ -117,7 +118,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
     gmtime=time.gmtime
 
     if fromEnd: pos=file_size
-    else:       pos=newpos=len(packed_version)
+    else:       pos=newpos=(not export) and len(packed_version)
      
     tlast=0
     err=0
@@ -156,9 +157,22 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
         if not h: break
         if len(h) !=  24: break
         oid,prev,start,tlen,plen=unpack(">iidii",h)
-        if (prev < 0 or prev >= pos or start < tlast
-            or plen > tlen or plen < 0 or oid < -999):
-            __traceback_info__=pos, oid,prev,start,tlen,plen
+        
+        if prev < 0 or (prev and (prev >= pos)):
+            error('Bad previous record pointer (%s) at %s' % (prev, pos))
+            if show > 0: error(read(show))
+            if not forgive:
+                err=1
+                break
+
+        if start < tlast:
+            error('record time stamps are not chronological at %s' % pos)
+            if show > 0: error(read(show))
+            if not forgive:
+                err=1
+                break
+
+        if plen > tlen or plen < 0 or oid < -999:
             error('Corrupted data record at %s' % pos)
             if show > 0: error(read(show))
             err=1
@@ -169,8 +183,9 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
         if newpos > file_size:
             error('Truncated data record at %s' % pos)
             if show > 0: error(read(show))
-            err=1
-            break
+            if not forgive:
+                err=1
+                break
 
         seek(newpos-4)
         if read(4) != h[16:20]:
@@ -354,6 +369,10 @@ def main(argv):
 
           Add a directory to the Python path.
 
+       -x
+
+          The input file is a ZODB 2 export file.
+
           
     """ % (sys.argv[0],
            string.join(map(
@@ -365,7 +384,7 @@ def main(argv):
     sys.path.append(os.path.split(sys.argv[0])[0])
 
     try:
-        opts, args = getopt.getopt(argv,'r:ebl:s:f:p:')
+        opts, args = getopt.getopt(argv,'r:ebl:s:f:p:x')
         filename,=args
     except: error(usage,1,1)
 
@@ -377,6 +396,8 @@ def main(argv):
     both=0
     n=99999999
     show=0
+    export=0
+    convert=0
     for o, v in opts:
         o=o[1:]
         if o=='r':
@@ -391,10 +412,8 @@ def main(argv):
             except: error('The number of bytes, %s, shuld ne an integer'
                           % v, 1)
         elif o=='e': fromEnd=1
-        elif o=='f':
-            import FS
-            rpt=FS.FS(v, file).rpt
-            
+        elif o=='x': export=1
+        elif o=='f': convert=1
         elif o=='b': both=1
         elif o=='p':
             if v=='-':
@@ -405,7 +424,14 @@ def main(argv):
             print sys.path
         else: error('Unrecognized option: -%s' % o, 1)
 
+    if convert:
+        import FS
+        if export:
+            rpt=FS.ZEXP(v, file).rpt
+        else:
+            rpt=FS.FS(v, file).rpt
 
-    _read_and_report(file, rpt, fromEnd, both, n, show)
+    _read_and_report(file, rpt, fromEnd, both, n, show,
+                     forgive=1, export=export)
 
 if __name__=='__main__': main(sys.argv[1:])
