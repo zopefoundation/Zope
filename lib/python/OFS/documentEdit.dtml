@@ -33,7 +33,8 @@
 	ROWS="<!--#var dtpref_rows-->"
 	<!--#else dtpref_rows-->
 	ROWS="20"
-	<!--#/if dtpref_rows-->><!--#var __str__--></TEXTAREA>
+	<!--#/if dtpref_rows-->>
+<!--#var __str__--></TEXTAREA>
 	</TD>
       </TR>
       <TR>
