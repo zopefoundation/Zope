@@ -53,8 +53,12 @@
   <INPUT TYPE="SUBMIT" NAME="manage_pasteObjects:method" VALUE="Paste">
   <!--#/if-->
   <!--#/unless-->
+  <!--#if "AUTHENTICATED_USER.has_permission('Delete objects', this())"-->
   <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
+  <!--#/if-->
+  <!--#if "AUTHENTICATED_USER.has_permission('Import/Export objects', this())"-->
   <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Export...">
+  <!--#/if-->
   </TD>
 </TR>
 </TABLE>
