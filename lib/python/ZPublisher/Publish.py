@@ -136,22 +136,16 @@ Access Control
   '__allow_groups__' attribute for a subobject overides
   '__allow_groups__' attributes for containing objects, however, if
   named groups are used, group data from containing objects may be
-  inherited by contained objects.  If a published object uses named
+  acquired by contained objects.  If a published object uses named
   groups, then for each named group in the published object, group
   data from groups with the same name in container objects will be
-  inherited from container objects if:
-
-     - The contained object uses named groups,
-     - There is no object that is a sub-object of the container
-       object, is a container of the published object, and that has
-       unnamed groups.
+  acquired from container objects.
 
   If the name of a group is the python object, 'None', then data from
-  named groups in container objects will be inherited even if the
-  groupd don't appear in the inheriting object, subject to the
-  restrictions above.
+  named groups in container objects will be acquired even if the
+  group names don't appear in the acquiring object.
 
-  When group data are inherited, then inherited data is appended to
+  When group data are acquired, then acquired data is appended to
   the existing data.  When groups contain names and passwords,
   individual user names may have multiple passwords if they appear in
   multiple groups.
@@ -182,7 +176,7 @@ Access Control
       name to password mappings contained in an object's
       '__allow_groups__' attribute will be used.
       
-      An object may "inherit" a realm from one of it's parent
+      An object may "acquir" a realm from one of it's parent
       objects in the URI path to the object, including the module
       used to publish the object.
 
@@ -522,7 +516,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.23 1996/10/28 22:13:45 jim Exp $"""
+$Id: Publish.py,v 1.24 1996/10/29 19:21:43 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -575,6 +569,13 @@ $Id: Publish.py,v 1.23 1996/10/28 22:13:45 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.24  1996/10/29 19:21:43  jim
+# Changed rule (and terminology) for acquiring authorization data
+# so that a subobject can aquire data from a container even if an
+# intervening object does not use named groups.
+#
+# Added better string formating of requests.
+#
 # Revision 1.23  1996/10/28 22:13:45  jim
 # Fixed bug in last fix.
 #
@@ -606,7 +607,7 @@ $Id: Publish.py,v 1.23 1996/10/28 22:13:45 jim Exp $"""
 # Added:
 #
 #   - Regex, regex input types,
-#   - New rule for inheriting allow groups,
+#   - New rule for acquiring allow groups,
 #   - Support for index_html attribute,
 #   - Support for relative base refs
 #   - Added URL as magic variable
@@ -673,7 +674,7 @@ $Id: Publish.py,v 1.23 1996/10/28 22:13:45 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 def main():
@@ -805,8 +806,7 @@ class ModulePublisher:
 	inherited_groups=default_inherited_groups
 	try:
 	    groups=theModule.__allow_groups__
-	    inherited_groups=allow_group_composition(
-		inherited_groups,groups,default_inherited_groups)
+	    inherited_groups=allow_group_composition(inherited_groups,groups)
 	except: groups=None
 
 	# Get a nice clean path list:
@@ -861,14 +861,13 @@ class ModulePublisher:
 		    try:
 			groups=subobject.__allow_groups__
 			inherited_groups=allow_group_composition(
-			    inherited_groups,groups,default_inherited_groups)
+			    inherited_groups,groups)
 		    except:
 			try:
 			    groups=getattr(object,
 					   entry_name+'__allow_groups__')
 			    inherited_groups=allow_group_composition(
-				inherited_groups,groups,
-				default_inherited_groups)
+				inherited_groups,groups)
 			except: pass
 		    try: doc=subobject.__doc__
 		    except:
@@ -913,14 +912,12 @@ class ModulePublisher:
 			try:
 			    groups=subobject.__allow_groups__
 			    inherited_groups=allow_group_composition(
-				inherited_groups,groups,
-				default_inherited_groups)
+				inherited_groups,groups)
 			except:
 			    try:
 				groups=object[entry_name+'__allow_groups__']
 				inherited_groups=allow_group_composition(
-				    inherited_groups,groups,
-				    default_inherited_groups)
+				    inherited_groups,groups)
 			    except: pass
 			try: doc=subobject.__doc__
 			except:
@@ -1269,9 +1266,22 @@ class Request:
 
     __http_colon=regex.compile("\(:\|\(%3[aA]\)\)")
 
+
     def __str__(self):
+
+	def str(self,name):
+	    dict=getattr(self,name)
+	    return "%s:\n\t%s\n\n" % (
+		name,
+		string.joinfields(
+		    map(lambda k, d=dict: "%s: %s" % (k, d[k]), dict.keys()),
+		    "\n\t"
+		    )
+		)
+	    
 	return "%s\n%s\n%s\n%s" % (
-	    str(self.other),str(self.form),str(self.environ),str(self.cookies))
+	    str(self,'other'),str(self,'form'),str(self,'environ'),
+	    str(self,'cookies'))
 
     __repr__=__str__
 
