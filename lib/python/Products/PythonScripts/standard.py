@@ -18,7 +18,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -27,10 +27,12 @@ security.declarePublic('special_formats', 'whole_dollars',
                        'dollars_and_cents', 'structured_text',
                        'sql_quote', 'html_quote', 'url_quote',
                        'url_quote_plus', 'newline_to_br',
-                       'thousands_commas')
+                       'thousands_commas', 'url_unquote',
+                       'url_unquote_plus')
 from DocumentTemplate.DT_Var import special_formats, \
  whole_dollars, dollars_and_cents, structured_text, sql_quote, \
- html_quote, url_quote, url_quote_plus, newline_to_br, thousands_commas
+ html_quote, url_quote, url_quote_plus, newline_to_br, thousands_commas, \
+ url_unquote, url_unquote_plus
 
 from Globals import HTML
 from AccessControl.DTML import RestrictedDTML

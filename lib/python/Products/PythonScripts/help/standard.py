@@ -70,6 +70,28 @@ def url_quote_plus(s):
 
     """
 
+def url_unquote(s):
+    """
+    Convert HTML character entities in strings back to their real values.
+
+    See Also
+
+      "Python 'urllib'
+      module":http://www.python.org/doc/current/lib/module-urllib.html
+      'url_unquote' function.
+    """
+      
+def url_unquote(s):
+    """
+    Like url_unquote, but also replace '+' characters with spaces.
+
+        See Also
+
+      "Python 'urllib'
+      module":http://www.python.org/doc/current/lib/module-urllib.html
+      'url_unquote_plus' function.
+    """
+
 def newline_to_br(s):
     """
     Convert newlines and carriage-return and newline combinations to

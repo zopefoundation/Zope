@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.12 2002/05/23 13:19:16 chrisw Exp $'
-__version__='$Revision: 1.12 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.13 2002/08/14 15:46:58 chrism Exp $'
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os
 import unittest
@@ -247,6 +247,45 @@ class DTMLTests (unittest.TestCase):
         expected = '$42.00 bobs your unclespam%eggs!|'
         res = html(spam=42) + html(spam=None)
         assert res == expected, res
+
+    def testUrlUnquote(self):
+        html1 = self.doc_class(
+            """
+            <dtml-var expr="'http%3A//www.zope.org%3Fa%3Db%20123'" fmt=url-unquote>
+            """
+            )
+        html2 = self.doc_class(
+            """
+            <dtml-var expr="'http%3A%2F%2Fwww.zope.org%3Fa%3Db+123'" fmt=url-unquote-plus>
+            """
+            )
+            
+        expected = (
+            """
+            http://www.zope.org?a=b 123
+            """
+            )
+        self.assertEqual(html1(), expected)
+        self.assertEqual(html2(), expected)
+        html1 = self.doc_class(
+            """
+            <dtml-var expr="'http%3A//www.zope.org%3Fa%3Db%20123'" url_unquote>
+            """
+            )
+        html2 = self.doc_class(
+            """
+            <dtml-var expr="'http%3A%2F%2Fwww.zope.org%3Fa%3Db+123'" url_unquote_plus>
+            """
+            )
+            
+        expected = (
+            """
+            http://www.zope.org?a=b 123
+            """
+            )
+        self.assertEqual(html1(), expected)
+        self.assertEqual(html2(), expected)
+            
 
     def test_fmt(self):
         html=self.doc_class(

@@ -114,6 +114,12 @@ __doc__='''Variable insertion parameters
        space characters with '+'. This is needed for building
        query strings in some cases.
 
+       'url_unquote' -- convert HTML character entities in strings
+       back to their real values.
+
+       'url_unquote_plus' -- like url_unquote, but also
+       replace '+' characters with spaces.
+
        'sql_quote' -- Convert single quotes to pairs of single
        quotes. This is needed to safely include values in
        Standard Query Language (SQL) strings.
@@ -145,12 +151,12 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.54 2002/08/01 16:00:39 mj Exp $'
-__version__='$Revision: 1.54 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.55 2002/08/14 15:46:57 chrism Exp $'
+__version__='$Revision: 1.55 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
-from urllib import quote, quote_plus
+from urllib import quote, quote_plus, unquote, unquote_plus
 from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!
 from types import StringType
@@ -167,7 +173,8 @@ class Var:
                             capitalize=1, spacify=1, null='', fmt='s',
                             size=0, etc='...', thousands_commas=1,
                             html_quote=1, url_quote=1, sql_quote=1,
-                            url_quote_plus=1, missing='',
+                            url_quote_plus=1, url_unquote=1,
+                            url_unquote_plus=1,missing='',
                             newline_to_br=1, url=1)
         self.args=args
         
@@ -333,6 +340,11 @@ def url_quote(v, name='(Unknown name)', md={}):
 def url_quote_plus(v, name='(Unknown name)', md={}):
     return quote_plus(str(v))
 
+def url_unquote(v, name='(Unknown name)', md={}):
+    return unquote(str(v))
+
+def url_unquote_plus(v, name='(Unknown name)', md={}):
+    return unquote_plus(str(v))
 
 def newline_to_br(v, name='(Unknown name)', md={}):
     # Unsafe data is explicitly quoted here; we don't expect this to be HTML
@@ -422,6 +434,8 @@ special_formats={
     'html-quote': html_quote,
     'url-quote': url_quote,
     'url-quote-plus': url_quote_plus,
+    'url-unquote': url_unquote,
+    'url-unquote-plus': url_unquote_plus,
     'multi-line': newline_to_br,
     'comma-numeric': thousands_commas,
     'dollars-with-commas': whole_dollars_with_commas,
@@ -434,7 +448,7 @@ def spacify(val):
 
 modifiers=(html_quote, url_quote, url_quote_plus, newline_to_br,
            string.lower, string.upper, string.capitalize, spacify,
-           thousands_commas, sql_quote)
+           thousands_commas, sql_quote, url_unquote, url_unquote_plus)
 modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 class Comment:
