@@ -3,62 +3,20 @@
 
        Copyright 1997 Digital Creations, L.L.C., 910 Princess Anne
        Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
-       unless otherwise indicated. Permission to use, copy and
-       distribute this software is hereby granted, provided that the
-       above copyright notice appear in all copies and that both that
-       copyright notice and this permission notice appear. Note that
-       any product, process or technology described in this software
-       may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
-       hereunder.
-
-     Trademarks 
-
-       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-       All other trademarks are owned by their respective companies. 
-
-     No Warranty 
-
-       The software is provided "as is" without warranty of any kind,
-       either express or implied, including, but not limited to, the
-       implied warranties of merchantability, fitness for a particular
-       purpose, or non-infringement. This software could include
-       technical inaccuracies or typographical errors. Changes are
-       periodically made to the software; these changes will be
-       incorporated in new editions of the software. DCLC may make
-       improvements and/or changes in this software at any time
-       without notice.
-
-     Limitation Of Liability 
-
-       In no event will DCLC be liable for direct, indirect, special,
-       incidental, economic, cover, or consequential damages arising
-       out of the use of or inability to use this software even if
-       advised of the possibility of such damages. Some states do not
-       allow the exclusion or limitation of implied warranties or
-       limitation of liability for incidental or consequential
-       damages, so the above limitation or exclusion may not apply to
-       you.
-
-    If you have questions regarding this software,
-    contact:
-   
-      Digital Creations L.L.C.  
-      info@digicool.com
-      (540) 371-6909
+       rights reserved. 
 
 ******************************************************************/
 
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.5 1997/10/29 16:58:53 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.6 1997/11/07 17:09:40 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
 
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
+static PyObject *py___call__;
 
 /* ----------------------------------------------------- */
 
@@ -293,7 +251,7 @@ MM_cget(MM *self, PyObject *key, int call)
 {
   long i;
   int dt=0;
-  PyObject *e, *rr, *tb;
+  PyObject *e, *t, *rr, *tb;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return NULL;
   while(--i >= 0)
@@ -316,9 +274,29 @@ MM_cget(MM *self, PyObject *key, int call)
 	      /* Try calling the object */
 	      if(call)
 		{
-		  if(dt) ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
-		  else if((rr=PyObject_CallObject(e,NULL))) ASSIGN(e,rr);
-		  else PyErr_Clear();
+		  if(dt)
+		    {
+		      ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
+		      UNLESS(e) return NULL;
+		    }
+		  else
+		    {
+		      rr=PyObject_CallObject(e,NULL);
+		      if(rr) ASSIGN(e,rr);
+		      else
+			{
+			  PyErr_Fetch(&t, &rr, &tb);
+			  if(t!=PyExc_AttributeError ||
+			     PyObject_Compare(rr,py___call__) != 0)
+			    {
+			      PyErr_Restore(t,rr,tb);
+			      Py_DECREF(e);
+			      return NULL;
+			    }
+
+		      if((rr=PyObject_CallObject(e,NULL))) ASSIGN(e,rr);
+			}
+		    }
 		}
 	    }
 
@@ -347,6 +325,21 @@ MM_get(MM *self, PyObject *args)
   return MM_cget(self, key, PyObject_IsTrue(call));
 }
 
+static PyObject *
+MM_has_key(MM *self, PyObject *args)
+{
+  PyObject *key;
+
+  UNLESS(PyArg_ParseTuple(args,"O",&key)) return NULL;
+  if((key=MM_cget(self, key, 0)))
+    {
+      Py_DECREF(key);
+      return PyInt_FromLong(1);
+    }
+  PyErr_Clear();
+  return PyInt_FromLong(0);
+}
+
 static struct PyMethodDef MM_methods[] = {
   {"__init__", (PyCFunction)MM__init__, 0,
    "__init__() -- Create a new empty multi-mapping"},
@@ -359,6 +352,9 @@ static struct PyMethodDef MM_methods[] = {
    "Normally, callable objects that can be called without arguments are\n"
    "called during retrieval. This can be suppressed by providing a\n"
    "second argument that is false.\n"
+  }, 
+  {"has_key",  (PyCFunction) MM_has_key,  METH_VARARGS,
+   "has_key(key) -- Test whether the mapping has the given key"
   }, 
   {NULL,		NULL}		/* sentinel */
 };
@@ -535,15 +531,17 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
   UNLESS(py_acquire=PyString_FromString("aq_acquire")) return;
+  UNLESS(py___call__=PyString_FromString("__call__")) return;
   UNLESS(py_=PyString_FromString("")) return;
   UNLESS(join=PyImport_ImportModule("string")) return;
   ASSIGN(join,PyObject_GetAttrString(join,"join"));
   UNLESS(join) return;
+  UNLESS(ExtensionClassImported) return;
 
   m = Py_InitModule4("cDocumentTemplate", Module_Level__methods,
 		     cDocumentTemplate_module_documentation,
@@ -565,6 +563,11 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.6  1997/11/07 17:09:40  jim
+  Changed so exception is raised if a callable object raises an
+  exception when called and the exception type and value are not
+  AttributeError and '__call__'.
+
   Revision 1.5  1997/10/29 16:58:53  jim
   Changed name of get to getitem.
 
