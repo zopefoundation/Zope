@@ -14,8 +14,8 @@
 
 This class is mixed into the database manager in App.ApplicationManager.
 
-$Id: CacheManager.py,v 1.30 2003/11/05 05:54:12 fdrake Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: CacheManager.py,v 1.31 2004/03/03 14:31:38 jeremy Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import time
 
@@ -123,7 +123,8 @@ class CacheManager:
 
     def manage_minimize(self,value=1,REQUEST=None):
         "Perform a full sweep through the cache"
-        self._getDB().cacheMinimize(value)
+        # XXX Add a deprecation warning about value?
+        self._getDB().cacheMinimize()
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
