@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.70 1999/03/16 17:20:30 brian Exp $"""
+$Id: Folder.py,v 1.71 1999/03/22 17:34:08 jim Exp $"""
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -207,6 +207,9 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
         return r
 
     def __getitem__(self, key):
+        v=self._getOb(key, None)
+        if v is not None: return v
+        
         if hasattr(self, 'REQUEST'):
             request=self.REQUEST
             method=request.get('REQUEST_METHOD', 'GET')
