@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.61 1998/11/10 00:48:51 jim Exp $
+ * $Id: cPickle.c,v 1.62 1998/12/15 20:42:07 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.61 1998/11/10 00:48:51 jim Exp $\n"
+"$Id: cPickle.c,v 1.62 1998/12/15 20:42:07 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -1039,7 +1039,7 @@ save_float(Picklerobject *self, PyObject *args) {
         p++;
 
         /* Second byte */
-        *p = ((e&0xF)<<4) | (fhi>>24);
+        *p = (char) (((e&0xF)<<4) | (fhi>>24));
         p++;
 
         /* Third byte */
@@ -1876,7 +1876,7 @@ Pickle_clear_memo(Picklerobject *self, PyObject *args) {
 static PyObject *
 Pickle_getvalue(Picklerobject *self, PyObject *args) {
   int l, i, rsize, ssize, clear=1, lm;
-  long ik, id;
+  long ik;
   PyObject *k, *r;
   char *s, *p, *have_get;
   Pdata *data;
@@ -2061,7 +2061,7 @@ newPicklerobject(PyObject *file, int bin) {
     if (file)
       Py_INCREF(file);
     else
-      file=Pdata_New(0);
+      file=Pdata_New();
 
     self->file = file;
 
@@ -2817,7 +2817,7 @@ load_obj(Unpicklerobject *self) {
 static int
 load_inst(Unpicklerobject *self) {
     PyObject *tup, *class, *obj, *module_name, *class_name;
-    int i, j, len;
+    int i, len;
     char *s;
 
     if ((i = marker(self)) < 0) return -1;
@@ -2912,7 +2912,7 @@ load_persid(Unpicklerobject *self) {
 static int
 load_binpersid(Unpicklerobject *self) {
     PyObject *pid = 0;
-    int len, res = -1;
+    int res = -1;
 
     if (self->pers_func) {
         PDATA_POP(self->stack, pid);
@@ -2963,7 +2963,7 @@ load_pop(Unpicklerobject *self) {
 
 static int
 load_pop_mark(Unpicklerobject *self) {
-    int i, len;
+    int i;
 
     if ((i = marker(self)) < 0)
         return -1;
@@ -3230,7 +3230,7 @@ static int
 load_build(Unpicklerobject *self) {
     PyObject *value = 0, *inst = 0, *instdict = 0, *d_key = 0, *d_value = 0, 
              *junk = 0, *__setstate__ = 0;
-    int len, i, r = 0;
+    int i, r = 0;
 
     if (self->stack->length < 2) return stackUnderflow();
     PDATA_POP(self->stack, value);
@@ -3310,7 +3310,6 @@ load_reduce(Unpicklerobject *self) {
 static PyObject *
 load(Unpicklerobject *self) {
     PyObject *stack = 0, *err = 0, *val = 0;
-    int len;
     char *s;
 
     self->num_marks = 0;
@@ -3540,7 +3539,7 @@ load(Unpicklerobject *self) {
 
 static int
 noload_obj(Unpicklerobject *self) {
-    int i, len;
+    int i;
 
     if ((i = marker(self)) < 0) return -1;
     return Pdata_clear(self->stack, i+1);
@@ -3549,7 +3548,7 @@ noload_obj(Unpicklerobject *self) {
 
 static int
 noload_inst(Unpicklerobject *self) {
-    int i, j;
+    int i;
     char *s;
 
     if ((i = marker(self)) < 0) return -1;
@@ -3572,7 +3571,6 @@ noload_global(Unpicklerobject *self) {
 
 static int
 noload_reduce(Unpicklerobject *self) {
-    int len;
 
     if (self->stack->length < 2) return stackUnderflow();
     Pdata_clear(self->stack, self->stack->length-2);
@@ -3582,17 +3580,16 @@ noload_reduce(Unpicklerobject *self) {
 
 static int
 noload_build(Unpicklerobject *self) {
-  int len;
 
   if (self->stack->length < 1) return stackUnderflow();
   Pdata_clear(self->stack, self->stack->length-1);
+  return 0;
 }
 
 
 static PyObject *
 noload(Unpicklerobject *self) {
     PyObject *stack = 0, *err = 0, *val = 0;
-    int len;
     char *s;
 
     self->num_marks = 0;
@@ -3868,6 +3865,7 @@ newUnpicklerobject(PyObject *f) {
     self->buf_size = 0;
     self->read = NULL;
     self->readline = NULL;
+    self->safe_constructors = NULL;
 
     UNLESS (self->memo = PyDict_New()) {
        Py_XDECREF((PyObject *)self);
@@ -4274,10 +4272,13 @@ init_stuff(PyObject *module, PyObject *module_dict) {
     return 0;
 }
 
-void
+#ifndef DL_EXPORT	/* declarations for DLL import/export */
+#define DL_EXPORT(RTYPE) RTYPE
+#endif
+DL_EXPORT(void)
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.61 $";
+    char *rev="$Revision: 1.62 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
