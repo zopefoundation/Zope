@@ -16,8 +16,8 @@ To be removed together with the API in due time.
 
 """
 
-__rcs_id__='$Id: testDeprecatedAPI.py,v 1.5 2003/01/27 22:55:27 gvanrossum Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: testDeprecatedAPI.py,v 1.6 2003/12/18 19:58:06 evan Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 import ZODB # Sigh. Persistent needs to be set, so we import ZODB.
 from AccessControl import User
@@ -50,6 +50,8 @@ class DeprecatedAPI(unittest.TestCase):
 
     def tearDown(self):
         warnings.resetwarnings()
+        warnings.simplefilter("ignore", category=PendingDeprecationWarning)
+        warnings.simplefilter("ignore", category=OverflowWarning)
 
 class BasicUser(DeprecatedAPI):
     userObject = User.SimpleUser('JoeBloke', '123', [], [])

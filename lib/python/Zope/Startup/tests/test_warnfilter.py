@@ -49,6 +49,8 @@ class TestWarnFilter(unittest.TestCase):
 
     def tearDown(self):
         warnings.resetwarnings()
+        warnings.simplefilter("ignore", category=PendingDeprecationWarning)
+        warnings.simplefilter("ignore", category=OverflowWarning)
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
