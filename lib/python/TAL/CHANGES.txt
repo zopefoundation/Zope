@@ -8,5 +8,16 @@ TAL changes
 
       Features Added
 
+        - Added TAL statement: omit_tag="[<boolean expr>]" replaces
+          the statement tag with its contents if the boolean
+          expression is true or omitted.
+
+        - The TAL and METAL namespaces can be applied to tag names,
+          tags in these namespaces are removed from rendered output
+          (leaving the contents in place, as with omit_tag)
+          whenever attributes in these namespaces would be, and
+          tag attributes without explicit namespaces default to the
+          tag's namespace (per XML spec).
+
       Bugs Fixed
 
