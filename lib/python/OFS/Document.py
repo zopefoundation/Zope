@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -91,7 +91,7 @@ class DocumentHandler:
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
-    def manage_addDocument(self,id,title,file='',
+    def manage_addDocument(self,id,title='',file='',
 			   acl_type='A',acl_roles=[],REQUEST=None):
 	"""Add a new Document object"""
 	if not file: file=default_html

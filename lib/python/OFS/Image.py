@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -70,7 +70,8 @@ class ImageHandler:
 
     manage_addImageForm=HTMLFile('OFS/imageAdd')
 
-    def manage_addImage(self,id,file,title,REQUEST,acl_type='A',acl_roles=[]):
+    def manage_addImage(self,id,file,title='',acl_type='A',acl_roles=[],
+			REQUEST=None):
 	"""Add a new Image object"""
 	i=Image()
 	i._init(id,file)
