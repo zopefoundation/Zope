@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.161 2003/03/21 21:15:02 fdrake Exp $"""
-__version__='$Revision: 1.161 $'[11:-2]
+$Id: Publish.py,v 1.162 2003/03/21 21:20:10 fdrake Exp $"""
+__version__='$Revision: 1.162 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -67,7 +67,6 @@ def publish(request, module_name, after_list, debug=0,
         response=request.response
 
         # First check for "cancel" redirect:
-        cancel=''
         if request_get('SUBMIT','').strip().lower()=='cancel':
             cancel=request_get('CANCEL_ACTION','')
             if cancel: raise 'Redirect', cancel
