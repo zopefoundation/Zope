@@ -12,15 +12,13 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Version.py,v 1.10 1997/12/31 17:17:04 brian Exp $'''
+$Id: Version.py,v 1.11 1997/12/31 19:34:57 jim Exp $'''
 
 import time, OFS.SimpleItem, AccessControl.Role
 import Persistence, Acquisition, Globals
 from string import rfind
 
-_addForm=Globals.HTMLFile('sessionAdd', globals())
-def addForm(realself, self, REQUEST, **ignored):
-    return _addForm(self, REQUEST)
+addForm=Globals.HTMLFile('sessionAdd', globals())
 
 def add(self, id, title, REQUEST=None):
     'Add a session'
@@ -32,14 +30,14 @@ def add(self, id, title, REQUEST=None):
 
 class Session(Persistence.Persistent,
 	      AccessControl.Role.RoleManager,
-	      OFS.SimpleItem.Item,
+	      SimpleItem.Item,
 	      Acquisition.Implicit):
 
     '''Model sessions as drop-in objects
     '''
 
     meta_type='Session'
-    icon='session'
+    icon='misc_/OFSP/session'
 
     manage_options=({'icon':'', 'label':'Join/Leave',
 		     'action':'manage_main', 'target':'manage_main',
@@ -74,8 +72,8 @@ class Session(Persistence.Persistent,
 	if l >= 0: cookie=cookie[:l]
 	self.cookie="%s/%s" % (cookie, id)
 
-    manage=manage_main=Globals.HTMLFile('sessionEdit', globals())
-    index_html=Globals.HTMLFile('session', globals())
+    manage=manage_main=Globals.HTMLFile('session', globals())
+    manage_properties=Globals.HTMLFile('sessionEdit', globals())
 
     def title_and_id(self):
 	r=Session.inheritedAttribute('title_and_id')(self)
@@ -84,18 +82,17 @@ class Session(Persistence.Persistent,
 
     def manage_edit(self, title, REQUEST=None):
 	'Modify a session'
-	self.title=title
+	self.title=title	
 	if REQUEST is not None: return self.manage_editedDialog(REQUEST)
 
     def enter(self, REQUEST, RESPONSE):
 	'Begin working in a session'
 	RESPONSE.setCookie(
 	    Globals.SessionNameName, self.cookie,
-	    expires="Mon, 27-Dec-99 23:59:59 GMT",
+	    #expires="Mon, 27-Dec-99 23:59:59 GMT",
 	    path=REQUEST['SCRIPT_NAME'],
 	    )
-	REQUEST[Globals.SessionNameName]=self.cookie
-	return self.index_html(self, REQUEST)
+	return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 	
     def leave(self, REQUEST, RESPONSE):
 	'Temporarily stop working in a session'
@@ -104,28 +101,26 @@ class Session(Persistence.Persistent,
 	    expires="Mon, 27-Aug-84 23:59:59 GMT",
 	    path=REQUEST['SCRIPT_NAME'],
 	    )
-	REQUEST[Globals.SessionNameName]=''
-	return self.index_html(self, REQUEST)
+	return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 	
     def leave_another(self, REQUEST, RESPONSE):
 	'Leave a session that may not be the current session'
-	self.leave(REQUEST, RESPONSE)
-	RESPONSE.setStatus(302)
-	RESPONSE['Location']=REQUEST['URL2']+'/manage_main'
+	return self.leave(REQUEST, RESPONSE)
 	
-    def save(self, remark, REQUEST):
+	
+    def save(self, remark, REQUEST=None):
 	'Make session changes permanent'
 	Globals.SessionBase[self.cookie].commit(remark)
-	if REQUEST is not None: return self.index_html(self, REQUEST)
+	if REQUEST is not None: return self.manage_main(self, REQUEST)
     
-    def discard(self, REQUEST):
+    def discard(self, REQUEST=None):
 	'Discard changes made during the session'
 	Globals.SessionBase[self.cookie].abort()
-	if REQUEST is not None: return self.index_html(self, REQUEST)
+	if REQUEST is not None: return self.manage_main(self, REQUEST)
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 
@@ -133,6 +128,9 @@ __version__='$Revision: 1.10 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.11  1997/12/31 19:34:57  jim
+# Brians changes.
+#
 # Revision 1.10  1997/12/31 17:17:04  brian
 # Security update
 #
