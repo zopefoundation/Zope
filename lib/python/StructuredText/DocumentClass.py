@@ -951,12 +951,13 @@ class DocumentClass:
 
     ## Some constants to make the doc_href() regex easier to read.
     _DQUOTEDTEXT = r'("[ %s0-9\n\r\-\.\,\;\(\)\/\:\/\*\']+")' % letters ## double quoted text
-    _URL_AND_PUNC = r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
+    _ABSOLUTE_URL=r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
+    _ABS_AND_RELATIVE_URL=r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
-                 expr1 = re.compile(_DQUOTEDTEXT + "(:)" + _URL_AND_PUNC + _SPACES).search,
-                 expr2 = re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _URL_AND_PUNC + _SPACES).search):
+                 expr1 = re.compile(_DQUOTEDTEXT + "(:)" + _ABS_AND_RELATIVE_URL + _SPACES).search,
+                 expr2 = re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _ABSOLUTE_URL + _SPACES).search):
         
         punctuation = re.compile(r"[\,\.\?\!\;]+").match
         r=expr1(s) or expr2(s)
