@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.33 1997/03/05 18:37:54 chris Exp $
+     $Id: cPickle.c,v 1.34 1997/03/11 15:43:20 chris Exp $
 
      Copyright 
 
@@ -73,6 +73,7 @@ static char cPickle_module_documentation[] =
 #define MARK        '('
 #define STOP        '.'
 #define POP         '0'
+#define POP_MARK    '1'
 #define DUP         '2'
 #define FLOAT       'F'
 #ifdef  FORMAT_1_3
@@ -123,7 +124,6 @@ static PyObject *dispatch_table;
 static PyObject *safe_constructors;
 static PyObject *class_map;
 static PyObject *empty_tuple;
-static PyObject *mark_ob;
 
 static PyObject *__class___str, *__getinitargs___str, *__dict___str,
   *__getstate___str, *__setstate___str, *__name___str, *__reduce___str,
@@ -134,7 +134,7 @@ static PyObject *__class___str, *__getinitargs___str, *__dict___str,
 static PyObject *builtins;
 
 static int save();
-
+static int put2();
 
 typedef struct {
      PyObject_HEAD
@@ -176,6 +176,23 @@ typedef struct {
 } Unpicklerobject;
  
 static PyTypeObject Unpicklertype;
+
+int 
+cPickle_PyMapping_HasKey(o, key)
+  PyObject *o;
+  PyObject *key;
+{
+    PyObject *v;
+
+    if (v = PyObject_GetItem(o,key))
+    {
+        Py_DECREF(v);
+        return 1;
+    }
+
+    PyErr_Clear();
+    return 0;
+}
 
 PyObject *
 #ifdef HAVE_STDARG_PROTOTYPES
@@ -470,6 +487,7 @@ readline_other(Unpicklerobject *self, char **s) {
     return str_size;
 }
 
+
 static char *
 strndup(char *s, int l)
 {
@@ -479,6 +497,7 @@ strndup(char *s, int l)
   r[l]=0;
   return r;
 }
+
 
 static int
 get(Picklerobject *self, PyObject *id) {
@@ -522,16 +541,21 @@ get(Picklerobject *self, PyObject *id) {
     return 0;
 }
     
-    
+
 static int
 put(Picklerobject *self, PyObject *ob) {
-    char c_str[30];
-    int p, len, res = -1;
-    PyObject *py_ob_id = 0, *memo_len = 0, *t = 0;
-
     if (ob->ob_refcnt < 2)
         return 0;
 
+    return put2(self, ob);
+}
+
+  
+static int
+put2(Picklerobject *self, PyObject *ob) {
+    char c_str[30];
+    int p, len, res = -1;
+    PyObject *py_ob_id = 0, *memo_len = 0, *t = 0;
     if ((p = PyDict_Size(self->memo)) < 0)
         goto finally;
 
@@ -831,7 +855,9 @@ save_float(Picklerobject *self, PyObject *args) {
 
 static int
 save_string(Picklerobject *self, PyObject *args) {
-    int size;
+    int size, len;
+
+    size = PyString_Size(args);
 
     if (!self->bin) {
         PyObject *repr;
@@ -843,12 +869,12 @@ save_string(Picklerobject *self, PyObject *args) {
             return -1;
 
         repr_str = PyString_AS_STRING((PyStringObject *)repr);
-        size = PyString_Size(repr);
+        len = PyString_Size(repr);
 
         if ((*self->write_func)(self, &string, 1) < 0)
             return -1;
 
-        if ((*self->write_func)(self, repr_str, size) < 0)
+        if ((*self->write_func)(self, repr_str, len) < 0)
             return -1;
 
         if ((*self->write_func)(self, "\n", 1) < 0)
@@ -857,7 +883,7 @@ save_string(Picklerobject *self, PyObject *args) {
         Py_XDECREF(repr);
     }
     else {
-        int len, i;
+        int i;
         char c_str[5];
 
         size = PyString_Size(args);
@@ -882,8 +908,9 @@ save_string(Picklerobject *self, PyObject *args) {
             return -1;
     }
 
-    if (put(self, args) < 0)
-        return -1;
+    if (size > 1)
+        if (put(self, args) < 0)
+            return -1;
 
     return 0;
 }
@@ -914,34 +941,39 @@ save_tuple(Picklerobject *self, PyObject *args) {
         goto finally;
 
     if (len) {
-        if (has_key = PyMapping_HasKey(self->memo, py_tuple_id) < 0)
+        if (has_key = cPickle_PyMapping_HasKey(self->memo, py_tuple_id) < 0)
             goto finally;
 
         if (has_key) {
-            static char pop = POP;
+            static char pop_mark = POP_MARK;
 
-            while (i-- >= 0) {
-                if ((*self->write_func)(self, &pop, 1) < 0)
-                    goto finally;
-            }
+            if ((*self->write_func)(self, &pop_mark, 1) < 0)
+                goto finally;
         
             if (get(self, py_tuple_id) < 0)
                 goto finally;
 
             res = 0;
-           goto finally;
+            goto finally;
         }
     }
-
 
     if ((*self->write_func)(self, &tuple, 1) < 0) {
         goto finally;
     }
-    
-    if (put(self, args) < 0)
-        goto finally;
+
+    if (len == 0)
+    {
+        if (put(self, args) < 0)
+            goto finally;
+    }
+    else
+    {
+        if (put2(self, args) < 0)
+            goto finally;
+    }
  
-     res = 0;
+    res = 0;
 
 finally:
     Py_XDECREF(py_tuple_id);
@@ -966,23 +998,35 @@ save_list(Picklerobject *self, PyObject *args) {
     static char append = APPEND, appends = APPENDS;
 
     if(self->bin) {
-      s[0] = EMPTY_LIST;
-      s_len = 1;
-    } else {
-      s[0] = MARK;
-      s[1] = LIST;
-      s_len = 2;
+        s[0] = EMPTY_LIST;
+        s_len = 1;
+    } 
+    else {
+        s[0] = MARK;
+        s[1] = LIST;
+        s_len = 2;
     }
 
     if ((len = PyList_Size(args)) < 0)
         goto finally;
 
-    using_appends = (self->bin && (len > 1));
-
-    if (using_appends) s[s_len++] = MARK;
-
     if ((*self->write_func)(self, s, s_len) < 0)
         goto finally;
+
+    if (len == 0)
+    {
+        if (put(self, args) < 0)
+            goto finally;
+    }
+    else
+    {
+        if (put2(self, args) < 0)
+            goto finally;
+    }
+
+    if (using_appends = (self->bin && (len > 1)))
+        if ((*self->write_func)(self, &MARKv, 1) < 0)
+            goto finally;
 
     for (i = 0; i < len; i++) {
         UNLESS(element = PyList_GET_ITEM((PyListObject *)args, i))  
@@ -1002,9 +1046,6 @@ save_list(Picklerobject *self, PyObject *args) {
             goto finally;
     }
 
-    if (put(self, args) < 0)
-        goto finally;
-
     res = 0;
 
 finally:
@@ -1021,22 +1062,36 @@ save_dict(Picklerobject *self, PyObject *args) {
 
     static char setitem = SETITEM, setitems = SETITEMS;
 
-    if(self->bin) {
-	s[0]=EMPTY_DICT;
-	len=1;
-      }
-    else {
-      s[0] = MARK;
-      s[1] = DICT;
-      len = 2;
+    if (self->bin) {
+	s[0] = EMPTY_DICT;
+	len = 1;
     }
-
-    using_setitems = (self->bin && (PyDict_Size(args) > 1));
-
-    if (using_setitems) s[len++] = MARK;
+    else {
+        s[0] = MARK;
+        s[1] = DICT;
+        len = 2;
+    }
 
     if ((*self->write_func)(self, s, len) < 0)
         goto finally;
+
+    if ((len = PyDict_Size(args)) < 0)
+        goto finally;
+
+    if (len == 0)
+    {
+        if (put(self, args) < 0)
+            goto finally;
+    }
+    else
+    {
+        if (put2(self, args) < 0)
+            goto finally;
+    }
+
+    if (using_setitems = (self->bin && (PyDict_Size(args) > 1)))
+        if ((*self->write_func)(self, &MARKv, 1) < 0)
+            goto finally;
 
     i = 0;
     while (PyDict_Next(args, &i, &key, &value)) {
@@ -1056,9 +1111,6 @@ save_dict(Picklerobject *self, PyObject *args) {
         if ((*self->write_func)(self, &setitems, 1) < 0)
             goto finally;
     }
-
-    if (put(self, args) < 0)
-        goto finally;
 
     res = 0;
 
@@ -1148,7 +1200,7 @@ save_inst(Picklerobject *self, PyObject *args) {
         goto finally;
     }
 
-    if (put(self, args) < 0)
+    if (put2(self, args) < 0)
     {
          goto finally;
     }
@@ -1241,7 +1293,7 @@ finally:
     return res;
 }
 
-
+static int
 save_pers(Picklerobject *self, PyObject *args, PyObject *f) {
     PyObject *pid = 0;
     int size, res = -1;
@@ -1384,6 +1436,12 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
 	        else          res = save_tuple(self, args);
                 goto finally;
             }
+
+        case 's':
+            if ((type == &PyString_Type) && (PyString_Size(args) < 2)) {
+                res = save_string(self, args);
+                goto finally;
+            }
     }
 
     if (args->ob_refcnt > 1) {
@@ -1395,7 +1453,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
         UNLESS(py_ob_id = PyInt_FromLong(ob_id))
             goto finally;
 
-        if ((has_key = PyMapping_HasKey(self->memo, py_ob_id)) < 0)
+        if ((has_key = cPickle_PyMapping_HasKey(self->memo, py_ob_id)) < 0)
             goto finally;
 
         if (has_key) {
@@ -1872,23 +1930,18 @@ finally:
 
 static int
 marker(Unpicklerobject *self) {
-    int i;
-
     if (self->num_marks < 1)
     {
         PyErr_SetString(UnpicklingError, "could not find MARK");
         return -1;
     }
 
-    i = self->marks[--self->num_marks];
-    if (DEL_LIST_SLICE(self->stack, i, i + 1) < 0)
-        return -1;
-    return i;
+    return self->marks[--self->num_marks];
 }
 
     
 static int
-load_none(Unpicklerobject *self, PyObject *args) {
+load_none(Unpicklerobject *self) {
     if (PyList_Append(self->stack, Py_None) < 0)
         return -1;
 
@@ -1897,7 +1950,7 @@ load_none(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_int(Unpicklerobject *self, PyObject *args) {
+load_int(Unpicklerobject *self) {
     PyObject *py_int = 0;
     char *endptr, *s;
     int len, res = -1;
@@ -1974,7 +2027,7 @@ load_binintx(Unpicklerobject *self, char *s, int  x) {
 
 
 static int
-load_binint(Unpicklerobject *self, PyObject *args) {
+load_binint(Unpicklerobject *self) {
     char *s;
 
     if ((*self->read_func)(self, &s, 4) < 0)
@@ -1985,7 +2038,7 @@ load_binint(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_binint1(Unpicklerobject *self, PyObject *args) {
+load_binint1(Unpicklerobject *self) {
     char *s;
 
     if ((*self->read_func)(self, &s, 1) < 0)
@@ -1996,7 +2049,7 @@ load_binint1(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_binint2(Unpicklerobject *self, PyObject *args) {
+load_binint2(Unpicklerobject *self) {
     char *s;
 
     if ((*self->read_func)(self, &s, 2) < 0)
@@ -2006,7 +2059,7 @@ load_binint2(Unpicklerobject *self, PyObject *args) {
 }
     
 static int
-load_long(Unpicklerobject *self, PyObject *args) {
+load_long(Unpicklerobject *self) {
     PyObject *l = 0;
     char *end, *s;
     int len, res = -1;
@@ -2033,7 +2086,7 @@ finally:
 
  
 static int
-load_float(Unpicklerobject *self, PyObject *args) {
+load_float(Unpicklerobject *self) {
     PyObject *py_float = 0;
     char *endptr, *s;
     int len, res = -1;
@@ -2068,7 +2121,7 @@ finally:
 
 #ifdef FORMAT_1_3
 static int
-load_binfloat(Unpicklerobject *self, PyObject *args) {
+load_binfloat(Unpicklerobject *self) {
     PyObject *py_float = 0;
     int s, e, res = -1;
     long fhi, flo;
@@ -2142,7 +2195,7 @@ finally:
 #endif
 
 static int
-load_string(Unpicklerobject *self, PyObject *args) {
+load_string(Unpicklerobject *self) {
     PyObject *str = 0;
     int len, res = -1;
     char *s;
@@ -2173,7 +2226,7 @@ finally:
 
 
 static int
-load_binstring(Unpicklerobject *self, PyObject *args) {
+load_binstring(Unpicklerobject *self) {
     PyObject *py_string = 0;
     long l;
     int res = -1;
@@ -2203,7 +2256,7 @@ finally:
 
 
 static int
-load_short_binstring(Unpicklerobject *self, PyObject *args) {
+load_short_binstring(Unpicklerobject *self) {
     PyObject *py_string = 0;
     unsigned char l;  
     int res = -1;
@@ -2233,7 +2286,7 @@ finally:
 
 
 static int
-load_tuple(Unpicklerobject *self, PyObject *args) {
+load_tuple(Unpicklerobject *self) {
     PyObject *tup = 0, *slice = 0, *list = 0;
     int i, j, res = -1;
 
@@ -2270,7 +2323,7 @@ finally:
 }
 
 static int
-load_empty_tuple(Unpicklerobject *self, PyObject *args) {
+load_empty_tuple(Unpicklerobject *self) {
     PyObject *tup = 0;
     int res;
 
@@ -2281,7 +2334,7 @@ load_empty_tuple(Unpicklerobject *self, PyObject *args) {
 }
 
 static int
-load_empty_list(Unpicklerobject *self, PyObject *args) {
+load_empty_list(Unpicklerobject *self) {
     PyObject *list = 0;
     int res;
 
@@ -2292,7 +2345,7 @@ load_empty_list(Unpicklerobject *self, PyObject *args) {
 }
 
 static int
-load_empty_dict(Unpicklerobject *self, PyObject *args) {
+load_empty_dict(Unpicklerobject *self) {
     PyObject *dict = 0;
     int res;
 
@@ -2304,7 +2357,7 @@ load_empty_dict(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_list(Unpicklerobject *self, PyObject *args) {
+load_list(Unpicklerobject *self) {
     PyObject *list = 0, *slice = 0;
     int i, j, l, res = -1;
 
@@ -2345,7 +2398,7 @@ finally:
 }
 
 static int
-load_dict(Unpicklerobject *self, PyObject *args) {
+load_dict(Unpicklerobject *self) {
     PyObject *list = 0, *dict = 0, *key = 0, *value = 0;
     int i, j, k, res = -1;
 
@@ -2405,7 +2458,7 @@ Instance_New(PyObject *cls, PyObject *args)
     else goto err;
        
   
-  if ((has_key = PyMapping_HasKey(safe_constructors, cls)) < 0)
+  if ((has_key = cPickle_PyMapping_HasKey(safe_constructors, cls)) < 0)
     goto err;
     
   if (!has_key)
@@ -2434,7 +2487,7 @@ err:
   
 
 static int
-load_obj(Unpicklerobject *self, PyObject *args) {
+load_obj(Unpicklerobject *self) {
     PyObject *class = 0, *slice = 0, *tup = 0, *obj = 0;
     int i, len, res = -1;
 
@@ -2476,7 +2529,7 @@ finally:
 
 
 static int
-load_inst(Unpicklerobject *self, PyObject *args) {
+load_inst(Unpicklerobject *self) {
     PyObject *arg_tup = 0, *arg_slice = 0, *class = 0, *obj = 0,
              *module_name = 0, *class_name = 0;
     int i, j, len, res = -1;
@@ -2533,7 +2586,7 @@ finally:
 
 
 static int
-load_global(Unpicklerobject *self, PyObject *args) {
+load_global(Unpicklerobject *self) {
     PyObject *class = 0, *module_name = 0, *class_name = 0;
     int res = -1, len;
     char *s;
@@ -2568,7 +2621,7 @@ finally:
 
 
 static int
-load_persid(Unpicklerobject *self, PyObject *args) {
+load_persid(Unpicklerobject *self) {
     PyObject *pid = 0, *pers_load_val = 0;
     int len, res = -1;
     char *s;
@@ -2607,7 +2660,7 @@ finally:
 
 
 static int
-load_binpersid(Unpicklerobject *self, PyObject *args) {
+load_binpersid(Unpicklerobject *self) {
     PyObject *pid = 0, *pers_load_val = 0;
     int len, res = -1;
 
@@ -2648,13 +2701,16 @@ finally:
 
 
 static int
-load_pop(Unpicklerobject *self, PyObject *args) {
+load_pop(Unpicklerobject *self) {
     int len;
 
     if ((len = PyList_Size(self->stack)) < 0)  
         return -1;
 
-    if (DEL_LIST_SLICE(self->stack, len - 1, len) < 0)  
+    if ((self->num_marks > 0) && 
+        (self->marks[self->num_marks - 1] == len))
+        self->num_marks--;
+    else if (DEL_LIST_SLICE(self->stack, len - 1, len) < 0)  
         return -1;
 
     return 0;
@@ -2662,7 +2718,24 @@ load_pop(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_dup(Unpicklerobject *self, PyObject *args) {
+load_pop_mark(Unpicklerobject *self) {
+    int i, len;
+
+    if ((i = marker(self)) < 0)
+        return -1;
+
+    if ((len = PyList_Size(self->stack)) < 0)
+        return -1;
+
+    if (DEL_LIST_SLICE(self->stack, i, len) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+load_dup(Unpicklerobject *self) {
     PyObject *last;
     int len;
 
@@ -2680,7 +2753,7 @@ load_dup(Unpicklerobject *self, PyObject *args) {
 
 
 static int
-load_get(Unpicklerobject *self, PyObject *args) {
+load_get(Unpicklerobject *self) {
     PyObject *py_str = 0, *value = 0;
     int len, res = -1;
     char *s;
@@ -2707,7 +2780,7 @@ finally:
 
 
 static int
-load_binget(Unpicklerobject *self, PyObject *args) {
+load_binget(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     unsigned char key;
     int res = -1;
@@ -2737,7 +2810,7 @@ finally:
 
 
 static int
-load_long_binget(Unpicklerobject *self, PyObject *args) {
+load_long_binget(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     unsigned char c, *s;
     long key;
@@ -2774,7 +2847,7 @@ finally:
 
 
 static int
-load_put(Unpicklerobject *self, PyObject *args) {
+load_put(Unpicklerobject *self) {
     PyObject *py_str = 0, *value = 0;
     int len, res = -1;
     char *s;
@@ -2804,7 +2877,7 @@ finally:
 
 
 static int
-load_binput(Unpicklerobject *self, PyObject *args) {
+load_binput(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     unsigned char key, *s;
     int len, res = -1;
@@ -2836,7 +2909,7 @@ finally:
 
 
 static int
-load_long_binput(Unpicklerobject *self, PyObject *args) {
+load_long_binput(Unpicklerobject *self) {
     PyObject *py_key = 0, *value = 0;
     long key;
     unsigned char c, *s;
@@ -2941,13 +3014,13 @@ err:
 
     
 static int
-load_append(Unpicklerobject *self, PyObject *args) {
+load_append(Unpicklerobject *self) {
     return do_append(self, PyList_Size(self->stack) - 1);
 }
 
 
 static int
-load_appends(Unpicklerobject *self, PyObject *args) {
+load_appends(Unpicklerobject *self) {
     return do_append(self, marker(self));
 }
 
@@ -2986,19 +3059,19 @@ finally:
 
 
 static int
-load_setitem(Unpicklerobject *self, PyObject *args) {
+load_setitem(Unpicklerobject *self) {
     return do_setitems(self, PyList_Size(self->stack) - 2);
 }
 
 
 static int
-load_setitems(Unpicklerobject *self, PyObject *args) {
+load_setitems(Unpicklerobject *self) {
     return do_setitems(self, marker(self));
 }
 
 
 static int
-load_build(Unpicklerobject *self, PyObject *args) {
+load_build(Unpicklerobject *self) {
     PyObject *value = 0, *inst = 0, *instdict = 0, *d_key = 0, *d_value = 0, 
              *junk = 0, *__setstate__ = 0;
     int len, i, res = -1;
@@ -3055,9 +3128,9 @@ finally:
 
 
 static int
-load_mark(Unpicklerobject *self, PyObject *args) {
+load_mark(Unpicklerobject *self) {
     int len;
-  
+
     if ((len = PyList_Size(self->stack)) < 0)
         return -1;
 
@@ -3080,14 +3153,11 @@ load_mark(Unpicklerobject *self, PyObject *args) {
 
     self->marks[self->num_marks++] = len;
 
-    if (PyList_Append(self->stack, mark_ob) < 0)
-        return -1;
-
     return 0;
 }
 
 static int
-load_reduce(Unpicklerobject *self, PyObject *args) {
+load_reduce(Unpicklerobject *self) {
     PyObject *callable = 0, *arg_tup = 0, *ob = 0;
     int len, res = -1;
 
@@ -3136,174 +3206,179 @@ load(Unpicklerobject *self)
 
         switch (s[0]) {
             case NONE:
-                if (load_none(self, NULL) < 0)
+                if (load_none(self) < 0)
                     break;
                 continue;
 
             case BININT:
-                 if (load_binint(self, NULL) < 0)
+                 if (load_binint(self) < 0)
                      break;
                  continue;
 
             case BININT1:
-                if (load_binint1(self, NULL) < 0)
+                if (load_binint1(self) < 0)
                     break;
                 continue;
 
             case BININT2:
-                if (load_binint2(self, NULL) < 0)
+                if (load_binint2(self) < 0)
                     break;
                 continue;
 
             case INT:
-                if (load_int(self, NULL) < 0)
+                if (load_int(self) < 0)
                     break;
                 continue;
 
             case LONG:
-                if (load_long(self, NULL) < 0)
+                if (load_long(self) < 0)
                     break;
                 continue;
 
             case FLOAT:
-                if (load_float(self, NULL) < 0)
+                if (load_float(self) < 0)
                     break;
                 continue;
 
 #ifdef FORMAT_1_3
             case BINFLOAT:
-                if (load_binfloat(self, NULL) < 0)
+                if (load_binfloat(self) < 0)
                     break;
                 continue;
 #endif
 
             case BINSTRING:
-                if (load_binstring(self, NULL) < 0)
+                if (load_binstring(self) < 0)
                     break;
                 continue;
 
             case SHORT_BINSTRING:
-                if (load_short_binstring(self, NULL) < 0)
+                if (load_short_binstring(self) < 0)
                     break;
                 continue;
 
             case STRING:
-                if (load_string(self, NULL) < 0)
+                if (load_string(self) < 0)
                     break;
                 continue;
 
             case EMPTY_TUPLE:
-                if (load_empty_tuple(self, NULL) < 0)
+                if (load_empty_tuple(self) < 0)
                     break;
                 continue;
 
             case TUPLE:
-                if (load_tuple(self, NULL) < 0)
+                if (load_tuple(self) < 0)
                     break;
                 continue;
 
             case EMPTY_LIST:
-                if (load_empty_list(self, NULL) < 0)
+                if (load_empty_list(self) < 0)
                     break;
                 continue;
 
             case LIST:
-                if (load_list(self, NULL) < 0)
+                if (load_list(self) < 0)
                     break;
                 continue;
 
             case EMPTY_DICT:
-                if (load_empty_dict(self, NULL) < 0)
+                if (load_empty_dict(self) < 0)
                     break;
                 continue;
 
             case DICT:
-                if (load_dict(self, NULL) < 0)
+                if (load_dict(self) < 0)
                     break;
                 continue;
 
             case OBJ:
-                if (load_obj(self, NULL) < 0)
+                if (load_obj(self) < 0)
                     break;
                 continue;
 
             case INST:
-                if (load_inst(self, NULL) < 0)
+                if (load_inst(self) < 0)
                     break;
                 continue;
 
             case GLOBAL:
-                if (load_global(self, NULL) < 0)
+                if (load_global(self) < 0)
                     break;
                 continue;
 
             case APPEND:
-                if (load_append(self, NULL) < 0)
+                if (load_append(self) < 0)
                     break;
                 continue;
 
             case APPENDS:
-                if (load_appends(self, NULL) < 0)
+                if (load_appends(self) < 0)
                     break;
                 continue;
    
             case BUILD:
-                if (load_build(self, NULL) < 0)
+                if (load_build(self) < 0)
                     break;
                 continue;
   
             case DUP:
-                if (load_dup(self, NULL) < 0)
+                if (load_dup(self) < 0)
                     break;
                 continue;
 
             case BINGET:
-                if (load_binget(self, NULL) < 0)
+                if (load_binget(self) < 0)
                     break;
                 continue;
 
             case LONG_BINGET:
-                if (load_long_binget(self, NULL) < 0)
+                if (load_long_binget(self) < 0)
                     break;
                 continue;
          
             case GET:
-                if (load_get(self, NULL) < 0)
+                if (load_get(self) < 0)
                     break;
                 continue;
 
             case MARK:
-                if (load_mark(self, NULL) < 0)
+                if (load_mark(self) < 0)
                     break;
                 continue;
 
             case BINPUT:
-                if (load_binput(self, NULL) < 0)
+                if (load_binput(self) < 0)
                     break;
                 continue;
 
             case LONG_BINPUT:
-                if (load_long_binput(self, NULL) < 0)
+                if (load_long_binput(self) < 0)
                     break;
                 continue;
          
             case PUT:
-                if (load_put(self, NULL) < 0)
+                if (load_put(self) < 0)
                     break;
                 continue;
 
             case POP:
-                if (load_pop(self, NULL) < 0)
+                if (load_pop(self) < 0)
+                    break;
+                continue;
+
+            case POP_MARK:
+                if (load_pop_mark(self) < 0)
                     break;
                 continue;
 
             case SETITEM:
-                if (load_setitem(self, NULL) < 0)
+                if (load_setitem(self) < 0)
                     break;
                 continue;
 
             case SETITEMS:
-                if (load_setitems(self, NULL) < 0)
+                if (load_setitems(self) < 0)
                     break;
                 continue;
 
@@ -3311,17 +3386,17 @@ load(Unpicklerobject *self)
                 break;
 
             case PERSID:
-                if (load_persid(self, NULL) < 0)
+                if (load_persid(self) < 0)
                     break;
                 continue;
 
             case BINPERSID:
-                if (load_binpersid(self, NULL) < 0)
+                if (load_binpersid(self) < 0)
                     break;
                 continue;
 
             case REDUCE:
-                if (load_reduce(self, NULL) < 0)
+                if (load_reduce(self) < 0)
                     break;
                 continue;
 
@@ -3722,9 +3797,6 @@ init_stuff(PyObject *module, PyObject *module_dict) {
     UNLESS(class_map = PyDict_New())
         return -1;
 
-    UNLESS(mark_ob = Py_BuildValue("[s]", "spam"))
-        return -1;
-
     UNLESS(PicklingError = PyString_FromString("cPickle.PicklingError"))
         return -1;
 
@@ -3749,7 +3821,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.33 $";
+    char *rev="$Revision: 1.34 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
