@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
@@ -159,23 +159,12 @@ def field2date(v):
 def field2boolean(v):
     return v
 
-
-def field2list(v):
-    if type(v) is not ListType: v=[v]
-    return v
-
-def field2tuple(v):
-    if type(v) is not TupleType: v=(v,)
-    return tuple(v)
-
 type_converters = {
     'float':    field2float,
     'int':      field2int,
     'long':     field2long,
     'string':   field2string,
     'date':     field2date,
-    'list':     field2list,
-    'tuple':    field2tuple,
     'required': field2required,
     'tokens':   field2tokens,
     'lines':    field2lines,
