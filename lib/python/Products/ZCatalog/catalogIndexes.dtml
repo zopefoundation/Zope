@@ -30,7 +30,7 @@ that have one or more keywords specified in a search query.</p>
 <ul>
 <dtml-in index_objects>
  <li>
-  <input type="checkbox" name="names:list" value="<dtml-var sequence-item html_quote>">
+  <input type="checkbox" name="names:list" value="<dtml-var id html_quote>">
 <dtml-var id>    (<i><dtml-var meta_type></i>)</li>
 </dtml-in>
 </ul>
