@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -92,6 +92,7 @@ from SimpleItem import Item_w__name__, pretty_tb
 from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
+from webdav.common import rfc1123_date
 from urllib import quote
 import regex, Globals, sys, Acquisition
 
@@ -156,6 +157,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
             return self.raise_standardErrorMessage(client, REQUEST)
                 
         if RESPONSE is None: return r
+        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         return decapitate(r, RESPONSE)
 
     def get_size(self):

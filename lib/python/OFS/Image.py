@@ -84,12 +84,13 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
+from webdav.common import rfc1123_date
 from SimpleItem import Item_w__name__
 from cStringIO import StringIO
 from Globals import Persistent
@@ -180,6 +181,7 @@ class File(Persistent,Implicit,PropertyManager,
             else:
                 c()
         RESPONSE.setHeader('content-type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         return self.data
 
 

@@ -84,12 +84,13 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
 from DTMLMethod import DTMLMethod, decapitate
 from PropertyManager import PropertyManager
+from webdav.common import rfc1123_date
 from sgmllib import SGMLParser
 from string import find
 from urllib import quote
@@ -177,6 +178,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
                 raise sys.exc_type, sys.exc_value, sys.exc_traceback
             return self.raise_standardErrorMessage(client, REQUEST)
         if RESPONSE is None: return r
+        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         return decapitate(r, RESPONSE)
 
 
