@@ -198,7 +198,7 @@ class Try:
 
                     for errname in nargs.split():
                         self.handlers.append((errname,nsection.blocks))
-                    if nargs.split()=='':
+                    if nargs.strip()=='':
                         if defaultHandlerFound:
                             raise ParseError, (
                                 'Only one default exception handler '
