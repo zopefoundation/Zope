@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.16 1997/11/05 15:06:56 paul Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Application.py,v 1.17 1997/11/06 22:43:39 brian Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -25,6 +25,7 @@ class Application(Folder.Folder):
     title    ='Principia'
     id       =title
     __roles__=None
+    __defined_roles__=('manage',)
     web__form__method='GET'
 
     manage_options=(
@@ -97,8 +98,9 @@ def install_products(products):
     # Install a list of products into the basic folder class, so
     # that all folders know about top-level objects, aka products
 
+    app       =Globals.Bobobase['Application']
     meta_types=list(Folder.Folder.dynamic_meta_types)
-    role_names=list(Globals.Bobobase['roles'])
+    role_names=list(app.__defined_roles__)
 
     for product in products:
 	product=__import__(product)
@@ -143,16 +145,23 @@ def install_products(products):
 	for name,method in product.methods.items():
 	    setattr(Folder.Folder, name, method)
 
+
 	# Try to install role names
-	try:
+        try:
 	    for n in product.role_names:
-		if n not in role_names: role_names.append(n)
+		if n not in role_names:
+		    role_names.append(n)
 	except: pass
 
     Folder.Folder.dynamic_meta_types=tuple(meta_types)
+
+    role_names.sort()
     role_names=tuple(role_names)
-    if Globals.Bobobase['roles'] != role_names:
-	Globals.Bobobase['roles'] = role_names
+    if app.__defined_roles__ != role_names:
+	app.__defined_roles__=tuple(role_names)
+
+#    if Globals.Bobobase['roles'] != role_names:
+#	Globals.Bobobase['roles'] = role_names
 
 
 
@@ -171,6 +180,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.17  1997/11/06 22:43:39  brian
+# Added global roles to app
+#
 # Revision 1.16  1997/11/05 15:06:56  paul
 # Renamed Redirect to PrincipiaRedirect, leaving Redirect for
 # compatibility.  Added PrincipiaTime which returns a DateTime object.
