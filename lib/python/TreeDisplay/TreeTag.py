@@ -9,16 +9,20 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.17 1997/12/05 18:06:37 brian Exp $'
-__version__='$Revision: 1.17 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.18 1997/12/11 15:28:24 jeffrey Exp $'
+__version__='$Revision: 1.18 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
 
-from string import join, split, rfind, find
+from string import join, split, rfind, find, translate
 from urllib import quote, unquote
 from zlib import compress, decompress
 from binascii import b2a_base64, a2b_base64
+
+tbl=join(map(chr, range(256)),'')
+tplus=tbl[:ord('+')]+'-'+tbl[ord('+')+1:]
+tminus=tbl[:ord('-')]+'+'+tbl[ord('-')+1:]
 
 class Tree:
     name='tree'
@@ -221,6 +225,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 		s=b2a_base64(s)[:-1]
 		l=find(s,'=')
 		if l >= 0: s=s[:l]
+	    s=translate(s, tplus)
 	    ####################################
 
 
@@ -374,7 +379,8 @@ def encode_seq(state):
 
     l=find(state,'=')
     if l >= 0: state=state[:l]
-	
+    
+    state=translate(state, tplus)
     return state
 
 def encode_str(state):
@@ -391,11 +397,12 @@ def encode_str(state):
     l=find(state,'=')
     if l >= 0: state=state[:l]
 	
+    state=translate(state, tplus)
     return state
 
 def decode_seq(state):
     "Convert an encoded string to a sequence"
-
+    state=translate(state, tminus)
     l=len(state)
 
     if l > 76:
