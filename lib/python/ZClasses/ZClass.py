@@ -84,8 +84,8 @@
 ##############################################################################
 """Zope Classes
 """
-import Globals, string, OFS.SimpleItem, OFS.PropertySheets
-import Method, Basic, Property, ObjectManager, AccessControl.Role
+import Globals, string, OFS.SimpleItem, OFS.PropertySheets, Products
+import Method, Basic, Property, AccessControl.Role
 
 from ZPublisher.mapply import mapply
 from ExtensionClass import Base
@@ -95,16 +95,6 @@ from ImageFile import ImageFile
 from OFS.misc_ import p_
 
 p_.ZClass_Icon=ImageFile('class.gif', globals())
-
-builtins=(
-    ('ObjectManager ObjectManager', 'Object Manager',
-     ObjectManager.ZObjectManager),
-    )
-builtin_classes={}
-builtin_names={}
-for id, name, c in builtins:
-    builtin_classes[id]=c
-    builtin_names[id]=name
 
 class PersistentClass(Base):
     def __class_init__(self): pass
@@ -117,15 +107,17 @@ def manage_addZClass(self, id, title='', baseclasses=[], REQUEST=None):
     """
     bases=[]
     for b in baseclasses:
-        if builtin_classes.has_key(b): bases.append(builtin_classes[b])
-        else:                          bases.append(getattr(self, b))
+        if Products.meta_classes.has_key(b):
+            bases.append(Products.meta_classes[b])
+        else:
+            bases.append(getattr(self, b))
 
     self._setObject(id, ZClass(id,title,bases))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 def manage_subclassableClassNames(self):
     r={}
-    r.update(builtin_names)
+    r.update(Products.meta_class_info)
 
     while 1:
         if not hasattr(self, 'objectItems'): break
