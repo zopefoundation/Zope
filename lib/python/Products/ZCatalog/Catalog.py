@@ -531,7 +531,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         rs   = None             # resultset
         data = self.data
-        
+
         if used is None: used={}
         for i in self.indexes.keys():
 
@@ -550,8 +550,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     r, u = r
                     for name in u: used[name]=1
                     w, rs = weightedIntersection(rs, r)
-
-
                         
         #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
