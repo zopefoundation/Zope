@@ -15,6 +15,7 @@
 # install folderAdd.dtml
 # install imageAdd.dtml
 # install imageEdit.dtml
+# install imageView.dtml
 # install fileEdit.dtml
 # install imageUpload.dtml
 # install main.dtml
