@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -229,6 +229,8 @@ class File(Persistent,Implicit,PropertyManager,
         data=(headers is None) and file or file.read()
         if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
+        else:
+            content_type=''
         if not content_type:
             content_type, enc=mimetypes.guess_type(self.id())
             if not content_type:
