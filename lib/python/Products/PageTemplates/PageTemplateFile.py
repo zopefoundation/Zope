@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -169,8 +169,8 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         __traceback_info__ = self.filename
         try:    mtime=os.stat(self.filename)[8]
         except: mtime=0
-        if mtime == self._v_last_read:
-                return
+        if hasattr(self, '_v_program') and mtime == self._v_last_read:
+            return
         self.pt_edit(open(self.filename), None)
         self._cook()
         if self._v_errors:
