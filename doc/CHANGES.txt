@@ -1,5 +1,13 @@
 Principia Changes
 
+  Principia 1.6.0
+
+    Features Added
+
+      - Management screen titles now provide navigation support.
+        The names in the object's URL are now hypertext links
+        to the corresponding folders.
+
   Principia 1.5.0
 
     Features Added
