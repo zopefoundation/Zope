@@ -94,7 +94,7 @@ from cPickle import dumps, loads
 from cStringIO import StringIO
 
 from driver import parsefile, copytree, talizetree, printtree, FILE
-from driver import compiletree, interpretit
+from driver import compiletree, interpretit, compilefile
 from TALDefs import macroIndexer
 
 def main():
@@ -118,9 +118,11 @@ def main():
     timefunc(count, printtree, doc, dummyfile)
     timefunc(count, macroIndexer, doc)
     it = timefunc(count, compiletree, doc)
+    it = timefunc(count, compilefile, file)
     timefunc(count, interpretit, it, None, dummyfile)
     s = timefunc(count, pickletree, doc)
     timefunc(count, unpickletree, s)
+    print "pickle length : %6d" % len(s)
 
 def timefunc(count, func, *args):
     sys.stderr.write("%-14s: " % func.__name__)
