@@ -110,7 +110,24 @@ def manage_addZCatalog(self,id,title,REQUEST=None):
 
 
 class ZCatalog(Folder, FindSupport, Persistent, Implicit):
-    """ZCatalog object"""
+    """ZCatalog object
+
+    A ZCatalog contains arbirary index like references to Zope
+    objects.  ZCatalog's can index either 'Field' values of object, or 
+    'Text' values.
+
+    ZCatalog does not store references to the objects themselves, but
+    rather to a unique identifier that defines how to get to the
+    object.  In Zope, this unique idenfier is the object's relative
+    path to the ZCatalog (since two Zope object's cannot have the same 
+    URL, this is an excellent unique qualifier in Zope).
+
+    Most of the dirty work is done in the _catalog object, which is an
+    instance of the Catalog class.  An interesting feature of this
+    class is that it is not Zope specific.  You can use it in any
+    Python program to catalog objects.
+
+    """
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
@@ -131,7 +148,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
          'target':'manage_main'},
         )
 
-    
     __ac_permissions__=(
 
         ('Manage ZCatalog Entries',
@@ -163,7 +179,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     manage_catalogIndexes = HTMLFile('catalogIndexes', globals())
     manage_catalogStatus = HTMLFile('catalogStatus', globals())
 
-
     def __init__(self,id,title=''):
         self.id=id
         self.title=title
@@ -186,7 +201,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         self._catalog.addColumn('summary')
         self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
         
-        
     def manage_edit(self, threshold=1000, REQUEST=None):
         """ edit the catalog """
         self.threshold = threshold
@@ -194,7 +208,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         message = "Object changed"
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
-
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
         """ index all Zope objects that 'urls' point to """
@@ -214,7 +227,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-
     def manage_uncatalogObject(self, REQUEST, urls=None):
         """ removes Zope object 'urls' from catalog """
 
@@ -229,7 +241,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         message = "Object UnCataloged"
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
-
 
     def manage_catalogReindex(self, REQUEST):
         """ iterate over the whole catalog, deleting inexistent
@@ -249,7 +260,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_catalogView(self, REQUEST,
                                 manage_tabs_message=message)
 
-
     def manage_catalogClear(self, REQUEST):
         """ clears the whole enchelada """
         self._catalog.clear()
@@ -257,7 +267,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         message = "Catalog Cleared"
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
-
 
     def manage_catalogFoundItems(self, REQUEST, obj_metatypes=None,
                                  obj_ids=None, obj_searchterm=None,
@@ -285,7 +294,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         message = "Objects Cataloged"
         return self.manage_catalogView(self, REQUEST,
                                 manage_tabs_message=message)
-
 
     def manage_addColumn(self, name, REQUEST):
         """ add a column """
@@ -332,17 +340,13 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             get_transaction().commit(1)
             self._v_total = 0
 
-
     def uncatalog_object(self, uid):
         """ wrapper around catalog """
-            
         self._catalog.uncatalogObject(uid)
-
 
     def uniqueValuesFor(self, name):
         """ returns the unique values for a given FieldIndex """
         return self._catalog.uniqueValuesFor(name)
-
 
     def getpath(self, rid):
         """
@@ -369,14 +373,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def index_objects(self):
         return self._catalog.indexes.values()
 
-
     def _searchable_arguments(self):
         r = {}
         n={'optional':1}
         for name in self._catalog.indexes.keys():
             r[name]=n
         return r
-
 
     def _searchable_result_columns(self):
         r = []
@@ -388,7 +390,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             i['width'] = 8
             r.append(i)
         return r
-
 
     def searchResults(self, REQUEST=None, used=None,
                       query_map={
@@ -406,7 +407,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                      (REQUEST,used, query_map), kw)
 
     __call__=searchResults
-
 
 ## this stuff is so the find machinery works
 
@@ -441,9 +441,10 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return roles
 
 ## stolen from ZPublisher and modified slightly
-
+## Note: do not use, this method is depricated.  Use 'getobject'
+    
     def resolve_url(self, path, REQUEST):
-	""" The use of this function is depricated """
+	""" The use of this function is depricated.  Use 'getobject' """
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
         # method will return the requested object if it is found

@@ -94,14 +94,12 @@ from Missing import MV
 
 from Lazy import LazyMap, LazyFilter, LazyCat
 
-
 class NoBrainer:
     """ This is the default class that gets instantiated for records
     returned by a __getitem__ on the Catalog.  By default, no special
     methods or attributes are defined.
     """
     pass
-
 
 def orify(seq,
           query_map={
@@ -116,13 +114,15 @@ def orify(seq,
     return apply(Query.Or,tuple(subqueries))
     
 
-
 class Catalog(Persistent, Acquisition.Implicit):
     """ An Object Catalog
 
     An Object Catalog maintains a table of object metadata, and a
     series of manageable indexes to quickly search for objects
     (references in the metadata) that satisfy a search query.
+
+    This class is not Zope specific, and can be used in any python
+    program to build catalogs of objects.
     """
 
     _v_brains = NoBrainer
@@ -152,7 +152,6 @@ class Catalog(Persistent, Acquisition.Implicit):
             
         self.useBrains(self._v_brains)
 
-
     def __getitem__(self, index):
         """ Returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
@@ -160,7 +159,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
         r.data_record_id_ = index
         return r
-
 
     def __setstate__(self, state):
         Persistent.__setstate__(self, state)
@@ -186,7 +184,6 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         self._v_brains = brains
         self._v_result_class=mybrains
-
 
     def addColumn(self, name, default_value=None):
         """ adds a row to the meta data schema """
@@ -218,7 +215,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.useBrains(self._v_brains)
             
         self.__changed__(1)    #why?
-
             
     def delColumn(self, name):
         """ deletes a row from the meta data schema """
@@ -246,7 +242,6 @@ class Catalog(Persistent, Acquisition.Implicit):
             rec = list(self.data[key])
             rec.remove(rec[_index])
             self.data[key] = tuple(rec)
-            
 
     def addIndex(self, name, type):
         """ adds an index """
@@ -270,7 +265,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         indexes = self.indexes
         del indexes[name]
         self.indexes = indexes
-
 
     # the cataloging API
 
@@ -311,7 +305,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.data = data
 
         return total
-                                          
 
     def uncatalogObject(self, uid):
         """ 
@@ -341,7 +334,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         del self.uids[uid]
         del self.paths[rid]
 
-
     def clear(self):
 
         """ clear catalog """
@@ -353,7 +345,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         for x in self.indexes.values():
             x.clear()
 
-
     def uniqueValuesFor(self, name):
         """ return unique values for FieldIndex name """
         return self.indexes[name].uniqueValues()
@@ -364,7 +355,6 @@ class Catalog(Persistent, Acquisition.Implicit):
             return self.uids[uid]
         else:
             return None
-
 
     def recordify(self, object):
         """ turns an object into a record tuple """
@@ -383,16 +373,13 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         return tuple(record)
 
-
     def instantiate(self, record):
 
         r=self._v_result_class(record[1])
         r.data_record_id_ = record[0]
         return r.__of__(self)
 
-
-
-# searching VOODOO follows
+## Searching engine
 
     def _indexedSearch(self, args, sort_index, append, used):
 
@@ -431,8 +418,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                         append((k,LazyMap(self.__getitem__, intset)))
 
         return used
-
-
 
     def searchResults(self, REQUEST=None, used=None,
                       query_map={
@@ -504,7 +489,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                 r=LazyCat(map(lambda i: i[1], r))
 
         return r
-
 
     __call__ = searchResults
 
