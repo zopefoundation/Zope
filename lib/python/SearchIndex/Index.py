@@ -10,10 +10,10 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.1 1997/09/08 18:52:04 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Index.py,v 1.2 1997/09/08 18:53:24 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
-from oiTree import BTree
+from OITree import BTree
 from intSet import intSet
 import operator
 
@@ -140,6 +140,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.2  1997/09/08 18:53:24  jim
+# *** empty log message ***
+#
 # Revision 1.1  1997/09/08 18:52:04  jim
 # *** empty log message ***
 #
