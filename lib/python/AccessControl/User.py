@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -29,20 +29,21 @@ class User(Implicit, Persistent):
     def _shared_roles(self, parent):
         r=[]
         while 1:
+            if hasattr(parent,'__roles__'):
+                roles=parent.__roles__
+                if roles is None: return 'Anonymous',
+                if 'Shared' in roles:
+                    roles=list(roles)
+                    roles.remove('Shared')
+                    r=r+roles
+                else:
+                    try: return r+list(roles)
+                    except: return r
             if hasattr(parent, 'aq_parent'):
                 while hasattr(parent.aq_self,'aq_self'):
                     parent=parent.aq_self
                 parent=parent.aq_parent
             else: return r
-            roles=parent.__roles__
-            if roles is None: return 'Anonymous',
-            if 'Shared' in roles:
-                roles=list(roles)
-                roles.remove('Shared')
-                r=r+roles
-            else:
-                try: return r+list(roles)
-                except: return r
 
     def allowed(self,parent,roles=None):
 	usr_roles=self.roles
@@ -64,7 +65,9 @@ class User(Implicit, Persistent):
         if 'Shared' in roles:
             # Damn, old role setting. Waaa
             roles=self._shared_roles(parent)
-            if 'Anonymous' in roles: return 1
+            if roles is None or 'Anonymous' in roles: return 1
+            while 'Shared' in roles: roles.remove('Shared')
+            return self.allowed(parent,roles)
             
 	return None
 
