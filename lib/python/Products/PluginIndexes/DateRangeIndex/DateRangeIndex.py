@@ -136,6 +136,7 @@ class DateRangeIndex(UnIndex):
         self._since         = IOBTree()
         self._until         = IOBTree()
         self._unindex       = IOBTree() # 'datum' will be a tuple of date ints
+        self._length.set(0)
 
     #
     #   PluggableIndexInterface implementation (XXX inherit assertions?)

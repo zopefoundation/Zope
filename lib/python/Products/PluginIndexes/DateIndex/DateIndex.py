@@ -98,7 +98,7 @@ class DateIndex(UnIndex, PropertyManager):
         """ Complete reset """
         self._index = IOBTree()
         self._unindex = OIBTree()
-
+        self._length.set(0)
 
     def index_object( self, documentId, obj, threshold=None ):
         """index an object, normalizing the indexed value to an integer
