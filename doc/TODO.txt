@@ -102,6 +102,10 @@ ZConfig replacement errors are too cryptic
   but a) shows you the replacement key without its original capitalization
   and b) doesn't give you a line number.
 
+More storage type examples in zope.conf.in
+
+  Temporary storage, bdbstorage, etc.
+
 ------------------------------
  MAYBE NEVER BUT NICE TO HAVE
 ------------------------------
