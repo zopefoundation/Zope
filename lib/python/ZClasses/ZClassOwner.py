@@ -89,13 +89,15 @@ import ExtensionClass, Globals, ZClass, Products
 class ZClassOwner(ExtensionClass.Base):
 
     manage_addZClassForm=Globals.HTMLFile(
-        'addZClass', globals(), default_class_='OFS.SimpleItem Item')
+        'addZClass', globals(), default_class_='OFS.SimpleItem Item',
+        CreateAFactory=1)
 
-    def manage_addZClass(self, id, title='', baseclasses=[], meta_type='',
+    def manage_addZClass(self, id, title='', baseclasses=[],
+                         meta_type='', CreateAFactory=0,
                          REQUEST=None):
         "Add a ZClass"
         return ZClass.manage_addZClass(
-            self, id, title, baseclasses, meta_type, REQUEST)
+            self, id, title, baseclasses, meta_type, CreateAFactory, REQUEST)
 
     def manage_subclassableClassNames(self):
         r={}
