@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.8 2003/11/04 16:03:04 andreasjung Exp $
+# $Id: ZReST.py,v 1.9 2003/11/04 17:27:16 chrism Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -262,7 +262,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         '''
         return self.quotedHTML(self.source)
 
-    def __call__ = __str__
+    __call__ = __str__
 
     def PrincipiaSearchSource(self):
         ''' Support for searching - the document's contents are searched.
