@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
@@ -104,6 +104,10 @@ def make(*args):
     print 'Compiling extensions in %s' % string.join(args,'/')
     
     for a in args: os.chdir(a)
+    # Copy over the prototype makefile:
+    root_path = len(args) * "../"
+    do("cp %sMakefile.pre.in ." % root_path)
+    # ... and now use it.
     do('make -f Makefile.pre.in boot PYTHON=%s' % sys.executable)
     do('make')
     do('make clean')
