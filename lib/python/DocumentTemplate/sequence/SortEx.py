@@ -14,7 +14,7 @@
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.5 2002/08/14 22:29:53 mj Exp $
+$Id: SortEx.py,v 1.6 2002/09/24 22:06:27 jeremy Exp $
 """
 
 
@@ -98,7 +98,8 @@ def sort(sequence, sort=(), _=None, mapping=0):
                     try:
                         if mapping: akey = v[sk]
                         else: akey = getattr(v, sk)
-                    except AttributeError, KeyError: akey = None
+                    except (AttributeError, KeyError):
+                        akey = None
                     if not basic_type(akey):
                         try: akey = akey()
                         except: pass
