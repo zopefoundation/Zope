@@ -1,0 +1,150 @@
+string: DTML String Functions
+
+  The 'string' modules provides string manipulation, conversion, and
+  searching functions. It is a standard Python module.
+
+  Functions
+
+    atof(s) -- Convert a string to a floating point number. The string
+      must have the standard syntax for a floating point literal in Python,
+      optionally preceded by a sign ("+" or "-"). Note that this behaves
+      identical to the built-in function float() when passed a string.
+
+    atoi(s [,base]) -- Convert string s to an integer in the given
+      base. The string must consist of one or more digits, optionally
+      preceded by a sign ("+" or "-"). The base defaults to 10. If it is 0,
+      a default base is chosen depending on the leading characters of the
+      string (after stripping the sign): "0x" or "0X" means 16, "0" means
+      8, anything else means 10. If base is 16, a leading "0x" or "0X" is
+      always accepted, though not required.
+
+    atol(s, [,base]) --Convert string s to a long integer in the given
+      base. The string must consist of one or more digits, optionally
+      preceded by a sign ("+" or "-"). The base argument has the same
+      meaning as for atoi(). A trailing "l" or "L" is not allowed,
+      except if the base is 0. Note that when invoked without base or
+      with base set to 10,
+
+    capitalize(word) -- Capitalize the first character of the argument. 
+
+    capwords(s) -- Split the argument into words using split(),
+      capitalize each word using capitalize(), and join the capitalized
+      words using join(). Note that this replaces runs of whitespace
+      characters by a single space, and removes leading and trailing
+      whitespace.
+
+    find(s, sub [,start [,end]]) -- Return the lowest index in s where
+      the substring sub is found such that sub is wholly contained in
+      s[start:end]. Return -1 on failure. Defaults for start and end and
+      interpretation of negative values is the same as for slices.
+
+    rfind(s, sub [,start [,end]]) -- Like find() but find the highest
+      index.
+
+    index(s, sub [,start [,end]]) -- Like find() but raise ValueError
+      when the substring is not found.
+
+    rindex(s, sub [,start [,end]]) -- Like rfind() but raise ValueError
+      when the substring is not found.
+
+    count(s, sub [,start [,end]]) -- Return the number of
+      (non-overlapping) occurrences of substring sub in string
+      s[start:end]. Defaults for start and end and interpretation of
+      negative values are the same as for slices.
+
+    lower(s) -- Return a copy of s, but with upper case letters
+      converted to lower case.
+
+    makestrans(from, to) -- Return a translation table suitable for passing
+      to translate() that will map each character in from into the
+      character at the same position in to; from and to must have the
+      same length.
+
+    split(s, [,sep [,maxsplit]]) -- Return a list of the words of the
+      string s. If the optional second argument sep is absent or None, the
+      words are separated by arbitrary strings of whitespace characters
+      (space, tab, newline, return, formfeed). If the second argument sep
+      is present and not None, it specifies a string to be used as the word
+      separator. The returned list will then have one more item than the
+      number of non-overlapping occurrences of the separator in the
+      string. The optional third argument maxsplit defaults to 0. If it is
+      nonzero, at most maxsplit number of splits occur, and the remainder
+      of the string is returned as the final element of the list (thus, the
+      list will have at most maxsplit+1 elements).
+
+    join(words [,sep]) -- Concatenate a list or tuple of words
+      with intervening occurrences of sep. The default value for sep
+      is a single space character. It is always true that
+      'string.join(string.split(s, sep), sep)' equals s.
+
+    lstrip(string) -- Return a copy of s but without leading whitespace
+      characters.
+
+    rstrip(string) -- Return a copy of s but without trailing whitespace
+      characters.
+
+    strip(string) -- Return a copy of s without leading or trailing
+      whitespace.
+
+    swapcase(s) -- Return a copy of s, but with lower case letters
+      converted to upper case and vice versa.
+
+    translate(s, table [,deletechars]) -- Delete all characters from s
+      that are in deletechars (if present), and then translate the
+      characters using table, which must be a 256-character string giving
+      the translation for each character value, indexed by its ordinal.
+
+    upper(s) -- Return a copy of string, but with lower case letters
+      converted to upper case.
+
+    ljust(string, width) -- Left-justifies a string in a field of
+      given width. Returns a string that is at least width characters
+      wide, created by padding the string with spaces until the given
+      width. The string is never truncated.
+
+    rjust(string, width) -- Right-justifies a string in a field of
+      given width.  Returns a string that is at least width characters
+      wide, created by padding the string s with spaces until the
+      given width. The string is never truncated.
+
+
+    center(string, width) -- Centers a string in a field of given
+      width. Returns a string that is at least width characters wide,
+      created by padding the string s with spaces until the given
+      width. The string is never truncated.
+
+    zfill(s, width) -- Pad a numeric string on the left with zero
+      digits until the given width is reached. Strings starting with a sign
+      are handled correctly.
+
+    replace(s, old, new [,maxsplit]) -- Return a copy of string s with
+      all occurrences of substring old replaced by new. If the optional
+      argument maxsplit is given, the first maxsplit occurrences are
+      replaced.
+
+  Attributes
+
+    digits -- The string '0123456789'
+
+    hexdigits -- The string '0123456789abcdefABCDEF'.
+
+    letters -- The concatenation of the strings 'lowercase' and 'uppercase' described below.
+
+    lowercase -- A string containing all the characters that are considered
+      lowercase letters. On most systems this is the string
+      'abcdefghijklmnopqrstuvwxyz'. 
+
+    octdigits -- The string '01234567'. 
+
+    uppercase -- A string containing all the characters that are considered
+      uppercase letters. On most systems this is the string
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.
+
+    whitespace -- A string containing all characters that are considered
+      whitespace. On most systems this includes the characters space, tab,
+      linefeed, return, formfeed, and vertical tab.
+  
+  See Also
+
+    "Python 'string' module":http://www.python.org/doc/current/lib/module-string.html
+

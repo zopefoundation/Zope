@@ -7,7 +7,7 @@ sqlvar: Inserts SQL variables
 
     'sqlvar' tag syntax::
 
-      <dml-sqlvar Variable|expr="VariableExpression">
+      <dtml-sqlvar Variable|expr="VariableExpression">
 
     The 'sqlvar' tag is a singleton. Like the 'var' tag, the 'sqlvar'
     tag looks up a variable and inserts it. Unlike the var tag, the
