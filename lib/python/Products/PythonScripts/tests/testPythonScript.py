@@ -106,12 +106,16 @@ def readf(name):
     return open('tscripts/%s%s' % (name, '.ps'), 'r').read()
 
 class TestPythonScriptNoAq(TestCase):
-    def _newPS(self, txt):
+    def _newPS(self, txt, bind=None):
         ps = PythonScript('ps')
-        ps.ZBindings_edit({})
+        ps.ZBindings_edit(bind or {})
         ps.write(txt)
         ps._makeFunction(1)
         return ps
+
+    def fail(self):
+        'Fail if called'
+        assert 0, 'Fail called'
 
     def testEmpty(self):
         empty = self._newPS('')()
@@ -190,6 +194,25 @@ class TestPythonScriptNoAq(TestCase):
                      46368, 75025, 121393, 196418, 317811, 514229, 832040,
                      1346269, 2178309, 3524578, 5702887, 9227465, 14930352,
                      24157817, 39088169, 63245986], r
+
+    def testSimplePrint(self):
+        txt = self._newPS(readf('simple_print'))()
+        assert txt == 'a 1 []\n', txt
+
+    def testComplexPrint(self):
+        txt = self._newPS(readf('complex_print'))()
+        assert txt == 'double\ndouble\n x: 1\ny: 0 1 2\n\n', txt
+
+    def testNSBind(self):
+        f = self._newPS(readf('ns_bind'), bind={'name_ns': '_'})
+        bound = f.__render_with_namespace__({'yes': 1, 'no': self.fail})
+        assert bound == 1, bound
+
+    def testManyArgs(self):
+        f = self._newPS(readf('manyargs'))
+        f()
+        ss = f._v_f.func_code.co_stacksize
+        assert ss == 24, ss
 
 test_classes = (TestPythonScriptNoAq,)
 

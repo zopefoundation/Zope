@@ -89,10 +89,10 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, os, traceback, re
-from Globals import DTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog, package_home
 import AccessControl, OFS, Guarded
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
@@ -111,6 +111,8 @@ Python_magic = imp.get_magic()
 del imp
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
+_default_file = os.path.join(package_home(globals()),
+                             'www', 'default.py')
 
 _marker = []  # Create a new marker object
 
@@ -161,7 +163,7 @@ class PythonScript(Script, Historical, Cacheable):
     def __init__(self, id):
         self.id = id
         self.ZBindings_edit(defaultBindings)
-        self._makeFunction(1)
+        self._body = open(_default_file).read()
 
     security = AccessControl.ClassSecurityInfo()
 
