@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.75 2002/10/11 14:05:30 Torped Exp $"""
-__version__ = "$Revision: 1.75 $"[11:-2]
+$Id: MailHost.py,v 1.76 2002/10/12 16:42:14 mj Exp $"""
+__version__ = "$Revision: 1.76 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -24,6 +24,7 @@ from cStringIO import StringIO
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import view_management_screens, \
                                       use_mailhost_services
+from DateTime import DateTime
 
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
