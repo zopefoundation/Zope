@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -162,7 +162,6 @@ class Version(Persistent,Implicit,RoleManager,Item):
         """Begin working in a version"""
         RESPONSE.setCookie(
             Globals.VersionNameName, self.cookie,
-            #expires="Mon, 27-Dec-99 23:59:59 GMT",
             path=REQUEST['SCRIPT_NAME'],
             )
         if (REQUEST.has_key('SERVER_SOFTWARE') and
@@ -180,7 +179,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         """Temporarily stop working in a version"""
         RESPONSE.setCookie(
             Globals.VersionNameName,'No longer active',
-            expires="Mon, 27-Aug-84 23:59:59 GMT",
+            expires="Mon, 25-Jan-1999 23:59:59 GMT",
             path=REQUEST['SCRIPT_NAME'],
             )
         if (REQUEST.has_key('SERVER_SOFTWARE') and
@@ -193,7 +192,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                          % self.id)
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
-        
+                
     def leave_another(self, REQUEST, RESPONSE):
         """Leave a version that may not be the current version"""
         return self.leave(REQUEST, RESPONSE)
@@ -250,5 +249,20 @@ class Version(Persistent,Implicit,RoleManager,Item):
             raise 'Version Error', (
                 'Attempt to %sdelete a non-empty version.<p>'
                 ((self is not item) and 'indirectly ' or ''))
+        
+        try: REQUEST=self.REQUEST
+        except: pass
+        else:
+            v=self.cookie
+            if REQUEST.get(Globals.VersionNameName, '') == v:
+                raise 'Version error', (               
+                    'An attempt was made to delete a version, %s, or an\n'
+                    'object containing %s while\n working in the\n'
+                    'version %s.  This would lead to a &quot;version\n'
+                    'paradox&quot;.  The object containing the deleted\n'
+                    'object would be locked and it would be impossible\n'
+                    'to clear the lock by saving or discarding the\n'
+                    'version, because the version would no longer\n'
+                    'be accessable.<p>\n'
+                    % (v,v,v))
 
-    
