@@ -1,5 +1,5 @@
 /*
- * $Id: cPickle.c,v 1.67 1999/05/12 16:09:45 jim Exp $
+ * $Id: cPickle.c,v 1.68 1999/05/17 16:15:39 jim Exp $
  * 
  * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
  * All rights reserved.
@@ -49,7 +49,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.67 1999/05/12 16:09:45 jim Exp $\n"
+"$Id: cPickle.c,v 1.68 1999/05/17 16:15:39 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -4251,7 +4251,7 @@ if (PyErr_Occurred()) { \
 
 static int
 init_stuff(PyObject *module, PyObject *module_dict) {
-    PyObject *string, *copy_reg, *t;
+    PyObject *string, *copy_reg, *t, *r;
 
 #define INIT_STR(S) UNLESS(S ## _str=PyString_FromString(#S)) return -1;
 
@@ -4308,12 +4308,13 @@ init_stuff(PyObject *module, PyObject *module_dict) {
       return -1;
 
     UNLESS (t=PyDict_New()) return -1;
-    if (PyRun_String("def __init__(self, *args): self.args=args\n\n"
-		     "def __str__(self):\n"
-		     "  return self.args and ('%s' % self.args[0]) or '???'\n",
-		     Py_file_input,
-		     module_dict, t) 
-	< 0) return -1;
+    UNLESS (r=PyRun_String(
+       "def __init__(self, *args): self.args=args\n\n"
+       "def __str__(self):\n"
+       "  return self.args and ('%s' % self.args[0]) or '???'\n",
+       Py_file_input,
+       module_dict, t) ) return -1;
+    Py_DECREF(r);
 
     UNLESS (PickleError = PyErr_NewException("cPickle.PickleError", NULL, t))
       return -1;
@@ -4326,14 +4327,15 @@ init_stuff(PyObject *module, PyObject *module_dict) {
       return -1;
 
     UNLESS (t=PyDict_New()) return -1;
-    if (PyRun_String("def __init__(self, *args): self.args=args\n\n"
-		     "def __str__(self):\n"
-		     "  a=self.args\n"
-		     "  a=a and type(a[0]) or '(what)'\n"
-		     "  return 'Cannot pickle %s objects' % a\n"
-		     , Py_file_input,
-		     module_dict, t) 
-	< 0) return -1;
+    UNLESS (r=PyRun_String(
+       "def __init__(self, *args): self.args=args\n\n"
+       "def __str__(self):\n"
+       "  a=self.args\n"
+       "  a=a and type(a[0]) or '(what)'\n"
+       "  return 'Cannot pickle %s objects' % a\n"
+       , Py_file_input,
+       module_dict, t) ) return -1;
+    Py_DECREF(r);
 
     UNLESS (UnpickleableError = PyErr_NewException(
                 "cPickle.UnpickleableError", PicklingError, t))
@@ -4379,7 +4381,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 DL_EXPORT(void)
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.67 $";
+    char *rev="$Revision: 1.68 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
