@@ -1,12 +1,12 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 import sys,os,time,string,Globals
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
-from OFS import SimpleItem, Folder
+from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 
 
@@ -41,11 +41,6 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     manage_editProperties=None
     manage_delProperties=None
     isPrincipiaFolderish=0
-
-    def __init__(self):
-	self.Factories=f=Folder.Folder()
-	f.id='Factories'
-	f.title='User-defined addable objects'
 
     def copyToClipboard(self, REQUEST):
 	return Globals.MessageDialog(title='Not Supported',
