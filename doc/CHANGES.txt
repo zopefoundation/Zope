@@ -32,11 +32,6 @@ Zope Changes
 
         o Simpler creation of Python products.
 
-    Unfortunately, there are a number of incompatabilities between
-    Zope and Python 1.5.2 that have been reported but not yet
-    fixed. Zope 2.0 alpha 2, which will be released the week of May
-    26, will fix most or all of these.
-
     ZODB 3
 
       ZODB is the next generation of our object database architecture.
