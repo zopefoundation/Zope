@@ -124,7 +124,7 @@ class p_:
 
     ZopeButton=ImageFile('App/www/zope_button.jpg')
     ZButton=ImageFile('App/www/z_button.jpg')
-    zopelogo_jpg=ImageFile('www/zopelogo.jpg', globals())
+    zopelogo_jpg=ImageFile('App/www/zopelogo.jpg', globals())
 
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
     Methods_icon=ImageFile('ZClasses/methods.gif')
