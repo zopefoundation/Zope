@@ -25,43 +25,10 @@ class FauxUser( Implicit ):
 
         self._id = id
         self._login = login
-        self._roles = {}
-        self._groups = {}
 
     def getId( self ):
 
         return self._id
-
-    def getUserName( self ):
-
-        return self._login
-
-    def getRoles( self ):
-
-        return self._roles
-
-    def getGroups( self ):
-
-        return self._groups
-
-    def allowed( self, value, roles ):
-
-        return 1
-
-    def _addRoles( self, roles ):
-
-        for role in roles:
-            self._roles[role] = 1
-
-    def _addGroups(self, groups):
-        
-        for group in groups:
-            self._groups[group] = 1
-
-    def __repr__( self ):
-
-        return '<FauxUser: %s>' % self._id
-
 
 class ObjectManagerTests( unittest.TestCase ):
 
@@ -132,7 +99,7 @@ class ObjectManagerTests( unittest.TestCase ):
 
         self.assertEqual( si.__ac_local_roles__, None )
 
-    def test_setObject_set_owner_with_simple_user( self ):
+    def test_setObject_set_owner_with_user( self ):
 
         om = self._makeOne()
 
@@ -140,11 +107,11 @@ class ObjectManagerTests( unittest.TestCase ):
 
         newSecurityManager( None, user )
 
-        si = SimpleItem( 'faux_creation' )
+        si = SimpleItem( 'user_creation' )
 
         self.assertEqual( si.__ac_local_roles__, None )
 
-        om._setObject( 'faux_creation', si )
+        om._setObject( 'user_creation', si )
 
         self.assertEqual( si.__ac_local_roles__, { 'user': ['Owner'] } )
 
@@ -251,6 +218,11 @@ class ObjectManagerTests( unittest.TestCase ):
         om._setObject( 'should_be_okay', si, set_owner=0 )
 
         self.assertEqual( si.__ac_local_roles__, None )
+
+def test_suite():
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( ObjectManagerTests ) )
+    return suite
 
 if __name__ == "__main__":
     unittest.main()
