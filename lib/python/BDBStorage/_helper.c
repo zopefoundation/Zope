@@ -1,8 +1,23 @@
+/*****************************************************************************
+
+  Copyright (c) 2002 Zope Corporation and Contributors.
+  All Rights Reserved.
+
+  This software is subject to the provisions of the Zope Public License,
+  Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+  THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+  WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+  WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+  FOR A PARTICULAR PURPOSE
+
+ ****************************************************************************/
+
 #include <Python.h>
 
-/* This helper only works for Python 2.2.  If using an older version, crap
- * out now so we don't leave a broken, but compiled and importable module
- * laying about.
+/* This helper only works for Python 2.2 and beyond.  If we're using an
+ * older version of Python, stop out now so we don't leave a broken, but
+ * compiled and importable module laying about.  Full.py has a workaround
+ * for when this extension isn't available.
  */
 #if PY_VERSION_HEX < 0x020200F0
 #error "Must be using at least Python 2.2"
@@ -20,12 +35,13 @@ helper_incr(PyObject* self, PyObject* args)
 
     assert(len == 8);
 
-    /* there seems to be no direct route from byte array to long long, so
+    /* There seems to be no direct route from byte array to long long, so
      * first convert it to a PyLongObject*, then convert /that/ thing to a
-     * long long
+     * long long.
      */
     pylong = _PyLong_FromByteArray(s, len,
-                                   0 /* big endian */, 0 /* unsigned */);
+                                   0 /* big endian */,
+                                   0 /* unsigned */);
     
     if (!pylong)
         return NULL;
@@ -35,7 +51,8 @@ helper_incr(PyObject* self, PyObject* args)
         return NULL;
 
     res = _PyLong_AsByteArray((PyLongObject*)sum, x, 8,
-                              0 /* big endian */, 0 /* unsigned */);
+                              0 /* big endian */,
+                              0 /* unsigned */);
     if (res < 0)
         return NULL;
 
