@@ -112,7 +112,7 @@ class Vocabulary(Item, Persistent, Implicit,
                  AccessControl.Role.RoleManager,
                  ):
     """
-    A Vocabulary is a user managable relization of a Lexicon object.
+    A Vocabulary is a user-managable realization of a Lexicon object.
 
     """
 
@@ -151,7 +151,7 @@ class Vocabulary(Item, Persistent, Implicit,
         """ create the lexicon to manage... """
         self.id = id
         self.title = title
-        self.globbing = globbing
+        self.globbing = not not globbing
 
         if globbing:
             self.lexicon = GlobbingLexicon.GlobbingLexicon()

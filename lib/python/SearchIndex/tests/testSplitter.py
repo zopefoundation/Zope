@@ -83,85 +83,59 @@
 # 
 ##############################################################################
 
-from BTrees.IIBTree import IIBucket
-from BTrees.IIBTree import weightedIntersection, weightedUnion, difference
-from BTrees.OOBTree import OOSet, union
+import sys
 
-class ResultList:
-  
-    def __init__(self, d, words, index, TupleType=type(())):
-        self._index = index
+try: import ZODB
+except:
+    import os
+    sys.path.insert(0, os.getcwd())
+    sys.path.insert(0, '../..')
+    import ZODB
 
-        if type(words) is not OOSet: words=OOSet(words)
-        self._words = words
-        
-        if (type(d) is TupleType):
-            d = IIBucket((d,))
-        elif type(d) is not IIBucket:
-            d = IIBucket(d)
+import unittest
+from SearchIndex.Splitter import Splitter
 
-        self._dict=d
-        self.__getitem__=d.__getitem__
-        try: self.__nonzero__=d.__nonzero__
-        except: pass
-        self.get=d.get
+class TestSplitter(unittest.TestCase):
+   def testSplitNormalText(self):
+       text = 'this is a long string of words'
+       a = Splitter(text)
+       r = map(None, a)
+       assert r == ['this', 'is', 'long', 'string', 'of', 'words']
 
-    def __nonzero__(self):
-        return not not self._dict
+   def testDropNumeric(self):
+       text = '123 456 789 foobar without you nothing'
+       a = Splitter(text)
+       r = map(None, a)
+       assert r == ['foobar', 'without', 'you', 'nothing'], r
+       
+   def testDropSingleLetterWords(self):
+       text = 'without you I nothing'
+       a = Splitter(text)
+       r = map(None, a)
+       assert r == ['without', 'you', 'nothing'], r
+       
+   def testSplitOnNonAlpha(self):
+       text = 'without you I\'m nothing'
+       a = Splitter(text)
+       r = map(None, a)
+       assert r == ['without', 'you', 'nothing'], r
+       
+def test_suite():
+   return unittest.makeSuite(TestSplitter, 'test')
 
-    def bucket(self): return self._dict
+def main():
+   unittest.TextTestRunner().run(test_suite())
 
-    def keys(self): return self._dict.keys()
+def debug():
+   test_suite().debug()
 
-    def has_key(self, key): return self._dict.has_key(key)
-
-    def items(self): return self._dict.items()  
-
-    def __and__(self, x):
-        return self.__class__(
-            weightedIntersection(self._dict, x._dict)[1],
-            union(self._words, x._words),
-            self._index,
-            )
-
-    def and_not(self, x):
-        return self.__class__(
-            difference(self._dict, x._dict),
-            self._words,
-            self._index,
-            )
-  
-    def __or__(self, x):
-        return self.__class__(
-            weightedUnion(self._dict, x._dict)[1],
-            union(self._words, x._words),
-            self._index,
-            )
-        return self.__class__(result, self._words+x._words, self._index)
-
-    def near(self, x):
-        result = IIBucket
-        dict = self._dict
-        xdict = x._dict
-        xhas = xdict.has_key
-        positions = self._index.positions
-        for id, score in dict.items():
-            if not xhas(id): continue
-            p=(map(lambda i: (i,0), positions(id,self._words))+
-               map(lambda i: (i,1), positions(id,x._words)))
-            p.sort()
-            d = lp = 9999
-            li = None
-            lsrc = None
-            for i,src in p:
-                if i is not li and src is not lsrc and li is not None:
-                    d = min(d,i-li)
-                li = i
-                lsrc = src
-            if d==lp: score = min(score,xdict[id]) # synonyms
-            else: score = (score+xdict[id])/d
-            result[id] = score
-    
-        return self.__class__(
-            result, union(self._words, x._words), self._index)
+def pdebug():
+    import pdb
+    pdb.run('debug()')
+   
+if __name__=='__main__':
+   if len(sys.argv) > 1:
+      globals()[sys.argv[1]]()
+   else:
+      main()
 

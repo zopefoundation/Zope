@@ -202,13 +202,13 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
+
+#XXX I strongly suspect that this is broken, but I'm not going to fix it. :(
 
 from Globals import Persistent
-import BTree, IIBTree
-BTree=BTree.BTree
-IIBTree=IIBTree.Bucket
-from intSet import intSet
+from BTrees.OOBTree import OOBTree
+from BTrees.IIBTree import IISet, IIBucket
 import operator
 from Splitter import Splitter
 from string import strip
@@ -250,7 +250,7 @@ class TextIndex(Persistent):
             self.id=id
             self.ignore_ex=ignore_ex
             self.call_methods=call_methods
-            self._index=BTree()
+            self._index=OOBTree() #XXX Is this really an IOBTree?
             self._syn=stop_word_dict
             self._reindex()
         else:
@@ -261,7 +261,7 @@ class TextIndex(Persistent):
 
 
     def clear(self):
-        self._index = BTree()
+        self._index = OOBTree()
 
 
     def positions(self, docid, words):
@@ -366,7 +366,7 @@ class TextIndex(Persistent):
                         index[word] = r
                     elif type(r) is dictType:
                         if len(r) > 4:
-                            b = IIBTree()
+                            b = IIBucket()
                             for k, v in r.items(): b[k] = v
                             r = b
                         r[id] = score
@@ -440,7 +440,7 @@ class TextIndex(Persistent):
         for key in keys:
             key = strip(key)
             if not key: continue
-            rr = intSet()
+            rr = IISet()
             try:
                 for i,score in query(key,self).items():
                     if score: rr.insert(i)
@@ -451,5 +451,5 @@ class TextIndex(Persistent):
                 r = r.intersection(rr) 
 
         if r is not None: return r, (id,)
-        return intSet(), (id,)
+        return IISet(), (id,)
 

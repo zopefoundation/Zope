@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.3 2001/01/15 16:29:23 petrilli Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.4 2001/03/15 13:16:23 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 class Lazy:
@@ -148,11 +148,12 @@ class LazyCat(Lazy):
     # Lazy concatenation of one or more sequences.  Should be handy
     # for accessing small parts of big searches.
     
-    def __init__(self, sequences):
+    def __init__(self, sequences, length=None):
         self._seq=sequences
         self._data=[]
         self._sindex=0
         self._eindex=-1
+        if length is not None: self._len=length
 
     def __getitem__(self,index):
 
@@ -194,11 +195,12 @@ class LazyMap(Lazy):
     # Act like a sequence, but get data from a filtering process.
     # Don't access data until necessary
 
-    def __init__(self,func,seq):
+    def __init__(self, func, seq, length=None):
         self._seq=seq
-        self._len=len(seq)
         self._data=[]
         self._func=func
+        if length is not None: self._len=length
+        else: self._len = len(seq)
 
     def __getitem__(self,index):
 
@@ -229,7 +231,7 @@ class LazyFilter(Lazy):
     # Act like a sequence, but get data from a filtering process.
     # Don't access data until necessary
 
-    def __init__(self,test,seq):
+    def __init__(self, test, seq):
         self._seq=seq
         self._data=[]
         self._eindex=-1
@@ -270,7 +272,7 @@ class LazyMop(Lazy):
     # Act like a sequence, but get data from a filtering process.
     # Don't access data until necessary
 
-    def __init__(self,test,seq):
+    def __init__(self, test, seq):
         self._seq=seq
         self._data=[]
         self._eindex=-1

@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ThreadLock.c,v 1.7 1999/02/19 16:10:05 jim Exp $
+  $Id: ThreadLock.c,v 1.8 2001/03/15 13:16:21 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,7 +46,7 @@
 */
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.7 1999/02/19 16:10:05 jim Exp $"
+"\n$Id: ThreadLock.c,v 1.8 2001/03/15 13:16:21 jim Exp $"
 ;
 
 #include "Python.h"
@@ -93,8 +93,9 @@ typedef struct {
 staticforward PyTypeObject ThreadLockType;
 
 static int
-cacquire(ThreadLockObject *self)
+cacquire(ThreadLockObject *self, int wait)
 {
+  int acquired = 1;
 #ifdef WITH_THREAD
   long id = get_thread_ident();
 #else
@@ -113,19 +114,26 @@ cacquire(ThreadLockObject *self)
     {
 #ifdef WITH_THREAD
       Py_BEGIN_ALLOW_THREADS
-      acquire_lock(self->lock, 1);
+      acquired = acquire_lock(self->lock, wait ? WAIT_LOCK : NOWAIT_LOCK);
       Py_END_ALLOW_THREADS
 #endif
-      self->count=0;
-      self->id=id;
+      if (acquired)
+        {
+          self->count=0;
+          self->id=id;
+        }
     }
-  return 0;
+  return acquired;
 }
 
 static PyObject *
 acquire(ThreadLockObject *self, PyObject *args)
 {
-  if(cacquire(self) < 0) return NULL;
+  int wait = -1, acquired;
+  if (! PyArg_ParseTuple(args, "|i", &wait)) return NULL;
+  acquired=cacquire(self, wait);
+  if(acquired < 0) return NULL;
+  if (wait >= 0) return PyInt_FromLong(acquired);
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -138,6 +146,7 @@ crelease(ThreadLockObject *self)
 #else
   long id = 1;
 #endif
+
   if(self->count >= 0 && self->id==id)
     {
       /* Somebody has locked me.  It is either the current thread or
@@ -161,6 +170,7 @@ crelease(ThreadLockObject *self)
 static PyObject *
 release(ThreadLockObject *self, PyObject *args)
 {
+  if (! PyArg_ParseTuple(args, "")) return NULL;
   if(crelease(self) < 0) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -172,7 +182,7 @@ call_method(ThreadLockObject *self, PyObject *args)
   PyObject *f, *a=0, *k=0;
 
   UNLESS(PyArg_ParseTuple(args,"OO|O",&f, &a, &k)) return NULL;
-  if(cacquire(self) < 0) return NULL;
+  if(cacquire(self, -1) < 0) return NULL;
   f=PyEval_CallObjectWithKeywords(f,a,k);
   if(crelease(self) < 0)
     {
@@ -189,7 +199,7 @@ static struct PyMethodDef ThreadLock_methods[] = {
    "Acquire the lock, call the function, and then release the lock.\n"
   },
   {"acquire", (PyCFunction)acquire, 1,
-   "acquire() -- Acquire a lock, taking the thread ID into account"
+   "acquire([wait]) -- Acquire a lock, taking the thread ID into account"
   },
   {"release", (PyCFunction)release, 1,
    "release() -- Release a lock, taking the thread ID into account"
@@ -296,7 +306,7 @@ void
 initThreadLock()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
 
   m = Py_InitModule4("ThreadLock", Module_methods,
 		     ThreadLock_module_documentation,

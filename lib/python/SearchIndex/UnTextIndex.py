@@ -91,14 +91,11 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.37 $'[11:-2]
+__version__ = '$Revision: 1.38 $'[11:-2]
 
-
-import BTree, IIBTree, IOBTree, OIBTree
 import string, regex, regsub, ts_regex
 import operator
 
-from intSet import intSet
 from Globals import Persistent
 from Acquisition import Implicit
 from Splitter import Splitter
@@ -107,10 +104,11 @@ from Lexicon import Lexicon
 from ResultList import ResultList
 from types import *
 
-BTree = BTree.BTree                     # Regular generic BTree
-IOBTree = IOBTree.BTree                 # Integer -> Object 
-IIBucket = IIBTree.Bucket               # Integer -> Integer
-OIBTree = OIBTree.BTree                 # Object -> Integer
+from BTrees.IOBTree import IOBTree
+from BTrees.OIBTree import OIBTree
+from BTrees.IIBTree import IIBTree, IIBucket, IISet, IITreeSet
+from BTrees.IIBTree import difference, weightedIntersection
+
 
 AndNot = 'andnot'
 And = 'and'
@@ -141,7 +139,7 @@ class UnTextIndex(Persistent, Implicit):
     meta_type = 'Text Index'
 
 
-    def __init__(self, id=None, ignore_ex=None,
+    def __init__(self, id, ignore_ex=None,
                  call_methods=None, lexicon=None):
         """Create an index
 
@@ -159,16 +157,12 @@ class UnTextIndex(Persistent, Implicit):
           'lexicon' is the lexicon object to specify, if None, the
           index will use a private lexicon."""
         
-        if not id == ignore_ex == call_methods == None:
-            self.id = id
-            self.ignore_ex = ignore_ex
-            self.call_methods = call_methods
-            self._index = IOBTree()
-            self._unindex = IOBTree()
+        self.id = id
+        self.ignore_ex = ignore_ex
+        self.call_methods = call_methods
 
-        else:
-            pass
-
+        self.clear()
+        
         if lexicon is None:
             ## if no lexicon is provided, create a default one
             self._lexicon = Lexicon()
@@ -185,32 +179,55 @@ class UnTextIndex(Persistent, Implicit):
         in this way, but I don't see too much of a problem with it."""
 
         if type(vocab_id) is not StringType:
-            vocab = vocab_id
+            return vocab_id
         else:
             vocab = getattr(self, vocab_id)
-        return vocab.lexicon
-        
+            return vocab.lexicon
 
-    def __len__(self):
-        """Return the number of objects indexed."""
-
-        return len(self._unindex)
+    def __nonzero__(self):
+        return not not self._unindex
+    
+    # Too expensive
+    #def __len__(self):
+    #    """Return the number of objects indexed."""
+    #    return len(self._unindex)
 
 
     def clear(self):
         """Reinitialize the text index."""
-        
         self._index = IOBTree()
         self._unindex = IOBTree()
 
+    def _convertBTrees(self, threshold=200):
+        if type(self._index) is IOBTree: return
 
-    def histogram(self):
+        from BTrees.convert import convert
+
+        _index=self._index
+        self._index=IOBTree()
+
+        def convertScores(scores,
+                          type=type, TupleType=TupleType, IIBTree=IIBTree
+                          ):
+            if type(scores) is not TupleType and type(scores) is not IIBTree():
+                scores=IIBTree(scores)
+            return scores
+                
+
+        convert(_index, self._index, threshold, convertScores)
+
+        _unindex=self._unindex
+        self._unindex=IOBTree()
+        convert(_unindex, self._unindex, threshold)
+
+    def histogram(self, type=type, TupleType=type(())):
         """Return a mapping which provides a histogram of the number of
         elements found at each point in the index."""
 
-        histogram = {}
+        histogram = IIBucket()
         for (key, value) in self._index.items():
-            entry = len(value)
+            if type(value) is TupleType: entry=1
+            else: entry = len(value)
             histogram[entry] = histogram.get(entry, 0) + 1
 
         return histogram
@@ -227,13 +244,8 @@ class UnTextIndex(Persistent, Implicit):
         if results is None:
             return default
         else:
-            # Now that we've got them, let's resolve out the word
-            # references
-            resolved = []
-            for (word, wordId) in wordMap:
-                if wordId in results:
-                    resolved.append(word)
-            return tuple(resolved)
+            return tuple(map(self.getLexicon(self._lexicon).getWord,
+                             results))
         
             
     def insertForwardIndexEntry(self, entry, documentId, score=1):
@@ -247,7 +259,8 @@ class UnTextIndex(Persistent, Implicit):
             5+     bucket.
         """
 
-        indexRow = self._index.get(entry, None)
+        index=self._index
+        indexRow = index.get(entry, None)
 
         if indexRow is not None:
             if type(indexRow) is TupleType:
@@ -260,78 +273,29 @@ class UnTextIndex(Persistent, Implicit):
                 if indexRow[0] == documentId:
                     if indexRow[1] != score:
                         indexRow = (documentId, score)
+                        index[entry] = indexRow
                 else:
-                    indexRow = { indexRow[0]: indexRow[1] }
-                    indexRow[documentId] = score
-                    self._index[entry] = indexRow
-            elif type(indexRow) is DictType:
-                if indexRow.has_key(documentId):
-                    if indexRow[documentId] == score:
-                        return 1    # No need to update
-                elif len(indexRow) > 4:
-                    # We have a mapping (dictionary), but it has
-                    # grown too large, so we'll convert it to a
-                    # bucket.
-                    newRow = IIBucket()
-                    for (k, v) in indexRow.items():
-                        newRow[k] = v
-                    indexRow = newRow
-                    indexRow[documentId] = score
-                    self._index[entry] = indexRow
-                else:
-                    indexRow[documentId] = score
+                    indexRow={
+                        indexRow[0]: indexRow[1],
+                        documentId: score,
+                        }
+                    index[entry] = indexRow
             else:
-                # We've got a IIBucket already.
-                if indexRow.has_key(documentId):
-                    if indexRow[documentId] == score:
-                        return 1
-                indexRow[documentId] = score
+                if indexRow.get(documentId, -1) != score:
+                    # score changed (or new entry)
+                    
+                    if type(indexRow) is DictType:
+                        indexRow[documentId] = score
+                        if len(indexRow) > 3:
+                            # Big enough to give it's own database record
+                            indexRow=IIBTree(indexRow) 
+                        index[entry] = indexRow
+                    else:
+                        indexRow[documentId] = score
         else:
             # We don't have any information at this point, so we'll
             # put our first entry in, and use a tuple to save space
-            self._index[entry] = (documentId, score)
-        return 1
-
-
-    def insertReverseIndexEntry(self, entry, documentId):
-        """Insert the correct entry into the reverse indexes for future
-        unindexing."""
-
-        newRow = self._unindex.get(documentId, [])
-        if newRow:
-            # Catch cases where we don't need to modify anything
-            if entry in newRow:
-                return 1
-        newRow.append(entry)
-        self._unindex[documentId] = newRow
-
-
-    def removeReverseEntry(self, entry, documentId):
-        """Removes a single entry from the reverse index."""
-
-        newRow = self._unindex.get(documentId, [])
-        if newRow:
-            try:
-                newRow.remove(entry)
-            except ValueError:
-                pass                    # We don't have it, this is bad
-        self._unindex[documentId] = newRow
-
-
-    def removeForwardEntry(self, entry, documentId):
-        """Remove a single entry from the forward index."""
-
-        currentRow = self._index.get(entry, None)
-        if type(currentRow) is TupleType:
-            del self._index[entry]
-        elif currentRow is not None:
-            try:
-                del self._index[entry][documentId]
-            except (KeyError, IndexError, TypeError):
-                LOG('UnTextIndex', ERROR,
-                    'unindex_object tried to unindex nonexistent'
-                    ' document %s' % str(documentId))
-
+            index[entry] = (documentId, score)
 
     def index_object(self, documentId, obj, threshold=None):
         """ Index an object:
@@ -354,71 +318,100 @@ class UnTextIndex(Persistent, Implicit):
         except AttributeError:
             return 0
         
+        lexicon = self.getLexicon(self._lexicon)
+        splitter=lexicon.Splitter
 
-        sourceWords = self.getLexicon(self._lexicon).Splitter(source)
-
-        wordList = OIBTree()
+        wordScores = OIBTree()
         last = None
         
         # Run through the words and score them
-        for word in sourceWords:
+        for word in splitter(source):
             if word[0] == '\"':
-                last = self.subindex(word[1:-1], wordList,
-                                     wordList.has_key, last) # XXX
+                last = self._subindex(word[1:-1], wordScores, last, splitter)
             else:
-                if wordList.has_key(word):
-                    if word != last:
-                        wordList[word] = wordList[word]+1
-                else:
-                    wordList[word] = 1
+                if word==last: continue
+                last=word
+                wordScores[word]=wordScores.get(word,0)+1
 
-        lexicon = self.getLexicon(self._lexicon)
-        currentWordIds = self._unindex.get(documentId, [])
-        wordCount = 0
+        # Convert scores to use wids:
+        widScores=IIBucket()
+        getWid=lexicon.getWordId
+        for word, score in wordScores.items():
+            widScores[getWid(word)]=score
 
-        # First deal with deleted words
-        # To do this, the first thing we have to do is convert the
-        # existing words to words, from wordIDS
-        wordListAsIds = OIBTree()
-        for word, score in wordList.items():
-            wordListAsIds[lexicon.getWordId(word)] = score
+        del wordScores
+
+        currentWids=IISet(self._unindex.get(documentId, []))
+
+        # Get rid of document words that are no longer indexed
+        self.unindex_objectWids(documentId, difference(currentWids, widScores))
         
-        for word in currentWordIds:
-            if not wordListAsIds.has_key(word):
-                self.removeForwardEntry(word, documentId)
+        # Now index the words. Note that the new xIBTrees are clever
+        # enough to do nothing when there isn't a change. Woo hoo.
+        insert=self.insertForwardIndexEntry
+        for wid, score in widScores.items():
+            insert(wid, documentId, score)
 
-        #import pdb; pdb.set_trace()
-        # Now we can deal with new/updated entries
-        for wordId, score in wordListAsIds.items():
-            self.insertForwardIndexEntry(wordId, documentId, score)
-            self.insertReverseIndexEntry(wordId, documentId)
-            wordCount = wordCount + 1
+        # Save the unindexing info if it's changed:
+        wids=widScores.keys()
+        if wids != currentWids.keys():
+            self._unindex[documentId]=wids
 
-        # Return the number of words you indexed
-        return wordCount
+        return len(wids)
 
+    def _subindex(self, source, wordScores, last, splitter):
+        """Recursively handle multi-word synonyms"""
+        for word in splitter(source):
+            if word[0] == '\"':
+                last = self._subindex(word[1:-1], wordScores, last, splitter)
+            else:
+                if word==last: continue
+                last=word
+                wordScores[word]=wordScores.get(word,0)+1
+
+        return last
 
     def unindex_object(self, i): 
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
-
+        
         index = self._index
         unindex = self._unindex
-        val = unindex.get(i, None)
-        if val is not None:
-            for n in val:
-                v = index.get(n, None)
-                if type(v) is TupleType:
-                    del index[n]
-                elif v is not None:
-                    try:
-                        del index[n][i]
-                    except (KeyError, IndexError, TypeError):
-                        LOG('UnTextIndex', ERROR,
-                            'unindex_object tried to unindex nonexistent'
-                            ' document %s' % str(i))
+        wids = unindex.get(i, None)
+        if wids is not None:
+            self.unindex_objectWids(i, wids)
             del unindex[i]
 
+    def unindex_objectWids(self, i, wids): 
+        """ carefully unindex document with integer id 'i' from the text
+        index and do not fail if it does not exist """
+
+        index = self._index
+        get=index.get
+        for wid in wids:
+            widScores = get(wid, None)
+            if widScores is None:
+                LOG('UnTextIndex', ERROR,
+                    'unindex_object tried to unindex nonexistent'
+                    ' document, wid  %s, %s' % (i,wid))
+                continue
+            if type(widScores) is TupleType:
+                del index[wid]
+            else:
+                try:
+                    del widScores[i]
+                    if widScores:
+                        if type(widScores) is DictType:
+                            if len(widScores) == 1:
+                                # convert to tuple
+                                widScores = widScores.items()[0]
+                            index[wid]=widScores
+                    else:
+                        del index[wid]
+                except (KeyError, IndexError, TypeError):
+                    LOG('UnTextIndex', ERROR,
+                        'unindex_object tried to unindex nonexistent'
+                        ' document %s' % str(i))
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
@@ -442,12 +435,13 @@ class UnTextIndex(Persistent, Implicit):
                 if splitSource[:1] == '"' and splitSource[-1:] == '"':
                     return self[splitSource]
 
-                r = self._index.get(
-                     self.getLexicon(self._lexicon).get(splitSource)[0],
-                     None)
-
-                if r is None:
-                    r = {}
+                wids=self.getLexicon(self._lexicon).get(splitSource)
+                if wids:
+                    r = self._index.get(wids[0], None)
+                    if r is None:
+                        r = {}
+                else:
+                    r={}
 
                 return ResultList(r, (splitSource,), self)
 
@@ -486,28 +480,20 @@ class UnTextIndex(Persistent, Implicit):
             if not keys or not string.strip(keys):
                 return None
             keys = [keys]
+            
         r = None
         
         for key in keys:
             key = string.strip(key)
             if not key:
                 continue
-            
-            rr = IIBucket()
-            try:
-                 for i, score in self.query(key).items():
-                    if score:
-                        rr[i] = score
-            except KeyError:
-                pass
-            if r is None:
-                r = rr
-            else:
-                # Note that we *and*/*narrow* multiple search terms.
-                r = r.intersection(rr) 
+
+            b = self.query(key).bucket()
+            w, r = weightedIntersection(r, b)
 
         if r is not None:
             return r, (self.id,)
+        
         return (IIBucket(), (self.id,))
 
 
@@ -533,19 +519,6 @@ class UnTextIndex(Persistent, Implicit):
         return r
 
 
-    def _subindex(self, isrc, d, old, last):
-        src = self.getLexicon(self._lexicon).Splitter(isrc)  
-
-        for s in src:
-            if s[0] == '\"':
-                last = self.subindex(s[1:-1],d,old,last)
-            else:
-                if old(s):
-                    if s != last: d[s] = d[s]+1
-                else: d[s] = 1
-
-        return last
-
 
     def query(self, s, default_operator=Or, ws=(string.whitespace,)):
         """ This is called by TextIndexes.  A 'query term' which is a
@@ -565,7 +538,6 @@ class UnTextIndex(Persistent, Implicit):
         ## For example, substitute wildcards, or translate words into
         ## various languages.
         q = self.getLexicon(self._lexicon).query_hook(q)
-        
         # do some more parsing
         q = parse2(q, default_operator)
 

@@ -85,18 +85,15 @@
 
 from Lexicon import Lexicon
 from Splitter import Splitter
-from intSet import intSet
 from UnTextIndex import Or
 
 import re, string
-import OIBTree, BTree, IOBTree, IIBTree
 
-# Short cuts for common data containers
-OIBTree = OIBTree.BTree                 # Object -> Integer
-OOBTree = BTree.BTree                   # Object -> Object
-IOBTree = IOBTree.BTree                 # Integer -> Object
-IIBucket = IIBTree.Bucket               # Integer -> Integer
-
+from BTrees.IIBTree import IISet, union, IITreeSet
+from BTrees.OIBTree import OIBTree
+from BTrees.IOBTree import IOBTree
+from BTrees.OOBTree import OOBTree
+from randid import randid
 
 class GlobbingLexicon(Lexicon):
     """Lexicon which supports basic globbing function ('*' and '?').
@@ -127,10 +124,23 @@ class GlobbingLexicon(Lexicon):
 
 
     def __init__(self):
-        self.counter = 0                # word id counter XXX
+        self.clear()
+
+    def clear(self):
         self._lexicon = OIBTree()
         self._inverseLex = IOBTree()
         self._digrams = OOBTree()
+
+    def _convertBTrees(self, threshold=200):
+        Lexicon._convertBTrees(self, threshold)
+        if type(self._digrams) is OOBTree: return
+
+        from BTrees.convert import convert
+
+        _digrams=self._digrams
+        self._digrams=OOBTree()
+        self._digrams._p_jar=self._p_jar
+        convert(_digrams, self._digrams, threshold, IITreeSet)
 
 
     def createDigrams(self, word):
@@ -139,8 +149,8 @@ class GlobbingLexicon(Lexicon):
 
         digrams.append(self.eow + word[0])    # Mark the beginning
 
-        for i in range(len(word)):
-            digrams.append(word[i:i+2])
+        for i in range(1,len(word)):
+            digrams.append(word[i-1:i+1])
 
         digrams[-1] = digrams[-1] + self.eow  # Mark the end
 
@@ -157,6 +167,8 @@ class GlobbingLexicon(Lexicon):
 
     set = getWordId                     # Kludge for old code
 
+    def getWord(self, wid):
+        return self._inverseLex.get(wid, None)
 
     def assignWordId(self, word):
         """Assigns a new word id to the provided word, and return it."""
@@ -165,20 +177,35 @@ class GlobbingLexicon(Lexicon):
         # return it.
         if self._lexicon.has_key(word):
             return self._lexicon[word]
-        
-        # First we go ahead and put the forward and reverse maps in.
-        self._lexicon[word] = self.counter
-        self._inverseLex[self.counter] = word
+
+
+        # Get word id. BBB Backward compat pain.
+        inverse=self._inverseLex
+        try: insert=inverse.insert
+        except AttributeError:
+            # we have an "old" BTree object
+            if inverse:            
+                wid=inverse.keys()[-1]+1
+            else:
+                self._inverseLex=IOBTree()
+                wid=1
+            inverse[wid] = word
+        else:
+            # we have a "new" IOBTree object
+            wid=randid()
+            while not inverse.insert(wid, word):
+                wid=randid()
+
+        self._lexicon[word] = wid
 
         # Now take all the digrams and insert them into the digram map.
         for digram in self.createDigrams(word):
-            set = self._digrams.get(digram)
+            set = self._digrams.get(digram, None)
             if set is None:
-                self._digrams[digram] = set = intSet()
-            set.insert(self.counter)
+                self._digrams[digram] = set = IISet()
+            set.insert(wid)
 
-        self.counter = self.counter + 1
-        return self.counter - 1         # Adjust for the previous increment
+        return wid
 
     
     def get(self, pattern):
@@ -208,14 +235,11 @@ class GlobbingLexicon(Lexicon):
             return (result, )
         
         ## now get all of the intsets that contain the result digrams
-        result = IIBucket()
+        result = None
         for digram in digrams:
-            if self._digrams.has_key(digram):
-                matchSet = self._digrams[digram]
-                if matchSet is not None:
-                    result = IIBucket().union(matchSet)
+            result=union(result, self._digrams.get(digram, None))
 
-        if len(result) == 0:
+        if not result:
             return ()
         else:
             ## now we have narrowed the list of possible candidates
@@ -227,10 +251,10 @@ class GlobbingLexicon(Lexicon):
 
             expr = re.compile(self.createRegex(pattern))
             words = []
-            hits = []
-            for x in result.keys():
+            hits = IISet()
+            for x in result:
                 if expr.match(self._inverseLex[x]):
-                    hits.append(x)
+                    hits.insert(x)
             return hits
 
                 
@@ -242,7 +266,6 @@ class GlobbingLexicon(Lexicon):
     def query_hook(self, q):
         """expand wildcards"""
         words = []
-        wids = []
         for w in q:
             if ( (self.multi_wc in w) or
                  (self.single_wc in w) ):
@@ -286,3 +309,5 @@ class GlobbingLexicon(Lexicon):
                                   r'()&|!@#$%^{}\<>')
 
         return "%s$" % result 
+
+

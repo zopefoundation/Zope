@@ -109,7 +109,7 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     def getObject(self, REQUEST=None):
         """Try to return the object for this record"""
         try:
-            obj = self.aq_parent.restrictedTraverse(self.getPath())
+            obj = self.aq_parent.unrestrictedTraverse(self.getPath())
             if not obj:
                 if REQUEST is None:
                     REQUEST = self.REQUEST

@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 
-from UnIndex import UnIndex, MV, intSet
+from UnIndex import UnIndex
 from zLOG import LOG, ERROR
-from Missing import MV
-from types import *
+from types import StringType
+from BTrees.OOBTree import OOSet, difference
 
 class UnKeywordIndex(UnIndex):
 
@@ -111,69 +111,54 @@ class UnKeywordIndex(UnIndex):
         # self.id is the name of the index, which is also the name of the
         # attribute we're interested in.  If the attribute is callable,
         # we'll do so.
-        try:
-            newKeywords = getattr(obj, self.id)
-            if callable(newKeywords):
-                newKeywords = newKeywords()
-        except AttributeError:
-            newKeywords = MV
+        newKeywords = getattr(obj, self.id, None)
+        if callable(newKeywords):
+            newKeywords = newKeywords()
 
         if type(newKeywords) is StringType:
             newKeywords = (newKeywords, )
 
-        # Now comes the fun part, we need to figure out what's changed
-        # if anything from the previous record.
-        oldKeywords = self._unindex.get(documentId, MV)
-
-        if newKeywords is MV:
+        if newKeywords is None:
             self.unindex_object(documentId)
             return 0
-        elif oldKeywords is MV:
+
+        # Now comes the fun part, we need to figure out what's changed
+        # if anything from the previous record.
+        oldKeywords = self._unindex.get(documentId, None)
+
+        if oldKeywords is None:
             try:
                 for kw in newKeywords:
                     self.insertForwardIndexEntry(kw, documentId)
             except TypeError:
                 return 0
         else:
-            # We need the old keywords to be a mapping so we can manipulate
-            # them more easily.
-            tmp = {}
-            try:
-                for kw in oldKeywords:
-                    tmp[kw] = None
-                    oldKeywords = tmp
-
-                    # Now we're going to go through the new keywords,
-                    # and add those that aren't already indexed.  If
-                    # they are already indexed, just delete them from
-                    # the list.
-                    for kw in newKeywords:
-                        if oldKeywords.has_key(kw):
-                            del oldKeywords[kw]
-                        else:
-                            self.insertForwardIndexEntry(kw, documentId)
-
-                    # Now whatever is left in oldKeywords are keywords
-                    # that we no longer have, and need to be removed
-                    # from the indexes.
-                    for kw in oldKeywords.keys():
-                        self.removeForwardIndexEntry(kw, documentId)
-
-            except TypeError:
-                return 0
+            if type(oldKeywords) is not OOSet: oldKeywords=OOSet(oldKeywords)
+            newKeywords=OOSet(newKeywords)
+            self.unindex_objectKeywords(
+                documentId, difference(oldKeywords, newKeywords))
+            for kw in difference(newKeywords, oldKeywords):
+                self.insertForwardIndexEntry(kw, documentId)
         
-        self._unindex[documentId] = newKeywords[:] # Make a copy
+        self._unindex[documentId] = list(newKeywords)
 
         return 1
     
 
+    def unindex_objectKeywords(self, documentId, keywords):
+        """ carefully unindex the object with integer id 'documentId'"""
+
+        if keywords is not None:
+            for kw in keywords:
+                self.removeForwardIndexEntry(kw, documentId)
+
     def unindex_object(self, documentId):
         """ carefully unindex the object with integer id 'documentId'"""
 
-        keywords = self._unindex.get(documentId, MV)
-        if keywords is MV:
-            return None
-        for kw in keywords:
-            self.removeForwardIndexEntry(kw, documentId)
-
-        del self._unindex[documentId]
+        keywords = self._unindex.get(documentId, None)
+        self.unindex_objectKeywords(documentId, keywords)
+        try:
+            del self._unindex[documentId]
+        except KeyError:
+            LOG('UnKeywordIndex', ERROR, 'Attempt to unindex nonexistent'
+                ' document id %s' % documentId)

@@ -29,8 +29,9 @@ AND THERE IS NO OBLIGATION WHATSOEVER TO PROVIDE MAINTENANCE,
 SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 """
 
-__author__ = "Steve Purcell (stephen_purcell@yahoo.com)"
-__version__ = "$Revision: 1.1.4.1 $"[11:-2]
+__author__ = "Steve Purcell"
+__email__ = "stephen_purcell@yahoo.com"
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 import time
 import sys
@@ -62,11 +63,13 @@ class TestResult:
     contain tuples of (testcase, exceptioninfo), where exceptioninfo is a
     tuple of values as returned by sys.exc_info().
     """
-    def __init__(self):
+    def __init__(self,args=(),kw={}):
         self.failures = []
         self.errors = []
         self.testsRun = 0
         self.shouldStop = 0
+        self.__args = args
+        self.__kw   = kw
 
     def startTest(self, test):
         "Called when the given test is about to be run"
@@ -112,17 +115,26 @@ class TestCase:
     many test methods as are needed. When instantiating such a TestCase
     subclass, specify in the constructor arguments the name of the test method
     that the instance is to execute.
+
+    If it is necessary to override the __init__ method, the base class
+    __init__ method must always be called.
     """
-    def __init__(self, methodName='runTest'):
+    def __init__(self, methodName='runTest',*args,**kw):
         """Create an instance of the class that will use the named test
            method when executed. Raises a ValueError if the instance does
            not have a method with the specified name.
         """
+        
         try:
-            self.__testMethod = getattr(self,methodName)
+            self.__testMethodName = methodName
+            testMethod = getattr(self, methodName)
+            self.__testMethodDoc = testMethod.__doc__
         except AttributeError:
             raise ValueError, "no such test method in %s: %s" % \
                   (self.__class__, methodName)
+
+        self.__args = args
+        self.__kw   = kw
 
     def setUp(self):
         "Hook method for setting up the test fixture before exercising it."
@@ -136,7 +148,7 @@ class TestCase:
         return 1
 
     def defaultTestResult(self):
-        return TestResult()
+        return TestResult(self.__args,self.__kw)
 
     def shortDescription(self):
         """Returns a one-line description of the test, or None if no
@@ -145,18 +157,18 @@ class TestCase:
         The default implementation of this method returns the first line of
         the specified test method's docstring.
         """
-        doc = self.__testMethod.__doc__
+        doc = self.__testMethodDoc
         return doc and string.strip(string.split(doc, "\n")[0]) or None
 
     def id(self):
-        return "%s.%s" % (self.__class__, self.__testMethod.__name__)
+        return "%s.%s" % (self.__class__, self.__testMethodName)
 
     def __str__(self):
-        return "%s (%s)" % (self.__testMethod.__name__, self.__class__)
+        return "%s (%s)" % (self.__testMethodName, self.__class__)
 
     def __repr__(self):
         return "<%s testMethod=%s>" % \
-               (self.__class__, self.__testMethod.__name__)
+               (self.__class__, self.__testMethodName)
 
     def run(self, result=None):
         return self(result)
@@ -164,6 +176,7 @@ class TestCase:
     def __call__(self, result=None):
         if result is None: result = self.defaultTestResult()
         result.startTest(self)
+        testMethod = getattr(self, self.__testMethodName)
         try:
             try:
                 self.setUp()
@@ -172,7 +185,7 @@ class TestCase:
                 return
 
             try:
-                self.__testMethod()
+                apply(testMethod,self.__args,self.__kw)
             except AssertionError, e:
                 result.addFailure(self,self.__exc_info())
             except:
@@ -186,8 +199,9 @@ class TestCase:
             result.stopTest(self)
 
     def debug(self):
+        """Run the test without collecting errors in a TestResult"""
         self.setUp()
-        self.__testMethod()
+        getattr(self, self.__testMethodName)()
         self.tearDown()
 
     def assert_(self, expr, msg=None):
@@ -219,6 +233,12 @@ class TestCase:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
             raise AssertionError, excName
+
+    def assertEqual(self, first, second, msg=None):
+        """Assert that the two objects are equal as determined by the '=='
+           operator.
+        """
+        self.assert_((first == second), msg or '%s != %s' % (first, second))
 
     def fail(self, msg=None):
         """Fail immediately, with the given message."""
@@ -278,8 +298,8 @@ class TestSuite:
         return result
 
     def debug(self):
+        """Run the tests without collecting errors in a TestResult"""
         for test in self._tests: test.debug()
-        
 
 
 class FunctionTestCase(TestCase):
@@ -345,7 +365,7 @@ def getTestCaseNames(testCaseClass, prefix, sortUsing=cmp):
     return testFnNames
 
 
-def makeSuite(testCaseClass, prefix='test', sortUsing=cmp):
+def makeSuite(testCaseClass, prefix='test', sortUsing=cmp, suiteClass=TestSuite):
     """Returns a TestSuite instance built from all of the test functions
        in the given test case class whose names begin with the given
        prefix. The cases are sorted by their function names
@@ -353,10 +373,21 @@ def makeSuite(testCaseClass, prefix='test', sortUsing=cmp):
     """
     cases = map(testCaseClass,
                 getTestCaseNames(testCaseClass, prefix, sortUsing))
-    return TestSuite(cases)
+    return suiteClass(cases)
 
 
-def createTestInstance(name, module=None):
+def findTestCases(module, prefix='test', sortUsing=cmp, suiteClass=TestSuite):
+    import types
+    tests = []
+    for name in dir(module):
+        obj = getattr(module, name)
+        if type(obj) == types.ClassType and issubclass(obj, TestCase):
+            tests.append(makeSuite(obj, prefix=prefix,
+                         sortUsing=sortUsing, suiteClass=suiteClass))
+    return suiteClass(tests)
+
+
+def createTestInstance(name, module=None, suiteClass=TestSuite):
     """Finds tests by their name, optionally only within the given module.
 
     Return the newly-constructed test, ready to run. If the name contains a ':'
@@ -371,7 +402,6 @@ def createTestInstance(name, module=None):
      findTest('examples.listtests.ListTestCase:check-')
         -- returns result of calling makeSuite(ListTestCase, prefix="check")
     """
-          
     spec = string.split(name, ':')
     if len(spec) > 2: raise ValueError, "illegal test name: %s" % name
     if len(spec) == 1:
@@ -396,7 +426,7 @@ def createTestInstance(name, module=None):
             prefix = caseName[:-1]
             if not prefix:
                 raise ValueError, "prefix too short: %s" % name
-            test = makeSuite(constructor, prefix=prefix)
+            test = makeSuite(constructor, prefix=prefix, suiteClass=suiteClass)
         else:
             test = constructor(caseName)
     else:
@@ -428,7 +458,7 @@ class _WritelnDecorator:
         if args: apply(self.write, args)
         self.write(self.linesep)
 
-        
+ 
 class _JUnitTextTestResult(TestResult):
     """A test result class that can print formatted text results to a stream.
 
@@ -628,7 +658,7 @@ Examples:
                                                in MyTestCase
 """
     def __init__(self, module='__main__', defaultTest=None,
-                 argv=None, testRunner=None):
+                 argv=None, testRunner=None, suiteClass=TestSuite):
         if type(module) == type(''):
             self.module = __import__(module)
             for part in string.split(module,'.')[1:]:
@@ -639,9 +669,9 @@ Examples:
             argv = sys.argv
         self.defaultTest = defaultTest
         self.testRunner = testRunner
+        self.suiteClass = suiteClass
         self.progName = os.path.basename(argv[0])
         self.parseArgs(argv)
-        self.createTests()
         self.runTests()
 
     def usageExit(self, msg=None):
@@ -658,19 +688,23 @@ Examples:
                 if opt in ('-h','-H','--help'):
                     self.usageExit()
             if len(args) == 0 and self.defaultTest is None:
-                raise getopt.error, "No default test is defined."
+                self.test = findTestCases(self.module,
+                                          suiteClass=self.suiteClass)
+                return
             if len(args) > 0:
                 self.testNames = args
             else:
                 self.testNames = (self.defaultTest,)
+            self.createTests()
         except getopt.error, msg:
             self.usageExit(msg)
 
     def createTests(self):
         tests = []
         for testName in self.testNames:
-            tests.append(createTestInstance(testName, self.module))
-        self.test = TestSuite(tests)
+            tests.append(createTestInstance(testName, self.module,
+                                            suiteClass=self.suiteClass))
+        self.test = self.suiteClass(tests)
 
     def runTests(self):
         if self.testRunner is None:

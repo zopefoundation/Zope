@@ -84,11 +84,11 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 from Persistence import Persistent
-from BTree import BTree
-from intSet import intSet
+from BTrees.OOBTree import OOBTree
+from BTrees.IIBTree import IITreeSet
 import operator
 from Missing import MV
 import string
@@ -135,7 +135,7 @@ class Index(Persistent):
             self.id = id
             self.ignore_ex=ignore_ex
             self.call_methods=call_methods
-            self._index = BTree()
+            self._index = OOBTree()
             
             self._reindex()
         else:
@@ -176,7 +176,7 @@ class Index(Persistent):
 
 
     def clear(self):
-        self._index = BTree()
+        self._index = OOBTree()
 
 
     def _reindex(self, start=0):
@@ -200,7 +200,7 @@ class Index(Persistent):
             if k is None or k == MV: continue
 
             set=get(k)
-            if set is None: index[k] = set = intSet()
+            if set is None: index[k] = set = IITreeSet()
             set.insert(i)
 
 
@@ -225,7 +225,7 @@ class Index(Persistent):
             return
 
         set = index.get(k)
-        if set is None: index[k] = set = intSet()
+        if set is None: index[k] = set = IITreeSet()
         set.insert(i)
 
 
@@ -301,8 +301,7 @@ class Index(Persistent):
                 if hi: setlist = index.items(lo,hi)
                 else:  setlist = index.items(lo)
                 for k,set in setlist:
-                    if r is None: r = set
-                    else: r = r.union(set)
+                    w, r = weightedUnion(r, set)
             except KeyError: pass
         else:           #not a range
             get = index.get
@@ -310,11 +309,10 @@ class Index(Persistent):
                 if key: anyTrue = 1
                 set=get(key)
                 if set is not None:
-                    if r is None: r = set
-                    else: r = r.union(set)
+                    w, r = weightedUnion(r, set)
 
         if r is None:
-            if anyTrue: r=intSet()
+            if anyTrue: r=IISet()
             else: return None
 
         return r, (id,)

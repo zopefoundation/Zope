@@ -92,11 +92,12 @@ mapping.
 from Splitter import Splitter
 from Persistence import Persistent
 from Acquisition import Implicit
-import OIBTree, BTree
-OIBTree=OIBTree.BTree
-OOBTree=BTree.BTree
-import re
 
+from BTrees.OIBTree import OIBTree
+from BTrees.IOBTree import IOBTree
+from BTrees.IIBTree import IISet, IITreeSet
+
+from randid import randid
 
 class Lexicon(Persistent, Implicit):
     """Maps words to word ids and then some
@@ -112,13 +113,38 @@ class Lexicon(Persistent, Implicit):
     stop_syn={}
 
     def __init__(self, stop_syn=None):
-        self._lexicon = OIBTree()
-        self.counter = 0
+        self.clear()
         if stop_syn is None:
             self.stop_syn = {}
         else:
             self.stop_syn = stop_syn
 
+    def clear(self):
+        self._lexicon = OIBTree()
+        self._inverseLex = IOBTree()
+        
+    def _convertBTrees(self, threshold=200):
+        if (type(self._lexicon) is OIBTree and
+            type(getattr(self, '_inverseLex', None)) is IOBTree):
+            return
+
+        from BTrees.convert import convert
+
+        lexicon=self._lexicon
+        self._lexicon=OIBTree()
+        self._lexicon._p_jar=self._p_jar
+        convert(lexicon, self._lexicon, threshold)
+
+        try:
+            inverseLex=self._inverseLex
+            self._inverseLex=IOBTree()
+        except AttributeError:
+            # older lexicons didn't have an inverse lexicon
+            self._inverseLex=IOBTree()
+            inverseLex=self._inverseLex
+
+        self._inverseLex._p_jar=self._p_jar
+        convert(inverseLex, self._inverseLex, threshold)
                 
     def set_stop_syn(self, stop_syn):
         """ pass in a mapping of stopwords and synonyms.  Format is:
@@ -135,31 +161,46 @@ class Lexicon(Persistent, Implicit):
     def getWordId(self, word):
         """ return the word id of 'word' """
 
-        if self._lexicon.has_key(word):
-            return self._lexicon[word]
-        else:
-            return self.assignWordId(word)
-
+        wid=self._lexicon.get(word, None)
+        if wid is None: 
+            wid=self.assignWordId(word)
+        return wid
+        
     set = getWordId
 
-    
+    def getWord(self, wid):
+        """ post-2.3.1b2 method, will not work with unconverted lexicons """
+        return self._inverseLex.get(wid, None)
+        
     def assignWordId(self, word):
         """Assigns a new word id to the provided word and returns it."""
         # First make sure it's not already in there
         if self._lexicon.has_key(word):
             return self._lexicon[word]
-        
-        if not hasattr(self, 'counter'):
-            self.counter = 0
-        self._lexicon[intern(word)] = self.counter
-        self.counter = self.counter + 1
-        return self.counter - 1 
+
+
+        try: inverse=self._inverseLex
+        except AttributeError:
+            # woops, old lexicom wo wids
+            inverse=self._inverseLex=IOBTree()
+            for word, wid in self._lexicon.items():
+                inverse[wid]=word
+
+        wid=randid()
+        while not inverse.insert(wid, word):
+            wid=randid()
+
+        self._lexicon[intern(word)] = wid
+
+        return wid
 
 
     def get(self, key, default=None):
         """Return the matched word against the key."""
-        return [self._lexicon.get(key, default)]
-
+        r=IISet()
+        wid=self._lexicon.get(key, default)
+        if wid is not None: r.insert(wid)
+        return r
 
     def __getitem__(self, key):
         return self.get(key)
@@ -174,21 +215,6 @@ class Lexicon(Persistent, Implicit):
         if words is None:
             words = self.stop_syn
         return Splitter(astring, words)
-
-
-    def grep(self, query):
-        """
-        regular expression search through the lexicon
-        he he.
-
-        Do not use unless you know what your doing!!!
-        """
-        expr = re.compile(query)
-        hits = []
-        for x in self._lexicon.keys():
-            if expr.search(x):
-                hits.append(x)
-        return hits
 
 
     def query_hook(self, q):

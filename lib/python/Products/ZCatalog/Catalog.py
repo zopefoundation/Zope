@@ -86,9 +86,6 @@
 from Persistence import Persistent
 import Acquisition
 import ExtensionClass
-import BTree, OIBTree, IOBTree, IIBTree
-IIBucket=IIBTree.Bucket
-from intSet import intSet
 from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
 from SearchIndex.Lexicon import Lexicon
 import regex, pdb
@@ -101,14 +98,13 @@ from zLOG import LOG, ERROR
 from Lazy import LazyMap, LazyFilter, LazyCat
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
+from BTrees.IIBTree import intersection, weightedIntersection
+from BTrees.OIBTree import OIBTree
+from BTrees.IOBTree import IOBTree
+import BTrees.Length
+from SearchIndex.randid import randid
+
 import time
-class KWMultiMapping(MultiMapping):
-    def has_key(self, name):
-        try:
-            r=self[name]
-            return 1
-        except KeyError:
-            return 0
 
 def orify(seq,
           query_map={
@@ -118,7 +114,7 @@ def orify(seq,
     subqueries=[]
     for q in seq:
         try: q=query_map[type(q)](q)
-        except: q=Query.Cmp(q)
+        except KeyError: q=Query.Cmp(q)
         subqueries.append(q)
     return apply(Query.Or,tuple(subqueries))
     
@@ -151,10 +147,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # integer id to the meta_data, self.uids is a mapping of the
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
-        
-        self.data = BTree.BTree()       # mapping of rid to meta_data
-        self.uids = OIBTree.BTree()     # mapping of uid to rid
-        self.paths = IOBTree.BTree()    # mapping of rid to uid
+
+        self.__len__=BTrees.Length.Length()
+        self.clear()
 
         # indexes can share a lexicon or have a private copy.  Here,
         # we instantiate a lexicon to be shared by all text indexes.
@@ -163,13 +158,58 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if type(vocabulary) is type(''):
             self.lexicon = vocabulary
         else:
-            #ack!
             self.lexicon = Lexicon()
 
         if brains is not None:
             self._v_brains = brains
             
         self.updateBrains()
+
+    def clear(self):
+        """ clear catalog """
+        
+        self.data  = IOBTree()  # mapping of rid to meta_data
+        self.uids  = OIBTree()  # mapping of uid to rid
+        self.paths = IOBTree()  # mapping of rid to uid
+
+        # convert old-style Catalog object to new in-place
+        try: self.__len__.set(0)
+        except AttributeError: self.__len__=BTrees.Length.Length()
+
+        for x in self.indexes.values():
+            x.clear()
+
+    def _convertBTrees(self, threshold=200):
+
+        from BTrees.convert import convert
+
+        if type(self.data) is not IOBTree:
+            data=self.data
+            self.data=IOBTree()
+            convert(data, self.data, threshold)
+
+            uids=self.uids
+            self.uids=OIBTree()
+            convert(uids, self.uids, threshold)
+
+            paths=self.paths
+            self.paths=IOBTree()
+            convert(paths, self.paths, threshold)
+
+            self.__len__=BTrees.Length.Length()
+
+        for index in self.indexes.values():
+            index._convertBTrees(threshold)
+
+        lexicon=self.lexicon
+        if type(lexicon) is type(''):
+           lexicon=getattr(self, lexicon).lexicon
+        lexicon._convertBTrees(threshold)
+
+    def __len__(self):
+        # NOTE, this is never called for new catalogs, since
+        # each instance overrides this.
+        return len(self.data)
 
     def updateBrains(self):
         self.useBrains(self._v_brains)
@@ -213,7 +253,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
         scopy = self.schema.copy()
 
-        # it is useful for our brains to know these things
         scopy['data_record_id_']=len(self.schema.keys())
         scopy['data_record_score_']=len(self.schema.keys())+1
         scopy['data_record_normalized_score_']=len(self.schema.keys())+2
@@ -345,32 +384,53 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         'uid' is the unique Catalog identifier for this object
 
         """
+        
         data = self.data
 
-        if self.uids.has_key(uid):
-            index = self.uids[uid]
-        elif data:
-            index = data.keys()[-1] + 1  # find the next available unique id
-            self.uids[uid] = index
-            self.paths[index] = uid
-        else:
-            index = 0                       
-            self.uids[uid] = index
-            self.paths[index] = uid
-
-        
         # meta_data is stored as a tuple for efficiency
         newDataRecord = self.recordify(object)
-        oldDataRecord = data.get(index, None)
-        
-        # Now we need to compare the tuples before we update them!
-        if oldDataRecord is not None:
-            for i in range(len(newDataRecord)):
-                if newDataRecord[i] != oldDataRecord[i]:
-                    data[index] = newDataRecord
-                    break
+
+        index=self.uids.get(uid, None)
+        if index is not None:
+            # old data
+            
+            if data.get(index, 0) != newDataRecord:
+                # Update the meta-data, if necessary
+                data[index] = newDataRecord
+                
         else:
-            data[index] = newDataRecord
+            # new data
+            
+            if type(data) is IOBTree:
+                # New style, get radom id
+                
+                index=getattr(self, '_v_nextid', 0)
+                if index%4000 == 0: index = randid()
+                while not data.insert(index, newDataRecord):
+                    index=randid()
+
+                # We want ids to be somewhat random, but there are
+                # advantages for having some ids generated
+                # sequentially when many catalog updates are done at
+                # once, such as when reindexing or bulk indexing.
+                # We allocate ids sequentially using a volatile base,
+                # so different threads get different bases. This
+                # further reduces conflict and reduces churn in
+                # here and it result sets when bulk indexing.
+                self._v_nextid=index+1
+            else:
+                if data:
+                    # find the next available unique id
+                    index = data.keys()[-1] + 1
+                else:
+                    index=0
+                data[index] = newDataRecord
+
+            try: self.__len__.change(1)
+            except AttributeError: pass # No managed length (old-style)
+                    
+            self.uids[uid] = index
+            self.paths[index] = uid
             
         total = 0
         for x in self.indexes.values():
@@ -418,6 +478,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
                                            'attempted to delete rid %s '
                                            'from paths or data btree.' % rid))
+                else:
+                    try: self.__len__.change(-1)
+                    except AttributeError: pass # No managed length
+
             del uids[uid]
             self.data = data
         else:
@@ -425,15 +489,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                                    'attempted to uncatalog an object '
                                    'with a uid of %s. ' % uid))
             
-    def clear(self):
-        """ clear catalog """
-        
-        self.data = BTree.BTree()
-        self.uids = OIBTree.BTree()
-        self.paths = IOBTree.BTree()
-
-        for x in self.indexes.values():
-            x.clear()
 
     def uniqueValuesFor(self, name):
         """ return unique values for FieldIndex name """
@@ -441,26 +496,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
     def hasuid(self, uid):
         """ return the rid if catalog contains an object with uid """
-        if self.uids.has_key(uid):
-            return self.uids[uid]
-        else:
-            return None
+        return self.uids.get(uid)
 
     def recordify(self, object):
         """ turns an object into a record tuple """
-
         record = []
         # the unique id is allways the first element
         for x in self.names:
-            try:
-                attr = getattr(object, x)
-                if(callable(attr)):
-                    attr = attr()
-                    
-            except:
-                attr = MV
+            attr=getattr(object, x, MV)
+            if(attr is not MV and callable(attr)): attr=attr()
             record.append(attr)
-
         return tuple(record)
 
     def instantiate(self, record):
@@ -485,12 +530,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 ## Searching engine.  You don't really have to worry about what goes
 ## on below here...  Most of this stuff came from ZTables with tweaks.
 
-    def _indexedSearch(self, args, sort_index, append, used,
-                       IIBType=type(IIBucket()), intSType=type(intSet())):
+    def _indexedSearch(self, args, sort_index, append, used):
         """
         Iterate through the indexes, applying the query to each one.
-        Do some magic to join result sets.  Be intelligent about
-        handling intSets and IIBuckets.
         """
 
         rs=None
@@ -498,82 +540,73 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
         if used is None: used={}
         for i in self.indexes.keys():
-            try:
-                index = self.indexes[i].__of__(self)
-                if hasattr(index,'_apply_index'):
-                    r=index._apply_index(args)
-                    if r is not None:
-                        r, u = r
-                        for name in u:
-                            used[name]=1
-                        if rs is None:
-                            rs = r
-                        else:
-                            # you can't intersect an IIBucket into an
-                            # intSet, but you can go the other way
-                            # around.  Make sure we're facing the
-                            # right direction...
-                            if type(rs) is intSType and type(r) is IIBType:
-                                rs=r.intersection(rs)
-                            else:
-                                rs=rs.intersection(r)
-            except:
-                return used
+            index = self.indexes[i].__of__(self)
+            if hasattr(index,'_apply_index'):
+                r=index._apply_index(args)
+                if r is not None:
+                    r, u = r
+                    for name in u:
+                        used[name]=1
+                    w, rs = weightedIntersection(rs, r)
 
+        #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
+            # return everything
             if sort_index is None:
                 rs=data.items()
-                append(LazyMap(self.instantiate, rs))
+                append(LazyMap(self.instantiate, rs, len(self)))
             else:
                 try:
-                    for k, intset in sort_index._index.items():
+                    for k, intset in sort_index.items():
                         append((k,LazyMap(self.__getitem__, intset)))
                 except AttributeError:
-                    raise ValueError, "Incorrect index name passed as " \
-                          "'sort_on' parameter.  Note that you may only " \
-                          "sort on values for which there is a matching " \
-                          "index available."
+                    raise ValueError, (
+                        "Incorrect index name passed as" 
+                        " 'sort_on' parameter.  Note that you may only" 
+                        " sort on values for which there is a matching" 
+                        " index available.")
         elif rs:
-            if sort_index is None and type(rs) is IIBType:
-                # then there is score information.  Build a new result 
-                # set, sort it by score, reverse it, compute the
-                # normalized score, and Lazify it.
-                rset = []
-                for key, score in rs.items():
-                    rset.append((score, key))
-                rset.sort()
-                rset.reverse()
+            # this is reached by having an empty result set (ie non-None)
+            if sort_index is None and hasattr(rs, 'values'):
+                # having a 'values' means we have a data structure with
+                # scores.  Build a new result set, sort it by score, reverse
+                # it, compute the normalized score, and Lazify it.
+                rset = rs.byValue(0) # sort it by score
                 max = float(rset[0][0])
                 rs = []
                 for score, key in rset:
+                    # compute normalized scores
                     rs.append(( int((score/max)*100), score, key))
                 append(LazyMap(self.__getitem__, rs))
                     
-            elif sort_index is None and type(rs) is intSType:
+            elif sort_index is None and not hasattr(rs, 'values'):
                 # no scores?  Just Lazify.
+                if hasattr(rs, 'keys'): rs=rs.keys() 
                 append(LazyMap(self.__getitem__, rs))
             else:
                 # sort.  If there are scores, then this block is not
                 # reached, therefor 'sort-on' does not happen in the
                 # context of text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                if len(rs)>len(sort_index._index):
-                    for k, intset in sort_index._index.items():
-                        if type(rs) is IIBType:
-                            intset=rs.intersection(intset)
-                            # Since we still have an IIBucket, let's convert
-                            # it to its set of keys
-                            intset=intset.keys()
-                        else:
-                            intset=intset.intersection(rs)
-                        if intset: 
+                if ((len(rs) / 4) > len(sort_index)):
+                    # if the sorted index has a quarter as many keys as
+                    # the result set
+                    for k, intset in sort_index.items():
+                        # We have an index that has a set of values for
+                        # each sort key, so we interset with each set and
+                        # get a sorted sequence of the intersections.
+
+                        # This only makes sense if the number of
+                        # keys is much less then the number of results.
+                        intset = intersection(rs, intset)
+                        if intset:
+                            if hasattr(intset, 'keys'): intset=intset.keys() 
                             append((k,LazyMap(self.__getitem__, intset)))
                 else:
-                    if type(rs) is IIBType:
-                        rs=rs.keys()
-                    for r in rs:
-                        append((sort_index._unindex[r],
-                               LazyMap(self.__getitem__,[r])))
+                    if hasattr(rs, 'keys'): rs=rs.keys()
+                    for did in rs:
+                        append((sort_index.keyForDocument(did),
+                               LazyMap(self.__getitem__,[did])))
 
         return used
 
@@ -587,10 +620,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST
-            except: pass
+            except AttributeError: pass
         if kw:
             if REQUEST:
-                m=KWMultiMapping()
+                m=MultiMapping()
                 m.push(REQUEST)
                 m.push(kw)
                 kw=m
@@ -599,7 +632,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Make sure batch size is set
         if REQUEST and not REQUEST.has_key('batch_size'):
             try: batch_size=self.default_batch_size
-            except: batch_size=20
+            except AttributeError: batch_size=20
             REQUEST['batch_size']=batch_size
 
         # Compute "sort_index", which is a sort index, or none:
@@ -611,8 +644,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             sort_index=kw['sort_on']
         else: sort_index=None
         sort_order=''
-        if sort_index is not None and sort_index in self.indexes.keys():
+        if sort_index is not None and self.indexes.has_key(sort_index):
             sort_index=self.indexes[sort_index]
+            if not hasattr(sort_index, 'keyForDocument'):
+                raise CatalogError('Invalid sort index')
 
         # Perform searches with indexes and sort_index
         r=[]
@@ -645,9 +680,4 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     __call__ = searchResults
 
 
-
-
-
-
-
-
+class CatalogError(Exception): pass

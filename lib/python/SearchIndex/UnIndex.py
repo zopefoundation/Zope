@@ -85,21 +85,25 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.25 $'[11:-2]
-
-
+__version__='$Revision: 1.26 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
 import BTree
 import IOBTree
-from intSet import intSet
 import operator
-from Missing import MV
 import string, pdb
 from zLOG import LOG, ERROR
 from types import *
 
+from BTrees.OOBTree import OOBTree
+from BTrees.IOBTree import IOBTree
+from BTrees.IIBTree import IITreeSet, IISet, union
+import BTrees.Length
+
+import sys
+
+_marker = []
 
 def nonEmpty(s):
     "returns true if a non-empty string or any other (nonstring) type"
@@ -115,13 +119,18 @@ class UnIndex(Persistent, Implicit):
 
     meta_type = 'Field Index'
 
-    def __init__(self, id=None, ignore_ex=None, call_methods=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None):
         """Create an unindex
 
         UnIndexes are indexes that contain two index components, the
         forward index (like plain index objects) and an inverted
         index.  The inverted index is so that objects can be unindexed 
         even when the old value of the object is not known.
+
+        e.g.
+
+        self._index = {datum:[documentId1, documentId2]}
+        self._unindex = {documentId:datum}
 
         The arguments are:
 
@@ -138,23 +147,53 @@ class UnIndex(Persistent, Implicit):
           uninded methods for this to work.
 
         """
-	######################################################################
-	# For b/w compatability, have to allow __init__ calls with zero args
+        self.id = id
+        self.ignore_ex=ignore_ex        # currently unimplimented
+        self.call_methods=call_methods
 
-        if not id==ignore_ex==call_methods==None:
-            self.id = id
-            self.ignore_ex=ignore_ex        # currently unimplimented
-            self.call_methods=call_methods
-            self._index = BTree.BTree()
-            self._unindex = IOBTree.BTree()
+        self.__len__=BTrees.Length.Length() # see __len__ method docstring
+        self.clear()
 
-        else:
-            pass
+    def clear(self):
+        # inplace opportunistic conversion from old-style to new style BTrees
+        try: self.__len__.set(0)
+        except AttributeError: self.__len__=BTrees.Length.Length()
+        self._index = OOBTree()
+        self._unindex = IOBTree()
 
+    def _convertBTrees(self, threshold=200):
+        if type(self._index) is OOBTree: return
+
+        from BTrees.convert import convert
+
+        _index=self._index
+        self._index=OOBTree()
+        
+        def convertSet(s, IITreeSet=IITreeSet):
+            if len(s) == 1:
+                try: return s[0]  # convert to int
+                except: pass # This is just an optimization.
+            return IITreeSet(s)
+    
+        convert(_index, self._index, threshold, convertSet)
+
+        _unindex=self._unindex
+        self._unindex=IOBTree()
+        convert(_unindex, self._unindex, threshold)
+
+        self.__len__=BTrees.Length.Length()
+
+    def __nonzero__(self):
+        return not not self._unindex
 
     def __len__(self):
-        return len(self._unindex)
+        """Return the number of objects indexed.
 
+        This method is only called for indexes which have "old" BTrees,
+        and the *only* reason that UnIndexes maintain a __len__ is for
+        the searching code in the catalog during sorting.
+        """
+        return len(self._unindex)
 
     def histogram(self):
         """Return a mapping which provides a histogram of the number of
@@ -173,31 +212,39 @@ class UnIndex(Persistent, Implicit):
         return self._unindex.keys()
 
 
-    def getEntryForObject(self, documentId, default=MV):
+    def getEntryForObject(self, documentId, default=_marker):
         """Takes a document ID and returns all the information we have
         on that specific object."""
-        if default is not MV:
-            return self._unindex.get(documentId, default)
-        else:
+        if default is _marker:
             return self._unindex.get(documentId)
+        else:
+            return self._unindex.get(documentId, default)
             
         
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
         in its entry in the index."""
-
-        indexRow = self._index.get(entry, MV)
-        if indexRow is not MV:
+        global _marker
+        indexRow = self._index.get(entry, _marker)
+        if indexRow is not _marker:
             try:
                 indexRow.remove(documentId)
-                if len(indexRow) == 0:
+                if not indexRow:
                     del self._index[entry]
+                    try: self.__len__.change(-1)
+                    except AttributeError: pass # pre-BTrees-module instance
+            except AttributeError:
+                # index row is an int
+                del self._index[entry]
+                try: self.__len__.change(-1)
+                except AttributeError: pass # pre-BTrees-module instance   
             except:
                 LOG(self.__class__.__name__, ERROR,
                     ('unindex_object could not remove '
-                     'integer id %s from index %s.  This '
+                     'documentId %s from index %s.  This '
                      'should not happen.'
-                     % (str(documentId), str(self.id)))) 
+                     % (str(documentId), str(self.id))), '',
+                    sys.exc_info())
         else:
             LOG(self.__class__.__name__, ERROR,
                 ('unindex_object tried to retrieve set %s '
@@ -210,20 +257,25 @@ class UnIndex(Persistent, Implicit):
         in the forward index.
 
         This will also deal with creating the entire row if necessary."""
-
-        indexRow = self._index.get(entry, MV)
+        global _marker
+        indexRow = self._index.get(entry, _marker)
         
         # Make sure there's actually a row there already.  If not, create
         # an IntSet and stuff it in first.
-        if indexRow is MV:
-            self._index[entry] = intSet()
-            indexRow = self._index[entry]
-        indexRow.insert(documentId)
-
+        if indexRow is _marker:
+            self._index[entry] = documentId
+            try:  self.__len__.change(1)
+            except AttributeError: pass # pre-BTrees-module instance
+        else:
+            try: indexRow.insert(documentId)
+            except AttributeError:
+                # index row is an int
+                indexRow=IITreeSet((indexRow, documentId))
+                self._index[entry] = indexRow
 
     def index_object(self, documentId, obj, threshold=None):
         """ index and object 'obj' with integer id 'documentId'"""
-
+        global _marker
         returnStatus = 0
 
         # First we need to see if there's anything interesting to look at
@@ -235,36 +287,41 @@ class UnIndex(Persistent, Implicit):
             if callable(datum):
                 datum = datum()
         except AttributeError:
-            datum = MV
+            datum = _marker
  
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
-        oldDatum = self._unindex.get(documentId, MV)
-        if not datum == oldDatum:
-            if oldDatum is not MV:
+        oldDatum = self._unindex.get(documentId, _marker)
+        if datum != oldDatum:
+            if oldDatum is not _marker:
                 self.removeForwardIndexEntry(oldDatum, documentId)
-            self.insertForwardIndexEntry(datum, documentId)
-            self._unindex[documentId] = datum
+
+            if datum is not _marker:
+                self.insertForwardIndexEntry(datum, documentId)
+                self._unindex[documentId] = datum
 
             returnStatus = 1
 
         return returnStatus
-    
 
     def unindex_object(self, documentId):
         """ Unindex the object with integer id 'documentId' and don't
         raise an exception if we fail """
 
-        unindexRecord = self._unindex.get(documentId, None)
-        if unindexRecord is None:
+        global _marker
+        unindexRecord = self._unindex.get(documentId, _marker)
+        if unindexRecord is _marker:
             return None
 
         self.removeForwardIndexEntry(unindexRecord, documentId)
         
-        del self._unindex[documentId]
-        
+        try:
+            del self._unindex[documentId]
+        except:
+            LOG('UnIndex', ERROR, 'Attempt to unindex nonexistent document'
+                ' with id %s' % documentId)
 
-    def _apply_index(self, request, cid=''): 
+    def _apply_index(self, request, cid='', type=type, None=None): 
         """Apply the index to query parameters given in the argument,
         request
 
@@ -301,6 +358,7 @@ class UnIndex(Persistent, Implicit):
         r = None
         anyTrue = 0
         opr = None
+        IntType=type(1)
 
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
@@ -321,10 +379,7 @@ class UnIndex(Persistent, Implicit):
                     setlist = index.items(lo)
 
                 for k, set in setlist:
-                    if r is None:
-                        r = set
-                    else:
-                        r = r.union(set)
+                    r = union(r, set)
 
             except KeyError:
                 pass
@@ -334,16 +389,18 @@ class UnIndex(Persistent, Implicit):
             for key in keys:
                 if nonEmpty(key):
                     anyTrue = 1
-                set=get(key)
+                set=get(key, None)
                 if set is not None:
-                    if r is None:
-                        r = set
-                    else:
-                        r = r.union(set)
+                    r = union(r, set)
 
+        if type(r) is IntType: r=IISet((r,))
+        if r:
+            return r, (id,)
+
+                
         if r is None:
             if anyTrue:
-                r=intSet()
+                r=IISet()
             else:
                 return None
 
@@ -369,8 +426,9 @@ class UnIndex(Persistent, Implicit):
             name = self.id
         elif name != self.id:
             return []
+
         if not withLengths: return tuple(
-            filter(nonEmpty,self._index.keys())
+            filter(nonEmpty, self._index.keys())
             )
         else: 
             rl=[]
@@ -379,10 +437,8 @@ class UnIndex(Persistent, Implicit):
                 else: rl.append((i, len(self._index[i])))
             return tuple(rl)
 
+    def keyForDocument(self, id):
+        return self._unindex(id)
 
-    def clear(self):
-        self._index = BTree.BTree()
-        self._unindex = IOBTree.BTree()
-
-
+    def items(self): return self._index.items()
 

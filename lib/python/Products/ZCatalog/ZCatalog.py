@@ -97,13 +97,14 @@ from Persistence import Persistent
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
-from Catalog import Catalog, orify
+from Catalog import Catalog, orify, CatalogError
 from SearchIndex import UnIndex, UnTextIndex
 from Vocabulary import Vocabulary
-import IOBTree
 from Shared.DC.ZRDB.TM import TM
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
+
+StringType=type('')
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -225,7 +226,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     def __init__(self, id, title='', vocab_id=None, container=None):
         self.id=id
         self.title=title
-        self.vocab_id = vocab_id
         
         self.threshold = 10000
         self._v_total = 0
@@ -233,11 +233,11 @@ class ZCatalog(Folder, Persistent, Implicit):
         if vocab_id is None:
             v = Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
             self._setObject('Vocabulary', v)
-            v = 'Vocabulary'
+            self.vocab_id = 'Vocabulary'
         else:
-            v = vocab_id
+            self.vocab_id = vocab_id
 
-        self._catalog = Catalog(vocabulary=v)
+        self._catalog = Catalog(vocabulary=self.vocab_id)
 
         self._catalog.addColumn('id')
         self._catalog.addIndex('id', 'FieldIndex')
@@ -254,6 +254,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog.addColumn('summary')
         self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
 
+    def __len__(self): return len(self._catalog)
 
     def getVocabulary(self):
         """ more ack! """
@@ -406,8 +407,20 @@ class ZCatalog(Folder, Persistent, Implicit):
             RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
 
-    def catalog_object(self, obj, uid):
+    def catalog_object(self, obj, uid=None):
         """ wrapper around catalog """
+
+        if uid is None:
+            try: uid = obj.getPhysicalPath
+            except AttributeError:
+                raise CatalogError(
+                    "A cataloged object must support the 'getPhysicalPath' "
+                    "method if no unique id is provided when cataloging"
+                    )
+            else: uid=string.join(uid(), '/')
+        elif type(uid) is not StringType:
+            raise CatalogError('The object unique id must be a string.')
+
         self._catalog.catalogObject(obj, uid, None)
         # None passed in to catalogObject as third argument indicates
         # that we shouldn't try to commit subtransactions within any
@@ -433,7 +446,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             # exceeded within the boundaries of the current transaction.
             if self._v_total > self.threshold:
                 get_transaction().commit(1)
-                self._p_jar.cacheFullSweep(1)
+                self._p_jar.cacheFullSweep(3)
                 self._v_total = 0
 
     def uncatalog_object(self, uid):
@@ -527,7 +540,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
         elif hasattr(self, 'aq_acquire'):
             try: pmt=self.aq_acquire('_product_meta_types')
-            except:  pass
+            except AttributeError:  pass
         return self.meta_types+Products.meta_types+pmt
 
     def valid_roles(self):
@@ -658,8 +671,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         script=REQUEST.script
         if string.find(path, script) != 0:
             path='%s/%s' % (script, path) 
-        try:    return REQUEST.resolve_url(path)
-        except: return None
+        try: return REQUEST.resolve_url(path)
+        except: pass
 
     def resolve_path(self, path):
         """ 
@@ -668,10 +681,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         style url. If no object is found, None is returned.
         No exceptions are raised.
         """
-        try:
-            return self.unrestrictedTraverse(path)
-        except:
-            return None
+        try: return self.unrestrictedTraverse(path)
+        except: pass
 
     def manage_normalize_paths(self, REQUEST):
         """Ensure that all catalog paths are full physical paths
@@ -713,6 +724,16 @@ class ZCatalog(Folder, Persistent, Implicit):
                   '%s unchanged.' % (len(fixed), len(removed), unchanged),
           action='./manage_main')
 
+    def manage_convertBTrees(self, threshold=200):
+        """Convert the catalog's data structures to use BTrees package"""
+        tt=time.time()
+        ct=time.clock()
+        self._catalog._convertBTrees(threshold
+                                     *1 #make sure ints an int)
+                                     )
+        tt=time.time()-tt
+        ct=time.clock()-ct
+        return 'Finished conversion in %s seconds (%s cpu)' % (tt, ct)
     
 Globals.default__class_init__(ZCatalog)
 
