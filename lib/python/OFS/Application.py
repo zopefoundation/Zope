@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.162 2001/11/17 00:00:20 amos Exp $'''
-__version__='$Revision: 1.162 $'[11:-2]
+$Id: Application.py,v 1.163 2001/11/17 00:06:29 amos Exp $'''
+__version__='$Revision: 1.163 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -476,9 +476,10 @@ def initialize(app):
     # b/c: Ensure that there's an Examples folder with examples
     if not hasattr(app, 'Examples'):
         examples=app._p_jar.importFile(
-            os.path.join(Globals.data_dir, 'Examples.zexp'),
-            clue='Added Examples folder')
+            os.path.join(Globals.data_dir, 'Examples.zexp'))
         app._setObject('Examples', examples)
+        get_transaction().note('Added Examples folder')
+        get_transaction().commit()
         del examples
 
     # b/c: Ensure that Owner role exists.
