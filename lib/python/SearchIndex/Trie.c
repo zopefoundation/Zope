@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.5 1997/03/20 19:30:04 jim Exp $"
+"\n$Id: Trie.c,v 1.6 1997/04/03 15:53:48 jim Exp $"
 ;
 
 
@@ -143,21 +143,36 @@ Trie__p___reinit__(TrieObject *self, PyObject *args)
 {
   PyObject *oid, *jar, *copy;
 
-  UNLESS(PyArg_ParseTuple(args, "OOO", &oid, &jar, &copy)) return NULL;
-  UNLESS(self->oid)
+  if(PyArg_ParseTuple(args, ""))
     {
-      Py_INCREF(oid);
-      ASSIGN(self->oid, oid);
+      if(self->state==cPersistent_UPTODATE_STATE)
+	{
+	  Py_XDECREF(self->bins);
+	  Py_XDECREF(self->value);
+	  self->bins=NULL;
+	  self->value=NULL;
+	  self->min=0;
+	  self->state=cPersistent_GHOST_STATE;
+	}
     }
-  if((self->oid==oid || PyObject_Compare(self->oid, oid)==0)
-     && self->state==cPersistent_UPTODATE_STATE)
+  else
     {
-      Py_XDECREF(self->bins);
-      Py_XDECREF(self->value);
-      self->bins=NULL;
-      self->value=NULL;
-      self->min=0;
-      self->state=cPersistent_GHOST_STATE;
+      UNLESS(PyArg_ParseTuple(args, "OOO", &oid, &jar, &copy)) return NULL;
+      UNLESS(self->oid)
+	{
+	  Py_INCREF(oid);
+	  ASSIGN(self->oid, oid);
+	}
+      if((self->oid==oid || PyObject_Compare(self->oid, oid)==0)
+	 && self->state==cPersistent_UPTODATE_STATE)
+	{
+	  Py_XDECREF(self->bins);
+	  Py_XDECREF(self->value);
+	  self->bins=NULL;
+	  self->value=NULL;
+	  self->min=0;
+	  self->state=cPersistent_GHOST_STATE;
+	}
     }
   Py_INCREF(Py_None);
   return Py_None;
@@ -647,7 +662,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -687,6 +702,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.6  1997/04/03 15:53:48  jim
+  Fixed bug in reinitialization code.
+
   Revision 1.5  1997/03/20 19:30:04  jim
   Major rewrite to use more efficient data structure.  In particular,
   try to avoid one-element tries by storing partial-key/value tuples
