@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.99 2000/06/16 19:40:14 srichter Exp $"""
+$Id: ObjectManager.py,v 1.100 2000/06/23 18:02:03 brian Exp $"""
 
-__version__='$Revision: 1.99 $'[11:-2]
+__version__='$Revision: 1.100 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -510,7 +510,7 @@ class ObjectManager(
     def manage_FTPlist(self, REQUEST):
         "Directory listing for FTP"
         out=()
-        
+
         # check to see if we are being acquiring or not
         ob=self
         while 1:
@@ -531,8 +531,13 @@ class ObjectManager(
                 self.isTopLevelPrincipiaApplicationObject):
             files.insert(0,('..',self.aq_parent))
         for k,v in files:
-            stat=marshal.loads(v.manage_FTPstat(REQUEST))
-            out=out+((k,stat),)
+            # Note that we have to tolerate failure here, because
+            # Broken objects won't stat correctly. If an object fails
+            # to be able to stat itself, we will ignore it.
+            try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
+            except: stat=None
+            if stat is not None:
+                out=out+((k,stat),)
         return marshal.dumps(out)   
 
     def manage_FTPstat(self,REQUEST):
