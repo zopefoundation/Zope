@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.4 1997/08/06 18:19:29 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: DA.py,v 1.5 1997/08/08 22:55:32 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -38,19 +38,33 @@ class Folder(OFS.Folder.Folder):
     manage_connectionForm=ManageHTMLFile('AqueductDA/connection')
     manage_addDAForm=ManageHTMLFile('AqueductDA/daAdd')
     start_time=DateTime.now()
+    bad_connection_string=(
+	"""<p><strong>Warning</strong>: The database is not connected.<p>
+	""")
 
     def manage_connection(self,value=None,check=None,REQUEST=None):
 	'change database connection data'
 	if value is None: return self.database_connection_string()
 	if check: self.database_connect(value)
+	else: self.manage_close_connection(REQUEST)
 	self.database_connection_string(value)
 	return self.manage_main(self,REQUEST)
+
+    def manage_close_connection(self, REQUEST):
+	" "
+	try: self._v_database_connection.close()
+	except: pass
+	self.bad_connection_string=(
+	    """<p><strong>Warning</strong>: The database is not connected.<p>
+	    """)
+	return self.manage_main(self,REQUEST)
+
 
     def database_connect(self,s=''):
 	try: self._v_database_connection.close()
 	except: pass
 	self.bad_connection_string=(
-	    """<strong>Warning</strong>: The database is not connected.
+	    """<p><strong>Warning</strong>: The database is not connected.<p>
 	    """)
 	if not s: s=self.folder_database_connection_string()
 	if not s: return 
@@ -155,10 +169,12 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 		      )
 
 	
-    def query(self,DB__,REQUEST,RESPONSE):
+    def query(self,REQUEST,RESPONSE):
 	' '
-	if DB__ is None: raise 'Database Error', (
-	    'No database connection defined')
+	try: DB__=self.database_connection()
+	except: raise 'Database Error', (
+	    '%s is not connected to a database' % self.id)
+
 	try:
 	    argdata=REQUEST.form.value
 	    argdata=decodestring(argdata)
@@ -197,6 +213,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.5  1997/08/08 22:55:32  jim
+# Improved connection status management and added database close method.
+#
 # Revision 1.4  1997/08/06 18:19:29  jim
 # Renamed description->title and name->id and other changes
 #
