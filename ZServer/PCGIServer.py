@@ -238,6 +238,7 @@ class PCGIChannel(asynchat.async_chat):
     def __repr__(self):
         return "<PCGIChannel at %x>" % id(self)
 
+
 class PCGIServer(asyncore.dispatcher):
     """Accepts PCGI requests and hands them off to the PCGIChannel for
     handling.
@@ -294,6 +295,10 @@ class PCGIServer(asyncore.dispatcher):
             self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
             self.set_reuse_addr()
             self.bind((self.ip, self.port))
+            self.log_info(
+                'PCGI Server started at %s\n'
+                '\tInet socket port: %s' % (time.ctime(time.time()), self.port)
+                )
         else:
             try:
                 os.unlink(self.socket_file)
@@ -306,7 +311,12 @@ class PCGIServer(asyncore.dispatcher):
                 os.chmod(self.socket_file,0777)
             except os.error:
                 pass
+            self.log_info(
+                'PCGI Server started at %s\n' 
+                '\tUnix socket: %s' % (time.ctime(time.time()), self.socket_file)
+                )
         self.listen(256)
+
 
     def read_info(self,info_file):
         "read configuration information from a PCGI info file"
@@ -352,11 +362,21 @@ class PCGIServer(asyncore.dispatcher):
         
         
 class PCGIResponse(HTTPResponse):
+
+    def write(self, data):
+        if not self._wrote:
+            self.stdout.write(str(self))
+            self._wrote=1
+        else:
+            self.stdout.write(data)
     
     def _finish(self):
         self.stdout.finish(self)
         self.stdout.close()
 
+        self.stdout=None
+        self._request=None
+        
         
 class PCGIPipe:
     """
@@ -389,8 +409,9 @@ class PCGIPipe:
             self._channel.push(ShutdownProducer(), 0)
             Wakeup(lambda: asyncore.close_all())
         else:
-             self._channel.push(None, 0)
-             Wakeup()
+            self._channel.push(None, 0)
+            Wakeup()
+        self._data=None
         self._channel=None
         
     def finish(self,request):
