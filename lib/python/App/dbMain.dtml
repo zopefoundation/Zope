@@ -35,7 +35,7 @@ and &quot;undoing&quot; previous changes to your site.
 <TR>
 <FORM ACTION="manage_pack" METHOD="POST">
 <TD ALIGN="LEFT" VALIGN="TOP">
-<BR>Click &quot;Pack&quot; to pack the Principia database, removing 
+<BR>Click &quot;Pack&quot; to pack the Zope database, removing 
 previous revisions of objects that are older than
 <INPUT TYPE="TEXT" VALUE="0" NAME="days:float" SIZE="3"> days.
 </TD>

@@ -8,7 +8,7 @@
 The Control Panel provides access to system management functions,
 such as database and product management.  The system has been running
 (with a process ID of <!--#var process_id-->) for <!--#var
-process_time-->.  Click &quot;Shutdown&quot; to shutdown the Principia 
+process_time-->.  Click &quot;Shutdown&quot; to shutdown the Zope 
 process. It will be restarted on the next web request.
 <BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
 </FORM>

@@ -41,7 +41,7 @@
           <!--#if user-->
 	    <strong><!--#if path--><!--#var path-->/<!--#/if--><!--#var user-->
           <!--#else-->
-            <em>Principia</em>
+            <em>Zope</em>
           <!--#/if-->
 	  </strong> on <!--#var time fmt=Mon--> <!--#var time fmt=day--> at
 	  <!--#var time fmt=Time-->
