@@ -215,11 +215,11 @@ class zhttp_handler:
     def handle_request(self,request):
         self.hits.increment()
 
-        DebugLogger.log('B', id(request), '%s %s' % (string.upper(request.command), request.uri))
+        DebugLogger.log('B', id(request), '%s %s' % (request.command.upper(), request.uri))
 
         size=get_header(CONTENT_LENGTH, request.header)
         if size and size != '0':
-            size=string.atoi(size)
+            size=int(size)
             zhttp_collector(self, request, size)
         else:
             sin=StringIO()
@@ -227,11 +227,6 @@ class zhttp_handler:
 
     def get_environment(self, request,
                         # These are strictly performance hackery...
-                        split=string.split,
-                        strip=string.strip,
-                        join =string.join,
-                        upper=string.upper,
-                        lower=string.lower,
                         h2ehas=header2env.has_key,
                         h2eget=header2env.get,
                         workdir=os.getcwd(),
@@ -250,7 +245,7 @@ class zhttp_handler:
 
         server=request.channel.server
         env = {}
-        env['REQUEST_METHOD']=upper(request.command)
+        env['REQUEST_METHOD']=request.command.upper()
         env['SERVER_PORT']=str(server.port)
         env['SERVER_NAME']=server.server_name
         env['SERVER_SOFTWARE']=server.SERVER_IDENT
@@ -262,7 +257,7 @@ class zhttp_handler:
         else:
             env['SCRIPT_NAME'] = self.uri_base
             try:
-                path_info=split(path,self.uri_base[1:],1)[1]
+                path_info=path.split(self.uri_base[1:],1)[1]
             except:
                 path_info=''
             env['PATH_INFO']=path_info
@@ -284,13 +279,13 @@ class zhttp_handler:
 
         env_has=env.has_key
         for header in request.header:
-            key,value=split(header,":",1)
-            key=lower(key)
-            value=strip(value)
+            key,value=header.split(":",1)
+            key=key.lower()
+            value=value.strip()
             if h2ehas(key) and value:
                 env[h2eget(key)]=value
             else:
-                key='HTTP_%s' % upper(join(split(key, "-"), "_"))
+                key='HTTP_%s' % ("_".join(key.split( "-"))).upper()
                 if value and not env_has(key):
                     env[key]=value
         env.update(self.env_override)
@@ -301,7 +296,7 @@ class zhttp_handler:
        
         s=get_header(CONTENT_LENGTH, request.header)
         if s:
-            s=string.atoi(s)
+            s=int(s)
         else:
             s=0    
         DebugLogger.log('I', id(request), s)
