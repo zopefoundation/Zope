@@ -92,8 +92,6 @@ import string
 
 from TALDefs import NAME_RE, TALError, TALESError
 
-CancelAction = []
-
 class DummyEngine:
 
     def __init__(self, macros=None):
@@ -122,12 +120,10 @@ class DummyEngine:
         if self.locals is self.stack[-1]:
             # Unmerge this scope's locals from previous scope of first set
             self.locals = self.locals.copy()
-        if value is not CancelAction:
-            self.locals[name] = value
+        self.locals[name] = value
 
     def setGlobal(self, name, value):
-        if value is not CancelAction:
-            self.globals[name] = value
+        self.globals[name] = value
 
     def evaluate(self, expression):
         expression = self.uncompile(expression)
@@ -224,9 +220,6 @@ class DummyEngine:
 
     def getTALESError(self):
         return TALESError
-
-    def getCancelAction(self):
-        return CancelAction
 
 class Iterator:
 
