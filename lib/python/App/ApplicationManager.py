@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 import sys,os,time,string,Globals
@@ -118,9 +118,7 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	path_join=os.path.join
 	isdir=os.path.isdir
 	exists=os.path.exists
-	split=string.split
 	strip=string.strip
-	join =string.join
 
 	product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
 	product_names=os.listdir(product_dir)
@@ -136,11 +134,6 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	    file=open(version_txt, 'r')
 	    data=file.readline()
 	    file.close()
-	    v=split(strip(data), '-')
-	    if len(v) != 4:
-		continue
-	    if v[0]=='OFSP':
-		v[0]='Principia'
-	    info.append('%s %s.%s.%s' % (v[0], v[1], v[2], v[3]))
+	    info.append(strip(data))
 	return info
 
