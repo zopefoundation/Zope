@@ -3,43 +3,60 @@
 
 __doc__='''Command-line Bobo
 
-Usage:
+Usage
 
    bobo [options] module_path [path_info]
 
-Options:
+   where:
 
-   -u username:password
+   module_path -- is a full path to a published module 
 
-         Supply HTTP authorization information
+   path_info -- Is the information after the module name that would
+         normally be specified in a GET URL, including a query string.
 
-   -p profiler_data_file
+Description
 
-         Run under profiler control, generating the profiler
-         data file, profiler_data_file.
+   The command-line interface to Bobo provides a handy way to test,
+   debug, and profile Bobo without a web server.  
 
-   -t
+Options
 
-         Compute the time required to complete a request, in
-	 milliseconds.
+   -u username:password        -- Supply HTTP authorization information
 
-   -d
+   -p profiler_data_file       -- Run under profiler control,
+                                  generating the profiler 
+				  data file, profiler_data_file.
 
-         Run in debug mode.  With this option, bobo will run
-         under Python debugger control.  Two useful breakpoints
-         are set.  The first is at the beginning of the module
-         publishing code.  Steping through this code shows how 
-         bobo finds objects and obtains certain meta-data.  The
-         second breakpoint is at the point just before the published 
-         object is called.  To jump to the second breakpoint, you must
-         enter 's' followed by a carriage return to step into the
-         module, then enter a 'c' followed by a carriage return to
-         jump to the first breakpoint and then another 'c' followed by
-         a carriage return to jump to the point where the object is
-         called.  Finally, enter 's' followed a carriage return.
+   -t                          -- Compute the time required to
+                                  complete a request, in 
+				  milliseconds.
 
-         For example, to debug a published object (such as a method)
-         spam the following might be entered::
+   -d                          -- Run in debug mode.  With this
+				  option, bobo will run under Python
+				  debugger control.  Two useful
+				  breakpoints are set.  The first is
+				  at the beginning of the module
+				  publishing code.  Steping through
+				  this code shows how bobo finds
+				  objects and obtains certain
+				  meta-data.  The second breakpoint is
+				  at the point just before the
+				  published object is called.  To jump
+				  to the second breakpoint, you must
+				  enter 's' followed by a carriage
+				  return to step into the module, then
+				  enter a 'c' followed by a carriage
+				  return to jump to the first
+				  breakpoint and then another 'c'
+				  followed by a carriage return to
+				  jump to the point where the object
+				  is called.  Finally, enter 's'
+				  followed a carriage return.
+
+Examples
+
+   For example, to debug a published object (such as a method), spam,
+   the following might be entered::
 
 	    bobo -d /prj/lib/python/mymod container/spam
             s
@@ -48,7 +65,7 @@ Options:
             s
 
 
-$Id: Test.py,v 1.4 1996/11/11 22:00:01 jim Exp $
+$Id: Test.py,v 1.5 1996/11/11 22:14:26 jim Exp $
 '''
 #     Copyright 
 #
@@ -101,6 +118,9 @@ $Id: Test.py,v 1.4 1996/11/11 22:00:01 jim Exp $
 #   (540) 371-6909
 #
 # $Log: Test.py,v $
+# Revision 1.5  1996/11/11 22:14:26  jim
+# Minor doc change
+#
 # Revision 1.4  1996/11/11 22:00:01  jim
 # Minor doc change
 #
@@ -118,7 +138,7 @@ $Id: Test.py,v 1.4 1996/11/11 22:00:01 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 #! /usr/local/bin/python
