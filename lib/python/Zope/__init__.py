@@ -90,7 +90,6 @@
 import sys, os, App.FindHomes
 sys.path.insert(0, os.path.join(SOFTWARE_HOME, 'ZopeZODB3'))
 #######################################################################
-
 import ZODB, ZODB.ZApplication, imp
 import Globals, OFS.Application, sys
 import AccessControl.SecurityManagement, AccessControl.User
@@ -159,8 +158,9 @@ sys.modules['Main']=sys.modules['Zope']
 
 import ZODB.POSException, ZPublisher, string, ZPublisher
 import ExtensionClass
-from zLOG import LOG, INFO, WARNING, BLATHER
-
+from zLOG import LOG, WARNING, INFO, BLATHER, log_time
+conflict_errors = 0
+startup_time = log_time()
 def debug(*args, **kw):
     return apply(ZPublisher.test,('Zope',)+args, kw)
 
@@ -186,9 +186,13 @@ def zpublisher_exception_hook(
             # do this by releasing the hold on it. There should be
             # some sane protocol for this, but for now we'll use
             # brute force:
-            LOG('Z2 CONFLICT', BLATHER,
-                'Competing writes at, %s' % REQUEST.get('PATH_INFO', ''),
-                error=sys.exc_info())
+            global conflict_errors
+            conflict_errors = conflict_errors + 1
+            method_name = REQUEST.get('PATH_INFO', '')
+            err = ('ZODB conflict error at %s (%s conflicts since startup '
+                   'at %s)')
+            LOG(err % (method_name, conflict_errors, startup_time), INFO, '')
+            LOG('Conflict traceback', BLATHER, '', error=sys.exc_info())
             raise ZPublisher.Retry(t, v, traceback)
         if t is ZPublisher.Retry: v.reraise()
 
