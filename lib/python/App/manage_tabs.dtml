@@ -140,7 +140,7 @@
   <dtml-with "_(option=manage_options[a_])">
   <dtml-if "option.has_key('help')">
   <td align="right" valign="top">
-  <dtml-var "HelpSys.button(HelpSys, 
+  <dtml-var "HelpSys.button(HelpSys, REQUEST, 
       product=option['help'][0],
       topic=option['help'][1])">
   </td>

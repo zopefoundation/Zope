@@ -6,7 +6,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add <dtml-var Kind></H2>
 
-<dtml-var "HelpSys.HelpButton(Kind + '_Add.dtml')">
+<dtml-var "HelpSys.HelpButton(Kind + '_Add.dtml','OFSP')">
 
 <P>
  You can create a new <dtml-var kind> in the system using the form below. 

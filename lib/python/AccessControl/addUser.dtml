@@ -7,7 +7,7 @@
 
 <H2>Add User</H2>
 
-<dtml-var "HelpSys.HelpButton('User-Folder_Add-User.dtml')">
+<dtml-var "HelpSys.HelpButton('User-Folder_Add-User.dtml','OFSP')">
 
 <P>
 To add a new user, enter the name,

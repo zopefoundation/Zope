@@ -4,7 +4,7 @@
 
 <h2>Add an Object Factory</h2>
 
-<dtml-var "HelpSys.HelpButton('Zope-Factory_Add.dtml')">
+<dtml-var "HelpSys.HelpButton('Zope-Factory_Add.dtml','OFSP')">
 
 <P>A Factory allows you to place entries in the Zope Product add
 list.</P>

@@ -7,7 +7,7 @@
 
 <H2>Change User</H2>
 
-<dtml-var "HelpSys.HelpButton('User-Folder_Edit-User.dtml')">
+<dtml-var "HelpSys.HelpButton('User-Folder_Edit-User.dtml','OFSP')">
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>

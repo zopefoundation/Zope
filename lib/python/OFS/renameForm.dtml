@@ -9,7 +9,7 @@
 <dtml-if cb_isMoveable>
 <H2>Rename <dtml-var meta_type></H2>
 
-<dtml-var "HelpSys.HelpButton('Folder_Rename.dtml')">
+<dtml-var "HelpSys.HelpButton('Folder_Rename.dtml','OFSP')">
 
 <P>
 <FORM ACTION="<dtml-var URL1>" METHOD="POST">
