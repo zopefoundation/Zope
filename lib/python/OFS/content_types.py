@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -101,7 +101,7 @@ tar: application/x-tar
 zip: application/x-zip
 """
 
-from string import split, strip, lower
+from string import split, strip, lower, find
 import ts_regex, mimetypes
 
 content_type={}
@@ -113,9 +113,13 @@ for l in filter(lambda s: s and s[:1] != '#', map(strip, split(src,'\n'))):
 
 
 find_binary=ts_regex.compile('[\0-\7]').search
-html_re=ts_regex.compile('<html>', ts_regex.casefold)
+
 def text_type(s):
-    return "text/" + (html_re.search(s) >= 0 and 'html' or 'plain')
+    # Yuk. See if we can figure out the type by content.
+    if (lower(strip(s)[:6]) == '<html>' or find(s, '</') > 0):
+        return 'text/html'
+    return 'text/plain'
+
 
 
 # This gives us a hook to add content types that
