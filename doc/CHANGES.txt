@@ -9,6 +9,9 @@ Zope Changes
       - Collector #433: Fixed broken Splitter backwards compatiblity
         issue caused by code cleanup.
 
+      - Collector #151: The Python 2.1 / 2.2 fcntl compatibility hacks
+        were bypassed when using medusa directly without importing 
+        ZServer first (as when using monitor_client.py).
 
   Zope 2.6.0 alpha 1
 
