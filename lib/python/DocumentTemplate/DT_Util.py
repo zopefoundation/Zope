@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.39 1998/07/29 15:35:27 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.40 1998/08/05 18:26:27 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -232,7 +232,13 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
                 if used('expr'):
                     raise ParseError, ('two exprs given', tag)
                 v=v[1:-1]
-                expr=Eval(v, expr_globals)
+                try: expr=Eval(v, expr_globals)
+                except SyntaxError, v:
+                    m,(huh,l,c,src) = v
+                    raise ParseError, (
+                        '<strong>Expression (Python) Syntax error</strong>:'
+                        '\n<pre>\n%s\n</pre>\n' % v[0],
+                        tag)
                 return v, expr
             else: raise ParseError, (
                 'The "..." shorthand for expr was used in a tag that doesn\'t support expr attributes.',
@@ -406,6 +412,10 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.40  1998/08/05 18:26:27  jim
+# Improved handling of expr syntax errors.  Could be better, but code
+# is dependent on Python version.
+#
 # Revision 1.39  1998/07/29 15:35:27  jim
 # Fixed bug in handling "..." shorthand.
 #
