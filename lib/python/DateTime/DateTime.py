@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -175,7 +175,8 @@ class _cache:
            'GMT+0600','GMT+0700','GMT+0800','GMT+0900','GMT+1000',
            'GMT+1100','GMT+1200','GMT+1300','GMT-0100','GMT-0200',
            'GMT-0300','GMT-0400','GMT-0500','GMT-0600','GMT-0700',
-           'GMT-0800','GMT-0900','GMT-1000','GMT-1100','GMT-1200']
+           'GMT-0800','GMT-0900','GMT-1000','GMT-1100','GMT-1200',
+           'GMT+1']
 
     _zmap={'aest':'GMT+1000', 'aedt':'GMT+1100',
            'brazil/acre':'Brazil/Acre',
@@ -188,6 +189,7 @@ class _cache:
            'canada/mountain':'Canada/Mountain',
            'canada/newfoundland':'Canada/Newfoundland',
            'canada/pacific':'Canada/Pacific','canada/yukon':'Canada/Yukon',
+           'central europe standard time':'GMT+0100',
            'chile/continental':'Chile/Continental',
            'chile/easterisland':'Chile/EasterIsland',
            'cst':'Us/Central','cuba':'Cuba','est':'US/Eastern','egypt':'Egypt',
@@ -197,15 +199,28 @@ class _cache:
            'mountain standard time':'US/Mountain',
            'pacific standard time':'US/Pacific',
            'gb-eire':'GB-Eire','gmt':'GMT',
-           'gmt+0100':'GMT+1','gmt+0200':'GMT+2','gmt+0300':'GMT+3',
-           'gmt+0400':'GMT+4','gmt+0500':'GMT+5','gmt+0600':'GMT+6',
-           'gmt+0700':'GMT+7','gmt+0800':'GMT+8','gmt+0900':'GMT+9',
+
+           'gmt+0100':'GMT+1', 'gmt+0200':'GMT+2', 'gmt+0300':'GMT+3',
+           'gmt+0400':'GMT+4', 'gmt+0500':'GMT+5', 'gmt+0600':'GMT+6',
+           'gmt+0700':'GMT+7', 'gmt+0800':'GMT+8', 'gmt+0900':'GMT+9',
            'gmt+1000':'GMT+10','gmt+1100':'GMT+11','gmt+1200':'GMT+12',
-           'gmt+1300':'GMT+13','gmt-0100':'GMT-1','gmt-0200':'GMT-2',
-           'gmt-0300':'GMT-3','gmt-0400':'GMT-4','gmt-0500':'GMT-5',
-           'gmt-0600':'GMT-6','gmt-0700':'GMT-7','gmt-0800':'GMT-8',
-           'gmt-0900':'GMT-9','gmt-1000':'GMT-10','gmt-1100':'GMT-11',
-           'gmt-1200':'GMT-12','greenwich':'Greenwich','hongkong':'Hongkong',
+           'gmt+1300':'GMT+13',
+           'gmt-0100':'GMT-1', 'gmt-0200':'GMT-2', 'gmt-0300':'GMT-3',
+           'gmt-0400':'GMT-4', 'gmt-0500':'GMT-5', 'gmt-0600':'GMT-6',
+           'gmt-0700':'GMT-7', 'gmt-0800':'GMT-8', 'gmt-0900':'GMT-9',
+           'gmt-1000':'GMT-10','gmt-1100':'GMT-11','gmt-1200':'GMT-12',
+
+           'gmt+1': 'GMT+1', 'gmt+2': 'GMT+2', 'gmt+3': 'GMT+3',
+           'gmt+4': 'GMT+4', 'gmt+5': 'GMT+5', 'gmt+6': 'GMT+6',
+           'gmt+7': 'GMT+7', 'gmt+8': 'GMT+8', 'gmt+9': 'GMT+9',
+           'gmt+10':'GMT+10','gmt+11':'GMT+11','gmt+12':'GMT+12',
+           'gmt+13':'GMT+13',
+           'gmt-1': 'GMT-1', 'gmt-2': 'GMT-2', 'gmt-3': 'GMT-3',
+           'gmt-4': 'GMT-4', 'gmt-5': 'GMT-5', 'gmt-6': 'GMT-6',
+           'gmt-7': 'GMT-7', 'gmt-8': 'GMT-8', 'gmt-9': 'GMT-9',
+           'gmt-10':'GMT-10','gmt-11':'GMT-11','gmt-12':'GMT-12',
+
+           'greenwich':'Greenwich','hongkong':'Hongkong',
            'iceland':'Iceland','iran':'Iran','israel':'Israel',
            'jamaica':'Jamaica','japan':'Japan',
            'mexico/bajanorte':'Mexico/BajaNorte',
