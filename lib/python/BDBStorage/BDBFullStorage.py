@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.19 $
+# $Revision: 1.20 $
 __version__ = '0.1'
 
 import struct
@@ -846,7 +846,10 @@ class Full(BerkeleyBase):
         # perform cascading decrefs on the referenced objects.
         #
         # We need the lrevid which points to the pickle for this revision...
-        lrevid = self._metadata.get(key)[16:24]
+        rec = self._metadata.get(key)
+        if rec is None:
+            return
+        lrevid = rec[1][16:24]
         # ...and now delete the metadata record for this object revision
         self._metadata.delete(key)
         # Decref the reference count of the pickle pointed to by oid+lrevid.
@@ -924,6 +927,8 @@ class Full(BerkeleyBase):
                     c.close()
 
     def pack(self, t, referencesf):
+        # BAW: This doesn't play nicely if you enable the `debugging revids'
+        #
         # t is a TimeTime, or time float, convert this to a TimeStamp object,
         # using an algorithm similar to what's used in FileStorage.  The
         # TimeStamp can then be used as a key in the txnMetadata table, since
@@ -932,12 +937,16 @@ class Full(BerkeleyBase):
         self._lock_acquire()
         c = None
         tidmarks = {}
+        oids = {}
         try:    
             # Figure out when to pack to.  We happen to know that our
             # transaction ids are really timestamps.
             c = self._txnoids.cursor()
             # Need to use the repr of the TimeStamp so we get a string
-            rec = c.set_range(`t0`)
+            try:
+                rec = c.set_range(`t0`)
+            except db.DBNotFoundError:
+                rec = c.last()
             while rec:
                 tid, oid = rec
                 rec = c.prev()
@@ -945,16 +954,33 @@ class Full(BerkeleyBase):
                 # pack, so that undo will not create a temporal anomaly.
                 if not tidmarks.has_key(tid):
                     meta = self._txnMetadata[tid]
+                    # Has this transaction already been packed?  If so, we can
+                    # stop here... I think!
+                    if meta[0] == PROTECTED_TRANSACTION:
+                        break
                     self._txnMetadata[tid] = PROTECTED_TRANSACTION + meta[1:]
                     tidmarks[tid] = 1
-                # Find out if the oid is current, if so skip it.  The oid
-                # record could be missing from serials if it's already been
-                # garbage collected.
-                revid = self._serials.get(oid)
-                if revid in (None, tid):
-                    continue
-                self._zaprevision(oid+revid, referencesf)
+                # For now, just remember which objects are touched by the
+                # packable 
+                oids[oid] = 1
+            # Now look at every object revision metadata record for the
+            # objects that have been touched in the packable transactions.  If
+            # the metadata record points at the current revision of the
+            # object, ignore it, otherwise reclaim it.
+            c.close()
+            c = self._metadata.cursor()
+            for oid in oids.keys():
+                current = self._serials[oid]
+                rec = c.set_range(oid)
+                while rec:
+                    key, data = rec
+                    rec = c.next()
+                    if key[8:] == current:
+                        continue
+                    self._zaprevision(key, referencesf)
         finally:
+            if c:
+                c.close()
             self._lock_release()
 
     # GCable interface, for cyclic garbage collection
