@@ -71,6 +71,17 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 final
+
+      Bugs fixed
+
+        - Database packing failed in certain cases where the data set
+	  contained many version commits.
+
+	- Database packing generated spurious error logs indicating
+	  that there were bad references for objects created in
+	  ncommitted versions.
+
     Zope 2.0 beta 4
     
       Features Removed
@@ -81,6 +92,8 @@ Zope Changes
 
         - The source release install script now checks to make sure that
           the Python used has thread support.
+
+        - FileStorages can now habe quotas.
 
       Bugs fixed
 
