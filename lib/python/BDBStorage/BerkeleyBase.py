@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.36 $'.split()[-2:][0]
+__version__ = '$Revision: 1.37 $'.split()[-2:][0]
 
 import os
 import time
@@ -136,7 +136,7 @@ class BerkeleyConfig:
     def __repr__(self):
         d = self.__class__.__dict__.copy()
         d.update(self.__dict__)
-        return """<BerkeleyConfig:
+        return """<BerkeleyConfig (read_only=%(read_only)s):
 \tcheckpoint interval: %(interval)s seconds
 \tcheckpoint kbytes: %(kbyte)s
 \tcheckpoint minutes: %(min)s
