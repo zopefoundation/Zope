@@ -10,10 +10,21 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-"""Mounted database support
+"""
+Mounted database support
 
-$Id: TemporaryFolder.py,v 1.5 2002/03/11 16:09:19 andreasjung Exp $"""
-__version__='$Revision: 1.5 $'[11:-2]
+A MountedTemporaryFolder is an object that is a mount point.  It mounts a
+TemporaryStorage-backed database and masquerades as its root object.
+When you traverse one of these things, the __of__ method of the mount
+point object is called, and that returns a Folder object that actually
+lives in another ZODB.
+
+To understand this fully, you'll need to read the source of
+ZODB.Mount.MountPoint.
+
+$Id: TemporaryFolder.py,v 1.6 2002/08/12 21:14:15 chrism Exp $
+"""
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
