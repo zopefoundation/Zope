@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.116 1999/11/03 16:05:20 brian Exp $'''
-__version__='$Revision: 1.116 $'[11:-2]
+$Id: Application.py,v 1.117 1999/12/09 23:37:52 amos Exp $'''
+__version__='$Revision: 1.117 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -94,7 +94,6 @@ import time, traceback, os, string, Products
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
-from HelpSys.HelpSys import HelpSys
 from App.ApplicationManager import ApplicationManager
 from webdav.NullResource import NullResource
 from FindSupport import FindSupport
@@ -105,7 +104,7 @@ from App.ProductContext import ProductContext
 from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR
-
+from HelpSys.HelpSystem import HelpSystem
 
 
 _standard_error_msg='''\
@@ -177,7 +176,7 @@ class Application(Globals.ApplicationDefaultPermissions,
     _isBeingUsedAsAMethod_=0
 
     # Create the help system object
-    HelpSys=HelpSys()
+    HelpSys=HelpSystem('HelpSys')
 
     p_=misc_.p_
     misc_=misc_.misc_
@@ -273,6 +272,8 @@ class Application(Globals.ApplicationDefaultPermissions,
     
     test_url___allow_groups__=None
     test_url=ZopeAttributionButton
+
+
 
     def absolute_url(self, relative=0):
         """Return an absolute url to the object. Note that the url
