@@ -12,13 +12,12 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.29 2002/02/08 17:16:57 matt Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: Undo.py,v 1.30 2002/02/08 18:58:23 andreasjung Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
 from AccessControl import getSecurityManager
-from string import join
 import base64
 
 class UndoSupport(ExtensionClass.Base):
@@ -81,13 +80,13 @@ class UndoSupport(ExtensionClass.Base):
         # is defined.        
         user = getSecurityManager().getUser()
         if hasattr(user, 'aq_parent'):
-            path = join(user.aq_parent.getPhysicalPath()[1:-1], '/')
+            path = '/'.join(user.aq_parent.getPhysicalPath()[1:-1])
         else:
             path=''
         if path: spec['user_name']=Prefix(path)
 
         # We also only want to undo things done here
-        opath=join(self.getPhysicalPath(),'/')
+        opath='/'.join(self.getPhysicalPath())
         if opath: spec['description']=Prefix(opath)
 
         r=Globals.UndoManager.undoInfo(
@@ -101,7 +100,7 @@ class UndoSupport(ExtensionClass.Base):
             if desc:
                 desc = desc.split()
                 d1=desc[0]
-                desc = join(desc[1:])
+                desc = ''.join(desc[1:])
                 if len(desc) > 60: desc = desc[:56]+' ...'
                 tid = "%s %s %s %s" % (encode64(tid), t, d1, desc)
             else:
@@ -118,7 +117,7 @@ class UndoSupport(ExtensionClass.Base):
         for tid in transaction_info:
             tid=tid.split()
             if tid:
-                get_transaction().note("Undo %s" % join(tid[1:]))
+                get_transaction().note("Undo %s" % ''.join(tid[1:]))
                 tid=decode64(tid[0])
                 undo(tid)
             
@@ -153,7 +152,7 @@ def encode64(s, b2a=binascii.b2a_base64):
     r=[]; a=r.append
     for i in range(0, len(s), 57):
         a(b2a(s[i:i+57])[:-1])
-    return join(r,'')
+    return ''.join(r)
 
 def decode64(s, a2b=binascii.a2b_base64):
     __traceback_info__=len(s), `s`
