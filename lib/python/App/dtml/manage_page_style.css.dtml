@@ -51,6 +51,7 @@ th {
 }
 
 .form-help {
+  font-family: Verdana, Helvetica, sans-serif;
   font-size: 10pt;
   color: #333333;
 }
@@ -70,6 +71,14 @@ th {
 .location-bar {
   background-color: #efefef;
   border: none;
+}
+
+.strong-header {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 12pt;
+  font-weight: bold;
+  background-color: #000000;
+  color: #ffffff;
 }
 
 .list-header {
