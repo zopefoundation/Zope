@@ -734,14 +734,23 @@
     </description>
   </section>
 
-  <!-- max-listen-sockets should really go into the ZServer package, but
-       I can't quite figure out how to put it there -->
+  <!-- max-listen-sockets and large-file-threshold should really go
+       into the ZServer package, but I can't quite figure out how to
+       put it there -->
 
   <key name="max-listen-sockets" datatype="integer"
        default="1000">
      <description>
        The maximum number of sockets that ZServer will attempt to open
        in order to service incoming connections.
+     </description>
+  </key>
+
+  <key name="large-file-threshold" datatype="byte-size"
+       handler="large_file_threshold" default="512KB">
+     <description>
+       Requests bigger than this size get saved into a temporary file
+       instead of being read completely into memory.
      </description>
   </key>
 

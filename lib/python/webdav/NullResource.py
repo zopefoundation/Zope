@@ -81,13 +81,16 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             ob=File(name, '', body, content_type=typ)
         return ob
 
-    PUT__roles__=('Anonymous',)
+    PUT__roles__ = ('Anonymous',)
     def PUT(self, REQUEST, RESPONSE):
-        """Create a new non-collection resource."""
+        """Create a new non-collection resource.
+        """
+        from ZServer import LARGE_FILE_THRESHOLD
+
         self.dav__init(REQUEST, RESPONSE)
 
-        name=self.__name__
-        parent=self.__parent__
+        name = self.__name__
+        parent = self.__parent__
 
         ifhdr = REQUEST.get_header('If', '')
         if WriteLockInterface.isImplementedBy(parent) and parent.wl_isLocked():
@@ -101,17 +104,40 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             # There was an If header, but the parent is not locked
             raise PreconditionFailed
 
-        body=REQUEST.get('BODY', '')
+        # SDS: Only use BODY if the file size is smaller than
+        # LARGE_FILE_THRESHOLD, otherwise read LARGE_FILE_THRESHOLD
+        # bytes from the file which should be enough to trigger
+        # content_type detection, and possibly enough for CMF's
+        # content_type_registry too.
+        #
+        # Note that body here is really just used for detecting the
+        # content type and figuring out the correct factory. The correct
+        # file content will be uploaded on ob.PUT(REQUEST, RESPONSE) after
+        # the object has been created.
+        #
+        # A problem I could see is content_type_registry predicates
+        # that do depend on the whole file being passed here as an
+        # argument. There's none by default that does this though. If
+        # they really do want to look at the file, they should use
+        # REQUEST['BODYFILE'] directly and try as much as possible not
+        # to read the whole file into memory.
+
+        if int(REQUEST.get('CONTENT_LENGTH') or 0) > LARGE_FILE_THRESHOLD:
+            file = REQUEST['BODYFILE']
+            body = file.read(LARGE_FILE_THRESHOLD)
+            file.seek(0)
+        else:
+            body = REQUEST.get('BODY', '')
+
         typ=REQUEST.get_header('content-type', None)
         if typ is None:
             typ, enc=OFS.content_types.guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory )
         ob = factory(name, typ, body)
-        ob = (ob is None and
-              self._default_PUT_factory(name, typ, body) or
-              ob
-              )
+        if ob is None:
+            ob = self._default_PUT_factory(name, typ, body)
+
         # We call _verifyObjectPaste with verify_src=0, to see if the
         # user can create this type of object (and we don't need to
         # check the clipboard.
@@ -122,9 +148,11 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         except:
             raise Forbidden, sys.exc_info()[1]
 
-        # Delegate actual PUT handling to the new object.
-        ob.PUT(REQUEST, RESPONSE)
+        # Delegate actual PUT handling to the new object,
+        # SDS: But just *after* it has been stored.
         self.__parent__._setObject(name, ob)
+        ob = self.__parent__._getOb(name)
+        ob.PUT(REQUEST, RESPONSE)
 
         RESPONSE.setStatus(201)
         RESPONSE.setBody('')

@@ -53,7 +53,7 @@ from medusa.default_handler import unquote
 from asyncore import compact_traceback, dispatcher
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
-from ZServer import requestCloseOnExec
+from ZServer import requestCloseOnExec, LARGE_FILE_THRESHOLD
 from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
 import DebugLogger
 from medusa import logger
@@ -76,7 +76,7 @@ class zhttp_collector:
     def __init__(self, handler, request, size):
         self.handler = handler
         self.request = request
-        if size > 524288:
+        if size > LARGE_FILE_THRESHOLD:
             # write large upload data to a file
             from tempfile import TemporaryFile
             self.data = TemporaryFile('w+b')
