@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.21 1997/03/20 21:51:01 jim Exp $'''
+$Id: InvertedIndex.py,v 1.22 1997/03/22 13:02:17 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.21 1997/03/20 21:51:01 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.22  1997/03/22 13:02:17  jim
+# Finish fixing bug in __or__ that Chris has started to fix.
+#
 # Revision 1.21  1997/03/20 21:51:01  jim
 # Rearranged and, or, and near.
 # Got rid of get/setstate.
@@ -153,7 +156,7 @@ $Id: InvertedIndex.py,v 1.21 1997/03/20 21:51:01 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -282,6 +285,12 @@ class ResultList:
 	    v=v[0]+xv[0], v[1]+xv[1]
 	except: pass
 	result[key] = v
+
+    for key,v in x.items():
+	try: self[key]
+	except: result[key]=v
+
+    return result
 
 
   def Not(self, index):
