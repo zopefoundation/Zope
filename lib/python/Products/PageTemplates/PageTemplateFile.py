@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__ = '$Revision: 1.28 $'[11:-2]
+__version__ = '$Revision: 1.29 $'[11:-2]
 
 import os, AccessControl
 from Globals import package_home, DevelopmentMode
@@ -70,8 +70,10 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
 
     def pt_getContext(self):
         root = self.getPhysicalRoot()
+        context = self._getContext()
         c = {'template': self,
-             'here': self._getContext(),
+             'here': context,
+             'context': context,
              'container': self._getContainer(),
              'nothing': None,
              'options': {},

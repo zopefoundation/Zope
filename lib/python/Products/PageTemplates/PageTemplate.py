@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys
 
@@ -69,6 +69,7 @@ class PageTemplate(Base):
         parent = getattr(self, 'aq_parent', None)
         if parent is not None:
             c['here'] = parent
+            c['context'] = parent
             c['container'] = self.aq_inner.aq_parent
             while parent is not None:
                 self = parent
