@@ -8,13 +8,14 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.1 1997/11/07 19:31:42 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1997/11/10 16:32:54 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Session
 
 __.meta_types=(
     {'name':'Session', 'action':'manage_addSessionForm'},
+    {'name':'File', 'action':'manage_addFileForm'},
     {'name':'Image', 'action':'manage_addImageForm'},
     {'name':'Folder', 'action':'manage_addFolderForm'},
     {'name':'Document', 'action':'manage_addDocumentForm'},
@@ -31,6 +32,9 @@ __.methods={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1997/11/10 16:32:54  jim
+# Changed to support separate Image and File objects.
+#
 # Revision 1.1  1997/11/07 19:31:42  jim
 # *** empty log message ***
 #

@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.16 1997/11/10 14:53:13 jim Exp $"""
+$Id: Folder.py,v 1.17 1997/11/10 16:30:47 jim Exp $"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -146,7 +146,8 @@ class PUTer:
 	    return self._parent.manage_addDocument(name,'',BODY,
 						   REQUEST=REQUEST)
 
-	i=Image.Image()
+	if lower(type)[:6]=='image/': i=Image.Image()
+	else: i=Image.File()
 	i._init(name, BODY, type)
 	i.title=''
 	i._setRoles('A',[])

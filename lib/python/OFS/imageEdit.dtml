@@ -1,11 +1,11 @@
 <HTML>
 <HEAD>
-<TITLE>Edit Image</TITLE>
+<TITLE>Edit <!--#var Kind--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Edit Image</H2>
+<H2>Edit <!--#var Kind--></H2>
 
-<H3>Edit Image Properties</H3>
+<H3>Edit <!--#var Kind--> Properties</H3>
 
 <FORM ACTION="manage_edit" METHOD="POST" TARGET="manage_main">
   <TABLE CELLSPACING="2">
@@ -37,7 +37,7 @@
 
 <H3>Upload New Data</H3>
 
-You can update data in the image using the form below. 
+You can update data in the <!--#var kind--> using the form below. 
 Select a data file from your local computer by clicking the <EM>Browse</EM> 
 button. The file you select will be uploaded to the application.
 

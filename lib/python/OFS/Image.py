@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -9,13 +9,13 @@ from AccessControl.Role import RoleManager
 import SimpleItem
 import Acquisition
 
-class Image(Persistent,RoleManager,SimpleItem.Item_w__name__,
-	    Acquisition.Implicit):
+class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
+	   Acquisition.Implicit):
     """Image object"""
-    meta_type='Image'
-    icon     ='OFS/Image_icon.gif'
+    meta_type='File'
+    icon     ='OFS/File_icon.gif'
 
-    manage_editForm   =HTMLFile('OFS/imageEdit')
+    manage_editForm   =HTMLFile('OFS/imageEdit', Kind='File', kind='file')
     manage=manage_main=manage_editForm
 
     def manage_edit(self,title,content_type,
@@ -56,8 +56,7 @@ class Image(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	RESPONSE['content-type']=self.content_type
         return self.data
 
-    def __str__(self):
-	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+    def __str__(self): return self.data
 
     def __len__(self):
 	# This is bogus and needed because of the way Python tests truth.
@@ -72,17 +71,38 @@ class Image(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	    if type: self.content_type=type
 	except KeyError: pass
 
+class Image(File):
+
+    meta_type='Image'
+    icon     ='OFS/Image_icon.gif'
+
+    manage=manage_editForm=HTMLFile('OFS/imageEdit', Kind='Image', kind='image')
+
+    def __str__(self):
+	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+
 
 class ImageHandler:
     """Image object handler mixin"""
     #meta_types=({'name':'Image', 'action':'manage_addImageForm'},)
 
-    manage_addImageForm=HTMLFile('OFS/imageAdd')
+    manage_addFileForm=HTMLFile('OFS/imageAdd', Kind='File', kind='file')
+    manage_addImageForm=HTMLFile('OFS/imageAdd', Kind='Image', kind='image')
 
     def manage_addImage(self,id,file,title='',acl_type='A',acl_roles=[],
 			REQUEST=None):
 	"""Add a new Image object"""
 	i=Image()
+	i._init(id,file)
+	i.title=title
+	i._setRoles(acl_type,acl_roles)
+	self._setObject(id,i)
+	return self.manage_main(self,REQUEST)
+
+    def manage_addFile(self,id,file,title='',acl_type='A',acl_roles=[],
+			REQUEST=None):
+	"""Add a new Image object"""
+	i=File()
 	i._init(id,file)
 	i.title=title
 	i._setRoles(acl_type,acl_roles)
@@ -105,6 +125,26 @@ class ImageHandler:
 	t=[]
 	for i in self.objectMap():
 	    if i['meta_type']=='Image':
+		n=i['id']
+		t.append((n,getattr(self,n)))
+	return t
+
+    def fileIds(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='File': t.append(i['id'])
+	return t
+
+    def fileValues(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='File': t.append(getattr(self,i['id']))
+	return t
+
+    def fileItems(self):
+	t=[]
+	for i in self.objectMap():
+	    if i['meta_type']=='File':
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
