@@ -9,7 +9,7 @@
 ############################################################################## 
 import ni, sys
 
-import SimpleDB, Sync
+import SimpleDB, Sync, TJar
 
 class SyncDB(SimpleDB.Default, Sync.Synchronized):
     pass
@@ -33,6 +33,7 @@ import Scheduler.Scheduler
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
+SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
     
 try: app=Bobobase['Application']
 except KeyError:
@@ -49,6 +50,9 @@ bobo_application=app
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.9  1997/11/07 17:13:49  jim
+# Added SessionBase.
+#
 # Revision 1.8  1997/10/31 17:04:18  brian
 # *** empty log message ***
 #
