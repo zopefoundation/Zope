@@ -1,5 +1,6 @@
 Glossary
 
+  <!-- XXX fix this -->
   For general information about Zope <a
   href="http://www.zope.org/SiteIndex/searchForm"
   target="_blank">search</a> Zope.org.
@@ -19,14 +20,14 @@ Glossary
   results in web pages.
 
     For more information on DTML see the <a
-    href="http://www.zope.org/Members/michel/ZB/DTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/DTML.stx"
     target="_blank">DTML chapter</a> of The Zope Book.
 
   [DTML Document] -- A Zope object for a web page.
   You can use DTML tags in a DTML document.
   
     For more information on DTML Documents see the <a
-    href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
     <dtml-var "apiLink('OFSP.DTMLDocument.DTMLDocument', REQUEST)">
@@ -35,7 +36,7 @@ Glossary
   be inserted into a web page. You can use DTML tags in a DTML Method.
   
     For more information on DTML Methods see the <a
-    href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
     <dtml-var "apiLink('OFSP.DTMLMethod.DTMLMethod', REQUEST)">
@@ -52,14 +53,14 @@ Glossary
   database.
     
     For more information on Database Connections see the <a
-    href="http://www.zope.org/Members/michel/ZB/RelationalDatabases.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/RelationalDatabases.stx"
     target="_blank">Relational Database chapter</a> of The Zope Book.
 
   [<dtml-call>] -- A DTML tag that allows your to perform an
   action without inserting anything into a web page.
   
     For more information on &lt;dtml-call&gt; tag see the <a
-    href="http://www.zope.org/Members/michel/ZB/AdvDTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/AdvDTML.stx"
     target="_blank">Advanced DTML chapter</a> of The Zope Book.
 
     <dtml-var "dtmlLink('call', REQUEST)">
@@ -68,7 +69,7 @@ Glossary
   objects into a DTML Document or DTML Method.
 
     For more information on &lt;dtml-if&gt; tag see the <a
-    href="http://www.zope.org/Members/michel/ZB/DTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/DTML.stx"
     target="_blank">DTML chapter</a> of The Zope Book.  
 
     <dtml-var "dtmlLink('if', REQUEST)">
@@ -77,7 +78,7 @@ Glossary
   of objects.
 
     For more information on &lt;dtml-in&gt; tag see the <a
-    href="http://www.zope.org/Members/michel/ZB/DTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/DTML.stx"
     target="_blank">DTML chapter</a> of The Zope Book.  
 
     <dtml-var "dtmlLink('in', REQUEST)">
@@ -86,7 +87,7 @@ Glossary
   into a DTML Document or DTML Method.
   
     For more information on &lt;dtml-var&gt; tag see the <a
-    href="http://www.zope.org/Members/michel/ZB/DTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/DTML.stx"
     target="_blank">DTML chapter</a> of The Zope Book.  
 
     <dtml-var "dtmlLink('var', REQUEST)">
@@ -94,7 +95,7 @@ Glossary
   [<dtml-sendmail>] -- A DTML tag that sends email.
 
     For more information on &lt;dtml-sendmail&gt; tag see the <a
-    href="http://www.zope.org/Members/michel/ZB/AdvDTML.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/AdvDTML.stx"
     target="_blank">Advanced DTML chapter</a> of The Zope Book.
 
     <dtml-var "dtmlLink('sendmail', REQUEST)">
@@ -104,7 +105,7 @@ Glossary
   add new objects to Folders with the product add list.
 
     For more information on Folders see the <a
-    href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
     <dtml-var "apiLink('OFSP.Folder.Folder', REQUEST)">
@@ -120,7 +121,7 @@ Glossary
   [Image] -- A Zope object for a picture.
     
     For more information on Images see the <a
-    href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
     
     <dtml-var "apiLink('OFSP.Image.Image', REQUEST)"> 
@@ -144,7 +145,7 @@ Glossary
   [Properties] -- Properties contain small pieces of content. 
 
     For more information on Properties see the <a
-    href="http://www.zope.org/Members/michel/ZB/BasicObject.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
     target="_blank">Basic Objects chapter</a> of The Zope Book.
 
     <dtml-var "apiLink('OFSP.PropertyManager.PropertyManager', REQUEST)">
@@ -165,7 +166,7 @@ Glossary
   database.
   
     For more information on ZSQL Methods see the <a
-    href="http://www.zope.org/Members/michel/ZB/RelationalDatabases.dtml"
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/RelationalDatabases.stx"
     target="_blank">Relational Database chapter</a> of The Zope Book.
 
     <dtml-var "apiLink('ZSQLMethods.ZSQLMethod.ZSQLMethod', REQUEST)">
