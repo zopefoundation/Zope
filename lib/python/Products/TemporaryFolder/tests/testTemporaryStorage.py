@@ -4,8 +4,11 @@ if __name__=='__main__':
     sys.path.insert(0, '..')
 
 import ZODB
+from ZODB.tests.MinPO import MinPO
 from Products.TemporaryFolder import TemporaryStorage
-import sys, os, unittest
+from Products.TemporaryFolder.TemporaryStorage import CONFLICT_CACHE_MAXAGE,\
+     CONFLICT_CACHE_GCEVERY
+import sys, os, unittest, time
 
 from ZODB.tests import StorageTestBase, BasicStorage, \
      Synchronization, ConflictResolution, \
@@ -13,7 +16,7 @@ from ZODB.tests import StorageTestBase, BasicStorage, \
 
 class TemporaryStorageTests(
     StorageTestBase.StorageTestBase,
-    RevisionStorage.RevisionStorage, # not actually a revision storage, but..
+    RevisionStorage.RevisionStorage, # not a revision storage, but passes
     BasicStorage.BasicStorage,
     Synchronization.SynchronizedStorage,
     ConflictResolution.ConflictResolvingStorage,
@@ -28,6 +31,29 @@ class TemporaryStorageTests(
 
     def tearDown(self):
         StorageTestBase.StorageTestBase.tearDown(self)
+
+    def checkConflictCacheIsCleared(self):
+        old_gcevery = TemporaryStorage.CONFLICT_CACHE_GCEVERY
+        old_maxage  = TemporaryStorage.CONFLICT_CACHE_MAXAGE
+        TemporaryStorage.CONFLICT_CACHE_GCEVERY = 5
+        TemporaryStorage.CONFLICT_CACHE_MAXAGE =  5
+        try:
+            oid = self._storage.new_oid()
+            self._dostore(oid, data=MinPO(5))
+            time.sleep(TemporaryStorage.CONFLICT_CACHE_GCEVERY + 1)
+            oid2 = self._storage.new_oid()
+            self._dostore(oid2, data=MinPO(10))
+            oid3 = self._storage.new_oid()
+            self._dostore(oid3, data=MinPO(9))
+            assert len(self._storage._conflict_cache) == 2
+            time.sleep(TemporaryStorage.CONFLICT_CACHE_GCEVERY + 1)
+            oid4 = self._storage.new_oid()
+            self._dostore(oid4, data=MinPO(11))
+            assert len(self._storage._conflict_cache) == 1
+            
+        finally:
+            TemporaryStorage.CONFLICT_CACHE_GCEVERY = old_gcevery
+            TemporaryStorage.CONFLICT_CACHE_MAXAGE =  old_maxage
 
 def test_suite():
     suite = unittest.makeSuite(TemporaryStorageTests, 'check')

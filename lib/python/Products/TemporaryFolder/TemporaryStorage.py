@@ -89,24 +89,22 @@ MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage and it does rudimentary conflict resolution.  This is a
 ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.4 2001/11/21 03:13:37 chrism Exp $
+$Id: TemporaryStorage.py,v 1.5 2001/11/26 15:34:56 chrism Exp $
 """
 
-__version__ ='$Revision: 1.4 $'[11:-2]
+__version__ ='$Revision: 1.5 $'[11:-2]
 
 from zLOG import LOG
-from struct import pack, unpack
 from ZODB.referencesf import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
-from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial,\
-     bad_classes, bad_class, _classFactory, PersistentReference, \
-     PersistentReferenceFactory, persistent_id, state
-from cStringIO import StringIO
-from cPickle import Unpickler, Pickler
+from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
+import time
 
-# number of transactions for which to keep prior object revisions
-CONFLICT_CACHE_SIZE = 100
+# keep old object revisions for CONFLICT_CACHE_MAXAGE seconds
+CONFLICT_CACHE_MAXAGE = 60
+# garbage collect conflict cache every CONFLICT_CACHE_GCEVERY seconds
+CONFLICT_CACHE_GCEVERY = 60
 
 class ReferenceCountError(POSException.POSError):
     """ An error occured while decrementing a reference to an object in
@@ -128,7 +126,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         opickle -- mapping of oid to pickle
         _tmp -- used by 'store' to collect changes before finalization
         _conflict_cache -- cache of recently-written object revisions
-        _transaction_counter -- rotating counter used in conflict resolution
+        _last_cache_gc -- last time that conflict cache was garbage collected
         """
         BaseStorage.__init__(self, name)
 
@@ -138,7 +136,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         self._opickle={}
         self._tmp = []
         self._conflict_cache = {}
-        self._transaction_counter = 0
+        self._last_cache_gc = 0
         self._oid = '\0\0\0\0\0\0\0\0'
 
     def __len__(self):
@@ -148,11 +146,14 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         return 0
 
     def _clear_temp(self):
+        now = time.time()
+        if now > (self._last_cache_gc + CONFLICT_CACHE_GCEVERY):
+            for k, v in self._conflict_cache.items():
+                data, t = v
+                if now > (t + CONFLICT_CACHE_MAXAGE):
+                    del self._conflict_cache[k]
+            self._last_cache_gc = now
         self._tmp = []
-        if self._transaction_counter % CONFLICT_CACHE_SIZE == 0:
-            # clear the revision cache before we run out of RAM.
-            self._transaction_counter = 0
-            self._conflict_cache = {}
         
     def close(self):
         """
@@ -174,7 +175,7 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         storage needs! """
         self._lock_acquire()
         try:
-            data = self._conflict_cache.get((oid, serial), marker)
+            data, t = self._conflict_cache.get((oid, serial), marker)
             if data is marker:
                 raise POSException.ConflictError, (oid, serial)
             return data
@@ -200,7 +201,8 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 oserial = serial
             newserial=self._serial
             self._tmp.append((oid, data))
-            self._conflict_cache[(oid, newserial)] = data
+            now = time.time()
+            self._conflict_cache[(oid, newserial)] = data, now
             return serial == oserial and newserial or ResolvedSerial
         finally:
             self._lock_release()
@@ -279,9 +281,8 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
                 if oid == '\0\0\0\0\0\0\0\0': continue
                 self._takeOutGarbage(oid)
 
-        self._transaction_counter = self._transaction_counter + 1
-        self._clear_temp()
-
+        self._tmp = []
+        
     def _takeOutGarbage(self, oid):
         # take out the garbage.
         referenceCount=self._referenceCount
