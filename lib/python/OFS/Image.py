@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.144 $'[11:-2]
+__version__='$Revision: 1.145 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -160,6 +160,7 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setHeader('Content-Length', self.size)
                     RESPONSE.setHeader('Accept-Ranges', 'bytes')
                     RESPONSE.setStatus(304)
+                    self.ZCacheable_set(None)
                     return ''
 
         if self.precondition and hasattr(self,self.precondition):
