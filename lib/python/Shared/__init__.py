@@ -8,30 +8,21 @@
 #       rights reserved.
 #
 ############################################################################## 
-__doc__='''$Id: __init__.py,v 1.1 1997/09/25 18:57:45 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+__doc__='''$Id: __init__.py,v 1.2 1997/12/02 14:57:16 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import sys, string, os
 
-__path__=__.__path__
-
-for o in 's', 'r':
-    try: 
-	s=os.popen('uname -s').read()[:-1]
-	r=os.popen('uname -r').read()[:-1]
-	if r and s:
-	    p=(string.lower(s)+r)
-	    if p: __path__.append("%s/bin-%s/%s" % (
-		__path__[0], string.split(sys.version)[0], p))
-    except: pass
-
-__path__.append("%s/bin-%s/%s" % (
-    __path__[0], string.split(sys.version)[0], sys.platform))
+__.__path__.append("%s/bin-%s/%s" % (
+    __.__path__[0], string.split(sys.version)[0], sys.platform))
     
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1997/12/02 14:57:16  jim
+# *** empty log message ***
+#
 # Revision 1.1  1997/09/25 18:57:45  jim
 # *** empty log message ***
 #
