@@ -39,25 +39,27 @@ def parse_input(data):
     method = replace(method, '.', '/')
     return method, params
 
-def response(anHTTPResponse):
-    """Return a valid ZPublisher response object
-
-    Use data already gathered by the existing response.
-    The new response will replace the existing response.
-    """
-    # As a first cut, lets just clone the response and
-    # put all of the logic in our refined response class below.
-    r=Response()
-    r.__dict__.update(anHTTPResponse.__dict__)
-    return r
+# See below
+#
+# def response(anHTTPResponse):
+#     """Return a valid ZPublisher response object
+# 
+#     Use data already gathered by the existing response.
+#     The new response will replace the existing response.
+#     """
+#     # As a first cut, lets just clone the response and
+#     # put all of the logic in our refined response class below.
+#     r=Response()
+#     r.__dict__.update(anHTTPResponse.__dict__)
+#     return r
     
     
 
 ########################################################################
 # Possible implementation helpers:
 
-class Response(HTTPResponse):
-    """Customized HTTPResponse that handles XML-RPC-specific details.
+class Response:
+    """Customized Response that handles XML-RPC-specific details.
 
     We override setBody to marhsall Python objects into XML-RPC. We
     also override exception to convert errors to XML-RPC faults.
@@ -69,6 +71,16 @@ class Response(HTTPResponse):
     It's probably possible to improve the 'exception' method quite a bit.
     The current implementation, however, should suffice for now.
     """
+
+    # Because we can't predict what kind of thing we're customizing,
+    # we have to use delegation, rather than inheritence to do the
+    # customization.
+
+    def __init__(self, real): self.__dict__['_real']=real
+
+    def __getattr__(self, name): return getattr(self._real, name)
+    def __setattr__(self, name, v): return setattr(self._real, name, v)
+    def __delattr__(self, name): return delattr(self._real, name)
     
     def setBody(self, body, title='', is_error=0, bogus_str_search=None):
 	if isinstance(body, xmlrpclib.Fault):
@@ -80,9 +92,8 @@ class Response(HTTPResponse):
             # everything to a string first.
             body = xmlrpclib.dumps((body,), methodresponse=1)
         # Set our body to the XML-RPC message, and fix our MIME type.
-        HTTPResponse.setBody(self, body)
-        self.setHeader('content-type', 'text/xml')
-        print 'setBody', body
+        self._real.setBody(body)
+        self._real.setHeader('content-type', 'text/xml')
         return self
 
     def exception(self, fatal=0, info=None,
@@ -113,7 +124,8 @@ class Response(HTTPResponse):
 
         # Do the damage.
         self.setBody(f)
-        print 'Exception', f
-        self.setStatus(200)
+        self._real.setStatus(200)
 
         return tb
+
+response=Response
