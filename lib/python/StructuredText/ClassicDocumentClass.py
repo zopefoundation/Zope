@@ -656,8 +656,8 @@ class DocumentClass:
     def doc_href(
         
         self, s,
-        expr1 = re.compile("(\"[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/]+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)").search,
-        expr2 = re.compile('(\"[ a-zA-Z0-9\n\-\.\:\;\(\)\/]+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)').search):
+        expr1 = re.compile("(\"[ a-zA-Z0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\:\/\.\~\-]+)([,]*\s*)").search,
+        expr2 = re.compile('(\"[ a-zA-Z0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#]+)(\s*)').search):
         
         #expr1=re.compile('\"([ a-zA-Z0-9.:/;,\n\~\(\)\-]+)\"'
         #                  ':'
