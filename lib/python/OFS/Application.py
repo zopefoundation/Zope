@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.30 1997/12/18 18:42:07 jim Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: Application.py,v 1.31 1997/12/19 15:37:34 jim Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -28,6 +28,10 @@ class Application(Folder.Folder):
     __roles__=None
     __defined_roles__=('manage',)
     web__form__method='GET'
+
+    class misc_:
+	"Miscellaneous product information"
+	__roles__=None
 
     manage_options=(
     {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
@@ -170,10 +174,9 @@ def install_products():
     product_dir=path_join(SOFTWARE_HOME,'Products')
     isdir=os.path.isdir
     exists=os.path.exists
+    DictType=type({})
 
-    app       =Globals.Bobobase['Application']
     meta_types=list(Folder.Folder.dynamic_meta_types)
-    role_names=list(app.__defined_roles__)
 
     product_names=os.listdir(product_dir)
     product_names.sort()
@@ -183,7 +186,8 @@ def install_products():
 	if not isdir(package_dir): continue
 	if not exists(path_join(package_dir, '__init__.py')): continue
 	product=__import__(product_name)
-	for meta_type in product.meta_types:
+
+	for meta_type in pgetattr(product, 'meta_types', ()):
 	    if product_name=='OFS': meta_types.insert(0,meta_type)
 	    else: meta_types.append(meta_type)
 	    name=meta_type['name']
@@ -222,27 +226,45 @@ def install_products():
 
 		setattr(Folder.Folder, "%sItems" % prefix , productItems)
 
-	for name,method in product.methods.items():
+	for name,method in pgetattr(product, 'methods', {}).items():
 	    setattr(Folder.Folder, name, method)
 
-
-	# Try to install role names
-        try:
-	    for n in product.role_names:
-		if n not in role_names:
-		    role_names.append(n)
-	except: pass
+	misc_=pgetattr(product, 'misc_', {})
+	if type(misc_) is DictType: misc_=Misc_(product_name, misc_)
+	Application.misc_.__dict__[product_name]=misc_
 
     Folder.Folder.dynamic_meta_types=tuple(meta_types)
 
-    role_names.sort()
-    role_names=tuple(role_names)
-    if app.__defined_roles__ != role_names:
-	app.__defined_roles__=tuple(role_names)
+def pgetattr(product, name, default=install_products):
+    if hasattr(product, name): return getattr(product, name)
+    if hasattr(product, '__init__'):
+	product=product.__init__
+	if hasattr(product, name): return getattr(product, name)
+
+    if default is not install_products: return default
+
+    raise AttributeError, name
+
+class Misc_:
+    "Miscellaneous product information"
+
+    __roles__=None
+
+    def __init__(self, name, dict):
+	self._d=dict
+	self.__name__=name
+
+    def __str__(self): return self.__name__
+    def __getitem__(self, name): return self._d[name]
+	
 
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.31  1997/12/19 15:37:34  jim
+# Now product __init__s can omit __ foolishness.
+# Now products can define misc objects.
+#
 # Revision 1.30  1997/12/18 18:42:07  jim
 # Rearranged things to make fixup "products" work.
 #
