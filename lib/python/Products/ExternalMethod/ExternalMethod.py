@@ -7,16 +7,13 @@ domain-specific customization of web environments.
 
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
-import OFS.SimpleItem, os
+import OFS.SimpleItem
 from string import split, join, find, lower
 import AccessControl.Role, sys, regex, traceback
-	    
-modules={}
+from OFS.SimpleItem import pretty_tb
+from App.Extensions import getObject, FuncCode
 
 manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
-
-path_split=os.path.split
-exists=os.path.exists
 
 def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder
@@ -102,41 +99,16 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 	elif module[-4:]=='.py': module=module[:-4]
 	self._module=module
 	self._function=function
-	try: del modules[module]
-	except: pass
-	self.getFunction(1)
+	self.getFunction(1,1)
 	if REQUEST: return MessageDialog(
 	    title  ='Changed %s' % self.id,
 	    message='%s has been updated' % self.id,
 	    action =REQUEST['URL1']+'/manage_main',
 	    target ='manage_main')
 
-    def getFunction(self, check=0):
+    def getFunction(self, check=0, reload=0):
 
-	module=self._module
-	
-	try: m=modules[module]
-	except:
-	    d,n = path_split(module)
-	    if d: raise ValueError, (
-		'The file name, %s, should be a simple file name' % module)
-	    m={}
-	    d=find(n,'.')
-	    if d > 0:
-		d,n=n[:d],n[d+1:]
-		n=("%s/lib/python/Products/%s/Extensions/%s.py"
-		   % (SOFTWARE_HOME,d,n))
-		__traceback_info__=n, module
-		if exists(n):
-		    exec open(n) in m
-		else:	    
-		    exec open("%s/Extensions/%s.py" %
-			      (SOFTWARE_HOME, module)) in m
-	    else:
-		exec open("%s/Extensions/%s.py" % (SOFTWARE_HOME, module)) in m
-	    modules[module]=m
-
-	f=m[self._function]
+        f=getObject(self._module, self._function, reload)
 	if hasattr(f,'im_func'): ff=f.im_func
 	else: ff=f
 	   
@@ -218,51 +190,6 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
     def function(self): return self._function
     def module(self): return self._module
-    
-class FuncCode:
-
-    def __init__(self, f, im=0):
-	self.co_varnames=f.func_code.co_varnames[im:]
-	self.co_argcount=f.func_code.co_argcount-im
-
-    def __cmp__(self,other):
-	return cmp((self.co_argcount, self.co_varnames),
-		   (other.co_argcount, other.co_varnames))
-
-
-def format_exception(etype,value,tb,limit=None):
-    import traceback
-    result=['Traceback (innermost last):']
-    if limit is None:
-	    if hasattr(sys, 'tracebacklimit'):
-		    limit = sys.tracebacklimit
-    n = 0
-    while tb is not None and (limit is None or n < limit):
-	    f = tb.tb_frame
-	    lineno = tb.tb_lineno
-	    co = f.f_code
-	    filename = co.co_filename
-	    name = co.co_name
-	    locals=f.f_locals
-	    result.append('  File %s, line %d, in %s'
-			  % (filename,lineno,name))
-	    try: result.append('    (Object: %s)' %
-			       locals[co.co_varnames[0]].__name__)
-	    except: pass
-	    try: result.append('    (Info: %s)' %
-			       str(locals['__traceback_info__']))
-	    except: pass
-	    tb = tb.tb_next
-	    n = n+1
-    result.append(join(traceback.format_exception_only(etype, value),
-		       ' '))
-    return result
-
-def pretty_tb(t,v,tb):
-    tb=format_exception(t,v,tb,200)
-    tb=join(tb,'\n')
-    return tb
-
 
 import __init__
 __init__.need_license=1
