@@ -17,6 +17,19 @@ Zope Changes
 
     Zope  1.10.3
 
+      TO DO !!!!!!
+
+        - Fix binary distributions so they aren't so darn big:
+
+           - Remove config and other unneeded subdirs of the
+             inluded python libraries.
+
+           - Don't include pycs and pyos in dist.
+
+           - Compile pycs and pys as part of the desitination
+             install.
+
+
       Features Added
 
         - A new 'utilities' directory is included in the distribution.
