@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.20 1998/05/08 14:58:48 jim Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: SimpleItem.py,v 1.21 1998/05/22 22:31:06 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -117,29 +117,6 @@ class Item(CopySource, App.Management.Tabs):
 	finally:
 	    tb=None
 
-    def bobobase_modification_time(self):
-	try:
-	    t=self._p_mtime
-	    if t is None: return DateTime()
-	except: t=0
-	return DateTime(t)
-
-    def locked_in_session(self):
-	oid=self._p_oid
-	return (oid and Globals.SessionBase.locks.has_key(oid)
-		and Globals.SessionBase.verify_lock(oid))
-
-    def modified_in_session(self):
-	jar=self._p_jar
-	if jar is None:
-	    if hasattr(self, 'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
-		jar=self.aq_parent._p_jar
-	    if jar is None: return 0
-	if not jar.name: return 0
-	try: jar.db[self._p_oid]
-	except: return 0
-	return 1
-
     def uniqueId(self):
 	return self._p_oid
 
@@ -203,6 +180,10 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.21  1998/05/22 22:31:06  jim
+# Moved some DB-related methods from ObjectManager and SimpleItem and stuffed them
+# right into Persistent in Globals.
+#
 # Revision 1.20  1998/05/08 14:58:48  jim
 # Changed permission settings to be in line with new machinery.
 #
