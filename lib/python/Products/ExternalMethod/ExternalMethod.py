@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-
+__version__='$Revision: 1.24 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
