@@ -51,12 +51,14 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.42 1998/09/02 21:06:05 jim Exp $''' 
-__version__='$Revision: 1.42 $'[11:-2]
+'''$Id: DT_Util.py,v 1.43 1998/09/04 20:45:58 jim Exp $''' 
+__version__='$Revision: 1.43 $'[11:-2]
 
 import regex, string, math, os
 from string import rfind, strip, join, atoi,lower,upper,capitalize,split,find
 import VSEval
+
+str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
 
 ParseError='Document Template Parse Error'
 ValidationError='Unauthorized'
