@@ -1,6 +1,6 @@
 *shared*
 intSet intSet.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
-WordSequence WordSequence.c
+Splitter Splitter.c
 
 Trie Trie.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 
@@ -12,6 +12,4 @@ OIBTree OIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 Query Query.c
  
 # install Index.py
-# install InvertedIndex.py
-# install InvertedIndexQuery.py
 # install TextIndex.py
