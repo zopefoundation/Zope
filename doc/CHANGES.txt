@@ -28,6 +28,9 @@ Zope Changes
 
         - Fixed misc typos in docstrings and docs.
 
+        - Fixed a bug that kept objects from being freed from the cache!
+          Basically, there was never a check for inactive objects.
+
         - MailHost objects didn't do appropriate CRLF conversion or
           recognize 4xx server responses.
 
