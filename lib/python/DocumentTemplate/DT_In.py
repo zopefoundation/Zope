@@ -23,6 +23,24 @@
       The text included within an 'in' command will be refered to
       as an 'in' block.
 
+    Synopsis
+
+      If the variable 'sequence' exists as a sequence, a simple case
+      of the 'in' tag is used as follows:
+
+        '<!--#in sequence-->some markup<!--#/in-->'
+
+      A more complete case is used as follows:
+
+        '<!--#in sequence sort=age-->'
+	'  <!--#var sequence-number-->) <!--#var age-->'
+	'<!--#/in-->'
+
+    Attributes
+
+      sort -- Define the sort order for sequence items.  If an item in
+      the sequence does not define 
+
       Within an 'in' block, variables are substituted from the
       elements of the iteration.  The elements may be either
       instance or mapping objects.  In addition, the variables:
@@ -212,7 +230,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.7 1997/10/05 19:50:58 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.8 1997/10/28 16:33:49 paul Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.7 1997/10/05 19:50:58 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -772,6 +790,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.8  1997/10/28 16:33:49  paul
+# Small change to docstring.
+#
 # Revision 1.7  1997/10/05 19:50:58  jim
 # Made sort work with methods.
 #
