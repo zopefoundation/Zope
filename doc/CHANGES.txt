@@ -43,6 +43,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #634: Image objects can now be rendered without border
+       attribute by calling "image.tag(border='')".
+
      - Collector #695: Object IDs "." and ".." are no longer permitted.
 
      - Collector #771: ZCatalog failed to index DTML Document if the name

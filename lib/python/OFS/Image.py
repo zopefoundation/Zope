@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.143 $'[11:-2]
+__version__='$Revision: 1.144 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -777,7 +777,8 @@ class Image(File):
 
         for key in args.keys():
             value = args.get(key)
-            result = '%s %s="%s"' % (result, key, value)
+            if value:
+                result = '%s %s="%s"' % (result, key, value)
 
         return '%s />' % result
 
