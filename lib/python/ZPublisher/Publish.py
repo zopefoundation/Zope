@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.135 1999/08/04 18:05:28 jim Exp $"""
-__version__='$Revision: 1.135 $'[11:-2]
+$Id: Publish.py,v 1.136 1999/08/04 20:51:18 jim Exp $"""
+__version__='$Revision: 1.136 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -169,7 +169,6 @@ def publish(request, module_name, after_list, debug=0,
         if have_transactions: get_transaction().commit()
 
         return response
-
     except:
         if err_hook is not None:
             if parents: parents=parents[-1]
@@ -209,8 +208,7 @@ def publish_module(module_name,
 
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
-            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
+            must_die=sys.exc_info()
             response.exception(must_die)
         except ImportError, v:
             if type(v) is type(()) and len(v)==3: must_die=v
