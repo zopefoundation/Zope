@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.32 1998/05/13 21:09:23 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.33 1998/05/13 21:50:14 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -179,6 +179,22 @@ expr_globals={
     '__guarded_getslice__': careful_getslice,
     }
 
+class Eval(VSEval.Eval):
+    
+    def eval(self, mapping):
+        d={'_vars': mapping, '_': mapping}
+	code=self.code
+	globals=self.globals
+	for name in self.used:
+	    try: d[name]=mapping.getitem(name,0)
+	    except KeyError:
+		if name=='_getattr':
+		    d['__builtins__']=globals
+		    exec compiled_getattr in d
+
+	return eval(code,globals,d)
+
+
 def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     used=params.has_key
     __traceback_info__=params, tag, expr, attr
@@ -204,7 +220,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
 	return params[attr]
     elif expr and used('expr'):
 	name=params['expr']
-	expr=VSEval.Eval(name, expr_globals)
+	expr=Eval(name, expr_globals)
 	return name, expr
 	
     raise ParseError, ('No %s given', (attr,tag))
@@ -339,6 +355,10 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.33  1998/05/13 21:50:14  jim
+# Moved special trick to handle _=_vars here so as to not break other uses
+# of VSEval.
+#
 # Revision 1.32  1998/05/13 21:09:23  jim
 # Changed the way that '_' is handled.  It is now an alias for the template dict.
 #
