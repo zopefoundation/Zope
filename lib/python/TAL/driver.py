@@ -89,6 +89,7 @@ Driver program to test METAL and TAL implementation.
 
 import os
 import sys
+import string
 
 import getopt
 
@@ -148,7 +149,7 @@ def interpretit(it, engine=None, stream=None, tal=1):
 def compilefile(file, html=None):
     if html is None:
         ext = os.path.splitext(file)[1]
-        html = ext in (".html", ".htm")
+        html = string.lower(ext) in (".html", ".htm")
     if html:
         from HTMLTALParser import HTMLTALParser
         p = HTMLTALParser()
