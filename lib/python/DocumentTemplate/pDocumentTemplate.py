@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.11 1998/05/13 20:28:02 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.12 1998/05/13 20:36:02 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import regex, string, sys
 from string import join
@@ -195,7 +195,7 @@ def render_blocks(blocks, md):
 				cond=md[cond]
 				cache[n]=cond
 			    except KeyError, v:
-                                if type(v) is not StringType: v,=v
+                                v=str(v)
 				if n != v: raise KeyError, v, sys.exc_traceback
 				cond=None
 			else: cond=cond(md)
@@ -227,6 +227,9 @@ def render_blocks(blocks, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.12  1998/05/13 20:36:02  jim
+# Slightly simpler solution to exception dilema.
+#
 # Revision 1.11  1998/05/13 20:28:02  jim
 # Fixed bug in handling conditional tags.
 #
