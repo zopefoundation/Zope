@@ -108,15 +108,17 @@ def main():
     versionTest = 1
     macros = 0
     mode = None
+    showcode = 0
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hmnx")
+        opts, args = getopt.getopt(sys.argv[1:], "hxmns")
     except getopt.error, msg:
         sys.stderr.write("\n%s\n" % str(msg))
         sys.stderr.write(
-            "usage: driver.py [-h|-x] [-m] [-n] [file]\n")
+            "usage: driver.py [-h|-x] [-m] [-n] [s] [file]\n")
         sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn off the Python 1.5.2 test\n")
+        sys.stderr.write("-s -- print intermediate code\n")
         sys.exit(2)
     for o, a in opts:
         if o == '-h':
@@ -127,6 +129,8 @@ def main():
             versionTest = 0
         if o == '-x':
             mode = "xml"
+        if o == '-s':
+            showcode = 1
     if not versionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
@@ -137,7 +141,8 @@ def main():
     else:
         file = FILE
     it = compilefile(file, mode)
-    interpretit(it, tal=(not macros))
+    if showcode: showit(it)
+    else: interpretit(it, tal=(not macros))
 
 def interpretit(it, engine=None, stream=None, tal=1):
     from TALInterpreter import TALInterpreter
@@ -162,6 +167,10 @@ def compilefile(file, mode=None):
         p = TALParser()
     p.parseFile(file)
     return p.getCode()
+
+def showit(it):
+    from pprint import pprint
+    pprint(it)
 
 if __name__ == "__main__":
     main()
