@@ -86,6 +86,7 @@ class DefaultConfiguration:
         self.dbtab = None
         self.debug_mode = True
         self.enable_product_installation = True
+        self.locale = None
 
         # restructured text
         default_enc = sys.getdefaultencoding()
