@@ -853,8 +853,7 @@ instancehome $INSTANCE
 #
 # Default:
 #
-#     An HTTP server starts on port 8080, an FTP server starts on port
-#     8021.
+#     An HTTP server starts on port 8080.
 
 <http-server>
   # valid keys are "address" and "force-connection-close"
@@ -862,12 +861,12 @@ instancehome $INSTANCE
   # force-connection-close on
 </http-server>
 
-<ftp-server>
-  # valid key is "address"
-  address 8021
-</ftp-server>
-
 # Examples:
+#
+#  <ftp-server>
+#    # valid key is "address"
+#    address 8021
+#  </ftp-server>
 #
 #  <webdav-source-server>
 #    # valid keys are "address" and "force-connection-close"
@@ -888,7 +887,7 @@ instancehome $INSTANCE
 #
 #  <monitor-server>
 #    # valid keys are "address"
-#    address 99
+#    address 8099
 #  </monitor-server>
 #
 #  <icp-server>
