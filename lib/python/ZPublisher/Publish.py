@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.30 1997/01/28 23:04:10 jim Exp $"""
+$Id: Publish.py,v 1.31 1997/01/30 00:50:18 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.30 1997/01/28 23:04:10 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 def main():
@@ -1232,6 +1232,12 @@ class Request:
 
     __repr__=__str__
 
+    def has_key(self,key):
+	try:
+	    self[key]
+	    return 1
+	except: return 0
+
     def __getitem__(self,key):
 	"""Get a variable value
 
@@ -1399,6 +1405,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.31  1997/01/30 00:50:18  jim
+# Added has_key method to Request
+#
 # Revision 1.30  1997/01/28 23:04:10  jim
 # *** empty log message ***
 #
