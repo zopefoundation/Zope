@@ -114,7 +114,34 @@ class TALGenerator:
         return self.optimize(self.program), self.macros
 
     def optimize(self, program):
-        return program # XXX later
+        output = []
+        collect = []
+        rawseen = cursor = 0
+        for cursor in xrange(len(program)+1):
+            try:
+                item = program[cursor]
+            except IndexError:
+                item = (None, None)
+            if item[0] == "rawtext":
+                collect.append(item[1])
+                continue
+            if item[0] == "endTag":
+                collect.append("</%s>" % item[1])
+                continue
+            if item[0] == "startTag" and not item[2]:
+                collect.append("<%s>" % item[1])
+                continue
+            if item[0] == "startEndTag" and not item[2]:
+                collect.append("<%s/>" % item[1])
+                continue
+            text = string.join(collect, "")
+            if text:
+                output.append(("rawtext", text))
+            if item[0] != None:
+                output.append(item)
+            rawseen = cursor+1
+            collect = []
+        return output
 
     def todoPush(self, todo):
         self.todoStack.append(todo)
