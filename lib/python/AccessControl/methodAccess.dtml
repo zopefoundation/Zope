@@ -5,7 +5,7 @@
 <!--#/if manage_tabs-->
 
 <p>The listing below shows the current permission mappings for this item.</p>
-<!--#with "_(valid=classDefinedPermissions())"-->
+<!--#with "_(valid=classDefinedAndInheritedPermissions())"-->
 <form action="manage_setPermissionMapping" method="POST">
 <table>
   <tr><th align=left>Permission</th>
