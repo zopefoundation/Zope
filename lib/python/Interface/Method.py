@@ -14,10 +14,10 @@
 """Method interfaces
 
 Revision information:
-$Id: Method.py,v 1.9 2002/06/07 17:18:29 jim Exp $
+$Id: Method.py,v 1.10 2002/06/10 16:47:38 chrism Exp $
 """
 import Exceptions
-from Attribute import Attribute
+from _Attribute import Attribute
 
 sig_traits = ['positional', 'required', 'optional', 'varargs', 'kwargs']
 

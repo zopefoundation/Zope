@@ -64,9 +64,10 @@ There is also a script, pyself.py in the package that can be used to
 create interface skeletins. Run it without arguments to get documentation.
 
 Revision information:
-$Id: __init__.py,v 1.6 2002/06/07 17:18:29 jim Exp $
+$Id: __init__.py,v 1.7 2002/06/10 16:47:38 chrism Exp $
 """
 
 from _Interface import Interface
+from _Attribute import Attribute
 Base = Interface # XXX We need to stamp out Base usage
 

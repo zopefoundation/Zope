@@ -14,13 +14,13 @@
 """Interface object implementation
 
 Revision information:
-$Id: _InterfaceClass.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: _InterfaceClass.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
 """
 
 from inspect import currentframe
 import sys
 from Method import Method, fromFunction
-from Attribute import Attribute
+from _Attribute import Attribute
 from types import FunctionType
 import Exceptions
 from _Element import Element
@@ -212,6 +212,12 @@ class Interface(Element):
 
     def __reduce__(self):
         return self.__name__
+
+    def __hash__(self):
+        """ interface instances need to be hashable, and inheriting
+        from extensionclass makes instances unhashable unless we declare
+        a __hash__ method here"""
+        return id(self)
 
 # We import this here to deal with module dependencies.
 from Implements import getImplementsOfInstances, visitImplements, getImplements

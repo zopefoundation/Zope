@@ -14,7 +14,7 @@
 """Interface object implementation
 
 Revision information:
-$Id: _Interface.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: _Interface.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
 """
 
 from _InterfaceClass import Interface as InterfaceClass
@@ -26,7 +26,7 @@ def wire():
 
     from Implements import implements
 
-    from Attribute import Attribute
+    from _Attribute import Attribute
     from IAttribute import IAttribute
     implements(Attribute, IAttribute)
 

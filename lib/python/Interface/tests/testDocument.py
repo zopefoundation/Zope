@@ -14,12 +14,12 @@
 """
 
 Revision information:
-$Id: testDocument.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: testDocument.py,v 1.3 2002/06/10 16:47:38 chrism Exp $
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite
 from Interface import Interface
-from Interface.Attribute import Attribute
+from Interface._Attribute import Attribute
 
 class Test(TestCase):
 

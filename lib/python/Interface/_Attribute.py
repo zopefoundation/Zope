@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: Attribute.py,v 1.2 2002/06/07 17:18:29 jim Exp $
+$Id: _Attribute.py,v 1.1 2002/06/10 16:47:38 chrism Exp $
 """
 
 from _Element import Element
