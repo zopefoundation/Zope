@@ -557,4 +557,15 @@
 
   <section type="zoperunner" name="*" attribute="runner"/>
 
+  <!-- the below should go into the ZServer package, but I can't quite
+   figure out how to put it there -->
+
+  <key name="max-listen-sockets" datatype="integer"
+       handler="max_listen_sockets" default="1000">
+     <description>
+       The maximum number of sockets that ZServer will attempt to open
+       in order to service incoming connections.
+     </description>
+  </key>
+
 </schema>

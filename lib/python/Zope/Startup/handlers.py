@@ -101,6 +101,10 @@ def http_realm(value):
 def security_policy_implementation(value):
     value not in ('C', None) and _setenv('ZOPE_SECURITY_POLICY', value)
 
+def max_listen_sockets(value):
+    import ZServer
+    ZServer.CONNECTION_LIMIT = value
+
 # server handlers
 
 def root_handler(config):
