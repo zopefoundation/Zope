@@ -29,8 +29,8 @@ Distutils setup for Zope
     your choosing.  For example, to use '/usr/local/lib/zope'::
 
       python setup.py install \
-        --home=/usr/local/lib/zope
-        --install-platlib=/usr/local/lib/zope
+        --home=/usr/local/lib/zope \
+        --install-platlib=/usr/local/lib/zope \
         --install-purelib=/usr/local/lib/zope
 
     Note that with this method, all packages and scripts (including
