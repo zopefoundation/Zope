@@ -20,7 +20,7 @@ from cgi import escape
 def field2string(v):
     if hasattr(v,'read'): return v.read()
     elif isinstance(v,UnicodeType) :
-        return v.encode('latin1')
+        return v.encode('iso-8859-15')
     else:
         return str(v)
 

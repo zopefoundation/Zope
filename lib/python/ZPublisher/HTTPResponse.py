@@ -444,7 +444,7 @@ class HTTPResponse(BaseResponse):
                 encoding = match.group(1)
                 return body.encode(encoding)
         # Use the default character encoding
-        return body.encode('latin1','replace')
+        return body.encode('iso-8859-15','replace')
 
     def setBase(self,base):
         """Set the base URL for the returned document.

@@ -522,7 +522,7 @@ class HTTPRequest(BaseRequest):
                                 if hasattr(converter,'convert_unicode'):
                                     item = converter.convert_unicode(item)
                                 else:
-                                    item = converter(item.encode('latin1'))
+                                    item = converter(item.encode('iso-8859-15'))
                             else:
                                 item=converter(item)
 
