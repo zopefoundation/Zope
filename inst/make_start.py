@@ -94,8 +94,10 @@ def sh(home, user, group):
         print 'Creating start script, start'
         open(start,'w').write(
             "#! /bin/sh\n"
-            "exec %s %s -D $*"
-            % (sys.executable, z2))
+            "PYTHONHOME=%s\n"
+            "export PYTHONHOME\n"
+            "exec %s \\\n  %s \\\n  -D $*\n"
+            % (home, sys.executable, z2))
         ch(start,user,group,0711)
 
     stop=os.path.join(home, 'stop')
