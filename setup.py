@@ -606,30 +606,6 @@ setup(
     packages=['zdaemon', 'zdaemon.tests']
 )
 
-# zlib
-setup(
-    name='zlib',
-    author=AUTHOR,
-
-    ext_modules=[
-        Extension(name='zlib',
-                  include_dirs=['../Components/zlib'],
-                  sources=['../Components/zlib/adler32.c',
-                           '../Components/zlib/compress.c',
-                           '../Components/zlib/crc32.c',
-                           '../Components/zlib/gzio.c',
-                           '../Components/zlib/uncompr.c',
-                           '../Components/zlib/deflate.c',
-                           '../Components/zlib/trees.c',
-                           '../Components/zlib/zutil.c',
-                           '../Components/zlib/inflate.c',
-                           '../Components/zlib/infblock.c',
-                           '../Components/zlib/inftrees.c',
-                           '../Components/zlib/infcodes.c',
-                           '../Components/zlib/infutil.c',
-                           '../Components/zlib/inffast.c',
-                           '../Components/zlib/zlib.c'])]
-)
 
 # initgroups
 setup(
