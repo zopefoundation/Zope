@@ -1,19 +1,19 @@
 /*
-     $Id: cPickle.c,v 1.52 1998/05/05 15:39:02 jim Exp $
+     $Id: cPickle.c,v 1.53 1998/05/05 15:41:31 jim Exp $
 
      Copyright 
 
-       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
-       unless otherwise indicated. Permission to use, copy and
-       distribute this software is hereby granted, provided that the
-       above copyright notice appear in all copies and that both that
-       copyright notice and this permission notice appear. Note that
-       any product, process or technology described in this software
-       may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
-       hereunder.
+       Copyright 1996, 1997, 1998 Digital Creations, Inc., 910
+       Princess Anne Street, Suite 300, Fredericksburg, Virginia 22401
+       U.S.A. All rights reserved.  Copyright in this software is
+       owned by DCLC, unless otherwise indicated. Permission to use,
+       copy and distribute this software is hereby granted, provided
+       that the above copyright notice appear in all copies and that
+       both that copyright notice and this permission notice
+       appear. Note that any product, process or technology described
+       in this software may be the subject of other Intellectual
+       Property rights reserved by Digital Creations, L.C. and are not
+       licensed hereunder.
 
      Trademarks 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.52 1998/05/05 15:39:02 jim Exp $\n"
+"$Id: cPickle.c,v 1.53 1998/05/05 15:41:31 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -4258,7 +4258,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.52 $";
+    char *rev="$Revision: 1.53 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
