@@ -202,9 +202,32 @@ class ZCatalog:
         Search the catalog.  Search terms can be passed in the REQUEST
         or as keyword arguments.
 
-        
-        XXX search grammar, how terms are combined, special search
-        terms, format of returned results XXX
+        Search queries consist of a mapping of index names to search
+        parameters.  You can either pass a mapping to searchResults as
+        the variable 'REQUEST' or you can use index names and search
+        parameters as keyword arguments to the method, in other words::
+
+          searchResults(title='Elvis Exposed',
+                        author='The Great Elvonso')
+
+        is the same as::
+
+          searchResults({'title' : 'Elvis Exposed',
+                         'author : 'The Great Elvonso'})
+
+        In these examples, 'title' and 'author' are indexes.  This
+        query will return any objects that have the title *Elvis
+        Exposed* AND also are authored by *The Great Elvonso*.  Terms
+        that are passed as keys and values in a searchResults() call
+        are implicitly ANDed together. To OR two search results, call
+        searchResults() twice and add concatenate the results like this::
+
+          results = ( searchResults(title='Elvis Exposed') +
+                      searchResults(author='The Great Elvonso') )
+          
+
+        This will return all objects that have the specified title OR
+        the specified author.
 
         """
     
