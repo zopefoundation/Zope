@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.20 1999/09/01 00:25:48 brian Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: HTTPResponse.py,v 1.21 1999/09/23 22:01:50 jim Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -320,7 +320,7 @@ class HTTPResponse(BaseResponse):
                                                 regex.casefold).search
                    ):
         if (self.headers.has_key('content-type') and
-            self.headers['content-type']!='text/html'): return
+            self.headers['content-type'] != 'text/html'): return
 
         if self.base:
             body=self.body
@@ -736,18 +736,9 @@ class HTTPResponse(BaseResponse):
         after beginning stream-oriented output. 
 
         """
-        self.body=self.body+data
-        headers=self.headers
-        if headers.has_key('content-length'):
-            del headers['content-length']
-        if not self.headers.has_key('content-type'):
-            self.setHeader('content-type', 'text/html')
-        self.insertBase()
-        body=self.body
-        self.body=''
-        self.write=write=self.stdout.write
-        try: self.flush=self.stdout.flush
-        except: pass
-        write(str(self))
-        self._wrote=1
-        write(body)
+        if not self._wrote:
+            self.outputBody()
+            self._wrote=1
+            self.stdout.flush()
+
+        self.stdout.write(data)
