@@ -602,7 +602,7 @@ static PyMethodDef zlib_methods[] =
 };
 
 statichere PyTypeObject Comptype = {
-        PyObject_HEAD_INIT(&PyType_Type)
+        PyObject_HEAD_INIT(NULL)
         0,
         "Compress",
         sizeof(compobject),
@@ -619,7 +619,7 @@ statichere PyTypeObject Comptype = {
 };
 
 statichere PyTypeObject Decomptype = {
-        PyObject_HEAD_INIT(&PyType_Type)
+        PyObject_HEAD_INIT(NULL)
         0,
         "Decompress",
         sizeof(compobject),
@@ -661,11 +661,15 @@ void
 PyInit_zlib()
 {
         PyObject *m, *d;
+
+	Comptype.ob_type=&PyType_Type;
+	Decomptype.ob_type=&PyType_Type;
+
         m = Py_InitModule("zlib", zlib_methods);
         d = PyModule_GetDict(m);
         ZlibError = Py_BuildValue("s", "zlib.error");
         PyDict_SetItemString(d, "error", ZlibError);
-        PyDict_SetItemString(d, "IDString", "$Id: zlib.c,v 1.1 1997/07/17 13:34:04 jim Exp $");
+        PyDict_SetItemString(d, "IDString", "$Id: zlib.c,v 1.2 1997/07/17 18:13:12 jim Exp $");
 	insint(d, "MAX_WBITS", MAX_WBITS);
 	insint(d, "DEFLATED", DEFLATED);
 	insint(d, "DEF_MEM_LEVEL", DEF_MEM_LEVEL);
