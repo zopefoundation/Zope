@@ -768,6 +768,17 @@
      </description>
   </key>
 
+  <key name="catalog-getObject-raises" datatype="boolean"
+       handler="catalog_getObject_raises">
+     <description>
+     If this directive is set to "on" (the deafult), ZCatalog brains objects
+     will raise NotFound exceptions from 'getObject' for unreachable objects,
+     and Unauthorized for disallowed objects.  If the option is "off", they
+     will return None in such cases (which was the old behavior)
+     </description>
+     <metadefault>off</metadefault>
+  </key>
+
   <multisection type="ZServer.server" name="*" attribute="servers"/>
   <key name="port-base" datatype="integer" default="0">
     <description>

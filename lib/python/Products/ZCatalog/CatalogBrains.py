@@ -14,6 +14,13 @@
 __version__ = "$Revision$"[11:-2]
 
 import Acquisition, Record
+from zExceptions import NotFound
+from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
+
+# Switch for new behavior, raise NotFound instead of returning None.
+# Use 'catalog-getOb-raises off' in zope.conf to restore old behavior.
+GETOBJECT_RAISES = True
 
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     """Abstract base brain that handles looking up attributes as
@@ -54,10 +61,25 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
             return None
         parent = self.aq_parent
         if len(path) > 1:
-            parent = parent.unrestrictedTraverse('/'.join(path[:-1]), None)
-            if parent is None:
+            try:
+                parent = parent.unrestrictedTraverse(path[:-1])
+            except ConflictError:
+                raise
+            except:
+                if GETOBJECT_RAISES:
+                    raise
                 return None
-        return parent.restrictedTraverse(path[-1], None)
+
+        try:
+            target = parent.restrictedTraverse(path[-1])
+        except ConflictError:
+            raise
+        except:
+            if GETOBJECT_RAISES:
+                raise
+            return None
+
+        return target
 
     def getRID(self):
         """Return the record ID for this object."""
