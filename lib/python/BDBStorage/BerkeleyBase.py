@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.34 $'.split()[-2:][0]
+__version__ = '$Revision: 1.35 $'.split()[-2:][0]
 
 import os
 import time
@@ -117,6 +117,11 @@ class BerkeleyConfig:
       3600, a classic pack will be performed once per day.  Set to zero to
       never automatically do classic packs.  For Minimal storage, this value
       is ignored -- all packs are classic packs.
+
+    Here are some other miscellaneous configuration variables:
+
+    - read_only causes ReadOnlyError's to be raised whenever any operation
+      (except pack!) might modify the underlying database.
     """
     interval = 120
     kbyte = 0
@@ -126,6 +131,7 @@ class BerkeleyConfig:
     frequency = 0
     packtime = 4 * 60 * 60
     classicpack = 0
+    read_only = 0
 
     def __repr__(self):
         d = self.__class__.__dict__.copy()
@@ -201,6 +207,7 @@ class BerkeleyBase(BaseStorage):
         # BaseStorage uses the name -- is globally unique.
         envdir = os.path.abspath(self._env.db_home)
         BaseStorage.__init__(self, envdir)
+        self._is_read_only = config.read_only
 
         # Instantiate a pack lock
         self._packlock = ThreadLock.allocate_lock()
