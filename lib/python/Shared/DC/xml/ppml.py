@@ -103,28 +103,19 @@ import xyap
 xyap=xyap.xyap
 
 ListType=type([])
-#  Create a list of all the characters
-L = map(chr,range(256))
 
-#  Create an empty dictionary
-d = {}     
-
-#  Create a dictionary d that maps each character to its
-#  repr form
-
-for c in L:
-    d[c] = repr(c)[1:-1]
-    
-#  Modify values in the dictionary
-d2={}
-d2['<'] = "\\074"
-d2['>'] = "\\076"
-d2['&'] = "\\046"
-d['\n'] = "\\n\n"
-d['\t'] = "\\t"
-d['\\'] = "\\"
-d['\r'] = "\\r"
-d["'"] = "\\'"
+# Create repr mappong
+reprs = {}
+for c in map(chr,range(256)): reprs[c] = repr(c)[1:-1]
+reprs['\n'] = "\\n\n"
+reprs['\t'] = "\\t"
+reprs['\\'] = "\\\\"
+reprs['\r'] = "\\r"
+reprs["'"] = "\\'"
+reprs2={}
+reprs2['<'] = "\\074"
+reprs2['>'] = "\\076"
+reprs2['&'] = "\\046"
 
 
 #  Function convert takes a string and converts it to either
@@ -133,7 +124,7 @@ d["'"] = "\\'"
 def convert(S, find=string.find):
     new = ''
     encoding = 'repr'
-    new = string.join(map(lambda s: d[s], S), '')
+    new = string.join(map(reprs.get, S), '')
     if len(new) > (1.4*len(S)):
         encoding = 'base64'
         new = base64.encodestring(S)[:-1]
@@ -142,7 +133,7 @@ def convert(S, find=string.find):
             new='<![CDATA[\n\n'+new+'\n\n]]>'
             encoding='cdata'
         else:
-            new=string.join(map(lambda s: d2[s], new), '')
+            new=string.join(map(lambda s: reprs2.get(s,s), new), '')
     return encoding, new
 
 #  Function unconvert takes a encoding and a string and 
@@ -168,22 +159,11 @@ def p64(v, pack=struct.pack):
 
 def u64(v, unpack=struct.unpack):
     h, v = unpack(">ii", v)
-    if v < 0: v=t32-v
+    if v < 0: v=t32+v
     if h:
-        if h < 0: h=t32-h
+        if h < 0: h=t32+h
         v=h*t32+v
     return v
-
-def cp(f1, f2, l):
-    read=f1.read
-    write=f2.write
-    n=8192
-    
-    while l > 0:
-        if n > l: n=l
-        d=read(n)
-        write(d)
-        l = l - len(d)
 
 class Global:
 
@@ -527,12 +507,6 @@ def end_string(self, tag, data):
     if a.has_key('id'): self._pickleids[a['id']]=v
     return v
 
-def end_none(self,tag,data):
-    return None
-
-def end_reference(self, tag, data):
-    return self._pickleids[data[1]['id']]
-
 def end_list(self, tag, data):
     v=data[2:]
     a=data[1]
@@ -552,10 +526,6 @@ def end_dictionary(self, tag, data):
     if a.has_key('id'): self._pickleids[a['id']]=D
     return D
 
-def end_item(self, tag, data):
-    v=data[2:]
-    return v
-
 class xmlUnpickler(NoBlanks, xyap):
     start_handlers={'pickle': start_pickle}
     end_handlers={
@@ -572,20 +542,17 @@ class xmlUnpickler(NoBlanks, xyap):
         'float':
         lambda self,tag,data,atof=string.atof,name=name:
             atof(name(self, tag, data)),
-        'none': end_none,
+        'none': lambda self, tag, data: None,
         'list': end_list,
         'tuple': end_tuple,
         'dictionary': end_dictionary,
         'key': lambda self, tag, data: data[2],
         'value': lambda self, tag, data: data[2],
-        'item': end_item,
-        'reference': end_reference,
+        'item': lambda self, tag, data: data[2:],
+        'reference': lambda self, tag, data: self._pickleids[data[1]['id']],
         'state': lambda self, tag, data: data[2],
         'klass': lambda self, tag, data: data[2],
         }
-
-def save_none(self, tag, data):
-    return 'N'
     
 def save_int(self, tag, data):
     binary=self.binary
@@ -609,6 +576,27 @@ def save_float(self, tag, data):
     else: v='F'+name(self, tag, data)+'\012'
     return v
 
+def save_put(self, v, attrs):
+    id=attrs.get('id','')
+    if id:
+        prefix=string.rfind(id,'.')
+        if prefix >= 0: id=id[prefix+1:]
+        elif id[0]=='i': id=id[1:]
+        if self.binary:
+            id=string.atoi(id)
+            s=mdumps(id)[1:]
+            if (id < 256):
+                id=s[0]
+                put='q'
+            else:
+                id=s
+                put='r'
+            id=put+id
+        else:
+            id="p"+id+"\012"
+        return v+id
+    return v
+
 def save_string(self, tag, data):
     binary=self.binary
     v=''
@@ -629,132 +617,37 @@ def save_string(self, tag, data):
             v='T'+s+v
         put='q'
     else: v="S'"+v+"'\012"
-    if a.has_key('id'):
-        id=a['id']
-        prefix=string.rfind(id,'.')
-        if prefix>=0: id=id[prefix+1:]
-        if binary:
-            id=string.atoi(id)
-            s=mdumps(id)[1:]
-            if (id < 256):
-                id=s[0]
-                put='q'
-            else:
-                id=s
-                put='r'
-            v=v+put+id
-        else: v=v+put+id+"\012"
-    return v
+    return save_put(self, v, a)
 
 def save_tuple(self, tag, data):
-    binary=self.binary
     T=data[2:]
-    a=data[1]
-    v=''
-    put='p'
-    for x in T:
-        v=v+x
-    if v is '': return ')'
-    v='('+v+'t'
-    if a.has_key('id'):
-        id=a['id']
-        prefix=string.rfind(id,'.')
-        if prefix>=0: id=id[prefix+1:]
-        if binary:
-            id=string.atoi(id)
-            s=mdumps(id)[1:]
-            if (id < 256):
-                id=s[0]
-                put='q'
-            else:
-                id=s
-                put='r'
-            v=v+put+id
-        else:
-            v=v+put+id+'\012'
-    return v
+    if not T: return ')'
+    return save_put(self, '('+string.join(T,'')+'t', data[1])
 
 def save_list(self, tag, data):
-    binary=self.binary
     L=data[2:]
     a=data[1]
-    v=''
-    x=0
-    if a.has_key('id'):
-        id=a['id']
-        prefix=string.rfind(id,'.')
-        if prefix>=0: id=id[prefix+1:]
-    if binary:
-        while x<len(L):
-            v=v+L[x]
-            x=x+1
-        if id:
-            id=string.atoi(id)
-            s=mdumps(id)[1:]
-            if (id < 256):
-                id=s[0]
-                put='q'
-            else:
-                id=s
-                put='r'
-            if v is not '':
-                v=']'+put+id+'('+v+'e'
-            else: v=']'+put+id
+    if self.binary:
+        v=save_put(self, ']', a)
+        if L: v=v+'('+string.join(L,'')+'e'
     else:
-        while x<len(L):
-            v=v+L[x]+'a'
-            x=x+1
-        if id:
-            v='(lp'+id+'\012'+v
-    if v=='': v=']'
-    
+        v=save_put(self, '(l', a)
+        if L: v=string.join(L,'a')+'a'
     return v
 
 def save_dict(self, tag, data):
-    binary=self.binary
     D=data[2:]
-    a=data[1]
-    id=a['id']
-    prefix=string.rfind(id,'.')
-    if prefix>=0: id=id[prefix+1:]
-    if binary:
-        id=string.atoi(id)
-        s=mdumps(id)[1:]
-        if (id < 256):
-            id=s[0]
-            put='q'
-        else:
-            id=s
-            put='r'
-        v='}'+put+id
-        if len(D)>0: v=v+'('
-        x=0
-        while x < len(D):
-            v=v+D[x]
-            x=x+1
-        if len(D)>0:
-            v=v+'u'
+    if self.binary:
+        v=save_put(self, '}', data[1])
+        if D: v=v+'('+string.join(D,'')+'u'
     else:
-        v='(dp'+id+'\012'
-        x=0
-        while x<len(D):
-            v=v+D[x]+'s'
-            x=x+1
-    return v
-
-def save_item(self, tag, data):
-    v=''
-    for x in data[2:]:
-        v=v+x
-    return v        
-
-def save_pickle(self, tag, data):
-    v=data[2]+'.'
+        v=save_put(self, '(d', data[1])
+        if D: v=v+string.join(D,'s')+'s'
     return v
 
 def save_reference(self, tag, data):
     binary=self.binary
-    a=data[1]
+    a=data[1]    
     id=a['id']
     prefix=string.rfind(id,'.')
     if prefix>=0: id=id[prefix+1:]
@@ -774,85 +667,33 @@ def save_reference(self, tag, data):
     return v
 
 def save_object(self, tag, data):
-    binary=self.binary
-    a=data[1]
-    v='('
-    j=0
-    id=a['id']
-    prefix=string.rfind(id,'.')
-    if prefix>=0: id=id[prefix+1:]
-    put='p'
-    if binary:
-        id=string.atoi(id)
-        s=mdumps(id)[1:]
-        if (id < 256):
-            id=s[0]
-            put='q'
-        else:
-            id=s
-            put='r'
-        for x in data[2:]:
-            if j==0: v=v + x
-            elif j==1:
-                x=x[1:]
-                stop=string.rfind(x,'t')
-                if stop>=0: x=x[:stop]
-                v=v+x+'o'+put+id
-            elif j==2: v=v+x
-            j=j+1
-    else:
-        for x in data[2:]:
-            if j==0: v=v+x
-            elif j==1:
-                x=x[1:]
-                stop=string.rfind(x,'t')
-                if stop>=0: x=x[:stop]
-                v=v+x+'o'+put+id+'\012'
-            elif j==2: v=v+x
-            j=j+1
-    v=v+'b'
-    if a.has_key('id'): self._pickleids[a['id']]=v
+    v='('+data[2]
+    x=data[3][1:]
+    stop=string.rfind(x,'t')  # This seems
+    if stop>=0: x=x[:stop]    # wrong!
+    v=save_put(self, v+x+'o', data[1])
+    v=v+data[4]+'b' # state
     return v
 
 def save_global(self, tag, data):
-    binary=self.binary
     a=data[1]
-    if a.has_key('id'):
-        id=a['id']
-        prefix=string.rfind(id,'.')
-        if prefix>=0: id=id[prefix+1:]
-        put='p'
-        if binary:
-            id=string.atoi(id)
-            s=mdumps(id)[1:]
-            if (id < 256):
-                id=s[0]
-                put='q'
-            else:
-                id=s
-                put='r'
-            v='c'+a['module']+'\012'+a['name']+'\012'+put+id
-        else:
-            v=a['module']+'\012'+a['name']+'\012'+put+id+'\012'
-        self._pickleids[a['id']]=v
-    else: v=a['module']+'\012'+a['name']+'\012'
-    return v
+    return save_put(self, 'c'+a['module']+'\012'+a['name']+'\012', a)
 
 def save_persis(self, tag, data):
-    binary=self.binary
     v=data[2]
-    if  binary:
+    if  self.binary:
         v=v+'Q'
     else:
         v='P'+v
     return v
 
-
 class xmlPickler(NoBlanks, xyap):
-    start_handlers={'pickle': start_pickle,}
+    start_handlers={
+        'pickle': lambda self, tag, attrs: [tag, attrs],
+        }
     end_handlers={
-        'pickle': save_pickle,
-        'none': save_none,
+        'pickle': lambda self, tag, data: data[2]+'.',
+        'none': lambda self, tag, data: 'N',
         'int': save_int,
         'float': save_float,
         'string': save_string,
@@ -860,7 +701,7 @@ class xmlPickler(NoBlanks, xyap):
         'tuple': save_tuple,
         'list': save_list,
         'dictionary': save_dict,
-        'item': save_item,
+        'item': lambda self, tag, data, j=string.join: j(data[2:],''),
         'value': lambda self, tag, data: data[2],
         'key' : lambda self, tag, data: data[2],
         'object': save_object,
