@@ -115,6 +115,14 @@ Options:
     The number of threads to use, if ZODB3 is used. The default is
     %(NUMBER_OF_THREADS)s.
 
+  -i n
+
+    Set the interpreter check interval. This integer value
+    determines how often the interpreter checks for periodic things
+    such as thread switches and signal handlers. The Zope default
+    is 120, but you may want to experiment with other values that
+    may increase performance in your particular environment.
+
   -D
 
     Run in Zope debug mode.  This causes the Zope process not to
@@ -274,6 +282,9 @@ if swhome != 'INSERT_SOFTWARE_HOME':
 
 import os, sys, getopt, string
 
+sys.setcheckinterval(120)
+
+
 program=sys.argv[0]
 here=os.path.join(os.getcwd(), os.path.split(program)[0])
 Zpid=''
@@ -381,7 +392,7 @@ try:
         raise 'Invalid python version', string.split(sys.version)[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:XM:')
+                               'hz:Z:t:i:a:d:u:w:f:p:m:Sl:2DP:rF:L:XM:')
 
     DEBUG=0
     READ_ONLY=0
@@ -408,6 +419,12 @@ try:
             try: v=string.atoi(v)
             except: raise 'Invalid number of threads', v
             NUMBER_OF_THREADS=v
+
+        elif o=='-i':
+            try: v=string.atoi(v)
+            except: raise 'Invalid value for -i option', v
+            sys.setcheckinterval(v)
+
         elif o=='-a': IP_ADDRESS=v
         elif o=='-d':
             if v=='-': v=''
