@@ -1,15 +1,15 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.17 2003/10/03 16:36:52 chrism Exp $
-# $Revision: 1.17 $
+# $Id: configure,v 1.18 2003/12/14 05:11:50 fdrake Exp $
+# $Revision: 1.18 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
 #####################################################################
 
 # Place the Zope major version number below.
-ZOPE_VERS=2.7
+ZOPE_VERS=2.8
 
 # Place the optimal target version number for Zope (as returned by sys.version)
 # below
