@@ -7,16 +7,10 @@ Zope Changes
 
   Zope 2.5 Alpha 2
 
-    Features Added
-
-      - Unicode support for ZCatalog: 
-
-        - added new UnicodeSplitter
-
-        - ZCatalog now allows unicode strings as attributes
-          of objects to be indexed using a TextIndex
-          (see lib/python/ZCatalog/README.txt)
-     
+    Bugs Fixed
+    
+      - New accelerated security management bugfix in App/Manager.py,
+        changing calling sequence to positional parameters.
 
   Zope 2.5 Alpha 1
 
@@ -109,6 +103,15 @@ Zope Changes
 
       - Accelerated C Document Template handling; Document Templates
         can now do additional rendering in C, improving performance.
+
+      - Unicode support for ZCatalog: 
+
+        - added new UnicodeSplitter
+
+        - ZCatalog now allows unicode strings as attributes
+          of objects to be indexed using a TextIndex
+          (see lib/python/ZCatalog/README.txt)
+     
 
     Bugs fixed
 
