@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -257,7 +257,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def manage_afterAdd(self, item, container):
         if not self.cookie:
-            # Site-relative, quoted
+            # Physical path
             self.cookie=join(self.getPhysicalPath(),'/')
 
     def manage_beforeDelete(self, item, container):        
