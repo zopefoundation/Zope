@@ -82,7 +82,15 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
+
+
+# This allows ZPublisher to work with embedded interpreters
+# that for some reason have no sys.argv (required by cgi.py).
+import sys
+if not hasattr(sys):
+    sys.argv=[]
+
 
 from Publish import publish_module, Retry
 
