@@ -157,6 +157,13 @@ class TestZCatalog(unittest.TestCase):
         testNum = str(self.upper - 3) 
         data = self._catalog.getIndexDataForUID(testNum)
         assert data['title'][0] == testNum
+        
+    def testSearch(self):
+        query = {'title': ['5','6','7']}
+        sr = self._catalog.searchResults(query)
+        self.assertEqual(len(sr), 3)
+        sr = self._catalog.search(query)
+        self.assertEqual(len(sr), 3)
 
 class TestCatalogObject(unittest.TestCase):
     def setUp(self):
@@ -346,6 +353,11 @@ class TestCatalogObject(unittest.TestCase):
         # set is much larger than the sort index.
         a = self._catalog(sort_on='att1')
         self.assertEqual(len(a), self.upper)
+    
+    def testSortLimit(self):
+        a = self._catalog(sort_on='num', sort_limit=10)
+        self.assertEqual(a[0].num, self.upper - 1)
+        self.assertEqual(a.actual_result_count, self.upper)
 
 class objRS(ExtensionClass.Base):
 

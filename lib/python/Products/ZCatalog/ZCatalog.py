@@ -137,7 +137,7 @@ class ZCatalog(Folder, Persistent, Implicit):
          ['searchResults', '__call__', 'uniqueValuesFor',
           'getpath', 'schema', 'indexes', 'index_objects', 
           'all_meta_types', 'valid_roles', 'resolve_url',
-          'getobject'],
+          'getobject', 'search'],
          ['Anonymous', 'Manager']),
          
         (manage_zcatalog_indexes, 
@@ -610,15 +610,34 @@ class ZCatalog(Folder, Persistent, Implicit):
         return r
 
     def searchResults(self, REQUEST=None, used=None, **kw):
-        """Search the catalog according to the ZTables search interface.
+        """Search the catalog
 
         Search terms can be passed in the REQUEST or as keyword
         arguments.
+        
+        The used argument is now deprecated and ignored
         """
 
         return self._catalog.searchResults(REQUEST, used, **kw)
 
     __call__=searchResults
+    
+    def search(
+        self, query_request, sort_index=None, reverse=0, limit=None, merge=1):
+        """Programmatic search interface, use for searching the catalog from
+        scripts.
+            
+        query_request: Dictionary containing catalog query
+        sort_index:    Name of sort index
+        reverse:       Reverse sort order?
+        limit:         Limit sorted result count (optimization hint)
+        merge:         Return merged results (like searchResults) or raw 
+                       results for later merging.
+        """
+        if sort_index is not None:
+            sort_index = self._catalog.indexes[sort_index]
+        return self._catalog.search(
+            query_request, sort_index, reverse, limit, merge)
 
 ## this stuff is so the find machinery works
 

@@ -20,7 +20,7 @@ import Record
 from Missing import MV
 from zLOG import LOG, ERROR
 
-from Lazy import LazyMap, LazyFilter, LazyCat
+from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
 from BTrees.IIBTree import intersection, weightedIntersection, IISet
@@ -30,6 +30,7 @@ import BTrees.Length
 from Products.PluginIndexes.common.randid import randid
 
 import time, sys, types
+from bisect import bisect
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog
@@ -425,12 +426,18 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 ## This is the Catalog search engine. Most of the heavy lifting happens below
 
-    def _indexedSearch(self, request, sort_index, append, used):
-        """
-        Iterate through the indexes, applying the query to each one.
-        """
-        rs = None             # resultset
-        data = self.data
+    def search(self, request, sort_index=None, reverse=0, limit=None, merge=1):
+        """Iterate through the indexes, applying the query to each one. If
+        merge is true then return a lazy result set (sorted if appropriate)
+        otherwise return the raw (possibly scored) results for later merging.
+        Limit is used in conjuntion with sorting or scored results to inform
+        the catalog how many results you are really interested in. The catalog
+        can then use optimizations to save time and memory. The number of
+        results is not guaranteed to fall within the limit however, you should
+        still slice or batch the results as usual."""
+
+        rs = None # resultset
+        result_count = 0
 
         # Indexes fulfill a fairly large contract here. We hand each
         # index the request mapping we are given (which may be composed
@@ -449,16 +456,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Note that if the indexes find query arguments, but the end result
         # is an empty sequence, we do nothing
 
-        # If sort_index is None, this method should pass sequences of
-        # catalog records to append().  The sequences will be concatenated
-        # together to generate the result set.
-        # If sort_index is not None, this method should instead pass pairs
-        # to append(), each pair containing a sort key and a sequence of
-        # catalog records.
-        # In either case, the sequences may be lazified.
-
-        if used is None:
-            used = {}
         for i in self.indexes.keys():
             index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
@@ -468,28 +465,35 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
             if r is not None:
                 r, u = r
-                for name in u:
-                    used[name] = 1
                 w, rs = weightedIntersection(rs, r)
-
+        
         if rs is None:
             # None of the indexes found anything to do with the request
             # We take this to mean that the query was empty (an empty filter)
             # and so we return everything in the catalog
             if sort_index is None:
-                rs = data.items()
-                append(LazyMap(self.instantiate, rs, len(self)))
+                if merge:
+                    return LazyMap(
+                        self.instantiate, self.data.items(), len(self))
+                else:
+                    return self.data.keys()
             else:
-                self._build_sorted_results(data, sort_index, append)
+                result_count = len(self)
+                rs = self.sortResults(
+                    self.data, sort_index, reverse,  limit, merge)
         elif rs:
+            result_count = len(rs)
+            
             # We got some results from the indexes.
             # Sort and convert to sequences.
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
                 # it, compute the normalized score, and Lazify it.
-                rset = rs.byValue(0) # sort it by score
-                max = float(rset[0][0])
+                if not merge:
+                    return rs
+                rs = rs.byValue(0) # sort it by score
+                max = float(rs[0][0])
 
                 # Here we define our getter function inline so that
                 # we can conveniently store the max value as a default arg
@@ -506,32 +510,32 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     r.data_record_score_ = score
                     r.data_record_normalized_score_ = int(100. * score / max)
                     return r
-
-                # Lazify the results
-                append(LazyMap(getScoredResult, rset))
+                
+                return LazyMap(getScoredResult, rs, len(rs))
 
             elif sort_index is None and not hasattr(rs, 'values'):
-                # no scores?  Just Lazify.
+                # no scores
                 if hasattr(rs, 'keys'):
                     rs = rs.keys()
-                append(LazyMap(self.__getitem__, rs))
             else:
                 # sort.  If there are scores, then this block is not
                 # reached, therefore 'sort-on' does not happen in the
                 # context of a text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
-                self._build_sorted_results(rs,sort_index,append)
+                rs = self.sortResults(
+                    rs, sort_index, reverse, limit, merge)
+        
+        if merge:
+            rs = LazyMap(self.__getitem__, rs, len(rs))
+            # Give the application an opportunity to see how many results
+            # there really were, regardless of the limit value
+            rs.actual_result_count = result_count
+        return rs 
 
-        #print 'ZCatalog search used', used.keys()
-        return used
-
-    def _build_sorted_results(self,rs,sort_index,append):
-        # This function will .append pairs where the first item
-        # in the pair is a sort key, and the second item in the
-        # pair is a sequence of results which share the same
-        # sort key. Later on the list to which these things
-        # are .append()ed will be .sort()ed, and the first element
-        # of each pair stripped.
+    def sortResults(self, rs, sort_index, reverse=0, limit=None, merge=1):
+        # Sort a result set using a sort index. Return a lazy
+        # result set in sorted order if merge is true otherwise
+        # returns a list of (sortkey, results) tuples
         #
         # The two 'for' loops in here contribute a significant
         # proportion of the time to perform an indexed search.
@@ -540,10 +544,17 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         _lazymap = LazyMap
         _intersection = intersection
         _self__getitem__ = self.__getitem__
+        index_key_map = sort_index.documentToKeyMap()
         _None = None
+        result = []
+        append = result.append
+        
         if (len(rs) > (len(sort_index) * 4)):
             # The result set is much larger than the sorted index,
             # so iterate over the sorted index for speed.
+            # This is almost never exercised in practice...
+            
+            length = 0
 
             try:
                 intersection(rs, IISet(()))
@@ -564,31 +575,72 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     if keys is not _None:
                         # Is this ever true?
                         intset = keys()
-                    append((k, _lazymap(_self__getitem__, intset)))
+                    length += len(intset)
+                    append((k, intset, _self__getitem__))
                     # Note that sort keys are unique.
+            
+            if merge:
+                result.sort()
+                if reverse:
+                    result.reverse()
+                return LazyCat(LazyValues(result), length)
+            else:
+                return result            
         else:
-            # Iterate over the result set.
+            # Iterate over the result set getting sort keys from the index
             if hasattr(rs, 'keys'):
                 rs = rs.keys()
-            _sort_index_keyForDocument = sort_index.keyForDocument
             _keyerror = KeyError
-            for did in rs:
-                try:
-                    key = _sort_index_keyForDocument(did)
-                except _keyerror:
-                    # This document is not in the sort key index.
-                    # skip it.
-                    pass
+            if limit is None:
+                for did in rs:
+                    try:
+                        key = index_key_map[did]
+                    except _keyerror:
+                        # This document is not in the sort key index.
+                        # skip it.
+                        pass
+                    else:
+                        append((key, did, _self__getitem__))
+                        # The reference back to __getitem__ is used in case
+                        # we do not merge now and need to intermingle the
+                        # results with those of other catalogs while avoiding
+                        # the cost of instantiating a LazyMap per result
+
+                if merge:
+                    result.sort()
+                    if reverse:
+                        result.reverse()
+                    return LazyValues(result)
                 else:
-                    # We want the sort keys to be unique so that
-                    # .sort()ing the list does not involve comparing
-                    # _lazymap objects, which is slow. To ensure
-                    # uniqueness the first element of each pair is
-                    # actually a tuple of:
-                    # (real sort key, some unique number)
-                    lm = _lazymap(_self__getitem__, [did])
-                    key = key, id(lm)
-                    append((key,lm))
+                    return result
+            else: 
+                # Limit/sort results using N-Best algorithm
+                # This is faster for large sets then a full sort
+                # And uses far less memory
+                keys = []
+                n = 0
+                for did in rs:
+                    try:
+                        key = index_key_map[did]
+                    except _keyerror:
+                        # This document is not in the sort key index.
+                        # skip it.
+                        pass
+                    else:
+                        if n >= limit and key <= keys[0]:
+                            continue
+                        i = bisect(keys, key)
+                        keys.insert(i, key)
+                        result.insert(i, (key, did, _self__getitem__))
+                        if n == limit:
+                            del keys[0], result[0]
+                        else:
+                            n += 1
+                result.reverse()
+                if merge:
+                    return LazyValues(result) 
+                else:
+                    return result     
 
     def _get_sort_attr(self, attr, kw):
         """Helper function to find sort-on or sort-order."""
@@ -626,32 +678,23 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         else:
             return None
 
-
     def searchResults(self, REQUEST=None, used=None, _merge=1, **kw):
+        # The used argument is deprecated and is ignored
         if REQUEST is None and not kw:
             # Try to acquire request if we get no args for bw compat
             REQUEST = getattr(self, 'REQUEST', None)
         args = CatalogSearchArgumentsMap(REQUEST, kw)
         sort_index = self._getSortIndex(args)
+        sort_limit = self._get_sort_attr('limit', args)
+        reverse = 0
+        if sort_index is not None:
+            order = self._get_sort_attr("order", args)
+            if (isinstance(order, types.StringType) and
+                order.lower() in ('reverse', 'descending')):
+                reverse = 1
         # Perform searches with indexes and sort_index
-        r = []
-        used = self._indexedSearch(args, sort_index, r.append, used)
-        if not _merge:
-            # Postpone merging and sorting.  This provides a way to
-            # efficiently sort results merged from multiple queries
-            # or multiple catalogs.
-            return r
-        else:
-            has_sort_keys = 0
-            reverse = 0
-            if sort_index is not None:
-                has_sort_keys = 1
-                order = self._get_sort_attr("order", args)
-                if (isinstance(order, types.StringType) and
-                    order.lower() in ('reverse', 'descending')):
-                    reverse = 1
-            return mergeResults(r, has_sort_keys, reverse)
-
+        return self.search(args, sort_index, reverse, sort_limit, _merge)
+                
     __call__ = searchResults
 
 
@@ -694,37 +737,35 @@ class CatalogSearchArgumentsMap:
             return 0
         else:
             return 1
+   
 
-
-def mergeResults(r, has_sort_keys, reverse):
+def mergeResults(catalogs_results, has_sort_keys, reverse):
     """Sort/merge sub-results, generating a flat sequence.
+    
+    catalog_results is a sequence of (catalog, r) tuples. This allows you to
+    merge and sort results efficiently from multiple catalogs.
 
     The contents of r depend on whether has_sort_keys is set.
     If not has_sort_keys, r contains sequences of records.
     If has_sort_keys, r contains pairs of (sort_key, sequence)
     and now we have to sort the results.
     """
-    if not r:
-        return LazyCat(r)
-    elif len(r) == 1:
-        if not has_sort_keys:
-            return r[0]
-        else:
-            return r[0][1]
+    result = []
+    if not has_sort_keys:
+        for catalog, r in catalogs_results:
+            if not r:
+                continue
+            result.append(LazyMap(catalog.__getitem__, r))
+        return LazyCat(result)
     else:
-        if not has_sort_keys:
-            # Note that the length of the final sequence is not
-            # the same as the length of r, since r may contain
-            # sequences of different sizes.
-            return LazyCat(r)
-        else:
-            r.sort()
-            if reverse:
-                r.reverse()
-            size = 0
-            tmp = []
-            for i in r:
-                elt = i[1]
-                tmp.append(elt)
-                size += len(elt)
-            return LazyCat(tmp, size)
+        # Concatenate the catalog results into one list and sort it
+        # Each result item consists of a list of tuples with three values:
+        # (sortkey, docid, catalog__getitem__)
+        for catalog, r in catalogs_results:
+            result.extend(r)
+        result.sort()
+        if reverse:
+            result.reverse()
+        return LazyMap(lambda rec: rec[2](rec[1]), result, len(result))
+
+        

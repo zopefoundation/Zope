@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.7 2002/08/14 22:25:15 mj Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.8 2002/12/05 21:17:05 caseman Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 class Lazy:
@@ -238,3 +238,21 @@ class LazyMop(Lazy):
                 raise IndexError, index
         self._eindex=e
         return data[i]
+
+class LazyValues(Lazy):
+    """Given a sequence of two tuples typically (key, value) act as
+    though we are just a list of the values lazily"""
+    
+    def __init__(self, seq):
+        self._seq = seq
+    
+    def __len__(self):
+        return len(self._seq)
+    
+    def __getitem__(self, index):
+        return self._seq[index][1]
+    
+    def __getslice__(self, start, end):
+        return self.__class__(self._seq[start:end])
+        
+    slice = __getslice__
