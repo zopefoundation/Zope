@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.64 1999/02/18 18:55:46 jim Exp $"""
+$Id: Folder.py,v 1.65 1999/02/18 22:56:51 amos Exp $"""
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -363,7 +363,7 @@ class PUTer(Acquisition.Explicit):
             type, enc=mimetypes.guess_type(name)
         if type is None:
             if content_types.find_binary(body) >= 0:
-                content_type='application/octet-stream'
+                type='application/octet-stream'
             else: type=content_types.text_type(body)
         type=lower(type)
         if type in ('text/html', 'text/xml', 'text/plain'):
