@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -373,7 +373,8 @@ funny="""<?xml version="1.0" encoding="utf-8"?>
  <d:set>
  <d:prop>
    <z:author>Brian Lloyd</z:author>
-   <z:title>My New Title</z:title>
+   <z:color>blue</z:color>
+   <z:count>72</z:count>
    <q:Authors>
      <q:Author>
        <q:Person>
@@ -381,14 +382,11 @@ funny="""<?xml version="1.0" encoding="utf-8"?>
        </q:Person>
      </q:Author>
    </q:Authors>
+   <q:color>
+     red
+   </q:color>
  </d:prop>
  </d:set>
- <d:remove>
- <d:prop>
-   <q:hoohoo/>
-   <z:favorite_color/>
- </d:prop>
- </d:remove>
 </d:propertyupdate>
 """
 
