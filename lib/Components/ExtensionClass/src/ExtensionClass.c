@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.51 2002/03/08 18:34:23 jeremy Exp $
+  $Id: ExtensionClass.c,v 1.52 2002/06/10 22:30:47 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.51 2002/03/08 18:34:23 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.52 2002/06/10 22:30:47 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -95,7 +95,8 @@ staticforward PyExtensionClass ECType;
   if (free ## T) { \
       self=free ## T; \
       free ## T=(T*)self->self; \
-      self->ob_refcnt=1; \
+      _Py_NewReference((PyObject *)self); \
+      assert(self->ob_refcnt == 1); \
     } \
   else UNLESS(self = PyObject_NEW(T, & T ## Type)) return NULL;
 
@@ -336,7 +337,29 @@ JimString_Build(va_alist) va_dcl
   return retval;
 }
 
+static PyObject *
+EC_NewObject(PyTypeObject *type, int size)
+{
+    PyObject *inst;
+    int len;
 
+    if (type->tp_itemsize) {
+	inst = PyObject_NEW_VAR(PyObject, type, size);
+	if (inst == NULL)
+	    return NULL;
+	((PyVarObject *)inst)->ob_size = size;
+    } 
+    else {
+	assert(size == 0);
+	inst = PyObject_NEW(PyObject, type);
+	if (inst == NULL)
+	    return NULL;
+    }
+    Py_INCREF(type);
+    len = (type->tp_basicsize + type->tp_itemsize * size) - sizeof(PyObject);
+    memset(((char *)inst) + sizeof(PyObject), 0, len);
+    return inst;
+}
 
 static int
 CMethod_issubclass(PyExtensionClass *sub, PyExtensionClass *type)
@@ -1414,7 +1437,7 @@ static PyObject *
 basicnew(PyExtensionClass *self, PyObject *args)
 {
   PyObject *inst=0;
-  typedef struct { PyObject_VAR_HEAD } PyVarObject__;
+  int size = 0;
 
   if (! self->tp_dealloc)
     {
@@ -1430,26 +1453,14 @@ basicnew(PyExtensionClass *self, PyObject *args)
     {
       /* We have a variable-sized object, we need to get it's size */
       PyObject *var_size;
-      int size;
       
       UNLESS(var_size=CCL_getattr(self, py__var_size__, 0)) return NULL;
       UNLESS_ASSIGN(var_size,PyObject_CallObject(var_size,NULL)) return NULL;
       size=PyInt_AsLong(var_size);
       if (PyErr_Occurred()) return NULL;
-      UNLESS(inst=PyObject_NEW_VAR(PyObject,(PyTypeObject *)self, size))
-	return NULL;
-      memset(inst,0,self->tp_basicsize+self->tp_itemsize*size);
-      ((PyVarObject__*)inst)->ob_size=size;
     }
-  else
-    {
-      UNLESS(inst=PyObject_NEW(PyObject,(PyTypeObject *)self)) return NULL;
-      memset(inst,0,self->tp_basicsize);
-    }
-
-  inst->ob_refcnt=1;
-  inst->ob_type=(PyTypeObject *)self;
-  Py_INCREF(self);
+  UNLESS(inst=EC_NewObject((PyTypeObject *)self, size))
+    return NULL;
 
   if (ClassHasInstDict(self))
     UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
@@ -1990,7 +2001,7 @@ static PyObject *
 CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
 {
   PyObject *inst=0, *init=0, *args=0;
-  typedef struct { PyObject_VAR_HEAD } PyVarObject__;
+  int size = 0;
 
   if (! self->tp_dealloc)
     {
@@ -2003,7 +2014,6 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
     {
       /* We have a variable-sized object, we need to get it's size */
       PyObject *var_size;
-      int size;
       
       if ((var_size=CCL_getattr(self,py__var_size__, 0)))
 	{
@@ -2032,33 +2042,21 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
 	      return NULL;
 	    }
 	}
-      UNLESS(inst=PyObject_NEW_VAR(PyObject,(PyTypeObject *)self, size))
-	return NULL;
-      memset(inst,0,self->tp_basicsize+self->tp_itemsize*size);
-      ((PyVarObject__*)inst)->ob_size=size;
     }
-  else
-    {
-      UNLESS(inst=PyObject_NEW(PyObject,(PyTypeObject *)self)) return NULL;
-      memset(inst,0,self->tp_basicsize);
-    }
-
-  inst->ob_refcnt=1;
-  inst->ob_type=(PyTypeObject *)self;
-  Py_INCREF(self);
+  UNLESS(inst=EC_NewObject((PyTypeObject *)self, size)) return NULL;
 
   if (ClassHasInstDict(self))
     UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
 
-  if ((init=CCL_getattr(self,py__init__,0)))
-    {
-      UNLESS(args=Py_BuildValue("(O)",inst)) goto err;
-      if (arg) UNLESS_ASSIGN(args,PySequence_Concat(args,arg)) goto err;
-      UNLESS_ASSIGN(args,PyEval_CallObjectWithKeywords(init,args,kw)) goto err;
-      Py_DECREF(args);
-      Py_DECREF(init);
-    }
-  else PyErr_Clear();
+   if ((init=CCL_getattr(self,py__init__,0)))
+      {
+       UNLESS(args=Py_BuildValue("(O)",inst)) goto err;
+       if (arg) UNLESS_ASSIGN(args,PySequence_Concat(args,arg)) goto err;
+       UNLESS_ASSIGN(args,PyEval_CallObjectWithKeywords(init,args,kw)) goto err;
+       Py_DECREF(args);
+       Py_DECREF(init);
+      }
+   else PyErr_Clear();
 
   if (self->bases && subclass_watcher &&
      ! PyObject_CallMethod(subclass_watcher,"created","O",inst))
