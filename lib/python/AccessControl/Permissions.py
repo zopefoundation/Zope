@@ -12,7 +12,7 @@
 ##############################################################################
 """Constant definitions for built-in Zope permissions"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 access_contents_information='Access contents information'
@@ -65,4 +65,4 @@ use_mailhost_services='Use mailhost services'
 view='View'
 view_history='View History'
 view_management_screens='View management screens'
-
+copy_or_move='Copy or Move'
