@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.121 2001/01/11 21:29:41 chrism Exp $"""
+$Id: ObjectManager.py,v 1.122 2001/01/17 16:18:02 brian Exp $"""
 
-__version__='$Revision: 1.121 $'[11:-2]
+__version__='$Revision: 1.122 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -475,16 +475,24 @@ class ObjectManager(
         # Return a list of subobjects, used by tree tag.
         r=[]
         if hasattr(aq_base(self), 'tree_ids'):
-            for id in self.tree_ids:
+            tree_ids=self.tree_ids
+            try:   tree_ids=list(tree_ids)
+            except TypeError:
+                pass
+            if hasattr(tree_ids, 'sort'):
+                tree_ids.sort()
+            for id in tree_ids:
                 if hasattr(self, id):
                     r.append(self._getOb(id))
         else:
+            obj_ids=self.objectIds()
+            obj_ids.sort()
+            for id in obj_ids:
             for id in self._objects:
-                o=self._getOb(id['id'])
-                try:
-                    if o.isPrincipiaFolderish: r.append(o)
-                except: pass
-
+                o=self._getOb(id)
+                if hasattr(o, 'isPrincipiaFolderish') and \
+                   o.isPrincipiaFolderish:
+                    r.append(o)
         return r
 
     def manage_exportObject(self, id='', download=None, toxml=None,

@@ -34,7 +34,7 @@ td {
   </td>
 </tr>
 </table>
-<dtml-tree sort=id nowrap=1>
+<dtml-tree nowrap=1>
 <dtml-if icon>
 <a href="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" 
  target="manage_main"><img src="&dtml-BASEPATH1;/&dtml-icon;" border="0"
