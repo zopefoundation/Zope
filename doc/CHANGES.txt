@@ -73,9 +73,6 @@ Zope Changes
         
       - New implementation of ZODB object cache.
 
-      - new env. variable LOG_ZPUBLISHER_TRACEBACK 
-        (see doc/ENVIRONMENT.txt)
-
     Bugs:
 
       - Made repr of an HTTPRequest.record eval'able as a dict (Collector

@@ -12,11 +12,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.58 2002/04/12 17:22:44 andreasjung Exp $'''
-__version__='$Revision: 1.58 $'[11:-2]
+$Id: HTTPResponse.py,v 1.59 2002/04/12 17:27:44 andreasjung Exp $'''
+__version__='$Revision: 1.59 $'[11:-2]
 
 import types, os, sys, re
-import zLOG
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
@@ -609,10 +608,6 @@ class HTTPResponse(BaseResponse):
                     (str(t), b + self._traceback(t,'(see above)', tb, 0)),
                     is_error=1)
         del tb
-
-        if os.environ.has_key('LOG_ZPUBLISHER_TRACEBACK'):
-            zLOG.LOG('zpublisher',zLOG.WARNING,'Traceback:',body)
-            
         return body
 
     _wrote=None
