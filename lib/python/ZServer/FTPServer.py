@@ -414,7 +414,7 @@ class zope_ftp_channel(ftp_channel):
     def dele_completion(self,response):   
         status=response.getStatus()
         if status==200 and string.find(response.body,'Not Deletable')==-1:
-            self.repond('250 DELE command successful.')
+            self.respond('250 DELE command successful.')
         elif status==401:
             self.respond('530 Unauthorized.') 
         else:
