@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -383,6 +383,7 @@ class DateTime:
 
 	d=t=s=None
 	ac=len(args)
+	dcomp=1L
 
 	# Fast unpickling support
 	if ac and args[0]==None: return
@@ -399,12 +400,12 @@ class DateTime:
 	    d=(self._julianday(yr,mo,dy)-jd1901)+s+1
             yr,mo,dy,hr,mn,sc=localtime(t)[:6]
             sc=sc+(t-int(t))
-
+	    
 	elif ac==1:
 	    arg=args[0]
 	    if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
 		# Current time, exp in specified timezone
-	        t,tz=time(),self._tzinfo._zmap[arg]
+	        t,tz=time(),self._tzinfo._zmap[lower(arg)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
@@ -429,7 +430,7 @@ class DateTime:
 	    elif type(arg)==StringType:
 		# Date/time string
 		yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
-		tz=self._tzinfo._zmap[tz]
+		tz=self._tzinfo._zmap[lower(tz)]
 	        if not self._validDate(yr,mo,dy):
 		    raise self.DateTimeError, 'Invalid date: %s' % arg
 		if not self._validTime(hr,mn,int(sc)):
@@ -439,6 +440,8 @@ class DateTime:
 		t=(d*86400.0)-EPOCH+86400.0
                 tza=self._tzinfo[tz].info(t)[0]
 		d,t=d-(tza/86400.0),t-tza
+		dcomp=2L
+
 
 	    elif (arg > 0) and (int(arg)/365+1901 > 2030):
 		# Seconds from epoch, gmt
@@ -449,7 +452,6 @@ class DateTime:
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
                 sc=sc+(t-int(t))
-
 	    else:
 		# Float days since Jan 1, 1901 machine tz
 	        _j,tz=arg*86400.0,self._localzone
@@ -473,12 +475,13 @@ class DateTime:
 		tza=self._tzinfo[tz].info(t)[0]
 		d,t=arg-(tza/86400.0),t-tza
 		s=d-int(d)
+		dcomp=2L
 
 	elif ac==2:
 	    if type(args[1])==StringType:
 		# Seconds from epoch (gmt) and timezone
 	        t,tz=args
-		tz=self._tzinfo._zmap[tz]
+		tz=self._tzinfo._zmap[lower(tz)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s+1
@@ -499,6 +502,7 @@ class DateTime:
 		    if sc<0:
 		        if (sc-int(sc)>=0.999): sc=round(sc)
 		        sc=59+sc
+
 	    else:
 		# Year, julean expressed in local zone
                 tz=self._localzone
@@ -524,6 +528,8 @@ class DateTime:
 		d=d-(self._tzinfo[tz].info(t)[0]/86400.0)
 		s=d-int(d)
 		t=(d*86400.0)-EPOCH
+		dcomp=2L
+
 	else:
 	    # Explicit format
 	    yr,mo,dy=args[:3]
@@ -545,13 +551,14 @@ class DateTime:
 	    if not self._validTime(hr,mn,sc):
 		raise self.DateTimeError, 'Invalid time: %s' % `args`
 	    if not tz: tz=self._localzone
-	    else:      tz=self._tzinfo._zmap[tz]
+	    else:      tz=self._tzinfo._zmap[lower(tz)]
 	    leap=yr%4==0 and (yr%100!=0 or yr%400==0)
 	    s=(hr/24.0+mn/1440.0+sc/86400.0)
 	    d=(self._julianday(yr,mo,dy)-jd1901)+s+1
 	    t=(d*86400.0)-EPOCH+86400.0
 	    tza=self._tzinfo[tz].info(t)[0]
 	    d,t=d-(tza/86400.0),t-tza
+	    dcomp=2L
 
 	if hr>12:
 	    self._pmhour=hr-12
@@ -559,7 +566,13 @@ class DateTime:
 	else:
 	    self._pmhour=hr or 12
 	    self._pm= (hr==12) and 'pm' or 'am'
-        self._dayoffset=dx=int(d)%7
+#        self._dayoffset=dx=(int(d)+1)%7
+#        ddd=int(d)+jd1901+2L
+#	ans=ddd%7
+#	print `ddd,ans`
+#d=      int(d-(self._tzinfo[tz].info(t)[0]/86400.0))
+        self._dayoffset=dx= \
+	   int((int(d-(self._tzinfo[tz].info(t)[0]/86400.0))+jd1901+dcomp)%7)
 	self._fmon,self._amon,self._pmon= \
 	    self._months[mo],self._months_a[mo],self._months_p[mo]
         self._fday,self._aday,self._pday= \
@@ -791,8 +804,17 @@ class DateTime:
     # Conversion and comparison methods
     def timeTime(self):
 	"""Return the date/time as a floating-point number in UTC,
-	   in the format used by the python time module."""
-        return self._t
+	   in the format used by the python time module.
+	   Note that it is possible to create date/time values
+	   with DateTime that have no meaningful value to the
+	   time module, and in such cases a DateTimeError is
+	   raised. A DateTime object\'s value must generally be
+	   between Jan 1, 1970 (or your local machine epoch) and
+	   Jan 2038 to produce a valid time.time() style value."""
+        t=self._t
+	if (t>0 and ((t/86400.0) < 24837)): return t
+	raise self.DateTimeError,'No time module compatible time to return'
+
 
     def toZone(self, z):
 	"""Return a DateTime with the value as the current
@@ -1049,16 +1071,20 @@ class DateTime:
     def __repr__(self):
         """Convert a DateTime to a string that 
 	   looks like a Python expression."""
-	return str(self)
+	return '%s(\'%s\')' % (self.__class__.__name__,str(self))
 
     def __str__(self):
 	"""Convert a DateTime to a string."""
 	y,m,d   =self._year,self._month,self._day
 	h,mn,s,t=self._hour,self._minute,self._second,self._tz
-	if (s-int(s))> 0.0001:
-	    return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%g %s' % (y,m,d,h,mn,s,t)
-	else:
-	    return '%4.4d/%2.2d/%2.2d  %2.2d:%2.2d:%2.2d %s' % (y,m,d,h,mn,s,t)
+	if(h+mn+s):
+	    if (s-int(s))> 0.0001:
+	        return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%g %s' % (
+		        y,m,d,h,mn,s,t)
+	    else:
+	        return '%4.4d/%2.2d/%2.2d  %2.2d:%2.2d:%2.2d %s' % (
+		        y,m,d,h,mn,s,t)
+	else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
 
     def __cmp__(self,other):
 	"""Compare a DateTime with another object"""
@@ -1071,20 +1097,16 @@ class DateTime:
 		     self._day+self.time)*100)
 
     def __int__(self):
-	"""Convert to an integer number of days since Jan. 1, 1900"""
+	"""Convert to an integer number of days since Jan. 1, 1901"""
 	return int(self._d)
 
     def __long__(self):
-	"""Convert to a long-int number of days since Jan. 1, 1900"""
+	"""Convert to a long-int number of days since Jan. 1, 1901"""
 	return long(self._d)
 
     def __float__(self):
-	"""Convert to a floating-point number of days since Jan. 1, 1900"""
+	"""Convert to a floating-point number of days since Jan. 1, 1901"""
 	return float(self._d)
-
-
-
-
 
 
 
@@ -1102,7 +1124,10 @@ def Timezones():
 
 
 
-
+#$Log: DateTime.py,v $
+#Revision 1.2  1997/03/13 00:51:56  brian
+#*** empty log message ***
+#
 
 
 
