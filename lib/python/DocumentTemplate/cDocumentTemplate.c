@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.16 1998/05/20 17:18:34 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.17 1998/05/20 20:11:20 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -19,7 +19,7 @@ static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_validate;
-static PyObject *py__push, *py__pop;
+static PyObject *py__push, *py__pop, *py_aq_base;
 
 /* ----------------------------------------------------- */
 
@@ -690,7 +690,7 @@ static struct PyMethodDef Module_Level__methods[] = {
 static PyObject *
 validate(PyObject *self, PyObject *args)
 {
-  PyObject *inst, *parent, *name, *value, *md, *__roles__;
+  PyObject *inst, *parent, *name, *value, *md, *__roles__, *i, *p;
 
   /* def validate(self, inst, parent, name, value, md): */
   UNLESS(PyArg_ParseTuple(args,"OOOOO",&inst,&parent,&name,&value,&md))
@@ -700,6 +700,11 @@ validate(PyObject *self, PyObject *args)
         if hasattr(value, '__roles__'): roles=value.__roles__
 	elif inst is parent: return 1
 	else:
+	    if hasattr(inst,'aq_base'): inst=inst.aq_base
+	    p=parent
+	    if hasattr(p,'aq_base'): p=p.aq_base
+	    if inst is p: return 1
+
 	    if hasattr(parent,'__roles__'): roles=parent.__roles__
 	    else: return 0
 	    value=parent
@@ -708,6 +713,29 @@ validate(PyObject *self, PyObject *args)
     {
       PyErr_Clear();
       if(inst==parent) return PyInt_FromLong(1);
+
+      /* Waaaa, check for wrapped objects, waaaaa! */
+      UNLESS(i=PyObject_GetAttr(inst, py_aq_base))
+	{
+	  PyErr_Clear();
+	  Py_INCREF(inst);
+	  i=inst;
+	}
+      UNLESS(p=PyObject_GetAttr(parent, py_aq_base))
+	{
+	  PyErr_Clear();
+	  Py_INCREF(parent);
+	  p=parent;
+	}
+      if(i==p)
+	{
+	  Py_DECREF(i);
+	  Py_DECREF(p);
+	  return PyInt_FromLong(1);
+	}
+      Py_DECREF(i);
+      Py_DECREF(p);
+
       UNLESS(__roles__=PyObject_GetAttr(parent,py___roles__))
 	{
 	  PyErr_Clear();
@@ -726,11 +754,6 @@ validate(PyObject *self, PyObject *args)
   /*    try: 
 	    if md.AUTHENTICATED_USER.hasRole(value, roles):
 		return 1
-	    if md is None: 
-                # None signals a resource that is protected and that
-                # has been acquired from outside the user's realm.
-	        raise 'Unauthorized', (
-		    'You are not authorized to access <em>%s</em>.' % name)
 	    
 	except AttributeError: pass
    */
@@ -815,7 +838,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -830,6 +853,7 @@ initcDocumentTemplate()
   UNLESS(py_validate=PyString_FromString("validate")) return;
   UNLESS(py__push=PyString_FromString("_push")) return;
   UNLESS(py__pop=PyString_FromString("_pop")) return;
+  UNLESS(py_aq_base=PyString_FromString("aq_base")) return;
   UNLESS(py_Unauthorized=PyString_FromString("Unauthorized")) return;
   UNLESS(py_Unauthorized_fmt=PyString_FromString(
 	 "You are not authorized to access <em>%s</em>.")) return;
@@ -865,6 +889,10 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.17  1998/05/20 20:11:20  jim
+  Added check for wrapped objects when performing inst is parent test in
+  validate.
+
   Revision 1.16  1998/05/20 17:18:34  jim
   Simplified validate method by getting rid of attempt to acquire roles.
   Also fixed bug in handling proxy roles.
