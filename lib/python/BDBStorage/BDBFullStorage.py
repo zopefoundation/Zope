@@ -4,8 +4,9 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.28 $'[-2:][0]
+__version__ = '$Revision: 1.29 $'[-2:][0]
 
+import sys
 import struct
 import time
 
@@ -918,107 +919,113 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         finally:
             self._lock_release()
 
+    def _zapobject(self, oid, referencesf):
+        # Delete all records referenced by this object
+        self._serials.delete(oid)
+        self._refcounts.delete(oid)
+        # Run through all the metadata records associated with this object,
+        # and recursively zap all its revisions.  Keep track of the tids and
+        # vids referenced by the metadata record, so that we can clean up the
+        # txnoids and currentVersions tables.
+        tids = {}
+        vids = {}
+        c = self._metadata.cursor()
+        try:
+            try:
+                rec = c.set_range(oid)
+            except db.DBNotFoundError:
+                return
+            while rec and rec[0][:8] == oid:
+                key, data = rec
+                rec = c.next()
+                tid = key[8:]
+                tids[tid] = 1
+                vid = data[:8]
+                if vid <> ZERO:
+                    vids[vid] = 1
+                self._zaprevision(key, referencesf)
+        finally:
+            c.close()
+        # Zap all the txnoid records...
+        c = self._txnoids.cursor()
+        try:
+            for tid in tids.keys():
+                rec = c.set_both(tid, oid)
+                while rec:
+                    k, v = rec
+                    if k <> tid or v <> oid:
+                        break
+                    c.delete()
+                    rec = c.next()
+        finally:
+            c.close()
+        # ...and all the currentVersion records...
+        c = self._currentVersions.cursor()
+        try:
+            for vid in vids.keys():
+                rec = c.set_both(vid, oid)
+                while rec:
+                    k, v = rec
+                    if k <> vid or v <> oid:
+                        break
+                    c.delete()
+                    rec = c.next()
+        finally:
+            c.close()
+        # ... now for each vid, delete the versions->vid and vid->versions
+        # mapping if we've deleted all references to this vid
+        for vid in vids.keys():
+            if self._currentVersions.get(vid):
+                continue
+            version = self._versions[vid]
+            self._versions.delete(vid)
+            self._vids.delete(version)
+
     def _zaprevision(self, key, referencesf):
         # Delete the metadata record pointed to by the key, decrefing the
         # reference counts of the pickle pointed to by this record, and
         # perform cascading decrefs on the referenced objects.
         #
-        # We need the lrevid which points to the pickle for this revision...
-        rec = self._metadata.get(key)
-        if rec is None:
+        # We need the lrevid which points to the pickle for this revision.
+        try:
+            lrevid = self._metadata[key][16:24]
+        except KeyError:
             return
-        lrevid = rec[1][16:24]
-        # ...and now delete the metadata record for this object revision
-        self._metadata.delete(key)
         # Decref the reference count of the pickle pointed to by oid+lrevid.
         # If the reference count goes to zero, we can garbage collect the
         # pickle, and decref all the objects pointed to by the pickle (with of
         # course, cascading garbage collection).
         pkey = key[:8] + lrevid
-        refcount = self._pickleRefcounts.get(pkey)
-        # It's possible the pickleRefcounts entry for this oid has already
-        # been deleted by a previous pass of _zaprevision().  If so, we're
-        # done.
-        if refcount is None:
-            return
-        refcount = utils.U64(refcount) - 1
+        refcount = utils.U64(self._pickleRefcounts[pkey]) - 1
         if refcount > 0:
             self._pickleRefcounts.put(pkey, utils.p64(refcount))
-            return
-        # The refcount of this pickle has gone to zero, so we need to garbage
-        # collect it, and decref all the objects it points to.
-        self._pickleRefcounts.delete(pkey)
-        pickle = self._pickles.get(pkey)
-        # Sniff the pickle to get the objects it refers to
-        collectables = []
-        refoids = []
-        referencesf(pickle, refoids)
-        # Now decref the reference counts for each of those objects.  If it
-        # goes to zero, remember the oid so we can recursively zap its
-        # metadata too.
-        for oid in refoids:
-            refcount = self._refcounts.get(oid)
-            refcount = utils.U64(refcount) - 1
-            if refcount > 0:
-                self._refcounts.put(oid, utils.p64(refcount))
-            else:
-                collectables.append(oid)
-        # Now for all objects whose refcounts just went to zero, we want to
-        # delete any records that pertain to this object.  When we get to
-        # deleting the metadata record, we'll do it recursively so as to
-        # decref any pickles it points to.  For everything else, we'll do it
-        # in the most efficient manner possible.
-        tids = []
-        vids = []
-        for oid in collectables:
-            self._serials.delete(oid)
-            self._refcounts.delete(oid)
-            # To delete all the metadata records associated with this object
-            # id, we use a trick of Berkeley cursor objects to only partially
-            # specify the key.  This works because keys are compared
-            # lexically, with shorter keys collating before longer keys.
-            c = self._metadata.cursor()
-            try:
-                rec = c.set(oid)
-                while rec and rec[0][:8] == oid:
-                    # Remember the transaction and version ids so we can clean
-                    # up the txnoids table and the currentVersions table below.
-                    vids.append(rec[1][:8])       # the 1st 8-bytes of value
-                    tids.append(rec[0][8:])       # second half of the key
-                    self._zaprevision(rec[0], referencesf)
-                    rec = c.next()
-            finally:
-                c.close()
-            # Delete all the txnoids entries that referenced this oid
-            c = self._txnoids.cursor()
-            try:
-                for tid in tids:
-                    rec = c.set_both(tid, oid)
-                    while rec:
-                        # Although unlikely, it is possible that an object got
-                        # modified more than once in a transaction.
-                        c.delete()
-                        rec = c.next_dup()
-            finally:
-                c.close()
-            # And delete all version entries w/ records containing oid
-            c = self._currentVersions.cursor()
-            try:
-                for vid in vids:
-                    rec = c.set_both(vid, oid)
-                    while rec:
-                        c.delete()
-                        rec = c.next_dup()
-            finally:
-                c.close()
-            # Now, for each vid, delete the versions->vid and vid->versions
-            # mapping if we've deleted all references to this vid
-            for vid in vids:
-                if self._currentVersions.get(vid):
-                    continue
-                version = self._versions[vid]
-                self._versions.delete(vid)
-                self._vids.delete(version)
+        else:
+            # The refcount of this pickle has gone to zero, so we need to
+            # garbage collect it, and decref all the objects it points to.
+            pickle = self._pickles[pkey]
+            # Sniff the pickle to get the objects it refers to
+            refoids = []
+            referencesf(pickle, refoids)
+            # Now decref the reference counts for each of those objects.  If
+            # the object's refcount goes to zero, remember the oid so we can
+            # recursively zap its metadata records too.
+            collectables = {}
+            for oid in refoids:
+                refcount = utils.U64(self._refcounts[oid]) - 1
+                if refcount > 0:
+                    self._refcounts.put(oid, utils.p64(refcount))
+                else:
+                    collectables[oid] = 1
+            # Garbage collect all objects with refcounts that just went to
+            # zero.
+            for oid in collectables.keys():
+                self._zapobject(oid, referencesf)
+            # We can now delete both the pickleRefcounts and pickle entry for
+            # this garbage collected pickle.
+            self._pickles.delete(pkey)
+            self._pickleRefcounts.delete(pkey)
+        # We can now delete this metadata record.
+        self._metadata.delete(key)
 
     def pack(self, t, referencesf):
         # BAW: This doesn't play nicely if you enable the `debugging revids'
@@ -1065,11 +1072,19 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             c.close()
             c = self._metadata.cursor()
             for oid in oids.keys():
-                current = self._serials[oid]
-                rec = c.set_range(oid)
+                try:
+                    current = self._serials[oid]
+                except KeyError:
+                    continue
+                try:
+                    rec = c.set_range(oid)
+                except db.DBNotFoundError:
+                    continue
                 while rec:
                     key, data = rec
                     rec = c.next()
+                    if key[:8] <> oid:
+                        break
                     if key[8:] == current:
                         continue
                     self._zaprevision(key, referencesf)
@@ -1078,8 +1093,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 refcounts = self._refcounts.get(oid)
                 if not refcounts:
                     # The current revision should be the only revision of this
-                    # object that exists, otherwise it's refcounts shouldn't
-                    # be zero.
+                    # object that exists, otherwise its refcounts shouldn't be
+                    # zero.
                     self._zaprevision(oid+current, referencesf)
                     # And delete a few other records that _zaprevisions()
                     # doesn't clean up
