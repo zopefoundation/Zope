@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.47 1998/05/11 15:00:13 jim Exp $'''
-__version__='$Revision: 1.47 $'[11:-2]
+$Id: DA.py,v 1.48 1998/06/26 21:51:28 jim Exp $'''
+__version__='$Revision: 1.48 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -92,7 +92,36 @@ class DA(
 	    del self.key
 	    del self.rotor
 
-    def manage_edit(self,title,connection_id,arguments,template,REQUEST=None):
+    _size_changes={
+        'Bigger': (5,5),
+        'Smaller': (-5,-5),
+        'Narrower': (0,-5),
+        'Wider': (0,5),
+        'Taller': (5,0),
+        'Shorter': (-5,0),
+        }
+
+    def _er(self,title,connection_id,arguments,template,
+            SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
+        dr,dc = self._size_changes[SUBMIT]
+        
+        rows=max(1,atoi(dtpref_rows)+dr)
+        cols=max(40,atoi(dtpref_cols)+dc)
+        e='Friday, 31-Dec-99 23:59:59 GMT'
+        resp=REQUEST['RESPONSE']
+        resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
+        resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
+        return self.manage_main(
+	    self,REQUEST,
+            title=title,
+            arguments_src=arguments,
+            connection_id=connection_id,
+            template=template,
+	    dtpref_cols=cols,dtpref_rows=rows)
+
+    def manage_edit(self,title,connection_id,arguments,template,
+                    SUBMIT='Change',dtpref_cols='50', dtpref_rows='20',
+                    REQUEST=None):
 	"""Change database method  properties
 
 	The 'connection_id' argument is the id of a database connection
@@ -105,6 +134,11 @@ class DA(
 	The 'template' argument is a string containing the source for the
 	SQL Template.
 	"""
+
+        if self._size_changes.has_key(SUBMIT):
+            return self._er(title,connection_id,arguments,template,
+                            SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
+
 	self.title=title
 	self.connection_id=connection_id
 	self.arguments_src=arguments
@@ -431,6 +465,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.48  1998/06/26 21:51:28  jim
+# Added resize buttons.
+#
 # Revision 1.47  1998/05/11 15:00:13  jim
 # Updated permissions.
 #

@@ -39,10 +39,30 @@
              value="<!--#var arguments_src fmt=html-quote-->"></td>
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
-	    <textarea name="template:text" rows=10 cols=50><!--#var
+	    <textarea name="template:text"
+  	<!--#if dtpref_cols-->
+	COLS="<!--#var dtpref_cols-->"
+	<!--#else dtpref_cols-->
+	COLS="50"
+	<!--#/if dtpref_cols-->
+	<!--#if dtpref_rows-->
+	ROWS="<!--#var dtpref_rows-->"
+	<!--#else dtpref_rows-->
+	ROWS="20"
+	<!--#/if dtpref_rows-->><!--#var
                src fmt=html-quote--></textarea></td></tr>
 
-<tr><td></td><td><input type="SUBMIT" name="SUBMIT" value="Change"></td></tr>
+<tr>
+	<TD align=left>
+          <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
+	</TD>
+	<TD align=left>
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Taller">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Shorter">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Wider">
+	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Narrower">
+	</TD>
+</tr>
 </table>
 
 </form>
