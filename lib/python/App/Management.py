@@ -1,13 +1,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.2 1997/08/08 17:25:12 jim Exp $"""
+$Id: Management.py,v 1.3 1997/08/13 19:06:39 jim Exp $"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys,Globals
 from Dialogs import MessageDialog
-from Globals import ManageHTMLFile
+from Globals import HTMLFile
 
 class Management:
     """A mix-in class for basic management interface support.

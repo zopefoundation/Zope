@@ -1,19 +1,19 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 import sys,os,time,Globals
 from Acquisition import Acquirer
 from Management import Management
-from Globals import ManageHTMLFile
+from Globals import HTMLFile
 
 class ApplicationManager(Acquirer,Management):
     """Application management component."""
 
-    manage_main    =ManageHTMLFile('App/appMain')
-    manage_packForm=ManageHTMLFile('App/pack')
-    manage_undoForm=ManageHTMLFile('App/undo')
+    manage_main    =HTMLFile('App/appMain')
+    manage_packForm=HTMLFile('App/pack')
+    manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
     {'icon':'App/arrow.jpg', 'label':'Application Manager',

@@ -1,13 +1,13 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.5 1997/08/08 23:03:51 jim Exp $"""
+$Id: ObjectManager.py,v 1.6 1997/08/13 19:09:05 jim Exp $"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
-from Globals import ManageHTMLFile,PublicHTMLFile
+from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog
 from App.Management import Management
 from Acquisition import Acquirer
@@ -29,8 +29,8 @@ class ObjectManager(Acquirer,Management,Persistent):
     _objects   =()
     _properties =({'id':'title', 'type': 'string'},)
 
-    manage_main          =ManageHTMLFile('OFS/main')
-    manage_propertiesForm=ManageHTMLFile('OFS/properties')
+    manage_main          =HTMLFile('OFS/main')
+    manage_propertiesForm=HTMLFile('OFS/properties')
 
     manage_options=(
     {'icon':'OFS/templates.jpg', 'label':'Objects',
@@ -252,6 +252,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.6  1997/08/13 19:09:05  jim
+# Got rid of ManageHTMLFile
+#
 # Revision 1.5  1997/08/08 23:03:51  jim
 # Improved property handling.
 #
