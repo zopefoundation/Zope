@@ -116,10 +116,10 @@ class TestMultiThread(TestCase):
     def go(self, token):
         readers = []
         writers = []
+        valuers = []
         readiters = 3
         writeiters = 3
-        readout = []
-        writeout = []
+        valueiters = 3
         numreaders = 2
         numwriters = 4
         numvaluers = 1
@@ -128,8 +128,8 @@ class TestMultiThread(TestCase):
             thread = ReaderThread(db, readiters, token)
             readers.append(thread)
         for i in range(numvaluers):
-            thread = ValuesGetterThread(db, readiters, token)
-            readers.append(thread)
+            thread = ValuesGetterThread(db, valueiters, token)
+            valuers.append(thread)
         for i in range(numwriters):
             thread = WriterThread(db, writeiters, token)
             writers.append(thread)
@@ -139,32 +139,52 @@ class TestMultiThread(TestCase):
         for thread in writers:
             thread.start()
             time.sleep(0.1)
+        for thread in valuers:
+            thread.start()
+            time.sleep(0.1)
         active = threading.activeCount()
-        while active > 1:
-            active = threading.activeCount()
+        while active > 0:
+            active = threading.activeCount()-1
             print 'waiting for %s threads' % active
+            print "readers: ", numActive(readers),
+            print "writers: ", numActive(writers),
+            print "valuers: ", numActive(valuers)
             time.sleep(5)
+
+def numActive(threads):
+    i = 0
+    for thread in threads:
+        if not thread.isFinished():
+            i+=1
+    return i
 
 class BaseReaderWriter(threading.Thread):
     def __init__(self, db, iters, token=None):
-        self.conn = db.open()
-        self.app = self.conn.root()['Application']
-        self.app = makerequest.makerequest(self.app)
-        if token is None:
-            token = getNewBrowserId()
-        self.app.REQUEST.browser_id_ = token
         self.iters = iters
         self.sdm_name = sdm_name
+        self.finished = 0
+        self.db = db
+        self.token = token
         threading.Thread.__init__(self)
 
     def run(self):
         i = 0
         try:
             while 1:
+                self.conn = self.db.open()
+                self.app = self.conn.root()['Application']
+                self.app = makerequest.makerequest(self.app)
+                if self.token is None:
+                    token = getNewBrowserId()
+                else:
+                    token = self.token
+                    self.app.REQUEST.browser_id_ = token
+
                 try:
                     self.run1()
                     return
                 except ReadConflictError:
+                    #traceback.print_exc()
                     print "R",
                 except BTreesConflictError:
                     print "B",
@@ -178,12 +198,18 @@ class BaseReaderWriter(threading.Thread):
                 
                 i = i + 1
                 get_transaction().abort()
-                self.conn.sync()
-                time.sleep(random.randrange(5) * .1)
+                self.conn.close()
+                time.sleep(random.randrange(10) * .1)
         finally:
+            get_transaction().abort()
             self.conn.close()
             del self.app
+            self.finished = 1
             print '%s finished' % self.__class__
+
+    def isFinished(self):
+        return self.finished
+        
 
 class ReaderThread(BaseReaderWriter):
     def run1(self):
