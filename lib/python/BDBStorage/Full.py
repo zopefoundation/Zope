@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 __version__ = '0.1'
 
 import struct
@@ -35,7 +35,7 @@ PROTECTED_TRANSACTION = 'N'
 
 
 
-class InternalInconsistencyError(POSException.POSError, AssertError):
+class InternalInconsistencyError(POSException.POSError, AssertionError):
     """Raised when we detect an internal inconsistency in our tables."""
 
 
@@ -178,7 +178,7 @@ class Full(BerkeleyBase):
         self._txnOids.close()
         self._refcounts.close()
         self._references.close()
-        self._pickleReferenceCount.close()
+        self._pickleRefcounts.close()
         BerkeleyBase.close(self)
 
     def _begin(self, tid, u, d, e):
@@ -236,7 +236,7 @@ class Full(BerkeleyBase):
                                   UNDOABLE_TRANSACTION + lengths + u + d + e,
                                   txn=txn)
             while 1:
-                rec = self._commitlog.next_object()
+                rec = self._commitlog.next()
                 if rec is None:
                     break
                 op, data = rec
@@ -269,22 +269,22 @@ class Full(BerkeleyBase):
                     self._txnOids.put(tid, oid, txn=txn)
                     # Boost the refcount of all the objects referred to by
                     # this pickle.  referencesf() scans a pickle and returns
-                    # the list of objects referenced by the pickle.  BAW: In
-                    # Zope 2.3.1, which we need to target, the signature of
-                    # this function requires an empty list, but it returns
-                    # that list.  In future versions of Zope, there's a
-                    # default argument for that.
-                    for roid in referencesf(pickle, []):
+                    # the list of objects referenced by the pickle.  BAW: the
+                    # signature of referencesf() has changed for Zope 2.4, to
+                    # make it more convenient to use.  Gotta stick with the
+                    # backwards compatible version for now.
+                    refdoids = []
+                    referencesf(pickle, refdoids)
+                    for roid in refdoids:
                         refcount = self._refcounts.get(roid, zero, txn=txn)
                         refcount = utils.p64(utils.U64(refcount) + 1)
                         self._refcounts.put(roid, refcount, txn=txn)
                     # Update the pickle's reference count.  Remember, the
                     # refcount is stored as a string, so we have to do the
                     # string->long->string dance.
-                    refcount = self._pickleReferenceCount.get(key, zero,
-                                                              txn=txn)
+                    refcount = self._pickleRefcounts.get(key, zero, txn=txn)
                     refcount = utils.p64(utils.U64(refcount) + 1)
-                    self._pickleReferenceCount.put(key, refcount, txn=txn)
+                    self._pickleRefcounts.put(key, refcount, txn=txn)
                 elif op == 'v':
                     # This is a "create-a-version" record
                     version, vid = data
@@ -477,14 +477,14 @@ class Full(BerkeleyBase):
             # requested, then we can simply return the pickle referenced by
             # the revid.
             if vid == '\0'*8 or self._versions[vid] == version:
-                return self._pickle[oid+lrevid], revid
+                return self._pickles[oid+lrevid], revid
             # Otherwise, we recognize that an object cannot be stored in more
             # than one version at a time (although this may change if/when
             # "Unlocked" versions are added).  So we return the non-version
             # revision of the object.  BAW: should we assert that version is
             # empty in this case?
             lrevid = self._metadata[oid+nvrevid][16:24]
-            return self._pickle[oid+lrevid], nvrevid
+            return self._pickles[oid+lrevid], nvrevid
         finally:
             self._lock_release()
 
@@ -522,6 +522,7 @@ class Full(BerkeleyBase):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
+        zero = '\0'*8
         self._lock_acquire()
         try:
             # Check for conflict errors.  JF says: under some circumstances,
@@ -533,14 +534,15 @@ class Full(BerkeleyBase):
             if oserial is None:
                 # There's never been a previous revision of this object, so
                 # set its non-version revid to zero.
-                nvrevid = '\0'*8
+                nvrevid = zero
+                oserial = zero
             elif serial <> oserial:
                 # The object exists in the database, but the serial number
                 # given in the call is not the same as the last stored serial
                 # number.  Raise a ConflictError.
                 raise POSException.ConflictError(
                     'serial number mismatch (was: %s, has: %s)' %
-                    (oserial, utils.U64(serial)))
+                    (utils.U64(oserial), utils.U64(serial)))
             # Do we already know about this version?  If not, we need to
             # record the fact that a new version is being created.  `version'
             # will be the empty string when the transaction is storing on the
@@ -549,7 +551,8 @@ class Full(BerkeleyBase):
                 vid = self.__findcreatevid(version)
             else:
                 # vid 0 means no explicit version
-                vid = '\0'*8
+                vid = zero
+                nvrevid = zero
             # A VersionLockError occurs when a particular object is being
             # stored on a version different than the last version it was
             # previously stored on (as long as the previous version wasn't
@@ -560,7 +563,7 @@ class Full(BerkeleyBase):
             if orevid:
                 rec = self._metadata[oid+orevid]
                 ovid, onvrevid = struct.unpack('>8s8s', rec[:16])
-                if ovid == '\0'*8:
+                if ovid == zero:
                     # The old revision's vid was zero any version is okay.
                     # But if we're storing this on a version, then the
                     # non-version revid will be the previous revid for the
@@ -572,13 +575,13 @@ class Full(BerkeleyBase):
                     # current version.  That's a no no.
                     raise POSException.VersionLockError(
                         'version mismatch for object %s (was: %s, got: %s)' %
-                        (oid, ovid, vid))
+                        map(utils.U64, (oid, ovid, vid)))
             # Record the update to this object in the commit log.
             self._commitlog.write_object(oid, vid, nvrevid, data, oserial)
         finally:
             self._lock_release()
         # Return our cached serial number for the object.
-        return serial
+        return self._serial
 
     def _decref(self, oid, lrevid, txn):
         # Decref the reference count of the pickle pointed to by oid+lrevid.
@@ -586,17 +589,19 @@ class Full(BerkeleyBase):
         # pickle, and decref all the object pointed to by the pickle (with of
         # course, cascading garbage collection).
         key = oid + lrevid
-        refcount = self._pickleReferenceCount.get(key, txn=txn)
+        refcount = self._pickleRefcounts.get(key, txn=txn)
         refcount = utils.U64(refcount) - 1
         if refcount > 0:
-            self._pickleReferenceCount.put(key, utils.p64(refcount), txn=txn)
+            self._pickleRefcounts.put(key, utils.p64(refcount), txn=txn)
             return
         # The refcount of this pickle has gone to zero, so we need to garbage
         # collect it, and decref all the objects it points to.
-        self._pickleReferenceCount.delete(key, txn=txn)
+        self._pickleRefcounts.delete(key, txn=txn)
         pickle = self._pickles.get(key, txn=txn)
         collectedOids = []
-        for roid in referencesf(pickle, []):
+        refdoids = []
+        referencesf(pickle, refdoids)
+        for roid in refdoids:
             refcount = self._refcounts.get(roid, txn=txn)
             refcount = utils.U64(refcount) - 1
             if refcount > 0:
