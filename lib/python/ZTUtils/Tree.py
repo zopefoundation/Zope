@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.13 2002/10/05 21:24:03 mj Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Tree.py,v 1.14 2002/10/07 19:43:14 mj Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -208,6 +208,9 @@ class TreeMaker:
             # Assume callable; result not useful anyway otherwise.
             children = children()
 
+        return self.filterChildren(children)
+
+    def filterChildren(self, children):
         if self._values_filter:
             return self._values_filter(children)
         return children
