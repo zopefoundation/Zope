@@ -55,25 +55,263 @@
 #   (540) 371-6909
 #
 ############################################################################## 
-__doc__="""Bobo call interface"""
-__version__='$Revision: 1.15 $'[11:-2]
+"""Bobo call interface
 
-import sys,regex,socket,mimetools
-from httplib import HTTP, replyprog
+This module provides tools for accessing web objects as if they were 
+functions or objects with methods.  It also provides a simple call function 
+that allows one to simply make a single web request.
+
+  Function -- Function-like objects that return both header and body
+              data when called.
+
+  Object -- Treat a URL as a web object with methods
+
+  call -- Simple interface to call a remote function.
+
+The module also provides a command-line interface for calling objects.
+
+"""
+__version__='$Revision: 1.16 $'[11:-2]
+
+import sys, regex, socket, mimetools
+from httplib import HTTP
 from os import getpid
 from time import time
 from rand import rand
 from regsub import gsub
 from base64 import encodestring
 from urllib import urlopen, quote
-from types import FileType,ListType,DictType,TupleType
-from string import strip,split,atoi,join,rfind,splitfields,joinfields
+from types import FileType, ListType, DictType, TupleType
+from string import strip, split, atoi, join, rfind, translate, maketrans
 
+class Function:
+    username=None
+    password=None
+    method=None
+    timeout=60
 
+    def __init__(self,url,
+		 arguments=(),method=None,username=None,password=None,
+		 timeout=None,
+		 **headers):
+	while url[-1:]=='/': url=url[:-1]
+	self.url=url
+	self.headers=headers
+	self.func_name=url[rfind(url,'/')+1:]
+	self.__dict__['__name__']=self.func_name
+	self.func_defaults=()
+	
+	self.args=arguments
 
+	if method is not None: self.method=method
+	if username is not None: self.username=username
+	if password is not None: self.password=password
+	if timeout is not None: self.timeout=timeout
 
+	if urlregex.match(url) >= 0:
+	    host,port,rurl=urlregex.group(1,2,3)
+	    if port: port=atoi(port[1:])
+	    else: port=80
+	    self.host=host
+	    self.port=port
+	    rurl=rurl or '/'
+	    self.rurl=rurl
+	else: raise ValueError, url
 
+    def __call__(self,*args,**kw):
+	method=self.method
+	if method=='PUT' and len(args)==1 and not kw:
+	    query=[args[0]]
+	    args=()
+	else:
+	    query=[]
+	for i in range(len(args)):
+	    try:
+		k=self.args[i]
+		if kw.has_key(k): raise TypeError, 'Keyword arg redefined'
+		kw[k]=args[i]
+	    except IndexError:    raise TypeError, 'Too many arguments'
 
+	headers={}
+	for k, v in self.headers.items(): headers[translate(k,dashtrans)]=v
+	method=self.method
+	if headers.has_key('Content-Type'):
+	    content_type=headers['Content-Type']
+	    if content_type=='multipart/form-data':
+		return self._mp_call(kw)
+	else:
+	    content_type=None
+	    if not method or method=='POST':
+		for v in kw.values():
+		    if hasattr(v,'read'): return self._mp_call(kw)
+		
+	can_marshal=type2marshal.has_key
+	for k,v in kw.items():
+	    t=type(v)
+	    if can_marshal(t): q=type2marshal[t](k,v)
+	    else: q='%s=%s' % (k,quote(v))
+	    query.append(q)
+
+	url=self.rurl
+	if query:
+	    query=join(query,'&')
+	    method=method or 'POST'
+	    if method == 'PUT':
+		headers['Content-Length']=str(len(query))
+	    if method != 'POST':
+		url="%s?%s" % (url,query)
+		query=''
+	    elif not content_type:
+		headers['Content-Type']='application/x-www-form-urlencoded'
+		headers['Content-Length']=str(len(query))
+	else: method=method or 'GET'
+
+	if (self.username and self.password and
+	    not headers.has_key('Authorization')):
+	    headers['Authorization']=(
+		"Basic %s" %
+		gsub('\012','',encodestring('%s:%s' % (
+		    self.username,self.password))))
+
+	try:
+	    h=HTTP()
+	    h.connect(self.host, self.port)
+	    h.putrequest(method, self.rurl)
+	    for hn,hv in headers.items():
+		h.putheader(translate(hn,dashtrans),hv)
+	    h.endheaders()
+	    if query: h.send(query)
+	    ec,em,headers=h.getreply()
+	    response     =h.getfile().read()
+	except:
+	    raise NotAvailable, \
+		  RemoteException(NotAvailable,sys.exc_value,self.url,query)
+
+	if ec==200: return (headers,response)
+	self.handleError(query, ec, em, headers, response)
+
+    def handleError(self, query, ec, em, headers, response):
+	try:    v=headers.dict['bobo-exception-value']
+	except: v=ec
+	try:    f=headers.dict['bobo-exception-file']
+	except: f='Unknown'
+	try:    l=headers.dict['bobo-exception-line']
+	except: l='Unknown'
+	try:    t=exceptmap[headers.dict['bobo-exception-type']]
+	except:
+	    if   ec >= 400 and ec < 500: t=NotFound
+	    elif ec == 503:              t=NotAvailable
+	    else:                        t=ServerError
+	raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
+	
+
+    
+
+    def _mp_call(self,kw,
+		type2suffix={
+		    type(1.0): ':float',
+		    type(1):   ':int',
+		    type(1L):  ':long',
+		    type([]):  ':list',
+		    type(()):  ':tuple',
+		    }
+		):
+        # Call a function using the file-upload protcol
+
+	# Add type markers to special values:
+	d={}
+	special_type=type2suffix.has_key
+	for k,v in kw.items():
+	    if ':' not in k:
+		t=type(v)
+		if special_type(t): d['%s%s' % (k,type2suffix[t])]=v
+		else: d[k]=v
+
+        rq=[('POST %s HTTP/1.0' % self.rurl),]
+	for n,v in self.headers.items():
+	    rq.append('%s: %s' % (n,v))
+	if self.username and self.password:
+	    c=gsub('\012','',encodestring('%s:%s' % (
+		             self.username,self.password)))
+	    rq.append('Authorization: Basic %s' % c)
+        rq.append(MultiPart(d).render())
+        rq=join(rq,'\n')
+
+	try:
+            sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+            sock.connect(self.host,self.port)
+            sock.send(rq)
+            reply=sock.makefile('rb')
+            sock=None
+            line=reply.readline()
+
+	    try:
+		[ver, ec, em] = split(line, None, 2)
+	    except ValueError:
+		raise 'BadReply','Bad reply from server: '+line
+	    if ver[:5] != 'HTTP/':
+		raise 'BadReply','Bad reply from server: '+line
+
+            ec=atoi(ec)
+            em=strip(em)
+            headers=mimetools.Message(reply,0)
+            response=reply.read()
+	finally:
+          if 0:
+	    raise NotAvailable, (
+		RemoteException(NotAvailable,sys.exc_value,
+				self.url,'<MultiPart Form>'))
+		
+	if ec==200: return (headers,response)
+	self.handleError('', ec, em, headers, response)
+
+class Object:
+    """Surrogate object for an object on the web"""
+    username=None
+    password=None
+    method=None
+    timeout=None
+    special_method='PUT','GET','POST','PUT'
+
+    def __init__(self, url,
+		 method=None,username=None,password=None,
+		 timeout=None,
+		 **headers):
+	self.url=url
+	self.headers=headers
+	if method is not None: self.method=method
+	if username is not None: self.username=username
+	if password is not None: self.password=password
+	if timeout is not None: self.timeout=timeout
+
+    def __getattr__(self, name):
+	if name in self.special_methods:
+	    method=name
+	    url=self.url
+	else:
+	    method=self.method
+	    url="%s/%s" % (self.url, name)
+
+	f=BoboFunction(url,
+		       method=method,
+		       username=self.username,
+		       password=self.password,
+		       timeout=self.timeout)
+
+	f.headers=self.headers
+
+	return f
+
+def call(url,username=None, password=None, **kw):
+    
+    return apply(Function(url,username=username, password=password), (), kw)
+
+##############################################################################
+# Implementation details below here
+
+urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?', regex.casefold)
+
+dashtrans=maketrans('_','-')
 
 def marshal_float(n,f): return '%s:float=%s' % (n,f)
 def marshal_int(n,f):   return '%s:int=%s' % (n,f)
@@ -122,8 +360,6 @@ def querify(items):
 
     return query and join(query,'&') or ''
 
-urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)', regex.casefold)
-
 NotFound     ='bci.NotFound'
 InternalError='bci.InternalError'
 BadRequest   ='bci.BadRequest'
@@ -157,7 +393,6 @@ exceptmap   ={'AccessError'      :AccessError,
 	      'ZeroDivisionError':ZeroDivisionError}
 
 
-
 class RemoteException:
 
     def __init__(self,etype=None,evalue=None,efile=None,eline=None,url=None,
@@ -181,93 +416,6 @@ class RemoteException:
 
 
 
-
-class RemoteMethod:
-
-    username=password=''
-
-    def __init__(self,url,*args):
-	while url[-1:]=='/': url=url[:-1]
-	self.url=url
-	self.headers={}
-	self.func_name=url[rfind(url,'/')+1:]
-	self.__dict__['__name__']=self.func_name
-	self.func_defaults=()
-	
-	self.args=args
-	if urlregex.match(url) >= 0:
-	    host,port,rurl=urlregex.group(1,2,3)
-	    if port: port=atoi(port[1:])
-	    else: port=80
-	    self.host=host
-	    self.port=port
-	    self.rurl=rurl
-	else: raise ValueError, url
-
-    def __call__(self,*args,**kw):
-	akw={}
-	for i in range(len(args)):
-	    try:
-		k=self.args[i]
-		if kw.has_key(k):
-		    raise TypeError, 'keyword parameter redefined'
-		akw[k]=args[i]
-	    except IndexError:
-		raise TypeError, 'too many arguments'
-	query=[]
-	for k,v in akw.items()+kw.items():
-	    try: q=type2marshal[type(v)](k,v)
-	    except KeyError: q='%s=%s' % (k,quote(v))
-	    query.append(q)
-
-	if query:
-	    method='POST'
-	    query=join(query,'&')
-	else: method='GET'
-
-	try:
-	    h=HTTP()
-	    h.connect(self.host, self.port)
-	    h.putrequest(method, self.rurl)
-	    h.putheader('Content-Type', 'application/x-www-form-urlencoded')
-	    if query: h.putheader('Content-Length', str(len(query)))
-	    for hn,hv in self.headers.items(): h.putheader(hn,hv)
-	    if self.username and self.password:
-	        credentials=gsub('\012','',encodestring('%s:%s' % (
-		                           self.username,self.password)))
-	        h.putheader('Authorization',"Basic %s" % credentials)
-	    h.endheaders()
-	    if query: h.send(query)
-	    ec,em,headers=h.getreply()
-	    response     =h.getfile().read()
-	except:
-	    raise NotAvailable, \
-		  RemoteException(NotAvailable,sys.exc_value,self.url,query)
-
-	if ec==200: return (headers,response)
-	else:
-	    try:    v=headers.dict['bobo-exception-value']
-	    except: v=ec
-	    try:    f=headers.dict['bobo-exception-file']
-	    except: f='Unknown'
-	    try:    l=headers.dict['bobo-exception-line']
-	    except: l='Unknown'
-	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
-	    except:
-		if   ec >= 400 and ec < 500: t=NotFound
-		elif ec == 503:              t=NotAvailable
-		else:                        t=ServerError
-	    raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
-
-
-
-
-
-
-
-# This section added for multipart/form-data
-# file upload support...
-
 class MultiPart:
     def __init__(self,*args):
         c=len(args)
@@ -287,31 +435,39 @@ class MultiPart:
             b=self.boundary()
             d=[]
             h['Content-Type']['_v']='multipart/form-data; boundary=%s' % b
-            for n,v in val.items(): d.append(MultiPart(n,v))
+            for n,v in val.items():
+		d.append(MultiPart(n,v))
 
         elif (dt==ListType) or (dt==TupleType):
             raise ValueError, 'Sorry, nested multipart is not done yet!'
 
-        elif dt==FileType:
-            fn=gsub('\\\\','/',val.name)
-            fn=fn[(rfind(fn,'/')+1):]
-            ex=fn[(rfind(fn,'.')+1):]
-            try:    ct=self._extmap[ex]
-            except: ct=self._extmap['']
-            try:    ce=self._encmap[ct]
-            except: ce=''
+        elif dt==FileType or hasattr(val,'read'):
+	    if hasattr(val,'name'):
+		fn=gsub('\\\\','/',val.name)
+		fn=fn[(rfind(fn,'/')+1):]
+		ex=fn[(rfind(fn,'.')+1):]
+		if self._extmap.has_key(ex): ct=self._extmap[ex]
+		else: ct=self._extmap['']
+	    else:
+		fn=''
+		ct=self._extmap[None]
+            if self._encmap.has_key(ct): ce=self._encmap[ct]
+            else: ce=''
 
             h['Content-Disposition']['_v']      ='form-data'
             h['Content-Disposition']['name']    ='"%s"' % name
             h['Content-Disposition']['filename']='"%s"' % fn
             h['Content-Transfer-Encoding']['_v']=ce
             h['Content-Type']['_v']             =ct
-            d=val.read()
-
+	    d=[]
+	    l=val.read(8192)
+	    while l:
+		d.append(l)
+		l=val.read(8192)
         else:
             h['Content-Disposition']['_v']='form-data'
             h['Content-Disposition']['name']='"%s"' % name
-            d=str(val)
+            d=[str(val)]
 
         self._headers =h
         self._data    =d
@@ -339,12 +495,12 @@ class MultiPart:
             b=self._boundary
             for d in self._data: p.append(d.render())
             t.append('--%s\n' % b)
-            t.append(joinfields(p,'\n--%s\n' % b))
+            t.append(join(p,'\n--%s\n' % b))
             t.append('\n--%s--\n' % b)
-            t=joinfields(t,'')
+            t=join(t,'')
             s.append('Content-Length: %s\n\n' % len(t))
             s.append(t)
-            return joinfields(s,'')
+            return join(s,'')
 
 	else:
             for n,v in h.items():
@@ -360,11 +516,11 @@ class MultiPart:
                 b=self._boundary
                 for d in self._data: p.append(d.render())
 	        s.append('--%s\n' % b)
-                s.append(joinfields(p,'\n--%s\n' % b))
+                s.append(join(p,'\n--%s\n' % b))
                 s.append('\n--%s--\n' % b)
-                return joinfields(s,'')
+                return join(s,'')
             else:
-                return joinfields(s,'')+self._data
+                return join(s+self._data,'')
 
 
     _extmap={'':     'text/plain',
@@ -376,6 +532,7 @@ class MultiPart:
              'gif':  'image/gif',
              'jpg':  'image/jpeg',
              'exe':  'application/octet-stream',
+	     None :  'application/octet-stream',
              }
 
     _encmap={'image/gif': 'binary',
@@ -384,170 +541,21 @@ class MultiPart:
              }
 
 
-
-
-class mpRemoteMethod:
-    username=password=''
-    def __init__(self,url,*args):
-	while url[-1:]=='/': url=url[:-1]
-	self.url=url
-	self.headers={}
-	self.func_name=url[rfind(url,'/')+1:]
-	self.__dict__['__name__']=self.func_name
-	self.func_defaults=()
-	
-	self.args=args
-	if urlregex.match(url) >= 0:
-	    host,port,rurl=urlregex.group(1,2,3)
-	    if port: port=atoi(port[1:])
-	    else: port=80
-	    self.host=host
-	    self.port=port
-	    self.rurl=rurl
-	else: raise ValueError, url
-
-
-    type2suffix={type(1.0): ':float',
-		 type(1):   ':int',
-		 type(1L):  ':long',
-		 type([]):  ':list',
-		 type(()):  ':tuple',
-		 }
-
-    def __call__(self,*args,**kw):
-	for i in range(len(args)):
-	    try:
-		k=self.args[i]
-		if kw.has_key(k): raise TypeError, 'Keyword arg redefined'
-		kw[k]=args[i]
-	    except IndexError:    raise TypeError, 'Too many arguments'
-
-	d={}
-	smap=self.type2suffix
-	for k,v in kw.items():
-	    s=''
-	    if ':' not in k:
-	        try:    s=smap(type(v))
-	        except: pass
-	    d['%s%s' % (k,s)]=v
-
-        rq=[('POST %s HTTP/1.0' % self.rurl),]
-	for n,v in self.headers.items():
-	    rq.append('%s: %s' % (n,v))
-	if self.username and self.password:
-	    c=gsub('\012','',encodestring('%s:%s' % (
-		             self.username,self.password)))
-	    rq.append('Authorization: Basic %s' % c)
-        rq.append(MultiPart(d).render())
-        rq=joinfields(rq,'\n')
-
-	try:
-            sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            sock.connect(self.host,self.port)
-            sock.send(rq)
-            reply=sock.makefile('rb')
-            sock=None
-            line=reply.readline()
-	    if replyprog.match(line) < 0:
-		raise 'BadReply','Bad reply from server'
-            ec,em=replyprog.group(1,2)
-            ec=atoi(ec)
-            em=strip(em)
-            headers=mimetools.Message(reply,0)
-            response=reply.read()
-	except:
-	    raise NotAvailable, \
-		  RemoteException(NotAvailable,sys.exc_value,
-				  self.url,'<MultiPart Form>')
-		
-	if ec==200: return (headers,response)
-	else:
-	    try:    v=headers.dict['bobo-exception-value']
-	    except: v=ec
-	    try:    f=headers.dict['bobo-exception-file']
-	    except: f='Unknown'
-	    try:    l=headers.dict['bobo-exception-line']
-	    except: l='Unknown'
-	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
-	    except:
-		if   ec >= 400 and ec < 500: t=NotFound
-		elif ec == 503:              t=NotAvailable
-		else:                        t=ServerError
-	    raise t, RemoteException(t,v,f,l,self.url,'<MultiPart Form>',
-				     ec,em,response)
-
-
-
-
-
-
-
-
-
-
-Function=RemoteMethod
-
 def ErrorTypes(code):
     if code >= 400 and code < 500: return NotFound
     if code >= 500 and code < 600: return ServerError
     return 'HTTP_Error_%s' % code
 
-class BoboFunction:
-    """Make bobo-published callable objects look like functions"""
-    username=password=''
-    def __init__(self,url,*args):
-	while url[-1:]=='/': url=url[:-1]
-	self.url=url
-	self.func_name=self.__name__=url[rfind(url,'/')+1:]
-	self.func_defaults=()
-	
-	self.args=args
-	if urlregex.match(url) >= 0:
-	    host,port,rurl=urlregex.group(1,2,3)
-	    if port: port=atoi(port[1:])
-	    else: port=80
-	    self.host=host
-	    self.port=port
-	    self.rurl=rurl
-	else: raise ValueError, url
+usage="""
+Usage: %s [-u username:password] url [name=value ...]
 
-    def __call__(self,*args,**kw):
-	akw={}
-	for i in range(len(args)):
-	    try:
-		k=self.args[i]
-		if kw.has_key(k):
-		    raise TypeError, 'keyword parameter redefined'
-		akw[k]=args[i]
-	    except IndexError:
-		raise TypeError, 'too many arguments'
+where url is the web resource to call.
 
-	query=[]
-	for k,v in akw.items()+kw.items():
-	    try: q=type2marshal[type(v)](k,v)
-	    except KeyError: q='%s=%s' % (k,quote(v))
-	    query.append(q)
-	query=join(query,'&')
+The -u option may be used to provide a user name and password.
 
-	# Make http request:
-	h=HTTP()
-	h.connect(self.host, self.port)
-	h.putrequest('POST', self.rurl)
-	h.putheader('Content-Type', 'application/x-www-form-urlencoded')
-	h.putheader('Content-Length', str(len(query)))
-	if self.username and self.password:
-	    credentials = encodestring('%s:%s' % (self.username,self.password))
-	    credentials=gsub('\012','',credentials)
-	    h.putheader('Authorization',"Basic %s" % credentials)
-	h.endheaders()
-	h.send(query)
-	errcode,errmsg,headers=h.getreply()
-	response=h.getfile().read()
-	__traceback_info__=query,self.__dict__,errcode,errmsg,response
-	if errcode != 200:
-	    raise ErrorTypes(errcode), self.rurl + '\n' + errmsg + response
-	return response
+Optional arguments may be provides as name=value pairs.
 
+""" % sys.argv[0]
 
 def main():
     import getopt
@@ -564,84 +572,23 @@ def main():
 
 	kw={}
 	for arg in args[1:]:
-	    [name,v]=split(arg)
+	    [name,v]=split(arg,'=')
+	    if name[:2]=='-f':
+		name=name[2:]
+		v=open(v)
 	    kw[name]=v
 
     except:
-	print """
-	Usage: %s [-u username:password] url [name=value ...]
-
-	where url is the web resource to call.
-
-	The -u option may be used to provide a user name and password.
-
-	Optional arguments may be provides as name=value pairs.
-	""" % sys.argv[0]
+	print "%s: %s\n%s" % (sys.exc_type, sys.exc_value, usage)
 	sys.exit(1)
-
+	
     # The "main" program for this module
-    f=BoboFunction(url)
+    f=Function(url)
     if user: f.username, f.password = user, pw
     print apply(f,(),kw)
 
 
-if __name__ == "__main__": main()
-
-#
-# $Log: Client.py,v $
-# Revision 1.15  1997/09/12 19:21:37  jim
-# Made querify handle lists of types values.
-#
-# Revision 1.14  1997/09/11 22:30:36  jim
-# Added querify utility method.
-#
-# Revision 1.13  1997/09/11 22:27:27  jim
-# Added logic to usef GET when no query parameters.
-#
-# Revision 1.12  1997/07/09 15:03:08  jim
-# Fixed usage info.
-#
-# Revision 1.11  1997/07/09 14:51:53  jim
-# Added command-line interface.
-#
-# Revision 1.10  1997/06/06 14:26:32  brian
-# Added multipart/form-data support with a new mpRemoteMethod object
-# which allows file upload via bci.
-#
-# Revision 1.9  1997/05/05 21:58:20  brian
-# Worked around weird problem where python didnt want to assign to
-# __name__ in RemoteMethod's __init__
-#
-# Revision 1.8  1997/04/29 16:23:27  brian
-# Added logic to work with the pcgi-wrapper - bci.NotAvailable will be raised
-# by a RemoteMethod if the remote host is not reachable from a network problem
-# or if the request timed out at the other end.
-#
-# Revision 1.7  1997/04/18 19:45:47  jim
-# Brian's changes to try and get file name and line no in exceptions.
-#
-# Revision 1.5  1997/04/16 21:56:27  jim
-# repr now shows URL on Not Found.
-#
-# Revision 1.4  1997/04/12 17:18:18  jim
-# Many wonderous changes by Brian.
-#
-# Revision 1.1  1997/03/27 17:13:54  jim
-# *** empty log message ***
-#
-# Revision 1.5  1997/03/20 16:58:00  jim
-# Pauls change
-#
-# Revision 1.4  1997/02/28 19:53:49  jim
-# Fixed numerous bugs.
-#
-# Revision 1.3  1997/02/27 19:04:00  jim
-# *** empty log message ***
-#
-# Revision 1.2  1997/02/27 19:00:33  jim
-# *** empty log message ***
-#
-# Revision 1.1  1997/02/27 13:35:06  jim
-# *** empty log message ***
-#
-#
+if __name__ == "__main__":
+    #import pdb
+    #pdb.run('main()')
+    main()
