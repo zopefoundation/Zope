@@ -306,7 +306,7 @@ class TALGenerator:
         return newlist
 
     def emitStartElement(self, name, attrlist, taldict, metaldict,
-                         position):
+                         position=None):
         for key in taldict.keys():
             if key not in KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
