@@ -65,8 +65,8 @@
     <!--#/if-->
 
 ''' 
-__rcs_id__='$Id: DT_Raise.py,v 1.8 1998/09/14 20:48:40 jim Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.9 1998/09/14 22:03:32 jim Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import parse_params, name_param, render_blocks, str
 
@@ -77,25 +77,24 @@ class Raise:
 
     def __init__(self, blocks):
 
-	tname, args, section = blocks[0]
-	self.section=section.blocks
-	args=parse_params(args, type='', expr='')
-	self.__name__, self.expr = name_param(args, 'raise', 1, attr='type')
+        tname, args, section = blocks[0]
+        self.section=section.blocks
+        args=parse_params(args, type='', expr='')
+        self.__name__, self.expr = name_param(args, 'raise', 1, attr='type')
 
     def render(self,md):
-	expr=self.expr
-	if expr is None:
-		t=self.__name__
-		if t[-5:]=='Error' and __builtins__.has_key(t):
-		    t=__builtins__[t]
-	else:
-	    try: t=expr.eval(md)
-	    except: t='Invalid Error Type Expression'
+        expr=self.expr
+        if expr is None:
+                t=self.__name__
+                if t[-5:]=='Error' and __builtins__.has_key(t):
+                    t=__builtins__[t]
+        else:
+            try: t=expr.eval(md)
+            except: t='Invalid Error Type Expression'
 
-	try: v=render_blocks(self.section,md)
-	except: v='Invalid Error Value'
+        try: v=render_blocks(self.section,md)
+        except: v='Invalid Error Value'
 
-	raise t, v
+        raise t, v
 
     __call__=render
-

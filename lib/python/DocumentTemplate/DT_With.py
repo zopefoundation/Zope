@@ -75,8 +75,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.5 1998/09/14 20:48:42 jim Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.6 1998/09/14 22:03:33 jim Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 
@@ -86,26 +86,26 @@ class With:
     mapping=None
     
     def __init__(self, blocks):
-	tname, args, section = blocks[0]
-	args=parse_params(args, name='', expr='', mapping=1)
-	name,expr=name_param(args,'with',1)
-	if expr is None: expr=name
-	else: expr=expr.eval
-	self.__name__, self.expr = name, expr
-	self.section=section.blocks
-	if args.has_key('mapping') and args['mapping']: self.mapping=1
+        tname, args, section = blocks[0]
+        args=parse_params(args, name='', expr='', mapping=1)
+        name,expr=name_param(args,'with',1)
+        if expr is None: expr=name
+        else: expr=expr.eval
+        self.__name__, self.expr = name, expr
+        self.section=section.blocks
+        if args.has_key('mapping') and args['mapping']: self.mapping=1
 
     def render(self, md):
-	expr=self.expr
-	if type(expr) is type(''): v=md[expr]
-	else: v=expr(md)
-	
-	if self.mapping: md._push(v)
-	else:
-	    if type(v) is type(()) and len(v)==1: v=v[0]
-	    md._push(InstanceDict(v,md))
+        expr=self.expr
+        if type(expr) is type(''): v=md[expr]
+        else: v=expr(md)
+        
+        if self.mapping: md._push(v)
+        else:
+            if type(v) is type(()) and len(v)==1: v=v[0]
+            md._push(InstanceDict(v,md))
 
-	try: return render_blocks(self.section, md)
-	finally: md._pop(1)
+        try: return render_blocks(self.section, md)
+        finally: md._pop(1)
 
     __call__=render

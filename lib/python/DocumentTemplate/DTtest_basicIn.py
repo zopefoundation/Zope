@@ -57,7 +57,7 @@ def d(**kw): return kw
 
 class D:
     def __init__(self, **kw):
-	for k, v in kw.items(): self.__dict__[k]=v
+        for k, v in kw.items(): self.__dict__[k]=v
 
     def __repr__(self): return "D(%s)" % `self.__dict__`
 

@@ -51,8 +51,8 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.46 1998/09/14 20:48:41 jim Exp $''' 
-__version__='$Revision: 1.46 $'[11:-2]
+'''$Id: DT_Util.py,v 1.47 1998/09/14 22:03:33 jim Exp $''' 
+__version__='$Revision: 1.47 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -65,37 +65,37 @@ ValidationError='Unauthorized'
 
 
 def html_quote(v, name='(Unknown name)', md={},
-	       character_entities=(
-		       (('&'), '&amp;'),
-		       (("<"), '&lt;' ),
-		       ((">"), '&gt;' ),
-		       (('"'), '&quot;'))): #"
+               character_entities=(
+                       (('&'), '&amp;'),
+                       (("<"), '&lt;' ),
+                       ((">"), '&gt;' ),
+                       (('"'), '&quot;'))): #"
         text=str(v)
-	for re,name in character_entities:
+        for re,name in character_entities:
             if find(text, re) >= 0: text=join(split(text,re),name)
-	return text
+        return text
 
 def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
-	try: v=atoi(v)
-	except:
-	    v=md[v]
-	    if type(v) is st: v=atoi(v)
+        try: v=atoi(v)
+        except:
+            v=md[v]
+            if type(v) is st: v=atoi(v)
     return v
 
 def careful_getattr(md, inst, name):
     if name[:1]!='_':
-	validate=md.validate
+        validate=md.validate
 
-	if validate is None: return getattr(inst, name)
+        if validate is None: return getattr(inst, name)
 
-	if hasattr(inst,'aq_acquire'):
-	    return inst.aq_acquire(name, validate, md)
+        if hasattr(inst,'aq_acquire'):
+            return inst.aq_acquire(name, validate, md)
 
-	v=getattr(inst, name)
-	if validate(inst,inst,name,v,md): return v
+        v=getattr(inst, name)
+        if validate(inst,inst,name,v,md): return v
 
     raise ValidationError, name
 
@@ -127,18 +127,18 @@ def careful_getitem(md, mapping, key):
 def careful_getslice(md, seq, *indexes):
     v=len(indexes)
     if v==2:
-	v=seq[indexes[0]:indexes[1]]
+        v=seq[indexes[0]:indexes[1]]
     elif v==1:
-	v=seq[indexes[0]:]
+        v=seq[indexes[0]:]
     else: v=seq[:]
 
     if type(seq) is type(''): return v # Short-circuit common case
 
     validate=md.validate
     if validate is not None:
-	for e in v:
-	    if not validate(seq,seq,'',e,md):
-		raise ValidationError, 'unauthorized access to slice member'
+        for e in v:
+            if not validate(seq,seq,'',e,md):
+                raise ValidationError, 'unauthorized access to slice member'
 
     return v
 
@@ -149,7 +149,7 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 d=TemplateDict.__dict__
 for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
-	     'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
+             'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
     d[name]=__builtins__[name]
 d['string']=string
 d['math']=math
@@ -158,7 +158,7 @@ d['whrandom']=whrandom
 def test(self, *args):
     l=len(args)
     for i in range(1, l, 2):
-	if args[i-1]: return args[i]
+        if args[i-1]: return args[i]
 
     if l%2: return args[-1]
 
@@ -211,16 +211,16 @@ class Eval(VSEval.Eval):
     
     def eval(self, mapping):
         d={'_vars': mapping, '_': mapping}
-	code=self.code
-	globals=self.globals
-	for name in self.used:
-	    try: d[name]=mapping.getitem(name,0)
-	    except KeyError:
-		if name=='_getattr':
-		    d['__builtins__']=globals
-		    exec compiled_getattr in d
+        code=self.code
+        globals=self.globals
+        for name in self.used:
+            try: d[name]=mapping.getitem(name,0)
+            except KeyError:
+                if name=='_getattr':
+                    d['__builtins__']=globals
+                    exec compiled_getattr in d
 
-	return eval(code,globals,d)
+        return eval(code,globals,d)
 
 
 def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
@@ -228,10 +228,10 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     __traceback_info__=params, tag, expr, attr
 
     #if expr and used('expr') and used('') and not used(params['']):
-    #	# Fix up something like: <!--#in expr="whatever" mapping-->
-    #	params[params['']]=default_unnamed
-    #	del params['']
-	
+    #   # Fix up something like: <!--#in expr="whatever" mapping-->
+    #   params[params['']]=default_unnamed
+    #   del params['']
+        
     if used(''):
         v=params['']
 
@@ -266,16 +266,16 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
             return params['']
 
     elif used(attr):
-	if expr:
-	    if used('expr'):
-		raise ParseError, ('%s and expr given' % attr, tag)
-	    return params[attr],None
-	return params[attr]
+        if expr:
+            if used('expr'):
+                raise ParseError, ('%s and expr given' % attr, tag)
+            return params[attr],None
+        return params[attr]
     elif expr and used('expr'):
-	name=params['expr']
-	expr=Eval(name, expr_globals)
-	return name, expr
-	
+        name=params['expr']
+        expr=Eval(name, expr_globals)
+        return name, expr
+        
     raise ParseError, ('No %s given' % attr, tag)
 
 Expr_doc="""
@@ -337,17 +337,17 @@ Python expression support
 
 ListType=type([])
 def parse_params(text,
-		 result=None,
-		 tag='',
-		 unparmre=regex.compile(
-		     '\([\0- ]*\([^\0- =\"]+\)\)'),
-		 qunparmre=regex.compile(
-		     '\([\0- ]*\("[^"]*"\)\)'),
-		 parmre=regex.compile(
-		     '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-		 qparmre=regex.compile(
-		     '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
-		 **parms):
+                 result=None,
+                 tag='',
+                 unparmre=regex.compile(
+                     '\([\0- ]*\([^\0- =\"]+\)\)'),
+                 qunparmre=regex.compile(
+                     '\([\0- ]*\("[^"]*"\)\)'),
+                 parmre=regex.compile(
+                     '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
+                 qparmre=regex.compile(
+                     '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+                 **parms):
 
     """Parse tag parameters
 
@@ -373,41 +373,41 @@ def parse_params(text,
     result=result or {}
 
     if parmre.match(text) >= 0:
-	name=lower(parmre.group(2))
-	value=parmre.group(3)
-	l=len(parmre.group(1))
+        name=lower(parmre.group(2))
+        value=parmre.group(3)
+        l=len(parmre.group(1))
     elif qparmre.match(text) >= 0:
-	name=lower(qparmre.group(2))
-	value=qparmre.group(3)
-	l=len(qparmre.group(1))
+        name=lower(qparmre.group(2))
+        value=qparmre.group(3)
+        l=len(qparmre.group(1))
     elif unparmre.match(text) >= 0:
-	name=unparmre.group(2)
-	l=len(unparmre.group(1))
-	if result:
-	    if parms.has_key(name):
-		if parms[name] is None: raise ParseError, (
-		    'Attribute %s requires a value' % name, tag)
-		    
-		result[name]=parms[name]
-	    else: raise ParseError, (
-		'Invalid attribute name, "%s"' % name, tag)
-	else:
-	    result['']=name
-	return apply(parse_params,(text[l:],result),parms)
+        name=unparmre.group(2)
+        l=len(unparmre.group(1))
+        if result:
+            if parms.has_key(name):
+                if parms[name] is None: raise ParseError, (
+                    'Attribute %s requires a value' % name, tag)
+                    
+                result[name]=parms[name]
+            else: raise ParseError, (
+                'Invalid attribute name, "%s"' % name, tag)
+        else:
+            result['']=name
+        return apply(parse_params,(text[l:],result),parms)
     elif qunparmre.match(text) >= 0:
-	name=qunparmre.group(2)
-	l=len(qunparmre.group(1))
-	if result: raise ParseError, (
+        name=qunparmre.group(2)
+        l=len(qunparmre.group(1))
+        if result: raise ParseError, (
             'Invalid attribute name, "%s"' % name, tag)
-	else: result['']=name
-	return apply(parse_params,(text[l:],result),parms)
+        else: result['']=name
+        return apply(parse_params,(text[l:],result),parms)
     else:
-	if not text or not strip(text): return result
-	raise ParseError, ('invalid parameter: "%s"' % text, tag)
+        if not text or not strip(text): return result
+        raise ParseError, ('invalid parameter: "%s"' % text, tag)
     
     if not parms.has_key(name):
-	raise ParseError, (
-	    'Invalid attribute name, "%s"' % name, tag)
+        raise ParseError, (
+            'Invalid attribute name, "%s"' % name, tag)
 
     if result.has_key(name):
         p=parms[name]

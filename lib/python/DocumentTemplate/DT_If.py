@@ -117,8 +117,8 @@ __doc__='''Conditional insertion
          variable is not reevaluated.
 
 ''' 
-__rcs_id__='$Id: DT_If.py,v 1.13 1998/09/14 20:48:39 jim Exp $'
-__version__='$Revision: 1.13 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.14 1998/09/14 22:03:31 jim Exp $'
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 
@@ -130,53 +130,52 @@ class If:
 
     def __init__(self, blocks):
 
-	tname, args, section = blocks[0]
-	args=parse_params(args, name='', expr='')
-	name,expr=name_param(args,'if',1)
-	self.__name__= name
-	if expr is None: cond=name
-	else: cond=expr.eval
-	sections=[cond, section.blocks]
+        tname, args, section = blocks[0]
+        args=parse_params(args, name='', expr='')
+        name,expr=name_param(args,'if',1)
+        self.__name__= name
+        if expr is None: cond=name
+        else: cond=expr.eval
+        sections=[cond, section.blocks]
 
-	if blocks[-1][0]=='else':
-	    tname, args, section = blocks[-1]
-	    del blocks[-1]
-	    args=parse_params(args, name='')
-	    if args:
-		ename,expr=name_param(args,'else',1)
-		if ename != name:
-		    raise ParseError, ('name in else does not match if', 'in')
-	    elses=section.blocks
-	else: elses=None
+        if blocks[-1][0]=='else':
+            tname, args, section = blocks[-1]
+            del blocks[-1]
+            args=parse_params(args, name='')
+            if args:
+                ename,expr=name_param(args,'else',1)
+                if ename != name:
+                    raise ParseError, ('name in else does not match if', 'in')
+            elses=section.blocks
+        else: elses=None
 
-	for tname, args, section in blocks[1:]:
-	    if tname=='else':
-		raise ParseError, (
-		    'more than one else tag for a single if tag', 'in')
-	    args=parse_params(args, name='', expr='')
-	    name,expr=name_param(args,'elif',1)
-	    if expr is None: cond=name
-	    else: cond=expr.eval
-	    sections.append(cond)
-	    sections.append(section.blocks)
+        for tname, args, section in blocks[1:]:
+            if tname=='else':
+                raise ParseError, (
+                    'more than one else tag for a single if tag', 'in')
+            args=parse_params(args, name='', expr='')
+            name,expr=name_param(args,'elif',1)
+            if expr is None: cond=name
+            else: cond=expr.eval
+            sections.append(cond)
+            sections.append(section.blocks)
 
-	if elses is not None: sections.append(elses)
+        if elses is not None: sections.append(elses)
 
-	self.simple_form=tuple(sections)
+        self.simple_form=tuple(sections)
 
 class Unless:
     name='unless'
     blockContinuations=()
 
     def __init__(self, blocks):
-	tname, args, section = blocks[0]
-	args=parse_params(args, name='', expr='')
-	name,expr=name_param(args,'unless',1)
-	if expr is None: cond=name
-	else: cond=expr.eval
-	self.simple_form=(cond,None,section.blocks)
+        tname, args, section = blocks[0]
+        args=parse_params(args, name='', expr='')
+        name,expr=name_param(args,'unless',1)
+        if expr is None: cond=name
+        else: cond=expr.eval
+        self.simple_form=(cond,None,section.blocks)
 
 class Else(Unless):
     # The else tag is included for backward compatibility and is deprecated.
     name='else'
-

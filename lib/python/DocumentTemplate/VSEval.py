@@ -54,8 +54,8 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.18 1998/09/14 20:48:43 jim Exp $'
-__version__='$Revision: 1.18 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.19 1998/09/14 22:03:34 jim Exp $'
+__version__='$Revision: 1.19 $'[11:-2]
 
 from string import translate
 import string
@@ -73,12 +73,12 @@ def careful_mul(env, *factors):
     s=None
     r=1
     for factor in factors:
-	try:
-	    l=len(factor)
-	    s=1
-	except: l=factor
-	if s and (l*r) > 1000: raise TypeError, 'Illegal sequence repeat'
-	r=r*factor
+        try:
+            l=len(factor)
+            s=1
+        except: l=factor
+        if s and (l*r) > 1000: raise TypeError, 'Illegal sequence repeat'
+        r=r*factor
 
     return r
 
@@ -109,68 +109,68 @@ class Eval:
     """
 
     def __init__(self, expr, globals=default_globals):
-	"""Create a 'safe' expression
+        """Create a 'safe' expression
 
-	where:
+        where:
 
-  	  expr -- a string containing the expression to be evaluated.
+          expr -- a string containing the expression to be evaluated.
 
-	  globals -- A global namespace.
-	"""
+          globals -- A global namespace.
+        """
         global gparse
         if gparse is None: import gparse
         
-	self.__name__=expr
-	expr=translate(expr,nltosp)
-	self.expr=expr
-	self.globals=globals
+        self.__name__=expr
+        expr=translate(expr,nltosp)
+        self.expr=expr
+        self.globals=globals
 
-	co=compile(expr,'<string>','eval')
+        co=compile(expr,'<string>','eval')
 
-	names=list(co.co_names)
+        names=list(co.co_names)
 
-	# Check for valid names, disallowing names that begin with '_' or
-	# 'manage'. This is a DC specific rule and probably needs to be
-	# made customizable!
-	for name in names:
-	    if name[:1]=='_' and name not in ('_', '_vars', '_getattr'):
-		raise TypeError, 'illegal name used in expression'
-		
-	used={}
+        # Check for valid names, disallowing names that begin with '_' or
+        # 'manage'. This is a DC specific rule and probably needs to be
+        # made customizable!
+        for name in names:
+            if name[:1]=='_' and name not in ('_', '_vars', '_getattr'):
+                raise TypeError, 'illegal name used in expression'
+                
+        used={}
 
-	i=0
-	code=co.co_code
-	l=len(code)
-	LOAD_NAME=101	
-	HAVE_ARGUMENT=90	
-	def HAS_ARG(op): ((op) >= HAVE_ARGUMENT)
-	while(i < l):
-	    c=ord(code[i])
-	    if c==LOAD_NAME:
-		name=names[ord(code[i+1])+256*ord(code[i+2])]
-		used[name]=1
-		i=i+3		
-	    elif c >= HAVE_ARGUMENT: i=i+3
-	    else: i=i+1
-	
-	self.code=gparse.compile(expr,'<string>','eval')
-	self.used=tuple(used.keys())
+        i=0
+        code=co.co_code
+        l=len(code)
+        LOAD_NAME=101   
+        HAVE_ARGUMENT=90        
+        def HAS_ARG(op): ((op) >= HAVE_ARGUMENT)
+        while(i < l):
+            c=ord(code[i])
+            if c==LOAD_NAME:
+                name=names[ord(code[i+1])+256*ord(code[i+2])]
+                used[name]=1
+                i=i+3           
+            elif c >= HAVE_ARGUMENT: i=i+3
+            else: i=i+1
+        
+        self.code=gparse.compile(expr,'<string>','eval')
+        self.used=tuple(used.keys())
 
     def eval(self, mapping):
         d={'_vars': mapping}
-	code=self.code
-	globals=self.globals
-	for name in self.used:
-	    try: d[name]=mapping.getitem(name,0)
-	    except KeyError:
-		if name=='_getattr':
-		    d['__builtins__']=globals
-		    exec compiled_getattr in d
+        code=self.code
+        globals=self.globals
+        for name in self.used:
+            try: d[name]=mapping.getitem(name,0)
+            except KeyError:
+                if name=='_getattr':
+                    d['__builtins__']=globals
+                    exec compiled_getattr in d
 
-	return eval(code,globals,d)
+        return eval(code,globals,d)
 
     def __call__(self, **kw):
-	return eval(self.code, self.globals, kw)
+        return eval(self.code, self.globals, kw)
 
 compiled_getattr=compile(
     'def _getattr(o,n): return __guarded_getattr__(_vars,o,n)',

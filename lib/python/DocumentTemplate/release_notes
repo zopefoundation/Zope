@@ -1,16 +1,21 @@
 DocumentTemplate releases
 
+  2.2
+
+    This release has a number of new features and bug fixes.
+
+    Features
+
       - There is a new user's guide in HTML and PDF formats with
         table of contents and index.
 
+      - AFAIK DocumentTemplate is now thread-safe.
+
+      - There is a new open-source copyright.
+
       - Import of some modules is delayed providing 30% faster imports.
 
-      - Several occurrences of 'from some_module import *' have been 
-        eliminated.
-
       - No longer enable the through-the-web-editing interface by default.
-
-      - Made regex use thread safe.
 
       - Added short-hand expr usage:
 
@@ -19,6 +24,11 @@ DocumentTemplate releases
         is not a short-hand for:
 
            <!--#some_tag expr="foo.bar"-->
+
+    Bugs fixed
+
+      - Several occurrences of 'from some_module import *' have been 
+        eliminated.
 
       - Fixed bugs in error reporting.
 
@@ -120,5 +130,5 @@ DocumentTemplate releases
     - New 'in' tag variables for getting information about the start and 
       end indexes of the current batch.
 
-  "Download DocumentTemplate 2.1":DocumentTemplate-2.1.tar.gz.
+  "Download DocumentTemplate 2.2":DocumentTemplate-2.2.tar.gz.
 

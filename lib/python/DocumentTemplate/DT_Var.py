@@ -100,8 +100,8 @@ __doc__='''Variable insertion parameters
          - Cannot be formatted with the specified format, and
 
          - Are either the special Python value 'None' or 
-	   are false and yield an empty string when converted to
-	   a string.
+           are false and yield an empty string when converted to
+           a string.
 
        For example, when showing a monitary value retrieved from a
        database that is either a number or a missing value, the
@@ -164,8 +164,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.22 1998/09/14 20:48:42 jim Exp $'
-__version__='$Revision: 1.22 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.23 1998/09/14 22:03:33 jim Exp $'
+__version__='$Revision: 1.23 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -176,92 +176,92 @@ class Var:
     expr=None
 
     def __init__(self, args, fmt='s'):
-	args = parse_params(args, name='', lower=1, upper=1, expr='',
-			    capitalize=1, spacify=1, null='', fmt='s',
-			    size=0, etc='...', thousands_commas=1,
-			    html_quote=1, url_quote=1, sql_quote=1,
-			    newline_to_br=1)
-	self.args=args
-	
-	self.modifiers=tuple(
-	    map(lambda t: t[1],
-		filter(lambda m, args=args, used=args.has_key:
-		       used(m[0]) and args[m[0]],
-		       modifiers)))
+        args = parse_params(args, name='', lower=1, upper=1, expr='',
+                            capitalize=1, spacify=1, null='', fmt='s',
+                            size=0, etc='...', thousands_commas=1,
+                            html_quote=1, url_quote=1, sql_quote=1,
+                            newline_to_br=1)
+        self.args=args
+        
+        self.modifiers=tuple(
+            map(lambda t: t[1],
+                filter(lambda m, args=args, used=args.has_key:
+                       used(m[0]) and args[m[0]],
+                       modifiers)))
 
-	name, expr = name_param(args,'var',1)
+        name, expr = name_param(args,'var',1)
 
-	self.__name__, self.expr = name, expr
-	self.fmt = fmt
+        self.__name__, self.expr = name, expr
+        self.fmt = fmt
 
-	if len(args)==1 and fmt=='s':
-	    if expr is None: expr=name
-	    else: expr=expr.eval
-	    self.simple_form=expr,
+        if len(args)==1 and fmt=='s':
+            if expr is None: expr=name
+            else: expr=expr.eval
+            self.simple_form=expr,
 
     def render(self, md):
-	name=self.__name__
-	val=self.expr
-	if val is None:
-	    val = md[name]
-	else:
-	    val=val.eval(md)
+        name=self.__name__
+        val=self.expr
+        if val is None:
+            val = md[name]
+        else:
+            val=val.eval(md)
 
-	args=self.args
-	have_arg=args.has_key
+        args=self.args
+        have_arg=args.has_key
 
-	__traceback_info__=name, val, args
+        __traceback_info__=name, val, args
 
-	# handle special formats defined using fmt= first
-	if have_arg('fmt'):
-	    fmt=args['fmt']
-	    if have_arg('null') and not val and val != 0:
-		try:
-		    if hasattr(val, fmt):
-			val = getattr(val,fmt)()
-		    elif special_formats.has_key(fmt):
-			val = special_formats[fmt](val, name, md)
-		    elif fmt=='': val=''
-		    else: val = fmt % val
-		except:
-		    t, v = sys.exc_type, sys.exc_value
-		    if val is None or not str(val): return args['null']
-		    raise t, v
+        # handle special formats defined using fmt= first
+        if have_arg('fmt'):
+            fmt=args['fmt']
+            if have_arg('null') and not val and val != 0:
+                try:
+                    if hasattr(val, fmt):
+                        val = getattr(val,fmt)()
+                    elif special_formats.has_key(fmt):
+                        val = special_formats[fmt](val, name, md)
+                    elif fmt=='': val=''
+                    else: val = fmt % val
+                except:
+                    t, v = sys.exc_type, sys.exc_value
+                    if val is None or not str(val): return args['null']
+                    raise t, v
 
-	    else:
-		# We duplicate the code here to avoid exception handler
-		# which tends to screw up stack or leak
-		if hasattr(val, fmt):
-		    val = getattr(val,fmt)()
-		elif special_formats.has_key(fmt):
-		    val = special_formats[fmt](val, name, md)
-		elif fmt=='': val=''
-		else: val = fmt % val
+            else:
+                # We duplicate the code here to avoid exception handler
+                # which tends to screw up stack or leak
+                if hasattr(val, fmt):
+                    val = getattr(val,fmt)()
+                elif special_formats.has_key(fmt):
+                    val = special_formats[fmt](val, name, md)
+                elif fmt=='': val=''
+                else: val = fmt % val
 
-	# finally, pump it through the actual string format...
-	fmt=self.fmt
-	if fmt=='s': val=str(val)
-	else: val = ('%'+self.fmt) % (val,)
+        # finally, pump it through the actual string format...
+        fmt=self.fmt
+        if fmt=='s': val=str(val)
+        else: val = ('%'+self.fmt) % (val,)
 
-	# next, look for upper, lower, etc
-	for f in self.modifiers: val=f(val)
+        # next, look for upper, lower, etc
+        for f in self.modifiers: val=f(val)
 
-	if have_arg('size'):
-	    size=args['size']
-	    try: size=atoi(size)
-	    except: raise 'Document Error',(
-		'''a <code>size</code> attribute was used in a <code>var</code>
-		tag with a non-integer value.''')
-	    if len(val) > size:
-		val=val[:size]
-		l=rfind(val,' ')
-		if l > size/2:
-		    val=val[:l+1]
-		if have_arg('etc'): l=args['etc']
-		else: l='...'
-		val=val+l
+        if have_arg('size'):
+            size=args['size']
+            try: size=atoi(size)
+            except: raise 'Document Error',(
+                '''a <code>size</code> attribute was used in a <code>var</code>
+                tag with a non-integer value.''')
+            if len(val) > size:
+                val=val[:size]
+                l=rfind(val,' ')
+                if l > size/2:
+                    val=val[:l+1]
+                if have_arg('etc'): l=args['etc']
+                else: l='...'
+                val=val+l
 
-	return val
+        return val
 
     __call__=render
 
@@ -270,11 +270,11 @@ class Call:
     expr=None
 
     def __init__(self, args):
-	args = parse_params(args, name='', expr='')
-	name, expr = name_param(args,'call',1)
-	if expr is None: expr=name
-	else: expr=expr.eval
-	self.simple_form=expr,None
+        args = parse_params(args, name='', expr='')
+        name, expr = name_param(args,'call',1)
+        if expr is None: expr=name
+        else: expr=expr.eval
+        self.simple_form=expr,None
 
 
 def url_quote(v, name='(Unknown name)', md={}):
@@ -363,7 +363,7 @@ def spacify(val):
     return val
 
 modifiers=(html_quote, url_quote, newline_to_br, string.lower, string.upper,
-	   string.capitalize, spacify, thousands_commas, sql_quote)
+           string.capitalize, spacify, thousands_commas, sql_quote)
 modifiers=map(lambda f: (f.__name__, f), modifiers)
 
 class Comment:
@@ -386,7 +386,6 @@ class Comment:
     def __init__(self, args, fmt=''): pass
 
     def render(self, md):
-	return ''
+        return ''
 
     __call__=render
-

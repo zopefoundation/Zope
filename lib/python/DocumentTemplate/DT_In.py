@@ -86,8 +86,8 @@
       A more complete case is used as follows::
 
         <!--#in sequence sort=age-->
-	  <!--#var sequence-number-->) <!--#var age-->
-	<!--#/in-->
+          <!--#var sequence-number-->) <!--#var age-->
+        <!--#/in-->
 
     Attributes
 
@@ -100,15 +100,15 @@
 
          'sequence-item' -- The element.
 
-	 'sequence-var-nnn' -- The value of a specific named attribute
-	   of the item, where 'nnn' is the name.  For example, to get
-	   an items 'title' attribute, use 'sequence-var-title'.  This
-	   construct is most useful in an 'if' tag to test whether an
-	   attribute is present, because the attribute lookup will be
-	   extended to the full document template namespace.
+         'sequence-var-nnn' -- The value of a specific named attribute
+           of the item, where 'nnn' is the name.  For example, to get
+           an items 'title' attribute, use 'sequence-var-title'.  This
+           construct is most useful in an 'if' tag to test whether an
+           attribute is present, because the attribute lookup will be
+           extended to the full document template namespace.
 
-	 'sequence-key' -- The key associated with the element in an
-	   items list. See below.
+         'sequence-key' -- The key associated with the element in an
+           items list. See below.
 
          'sequence-index' -- The index, starting from 0, of the
            element within the sequence.
@@ -190,9 +190,9 @@
              attribute removed.  This is extremely useful when
              building URLs to fetch another batch.
 
-	     To see how this is used, consider the following example::
+             To see how this is used, consider the following example::
 
-		 <!--#in search_results size=20 start=batch_start-->
+                 <!--#in search_results size=20 start=batch_start-->
 
                     ... display rows
 
@@ -204,18 +204,18 @@
                       </a>
                     <!--#/if--> <!--#/if-->
 
-		 <!--#/in-->
+                 <!--#/in-->
 
-	     If the original URL is: 'foo/bar?x=1&y=2', then the
-	     rendered text (after row data are displated) will be::
+             If the original URL is: 'foo/bar?x=1&y=2', then the
+             rendered text (after row data are displated) will be::
 
                       <a href="foo/bar?x=1&y=2&batch_start=20">
                       (Next 20 results)
                       </a>
 
-	     If the original URL is: 'foo/bar?batch_start=10&x=1&y=2',
-	     then the rendered text (after row data are displated)
-	     will be::
+             If the original URL is: 'foo/bar?batch_start=10&x=1&y=2',
+             then the rendered text (after row data are displated)
+             will be::
 
                       <a href="foo/bar?x=1&y=2&batch_start=30">
                       (Next 20 results)
@@ -307,29 +307,29 @@
 
       Currently supported statistic names are:
 
-	total -- The total of numeric values.
+        total -- The total of numeric values.
 
-	count -- The total number of non-missing values.
+        count -- The total number of non-missing values.
 
-	min -- The minimum of non-missing values.
+        min -- The minimum of non-missing values.
 
-	max -- The maximum of non-missing values.
+        max -- The maximum of non-missing values.
 
-	median -- The median of non-missing values.
+        median -- The median of non-missing values.
 
-	mean -- The mean of numeric values values.
+        mean -- The mean of numeric values values.
 
-	variance -- The variance of numeric values computed with a
-	  degrees of freedom qeual to the count - 1.
+        variance -- The variance of numeric values computed with a
+          degrees of freedom qeual to the count - 1.
 
-	variance-n -- The variance of numeric values computed with a
-	  degrees of freedom qeual to the count.
+        variance-n -- The variance of numeric values computed with a
+          degrees of freedom qeual to the count.
 
-	standard-deviation -- The standard deviation of numeric values
-	  computed with a degrees of freedom qeual to the count - 1.
+        standard-deviation -- The standard deviation of numeric values
+          computed with a degrees of freedom qeual to the count - 1.
 
-	standard-deviation-n -- The standard deviation of numeric
-	  values computed with a degrees of freedom qeual to the count.
+        standard-deviation-n -- The standard deviation of numeric
+          values computed with a degrees of freedom qeual to the count.
 
       Missing values are either 'None' or the attribute 'Value'
       of the module 'Missing', if present.
@@ -342,15 +342,15 @@
         - The sequence given to the 'in' tag is of zero length, or
 
         - The 'previous' attribute was used and their are no
-	  previous batches, or
+          previous batches, or
 
         - The 'next' attribute was used and their are no
-	  next batches, or
+          next batches, or
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.29 1998/09/14 20:48:40 jim Exp $'
-__version__='$Revision: 1.29 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.30 1998/09/14 22:03:32 jim Exp $'
+__version__='$Revision: 1.30 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict
@@ -364,9 +364,9 @@ class InFactory:
     name='in'
 
     def __call__(self, blocks):
-	i=InClass(blocks)
-	if i.batch: return i.renderwb
-	else: return i.renderwob
+        i=InClass(blocks)
+        if i.batch: return i.renderwb
+        else: return i.renderwob
 
 In=InFactory()
 
@@ -376,143 +376,143 @@ class InClass:
     start_name_re=None
     
     def __init__(self, blocks):
-	tname, args, section = blocks[0]
-	args=parse_params(args, name='', start='1',end='-1',size='10',
-			  orphan='3',overlap='1',mapping=1,
-			  skip_unauthorized=1,
-			  previous=1, next=1, expr='', sort='')
-	self.args=args
-	has_key=args.has_key
+        tname, args, section = blocks[0]
+        args=parse_params(args, name='', start='1',end='-1',size='10',
+                          orphan='3',overlap='1',mapping=1,
+                          skip_unauthorized=1,
+                          previous=1, next=1, expr='', sort='')
+        self.args=args
+        has_key=args.has_key
 
-	if has_key('sort'): self.sort=args['sort']
-	if has_key('mapping'): self.mapping=args['mapping']
-	for n in 'start', 'size', 'end':
-	    if has_key(n): self.batch=1
+        if has_key('sort'): self.sort=args['sort']
+        if has_key('mapping'): self.mapping=args['mapping']
+        for n in 'start', 'size', 'end':
+            if has_key(n): self.batch=1
 
-	for n in 'orphan','overlap','previous','next':
-	    if has_key(n) and not self.batch:
-		raise ParseError, (
-		    """
-		    The %s attribute was used but neither of the
-		    <code>start</code>, <code>end</code>, or <code>size</code>
-		    attributes were used.
-		    """ % n, 'in')
+        for n in 'orphan','overlap','previous','next':
+            if has_key(n) and not self.batch:
+                raise ParseError, (
+                    """
+                    The %s attribute was used but neither of the
+                    <code>start</code>, <code>end</code>, or <code>size</code>
+                    attributes were used.
+                    """ % n, 'in')
 
-	if has_key('start'):
-	    v=args['start']
-	    if type(v)==type(''):
-		try: atoi(v)
-		except:
-		    self.start_name_re=ts_regex.compile(
-			'&+'+
-			join(map(lambda c: "[%s]" % c, v),'')+
-			'=[0-9]+&+')
-		    
-	name,expr=name_param(args,'in',1)
-	if expr is not None: expr=expr.eval
-	self.__name__, self.expr = name, expr
-	self.section=section.blocks
-	if len(blocks) > 1:
-	    if len(blocks) != 2: raise ParseError, (
-		'too many else blocks', 'in')
-	    tname, args, section = blocks[1]
-	    args=parse_params(args, name='')
-	    if args:
-		ename=name_param(args)
-		if ename != name:
-		    raise ParseError, (
-			'name in else does not match in', 'in')
-	    self.elses=section.blocks
-	    
+        if has_key('start'):
+            v=args['start']
+            if type(v)==type(''):
+                try: atoi(v)
+                except:
+                    self.start_name_re=ts_regex.compile(
+                        '&+'+
+                        join(map(lambda c: "[%s]" % c, v),'')+
+                        '=[0-9]+&+')
+                    
+        name,expr=name_param(args,'in',1)
+        if expr is not None: expr=expr.eval
+        self.__name__, self.expr = name, expr
+        self.section=section.blocks
+        if len(blocks) > 1:
+            if len(blocks) != 2: raise ParseError, (
+                'too many else blocks', 'in')
+            tname, args, section = blocks[1]
+            args=parse_params(args, name='')
+            if args:
+                ename=name_param(args)
+                if ename != name:
+                    raise ParseError, (
+                        'name in else does not match in', 'in')
+            self.elses=section.blocks
+            
 
     def renderwb(self, md):
-	expr=self.expr
-	name=self.__name__
-	if expr is None:
-	    sequence=md[name]
-	    cache={ name: sequence }
-	else:
-	    sequence=expr(md)
-	    cache=None
+        expr=self.expr
+        name=self.__name__
+        if expr is None:
+            sequence=md[name]
+            cache={ name: sequence }
+        else:
+            sequence=expr(md)
+            cache=None
 
-	if not sequence:
-	    if self.elses: return render_blocks(self.elses, md)
-	    return ''
+        if not sequence:
+            if self.elses: return render_blocks(self.elses, md)
+            return ''
 
-	section=self.section
-	params=self.args
-	
-	mapping=self.mapping
+        section=self.section
+        params=self.args
+        
+        mapping=self.mapping
 
-	if self.sort is not None: sequence=self.sort_sequence(sequence)
+        if self.sort is not None: sequence=self.sort_sequence(sequence)
 
-	next=previous=0
-	try: start=int_param(params,md,'start',0)
-	except: start=1
-	end=int_param(params,md,'end',0)
-	size=int_param(params,md,'size',0)
-	overlap=int_param(params,md,'overlap',0)
-	orphan=int_param(params,md,'orphan','3')
-	start,end,sz=opt(start,end,size,orphan,sequence)
-	if params.has_key('next'): next=1
-	if params.has_key('previous'): previous=1
+        next=previous=0
+        try: start=int_param(params,md,'start',0)
+        except: start=1
+        end=int_param(params,md,'end',0)
+        size=int_param(params,md,'size',0)
+        overlap=int_param(params,md,'overlap',0)
+        orphan=int_param(params,md,'orphan','3')
+        start,end,sz=opt(start,end,size,orphan,sequence)
+        if params.has_key('next'): next=1
+        if params.has_key('previous'): previous=1
 
-	last=end-1
-	first=start-1
+        last=end-1
+        first=start-1
 
-	try: query_string=md['QUERY_STRING']
-	except: query_string=''
+        try: query_string=md['QUERY_STRING']
+        except: query_string=''
 
-	vars=sequence_variables(sequence,'?'+query_string,self.start_name_re)
-	kw=vars.data
-	kw['mapping']=mapping
-	kw['sequence-step-size']=sz
-	kw['sequence-step-overlap']=overlap
-	kw['sequence-step-start']=start
-	kw['sequence-step-end']=end
-	kw['sequence-step-start-index']=start-1
-	kw['sequence-step-end-index']=end-1
-	kw['sequence-step-orphan']=orphan
+        vars=sequence_variables(sequence,'?'+query_string,self.start_name_re)
+        kw=vars.data
+        kw['mapping']=mapping
+        kw['sequence-step-size']=sz
+        kw['sequence-step-overlap']=overlap
+        kw['sequence-step-start']=start
+        kw['sequence-step-end']=end
+        kw['sequence-step-start-index']=start-1
+        kw['sequence-step-end-index']=end-1
+        kw['sequence-step-orphan']=orphan
 
-	push=md._push
-	pop=md._pop
-	render=render_blocks
+        push=md._push
+        pop=md._pop
+        render=render_blocks
 
-	if cache: push(cache)
-	push(vars)
-	try:
-	    if previous:
-		if first > 0:
-		    pstart,pend,psize=opt(None,first+overlap,
-					  sz,orphan,sequence)
-		    kw['previous-sequence']=1
-		    kw['previous-sequence-start-index']=pstart-1
-		    kw['previous-sequence-end-index']=pend-1
-		    kw['previous-sequence-size']=pend+1-pstart
-		    result=render(section,md)
+        if cache: push(cache)
+        push(vars)
+        try:
+            if previous:
+                if first > 0:
+                    pstart,pend,psize=opt(None,first+overlap,
+                                          sz,orphan,sequence)
+                    kw['previous-sequence']=1
+                    kw['previous-sequence-start-index']=pstart-1
+                    kw['previous-sequence-end-index']=pend-1
+                    kw['previous-sequence-size']=pend+1-pstart
+                    result=render(section,md)
 
-		elif self.elses: result=render(self.elses, md)
-		else: result=''
-	    elif next:
-		try:
-		    # The following line is a sneaky way to test whether
-		    # there are more items, without actually
-		    # computing a length:
-		    sequence[end]
-		    pstart,pend,psize=opt(end+1-overlap,None,
-					  sz,orphan,sequence)
-		    kw['next-sequence']=1
-		    kw['next-sequence-start-index']=pstart-1
-		    kw['next-sequence-end-index']=pend-1
-		    kw['next-sequence-size']=pend+1-pstart
-		    result=render(section,md)
-		except:
-		    if self.elses: result=render(self.elses, md)
-		    else: result=''
-	    else:
+                elif self.elses: result=render(self.elses, md)
+                else: result=''
+            elif next:
+                try:
+                    # The following line is a sneaky way to test whether
+                    # there are more items, without actually
+                    # computing a length:
+                    sequence[end]
+                    pstart,pend,psize=opt(end+1-overlap,None,
+                                          sz,orphan,sequence)
+                    kw['next-sequence']=1
+                    kw['next-sequence-start-index']=pstart-1
+                    kw['next-sequence-end-index']=pend-1
+                    kw['next-sequence-size']=pend+1-pstart
+                    result=render(section,md)
+                except:
+                    if self.elses: result=render(self.elses, md)
+                    else: result=''
+            else:
                 result = []
                 append=result.append
-		validate=md.validate
+                validate=md.validate
                 for index in range(first,end):
                     if index==first and index > 0:
                         pstart,pend,psize=opt(None,index+overlap,
@@ -537,154 +537,153 @@ class InClass:
                                 kw['next-sequence-end-index']=pend-1
                                 kw['next-sequence-size']=pend+1-pstart
                             except: pass
-    	
-		    if index==last: kw['sequence-end']=1
+        
+                    if index==last: kw['sequence-end']=1
 
-		    client=sequence[index]
+                    client=sequence[index]
 
-		    if validate is not None:
-			try: vv=validate(sequence,sequence,index,client,md)
-			except: vv=0
-			if not vv:
-			    if (params.has_key('skip_unauthorized') and
-				params['skip_unauthorized']):
-			        if index==first: kw['sequence-start']=0
-			        continue
-			    raise ValidationError, index
+                    if validate is not None:
+                        try: vv=validate(sequence,sequence,index,client,md)
+                        except: vv=0
+                        if not vv:
+                            if (params.has_key('skip_unauthorized') and
+                                params['skip_unauthorized']):
+                                if index==first: kw['sequence-start']=0
+                                continue
+                            raise ValidationError, index
 
-		    kw['sequence-index']=index
-		    if type(client)==TupleType and len(client)==2:
-			client=client[1]
+                    kw['sequence-index']=index
+                    if type(client)==TupleType and len(client)==2:
+                        client=client[1]
 
-		    if mapping: push(client)
-		    else: push(InstanceDict(client, md))
+                    if mapping: push(client)
+                    else: push(InstanceDict(client, md))
 
-		    try: append(render(section, md))
-		    finally: pop(1)
+                    try: append(render(section, md))
+                    finally: pop(1)
 
-		    if index==first: kw['sequence-start']=0
+                    if index==first: kw['sequence-start']=0
 
 
-		result=join(result, '')
+                result=join(result, '')
 
-	finally:
-	    if cache: pop()
-	    pop()
+        finally:
+            if cache: pop()
+            pop()
 
-	return result
+        return result
 
     def renderwob(self, md):
-	expr=self.expr
-	name=self.__name__
-	if expr is None:
-	    sequence=md[name]
-	    cache={ name: sequence }
-	else:
-	    sequence=expr(md)
-	    cache=None
+        expr=self.expr
+        name=self.__name__
+        if expr is None:
+            sequence=md[name]
+            cache={ name: sequence }
+        else:
+            sequence=expr(md)
+            cache=None
 
-	if not sequence:
-	    if self.elses: return render_blocks(self.elses, md)
-	    return ''
+        if not sequence:
+            if self.elses: return render_blocks(self.elses, md)
+            return ''
 
-	section=self.section
-	
-	mapping=self.mapping
+        section=self.section
+        
+        mapping=self.mapping
 
-	if self.sort is not None: sequence=self.sort_sequence(sequence)
+        if self.sort is not None: sequence=self.sort_sequence(sequence)
 
-	vars=sequence_variables(sequence)
-	kw=vars.data
-	kw['mapping']=mapping
+        vars=sequence_variables(sequence)
+        kw=vars.data
+        kw['mapping']=mapping
 
-	l=len(sequence)
-	last=l-1
+        l=len(sequence)
+        last=l-1
 
-	push=md._push
-	pop=md._pop
-	render=render_blocks
+        push=md._push
+        pop=md._pop
+        render=render_blocks
 
-	if cache: push(cache)
-	push(vars)
-	try:
-		result = []
-		append=result.append
-		validate=md.validate
-		for index in range(l):
-		    if index==last: kw['sequence-end']=1
-		    client=sequence[index]
+        if cache: push(cache)
+        push(vars)
+        try:
+                result = []
+                append=result.append
+                validate=md.validate
+                for index in range(l):
+                    if index==last: kw['sequence-end']=1
+                    client=sequence[index]
 
-		    if validate is not None:
-			try: vv=validate(sequence,sequence,index,client,md)
-			except: vv=0
-			if not vv:
-			    if (self.args.has_key('skip_unauthorized') and
-				self.args['skip_unauthorized']):
-			        if index==1: kw['sequence-start']=0
-			        continue
-			    raise ValidationError, index
+                    if validate is not None:
+                        try: vv=validate(sequence,sequence,index,client,md)
+                        except: vv=0
+                        if not vv:
+                            if (self.args.has_key('skip_unauthorized') and
+                                self.args['skip_unauthorized']):
+                                if index==1: kw['sequence-start']=0
+                                continue
+                            raise ValidationError, index
 
-		    kw['sequence-index']=index
-		    if type(client)==TupleType and len(client)==2:
-			client=client[1]
+                    kw['sequence-index']=index
+                    if type(client)==TupleType and len(client)==2:
+                        client=client[1]
 
-		    if mapping: push(client)
-		    else: push(InstanceDict(client, md))
+                    if mapping: push(client)
+                    else: push(InstanceDict(client, md))
 
-		    try: append(render(section, md))
-		    finally: pop()
-		    if index==0: kw['sequence-start']=0
+                    try: append(render(section, md))
+                    finally: pop()
+                    if index==0: kw['sequence-start']=0
 
-		result=join(result, '')
+                result=join(result, '')
 
-	finally:
-	    if cache: pop()
-	    pop()
+        finally:
+            if cache: pop()
+            pop()
 
-	return result
+        return result
 
     def sort_sequence(self, sequence):
 
-	sort=self.sort
-	mapping=self.mapping
-	isort=not sort
-	k=None
-	s=[]
-	for client in sequence:
-	    if type(client)==TupleType and len(client)==2:
-		if isort: k=client[0]
-		v=client[1]
-	    else:
-		if isort: k=client
-		v=client
+        sort=self.sort
+        mapping=self.mapping
+        isort=not sort
+        k=None
+        s=[]
+        for client in sequence:
+            if type(client)==TupleType and len(client)==2:
+                if isort: k=client[0]
+                v=client[1]
+            else:
+                if isort: k=client
+                v=client
 
-	    if sort:
-		if mapping: k=v[sort]
-		else: k=getattr(v, sort)
-		if not basic_type(k):		
-		    try: k=k()
-		    except: pass
+            if sort:
+                if mapping: k=v[sort]
+                else: k=getattr(v, sort)
+                if not basic_type(k):           
+                    try: k=k()
+                    except: pass
 
-	    s.append((k,client))
+            s.append((k,client))
 
-	s.sort()
+        s.sort()
 
-	sequence=[]
-	for k, client in s: sequence.append(client)
+        sequence=[]
+        for k, client in s: sequence.append(client)
 
-	return sequence
+        return sequence
 
 
 basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1
-	    }.has_key
+            }.has_key
 
 def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
-	try: v=atoi(v)
-	except:
-	    v=md[v]
-	    if type(v) is st: v=atoi(v)
+        try: v=atoi(v)
+        except:
+            v=md[v]
+            if type(v) is st: v=atoi(v)
     return v
-

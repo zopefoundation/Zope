@@ -54,8 +54,8 @@
 
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.6 1998/09/14 20:48:41 jim Exp $''' 
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: DT_UI.py,v 1.7 1998/09/14 22:03:33 jim Exp $''' 
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -97,12 +97,12 @@ HTML._manage_editForm = HTML(
       <!--#/if FactoryDefaultString-->
       <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Cancel">
       <!--#if HTTP_REFERER-->
-    	 <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" 
-    		VALUE="<!--#var HTTP_REFERER-->">
+         <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" 
+                VALUE="<!--#var HTTP_REFERER-->">
       <!--#else HTTP_REFERER-->
          <!--#if PARENT_URL-->
-    	   <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-    		  VALUE="<!--#var PARENT_URL-->">
+           <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
+                  VALUE="<!--#var PARENT_URL-->">
          <!--#/if PARENT_URL-->
       <!--#/if HTTP_REFERER-->
     </center>
@@ -118,13 +118,13 @@ HTML.editConfirmation=HTML(
     """<html><head><title>Change Successful</title></head><body>
     <!--#if CANCEL_ACTION-->
       <form action="<!--#var CANCEL_ACTION-->" method="POST">
-    	<center>
-    	   <em><!--#var dt_edit_name--></em><br>has been changed.<br><br>
-    	   <input type=submit name="SUBMIT" value="OK">
-    	</center>
+        <center>
+           <em><!--#var dt_edit_name--></em><br>has been changed.<br><br>
+           <input type=submit name="SUBMIT" value="OK">
+        </center>
       </form></body></html>
     <!--#else CANCEL_ACTION-->
       <center>
-    	 <em><!--#var dt_edit_name--></em><br>has been changed.
+         <em><!--#var dt_edit_name--></em><br>has been changed.
       </center>
     <!--#/if CANCEL_ACTION-->""")
