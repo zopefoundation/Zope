@@ -102,9 +102,9 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
-import Globals
+import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
@@ -112,7 +112,7 @@ from SimpleItem import Item_w__name__
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
-import string, struct
+
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
@@ -168,13 +168,13 @@ class File(Persistent,Implicit,PropertyManager,
         self.precondition=precondition
         headers=hasattr(file, 'headers') and file.headers or None
         if (headers is None) and (not content_type):
-            raise 'BadValue', 'No content type specified.'
-        if headers.has_key('content-type'):
+            raise 'Bad Request', 'No content type specified.'
+        if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
         if not content_type:
-            raise 'BadValue', 'No content type specified.'
+            raise 'Bad Request', 'No content type specified.'
         data=(headers is None) and file or file.read()
-        self.post_process(data, content_type)
+        self.update_data(data, content_type)
 
     def id(self):
         return self.__name__
@@ -205,7 +205,7 @@ class File(Persistent,Implicit,PropertyManager,
         """
         raise 'Redirect', URL1
 
-    def post_process(self, data, content_type=None):
+    def update_data(self, data, content_type=None):
         if content_type is not None:
             self.content_type=content_type
         self.data=Pdata(data)
@@ -233,7 +233,7 @@ class File(Persistent,Implicit,PropertyManager,
         if file.headers.has_key('content-type'):
             content_type=file.headers['content-type']
         else: content_type=None
-        self.post_process(file.read(), content_type)
+        self.update_data(file.read(), content_type)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -246,11 +246,21 @@ class File(Persistent,Implicit,PropertyManager,
         RESPONSE['content-length']=self.getSize()
         return ''
 
-    def PUT(self, BODY, REQUEST):
+    def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
-        content_type=REQUEST.get('CONTENT_TYPE', None)
-        self.post_process(BODY, content_type)
-
+        type=REQUEST.get_header('content-type', None)
+        body=REQUEST.get('BODY', '')
+        if type is None:
+            type, enc=mimetypes.guess_type(self.id())
+        if type is None:
+            if content_types.find_binary(body) >= 0:
+                type='application/octet-stream'
+            else: type=content_types.text_type(body)
+        type=string.lower(type)
+        self.update_data(body, type)
+        RESPONSE.setStatus(204)
+        return RESPONSE
+    
     def getSize(self):
         """Get the size of a file or image.
 
@@ -309,7 +319,7 @@ class Image(File):
                                kind='image')
     manage=manage_main=manage_editForm
 
-    def post_process(self, data, content_type=None):
+    def update_data(self, data, content_type=None):
         if content_type is not None:
             self.content_type=content_type
         self.data=Pdata(data)

@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
 from DTMLMethod import DTMLMethod, decapitate
@@ -153,13 +153,10 @@ class DTMLDocument(DTMLMethod, PropertyManager):
                 state[k]=v
         return state
 
-    do_post_processing=1
-
-    def post_process(self, data):
-        if not self.do_post_processing:
-            return
-        # Set properties based on html meta tags.
-        try:    meta=hp(data)
+    def on_update(self):
+        # This is just experimental!        
+        if 1: return
+        try:    meta=hp(self.raw)
         except: return
         for key, val in meta.metavars.items():
             if not self.hasProperty(key):
@@ -190,7 +187,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
         self.title=title
         self.munge(data)
-        self.post_process(data)
+        self.on_update()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -201,18 +198,19 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         self._validateProxy(REQUEST)
         data=file.read()
         self.munge(data)
-        self.post_process(data)
+        self.on_update()
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
 
-    def PUT(self, BODY, REQUEST):
+    def PUT(self, BODY, REQUEST, RESPONSE):
         """Handle HTTP PUT requests."""
         self._validateProxy(REQUEST)
         self.munge(BODY)
-        self.post_process(BODY)
-        return 'OK'
+        self.on_update()
+        RESPONSE.setStatus(204)
+        return RESPONSE
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,
@@ -305,7 +303,7 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     if not file: file=default_dd_html
     ob=DTMLDocument(file, __name__=id)
     ob.title=title
-    ob.post_process(file)
+    ob.on_update()
     self._setObject(id, ob)
     if REQUEST is not None:
         u=REQUEST['URL1']

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -219,7 +219,7 @@ class PropertyManager:
     
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
-           the given id, type, and value."""
+        the given id, type, and value."""
         if type_converters.has_key(type):
             value=type_converters[type](value)
         self._setProperty(id, value, type)
@@ -338,26 +338,26 @@ class PropertyManager:
         'lines':        _linesInput,
         'text':         _textInput,
         'date':         _defaultInput,
-        'tokens':       _tokensInput,   
+        'tokens':       _tokensInput
         }
 
-     propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
-     propertyTypes.sort()
-     propertyTypes=map(lambda key:
-                       {'id': key[1],
-                        'selected': key[1]=='string' and 'SELECTED' or ''},
-                       propertyTypes)
+    propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
+    propertyTypes.sort()
+    propertyTypes=map(lambda key:
+                      {'id': key[1],
+                       'selected': key[1]=='string' and 'SELECTED' or ''},
+                      propertyTypes)
 
            
-     def propertyInputs(self):
-         imap=self._inputMap
-         r=[]
-         for p in self._properties:
-             n=p['id']
-             t=p['type']
-             v=getattr(self,n)
-             r.append({'id': n, 'input': imap[t](None,n,t,v)})
-         return r
+    def propertyInputs(self):
+        imap=self._inputMap
+        r=[]
+        for p in self._properties:
+            n=p['id']
+            t=p['type']
+            v=getattr(self,n)
+            r.append({'id': n, 'input': imap[t](None,n,t,v)})
+        return r
 
 
 def aq_base(ob):

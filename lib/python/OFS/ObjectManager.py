@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.49 1999/01/06 23:20:06 brian Exp $"""
+$Id: ObjectManager.py,v 1.50 1999/01/29 15:41:39 brian Exp $"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
@@ -153,21 +153,18 @@ class ObjectManager(
         return self.meta_types+self.dynamic_meta_types+pmt
 
     def _checkId(self,id):
-
-        if not id: raise 'Bad Request', 'No <em>id</em> was specified'
-
+        if not id:
+            raise 'Bad Request', 'No <em>id</em> was specified'
         if quote(id) != id: raise 'Bad Request', (
             """The id <em>%s<em>  is invalid - it
                contains characters illegal in URLs.""" % id)
-
         if id[:1]=='_': raise 'Bad Request', (
             """The id <em>%s<em>  is invalid - it 
                begins with an underscore character, _.""" % id)
-
-        try: self=self.aq_base
-        except: return
-
-        if hasattr(self,id): raise 'Bad Request', (
+        if hasattr(self, 'aq_base'):
+            self=self.aq_base
+        if hasattr(self, id):
+            raise 'Bad Request', (
             """The id <em>%s<em>  is invalid - it
                is already in use.""" % id)
 

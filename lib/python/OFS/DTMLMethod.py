@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -216,7 +216,6 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
     manage=manage_main=manage_editDocument=manage_editForm
     manage_proxyForm=HTMLFile('documentProxy', globals())
 
-
     _size_changes={
         'Bigger': (5,5),
         'Smaller': (-5,-5),
@@ -270,11 +269,7 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
                     message='Your changes have been saved',
                     action ='manage_main')
 
-    def PUT(self, BODY, REQUEST):
-        """Handle HTTP PUT requests."""
-        self._validateProxy(REQUEST)
-        self.munge(BODY)
-        return 'OK'
+
 
     def manage_haveProxy(self,r): return r in self._proxy_roles
 
@@ -311,63 +306,20 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
         return self.read()
 
 
+    ## Protocol handlers
+
+    def PUT(self, BODY, REQUEST, RESPONSE):
+        """Handle HTTP PUT requests."""
+        self._validateProxy(REQUEST)
+        self.munge(BODY)
+        RESPONSE.setStatus(204)
+        return RESPONSE
+
     def manage_FTPget(self):
         "Get source for FTP download"
         return self.read()
 
 
-
-from sgmllib import SGMLParser
-
-done='done'
-
-class hp(SGMLParser):
-
-    from htmlentitydefs import entitydefs
-
-    def __init__(self, data):
-        SGMLParser.__init__(self, verbose=0)
-        self.metavars={}
-        self.headers={}
-        self.data=None
-        self.title=''
-        try: self.feed(data)
-        except done: pass
-        
-    def handle_data(self, data):
-        if self.data is not None:
-            self.data=self.data + data
-        else: pass
-
-    def save_bgn(self):
-        self.data=''
-
-    def save_end(self):
-        data=self.data
-        self.data=None
-        return data
-    
-    def start_head(self, attrs):
-        pass
-    
-    def end_head(self):
-        # avoid parsing whole file!
-        raise done, done
-
-    def start_title(self, attrs):
-        self.save_bgn()
-
-    def end_title(self):
-        self.title=self.save_end()
-
-    def do_meta(self, attrs):
-        dict={}
-        for key, val in attrs:
-            dict[key]=val
-        if dict.has_key('http-equiv'):
-            self.headers[dict['http-equiv']]=dict['content']
-        elif dict.has_key('name'):
-            self.metavars[dict['name']]=dict['content']
 
 
 

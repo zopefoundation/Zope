@@ -105,23 +105,20 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.58 1999/01/27 20:30:28 brian Exp $"""
+$Id: Folder.py,v 1.59 1999/01/29 15:41:39 brian Exp $"""
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
-
+import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from PropertyManager import PropertyManager
+from AccessControl.Role import RoleManager
 from CopySupport import CopyContainer
 from FindSupport import FindSupport
 from Image import Image, File
-from AccessControl.Role import RoleManager
-import SimpleItem
 from string import rfind, lower
-from content_types import content_type, find_binary, text_type
-import Globals
-import Acquisition
+
 
 manage_addFolderForm=HTMLFile('folderAdd', globals())
 
@@ -258,45 +255,43 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         self._setObject(id,o)
         return 'OK, I imported %s' % id
 
+
+
 class PUTer(Acquisition.Explicit):
     """Class to support the HTTP PUT protocol."""
 
-    def __init__(self, parent, key):
-        self._parent=parent
-        self._key=key
-        self.__roles__=parent.PUT__roles__
+    def __init__(self, parent, id):
+        self.id=id
+        self.__parent__=parent
+        self.__roles__ =parent.PUT__roles__
 
-    def PUT(self, REQUEST, BODY):
+    def PUT(self, REQUEST, RESPONSE):
         """Adds a document, image or file to the folder when a PUT
         request is received."""
-        name=self._key
-        try: type=REQUEST['CONTENT_TYPE']
-        except KeyError: type=''
-        if not type:
-            dot=rfind(name, '.')
-            suf=dot > 0 and lower(name[dot+1:]) or ''
-            if suf:
-                try: type=content_type[suf]
-                except KeyError:
-                    if find_binary(BODY) >= 0: type='application/x-%s' % suf
-                    else: type=text_type(BODY)
-            else:
-                if find_binary(BODY) >= 0:
-                    raise 'Bad Request', 'Could not determine file type'
-                else: type=text_type(BODY)
-            __traceback_info__=suf, dot, name, type
-        if lower(type)[:5]=='text/':
-            return self._parent.manage_addDTMLDocument(name,'',BODY,
-                                                       REQUEST=REQUEST)
-        if lower(type)[:6]=='image/':
-            self._parent._setObject(name, Image(name, '', BODY, 
-                                                   content_type=type))
+        name=self.id
+        type=REQUEST.get_header('content-type', None)
+        body=REQUEST.get('BODY', '')
+        if type is None:
+            type, enc=mimetypes.guess_type(name)
+        if type is None:
+            if content_types.find_binary(body) >= 0:
+                raise 'Bad Request', 'Unknown content type'
+            else: type=content_types.text_type(body)
+        type=lower(type)
+        if type in ('text/html', 'text/xml', 'text/plain'):
+            self.__parent__.manage_addDTMLDocument(name, '', body)
+        elif type[:6]=='image/':
+            ob=Image(name, '', body, content_type=type)
+            self.__parent__._setObject(name, ob)
         else:
-            self._parent._setObject(name, File(name, '', BODY,
-                                                   content_type=type))
-        return 'OK'
+            ob=File(name, '', body, content_type=type)
+            self.__parent__._setObject(name, ob)
+        RESPONSE.setStatus(201)
+        RESPONSE.setBody('')
+        return RESPONSE
 
-    def __str__(self): return self._key
+    def __str__(self):
+        return self.id
 
 
 
