@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.38 1998/03/17 19:29:05 jim Exp $'''
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: DA.py,v 1.39 1998/03/17 21:16:08 brian Exp $'''
+__version__='$Revision: 1.39 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -202,8 +202,11 @@ class DA(
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
-	if hasattr(REQUEST,'PARENTS'): p=REQUEST['PARENTS'][1]
-	elif hasattr(self, 'aq_parent'): p=self.aq_parent
+	if hasattr(REQUEST,'PARENTS'):
+	    parents=REQUEST['PARENTS']
+	    p=parents[(parents[0] is self)]
+	elif hasattr(self, 'aq_parent'):
+	    p=self.aq_parent
 	else: p=None
 
 	argdata=self._argdata(REQUEST)
@@ -369,6 +372,10 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.39  1998/03/17 21:16:08  brian
+# Changed __call__ to detect whether it is being called via the
+# web, or via dtml, and bind itself accordingly.
+#
 # Revision 1.38  1998/03/17 19:29:05  jim
 # Added support for sqlvar, sqltest, and sqlgroup tags.
 #
