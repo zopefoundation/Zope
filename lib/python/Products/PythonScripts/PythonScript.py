@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -187,18 +187,18 @@ class PythonScript(Script, Historical, Cacheable):
                                                manage_tabs_message=message)
 
     def ZPythonScript_setTitle(self, title):
-        self.title = str(title)
-        self.ZCacheable_invalidate()
+        title = str(title)
+        if self.title != title:
+            self.title = title
+            self.ZCacheable_invalidate()
 
     def ZPythonScript_edit(self, params, body):
         self._validateProxy()
-        self.ZCacheable_invalidate()
         if type(body) is not type(''):
             body = body.read()
         if self._params <> params or self._body <> body:
             self._params = str(params)
-            self._body = rstrip(body)
-            self._makeFunction(1)
+            self.write(body)
 
     def ZPythonScriptHTML_upload(self, REQUEST, file=''):
         """Replace the body of the script with the text in file."""
@@ -275,6 +275,7 @@ class PythonScript(Script, Historical, Cacheable):
         from Guarded import WriteGuard, ReadGuard
         if allowSideEffect:
             self._checkCBlock(GuardedBlock)
+            self.ZCacheable_invalidate()
         if getattr(self, '_v_errors', None):
             raise "Python Script Error", ('<pre>%s</pre>' %
                                           join(self._v_errors, '\n') )
@@ -284,7 +285,6 @@ class PythonScript(Script, Historical, Cacheable):
                             __builtins__=safebin)
 
     def _editedBindings(self):
-        self.ZCacheable_invalidate()
         f = getattr(self, '_v_f', None)
         if f is None:
             return
@@ -377,10 +377,10 @@ class PythonScript(Script, Historical, Cacheable):
 
     def write(self, text):
         self._validateProxy()
-        self.ZCacheable_invalidate()
         mdata = self._metadata_map()
         bindmap = self.getBindingAssignments().getAssignedNames()
         bup = 0
+
         st = 0
         try:
             while 1:
@@ -419,10 +419,14 @@ class PythonScript(Script, Historical, Cacheable):
                     bindmap[_nice_bind_names[k[5:]]] = v
                     bup = 1
 
-            self._body = rstrip(body)
+            body = rstrip(body)
+            if body != self._body:
+                self._body = body
             if bup:
                 self._setupBindings(bindmap)
-            self._makeFunction(1)
+
+            if self._p_changed:
+                self._makeFunction(1)
         except:
             LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
             raise
