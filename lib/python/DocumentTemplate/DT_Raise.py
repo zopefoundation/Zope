@@ -65,10 +65,10 @@
     <!--#/if-->
 
 ''' 
-__rcs_id__='$Id: DT_Raise.py,v 1.6 1998/09/02 21:06:04 jim Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.7 1998/09/08 15:05:31 jim Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
-from DT_Util import parse_params, name_param, render_blocks
+from DT_Util import parse_params, name_param, render_blocks, str
 
 class Raise:
     blockContinuations=()
@@ -103,6 +103,9 @@ class Raise:
 ##########################################################################
 #
 # $Log: DT_Raise.py,v $
+# Revision 1.7  1998/09/08 15:05:31  jim
+# added str to DT_Util import to address pickling lamosities
+#
 # Revision 1.6  1998/09/02 21:06:04  jim
 # many changes for thread safety, bug fixes, and faster import
 #

@@ -117,10 +117,10 @@ __doc__='''Conditional insertion
          variable is not reevaluated.
 
 ''' 
-__rcs_id__='$Id: DT_If.py,v 1.11 1998/09/02 21:06:03 jim Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.12 1998/09/08 15:05:31 jim Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
-from DT_Util import ParseError, parse_params, name_param
+from DT_Util import ParseError, parse_params, name_param, str
 
 class If:
     blockContinuations='else','elif'
@@ -184,6 +184,9 @@ class Else(Unless):
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.12  1998/09/08 15:05:31  jim
+# added str to DT_Util import to address pickling lamosities
+#
 # Revision 1.11  1998/09/02 21:06:03  jim
 # many changes for thread safety, bug fixes, and faster import
 #

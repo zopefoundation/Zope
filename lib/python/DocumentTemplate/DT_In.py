@@ -349,10 +349,10 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.27 1998/09/02 21:06:04 jim Exp $'
-__version__='$Revision: 1.27 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.28 1998/09/08 15:05:31 jim Exp $'
+__version__='$Revision: 1.28 $'[11:-2]
 
-from DT_Util import ParseError, parse_params, name_param
+from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict
 from string import find, atoi, join
 import ts_regex
@@ -690,6 +690,9 @@ def int_param(params,md,name,default=0, st=type('')):
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.28  1998/09/08 15:05:31  jim
+# added str to DT_Util import to address pickling lamosities
+#
 # Revision 1.27  1998/09/02 21:06:04  jim
 # many changes for thread safety, bug fixes, and faster import
 #

@@ -51,12 +51,12 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.16 1998/09/02 21:16:45 jim Exp $"
+"$Id: DT_String.py,v 1.17 1998/09/08 15:05:32 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
 
-from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks
+from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment
 
 

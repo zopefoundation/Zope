@@ -164,10 +164,10 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.17 1998/09/02 21:06:05 jim Exp $'
-__version__='$Revision: 1.17 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.18 1998/09/08 15:05:32 jim Exp $'
+__version__='$Revision: 1.18 $'[11:-2]
 
-from DT_Util import parse_params, name_param, html_quote
+from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
 from string import find, split, join
 
@@ -390,6 +390,9 @@ class Comment:
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.18  1998/09/08 15:05:32  jim
+# added str to DT_Util import to address pickling lamosities
+#
 # Revision 1.17  1998/09/02 21:06:05  jim
 # many changes for thread safety, bug fixes, and faster import
 #
