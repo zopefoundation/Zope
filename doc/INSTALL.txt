@@ -139,7 +139,7 @@ Accessing Zope through the web
   You will be prompted to enter a user name and a password. Enter the
   super user name and password you specified in the access file.
   
-  Now your off and running! You should be looking at the Zope management
+  Now you're off and running! You should be looking at the Zope management
   screen which is divided into two frames. On the left you can navigate
   between Zope object and on the right you can edit them by selecting
   different management functions with the tabs at the top of the frame.
