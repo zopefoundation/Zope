@@ -159,7 +159,7 @@ def heartbeat():
 def forkit(attempts = FORK_ATTEMPTS):
     while attempts:
         # if at first you don't succeed...
-        attempts = attempts + 1
+        attempts = attempts - 1
         try:
             pid = os.fork()
         except os.error:
