@@ -116,7 +116,9 @@ class FactoryDispatcher(Acquisition.Implicit):
     def Destination(self):
         "Return the destination for factory output"
         return self.__dict__['_d'] # we don't want to wrap the result!
-    Destination__roles__=None
+    this=Destination
+    this__roles__=Destination__roles__=None
+    
 
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
