@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -197,11 +197,6 @@ class CopyContainer(ExtensionClass.Base):
             try: ob=m.bind(self._p_jar)
             except: raise CopyError, eNotFound
             self._verifyObjectPaste(ob, REQUEST)
-            # try:    ob._notifyOfCopyTo(self, op=op)
-            # except: raise CopyError, MessageDialog(
-            #               title='Copy Error',
-            #               message=sys.exc_value,
-            #               action ='manage_main')
             oblist.append(ob)
 
         if op==0:
@@ -214,8 +209,6 @@ class CopyContainer(ExtensionClass.Base):
                 id=self._get_id(absattr(ob.id))
                 ob._setId(id)
                 self._setObject(id, ob)
-                #ob=ob.__of__(self)
-                #ob._postCopy(self, op=0)
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
@@ -227,14 +220,14 @@ class CopyContainer(ExtensionClass.Base):
                 id=absattr(ob.id)
                 if not ob.cb_isMoveable():
                     raise CopyError, eNotSupported % id
+                if not sanity_check(self, ob):
+                    raise CopyError, 'This object cannot be pasted into itself'
                 ob.aq_parent._delObject(id)
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=self._get_id(id)
                 ob._setId(id)
                 self._setObject(id, ob)
-                #ob=ob.__of__(self)            
-                #ob._postCopy(self, op=1)
 
             if REQUEST is not None:
                 REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
@@ -436,6 +429,19 @@ class CopySource:
             return 0
         return 1
 
+
+
+def sanity_check(c, ob):
+    # This is called on cut/paste operations to make sure that
+    # an object is not cut and pasted into itself or one of its
+    # subobjects, which is an undefined situation.
+    ob=getattr(ob, 'aq_base', ob)
+    while 1:
+        if getattr(c, 'aq_base', c) is ob:
+            return 0
+        if not hasattr(c, 'aq_parent'):
+            return 1
+        c=c.aq_parent
 
 def absattr(attr):
     if callable(attr): return attr()
