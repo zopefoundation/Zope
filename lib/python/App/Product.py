@@ -82,12 +82,12 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Principia Product Objects
+"""Product objects
 """
 # The new Product model:
 # 
-#   Products may be defined with Principia or by placing directories in
-#   lib/python/Products.
+#   Products may be defined in the Products folder or by placing directories
+#   in lib/python/Products.
 # 
 #   Products in lib/python/Products may have up to three sources of information:
 # 

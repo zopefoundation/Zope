@@ -82,12 +82,12 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Standard routines for handling Principia Extensions
+__doc__='''Standard routines for handling extensions.
 
-Principia extensions currently include external methods and pluggable brains.
+Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.10 1999/06/10 18:56:25 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Extensions.py,v 1.11 1999/11/03 14:35:41 brian Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from string import find
 import os, zlib, rotor

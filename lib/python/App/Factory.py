@@ -82,10 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Principia Factories
+__doc__='''Factory objects
 
-$Id: Factory.py,v 1.13 1999/07/21 13:15:23 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Factory.py,v 1.14 1999/11/03 14:35:41 brian Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
