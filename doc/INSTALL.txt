@@ -1,0 +1,23 @@
+Building and installing Zope
+
+  This document describes buiding and installing Zope on Unix.
+  We will provide Windows instructions in later releases.
+  
+  There are some python scripts in the top-level directory that should
+  help you get started.  You must run these scripts from the top-level
+  directory.
+
+  If you want to try out zope in the simplest fashion using a 
+  Python web server, then run the script wo_pcgi::
+
+    python wo_pcgi.py
+
+  then to start the web server, run the serve script::
+
+    python serve.py
+
+  If you want to use PCGI and an existing web server, run w_pcgi::
+
+    python w_pcgi.py
+
+  and configure the web server appropriately.
