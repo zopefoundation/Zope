@@ -115,6 +115,21 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0,
     find=string.find
     seek(0,2)
     file_size=file.tell()
+    if not export:
+        seek(0)
+        h=read(len(packed_version))
+        if h != packed_version:
+            if h[:4]=='FS21':
+                error("The input file is a ZODB File Storage\n"
+                      "This script only works with ZODB 2 (BoboPOS) "
+                      "data or export files."
+                      ,1)
+            else:
+                error("The input file is not a ZODB 2 database file.\n"
+                      "This script only works with ZODB 2 (BoboPOS) "
+                      "data or export files."
+                      ,1)
+            
     gmtime=time.gmtime
 
     if fromEnd: pos=file_size
