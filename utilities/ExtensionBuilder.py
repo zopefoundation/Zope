@@ -384,6 +384,7 @@ def build_zope(path):
                  'lib/python/DocumentTemplate',
                  'lib/python/ZODB',
                  'lib/python/BTrees',
+                 'lib/python/AccessControl',
                  'lib/python/SearchIndex',
                  'lib/python/Shared/DC/xml/pyexpat',
                  'lib/python/Products/PluginIndexes/TextIndex/Splitter/ZopeSplitter',
