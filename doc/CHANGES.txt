@@ -10,6 +10,8 @@ Zope changes
           machinery.  It is an implicit role, and cannot be provided to
           users within the user management screens or the local roles
           management screens.  It is provided to all authenticated users.
+          Another way to think of the 'Authenticated' role is that
+          it is possessed by all users *except* the Anonymous User.
 
         - A module 'requestprofiler.py' is now part of the utilities
           directory.  When run from the command line, this utility
