@@ -211,18 +211,3 @@ class TransientItemContainer(Interface.Base):
         'before destruction' functions need accept a single argument: 'item',
         which is the item being destroyed.
         """
-
-    def notifyAdd(self, item):
-        """
-        Calls the registered ExecuteAfterAdd function on item.
-
-        Raises no errors (traps errors).
-        """
-
-    def notifyDestruct(self, item):
-        """
-        Calls the registered ExecuteBeforeDestruct function on item.
-
-        Raises no errors (traps errors).
-        """
-
