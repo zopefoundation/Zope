@@ -70,7 +70,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         # via the silly "extra" record.
         self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
 
-        lexicon_id = lexicon_id or extra.lexicon_idp
+        lexicon_id = lexicon_id or extra.lexicon_id
         lexicon = getattr(caller, lexicon_id, None)
 
         if lexicon is None:
