@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.46 1999/01/13 15:15:20 brian Exp $'''
-__version__='$Revision: 1.46 $'[11:-2]
+$Id: Response.py,v 1.47 1999/02/05 21:12:47 brian Exp $'''
+__version__='$Revision: 1.47 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -94,88 +94,68 @@ from types import StringType, InstanceType
 nl2sp=string.maketrans('\n',' ')
 
 status_reasons={
-    200: 'OK',
-    201: 'Created',
-    202: 'Accepted',
-    204: 'No Content',
-    300: 'Multiple Choices',
-    301: 'Moved Permanently',
-    302: 'Moved Temporarily',
-    304: 'Not Modified',
-    400: 'Bad Request',
-    401: 'Unauthorized',
-    403: 'Forbidden',
-    404: 'Not Found',
-    500: 'Internal Error',
-    501: 'Not Implemented',
-    502: 'Bad Gateway',
-    503: 'Service Unavailable',
-    }
+100: 'Continue',
+101: 'Switching Protocols',
+102: 'Processing',
+200: 'OK',
+201: 'Created',
+202: 'Accepted',
+203: 'Non-Authoritative Information',
+204: 'No Content',
+205: 'Reset Content',
+206: 'Partial Content',
+207: 'Multi-Status',
+300: 'Multiple Choices',
+301: 'Moved Permanently',
+302: 'Moved Temporarily',
+303: 'See Other',
+304: 'Not Modified',
+305: 'Use Proxy',
+307: 'Temporary Redirect',
+400: 'Bad Request',
+401: 'Unauthorized',
+402: 'Payment Required',
+403: 'Forbidden',
+404: 'Not Found',
+405: 'Method Not Allowed',
+406: 'Not Acceptable',
+407: 'Proxy Authentication Required',
+408: 'Request Time-out',
+409: 'Conflict',
+410: 'Gone',
+411: 'Length Required',
+412: 'Precondition Failed',
+413: 'Request Entity Too Large',
+414: 'Request-URI Too Large',
+415: 'Unsupported Media Type',
+416: 'Requested range not satisfiable',
+417: 'Expectation Failed',
+422: 'Unprocessable Entity',
+423: 'Locked',
+424: 'Failed Dependency',
+500: 'Internal Server Error',
+501: 'Not Implemented',
+502: 'Bad Gateway',
+503: 'Service Unavailable',
+504: 'Gateway Time-out',
+505: 'HTTP Version not supported',
+507: 'Insufficient Storage',
+}
 
-status_codes={
-    'ok': 200,
-    'created':201,
-    'accepted':202,
-    'nocontent':204,
-    'multiplechoices':300,
-    'redirect':300,
-    'movedpermanently':301,
-    'movedtemporarily':302,
-    'notmodified':304,
-    'badrequest':400,
-    'unauthorized':401,
-    'forbidden':403,
-    'notfound':404,
-    'internalerror':500,
-    'notimplemented':501,
-    'badgateway':502,
-    'serviceunavailable':503,
-    'no content':204,
-    'multiple choices':300,
-    'moved permanently':301,
-    'moved temporarily':302,
-    'not modified':304,
-    'bad request':400,
-    'not found':404,
-    'internal error':500,
-    'not implemented':501,
-    'bad gateway':502,
-    'service unavailable':503,
-    200: 200,
-    201: 201,
-    202: 202,
-    204: 204,
-    301: 301,
-    302: 302,
-    304: 304,
-    400: 400,
-    401: 401,
-    403: 403,
-    404: 404,
-    500: 500,
-    501: 501,
-    502: 502,
-    503: 503,
+status_codes={}
+# Add mappings for builtin exceptions and
+# provide text -> error code lookups.
+for key, val in status_reasons.items():
+    status_codes[lower(join(split(val, ' '), ''))]=key
+    status_codes[lower(val)]=key
+    status_codes[key]=key
+en=filter(lambda n: n[-5:]=='Error', dir(__builtins__))
+for name in map(lower, en):
+    status_codes[name]=500
+status_codes['nameerror']=503
+status_codes['keyerror']=503
+status_codes['redirect']=300
 
-    # Map standard python exceptions to status codes:
-    'accesserror':500,
-    'attributeerror':500,
-    'conflicterror':500,
-    'eoferror':500,
-    'ioerror':500,
-    'importerror':500,
-    'indexerror':500,
-    'keyerror':503,
-    'memoryerror':500,
-    'nameerror':503,
-    'overflowerror':500,
-    'runtimeerror':500,
-    'syntaxerror':500,
-    'systemerror':500,
-    'typeerror':500,
-    'valueerror':500,
-    'zerodivisionerror':500,
-    }
 
 end_of_header_search=regex.compile('</head>',regex.casefold).search
 
