@@ -12,7 +12,7 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.4 2002/02/07 17:37:10 andreasjung Exp $
+$Id: RefreshFuncs.py,v 1.5 2002/06/16 01:56:00 shane Exp $
 '''
 
 import os, sys
@@ -142,7 +142,7 @@ def logBadRefresh(productid):
         else:
             error_type = str(exc[0])
         error_value = str(exc[1])
-        info = format_exception(exc[0], exc[1], exc[2], limit=200)
+        info = ''.join(format_exception(exc[0], exc[1], exc[2], limit=200))
         refresh_exc_info[productid] = (error_type, error_value, info)
     finally:
         exc = None
