@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.31 1999/08/05 21:36:50 jim Exp $
+  $Id: Acquisition.c,v 1.32 1999/09/21 22:33:44 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -135,8 +135,6 @@ typedef struct {
   PyObject *container;
 } Wrapper;
 
-static Wrapper *freeWrappers=0;
-
 staticforward PyExtensionClass Wrappertype, XaqWrappertype;
 
 #define isWrapper(O) ((O)->ob_type==(PyTypeObject*)&Wrappertype || \
@@ -178,6 +176,10 @@ err:
   return NULL;
 }
 
+static Wrapper *freeWrappers=0;
+static int nWrappers=0;
+#define MAX_CACHED_WRAPPERS 200
+
 static PyObject *
 newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
 {
@@ -189,6 +191,7 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
       freeWrappers=(Wrapper*)self->obj;
       self->ob_type=Wrappertype;
       self->ob_refcnt=1;
+      nWrappers--;
     }
   else
     UNLESS(self = PyObject_NEW(Wrapper, Wrappertype)) return NULL;
@@ -206,8 +209,17 @@ Wrapper_dealloc(Wrapper *self)
 {
   Py_DECREF(self->obj);
   Py_DECREF(self->container);
-  self->obj=OBJECT(freeWrappers);
-  freeWrappers=self;
+  if (nWrappers < MAX_CACHED_WRAPPERS)
+    {
+      self->obj=OBJECT(freeWrappers);
+      freeWrappers=self;
+      nWrappers++;
+    }
+  else 
+    {
+      Py_DECREF(self->ob_type);
+      PyMem_DEL(self);
+    }
 }
 
 static PyObject *
@@ -1000,7 +1012,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.31 $";
+  char *rev="$Revision: 1.32 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1019,7 +1031,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.31 1999/08/05 21:36:50 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.32 1999/09/21 22:33:44 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
