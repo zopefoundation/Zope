@@ -15,6 +15,8 @@ Options:
 
   Z path
 
+    Unix only! This option is ignored on windows.
+
     If this option is specified, a separate managemnt process will
     be created that restarts Zope after a shutdown (or crash).
     The path must point to a pid file that the process will record it's
@@ -80,7 +82,8 @@ Zpid=''
 ##
 
 # If you want run as a deamon, then uncomment the line below:
-Zpid='var/zProcessManager.pid'
+if sys.platform=='win32': Zpid=''
+else: Zpid='var/zProcessManager.pid'
 
 # This is the IP address of the network interface you want your servers to
 # be visible from.  This can be changed to '' to listen on all interfaces.
@@ -173,6 +176,8 @@ except:
     print 'Error:'
     print "%s: %s" % (sys.exc_type, sys.exc_value)
     sys.exit(1)
+
+if sys.platform=='win32': Zpid=''
 
 #
 ########################################################################
