@@ -12,7 +12,7 @@
 ##############################################################################
 """ ZCatalog product
 
-$Id: ZCatalog.py,v 1.130 2004/03/19 13:25:34 andreasjung Exp $
+$Id: ZCatalog.py,v 1.126.2.4 2004/05/13 18:11:16 andreasjung Exp $
 """
 
 from Globals import DTMLFile, MessageDialog
@@ -31,12 +31,14 @@ from AccessControl.DTML import RestrictedDTML
 from AccessControl.Permissions import \
     manage_zcatalog_entries, manage_zcatalog_indexes, search_zcatalog
 from ZCatalogIndexes import ZCatalogIndexes
+from ZODB.POSException import ConflictError
 from Products.PluginIndexes.common.PluggableIndex \
      import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex import Splitter
-import urllib, time, types
-import string
+import urllib, time, sys
+import string, logging
 from IZCatalog import IZCatalog
+from zLOG import LOG, INFO, BLATHER
 
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
@@ -55,6 +57,8 @@ def manage_addZCatalog(self, id, title,
 
 
 class ZCatalog(Folder, Persistent, Implicit):
+    __implements__ = IZCatalog
+
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -73,8 +77,6 @@ class ZCatalog(Folder, Persistent, Implicit):
     Python program to catalog objects.
 
     """
-    
-    __implements__ = IZCatalog
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
@@ -213,7 +215,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
         """ index Zope object(s) that 'urls' point to """
         if urls:
-            if isinstance(urls, types.StringType):
+            if isinstance(urls, str):
                 urls=(urls,)
 
             for url in urls:
@@ -232,7 +234,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         """ removes Zope object(s) 'urls' from catalog """
 
         if urls:
-            if isinstance(urls, types.StringType):
+            if isinstance(urls, str):
                 urls=(urls,)
 
             for url in urls:
@@ -271,12 +273,26 @@ class ZCatalog(Folder, Persistent, Implicit):
             paths = tuple(paths)
             cat.clear()
 
-        for p in paths:
+        LOG('ZCatalog', BLATHER, 'Starting recataloging of ZCatalog at %s' % 
+             self.absolute_url(1))
+        num_objects = len(paths)
+        for i in xrange(num_objects):
+            p = paths[i]
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, self.REQUEST)
             if obj is not None:
-                self.catalog_object(obj, p)
+                try:
+                    LOG('ZCatalog', BLATHER, 'Recataloging object %s (%d/%d)' %
+                         (p, i, num_objects))
+                    self.catalog_object(obj, p)
+                except ConflictError:
+                    raise
+                except:
+                    LOG('ZCatalog', ERROR, 'Recataloging object at %s failed' % p,
+                              error=sys.exc_info())
+
+        LOG('ZCatalog', BLATHER, 'Recataloging of ZCatalog at %s terminated' % self.absolute_url(1))
 
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ clears the whole enchilada """
@@ -363,7 +379,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_delColumn(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ delete a column or some columns """
-        if isinstance(names, types.StringType):
+        if isinstance(names, str):
             names = (names,)
 
         for name in names:
@@ -413,7 +429,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        if isinstance(ids, types.StringType):
+        if isinstance(ids, str):
             ids = (ids,)
 
         for name in ids:
@@ -433,7 +449,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        if isinstance(ids, types.StringType):
+        if isinstance(ids, str):
             ids = (ids,)
 
         for name in ids:
@@ -477,7 +493,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        if isinstance(ids, types.StringType):
+        if isinstance(ids, str):
             ids = (ids,)
 
         for name in ids:
@@ -506,7 +522,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     "method if no unique id is provided when cataloging"
                     )
             else: uid='/'.join(uid())
-        elif not isinstance(uid,types.StringType):
+        elif not isinstance(uid,str):
             raise CatalogError('The object unique id must be a string.')
 
         self._catalog.catalogObject(obj, uid, None, idxs,
