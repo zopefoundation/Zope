@@ -22,9 +22,9 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.7 2002/08/14 22:25:13 mj Exp $
+$Id: TemporaryFolder.py,v 1.8 2003/05/28 15:28:27 chrism Exp $
 """
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -69,7 +69,11 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
     def _createDB(self, db=None): # huh?  db=db was original
         """ Create a mounted RAM database """
         db = DB(TemporaryStorage())
-        db.klass = LowConflictConnection
+        # the connection in 2.5.X - 2.6.1 was a "low conflict connection",
+        # but this caused synchronization problems.  For 2.6.2, we want
+        # to reenable read conflict errors, so we use a default connection
+        # type.
+        #db.klass = LowConflictConnection
         return db
 
     def _getMountRoot(self, root):
