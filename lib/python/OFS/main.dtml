@@ -15,7 +15,7 @@
 <!--#if parentObject-->
   <!--#in parentObject-->
      <A HREF="<!--#var URL2-->/manage" target="_top">
-     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/dirup.jpg" BORDER=0>
+     <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
      </A>
      Go up to <!--#if title-->
      <!--#var title--><!--#else title-->
