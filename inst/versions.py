@@ -4,4 +4,4 @@ ZOPE_BRANCH_NAME    = '$Name$'[6:] or 'no-branch'
 
 # always start prerelease branches with '0' to avoid upgrade
 # issues in RPMs
-VERSION_RELEASE_TAG = 'a2'
+VERSION_RELEASE_TAG = 'b1'
