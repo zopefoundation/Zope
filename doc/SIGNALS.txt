@@ -4,32 +4,23 @@ Signals (POSIX only)
   If you are using Windows then this documentation does not apply.
 
   Zope responds to signals which are sent to the process id
-  specified in the file 'ZOPE_HOME/var/Z2.pid'::
+  specified in the file '$INSTANCE_HOME/var/Z2.pid'::
 
     SIGHUP  - close open database connections, then restart the server
-              process. The common idiom for restarting a Zope server is:
+              process. A idiom for restarting a Zope server is:
 
-              kill -HUP `cat ZOPE_HOME/var/z2.pid`
+              kill -HUP `cat $INSTANCE_HOME/var/z2.pid`
 
-    SIGTERM - close open database connections then shut down. The common
+    SIGTERM - close open database connections then shut down. A common
               idiom for shutting down Zope is:
 
-              kill -TERM `cat ZOPE_HOME/var/Z2.pid`
+              kill -TERM `cat $INSTANCE_HOME/var/Z2.pid`
 
     SIGINT  - same as SIGTERM
 
     SIGUSR2 - close and re-open all Zope log files (z2.log, event log,
-              detailed log.) The common idiom after rotating Zope log files
+              detailed log.) A common idiom after rotating Zope log files
               is:
 
-              kill -USR2 `cat ZOPE_HOME var/z2.pid`
+              kill -USR2 `cat $INSTANCE_HOME/var/z2.pid`
 
-  The process id written to the 'z2.pid' file depends on whether Zope
-  is run under the 'zdaemon' management process. If Zope is run under
-  a management process (as it is by default) then the pid of the
-  management process is recorded here.  Relevant signals sent to the
-  management process are forwarded on to the server process.
-  Specifically, it forwards all those signals listed above, plus
-  SIGQUIT and SIGUSR1.  If Zope is not using a management process (-Z0
-  on the z2.py command line), the server process records its own pid
-  into 'z2.pid', but all signals work the same way.
