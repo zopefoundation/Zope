@@ -11,6 +11,7 @@ import ZODB, ZODB.FileStorage, ZODB.ZApplication
 import Globals, OFS.Application, sys
 
 Globals.BobobaseName = '%s/Data.fs' % Globals.data_dir
+Globals.DatabaseVersion='3'
 
 # Import products
 OFS.Application.import_products()
