@@ -41,6 +41,9 @@ Zope Changes
 
         - Product version information was not displayed correctly.
 
+        - ZGadflyDA cached table meta-data which lead to missleading
+          information when browsing databases.
+
     Zope 1.9 beta 3
 
       New Features
