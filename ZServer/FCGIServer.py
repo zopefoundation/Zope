@@ -425,7 +425,7 @@ class FCGIChannel(asynchat.async_chat):
             self.requestId = rec.reqId
             if rec.role == FCGI_AUTHORIZER:   self.remainingRecs = 1
             elif rec.role == FCGI_RESPONDER:  self.remainingRecs = 2
-            elif rec.role == FCGI_FILTER:     self.remainingRecs = 3       
+            elif rec.role == FCGI_FILTER:     self.remainingRecs = 3
 
         # Read some name-value pairs (the CGI environment)
         elif rec.recType == FCGI_PARAMS:
@@ -444,8 +444,6 @@ class FCGIChannel(asynchat.async_chat):
                 self.remainingRecs = self.remainingRecs - 1
                 self.content_length=string.atoi(self.env.get(
                     'CONTENT_LENGTH','0'))
-                if self.content_length==0:
-                    self.remainingRecs = self.remainingRecs - 1
             else:
                 self.env.update(rec.values)
 
@@ -463,9 +461,6 @@ class FCGIChannel(asynchat.async_chat):
                     self.stdin=t
                     self.using_temp_stdin=1
                 self.stdin.write(rec.content)
-                self.content_length = self.content_length - rec.contentLength
-                if self.content_length <= 0:
-                    self.remainingRecs = self.remainingRecs - 1
  
 
         # read some filter data
