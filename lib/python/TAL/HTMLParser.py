@@ -66,6 +66,10 @@ class HTMLParseError(Exception):
         return result
 
 
+def _contains_at(s, sub, pos):
+    return s[pos:pos+len(sub)] == sub
+
+
 class HTMLParser(markupbase.ParserBase):
     """Find tags and other markup and call handler functions.
 
@@ -152,11 +156,11 @@ class HTMLParser(markupbase.ParserBase):
                     k = self.parse_endtag(i)
                     if k >= 0:
                         self.clear_cdata_mode()
-                elif rawdata.startswith("<!--", i): # <!--
+                elif _contains_at(rawdata, "<!--", i): # <!--
                     k = self.parse_comment(i)
-                elif rawdata.startswith("<?", i): # <?
+                elif _contains_at(rawdata, "<?", i): # <?
                     k = self.parse_pi(i)
-                elif rawdata.startswith("<!", i): # <!
+                elif _contains_at(rawdata, "<?", i): # <!
                     k = self.parse_declaration(i)
                 elif (i + 1) < n:
                     self.handle_data("<")
