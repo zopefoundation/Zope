@@ -84,8 +84,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.2 2000/06/12 19:49:48 shane Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Traversable.py,v 1.3 2000/07/28 15:55:09 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 import Acquisition
@@ -98,6 +98,7 @@ StringType=type('')
 
 class Traversable:
 
+    absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
         req = self.REQUEST
         rpp = req.get('VirtualRootPhysicalPath', ('',))
@@ -115,8 +116,9 @@ class Traversable:
         return join([req['SERVER_URL']] + req._script + path, '/')
 
     getPhysicalRoot=Acquisition.Acquired
-    getPhysicalRoot__roles__=()
-    
+    getPhysicalRoot__roles__=() # Private
+
+    getPhysicalPath__roles__=None # Public
     def getPhysicalPath(self):
         '''Returns a path (an immutable sequence of strings)
         that can be used to access this object again
@@ -131,7 +133,7 @@ class Traversable:
 
         return path
 
-    unrestrictedTraverse__roles__=()
+    unrestrictedTraverse__roles__=() # Private
     def unrestrictedTraverse(self, path, default=_marker, restricted=0):
 
         if not path: return self
@@ -146,11 +148,15 @@ class Traversable:
         REQUEST={'TraversalRequestNameStack': path}
         path.reverse()
         pop=path.pop
+        if restricted: securityManager=getSecurityManager()
+        else: securityManager=None
 
         if not path[-1]:
             # If the path starts with an empty string, go to the root first.
             pop()
             self=self.getPhysicalRoot()
+            if (restricted and not securityManager.validateValue(self)):
+                raise 'Unauthorized', name
                     
         try:
             object = self
@@ -164,8 +170,7 @@ class Traversable:
                 if name=='..':
                     o=getattr(object, 'aq_parent', M)
                     if o is not M:
-                        if (restricted and
-                            not getSecurityManager().validate(
+                        if (restricted and not securityManager.validate(
                             object, object,name, o)):
                             raise 'Unauthorized', name
                         object=o
@@ -177,7 +182,7 @@ class Traversable:
                     
                     # Note we pass no container, because we have no
                     # way of knowing what it is
-                    if (restricted and not getSecurityManager().validate(
+                    if (restricted and not securityManager.validate(
                         object, None, name, o)):
                         raise 'Unauthorized', name
                       
@@ -188,17 +193,17 @@ class Traversable:
                             # waaaa
                             if hasattr(get(object,'aq_base',object), name):
                                 # value wasn't acquired
-                                if not getSecurityManager().validate(
+                                if not securityManager.validate(
                                     object, object, name, o):
                                     raise 'Unauthorized', name
                             else:
-                                if not getSecurityManager().validate(
+                                if not securityManager.validate(
                                     object, None, name, o):
                                     raise 'Unauthorized', name
                         
                     else:
                         o=object[name]
-                        if (restricted and not getSecurityManager().validate(
+                        if (restricted and not securityManager.validate(
                             object, object, None, o)):
                             raise 'Unauthorized', name
 
@@ -210,6 +215,6 @@ class Traversable:
             if default==_marker: raise
             return default
 
-    restrictedTraverse__roles__=()
-    def restrictedTraverse(self, path, default=_marker, restricted=0):
+    restrictedTraverse__roles__=None # Public
+    def restrictedTraverse(self, path, default=_marker):
         return self.unrestrictedTraverse(path, default, restricted=1)
