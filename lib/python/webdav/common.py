@@ -13,11 +13,14 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import  time, urllib, re
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
 from App.Common import aq_base
+import random
+
+_randGen = random.Random(time.time())
 
 def absattr(attr):
     if callable(attr):
@@ -53,10 +56,10 @@ def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
 
 def generateLockToken():
     # Generate a lock token
-    # XXX This is simple right now, just lifted from the original shortcut
-    # in Resource.dav__genlocktoken, but should be replaced by something
-    # better.
-    return 'AA9F6414-1D77-11D3-B825-00105A989226:%.03f' % time.time()
+    return '%s-%s-00105A989226:%.03f' %  \
+         (_randGen.random(),_randGen.random(),time.time())
+
+    
 
 def tokenFinder(token):
     # takes a string like '<opaquelocktoken:afsdfadfadf> and returns the token

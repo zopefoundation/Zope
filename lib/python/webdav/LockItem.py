@@ -11,8 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.5 $"[11:-2]
-
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 from Globals import Persistent
 from WriteLockInterface import LockItemInterface
@@ -142,7 +141,10 @@ class LockItem(Persistent):
     def getLockScope(self):
         return self._lockscope
 
-    def asLockDiscoveryProperty(self, ns='d'):
+    def asLockDiscoveryProperty(self, ns='d',fake=0):
+
+        if fake: token = 'this-is-a-faked-no-permission-token'
+        else:    token = self._token
         s = (' <%(ns)s:activelock>\n'
              '  <%(ns)s:locktype><%(ns)s:%(locktype)s/></%(ns)s:locktype>\n'
              '  <%(ns)s:lockscope><%(ns)s:%(lockscope)s/></%(ns)s:lockscope>\n'
@@ -160,11 +162,12 @@ class LockItem(Persistent):
                'depth': self._depth,
                'owner': self._owner,
                'timeout': self.getTimeoutString(),
-               'locktoken': self._token,
+               'locktoken': token,
                }
         return s
 
     def asXML(self):
+
         s = """<?xml version="1.0" encoding="utf-8" ?>
 <d:prop xmlns:d="DAV:">
  <d:lockdiscovery>

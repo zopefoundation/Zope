@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -26,6 +26,7 @@ from ExtensionClass import Base
 from Globals import Persistent
 from Traversable import Traversable
 from Acquisition import aq_base
+from AccessControl import getSecurityManager
 
 class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
@@ -541,13 +542,24 @@ class DAVProperties(Virtual, PropertySheet, View):
                '  </n:lockentry>\n  '
 
     def dav__lockdiscovery(self):
+        security = getSecurityManager()
+        user = security.getUser().getUserName()
+        
+
         vself = self.v_self()
         out = '\n'
         if WriteLockInterface.isImplementedBy(vself):
             locks = vself.wl_lockValues(killinvalids=1)
             for lock in locks:
-                out = '%s\n%s' % (out, lock.asLockDiscoveryProperty('n'))
+
+                creator = lock.getCreator()[-1]
+                if creator == user: fake=0
+                else:               fake=1
+                    
+                out = '%s\n%s' % (out, lock.asLockDiscoveryProperty('n',fake=fake))
+                
             out = '%s\n' % out
+
         return out
 
 
