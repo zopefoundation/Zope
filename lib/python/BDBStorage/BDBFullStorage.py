@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.23 $'[-2:][0]
+__version__ = '$Revision: 1.24 $'[-2:][0]
 
 import struct
 import time
@@ -832,12 +832,58 @@ class Full(BerkeleyBase):
                 c.close()
             self._lock_release()
 
-    def history(self, oid, version=None, length=1, filter=None):
-        # FIXME
+    def history(self, oid, version=None, size=1, filter=None):
         self._lock_acquire()
         try:
-            tid=self._current[oid]
-        finally: self._lock_release()
+            # Find the vid for the version
+            if version is None:
+                tvid = None
+                version = ''
+            elif version == '':
+                tvid = 0
+            else:
+                # BAW: for now, let KeyErrors percolate up
+                tvid = self._vids[version]
+            # Start with the most recent revision of the object, then search
+            # the transaction records backwards finding revisions in the
+            # selected version.
+            history = []
+            revid = self._serials[oid]
+            # BAW: Again, let KeyErrors percolate up
+            while len(history) < size:
+                vid, nvrevid, lrevid, previd = struct.unpack(
+                    '>8s8s8s8s', self._metadata[oid+revid])
+                if tvid is None or vid == ZERO or tvid == vid:
+                    # Get transaction metadata, which we need to fill in the
+                    # appropriate HistoryEntry slots.
+                    txnmeta = self._txnMetadata[revid]
+                    userlen, desclen = struct.unpack('>II', txnmeta[1:9])
+                    user = txnmeta[9:9+userlen]
+                    desc = txnmeta[9+userlen:9+userlen+desclen]
+                    # Now get the pickle size
+                    data = self._pickles[oid+lrevid]
+                    # Create a HistoryEntry structure, which turns out to be a
+                    # dictionary with some specifically named entries (BAW:
+                    # although this poorly documented).
+                    if vid == ZERO:
+                        retvers = ''
+                    else:
+                        retvers = version
+                    d = {'time'       : TimeStamp(revid).timeTime(),
+                         'user_name'  : user,
+                         'description': desc,
+                         'serial'     : revid,
+                         'version'    : retvers,
+                         'size'       : len(data),
+                         }
+                    if filter is None or filter(d):
+                        history.append(d)
+                if previd == ZERO:
+                    break
+                revid = previd
+            return history
+        finally:
+            self._lock_release()
 
     def _zaprevision(self, key, referencesf):
         # Delete the metadata record pointed to by the key, decrefing the
