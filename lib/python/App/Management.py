@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.47 2001/01/16 21:26:56 chrism Exp $"""
+$Id: Management.py,v 1.48 2001/06/08 18:15:24 evan Exp $"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -192,6 +192,24 @@ class Tabs(ExtensionClass.Base):
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
         return join(out, '/')
+
+    class_manage_path__roles__=None
+    def class_manage_path(self):
+        if self.__class__.__module__[:1] != '*': return
+        path = getattr(self.__class__, '_v_manage_path_roles', None)
+        if path is None:
+            meta_type = self.meta_type
+            for zclass in self.getPhysicalRoot()._getProductRegistryData(
+                'zclasses'):
+                if zclass['meta_type'] == meta_type:
+                    break
+            else:
+                self.__class__._v_manage_path_roles = ''
+                return
+            path = self.__class__._v_manage_path_roles = (
+                '%(product)s/%(id)s' % zclass)
+        if path:
+            return '/Control_Panel/Products/%s/manage_workspace' % path
 
 Globals.default__class_init__(Tabs)
 
