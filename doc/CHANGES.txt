@@ -29,6 +29,13 @@ Zope changes
           that overridden __set/delattr__ methods must explicitly
           signal changes that should be persistent.
 
+        - Better error messages and syslog capabilities were added to 
+          pcgi-wrapper (thanks to Jeff Rush).
+
+        - Calls to the ZLogger system were added to the user authentication
+          process to help sys admins diagnose login problems (thanks again
+          to Jeff Rush).
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
@@ -89,6 +96,7 @@ Zope changes
         - A bug in the transaction machinery could cause objects to
           be aborted multiple times if errors occurred.
 
+        - Logging via syslog now correctly captures the process id.
 
 
 
