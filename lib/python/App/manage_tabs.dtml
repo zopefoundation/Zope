@@ -106,38 +106,40 @@
 <hr>
 <!--#endif-->
 <br>
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-<tr>
-  <td align="left" valign="top">
-  <!--#if icon-->
-  <img src="<!--#var SCRIPT_NAME-->/<!--#var icon-->" 
-       alt="<!--#var meta_type-->" border="0">
-  <strong>
-  <!--#endif-->
-  <!--#if meta_type-->
-  <!--#var meta_type-->
-  <!--#else-->
-  Object
-  <!--#endif--> 
-  at /<!--#var 
-  expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)"-->
-  </strong>
-  <!--#if locked_in_version-->
-    <!--#if modified_in_version-->
-      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
-       ALT="This item has been modified in this version">
+<dtml-unless MANAGE_TABS_NO_BANNER>
+  <table width="100%" cellspacing="0" cellpadding="2" border="0">
+  <tr>
+    <td align="left" valign="top">
+    <!--#if icon-->
+    <img src="<!--#var SCRIPT_NAME-->/<!--#var icon-->" 
+         alt="<!--#var meta_type-->" border="0">
+    <strong>
+    <!--#endif-->
+    <!--#if meta_type-->
+    <!--#var meta_type-->
     <!--#else-->
-      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
-       ALT="This item has been modified in another version">
-            (<em><!--#var locked_in_version--></em>)
+    Object
+    <!--#endif--> 
+    at /<!--#var 
+    expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)"-->
+    </strong>
+    <!--#if locked_in_version-->
+      <!--#if modified_in_version-->
+        <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
+         ALT="This item has been modified in this version">
+      <!--#else-->
+        <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
+         ALT="This item has been modified in another version">
+              (<em><!--#var locked_in_version--></em>)
+      <!--#/if-->
     <!--#/if-->
-  <!--#/if-->
-  </td>
-</tr>
-</table>
-<!--#if Zope-Version-->
-<p>
-<em>You are currently working in version <!--#var Zope-Version--></em>
-</p>
-<!--#endif-->
+    </td>
+  </tr>
+  </table>
+  <!--#if Zope-Version-->
+  <p>
+  <em>You are currently working in version <!--#var Zope-Version--></em>
+  </p>
+  <!--#endif-->
+</dtml-unless>
 <!--#/with-->
