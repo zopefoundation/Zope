@@ -10,7 +10,9 @@
 Database Connection Information
 </FONT>
 
-<form action="<!--#var PARENT_URL-->/manage_connection" method="get">
+<!--#var bad_connection_string-->
+
+<form action="manage_connection" method="get">
 
 <strong>Enter the database connection string:</strong><br>
 <input name="value" size="60" value="<!--#var manage_connection-->"><p>
@@ -27,5 +29,11 @@ Database Connection Information
   <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var PARENT_URL-->">
 <!--#/if HTTP_REFERER-->
 </form>
+
+<!--#else bad_connection_string-->
+<form action="manage_close_connection" method="get">
+<input type="SUBMIT" value="Close Database Connection">
+</form>
+<!--#/else bad_connection_string-->
 
 </body> </html>
