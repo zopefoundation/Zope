@@ -51,8 +51,12 @@ build:
 unbuild:
 	${RMRF} ${BUILD_BASE}
 
+${BASE_DIR}/lib/python/version.txt:
+	echo -n "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
+          "${BASE_DIR}/lib/python/version.txt"
+
 # install:     Install a software home.
-install: build
+install: build ${BASE_DIR}/lib/python/version.txt
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} install \
 	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
 	[ -f ${PREFIX}/bin/python ] || ${LN} ${PYTHON} ${PREFIX}/bin/python
@@ -111,9 +115,7 @@ sdist: clobber sdist_tgz
 
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
-sdist_tgz:
-	echo -n "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
-          "${BASE_DIR}/lib/python/version.txt"
+sdist_tgz: ${BASE_DIR}/lib/python/version.txt
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz ${PACKAGE_NAME} \
@@ -124,7 +126,6 @@ sdist_tgz:
            --exclude=build-base \
            --exclude=*~ \
            --exclude=.#*
-	${RM} "${BASE_DIR}/lib/python/version.txt"
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
 
 # clobber:     Make the source tree 'pristine' again.
