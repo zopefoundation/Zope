@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.41 $'[11:-2]
+__version__ = '$Revision: 1.42 $'[11:-2]
 
 
 import string, regex, regsub, ts_regex
@@ -528,7 +528,7 @@ class UnTextIndex(Persistent, Implicit):
 
 
 
-    def query(self, s, default_operator=And, ws=(string.whitespace,)):
+    def query(self, s, default_operator=Or, ws=(string.whitespace,)):
         """ This is called by TextIndexes.  A 'query term' which is a
         string 's' is passed in, along with an index object.  s is
         parsed, then the wildcards are parsed, then something is
