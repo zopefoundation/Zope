@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -230,8 +230,6 @@ class Resource:
         except: raise sys.exc_type, sys.exc_value
         if hasattr(parent, '__dav_null__'):
             raise 'Conflict', 'The resource %s must exist.' % path
-        if self.dav__is_acquired(parent):
-            raise 'Conflict', 'The resource %s must exist.' % path
         
         existing=hasattr(aq_base(parent), name)
         if existing and flag=='F':
@@ -277,8 +275,6 @@ class Resource:
             raise 'Conflict', 'The resource %s must exist.' % path
         except: raise sys.exc_type, sys.exc_value
         if hasattr(parent, '__dav_null__'):
-            raise 'Conflict', 'The resource %s must exist.' % path
-        if self.dav__is_acquired(parent):
             raise 'Conflict', 'The resource %s must exist.' % path
         
         existing=hasattr(aq_base(parent), name)
