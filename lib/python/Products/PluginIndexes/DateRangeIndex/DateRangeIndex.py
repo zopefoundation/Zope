@@ -312,9 +312,12 @@ class DateRangeIndex(UnIndex):
     #
     security.declareProtected( VIEW_PERMISSION , 'numObjects' )
     def numObjects( self ):
-        """
-        """
+        """ """
         return len( self._unindex )
+
+    def indexSize(self):
+        """ """
+        return len(self)
 
     #
     #   Helper functions.
