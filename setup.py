@@ -1051,6 +1051,7 @@ setup(
     packages=['Products.ZReST'],
     data_files=[['Products/ZReST', ['Products/ZReST/*.txt']],
                 ['Products/ZReST/dtml', ['Products/ZReST/dtml/*']],
+                ['Products/ZReST/www', ['Products/ZReST/www/*']],
                 ],
     )
 
