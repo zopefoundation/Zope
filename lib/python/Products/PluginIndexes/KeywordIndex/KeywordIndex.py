@@ -36,7 +36,7 @@ class KeywordIndex(UnIndex):
          'help': ('KeywordIndex','KeywordIndex_Settings.stx')},
     )
 
-    query_options = ("query","operator", "range")
+    query_options = ("query","operator")
 
 
     """Like an UnIndex only it indexes sequences of items
