@@ -9,8 +9,8 @@
 ########################################################################### 
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.2 1998/04/20 18:33:46 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DABase.py,v 1.3 1998/06/04 15:49:46 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from db import manage_DataSources
 import AqueductDA.Connection, sys
@@ -24,7 +24,7 @@ class Connection(AqueductDA.Connection.Connection):
 
     manage_options=AqueductDA.Connection.Connection.manage_options+(
 	{'label': 'Browse', 'action':'manage_browse'},
-	{'label': 'Design', 'action':'manage_tables'},
+	# {'label': 'Design', 'action':'manage_tables'},
 	)
 
     manage_tables=HTMLFile('tables',globals())
@@ -189,6 +189,9 @@ field_icons={
 ############################################################################## 
 #
 # $Log: DABase.py,v $
+# Revision 1.3  1998/06/04 15:49:46  jim
+# Commented design tab.
+#
 # Revision 1.2  1998/04/20 18:33:46  jim
 # *** empty log message ***
 #
