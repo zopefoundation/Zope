@@ -12,7 +12,7 @@ specific test cases and suites (TestCase, TestSuite etc.), and also a
 text-based utility class for running the tests and reporting the results
 (TextTestRunner).
 
-Copyright (c) 1999, 2000 Steve Purcell
+Copyright (c) 1999, 2000, 2001 Steve Purcell
 This module is free software, and you may redistribute it and/or modify
 it under the same terms as Python itself, so long as this copyright message
 and disclaimer are retained in their original form.
@@ -30,13 +30,22 @@ SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 """
 
 __author__ = "Steve Purcell (stephen_purcell@yahoo.com)"
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.20 $"[11:-2]
 
 import time
 import sys
 import traceback
 import string
 import os
+
+##############################################################################
+# A platform-specific concession to help the code work for JPython users
+##############################################################################
+
+plat = string.lower(sys.platform)
+_isJPython = string.find(plat, 'java') >= 0 or string.find(plat, 'jdk') >= 0
+del plat
+
 
 ##############################################################################
 # Test framework core
@@ -88,6 +97,7 @@ class TestResult:
                (self.__class__, self.testsRun, len(self.errors),
                 len(self.failures))
 
+
 class TestCase:
     """A class whose instances are single test cases.
 
@@ -105,12 +115,14 @@ class TestCase:
     """
     def __init__(self, methodName='runTest'):
         """Create an instance of the class that will use the named test
-           method when executed.
+           method when executed. Raises a ValueError if the instance does
+           not have a method with the specified name.
         """
         try:
             self.__testMethod = getattr(self,methodName)
         except AttributeError:
-            raise ValueError,"no such test method: %s" % methodName
+            raise ValueError, "no such test method in %s: %s" % \
+                  (self.__class__, methodName)
 
     def setUp(self):
         "Hook method for setting up the test fixture before exercising it."
@@ -126,8 +138,21 @@ class TestCase:
     def defaultTestResult(self):
         return TestResult()
 
-    def __str__(self):
+    def shortDescription(self):
+        """Returns a one-line description of the test, or None if no
+        description has been provided.
+
+        The default implementation of this method returns the first line of
+        the specified test method's docstring.
+        """
+        doc = self.__testMethod.__doc__
+        return doc and string.strip(string.split(doc, "\n")[0]) or None
+
+    def id(self):
         return "%s.%s" % (self.__class__, self.__testMethod.__name__)
+
+    def __str__(self):
+        return "%s (%s)" % (self.__testMethod.__name__, self.__class__)
 
     def __repr__(self):
         return "<%s testMethod=%s>" % \
@@ -186,8 +211,9 @@ class TestCase:
         except excClass:
             return
         else:
-            raise AssertionError, (hasattr(excClass,'__name__') and
-                                   excClass.__name__ or str(excClass))
+            if hasattr(excClass,'__name__'): excName = excClass.__name__
+            else: excName = str(excClass)
+            raise AssertionError, excName
 
     def fail(self, msg=None):
         """Fail immediately, with the given message."""
@@ -204,6 +230,7 @@ class TestCase:
             return (exctype, excvalue, tb)
         return (exctype, excvalue, newtb)
 
+
 class TestSuite:
     """A test suite is a composite test consisting of a number of TestCases.
 
@@ -217,10 +244,10 @@ class TestSuite:
         self._tests = []
         self.addTests(tests)
 
-    def __str__(self):
+    def __repr__(self):
         return "<%s tests=%s>" % (self.__class__, self._tests)
 
-    __repr__ = __str__
+    __str__ = __repr__
 
     def countTestCases(self):
         cases = 0
@@ -244,7 +271,133 @@ class TestSuite:
                 break
             test(result)
         return result
-        
+
+
+class FunctionTestCase(TestCase):
+    """A test case that wraps a test function.
+
+    This is useful for slipping pre-existing test functions into the
+    PyUnit framework. Optionally, set-up and tidy-up functions can be
+    supplied. As with TestCase, the tidy-up ('tearDown') function will
+    always be called if the set-up ('setUp') function ran successfully.
+    """
+
+    def __init__(self, testFunc, setUp=None, tearDown=None,
+                 description=None):
+        TestCase.__init__(self)
+        self.__setUpFunc = setUp
+        self.__tearDownFunc = tearDown
+        self.__testFunc = testFunc
+        self.__description = description
+
+    def setUp(self):
+        if self.__setUpFunc is not None:
+            self.__setUpFunc()
+
+    def tearDown(self):
+        if self.__tearDownFunc is not None:
+            self.__tearDownFunc()
+
+    def runTest(self):
+        self.__testFunc()
+
+    def id(self):
+        return self.__testFunc.__name__
+
+    def __str__(self):
+        return "%s (%s)" % (self.__class__, self.__testFunc.__name__)
+
+    def __repr__(self):
+        return "<%s testFunc=%s>" % (self.__class__, self.__testFunc)
+
+    def shortDescription(self):
+        if self.__description is not None: return self.__description
+        doc = self.__testFunc.__doc__
+        return doc and string.strip(string.split(doc, "\n")[0]) or None
+
+
+
+##############################################################################
+# Convenience functions
+##############################################################################
+
+def getTestCaseNames(testCaseClass, prefix, sortUsing=cmp):
+    """Extracts all the names of functions in the given test case class
+       and its base classes that start with the given prefix. This is used
+       by makeSuite().
+    """
+    testFnNames = filter(lambda n,p=prefix: n[:len(p)] == p,
+                         dir(testCaseClass))
+    for baseclass in testCaseClass.__bases__:
+        testFnNames = testFnNames + \
+                      getTestCaseNames(baseclass, prefix, sortUsing=None)
+    if sortUsing:
+        testFnNames.sort(sortUsing)
+    return testFnNames
+
+
+def makeSuite(testCaseClass, prefix='test', sortUsing=cmp):
+    """Returns a TestSuite instance built from all of the test functions
+       in the given test case class whose names begin with the given
+       prefix. The cases are sorted by their function names
+       using the supplied comparison function, which defaults to 'cmp'.
+    """
+    cases = map(testCaseClass,
+                getTestCaseNames(testCaseClass, prefix, sortUsing))
+    return TestSuite(cases)
+
+
+def createTestInstance(name, module=None):
+    """Finds tests by their name, optionally only within the given module.
+
+    Return the newly-constructed test, ready to run. If the name contains a ':'
+    then the portion of the name after the colon is used to find a specific
+    test case within the test case class named before the colon.
+
+    Examples:
+     findTest('examples.listtests.suite')
+        -- returns result of calling 'suite'
+     findTest('examples.listtests.ListTestCase:checkAppend')
+        -- returns result of calling ListTestCase('checkAppend')
+     findTest('examples.listtests.ListTestCase:check-')
+        -- returns result of calling makeSuite(ListTestCase, prefix="check")
+    """
+          
+    spec = string.split(name, ':')
+    if len(spec) > 2: raise ValueError, "illegal test name: %s" % name
+    if len(spec) == 1:
+        testName = spec[0]
+        caseName = None
+    else:
+        testName, caseName = spec
+    parts = string.split(testName, '.')
+    if module is None:
+        if len(parts) < 2:
+            raise ValueError, "incomplete test name: %s" % name
+        constructor = __import__(string.join(parts[:-1],'.'))
+        parts = parts[1:]
+    else:
+        constructor = module
+    for part in parts:
+        constructor = getattr(constructor, part)
+    if not callable(constructor):
+        raise ValueError, "%s is not a callable object" % constructor
+    if caseName:
+        if caseName[-1] == '-':
+            prefix = caseName[:-1]
+            if not prefix:
+                raise ValueError, "prefix too short: %s" % name
+            test = makeSuite(constructor, prefix=prefix)
+        else:
+            test = constructor(caseName)
+    else:
+        test = constructor()
+    if not hasattr(test,"countTestCases"):
+        raise TypeError, \
+              "object %s found with spec %s is not a test" % (test, name)
+    return test
+
+
 ##############################################################################
 # Text UI
 ##############################################################################
@@ -253,14 +406,24 @@ class _WritelnDecorator:
     """Used to decorate file-like objects with a handy 'writeln' method"""
     def __init__(self,stream):
         self.stream = stream
+        if _isJPython:
+            import java.lang.System
+            self.linesep = java.lang.System.getProperty("line.separator")
+        else:
+            self.linesep = os.linesep
+
     def __getattr__(self, attr):
         return getattr(self.stream,attr)
+
     def writeln(self, *args):
         if args: apply(self.write, args)
-        self.write(os.linesep)
+        self.write(self.linesep)
+
         
-class _TextTestResult(TestResult):
+class _JUnitTextTestResult(TestResult):
     """A test result class that can print formatted text results to a stream.
+
+    Used by JUnitTextTestRunner.
     """
     def __init__(self, stream):
         self.stream = stream
@@ -270,6 +433,8 @@ class _TextTestResult(TestResult):
         TestResult.addError(self,test,error)
         self.stream.write('E')
         self.stream.flush()
+        if err[0] is KeyboardInterrupt:
+            self.shouldStop = 1
  
     def addFailure(self, test, error):
         TestResult.addFailure(self,test,error)
@@ -296,10 +461,10 @@ class _TextTestResult(TestResult):
             i = i + 1
  
     def printErrors(self):
-        self.printNumberedErrors('error',self.errors)
+        self.printNumberedErrors("error",self.errors)
 
     def printFailures(self):
-        self.printNumberedErrors('failure',self.failures)
+        self.printNumberedErrors("failure",self.failures)
 
     def printHeader(self):
         self.stream.writeln()
@@ -309,7 +474,7 @@ class _TextTestResult(TestResult):
             self.stream.writeln("!!!FAILURES!!!")
             self.stream.writeln("Test Results")
             self.stream.writeln()
-            self.stream.writeln("Run: %i ; Failures: %i; Errors: %i" %
+            self.stream.writeln("Run: %i ; Failures: %i ; Errors: %i" %
                                 (self.testsRun, len(self.failures),
                                  len(self.errors)))
             
@@ -318,18 +483,19 @@ class _TextTestResult(TestResult):
         self.printErrors()
         self.printFailures()
 
-class TextTestRunner:
+
+class JUnitTextTestRunner:
     """A test runner class that displays results in textual form.
     
-    Uses TextTestResult.
+    The display format approximates that of JUnit's 'textui' test runner.
+    This test runner may be removed in a future version of PyUnit.
     """
     def __init__(self, stream=sys.stderr):
         self.stream = _WritelnDecorator(stream)
 
     def run(self, test):
-        """Run the given test case or test suite.
-        """
-        result = _TextTestResult(self.stream)
+        "Run the given test case or test suite."
+        result = _JUnitTextTestResult(self.stream)
         startTime = time.time()
         test(result)
         stopTime = time.time()
@@ -338,73 +504,177 @@ class TextTestRunner:
         result.printResult()
         return result
 
-def createTestInstance(name):
-    """Looks up and calls a callable object by its string name, which should
-       include its module name, e.g. 'widgettests.WidgetTestSuite'.
-    """
-    if '.' not in name:
-        raise ValueError,"Incomplete name; expected 'package.suiteobj'"
-    dotPos = string.rfind(name,'.')
-    last = name[dotPos+1:]
-    if not len(last):
-        raise ValueError,"Malformed classname"
-    pkg = name[:dotPos]
-    try:
-        testCreator = getattr(__import__(pkg,globals(),locals(),[last]),last)
-    except AttributeError, e:
-        raise ImportError, \
-              "No object '%s' found in package '%s'" % (last,pkg)
-    if not callable(testCreator):
-        raise ValueError, "'%s' is not callable" % name
-    try:
-        test = testCreator()
-    except:
-        raise TypeError, \
-              "Error making a test instance by calling '%s'" % testCreator
-    if not hasattr(test,"countTestCases"):
-        raise TypeError, \
-              "Calling '%s' returned '%s', which is not a test case or suite" \
-              % (name,test)
-    return test
 
-def getTestCaseNames(testCaseClass, prefix, sortUsing=cmp):
-    """Extracts all the names of functions in the given test case class
-       and its base classes that start with the given prefix. This is used
-       by makeSuite().
-    """
-    testFnNames = filter(lambda n,p=prefix: n[:len(p)] == p,
-                         dir(testCaseClass))
-    for baseclass in testCaseClass.__bases__:
-        testFnNames = testFnNames + \
-                      getTestCaseNames(baseclass, prefix, sortUsing=None)
-    if sortUsing:
-        testFnNames.sort(sortUsing)
-    return testFnNames
+##############################################################################
+# Verbose text UI
+##############################################################################
 
-def makeSuite(testCaseClass, prefix='test', sortUsing=cmp):
-    """Returns a TestSuite instance built from all of the test functions
-       in the given test case class whose names begin with the given
-       prefix. The cases are sorted by their function names
-       using the supplied comparison function, which defaults to 'cmp'.
+class _VerboseTextTestResult(TestResult):
+    """A test result class that can print formatted text results to a stream.
+
+    Used by VerboseTextTestRunner.
     """
-    cases = map(testCaseClass,
-                getTestCaseNames(testCaseClass, prefix, sortUsing))
-    return TestSuite(cases)
+    def __init__(self, stream, descriptions):
+        TestResult.__init__(self)
+        self.stream = stream
+        self.lastFailure = None
+        self.descriptions = descriptions
+        
+    def startTest(self, test):
+        TestResult.startTest(self, test)
+        if self.descriptions:
+            self.stream.write(test.shortDescription() or str(test))
+        else:
+            self.stream.write(str(test))
+        self.stream.write(" ... ")
+
+    def stopTest(self, test):
+        TestResult.stopTest(self, test)
+        if self.lastFailure is not test:
+            self.stream.writeln("ok")
+
+    def addError(self, test, err):
+        TestResult.addError(self, test, err)
+        self._printError("ERROR", test, err)
+        self.lastFailure = test
+        if err[0] is KeyboardInterrupt:
+            self.shouldStop = 1
+
+    def addFailure(self, test, err):
+        TestResult.addFailure(self, test, err)
+        self._printError("FAIL", test, err)
+        self.lastFailure = test
+
+    def _printError(self, flavour, test, err):
+        errLines = []
+        separator1 = "\t" + '=' * 70
+        separator2 = "\t" + '-' * 70
+        if not self.lastFailure is test:
+            self.stream.writeln()
+            self.stream.writeln(separator1)
+        self.stream.writeln("\t%s" % flavour)
+        self.stream.writeln(separator2)
+        for line in apply(traceback.format_exception, err):
+            for l in string.split(line,"\n")[:-1]:
+                self.stream.writeln("\t%s" % l)
+        self.stream.writeln(separator1)
+
+
+class VerboseTextTestRunner:
+    """A test runner class that displays results in textual form.
+    
+    It prints out the names of tests as they are run, errors as they
+    occur, and a summary of the results at the end of the test run.
+    """
+    def __init__(self, stream=sys.stderr, descriptions=1):
+        self.stream = _WritelnDecorator(stream)
+        self.descriptions = descriptions
+
+    def run(self, test):
+        "Run the given test case or test suite."
+        result = _VerboseTextTestResult(self.stream, self.descriptions)
+        startTime = time.time()
+        test(result)
+        stopTime = time.time()
+        timeTaken = float(stopTime - startTime)
+        self.stream.writeln("-" * 78)
+        run = result.testsRun
+        self.stream.writeln("Ran %d test%s in %.3fs" %
+                            (run, run > 1 and "s" or "", timeTaken))
+        self.stream.writeln()
+        if not result.wasSuccessful():
+            self.stream.write("FAILED (")
+            failed, errored = map(len, (result.failures, result.errors))
+            if failed:
+                self.stream.write("failures=%d" % failed)
+            if errored:
+                if failed: self.stream.write(", ")
+                self.stream.write("errors=%d" % errored)
+            self.stream.writeln(")")
+        else:
+            self.stream.writeln("OK")
+        return result
+        
+
+# Which flavour of TextTestRunner is the default?
+TextTestRunner = VerboseTextTestRunner
 
 
 ##############################################################################
-# Command-line usage
+# Facilities for running tests from the command line
+##############################################################################
+
+class TestProgram:
+    """A command-line program that runs a set of tests; this is primarily
+       for making test modules conveniently executable.
+    """
+    USAGE = """\
+Usage: %(progName)s [-h|--help] [test[:(casename|prefix-)]] [...]
+
+Examples:
+  %(progName)s                               - run default set of tests
+  %(progName)s MyTestSuite                   - run suite 'MyTestSuite'
+  %(progName)s MyTestCase:checkSomething     - run MyTestCase.checkSomething
+  %(progName)s MyTestCase:check-             - run all 'check*' test methods
+                                               in MyTestCase
+"""
+    def __init__(self, module='__main__', defaultTest=None,
+                 argv=None, testRunner=None):
+        if type(module) == type(''):
+            self.module = __import__(module)
+            for part in string.split(module,'.')[1:]:
+                self.module = getattr(self.module, part)
+        else:
+            self.module = module
+        if argv is None:
+            argv = sys.argv
+        self.defaultTest = defaultTest
+        self.testRunner = testRunner
+        self.progName = os.path.basename(argv[0])
+        self.parseArgs(argv)
+        self.createTests()
+        self.runTests()
+
+    def usageExit(self, msg=None):
+        if msg: print msg
+        print self.USAGE % self.__dict__
+        sys.exit(2)
+
+    def parseArgs(self, argv):
+        import getopt
+        try:
+            options, args = getopt.getopt(argv[1:], 'hH', ['help'])
+            opts = {}
+            for opt, value in options:
+                if opt in ('-h','-H','--help'):
+                    self.usageExit()
+            if len(args) == 0 and self.defaultTest is None:
+                raise getopt.error, "No default test is defined."
+            if len(args) > 0:
+                self.testNames = args
+            else:
+                self.testNames = (self.defaultTest,)
+        except getopt.error, msg:
+            self.usageExit(msg)
+
+    def createTests(self):
+        tests = []
+        for testName in self.testNames:
+            tests.append(createTestInstance(testName, self.module))
+        self.test = TestSuite(tests)
+
+    def runTests(self):
+        if self.testRunner is None:
+            self.testRunner = TextTestRunner()
+        result = self.testRunner.run(self.test)
+        sys.exit(not result.wasSuccessful())    
+
+main = TestProgram
+
+
+##############################################################################
+# Executing this module from the command line
 ##############################################################################
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2 and sys.argv[1] not in ('-help','-h','--help'):
-        testClass = createTestInstance(sys.argv[1])
-        result = TextTestRunner().run(testClass)
-        if result.wasSuccessful():
-            sys.exit(0)
-        else:
-            sys.exit(1)
-    else:
-        print "usage:", sys.argv[0], "package1.YourTestSuite"
-        sys.exit(2)
-
+    main(module=None)
