@@ -128,6 +128,7 @@ class TALInterpreter:
         self.html = html
         self.slots = {}
         self.currentMacro = None
+        self.position = None, None  # (lineno, offset)
 
     def __call__(self):
         if self.html:
@@ -163,6 +164,9 @@ class TALInterpreter:
             method = getattr(self, methodName)
             apply(method, args)
         self.level = self.level - 1
+
+    def do_setPosition(self, position):
+        self.position = position
 
     def do_startEndTag(self, name, attrList):
         if self.html and string.lower(name) not in EMPTY_HTML_TAGS:
@@ -242,8 +246,8 @@ class TALInterpreter:
         if structure is None:
             return
         if repldict:
-            raise TALError(
-           "replace structure with attribute replacements not yet implemented")
+            raise TALError("replace structure with attribute replacements "
+                           "not yet implemented", self.position)
         text = str(structure)
         self.checkXMLSyntax(text)
         self.stream_write(text) # No quoting -- this is intentional

@@ -339,10 +339,14 @@ class TALGenerator:
         if n > 1:
             raise TALError("at most one of content, replace, repeat",
                            position)
+
         repeatWhitespace = None
         if repeat:
             # Hack to include preceding whitespace in the loop program
             repeatWhitespace = self.unEmitNewlineWhitespace()
+        if position != (None, None):
+            # XXX at some point we should insist on a non-trivial position
+            self.emit("setPosition", position)
         if defineMacro:
             self.pushProgram()
             todo["defineMacro"] = defineMacro
