@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -152,10 +152,15 @@ class FindSupport(ExtensionClass.Base):
         if hasattr(obj, 'aq_base'):
             base=obj.aq_base
 
-        if not hasattr(base, 'objectItems'):
-            return result
-        try:    items=obj.objectItems()
-        except: return result
+        if hasattr(base, 'objectItems'):
+	    try:    items=obj.objectItems()
+	    except: return result
+        else:
+            if getattr(base, 'meta_type', None) == 'Z Class':
+		try:    items=obj.propertysheets.methods.objectItems()
+		except: return result
+            else:
+		return result
 
         try: add_result=result.append
         except:
@@ -194,14 +199,21 @@ class FindSupport(ExtensionClass.Base):
                 ):
                 add_result((p, ob))
                 dflag=0
-                    
-            if search_sub and hasattr(bs, 'objectItems'):
-                self.ZopeFind(ob, obj_ids, obj_metatypes,
+
+            is_zclass = getattr(bs, 'meta_type', None) == 'Z Class'
+            if search_sub and (hasattr(bs, 'objectItems') or is_zclass):
+                if is_zclass:
+                    subob = ob.propertysheets.methods
+                    sub_p = '%s/propertysheets/methods' % p
+                else:
+                    subob = ob
+                    sub_p = p
+                self.ZopeFind(subob, obj_ids, obj_metatypes,
                                    obj_searchterm, obj_expr,
                                    obj_mtime, obj_mspec,
                                    obj_permission, obj_roles,
                                    search_sub,
-                                   REQUEST, result, p)
+                                   REQUEST, result, sub_p)
             if dflag: ob._p_deactivate()
 
         return result
