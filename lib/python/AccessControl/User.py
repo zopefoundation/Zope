@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -52,10 +52,12 @@ class User(Implicit, Persistent):
     def __str__(self): return self.name
     __repr__=__str__
 
+_remote_user_mode=0
 try:
     f=open('%s/access' % SOFTWARE_HOME, 'r')
     data=split(strip(f.readline()),':')
     f.close()
+    _remote_user_mode=not data[1]
     super=User(data[0],data[1],('manage',))
     del data
 except:
@@ -147,8 +149,10 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	return None
 
     _mainUser=HTMLFile('mainUser', globals())
-    _add_User=HTMLFile('addUser', globals())
-    _editUser=HTMLFile('editUser', globals())
+    _add_User=HTMLFile('addUser', globals(),
+		       remote_user_mode__=_remote_user_mode)
+    _editUser=HTMLFile('editUser', globals(),
+		       remote_user_mode__=_remote_user_mode)
 
     manage=manage_main=_mainUser
 
@@ -271,6 +275,32 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 	if clip_id != self.id:
 	     raise ('Copy Error',
 		    '<EM>Cannot change the id of a UserFolder</EM>')
+
+if _remote_user_mode:
+
+    class UserFolder(UserFolder):
+
+	def validate(self,request,auth='',roles=None):
+	    parent=request['PARENTS'][0]
+
+	    e=request.environ
+	    if e.has_key('REMOTE_USER'): name=e['REMOTE_USER']
+	    else:
+		if nobody.hasRole(parent, roles):
+		    return nobody
+		return None
+
+	    # Check for superuser
+	    if self._isTop() and (name==super.name):
+		return super
+
+	    # Try to get user
+	    try:    user=self.data[name]
+	    except: return None
+
+	    # Try to authorize user
+	    if user.hasRole(parent, roles):
+		return user
 
 
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):

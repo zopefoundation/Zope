@@ -5,8 +5,11 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 <P>
-To add a new user, enter the name, password, confirmation and 
-roles for the new user and click &quot;Add&quot;.
+To add a new user, enter the name,
+<!--#unless remote_user_mode__-->
+  password, confirmation
+<!--#/unless-->
+and roles for the new user and click &quot;Add&quot;.
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>
@@ -18,6 +21,10 @@ roles for the new user and click &quot;Add&quot;.
   <INPUT TYPE="TEXT" NAME="name" SIZE="20">
   </TD>
 </TR>
+<!--#if remote_user_mode__-->
+  <INPUT TYPE="HIDDEN" NAME="password" value="password">
+  <INPUT TYPE="HIDDEN" NAME="confirm"  value="password">
+<!--#else-->
 <TR>
   <TD VALIGN="TOP">
   <STRONG>Password</STRONG>
@@ -34,6 +41,7 @@ roles for the new user and click &quot;Add&quot;.
   <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20">
   </TD>
 </TR>
+<!--#/if-->
 <TR>
   <TD VALIGN="TOP">
   <STRONG>Roles</STRONG>
