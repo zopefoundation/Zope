@@ -22,7 +22,6 @@ from zLOG import LOG, ERROR
 
 from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
-from sorters import buildSortableResults
 
 from BTrees.IIBTree import intersection, weightedIntersection, IISet
 from BTrees.OIBTree import OIBTree
