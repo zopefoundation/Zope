@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.61 1999/02/11 00:49:45 amos Exp $"""
+$Id: Folder.py,v 1.62 1999/02/15 23:10:19 brian Exp $"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -268,24 +268,27 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
 
     # These methods replace manage_importHack and manage_exportHack
 
-    def manage_exportObject(self,id=None,download=None,RESPONSE=None):
+    def manage_exportObject(self, id='', download=None, RESPONSE=None):
         """Exports an object to a file and returns that file."""        
-        if id is None: o=self
-        else: o=getattr(self,id)
+        if not id:
+            id=self.id
+            if callable(id): id=id()
+            ob=self
+        else: ob=getattr(self,id)
         if download:
             f=StringIO()
-            o._p_jar.export_file(o,f)
+            ob._p_jar.export_file(ob, f)
             RESPONSE.setHeader('Content-type','application/data')
             RESPONSE.setHeader('Content-Disposition',
                 'inline;filename=%s.bbe' % id)
             return f.getvalue()
         f=Globals.data_dir+'/%s.bbe' % id
-        o._p_jar.export_file(o,f)
+        ob._p_jar.export_file(ob, f)
         if RESPONSE is not None:
             return MessageDialog(
                     title="Object exported",
                     message="<EM>%s</EM> sucessfully\
-                    exported to <pre>%s</pre>." % (id,f),
+                    exported to <pre>%s</pre>." % (id, f),
                     action="manage_main")
 
     manage_importExportForm=HTMLFile('importExport',globals())
@@ -350,7 +353,7 @@ class PUTer(Acquisition.Explicit):
         self.id=id
         self.__parent__=parent
         self.__roles__ =parent.PUT__roles__
-
+        
     def PUT(self, REQUEST, RESPONSE):
         """Adds a document, image or file to the folder when a PUT
         request is received."""
@@ -361,7 +364,7 @@ class PUTer(Acquisition.Explicit):
             type, enc=mimetypes.guess_type(name)
         if type is None:
             if content_types.find_binary(body) >= 0:
-                raise 'Bad Request', 'Unknown content type'
+                content_type='application/octet-stream'
             else: type=content_types.text_type(body)
         type=lower(type)
         if type in ('text/html', 'text/xml', 'text/plain'):

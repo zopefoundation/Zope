@@ -9,21 +9,17 @@
 You can export Zope objects to a file in order to transfer
 them to a different Zope installation. You can either choose
 to download the export file to your local machine, or save it
-in Zope's 'var' directory on the server.
+in the &quot;var&quot; directory of your Zope installation 
+on the server.
 </P>
 
-<FORM ACTION="manage_exportObject" METHOD="POST"
-TARGET="manage_main">
+<FORM ACTION="manage_exportObject" METHOD="POST" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Export object id</TH>
   <TD ALIGH="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="id" SIZE="25"
-  <!--#if ids-->
-  VALUE="<!--#var "ids[0]"-->">
-  <!--#else-->
-  VALUE="">
-  <!--#/if-->
+  <INPUT TYPE="TEXT" NAME="id" SIZE="25" VALUE="<!--#if ids--><!--#var 
+  "ids[0]"--><!--#/if-->">
   </TD>
 </TR>
 <TR>
@@ -31,23 +27,23 @@ TARGET="manage_main">
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="RADIO" NAME="download:int" VALUE="1">
   Download to local machine<BR>
-  <INPUT TYPE="RADIO" NAME="download:int" VALUE="0">
+  <INPUT TYPE="RADIO" NAME="download:int" VALUE="0" checked>
   Save to file on server
   </TD>
 </TR>  
 <TR>
   <TD></TD>
-  <TD><BR>
-  <INPUT TYPE="SUBMIT" VALUE="Export">
-  </TD>
+  <TD><INPUT TYPE="SUBMIT" VALUE="Export"></TD>
 </TR>
 </TABLE>
 </FORM>
 
 <P>
-You can import Zope objects which have been previously
-exported to a file, by placing the file in Zope's 'Import'
-directory on the server.
+You may import Zope objects which have been previously
+exported to a file, by placing the file in the &quot;Import&quot;
+directory of your Zope installation on the server. You should create 
+the &quot;Import&quot; directory in the root of your Zope installation 
+if it does not yet exist.
 </P>
 
 <FORM ACTION="manage_importObject" METHOD="POST"
@@ -62,11 +58,16 @@ directory on the server.
 </TR>
 <TR>
   <TD></TD>
-  <TD><BR>
-  <INPUT TYPE="SUBMIT" VALUE="Import">
+  <TD><INPUT TYPE="SUBMIT" VALUE="Import">
   </TD>
 </TR>
 </TABLE>
 </FORM>
 </BODY>
 </HTML>
+
+
+
+
+
+
