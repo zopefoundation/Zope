@@ -90,7 +90,8 @@ def start_zope(cfg):
         'There was a problem starting a server of type "%s". '
         'This may mean that your user does not have permission to '
         'bind to the port which the server is trying to use or the '
-        'port may already be in use by another application.'
+        'port may already be in use by another application. '
+        '(%s)'
         )
     servers = []
     for server in cfg.servers:
@@ -98,9 +99,9 @@ def start_zope(cfg):
         # set up in the config
         try:
             servers.append(server.create())
-        except socket.error:
+        except socket.error,e:
             raise ZConfig.ConfigurationError(socket_err
-                                             % server.servertype())
+                                             % (server.servertype(),e[1]))
     cfg.servers = servers
 
     # do stuff that only applies to posix platforms (setuid, daemonizing)
