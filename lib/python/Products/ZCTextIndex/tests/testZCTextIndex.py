@@ -96,7 +96,7 @@ class ZCIndexTestsBase:
         self.assertEqual(len(self.index.get_words(1)), 1)
 
     def testDocUpdate(self):
-        docid = 1
+        docid = 1   # doesn't change -- we index the same doc repeatedly
         N = len(text)
         stop = get_stopdict()
 
@@ -131,9 +131,6 @@ class ZCIndexTestsBase:
                 for w in v:
                     nbest, total = self.zc_index.query(w)
                     self.assertEqual(total, 0, "did not expect to find %s" % w)
-            # XXX The next line is necessary because we're not yet reindexing
-            # XXX docs correctly.
-            self.zc_index.unindex_object(docid)
 
 class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
 

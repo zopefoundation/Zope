@@ -84,7 +84,9 @@ class BaseIndex(Persistent):
 
     # A subclass may wish to extend or override this.
     def index_doc(self, docid, text):
-        # XXX If docid is already known, do something smart.
+        if self._docwords.has_key(docid):
+            # XXX Do something smarter than this.
+            self.unindex_doc(docid)
         wids = self._lexicon.sourceToWordIds(text)
         wid2weight, docweight = self._get_frequencies(wids)
         for wid, weight in wid2weight.items():
