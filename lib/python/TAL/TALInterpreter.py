@@ -96,8 +96,8 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from XMLParser import XMLParser
 from TALDefs import TALError, TALESError, quote, TAL_VERSION
+from TALGenerator import TALGenerator
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in
@@ -117,6 +117,35 @@ EMPTY_HTML_TAGS = [
     "base", "meta", "link", "hr", "br", "param", "img", "area",
     "input", "col", "basefont", "isindex", "frame", 
 ]
+
+class AltTALGenerator(TALGenerator):
+
+    def __init__(self, repldict, expressionCompiler=None, xml=0):
+        self.repldict = repldict
+        self.enabled = 1
+        TALGenerator.__init__(self, expressionCompiler, xml)
+
+    def enable(self, enabled):
+        self.enabled = enabled
+
+    def emit(self, *args):
+        if self.enabled:
+            apply(TALGenerator.emit, (self,) + args)
+
+    def emitStartElement(self, name, attrlist, taldict, metaldict,
+                         position=(None, None), isend=0):
+        metaldict = {}
+        taldict = {}
+        if self.enabled and self.repldict:
+            taldict["attributes"] = ""
+        TALGenerator.emitStartElement(self, name, attrlist,
+                                      taldict, metaldict, position, isend)
+
+    def replaceAttrs(self, attrlist, repldict):
+        if self.enabled and self.repldict:
+            repldict = self.repldict
+            self.repldict = None
+        return TALGenerator.replaceAttrs(self, attrlist, repldict)
 
 class TALInterpreter:
 
@@ -179,6 +208,10 @@ class TALInterpreter:
 
     def do_version(self, version):
         assert version == TAL_VERSION
+
+    def do_mode(self, mode):
+        assert mode in ["html", "xml"]
+        self.html = (mode == "html")
 
     def do_setPosition(self, position):
         self.position = position
@@ -262,19 +295,32 @@ class TALInterpreter:
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
             return
-        if repldict:
-            raise TALError("replace structure with attribute replacements "
-                           "not yet implemented", self.position)
         text = str(structure)
-        self.checkXMLSyntax(text)
-        self.stream_write(text) # No quoting -- this is intentional
+        if self.html:
+            self.insertHTMLStructure(text, repldict)
+        else:
+            self.insertXMLStructure(text, repldict)
 
-    def checkXMLSyntax(self, text):
-        # XXX This is a bit of a hack!
-        text = '<!DOCTYPE foo PUBLIC "foo" "bar"><foo>%s</foo>' % text
-        p = XMLParser()
+    def insertHTMLStructure(self, text, repldict):
+        from HTMLTALParser import HTMLTALParser
+        gen = AltTALGenerator(repldict, self.engine, 0)
+        p = HTMLTALParser(gen) # Raises an exception if text is invalid
         p.parseString(text)
-        # If this succeeds without errors, we're fine
+        program, macros = p.getCode()
+        self.interpret(program)
+
+    def insertXMLStructure(self, text, repldict):
+        from TALParser import TALParser
+        gen = AltTALGenerator(repldict, self.engine, 0)
+        p = TALParser(gen)
+        gen.enable(0)
+        p.parseFragment('<!DOCTYPE foo PUBLIC "foo" "bar"><foo>')
+        gen.enable(1)
+        p.parseFragment(text) # Raises an exception if text is invalid
+        gen.enable(0)
+        p.parseFragment('</foo>', 1)
+        program, macros = gen.getCode()
+        self.interpret(program)
 
     def do_loop(self, name, expr, block):
         if not self.tal:
