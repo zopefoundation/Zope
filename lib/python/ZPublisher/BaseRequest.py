@@ -308,15 +308,20 @@ class BaseRequest:
                           "Object name begins with an underscore at: %s" % URL)
                     else: return response.forbiddenError(entry_name)
 
-                if hasattr(object,'__bobo_traverse__'):
-                    subobject=object.__bobo_traverse__(request,entry_name)
-                    if type(subobject) is type(()) and len(subobject) > 1:
-                        # Add additional parents into the path
-                        parents[-1:] = list(subobject[:-1])
-                        object, subobject = subobject[-2:]
-                else:
-                    try:
+                bobo_got = 0
+                try:
+                    if hasattr(object,'__bobo_traverse__'):
+                        subobject=object.__bobo_traverse__(request,entry_name)
+                        bobo_got = 1
+                        if type(subobject) is type(()) and len(subobject) > 1:
+                            # Add additional parents into the path
+                            parents[-1:] = list(subobject[:-1])
+                            object, subobject = subobject[-2:]
+                except (AttributeError, KeyError):
+                    pass
 
+                if not bobo_got:
+                    try:
                         # Note - no_acquire_flag is necessary to support
                         # things like DAV.  We have to make sure
                         # that the target object is not acquired
@@ -362,7 +367,7 @@ class BaseRequest:
                 # certain mutable types (dicts, lists) to become publishable
                 # when they shouldn't be. The following check makes sure that
                 # the right thing happens in both 2.2.2+ and earlier versions.
-                
+
                 if not typeCheck(subobject):
                     return response.debugError(
                         "The object at %s is not publishable." % URL
