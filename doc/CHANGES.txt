@@ -58,6 +58,9 @@ Zope Changes
         
     Bugs:
 
+      - Fixed bug reported on maillist during EWOULDBLOCK when using FTP server
+        (http:// lists.zope.org/pipermail/zope/2002-March/111521.html).
+
       - App/FindHomes.py now computes the "real" path for SOFTWARE_HOME and
         INSTANCE_HOME, resolving any symlinks in any element within paths
         passed in via the INSTANCE_HOME or SOFTWARE_HOME envvars.  Paths that
