@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -8,14 +8,17 @@ from AccessControl.Role import RoleManager
 
 class Image(Persistent,RoleManager):
     """Image object"""
-    meta_type  ='Image'
-    title=''
-    icon       ='OFS/Image_icon.gif'
+    meta_type='Image'
+    title    =''
+    icon     ='OFS/Image_icon.gif'
 
-    manage_editForm=HTMLFile('OFS/imageEdit')
-    manage         =manage_editForm
+    manage_editForm   =HTMLFile('OFS/imageEdit')
+    manage=manage_main=manage_editForm
+
+    manage_options=()
 
     def manage_edit(self,file,title,content_type='',acl_type='A',acl_roles=[]):
+	""" """
 	try:    headers=file.headers
 	except: headers=None
 

@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from Globals import HTML
 from Globals import HTMLFile
@@ -18,6 +18,8 @@ class Document(HTML, RoleManager):
     meta_type  ='Document'
     title=''
     icon       ='OFS/Document_icon.gif'
+
+    manage_options=()
 
     __state_names__=HTML.__state_names__+('title','__roles__')
 

@@ -11,18 +11,19 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.8 1997/09/08 23:38:58 brian Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Application.py,v 1.9 1997/09/09 14:21:07 brian Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
-import Folder, regex
-import Globals
+
+import Globals,Folder,regex
 from string import lower, find
 from AccessControl.User import UserFolder
 
+
 class Application(Folder.Folder):
+    web__form__method='GET'
     title='Site Studio'
     id   =title
-    web__form__method='GET'
 
     manage_options=(
     {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
@@ -31,7 +32,7 @@ class Application(Folder.Folder):
      'action':'manage_propertiesForm',   'target':'manage_main'},
     {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
      'action':'manage_rolesForm',   'target':'manage_main'},
-    {'icon':'OFS/Help_icon.gif', 'label':'Control Panel',
+    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
      'action':'app/manage',   'target':'_top'},
     {'icon':'OFS/Help_icon.gif', 'label':'Help',
      'action':'manage_help',   'target':'_new'},
@@ -144,6 +145,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.9  1997/09/09 14:21:07  brian
+# Fixed Image editing
+#
 # Revision 1.8  1997/09/08 23:38:58  brian
 # Style mods
 #
