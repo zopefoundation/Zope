@@ -62,6 +62,9 @@ class EventCollector(HTMLParser.HTMLParser):
     def handle_pi(self, data):
         self.append(("pi", data))
 
+    def unknown_decl(self, decl):
+        self.append(("unknown decl", decl))
+
 
 class EventCollectorExtra(EventCollector):
 
@@ -117,6 +120,7 @@ class HTMLParserTestCase(TestCaseBase):
 comment1b-->
 <Img sRc='Bar' isMAP>sample
 text
+&#x201C;
 <!--comment2a-- --comment2b-->
 </Html>
 """, [
@@ -131,18 +135,51 @@ text
     ("data", "\n"),
     ("starttag", "img", [("src", "Bar"), ("ismap", None)]),
     ("data", "sample\ntext\n"),
+    ("charref", "x201C"),
+    ("data", "\n"),
     ("comment", "comment2a-- --comment2b"),
     ("data", "\n"),
     ("endtag", "html"),
     ("data", "\n"),
     ])
 
+    def check_doctype_decl(self):
+        inside = """\
+DOCTYPE html [
+  <!ELEMENT html - O EMPTY>
+  <!ATTLIST html
+      version CDATA #IMPLIED
+      profile CDATA 'DublinCore'>
+  <!NOTATION datatype SYSTEM 'http://xml.python.org/notations/python-module'>
+  <!ENTITY myEntity 'internal parsed entity'>
+  <!ENTITY anEntity SYSTEM 'http://xml.python.org/entities/something.xml'>
+  <!ENTITY % paramEntity 'name|name|name'>
+  %paramEntity;
+  <!-- comment -->
+]"""
+        self._run_check("<!%s>" % inside, [
+            ("decl", inside),
+            ])
+
     def check_bad_nesting(self):
+        # Strangely, this *is* supposed to test that overlapping
+        # elements are allowed.  HTMLParser is more geared toward
+        # lexing the input that parsing the structure.
         self._run_check("<a><b></a></b>", [
             ("starttag", "a", []),
             ("starttag", "b", []),
             ("endtag", "a"),
             ("endtag", "b"),
+            ])
+
+    def check_bare_ampersands(self):
+        self._run_check("this text & contains & ampersands &", [
+            ("data", "this text & contains & ampersands &"),
+            ])
+
+    def check_bare_pointy_brackets(self):
+        self._run_check("this < text > contains < bare>pointy< brackets", [
+            ("data", "this < text > contains < bare>pointy< brackets"),
             ])
 
     def check_attr_syntax(self):
@@ -174,6 +211,14 @@ text
             ("starttag", "a", [("a.b", "v"), ("c:d", "v"), ("e-f", "v")]),
             ])
 
+    def check_illegal_declarations(self):
+        s = 'abc<!spacer type="block" height="25">def'
+        self._run_check(s, [
+            ("data", "abc"),
+            ("unknown decl", 'spacer type="block" height="25"'),
+            ("data", "def"),
+            ])
+
     def check_starttag_end_boundary(self):
         self._run_check("""<a b='<'>""", [("starttag", "a", [("b", "<")])])
         self._run_check("""<a b='>'>""", [("starttag", "a", [("b", ">")])])
@@ -196,17 +241,12 @@ text
         self._run_check(["<a b='>'", ">"], output)
 
     def check_starttag_junk_chars(self):
-        self._parse_error("<")
-        self._parse_error("<>")
         self._parse_error("</>")
         self._parse_error("</$>")
         self._parse_error("</")
         self._parse_error("</a")
-        self._parse_error("</a")
         self._parse_error("<a<a>")
         self._parse_error("</a<a>")
-        self._parse_error("<$")
-        self._parse_error("<$>")
         self._parse_error("<!")
         self._parse_error("<a $>")
         self._parse_error("<a")
