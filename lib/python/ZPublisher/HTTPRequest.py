@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -982,7 +982,7 @@ class HTTPRequest(BaseRequest):
 def has_codec(x):
     try:
         codecs.lookup(x)
-    except LookupError:
+    except (LookupError, SystemError):
         return 0
     else:
         return 1
