@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.17 2001/05/01 11:44:48 andreas Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.18 2001/07/09 15:13:06 andreas Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -882,6 +882,9 @@ class xmit_channel (asynchat.async_chat):
             # TODO: there's a better way to do this.  we need to be able to
             # put 'events' in the producer fifo.  to do this cleanly we need
             # to reposition the 'producer' fifo as an 'event' fifo.
+
+    # dummy function to suppress warnings caused by some FTP clients
+    def handle_connect(self): pass
             
     def close (self):
         c = self.channel
