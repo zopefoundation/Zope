@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -191,8 +191,9 @@ class PropertySheet(Persistent, Implicit):
         pself=self.p_self()
         self=self.v_self()
         if hasattr(aq_base(self),id):
-            raise 'Bad Request', (
-                'Invalid property id, %s. It is in use.' % id)
+            if not (id=='title' and not self.__dict__.has_key(id)):
+                raise 'Bad Request', (
+                    'Invalid property id, <em>%s</em>. It is in use.' % id)
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         pself._properties=pself._properties+(prop,)
