@@ -38,12 +38,12 @@ def main():
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
     REQUIRE_ZLIB = 1
-    REQUIRE_PYEXPAT = 1 
+    REQUIRE_EXPAT = 1 
     INSTALL_FLAGS = ''
     DISTUTILS_OPTS = ''
     try:
         longopts = ['help', 'ignore-largefile', 'ignore-zlib',
-                    'ignore-pyexpat', 'prefix=',
+                    'ignore-expat', 'prefix=',
                     'build-base=', 'optimize', 'no-compile', 'quiet']
         opts, args = getopt.getopt(sys.argv[1:], 'h', longopts)
     except getopt.GetoptError, v:
@@ -60,8 +60,8 @@ def main():
             REQUIRE_LF_ENABLED=0
         if o == '--ignore-zlib':
             REQUIRE_ZLIB=0
-        if o == '--ignore-pyexpat':
-            REQUIRE_PYEXPAT=0
+        if o == '--ignore-expat':
+            REQUIRE_EXPAT=0
         if o == '--optimize':
             INSTALL_FLAGS = '--optimize=1 --no-compile'
         if o == '--no-compile':
@@ -76,8 +76,8 @@ def main():
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
-    if REQUIRE_PYEXPAT:
-        test_pyexpat()
+    if REQUIRE_EXPAT:
+        test_expat()
     out('  - Zope top-level binary directory will be %s.' % PREFIX)
     if INSTALL_FLAGS:
         out('  - Distutils install flags will be "%s"' % INSTALL_FLAGS)
@@ -121,8 +121,8 @@ Options:
   --ignore-largefile            allow configuration to proceed without
                                 Python large file support.
 
-  --ignore-pyexpat              allow configuration to proceed if the pyexpat
-                                module is not found.
+  --ignore-expat                allow configuration to proceed if the expat
+                                XML parsing module is not found.
 
   --optimize                    compile Python files as .pyo files
                                 instead of as .pyc files
@@ -142,9 +142,9 @@ files by using '--prefix', for example: '--prefix=$HOME/zope'.
              )
     print usage
 
-def test_pyexpat():
+def test_expat():
     try:
-        import pyexpat
+        import xml.parsers.expat
     except ImportError:
         print (
             """
@@ -164,7 +164,7 @@ Clark's expat libraries and development packages (look for libexpat.so and
 expat.h). Typically, these come as part of your operating system's libexpat
 and libexpat-dev packages, respectively.
 
-Run the configure script with the --ignore-pyexpat option to prevent this
+Run the configure script with the --ignore-expat option to prevent this
 warning with the understanding that some Zope features may not work properly
 until you've installed the pyexpat module.
 """
