@@ -21,7 +21,7 @@ void
 initMethodObject()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   PURE_MIXIN_CLASS(Method,
 	"Base class for objects that want to be treated as methods\n"
 	"\n"
@@ -36,7 +36,8 @@ initMethodObject()
 
   /* Create the module and add the functions */
   m = Py_InitModule4("MethodObject", methods,
-		     "Method-object mix-in class module",
+		     "Method-object mix-in class module\n\n",
+		     "$Id: MethodObject.c,v 1.3 1997/06/19 19:34:23 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
