@@ -146,6 +146,7 @@ class HTTPResponse(BaseResponse):
     realm = 'Zope'
     _error_format = 'text/html'
     _locked_status = 0
+    _locked_body = 0
 
     # Indicate if setBody should content-compress output.
     # 0 - no compression
@@ -199,7 +200,7 @@ class HTTPResponse(BaseResponse):
         """Returns true if this request requested a server shutdown."""
         return self._shutdown_flag is not None
 
-    def setStatus(self, status, reason=None):
+    def setStatus(self, status, reason=None, lock=None):
         '''\
         Sets the HTTP status code of the response; the argument may
         either be an integer or a string from { OK, Created, Accepted,
@@ -234,6 +235,9 @@ class HTTPResponse(BaseResponse):
                 reason = 'Unknown'
         self.setHeader('Status', "%d %s" % (status,str(reason)))
         self.errmsg = reason
+        # lock the status if we're told to
+        if lock:
+             self._locked_status = 1
 
     def setHeader(self, name, value, literal=0):
         '''\
@@ -268,7 +272,8 @@ class HTTPResponse(BaseResponse):
                 latin1_alias_match=re.compile(
                 r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
                 r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
-                r'(iso[-_]8859[-_]1(:1987)?)))?$',re.I).match
+                r'(iso[-_]8859[-_]1(:1987)?)))?$',re.I).match,
+                lock=None
                 ):
         '''\
         Set the body of the response
@@ -285,6 +290,12 @@ class HTTPResponse(BaseResponse):
         If is_error is true then the HTML will be formatted as a Zope error
         message instead of a generic HTML page.
         '''
+        # allow locking of the body in the same way as the status
+        if self._locked_body:
+            return
+        elif lock:
+            self._locked_body = 1
+            
         if not body:
             return self
 

@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+     - RESPONSE.setBody and RESPONSE.setStatus now accept lock
+       parameters in the same way as RESPONSE.redirect. These prevent
+       further calls to the methods from overwriting the previous value.
+       This is useful when writing http proxies.
+
      - DateTime: new DateTime instance can be constructed from a given
        DateTime instance: d_new = DateTime(d_old)
 
