@@ -85,8 +85,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.6 2000/06/29 14:08:07 shane Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.7 2000/07/05 13:51:21 brian Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=[]
@@ -163,7 +163,7 @@ class ZopeSecurityPolicy:
             if roles is _noroles: return 1
 
             # We are going to need a security-aware object to pass
-            # to hasRole. We'll use the container.
+            # to allowed(). We'll use the container.
             value=container
 
         # Short-circuit tests if we can:
@@ -176,7 +176,7 @@ class ZopeSecurityPolicy:
 
             # If the executable had an owner, can it execute?
             owner=eo.getOwner()
-            if (owner is not None) and not owner.hasRole(value, roles):
+            if (owner is not None) and not owner.allowed(value, roles):
                 # We don't want someone to acquire if they can't
                 # get an unacquired!
                 if accessedbase is containerbase:
@@ -201,7 +201,7 @@ class ZopeSecurityPolicy:
                 
 
         try:
-            if context.user.hasRole(value, roles): return 1
+            if context.user.allowed(value, roles): return 1
         except AttributeError: pass
 
         # We don't want someone to acquire if they can't get an unacquired!
