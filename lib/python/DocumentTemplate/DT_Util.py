@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.7 1997/10/28 22:10:46 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.8 1997/10/29 16:17:45 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -101,6 +101,24 @@ def careful_getitem(mapping, key, md):
     if validate is None or validate(mapping,mapping,key,v,md): return v
     raise KeyError, key
 
+def careful_getslice(seq, indexes, md):
+    v=len(indexes)
+    if v==2:
+	v=seq[indexes[0]:indexes[1]]
+    elif v==1:
+	v=seq[indexes[0]:]
+    else: v=seq[:]
+
+    if type(seq) is type(''): return v # Short-circuit common case
+
+    validate=md.validate
+    if validate is not None:
+	for e in v:
+	    if not validate(seq,seq,'',e,md):
+		raise TypeError, 'unauthorized access to slice member'
+
+    return v
+
 def name_param(params,tag='',expr=0):
     used=params.has_key
     if used(''):
@@ -121,6 +139,7 @@ def name_param(params,tag='',expr=0):
 			 __mul__=VSEval.careful_mul,
 			 __getattr__=careful_getattr,
 			 __getitem__=careful_getitem,
+			 __getslice__=careful_getslice,
 			 )
 	return name, expr
 	
@@ -197,6 +216,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.8  1997/10/29 16:17:45  jim
+# Added careful_getslice.
+#
 # Revision 1.7  1997/10/28 22:10:46  jim
 # changed 'acquire' to 'aq_acquire'.
 #
