@@ -71,7 +71,9 @@ values and click "Save Changes".
   <textarea name="<dtml-var id>:lines" rows="6" cols="35"><dtml-in
   "getProperty(id)"><dtml-var sequence-item html_quote><dtml-if
    sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
+
   <dtml-elif "type=='selection'">
+
     <dtml-if "hasProperty(select_variable)">
     <select name="<dtml-var id>">
       <dtml-in "getProperty(select_variable)">
@@ -80,22 +82,44 @@ values and click "Save Changes".
           ><dtml-var sequence-item html_quote></option>
       </dtml-in>
     </select>
+    <dtml-elif "_.has_key(select_variable)">
+    <select name="<dtml-var id>">
+      <dtml-in "_[select_variable]">
+         <option
+          <dtml-if "_['sequence-item']==getProperty(id)">SELECTED</dtml-if>
+          ><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
     <dtml-else>
        No value for <dtml-var select_variable>.
     </dtml-if>
+
   <dtml-elif "type=='multiple selection'">
+
     <dtml-if "hasProperty(select_variable)">
     <select name="<dtml-var id>:list" multiple
       size="<dtml-var "_.min(7, _.len(getProperty(select_variable)))">">
       <dtml-in "getProperty(select_variable)">
          <option<dtml-if 
-         "getProperty(id) and (_['sequence-item'] in getProperty(id))"> SELECTED</dtml-if
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
+         >><dtml-var sequence-item html_quote></option>
+      </dtml-in>
+    </select>
+    <dtml-elif "_.has_key(select_variable)">
+    <select name="<dtml-var id>:list" multiple
+      size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
+      <dtml-in "_[select_variable]">
+         <option<dtml-if 
+         "getProperty(id) and (_['sequence-item'] in getProperty(id))"
+         > SELECTED</dtml-if
          >><dtml-var sequence-item html_quote></option>
       </dtml-in>
     </select>
     <dtml-else>
     No value for <dtml-var select_variable>.
     </dtml-if>
+
   <dtml-else>
   <em>Unknown property type</em>
   </dtml-if>
