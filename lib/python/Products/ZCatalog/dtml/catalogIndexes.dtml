@@ -133,7 +133,12 @@ function toggleSelect() {
   <a href="Indexes/&dtml.url_quote-sequence-key;/manage_workspace">
   &dtml-sequence-key; 
   <dtml-try>
-    (indexed attrs: <dtml-var "', '.join(_['sequence-item'].getIndexSourceNames())">)
+   <dtml-let source_names="_['sequence-item'].getIndexSourceNames()">
+    <dtml-if expr="_.len(source_names) != 1
+                   or source_names[0] != _['sequence-key']">
+     (indexed attributes: <dtml-var "', '.join(source_names)">)
+    </dtml-if>
+   </dtml-let>
   <dtml-except>
     <dtml-if title> (&dtml-title;) </dtml-if>
   </dtml-try>
