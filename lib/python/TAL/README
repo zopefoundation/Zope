@@ -1,0 +1,58 @@
+TAL - Template Attribute Language
+---------------------------------
+
+This is a prototype implementation of TAL, the Zope Template Attribute
+Language.  For TAL, see the Zope Presentation Templates ZWiki:
+
+    http://dev.zope.org/Wikis/DevSite/Projects/ZPT/FrontPage
+
+It is not yet a Zope product nor is it intended to run inside of Zope,
+but you must have a Zope checkout to access the DOM implementation
+used.
+
+Prerequisites
+-------------
+
+You need:
+
+- A recent checkout of Zope2; don't forget to run the wo_pcgi.py
+  script to compile everything).
+
+- A recent checkout of the Zope2 product ParsedXML, accessible
+  throught <Zope2>/lib/python/Products/ParsedXML; don't forget to run
+  the setup.py script to compiles Expat.
+
+- Python 1.5.2; the driver script refuses to work with other versions
+  unless you specify the -n option; this is done so that I don't
+  accidentally use Python 2.x features.
+
+- Edit the setpath.py script to set the proper module search path; the
+  variable libPython should be set to the <Zope2>/lib/python directory
+  that you want to use.
+
+How To Play
+-----------
+
+(Don't forget to edit setpath.py!)
+
+The script driver.py takes an XML file with TAL markup as argument and
+writes the expanded version to standard output.  The filename argument
+defaults to test/test1.xml.
+
+What's Here
+-----------
+
+DOMVisitor.py		base class to create DOM visitor classes
+CopyingDOMVisitor.py	class to copy DOM trees
+TALVisitor.py		class to copy DOM trees with TAL expansion
+DummyEngine.py		simple-minded TALES execution engine
+driver.py		script to demonstrate TAL expansion
+timer.py		script to time various processing phases
+setpath.py		hack to set sys.path and import ZODB
+__init__.py		empty file that makes this directory a package
+
+Author and License
+------------------
+
+This code is written by Guido van Rossum.  It is owned by Digital
+Creations and can be redistributed under the Zope Public License.
