@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -190,14 +190,6 @@ class HTTPRequest(BaseRequest):
 
         form={}
         defaults={}
-
-        # add class
-        class record:
-            def __str__(self):
-              L1 = self.__dict__.items()
-              L1.sort()
-              return join(map(lambda item: "%s: %s" %item, L1), ", ") 
-            __repr__ = __str__
             
         meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
@@ -854,3 +846,12 @@ def parse_cookie(text,
     if not already_have(name): result[name]=value
 
     return apply(parse_cookie,(text[l:],result))
+
+# add class
+class record:
+    def __str__(self):
+        L1 = self.__dict__.items()
+        L1.sort()
+        return join(map(lambda item: "%s: %s" %item, L1), ", ") 
+
+    __repr__ = __str__
