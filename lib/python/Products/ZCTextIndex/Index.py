@@ -17,11 +17,12 @@
 import math
 
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket, IISet
-from BTrees.IIBTree import weightedIntersection, weightedUnion
+from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
+from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
+                                        mass_weightedUnion
 
 import ZODB
 from Persistence import Persistent
@@ -62,7 +63,7 @@ class Index(Persistent):
     def length(self):
         """Return the number of documents in the index."""
         return len(self._docwords)
-        
+
     def get_words(self, docid):
         """Returns the wordids for a given docid"""
         return WidCode.decode(self._docwords[docid])
@@ -114,15 +115,15 @@ class Index(Persistent):
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)
-        return self._union(self._search_wids(wids))
+        return mass_weightedUnion(self._search_wids(wids))
 
     def search_glob(self, pattern):
         wids = self._lexicon.globToWordIds(pattern)
-        return self._union(self._search_wids(wids))
+        return mass_weightedUnion(self._search_wids(wids))
 
     def search_phrase(self, phrase):
         wids = self._lexicon.termToWordIds(phrase)
-        hits = self._intersection(self._search_wids(wids))
+        hits = mass_weightedIntersection(self._search_wids(wids))
         if not hits:
             return hits
         code = WidCode.encode(wids)
@@ -148,22 +149,6 @@ class Index(Persistent):
             L.append((d2w, scaled_int(idf)))
         L.sort(lambda x, y: cmp(len(x[0]), len(y[0])))
         return L
-
-    def _intersection(self, L):
-        if not L:
-            return IIBTree()
-        d2w, weight = L[0]
-        dummy, result = weightedUnion(IIBTree(), d2w, 1, weight)
-        for d2w, weight in L[1:]:
-            dummy, result = weightedIntersection(result, d2w, 1, weight)
-        return result
-
-    def _union(self, L):
-        # XXX This can be optimized, see OkapiIndex
-        result = IIBTree()
-        for d2w, weight in L:
-            dummy, result = weightedUnion(result, d2w, 1, weight)
-        return result
 
     def query_weight(self, terms):
         wids = []

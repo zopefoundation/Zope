@@ -20,12 +20,13 @@
 import math
 
 from BTrees.IOBTree import IOBTree
-from BTrees.IIBTree import IIBTree, IIBucket, IISet
-from BTrees.IIBTree import weightedIntersection, weightedUnion
+from BTrees.IIBTree import IIBTree, IIBucket
 
 from Products.ZCTextIndex.IIndex import IIndex
-from Products.ZCTextIndex import WidCode
 from Products.ZCTextIndex.NBest import NBest
+from Products.ZCTextIndex import WidCode
+from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
+                                        mass_weightedUnion
 
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024
@@ -98,15 +99,15 @@ class Index:
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)
-        return self._union(self._search_wids(wids))
+        return mass_weightedUnion(self._search_wids(wids))
 
     def search_glob(self, pattern):
         wids = self._lexicon.globToWordIds(pattern)
-        return self._union(self._search_wids(wids))
+        return mass_weightedUnion(self._search_wids(wids))
 
     def search_phrase(self, phrase):
         wids = self._lexicon.termToWordIds(phrase)
-        hits = self._intersection(self._search_wids(wids))
+        hits = mass_weightedIntersection(self._search_wids(wids))
         if not hits:
             return hits
         code = WidCode.encode(wids)
@@ -155,34 +156,6 @@ class Index:
         # skating near the edge, it's not a speed cure, since the computation
         # of tf would still done at Python speed, and it's a lot more
         # work than just multiplying by idf.
-
-    def _intersection(self, L):
-        if not L:
-            return IIBTree()
-        # Intersect with smallest first.
-        L = L[:]    # don't mutate the caller's L
-        L.sort(lambda x, y: cmp(len(x[0]), len(y[0])))
-        d2w, weight = L[0]
-        dummy, result = weightedUnion(IIBTree(), d2w, 1, weight)
-        for d2w, weight in L[1:]:
-            dummy, result = weightedIntersection(result, d2w, 1, weight)
-        return result
-
-    def _union(self, L):
-        if not L:
-            return IIBTree()
-        # Balance unions as closely as possible, smallest to largest.
-        merge = NBest(len(L))
-        for x, weight in L:
-            merge.add((x, weight), len(x))
-        while len(merge) > 1:
-            # Merge the two smallest so far, and add back to the queue.
-            (x, wx), dummy = merge.pop_smallest()
-            (y, wy), dummy = merge.pop_smallest()
-            dummy, z = weightedUnion(x, y, wx, wy)
-            merge.add((z, 1), len(z))
-        (result, weight), score = merge.pop_smallest()
-        return result
 
     def query_weight(self, terms):
         # XXX I have no idea what to put here
