@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.53 2000/06/19 18:51:58 brian Exp $"""
-__version__ = "$Revision: 1.53 $"[11:-2]
+$Id: MailHost.py,v 1.54 2000/06/19 19:52:26 brian Exp $"""
+__version__ = "$Revision: 1.54 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -121,6 +121,8 @@ def add(self, id, title='', smtp_host=None,
     self._setObject(id,i)   #register it
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
+
+import pdb
 
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
@@ -199,15 +201,17 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
+
+#        pdb.set_trace()
         headers = extractheaders(messageText)
-        
+
         if not headers['subject']:
-            messageText="subject: %s\n%s" % (subject or '[No Subject]',
+            messageText="subject: %s\n\n%s" % (subject or '[No Subject]',
                                              messageText)
         if mto:
             if type(mto) is type('s'):
                 mto=map(string.strip, string.split(mto,','))
-            headers['to'] = filter(truth, mto)
+            headers['to'] = filter(None, mto)
         if mfrom:
             headers['from'] = mfrom
             
@@ -285,5 +289,5 @@ def extractheaders(message):
             hd['to'].append(addr)
     
     hd['from']=mo.getaddr('from')[1]
-    hd['subject']=mo.getheader('subject') or "No Subject"
+    hd['subject']=mo.getheader('subject') or ''
     return hd
