@@ -13,7 +13,7 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.21 2002/08/14 22:25:18 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.21 $'[11:-2]
 
 import Shared.DC.ZRDB.DA

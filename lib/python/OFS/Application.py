@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.202 2004/04/15 16:41:04 jeremy Exp $'''
+$Id$'''
 __version__='$Revision: 1.202 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_

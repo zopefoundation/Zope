@@ -1,5 +1,5 @@
 # 
-# $Id: __init__.py,v 1.5 2004/01/18 10:25:57 andreasjung Exp $
+# $Id$
 #
 __version__='1.0'
 

@@ -12,7 +12,7 @@
 ##############################################################################
 """ API documentation help topics.
 
-$Id: APIHelpTopic.py,v 1.17 2004/05/04 19:09:29 yuppie Exp $
+$Id$
 """
 
 import types

@@ -12,7 +12,7 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.24 2003/12/10 22:46:17 evan Exp $'''
+$Id$'''
 __version__='$Revision: 1.24 $'[11:-2]
 
 

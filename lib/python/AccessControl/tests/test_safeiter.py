@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the guarded iterartor.
 
-$Id: test_safeiter.py,v 1.2 2004/01/15 23:09:06 tseaver Exp $
+$Id$
 """
 
 import unittest

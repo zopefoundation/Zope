@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Package of template utility classes and functions.
 
-$Id: __init__.py,v 1.6 2002/08/14 22:10:12 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.6 $'[11:-2]
 
 from Batch import Batch

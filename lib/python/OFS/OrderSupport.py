@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support for 'Object Manager'.
 
-$Id: OrderSupport.py,v 1.6 2004/04/09 12:26:26 yuppie Exp $
+$Id$
 """
 
 from types import StringType

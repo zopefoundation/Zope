@@ -13,7 +13,7 @@
 __doc__='''Sequence variables support
 
 
-$Id: DT_InSV.py,v 1.22 2002/08/14 22:29:52 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.22 $'[11:-2]
 
 from math import sqrt

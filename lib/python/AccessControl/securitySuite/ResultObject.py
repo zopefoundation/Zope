@@ -16,7 +16,7 @@ class ResultObject:
     """ result object used for keeping results from the
         ZPublisher.Zope() calls
 
-        $Id: ResultObject.py,v 1.4 2002/08/14 21:27:32 mj Exp $
+        $Id$
     """
 
     def __str__(self,expected=-1,with_output=1):

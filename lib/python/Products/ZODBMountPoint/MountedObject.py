@@ -13,7 +13,7 @@
 ##############################################################################
 """DBTab mount point (stored in ZODB).
 
-$Id: MountedObject.py,v 1.4 2004/03/04 22:43:06 jim Exp $
+$Id$
 """
 
 import os

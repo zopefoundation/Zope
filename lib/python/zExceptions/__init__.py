@@ -15,7 +15,7 @@
 These exceptions are so general purpose that they don't belong in Zope
 application-specific packages.
 
-$Id: __init__.py,v 1.5 2003/11/18 13:17:21 tseaver Exp $
+$Id$
 """
 
 from unauthorized import Unauthorized

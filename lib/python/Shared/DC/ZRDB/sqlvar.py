@@ -47,7 +47,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.15 2003/11/18 13:17:14 tseaver Exp $'
+__rcs_id__='$Id$'
 
 ############################################################################
 #     Copyright

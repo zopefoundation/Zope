@@ -13,7 +13,7 @@
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.10 2002/08/14 21:29:07 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.10 $'[11:-2]
 
 import string, Products, Globals

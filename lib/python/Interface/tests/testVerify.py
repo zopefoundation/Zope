@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testVerify.py,v 1.4 2002/11/11 19:53:16 mj Exp $
+$Id$
 """
 from __future__ import nested_scopes
 

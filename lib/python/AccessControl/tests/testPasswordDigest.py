@@ -13,7 +13,7 @@
 """Test of AuthEncoding
 """
 
-__rcs_id__='$Id: testPasswordDigest.py,v 1.5 2003/01/27 22:55:27 gvanrossum Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.5 $'[11:-2]
 
 import os, sys, unittest

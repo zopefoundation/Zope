@@ -14,7 +14,7 @@
 
 /*
 
-  $Id: ExtensionClass.h,v 1.2 2003/11/28 16:45:02 jim Exp $
+  $Id$
 
   Extension Class Definitions
 

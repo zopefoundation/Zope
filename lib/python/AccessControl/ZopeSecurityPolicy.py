@@ -12,7 +12,7 @@
 ##############################################################################
 """Define Zope's default security policy
 
-$Id: ZopeSecurityPolicy.py,v 1.26 2004/01/15 23:09:03 tseaver Exp $"""
+$Id$"""
 
 
 # AccessControl.Implementation inserts ZopeSecurityPolicy, getRoles

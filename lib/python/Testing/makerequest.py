@@ -19,7 +19,7 @@ Usage:
     import makerequest
     app = makerequest.makerequest(Zope.app())
 
-$Id: makerequest.py,v 1.5 2002/08/14 22:01:39 mj Exp $
+$Id$
 
 """
 

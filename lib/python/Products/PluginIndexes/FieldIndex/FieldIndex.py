@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Simple column indices
-$Id: FieldIndex.py,v 1.12 2003/01/23 17:46:21 andreasjung Exp $
+$Id$
 """
 
 from Products.PluginIndexes import PluggableIndex

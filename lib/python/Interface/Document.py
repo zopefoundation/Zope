@@ -17,7 +17,7 @@ This module provides a function, asStructuredText, for rendering an
 interface as structured text.
 
 Revision information:
-$Id: Document.py,v 1.3 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from string import maketrans

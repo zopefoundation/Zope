@@ -13,7 +13,7 @@
 '''API module to set the security policy
 
 
-$Id: SecurityManager.py,v 1.15 2004/01/15 23:09:03 tseaver Exp $'''
+$Id$'''
 
 from AccessControl import ImplPython as _ImplPython
 from AccessControl.SimpleObjectPolicies import _noroles

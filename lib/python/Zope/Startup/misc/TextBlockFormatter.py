@@ -13,7 +13,7 @@
 ##############################################################################
 """
 Revision information:
-$Id: TextBlockFormatter.py,v 1.4 2003/03/18 21:37:49 fdrake Exp $
+$Id$
 """
 import string, math
 

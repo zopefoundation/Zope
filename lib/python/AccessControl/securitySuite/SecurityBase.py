@@ -39,7 +39,7 @@ __bobo_before__=AccessControl.SecurityManagement.noSecurityManager
 
 class SecurityBase(unittest.TestCase) :
     """ Base class for all security tests
-    $Id: SecurityBase.py,v 1.7 2002/08/14 21:27:32 mj Exp $
+    $Id$
     """
 
     status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\

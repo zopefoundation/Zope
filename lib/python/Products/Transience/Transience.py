@@ -13,7 +13,7 @@
 """
 Transient Object Container Class ('timeslice'-based design, no index).
 
-$Id: Transience.py,v 1.32.12.3 2004/05/14 22:52:12 chrism Exp $
+$Id$
 """
 
 __version__='$Revision: 1.32.12.3 $'[11:-2]

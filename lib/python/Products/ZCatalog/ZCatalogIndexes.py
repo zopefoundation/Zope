@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: ZCatalogIndexes.py,v 1.9 2004/04/14 08:20:23 andreasjung Exp $
+"""$Id$
 """
 
 from  Globals import DTMLFile, InitializeClass

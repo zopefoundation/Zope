@@ -15,7 +15,7 @@
 XXX This module is no longer actively used, but is left as an
 XXX implementation reference for cDocumentTemplate
 
-$Id: pDocumentTemplate.py,v 1.42 2004/04/29 21:17:08 caseman Exp $"""
+$Id$"""
 __version__='$Revision: 1.42 $'[11:-2]
 
 import sys, types

@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.19 2004/05/04 19:33:07 caseman Exp $'''
+$Id$'''
 __version__='$Revision: 1.19 $'[11:-2]
 
 from Acquisition import Explicit

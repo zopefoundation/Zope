@@ -12,7 +12,7 @@
 ##############################################################################
 """ Basic ZPublisher request management.
 
-$Id: BaseRequest.py,v 1.56 2004/03/08 17:37:05 evan Exp $
+$Id$
 """
 
 from urllib import quote

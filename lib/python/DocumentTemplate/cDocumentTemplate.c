@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.48 2002/08/05 20:51:14 shane Exp $"
+"\n$Id$"
 ;
 
 #include "ExtensionClass.h"

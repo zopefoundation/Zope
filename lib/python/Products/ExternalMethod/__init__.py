@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.15 2002/08/14 22:14:10 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.15 $'[11:-2]
 
 import ExternalMethod

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testDocument.py,v 1.5 2002/08/14 21:35:33 mj Exp $
+$Id$
 """
 
 from unittest import TestCase, TestSuite, main, makeSuite

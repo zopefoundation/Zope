@@ -12,7 +12,7 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.13 2004/01/19 14:49:28 Brian Exp $'''
+$Id$'''
 __version__='$Revision: 1.13 $'[11:-2]
 
 from DocumentTemplate import DT_Util

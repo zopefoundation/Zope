@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.27 2003/05/14 14:43:44 shane Exp $'''
+$Id$'''
 __version__='$Revision: 1.27 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role

@@ -13,7 +13,7 @@
 ##############################################################################
 """Global Translation Service for providing I18n to Page Templates.
 
-$Id: GlobalTranslationService.py,v 1.4 2003/04/07 17:38:27 fdrake Exp $
+$Id$
 """
 
 import re

@@ -13,7 +13,7 @@
 """
 Zope signal handlers for clean shutdown, restart and log rotation.
 
-$Id: Signals.py,v 1.3 2004/04/13 19:02:25 fdrake Exp $
+$Id$
 """
 __version__='$Revision: 1.3 $'[11:-2]
 

@@ -13,7 +13,7 @@
 ##############################################################################
 """ITracebackSupplement interface definition.
 
-$Id: ITracebackSupplement.py,v 1.3 2002/08/14 22:12:06 mj Exp $
+$Id$
 """
 
 

@@ -22,7 +22,7 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.12 2003/08/17 20:57:45 chrism Exp $
+$Id$
 """
 __version__='$Revision: 1.12 $'[11:-2]
 

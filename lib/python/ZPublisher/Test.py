@@ -90,7 +90,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.41 2003/11/18 13:17:17 tseaver Exp $
+$Id$
 '''
 __version__='$Revision: 1.41 $'[11:-2]
 

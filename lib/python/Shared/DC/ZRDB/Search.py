@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.22 2004/01/15 22:44:08 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import DTMLFile

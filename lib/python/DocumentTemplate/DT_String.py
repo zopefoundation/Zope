@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.52 2003/12/26 23:43:11 jeremy Exp $"
+"$Id$"
 
 import os
 import thread

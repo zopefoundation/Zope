@@ -13,7 +13,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testustr.py,v 1.3 2002/08/14 22:29:53 mj Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os

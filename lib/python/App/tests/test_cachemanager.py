@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests for the CacheManager.
 
-$Id: test_cachemanager.py,v 1.1 2003/11/03 16:40:37 fdrake Exp $
+$Id$
 """
 
 import unittest

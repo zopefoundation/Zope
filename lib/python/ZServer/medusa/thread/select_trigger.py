@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.7 2003/11/18 13:17:19 tseaver Exp $"
+VERSION_STRING = "$Id$"
 
 import asyncore
 import asynchat

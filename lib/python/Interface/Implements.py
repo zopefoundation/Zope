@@ -14,7 +14,7 @@
 """Implemantation assertion facilities.
 
 Revision information:
-$Id: Implements.py,v 1.5 2003/10/20 21:44:10 tiran Exp $
+$Id$
 """
 
 import Exceptions

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: _Element.py,v 1.5 2003/07/30 22:09:23 philikon Exp $
+$Id$
 """
 
 from _object import object

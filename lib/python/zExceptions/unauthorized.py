@@ -11,7 +11,7 @@
 #
 ##############################################################################
 """
-$Id: unauthorized.py,v 1.9 2004/03/23 11:46:30 andreasjung Exp $
+$Id$
 """
 
 from types import StringType

@@ -13,7 +13,7 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.9 2002/08/14 22:25:13 mj Exp $
+$Id$
 """
 
 __version__='$Revision: 1.9 $'[11:-2]

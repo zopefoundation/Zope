@@ -13,7 +13,7 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.13 2002/08/20 19:27:37 jim Exp $
+$Id$
 """
 __version__ = "$Revision: 1.13 $"[11:-2]
 

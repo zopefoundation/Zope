@@ -13,7 +13,7 @@
 """Tests of PermissionRole
 """
 
-__rcs_id__='$Id: testPermissionRole.py,v 1.4 2002/12/16 19:15:05 chrism Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, unittest

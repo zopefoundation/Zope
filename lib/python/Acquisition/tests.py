@@ -328,7 +328,7 @@
    http://www.bell-labs.com/people/cope/oopsla/Oopsla96TechnicalProgramAbstracts.html#GilLorenz, 
    OOPSLA '96 Proceedings, ACM SIG-PLAN, October, 1996
 
-$Id: tests.py,v 1.2 2003/11/28 16:44:14 jim Exp $
+$Id$
 """
 
 import ExtensionClass

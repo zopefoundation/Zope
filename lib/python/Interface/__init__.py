@@ -64,7 +64,7 @@ There is also a script, pyself.py in the package that can be used to
 create interface skeletins. Run it without arguments to get documentation.
 
 Revision information:
-$Id: __init__.py,v 1.9 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from _Interface import Interface

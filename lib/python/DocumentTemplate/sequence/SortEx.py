@@ -14,7 +14,7 @@
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.8 2003/04/01 10:45:24 yuppie Exp $
+$Id$
 """
 
 from types import TupleType

@@ -14,7 +14,7 @@
 """Method interfaces
 
 Revision information:
-$Id: Method.py,v 1.12 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 import Exceptions
 from Attribute import Attribute

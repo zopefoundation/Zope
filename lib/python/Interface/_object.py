@@ -13,7 +13,7 @@
 ##############################################################################
 """Provide a halfway believable rendition of Python 2.2's object
 
-$Id: _object.py,v 1.4 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 class _x:

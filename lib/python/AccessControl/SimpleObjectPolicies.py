@@ -42,7 +42,7 @@ disallowed otherwise.
 XXX This descrition doesn't actually match what's done in ZopeGuards
 or in ZopeSecurityPolicy. :(
 
-$Id: SimpleObjectPolicies.py,v 1.16 2004/01/27 21:39:34 fdrake Exp $'''
+$Id$'''
 
 _noroles = [] # this is imported in various places
 

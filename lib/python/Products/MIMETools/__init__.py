@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__='''MIMETools Product Initialization
-$Id: __init__.py,v 1.3 2002/08/14 22:14:27 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.3 $'[11:-2]
 
 import MIMETag

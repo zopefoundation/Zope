@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.13 2002/08/14 22:25:08 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.13 $'[11:-2]
 
 import PythonScript

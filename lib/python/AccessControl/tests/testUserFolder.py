@@ -13,7 +13,7 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.10 2004/04/29 21:17:06 caseman Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, base64, unittest

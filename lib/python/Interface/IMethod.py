@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: IMethod.py,v 1.3 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from IAttribute import IAttribute

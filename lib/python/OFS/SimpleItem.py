@@ -17,7 +17,7 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.110 2003/12/14 05:08:25 fdrake Exp $'''
+$Id$'''
 __version__='$Revision: 1.110 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo

@@ -31,7 +31,7 @@ Except that you can also use computed attributes with instances:
 >>> "%.2f" % p.angle
 '0.93'
 
-$Id: tests.py,v 1.2 2003/11/28 16:44:59 jim Exp $
+$Id$
 """
 
 def test_wrapper_support():

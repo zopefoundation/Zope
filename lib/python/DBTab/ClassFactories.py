@@ -13,7 +13,7 @@
 ##############################################################################
 """Available ZODB class factories.
 
-$Id: ClassFactories.py,v 1.3 2004/04/15 16:41:03 jeremy Exp $"""
+$Id$"""
 
 import OFS.Uninstalled
 

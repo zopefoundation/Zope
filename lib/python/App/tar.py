@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Simple module for writing tar files
 
-$Id: tar.py,v 1.8 2004/01/19 16:28:08 Brian Exp $'''
+$Id$'''
 __version__='$Revision: 1.8 $'[11:-2]
 
 import sys, time, zlib

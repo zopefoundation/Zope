@@ -13,7 +13,7 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.11 2003/11/18 13:17:14 tseaver Exp $'''
+$Id$'''
 #     Copyright
 #
 #       Copyright 1997 Digital Creations, Inc, 910 Princess Anne

@@ -12,7 +12,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.32 2002/08/14 22:29:52 mj Exp $"""
+$Id$"""
 
 from DT_String import String, FileMixin
 import DT_String, re

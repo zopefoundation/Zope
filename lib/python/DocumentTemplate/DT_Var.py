@@ -151,7 +151,7 @@ Evaluating expressions without rendering results
 
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.60 2003/11/18 13:17:00 tseaver Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.60 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr

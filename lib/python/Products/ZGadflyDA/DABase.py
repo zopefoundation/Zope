@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.12 2002/08/14 22:25:17 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.12 $'[11:-2]
 
 from db import manage_DataSources

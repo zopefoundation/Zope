@@ -12,7 +12,7 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.7 2003/12/10 20:03:03 shane Exp $
+$Id$
 '''
 
 import os, sys

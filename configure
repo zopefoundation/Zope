@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.24 2004/04/15 14:21:00 fdrake Exp $
-# $Revision: 1.24 $
+# $Id$
+# $Rev$
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #

@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.39 2004/01/15 22:44:08 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.39 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys

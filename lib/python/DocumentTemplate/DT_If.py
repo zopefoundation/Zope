@@ -75,7 +75,7 @@ __doc__='''Conditional insertion
          variable is not reevaluated.
 
 '''
-__rcs_id__='$Id: DT_If.py,v 1.19 2002/08/14 22:29:52 mj Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.19 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str

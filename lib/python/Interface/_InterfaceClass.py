@@ -14,7 +14,7 @@
 """Interface object implementation
 
 Revision information:
-$Id: _InterfaceClass.py,v 1.6 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from inspect import currentframe

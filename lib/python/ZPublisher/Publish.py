@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.167 2004/04/25 21:26:15 fdrake Exp $"""
+$Id$"""
 __version__='$Revision: 1.167 $'[11:-2]
 
 import sys, os

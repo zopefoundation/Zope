@@ -709,7 +709,7 @@ static struct PyMethodDef pyexpat_methods[] = {
 /* Initialization function for the module (*must* be called initpyexpat) */
 
 static char pyexpat_module_documentation[] = 
-"$Id: dcpyexpat.c,v 1.4 2002/03/21 15:48:56 htrd Exp $"
+"$Id$"
 ;
 
 void

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: testExternalMethod.py,v 1.6 2003/02/11 17:17:06 fdrake Exp $
+$Id$
 """
 
 import math

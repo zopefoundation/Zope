@@ -15,7 +15,7 @@
 ExceptionFormatter tests.
 
 Revision information:
-$Id: testExceptionFormatter.py,v 1.4 2002/08/14 22:12:07 mj Exp $
+$Id$
 """
 
 from __future__ import nested_scopes

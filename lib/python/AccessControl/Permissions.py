@@ -12,7 +12,7 @@
 ##############################################################################
 """Constant definitions for built-in Zope permissions
 
-$Id: Permissions.py,v 1.8 2004/01/15 23:09:03 tseaver Exp $"""
+$Id$"""
 
 
 access_contents_information='Access contents information'

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.18 2004/04/20 14:30:45 andreasjung Exp $'
+__version__ = '$Id$'
 
 from logging import getLogger
 

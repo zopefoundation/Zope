@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.8 2004/04/20 14:30:45 andreasjung Exp $'
+__version__ = '$Id$'
 
 import sys
 from logging import getLogger

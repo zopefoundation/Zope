@@ -12,7 +12,7 @@
 ##############################################################################
 """ 'Folder' with order support.
 
-$Id: OrderedFolder.py,v 1.2 2003/06/12 10:20:59 yuppie Exp $
+$Id$
 """
 
 from AccessControl import getSecurityManager

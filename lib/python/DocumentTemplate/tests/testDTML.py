@@ -13,7 +13,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.15 2003/07/09 15:12:07 fdrake Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os

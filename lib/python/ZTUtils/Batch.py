@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.10 2002/08/14 22:10:12 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.10 $'[11:-2]
 
 from ExtensionClass import Base

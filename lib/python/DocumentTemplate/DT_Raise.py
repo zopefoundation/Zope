@@ -23,7 +23,7 @@
     <!--#/if-->
 
 '''
-__rcs_id__='$Id: DT_Raise.py,v 1.13 2002/08/14 22:29:52 mj Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import parse_params, name_param, render_blocks, str

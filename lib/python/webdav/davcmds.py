@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects.
 
-$Id: davcmds.py,v 1.23 2003/12/27 00:05:48 jeremy Exp $
+$Id$
 """
 
 import sys, os

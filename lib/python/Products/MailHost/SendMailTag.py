@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.18 2003/01/14 19:10:38 regebro Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.18 $'[11:-2]
 
 from MailHost import MailBase, MailHostError

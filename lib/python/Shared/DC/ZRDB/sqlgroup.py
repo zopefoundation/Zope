@@ -69,7 +69,7 @@
 #       rights reserved.
 #
 ############################################################################
-__rcs_id__='$Id: sqlgroup.py,v 1.10 2003/11/18 13:17:14 tseaver Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.10 $'[11:-2]
 
 from DocumentTemplate.DT_Util import parse_params

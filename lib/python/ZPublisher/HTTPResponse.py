@@ -12,7 +12,7 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.81 2004/04/26 10:12:08 shh Exp $'''
+$Id$'''
 __version__ = '$Revision: 1.81 $'[11:-2]
 
 import types, os, sys, re

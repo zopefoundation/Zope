@@ -13,7 +13,7 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.10 2004/01/27 19:22:51 Brian Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, unittest

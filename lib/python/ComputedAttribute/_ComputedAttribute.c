@@ -109,7 +109,7 @@ init_ComputedAttribute(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("_ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: _ComputedAttribute.c,v 1.2 2003/11/28 16:44:59 jim Exp $\n",
+	   "$Id$\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

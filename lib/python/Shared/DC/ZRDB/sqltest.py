@@ -55,7 +55,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.19 2003/11/18 13:17:14 tseaver Exp $'
+__rcs_id__='$Id$'
 
 ############################################################################
 #     Copyright

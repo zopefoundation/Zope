@@ -13,7 +13,7 @@
 ##############################################################################
 """Tests of the content_types extension mechanism.
 
-$Id: testContentTypes.py,v 1.1 2003/10/31 16:40:09 fdrake Exp $
+$Id$
 """
 
 import mimetypes

@@ -25,7 +25,7 @@ Example:
 The dotted name is the module name and interface object name connected
 with a dot.
 
-Revision information: $Id: pyskel.py,v 1.6 2002/08/14 21:35:32 mj Exp $
+Revision information: $Id$
 """
 
 import sys, os, re

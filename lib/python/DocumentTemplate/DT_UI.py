@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.15 2004/01/15 22:44:07 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.15 $'[11:-2]
 
 from DT_HTML import HTML

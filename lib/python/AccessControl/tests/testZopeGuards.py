@@ -15,7 +15,7 @@
 
 Well, at least begin testing some of the functionality
 
-$Id: testZopeGuards.py,v 1.2 2004/01/15 23:09:06 tseaver Exp $
+$Id$
 """
 
 import os, sys

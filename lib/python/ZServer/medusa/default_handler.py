@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID = '$Id: default_handler.py,v 1.9 2003/03/18 21:15:16 fdrake Exp $'
+RCS_ID = '$Id$'
 
 # standard python modules
 import os

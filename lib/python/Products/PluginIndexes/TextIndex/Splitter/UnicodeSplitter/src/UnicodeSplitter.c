@@ -405,7 +405,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.16 2002/05/13 22:52:00 jeremy Exp $\n"
+    "$Id$\n"
     ;
 
 

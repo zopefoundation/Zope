@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: filesys.py,v 1.13 2003/03/18 21:15:16 fdrake Exp $
+#	$Id$
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 # Generic filesystem interface.

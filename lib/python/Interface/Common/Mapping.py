@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: Mapping.py,v 1.3 2002/08/14 21:35:33 mj Exp $
+$Id$
 """
 
 from Interface import Interface

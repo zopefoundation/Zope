@@ -33,7 +33,7 @@
 
 '''
 
-__rcs_id__='$Id: DT_With.py,v 1.15 2002/08/14 22:29:52 mj Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.15 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str

@@ -12,7 +12,7 @@
 ##############################################################################
 """Base for bi-directional indexes
 
-$Id: UnIndex.py,v 1.25 2004/04/23 15:47:33 caseman Exp $"""
+$Id$"""
 
 import sys
 from cgi import escape

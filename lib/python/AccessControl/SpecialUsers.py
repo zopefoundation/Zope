@@ -16,7 +16,7 @@ This is needed to avoid a circular import problem.  The 'real' values
 are stored here by the AccessControl.User module as part of it's
 initialization.
 
-$Id: SpecialUsers.py,v 1.5 2003/07/11 14:21:30 fdrake Exp $
+$Id$
 """
 __version__='$Revision: 1.5 $'[11:-2]
 

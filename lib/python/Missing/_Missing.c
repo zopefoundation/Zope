@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: _Missing.c,v 1.2 2003/11/28 16:45:07 jim Exp $"
+"\n$Id$"
 ;
 
 #include "ExtensionClass.h"

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 """
-$Id: Undo.py,v 1.34 2003/08/04 09:59:40 andreasjung Exp $"""
+$Id$"""
 __version__='$Revision: 1.34 $'[11:-2]
 
 from Acquisition import aq_base, aq_parent, aq_inner

@@ -516,7 +516,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ZopeSplitter.c,v 1.9 2002/04/30 04:15:12 jeremy Exp $\n"
+    "$Id$\n"
     ;
 
 

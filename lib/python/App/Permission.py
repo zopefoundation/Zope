@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Zope registerable permissions
 
-$Id: Permission.py,v 1.9 2003/05/28 14:51:12 shane Exp $'''
+$Id$'''
 __version__='$Revision: 1.9 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.42 2004/04/22 03:35:39 fdrake Exp $'
+__version__ = '$Id$'
 
 from types import StringType, ListType, TupleType
 from logging import getLogger

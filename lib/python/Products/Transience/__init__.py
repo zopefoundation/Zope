@@ -13,7 +13,7 @@
 """
 Transience initialization routines
 
-$Id: __init__.py,v 1.7 2002/08/14 22:25:13 mj Exp $
+$Id$
 """
 
 import ZODB # this is to help out testrunner, don't remove.

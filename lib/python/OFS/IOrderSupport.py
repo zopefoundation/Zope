@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support interfaces.
 
-$Id: IOrderSupport.py,v 1.4 2004/04/09 12:26:26 yuppie Exp $
+$Id$
 """
 
 from Interface import Interface

@@ -1,6 +1,6 @@
 """Unit tests for AccessControl.Owned
 
-$Id: testOwned.py,v 1.3 2004/03/12 18:12:11 tseaver Exp $
+$Id$
 """
 
 import unittest

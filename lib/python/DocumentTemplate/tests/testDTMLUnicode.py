@@ -13,7 +13,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTMLUnicode.py,v 1.4 2002/09/16 10:09:11 htrd Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os

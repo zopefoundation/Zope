@@ -12,7 +12,7 @@
 ##############################################################################
 """Support for owned objects
 
-$Id: Owned.py,v 1.24 2004/03/12 18:12:11 tseaver Exp $
+$Id$
 """
 
 import Globals, urlparse, SpecialUsers, ExtensionClass

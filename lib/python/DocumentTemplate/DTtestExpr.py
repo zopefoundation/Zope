@@ -13,7 +13,7 @@
 __doc__='''short description
 
 
-$Id: DTtestExpr.py,v 1.8 2002/08/14 22:29:52 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate import *

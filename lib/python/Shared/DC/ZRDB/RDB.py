@@ -13,7 +13,7 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.33 2002/08/14 21:50:59 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.33 $'[11:-2]
 
 from string import split, strip, lower, upper, atof, atoi, atol, find, join,find

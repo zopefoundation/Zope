@@ -13,7 +13,7 @@
 """Module Import Tests
 """
 
-__rcs_id__='$Id: testModuleSecurity.py,v 1.4 2002/08/21 20:01:37 shane Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, unittest

@@ -12,7 +12,7 @@
 ##############################################################################
 """ ZCatalog product
 
-$Id: ZCatalog.py,v 1.126.2.4 2004/05/13 18:11:16 andreasjung Exp $
+$Id$
 """
 
 from Globals import DTMLFile, MessageDialog

@@ -14,7 +14,7 @@
 
 This class is mixed into the database manager in App.ApplicationManager.
 
-$Id: CacheManager.py,v 1.31 2004/03/03 14:31:38 jeremy Exp $'''
+$Id$'''
 __version__='$Revision: 1.31 $'[11:-2]
 
 import time

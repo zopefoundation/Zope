@@ -7,7 +7,7 @@ Also see http://zope.org/Collectors/Zope/809
 
 Note: Tests require Zope >= 2.7
 
-$Id: testVirtualHostMonster.py,v 1.3 2003/12/11 19:50:27 evan Exp $
+$Id$
 """
 
 from Testing.makerequest import makerequest

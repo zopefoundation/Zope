@@ -13,7 +13,7 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.8 2003/08/02 17:49:06 chrism Exp $
+$Id$
 """
 
 import ZODB # for testrunner to be happy

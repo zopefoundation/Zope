@@ -13,7 +13,7 @@
 ##############################################################################
 """ZODB Mounted database support, simplified for DBTab.
 
-$Id: Mount.py,v 1.5 2004/04/20 14:38:52 andreasjung Exp $"""
+$Id$"""
 
 import sys
 from logging import getLogger

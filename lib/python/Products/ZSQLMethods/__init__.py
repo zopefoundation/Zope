@@ -13,7 +13,7 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.18 2002/08/14 22:25:18 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.18 $'[11:-2]
 import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 import Shared.DC.ZRDB.RDB

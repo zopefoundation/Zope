@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: redirecting_handler.py,v 1.5 2003/03/18 21:15:17 fdrake Exp $'
+RCS_ID =  '$Id$'
 
 import re
 import counter

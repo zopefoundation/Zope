@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.12 2003/12/30 06:23:52 jace Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *

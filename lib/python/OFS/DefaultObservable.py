@@ -15,7 +15,7 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.7 2003/11/18 13:17:02 tseaver Exp $"""
+$Id$"""
 
 __version__='$Revision: 1.7 $'[11:-2]
 

@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.58 2004/01/15 22:44:08 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.58 $'[11:-2]
 
 import Globals, os

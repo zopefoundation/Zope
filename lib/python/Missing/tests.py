@@ -33,7 +33,7 @@
 >>> Value == Value + 1
 1
 
-$Id: tests.py,v 1.2 2003/11/28 16:45:07 jim Exp $
+$Id$
 """
 import unittest
 from doctest import DocTestSuite

@@ -13,7 +13,7 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.9 2004/03/22 16:25:02 shh Exp $
+$Id$
 """
 import os
 

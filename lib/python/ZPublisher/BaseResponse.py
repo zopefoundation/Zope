@@ -12,7 +12,7 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.19 2003/12/26 23:48:18 jeremy Exp $'''
+$Id$'''
 __version__ = '$Revision: 1.19 $'[11:-2]
 
 from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest

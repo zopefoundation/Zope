@@ -12,7 +12,7 @@
 ##############################################################################
 """Unittests for Catalog brains
 
-$Id: testBrains.py,v 1.2 2004/03/23 21:27:03 caseman Exp $"""
+$Id$"""
 
 import unittest
 import Acquisition

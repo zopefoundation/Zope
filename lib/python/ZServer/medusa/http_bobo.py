@@ -3,7 +3,7 @@
 import string
 import regex
 
-RCS_ID = '$Id: http_bobo.py,v 1.6 2003/03/18 21:15:17 fdrake Exp $'
+RCS_ID = '$Id$'
 VERSION_STRING = string.split(RCS_ID)[2]
 
 class bobo_extension:

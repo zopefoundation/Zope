@@ -14,7 +14,7 @@
 """Interface object implementation
 
 Revision information:
-$Id: _Interface.py,v 1.5 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from _InterfaceClass import Interface as InterfaceClass

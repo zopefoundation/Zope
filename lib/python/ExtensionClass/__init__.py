@@ -99,7 +99,7 @@ called even when it is retrieved from an instance.
 >>> int(c.o2 == (o2, c, type(c)))
 1
   
-$Id: __init__.py,v 1.2 2003/11/28 16:45:02 jim Exp $
+$Id$
 """
 
 from _ExtensionClass import *

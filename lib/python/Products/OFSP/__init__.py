@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__='''Object system core
-$Id: __init__.py,v 1.38 2003/06/12 10:21:01 yuppie Exp $'''
+$Id$'''
 __version__='$Revision: 1.38 $'[11:-2]
 
 import Version, OFS.Image, OFS.Folder, AccessControl.User

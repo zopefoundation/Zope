@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Simple Tree classes
 
-$Id: SimpleTree.py,v 1.5 2004/01/15 23:00:17 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.5 $'[11:-2]
 
 from Tree import TreeMaker, TreeNode, b2a

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: IElement.py,v 1.5 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from _Interface import Interface

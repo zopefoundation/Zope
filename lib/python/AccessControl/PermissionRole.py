@@ -12,7 +12,7 @@
 ##############################################################################
 '''Objects that implement Permission-based roles.
 
-$Id: PermissionRole.py,v 1.21 2004/01/15 23:09:03 tseaver Exp $'''
+$Id$'''
   
 # The following names are inserted by AccessControl.Implementation:
 #

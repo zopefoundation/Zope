@@ -13,7 +13,7 @@
 ##############################################################################
 """DBTab and DatabaseFactory classes.
 
-$Id: DBTab.py,v 1.1 2003/07/20 02:55:58 chrism Exp $
+$Id$
 """
 
 import sys

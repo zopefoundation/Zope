@@ -49,7 +49,7 @@ init_MethodObject(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("_MethodObject", methods,
 		     "Method-object mix-in class module\n\n"
-		     "$Id: _MethodObject.c,v 1.2 2003/11/28 16:45:06 jim Exp $\n",
+		     "$Id$\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.15 2004/02/06 15:20:17 poster Exp $
+"""$Id$
 """
 
 from datetime import tzinfo, timedelta

@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: IAttribute.py,v 1.3 2002/08/14 21:35:32 mj Exp $
+$Id$
 """
 
 from IElement import IElement

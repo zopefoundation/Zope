@@ -574,7 +574,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: ISO_8859_1_Splitter.c,v 1.11 2002/07/22 20:32:58 matt Exp $\n"
+    "$Id$\n"
     ;
 
 

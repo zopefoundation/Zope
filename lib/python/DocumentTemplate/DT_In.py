@@ -329,7 +329,7 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.62 2004/01/15 22:44:07 tseaver Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.62 $'[11:-2]
 
 import sys

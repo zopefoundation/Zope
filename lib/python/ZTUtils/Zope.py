@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.15 2004/01/27 15:47:02 fdrake Exp $'''
+$Id$'''
 __version__='$Revision: 1.15 $'[11:-2]
 
 import sys, cgi, urllib, cgi

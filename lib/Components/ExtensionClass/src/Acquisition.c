@@ -1542,7 +1542,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.62 2003/10/21 12:43:22 andreasjung Exp $\n",
+	   "$Id$\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

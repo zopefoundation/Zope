@@ -12,7 +12,7 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.58 2004/04/29 19:03:08 caseman Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.58 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *

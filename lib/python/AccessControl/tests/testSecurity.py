@@ -13,7 +13,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.13 2004/01/19 14:49:29 Brian Exp $'
+__rcs_id__='$Id$'
 __version__='$Revision: 1.13 $'[11:-2]
 
 import os, sys, unittest

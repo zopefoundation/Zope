@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.22 2002/08/14 22:14:51 mj Exp $'''
+$Id$'''
 __version__='$Revision: 1.22 $'[11:-2]
 
 import MailHost

@@ -13,7 +13,7 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.10 2004/01/21 19:59:09 Brian Exp $'''
+$Id$'''
 __version__='$Revision: 1.10 $'[11:-2]
 
 def getSecurityManager():

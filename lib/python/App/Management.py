@@ -13,7 +13,7 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.66 2004/01/15 22:44:04 tseaver Exp $
+$Id$
 """
 
 import sys, Globals, ExtensionClass, urllib

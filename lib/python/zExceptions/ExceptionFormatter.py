@@ -14,7 +14,7 @@
 """An exception formatter that shows traceback supplements and traceback info,
 optionally in HTML.
 
-$Id: ExceptionFormatter.py,v 1.4 2002/08/14 22:12:06 mj Exp $
+$Id$
 """
 
 import sys

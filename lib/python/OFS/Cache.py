@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.12 2003/11/28 16:45:33 jim Exp $"""
+$Id$"""
 
 __version__='$Revision: 1.12 $'[11:-2]
 

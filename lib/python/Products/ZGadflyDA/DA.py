@@ -13,7 +13,7 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.16 2003/11/18 13:17:11 tseaver Exp $''' % database_type
+$Id$''' % database_type
 __version__='$Revision: 1.16 $'[11:-2]
 
 from db import DB, manage_DataSources

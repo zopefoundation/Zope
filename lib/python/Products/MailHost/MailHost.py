@@ -11,7 +11,7 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.83 2003/12/20 10:37:23 regebro Exp $"""
+$Id$"""
 __version__ = "$Revision: 1.83 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass

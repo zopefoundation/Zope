@@ -15,7 +15,7 @@
 # Andreas Jung, andreas@digicool.com 03/24/2001
 
 
-__version__ = '$Id: dispatcher.py,v 1.5 2002/08/14 22:01:39 mj Exp $'
+__version__ = '$Id$'
 
 
 import os,sys,re,string

@@ -206,7 +206,7 @@ init_MultiMapping(void)
       "_MultiMapping", MultiMapping_methods,
       "MultiMapping -- Wrap multiple mapping objects for lookup"
       "\n\n"
-      "$Id: _MultiMapping.c,v 1.2 2003/11/28 16:45:14 jim Exp $\n",
+      "$Id$\n",
       (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);

@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.16 2003/11/18 13:17:11 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, os

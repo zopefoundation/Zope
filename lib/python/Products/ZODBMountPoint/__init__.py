@@ -13,7 +13,7 @@
 ##############################################################################
 """ZODBMountPoint product.
 
-$Id: __init__.py,v 1.1 2003/07/20 02:56:01 chrism Exp $
+$Id$
 """
 
 def initialize(context):

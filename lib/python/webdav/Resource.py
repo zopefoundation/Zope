@@ -13,7 +13,7 @@
 
 """WebDAV support - resource objects.
 
-$Id: Resource.py,v 1.60 2004/03/21 16:39:58 sf Exp $
+$Id$
 """
 
 import sys

@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.6.12.6 2004/05/14 16:54:57 andreasjung Exp $
+# $Id$
 #
 ''' ReStructuredText Product for Zope
 

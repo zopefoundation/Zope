@@ -14,7 +14,7 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.23 2003/11/18 13:16:58 tseaver Exp $'''
+$Id$'''
 __version__='$Revision: 1.23 $'[11:-2]
 
 import os, zlib, imp
