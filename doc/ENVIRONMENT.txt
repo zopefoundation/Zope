@@ -1,4 +1,19 @@
-Usage of environment variables:
+The following environment variables are used by Zope.
+
+Setting an enviornment variable:
+
+    setenv <VARIABLE_NAME> <VALUE>     (for csh/tcsh)
+
+    export <VARIABLE_NAME>=<VALUE>     (for sh/bash)
+
+    set <VARIABLE_NAME>=<VALUE>        (for Windows)
+
+Example:
+
+    setenv INSTANCE_HOME  /opt/Zope/instance
+    export INSTANCE_HOME=/opt/Zope/instance
+    set INSTANCE_HOME=C:\Zope\instance
+
 
 
 Zope installation
