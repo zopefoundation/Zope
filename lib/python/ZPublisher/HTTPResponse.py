@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.30 2000/06/19 21:54:52 brian Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: HTTPResponse.py,v 1.31 2000/06/28 14:11:02 brian Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -454,13 +454,13 @@ class HTTPResponse(BaseResponse):
         else:               _tbopen, _tbclose = '<!--',  '-->'
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
-    def redirect(self, location):
+    def redirect(self, location, status=302):
         """Cause a redirection without raising an error"""
-        self.status=302
-        self._locked_status = 1  # Don't let anything change the status code.
-        headers=self.headers
-        headers['status']='302 Moved Temporarily'
-        headers['location']=location
+        self.setStatus(status)
+        self.setHeader('Location', location)
+
+        # Don't let anything change the status code.
+        self._locked_status = 1
         return location
 
 
