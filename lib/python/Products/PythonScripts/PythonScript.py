@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -397,6 +397,7 @@ class PythonScript(Script, Historical, Cacheable):
     manage_FTPput = PUT
 
     def write(self, text):
+        """ Change the Script by parsing a read()-style source text. """
         self._validateProxy()
         mdata = self._metadata_map()
         bindmap = self.getBindingAssignments().getAssignedNames()
@@ -468,6 +469,11 @@ class PythonScript(Script, Historical, Cacheable):
         return m
 
     def read(self):
+        """ Generate a text representation of the Script source.
+
+        Includes specially formatted comment lines for parameters,
+        bindings, and the title.
+        """
         # Construct metadata header lines, indented the same as the body.
         m = _first_indent.search(self._body)
         if m: prefix = m.group(0) + '##'
