@@ -19,8 +19,8 @@
 <input type="submit" value="Change">
 </form></td></tr>
 
-<tr><th align=right>Mean time since last access:</th>
-    <td><!--#var cache_mean_age--></td></tr>
+<tr><th align=right>Mean time since last access (minutes):</th>
+    <td><!--#var cache_mean_age fmt="%.4g"--></td></tr>
 
 <tr><th valign=top align=right>Target maximum time between accesses:</th><td>
 <form action="<!--#var URL1-->/manage_cache_age" method=GET>
@@ -28,11 +28,11 @@
 <input type="submit" value="Change">
 </form></td></tr>
 
-<tr><th align=right>Deactivation rate (objects/second):</th>
-    <td><!--#var cache_mean_deac--></td></tr>
+<tr><th align=right>Deactivation rate (objects/minute):</th>
+    <td><!--#var cache_mean_deac fmt="%.4f"--></td></tr>
 
-<tr><th align=right>Deallocation rate (objects/second):</th>
-    <td><!--#var cache_mean_deal--></td></tr>
+<tr><th align=right>Deallocation rate (objects/minute):</th>
+    <td><!--#var cache_mean_deal fmt="%.4f"--></td></tr>
 
 <tr><th align=right>Time of last cache garbage collection:</th>
     <td><!--#var cache_last_gc_time--></td></tr>

@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.9 1998/12/04 20:15:25 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: CacheManager.py,v 1.10 1998/12/18 22:03:09 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals, time, sys
 
@@ -124,13 +124,13 @@ class CacheManager:
         return self.manage_cacheParameters(self,REQUEST)
 
     def cache_mean_age(self):
-        return Globals.Bobobase._jar.cache.cache_mean_age
+        return Globals.Bobobase._jar.cache.cache_mean_age/60.0
 
     def cache_mean_deal(self):
-        return Globals.Bobobase._jar.cache.cache_mean_deal
+        return Globals.Bobobase._jar.cache.cache_mean_deal*60
 
     def cache_mean_deac(self):
-        return Globals.Bobobase._jar.cache.cache_mean_deac
+        return Globals.Bobobase._jar.cache.cache_mean_deac*60
 
     def cache_last_gc_time(self):
         t=Globals.Bobobase._jar.cache.cache_last_gc_time
