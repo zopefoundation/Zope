@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.4 1997/08/08 16:54:12 jim Exp $"""
+$Id: ObjectManager.py,v 1.5 1997/08/08 23:03:51 jim Exp $"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -11,8 +11,9 @@ from Globals import ManageHTMLFile,PublicHTMLFile
 from Globals import MessageDialog
 from App.Management import Management
 from Acquisition import Acquirer
-from string import find,joinfields
+from string import find,join,lower
 from urllib import quote
+from DocumentTemplate import html_quote
 
 class ObjectManager(Acquirer,Management,Persistent):
     """Generic object manager
@@ -163,7 +164,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	for p in self._properties:
 	    n=p['id']
 	    try:    setattr(self,n,REQUEST[n])
-	    except: pass
+	    except: setattr(self,n,'')
 	return self.manage_propertiesForm(self,REQUEST)
 
     def manage_delProperties(self,ids,REQUEST):
@@ -187,28 +188,56 @@ class ObjectManager(Acquirer,Management,Persistent):
     def _defaultInput(self,n,t,v):
         return '<INPUT NAME="%s:%s" SIZE="50" VALUE="%s"></TD>' % (n,t,v)
 
+    def _stringInput(self,n,t,v):
+        return ('<INPUT NAME="%s:%s" SIZE="50" VALUE="%s"></TD>'
+		% (n,t,html_quote(v)))
+
+    def _booleanInput(self,n,t,v):
+	if v: v="CHECKET"
+	else: v=''
+        return ('<INPUT TYPE= "CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
+		% (n,t,v))
+
     def _selectInput(self,n,t,v):
         s=['<SELECT NAME="%s:%s">' % (n,t)]
 	map(lambda i: s.append('<OPTION>%s' % i), v)
         s.append('</SELECT>')
-        return joinfields(s,'\n')
+        return join(s,'\n')
 
     def _linesInput(self,n,t,v):
+	try: v=html_quote(join(v,'\n'))
+	except: v=''
         return (
-	'<TEXTAREA NAME="%s:lines" ROWS="10" COLS="50">%s</TEXTAREA>' % (n,v))
+	'<TEXTAREA NAME="%s:lines" ROWS="10" COLS="50">%s</TEXTAREA>'
+	% (n,v))
 
     def _textInput(self,n,t,v):
-        return '<TEXTAREA NAME="%s" ROWS="10" COLS="50">%s</TEXTAREA>' % (n,v)
+        return ('<TEXTAREA NAME="%s" ROWS="10" COLS="50">%s</TEXTAREA>'
+		% (n,html_quote(v)))
 
-    _inputMap={'float': _defaultInput,
-	       'int':   _defaultInput,
-	       'long':  _defaultInput,
-	       'string':_defaultInput,
-               'lines': _linesInput,
-	       'text':  _textInput,
-               }
+    _inputMap={
+	'float': 	_defaultInput,
+	'int':   	_defaultInput,
+	'long':  	_defaultInput,
+	'string':	_stringInput,
+	'lines': 	_linesInput,
+	'text':  	_textInput,
+	'date':	 	_defaultInput,
+	'regex':	_stringInput,
+	'Regex':	_stringInput,
+	'regexs':	_stringInput,
+	'Regexs':	_stringInput,
+	'tokens':	_stringInput,	
+	'boolean':	_booleanInput,	
+	}
 
-    propertyTypes=_inputMap.keys()
+    propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
+    propertyTypes.sort()
+    propertyTypes=map(lambda key:
+		      {'id': key[1],
+		       'selected': key[1]=='string' and 'SELECTED' or ''},
+		      propertyTypes)
+		      
 
     def propertyInputs(self):
 	imap=self._inputMap
@@ -223,6 +252,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.5  1997/08/08 23:03:51  jim
+# Improved property handling.
+#
 # Revision 1.4  1997/08/08 16:54:12  jim
 # Changed to allow overriding of acquired attributes.
 #

@@ -16,7 +16,7 @@ edit the value and click the "Change Properties" button.
 <!--#in propertyInputs mapping-->
   <TR>
     <TD ALIGN="LEFT" VALIGN="TOP"><B><!--#var id fmt=spacify--></B></TD>
-    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input fmt=html_quote--></TD>
+    <TD ALIGN="LEFT" VALIGN="TOP"><!--#var input--></TD>
   </TR>
 <!--#/in propertyInputs-->
 <!--#/if propertyInputs-->
@@ -48,8 +48,8 @@ value fields below and then clicking on the "Add Property" button.
   <TD ALIGN="LEFT" VALIGN="TOP">Type:</TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="type">
-  <!--#in propertyTypes-->
-    <OPTION><!--#var __str__-->
+  <!--#in propertyTypes mapping-->
+    <OPTION <!--#var selected-->><!--#var id-->
   <!--#/in propertyTypes-->
   </SELECT>
   </TD>
