@@ -1,4 +1,4 @@
-#! /usr/bin/env python1.5
+#! /usr/bin/env python
 """Run all tests."""
 
 import os, sys
