@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -896,27 +896,59 @@ class DateTime:
            the current object\'s day, in the object\'s timezone context"""
         return self.__class__(self._year,self._month,self._day,
 			      23,59,59,self._tz)
-
     def greaterThan(self,t):
-        """Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time greater
-           than the specified time module style time."""
-        return (self._t > t)
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time greater than the specified DateTime
+           or time module style time."""
+        try:    return (self._d > t._d)
+	except: return (self._t > t)
+
+    def greaterThanEqualTo(self,t):
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time greater than or equal to the 
+           specified DateTime or time module style time."""
+        try:    return (self._d >= t._d)
+	except: return (self._t >= t)
 
     def equalTo(self,t):
-        """Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time equal
-           to the specified time module style time."""
-        return (self._t==t)
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time equal to the specified DateTime
+           or time module style time."""
+        try:    return (self._d == t._d)
+	except: return (self._t == t)
+
+    def notEqualTo(self,t):
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time not equal to the specified DateTime
+           or time module style time."""
+        try:    return (self._d != t._d)
+	except: return (self._t != t)
 
     def lessThan(self,t):
-        """Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time less
-           than the specified time module style time."""
-        return (self._t < t)
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time less than the specified DateTime
+           or time module style time."""
+        try:    return (self._d < t._d)
+	except: return (self._t < t)
+
+    def lessThanEqualTo(self,t):
+        """Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time less than or equal to the specified 
+           DateTime or time module style time."""
+        try:    return (self._d <= t._d)
+	except: return (self._t <= t)
 
     def isLeapYear(self):
 	"""Return true if the current year (in the context of the object\'s
@@ -1181,14 +1213,11 @@ class DateTime:
 		        y,m,d,h,mn,s,t)
 	else: return '%4.4d/%2.2d/%2.2d' % (y,m,d)
 
-    def __cmp__(self,other):
-	"""Compare a DateTime with another object. Note that the
-           value of a DateTime when doing comparisons is the 
-           number of days since 1901, in gmt. To compare a DateTime
-           with floats such as those used by the time module, use
-           the greaterThan, equalTo and lessThan methods."""
-	try:    return cmp(self._d,other._d)
-	except: return cmp(self._d,other)
+    def __cmp__(self,obj):
+	"""Compare a DateTime with another DateTime object, or
+           a float such as those returned by time.time()."""
+	try:                   return cmp(self._d,obj._d)
+	except AttributeError: return cmp(self._t,obj)
 
     def __hash__(self):
 	"""Compute a hash value for a DateTime"""
