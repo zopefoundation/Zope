@@ -270,7 +270,10 @@ class HTMLTALParser(HTMLParser):
         for item in attrs:
             key, value = item
             key, keybase, keyns = self.fixname(key)
-            ns = keyns or namens # default to tag namespace
+            if ':' in key and not keyns:
+                ns = 0
+            else:
+                ns = keyns or namens # default to tag namespace
             if ns and ns != 'unknown':
                 item = (key, value, ns)
             if ns == 'tal':
