@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.27 1997/03/28 17:11:38 chris Exp $'''
+$Id: InvertedIndex.py,v 1.28 1997/03/31 23:17:53 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.27 1997/03/28 17:11:38 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.28  1997/03/31 23:17:53  jim
+# I put back the list_class hook.
+#
 # Revision 1.27  1997/03/28 17:11:38  chris
 # *** empty log message ***
 #
@@ -178,7 +181,7 @@ $Id: InvertedIndex.py,v 1.27 1997/03/28 17:11:38 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -462,6 +465,8 @@ class Index:
     # perform a test search
     print i['blah']
   '''
+  list_class=ResultList
+
 
   def __init__(self, index_dictionary = None):
       'Create an inverted index'
@@ -562,7 +567,7 @@ class Index:
     '''
 
     index = self._index_object 
-    List = ResultList
+    List = self.list_class
 
     if (type(key) == RegexType):
       dict = {}
