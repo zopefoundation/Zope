@@ -3,63 +3,16 @@
 #
 #     Copyright 
 #
-#       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
+#       Copyright 1997 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved.  Copyright in this software is owned by DCLC,
-#       unless otherwise indicated. Permission to use, copy and
-#       distribute this software is hereby granted, provided that the
-#       above copyright notice appear in all copies and that both that
-#       copyright notice and this permission notice appear. Note that
-#       any product, process or technology described in this software
-#       may be the subject of other Intellectual Property rights
-#       reserved by Digital Creations, L.C. and are not licensed
-#       hereunder.
-#
-#     Trademarks 
-#
-#       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-#       All other trademarks are owned by their respective companies. 
-#
-#     No Warranty 
-#
-#       The software is provided "as is" without warranty of any kind,
-#       either express or implied, including, but not limited to, the
-#       implied warranties of merchantability, fitness for a particular
-#       purpose, or non-infringement. This software could include
-#       technical inaccuracies or typographical errors. Changes are
-#       periodically made to the software; these changes will be
-#       incorporated in new editions of the software. DCLC may make
-#       improvements and/or changes in this software at any time
-#       without notice.
-#
-#     Limitation Of Liability 
-#
-#       In no event will DCLC be liable for direct, indirect, special,
-#       incidental, economic, cover, or consequential damages arising
-#       out of the use of or inability to use this software even if
-#       advised of the possibility of such damages. Some states do not
-#       allow the exclusion or limitation of implied warranties or
-#       limitation of liability for incidental or consequential
-#       damages, so the above limitation or exclusion may not apply to
-#       you.
-#  
-#
-# If you have questions regarding this software, contact:
-#
-#   Digital Creations, L.C.
-#   910 Princess Ann Street
-#   Fredericksburge, Virginia  22401
-#
-#   info@digicool.com
-#
-#   (540) 371-6909
+#       rights reserved. 
 #
 ############################################################################## 
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.6 1998/03/24 16:39:11 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: CacheManager.py,v 1.7 1998/08/03 13:43:00 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals, time, sys
 
@@ -69,7 +22,8 @@ class CacheManager:
     _cache_age=60
     _cache_size=400
 
-    manage_cacheForm=Globals.HTMLFile('cache', globals())
+    manage_cacheParameters=Globals.HTMLFile('cacheParameters', globals())
+    manage_cacheGC=Globals.HTMLFile('cacheGC', globals())
 
     def cache_length(self): return len(Globals.Bobobase._jar.cache)
 
@@ -83,7 +37,7 @@ class CacheManager:
 		'''You may not change the database cache age
 		while working in a <em>session</em>''')
 	self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
-	return self.manage_cacheForm(self,REQUEST)
+	return self.manage_CacheParameters(self,REQUEST)
 
     def cache_size(self): return self._cache_size
     def manage_cache_size(self,value,REQUEST):
@@ -93,7 +47,7 @@ class CacheManager:
 		'''You may not change the database cache size
 		while working in a <em>session</em>''')
 	self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
-	return self.manage_cacheForm(self,REQUEST)
+	return self.manage_CacheParameters(self,REQUEST)
 
     def cache_mean_age(self):
 	return Globals.Bobobase._jar.cache.cache_mean_age
@@ -111,12 +65,12 @@ class CacheManager:
     def manage_full_sweep(self,value,REQUEST):
 	"Perform a full sweep through the cache"
 	Globals.Bobobase._jar.cache.full_sweep(value)
-	return self.manage_cacheForm(self,REQUEST)
+	return self.manage_cacheGC(self,REQUEST)
 
     def manage_minimize(self,value,REQUEST):
 	"Perform a full sweep through the cache"
 	Globals.Bobobase._jar.cache.minimize(value)
-	return self.manage_cacheForm(self,REQUEST)
+	return self.manage_cacheGC(self,REQUEST)
 
     def initialize_cache(self):
 	Globals.Bobobase._jar.cache.cache_size=self._cache_size
@@ -157,6 +111,10 @@ class CacheManager:
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.7  1998/08/03 13:43:00  jim
+#       - New folderish control panel that separates database and
+#         product management into separate interfaces.
+#
 # Revision 1.6  1998/03/24 16:39:11  jim
 # Changed to give more likely database size.
 #
