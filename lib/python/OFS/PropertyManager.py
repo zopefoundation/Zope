@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 from ZPublisher.Converters import type_converters
@@ -95,7 +95,7 @@ from Acquisition import Implicit
 from Globals import Persistent
 from DateTime import DateTime
 
-
+from PropertySheets import vps
 
 class PropertyManager:
     """
@@ -158,6 +158,9 @@ class PropertyManager:
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
     _reserved_names=()
+
+    __propsets__=()
+    propertysheets=vps()
 
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (' ' in id) \
@@ -315,4 +318,5 @@ class PropertyManager:
 
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
+
 
