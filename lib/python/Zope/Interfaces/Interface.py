@@ -7,7 +7,7 @@ class Interface:
 
     __extends__=()
 
-    def __init__(self, klass):
+    def __init__(self, klass, name=None):
         # Creates an interface instance given a python class.
         # the class describes the inteface; it contains
         # methods, arguments and doc strings.
@@ -17,8 +17,12 @@ class Interface:
         #
         # The base interfaces are deduced from the __extends__
         # attribute.
-    
-        self.name=klass.__dict__['__name__']
+
+        if name is not None:
+            self.name = name
+        else:
+            self.name=klass.__name__
+            
         self.doc=klass.__doc__
         if hasattr(klass,'__extends__'):
             self.extends=klass.__extends__
