@@ -229,8 +229,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def manage_uncatalogObject(self, REQUEST, urls=None):
         """ removes Zope object 'urls' from catalog """
-##	import pdb
-##	pdb.set_trace()
+
         if urls:
             for url in urls:
                 try:
@@ -245,7 +244,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def manage_catalogReindex(self, REQUEST):
         """ clear the catalog, then re-index everything """
-	
+
+	import pdb
+        pdb.set_trace()
         paths = tuple(self._catalog.paths.values())
 	self.manage_catalogClear(REQUEST)
 
@@ -256,16 +257,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 	    except:
 		pass
 		
-
-##        for path, i in items:
-##            try:
-##                obj = self.getobject(i, REQUEST)
-##            except:
-##                self.uncatalog_object(path)
-##            else:
-##                self.uncatalog_object(path)
-##                self.catalog_object(obj, path)
-
         message = "Catalog Reindexed"
         return self.manage_catalogView(self, REQUEST,
                                 manage_tabs_message=message)
@@ -278,7 +269,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         return self.manage_main(self, REQUEST,
                                 manage_tabs_message=message)
 
-    def manage_catalogFoundItems(self, REQUEST, obj_metatypes=None,
+    def manage_catalogFoundItems(self, REQUEST, URL1, obj_metatypes=None,
                                  obj_ids=None, obj_searchterm=None,
                                  obj_expr=None, obj_mtime=None,
                                  obj_mspec=None, obj_roles=None,
