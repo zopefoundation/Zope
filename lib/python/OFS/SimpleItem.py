@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.15 1998/01/15 15:16:46 brian Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: SimpleItem.py,v 1.16 1998/03/09 19:58:21 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, App.Management
 from DateTime import DateTime
@@ -87,6 +87,10 @@ class Item(CopySource, App.Management.Tabs):
 	except: t=0
 	return DateTime(t)
 
+    def locked_in_session(self):
+	oid=self._p_oid
+	return oid and Globals.SessionBase.locks.has_key(oid)
+
     def modified_in_session(self):
 	jar=self._p_jar
 	if jar is None:
@@ -119,6 +123,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.16  1998/03/09 19:58:21  jim
+# changed session marking support
+#
 # Revision 1.15  1998/01/15 15:16:46  brian
 # Fixed Setup, cleaned up SimpleItem
 #

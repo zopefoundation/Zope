@@ -1,11 +1,11 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.35 1998/02/10 18:38:01 jim Exp $"""
+$Id: ObjectManager.py,v 1.36 1998/03/09 19:58:20 jim Exp $"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
-import Persistence, App.Management, Acquisition, App.Undo
+import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog, default__class_init__
 from string import find,join,lower
@@ -456,6 +456,10 @@ class ObjectManager(
 	except: t=0
 	return DateTime(t)
 
+    def locked_in_session(self):
+	oid=self._p_oid
+	return oid and Globals.SessionBase.locks.has_key(oid)
+
     def modified_in_session(self):
 	jar=self._p_jar
 	if jar is None:
@@ -473,6 +477,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.36  1998/03/09 19:58:20  jim
+# changed session marking support
+#
 # Revision 1.35  1998/02/10 18:38:01  jim
 # Removed validation check.
 #
