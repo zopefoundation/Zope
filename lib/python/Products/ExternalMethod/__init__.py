@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.6 1998/02/23 18:28:36 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 1998/05/20 21:18:49 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import ExternalMethod
 from ImageFile import ImageFile
@@ -34,12 +34,16 @@ misc_={'function_icon':
 __ac_permissions__=(
     ('Add External Methods',
      ('manage_addExternalMethodForm', 'manage_addExternalMethod')),
+    ('Change External Methods', ()),
     )
 
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.7  1998/05/20 21:18:49  jim
+# Updated permissions.
+#
 # Revision 1.6  1998/02/23 18:28:36  jim
 # updated permissions
 #

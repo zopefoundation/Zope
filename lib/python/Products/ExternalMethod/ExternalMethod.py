@@ -77,8 +77,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
     __ac_permissions__=(
     ('View management screens', ['manage_main','manage_tabs']),
     ('Change permissions', ['manage_access']),
-    ('Change', ['manage_edit',]),
-    ('View', ['__call__',]),
+    ('Change External Methods', ['manage_edit',]),
+    ('View', ['__call__','']),
     )
 
     def __init__(self, id, title, module, function):
