@@ -38,9 +38,13 @@ products <<PRODUCTS2>>
 </zodb_db>
 """
 
+# CAUTION:  A raw string must be used in the open() call.  This is crucial
+# so that if you happen to be on Windows, and are passed a path containing
+# backslashes, the backslashes get treated *as* backslashes instead of as
+# string escape codes.
 dummy_product_init = """
 def initialize(context):
-    f=open('%s', 'w')
+    f=open(r'%s', 'w')
     f.write('didit')
     f.close()
 misc_ = {'a':1}
@@ -124,7 +128,7 @@ class TestProductInit( unittest.TestCase ):
         for name in FAKEPRODUCTS:
             self.assert_(name in names)
         self.assert_('gleeb' not in names)
-        
+
     def test_file_on_products_path_is_not_product(self):
         self.makeFakeProducts()
         f = open(os.path.join(TEMPPRODUCTS, 'README.txt'), 'w')
