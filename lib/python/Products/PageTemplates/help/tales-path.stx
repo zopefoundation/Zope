@@ -50,7 +50,7 @@ TALES Path expressions
     then in globals, then in this list, these names act just like
     built-ins in Python; They are always available, but they can be
     shadowed by a global or local variable declaration. You can always
-    access the built-in names explicitely by prefixing them with
+    access the built-in names explicitly by prefixing them with
     *CONTEXTS*. (e.g. CONTEXTS/root, CONTEXTS/nothing, etc).
 
   Examples

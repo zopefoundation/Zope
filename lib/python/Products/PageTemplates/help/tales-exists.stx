@@ -22,6 +22,6 @@ TALES Exists expressions
       </p>
 
     Note that in this case you can't use the expression,
-    "not:request/form/number", since that expression will be true if
+    'not:request/form/number', since that expression will be true if
     the 'number' variable exists and is zero.
     

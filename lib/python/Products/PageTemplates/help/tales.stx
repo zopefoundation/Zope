@@ -1,11 +1,11 @@
 TALES Overview
 
   The *Template Attribute Language Expression Syntax* (TALES) standard
-  describes expressions that suppy "TAL":tal.stx and "METAL":metal.stx
-  with data.  TALES is *one* possible expression syntax for these
-  languages, but they are not bound to this definition.  Similarly,
-  TALES could be used in a context having nothing to do with TAL or
-  METAL.
+  describes expressions that supply "TAL":tal.stx and
+  "METAL":metal.stx with data.  TALES is *one* possible expression
+  syntax for these languages, but they are not bound to this
+  definition.  Similarly, TALES could be used in a context having
+  nothing to do with TAL or METAL.
 
   TALES expressions are described below with any delimiter or quote
   markup from higher language layers removed.  Here is the basic
@@ -72,7 +72,7 @@ TALES Overview
       attributes of the current statement tag.
 
     - *CONTEXTS* - the list of standard names (this list).  This can be
-      used to access a builtin variable that has been hidden by a local
+      used to access a built-in variable that has been hidden by a local
       or global variable with the same name.
 
     - *root* - the system's top-most object. In Zope this corresponds
@@ -100,7 +100,9 @@ TALES Overview
 
   See Also
 
-    "TAL overview":tal.stx
+    "TAL Overview":tal.stx
+
+    "METAL Overview":metal.stx
 
     "exists":tales-exists.stx expressions
 

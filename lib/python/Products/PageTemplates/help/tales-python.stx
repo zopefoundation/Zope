@@ -14,7 +14,24 @@ TALES Python expressions
 
     Security Restrictions
 
-      XXX
+      Python expressions are subject to the same security restrictions
+      as Python-based scripts. These restrictions include:
+
+      loop limits -- Python expressions cannot create infinite loops.
+
+      import limits -- Python expressions can only access some Python
+      modules. See below for details.
+
+      access limits -- Python expressions are subject to Zope
+      permission and role security restrictions. In addition,
+      expressions cannot access objects whose names begin with
+      underscore.
+
+      write limits -- Python expressions cannot change attributes of
+      Zope objects.
+
+      Despite these limits malicious Python expressions can cause
+      problems.  See The Zope Book for more information.
 
     Built-in Functions
 
@@ -32,9 +49,9 @@ TALES Python expressions
       keep them from generating very large numbers and sequences. This
       limitation helps protect against denial of service attacks.
 
-      In addition, these DTML utility functions are available:
-      'DateTime', 'test', 'namespace', 'render'. See XXX for more
-      information on these functions.
+      In addition, these utility functions are available: 'DateTime',
+      'test', 'same_type'. See XXX for more information on these
+      functions.
 
       Finally, these functions are available in Python expressions,
       but not in Python-based scripts:
@@ -53,13 +70,25 @@ TALES Python expressions
 
     Python Modules
 
-      string -- XXX
+      A number of Python modules are available by default. You can
+      make more modules available. See XXX for more information. You
+      can access modules either via path expressions (for example
+      'modules/string/join') or in Python with the 'modules' mapping
+      object (for example 'modules["string"].join'). Here are the
+      default modules:
 
-      random -- XXX
+      'string' -- The standard "Python string
+      module":http://www.python.org/doc/current/lib/module-string.html. Note:
+      most of the functions in the module are also available as
+      methods on string objects.
 
-      math -- XXX
+      'random' -- The standard "Python random
+      module":http://www.python.org/doc/current/lib/module-random.html.
 
-      Products.PythonScripts.standard -- XXX
+      'math' -- The standard "Python math
+      module":http://www.python.org/doc/current/lib/module-math.html.
+
+      'Products.PythonScripts.standard' -- XXX
 
       ZPTUtils.* -- XXX
 
@@ -67,7 +96,30 @@ TALES Python expressions
 
   Examples
 
-    XXX
+    Basic module usage::
+
+      <span tal:replace="python:modules['random'].choice(['one', 
+                           'two', 'three', 'four', 'five'])">
+        a random number between one and five
+      </span>
+
+    String processing (capitalize the user name)::
+
+      <p tal:content="python:user.getUserName().capitalize()">
+        User Name
+      </p>
+
+    Basic math (convert image size to mega bytes)::
+
+      <p tal:content="python:image.getSize() / 1048576.0">
+        12.2323
+      </p>
+
+    String formatting (format a float to two decimal places)::
+
+      <p tal:content="python:'%0.2f' % size">
+        13.56
+      </p>
 
   See Also
 
