@@ -90,10 +90,9 @@
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E) UNLESS(V)
 
 #define UPPERCASE "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖÙÚÛÜİ"
-#define LOWERCASE "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïğñòóôõöùúûüı"
-#define DIGITSETC "0123456789-ßµ"
+#define LOWERCASE "abcdefghijklmnopqrstuvwxyzàáâãäåæçèéêëìíîïğñòóôõöùúûüıß"
+#define DIGITSETC "0123456789-µ"
 
-static PyObject *next_word();
 
 static unsigned char letdig[256];
 static unsigned char trtolower[256];
@@ -106,6 +105,8 @@ typedef struct
     char *here, *end;
     int index;
 } Splitter;
+
+static PyObject *next_word(Splitter *,char **,char **);
 
 //-------------------------------------------------------
 
@@ -126,10 +127,10 @@ static int myisspace(int c)
 	return isspace(c);
 }
 
-static void initSplitterTrtabs()
+static void initSplitterTrtabs(void)
 {
 	int i;
-	static initialized=0;
+	static int initialized=0;
 
 	if (initialized) return;
 	initialized=1;
@@ -146,7 +147,7 @@ static void initSplitterTrtabs()
 	}
 	for (i=0;i<sizeof(DIGITSETC);i++)
 	{
-		letdig[DIGITSETC[i]]=1;
+		letdig[(int)DIGITSETC[i]]=1;
 	}
 }
 //-------------------------------------------------------
@@ -532,15 +533,15 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.2 2001/05/30 15:57:34 andreas Exp $\n"
+"$Id: Splitter.c,v 1.3 2001/06/01 16:01:32 andreas Exp $\n"
 ;
 
 
 void
-initSplitter() 
+initSplitter(void) 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   
   /* Create the module and add the functions */
   initSplitterTrtabs();
