@@ -7,3 +7,5 @@ cStringIO cStringIO.c
 cPickle cPickle.c
 
 #install cPickle.so blah
+
+#install copy_reg.py
