@@ -5,7 +5,11 @@
 <!--#if sequence-item-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
   <FONT SIZE="-1">
+  <!--#if action-->
   <A HREF="<!--#var action-->"><!--#var label--></A>
+  <!--#else action-->
+  <A HREF="<!--#var URL1-->"><!--#var label--></A>
+  <!--#/if action-->
   </FONT>
   </TD>
 <!--#/if sequence-item-->
