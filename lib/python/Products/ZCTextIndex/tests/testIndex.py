@@ -15,7 +15,7 @@
 from unittest import TestCase, TestSuite, main, makeSuite
 
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
-from Products.ZCTextIndex.Index      import Index as CosineIndex
+from Products.ZCTextIndex.CosineIndex import Index as CosineIndex
 from Products.ZCTextIndex.OkapiIndex import Index as OkapiIndex
 
 # The cosine and Okapi indices have the same public interfaces, but these
