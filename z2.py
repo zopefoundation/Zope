@@ -25,18 +25,22 @@ Options:
     The location of the Zope installation.
     The default is the location of this script, %(here)s.
 
-  -Z path
+  -Z 0 or 1
 
-    Unix only! This option is ignored on windows.
+    UNIX only! This option is ignored on Windows.
 
-    If this option is specified, a separate managemnt process will
-    be created that restarts Zope after a shutdown (or crash).
-    The path must point to a pid file that the process will record its
-    process id in. The path may be relative, in which case it will be
-    relative to the Zope location.
+    This option controls whether a management process will be created
+    that restarts Zope after a shutdown or crash.
+    
+    If the argument to -Z is non-null (e.g. "-Z1" or "-Zyes"), a
+    management process will be used.  If the argument to -Z is "-", or
+    "0", (e.g. "-Z-" or "-Z0"), a management process will not be used.
+    On UNIX, the default behavior is to create a separate management
+    process (e.g. -Z1) if the -Z option is not specified.
 
-    To prevent use of a separate management process, provide an
-    empty string: -Z=''
+    (Note: the -Z option in Zopes before Zope 2.6 used to be used to specify
+    a pidfile name for the management process.  This pidfile no longer
+    exists).
 
   -t n
 
@@ -251,18 +255,12 @@ sys.setcheckinterval(500)
 
 program=sys.argv[0]
 here=os.path.join(os.getcwd(), os.path.split(program)[0])
-Zpid=''
-
 
 ########################################################################
 # Configuration section
 
 ## General configuration options
 ##
-
-# If you want run as a daemon, then uncomment the line below:
-if sys.platform=='win32': Zpid=''
-else: Zpid='zProcessManager.pid'
 
 # This is the IP address of the network interface you want your servers to
 # be visible from.  This can be changed to '' to listen on all interfaces.
@@ -331,6 +329,9 @@ FCGI_PORT=None
 # Detailed log file
 DETAILED_LOG_FILE=''
 
+# Use a daemon process
+USE_DAEMON = 1
+
 #
 ########################################################################
 
@@ -391,6 +392,9 @@ try:
 
     DEBUG=0
     READ_ONLY=0
+    if sys.platform == 'win32':
+        USE_DAEMON = 0
+        
 
     # Get environment variables
     for a in args:
@@ -407,8 +411,10 @@ try:
     for o, v in opts:
         if o=='-z': here=v
         elif o=='-Z':
-            if v=='-': v=''
-            Zpid=v
+            if v in ('-', '0', ''):
+                USE_DAEMON=0
+            elif sys.platform != 'win32':
+                USE_DAEMON = 1
         elif o=='-r': READ_ONLY=1
         elif o=='-t':
             try: v=int(v)
@@ -473,8 +479,6 @@ except:
     print "%s: %s" % (sys.exc_type, sys.exc_value)
     sys.exit(1)
 
-if sys.platform=='win32': Zpid=''
-
 #
 ########################################################################
 
@@ -529,13 +533,18 @@ if os.name == 'posix':
     from Signals import Signals
     Signals.registerZopeSignals()
 
-if Zpid and not READ_ONLY:
+# Location of the ZServer pid file. When Zope starts up it will write
+# its PID to this file.  If Zope is run under zdaemon control, zdaemon
+# will write to this pidfile instead of Zope.
+PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
+
+if USE_DAEMON and not READ_ONLY:
     import App.FindHomes
     sys.ZMANAGED=1
     # zdaemon.run creates a process which "manages" the actual Zope
     # process (restarts it if it dies).  The management process passes along
     # signals that it receives to its child.
-    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
+    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, PID_FILE))
 
 os.chdir(CLIENT_HOME)
 
@@ -577,11 +586,6 @@ try:
         LOG_PATH=os.path.join(CLIENT_HOME, LOG_FILE)
     else:
         LOG_PATH=LOG_FILE
-
-    # Location of the ZServer pid file. When ZServer starts up it will write
-    # its PID to this file.
-    PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
-
 
     # import ZServer stuff
 
@@ -804,12 +808,10 @@ try:
                                       'switch':'--icp'}
                 raise
 
-    if not READ_ONLY:
+    if not USE_DAEMON and not READ_ONLY:
         if os.path.exists(PID_FILE): os.unlink(PID_FILE)
         pf = open(PID_FILE, 'w')
-        pid=str(os.getpid())
-        try: pid=str(os.getppid())+' '+pid
-        except: pass
+        pid='%s\n' % os.getpid()
         pf.write(pid)
         pf.close()
 
