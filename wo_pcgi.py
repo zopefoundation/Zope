@@ -123,15 +123,6 @@ if not os.path.exists(ac_path):
     acfile.close()
     os.system('chmod 744 access')
 
-sh_path=os.path.join(home, 'start')
-if not os.path.exists(sh_path):
-    print 'creating start'
-    s='#!/bin/sh\n%s serve.py >var/serve.log 2>var/serve.log &\n'
-    shfile=open(sh_path, 'w')
-    shfile.write(s % sys.executable)
-    shfile.close()
-    os.system('chmod 775 start')
-
     
 print
 print '-'*78
