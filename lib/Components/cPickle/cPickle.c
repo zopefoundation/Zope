@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.22 1997/02/26 19:34:38 chris Exp $
+     $Id: cPickle.c,v 1.23 1997/02/28 21:52:23 chris Exp $
 
      Copyright 
 
@@ -59,6 +59,7 @@ static char cPickle_module_documentation[] =
 #include "Python.h"
 #include "cStringIO.h"
 #include "graminit.h"
+#include "mymath.h"
 
 #include <errno.h>
 
@@ -74,6 +75,9 @@ static char cPickle_module_documentation[] =
 #define POP         '0'
 #define DUP         '2'
 #define FLOAT       'F'
+#ifdef  FORMAT_1_3
+#define BINFLOAT    'G'
+#endif
 #define INT         'I'
 #define BININT      'J'
 #define BININT1     'K'
@@ -203,21 +207,21 @@ PyErr_Format(va_alist) va_dcl
   if(retval)
     {
       if(args)
-	{
-	  PyObject *v;
-	  v=PyString_Format(retval, args);
-	  Py_DECREF(retval);
-	  Py_DECREF(args);
-	  if(! v) return NULL;
-	  retval=v;
-	}
+        {
+          PyObject *v;
+          v=PyString_Format(retval, args);
+          Py_DECREF(retval);
+          Py_DECREF(args);
+          if(! v) return NULL;
+          retval=v;
+        }
     }
   else
     if(args) retval=args;
     else
       {
-	PyErr_SetObject(ErrType,Py_None);
-	return NULL;
+        PyErr_SetObject(ErrType,Py_None);
+        return NULL;
       }
   PyErr_SetObject(ErrType,retval);
   Py_DECREF(retval);
@@ -647,9 +651,9 @@ save_int(Picklerobject *self, PyObject *args) {
     int len = 0;
 
     if (!self->bin || sizeof(long) == 8 && (l >> 32)) {
-	        /* Save extra-long ints in non-binary mode, so that
-		   we can use python long parsing code to restore,
-		   if necessary. */
+                /* Save extra-long ints in non-binary mode, so that
+                   we can use python long parsing code to restore,
+                   if necessary. */
         c_str[0] = INT;
         sprintf(c_str + 1, "%ld\n", l);
         if ((*self->write_func)(self, c_str, strlen(c_str)) < 0)
@@ -718,13 +722,108 @@ finally:
 
 static int
 save_float(Picklerobject *self, PyObject *args) {
-    char c_str[250];
+    double x = PyFloat_AS_DOUBLE((PyFloatObject *)args);
 
-    c_str[0] = FLOAT;
-    sprintf(c_str + 1, "%f\n", PyFloat_AS_DOUBLE((PyFloatObject *)args));
+#ifdef FORMAT_1_3
+    if (self->bin) {
+        int s, e, i = -1;
+        double f;
+        long fhi, flo;
+        char str[9], *p = str;
 
-    if ((*self->write_func)(self, c_str, strlen(c_str)) < 0)
-        return -1;
+        *p = BINFLOAT;
+        p++;
+
+        if (x < 0) {
+            s = 1;
+            x = -x;
+        }
+        else
+            s = 0;
+
+        f = frexp(x, &e);
+
+        /* Normalize f to be in the range [1.0, 2.0) */
+        if (0.5 <= f && f < 1.0) {
+            f *= 2.0;
+            e--;
+        }
+        else if (f == 0.0) {
+            e = 0;
+        }
+        else {
+            PyErr_SetString(PyExc_SystemError,
+                            "frexp() result out of range");
+            return -1;
+        }
+
+        if (e >= 1024) {
+            /* XXX 1024 itself is reserved for Inf/NaN */
+            PyErr_SetString(PyExc_OverflowError,
+                            "float too large to pack with d format");
+            return -1;
+        }
+        else if (e < -1022) {
+            /* Gradual underflow */
+            f = ldexp(f, 1022 + e);
+            e = 0;
+        }
+        else {
+            e += 1023;
+            f -= 1.0; /* Get rid of leading 1 */
+        }
+
+        /* fhi receives the high 28 bits; flo the low 24 bits (== 52 bits) */
+        f *= 268435456.0; /* 2**28 */
+        fhi = (long) floor(f); /* Truncate */
+        f -= (double)fhi;
+        f *= 16777216.0; /* 2**24 */
+        flo = (long) floor(f + 0.5); /* Round */
+
+        /* First byte */
+        *p = (s<<7) | (e>>4);
+        p++;
+
+        /* Second byte */
+        *p = ((e&0xF)<<4) | (fhi>>24);
+        p++;
+
+        /* Third byte */
+        *p = (fhi>>16) & 0xFF;
+        p++;
+
+        /* Fourth byte */
+        *p = (fhi>>8) & 0xFF;
+        p++;
+
+        /* Fifth byte */
+        *p = fhi & 0xFF;
+        p++;
+
+        /* Sixth byte */
+        *p = (flo>>16) & 0xFF;
+        p++;
+
+        /* Seventh byte */
+        *p = (flo>>8) & 0xFF;
+        p++;
+
+        /* Eighth byte */
+        *p = flo & 0xFF;
+
+        if ((*self->write_func)(self, str, 9) < 0)
+            return -1;
+    }
+    else
+#endif
+    {
+        char c_str[250];
+        c_str[0] = FLOAT;
+        sprintf(c_str + 1, "%f\n", x);
+
+        if ((*self->write_func)(self, c_str, strlen(c_str)) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -887,7 +986,7 @@ save_list(Picklerobject *self, PyObject *args) {
             goto finally;
 
         if (save(self, element, 0) < 0)  
-            goto finally;	
+            goto finally;       
 
         if (!using_appends) {
             if ((*self->write_func)(self, &append, 1) < 0)
@@ -920,8 +1019,8 @@ save_dict(Picklerobject *self, PyObject *args) {
     static char setitem = SETITEM, setitems = SETITEMS;
 
     if(self->bin) {
-	s[0]=EMPTY_DICT;
-	len=1;
+        s[0]=EMPTY_DICT;
+        len=1;
       }
     else {
       s[0] = MARK;
@@ -1268,12 +1367,12 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
                 res = save_float(self, args);
                 goto finally;
             }
-	    break;
+            break;
 
         case 't':
             if (type == &PyTuple_Type && PyTuple_Size(args)==0) {
-	        if(self->bin) res = save_empty_tuple(self, args);
-	        else          res = save_tuple(self, args);
+                if(self->bin) res = save_empty_tuple(self, args);
+                else          res = save_tuple(self, args);
                 goto finally;
             }
     }
@@ -1310,7 +1409,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
             if (type == &PyTuple_Type) {
                 res = save_tuple(self, args);
                 goto finally;
-	    }
+            }
 
         case 'l':
             if (type == &PyList_Type) {
@@ -1731,7 +1830,7 @@ find_class(PyObject *py_module_name, PyObject *py_class_name) {
 
     if (class = PyDict_GetItem(class_map, t)) {
         res = class;
-	Py_INCREF(class);
+        Py_INCREF(class);
         goto finally;
     }
 
@@ -1787,15 +1886,15 @@ load_int(Unpicklerobject *self, PyObject *args) {
 
     if (errno || (*endptr != '\n') || (endptr[1] != '\0')) {
         /* Hm, maybe we've got something long.  Let's try reading
-	   it as a Python long object. */
+           it as a Python long object. */
         errno=0;
         UNLESS(py_int=PyLong_FromString(s,&endptr,0)) goto finally;
 
-	if ((*endptr != '\n') || (endptr[1] != '\0')) {
-	    PyErr_SetString(PyExc_ValueError,
-			    "could not convert string to int");
-	    goto finally;
-	}
+        if ((*endptr != '\n') || (endptr[1] != '\0')) {
+            PyErr_SetString(PyExc_ValueError,
+                            "could not convert string to int");
+            goto finally;
+        }
     }
     else {
         UNLESS(py_int = PyInt_FromLong(l)) goto finally;
@@ -1942,6 +2041,80 @@ finally:
     return res;
 }
 
+#ifdef FORMAT_1_3
+static int
+load_binfloat(Unpicklerobject *self, PyObject *args) {
+    PyObject *py_float = 0;
+    int s, e, res = -1;
+    long fhi, flo;
+    double x;
+    char *p;
+
+    if ((*self->read_func)(self, &p, 8) < 0)
+        return -1;
+
+    /* First byte */
+    s = (*p>>7) & 1;
+    e = (*p & 0x7F) << 4;
+    p++;
+
+    /* Second byte */
+    e |= (*p>>4) & 0xF;
+    fhi = (*p & 0xF) << 24;
+    p++;
+
+    /* Third byte */
+    fhi |= (*p & 0xFF) << 16;
+    p++;
+
+    /* Fourth byte */
+    fhi |= (*p & 0xFF) << 8;
+    p++;
+
+    /* Fifth byte */
+    fhi |= *p & 0xFF;
+    p++;
+
+    /* Sixth byte */
+    flo = (*p & 0xFF) << 16;
+    p++;
+
+    /* Seventh byte */
+    flo |= (*p & 0xFF) << 8;
+    p++;
+
+    /* Eighth byte */
+    flo |= *p & 0xFF;
+
+    x = (double)fhi + (double)flo / 16777216.0; /* 2**24 */
+    x /= 268435456.0; /* 2**28 */
+
+    /* XXX This sadly ignores Inf/NaN */
+    if (e == 0)
+        e = -1022;
+    else {
+        x += 1.0;
+        e -= 1023;
+    }
+    x = ldexp(x, e);
+
+    if (s)
+        x = -x;
+
+    UNLESS(py_float = PyFloat_FromDouble(x))
+        goto finally;
+
+    if (PyList_Append(self->stack, py_float) < 0) 
+        goto finally;
+
+    res = 0;
+
+finally:
+    Py_XDECREF(py_float);
+
+    return res;
+}
+#endif
 
 static int
 load_string(Unpicklerobject *self, PyObject *args) {
@@ -2132,7 +2305,7 @@ load_list(Unpicklerobject *self, PyObject *args) {
         goto finally;
     } else {
       if(PyList_Append(self->stack,slice) < 0)
-	goto finally;
+        goto finally;
     }
 
     res = 0;
@@ -2182,7 +2355,7 @@ load_dict(Unpicklerobject *self, PyObject *args) {
     }
     else 
       if(PyList_Append(self->stack, dict) < 0)
-	goto finally;
+        goto finally;
 
     res = 0;
 
@@ -2223,8 +2396,8 @@ err:
     PyErr_Fetch(&tp, &v, &tb);
     if(r=Py_BuildValue("OOO",v,cls,args))
       {
-	Py_XDECREF(v);
-	v=r;
+        Py_XDECREF(v);
+        v=r;
       }
     PyErr_Restore(tp,v,tb);
   }
@@ -2704,22 +2877,22 @@ do_append(Unpicklerobject *self, int  x) {
             return -1;
          
         for (i = x; i < len; i++) {
-	    PyObject *junk;
+            PyObject *junk;
 
             UNLESS(value = PyList_GetItem(self->stack, i))  
                 return -1;
 
-	    UNLESS(self->arg)
-	      UNLESS(self->arg = PyTuple_New(1)) 
-	        goto err;
-	    
-	    Py_INCREF(value);
-	    if (PyTuple_SetItem(self->arg, 0, value) < 0) 
-	      goto err;
-	    
-	    UNLESS(junk = PyObject_CallObject(append_method, self->arg)) 
-	      goto err;
-	    Py_DECREF(junk);
+            UNLESS(self->arg)
+              UNLESS(self->arg = PyTuple_New(1)) 
+                goto err;
+            
+            Py_INCREF(value);
+            if (PyTuple_SetItem(self->arg, 0, value) < 0) 
+              goto err;
+            
+            UNLESS(junk = PyObject_CallObject(append_method, self->arg)) 
+              goto err;
+            Py_DECREF(junk);
         }
     }
 
@@ -2963,6 +3136,13 @@ Unpickler_load(Unpicklerobject *self, PyObject *args) {
                 if (load_float(self, NULL) < 0)
                     break;
                 continue;
+
+#ifdef FORMAT_1_3
+            case BINFLOAT:
+                if (load_binfloat(self, NULL) < 0)
+                    break;
+                continue;
+#endif
 
             case BINSTRING:
                 if (load_binstring(self, NULL) < 0)
@@ -3519,7 +3699,9 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.22 $";
+    char *rev="$Revision: 1.23 $";
+    PyObject *format_version;
+    PyObject *compatible_formats;
 
     /* Create the module and add the functions */
     m = Py_InitModule4("cPickle", cPickle_methods,
@@ -3532,7 +3714,18 @@ initcPickle() {
     /* Add some symbolic constants to the module */
     d = PyModule_GetDict(m);
     PyDict_SetItemString(d,"__version__",
-			 PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+                         PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+
+#ifdef FORMAT_1_3
+    format_version = PyString_FromString("1.2");
+    compatible_formats = Py_BuildValue("[ss]", "1.0", "1.1");
+#else
+    format_version = PyString_FromString("1.3");
+    compatible_formats = Py_BuildValue("[sss]", "1.0", "1.1", "1.2");
+#endif
+
+    PyDict_SetItemString(d, "format_version", format_version);
+    PyDict_SetItemString(d, "compatible_formats", compatible_formats);
 
     init_stuff(m, d);
     CHECK_FOR_ERRORS("can't initialize module cPickle");
