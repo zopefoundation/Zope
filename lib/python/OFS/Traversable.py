@@ -84,18 +84,35 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.1 2000/06/12 19:36:37 shane Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Traversable.py,v 1.2 2000/06/12 19:49:48 shane Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import Acquisition
 from AccessControl import getSecurityManager
-from string import split
+from string import split, join
+from urllib import quote
 
 _marker=[]
 StringType=type('')
 
 class Traversable:
+
+    def absolute_url(self, relative=0):
+        req = self.REQUEST
+        rpp = req.get('VirtualRootPhysicalPath', ('',))
+        spp = self.getPhysicalPath()
+        i = 0
+        for name in rpp[:len(spp)]:
+            if spp[i] == name:
+                i = i + 1
+            else:
+                break
+        path = map(quote, spp[i:])
+        if relative:
+            # This is useful for physical path relative to a VirtualRoot
+            return join(path, '/')
+        return join([req['SERVER_URL']] + req._script + path, '/')
 
     getPhysicalRoot=Acquisition.Acquired
     getPhysicalRoot__roles__=()
