@@ -236,7 +236,7 @@ class TALGenerator:
             self.emit("insertText", cexpr, [])
         else:
             assert key == "structure"
-            self.emit("insertStructure", cexpr, attrDict, [])
+            self.emit("insertStructure", cexpr, {}, [])
         self.emitEndTag(name)
         handler = self.popProgram()
         self.emit("onError", block, handler)
