@@ -46,6 +46,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1450: files in utilities/ZODBTools are now installed
+        during the installation process in the 'bin' directory
+
       - Collector #1003: added new 'http-header-max-length' directive
         to zope.conf to specific the maximum length of a HTTP request
         header before it is considered as a possible DoS attack and
