@@ -104,7 +104,7 @@ changes from Medusa's http_server
     
 """ 
 import sys
-import regex
+import re
 import string
 import os
 import types
@@ -131,8 +131,8 @@ from medusa import logger
 
 register_subsystem('ZServer HTTPServer')
 
-CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
-CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
+CONTENT_LENGTH  = re.compile('Content-Length: ([0-9]+)',re.I)
+CONNECTION      = re.compile('Connection: (.*)', re.I)
 
 # maps request some headers to environment variables.
 # (those that don't start with 'HTTP_')
@@ -140,6 +140,14 @@ header2env={'content-length'    : 'CONTENT_LENGTH',
             'content-type'      : 'CONTENT_TYPE',
             'connection'        : 'CONNECTION_TYPE',
             }
+
+
+# stolen from Medusa
+def get_header (head_reg, lines, group=1):
+    for line in lines:
+        if head_reg.match (line):
+            return head_reg.group(group)
+    return ''
 
 class zhttp_collector:
     def __init__(self, handler, request, size):
@@ -201,11 +209,11 @@ class zhttp_handler:
               uri_base=uri_base[:-1]
         self.uri_base=uri_base
         uri_regex='%s.*' % self.uri_base
-        self.uri_regex = regex.compile(uri_regex)
+        self.uri_regex = re.compile(uri_regex)
 
     def match(self, request):
         uri = request.uri
-        if self.uri_regex.match(uri) == len(uri):
+        if self.uri_regex.match(uri):
             return 1
         else:
             return 0
