@@ -1,6 +1,6 @@
 cPickle, A C Pickle Implementation
 
-  "cPickle", http://www.digicool.com/releases/cPickle/cPickle-0.3.1.tar.gz,
+  "cPickle", http://www.digicool.com/releases/cPickle/cPickle-1.0b1.tar.gz,
   is a C implementation of the Python module, pickle.py, and is
   fully compatible with pickle: all types picklable by pickle can be
   pickled using cPickle [1], and pickles generated using pickle may be
@@ -112,8 +112,8 @@ cPickle, A C Pickle Implementation
   
   Status
 
-    The current release of cPickle is "0.3.1",
-    http://www.digicool.com/releases/cPickle/cPickle-0.3.1.tar.gz.
+    The current release of cPickle is "1.0b1",
+    http://www.digicool.com/releases/cPickle/cPickle-1.0b1.tar.gz.
     This release requires Python version 1.4 or higher.
 
     This version introduces a special binary mode format for floats.
@@ -247,7 +247,7 @@ cPickle, A C Pickle Implementation
 	    global references.
 
 
-     1.0 -- Official release
+     1.0b1 -- Official release (almost)
 
         This is the release that I expect to be included in Python
         1.5 final.
@@ -310,8 +310,6 @@ cPickle, A C Pickle Implementation
 
   To do
 
-    I actually thought I was done some time ago, but a couple of
-    things have come up:
 
     - Support for pickling humongous arrays. Konrad Hinsen summed up
       the issue:
