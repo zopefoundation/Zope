@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.7 1997/02/21 22:24:23 chris Exp $
+#     $Id: pickle.py,v 1.8 1997/02/26 19:34:53 chris Exp $
 #
 #     Copyright 
 #
@@ -295,7 +295,7 @@ class Pickler:
             return
 
         if memo.has_key(d):
-            self.write(self.get(memo[d]))
+            self.write(self.get(memo[d][0]))
             return
 
         try:
@@ -417,7 +417,7 @@ class Pickler:
 
         memo_len = len(memo)
         self.write(self.put(memo_len))
-        memo[d] = memo_len
+        memo[d] = (memo_len, object)
     dispatch[StringType] = save_string
 
     def save_tuple(self, object):
@@ -434,12 +434,12 @@ class Pickler:
             save(element)
 
         if (memo.has_key(d)):
-            write(POP * len(object) + self.get(memo[d]))
+            write(POP * len(object) + self.get(memo[d][0]))
             return
 
         memo_len = len(memo)
         self.write(TUPLE + self.put(memo_len))
-        memo[d] = memo_len
+        memo[d] = (memo_len, object)
     dispatch[TupleType] = save_tuple
 
     def save_empty_tuple(self, object):
@@ -473,7 +473,7 @@ class Pickler:
 
         memo_len = len(memo)
         write(self.put(memo_len))
-        memo[d] = memo_len
+        memo[d] = (memo_len, object)
     dispatch[ListType] = save_list
 
     def save_dict(self, object):
@@ -506,7 +506,7 @@ class Pickler:
 
         memo_len = len(memo)
         self.write(self.put(memo_len))
-        memo[d] = memo_len
+        memo[d] = (memo_len, object)
     dispatch[DictionaryType] = save_dict
 
     def save_inst(self, object):
@@ -540,7 +540,7 @@ class Pickler:
             write(INST + module + '\n' + name + '\n' +
                 self.put(memo_len))
 
-        memo[d] = memo_len
+        memo[d] = (memo_len, object)
 
         try:
             getstate = object.__getstate__
@@ -564,7 +564,7 @@ class Pickler:
         memo_len = len(memo)
         write(GLOBAL + module + '\n' + name + '\n' +
             self.put(memo_len))
-        memo[id(object)] = memo_len
+        memo[id(object)] = (memo_len, object)
     dispatch[ClassType] = save_global
     dispatch[FunctionType] = save_global
     dispatch[BuiltinFunctionType] = save_global

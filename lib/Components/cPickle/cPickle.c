@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.21 1997/02/19 15:29:36 jim Exp $
+     $Id: cPickle.c,v 1.22 1997/02/26 19:34:38 chris Exp $
 
      Copyright 
 
@@ -486,6 +486,9 @@ get(Picklerobject *self, PyObject *id) {
     UNLESS(value = PyDict_GetItem(self->memo, id))
         return -1;
 
+    UNLESS(value = PyTuple_GetItem(value, 0))
+        return -1;
+        
     c_value = PyInt_AsLong(value);
 
     if (!self->bin) {
@@ -520,7 +523,7 @@ static int
 put(Picklerobject *self, PyObject *ob) {
     char c_str[30];
     int p, len, res = -1;
-    PyObject *py_ob_id = 0, *memo_len = 0;
+    PyObject *py_ob_id = 0, *memo_len = 0, *t = 0;
 
     if (ob->ob_refcnt < 2)
         return 0;
@@ -558,7 +561,15 @@ put(Picklerobject *self, PyObject *ob) {
     UNLESS(memo_len = PyInt_FromLong(p))
         goto finally;
 
-    if (PyDict_SetItem(self->memo, py_ob_id, memo_len) < 0)
+    UNLESS(t = PyTuple_New(2))
+        goto finally;
+
+    PyTuple_SET_ITEM(t, 0, memo_len);
+    Py_INCREF(memo_len);
+    PyTuple_SET_ITEM(t, 1, ob);
+    Py_INCREF(ob);
+
+    if (PyDict_SetItem(self->memo, py_ob_id, t) < 0)
         goto finally;
 
     res = 0;
@@ -566,6 +577,7 @@ put(Picklerobject *self, PyObject *ob) {
 finally:
     Py_XDECREF(py_ob_id);
     Py_XDECREF(memo_len);
+    Py_XDECREF(t);
 
     return res;
 }
@@ -3507,7 +3519,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.21 $";
+    char *rev="$Revision: 1.22 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("cPickle", cPickle_methods,
