@@ -39,7 +39,7 @@ class ZRendevous:
             return r
         finally: self._r()
 
-    def handle(self, name, environ, input, callback):
+    def handle(self, name, environ, input, callback=None):
         output=OutputPipe(callback)
         self._a()
         try:
