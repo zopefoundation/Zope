@@ -1,0 +1,128 @@
+Zope Changes
+
+  This file gives information on changes made to Zope over time,
+  things that need to be done before the next release and future
+  plans.
+
+  Releases
+
+    Zope 1.9 beta 2
+
+      In addition to various documentation updates, this release includes:
+
+      New Features
+
+        - Changed serve.py to accept ZopeHTTPServer command-line options.
+
+        - Added a -P option to the ZopeHTTPServer to specify a file
+          to contain the process ID.  This allows a script to stop
+          the process on Unix.
+
+        - Added support for the environment variables, Z_REALM and
+          Z_DEBUG_MODE to set an authentication realm and to
+          enable debug mode.
+
+      Bugs fixed
+
+        - External methods were broken due to differences in 
+          Python 1.4 and Python 1.5 comparison semantics.
+
+        - ZopeHTTPServer command-line environment settings
+          were not available in os.environ.
+
+        - Some class references were wrong in examples in the ExtensionClass
+          documentation.
+
+        - INSTANCE_HOME was not set correctly when the debugger was run
+          with a relative path to the published module.
+
+        - The #! line in the ZopeHTTPServer was hidden by the copyright
+          statement and didn't have the right path.
+
+    Zope 1.9 beta 1
+
+      Bugs fixed:
+
+        - pcgi did not build correctly on Solaurus 2.6
+
+        - links in headers were broken when Zope was reached with
+          /, as is the case when the ZopeHTTPServer is used.
+
+        - Python sources used tabs and spaces for indentation, which
+          made some people unhappy.
+
+        - Copyright statements were missing or out of date.
+        
+        - Added better instructions for building and running Zope.
+
+        - Added new Zope License and attribution information.
+
+        - Merged BoboHTTPServer updates with ZopeHTTPServer. Including 
+          socket changes to allow easier stopping and starting.
+
+        - Shutting down the ZopeHTTPServer from the application
+          caused an empty document to be returned.
+
+        - The install scripts failed if run more than once when attempting
+          to create a var directory.
+
+      Features
+
+        - Added (and old version of) the zlib module to make
+          installation simpler.
+
+        - Zope requires an access file.  The install scripts now create
+          one.
+
+    Zope 1.9 alpha 1 
+
+      This was the inital Zope test release.
+
+  Futures
+
+    Things we plan to happen real soon (maybe next release)
+
+      Features
+
+       - include a serve shell script along the lines of:
+   
+	   #!/bin/sh
+	   python serve.py > var/serve.log 2> var/serve.errors &
+   
+	 Note that this script should be written by the installers
+	 and use sys.executable.
+
+         (Brian)
+
+      Bugs
+
+       - Chase down weird bugs reported by Michel Pelletier.
+
+    Things to do sometime
+
+      Features
+
+        - Better deamon management for ZopeHTTPServer, Medusa,
+          and pcgi-LRP (when pcgi wrapper gets out of process
+          management business).
+
+          (Note that there is some experimental code along these
+           lines in principia main.)
+
+       - Need make_clean.py that:
+   
+	 - runs make clobber for the extensions
+   
+	 - runs make clean in pcgi
+   
+	 - prints an message reminding user to manually remove var
+   
+	 (brian)
+
+       - The default access file should be handled a little differently.
+         The installer should make people enter values, the default
+         should have a randomly generated password, or the default should
+         be ommitted.
+
+      Bugs
+
