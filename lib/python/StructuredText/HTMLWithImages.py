@@ -22,17 +22,22 @@ class HTMLWithImages(HTMLClass):
     element_types = ets
 
     def document(self, doc, level, output):
-        output('<html>\n')
-        children=doc.getChildNodes()
-        if (children and
-            children[0].getNodeName() == 'StructuredTextSection'):
-           output('<head>\n<title>%s</title>\n</head>\n' %
-                  children[0].getChildNodes()[0].getNodeValue())
-        output('<body>\n')
+
+        if self.header:
+            output('<html>\n')
+            children=doc.getChildNodes()
+            if (children and
+                children[0].getNodeName() == 'StructuredTextSection'):
+               output('<head>\n<title>%s</title>\n</head>\n' %
+                      children[0].getChildNodes()[0].getNodeValue())
+            output('<body>\n')
+
         for c in children:
            getattr(self, self.element_types[c.getNodeName()])(c, level, output)
-        output('</body>\n')
-        output('</html>\n')
+
+        if self.header:
+            output('</body>\n')
+            output('</html>\n')
 
     def image(self, doc, level, output):
        if hasattr(doc, 'key'):

@@ -56,7 +56,7 @@ class HTMLClass:
     def document(self, doc, level, output):
         children=doc.getChildNodes()
 
-        if self.header==1:
+        if self.header:
             output('<html>\n')
             if (children and
                  children[0].getNodeName() == 'StructuredTextSection'):
@@ -67,7 +67,7 @@ class HTMLClass:
         for c in children:
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
 
-        if self.header==1:
+        if self.header:
             output('</body>\n')
             output('</html>\n')
 
