@@ -79,6 +79,8 @@ class trigger (asyncore.dispatcher):
 			msg = 'Bang!'
 		self.trigger.sendto (msg, self.addr)
 
+	def handle_connect(self): pass
+
 	def handle_read (self):
 		what, where = self.recvfrom (128)
 		if what != 'Bang!':
