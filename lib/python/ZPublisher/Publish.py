@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.50 1997/09/09 20:56:12 jim Exp $"""
+$Id: Publish.py,v 1.51 1997/09/09 23:00:55 brian Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.50 1997/09/09 20:56:12 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 
 def main():
@@ -600,10 +600,6 @@ class ModulePublisher:
 	    except: pass
 
 	form={}
-
-	if environ.has_key('HTTP_COOKIE'):
-	    parse_cookie(self.environ['HTTP_COOKIE'], form)
-
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
 	try: fslist=fs.list
 	except: fslist=None
@@ -658,7 +654,15 @@ class ModulePublisher:
 
 	    for key in tuple_items.keys(): form[key]=tuple(form[key])
 
-	
+	# Cookie values should *not* be appended to existing form
+	# vars with the same name - they are more like default values
+	# for names not otherwise specified in the form.
+
+	if environ.has_key('HTTP_COOKIE'):
+	    d=parse_cookie(self.environ['HTTP_COOKIE'])
+	    for k in d.keys():
+		if not form.has_key(k):
+		    form[k]=d[k]
 
         request=self.request=Request(environ,form,stdin)
 	self.response=Response(stdout=stdout, stderr=stderr)
@@ -1457,6 +1461,11 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.51  1997/09/09 23:00:55  brian
+# Fixed cookie error: cookies should not be appended to explicit form
+# values (thus possibly changing the expected type and causing havoc).
+# Form values now override cookie-based values.
+#
 # Revision 1.50  1997/09/09 20:56:12  jim
 # *** empty log message ***
 #
