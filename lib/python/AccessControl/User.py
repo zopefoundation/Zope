@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.106 $'[11:-2]
+__version__='$Revision: 1.107 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -217,8 +217,7 @@ class BasicUser(Implicit):
                         hasattr(parent, 'im_self')):
                         # This is a method, grab it's self.
                         parent=parent.im_self
-                    if (hasattr(parent, 'aq_inContextOf') and 
-                        not parent.aq_inContextOf(self.aq_parent.aq_parent,1)):
+                    if not parent.aq_inContextOf(self.aq_parent.aq_parent,1):
                         if 'Shared' in roles:
                             # Damn, old role setting. Waaa
                             roles=self._shared_roles(parent)
