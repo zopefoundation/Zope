@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.21 1998/04/14 15:20:39 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: Aqueduct.py,v 1.22 1998/04/15 14:23:36 jim Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -133,7 +133,6 @@ def default_input_form(id,arguments,action='query',
 		       tabs=''):
     if arguments:
 	items=arguments.items()
-	# items.sort()
 	return (
 	    "%s\n%s%s" % (
 		'<html><head><title>%s Input Data</title></head><body>\n%s\n'
@@ -240,17 +239,38 @@ def decodestring(s):
 	decode(f, g)
 	return g.getvalue()
 
-def parse(text,
-	     result=None,
-	     unparmre=regex.compile(
-		 '\([\0- ]*\([^\0- =\"]+\)\)'),
-	     parmre=regex.compile(
-		 '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
-	     qparmre=regex.compile(
-		 '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
-	     ):
+class Args:
+    def __init__(self, data, keys):
+	self._data=data
+	self._keys=keys
 
-    if result is None: result = {}
+    def items(self):
+	return map(lambda k, d=self._data: (k,d[k]), self._keys)
+
+    def values(self):
+	return map(lambda k, d=self._data: d[k], self._keys)
+
+    def keys(self): return list(self._keys)
+    def has_key(self, key): return self._data.has_key(key)
+    def __getitem__(self, key): return self._data[key]
+    def __setitem__(self, key, v): self._data[key]=v
+    def __delitem__(self, key): del self._data[key]
+			
+
+def parse(text,
+	  result=None,
+	  keys=None,
+	  unparmre=regex.compile(
+	      '\([\0- ]*\([^\0- =\"]+\)\)'),
+	  parmre=regex.compile(
+	      '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
+	  qparmre=regex.compile(
+	      '\([\0- ]*\([^\0- =\"]+\)="\([^"]*\)\"\)'),
+	  ):
+
+    if result is None:
+	result = {}
+	keys=[]
 
     __traceback_info__=text
 
@@ -267,7 +287,7 @@ def parse(text,
 	l=len(unparmre.group(1))
 	value={}
     else:
-	if not text or not strip(text): return result
+	if not text or not strip(text): return Args(result,keys)
 	raise InvalidParameter, text
 
     lt=string.find(name,':')
@@ -276,8 +296,9 @@ def parse(text,
 	name=name[:lt]
 
     result[name]=value
+    keys.append(name)
 
-    return parse(text[l:],result)
+    return parse(text[l:],result,keys)
 
 def quotedHTML(text,
 	       character_entities=(
@@ -366,6 +387,10 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.22  1998/04/15 14:23:36  jim
+# Changed parse to return a mapping object that keeps its
+# items sorted in original order.
+#
 # Revision 1.21  1998/04/14 15:20:39  jim
 # No longer sort items in input form.
 #
