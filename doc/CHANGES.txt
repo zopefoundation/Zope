@@ -103,6 +103,8 @@ Zope Changes
 
     Bugs fixed
 
+     - ObjectManager no longer raises string exceptions
+
      - Collector #1260: Testing/__init__.py no longer changes the
        INSTANCE_HOME.
     

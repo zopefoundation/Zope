@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.172 2004/03/17 23:51:23 urbanape Exp $"""
+$Id: ObjectManager.py,v 1.173 2004/03/23 06:51:13 Zen Exp $"""
 
-__version__='$Revision: 1.172 $'[11:-2]
+__version__='$Revision: 1.173 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -49,8 +49,6 @@ customImporters={
 
 bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$\(\)# ]').search #TS
 
-BadRequestException = 'Bad Request'
-
 def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object
     # with the given id already exists. If allow_dup is true,
@@ -60,17 +58,17 @@ def checkValidId(self, id, allow_dup=0):
 
     if not id or not isinstance(id, StringType):
         if isinstance(id, UnicodeType): id = escape(id)
-        raise BadRequestException, ('Empty or invalid id specified', id)
+        raise BadRequest, ('Empty or invalid id specified', id)
     if bad_id(id) is not None:
-        raise BadRequestException, (
+        raise BadRequest, (
             'The id "%s" contains characters illegal in URLs.' % escape(id))
-    if id in ('.', '..'): raise BadRequestException, (
+    if id in ('.', '..'): raise BadRequest, (
         'The id "%s" is invalid because it is not traversable.' % id)
-    if id.startswith('_'): raise BadRequestException, (
+    if id.startswith('_'): raise BadRequest, (
         'The id "%s" is invalid because it begins with an underscore.' % id)
-    if id.startswith('aq_'): raise BadRequestException, (
+    if id.startswith('aq_'): raise BadRequest, (
         'The id "%s" is invalid because it begins with "aq_".' % id)
-    if id.endswith('__'): raise BadRequestException, (
+    if id.endswith('__'): raise BadRequest, (
         'The id "%s" is invalid because it ends with two underscores.' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
@@ -81,16 +79,16 @@ def checkValidId(self, id, allow_dup=0):
             if hasattr(aq_base(self), id):
                 # The object is located in this ObjectManager.
                 if not flags & REPLACEABLE:
-                    raise BadRequestException, (
+                    raise BadRequest, (
                         'The id "%s" is invalid - it is already in use.' % id)
                 # else the object is replaceable even if the UNIQUE
                 # flag is set.
             elif flags & UNIQUE:
-                raise BadRequestException, ('The id "%s" is reserved.' % id)
+                raise BadRequest, ('The id "%s" is reserved.' % id)
     if id == 'REQUEST':
-        raise BadRequestException, 'REQUEST is a reserved name.'
+        raise BadRequest, 'REQUEST is a reserved name.'
     if '/' in id:
-        raise BadRequestException, (
+        raise BadRequest, (
             'The id "%s" contains characters illegal in URLs.' % id)
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
@@ -528,7 +526,7 @@ class ObjectManager(
         """Import an object from a file"""
         dirname, file=os.path.split(file)
         if dirname:
-            raise BadRequestException, 'Invalid file name %s' % escape(file)
+            raise BadRequest, 'Invalid file name %s' % escape(file)
 
         cfg = getConfiguration()
         for impath in (cfg.instancehome, cfg.zopehome):
@@ -536,7 +534,7 @@ class ObjectManager(
             if os.path.exists(filepath):
                 break
         else:
-            raise BadRequestException, 'File does not exist: %s' % escape(file)
+            raise BadRequest, 'File does not exist: %s' % escape(file)
 
         self._importObjectFromFile(filepath, verify=not not REQUEST,
                                    set_owner=set_owner)
