@@ -70,6 +70,9 @@ Zope Changes
 	  standard Zope objects. Zope developers can add help for their
 	  Python Products and Control Panel Products.
 
+        - The message returned when an empty result set is returned
+          from a ZSQL Method has been clarified.
+
       Bugs Fixed
 
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
