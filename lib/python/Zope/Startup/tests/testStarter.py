@@ -105,20 +105,27 @@ class ZopeStarterTestCase(unittest.TestCase):
                path <<INSTANCE_HOME>>/event.log
               level info
              </logfile>
+             <logfile>
+               path <<INSTANCE_HOME>>/event2.log
+              level blather
+             </logfile>
            </eventlog>""")
         starter = ZopeStarter(conf)
+        self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
+                         logging.NOTSET)
         starter.setupStartupHandler()
         self.assert_(not zLOG._call_initialize)
         self.assertEqual(starter.startup_handler.formatter,
                          zLOG.EventLogger.formatters['file'])
-        self.assertEqual(starter.startup_handler.level,
-                         logging.DEBUG)
+
+        # startup handler should take on the level of the event log handler
+        # with the lowest level
+        self.assertEqual(starter.startup_handler.level, 15) # 15 is BLATHER
         self.assertEqual(starter.startup_handler,
                      zLOG.EventLogger.EventLogger.logger.handlers[0])
-        self.assertEqual(len(zLOG.EventLogger.EventLogger.logger.handlers), 1)
         self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
-                         logging.DEBUG)
-        self.assertEqual(starter.startup_handler.level, logging.DEBUG)
+                         15)
+        self.assertEqual(len(zLOG.EventLogger.EventLogger.logger.handlers), 1)
         self.failUnlessEqual(starter.startup_handler.stream, sys.stderr)
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
@@ -230,7 +237,7 @@ class ZopeStarterTestCase(unittest.TestCase):
         import sys
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
-            debug-mode off 
+            debug-mode off
             <eventlog>
              level info
              <logfile>
@@ -252,11 +259,15 @@ class ZopeStarterTestCase(unittest.TestCase):
            </logger>
            """)
         try:
+            self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
+                             logging.NOTSET)
             starter = ZopeStarter(conf)
             starter.setupStartupHandler()
             starter.info('hello')
             starter.removeStartupHandler()
             starter.setupConfiguredLoggers()
+            self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
+                             logging.INFO)
             starter.flushStartupHandlerBuffer()
             l = open(os.path.join(TEMPNAME, 'event.log')).read()
             self.failUnless(l.find('hello') > -1)
