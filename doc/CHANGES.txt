@@ -33,8 +33,8 @@ Zope Changes
        than one attribute of an object. This removes the ties between the
        indexes ID and the attribute name to be indexed. 
 
-     - Integration of reStructuredText (reST). 
-       See doc/RESTRUCTUREDTEXT.txt for details.
+     - Integration of reStructuredText (reST) and the ZReST product
+       by Richard Jones.  See doc/RESTRUCTUREDTEXT.txt for details.
 
     Bugs Fixed
 
