@@ -75,10 +75,10 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.2 1998/09/02 14:35:55 jim Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.3 1998/09/02 21:06:06 jim Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
-from DT_Util import *
+from DT_Util import parse_params, name_param, InstanceDict, render_blocks
 
 class With:
     blockContinuations=()

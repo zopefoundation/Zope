@@ -164,11 +164,11 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.16 1998/09/02 14:35:54 jim Exp $'
-__version__='$Revision: 1.16 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.17 1998/09/02 21:06:05 jim Exp $'
+__version__='$Revision: 1.17 $'[11:-2]
 
-from DT_Util import *
-import ts_regex
+from DT_Util import parse_params, name_param, html_quote
+import regex, string, sys, regex
 from string import find, split, join
 
 class Var: 
@@ -277,24 +277,15 @@ class Call:
 	self.simple_form=expr,None
 
 
-def html_quote(v, name='(Unknown name)', md={},
-	       character_entities=(
-		       (('&'), '&amp;'),
-		       (("<"), '&lt;' ),
-		       ((">"), '&gt;' ),
-		       (('"'), '&quot;'))): #"
-        text=str(v)
-	for re,name in character_entities:
-            if find(text, re) >= 0: text=join(split(text,re),name)
-	return text
-
 def url_quote(v, name='(Unknown name)', md={}):
     import urllib
     return urllib.quote(str(v))
 
-def newline_to_br(v, name='(Unknown name)', md={},
-                  nl=ts_regex.compile('\r?\n')):
-    return gsub(nl,'<br>\n',str(v))
+def newline_to_br(v, name='(Unknown name)', md={}):
+    v=str(v)
+    if find(v,'\r') >= 0: v=join(split(v,'\r'),'')
+    if find(v,'\n') >= 0: v=join(split(v,'\n'),'<br>\n')
+    return v
 
 def whole_dollars(v, name='(Unknown name)', md={}):
     try: return "$%d" % v
@@ -305,11 +296,20 @@ def dollars_and_cents(v, name='(Unknown name)', md={}):
     except: return ''
 
 def thousands_commas(v, name='(Unknown name)', md={},
-                     thou=ts_regex.compile("\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)")):
+                     thou=regex.compile(
+                         "\([0-9]\)\([0-9][0-9][0-9]\([,.]\|$\)\)").search):
     v=str(v)
-    while thou.search(v) >= 0:
-	v=sub(thou,"\\1,\\2",v)
-    return v
+    vl=split(v,'.')
+    if not vl: return v
+    v=vl[0]
+    del vl[0]
+    if vl: s='.'+join(vl,'.')
+    else: s=''
+    l=thou(v)
+    while l >= 0:
+        v=v[:l+1]+','+v[l+1:]
+        l=thou(v)
+    return v+s
     
 def whole_dollars_with_commas(v, name='(Unknown name)', md={}):
     try: v= "$%d" % v
@@ -360,13 +360,39 @@ special_formats={
 
 def spacify(val): return gsub('_', ' ', val)
 
-modifiers=(html_quote, url_quote, newline_to_br, lower, upper,
-	   capitalize, spacify, thousands_commas, sql_quote)
+modifiers=(html_quote, url_quote, newline_to_br, string.lower, string.upper,
+	   string.capitalize, spacify, thousands_commas, sql_quote)
 modifiers=map(lambda f: (f.__name__, f), modifiers)
 
+class Comment:
+    '''Comments
+
+    The 'comment' tag can be used to simply include comments
+    in DTML source.
+    
+    For example::
+    
+      <!--#comment-->
+      
+        This text is not rendered.
+
+      <!--#/comment-->
+    ''' 
+    name='comment'
+    blockContinuations=()
+
+    def __init__(self, args, fmt=''): pass
+
+    def render(self, md):
+	return ''
+
+    __call__=render
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.17  1998/09/02 21:06:05  jim
+# many changes for thread safety, bug fixes, and faster import
+#
 # Revision 1.16  1998/09/02 14:35:54  jim
 # open source copyright
 #

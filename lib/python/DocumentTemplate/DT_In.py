@@ -349,14 +349,15 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.26 1998/09/02 14:35:52 jim Exp $'
-__version__='$Revision: 1.26 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.27 1998/09/02 21:06:04 jim Exp $'
+__version__='$Revision: 1.27 $'[11:-2]
 
-from DT_Util import *
+from DT_Util import ParseError, parse_params, name_param
+from DT_Util import render_blocks, InstanceDict
 from string import find, atoi, join
 import ts_regex
-from regsub import gsub
 from DT_InSV import sequence_variables, opt
+TupleType=type(())
 
 class InFactory:
     blockContinuations=('else',)
@@ -677,19 +678,21 @@ class InClass:
 basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1
 	    }.has_key
 
-def int_param(params,md,name,default=0):
+def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
 	try: v=atoi(v)
 	except:
 	    v=md[v]
-	    if type(v)==types.StringType:
-		v=atoi(v)
+	    if type(v) is st: v=atoi(v)
     return v
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.27  1998/09/02 21:06:04  jim
+# many changes for thread safety, bug fixes, and faster import
+#
 # Revision 1.26  1998/09/02 14:35:52  jim
 # open source copyright
 #

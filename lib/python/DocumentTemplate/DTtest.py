@@ -55,8 +55,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.6 1998/09/02 14:35:55 jim Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: DTtest.py,v 1.7 1998/09/02 21:06:06 jim Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -100,6 +100,7 @@ def test1():
 
     ss=String(
 	"""\
+        %(comment)[ blah %(comment)]
 	<html><head><title>Test of documentation templates</title></head>
 	<body>
 	%(if args)[
@@ -432,7 +433,7 @@ def test10():
     html=HTML(
 	"""
 	      <!--#var spam fmt="$%.2f bob's your uncle" null="spam%eggs!|"-->
-	""")
+	""") #'
     print html(spam=42)
     print html(spam=None)
     #print html(spam=Missing.Value)
@@ -501,6 +502,26 @@ def test13():
       <!--#var expr="_.render(i.y)"-->, 
       <!--#var expr="_.render(i.h2)"-->""")(i=C())
 
+def test14():
+    # test with tag
+    class person:
+        name='Jim'
+        height_inches=73
+
+    print HTML("""<!--#with person-->
+    Hi, my name is <!--#var name-->
+    My height is <!--#var "height_inches*2.54"--> centimeters.
+    <!--#/with-->""")(person=person)
+
+def test15():
+    # test raise tag
+    try:
+        print HTML("""<!--#raise IndexError-->
+        The raise tag test suceeded!
+        <!--#/raise-->""")()
+    except IndexError, v:
+        print v
+
 def main():
 	import traceback
 	print 'Test 1', '='*60
@@ -533,6 +554,12 @@ def main():
 	print 'Test 11', '='*60
 	try: test11()
 	except: traceback.print_exc()
+	print 'Test 14', '='*60
+	try: test14()
+	except: traceback.print_exc()
+	print 'Test 15', '='*60
+	try: test15()
+	except: traceback.print_exc()
     
 
 if __name__ == "__main__":
@@ -542,6 +569,9 @@ if __name__ == "__main__":
 
 ############################################################################
 # $Log: DTtest.py,v $
+# Revision 1.7  1998/09/02 21:06:06  jim
+# many changes for thread safety, bug fixes, and faster import
+#
 # Revision 1.6  1998/09/02 14:35:55  jim
 # open source copyright
 #

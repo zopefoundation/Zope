@@ -54,12 +54,11 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.8 1998/09/02 14:35:52 jim Exp $"""
+$Id: DT_HTML.py,v 1.9 1998/09/02 21:06:03 jim Exp $"""
 
 from DT_String import String, FileMixin
-import DT_Doc, DT_String, regex
-from DT_Util import *
-from regsub import gsub
+import DT_String, regex
+from DT_Util import ParseError
 from string import strip, find, split, join
 
 class dtml_re_class:
@@ -109,7 +108,19 @@ class dtml_re_class:
 	
 
 class HTML(DT_String.String):
-    __doc__=DT_Doc.HTML__doc__
+    """HTML Document Templates
+
+    HTML Document templates use HTML server-side-include syntax,
+    rather than Python format-string syntax.  Here's a simple example:
+
+      <!--#in results-->
+        <!--#var name-->
+      <!--#/in-->
+
+    HTML document templates quote HTML tags in source when the
+    template is converted to a string.  This is handy when templates
+    are inserted into HTML editing forms.
+    """
 
     def tagre(self):
 	return dtml_re_class()

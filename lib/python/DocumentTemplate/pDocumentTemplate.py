@@ -54,10 +54,10 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.15 1998/09/02 14:35:58 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.16 1998/09/02 21:06:07 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
-import string, sys
+import string, sys, types
 from string import join
 
 StringType=type('')

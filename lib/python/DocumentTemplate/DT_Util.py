@@ -51,28 +51,36 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.41 1998/09/02 14:35:54 jim Exp $''' 
-__version__='$Revision: 1.41 $'[11:-2]
+'''$Id: DT_Util.py,v 1.42 1998/09/02 21:06:05 jim Exp $''' 
+__version__='$Revision: 1.42 $'[11:-2]
 
-import sys, regex, string, types, math, os
-from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
-from types import *
-from regsub import gsub, sub, split
-from __builtin__ import *
+import regex, string, math, os
+from string import rfind, strip, join, atoi,lower,upper,capitalize,split,find
 import VSEval
 
 ParseError='Document Template Parse Error'
 ValidationError='Unauthorized'
 
-def int_param(params,md,name,default=0):
+
+def html_quote(v, name='(Unknown name)', md={},
+	       character_entities=(
+		       (('&'), '&amp;'),
+		       (("<"), '&lt;' ),
+		       ((">"), '&gt;' ),
+		       (('"'), '&quot;'))): #"
+        text=str(v)
+	for re,name in character_entities:
+            if find(text, re) >= 0: text=join(split(text,re),name)
+	return text
+
+def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]
     except: v=default
     if v:
 	try: v=atoi(v)
 	except:
 	    v=md[v]
-	    if type(v)==types.StringType:
-		v=atoi(v)
+	    if type(v) is st: v=atoi(v)
     return v
 
 def careful_getattr(md, inst, name):
@@ -409,167 +417,3 @@ def parse_params(text,
     text=strip(text[l:])
     if text: return apply(parse_params,(text,result),parms)
     else: return result
-
-############################################################################
-# $Log: DT_Util.py,v $
-# Revision 1.41  1998/09/02 14:35:54  jim
-# open source copyright
-#
-# Revision 1.40  1998/08/05 18:26:27  jim
-# Improved handling of expr syntax errors.  Could be better, but code
-# is dependent on Python version.
-#
-# Revision 1.39  1998/07/29 15:35:27  jim
-# Fixed bug in handling "..." shorthand.
-#
-# Revision 1.38  1998/07/27 23:42:12  jim
-# Revamped attribute parsing to:
-#
-#   - Handle valueless attributes a bit better.
-#     In particular, if a valueless parameter is not
-#     in the first position, it is not confused for a name,
-#
-#   - Added "..." shorthand for exprs, so now you can:
-#
-#       <!--#if "x < 1"-->
-#
-# Revision 1.37  1998/05/20 17:54:34  jim
-# Fixed obsolete stupid attr function. Blech.
-#
-# Revision 1.36  1998/05/14 16:30:49  jim
-# Added render function.
-#
-# Revision 1.35  1998/05/13 22:15:27  jim
-# Updated doc string.
-#
-# Revision 1.34  1998/05/13 22:06:31  jim
-# Updated doc string.
-#
-# Revision 1.33  1998/05/13 21:50:14  jim
-# Moved special trick to handle _=_vars here so as to not break other uses
-# of VSEval.
-#
-# Revision 1.32  1998/05/13 21:09:23  jim
-# Changed the way that '_' is handled.  It is now an alias for the template dict.
-#
-# Revision 1.31  1998/04/02 17:37:37  jim
-# Major redesign of block rendering. The code inside a block tag is
-# compiled as a template but only the templates blocks are saved, and
-# later rendered directly with render_blocks.
-#
-# Added with tag.
-#
-# Also, for the HTML syntax, we now allow spaces after # and after end
-# or '/'.  So, the tags::
-#
-#   <!--#
-#     with spam
-#     -->
-#
-# and::
-#
-#   <!--#
-#     end with
-#     -->
-#
-# are valid.
-#
-# Revision 1.30  1998/03/26 22:02:16  jim
-# Changed value of ValidationError to Unauthorized.
-#
-# Revision 1.29  1998/03/26 16:09:11  jim
-# *** empty log message ***
-#
-# Revision 1.28  1998/03/26 16:05:46  jim
-# *** empty log message ***
-#
-# Revision 1.27  1998/03/26 14:59:29  jim
-# Fixed bug in exporting rand modules.
-#
-# Revision 1.26  1998/03/12 20:52:11  jim
-# Added namespace function to _ module for exprs.
-#
-# Revision 1.25  1998/03/10 15:04:58  jim
-# Added better handling of case like:
-#
-#   <!--#in expr="whatever" mapping-->
-#
-# Revision 1.24  1998/03/06 23:22:36  jim
-# Added "builtin" 'attr' function: attr(inst,name,_vars)
-#
-# Revision 1.23  1998/03/04 18:18:40  jim
-# Extended the parse_name utility to handle other name-like tags.
-#
-# Revision 1.22  1998/01/13 19:35:55  jim
-# Added rand and whrand.
-#
-# Revision 1.21  1998/01/12 16:48:40  jim
-# Fixed error reporting bug.
-#
-# Revision 1.20  1997/11/27 00:10:50  jim
-# Hacked my way out of using new module.
-#
-# Revision 1.19  1997/11/25 15:26:34  jim
-# Added test to expr documentation.
-#
-# Revision 1.18  1997/11/25 15:20:30  jim
-# Expanded test function to allow any number of arguments.
-#
-# Revision 1.17  1997/11/19 15:42:47  jim
-# added _ prefix to push and pop methods to make them private
-#
-# Revision 1.16  1997/11/19 15:33:32  jim
-# Updated parse_params so that you can define an attribute that, if
-# used, must have a value.  This is done by specifying None as a default
-# value.
-#
-# Revision 1.15  1997/11/12 19:44:13  jim
-# Took out setting __roles__ for pop and push.
-#
-# Revision 1.14  1997/11/11 18:13:48  jim
-# updated expr machinery to use parse-tree manipulation
-#
-# Revision 1.13  1997/10/29 22:06:06  jim
-# Moved func_code from DT_Util to DT_String.
-#
-# Took stab at expression documentation.
-#
-# Revision 1.12  1997/10/29 21:30:24  jim
-# Added "builtin" objects.
-#
-# Revision 1.11  1997/10/29 21:03:26  jim
-# *** empty log message ***
-#
-# Revision 1.10  1997/10/29 20:43:24  jim
-# *** empty log message ***
-#
-# Revision 1.9  1997/10/29 16:58:30  jim
-# Modified to explicitly make push and pop private.
-#
-# Revision 1.8  1997/10/29 16:17:45  jim
-# Added careful_getslice.
-#
-# Revision 1.7  1997/10/28 22:10:46  jim
-# changed 'acquire' to 'aq_acquire'.
-#
-# Revision 1.6  1997/10/28 21:50:01  jim
-# Updated validation rules to use DT validation method.
-#
-# Revision 1.5  1997/10/27 17:38:41  jim
-# Added some new experimental validation machinery.
-# This is, still a work in progress.
-#
-# Fixed some error generation bugs.
-#
-# Revision 1.4  1997/09/25 18:56:39  jim
-# fixed problem in reporting errors
-#
-# Revision 1.3  1997/09/22 14:42:50  jim
-# added expr
-#
-# Revision 1.2  1997/09/02 20:35:09  jim
-# Various fixes to parsing code.
-#
-# Revision 1.1  1997/08/27 18:55:43  jim
-# initial
-#

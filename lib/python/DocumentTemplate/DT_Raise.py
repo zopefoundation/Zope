@@ -65,11 +65,10 @@
     <!--#/if-->
 
 ''' 
-__rcs_id__='$Id: DT_Raise.py,v 1.5 1998/09/02 14:35:53 jim Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.6 1998/09/02 21:06:04 jim Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
-from DT_Util import *
-import sys
+from DT_Util import parse_params, name_param, render_blocks
 
 class Raise:
     blockContinuations=()
@@ -104,6 +103,9 @@ class Raise:
 ##########################################################################
 #
 # $Log: DT_Raise.py,v $
+# Revision 1.6  1998/09/02 21:06:04  jim
+# many changes for thread safety, bug fixes, and faster import
+#
 # Revision 1.5  1998/09/02 14:35:53  jim
 # open source copyright
 #

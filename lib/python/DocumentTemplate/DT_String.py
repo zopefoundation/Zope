@@ -51,17 +51,33 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.14 1998/09/02 14:35:53 jim Exp $"
+"$Id: DT_String.py,v 1.15 1998/09/02 21:06:04 jim Exp $"
 
-from string import *
-import DT_Doc, DT_Var, DT_In, DT_If, regex, ts_regex, DT_Raise, DT_With
-Var=DT_Var.Var
+from string import split, strip
+import regex, ts_regex
 
-from DT_Util import *
-from DT_Comment import Comment
+from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks
+from DT_Var import Var, Call, Comment
+
 
 class String:
-    __doc__=DT_Doc.String__doc__
+    """Document templates defined from strings.
+
+    Document template strings use an extended form of python string
+    formatting.  To insert a named value, simply include text of the
+    form: '%(name)x', where 'name' is the name of the value and 'x' is
+    a format specification, such as '12.2d'.
+
+    To intrduce a block such as an 'if' or an 'in' or a block continuation,
+    such as an 'else', use '[' as the format specification.  To
+    terminate a block, ise ']' as the format specification, as in::
+
+      %(in results)[
+        %(name)s
+      %(in results)]
+
+    """ 
+
     isDocTemp=1
 
     # Document Templates masquerade as functions:
@@ -79,15 +95,15 @@ class String:
 	    self.errQuote(self.__name__))
 
     commands={
-	'var': DT_Var.Var,
-	'call': DT_Var.Call,
-	'in': DT_In.In,
-	'with': DT_With.With,
-	'if': DT_If.If,
-	'unless': DT_If.Unless,
-	'else': DT_If.Else,
+	'var': Var,
+	'call': Call,
+	'in': ('in', 'DT_In','In'),
+	'with': ('with', 'DT_With','With'),
+	'if': ('if', 'DT_If','If'),
+	'unless': ('unless', 'DT_If','Unless'),
+	'else': ('else', 'DT_If','Else'),
 	'comment': Comment,
-	'raise': DT_Raise.Raise,
+	'raise': ('raise', 'DT_Raise','Raise'),
 	}
 
     def SubTemplate(self, name): return String('', __name__=name)
@@ -103,6 +119,16 @@ class String:
 	    ')\(<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![]\)' # end
 	    , regex.casefold) 
 
+    def _parseTag(self, tagre, command=None, sargs='', tt=type(())):
+        tag, args, command, coname = self.parseTag(tagre,command,sargs)
+        if type(command) is tt:
+            cname, module, name = command
+            d={}
+            exec 'from %s import %s' % (module, name) in d
+            command=d[name]
+            self.commands[cname]=command
+        return tag, args, command, coname
+    
     def parseTag(self, tagre, command=None, sargs=''):
 	"""Parse a tag using an already matched re
 
@@ -151,7 +177,7 @@ class String:
         l=tagre.search(text,start)
 	while l >= 0:
 
-	    try: tag, args, command, coname = self.parseTag(tagre)
+	    try: tag, args, command, coname = self._parseTag(tagre)
 	    except ParseError, m: self.parse_error(m[0],m[1],text,l)
 
 	    s=text[start:l]
@@ -196,7 +222,7 @@ class String:
 	    l=tagre.search(text,start)
 	    if l < 0: self.parse_error('No closing tag', stag, text, sloc)
 
-	    try: tag, args, command, coname= self.parseTag(tagre,scommand,sa)
+	    try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
 	    except ParseError, m: self.parse_error(m[0],m[1], text, l)
 	    
 	    if command:
@@ -233,7 +259,7 @@ class String:
 	    l=tagre.search(text,start)
 	    if l < 0: self.parse_error('No closing tag', stag, text, sloc)
 
-	    try: tag, args, command, coname= self.parseTag(tagre,scommand,sa)
+	    try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
 	    except ParseError, m: self.parse_error(m[0],m[1], text, l)
 
 	    start=l+len(tag)
@@ -297,7 +323,7 @@ class String:
 	    self.initvars(mapping, vars)
 	if source_string is not None: 
 	    self.raw=source_string
-	self.cooked=self.cook()
+	self.cook()
 
     def manage_edit(self,data,REQUEST=None):
 	self.munge(data)
@@ -308,8 +334,15 @@ class String:
     def read(self,raw=None):
 	return self.read_raw()
 
-    def cook(self):
-	self.blocks=self.parse(self.read())
+    def cook(self,
+             cooklock=ts_regex.allocate_lock(),
+             ):
+        cooklock.acquire()
+        try:
+            self.blocks=self.parse(self.read())
+            self.cooked=None
+        finally:
+            cooklock.release()
 
     def initvars(self, globals, vars):
 	if globals:
@@ -384,8 +417,7 @@ class String:
 	if not hasattr(self,'cooked'):
 	    try: changed=self.__changed__()
 	    except: changed=1
-	    cooked=self.cook()
-	    self.cooked=cooked
+	    self.cook()
 	    if not changed: self.__changed__(0)
 
 	pushed=None

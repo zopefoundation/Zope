@@ -54,11 +54,12 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.15 1998/09/02 14:35:56 jim Exp $'
-__version__='$Revision: 1.15 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.16 1998/09/02 21:06:07 jim Exp $'
+__version__='$Revision: 1.16 $'[11:-2]
 
 from string import join, find, split, translate
-import sys, gparse, string
+import string
+gparse=None
 
 nltosp=string.maketrans('\r\n','  ')
 
@@ -116,7 +117,9 @@ class Eval:
 
 	  globals -- A global namespace.
 	"""
-
+        global gparse
+        if gparse is None: import gparse
+        
 	self.__name__=expr
 	expr=translate(expr,nltosp)
 	self.expr=expr
