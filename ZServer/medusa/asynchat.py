@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.4 1999/01/15 02:25:16 amos Exp $
+#	$Id: asynchat.py,v 1.5 1999/01/18 22:43:43 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -29,6 +29,7 @@ import socket
 import asyncore
 import string
 import types
+from producers import NotReady
 
 # This class adds support for 'chat' style protocols - where one side
 # sends a 'command', and the other sends a response (examples would be
@@ -49,9 +50,17 @@ import types
 # you - by calling your self.found_terminator() method
 
 # Added support for sized input. If you set terminator to an integer
-# instead of a string, then output will be collected and sent to
-# 'collect_incoming_data' until the given number of bytes have been
-# read. At that point, 'found_terminator' will be called.
+# or a long, instead of a string, then output will be collected and
+# sent to 'collect_incoming_data' until the given number of bytes have
+# been read. At that point, 'found_terminator' will be called.
+
+# Added support for future producers. See producers.py for more info
+# on the future producer interface. Suffice it to say that if you
+# wish to handle future producers in your asynchat subclass, you
+# need to call self.producer_fifo.ready in your writable method. For
+# your convenience we include such a method, 'writable_future'. If you
+# are not interested in future producers, simply don't use them. You
+# incur no overhead.
 
 class async_chat (asyncore.dispatcher):
 	"""This is an abstract class.  You must derive from this class, and add
@@ -109,17 +118,17 @@ class async_chat (asyncore.dispatcher):
 			# until we have read that much. ac_in_buffer_read tracks
 			# how much data has been read.
 			if type(terminator)==types.IntType:
-				self.ac_in_buffer_read=self.ac_in_buffer_read+len(data)		
-				if self.ac_in_buffer_read < terminator:
+				self.ac_in_buffer_read=self.ac_in_buffer_read+len(data)
+				if self.ac_in_buffer_read < self.terminator:
 					self.collect_incoming_data(self.ac_in_buffer)
 					self.ac_in_buffer=''
-				elif self.ac_in_buffer_read == terminator:
+				elif self.ac_in_buffer_read == self.terminator:
 					self.collect_incoming_data(self.ac_in_buffer)
 					self.ac_in_buffer=''
 					self.ac_in_buffer_read=0
 					self.found_terminator()
 				else:
-					border=terminator - (self.ac_in_buffer_read - len(data))
+					border=self.terminator-(self.ac_in_buffer_read-len(data))
 					self.collect_incoming_data(self.ac_in_buffer[:border])
 					self.ac_in_buffer=self.ac_in_buffer[border:]
 					self.ac_in_buffer_read=0
@@ -180,6 +189,10 @@ class async_chat (asyncore.dispatcher):
 	def writable (self):
 		return len(self.ac_out_buffer) or len(self.producer_fifo) or (not self.connected)
 
+	# To use future producers override writable with writable_future 
+	def writable_future(self):
+		return len(self.ac_out_buffer) or self.producer_fifo.ready() or (not self.connected)
+
 	def close_when_done (self):
 		self.producer_fifo.push (None)
 
@@ -196,7 +209,11 @@ class async_chat (asyncore.dispatcher):
 						self.producer_fifo.pop()
 						self.close()
 					return
-				data = p.more()
+				try:
+					data = p.more()
+				except NotReady:
+					return		
+				
 				if data:
 					self.ac_out_buffer = self.ac_out_buffer + data
 					return
@@ -221,8 +238,7 @@ class async_chat (asyncore.dispatcher):
 		# Emergencies only!
 		self.ac_in_buffer = ''
 		self.ac_out_buffer == ''
-		while self.producer_fifo:
-			self.producer_fifo.pop()
+		self.producer_fifo.list=[]
 
 	# ==================================================
 	# support for push mode.
@@ -233,6 +249,10 @@ class async_chat (asyncore.dispatcher):
 
 	def writable_push (self):
 		return self.connected and len(self.ac_out_buffer)
+
+
+		
+
 
 class simple_producer:
 	def __init__ (self, data, buffer_size=512):
@@ -266,12 +286,17 @@ class fifo:
 		self.list.append (data)
 
 	def pop (self):
-		if self.list:
+		if self.ready():
 			result = self.list[0]
 			del self.list[0]
 			return (1, result)
 		else:
 			return (0, None)
+			
+	def ready(self):
+		"Is the first producer in the fifo ready?"
+		if len(self.list):
+			return not hasattr(self.list[0],'ready') or self.list[0].ready()
 
 # Given 'haystack', see if any prefix of 'needle' is at its end.  This
 # assumes an exact match has already been checked.  Return the number of
