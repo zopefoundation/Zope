@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -424,13 +424,19 @@ def absattr(attr):
     return attr
 
 def _get_id(ob, id):
+    # Allow containers to override the generation of
+    # object copy id by attempting to call its _get_id
+    # method, if it exists.
+    if hasattr(ob, '_get_id'):
+        return ob._get_id(id)
     try: ob=ob.aq_base
     except: pass
     n=0
     if (len(id) > 8) and (id[8:]=='copy_of_'):
         n=1
+    orig_id=id
     while (hasattr(ob, id)):
-        id='copy%s_of_%s' % (n and n+1 or '', id)
+        id='copy%s_of_%s' % (n and n+1 or '', orig_id)
         n=n+1
     return id
 
