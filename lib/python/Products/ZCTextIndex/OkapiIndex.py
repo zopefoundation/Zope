@@ -55,16 +55,8 @@ class OkapiIndex(BaseIndex):
         self._totaldoclen = 0L
 
     def index_doc(self, docid, text):
-        wids = self._lexicon.sourceToWordIds(text)
-        self._docweight[docid] = len(wids)
-        self._totaldoclen += len(wids)
-
-        wid2count = self._get_frequencies(wids)
-        for wid, count in wid2count.items():
-            self._add_wordinfo(wid, count, docid)
-
-        self._docwords[docid] = WidCode.encode(wids)
-        return len(wids)
+        count = BaseIndex.index_doc(self, docid, text)
+        self._totaldoclen += count
 
     def unindex_doc(self, docid):
         self._totaldoclen -= self._docweight[docid]
@@ -125,15 +117,11 @@ class OkapiIndex(BaseIndex):
         return 10   # arbitrary
 
     def _get_frequencies(self, wids):
-        """Return individual term frequencies."""
-        # Computes f(d, t) for each term.
-        # Returns a dict mapping wid to the number of times wid appeares
-        # in wids, {t -> f(d, t)}
         d = {}
         dget = d.get
         for wid in wids:
             d[wid] = dget(wid, 0) + 1
-        return d
+        return d, len(wids)
 
 """
 "Okapi" (much like "cosine rule" also) is a large family of scoring gimmicks.

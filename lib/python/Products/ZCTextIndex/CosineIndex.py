@@ -69,15 +69,6 @@ class CosineIndex(BaseIndex):
     #    W(q) = sqrt(sum(for t in q: w(q, t) ** 2))
     #        computed by self.query_weight()
 
-    def index_doc(self, docid, text):
-        wids = self._lexicon.sourceToWordIds(text)
-        uniqwids, freqs, docweight = self._get_frequencies(wids)
-        for i in range(len(uniqwids)):
-            self._add_wordinfo(uniqwids[i], freqs[i], docid)
-        self._docweight[docid] = docweight
-        self._docwords[docid] = WidCode.encode(wids)
-        return len(wids)
-
     def _search_wids(self, wids):
         if not wids:
             return []
@@ -111,30 +102,22 @@ class CosineIndex(BaseIndex):
         return scaled_int(math.sqrt(sum))
 
     def _get_frequencies(self, wids):
-        """Return individual doc-term weights and docweight."""
-        # Computes w(d, t) for each term, and W(d).
-        # Return triple:
-        #    [wid0, wid1, ...],
-        #    [w(d, wid0)/W(d), w(d, wid1)/W(d), ...],
-        #    W(d)
-        # The second list and W(d) are scaled_ints.
         d = {}
+        dget = d.get
         for wid in wids:
-            d[wid] = d.get(wid, 0) + 1
+            d[wid] = dget(wid, 0) + 1
         Wsquares = 0.0
-        weights = []
-        push = weights.append
-        for count in d.values():
+        for wid, count in d.items():
             w = doc_term_weight(count)
             Wsquares += w * w
-            push(w)
+            d[wid] = w
         W = math.sqrt(Wsquares)
         #print "W = %.3f" % W
-        for i in xrange(len(weights)):
-            #print i, ":", "%.3f" % weights[i],
-            weights[i] = scaled_int(weights[i] / W)
-            #print "->", weights[i]
-        return d.keys(), weights, scaled_int(W)
+        for wid, weight in d.items():
+            #print i, ":", "%.3f" % weight,
+            d[wid] = scaled_int(weight / W)
+            #print "->", d[wid]
+        return d, scaled_int(W)
 
     # The rest are helper methods to support unit tests
 

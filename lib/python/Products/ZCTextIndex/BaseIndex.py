@@ -82,8 +82,26 @@ class BaseIndex(Persistent):
         """Returns the wordids for a given docid"""
         return WidCode.decode(self._docwords[docid])
 
-    # Subclass must override.
+    # A subclass may wish to extend or override this.
     def index_doc(self, docid, text):
+        # XXX If docid is already known, do something smart.
+        wids = self._lexicon.sourceToWordIds(text)
+        wid2weight, docweight = self._get_frequencies(wids)
+        for wid, weight in wid2weight.items():
+            self._add_wordinfo(wid, weight, docid)
+        self._docweight[docid] = docweight
+        self._docwords[docid] = WidCode.encode(wids)
+        return len(wids)
+
+    # Subclass must override.
+    def _get_frequencies(self, wids):
+        # Compute term frequencies and a doc weight, whatever those mean
+        # to an indexer.
+        # Return pair:
+        #    {wid0: w(d, wid0), wid1: w(d, wid1),  ...],
+        #    docweight
+        # The wid->weight mappings are fed into _add_wordinfo, and docweight
+        # becomes the value of _docweight[docid].
         raise NotImplementedError
 
     # A subclass may wish to extend or override this.
