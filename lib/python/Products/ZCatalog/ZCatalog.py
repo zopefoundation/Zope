@@ -38,6 +38,7 @@ from Products.PluginIndexes.TextIndex import Splitter
 import urllib, time, sys
 import string,logging
 from IZCatalog import IZCatalog
+from ProgressHandler import ProgressMixin, DefaultProgressHandler
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -56,7 +57,7 @@ def manage_addZCatalog(self, id, title,
         return self.manage_main(self, REQUEST,update_menu=1)
 
 
-class ZCatalog(Folder, Persistent, Implicit):
+class ZCatalog(Folder, Persistent, Implicit, ProgressMixin):
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -463,13 +464,23 @@ class ZCatalog(Folder, Persistent, Implicit):
     def reindexIndex(self, name, REQUEST):
         if isinstance(name, str):
             name = (name,)
-        for p in self._catalog.uids.keys():
+
+        paths = self._catalog.uids.keys()
+        num_paths = len(paths)   # inefficient        
+
+        i = 0
+        self.pg_register(DefaultProgressHandler(steps=10))
+        self.pg_init('reindexing %s' % name, num_paths)
+
+        for p in paths:
+            i+=1
+            self.pg_report(i)
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
             if obj is None:
                 LOG.error('reindexIndex could not resolve '
-                          'an object from the uid %r.' % (uid))
+                          'an object from the uid %r.' % p)
             else:
                 # don't update metadata when only reindexing a single
                 # index via the UI
@@ -486,6 +497,8 @@ class ZCatalog(Folder, Persistent, Implicit):
                          % self.__class__.__name__,
                          DeprecationWarning)
                     self.catalog_object(obj, p, idxs=name)
+
+        self.pg_finish()
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
                             URL1=None):
