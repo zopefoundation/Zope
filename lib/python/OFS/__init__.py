@@ -8,12 +8,13 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.2 1997/11/10 16:32:54 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: __init__.py,v 1.3 1997/11/11 19:26:37 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
-import Session
+import Session, DraftFolder
 
 __.meta_types=(
+    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
     {'name':'Session', 'action':'manage_addSessionForm'},
     {'name':'File', 'action':'manage_addFileForm'},
     {'name':'Image', 'action':'manage_addImageForm'},
@@ -23,6 +24,8 @@ __.meta_types=(
 __.methods={
     'manage_addSessionForm': Session.addForm,
     'manage_addSession': Session.add,
+    'manage_addDraftFolderForm': DraftFolder.addForm,
+    'manage_addDraftFolder': DraftFolder.add,
     }
 
 
@@ -32,6 +35,9 @@ __.methods={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.3  1997/11/11 19:26:37  jim
+# Added DraftFolder.
+#
 # Revision 1.2  1997/11/10 16:32:54  jim
 # Changed to support separate Image and File objects.
 #
