@@ -40,7 +40,9 @@ Zope changes
           permission stored in the metatype registry, if available
           (Collector #1975).
 
-        - StructuredText now takes care of your locale settings. 
+        - StructuredText: old StructuredText replaces by StructuredTextNG.
+          Added support for locale settings.  Several bugfixes and code
+          cleanup.
 
         - Image and File objects now support the HTTP Range and If-Range
           headers, enabeling partial downloads of such objects. This can be
