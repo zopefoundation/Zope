@@ -13,15 +13,14 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.59 2002/04/12 19:39:53 Brian Exp $"""
+$Id: Management.py,v 1.60 2002/04/12 19:45:33 Brian Exp $"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from AccessControl import getSecurityManager, Unauthorized
-from AccessControl.SimpleObjectPolicies import _noroles
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
