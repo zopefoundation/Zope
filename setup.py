@@ -641,6 +641,7 @@ setup(
 
     packages=['ZEO', 'ZEO.tests', 'ZEO.zrpc'],
     data_files=[['ZEO', ['ZEO/*.txt']]],
+    cmdclass={'install_data': install_data},
 
 )
 
