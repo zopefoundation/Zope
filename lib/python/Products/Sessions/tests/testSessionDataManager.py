@@ -14,25 +14,24 @@ import sys, os, time
 
 from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working
+from ZODB.POSException import InvalidObjectReference, ConflictError
+from ZODB.DemoStorage import DemoStorage
 from OFS.DTMLMethod import DTMLMethod
 import Acquisition
 from Acquisition import aq_base
 from Products.Sessions.BrowserIdManager import BrowserIdManager
 from Products.Sessions.SessionDataManager import \
-    SessionDataManager, SessionDataManagerErr, SessionDataManagerTraverser
+     SessionDataManager, SessionDataManagerErr, SessionDataManagerTraverser
 from Products.Transience.Transience import \
-    TransientObjectContainer, TransientObject
+     TransientObjectContainer, TransientObject
 from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-from ZODB.POSException import InvalidObjectReference, ConflictError
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 import time, threading
 from cPickle import UnpickleableError
-from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
-    unregisterBeforeTraverse
-import sys
+     unregisterBeforeTraverse
 
 tf_name = 'temp_folder'
 idmgr_name = 'browser_id_manager'
