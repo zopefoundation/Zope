@@ -230,7 +230,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.12 1997/11/19 15:42:46 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.13 1997/12/15 17:34:40 jeffrey Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.12 1997/11/19 15:42:46 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -456,6 +456,10 @@ class In:
 		    else: kw['sequence-end']=0
 		    client=sequence[index]
 		    kw['sequence-index']=index
+		    kw['sequence-index-even']=kw['sequence-index-is-even']=\
+					       index % 2
+		    kw['sequence-index-odd']=kw['sequence-index-is-odd']=\
+					      not (index % 2)
 		    if type(client)==TupleType and len(client)==2:
 			client=client[1]
 		    if mapping:
@@ -791,6 +795,10 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.13  1997/12/15 17:34:40  jeffrey
+# added sequence-index-[is-]even and odd variables for testing in
+# sequences
+#
 # Revision 1.12  1997/11/19 15:42:46  jim
 # added _ prefix to push and pop methods to make them private
 #
