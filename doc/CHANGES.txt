@@ -75,12 +75,26 @@ Zope Changes
 
       Bugs fixed
 
+
+
+    Zope 2.0 beta 5
+
+      Bugs fixed
+
         - Database packing failed in certain cases where the data set
 	  contained many version commits.
 
 	- Database packing generated spurious error logs indicating
 	  that there were bad references for objects created in
 	  ncommitted versions.
+
+	- Fixed bug where ZCatalog's not in the root folder did not
+	  recognize the proper URL of objects using the 'Find'
+	  machinery.  This caused all the objects to mysteriously
+	  disapear when you updated the catalog (because their paths
+	  were wrong).  The Catalog now works correctly anywhere in
+	  the object hierarchy.
+
 
     Zope 2.0 beta 4
     
