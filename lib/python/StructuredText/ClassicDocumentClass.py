@@ -138,6 +138,12 @@ class StructuredTextSection(ST.StructuredTextParagraph):
              (self, StructuredTextSectionTitle(src), subs),
              kw)
 
+    def getColorizableTexts(self):
+        return self._src.getColorizableTexts()
+    
+    def setColorizableTexts(self,src):
+        self._src.setColorizableTexts(src)
+        
 # a StructuredTextTable holds StructuredTextRows
 class StructuredTextTable(ST.StructuredTextDocument):
     """

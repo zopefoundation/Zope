@@ -137,7 +137,13 @@ class StructuredTextSection(ST.StructuredTextParagraph):
        apply(ST.StructuredTextParagraph.__init__,
              (self, StructuredTextSectionTitle(src), subs),
              kw)
-
+    
+    def getColorizableTexts(self):
+        return self._src.getColorizableTexts()
+    
+    def setColorizableTexts(self,src):
+        self._src.setColorizableTexts(src)
+        
 # a StructuredTextTable holds StructuredTextRows
 class StructuredTextTable(ST.StructuredTextParagraph):
     """
