@@ -116,7 +116,7 @@ class WebDAVSrcHandler( zhttp_handler ):
         # We check the user-agent and remove a trailing dot for PATH_INFO
         # and PATH_TRANSLATED
 
-        if string.find(env["HTTP_USER_AGENT"],"Microsoft Data Access Internet Publishing Provider")>-1:
+        if string.find(env.get("HTTP_USER_AGENT",""),"Microsoft Data Access Internet Publishing Provider")>-1:
             if env["PATH_INFO"][-1]=='.':
                 env["PATH_INFO"] = env["PATH_INFO"][:-1]             
 
