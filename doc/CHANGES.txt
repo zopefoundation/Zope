@@ -28,11 +28,6 @@ Zope Changes
        "import" new schema components to allow 3rd-party components
        (such as storages, databases, or logging handlers) to be used.
 
-     - The standard ProperyManager now includes the same label
-       functionality as the CMF SimpleItemWithProperties object.
-       By adding a 'label' entry to the property definition you
-       can now display a prettier label for the property.
-
     Bugs fixed
 
      - Made the control panel properly reflect the cache-size setting
@@ -136,6 +131,11 @@ Zope Changes
      - Add a check to the configurator to ensure that the Python found
        has an expat parser.
 
+     - The standard ProperyManager now includes the same label
+       functionality as the CMF SimpleItemWithProperties object.
+       By adding a 'label' entry to the property definition you
+       can now display a prettier label for the property.
+
     Bugs fixed
 
      - The Products directory in an instance home was not
@@ -152,7 +152,7 @@ Zope Changes
 
        * i18n and metal interactions
 
-       * fix handling of nested translations with tal:content/replace 
+       * fix handling of nested translations with tal:content/replace
          and i18n:name
 
      - Collector #1017: reST has been broken
