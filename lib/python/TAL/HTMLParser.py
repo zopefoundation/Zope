@@ -1,6 +1,6 @@
 """A parser for HTML."""
 
-# This file is derived from nsgmllib.py, which is part of Python.
+# This file is derived from sgmllib.py, which is part of Python.
 
 # XXX There should be a way to distinguish between PCDATA (parsed
 # character data -- the normal case), RCDATA (replaceable character
