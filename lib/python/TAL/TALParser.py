@@ -117,7 +117,7 @@ class TALParser(XMLParser):
         self.gen = gen
         self.todoStack = []
         self.nsStack = []
-        self.nsDict = {}
+        self.nsDict = {XML_NS: 'xml'}
         self.nsNew = []
 
     def getCode(self):
