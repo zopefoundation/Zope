@@ -106,7 +106,7 @@ class HTMLTALParserTestCases(TestCaseBase):
             ('rawtext', '<a b="&amp;&gt;&lt;&quot;\'"></a>'),
             ])
         self._run_check("""<a b='\"'>""", [
-            ('rawtext', "<a b='\"'></a>"),
+            ('rawtext', '<a b="&quot;"></a>'),
             ])
         self._run_check("""<a b='&'>""", [
             ('rawtext', '<a b="&amp;"></a>'),
