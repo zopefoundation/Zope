@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -125,6 +125,7 @@ if sys.modules.has_key('Zope'):
     else:
         from ZPythonExpr import PythonExpr, _SecureModuleImporter, \
              call_with_ns
+    SecureModuleImporter = _SecureModuleImporter()
 else:
     from PythonExpr import getSecurityManager, PythonExpr
     def call_with_ns(f, ns, arg=1):

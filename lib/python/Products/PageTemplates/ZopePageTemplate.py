@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -104,6 +104,8 @@ from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 from PageTemplate import PageTemplate
 from TALES import TALESError
+from Expressions import SecureModuleImporter
+from PageTemplateFile import PageTemplateFile
 
 try:
     from webdav.Lockable import ResourceLockedError
@@ -124,12 +126,13 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     func_defaults = None
     func_code = FuncCode((), 0)
 
-    _default_bindings = {'name_subpath': 'traverse_subpath'}
+    _default_bindings = {}
     _default_content_fn = os.path.join(package_home(globals()),
                                        'www', 'default.html')
 
     manage_options = (
-        {'label':'Edit', 'action':'pt_editForm'},
+        {'label':'Edit', 'action':'pt_editForm',
+         'help': ('PageTemplates', 'PageTemplate_Edit.stx')},
         {'label':'Test', 'action':'ZScriptHTML_tryForm'},
         ) + PropertyManager.manage_options \
         + Historical.manage_options \
@@ -161,6 +164,11 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
       'pt_editForm', 'manage_main', 'read',
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
       'document_src', 'source.html', 'source.xml')
+
+    pt_editForm = PageTemplateFile('www/ptEdit', globals(),
+                                   __name__='pt_editForm')
+    pt_editForm._owner = None
+    manage = manage_main = pt_editForm
 
     security.declareProtected('Change Page Templates',
       'pt_editAction', 'pt_setTitle', 'pt_edit',
@@ -335,10 +343,9 @@ class Src(Acquisition.Explicit):
 d = ZopePageTemplate.__dict__
 d['source.xml'] = d['source.html'] = Src()
 
-from Expressions import _SecureModuleImporter
-SecureModuleImporter = _SecureModuleImporter()
-
 # Product registration and Add support
+manage_addPageTemplateForm = PageTemplateFile('www/ptAdd', globals())
+
 from urllib import quote
 
 def manage_addPageTemplate(self, id, title=None, text=None,
@@ -368,16 +375,7 @@ def manage_addPageTemplate(self, id, title=None, text=None,
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
-#manage_addPageTemplateForm = DTMLFile('dtml/ptAdd', globals())
-
 def initialize(context):
-    from PageTemplateFile import PageTemplateFile
-    manage_addPageTemplateForm = PageTemplateFile('www/ptAdd', globals())
-    _editForm = PageTemplateFile('www/ptEdit', globals())
-    ZopePageTemplate.manage = _editForm
-    ZopePageTemplate.manage_main = _editForm
-    ZopePageTemplate.pt_editForm = _editForm
-    _editForm._owner = None
     context.registerClass(
         ZopePageTemplate,
         permission='Add Page Templates',

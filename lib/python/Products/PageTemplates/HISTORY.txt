@@ -4,6 +4,22 @@ Page Template history
   PageTemplates. Change information for the current release can be found
   in the file CHANGES.txt.
 
+    Version 1.4.1
+
+      Bugs Fixed
+
+        - Tracebacks were often truncated.
+
+        - __bobo_traverse__ objects, such as the root, triggered
+          security incorrectly when traversed.
+
+        - If a PageTemplate was owned by a missing user, or one with
+          insufficient permissions, the editing form broke.
+
+        - PageTemplateFiles didn't bind 'user'.
+
+        - There was no help.
+
     Version 1.4.0
 
       Features Added

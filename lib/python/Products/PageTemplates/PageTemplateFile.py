@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -98,8 +98,14 @@ from Shared.DC.Scripts.Signature import FuncCode
 from AccessControl import getSecurityManager
 from OFS.Traversable import Traversable
 from PageTemplate import PageTemplate
-from ZopePageTemplate import SecureModuleImporter
+from Expressions import SecureModuleImporter
 from ComputedAttribute import ComputedAttribute
+from ExtensionClass import Base
+
+class MacroCollection(Base):
+    def __of__(self, parent):
+        parent._cook_check()
+        return parent._v_macros
 
 class PageTemplateFile(Script, PageTemplate, Traversable):
     "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
@@ -110,6 +116,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
     func_code = FuncCode((), 0)
     _need__name__=1
     _v_last_read=0
+    macros = MacroCollection()
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
@@ -125,9 +132,9 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         elif type(_prefix) is not type(''):
             _prefix = package_home(_prefix)
         name = kw.get('__name__')
-        if not name:
-            name = os.path.split(filename)[-1]
-        self.__name__ = name
+        if name:
+            self._need__name__ = 0
+            self.__name__ = name
         self.filename = filename = os.path.join(_prefix, filename + '.zpt')
 
     def pt_getContext(self):
