@@ -148,6 +148,14 @@ Zope Changes
         - Fixed a bug in ZOM which caused getElementsByTagName to fail
           when using XML Document. Thanks to Andrew Kuchling.
 
+        - It was possible to hijak 'self' arguments for DTML and
+          External methods with request variables. This was especially
+          problematic for XML-RPC, which uses positional arguments.
+
+	- It was difficult or impossible to call External methods with
+          'self' arguments from XML-RPC.
+        
+
     Zope 2.0 beta 6
 
       Features Added
