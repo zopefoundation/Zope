@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from User import SafeDtml
@@ -14,8 +14,7 @@ class RoleManager:
     manage_rolesForm=SafeDtml('AccessControl/RoleManager_manage_rolesForm')
     smallRolesWidget=SafeDtml('AccessControl/smallRolesWidget')
 
-    def validRoles(self):
-	return Globals.Bobobase['Application'].__defined_roles__
+
 
     def selectedRoles(self):
 	try:    roles=self.__roles__
@@ -74,29 +73,6 @@ class RoleManager:
 	self.__roles__=roles
         return self.manage_rolesForm(self,REQUEST)
 
-    def manage_addRole(self,REQUEST,role):
-	""" """
-	app  =Globals.Bobobase['Application']
-        roles=list(app.__defined_roles__)
-	if role not in roles:
-	    roles.append(role)
-            roles.sort()
-	    app.__defined_roles__=tuple(roles)
-	try:    roles=self.__roles__
-	except: roles=[]
-	if roles is None: roles=[]
-        roles.append(role)
-	self.__roles__=roles
-	return self.manage_rolesForm(self, REQUEST)
-
-    def manage_deleteRole(self,REQUEST,role):
-	""" """
-	app  =Globals.Bobobase['Application']
-	roles=list(app.__defined_roles__)
-	if role in roles:
-	    del roles[roles.index(role)]
-	    app.__defined_roles__=tuple(roles)
-	return self.manage_main(self, REQUEST)
 
     def _setRoles(self,acl_type,acl_roles):
 	# Non-web helper to correctly set roles
@@ -112,7 +88,12 @@ class RoleManager:
 	self.__roles__=acl_roles
 
 
+
+
 # $Log: Role.py,v $
+# Revision 1.5  1997/11/07 17:10:03  brian
+# Moved validRoles manage_addRole and manage_deleteRole to app object
+#
 # Revision 1.4  1997/11/06 22:45:26  brian
 # Added global roles to app
 #
