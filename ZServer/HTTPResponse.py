@@ -328,6 +328,10 @@ class ChannelPipe:
             Wakeup()
         else:
             # channel closed too soon
+
+            self._request.log(self._bytes)
+            DebugLogger.log('E', id(self._request))
+
             if self._shutdown:
                 try: r=self._shutdown[0]
                 except: r=0
