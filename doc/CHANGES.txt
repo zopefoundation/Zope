@@ -13,6 +13,8 @@ Zope Changes
 
    Bugs fixed
 
+     - Collector #1017: reST has been broken
+
      - The container-class keyword to database sections
        didn't work.
 
