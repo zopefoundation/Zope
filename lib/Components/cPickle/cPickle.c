@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.48 1997/12/07 14:37:39 jim Exp $
+     $Id: cPickle.c,v 1.49 1998/03/06 14:23:08 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.48 1997/12/07 14:37:39 jim Exp $\n"
+"$Id: cPickle.c,v 1.49 1998/03/06 14:23:08 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -3908,6 +3908,7 @@ newUnpicklerobject(PyObject *f) {
     self->buf_size = 0;
     self->read = NULL;
     self->readline = NULL;    
+    self->class_map = NULL;    
 
     UNLESS(self->memo = PyDict_New()) {
        Py_XDECREF((PyObject *)self);
@@ -4307,7 +4308,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.48 $";
+    char *rev="$Revision: 1.49 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
