@@ -31,10 +31,3 @@ Installing Zope
 
   Follow the instructions in "doc/INSTALL.txt" to install Zope.
 
-Notes
-
-  * This release requires Python 2.2.3.
-
-  * Don't forget to check the Zope web site and mailing list.
-
-  * Read the source and have fun!
