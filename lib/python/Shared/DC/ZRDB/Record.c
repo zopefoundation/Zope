@@ -10,7 +10,7 @@
 
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.2 1997/09/26 15:05:17 jim Exp $"
+"\n$Id: Record.c,v 1.3 1998/01/16 21:13:28 jim Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -70,12 +70,12 @@ Record_init(Record *self)
 static PyObject *
 Record___setstate__(Record *self, PyObject *args)
 {
-  PyObject *state=0, **d;
+  PyObject *state=0, *parent, **d;
   int l, ls, i;
 
   if((l=Record_init(self)) < 0) return NULL;
 
-  UNLESS(PyArg_ParseTuple(args, "|O", &state)) return NULL;
+  UNLESS(PyArg_ParseTuple(args, "|OO", &state, &parent)) return NULL;
 
   if(state)
     if(PyDict_Check(state))
@@ -512,7 +512,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -551,6 +551,10 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.3  1998/01/16 21:13:28  jim
+  Added extra ignored parent object argument to __init__ and
+  __setstate__.
+
   Revision 1.2  1997/09/26 15:05:17  jim
   Added sequence and mapping behavior.
 
