@@ -18,6 +18,11 @@ Options:
          Run under profiler control, generating the profiler
          data file, profiler_data_file.
 
+   -t
+
+         Compute the time required to complete a request, in
+	 milliseconds.
+
    -d
 
          Run in debug mode.  With this option, bobo will run
@@ -43,7 +48,7 @@ Options:
             s
 
 
-$Id: Test.py,v 1.2 1996/09/16 14:43:26 jim Exp $
+$Id: Test.py,v 1.3 1996/10/02 16:03:59 jim Exp $
 '''
 #     Copyright 
 #
@@ -96,6 +101,9 @@ $Id: Test.py,v 1.2 1996/09/16 14:43:26 jim Exp $
 #   (540) 371-6909
 #
 # $Log: Test.py,v $
+# Revision 1.3  1996/10/02 16:03:59  jim
+# Took out spurious line.
+#
 # Revision 1.2  1996/09/16 14:43:26  jim
 # Changes to make shutdown methods work properly.  Now shutdown methods
 # can simply sys.exit(0).
@@ -107,46 +115,63 @@ $Id: Test.py,v 1.2 1996/09/16 14:43:26 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 
 #! /usr/local/bin/python
 
 import sys,traceback
 from cgi_module_publisher import publish_module
-    
-o=open('/dev/null','w')
-
 
 def main():
     import sys, os, getopt, string
 
     try:
-	optlist,args=getopt.getopt(sys.argv[1:], 'du:p:')
+	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:')
 	if len(args) > 2 or len(args) < 1: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
 	sys.stderr.write(__doc__)
 	sys.exit(-1)
 
-    profile=u=debug=None
+    profile=u=debug=timeit=None
     for opt,val in optlist:
 	if opt=='-d':
 	    debug=1
+	if opt=='-t':
+	    timeit=1
 	if opt=='-u':
 	    u=val
 	elif opt=='-p':
 	    profile=val
 
+    if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
+	raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
     
-    publish(args[0],path_info,u=u,p=profile,d=debug)
+    publish(args[0],path_info,u=u,p=profile,d=debug,t=timeit)
 
-def publish(script,path_info,u=None,p=None,d=None):
+
+
+def time(function,*args,**kwargs):
+    from timing import start, finish, milli
+
+    repeat_range=range(10)
+    apply(function,args,kwargs)
+    start()
+    for i in repeat_range:
+	apply(function,args,kwargs)
+    finish()
+
+    return float(milli())/len(repeat_range)
+
+
+def publish(script,path_info,u=None,p=None,d=None,t=None):
 
     import sys, os, getopt, string
 
     profile=p
     debug=d
+    timeit=t
 
     env={'SERVER_NAME':'bobo.server',
 	 'SERVER_PORT':'80',
@@ -226,7 +251,13 @@ def publish(script,path_info,u=None,p=None,d=None):
 	db.run('publish_module(file,environ=env,debug=1)',
 	       cgi_module_publisher.__dict__,
 	       {'file':file, 'env':env})
+    elif timeit:
+	stdout=sys.stdout
+	t= time(publish_module,file,
+		stdout=open('/dev/null','w'), environ=env)
+	stdout.write('%s milliseconds\n' % t)
     else:
 	publish_module(file, environ=env)
+	print '\n%s\n' % ('_'*60)
 
 if __name__ == "__main__": main()
