@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.29 1997/03/04 19:41:57 jim Exp $
+     $Id: cPickle.c,v 1.30 1997/03/04 20:17:53 chris Exp $
 
      Copyright 
 
@@ -1542,20 +1542,30 @@ finally:
 }
 
 
-static PyObject *
-Pickler_dump(Picklerobject *self, PyObject *args) {
+static int
+dump(Picklerobject *self, PyObject *args) {
     static char stop = STOP;
 
-    UNLESS(PyArg_ParseTuple(args, "O", &args))
-        return NULL;
-
     if (save(self, args, 0) < 0)
-        return NULL;
+        return -1;
 
     if ((*self->write_func)(self, &stop, 1) < 0)
-        return NULL;
+        return -1;
 
     if ((*self->write_func)(self, NULL, 0) < 0)
+        return -1;
+
+    return 0;
+}
+
+static PyObject *
+Pickler_dump(Picklerobject *self, PyObject *args) {
+    PyObject *ob;
+
+    UNLESS(PyArg_ParseTuple(args, "O", &ob))
+        return NULL;
+
+    if (dump(self, ob) < 0)
         return NULL;
 
     Py_INCREF(Py_None);
@@ -3084,14 +3094,12 @@ finally:
     return res;
 }
     
-
 static PyObject *
-Unpickler_load(Unpicklerobject *self, PyObject *args) {
+load(Unpicklerobject *self)
+{
     PyObject *stack = 0, *err = 0, *exc = 0, *val = 0, *tb = 0;
     int len;
     char *s;
-
-    UNLESS(PyArg_ParseTuple(args,"")) return NULL;
 
     UNLESS(stack = PyList_New(0))
         goto err;
@@ -3326,6 +3334,15 @@ err:
 
     return NULL;
 }
+    
+
+static PyObject *
+Unpickler_load(Unpicklerobject *self, PyObject *args) {
+    UNLESS(PyArg_ParseTuple(args, "")) 
+        return NULL;
+
+    return load(self);
+}
 
 
 static struct PyMethodDef Unpickler_methods[] = {
@@ -3472,7 +3489,7 @@ Unpickler_setattr(Unpicklerobject *self, char *name, PyObject *value) {
 
 
 static PyObject *
-dump(PyObject *self, PyObject *args) {
+cpm_dump(PyObject *self, PyObject *args) {
     PyObject *ob, *file, *res = NULL;
     Picklerobject *pickler = 0;
     int bin = 0;
@@ -3483,7 +3500,11 @@ dump(PyObject *self, PyObject *args) {
     UNLESS(pickler = newPicklerobject(file, bin))
         goto finally;
 
-    res = Pickler_dump(pickler, ob);
+    if (dump(pickler, ob) < 0)
+        goto finally;
+
+    Py_INCREF(Py_None);
+    res = Py_None;
 
 finally:
     Py_XDECREF(pickler);
@@ -3493,7 +3514,7 @@ finally:
 
 
 static PyObject *
-dumps(PyObject *self, PyObject *args) {
+cpm_dumps(PyObject *self, PyObject *args) {
     PyObject *ob, *file = 0, *res = NULL;
     Picklerobject *pickler = 0;
     int bin = 0;
@@ -3507,7 +3528,7 @@ dumps(PyObject *self, PyObject *args) {
     UNLESS(pickler = newPicklerobject(file, bin))
         goto finally;
 
-    UNLESS(Pickler_dump(pickler, ob))
+    if (dump(pickler, ob) < 0)
         goto finally;
 
     res = PycStringIO->cgetvalue(file);
@@ -3523,15 +3544,15 @@ finally:
 static PyObject *
 cpm_load(PyObject *self, PyObject *args) {
     Unpicklerobject *unpickler = 0;
-    PyObject *res = NULL;
+    PyObject *ob, *res = NULL;
 
-    UNLESS(PyArg_ParseTuple(args, "O", &args))
+    UNLESS(PyArg_ParseTuple(args, "O", &ob))
         goto finally;
 
-    UNLESS(unpickler = newUnpicklerobject(args))
+    UNLESS(unpickler = newUnpicklerobject(ob))
         goto finally;
 
-    res = Unpickler_load(unpickler, NULL);
+    res = load(unpickler);
 
 finally:
     Py_XDECREF(unpickler);
@@ -3541,20 +3562,20 @@ finally:
 
 
 static PyObject *
-loads(PyObject *self, PyObject *args) {
-    PyObject *file = 0, *res = NULL;
+cpm_loads(PyObject *self, PyObject *args) {
+    PyObject *ob, *file = 0, *res = NULL;
     Unpicklerobject *unpickler = 0;
 
-    UNLESS(PyArg_ParseTuple(args, "O", &args))
+    UNLESS(PyArg_ParseTuple(args, "O", &ob))
         goto finally;
 
-    UNLESS(file = PycStringIO->NewInput(args))
+    UNLESS(file = PycStringIO->NewInput(ob))
         goto finally;
   
     UNLESS(unpickler = newUnpicklerobject(file))
         goto finally;
 
-    res = Unpickler_load(unpickler, NULL);
+    res = load(unpickler);
 
 finally:
     Py_XDECREF(file);
@@ -3595,10 +3616,10 @@ static PyTypeObject Unpicklertype_value() {
 }
 
 static struct PyMethodDef cPickle_methods[] = {
-  {"dump",         (PyCFunction)dump,             1, ""},
-  {"dumps",        (PyCFunction)dumps,            1, ""},
+  {"dump",         (PyCFunction)cpm_dump,         1, ""},
+  {"dumps",        (PyCFunction)cpm_dumps,        1, ""},
   {"load",         (PyCFunction)cpm_load,         1, ""},
-  {"loads",        (PyCFunction)loads,            1, ""},
+  {"loads",        (PyCFunction)cpm_loads,        1, ""},
   {"Pickler",      (PyCFunction)get_Pickler,      1, ""},
   {"Unpickler",    (PyCFunction)get_Unpickler,    1, ""},
   { NULL, NULL }
@@ -3692,7 +3713,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.29 $";
+    char *rev="$Revision: 1.30 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
