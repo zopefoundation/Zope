@@ -444,7 +444,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.7 1996/07/11 19:39:07 jfulton Exp $"""
+$Id: Publish.py,v 1.8 1996/07/18 14:59:54 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -497,6 +497,9 @@ $Id: Publish.py,v 1.7 1996/07/11 19:39:07 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.8  1996/07/18 14:59:54  jfulton
+# Fixed bug in getting web_objects.
+#
 # Revision 1.7  1996/07/11 19:39:07  jfulton
 # Fixed bug in new feature: 'AUTHENTICATED_USER'
 #
@@ -523,7 +526,7 @@ $Id: Publish.py,v 1.7 1996/07/11 19:39:07 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 def main():
@@ -613,7 +616,7 @@ class ModulePublisher:
 	    exec 'import %s' % module_name in dict
 	    theModule=object=dict[module_name]
 	    if hasattr(theModule,published):
-		object=getattr(dict,published)
+		object=getattr(theModule,published)
 	    else:
 		object=theModule
 		published=None
@@ -635,9 +638,27 @@ class ModulePublisher:
 	path=(string.strip(self.env('PATH_INFO')) or '/')[1:]
 	path=string.splitfields(path,'/')
 	while path and not path[0]: path = path[1:]
-    
-	# Make help the default, if nothing is specified:
-	if not path: path = ['help']
+ 
+	# Get default doc:
+	try: doc=object.__doc__
+	except:
+	    try: doc=object['__doc__']
+	    except: doc=None
+
+	# Get default object if no path was specified:
+	if not path:
+	    for entry_name in 'index_html', 'index.html':
+		try:
+		    if hasattr(object,entry_name):
+			path=[entry_name]
+			break
+		except: pass
+		try:
+		    if object.has_key(entry_name):
+			path=[entry_name]
+			break
+		except: pass
+	    if not path: path = ['help']
     
 	while path:
 	    entry_name,path,groups=path[0], path[1:], None
