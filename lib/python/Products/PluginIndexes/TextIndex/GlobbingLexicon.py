@@ -80,14 +80,9 @@ class GlobbingLexicon(Lexicon):
 
     def createDigrams(self, word):
         """Returns a list with the set of digrams in the word."""
-        digrams = list(word)
-        digrams.append(self.eow)
-        last = self.eow
-
-        for i in range(len(digrams)):
-            last, digrams[i] = digrams[i], last + digrams[i]
-
-        return digrams
+        
+        word = '$'+word+'$'
+        return [ word[i:i+2] for i in range(len(word)-1)]
 
     
     def getWordId(self, word):
