@@ -307,7 +307,7 @@ class TALInterpreter:
                 self.col >= align and
                 self.col + 1 + _len(s) > self.wrap):
                 self._stream_write("\n" + " "*align)
-                self.col = self.col + align
+                self.col = align
             else:
                 s = " " + s
             self._stream_write(s)
