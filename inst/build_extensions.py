@@ -21,37 +21,5 @@ print
 print '-'*78
 print 'Building extension modules'
 
-# For Python 2, we want to skip some things
-if sys.version[:1]=='2':
-    do('cp ./lib/python/Setup20 ./lib/python/Setup')
-else:
-    do('cp ./lib/python/Setup15 ./lib/python/Setup')
+do('%s setup.py build_ext -i' % sys.executable)
 
-make('lib','python')
-make('lib','python','DocumentTemplate')
-make('lib','python','ZODB')
-make('lib','python','BTrees')
-make('lib','python','AccessControl')
-make('lib','python','SearchIndex')
-make('lib','python','Shared','DC','xml','pyexpat')
-make('lib','python','Products','PluginIndexes','TextIndex','Splitter','ZopeSplitter')
-make('lib','python','Products','PluginIndexes','TextIndex','Splitter','ISO_8859_1_Splitter')
-make('lib','python','Products','PluginIndexes','TextIndex','Splitter','UnicodeSplitter')
-make('lib','python','Products','ZCTextIndex')
-
-# Try to link/copy cPickle.so to BoboPOS to out-fox
-# stock Python cPickle if using Python 1.5.2.
-if sys.version[:1] != '2':
-    cd('lib')
-    files=filter(
-        lambda f: string.lower(f[:8])=='cpickle.',
-        os.listdir('python')
-        )
-    if files:
-        cd('python'); cd('ZODB')
-        for f in files:
-            src=os.path.join('..',f)
-            try: os.link(src,f)
-            except: open(f,'wb').write(open(src,'rb').read())
-        cd('..'); cd('..')
-    cd('..')
