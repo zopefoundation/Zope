@@ -25,6 +25,9 @@ Zope Changes
 
         - Fixed misc typos in docstrings and docs.
 
+	- MailHost objects didn't do appropriate CRLF conversion or
+          recognize 4xx server responses.
+
     Zope  1.10.0 pr1
 
       New Features
