@@ -8,6 +8,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - VirtualHostMonster handles empty Mapping paths properly.
+    
       - Deadlock prevention code added.
 
         It was possible for earlier versions of ZODB to deadlock when

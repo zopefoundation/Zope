@@ -59,13 +59,14 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         while i2 < len(obpath) and obpath[i2][:4] == '_vh_':
                             i2 = i2 + 1
                         del obpath[i1:i2]
-                    try:
-                        ob = self.unrestrictedTraverse(obpath)
-                    except:
-                        raise 'LineError', 'Path not found'
-                    if not getattr(ob.aq_base, 'isAnObjectManager', 0):
-                        raise 'LineError', ('Path must lead to '
-                                            'an Object Manager')
+                    if obpath:
+                        try:
+                            ob = self.unrestrictedTraverse(obpath)
+                        except:
+                            raise 'LineError', 'Path not found'
+                        if not getattr(ob.aq_base, 'isAnObjectManager', 0):
+                            raise 'LineError', ('Path must lead to '
+                                                'an Object Manager')
                     if 'VirtualHostRoot' not in pp:
                         pp.append('/')
                     pp.reverse()
