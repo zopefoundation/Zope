@@ -85,9 +85,14 @@
 
 """Text Index
 
+The UnTextIndex falls under the 'I didnt have a better name for it'
+excuse.  It is an 'Un' Text index because it stores a little bit of
+undo information so that objects can be unindexed when the old value
+is no longer known.
+
 
 """
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -101,12 +106,14 @@ from Splitter import Splitter
 from string import strip
 import string, regex, regsub, pdb
 
+
 from Lexicon import *
 from ResultList import ResultList
 
 class UnTextIndex(Persistent):
 
-    def __init__(self, id=None, ignore_ex=None, call_methods=None):
+    def __init__(self, id=None, ignore_ex=None,
+                 call_methods=None, lexicon=None):
         """Create an index
 
         The arguments are:
@@ -120,58 +127,72 @@ class UnTextIndex(Persistent):
           'call_methods' -- Tells the indexer to call methods instead
           of getattr or getitem to get an attribute.
 
+          'lexicon' is the lexicon object to specify, if None, the
+          index will use a private lexicon.
+
+        There is a ZCatalog UML model that sheds some light on what is
+        going on here.  '_index' is a BTree which maps word ids to
+        mapping from document id to score.  Something like:
+
+          {'bob' : {1 : 5, 2 : 3, 42 : 9}}
+          {'uncle' : {1 : 1}}
+
+
+        The '_unindex' attribute is a mapping from document id to word 
+        ids.  This mapping allows the catalog to unindex an object:
+
+          {42 : ('bob', 'is', 'your', 'uncle')
+
+        This isn't exactly how things are represented in memory, many
+        optimizations happen along the way.
+
         """
         if not id==ignore_ex==call_methods==None:
             self.id=id
             self.ignore_ex=ignore_ex
             self.call_methods=call_methods
-            self._index=BTree()
+            self._index=IOBTree()
             self._unindex=IOBTree()
             self._syn=stop_word_dict
 
         else:
             pass
 
+        if not lexicon:
+            self._lexicon=Lexicon()
+        else:
+            self._lexicon=lexicon
+
 
     def __len__(self):
         return len(self._unindex)
 
     def clear(self):
-        self._index = BTree()
+        self._index = IOBTree()
         self._unindex = IOBTree()
-
-
-    def positions(self, docid, words, obj):
-        """Return the positions in the document for the given document
-        id of the word, word."""
-        id = self.id
-
-        if self._schema is None:
-            f = getattr
-        else:
-            f = operator.__getitem__
-            id = self._schema[id]
-
-
-        if self.call_methods:
-            doc = str(f(obj, id)())
-        else:
-            doc = str(f(obj, id))
-
-        r = []
-        for word in words:
-            r = r+Splitter(doc, self._syn).indexes(word)
-        return r
 
 
     def index_object(self, i, obj, threshold=None, tupleType=type(()),
                      dictType=type({}), strType=type(""), callable=callable):
         
-        """ Please document """
+        """ Index an object:
+
+          'i' is the integer id of the document
+
+          'obj' is the objects to be indexed
+
+          'threshold' is the number of words to process between
+          commiting subtransactions.  If 'None' subtransactions are
+          not used.
+
+          the next four arguments are default optimizations.
+          """
 
         id = self.id
-
         try:
+            ## sniff the object for our 'id', the 'document source' of 
+            ## the index is this attribute.  If it smells callable,
+            ## call it.
             k = getattr(obj, id)
             if callable(k):
                 k = str(k())
@@ -184,8 +205,11 @@ class UnTextIndex(Persistent):
         old = d.has_key
         last = None
 
+        ## The Splitter should now be european compliant at least.
+        ## Someone should test this.
         src = Splitter(k, self._syn)
-        # tuple the splitter object and store in the unindex
+        ## This returns a tuple of stemmed words.  Stopwords have been 
+        ## stripped.
         
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1], d, old, last)
@@ -196,29 +220,31 @@ class UnTextIndex(Persistent):
 
         index = self._index
         unindex = self._unindex
+        lexicon = self._lexicon
         get = index.get
-
         unindex[i] = []
-
         times = 0
-        for word,score in d.items():
+
+        for word, score in d.items():
             if threshold is not None:
                 if times > threshold:
-                    # commit a subtransaction
+                    # commit a subtransaction hack
                     get_transaction().commit(1)
                     # kick the cache
                     self._p_jar.cacheFullSweep(1)
                     times = 0
                     
-            r = get(word)
+            word_id = lexicon.set(word)
+            
+            r = get(word_id)
             if r is not None:
-                r = index[word]
+                r = index[word_id]
                 if type(r) is tupleType:
                     r = {r[0]:r[1]}
                     r[i] = score
 
-                    index[word] = r
-                    unindex[i].append(word)
+                    index[word_id] = r
+                    unindex[i].append(word_id)
                     
                 elif type(r) is dictType:
                     if len(r) > 4:
@@ -227,13 +253,13 @@ class UnTextIndex(Persistent):
                         r = b
                     r[i] = score
 
-                    index[word] = r
-                    unindex[i].append(word)
+                    index[word_id] = r
+                    unindex[i].append(word_id)
                     
                 else: r[i] = score
             else:
-                index[word] = i, score
-                unindex[i].append(word)
+                index[word_id] = i, score
+                unindex[i].append(word_id)
             times = times + 1
 
         unindex[i] = tuple(unindex[i])
@@ -242,6 +268,7 @@ class UnTextIndex(Persistent):
         self._index = index
         self._unindex = unindex
 
+        ## return the number of words you indexed
         return times
 
 
@@ -260,37 +287,32 @@ class UnTextIndex(Persistent):
         self._index = index
 
 
-    def _subindex(self, isrc, d, old, last):
-
-        src = Splitter(isrc, self._syn)  
-
-        for s in src:
-            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
-            else:
-                if old(s):
-                    if s != last: d[s] = d[s]+1
-                else: d[s] = 1
-
-        return last
-
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
         """
         src = tuple(Splitter(word, self._syn))
-        if not src: return ResultList({}, (word,), self)
+        if not src:
+            return ResultList({}, (word,), self)
+
         if len(src) == 1:
             src=src[0]
-            if src[:1]=='"' and src[-1:]=='"': return self[src]
-            r = self._index.get(word,None)
-            if r is None: r = {}
+            if src[:1]=='"' and src[-1:]=='"':
+                return self[src]
+
+            r = self._index.get(self._lexicon[word], None)
+            if r is None:
+                r = {}
             return ResultList(r, (word,), self)
             
         r = None
         for word in src:
             rr = self[word]
-            if r is None: r = rr
-            else: r = r.near(rr)
+
+            if r is None:
+                r = rr
+            else:
+                r = r.near(rr)
 
         return r
 
@@ -327,6 +349,7 @@ class UnTextIndex(Persistent):
             key = strip(key)
             if not key:
                 continue
+            
             rr = IIBucket()
             try:
                 for i, score in query(key,self).items():
@@ -343,4 +366,41 @@ class UnTextIndex(Persistent):
         if r is not None:
             return r, (id,)
         return IIBucket(), (id,)
+
+
+    def positions(self, docid, words, obj):
+        """Return the positions in the document for the given document
+        id of the word, word."""
+        id = self.id
+
+        if self._schema is None:
+            f = getattr
+        else:
+            f = operator.__getitem__
+            id = self._schema[id]
+
+
+        if self.call_methods:
+            doc = str(f(obj, id)())
+        else:
+            doc = str(f(obj, id))
+
+        r = []
+        for word in words:
+            r = r+Splitter(doc, self._syn).indexes(word)
+        return r
+
+
+    def _subindex(self, isrc, d, old, last):
+
+        src = Splitter(isrc, self._syn)  
+
+        for s in src:
+            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
+            else:
+                if old(s):
+                    if s != last: d[s] = d[s]+1
+                else: d[s] = 1
+
+        return last
 

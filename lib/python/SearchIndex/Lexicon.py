@@ -312,8 +312,39 @@ import regsub
 
 
 
+__doc__=""" Module breaks out Zope specific methods and behavior.  In
+addition, provides the Lexicon class which defines a word to integer
+mapping.
 
+"""
 
+from Persistence import Persistent
+from Acquisition import Implicit
+import OIBTree
+OIBTree=OIBTree.BTree
+
+class Lexicon(Persistent, Implicit):
+    """ maps words to word ids """
+
+    def __init__(self):
+        self._lexicon = OIBTree()
+        self.counter = 0
+
+    def __getitem__(self, key):
+        """ overload mapping behavior """
+        return self._lexicon[key]
+
+    def set(self, word):
+        """ return the word id of 'word' """
+
+        if self._lexicon.has_key(word):
+            return self._lexicon[word]
+
+        else:
+            self._lexicon[intern(word)] = self.counter
+            self.counter = self.counter + 1
+            return self.counter
+        
 
 AndNot    = 'andnot'
 And       = 'and'
