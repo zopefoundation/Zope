@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -124,7 +124,7 @@ class ZopePageTemplate(PageTemplate, Script, Historical, Cacheable,
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
     _default_content_fn = os.path.join(package_home(globals()),
-                                       'dtml', 'default.xml')
+                                       'dtml', 'default.html')
 
     manage_options = (
         {'label':'Edit', 'action':'pt_editForm'},
@@ -315,7 +315,7 @@ def manage_addPageTemplate(self, id, REQUEST=None, submit=None):
     else:
         file = REQUEST.form.get('file')
         headers = getattr(file, 'headers', None)
-        if headers is None:
+        if headers is None or not file.filename:
             zpt = ZopePageTemplate(id)
         else:
             zpt = ZopePageTemplate(id, file, headers.get('content_type'))
