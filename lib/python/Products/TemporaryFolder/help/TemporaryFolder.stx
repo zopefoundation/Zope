@@ -2,30 +2,41 @@ Temporary Folders
 
   Overview 
 
-    Temporary Folders are Folders which are created out of memory, in such
-    the same way as a RAM disk, for example, which have their contents
-    lost upon shutdown.  
-
-    By default, Zope will create a temporary folder named "temp_folder" in
-    the root of the Zope installation.
+    Temporary Folders are Folders which store their contents
+    "in-memory", in much the same way as a RAM disk.  The contents
+    of a Temporary Folder are lost upon shutdown.
 
   Creating
 
-    Creating a Temporary Folder is fairly straightforward; one creates them
-    as you would a regular Folder; through the Zope management interface:
+    By default, Zope will create a Temporary Folder named "temp_folder" in
+    the root of every Zope installation.  This Temporary Folder will
+    be used by the Zope Sessions machinery, but it may be used for
+    other purposes as well.
+
+    You may create additional Temporary Folders.  Creating a Temporary
+    Folder is fairly straightfoward; they are created in the same way
+    as a "regular" Folder through the Zope management interface:
 
       - Specify an id (a name) for the folder
 
       - Specify an optional title for the folder
 
-    Once created and mounted, Temporary Folders are regular Folder objects.
-    Mounting of the Temporary Folder happens automatically the first time
-    it is accessed.
+  Usage
+
+    Once created, a Temporary Folder acts just like regular Folder
+    object with the exception that the items which it contains will be
+    lost upon Zope shutdown and restart.
+
+    Since Temporary Folders use RAM to store data, it is advised to
+    add items to a Temporary Folder sparingly.  The capacity of a
+    Temporary Folder is limited by available RAM.
 
   Interaction with ZEO
 
-    Temporary Folders exist local to the Zope server; thus, each server in
-    a ZEO cluster would have their own private copy of data in a Temporary
-    Folder.  Only temporary data that should be local to a specific Zope
-    instance should go in the Temporary Folder.  Items which need to be
-    shared between Zope servers should not be placed in Temporary Folders.
+    Temporary Folders exist local to the Zope server.  Thus, each
+    server in a ZEO cluster would have their own private copy of data
+    in a Temporary Folder.  Only temporary data that should be local
+    to a specific Zope instance should go into a Temporary Folder.
+    Items which need to be shared between Zope servers in a ZEO
+    cluster should not be placed in Temporary Folders.
+
