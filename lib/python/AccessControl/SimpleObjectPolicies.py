@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.2 2000/05/11 18:54:13 jim Exp $''' 
-__version__='$Revision: 1.2 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.3 2000/05/26 21:39:27 shane Exp $''' 
+__version__='$Revision: 1.3 $'[11:-2] 
 
 import Record
 
@@ -98,8 +98,12 @@ ContainerAssertions={
     type({}): 1,
     }
 
-from DocumentTemplate.cDocumentTemplate import InstanceDict
-ContainerAssertions[InstanceDict]=1
+from DocumentTemplate.DT_Util import TemplateDict
+# Temporarily create a DictInstance so that we can mark its type as
+# being a key in the ContainerAssertions.
+templateDict = TemplateDict()
+dictInstance = templateDict(dummy=1)
+ContainerAssertions[type(dictInstance)]=1
 
 Containers=ContainerAssertions.get
 
