@@ -84,6 +84,17 @@ Zope Changes
         - Record objects returned by ':record' form-marshalling tag have
           been enhanced to act like mapping objects.
 
+        - The ZServer startup script, z2.py, now allows all servers to be
+          disabled with a single option,
+
+        - The ZServer startup script, z2.py, now allows all multiple
+          HTTP, FTP, or monitor servers to be run.
+
+        - The ZServer startup script, z2.py, now allows separate IP
+          addresses to be specified for each HTTP, FTP, or monitor
+          server. 
+
+
       Bugs Fixed
 
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
