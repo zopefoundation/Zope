@@ -2,7 +2,9 @@
 
 # Unittests for Catalog
 
-import os,sys, unittest
+import os
+import random
+import unittest
 
 import ZODB, OFS.Application
 from ZODB.DemoStorage import DemoStorage
@@ -16,8 +18,6 @@ from Products.PluginIndexes.FieldIndex.FieldIndex import FieldIndex
 from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
 from Products.PluginIndexes.TextIndex.Lexicon import  Lexicon
 from Products.PluginIndexes.KeywordIndex.KeywordIndex import KeywordIndex
-
-import whrandom,string, unittest, random
 
 
 def createDatabase():
@@ -44,18 +44,20 @@ app = createDatabase()
 
 ################################################################################
 # Stuff of Chris
+# XXX What's this mean?  What does this comment apply to?
 ################################################################################
 
-from AccessControl.SecurityManagement import newSecurityManager
-from AccessControl.SecurityManagement import noSecurityManager
+# XXX These imports and class don't appear to be needed?
+## from AccessControl.SecurityManagement import newSecurityManager
+## from AccessControl.SecurityManagement import noSecurityManager
 
-class DummyUser:
+## class DummyUser:
 
-    def __init__( self, name ):
-        self._name = name
+##     def __init__( self, name ):
+##         self._name = name
 
-    def getUserName( self ):
-        return self._name
+##     def getUserName( self ):
+##         return self._name
 
 
 class CatalogBase:
@@ -133,13 +135,13 @@ class TestZCatalog(unittest.TestCase):
         self._catalog = ZCatalog.ZCatalog('Catalog')
         self._catalog.addIndex('title', 'KeywordIndex')
         self._catalog.addColumn('title')
-        
+
         self.upper = 10
 
         class dummy(ExtensionClass.Base):
             def __init__(self, num):
                 self.num = num
-    
+
             def title(self):
                 return '%d' % self.num
 
@@ -154,10 +156,10 @@ class TestZCatalog(unittest.TestCase):
         assert data['title'] == testNum
 
     def testGetIndexDataForUID(self):
-        testNum = str(self.upper - 3) 
+        testNum = str(self.upper - 3)
         data = self._catalog.getIndexDataForUID(testNum)
         assert data['title'][0] == testNum
-        
+
     def testSearch(self):
         query = {'title': ['5','6','7']}
         sr = self._catalog.searchResults(query)
@@ -166,16 +168,16 @@ class TestZCatalog(unittest.TestCase):
         self.assertEqual(len(sr), 3)
 
 class TestCatalogObject(unittest.TestCase):
-    
+
     upper = 1000
-    
+
     nums = range(upper)
     for i in range(upper):
-        j = random.randint(0, upper-1)
+        j = random.randrange(0, upper)
         tmp = nums[i]
         nums[i] = nums[j]
         nums[j] = tmp
-        
+
     def setUp(self):
         self._vocabulary = Vocabulary.Vocabulary('Vocabulary','Vocabulary',
                                                  globbing=1)
@@ -222,7 +224,7 @@ class TestCatalogObject(unittest.TestCase):
             def col3(self):
                 return ['col3']
 
-        
+
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(self.nums[x]), `x`)
         self._catalog.aq_parent = dummy('foo') # fake out acquisition
@@ -362,13 +364,13 @@ class TestCatalogObject(unittest.TestCase):
         # set is much larger than the sort index.
         a = self._catalog(sort_on='att1')
         self.assertEqual(len(a), self.upper)
-        
+
     def testBadSortLimits(self):
         self.assertRaises(
             AssertionError, self._catalog, sort_on='num', sort_limit=0)
         self.assertRaises(
             AssertionError, self._catalog, sort_on='num', sort_limit=-10)
-    
+
     def testSortLimit(self):
         full = self._catalog(sort_on='num')
         a = self._catalog(sort_on='num', sort_limit=10)
@@ -379,7 +381,7 @@ class TestCatalogObject(unittest.TestCase):
         rev.reverse()
         self.assertEqual([r.num for r in a], rev)
         self.assertEqual(a.actual_result_count, self.upper)
-        
+
     def testBigSortLimit(self):
         a = self._catalog(sort_on='num', sort_limit=self.upper*3)
         self.assertEqual(a.actual_result_count, self.upper)
@@ -388,7 +390,7 @@ class TestCatalogObject(unittest.TestCase):
             sort_on='num', sort_limit=self.upper*3, sort_order='reverse')
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, self.upper - 1)
-        
+
 
 class objRS(ExtensionClass.Base):
 
@@ -406,7 +408,7 @@ class testRS(unittest.TestCase):
         self._catalog.addColumn('number')
 
         for i in range(5000):
-            obj = objRS(whrandom.randint(0,20000))
+            obj = objRS(random.randrange(0,20000))
             self._catalog.catalogObject(obj,i)
 
         self._catalog.aq_parent = objRS(200)
@@ -414,7 +416,7 @@ class testRS(unittest.TestCase):
     def testRangeSearch(self):
         for i in range(10000):
 
-            m = whrandom.randint(0,20000)
+            m = random.randrange(0,20000)
             n = m + 1000
 
             for r  in self._catalog.searchResults(
@@ -436,4 +438,3 @@ def test_suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
-    
