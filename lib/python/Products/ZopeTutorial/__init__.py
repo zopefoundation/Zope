@@ -101,7 +101,6 @@ def initialize(context):
     context.registerClass(
         None,
         meta_type='Zope Tutorial',
-        permission='Add Documents, Images, and Files',
         constructors=(TutorialTopic.addTutorialForm, TutorialTopic.addTutorial),
         )
 
