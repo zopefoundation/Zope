@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.8 1997/07/02 20:15:27 jim Exp $
+  $Id: Acquisition.c,v 1.9 1997/10/28 19:36:46 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,29 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.9  1997/10/28 19:36:46  jim
+  Changed semantics is acquire method:
+
+    - Available for Impleicit and Explicit,
+
+    - Does not filter names with leading underscore,
+
+    - Accepts optional 'filter' and 'extra' arguments.  If 'filter'
+      is provided, then it must be a callable object and it is
+      called with four arguments:
+
+        inst -- The object in which an attribute is found
+
+        name -- The attribute name
+
+        v -- The attribute value
+
+        extra -- The 'extra' value passed to 'acquire' or None.
+
+      The filter function should return 1 if the attribute should
+      be returned by acquire and 0 otherwise.  It may also raise an
+      error, in which case the error is propigated.
+
   Revision 1.8  1997/07/02 20:15:27  jim
   Added stupid parens to make 'gcc -Wall -pedantic' and Barry happy.
 
@@ -249,6 +272,9 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 
   name=PyString_AsString(oname);
 
+  if(*name=='a' && strcmp(name,"acquire")==0)
+    return Py_FindAttr((PyObject*)self,oname);
+
   if(*name != '_')
     {
       
@@ -342,74 +368,110 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
   return NULL;
 }
 
+static int
+apply_filter(PyObject *filter, PyObject *inst, PyObject *oname, PyObject *r,
+	     PyObject *extra)
+{
+  PyObject *fr;
+  int ir;
+
+  UNLESS(fr=PyTuple_New(4)) goto err;
+  PyTuple_SET_ITEM(fr,0,inst);
+  Py_INCREF(inst);
+  PyTuple_SET_ITEM(fr,1,oname);
+  Py_INCREF(oname);
+  PyTuple_SET_ITEM(fr,2,r);
+  Py_INCREF(r);
+  PyTuple_SET_ITEM(fr,3,extra);
+  Py_INCREF(extra);
+  UNLESS_ASSIGN(fr,PyObject_CallObject(filter, fr)) goto err;
+  ir=PyObject_IsTrue(fr);
+  Py_DECREF(fr);
+  if(ir) return 1;
+  Py_DECREF(r);
+  return 0;
+err:
+  Py_DECREF(r);
+  return -1;
+}
+
 static PyObject *
-Wrapper_acquire(Wrapper *self, PyObject *oname)
+Wrapper_acquire(Wrapper *self, PyObject *oname,
+		PyObject *filter, PyObject *extra)
 {
   PyObject *r;
   char *name;
+  int ir;
 
-  if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
+  if(self->obj)
     {
-      if(r->ob_type==self->ob_type)
+      if(r=PyObject_GetAttr(self->obj,oname))
 	{
-	  if(r->ob_refcnt==1)
+	  if(r->ob_type==self->ob_type)
 	    {
-	      Py_INCREF(self);
-	      ASSIGN(((Wrapper*)r)->container,(PyObject*)self);
+	      if(r->ob_refcnt==1)
+		{
+		  Py_INCREF(self);
+		  ASSIGN(((Wrapper*)r)->container,(PyObject*)self);
+		}
+	      else
+		ASSIGN(r,(PyObject*)newWrapper(((Wrapper*)r)->obj,
+					       (PyObject*)self, self->ob_type));
 	    }
-	  else
-	    ASSIGN(r,(PyObject*)newWrapper(((Wrapper*)r)->obj,
-					   (PyObject*)self, self->ob_type));
+	  else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
+	    ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
+	  else if(has__of__(r))
+	    ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
+	  if(filter)
+	    switch(apply_filter(filter,self->obj,oname,r,extra))
+	      {
+	      case -1: return NULL;
+	      case 1: return r;
+	      }
+	  else return r;
 	}
-      else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
-	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
-      else if(has__of__(r))
-	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
-      return r;
+      PyErr_Clear();
     }
-  if(self->obj) PyErr_Clear();
 
   name=PyString_AsString(oname);
-
-  if(*name != '_')
+  if(*name++=='a' && *name++=='q' && *name++=='_')
     {
-
-      if(*name++=='a' && *name++=='q' && *name++=='_')
+      if(strcmp(name,"parent")==0)
 	{
-	  if(strcmp(name,"parent")==0)
-	    {
-	      if(self->container) r=self->container;
-	      else r=Py_None;
-	      Py_INCREF(r);
-	      return r;
-	    }
-	  if(strcmp(name,"self")==0)
-	    {
-	      if(self->obj) r=self->obj;
-	      else r=Py_None;
-	      Py_INCREF(r);
-	      return r;
-	    }
+	  if(self->container) r=self->container;
+	  else r=Py_None;
+	  Py_INCREF(r);
+	  return r;
 	}
-
-      if(self->container) 
+      if(strcmp(name,"self")==0)
 	{
-	  if(isWrapper(self->container))
-	    {
-	      if((r=Wrapper_acquire((Wrapper*)self->container,oname)))
-		return r;
-	    }
-	  else
-	    {
-	      if((r=PyObject_GetAttr(self->container,oname)))
-		return r;
-	    }
-	  PyErr_Clear();
+	  if(self->obj) r=self->obj;
+	  else r=Py_None;
+	  Py_INCREF(r);
+	  return r;
 	}
     }
-
-  if(*name++=='_' && strcmp(name,"_init__")==0)
-    return Py_FindAttr((PyObject*)self,oname);
+  
+  if(self->container) 
+    {
+      if(isWrapper(self->container))
+	{
+	  if((r=Wrapper_acquire((Wrapper*)self->container,oname,filter,extra)))
+	    return r;
+	}
+      else
+	{
+	  if((r=PyObject_GetAttr(self->container,oname)))
+	    if(filter)
+	      switch(apply_filter(filter,self->container,oname,r,extra))
+		{
+		case -1: return NULL;
+		case 1: return r;
+		}
+	    else return r;
+	}
+      PyErr_Clear();
+    }
 
   PyErr_SetObject(PyExc_AttributeError,oname);
   return NULL;
@@ -601,10 +663,20 @@ static PyMappingMethods Wrapper_as_mapping = {
 
 /* -------------------------------------------------------- */
 
+static PyObject *
+Wrapper_acquire_method(Wrapper *self, PyObject *args)
+{
+  PyObject *name, *filter=0, *extra=Py_None;
+
+  UNLESS(PyArg_ParseTuple(args,"O|OO",&name,&filter,&extra)) return NULL;
+
+  return Wrapper_acquire(self,name,filter,extra);
+}
+
 static struct PyMethodDef Wrapper_methods[] = {
   {"__init__", (PyCFunction)Wrapper__init__, 0,
    "Initialize an Acquirer Wrapper"},
-  {"acquire", (PyCFunction)Wrapper_acquire, 0,
+  {"acquire", (PyCFunction)Wrapper_acquire_method, METH_VARARGS,
    "Get an attribute, acquiring it if necessary"},
   {NULL,		NULL}		/* sentinel */
 };
@@ -721,7 +793,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -736,7 +808,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 		     "Provide base classes for acquiring objects\n\n"
-		     "$Id: Acquisition.c,v 1.8 1997/07/02 20:15:27 jim Exp $\n",
+		     "$Id: Acquisition.c,v 1.9 1997/10/28 19:36:46 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
