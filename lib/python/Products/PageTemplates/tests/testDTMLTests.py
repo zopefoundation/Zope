@@ -17,6 +17,7 @@ from Products.PageTemplates.tests import util
 from Products.PageTemplates.PageTemplate import PageTemplate
 from Acquisition import Implicit
 from AccessControl import SecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 
 class AqPageTemplate(Implicit, PageTemplate):
    pass
@@ -48,9 +49,11 @@ class DTMLTests(unittest.TestCase):
       self.t=(AqPageTemplate())
       self.policy = UnitTestSecurityPolicy()
       self.oldPolicy = SecurityManager.setSecurityPolicy( self.policy )
+      noSecurityManager()  # Use the new policy.
 
    def tearDown(self):
       SecurityManager.setSecurityPolicy( self.oldPolicy )
+      noSecurityManager()  # Reset to old policy.
 
    def check1(self):
       """DTML test 1: if, in, and var:
