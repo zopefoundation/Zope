@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.10 2003/11/28 16:46:28 jim Exp $
+# $Id: ZReST.py,v 1.6.12.6 2004/05/14 16:54:57 andreasjung Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -21,11 +21,6 @@ from DateTime.DateTime import DateTime
 from App.config import getConfiguration 
 import sys
 modulesecurity = ModuleSecurityInfo()
-
-
-default_enc = sys.getdefaultencoding()
-default_output_encoding = getConfiguration().rest_output_encoding or default_enc
-default_input_encoding = getConfiguration().rest_input_encoding or default_enc
 
 modulesecurity.declareProtected('View management screens',
     'manage_addZReSTForm')
@@ -53,23 +48,28 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     meta_type =  'ReStructuredText Document'
     security = ClassSecurityInfo()
 
-    def __init__(self, id,output_encoding=default_output_encoding,
-                 input_encoding=default_input_encoding):
+    def __init__(self, id,output_encoding=None,
+                 input_encoding=None):
         self.id = id
         self.title = id
         self.stylesheet = 'default.css'
         self.report_level = '2'
         self.source = self.formatted = ''
-        self.input_encoding = input_encoding
-        self.output_encoding = output_encoding
+
+        from reStructuredText import default_output_encoding, \
+                                     default_input_encoding
+        self.input_encoding = input_encoding or \
+                              default_input_encoding
+        self.output_encoding = output_encoding  or \
+                               default_output_encoding
 
     # define the properties that define this object
     _properties = (
         {'id':'stylesheet', 'type': 'string', 'mode': 'w',
             'default': 'default.css'},
         {'id':'report_level', 'type': 'string', 'mode': 'w', 'default': '2'},
-        {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': default_input_encoding},
-        {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': default_output_encoding},
+        {'id':'input_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
+        {'id':'output_encoding', 'type': 'string', 'mode': 'w', 'default': 'iso-8859-15'},
     )
     property_extensible_schema__ = 0
 
