@@ -301,13 +301,18 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         topics=[]
         apitopics=[]
+        dtmltopics=[]
         for topic in self.objectValues('Help Topic'):
             if hasattr(topic,'isAPIHelpTopic') and topic.isAPIHelpTopic:
                 apitopics.append(topic)
+            elif topic.getId()[:5]=='dtml-':
+                dtmltopics.append(topic)
             else:
                 topics.append(topic)
+        if dtmltopics:
+            topics = topics + [TreeCollection(' DTML Reference', dtmltopics)]
         if apitopics:
-            topics = topics + [TreeCollection('API Documentation', apitopics)]
+            topics = topics + [TreeCollection(' API Reference', apitopics)]
         return topics
         
     def all_meta_types(self):
