@@ -5,6 +5,48 @@ Building and installing Zope from source
   We will provide Windows instructions in later releases. We
   will also provide binary releases for some platforms.
 
+Important notes
+
+   THIS IS AN ALPHA RELEASE!
+
+   ZOPE 2.0 REQUIRES PYTHON 1.5.2!
+
+   See CHANGES.txt for important notes on Zope 2.0.
+
+Running Zope
+
+  You have a number of options for running Zope. (Too Many? ;)
+
+  - You can use ZServer, the integration of Zope and Medusa.  You must
+    use ZServer if you want to use ZODB 3 and use multiple concurrent
+    threads. ZServer is currently in beta, so this may not be a good
+    choice for production systems.
+
+  - You can use the built-in ZopeHTTP web server.  This option is
+    no longer recommended.
+
+  - You can use the PCGI publisher with an existing web server. 
+    This is currently the recommended way to run Zope for production
+    systems. 
+
+Choosing your database
+
+  We currently support two Zope databases, ZODB 2 and ZODB 3.  To use
+  ZODB 3 use ZServer via the z2.py script described below.  To use 
+  ZODB 2, use the simple ZopeHTTP server or use PCGI publisher 
+  (without ZServer).
+
+  (Alternatives for the curious and ZPublisher aware:
+
+    - You can use ZODB 2 with ZServer and the z2.py script
+      described below by providing the -2 command-line option to
+      z2.py. 
+
+    - You can use ZODB 3 with the ZopeHTTPServer and the
+      PCGI publisher by changing the published module to
+      Zope.  This will only use a single thread, however.
+  )
+
 Building Zope
   
   There are some python scripts in the top-level directory that should
@@ -12,17 +54,18 @@ Building Zope
   directory.
 
   If you want to try out Zope in the simplest fashion using a 
-  Python web server, then run the script wo_pcgi::
+  Python web server or using ZServer, then run the script wo_pcgi::
 
     python wo_pcgi.py
 
-  If you want to use PCGI and an existing web server, run w_pcgi::
+  If you want to use PCGI and an existing web server and you don't
+  want to use ZServer, run w_pcgi::
 
     python w_pcgi.py
 
   Notes
   
-    * You should be using Python 1.5.1 to run the build scripts.
+    * You should be using Python 1.5.2 to run the build scripts.
 
     * To build python extensions you need to have Python configuration
       information available. If your Python comes from an RPM you may need
@@ -32,6 +75,7 @@ Building Zope
     * If you just want to use Zope components it's not necessary to build Zope
       but it's a good idea since it will compile Python C extensions for you.
 
+    * You can use PCGI and an existing web server if you use ZServer.
 
 Setting the Zope "super manager" name and password
 
@@ -103,6 +147,22 @@ Setting permissions on the var directory.
   of the var directory and the files in it to allow Zope to read and write
   under its changed userid.
 
+Using ZServer
+
+  Zope comes with a ZServer startup script, z2.py, for starting
+  ZServer::
+
+    python z2.py
+
+  Look at the documentation string or run the script with
+  the -h option to get information on available options.  You can edit
+  this script to change defaults, or you can create a Unix shell
+  script or DOS BAT file to run the script with arguments.  The second
+  approach is preferred to avoid having to reconfigure the z2.py script
+  after a software update. 
+
+  You *must* specify a DNS server in z2.py or via command-line
+  options.
 
 Using Zope with ZopeHTTPServer
 
@@ -113,7 +173,6 @@ Using Zope with ZopeHTTPServer
   cd to the Zope directory and issue the command::
 
     ./start
-
 
 Starting Zope with an existing web server
 
