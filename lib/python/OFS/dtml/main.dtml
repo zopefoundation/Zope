@@ -40,7 +40,7 @@ function toggleSelect() {
   <form action="&dtml-URL1;/" method="get">
   <dtml-if "_.len(filtered_meta_types) > 1">
     <select class="form-element" name=":action" 
-     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value" />
+     onChange="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
     <option value="manage_workspace" disabled>Select type to add...</option>
     <dtml-in filtered_meta_types mapping sort=name>
     <option value="&dtml.url_quote-action;">&dtml-name;</option>
@@ -130,11 +130,6 @@ function toggleSelect() {
        alt="This item has been modified in another version" />
        (<em>&dtml-locked_in_version;</em>)
     </dtml-if>
-  </dtml-if>
-  <dtml-if wl_isLocked>
-   <img src="&dtml-BASEPATH1;/p_/davlocked"
-    alt="This item has been locked by WebDAV"
-    title="This item has been locked by WebDAV" />
   </dtml-if>
   </div>
   </td>
