@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-import re, time, sys
+import re, time, string, sys
 import Globals
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, Explicit, aq_base
@@ -23,6 +23,7 @@ from zLOG import LOG, WARNING, BLATHER
 from AccessControl import ClassSecurityInfo
 import SessionInterfaces
 from SessionPermissions import *
+from types import StringType
 from common import DEBUG
 from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
     unregisterBeforeTraverse
@@ -150,7 +151,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                     'Container path contains characters invalid in a Zope '
                     'object path'
                     )
-            self.obpath = path.split('/')
+            self.obpath = string.split(path, '/')
         elif type(path) in (type([]), type(())):
             self.obpath = list(path) # sequence
         else:
@@ -160,7 +161,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def getContainerPath(self):
         """ """
         if self.obpath is not None:
-            return '/'.join(self.obpath)
+            return string.join(self.obpath, '/')
         return '' # blank string represents undefined state
     
     def _hasSessionDataObject(self, key):
@@ -194,7 +195,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             # be construed as a security hole, albeit a minor one.
             # unrestrictedTraverse is also much faster.
             if DEBUG and not hasattr(self, '_v_wrote_dc_type'):
-                args = '/'.join(self.obpath)
+                args = string.join(self.obpath, '/')
                 LOG('Session Tracking', BLATHER,
                     'External data container at %s in use' % args)
                 self._v_wrote_dc_type = 1
@@ -202,7 +203,7 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         except:
             raise SessionDataManagerErr, (
                 "External session data container '%s' not found." %
-                '/'.join(self.obpath)
+                string.join(self.obpath,'/')
                 )
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getRequestName')
@@ -229,24 +230,33 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
             self._requestSessionName = None
 
         if requestSessionName:
-            hook = SessionDataManagerTraverser(requestSessionName, self)
+            hook = SessionDataManagerTraverser(requestSessionName, self.id)
             registerBeforeTraverse(parent, hook, 'SessionDataManager', 50)
             self._hasTraversalHook = 1
             self._requestSessionName = requestSessionName
 
 class SessionDataManagerTraverser(Persistent):
-    def __init__(self, requestSessionName, sdm):
+    def __init__(self, requestSessionName, sessionDataManagerName):
         self._requestSessionName = requestSessionName
-        self._sessionDataManager = sdm
+        self._sessionDataManager = sessionDataManagerName
 
-    def __call__(self, container, request):
+    def __call__(self, container, request, StringType=StringType):
         try:
-            sdm = self._sessionDataManager.__of__(container)
-            session = sdm.getSessionData
+            sdmName = self._sessionDataManager
+            if not isinstance(sdmName, StringType):
+                # Zopes v2.5.0 - 2.5.1b1 stuck the actual session data
+                # manager object in _sessionDataManager in order to use
+                # its getSessionData method.  We don't actually want to
+                # do this, because it's safer to use getattr to get the
+                # data manager object by name.  Using getattr also puts
+                # the sdm in the right context automatically.  Here we
+                # pay the penance for backwards compatibility:
+                sdmName = sdmName.id
+            sdm = getattr(container, sdmName)
+            getSessionData = sdm.getSessionData
         except:
             msg = 'Session automatic traversal failed to get session data'
             LOG('Session Tracking', WARNING, msg, error=sys.exc_info())
             return
         if self._requestSessionName is not None:
-            request.set_lazy(self._requestSessionName, session)
-
+            request.set_lazy(self._requestSessionName, getSessionData)
