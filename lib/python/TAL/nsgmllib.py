@@ -24,12 +24,12 @@ incomplete = re.compile('&([a-zA-Z][a-zA-Z0-9]*|#[0-9]*)?|'
 entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
 charref = re.compile('&#([0-9]+)[^0-9]')
 
-starttagopen = re.compile('<[>a-zA-Z]')
+starttagopen = re.compile('<[a-zA-Z]')
 shorttagopen = re.compile('<[a-zA-Z][-.a-zA-Z0-9]*/')
 shorttag = re.compile('<([a-zA-Z][-.a-zA-Z0-9]*)/([^/]*)/')
 piopen = re.compile('<\?')
 piclose = re.compile('>')
-endtagopen = re.compile('</[<>a-zA-Z]')
+endtagopen = re.compile('</[a-zA-Z]')
 endbracket = re.compile('[<>]')
 special = re.compile('<![^<>]*>')
 commentopen = re.compile('<!--')
@@ -239,17 +239,12 @@ class SGMLParser:
         j = match.start(0)
         # Now parse the data between i+1 and j into a tag and attrs
         attrs = []
-        if rawdata[i:i+2] == '<>':
-            # SGML shorthand: <> == <last open tag seen>
-            k = j
-            tag = self.lasttag
-        else:
-            match = tagfind.match(rawdata, i+1)
-            if not match:
-                raise RuntimeError, 'unexpected call to parse_starttag'
-            k = match.end(0)
-            tag = string.lower(rawdata[i+1:k])
-            self.lasttag = tag
+        match = tagfind.match(rawdata, i+1)
+        if not match:
+            raise RuntimeError, 'unexpected call to parse_starttag'
+        k = match.end(0)
+        tag = string.lower(rawdata[i+1:k])
+        self.lasttag = tag
         while k < j:
             match = attrfind.match(rawdata, k)
             if not match: break
