@@ -131,6 +131,8 @@ class ZCIndexTestsBase:
                 for w in v:
                     nbest, total = self.zc_index.query(w)
                     self.assertEqual(total, 0, "did not expect to find %s" % w)
+            # XXX The next line is necessary because we're not yet reindexing
+            # XXX docs correctly.
             self.zc_index.unindex_object(docid)
 
 class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
