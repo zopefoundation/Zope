@@ -13,8 +13,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.13 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: SecurityManager.py,v 1.14 2003/11/28 16:44:03 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import ZopeSecurityPolicy, os
 
@@ -47,7 +47,7 @@ class SecurityManager:
     """
 
     __allow_access_to_unprotected_subobjects__ = {
-        'validate': 1, 'validateValue': 1, 'checkPermission': 1,
+        'validate': 1, 'checkPermission': 1,
         'getUser': 1, 'calledByExecutable': 1
         }
 
@@ -112,17 +112,6 @@ class SecurityManager:
         policy=self._policy
         return policy.validate(accessed, container, name, value,
                                self._context)
-
-    def validateValue(self, value, roles=_noroles):
-        """Convenience for common case of simple value validation.
-        """
-        policy=self._policy
-        if roles is _noroles:
-            return policy.validate(None, None, None, value,
-                                   self._context)
-        else:
-            return policy.validate(None, None, None, value,
-                                   self._context, roles)
 
     def checkPermission(self, permission, object):
         """Check whether the security context allows the given permission on
