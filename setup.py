@@ -1117,7 +1117,7 @@ def skel_visit(skel, dirname, names):
 installed_data_files = [
     ["../../doc", ['doc/*.txt']],
     ["../../import", ['import/*.zexp']],
-    ["../../bin", ['utilities/README.txt',]],
+    ["../../bin", ['utilities/README.txt', 'test.py']],
     ]
 
 os.path.walk("skel", skel_visit, installed_data_files)
