@@ -72,4 +72,5 @@ Creations and can be redistributed under the Zope Public License.
 TO DO
 -----
 
-- Implement insertStructure() properly.
+- Finish implementing insertStructure(): attribute replacement isn't
+  implemented yet.
