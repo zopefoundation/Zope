@@ -456,7 +456,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.11 1996/07/23 20:56:40 jfulton Exp $"""
+$Id: Publish.py,v 1.12 1996/07/25 12:39:09 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -509,6 +509,10 @@ $Id: Publish.py,v 1.11 1996/07/23 20:56:40 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.12  1996/07/25 12:39:09  jfulton
+# Added support for __allow_groups__ method.
+# Made auto-generation of realms smarter about realm names.
+#
 # Revision 1.11  1996/07/23 20:56:40  jfulton
 # Updated the documentation.
 #
@@ -545,7 +549,7 @@ $Id: Publish.py,v 1.11 1996/07/23 20:56:40 jfulton Exp $"""
 # Revision 1.5  1996/07/08 20:34:11  jfulton
 # Many changes, including:
 #
-#   - Butter realm management
+#   - Better realm management
 #   - Automatic type conversion
 #   - Improved documentation
 #   - ...
@@ -557,7 +561,7 @@ $Id: Publish.py,v 1.11 1996/07/23 20:56:40 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 def main():
@@ -611,6 +615,12 @@ class ModulePublisher:
 
 
     def validate(self,groups,realm=None):
+	
+	# Check whether groups is a collection, and, if not, try to
+	# call it:
+	try: len(groups)
+	except: groups=groups()
+
 	if not realm:
 	    try: realm=self.realm
 	    except:
@@ -627,7 +637,7 @@ class ModulePublisher:
 		t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
 		auth,v=v
 	    except: pass
-	    if t == 'Unauthorized':
+ 	    if t == 'Unauthorized':
 		self.response['WWW-authenticate']=auth
 		raise 'Unauthorized', v
 	self.forbiddenError()
@@ -639,6 +649,8 @@ class ModulePublisher:
 	self.module_name=module_name
 	response=self.response
 	response.setBase(self.base)
+	default_realm_name="%s.%s" % (self.module_name,self.request.SERVER_NAME)
+	realm_name=default_realm_name
 
 	dict=imported_modules
 	try:
@@ -691,6 +703,7 @@ class ModulePublisher:
     
 	while path:
 	    entry_name,path=path[0], path[1:]
+	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
 	    if entry_name:
 		try:
 		    subobject=getattr(object,entry_name)
@@ -703,9 +716,13 @@ class ModulePublisher:
 		    except:
 			try: doc=getattr(object,entry_name+'__doc__')
 			except: doc=None
-		    try: realm=subobject.__realm__
+		    try:
+			realm=subobject.__realm__
+			realm_name=default_realm_name
 		    except:
-			try: realm=getattr(object,entry_name+'__realm__')
+			try:
+			    realm=getattr(object,entry_name+'__realm__')
+			    realm_name=default_realm_name
 			except: pass
 		except AttributeError:
 		    try:
@@ -718,9 +735,13 @@ class ModulePublisher:
 			except:
 			    try: doc=object[entry_name+'__doc__']
 			    except: doc=None
-			try: realm=subobject.__realm__
+			try:
+			    realm=subobject.__realm__
+			    realm_name=default_realm_name
 			except:
-			    try: realm=object[entry_name+'__realm__']
+			    try:
+				realm=object[entry_name+'__realm__']
+				realm_name=default_realm_name
 			    except: pass
 		    except (TypeError,AttributeError):
 			if not path and entry_name=='help' and doc:
@@ -750,7 +771,16 @@ class ModulePublisher:
 
 
 	# Do authorization checks
-	if groups: self.validate(groups,realm)
+	if groups:
+	    try:
+		if realm.name is None:
+		    realm.name=realm_name
+	    except:
+		try:
+		    len(realm)
+		    realm=Realm(realm_name,realm)
+		except: pass
+	    self.validate(groups,realm)
 
 	object_as_function=object	
 	if type(object_as_function) is types.ClassType:
@@ -787,7 +817,7 @@ class ModulePublisher:
 		if name_index < nrequired:
 		    self.badRequestError(argument_name)
 
-
+   
 	# Attempt to start a transaction:
 	try:
 	    transaction=get_transaction()
