@@ -176,23 +176,7 @@ Zope Installation Frequently Asked Questions
        the listings with 'z2.py'.  (You may need to do a long listing
        to see it.)  PCGI mastered zopes will have 'pcgi-wrapper'.
 
-    3. What files are used by the object database?
-
-       The state of the application is stored in files in the 'var'
-       subdirectory inside the installation.  There is currently one
-       file:
-
-         o Data.fs -- Primary database file
-
-       Data.fs replaces the database file of prior versions,
-       Data.bbb.  To convert an existing Data.bbb file to the new
-       format, see doc/ZODB.txt.
-
-       Other files in the 'var' directory are associated with each
-       process and are only temporary.       
-
-
-    4. Is it OK to use 'kill' to shutdown the process?
+    3. Is it OK to use 'kill' to shutdown the process?
 
        It is best to shutdown the process using the Shutdown button in
        the Control Panel. Alternatively, the URL:
