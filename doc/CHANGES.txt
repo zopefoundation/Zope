@@ -36,6 +36,20 @@ Zope changes
           process to help sys admins diagnose login problems (thanks again
           to Jeff Rush).
 
+        - The Undo view shows *only* transactions performed in the
+          place where undo was performed. (As before, it also
+          shows only transactions performed by users defined in the
+          place where the undo user is defined.)
+
+        - The way that transaction logging is done was changed to make
+          transaction logs based on "physical" object and user
+          paths. This was necessary to make undo work properly in the
+          presense of virtual hosts.
+
+        - A number of hooks have been added and changes made to
+          support products that implement virtual hosts. Keep an eye on
+          http://www.zope.org/Members/michel/Projects/Interfaces/ImplementingVirtualHosts
+
       Bugs Fixed
 
         - Added type checking to the constructor and edit methods of
