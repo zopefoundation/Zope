@@ -852,7 +852,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile(r'\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\-\_\/\=]+)\*(?!\*|-)').search
+        expr = re.compile(r'\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)').search
         ):
 
         r=expr(s)
