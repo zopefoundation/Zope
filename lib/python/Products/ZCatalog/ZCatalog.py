@@ -112,7 +112,9 @@ def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
     id=str(id)
     title=str(title)
     vocab_id=str(vocab_id)
-    
+    if vocab_id == 'create_default_catalog_':
+        vocab_id = None
+        
     c=ZCatalog(id, title, vocab_id, self)
     self._setObject(id, c)
     if REQUEST is not None:
@@ -203,7 +205,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         self.threshold = 10000
         self._v_total = 0
 
-        if vocab_id == 'create_default_catalog_':
+        if vocab_id is None:
             v = Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
             self._setObject('Vocabulary', v)
             v = 'Vocabulary'
