@@ -1,0 +1,106 @@
+Browser Id Manager - Add
+
+  Though you'll likely interact mostly with "session data manager"
+  objects while you develop session-aware code, before you can
+  instantiate a session data manager object, you must instantiate a
+  "browser id manager."  A browser id manager is an object which
+  doles out and otherwise manages session tokens.  All session
+  data managers need to talk to a browser id manager to get token
+  information.
+
+  You can add an initial browser id manager anywhere in your Zope
+  tree, but chances are you'll want to create it in your root
+  folder if you don't anticipate the need for multiple browser id
+  managers.  In other words, just put one browser id manager in
+  the root Folder unless you have special needs.  In the container
+  of your choosing, select "Browser Id Manager" from the add
+  dropdown list in the Zope management interface.
+
+  Form options available are:
+
+    id -- you cannot choose an 'id' for your browser id manager.
+    It must always be "browser_id_manager".  Additionally, you cannot
+    rename a browser id manager.  This is required in the current
+    implementation so that session data managers can find browser
+    id managers via Zope acquisition.  This may be changed in a
+    later release.
+
+    title -- the browser id manager title.
+
+    session token key -- the cookie name and/or form variable name
+    used for this browser id manager instance.  This will be the
+    name looked up in the 'cookies' or 'form' REQUEST namespaces
+    when the browser id manager attempts to find a cookie or form
+    variable with a session token in it.
+
+    token key search namespaces -- choose a "priority" for each
+    token key namespace.  A priority of "1" is highest.  For
+    instance, setting 'cookies' to '1' and 'form vars' to '2'
+    means that the browser id manager checks for cookies with a
+    session token first, then form variables second.  Choosing
+    "off" for either 'cookies' or 'form vars' entirely excludes
+    that namespace from being searched for a session token.  The
+    namepace identifiers ('cookies' and 'form') refer to the
+    REQUEST namespaces searched for the token key
+    (ie. REQUEST.cookies, REQUEST.form).
+
+    cookie path -- this is the 'path' element which should be sent
+    in the session token cookie.  For more information, see the
+    Netscape Cookie specification at
+    http://home.netscape.com/newsref/std/cookie_spec.html.
+
+    cookie domain -- this is the "domain" element which should be
+    sent in the session token cookie. For more information, see
+    the Netscape Cookie specification at
+    http://home.netscape.com/newsref/std/cookie_spec.html.
+    Leaving this form element blank results in no domain element
+    in the cookie.  If you change the cookie domain here, the
+    value you enter must have at least two dots (as per the cookie
+    spec).
+
+    cookie lifetime in days -- browser id cookies sent to browsers
+    will last this many days on a remote system before expiring if
+    this value is set.  If this value is 0, cookies will persist
+    on client browsers for only as long as the browser is open.
+
+    only send cookie over https -- if this flag is set, only send
+    cookies to remote browsers if they're communicating with us
+    over https.  The browser id cookie sent under this
+    circumstance will also have the 'secure' flag set in it, which
+    the remote browser should interpret as a request to refrain
+    from sending the cookie back to the server over an insecure
+    (non-https) connection.  NOTE: In the case you wish to share
+    browser id cookies between https and non-https connections
+    from the same browser, do not set this flag.
+
+  After reviewing and changing these options, click the "Add"
+  button to instantiate a browser id manager.
+
+  You can manage a browser id manager by visiting it in the
+  management interface.  In addition to adjusting the settings you
+  chose at add-time, you can additionally turn a browser id
+  manager "off" via this management interface, which will cause
+  session data managers to ignore it when attempting to acquire a
+  browser id manager.  Session data managers will instead acquire
+  a browser id manager nearer the root of the ZODB.
+
+Instantiating Multiple Browser Id Managers (Optional)
+
+  If you've got special needs, you may want to instantiate more
+  than one browser id manager.  Having multiple browser id
+  managers may be useful in cases where you have a "secure"
+  section of a site and an "insecure" section of a site, each
+  using a different browser id manager with respectively
+  restrictive security settings.  Some special considerations are
+  required for this setup.
+
+  Once you've instantiated one browser id manager, you will not be
+  able to instantiate another browser id manager in a place where
+  the new browser id manager can acquire the original browser id
+  manager via its containment path (for programmers: the session
+  id manager's class' Zope __replaceable__ property is set to
+  UNIQUE).  This means, practically, that if you wish to have
+  multiple browser id managers, you need to carefully think about
+  where they should go, and then you need to place them in the
+  most deeply-nested containers first, working your way out
+  towards the root.

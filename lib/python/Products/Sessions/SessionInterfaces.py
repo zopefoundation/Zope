@@ -1,3 +1,15 @@
+"""
+
+Session API
+
+  See Also
+
+    - "Programming with the Session API":sessionapi-prog.stx
+
+    - "Transient Object API":../../Transience/Help/TransienceInterfaces.py
+
+"""
+
 import Interface
 
 class BrowserIdManagerInterface(

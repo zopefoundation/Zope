@@ -1,5 +1,9 @@
 <dtml-var manage_page_header>
-<dtml-var manage_tabs>
+<dtml-var "manage_tabs(this(), _,
+	form_title='Manage Browser Id Manager',
+	help_product='Sessions',
+	help_topic='browser-change.stx'
+	)">
 
 <FORM ACTION="manage_changeBrowserIdManager" METHOD="POST">
 <TABLE CELLSPACING="2">

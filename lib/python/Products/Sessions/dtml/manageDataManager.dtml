@@ -1,5 +1,10 @@
 <dtml-var manage_page_header>
-<dtml-var manage_tabs>
+<dtml-var "manage_tabs(this(), _,
+        form_title='Manage Session Data Manager',
+	help_product='Sessions',
+	help_topic='session-change.stx'
+	)">
+
 
 <form action="manage_changeSDM" method="post">
 <table cellspacing="2">

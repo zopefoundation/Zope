@@ -3,7 +3,7 @@
 <dtml-var "manage_form_title(this(), _,
            form_title='Add Session Data Manager',
            help_product='Sessions',
-           help_topic='Sessions.stx'
+           help_topic='session-add.stx'
 	   )">
 
 <FORM ACTION="constructSessionDataManager" METHOD="POST">

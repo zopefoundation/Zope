@@ -85,7 +85,7 @@
 """
 Session initialization routines
 
-$Id: __init__.py,v 1.3 2001/11/01 20:19:57 matt Exp $
+$Id: __init__.py,v 1.4 2001/11/05 21:15:47 matt Exp $
 """
 
 import BrowserIdManager
@@ -110,3 +110,4 @@ def initialize(context):
 
 
     context.registerHelp()
+    context.registerHelpTitle("Zope Help")
