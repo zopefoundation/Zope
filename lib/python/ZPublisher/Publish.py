@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.45 1997/07/28 21:46:17 jim Exp $"""
+$Id: Publish.py,v 1.46 1997/07/28 22:01:58 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.45 1997/07/28 21:46:17 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 def main():
@@ -898,7 +898,6 @@ class ModulePublisher:
 		    parents[i]=p
 		except: pass
 	query['PARENTS']=parents
-	response.setBase(self.base,URL)
 
 	args=[]
 	nrequired=len(argument_names) - (len(defaults or []))
@@ -1688,6 +1687,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.46  1997/07/28 22:01:58  jim
+# Tries to get rid of base ref.
+#
 # Revision 1.45  1997/07/28 21:46:17  jim
 # Added roles.
 # Tries to get rid of base ref.
