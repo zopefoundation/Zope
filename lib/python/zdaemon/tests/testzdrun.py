@@ -222,6 +222,7 @@ class ZDaemonTests(unittest.TestCase):
         try:
             response = send_action('status\n', zdrun_socket) or ''
         except socket.error, msg:
+            raise
             response = ''
         params = response.split('\n')
         self.assert_(len(params) > 1, repr(response))
@@ -265,6 +266,7 @@ def send_action(action, sockname):
         sock.close()
         return response
     except socket.error, msg:
+        raise
         return None
 
 def test_suite():
