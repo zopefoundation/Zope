@@ -85,11 +85,14 @@
 
 import sys, os
 
+sys.path.insert(0, os.path.join(sys.path[0],'..'))
 sys.path.insert(0, os.getcwd())
 try: import unittest
 except:
-    sys.path[0]=os.path.join(sys.path[0],'..','..')
+    sys.path[0]=os.path.join(sys.path[0],'..','..', '..')
     import unittest
+
+print sys.path
 
 class Dummy:
 
@@ -105,13 +108,13 @@ def log_write(subsystem, severity, summary, detail, error):
 zLOG.log_write=log_write
 
 import ZODB, ZODB.DemoStorage, ZODB.FileStorage
-import SearchIndex.UnTextIndex
-import SearchIndex.GlobbingLexicon
+import TextIndex
+import GlobbingLexicon
 
 class Tests(unittest.TestCase):
 
    def setUp(self):
-       self.index=SearchIndex.UnTextIndex.UnTextIndex('text')
+       self.index=TextIndex.TextIndex('text')
        self.doc=Dummy(text='this is the time, when all good zopes')
 
    def dbopen(self):
@@ -120,7 +123,7 @@ class Tests(unittest.TestCase):
        db=self.db=ZODB.DB(s)
        self.jar=db.open()
        if not self.jar.root().has_key('index'):
-           self.jar.root()['index']=SearchIndex.UnTextIndex.UnTextIndex('text')
+           self.jar.root()['index']=TextIndex.TextIndex('text')
            get_transaction().commit()
        return self.jar.root()['index']
 
@@ -221,7 +224,7 @@ class Tests(unittest.TestCase):
    def globTest(self, qmap, rlist):
        "Check a glob query"
        index=self.dbopen()
-       index._lexicon = SearchIndex.GlobbingLexicon.GlobbingLexicon()
+       index._lexicon = GlobbingLexicon.GlobbingLexicon()
 
        for i in range(len(self.sample_texts)):
            self.doc.text=self.sample_texts[i]
@@ -276,8 +279,8 @@ class Tests(unittest.TestCase):
        assert  r == [0, 6], r
 
    def checkTextIndexOperatorQuery(self):
-       "Check a query with 'textindex_operator' in the request"
-       self.globTest({'text':'time men', 'textindex_operator':'and'}, [0,])
+       "Check a query with 'operator' in the request"
+       self.globTest({'text': {'query': 'time men', 'operator':'and'}}, [0,])
 
    def checkNonExistentWord(self):
        """ Check for nonexistent word """

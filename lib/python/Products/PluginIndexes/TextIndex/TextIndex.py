@@ -85,13 +85,9 @@
 
 """Text Index
 
-The TextIndex falls under the 'I didnt have a better name for it'
-excuse.  It is an 'Un' Text index because it stores a little bit of
-undo information so that objects can be unindexed when the old value
-is no longer known.
 """
 
-__version__ = '$Revision: 1.9 $'[11:-2]
+__version__ = '$Revision: 1.10 $'[11:-2]
 
 
 import string, re
@@ -113,12 +109,21 @@ from Lexicon import Lexicon
 
 from types import *
 
-AndNot      = 'andnot'
-And         = 'and'
-Or          = 'or'
-Near        = '...'
-QueryError  = 'TextIndex.QueryError'
+class Op:
+    def __init__(self, name):
+        self.name = name
+    def __repr__(self):
+        return self.name
+    __str__ = __repr__
 
+AndNot      = Op('andnot')
+And         = Op('and')
+Or          = Op('or')
+Near        = Op('...')
+QueryError  = 'TextIndex.QueryError'
+operator_dict = {'andnot': AndNot, 'and': And, 'or': Or,
+                 '...': Near, 'near': Near,
+                 AndNot: AndNot, And: And, Or: Or, Near: Near}
 
 class TextIndex(PluggableIndex.PluggableIndex, Persistent,
      Implicit, SimpleItem):
@@ -176,8 +181,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
 
         # Default text index operator (should be visible to ZMI)
-        self.operators = { 'andnot':AndNot, 'and':And,
-                            'near':Near, 'or':Or }
         self.useOperator  = 'or'
 
         self.clear()
@@ -508,10 +511,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         # Changed for 2.4
         # We use the default operator that can me managed via the ZMI
 
-        query_operator = record.get('operator',self.useOperator)
-        if not query_operator in self.operators.keys():
-            raise exceptions.RuntimeError,"Invalid operator '%s' for a TextIndex"\
-                     % query_operator
+        qop = record.get('operator', self.useOperator)
 
         # We keep this for pre-2.4 compatibility
         # This stinking code should go away somewhere. A global
@@ -520,10 +520,16 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         # should be specified on a per-index base
 
         if request.has_key('textindex_operator'):
-            query_operator = request['textindex_operator']
-            warnings.warn("The usage of the 'textindex_operator' is no longer recommended.\n"\
-                          "Please use a mapping object and the 'operator' to specify the operator")
+            qop = request['textindex_operator']
+            warnings.warn("The usage of the 'textindex_operator' "
+                          "is no longer recommended.\n"
+                          "Please use a mapping object and the "
+                          "'operator' key to specify the operator.")
 
+        query_operator = operator_dict.get(qop)
+        if query_operator is None:
+            raise exceptions.RuntimeError, ("Invalid operator '%s' "
+                                            "for a TextIndex" % qop)
         r = None
 
         for key in record.keys:
@@ -572,29 +578,37 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
 
 
-    def query(self, s, default_operator=Or, ws=(string.whitespace,)):
-        """ This is called by TextIndexes.  A 'query term' which is a
-        string 's' is passed in, along with an index object.  s is
-        parsed, then the wildcards are parsed, then something is
-        parsed again, then the whole thing is 'evaluated'. """
+    def query(self, s, default_operator=Or):
+        """ Evaluate a query string.
+        
+        Convert the query string into a data structure of nested lists
+        and strings, based on the grouping of whitespace-separated
+        strings by parentheses and quotes.  The 'Near' operator is
+        inserted between the strings of a quoted group.
+
+        The Lexicon is given the opportunity to transform the
+        data structure.  Stemming, wildcards, and translation are
+        possible Lexicon services.
+
+        Finally, the query list is normalized so that it and every
+        sub-list consist of non-operator strings or lists separated
+        by operators. This list is evaluated.
+        """
 
         # First replace any occurences of " and not " with " andnot "
-        s = re.sub(
-            '[%s]+[aA][nN][dD][%s]*[nN][oO][tT][%s]+' % (ws * 3),
-            ' andnot ', s)
+        s = re.sub('(?i)\s+and\s*not\s+', ' andnot ', s)
 
-        # do some parsing
+        # Parse parentheses and quotes
         q = parse(s)
 
-        ## here, we give lexicons a chance to transform the query.
-        ## For example, substitute wildcards, or translate words into
-        ## various languages.
+        # Allow the Lexicon to process the query
         q = self.getLexicon().query_hook(q)
-        # do some more parsing
 
+        # Insert the default operator between any two search terms not
+        # already joined by an operator.
         q = parse2(q, default_operator)
 
-        ## evalute the final 'expression'
+        # evalute the final 'expression'
         return self.evaluate(q)
 
 
@@ -629,22 +643,20 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
     def evaluate(self, query):
         """Evaluate a parsed query"""
-        # There are two options if the query passed in is only one
-        # item. It means either it's an embedded query, in which case
-        # we'll recursively evaluate, other wise it's nothing for us
-        # to evaluate, and we just get the results and return them.
-        if (len(query) == 1):
-            if (type(query[0]) is ListType):
-                return self.evaluate(query[0])
+        # Strip off meaningless layers
+        while isinstance(query, ListType) and len(query) == 1:
+            query = query[0]
 
-            return self[query[0]]       # __getitem__
+        # If it's not a list, assume a string or number
+        if not isinstance(query, ListType):
+            return self[query]
 
-        # Now we need to loop through the query and expand out
+        # Now we need to loop through the query and reduce
         # operators.  They are currently evaluated in the following
-        # order: AndNote -> And -> Or -> Near
+        # order: AndNot -> And -> Or -> Near
         i = 0
         while (i < len(query)):
-            if query[i] == AndNot:
+            if query[i] is AndNot:
                 left, right = self.get_operands(query, i)
                 val = left.and_not(right)
                 query[(i - 1) : (i + 2)] = [ val ]
@@ -652,7 +664,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         i = 0
         while (i < len(query)):
-            if query[i] == And:
+            if query[i] is And:
                 left, right = self.get_operands(query, i)
                 val = left & right
                 query[(i - 1) : (i + 2)] = [ val ]
@@ -660,7 +672,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         i = 0
         while (i < len(query)):
-            if query[i] == Or:
+            if query[i] is Or:
                 left, right = self.get_operands(query, i)
                 val = left | right
                 query[(i - 1) : (i + 2)] = [ val ]
@@ -668,14 +680,15 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         i = 0
         while (i < len(query)):
-            if query[i] == Near:
+            if query[i] is Near:
                 left, right = self.get_operands(query, i)
                 val = left.near(right)
                 query[(i - 1) : (i + 2)] = [ val ]
             else: i = i + 1
 
-
-        if (len(query) != 1): raise QueryError, "Malformed query"
+        if (len(query) != 1):
+            import pdb; pdb.set_trace()
+            raise QueryError, "Malformed query"
 
         return query[0]
 
@@ -706,101 +719,93 @@ def parse(s):
     l = []
     tmp = string.lower(s)
 
-    while (1):
+    p = parens(tmp)
+    while p is not None:
+        # Look for quotes in the section of the string before
+        # the parentheses, then parse the string inside the parens
+        l = l + quotes(p[0])
+        l.append(parse(p[1]))
+
+        # continue looking through the rest of the string
+        tmp = p[2]
         p = parens(tmp)
 
-        if (p is None):
-            # No parentheses found.  Look for quotes then exit.
-            l = l + quotes(tmp)
-            break
-        else:
-            # Look for quotes in the section of the string before
-            # the parentheses, then parse the string inside the parens
-            l = l + quotes(tmp[:(p[0] - 1)])
-            l.append(parse(tmp[p[0] : p[1]]))
+    return l + quotes(tmp)
 
-            # continue looking through the rest of the string
-            tmp = tmp[(p[1] + 1):]
-
-    return l
-
-def parse2(q, default_operator,
-           operator_dict={AndNot: AndNot, And: And, Or: Or, Near: Near}):
+def parse2(q, default_operator, operator_dict=operator_dict):
     """Find operators and operands"""
-    i = 0
     isop = operator_dict.has_key
-    while (i < len(q)):
-        if (type(q[i]) is ListType): q[i] = parse2(q[i], default_operator)
-
-        # every other item, starting with the first, should be an operand
-        if ((i % 2) != 0):
-            # This word should be an operator; if it is not, splice in
-            # the default operator.
-            
-            if type(q[i]) is not ListType and isop(q[i]):
-                q[i] = operator_dict[q[i]]
-            else: q[i : i] = [ default_operator ]
-
-        i = i + 1
+    i = len(q) - 1
+    while i >= 0:
+        e = q[i]
+        if isinstance(e, ListType):
+            q[i] = parse2(e, default_operator)
+            if i % 2:
+                q.insert(i, default_operator)
+        elif i % 2:
+            # This element should be an operator
+            if isop(e):
+                # Ensure that it is identical, not merely equal.
+                q[i] = operator_dict[e]
+            else:
+                # Insert the default operator.
+                q.insert(i, default_operator)
+        i = i - 1
 
     return q
 
 
-def parens(s, parens_re=re.compile('[\(\)]').search):
-
-    index = open_index = paren_count = 0
-
-    while 1:
-
-        mo = parens_re(s, index)
-        if mo is None : break
-
+def parens(s, parens_re=re.compile('[()]').search):
+    mo = parens_re(s)
+    if mo is None:
+        return
+    
+    open_index = mo.start(0) + 1
+    paren_count = 0
+    while mo is not None:
         index = mo.start(0)
     
         if s[index] == '(':
             paren_count = paren_count + 1
-            if open_index == 0 : open_index = index + 1
         else:
             paren_count = paren_count - 1
+            if paren_count == 0:
+                return (s[:open_index - 1], s[open_index:index],
+                        s[index + 1:])
+            if paren_count < 0:
+                break
+        mo = parens_re(s, index + 1)
 
-        if paren_count == 0:
-            return open_index, index
-        else:
-            index = index + 1
-
-    if paren_count == 0: # No parentheses Found
-        return None
-    else:
-        raise QueryError, "Mismatched parentheses"      
+    raise QueryError, "Mismatched parentheses"      
 
 
-def quotes(s, ws=(string.whitespace,)):
-     # split up quoted regions
-     splitted = re.split( '[%s]*\"[%s]*' % (ws * 2),s)
-     split=string.split
-
-     if (len(splitted) > 1):
-         if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
+def quotes(s):
+    split=string.split
+    if '"' not in s:
+        return split(s)
     
-         for i in range(1,len(splitted),2):
-             # split the quoted region into words
-             splitted[i] = filter(None, split(splitted[i]))
+    # split up quoted regions
+    splitted = re.split('\s*\"\s*', s)
 
-             # put the Proxmity operator in between quoted words
-             for j in range(1, len(splitted[i])):
-                 splitted[i][j : j] = [ Near ]
+    if (len(splitted) % 2) == 0: raise QueryError, "Mismatched quotes"
+    
+    for i in range(1,len(splitted),2):
+        # split the quoted region into words
+        words = splitted[i] = split(splitted[i])
+        
+        # put the Proxmity operator in between quoted words
+        j = len(words) - 1
+        while j > 0:
+            words.insert(j, Near)
+            j = j - 1
 
-         for i in range(len(splitted)-1,-1,-2):
-             # split the non-quoted region into words
-             splitted[i:i+1] = filter(None, split(splitted[i]))
+    i = len(splitted) - 1
+    while i >= 0:
+        # split the non-quoted region into words
+        splitted[i:i+1] = split(splitted[i])
+        i = i - 2
 
-         splitted = filter(None, splitted)
-     else:
-         # No quotes, so just split the string into words
-         splitted = filter(None, split(s))
-
-     return splitted
-
+    return filter(None, splitted)
 
 
 manage_addTextIndexForm = DTMLFile('dtml/addTextIndex', globals())

@@ -85,7 +85,7 @@
 
 from Lexicon import Lexicon
 import Splitter
-from Products.PluginIndexes.TextIndex.TextIndex import Or
+from TextIndex import Or, Op
 
 import re, string
 
@@ -147,14 +147,12 @@ class GlobbingLexicon(Lexicon):
 
     def createDigrams(self, word):
         """Returns a list with the set of digrams in the word."""
-        digrams = []
+        digrams = list(word)
+        digrams.append(self.eow)
+        last = self.eow
 
-        digrams.append(self.eow + word[0])    # Mark the beginning
-
-        for i in range(1,len(word)):
-            digrams.append(word[i-1:i+1])
-
-        digrams[-1] = digrams[-1] + self.eow  # Mark the end
+        for i in range(len(digrams)):
+            last, digrams[i] = digrams[i], last + digrams[i]
 
         return digrams
 
@@ -269,21 +267,30 @@ class GlobbingLexicon(Lexicon):
 
     def query_hook(self, q):
         """expand wildcards"""
-        words = []
-        for w in q:
-            if ( (self.multi_wc in w) or
-                 (self.single_wc in w) ):
-                wids = self.get(w)
+        ListType = type([])
+        i = len(q) - 1
+        while i >= 0:
+            e = q[i]
+            if isinstance(e, ListType):
+                self.query_hook(e)
+            elif isinstance(e, Op):
+                pass
+            elif ( (self.multi_wc in e) or
+                   (self.single_wc in e) ):
+                wids = self.get(e)
+                words = []
                 for wid in wids:
                     if words:
                         words.append(Or)
                     words.append(wid)
-            else:
-                words.append(w)
+                if not words:
+                    # if words is empty, return something that will make
+                    # textindex's __getitem__ return an empty result list
+                    words.append('')
+                q[i] = words
+            i = i - 1
 
-        # if words is empty, return something that will make textindex's
-        # __getitem__ return an empty result list
-        return words or ['']
+        return q
 
     def Splitter(self, astring, words=None):
         """ wrap the splitter """
@@ -300,18 +307,16 @@ class GlobbingLexicon(Lexicon):
         There is no way to quote meta-characters.
         """
 
+        # Remove characters that are meaningful in a regex
         transTable = string.maketrans("", "")
+        result = string.translate(pat, transTable,
+                                  r'()&|!@#$%^{}\<>.')
         
-        # First, deal with mutli-character globbing
-        result = string.replace(pat, '*', '.*')
+        # First, deal with multi-character globbing
+        result = string.replace(result, '*', '.*')
 
         # Next, we need to deal with single-character globbing
-        result = string.replace(result, '?', '.?')
-
-        # Now, we need to remove all of the characters that
-        # are forbidden.
-        result = string.translate(result, transTable,
-                                  r'()&|!@#$%^{}\<>')
+        result = string.replace(result, '?', '.')
 
         return "%s$" % result 
 
