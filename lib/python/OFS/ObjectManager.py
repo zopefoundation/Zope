@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.170 2004/03/17 13:54:16 urbanape Exp $"""
+$Id: ObjectManager.py,v 1.171 2004/03/17 16:34:26 urbanape Exp $"""
 
-__version__='$Revision: 1.170 $'[11:-2]
+__version__='$Revision: 1.171 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -271,7 +271,7 @@ class ObjectManager(
                 if object.__ac_local_roles__ is None:
                     user=getSecurityManager().getUser()
                     if user is not None:
-                        name=user.getName()
+                        name=user.getUserName()
                         if name != 'Anonymous User':
                             object.manage_setLocalRoles(name, ['Owner'])
 
