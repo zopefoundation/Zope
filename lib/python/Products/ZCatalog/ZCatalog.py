@@ -144,22 +144,42 @@ class ZCatalog(Folder, Persistent, Implicit):
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
 
-    manage_options=Folder.manage_options + (  
-        {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
+    manage_options = (
+        {'label': 'Contents',           # TAB: Contents
+         'action': 'manage_main',
+         'help': ('OFSP','ObjectManager_Contents.stx')},
+        {'label': 'Catalog',            # TAB: Cataloged Objects
+         'action': 'manage_catalogView',
          'target': 'manage_main',
          'help':('ZCatalog','ZCatalog_Cataloged-Objects.stx')},
-        {'label': 'Find Objects', 'action': 'manage_catalogFind', 
-         'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
-        {'label': 'Metadata', 'action': 'manage_catalogSchema', 
+        {'label': 'Properties',         # TAB: Properties
+         'action': 'manage_propertiesForm',
+         'help': ('OFSP','Properties.stx')},
+        {'label': 'Indexes',            # TAB: Indexes
+         'action': 'manage_catalogIndexes', 
+         'target': 'manage_main',
+         'help':('ZCatalog','ZCatalog_Indexes.stx')},
+        {'label': 'Metadata',           # TAB: Metadata
+         'action': 'manage_catalogSchema', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_MetaData-Table.stx')},
-        {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
-         'target':'manage_main',
-         'help':('ZCatalog','ZCatalog_Indexes.stx')},
-        {'label': 'Status', 'action': 'manage_catalogStatus', 
+        {'label': 'Status',             # TAB: Status
+         'action': 'manage_catalogStatus', 
          'target':'manage_main',
          'help':('ZCatalog','ZCatalog_Status.stx')},
+        {'label': 'Find Objects',       # TAB: Find Objects
+         'action': 'manage_catalogFind', 
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.stx')},
+        {'label': 'Undo',               # TAB: Undo
+         'action': 'manage_UndoForm',
+         'help': ('OFSP','Undo.stx')},
+        {'label': 'Security',           # TAB: Security
+         'action': 'manage_access',
+         'help': ('OFSP','Security.stx')},
+        {'label': 'Ownership',          # TAB: Ownership
+         'action': 'manage_owner',
+         'help': ('OFSP','Ownership.stx'),}
         )
 
     __ac_permissions__=(
