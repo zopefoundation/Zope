@@ -37,11 +37,13 @@ def main():
     PYTHON=sys.executable
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
-    REQUIRE_ZLIB=1
+    REQUIRE_ZLIB = 1
+    REQURE_PYEXPAT = 1 
     INSTALL_FLAGS = ''
     DISTUTILS_OPTS = ''
     try:
-        longopts = ['help', 'ignore-largefile', 'ignore-zlib', 'prefix=',
+        longopts = ['help', 'ignore-largefile', 'ignore-zlib',
+                    '--ignore-pyexpat', 'prefix=',
                     'build-base=', 'optimize', 'no-compile', 'quiet']
         opts, args = getopt.getopt(sys.argv[1:], 'h', longopts)
     except getopt.GetoptError, v:
@@ -58,6 +60,8 @@ def main():
             REQUIRE_LF_ENABLED=0
         if o == '--ignore-zlib':
             REQUIRE_ZLIB=0
+        if o == '--ignore-pyexpat':
+            REQUIRE_PYEXPAT=0
         if o == '--optimize':
             INSTALL_FLAGS = '--optimize=1 --no-compile'
         if o == '--no-compile':
@@ -72,6 +76,8 @@ def main():
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
+    if REQUIRE_PYEXPAT:
+        test_pyexpat()
     out('  - Zope top-level binary directory will be %s.' % PREFIX)
     if INSTALL_FLAGS:
         out('  - Distutils install flags will be "%s"' % INSTALL_FLAGS)
@@ -115,6 +121,9 @@ Options:
   --ignore-largefile            allow configuration to proceed without
                                 Python large file support.
 
+  --ignore-pyexpat              allow configuration to proceed if the pyexpat
+                                module is not found.
+
   --optimize                    compile Python files as .pyo files
                                 instead of as .pyc files
 
@@ -132,6 +141,35 @@ files by using '--prefix', for example: '--prefix=$HOME/zope'.
 """ % ({'program':sys.argv[0], 'PREFIX':PREFIX})
              )
     print usage
+
+def test_pyexpat():
+    try:
+        import pyexpat
+    except ImportError:
+        print (
+            """
+The Python interpreter you are using does not appear to have the 'pyexpat'
+library module installed.  For many Zope features to work properly, including
+Zope Page Templates, you must install a Python interpreter which includes the
+pyexpat module, or install the pyexpat library into your Python interpreter
+manually.  The file which represents the library is named 'pyexpat.so' (UNIX)
+or 'pyexpat.dll' (Windows) and is typically located in the 'lib-dynload'
+directory of your Python's library directory.  Some Python packagers ship the
+pyexpat module as a separate installable binary. If you are using a
+system-provided Python installation, you may want to look for a 'python-xml'
+or 'python-pyexpat' package (or something like it) and install it to make the
+pyexpat module available to Zope.  If you've compiled your Python interpreter
+from source, you may need to recompile and reinstall it after installing James
+Clark's expat libraries and development packages (look for libexpat.so and
+expat.h). Typically, these come as part of your operating system's libexpat
+and libexpat-dev packages, respectively.
+
+Run the configure script with the --ignore-pyexpat option to prevent this
+warning with the understanding that some Zope features may not work properly
+until you've installed the pyexpat module.
+"""
+            )
+        
 
 def test_zlib():
     try:
