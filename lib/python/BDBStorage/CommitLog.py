@@ -30,7 +30,7 @@
 # using the CommitLog instance, and derived classes provide a more specific
 # interface for the storage.
 
-__version__ = '$Revision: 1.10 $'.split()[-2:][0]
+__version__ = '$Revision: 1.11 $'.split()[-2:][0]
 
 import sha
 import struct
@@ -341,6 +341,8 @@ class FullLog(CommitLog):
     #           actually higher level API method that write essentially the
     #           same record with some of the elements defaulted to the empty
     #           string or the "all-zeros" string.
+    #     'x' - Like 'o' but might have slightly different semantics in the
+    #           individual databases.
     #     'v' - new version record, consisting of a version string and a
     #           version id
     #     'd' - discard version, consisting of a version id
@@ -375,27 +377,32 @@ class FullLog(CommitLog):
 
     # read/write protocol
 
-    def write_object(self, oid, vid, nvrevid, pickle, prevrevid):
+    def write_object(self, oid, vid, nvrevid, refdoids, prevrevid):
         # Write an empty lrevid since that will be the same as the transaction
         # id at the time of the commit to Berkeley.
-        self._append('o', (oid, vid, nvrevid, '', pickle, prevrevid))
+        #
+        # Since we're now writing the pickles directly to Berkeley instead of
+        # logging them, we don't need to store the pickle data here.  Instead,
+        # we'll write the list of oids referenced by the data, which will be
+        # useful during _finish()
+        self._append('x', (oid, vid, nvrevid, '', refdoids, prevrevid))
 
     def write_nonversion_object(self, oid, lrevid, prevrevid, zero='\0'*8):
         # Write zeros for the vid and nvrevid since we're storing this object
         # into version zero (the non-version).  Also, write an empty pickle
         # since we'll reuse one already in the pickle table.
-        self._append('o', (oid, zero, zero, lrevid, '', prevrevid))
+        self._append('o', (oid, zero, zero, lrevid, None, prevrevid))
 
     def write_moved_object(self, oid, vid, nvrevid, lrevid, prevrevid):
         # Write an empty pickle since we're just moving the object and we'll
         # reuse the pickle already in the database.
-        self._append('o', (oid, vid, nvrevid, lrevid, '', prevrevid))
+        self._append('o', (oid, vid, nvrevid, lrevid, None, prevrevid))
 
     def write_object_undo(self, oid, vid, nvrevid, lrevid, prevrevid):
         # Identical to write_moved_object() except that we have to keep some
         # extra info around.  Specifically, it's possible to undo multiple
         # transactions in the same transaction.
-        self._append('o', (oid, vid, nvrevid, lrevid, '', prevrevid))
+        self._append('o', (oid, vid, nvrevid, lrevid, None, prevrevid))
         self.__prevrevids[oid] = prevrevid
 
     def write_new_version(self, version, vid):
@@ -414,6 +421,6 @@ class FullLog(CommitLog):
             key, data = rec
         except ValueError:
             raise LogCorruptedError, 'incomplete record'
-        if key not in 'ovd':
+        if key not in 'xovdr':
             raise LogCorruptedError, 'bad record key: %s' % key
         return key, data
