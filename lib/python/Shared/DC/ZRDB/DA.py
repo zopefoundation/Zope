@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.21 1998/01/09 21:58:25 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: DA.py,v 1.22 1998/01/12 20:02:23 jim Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -173,15 +173,20 @@ class DA(
 
 	return result
 
-    def __call__(self,REQUEST=None):
+    def __call__(self, REQUEST=None, **kw):
 
-	if REQUEST is None: REQUEST=self.REQUEST
+	if REQUEST is None:
+	    if kw: REQUEST=kw
+	    else:
+		if hasattr(self, 'REQUEST'): REQUEST=self.REQUEST
+		else: REQUEST={}
 	
 	try: DB__=getattr(self, self.connection_id)()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
-	self=self.__of__(REQUEST['PARENTS'][0])
+	if hasattr(REQUEST,'PARENTS'): self=self.__of__(REQUEST['PARENTS'][0])
+
 	argdata=self._argdata(REQUEST)
 	query=apply(self.template, (self,), argdata)
 
@@ -334,6 +339,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.22  1998/01/12 20:02:23  jim
+# Added support for keyword arguments to methods.
+#
 # Revision 1.21  1998/01/09 21:58:25  jim
 # Fixed bug in handling of arguments.
 #
