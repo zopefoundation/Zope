@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.15 1999/08/05 14:53:06 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: CacheManager.py,v 1.16 1999/10/07 19:53:25 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, time, sys
 
@@ -237,10 +237,10 @@ class CacheManager:
             Globals.Bobobase._jar.cache.cache_size=self._cache_size
             Globals.Bobobase._jar.cache.cache_age =self._cache_age
         else:
-            db.SetCacheSize(self._cache_size)
-            db.SetCacheDeactivateAfter(self._cache_age)
-            db.SetVersionCacheSize(self._vcache_size)
-            db.SetVersionCacheDeactivateAfter(self._vcache_age)
+            db.setCacheSize(self._cache_size)
+            db.setCacheDeactivateAfter(self._cache_age)
+            db.setVersionCacheSize(self._vcache_size)
+            db.setVersionCacheDeactivateAfter(self._vcache_age)
 
     def cache_detail(self):
         try: db=self._p_jar.db()
