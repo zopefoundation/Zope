@@ -36,6 +36,9 @@ Zope Changes
         _ACCESS in their name. Those old environment variables
         still do the same job of sending the event log to syslog.
 
+      - When run as a daemon on Unix, Zope will now redirect
+        stdin/stdout/stderr to /dev/null
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
