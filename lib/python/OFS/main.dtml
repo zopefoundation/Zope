@@ -20,7 +20,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var id-->/manage_main">
-  <IMG SRC="<!--#var id-->/<!--#var icon-->"
+  <IMG SRC="<!--#var SCRIPT_NAME-->/misc_/<!--#var icon-->"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
