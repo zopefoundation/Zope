@@ -3,11 +3,14 @@
 import asynchat
 import socket
 import string
+import time         # these three are for the rotating logger
+import os           # |
+import stat         # v
 
 #
 # three types of log:
 # 1) file
-#    with optional flushing.
+#    with optional flushing.  Also, one that rotates the log.
 # 2) socket
 #    dump output directly to a socket connection. [how do we
 #    keep it open?]
@@ -31,7 +34,7 @@ import string
 class file_logger:
 			
 	# pass this either a path or a file object.
-	def __init__ (self, file, flush=1, mode='wa'):
+	def __init__ (self, file, flush=1, mode='a'):
 		if type(file) == type(''):
 			if (file == '-'):
 				import sys
@@ -72,6 +75,72 @@ class file_logger:
 			self.write (message + '\n')
 		else:
 			self.write (message)
+
+# like a file_logger, but it must be attached to a filename.
+# When the log gets too full, or a certain time has passed,
+# it backs up the log and starts a new one.  Note that backing
+# up the log is done via "mv" because anything else (cp, gzip)
+# would take time, during which medusa would do nothing else.
+
+class rotating_file_logger (file_logger):
+			
+	# If freq is non-None we back up "daily", "weekly", or "monthly".
+	# Else if maxsize is non-None we back up whenever the log gets
+	# to big.  If both are None we never back up.
+	def __init__ (self, file, freq=None, maxsize=None, flush=1, mode='a'):
+		self.filename = file
+		self.mode = mode
+		self.file = open (file, mode)
+		self.freq = freq
+		self.maxsize = maxsize
+		self.rotate_when = self.next_backup(self.freq)
+		self.do_flush = flush
+
+	def __repr__ (self):
+		return '<rotating-file logger: %s>' % self.file
+
+	# We back up at midnight every 1) day, 2) monday, or 3) 1st of month
+	def next_backup (self, freq):
+		(yr, mo, day, hr, min, sec, wd, jday, dst) = time.localtime(time.time())
+		if freq == 'daily':
+			return time.mktime(yr,mo,day+1, 0,0,0, 0,0,-1)
+		elif freq == 'weekly':
+			return time.mktime(yr,mo,day-wd+7, 0,0,0, 0,0,-1)  # wd(monday)==0
+		elif freq == 'monthly':
+			return time.mktime(yr,mo+1,1, 0,0,0, 0,0,-1)
+		else:
+			return None                  # not a date-based backup
+
+	def maybe_flush (self):              # rotate first if necessary
+		self.maybe_rotate()
+		if self.do_flush:                # from file_logger()
+			self.file.flush()
+
+	def maybe_rotate (self):
+		if self.freq and time.time() > self.rotate_when:
+			self.rotate()
+			self.rotate_when = self.next_backup(self.freq)
+		elif self.maxsize:               # rotate when we get too big
+			try:
+				if os.stat(self.filename)[stat.ST_SIZE] > self.maxsize:
+					self.rotate()
+ 			except os.error:             # file not found, probably
+				self.rotate()            # will create a new file
+
+	def rotate (self):
+		(yr, mo, day, hr, min, sec, wd, jday, dst) = time.localtime(time.time())
+		try:
+			self.file.close()
+			newname = '%s.ends%04d%02d%02d' % (self.filename, yr, mo, day)
+			try:
+				open(newname, "r").close()      # check if file exists
+				newname = newname + "-%02d%02d%02d" % (hr, min, sec)
+			except:                             # YEARMODY is unique
+				pass
+			os.rename(self.filename, newname)
+			self.file = open(self.filename, self.mode)
+		except:
+			pass
 
 # syslog is a line-oriented log protocol - this class would be
 # appropriate for FTP or HTTP logs, but not for dumping stderr to.

@@ -8,7 +8,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID = '$Id: default_handler.py,v 1.1 1999/01/09 03:17:31 amos Exp $'
+RCS_ID = '$Id: default_handler.py,v 1.2 1999/04/09 00:37:33 amos Exp $'
 
 # standard python modules
 import os
@@ -203,7 +203,7 @@ class default_handler:
 		request.done()
 
 	def set_content_type (self, path, request):
-		ext = get_extension (path)
+		ext = string.lower (get_extension (path))
 		if mime_type_table.content_type_map.has_key (ext):
 			request['Content-Type'] = mime_type_table.content_type_map[ext]
 		else:

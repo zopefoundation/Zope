@@ -109,16 +109,15 @@ def build_http_date (when):
 
 def parse_http_date (d):
 	d = string.lower (d)
-	# Thanks to Craig Silverstein <csilvers@google.com> for pointing
-	# out the DST discrepancy
-	if time.daylight:
-		tz = time.altzone
-	else:
-		tz = time.timezone
-	# rfc850 comes first, netscape uses it. <frown>
+	tz = time.timezone
 	if rfc850_reg.match (d) == len(d):
-		return int (time.mktime (unpack_rfc850()) - tz)
+		retval = int (time.mktime (unpack_rfc850()) - tz)
 	elif rfc822_reg.match (d) == len(d):
-		return int (time.mktime (unpack_rfc822()) - tz)
+		retval = int (time.mktime (unpack_rfc822()) - tz)
 	else:
 		return 0
+	# Thanks to Craig Silverstein <csilvers@google.com> for pointing
+	# out the DST discrepancy
+	if time.daylight and time.localtime(retval)[-1] == 1: # DST correction
+		retval = retval + (tz - time.altzone)
+	return retval

@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.1 1999/01/08 23:04:42 jim Exp $
+# 	$Id: asyncore.py,v 1.2 1999/04/09 00:37:33 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -47,25 +47,20 @@ def poll (timeout=0.0):
 		sockets = socket_map.keys()
 		r = filter (lambda x: x.readable(), sockets)
 		w = filter (lambda x: x.writable(), sockets)
-		e = sockets[:]
+		e = []
 
 		(r,w,e) = select.select (r,w,e, timeout)
 
-		for x in e:
-			try:
-				x.handle_expt_event()
-			except:
-				x.handle_error (sys.exc_type, sys.exc_value, sys.exc_traceback)
 		for x in r:
 			try:
 				x.handle_read_event()
 			except:
-				x.handle_error (sys.exc_type, sys.exc_value, sys.exc_traceback)
+				x.handle_error()
 		for x in w:
 			try:
 				x.handle_write_event()
 			except:
-				x.handle_error (sys.exc_type, sys.exc_value, sys.exc_traceback)
+				x.handle_error()
 
 def poll2 (timeout=0.0):
 	import poll
@@ -85,18 +80,17 @@ def poll2 (timeout=0.0):
 			if flags:
 				l.append (fd, flags)
 		r = poll.poll (l, timeout)
-		print r
 		for fd, flags in r:
 			s = fd_map[fd]
 			try:
 				if (flags & poll.POLLIN):
-						s.handle_read_event()
+					s.handle_read_event()
 				if (flags & poll.POLLOUT):
-						s.handle_write_event()
+					s.handle_write_event()
 				if (flags & poll.POLLERR):
-						s.handle_expt_event()
+					s.handle_expt_event()
 			except:
-				apply (s.handle_error, sys.exc_info())
+				s.handle_error()
 
 
 def loop (timeout=30.0, use_poll=0):
@@ -114,7 +108,6 @@ class dispatcher:
 	connected = 0
 	accepting = 0
 	closing = 0
-	_fileno = None
 	addr = None
 
 	def __init__ (self, sock=None):
@@ -149,14 +142,6 @@ class dispatcher:
 	def add_channel (self):
 		self.log ('adding channel %s' % self)
 		socket_map [self] = 1
-
-	# we cache the original fileno, because after closing
-	# a socket, s.fileno() will return -1, and we want to
-	# continue tracking it via the original number.
-	def fileno (self):
-		if self._fileno is None:
-			self._fileno = self.socket.fileno()
-		return self._fileno
 
 	def del_channel (self):
 		if socket_map.has_key (self):
@@ -216,6 +201,7 @@ class dispatcher:
 		return self.socket.bind (addr)
 
 	def connect (self, address):
+		self.connected = 0
 		try:
 			self.socket.connect (address)
 		except socket.error, why:
@@ -268,8 +254,6 @@ class dispatcher:
 	def close (self):
 		self.del_channel()
 		self.socket.close()
-		self._fileno = None
-		self.connected = 0
 
 	# cheap inheritance, used to pass all other attribute
 	# references to the underlying socket object.
@@ -306,9 +290,8 @@ class dispatcher:
 	def handle_expt_event (self):
 		self.handle_expt()
 
-	def handle_error (self, *info):
-		(t,v,tb) = info
-		(file,fun,line), tbinfo = compact_traceback (t,v,tb)
+	def handle_error (self):
+		(file,fun,line), t, v, tbinfo = compact_traceback()
 
 		# sometimes a user repr method will crash.
 		try:
@@ -319,12 +302,11 @@ class dispatcher:
 		print (
 			'uncaptured python exception, closing channel %s (%s:%s %s)' % (
 				self_repr,
-				str(t),
-				str(v),
+				t,
+				v,
 				tbinfo
 				)
 			)
-		del t,v,tb
 		self.close()
 
 	def handle_expt (self):
@@ -338,9 +320,6 @@ class dispatcher:
 
 	def handle_connect (self):
 		self.log ('unhandled connect event')
-
-	def handle_oob (self):
-		self.log ('unhandled out-of-band event')
 
 	def handle_accept (self):
 		self.log ('unhandled accept event')
@@ -380,7 +359,8 @@ class dispatcher_with_send (dispatcher):
 # used for debugging.
 # ---------------------------------------------------------------------------
 
-def compact_traceback (t,v,tb):
+def compact_traceback ():
+	t,v,tb = sys.exc_info()
 	tbinfo = []
 	while 1:
 		tbinfo.append (
@@ -392,6 +372,9 @@ def compact_traceback (t,v,tb):
 		if not tb:
 			break
 
+	# just to be safe
+	del tb
+
 	file, function, line = tbinfo[-1]
 	info = '[' + string.join (
 		map (
@@ -400,7 +383,7 @@ def compact_traceback (t,v,tb):
 			),
 		'] ['
 		) + ']'
-	return (file, function, line), info
+	return (file, function, line), t, v, info
 
 def close_all ():
 	global socket_map
@@ -457,3 +440,4 @@ if os.name == 'posix':
 		def set_file (self, fd):
 			self.socket = file_wrapper (fd)
 			self.add_channel()
+

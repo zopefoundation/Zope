@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.1 1999/01/21 22:52:08 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.2 1999/04/09 00:37:33 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -157,8 +157,7 @@ class ftp_channel (asynchat.async_chat):
 				result = apply (fun, (line,))
 			except:
 				self.server.total_exceptions.increment()
-				t,v,tb = sys.exc_info()
-				(file, fun, line), ctb = asyncore.compact_traceback (t,v,tb)
+				(file, fun, line), t,v, tbinfo = asyncore.compact_traceback()
 				if self.client_dc:
 					try:
 						self.client_dc.close()
@@ -166,7 +165,7 @@ class ftp_channel (asynchat.async_chat):
 						pass
 				self.respond (
 					'451 Server Error: %s, %s: file: %s line: %s' % (
-						str(t),str(v),file,line,
+						t,v,file,line,
 						)
 					)
 
@@ -220,7 +219,7 @@ class ftp_channel (asynchat.async_chat):
 	# --------------------------------------------------
 
 	def check_command_authorization (self, command):
-		if command in ['stor', 'dele'] and self.read_only:
+		if command in self.write_commands and self.read_only:
 			return 0
 		else:
 			return 1
@@ -375,9 +374,10 @@ class ftp_channel (asynchat.async_chat):
 		'prepare for server-to-server transfer'
 		pc = self.new_passive_acceptor()
 		port = pc.addr[1]
+		ip_addr = pc.control_channel.getsockname()[0]
 		self.respond (
-			'227 Entering Passive Mode. %s,%d,%d' % (
-				string.join (string.split (IP_ADDRESS, '.'), ','),
+			'227 Entering Passive Mode (%s,%d,%d)' % (
+				string.join (string.split (ip_addr, '.'), ','),
 				port/256,
 				port%256
 				)
@@ -621,6 +621,22 @@ class ftp_channel (asynchat.async_chat):
 			'350 Restarting at %d. Send STORE or RETRIEVE to initiate transfer.' % pos
 			)
 
+	def cmd_stru (self, line):
+		'obsolete - set file transfer structure'
+		if line[1] in 'fF':
+			# f == 'file'
+			self.respond ('200 STRU F Ok')
+		else:
+			self.respond ('504 Unimplemented STRU type')
+
+	def cmd_mode (self, line):
+		'obsolete - set file transfer mode'
+		if line[1] in 'sS':
+			# f == 'file'
+			self.respond ('200 MODE S Ok')
+		else:
+			self.respond ('502 Unimplemented MODE type')
+
 # The stat command has two personalities.  Normally it returns status
 # information about the current connection.  But if given an argument,
 # it is equivalent to the LIST command, with the data sent over the
@@ -794,9 +810,6 @@ class passive_acceptor (asyncore.dispatcher):
 		asyncore.dispatcher.__init__ (self)
 		self.control_channel = control_channel
 		self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
-
-		#self.bind ((IP_ADDRESS, 0))
-		#self.bind (('', 0))
 		# bind to an address on the interface that the
 		# control connection is coming from.
 		self.bind ((
@@ -856,8 +869,7 @@ class xmit_channel (asynchat.async_chat):
 		self.bytes_out = self.bytes_out + result
 		return result
 
-	def handle_error (self, t,v,tb):
-		import errno
+	def handle_error (self):
 		# usually this is to catch an unexpected disconnect.
 		self.log ('unexpected disconnect on data xmit channel')
 		self.close()

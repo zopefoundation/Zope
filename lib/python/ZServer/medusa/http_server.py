@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.5 1999/03/12 19:21:40 brian Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.6 1999/04/09 00:37:33 amos Exp $'
 
 # python modules
 import os
@@ -54,7 +54,6 @@ class http_request:
 	# If your clients are having trouble, you might want to disable this.
 	use_chunked = 1
 	
-
 	# by default, this request object ignores user data.
 	collector = None
 
@@ -70,6 +69,8 @@ class http_request:
 			'Date'		: http_date.build_http_date (time.time())
 			}
 		self.request_number = http_request.request_counter.increment()
+		self._split_uri = None
+		self._header_cache = {}
 
 	# --------------------------------------------------
 	# reply header management
@@ -93,6 +94,47 @@ class http_request:
 			) + '\r\n\r\n'
 
 	# --------------------------------------------------
+	# split a uri
+	# --------------------------------------------------
+
+	# <path>;<params>?<query>#<fragment>
+	path_regex = regex.compile (
+	#        path        params        query       fragment
+		'\\([^;?#]*\\)\\(;[^?#]*\\)?\\(\\?[^#]*\)?\(#.*\)?'
+		)
+
+	def split_uri (self):
+		if self._split_uri is None:
+			if self.path_regex.match (self.uri) != len(self.uri):
+				raise ValueError, "Broken URI"
+			else:
+				self._split_uri = map (lambda i,r=self.path_regex: r.group(i), range(1,5))
+		return self._split_uri
+
+
+	def get_header_with_regex (self, head_reg, group):
+		for line in self.header:
+			if head_reg.match (line) == len(line):
+				return head_reg.group(group)
+		return ''
+
+	def get_header (self, header):
+		header = string.lower (header)
+		hc = self._header_cache
+		if not hc.has_key (header):
+			h = header + ': '
+			hl = len(h)
+			for line in self.header:
+				if string.lower (line[:hl]) == h:
+					r = line[hl:]
+					hc[header] = r
+					return r
+			hc[header] = None
+			return None
+		else:
+			return hc[header]
+
+	# --------------------------------------------------
 	# user data
 	# --------------------------------------------------
 
@@ -112,11 +154,11 @@ class http_request:
 				'warning: unexpected end-of-record for incoming request\n'
 				)
 
-	def push (self, producer):
-		if type(producer) == type(''):
-			self.outgoing.push (producers.simple_producer (producer))
+	def push (self, thing):
+		if type(thing) == type(''):
+			self.outgoing.push (producers.simple_producer (thing))
 		else:
-			self.outgoing.push (producer)
+			self.outgoing.push (thing)
 
 	def response (self, code=200):
 		message = self.responses[code]
@@ -209,13 +251,6 @@ class http_request:
 		if close_it:
 			self.channel.close_when_done()
 
-	def log (self, bytes):
-		print 'request %3d: %s %d bytes' % (
-			self.request_counter,
-			self.request,
-			bytes
-			)
-
 	def log_date_string (self, when):
 		return time.strftime (
 			'%d/%b/%Y:%H:%M:%S ',
@@ -244,14 +279,12 @@ class http_request:
 		204: "No Content",
 		205: "Reset Content",
 		206: "Partial Content",
-		207: "Multi-Status",
 		300: "Multiple Choices",
 		301: "Moved Permanently",
 		302: "Moved Temporarily",
 		303: "See Other",
 		304: "Not Modified",
 		305: "Use Proxy",
-		307: "Temporary Redirect",
 		400: "Bad Request",
 		401: "Unauthorized",
 		402: "Payment Required",
@@ -273,8 +306,7 @@ class http_request:
 		502: "Bad Gateway",
 		503: "Service Unavailable",
 		504: "Gateway Time-out",
-		505: "HTTP Version not supported",
-		507: "Insufficient Storage"
+		505: "HTTP Version not supported"
 		}
 
 	# Default error message
@@ -304,7 +336,6 @@ class http_channel (asynchat.async_chat):
 
 	current_request = None
 	channel_counter = counter()
-	writable=asynchat.async_chat.writable_future
 
 	def __init__ (self, server, conn, addr):
 		self.channel_number = http_channel.channel_counter.increment()
@@ -407,14 +438,9 @@ class http_channel (asynchat.async_chat):
 						h.handle_request (r)
 					except:
 						self.server.exceptions.increment()
-						t,v,tb = sys.exc_info()
-						(file,fun,line),tbinfo = asyncore.compact_traceback (t,v,tb)
-						while tb.tb_next:
-							tb = tb.tb_next
+						(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
 						# Log this to a better place.
 						print 'Server Error: %s, %s: file: %s line: %s' % (t,v,file,line)
-						# IMPORTANT: without this <del>, this entire connection will leak. [why?]
-						del t,v,tb
 						try:
 							r.error (500)
 						except:
@@ -422,7 +448,11 @@ class http_channel (asynchat.async_chat):
 					return
 
 			# no handlers, so complain
-			r.error (404)		
+			r.error (404)
+
+	def writable (self):
+		# this is just the normal async_chat 'writable', here for comparison
+		return self.ac_out_buffer or len(self.producer_fifo)
 
 	def writable_for_proxy (self):
 		# this version of writable supports the idea of a 'stalled' producer
@@ -463,15 +493,20 @@ class http_server (asyncore.dispatcher):
 
 		self.set_reuse_addr()
 		self.bind ((ip, port))
-		self.listen (5)
+
+		# lower this to 5 if your OS complains
+		self.listen (1024)
+
 		host, port = self.socket.getsockname()
 		if not ip:
 			print 'Warning: computing default hostname'
-			self.server_name = socket.gethostbyaddr (
-				socket.gethostbyname (socket.gethostname())
-				)[0]
-		else:
+			ip = socket.gethostbyname (socket.gethostname())
+		try:
 			self.server_name = socket.gethostbyaddr (ip)[0]
+		except socket.error:
+			print 'Warning: cannot do reverse lookup'
+			self.server_name = ip       # use the IP address as the "hostname"
+
 		self.server_port = port
 		self.total_clients = counter()
 		self.total_requests = counter()
@@ -541,7 +576,7 @@ class http_server (asyncore.dispatcher):
 		handler_stats = filter (None, map (maybe_status, self.handlers))
 		
 		if self.total_clients:
-			ratio = float(self.total_requests.as_long()/self.total_clients.as_long())
+			ratio = self.total_requests.as_long() / float(self.total_clients.as_long())
 		else:
 			ratio = 0.0
 		
@@ -598,13 +633,32 @@ def crack_request (r):
 			version = None
 		return string.lower (REQUEST.group (1)), REQUEST.group(2), version
 
-class fifo(asynchat.fifo):
+class fifo:
+	def __init__ (self, list=None):
+		if not list:
+			self.list = []
+		else:
+			self.list = list
+		
+	def __len__ (self):
+		return len(self.list)
+
+	def first (self):
+		return self.list[0]
 
 	def push_front (self, object):
 		self.list.insert (0, object)
 
+	def push (self, data):
+		self.list.append (data)
 
-
+	def pop (self):
+		if self.list:
+			result = self.list[0]
+			del self.list[0]
+			return (1, result)
+		else:
+			return (0, None)
 
 def compute_timezone_for_log ():
 	if time.daylight:

@@ -4,7 +4,7 @@
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 
-RCS_ID =  '$Id: resolver.py,v 1.1 1999/01/09 03:17:32 amos Exp $'
+RCS_ID =  '$Id: resolver.py,v 1.2 1999/04/09 00:37:33 amos Exp $'
 
 # Fast, low-overhead asynchronous name resolver.  uses 'pre-cooked'
 # DNS requests, unpacks only as much as it needs of the reply.
@@ -247,10 +247,8 @@ class resolver (asyncore.dispatcher):
 			try:
 				callback (host, ttl, answer)
 			except:
-				t,v,tb = sys.exc_info()
-				(file,fun,line), tbinfo = asyncore.compact_traceback (t,v,tb)
-				print t,v
-				print tbinfo
+				(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
+				print t,v,tbinfo
 
 class rbl (resolver):
 

@@ -1,5 +1,7 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
+VERSION_STRING = "$Id: status_handler.py,v 1.2 1999/04/09 00:37:33 amos Exp $"
+
 #			
 # medusa status extension
 #
@@ -32,11 +34,15 @@ def split_path (path):
 class status_extension:
 	hit_counter = counter()
 
-	hyper_regex = regex.compile ('/status/object/\([0-9]+\)/.*')
-
-	def __init__ (self, objects, regexp='/status\(/.*\)?'):
+	def __init__ (self, objects, statusdir='/status', allow_emergency_debug=0):
 		self.objects = objects
-		self.regexp = regex.compile (regexp)
+		self.statusdir = statusdir
+		self.allow_emergency_debug = allow_emergency_debug
+		# We use /status instead of statusdir here because it's too
+		# hard to pass statusdir to the logger, who makes the HREF
+		# to the object dir.  We don't need the security-through-
+		# obscurity here in any case, because the id is obscurity enough
+		self.hyper_regex = regex.compile('/status/object/\([0-9]+\)/.*')
 		self.hyper_objects = []
 		for object in objects:
 			self.register_hyper_object (object)
@@ -49,7 +55,9 @@ class status_extension:
 
 	def match (self, request):
 		[path, params, query, fragment] = split_path (request.uri)
-		return self.regexp.match (path) == len(path)
+		# For reasons explained above, we don't use statusdir for /object
+		return (path[:len(self.statusdir)] == self.statusdir or
+				path[:len("/status/object/")] == '/status/object/')
 
 	# Possible Targets:
 	# /status
@@ -67,7 +75,7 @@ class status_extension:
 	def handle_request (self, request):
 		[path, params, query, fragment] = split_path (request.uri)
 		self.hit_counter.increment()
-		if path == '/status':
+		if path == self.statusdir:          # and not a subdirectory
 			up_time = string.join (english_time (long(time.time()) - START_TIME))
 			request['Content-Type'] = 'text/html'
 			request.push (
@@ -81,40 +89,42 @@ class status_extension:
 				request.push (self.objects[i].status())
 				request.push ('<hr>\r\n')
 			request.push (
-				'<p><a href="/status/channel_list">Channel List</a>'
+				'<p><a href="%s/channel_list">Channel List</a>'
 				'<hr>'
-				'<img src="/status/medusa.gif" align=right width=%d height=%d>' % (
+				'<img src="%s/medusa.gif" align=right width=%d height=%d>'
+				'</body></html>' % (
+					self.statusdir,
+					self.statusdir,
 					medusa_gif.width,
 					medusa_gif.height
-					) +
-				'</body></html>'
+					)
 				)
 			request.done()
-
-		elif path == '/status/channel_list':
+		elif path == self.statusdir + '/channel_list':
 			request['Content-Type'] = 'text/html'
 			request.push ('<html><body>')
-			request.push(channel_list_producer())
+			request.push(channel_list_producer(self.statusdir))
 			request.push (
 				'<hr>'
-				'<img src="/status/medusa.gif" align=right width=%d height=%d>' % (
-					medusa_gif.width,
+				'<img src="%s/medusa.gif" align=right width=%d height=%d>' % (
+					self.statusdir,
+					medusa_gif.width, 
 					medusa_gif.height
 					) +
 				'</body></html>'
 				)
 			request.done()
 
-		elif path == '/status/medusa.gif':
+		elif path == self.statusdir + '/medusa.gif':
 			request['Content-Type'] = 'image/gif'
 			request['Content-Length'] = len(medusa_gif.data)
 			request.push (medusa_gif.data)
 			request.done()
 
-		elif path == '/status/close_zombies':
+		elif path == self.statusdir + '/close_zombies':
 			message = (
 				'<h2>Closing all zombie http client connections...</h2>'
-				'<p><a href="/status">Back to the status page</a>'
+				'<p><a href="%s">Back to the status page</a>' % self.statusdir
 				)
 			request['Content-Type'] = 'text/html'
 			request['Content-Length'] = len (message)
@@ -131,8 +141,7 @@ class status_extension:
 		# If a server is running away from you, don't KILL it!
 		# Move all the AF_INET server ports and perform an autopsy...
 		# [disabled by default to protect the innocent]
-		#elif path == '/status/emergency_debug':
-		elif 0:
+		elif self.allow_emergency_debug and path == self.statusdir + '/emergency_debug':
 			request.push ('<html>Moving All Servers...</html>')
 			request.done()
 			for channel in asyncore.socket_map.keys():
@@ -154,6 +163,7 @@ class status_extension:
 				if id (object) == oid:
 					if hasattr (object, 'hyper_respond'):
 						object.hyper_respond (self, path, request)
+
 		else:
 			request.error (404)
 			return
@@ -200,7 +210,7 @@ class lines_producer:
 			return ''
 
 class channel_list_producer (lines_producer):
-	def __init__ (self):
+	def __init__ (self, statusdir):
 		channel_reprs = map (
 			lambda x: '&lt;' + repr(x)[1:-1] + '&gt;',
 			asyncore.socket_map.keys()
@@ -212,7 +222,7 @@ class channel_list_producer (lines_producer):
 			 '<pre>'
 			 ] + channel_reprs + [
 				 '</pre>',
-				 '<p><a href="/status">Status Report</a>'
+				 '<p><a href="%s">Status Report</a>' % statusdir
 				 ]
 			)
 
