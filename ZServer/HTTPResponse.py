@@ -105,7 +105,9 @@ import DebugLogger
 class ZServerHTTPResponse(HTTPResponse):
     "Used to push data into a channel's producer fifo"
 
-    http_chunk=0
+    # Set this value to 1 if streaming output in
+    # HTTP/1.1 should use chunked encoding
+    http_chunk=1
     http_chunk_size=1024
     
     # defaults
@@ -113,12 +115,19 @@ class ZServerHTTPResponse(HTTPResponse):
     _http_connection='close'
     _server_version='Zope/2.0 ZServer/2.0'
 
+    # using streaming response
     _streaming=0
+    # using chunking transfer-encoding
+    _chunking=0 
     
     def __str__(self,
                 html_search=regex.compile('<html>',regex.casefold).search,
                 ):        
-        if self._wrote: return ''       # Streaming output was used.
+        if self._wrote:
+            if self._chunking:
+                return '0\r\n\r\n'
+            else:
+                return ''
 
         headers=self.headers
         body=self.body
@@ -146,15 +155,12 @@ class ZServerHTTPResponse(HTTPResponse):
         # and not streaming
         if not headers.has_key('content-type') and \
                 not headers.has_key('content-length') and \
-                not headers.has_key('transfer-encoding') and \
                 not self._streaming and \
                 self.status == 200:
             self.setStatus('nocontent')
 
-        # add content length if not transfer encoded
-        # and not streaming
+        # add content length if not streaming
         if not headers.has_key('content-length') and \
-                not headers.has_key('transfer-encoding') and \
                 not self._streaming:
             self.setHeader('content-length',len(body))
 
@@ -171,38 +177,25 @@ class ZServerHTTPResponse(HTTPResponse):
         # add zserver headers
         append('Server: %s' % self._server_version) 
         append('Date: %s' % build_http_date(time.time()))
-        chunk=0
+
         if self._http_version=='1.0':
-            if self._http_connection=='keep alive':
-                if self.headers.has_key('content-length'):
-                    self.setHeader('Connection','close')
-                else:
-                    self.setHeader('Connection','Keep-Alive')
+            if self._http_connection=='keep-alive' and \
+                    self.headers.has_key('content-length'):
+                self.setHeader('Connection','Keep-Alive')
             else:
                 self.setHeader('Connection','close')
-        elif self._http_version=='1.1':           
+                
+        # Close the connection if we have been asked to.
+        # Use chunking if streaming output.
+        if self._http_version=='1.1':
             if self._http_connection=='close':
                 self.setHeader('Connection','close')
             elif not self.headers.has_key('content-length'):
-                if self.headers.has_key('transfer-encoding'):
-                    if self.headers['transfer-encoding'] != 'chunked':
-                        self.setHeader('Connection','close')
-                    else:
-                        chunk=1
-                elif self.http_chunk:
+                if self.http_chunk and self._streaming:
                     self.setHeader('Transfer-Encoding','chunked')
-                    chunk=1
+                    self._chunking=1
                 else:
-                    self.setHeader('Connection','close')
-        
-        if chunk:
-            chunked_body=''
-            while body:
-                chunk=body[:self.http_chunk_size]
-                body=body[self.http_chunk_size:]
-                chunked_body='%s%x\r\n%s\r\n' % (chunked_body, len(chunk), chunk)    
-            chunked_body='%s0\r\n\r\n' % chunked_body
-            body=chunked_body
+                    self.setHeader('Connection','close')                
         
         for key, val in headers.items():
             if string.lower(key)==key:
@@ -256,6 +249,9 @@ class ZServerHTTPResponse(HTTPResponse):
             self._wrote=1
 
         if not data: return
+
+        if self._chunking:
+            data = '%x\r\n%s\r\n' % (len(data),data)
 
         t=self._tempfile
         if t is None:
