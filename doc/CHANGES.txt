@@ -28,6 +28,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Don't try to close network connections in the signal handler
+        for shutdown.  This hosed ZEO clients.
+
       - Collector #292: PythonScript.write() didn't properly refresh bindings.
 
       - Dumb bug in zdaemon fixed in which it would try to kill
