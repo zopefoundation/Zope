@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 
 import re, math,  DateTimeZone
@@ -370,7 +370,7 @@ def _tzoffset(tz, t):
         return DateTime._tzinfo[tz].info(t)[0]
     except:
         if numericTimeZoneMatch(tz) is not None:
-            return -int(tz[1:3])*3600-int(tz[3:5])*60
+            return int(tz[0:3])*3600+int(tz[0]+tz[3:5])*60
         else:
             return 0 # ??
 
@@ -1293,6 +1293,10 @@ class DateTime:
     def timezone(self):
         """Return the timezone in which the object is represented."""
         return self._tz
+
+    def tzoffset(self):
+        """Return the timezone offset for the objects timezone."""
+        return _tzoffset(self._tz, self._t)
 
     def year(self):
         """Return the calendar year of the object"""

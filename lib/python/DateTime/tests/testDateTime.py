@@ -212,9 +212,39 @@ class DateTimeTests(unittest.TestCase):
 
     def test_tzoffset(self):
         '''Test time-zone given as an offset'''
+
+        # GMT
+        dt = DateTime('Tue, 10 Sep 2001 09:41:03 GMT')
+        self.assertEqual(dt.tzoffset(), 0)
+
+        # Timezone by name, a timezone that hasn't got daylightsaving.
+        dt = DateTime('Tue, 2 Mar 2001 09:41:03 GMT+3')
+        self.assertEqual(dt.tzoffset(), 10800)
+
+        # Timezone by name, has daylightsaving but is not in effect.
+        dt = DateTime('Tue, 21 Jan 2001 09:41:03 PST')
+        self.assertEqual(dt.tzoffset(), -28800)
+
+        # Timezone by name, with daylightsaving in effect
+        dt = DateTime('Tue, 24 Aug 2001 09:41:03 PST')
+        self.assertEqual(dt.tzoffset(), -25200)
+
+        # A negative numerical timezone
         dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0400')
-        self.assertEqual(time.gmtime(dt.timeTime())[:6],
-                         (2001, 7, 24, 13, 41, 3))
+        self.assertEqual(dt.tzoffset(), -14400)
+        
+        # A positive numerical timzone
+        dt = DateTime('Tue, 6 Dec 1966 01:41:03 +0200')
+        self.assertEqual(dt.tzoffset(), 7200)
+        
+        # A negative numerical timezone with minutes.
+        dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0637')
+        self.assertEqual(dt.tzoffset(), -23820)
+
+        # A positive numerical timezone with minutes.
+        dt = DateTime('Tue, 24 Jul 2001 09:41:03 +0425')
+        self.assertEqual(dt.tzoffset(), 15900)
+        
 
     def testISO8601(self):
         ''' iso 8601 dates '''

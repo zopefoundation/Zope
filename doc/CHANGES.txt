@@ -39,8 +39,15 @@ Zope Changes
 
 
   Zope 2.6.1 beta 2
+    
+    Features added
+
+      - DateTime objects now have a tzoffset() method that returns the objects
+        timezones offset from GMT in seconds.
 
     Bugs Fixed
+
+      - Collector #740: DateTime now handles positive numerical timezones correcly.
 
       - Collector #763: There was no error when you had a sendmail-tag
         without specifying a mailhost or smpthost. Also added a missing import.
