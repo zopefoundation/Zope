@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.67 2000/06/16 19:31:37 shane Exp $''' 
-__version__='$Revision: 1.67 $'[11:-2]
+'''$Id: DT_Util.py,v 1.68 2000/06/29 14:34:19 shane Exp $''' 
+__version__='$Revision: 1.68 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -252,13 +252,13 @@ d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
 d['range']=careful_range
 
-class namespace_:
-    __allow_access_to_unprotected_subobjects__=1
-
+#class namespace_:
+#    __allow_access_to_unprotected_subobjects__=1
 
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whos attributes are
     provided as keyword arguments."""
+    # NOTE: the self argument needs to be a TemplateDict instance.
     return apply(self, (), kw)
 
 d['namespace']=namespace

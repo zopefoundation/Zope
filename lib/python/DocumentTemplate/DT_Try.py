@@ -240,7 +240,7 @@ class Try:
                 f=StringIO()
                 traceback.print_exc(100,f)
                 error_tb=f.getvalue()
-                ns = namespace(self, error_type=errname, error_value=v,
+                ns = namespace(md, error_type=errname, error_value=v,
                     error_tb=error_tb)[0]
                 md._push(InstanceDict(ns,md))
                 return render_blocks(handler, md)
