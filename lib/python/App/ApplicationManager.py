@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -126,6 +126,12 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
          'help':('OFSP','Database-Management_Flush-Cache.stx')},
         )
         )
+
+    # These need to be here rather to make tabs work correctly. This
+    # needs to be revisited.
+    manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
+    manage_cacheGC=Globals.DTMLFile('dtml/cacheGC', globals())
+
 
 Globals.default__class_init__(DatabaseManager)
 
