@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.12 2003/06/24 20:22:39 chrism Exp $
-# $Revision: 1.12 $
+# $Id: configure,v 1.13 2003/06/24 22:35:34 chrism Exp $
+# $Revision: 1.13 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -53,6 +53,7 @@ usage()
     echo "  --ignore-largefile  ignore large file support warnings"
     echo "  --ignore-zlib       ignore warnings about zlib"
     echo "  --optimize          optimize compiled Python bytecode"
+    echo "  --no-compile        Dont compile Python bytecode"
     echo
     echo " Given no options, configure will search your PATH for a suitable"
     echo " Python interpreter and will use '/opt/Zope-$ZOPE_VERS' as a prefix."

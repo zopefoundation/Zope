@@ -41,9 +41,9 @@ def main():
     INSTALL_FLAGS = ''
     DISTUTILS_OPTS = ''
     try:
-        longopts = ["help", "ignore-largefile", "ignore-zlib", "prefix=",
-                    "build-base=", "optimize", "quiet"]
-        opts, args = getopt.getopt(sys.argv[1:], "h", longopts)
+        longopts = ['help', 'ignore-largefile', 'ignore-zlib', 'prefix=',
+                    'build-base=', 'optimize', 'no-compile', 'quiet']
+        opts, args = getopt.getopt(sys.argv[1:], 'h', longopts)
     except getopt.GetoptError, v:
         print v
         usage()
@@ -54,12 +54,14 @@ def main():
             sys.exit()
         if o == '--prefix':
             PREFIX=os.path.abspath(os.path.expanduser(a))
-        if o == "--ignore-largefile":
+        if o == '--ignore-largefile':
             REQUIRE_LF_ENABLED=0
-        if o == "--ignore-zlib":
+        if o == '--ignore-zlib':
             REQUIRE_ZLIB=0
-        if o == "--optimize":
+        if o == '--optimize':
             INSTALL_FLAGS = '--optimize=1 --no-compile'
+        if o == '--no-compile':
+            INSTALL_FLAGS = '--no-compile'
         if o == '--build-base':
             BUILD_BASE = a
         if o == '--quiet':
@@ -70,9 +72,9 @@ def main():
         test_largefile()
     if REQUIRE_ZLIB:
         test_zlib()
-    out("  - Zope top-level binary directory will be %s." % PREFIX)
+    out('  - Zope top-level binary directory will be %s.' % PREFIX)
     if INSTALL_FLAGS:
-        out("  - Distutils install flags will be '%s'" % INSTALL_FLAGS)
+        out('  - Distutils install flags will be "%s"' % INSTALL_FLAGS)
     idata = {
         '<<PYTHON>>':PYTHON,
         '<<PREFIX>>':PREFIX,
@@ -88,10 +90,10 @@ def main():
         MAKEFILE = MAKEFILE.replace(k, v)
     f = open(os.path.join(os.getcwd(), 'makefile'), 'w')
     f.write(MAKEFILE)
-    out("  - Makefile written.")
-    out("")
-    out("  Next, run %s." % MAKE_COMMAND)
-    out("")
+    out('  - Makefile written.')
+    out('')
+    out('  Next, run %s.' % MAKE_COMMAND)
+    out('')
 
 def usage():
     usage = ("""
@@ -115,6 +117,8 @@ Options:
 
   --optimize                    compile Python files as .pyo files
                                 instead of as .pyc files
+
+  --no-compile                  don't compile Python files
 
 Directories:
 
