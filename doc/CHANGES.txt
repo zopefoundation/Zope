@@ -48,6 +48,11 @@ Zope Changes
         - Fixed broken aquisition of vocabularies from a Catalog
           by a TextIndex.
 
+
+        - Collector #2504: level parameter has not been passed to HTMLClass
+          constructor
+
+
     Zope 2.4 beta 2
 
       Bugs fixed
