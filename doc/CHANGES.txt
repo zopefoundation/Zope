@@ -71,6 +71,10 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector: #964: standard_error_message refers to looking into the
+       HTML code for more information which is deprecated. Referring to
+       the error log now.
+
      - Collector #893: Mailhost: munge_header has been broken for addresses
        containing the recipients full name
 

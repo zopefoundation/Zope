@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.75 2003/04/28 21:16:43 Brian Exp $'''
-__version__ = '$Revision: 1.75 $'[11:-2]
+$Id: HTTPResponse.py,v 1.76 2003/07/08 05:54:11 ctheune Exp $'''
+__version__ = '$Revision: 1.76 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -614,7 +614,7 @@ class HTTPResponse(BaseResponse):
   </UL>
 
   <P>For more detailed information about the error, please
-  refer to the HTML source for this page.
+  refer to error log.
   </P>
 
   <P>If the error persists please contact the site maintainer.
