@@ -99,6 +99,14 @@ compileall.compile_dir(os.getcwd())
 
 import build_extensions
 
+# Munge the python path
+sys.path = sys.path + ['./utilities']
+import zpasswd
+import whrandom
+pw_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
+             "abcdefghijklmnopqrstuvwxyz" \
+             "0123456789!"
+
 print
 print '-'*78
 
@@ -119,21 +127,24 @@ ac_path=os.path.join(home, 'access')
 if not os.path.exists(ac_path):
     print 'creating default access file'
     acfile=open(ac_path, 'w')
-    acfile.write('superuser:123\n')
+    pw = ''
+    for i in range(8):
+        pw = pw + whrandom.choice(pw_choices)
+    acfile.write('superuser:' + zpasswd.generate_passwd(pw, 'SHA'))
     acfile.close()
-    os.system('chmod 744 access')
+    os.system('chmod 644 access')
 
+    print "NOTE: The default super user name and password are 'superuser'"
+    print "      and '%s'.  Create a file named 'access' in this directory" % pw
+    print "      with a different super user name and password on one line"
+    print "      separated by a a colon. (e.g. 'spam:eggs').  You can also"
+    print "      specify a domain (e.g. 'spam:eggs:*.digicool.com')."
     
 print
 print '-'*78
 print 'NOTE: change owndership or permissions on var so that it can be'
 print '      written by the web server!'
 print
-print "NOTE: The default super user name and password are 'superuser'"
-print "      and '123'.  Create a file named 'access' in this directory"
-print "      with a different super user name and password on one line"
-print "      separated by a a colon. (e.g. 'spam:eggs').  You can also"
-print "      specify a domain (e.g. 'spam:eggs:*.digicool.com')."
 print '-'*78
 print
 print 'Done!'
