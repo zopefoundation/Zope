@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -263,7 +263,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
     def manage_beforeDelete(self, item, container):        
         if self.nonempty():
             raise VersionException(
-                'Attempt to %sdelete a non-empty version.<p>'
+                'Attempt to %sdelete a non-empty version.<br />' %
                 ((self is not item) and 'indirectly ' or ''))
         
         try: REQUEST=self.REQUEST
