@@ -13,9 +13,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.8 2002/06/12 20:39:18 shane Exp $
+$Id: testBrowserIdManager.py,v 1.9 2002/07/19 04:44:35 chrism Exp $
 """
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 import sys
 import ZODB
@@ -40,128 +40,84 @@ class TestBrowserIdManager(TestCase):
 
     def testSetBrowserIdName(self):
         self.m.setBrowserIdName('foo')
-        assert self.m.getBrowserIdName()== 'foo'
+        self.failUnless(self.m.getBrowserIdName()== 'foo')
 
     def testSetBadBrowserIdName(self):
-        try:
-            self.m.setBrowserIdName('')
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
-        try:
-            self.m.setBrowserIdName(1)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
-            
+        self.assertRaises(BrowserIdManagerErr,
+                          lambda self=self: self.m.setBrowserIdName(''))
+        self.assertRaises(BrowserIdManagerErr,
+                          lambda self=self: self.m.setBrowserIdName(1))
+
     def testSetBadNamespaces(self):
         d = {1:'gummy', 2:'froopy'}
-        try:
-            self.m.setBrowserIdNamespaces(d)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
-            
+        self.assertRaises(BrowserIdManagerErr,
+                          lambda self=self,d=d:
+                          self.m.setBrowserIdNamespaces(d))
+
     def testSetGoodNamespaces(self):
         d = {1:'cookies', 2:'form'}
         self.m.setBrowserIdNamespaces(d)
-        assert self.m.getBrowserIdNamespaces() == d
+        self.failUnless(self.m.getBrowserIdNamespaces() == d)
 
     def testSetNamespacesByLocation(self):
         self.m.setBrowserIdLocation('cookiesonly')
-        assert self.m.getBrowserIdNamespaces() == {1:'cookies'}
-        assert self.m.getBrowserIdLocation() == 'cookiesonly'
+        self.failUnless(self.m.getBrowserIdNamespaces() == {1:'cookies'})
+        self.failUnless(self.m.getBrowserIdLocation() == 'cookiesonly')
         self.m.setBrowserIdLocation('cookiesthenform')
-        assert self.m.getBrowserIdNamespaces() == {1:'cookies', 2:'form'}
-        assert self.m.getBrowserIdLocation() == 'cookiesthenform'
+        self.failUnless(self.m.getBrowserIdNamespaces()=={1:'cookies',2:'form'})
+        self.failUnless(self.m.getBrowserIdLocation() == 'cookiesthenform')
         self.m.setBrowserIdLocation('formonly')
-        assert self.m.getBrowserIdNamespaces() == {1:'form'}
-        assert self.m.getBrowserIdLocation() == 'formonly'
+        self.failUnless(self.m.getBrowserIdNamespaces() == {1:'form'})
+        self.failUnless(self.m.getBrowserIdLocation() == 'formonly')
         self.m.setBrowserIdLocation('formthencookies')
-        assert self.m.getBrowserIdNamespaces() == {1:'form', 2:'cookies'}
-        assert self.m.getBrowserIdLocation() == 'formthencookies'
+        self.failUnless(self.m.getBrowserIdNamespaces()=={1:'form',2:'cookies'})
+        self.failUnless(self.m.getBrowserIdLocation() == 'formthencookies')
 
     def testSetBadCookiePath(self):
         path = '/;'
-        try:
-            self.m.setCookiePath(path)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
+        self.assertRaises(BrowserIdManagerErr,
+                        lambda self=self, path=path:self.m.setCookiePath(path))
 
     def testSetGoodCookiePath(self):
         self.m.setCookiePath('/foo')
-        assert self.m.getCookiePath() == '/foo'
+        self.failUnless(self.m.getCookiePath() == '/foo')
 
     def testSetBadCookieLifeDays(self):
-        life = ''
-        try:
-            self.m.setCookieLifeDays('')
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
+        self.assertRaises(BrowserIdManagerErr,
+                          lambda self=self: self.m.setCookieLifeDays(''))
 
     def testSetGoodCookieLifeDays(self):
         self.m.setCookieLifeDays(1)
-        assert self.m.getCookieLifeDays() == 1
+        self.failUnless(self.m.getCookieLifeDays() == 1)
 
     def testSetBadCookieDomain(self):
-        life = ''
-        try:
-            self.m.setCookieDomain('gubble')
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
+        self.assertRaises(BrowserIdManagerErr,
+                          lambda self=self: self.m.setCookieDomain('gubble'))
 
     def testSetGoodCookieLifeDays(self):
         self.m.setCookieLifeDays(1)
-        assert self.m.getCookieLifeDays() == 1
+        self.failUnless(self.m.getCookieLifeDays() == 1)
 
     def testSetNoCookieDomain(self):
         domain = ''
         self.m.setCookieDomain(domain)
         setdomain = self.m.getCookieDomain()
-        assert setdomain == domain, "%s" % setdomain
+        self.failUnless(setdomain == domain)
 
     def testSetBadCookieDomain(self):
-        domain = 'zope.org' # not enough dots
-        try:
-            self.m.setCookieDomain(domain)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
-
-        domain = {1:1} # must be stringtype
-        try:
-            self.m.setCookieDomain(domain)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
-            
-        domain = '.zope.org;' # semicolon follows
-        try:
-            self.m.setCookieDomain(domain)
-        except BrowserIdManagerErr:
-            pass
-        else:
-            assert 1 == 2
+        # not enough dots, must be stringtype, semicolon follows respectively
+        for domain in ('zope.org', {1:1}, '.zope.org;'):
+            self.assertRaises(BrowserIdManagerErr,
+               lambda self=self, domain=domain: self.m.setCookieDomain(domain))
 
     def testSetGoodCookieDomain(self):
         self.m.setCookieDomain('.zope.org')
         setdomain = self.m.getCookieDomain()
-        assert setdomain == '.zope.org', "%s" % setdomain
+        self.failUnless( setdomain == '.zope.org', "%s" % setdomain )
         
     def testSetCookieSecure(self):
         self.m.setCookieSecure(1)
-        assert self.m.getCookieSecure() == 1
+        self.failUnless( self.m.getCookieSecure() == 1 )
 
     def testGetBrowserIdCookie(self):
         token = self.m.getBrowserId()
@@ -170,27 +126,27 @@ class TestBrowserIdManager(TestCase):
         tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
         a = self.m.getBrowserId()
-        assert a == token, repr(a)
-        assert self.m.isBrowserIdFromCookie()
+        self.failUnless( a == token, repr(a) )
+        self.failUnless( self.m.isBrowserIdFromCookie() )
 
     def testSetBrowserIdDontCreate(self):
         a = self.m.getBrowserId(0)
-        assert a == None
+        self.failUnless( a == None )
 
     def testSetBrowserIdCreate(self):
         a = self.m.getBrowserId(1)
         tokenkey = self.m.getBrowserIdName()
         b = self.m.REQUEST.RESPONSE.cookies[tokenkey]
-        assert a == b['value'], (a, b)
+        self.failUnless( a == b['value'] )
 
     def testHasBrowserId(self):
-        assert not self.m.hasBrowserId()
+        self.failUnless( not self.m.hasBrowserId() )
         a = self.m.getBrowserId()
-        assert self.m.hasBrowserId()
+        self.failUnless( self.m.hasBrowserId() )
         
     def testBrowserIdIsNew(self):
         a = self.m.getBrowserId()
-        assert self.m.isBrowserIdNew()
+        self.failUnless( self.m.isBrowserIdNew() )
 
     def testIsBrowserIdFromCookieFirst(self):
         token = self.m.getBrowserId()
@@ -200,7 +156,7 @@ class TestBrowserIdManager(TestCase):
         self.m.REQUEST.cookies[tokenkey] = token
         self.m.setBrowserIdNamespaces({1:'cookies', 2:'form'})
         a = self.m.getBrowserId()
-        assert self.m.isBrowserIdFromCookie()
+        self.failUnless( self.m.isBrowserIdFromCookie() )
 
     def testIsBrowserIdFromFormFirst(self):
         token = self.m.getBrowserId()
@@ -210,7 +166,7 @@ class TestBrowserIdManager(TestCase):
         self.m.REQUEST.form[tokenkey] = token
         self.m.setBrowserIdNamespaces({1:'form', 2:'cookies'})
         a = self.m.getBrowserId()
-        assert self.m.isBrowserIdFromForm()
+        self.failUnless( self.m.isBrowserIdFromForm() )
 
     def testIsBrowserIdFromCookieOnly(self):
         token = self.m.getBrowserId()
@@ -220,8 +176,8 @@ class TestBrowserIdManager(TestCase):
         self.m.REQUEST.form[tokenkey] = token
         self.m.setBrowserIdNamespaces({1:'cookies'})
         a = self.m.getBrowserId()
-        assert self.m.isBrowserIdFromCookie()
-        assert not self.m.isBrowserIdFromForm()
+        self.failUnless( self.m.isBrowserIdFromCookie() )
+        self.failUnless( not self.m.isBrowserIdFromForm() )
  
     def testIsBrowserIdFromFormOnly(self):
         token = self.m.getBrowserId()
@@ -231,8 +187,8 @@ class TestBrowserIdManager(TestCase):
         self.m.REQUEST.form[tokenkey] = token
         self.m.setBrowserIdNamespaces({1:'form'})
         a = self.m.getBrowserId()
-        assert not self.m.isBrowserIdFromCookie()
-        assert self.m.isBrowserIdFromForm()
+        self.failUnless( not self.m.isBrowserIdFromCookie() )
+        self.failUnless( self.m.isBrowserIdFromForm() )
 
     def testFlushBrowserIdCookie(self):
         token = self.m.getBrowserId()
@@ -241,11 +197,11 @@ class TestBrowserIdManager(TestCase):
         tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
         a = self.m.getBrowserId()
-        assert a == token, repr(a)
-        assert self.m.isBrowserIdFromCookie()
+        self.failUnless( a == token, repr(a) )
+        self.failUnless( self.m.isBrowserIdFromCookie() )
         self.m.flushBrowserIdCookie()
         c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
-        assert c['value'] == 'deleted', c
+        self.failUnless( c['value'] == 'deleted' )
         
     def testSetBrowserIdCookieByForce(self):
         token = self.m.getBrowserId()
@@ -254,22 +210,22 @@ class TestBrowserIdManager(TestCase):
         tokenkey = self.m.getBrowserIdName()
         self.m.REQUEST.cookies[tokenkey] = token
         a = self.m.getBrowserId()
-        assert a == token, repr(a)
-        assert self.m.isBrowserIdFromCookie()
+        self.failUnless( a == token )
+        self.failUnless( self.m.isBrowserIdFromCookie() )
         token = 'abcdefghijk'
         self.m.setBrowserIdCookieByForce(token)
         c = self.m.REQUEST.RESPONSE.cookies[tokenkey]
-        assert c['value'] == token, c
+        self.failUnless( c['value'] == token )
 
     def testEncodeUrl(self):
         keystring = self.m.getBrowserIdName()
         key = self.m.getBrowserId()
         u = '/home/chrism/foo'
         r = self.m.encodeUrl(u)
-        assert r == '%s?%s=%s' % (u, keystring, key)
+        self.failUnless( r == '%s?%s=%s' % (u, keystring, key) )
         u = 'http://www.zope.org/Members/mcdonc?foo=bar&spam=eggs'
         r = self.m.encodeUrl(u)
-        assert r == '%s&amp;%s=%s' % (u, keystring, key)
+        self.failUnless( r == '%s&amp;%s=%s' % (u, keystring, key) )
 
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')

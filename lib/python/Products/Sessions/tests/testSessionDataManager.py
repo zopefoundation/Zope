@@ -37,6 +37,7 @@ import sys
 tf_name = 'temp_folder'
 idmgr_name = 'browser_id_manager'
 toc_name = 'temp_transient_container'
+sdm_name = 'session_data_manager'
 
 stuff = {}
 
@@ -66,7 +67,7 @@ def _populate(app):
     tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
     toc = TransientObjectContainer(toc_name, title='Temporary '
         'Transient Object Container', timeout_mins=20)
-    session_data_manager=SessionDataManager(id='session_data_manager',
+    session_data_manager=SessionDataManager(id=sdm_name,
         path='/'+tf_name+'/'+toc_name, title='Session Data Manager',
         requestName='TESTOFSESSION')
 
@@ -76,7 +77,7 @@ def _populate(app):
     try: app._delObject(tf_name)
     except AttributeError: pass
 
-    try: app._delObject('session_data_manager')
+    try: app._delObject(sdm_name)
     except AttributeError: pass
 
     try: app._delObject('index_html')
@@ -84,7 +85,7 @@ def _populate(app):
 
     app._setObject(idmgr_name, bidmgr)
 
-    app._setObject('session_data_manager', session_data_manager)
+    app._setObject(sdm_name, session_data_manager)
 
     app._setObject(tf_name, tf)
     get_transaction().commit()
@@ -110,48 +111,53 @@ class TestBase(TestCase):
 
 class TestSessionManager(TestBase):
     def testHasId(self):
-        assert self.app.session_data_manager.id == 'session_data_manager'
+        self.failUnless(self.app.session_data_manager.id == \
+                        sdm_name)
 
     def testHasTitle(self):
-        assert self.app.session_data_manager.title == 'Session Data Manager'
+        self.failUnless(self.app.session_data_manager.title \
+                        == 'Session Data Manager')
 
     def testGetSessionDataNoCreate(self):
         sd = self.app.session_data_manager.getSessionData(0)
-        assert sd is None, repr(sd)
+        self.failUnless(sd is None)
 
     def testGetSessionDataCreate(self):
         sd = self.app.session_data_manager.getSessionData(1)
-        assert sd.__class__ is TransientObject, repr(sd)
+        self.failUnless(sd.__class__ is TransientObject)
 
     def testHasSessionData(self):
         sd = self.app.session_data_manager.getSessionData()
-        assert self.app.session_data_manager.hasSessionData()
+        self.failUnless(self.app.session_data_manager.hasSessionData())
+
+    def testNotHasSessionData(self):
+        self.failUnless(not self.app.session_data_manager.hasSessionData())
 
     def testSessionDataWrappedInSDMandTOC(self):
         sd = self.app.session_data_manager.getSessionData(1)
-        assert aq_base(sd.aq_parent) is \
-               aq_base(getattr(self.app, 'session_data_manager')), sd.aq_parent
-        assert aq_base(sd.aq_parent.aq_parent) is \
-               aq_base(getattr(self.app.temp_folder, toc_name)), \
-               sd.aq_parent.aq_parent
+        sdm = aq_base(getattr(self.app, sdm_name))
+        toc = aq_base(getattr(self.app.temp_folder, toc_name))
+        
+        self.failUnless(aq_base(sd.aq_parent) is sdm)
+        self.failUnless(aq_base(sd.aq_parent.aq_parent) is toc)
 
     def testNewSessionDataObjectIsValid(self):
         sdType = type(TransientObject(1))
         sd = self.app.session_data_manager.getSessionData()
-        assert type(getattr(sd, 'aq_base', sd)) is sdType
-        assert not hasattr(sd, '_invalid')
+        self.failUnless(type(aq_base(sd)) is sdType)
+        self.failUnless(not hasattr(sd, '_invalid'))
 
     def testBrowserIdIsSet(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
-        assert mgr.hasBrowserId()
+        self.failUnless(mgr.hasBrowserId())
 
     def testGetSessionDataByKey(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
         token = mgr.getBrowserId()
         bykeysd = self.app.session_data_manager.getSessionDataByKey(token)
-        assert sd == bykeysd, (sd, bykeysd, token)
+        self.failUnless(sd == bykeysd)
 
     def testBadExternalSDCPath(self):
         sdm = self.app.session_data_manager
@@ -168,7 +174,7 @@ class TestSessionManager(TestBase):
         sd = sdm.getSessionData()
         sd['test'] = 'Its alive!  Alive!'
         sd.invalidate()
-        assert not sdm.getSessionData().has_key('test')
+        self.failUnless(not sdm.getSessionData().has_key('test'))
 
     def testGhostUnghostSessionManager(self):
         sdm = self.app.session_data_manager
@@ -177,12 +183,12 @@ class TestSessionManager(TestBase):
         sd.set('foo', 'bar')
         sdm._p_changed = None
         get_transaction().commit()
-        assert sdm.getSessionData().get('foo') == 'bar'
+        self.failUnless(sdm.getSessionData().get('foo') == 'bar')
 
     def testSubcommit(self):
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', 'bar')
-        assert get_transaction().commit(1) == None
+        self.failUnless(get_transaction().commit(1) == None)
 
     def testForeignObject(self):
         self.assertRaises(InvalidObjectReference, self._foreignAdd)
@@ -205,7 +211,7 @@ class TestSessionManager(TestBase):
         self.app.REQUEST['PARENTS'] = [self.app]
         self.app.REQUEST['URL'] = 'a'
         self.app.REQUEST.traverse('/')
-        assert self.app.REQUEST.has_key('TESTOFSESSION')
+        self.failUnless(self.app.REQUEST.has_key('TESTOFSESSION'))
 
     def testUnlazifyAutoPopulated(self):
         self.app.REQUEST['PARENTS'] = [self.app]
@@ -213,7 +219,7 @@ class TestSessionManager(TestBase):
         self.app.REQUEST.traverse('/')
         sess = self.app.REQUEST['TESTOFSESSION']
         sdType = type(TransientObject(1))
-        assert type(aq_base(sess)) is sdType, type(aq_base(sess))
+        self.failUnless(type(aq_base(sess)) is sdType)
 
 def test_suite():
     test_datamgr = makeSuite(TestSessionManager, 'test')
