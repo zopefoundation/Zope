@@ -53,8 +53,12 @@ class TestRunner:
         path, filename=os.path.split(filepath)
         name, ext=os.path.splitext(filename)
         file, pathname, desc=imp.find_module(name, [path])
+        # Add path of imported module to sys.path, so local imports work.
+        sys.path.insert(0, path)
         try:     module=imp.load_module(name, file, pathname, desc)
         finally: file.close()
+        # Remove extra path again.
+        sys.path.remove(path)
         function=getattr(module, 'test_suite', None)
         if function is None:
             return None
