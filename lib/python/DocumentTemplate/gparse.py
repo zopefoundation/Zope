@@ -51,25 +51,18 @@
 #   (540) 371-6909
 #
 ##############################################################################
-"$Id: gparse.py,v 1.5 1998/09/14 20:48:44 jim Exp $"
+"$Id: gparse.py,v 1.6 1998/09/14 21:26:44 jim Exp $"
 import sys, parser, symbol, token
-from symbol import *
-from token import *
+
+from symbol import test, suite, argument, arith_expr, shift_expr
+from symbol import subscriptlist, subscript, comparison, trailer, xor_expr
+from symbol import term, not_test, factor, atom, expr, arglist
+from symbol import power, and_test, and_expr
+
+from token import STAR, NAME, RPAR, LPAR, NUMBER, DOT, STRING, COMMA
+from token import ISTERMINAL, LSQB, COLON
+
 from parser import sequence2ast, compileast, ast2list
-
-def pretty(s):
-    l=ast2list(parser.expr(s))
-    print l
-    pret(l)
-
-def astl(s): return parser.ast2list(parser.expr(s))
-
-def pret(ast, level=0):
-    if ISTERMINAL(ast[0]): print '  '*level, ast[1]
-    else:
-	print '  '*level, sym_name[ast[0]], '(%s)' % ast[0]
-	for a in ast[1:]:
-	    pret(a,level+1)
 
 ParseError='Expression Parse Error'
 
@@ -259,15 +252,6 @@ def multi_munge(ast):
 		     [atom, [NAME, '__guarded_mul__']],
 		     [trailer, [LPAR, '('], args, [RPAR, ')'],
 		      ]]]
-	    
-    
-def tpretty():
-    print 60*'='
-    for arg in sys.argv[1:]:
-      print
-      print arg
-      pretty(arg)
-      print 60*'='
 
 def compile(src, file_name, ctype):
     if ctype=='eval': ast=parser.expr(src)
@@ -276,81 +260,4 @@ def compile(src, file_name, ctype):
     l=munge(l)
     ast=sequence2ast(l)
     return parser.compileast(ast, file_name)
-
-def check(expr1=None, expr2=None):
-    ok=1
-    expr1=expr1 or sys.argv[1]
-    expr2=expr2 or sys.argv[2]
-    l1=munge(astl(expr1))
-    l2=astl(expr2)
-    try: c1=compileast(sequence2ast(l1))
-    except:
-        traceback.print_exc
-        c1=None
-    c2=compileast(sequence2ast(l2))
-    if c1 !=c2:
-        ok=0
-        print 'test failed', expr1, expr2
-        print
-        print l1
-        print
-        print l2
-        print
-
-    ast=parser.sequence2ast(l1)
-    c=parser.compileast(ast)
-
-    pretty(expr1)
-    pret(l1)
-    pret(l2)
-
-    return ok
-    
-def spam():
-    # Regression test
-    import traceback
-    ok=1
-    for expr1, expr2 in (
-	("a*b", 	"__guarded_mul__(_vars, a, b)"),
-	("a*b*c",
-	 "__guarded_mul__(_vars, __guarded_mul__(_vars, a, b), c)"
-	 ),
-	("a.b",		"__guarded_getattr__(_vars, a, 'b')"),
-	("a[b]", 	"__guarded_getitem__(_vars, a, b)"),
-	("a[b,c]", 	"__guarded_getitem__(_vars, a, b, c)"),
-	("a[b:c]",	"__guarded_getslice__(_vars, a, b, c)"),
-	("a[:c]",	"__guarded_getslice__(_vars, a, 0, c)"),
-	("a[b:]",	"__guarded_getslice__(_vars, a, b)"),
-	("a[:]",	"__guarded_getslice__(_vars, a)"),
-	("_vars['sequence-index'] % 2",
-	 "__guarded_getitem__(_vars, _vars, 'sequence-index') % 2"
-	 ),
-	):
-        l1=munge(astl(expr1))
-	l2=astl(expr2)
-	try: c1=compileast(sequence2ast(l1))
-	except:
-	    traceback.print_exc
-	    c1=None
-        c2=compileast(sequence2ast(l2))
-	if c1 !=c2:
-	    ok=0
-	    print 'test failed', expr1, expr2
-	    print
-	    print l1
-	    print
-	    print l2
-	    print
-
-	ast=parser.sequence2ast(l1)
-	c=parser.compileast(ast)
-        
-    if ok: print 'all tests succeeded'
-
-if __name__=='__main__':
-    try:
-	c=sys.argv[1]
-	del sys.argv[1]
-	globals()[c]()
-    except: spam()    
 
