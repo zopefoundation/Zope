@@ -29,11 +29,16 @@
   <!--#if title-->
   (<!--#var title-->)
   <!--#/if title-->
-  </A> 
-  <!--#if modified_in_session-->
-  <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
-   ALT="This item has been modified in a session">
-  <!--#/if modified_in_session-->
+  </A>
+  <!--#if locked_in_session-->
+    <!--#if modified_in_session-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/locked"
+       ALT="This item has been modified in this session">
+    <!--#else-->
+      <IMG SRC="<!--#var SCRIPT_NAME-->/p_/lockedo"
+       ALT="This item has been modified in another session">
+    <!--#/if-->
+  <!--#/if-->
   </TD>
 </TR>
 <!--#/in objectValues-->

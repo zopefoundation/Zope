@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.53 1998/02/25 19:40:47 jim Exp $'''
-__version__='$Revision: 1.53 $'[11:-2]
+$Id: Application.py,v 1.54 1998/03/04 17:13:16 jim Exp $'''
+__version__='$Revision: 1.54 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -49,6 +49,7 @@ class Application(Folder.Folder):
 	User_icon =ImageFile('AccessControl/www/User_icon.gif')
 
 	locked=ImageFile('www/modified.gif', globals())
+	lockedo=ImageFile('www/locked.gif', globals())
 
 	pl=ImageFile('TreeDisplay/www/Plus_icon.gif')
 	mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
@@ -362,6 +363,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.54  1998/03/04 17:13:16  jim
+# Added new image to mark objects that were modified in another session
+# and are therefore locked.
+#
 # Revision 1.53  1998/02/25 19:40:47  jim
 # Got rid of xxxItems methods.
 #
