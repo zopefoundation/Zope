@@ -14,8 +14,6 @@
 __version__ = "$Revision$"[11:-2]
 
 import Acquisition, Record
-import zLOG
-import sys
 
 class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
     """Abstract base brain that handles looking up attributes as

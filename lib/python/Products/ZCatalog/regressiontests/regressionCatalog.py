@@ -24,7 +24,6 @@ import Persistence
 import ExtensionClass
 from Testing import dispatcher
 import keywords
-from zLOG import LOG
 
 
 import getopt,whrandom,time,string,mailbox,rfc822

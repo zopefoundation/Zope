@@ -17,7 +17,7 @@ import ExtensionClass
 from MultiMapping import MultiMapping
 import Record
 from Missing import MV
-from zLOG import LOG, ERROR
+import logging
 
 from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
@@ -29,6 +29,8 @@ import BTrees.Length
 import time, sys, types
 from bisect import bisect
 from random import randint
+
+LOG = logging.getLogger('ZCatalog')
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
@@ -231,8 +233,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         _index = names.index(name)
 
         if not self.schema.has_key(name):
-            LOG('Catalog', ERROR, ('delColumn attempted to delete '
-                                   'nonexistent column %s.' % str(name)))
+            LOG.error('delColumn attempted to delete nonexistent column %s.' % str(name))
             return
 
         names.remove(name)
@@ -390,8 +391,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 blah = x.index_object(index, object, threshold)
                 total = total + blah
             else:
-                LOG('Catalog', ERROR, ('catalogObject was passed '
-                                       'bad index object %s.' % str(x)))
+                LOG.error('catalogObject was passed bad index object %s.' % str(x))
 
         return total
 
@@ -424,9 +424,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             try: self.__len__.change(-1)
             except AttributeError: pass # No managed length
         else:
-            LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
-                                   'attempted to uncatalog an object '
-                                   'with a uid of %s. ' % str(uid)))
+            LOG.error('uncatalogObject unsuccessfully '
+                      'attempted to uncatalog an object '
+                      'with a uid of %s. ' % str(uid))
 
 
     def uniqueValuesFor(self, name):

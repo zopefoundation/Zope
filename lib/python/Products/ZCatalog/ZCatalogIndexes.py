@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: ZCatalogIndexes.py,v 1.8 2002/08/14 22:25:15 mj Exp $
+"""$Id: ZCatalogIndexes.py,v 1.9 2004/04/14 08:20:23 andreasjung Exp $
 """
 
 from  Globals import DTMLFile, InitializeClass
@@ -24,11 +24,11 @@ from OFS.History import Historical
 from OFS.SimpleItem import SimpleItem
 from OFS.ObjectManager import ObjectManager, IFAwareObjectManager
 
-import os, sys, time
+import os, sys, time 
 
 from Acquisition import Implicit
 from Persistence import Persistent
-from zLOG import LOG, ERROR
+
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 
 _marker = []
