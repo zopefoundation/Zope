@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -98,7 +98,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     manage_propertyTypeForm=DTMLFile('dtml/propertyType', globals())
 
     title=''
-    _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties=({'id':'title', 'type': 'string', 'mode':'wd'},)
     _reserved_names=()
 
     __ac_permissions__=(

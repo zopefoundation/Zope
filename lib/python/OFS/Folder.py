@@ -15,9 +15,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.103 2003/07/24 15:24:28 sf Exp $"""
+$Id: Folder.py,v 1.104 2003/10/21 15:15:54 andreasjung Exp $"""
 
-__version__='$Revision: 1.103 $'[11:-2]
+__version__='$Revision: 1.104 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -83,7 +83,7 @@ class Folder(
     __implements__ = (WriteLockInterface,)
     meta_type='Folder'
 
-    _properties=({'id':'title', 'type': 'string','mode':'w'},)
+    _properties=({'id':'title', 'type': 'string','mode':'wd'},)
 
     manage_options=(
         ObjectManager.ObjectManager.manage_options+
