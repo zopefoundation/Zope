@@ -74,7 +74,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         self._indexed_attrs = self._fieldname.split(',')
         self._indexed_attrs = [ attr.strip() for attr in  self._indexed_attrs if attr ]
 
-        lexicon_id = lexicon_id or extra.lexicon_id
+        lexicon_id = lexicon_id or getattr(extra, 'lexicon_id', '')
         lexicon = getattr(caller, lexicon_id, None)
 
         if lexicon is None:
