@@ -10,9 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
+
+from zLOG import LOG, ERROR
 
 # Interface
 
@@ -96,7 +98,11 @@ class MultiHook:
         if prior is not None:
             prior(container, request)
         for cob in self._list:
-            cob(container, request)
+            try:
+                cob(container, request)
+            except TypeError:
+                LOG('MultiHook', ERROR, '%s call %s failed.' % (
+                    `self._hookname`, `cob`), error=sys.exc_info())
 
     def add(self, cob):
         self._list.append(cob)
