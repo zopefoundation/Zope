@@ -1,6 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
-
+</dtml-with>
 <p class="form-text">
 Roles assigned to the permission <strong><dtml-var 
 permission_to_manage></strong>

@@ -1,6 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
 <dtml-if  manage_tabs><dtml-var manage_tabs></dtml-if>
-
+</dtml-with>
 <p class="form-help">
 The listing below shows the current security settings for this item. 
 Permissions are rows and roles are columns.  Checkboxes are used to

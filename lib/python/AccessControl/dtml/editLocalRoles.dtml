@@ -1,6 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
-
+</dtml-with>
 <p class="form-help">
 Local roles allow you to give particular users extra roles in the 
 context of this object, in addition to the roles they already have. 

@@ -1,6 +1,7 @@
 <dtml-var manage_page_header>
+<dtml-with "_(management_view='Security')">
 <dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
-
+</dtml-with>
 <dtml-if stat>
 <hr>
 <font color="red"><dtml-var stat></font>
