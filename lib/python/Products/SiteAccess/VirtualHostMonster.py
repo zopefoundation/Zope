@@ -50,41 +50,39 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 except:
                     raise 'LineError', 'Needs a slash between host and path'
 	        pp = filter(None, split(path, '/'))
-                if not pp:
-                    raise 'LineError', 'Empty path'
-
-                obpath = pp[:]
-                if obpath[0] == 'VirtualHostBase':
-                    obpath = obpath[3:]
-                if 'VirtualHostRoot' in obpath:
-                    i1 = obpath.index('VirtualHostRoot')
-                    i2 = i1 + 1
-                    while i2 < len(obpath) and obpath[i2][:4] == '_vh_':
-                        i2 = i2 + 1
-                    del obpath[i1:i2]
-                try:
-                    ob = self.unrestrictedTraverse(obpath)
-                except:
-                    raise 'LineError', 'Path not found'
-                if not getattr(ob.aq_base, 'isAnObjectManager', 0):
-                    raise 'LineError', 'Path must lead to an Object Manager'
-
+                if pp:
+                    obpath = pp[:]
+                    if obpath[0] == 'VirtualHostBase':
+                        obpath = obpath[3:]
+                    if 'VirtualHostRoot' in obpath:
+                        i1 = obpath.index('VirtualHostRoot')
+                        i2 = i1 + 1
+                        while i2 < len(obpath) and obpath[i2][:4] == '_vh_':
+                            i2 = i2 + 1
+                        del obpath[i1:i2]
+                    try:
+                        ob = self.unrestrictedTraverse(obpath)
+                    except:
+                        raise 'LineError', 'Path not found'
+                    if not getattr(ob.aq_base, 'isAnObjectManager', 0):
+                        raise 'LineError', ('Path must lead to '
+                                            'an Object Manager')
+                    if 'VirtualHostRoot' not in pp:
+                        pp.append('/')
+                    pp.reverse()
                 try:
                     int(replace(host,'.',''))
                     raise 'LineError',  'IP addresses are not mappable'
                 except ValueError:
                     pass
-                if 'VirtualHostRoot' not in pp:
-                    pp.append('/')
-                pp.reverse()
                 if host[:2] == '*.':
                     host_map = sub_map
                     host = host[2:]
                 else:
                     host_map = fixed_map
-                if not host_map.has_key(host):
-                    host_map[host] = {}
                 hostname, port = (split(host, ':', 1) + [None])[:2]
+                if not host_map.has_key(hostname):
+                    host_map[hostname] = {}
                 host_map[hostname][port] = pp
             except 'LineError', msg:
                 line = '%s #! %s' % (line, msg)
@@ -160,8 +158,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     # If the directive is on top of the stack, go ahead
                     # and process it right away.
                     if at_end:
-                        if pp == [''] or pp == ['', '']:
-                            pp = []
+                        pp = filter(None, pp)
                         request.setVirtualRoot(pp)
                         del stack[-2:]
                     break
@@ -187,7 +184,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     hostname = split(hostname, '.', 1)[1]
             if ports:
                 pp = ports.get(port, 0)
-                if not pp and port is not None:
+                if pp == 0 and port is not None:
                     # Try default port
                     pp = ports.get(None, 0)
                 if not pp:
