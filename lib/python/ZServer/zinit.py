@@ -107,7 +107,7 @@ TODO
 
 import os, sys, time, signal
 
-SOFTWARE_HOME = '/projects/users/zs_zope'
+SOFTWARE_HOME = '/projects/users/zmichel'
 START_FILE = os.path.join(SOFTWARE_HOME, 'ZServer', 'start.py')
 pyth = sys.executable
 
