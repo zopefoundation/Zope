@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -97,7 +97,7 @@ from DateTime.DateTime import DateTime
 from string import join, strip, rstrip, split, replace, lower
 from Shared.DC.Scripts.Script import Script, BindingsUI
 from Shared.DC.Scripts.Signature import FuncCode
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, Unauthorized
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
@@ -274,7 +274,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             try:
                 result = self.pt_render(extra_context=bound_names)
             except TALESError, err:
-                if err.type == 'Unauthorized':
+                if (err.type == Unauthorized or
+                    isinstance(err.type, Unauthorized)):
                     raise err.type, err.value, err.takeTraceback()
                 err.takeTraceback()
                 raise

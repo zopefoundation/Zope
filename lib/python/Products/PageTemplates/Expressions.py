@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -118,7 +118,7 @@ def installHandlers(engine):
 
 if sys.modules.has_key('Zope'):
     import AccessControl
-    from AccessControl import getSecurityManager
+    from AccessControl import getSecurityManager, Unauthorized
     if hasattr(AccessControl, 'full_read_guard'):
         from ZRPythonExpr import PythonExpr, _SecureModuleImporter, \
              call_with_ns
@@ -128,6 +128,10 @@ if sys.modules.has_key('Zope'):
     SecureModuleImporter = _SecureModuleImporter()
 else:
     from PythonExpr import getSecurityManager, PythonExpr
+    try:
+        from zExceptions import Unauthorized
+    except ImportError:
+        Unauthorized = "Unauthorized"
     def call_with_ns(f, ns, arg=1):
         if arg==2:
             return f(None, ns)
@@ -206,7 +210,7 @@ class PathExpr:
             except Undefined, e:
                 ob = e
             except (AttributeError, KeyError, TypeError, IndexError,
-                    'Unauthorized'), e:
+                    Unauthorized), e:
                 ob = Undefined(self._s, sys.exc_info())
 
         if self._name == 'exists':
@@ -311,7 +315,7 @@ def restrictedTraverse(self, path, securityManager,
         # If the path starts with an empty string, go to the root first.
         self = self.getPhysicalRoot()
         if not securityManager.validateValue(self):
-            raise 'Unauthorized', name
+            raise Unauthorized, name
         i = 1
 
     plen = len(path)
@@ -331,7 +335,7 @@ def restrictedTraverse(self, path, securityManager,
             o = get(object, 'aq_parent', M)
             if o is not M:
                 if not validate(object, object, name, o):
-                    raise 'Unauthorized', name
+                    raise Unauthorized, name
                 object=o
                 continue
 
@@ -346,7 +350,7 @@ def restrictedTraverse(self, path, securityManager,
                 and get(object, name) == o):
                 container = object
             if not validate(object, container, name, o):
-                raise 'Unauthorized', name
+                raise Unauthorized, name
         else:
             o=get(object, name, M)
             if o is not M:
@@ -356,14 +360,14 @@ def restrictedTraverse(self, path, securityManager,
                         name, validate2, validate)
                 else:
                     if not validate(object, object, name, o):
-                        raise 'Unauthorized', name
+                        raise Unauthorized, name
             else:
                 try:
                     o=object[name]
                 except (AttributeError, TypeError):
                     raise AttributeError, name
                 if not validate(object, object, name, o):
-                    raise 'Unauthorized', name
+                    raise Unauthorized, name
         object = o
 
     return object
@@ -371,5 +375,5 @@ def restrictedTraverse(self, path, securityManager,
 
 def validate2(orig, inst, name, v, real_validate):
     if not real_validate(orig, inst, name, v):
-        raise 'Unauthorized', name
+        raise Unauthorized, name
     return 1
