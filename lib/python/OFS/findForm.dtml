@@ -1,24 +1,6 @@
 <HTML>
 <HEAD>
 <TITLE>Find</TITLE>
-<SCRIPT LANGUAGE="javascript">
-<!--
-function show_smp()
-{  document.location.href="<!--#var URL1-->/manage_findForm";
-}
-
-function show_adv()
-{   document.location.href="<!--#var URL1-->/manage_findAdv";
-}
-
-function show_opt()
-{ wnd=window.open("<!--#var URL1-->/manage_findOpt","wnd_find_options","width=400,height=200");
-  if (document.layers || document.all) {
-    wnd.focus()
-  }
-}
-//-->
-</SCRIPT>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
@@ -87,15 +69,11 @@ function show_opt()
   <TD ALIGN="LEFT" VALIGN="TOP">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find"> 
-  <INPUT TYPE="BUTTON" NAME="btn_opt" VALUE="Options..."
-   onClick="show_opt()">
-  <INPUT TYPE="BUTTON" NAME="btn_adv" VALUE="Advanced..."
-   onClick="show_adv()">
+  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  <a href="manage_findAdv" target="findForm">Advanced...<a>
   </TD>
 </TR>
 </TABLE>
 </FORM>
-
 </BODY>
 </HTML>

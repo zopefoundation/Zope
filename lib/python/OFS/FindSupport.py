@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 import sys, os, string, time, Globals
@@ -103,7 +103,7 @@ class FindSupport:
     manage_findForm=HTMLFile('findForm', globals())
     manage_findAdv=HTMLFile('findAdv', globals())
     manage_findResult=HTMLFile('findResult', globals())
-    manage_findOpt=HTMLFile('findOpt', globals())
+#    manage_findOpt=HTMLFile('findOpt', globals())
     
     def PrincipiaFind(self, obj, obj_ids=None, obj_metatypes=None,
                       obj_searchterm=None, obj_expr=None,
