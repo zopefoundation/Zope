@@ -42,4 +42,10 @@ Zope changes
           are not found in the update request are not reset to empty 
           values.
 
+        - A problem that disallowed access to the individual records in 
+          a result set from a SQL method was fixed.
+
+        - A problem that caused the query template for an SQL method to
+          be rendered twice when used from the "test" tab has been fixed.
+
 
