@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Add Zope Tutorial</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>Add Zope Tutorial</H2>
+
+<P>
+  This tutorial show you the basics of using Zope. You will
+  learn how to create and manage Zope resources by builting
+  a web site devoted to tracking Elvis sightings. Each lesson
+  includes working examples in Zope that allow you to learn
+  by hands on experimentation.
+</P><P>  
+  The tutorial assumes that you are familiar with basic Internet
+  technologies such as <a href="http://www.w3.org/MarkUp/Guide/">HTML</a>,
+  URLs, and web browers.
+</P>
+
+
+<FORM ACTION="addTutorial" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="40">
+  </TD>
+</TR>
+
+<TR>
+<TD></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+

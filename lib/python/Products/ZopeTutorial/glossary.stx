@@ -1,0 +1,142 @@
+Glossary
+
+  For general information about Zope <a
+  href="http://www.zope.org/SiteIndex/searchForm" target="_blank">search</a> Zope.org.
+
+  For Zope documentation try the <a href="http://zdp.zope.org" target="_blank">Zope
+  Documentation Project</a> site and the <a
+  href="http://www.zope.org/Documentation" target="_blank">documentation area</a> on Zope.org.
+
+  [DTML] -- A tag-based reporting language, like ASP
+  or PHP. It allows you to perform operations on Zope objects and insert the
+  results in web pages.
+
+    For more information on DTML see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML" target="_blank">DTML
+    Reference</a>.
+
+  [DTML Document] -- A Zope object for a web page.
+  You can use DTML tags in a DTML document.
+  
+    For more information on DTML Documents see the <a
+    href="http://www.zope.org/Documentation/Guides/ZCMG-HTML/ZCMG.9.2.html"
+    target="_blank">Zope Content Manager's Guide</a>.
+
+    <dtml-var "apiLink('OFSP'+'.DTMLDocument.DTMLDocument', REQUEST)">
+
+  [DTML Method] -- A Zope object that holds a piece of content that can
+  be inserted into a web page. You can use DTML tags in a DTML Method.
+  
+    For more information on DTML Methods see the <a
+    href="http://www.zope.org/Documentation/Guides/ZCMG-HTML/ZCMG.9.1.html"
+    target="_blank">Zope Content Manager's Guide</a>.
+
+    <dtml-var "apiLink('OFSP'+'.DTMLMethod.DTMLMethod', REQUEST)">
+    
+  [Delete] -- Remove an object from the current Folder. Unlike Cut, this
+  does not place a copy of the object in the clipboard.
+
+  [Folder] -- A Zope object that contains other Zope objects. You can
+  move objects between Folders by cutting and pasting them. You can
+  add new objects to Folders with the product add list.
+
+    For more information on Folders see the <a
+    href="http://www.zope.org/Documentation/Guides/ZCMG-HTML/ZCMG.8.2.html"
+    target="_blank">Zope Content Manager's Guide</a>.
+    
+  [Cut] -- Remove a Zope object from its current location and place it
+  in the clipboard.
+  
+  [Copy] -- Copy a Zope object to the clipboard.
+  
+  [Database Connection] -- A Zope object to connect to a relational
+  database.
+    
+    For more information on Database Connections see the <a
+    href="http://www.zope.org/Documentation/Guides/ZSQL-HTML/ZSQL.1.3.html"
+    target="_blank">SQL Method User's Guide</a>.
+
+  [<dtml-call>] -- A DTML tag that allows your to perform an
+  action without inserting anything into a web page.
+  
+    For more information on &lt;dtml-call&gt; tag see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML-HTML/DTML.11.html"
+    target="_blank">DTML Reference</a>.
+  
+  [<dtml-if>] -- A DTML tag that allows you to conditionally insert
+  objects into a DTML Document or DTML Method.
+
+    For more information on &lt;dtml-if&gt; tag see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML-HTML/DTML.7.html"
+    target="_blank">DTML Reference</a>.  
+
+  [<dtml-in>] -- A DTML tag that allows you to loop over a sequence
+  of objects.
+
+    For more information on &lt;dtml-in&gt; tag see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML-HTML/DTML.8.html"
+    target="_blank">DTML Reference</a>.  
+
+  [<dtml-var>] -- A DTML tag that allows you to insert objects
+  into a DTML Document or DTML Method.
+  
+    For more information on &lt;dtml-var&gt; tag see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML-HTML/DTML.6.html"
+    target="_blank">DTML Reference</a>.
+    
+  [<dtml-sendmail>] -- A DTML tag that sends email.
+
+    For more information on &lt;dtml-sendmail&gt; tag see the <a
+    href="http://www.zope.org/Documentation/Guides/DTML-HTML/DTML.17.html"
+    target="_blank">DTML Reference</a>.
+
+  [Mail Host] -- A Zope object that allows you to send email.
+  Use the &lt;dtml-sendmail&gt; tag to send email.
+  
+  [Paste] -- Insert the objects from the clipboard into the current Folder.
+  
+  [Image] -- A Zope object for a picture.
+    
+    For more information on Images see the <a
+    href="http://www.zope.org/Documentation/Guides/ZCMG-HTML/ZCMG.8.4.html"
+    >Zope Content Manager's Guide</a>.
+    
+    <dtml-var "apiLink('OFSP'+'.Image.Image', REQUEST)">
+    
+  [HTTP Cookies] -- Cookies allow you to record information in a visitor's
+  browser. This is commonly used to provide personalization for a web site. 
+
+  [id] -- All Zope objects have an identifier known as the id. The id is a
+  short string that contains letters and numbers, spaces, underscores, dashes,
+  commas and tildes. Here are some example ids: 'index.html', 'My Page',
+  'item-12'.
+    
+  [index_html] -- The name of the default Zope object in a Folder.
+  When you view a Folder the index_html object will be displayed
+  unless you specify otherwise. This is just like the 'index.html'
+  or 'default.htm' default web page with a normal web server.
+
+  [product add list] -- The list of addable objects. Select an object
+  from the product add list to create a new object in the current
+  Folder.
+  
+  [Properties] -- Properties contain small pieces of content. 
+  
+  [standard_html_header] -- The standard Zope header object. By
+  convention this object displays an HTML header.
+  
+  [standard_html_footer] -- The standard Zope footer object. By
+  convention this object displays an HTML footer.
+  
+  [title] -- Most Zope objects can have titles. Titles are optional
+  one line descriptions.
+  
+  [Undo] -- Allows you to recover from mistakes by undoing a
+  transaction.
+    
+  [ZSQL Method] -- A Zope object to get data into or out of a relational
+  database.
+  
+    For more information on ZSQL Methods see the <a
+    href="http://www.zope.org/Documentation/Guides/ZSQL-HTML/ZSQL.1.4.html"
+    target="_blank">SQL Method User's Guide</a>.  
