@@ -501,6 +501,8 @@ class DateTime:
 
         try:
             return self._parse_args(*args, **kw)
+        except (DateError, TimeError, DateTimeError):
+            raise
         except:
             raise SyntaxError('Unable to parse %s, %s' % (args, kw))
 
