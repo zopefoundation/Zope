@@ -47,7 +47,7 @@ def main(rt):
 if __name__ == "__main__":
     import sys
     import getopt
-    
+
     VERBOSE = 0
     FSPATH = "Data.fs"
 
@@ -69,4 +69,3 @@ if __name__ == "__main__":
     cn = db.open()
     rt = cn.root()
     main(rt)
-
