@@ -62,12 +62,10 @@ class AcceleratedHTTPCache (Cache):
                 p = path[:-1] + ob_path
             else:
                 p = path + ob_path
-            h = httplib.HTTP(host)
-            h.putrequest('PURGE', p)
-            h.endheaders()
-            errcode, errmsg, headers = h.getreply()
-            h.getfile().read()  # Mandatory for httplib?
-            results.append('%s %s' % (errcode, errmsg))
+            h = httplib.HTTPConnection(host)
+            h.request('PURGE', p)
+            r = h.getresponse()
+            results.append('%s %s' % (r.status, r.reason))
         return 'Server response(s): ' + ';'.join(results)
 
     def ZCache_get(self, ob, view_name, keywords, mtime_func, default):

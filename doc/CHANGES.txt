@@ -51,6 +51,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1657:  Don't break host-based virtual hosting when
+        purging an HTTP accelerator.
+
       - DTML Methods were not interoperable with the new filestream_iterator
         and caches based on it (FileCacheManager).
 
