@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.3 1999/03/01 18:33:13 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: HTTPResponse.py,v 1.4 1999/03/03 21:38:09 jeffrey Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -337,7 +337,7 @@ class HTTPResponse(BaseResponse):
         dict={'max_age':0, 'expires':'Wed, 31-Dec-97 23:59:59 GMT'}
         for k, v in kw.items():
             dict[k]=v
-        apply(Response.setCookie, (self, name, 'deleted'), dict)
+        apply(HTTPResponse.setCookie, (self, name, 'deleted'), dict)
 
     def setCookie(self,name,value,**kw):
         '''\
