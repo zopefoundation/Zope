@@ -26,7 +26,7 @@ import traceback
 
 import Persistence, Acquisition
 from Acquisition import aq_base
-from ZODB.POSException import MountedStorageError
+from ZODB.POSException import MountedStorageError, ConnectionStateError
 
 
 LOG = getLogger('Zope.ZODBMountPoint')
@@ -203,12 +203,19 @@ class ConnectionPatches:
                 # XXX maybe we ought to call the close callbacks.
                 conn._storage = conn._tmp = conn.new_oid = conn._opened = None
                 conn._debug_info = ()
+
+                # collector #1350: ensure that the connection is unregistered
+                # from the transaction manager (XXX API method?)
+                if conn._synch:
+                    conn._txn_mgr.unregisterSynch(conn)
+
                 # The mounted connection keeps a reference to
                 # its database, but nothing else.
                 # Note that mounted connections can not operate
                 # independently, so don't use _closeConnection() to
                 # return them to the pool.  Only the root connection
                 # should be returned.
+
         # Close this connection only after the mounted connections
         # have been closed.  Otherwise, this connection gets returned
         # to the pool too early and another thread might use this
