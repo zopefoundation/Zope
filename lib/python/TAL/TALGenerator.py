@@ -725,7 +725,6 @@ class TALGenerator:
         replace = todo.get("replace")
         condition = todo.get("condition")
         onError = todo.get("onError")
-        define = todo.get("define")
         repldict = todo.get("repldict", {})
         scope = todo.get("scope")
         optTag = todo.get("optional tag")
@@ -849,7 +848,9 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position,
             addAttribute(d, attr, msgid, position, xml)
     else:
         i18nattrlist = i18nattrs.split()
-        if len(i18nattrlist) == 2:
+        if len(i18nattrlist) == 1:
+            addAttribute(d, i18nattrlist[0], None, position, xml)
+        elif len(i18nattrlist) == 2:
             staticattrs = [attr[0] for attr in attrlist if len(attr) == 2]
             if (not i18nattrlist[1] in staticattrs) and (
                 not i18nattrlist[1] in repldict):
