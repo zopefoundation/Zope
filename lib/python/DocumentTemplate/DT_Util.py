@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.35 1998/05/13 22:15:27 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.36 1998/05/14 16:30:49 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -164,12 +164,30 @@ d['hasattr']=careful_hasattr
 class namespace_: pass
 
 def namespace(self, **kw):
+    """Create a tuple consisting of a single instance whos attributes are
+    provided as keyword arguments."""
     r=namespace_()
     d=r.__dict__
     for k, v in kw.items(): d[k]=v
     return r,
 
 d['namespace']=namespace
+
+def render(self, v, simple={
+    type(''): 1, type(0): 1, type(0.0): 1,
+    type([]): 1, type(()): 1,
+    }.has_key):
+    "Render an object in the way done be the 'name' attribute"
+
+    if not simple(type(v)):
+        if hasattr(v,'isDocTemp') and v.isDocTemp:
+            v=v(None, self)
+        else:
+            try: v=v()
+            except (AttributeError,TypeError): pass
+    return v
+
+d['render']=render
 
 expr_globals={
     '__builtins__':{},
@@ -354,6 +372,9 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.36  1998/05/14 16:30:49  jim
+# Added render function.
+#
 # Revision 1.35  1998/05/13 22:15:27  jim
 # Updated doc string.
 #
