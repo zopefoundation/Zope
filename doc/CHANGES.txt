@@ -43,6 +43,10 @@ Zope Changes
 
     Bugs Fixed
 
+     - Cut & Delete operations on locked objects (WebDAV) are no longer
+       permitted and will raise an exception. Copies of locked objects
+       are copied without lock.
+
      - Collector #634: Image objects can now be rendered without border
        attribute by calling "image.tag(border='')".
 
