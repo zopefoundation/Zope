@@ -7,7 +7,14 @@ Zope Changes
   HEAD only
 
     Features added
- 
+
+     - Shane Hathaway's DBTab product has been integrated.  The
+       Control_Panel -> Databases tab now allows you to control all
+       mounted databases.  You can add a mount point by editing the
+       zope.conf file, adding a zodb_db section for the main database
+       and other mounted databases, and choosing "ZODB Mount Point"
+       from the Zope "Add" list.
+
      - DTML Methods and Documents supply a traceback supplement when called.
 
      - OFS: OrderSupport and OrderedFolder added. OrderSupport is a mixin class

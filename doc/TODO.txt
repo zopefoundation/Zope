@@ -105,11 +105,6 @@ Review impact of missing Data.fs.in
       enough".  The code that installs these default objects exists in
       the initialize function within lib/python/OFS/Application.
 
-Integrate DBTab functionality
-
-  Integrate DBTab functionality driven by zconfig.
-
-
 -----------------
 BEFORE 2.7 FINAL
 -----------------
