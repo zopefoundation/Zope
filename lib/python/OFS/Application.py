@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.163 2001/11/17 00:06:29 amos Exp $'''
-__version__='$Revision: 1.163 $'[11:-2]
+$Id: Application.py,v 1.164 2001/11/17 15:56:01 chrism Exp $'''
+__version__='$Revision: 1.164 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -431,19 +431,18 @@ def initialize(app):
         
     # b/c: Ensure that there is a transient container in the temp folder
     tf = app.temp_folder
-    if not hasattr(tf, 'transient_container'):
+    if not hasattr(tf, 'session_data'):
         from Products.Transience.Transience import TransientObjectContainer
-
         addnotify = os.environ.get('ZSESSION_ADD_NOTIFY', '/session_add')
         delnotify = os.environ.get('ZSESSION_DEL_NOTIFY', '/session_del')
         if app.unrestrictedTraverse(addnotify,None) is None: addnotify=None
         if app.unrestrictedTraverse(delnotify,None) is None: delnotify=None
 
-        toc = TransientObjectContainer('transient_container', 
-            'Transient Object Container', addNotification=addnotify,
+        toc = TransientObjectContainer('session_data',
+            'Session Data Container', addNotification=addnotify,
             delNotification = delnotify)
-        tf._setObject('transient_container', toc)
-        get_transaction().note('Added transient_container to '
+        tf._setObject('session_data', toc)
+        get_transaction().note('Added session_data to '
             'temp_folder')
         get_transaction().commit()
         del toc
@@ -466,7 +465,7 @@ def initialize(app):
         from Products.Sessions.SessionDataManager import SessionDataManager
         sdm = SessionDataManager('session_data_manager',
             title='Session Data Manager',
-            path='/temp_folder/transient_container',
+            path='/temp_folder/session_data',
             requestName='SESSION')
         app._setObject('session_data_manager', sdm)
         get_transaction().note('Added session_data_manager')
