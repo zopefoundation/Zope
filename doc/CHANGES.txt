@@ -181,6 +181,9 @@ Zope Changes
         - Temporary files were created for file storages that were
           opened in read-only mode.
 
+	- A bug in FileStorage and DemoStorage didn't show you more
+	  than the first 20 previous transactions in the Undo log.
+
       Note:
 
         The section for Zope 2.0 alpha 4 did not mention that ZCatalog 
