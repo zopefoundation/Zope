@@ -572,6 +572,40 @@ def parse_qs(qs, keep_blank_values=0, strict_parsing=0):
                 dict[name] = [value]
     return dict
 
+def parse_qsl(qs, keep_blank_values=0, strict_parsing=0):
+    """Parse a query given as a string argument.
+
+        Arguments:
+
+        qs: URL-encoded query string to be parsed
+
+        keep_blank_values: flag indicating whether blank values in
+            URL encoded queries should be treated as blank strings.  
+            A true value inicates that blanks should be retained as 
+            blank strings.  The default false value indicates that
+            blank values are to be ignored and treated as if they were
+            not included.
+
+        strict_parsing: flag indicating what to do with parsing errors.
+            If false (the default), errors are silently ignored.
+            If true, errors raise a ValueError exception.
+
+       Returns a list, as God intended.
+    """
+    name_value_pairs = string.splitfields(qs, '&')
+    r=[]
+    for name_value in name_value_pairs:
+        nv = string.splitfields(name_value, '=')
+        if len(nv) != 2:
+            if strict_parsing:
+                raise ValueError, "bad query field: %s" % `name_value`
+            continue
+        name = urllib.unquote(string.replace(nv[0], '+', ' '))
+        value = urllib.unquote(string.replace(nv[1], '+', ' '))
+        r.append(name, value)
+
+    return r
+
 
 def parse_multipart(fp, pdict):
     """Parse multipart input.
@@ -934,11 +968,10 @@ class FieldStorage:
     def read_urlencoded(self):
         """Internal: read data in query string format."""
         qs = self.fp.read(self.length)
-        dict = parse_qs(qs, self.keep_blank_values, self.strict_parsing)
-        self.list = []
-        for key, valuelist in dict.items():
-            for value in valuelist:
-                self.list.append(MiniFieldStorage(key, value))
+        self.list = list = []
+        append=list.append
+        for key, value in parse_qsl(qs, self.keep_blank_values, self.strict_parsing):
+            append(MiniFieldStorage(key, value))
         self.skip_lines()
 
     FieldStorageClass = None
