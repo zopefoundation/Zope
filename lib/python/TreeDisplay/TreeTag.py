@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.51 2002/02/07 18:13:17 andreasjung Exp $'
-__version__='$Revision: 1.51 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.52 2002/05/21 14:41:41 andreasjung Exp $'
+__version__='$Revision: 1.52 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -295,17 +295,17 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     diff.append(id)
 
 
-    _td_colspan='<TD COLSPAN="%s" NOWRAP></TD>'
-    _td_single ='<TD WIDTH="16" NOWRAP></TD>'
+    _td_colspan='<td colspan="%s" style="white-space: nowrap"></td>'
+    _td_single ='<td width="16" style="white-space: nowrap"></td>'
 
     sub=None
     if substate is state:
-        output('<TABLE CELLSPACING="0">\n')
+        output('<table cellspacing="0">\n')
         sub=substate[0]
         exp=items
     else:
         # Add prefix
-        output('<TR>\n')
+        output('<tr>\n')
 
         # Add +/- icon
         if items:
@@ -314,7 +314,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 elif level > 1: output(_td_single * (level-1))
                 output(_td_single)
                 output('\n')
-            output('<TD WIDTH="16" VALIGN="TOP" NOWRAP>')
+            output('<td width="16" valign="top" style="white-space: nowrap">')
             for i in range(len(substate)):
                 sub=substate[i]
                 if sub[0]==id:
@@ -343,14 +343,14 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
             if exp:
                 ptreeData['tree-item-expanded']=1
-                output('<A NAME="%s" HREF="%s?%stree-c=%s#%s">'
-                       '<IMG SRC="%s/p_/mi" ALT="-" BORDER=0></A>' %
+                output('<a name="%s" href="%s?%stree-c=%s#%s">'
+                       '<img src="%s/p_/mi" alt="-" border="0" /></a>' %
                        (id, root_url, param, s, id, script))
             else:
-                output('<A NAME="%s" HREF="%s?%stree-e=%s#%s">'
-                       '<IMG SRC="%s/p_/pl" ALT="+" BORDER=0></A>' %
+                output('<a name="%s" href="%s?%stree-e=%s#%s">'
+                       '<img src="%s/p_/pl" alt="+" border="0" /></a>' %
                        (id, root_url, param, s, id, script))
-            output('</TD>\n')
+            output('</td>\n')
 
         else:
             if level > 2:   output(_td_colspan % level)
@@ -361,12 +361,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     
         # add item text
         dataspan=colspan-level
-        output('<TD%s%s VALIGN="TOP" ALIGN="LEFT">' %
-               ((dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''),
-               (have_arg('nowrap') and args['nowrap'] and ' NOWRAP' or ''))
+        output('<td%s%s valign="top" align="left">' %
+               ((dataspan > 1 and (' colspan="%s"' % dataspan) or ''),
+               (have_arg('nowrap') and args['nowrap'] and ' style="white-space: nowrap"' or ''))
                )
         output(render_blocks(section, md))
-        output('</TD>\n</TR>\n')
+        output('</td>\n</tr>\n')
 
 
     if exp:
@@ -385,12 +385,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 output(doc(
                     None, md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
-                        '<TD%s VALIGN="TOP">'
+                        '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                        '<td%s valign="top">'
                         % (h,
-                           (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
+                           (dataspan > 1 and (' colspan="%s"' % dataspan)
                             or ''))),
-                    standard_html_footer='</TD></TR>',
+                    standard_html_footer='</td></tr>',
                     ))
             
         if items==1:
@@ -406,12 +406,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                     try: output(doc(
                         None,md,
                         standard_html_header=(
-                            '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
-                            '<TD%s VALIGN="TOP">'
+                            '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                            '<td%s valign="top">'
                             % (h,
                                (dataspan > 1 and
-                                (' COLSPAN="%s"' % dataspan) or ''))),
-                        standard_html_footer='</TD></TR>',
+                                (' colspan="%s"' % dataspan) or ''))),
+                        standard_html_footer='</td></tr>',
                         ))
                     finally: md._pop(1)
         elif have_arg('expand'):
@@ -425,12 +425,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 try: output(doc(
                     None,md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
-                        '<TD%s VALIGN="TOP">'
+                        '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                        '<td%s valign="top">'
                         % (h,
                            (dataspan > 1 and
-                            (' COLSPAN="%s"' % dataspan) or ''))),
-                    standard_html_footer='</TD></TR>',
+                            (' colspan="%s"' % dataspan) or ''))),
+                    standard_html_footer='</td></tr>',
                     ))
                 finally: md._pop(1)
         else:
@@ -464,16 +464,16 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 output(doc(
                     None, md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
-                        '<TD%s VALIGN="TOP">'
+                        '<tr>%s<td width="16" style="white-space: nowrap"></td>'
+                        '<td%s valign="top">'
                         % (h,
-                           (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
+                           (dataspan > 1 and (' colspan="%s"' % dataspan)
                             or ''))),
-                    standard_html_footer='</TD></TR>',
+                    standard_html_footer='</td></tr>',
                     ))
 
     del diff[-1]
-    if not diff: output('</TABLE>\n')
+    if not diff: output('</table>\n')
 
     return data
 

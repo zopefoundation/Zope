@@ -145,8 +145,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.52 2002/03/27 10:14:02 htrd Exp $'
-__version__='$Revision: 1.52 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.53 2002/05/21 14:41:41 andreasjung Exp $'
+__version__='$Revision: 1.53 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -300,7 +300,7 @@ def url_quote_plus(v, name='(Unknown name)', md={}):
 def newline_to_br(v, name='(Unknown name)', md={}):
     v=str(v)
     if v.find('\r') >= 0: v=''.join(v.split('\r'))
-    if v.find('\n') >= 0: v='<br>\n'.join(v.split('\n'))
+    if v.find('\n') >= 0: v='<br />\n'.join(v.split('\n'))
     return v
 
 def whole_dollars(v, name='(Unknown name)', md={}):
