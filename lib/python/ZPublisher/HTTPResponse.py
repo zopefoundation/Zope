@@ -84,10 +84,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.45 2001/04/07 16:07:09 jim Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: HTTPResponse.py,v 1.46 2001/04/24 15:59:49 andreas Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
-import string, types, sys, regex, re
+import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
 from types import StringType, InstanceType, LongType
 from BaseResponse import BaseResponse
@@ -271,7 +271,7 @@ class HTTPResponse(BaseResponse):
     __setitem__=setHeader
 
     def setBody(self, body, title='', is_error=0,
-                bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
+                bogus_str_search=re.compile(" [a-fA-F0-9]+>$").search,
                 latin1_alias_match=re.compile(
                 r'text/html(\s*;\s*charset=((latin)|(latin[-_]?1)|'
                 r'(cp1252)|(cp819)|(csISOLatin1)|(IBM819)|(iso-ir-100)|'
@@ -304,7 +304,7 @@ class HTTPResponse(BaseResponse):
         body=str(body)
         l=len(body)
         if ((l < 200) and body[:1]=='<' and find(body,'>')==l-1 and 
-            bogus_str_search(body) > 0):
+            bogus_str_search(body) is not None):
             self.notFoundError(body[1:-1])
         else:
             if(title):
@@ -343,8 +343,7 @@ class HTTPResponse(BaseResponse):
         self.base=base
 
     def insertBase(self,
-                   base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
-                                                regex.casefold).search
+                   base_re_search=re.compile('(<base.*?>)',re.I).search
                    ):
 
         # Only insert a base tag if content appears to be html.
@@ -359,7 +358,7 @@ class HTTPResponse(BaseResponse):
                 if match is not None:
                     index=match.start(0) + len(match.group(0))
                     ibase=base_re_search(body)
-                    if ibase < 0:
+                    if ibase is None:
                         self.body=('%s\n<base href="%s" />\n%s' %
                                    (body[:index], self.base, body[index:]))
                         self.setHeader('content-length', len(self.body))
@@ -560,7 +559,7 @@ class HTTPResponse(BaseResponse):
 
     def badRequestError(self,name):
         self.setStatus(400)
-        if regex.match('^[A-Z_0-9]+$',name) >= 0:
+        if re.match('^[A-Z_0-9]+$',name):
             raise 'InternalError', self._error_html(
                 "Internal Error",
                 "Sorry, an internal error occurred in this resource.")
@@ -589,13 +588,7 @@ class HTTPResponse(BaseResponse):
         raise 'Unauthorized', m
 
     def exception(self, fatal=0, info=None,
-                  absuri_match=regex.compile(
-                      "^"
-                      "\(/\|\([a-zA-Z0-9+.-]+:\)\)"
-                      "[^\000- \"\\#<>]*"
-                      "\\(#[^\000- \"\\#<>]*\\)?"
-                      "$"
-                      ).match,
+                  absuri_match=re.compile(r'\w+://[\w\.]+').match,
                   tag_search=re.compile('[a-zA-Z]>').search,
                   abort=1
                   ):
@@ -628,7 +621,7 @@ class HTTPResponse(BaseResponse):
         stb=None
         self.setStatus(t)
         if self.status >= 300 and self.status < 400:
-            if type(v) == types.StringType and absuri_match(v) >= 0:
+            if type(v) == types.StringType and absuri_match(v) is not None:
                 if self.status==300: self.setStatus(302)
                 self.setHeader('location', v)
                 tb=None
@@ -636,7 +629,7 @@ class HTTPResponse(BaseResponse):
             else:
                 try:
                     l,b=v
-                    if type(l) == types.StringType and absuri_match(l) >= 0:
+                    if type(l) == types.StringType and absuri_match(l) is not None:
                         if self.status==300: self.setStatus(302)
                         self.setHeader('location', l)
                         self.setBody(b)
@@ -704,7 +697,7 @@ class HTTPResponse(BaseResponse):
         return cookie_list
 
     def __str__(self,
-                html_search=regex.compile('<html>',regex.casefold).search,
+                html_search=re.compile('<html>',re.I).search,
                 ):
         if self._wrote: return ''       # Streaming output was used.
 
@@ -770,3 +763,4 @@ class HTTPResponse(BaseResponse):
             self.stdout.flush()
 
         self.stdout.write(data)
+
