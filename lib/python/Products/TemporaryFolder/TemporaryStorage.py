@@ -85,27 +85,20 @@
 
 """
 A storage implementation which uses RAM to persist objects, much like
-MappingStorage, but unlike MappingStorage needs not be packed to get rid of
+MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage.  This is a ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.2 2001/11/13 21:44:33 matt Exp $
+$Id: TemporaryStorage.py,v 1.3 2001/11/17 22:50:31 chrism Exp $
 """
 
-__version__ ='$Revision: 1.2 $'[11:-2]
+__version__ ='$Revision: 1.3 $'[11:-2]
 
 from zLOG import LOG
 from struct import pack, unpack
 from ZODB.referencesf import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
-try:
-    from ZODB.ConflictResolution import ConflictResolvingStorage
-except:
-    LOG('Temporary Storage', 100,
-        ('Not able to use ConflictResolvingStorage for TemporaryStorage, '
-         'this is suboptimal.  Upgrade to Zope 2.3.2 or later to '
-         'make use of conflict resolution.'))
-    class ConflictResolvingStorage: pass
+from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
 class ReferenceCountError(POSException.POSError):
     """ An error occured while decrementing a reference to an object in
@@ -117,7 +110,7 @@ class TemporaryStorageError(POSException.POSError):
     available tempfile space and RAM consumption and restart the server
     process."""
 
-class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
+class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
 
     def __init__(self, name='TemporaryStorage'):
         """
@@ -158,40 +151,40 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
         finally:
             self._lock_release()
 
-    def loadSerial(self, oid, serial):
-        """ only a stub to make conflict resolution work! """
-        self._lock_acquire()
-        try:
-            return self._opickle[oid]
-        finally:
-            self._lock_release()
+## This loadSerial doesn't work for resolution of conficts.  :-(  I
+## haven't figured out why that's the case.  As a result, I'm disabling
+## conflict resolution in the storage until I have time to figure out why.
+
+##     def loadSerial(self, oid, serial):
+##         """ only a stub to make conflict resolution work! """
+##         self._lock_acquire()
+##         try:
+##             return self._opickle[oid]
+##         finally:
+##             self._lock_release()
             
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
-
-
         if version:
-            raise POSException.Unsupported, ("TemporaryStorage is incompatible "
-                "with versions",)
-
+            raise POSException.Unsupported, (
+                "TemporaryStorage is incompatible with versions"
+                )
         self._lock_acquire()
         try:
             if self._index.has_key(oid):
                 oserial=self._index[oid]
                 if serial != oserial:
-                    if hasattr(self, 'tryToResolveConflict'):
-                        data=self.tryToResolveConflict(
-                            oid, oserial, serial, data
-                            )
-                        if not data:
-                            raise POSException.ConflictError, (serial,oserial)
-                    else:
-                        raise POSException.ConflictError, (serial,oserial)
-                
-            serial=self._serial
+                    raise POSException.ConflictError, (serial, oserial)
+##                     data=self.tryToResolveConflict(oid, oserial, serial, data)
+##                     if not data:
+##                         raise POSException.ConflictError, (serial,oserial)
+            else:
+                oserial = serial
+            newserial=self._serial
             self._tmp.append((oid, data))
-            return serial
+##             return serial == oserial and newserial or ResolvedSerial
+            return newserial
         finally:
             self._lock_release()
 
