@@ -12,11 +12,10 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.26 2002/08/14 21:31:40 mj Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: Factory.py,v 1.27 2003/05/14 14:43:44 shane Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
-import Products, Product
 
 class Factory(
     AccessControl.Role.RoleManager,
@@ -69,6 +68,7 @@ class Factory(
         if REQUEST is not None: return self.manage_main(self, REQUEST)
 
     def manage_afterAdd(self, item, container):
+        import Product  # local to avoid circular import
         if hasattr(self, 'aq_parent'):
             container=self.aq_parent
         elif item is not self:
@@ -78,6 +78,7 @@ class Factory(
             self._register()
 
     def manage_beforeDelete(self, item, container):
+        import Product  # local to avoid circular import
         if hasattr(self, 'aq_parent'):
             container=self.aq_parent
         elif item is not self:

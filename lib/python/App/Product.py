@@ -34,19 +34,19 @@
 #   on restart if there is still a product directory.
 
 
-import Globals, OFS.Folder, OFS.SimpleItem, os,  Acquisition, Products
-import re, zlib, Globals, cPickle, marshal, rotor
-import ZClasses, ZClasses.ZClass, AccessControl.Owned
-from urllib import quote
+import os, re, zlib, marshal, rotor, cPickle
 from cgi import escape
+from urllib import quote
 
+import Globals, OFS.Folder, OFS.SimpleItem,  Acquisition, Products
+import ZClasses, AccessControl.Owned
 from OFS.Folder import Folder
+from HelpSys.HelpSys import ProductHelp
+from AccessControl import Unauthorized
+
 from Factory import Factory
 from Permission import PermissionManager
-import ZClasses, ZClasses.ZClass
-from HelpSys.HelpSys import ProductHelp
 import RefreshFuncs
-from AccessControl import Unauthorized
 from App.config import getConfiguration
 
 

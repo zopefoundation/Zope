@@ -15,7 +15,7 @@
 
 import Acquisition, ExtensionClass, Globals, OFS.PropertySheets, OFS.Folder
 from AccessControl.Permission import pname
-import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
+import App.Dialogs, ZClasses, App.Factory, App.ProductRegistry
 import ZClassOwner
 from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 
@@ -40,8 +40,6 @@ class ZClassMethodsSheet(
 
     ######################################################################
     # Hijinks to let us create factories and classes within classes.
-
-    #meta_types=App.Product.Product.meta_types
 
     meta_types=(
         {'name': 'Z Class',
