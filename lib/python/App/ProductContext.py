@@ -86,6 +86,7 @@
 """
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
+import AccessControl.Permission
 from HelpSys import HelpTopic, APIHelpTopic
 from HelpSys.HelpSys import ProductHelp
 from FactoryDispatcher import FactoryDispatcher
@@ -161,34 +162,30 @@ class ProductContext:
 
         OM=OFS.ObjectManager.ObjectManager
 
-        perms={}
-        for p in Products.__ac_permissions__: perms[p[0]]=None
+        if permissions:
+            for p in permissions:
+                if type(p) is tt:
+                    p, default= p
+                    AccessControl.Permission.registerPermissions(
+                        ((p, (), default),))
+                else:
+                    AccessControl.Permission.registerPermissions(
+                        ((p, ()),))
 
+        ############################################################
+        # Constructor permission setup
         if permission is None:
             permission="Add %ss" % (meta_type or instance_class.meta_type)
 
-        if permissions is None:
-            permissions=[]
-            if hasattr(instance_class, '__ac_permissions__'):
-                for p in instance_class.__ac_permissions__:
-                    if len(p) > 2: permissions.append((p[0],p[2]))
-                    else: permissions.append(p[0])
+        if type(permission) is tt:
+            permission, default = permission
+        else:
+            default = ('Manager',)
 
-        pr=None
-        for p in (permission,)+tuple(permissions):
-            if type(p) is tt: p, default= p
-            else: default=('Manager',)
-
-            if pr is None: pr=pr_=PermissionRole(p,default)
-            else: pr_=PermissionRole(p,default)
-            
-            if not perms.has_key(p):
-                perms[p]=None
-                Products.__ac_permissions__=(
-                    Products.__ac_permissions__+((p,(),default),))
-                if not hasattr(Globals.ApplicationDefaultPermissions, pr_._p):
-                    setattr(Globals.ApplicationDefaultPermissions,
-                            pr_._p, default)
+        pr=PermissionRole(permission,default)
+        AccessControl.Permission.registerPermissions(
+            ((permission, (), default),))
+        ############################################################
 
         for method in legacy:
             if type(method) is tt: name, method = method
