@@ -191,7 +191,7 @@ class PcgiFile:
         if port:
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                sock.bind(hostname, port)
+                sock.bind((hostname, port))
             except socket.error:
                 self.log.append("error creating/binding INET socket (%s, %s)" % (hostname, port))
                 raise PcgiFileException
