@@ -13,18 +13,16 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.6 2002/08/14 22:01:39 mj Exp $
+$Id: __init__.py,v 1.7 2003/02/07 21:28:13 fdrake Exp $
 """
 import os
 
-def pdir(path):
-    return os.path.split(path)[0]
-
 # Set the INSTANCE_HOME to the Testing package directory
-os.environ['INSTANCE_HOME'] = INSTANCE_HOME = pdir(__file__)
+os.environ['INSTANCE_HOME'] = INSTANCE_HOME = os.path.dirname(__file__)
 
 # Set the SOFTWARE_HOME to the directory containing the Testing package
-os.environ['SOFTWARE_HOME'] = SOFTWARE_HOME = pdir(INSTANCE_HOME)
+# XXX This isn't a change, so why?
+os.environ['SOFTWARE_HOME'] = SOFTWARE_HOME = os.path.dirname(INSTANCE_HOME)
 
 # Note: we don't set os.environ['ZEO_CLIENT'] anymore because we
 # really do need all the products to be initialized.  Some tests
