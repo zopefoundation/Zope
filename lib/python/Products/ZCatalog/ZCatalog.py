@@ -419,19 +419,23 @@ class ZCatalog(Folder, Persistent, Implicit):
     def _searchable_arguments(self):
         r = {}
         n={'optional':1}
-        for name in self._catalog.indexes.keys():
+        for name in self._catalog.schema.keys():
             r[name]=n
         return r
 
     def _searchable_result_columns(self):
         r = []
-        for name in self._catalog.indexes.keys():
+        for name in self._catalog.schema.keys():
             i = {}
             i['name'] = name
             i['type'] = 's'
             i['parser'] = str
             i['width'] = 8
             r.append(i)
+        r.append({'name': 'data_record_id_',
+                  'type': 's',
+                  'parser': str,
+                  'width': 8})
         return r
 
     def searchResults(self, REQUEST=None, used=None,
