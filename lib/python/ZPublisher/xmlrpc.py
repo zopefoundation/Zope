@@ -100,8 +100,9 @@ class Response:
             # Marshall our body as an XML-RPC response. Strings will be sent
             # strings, integers as integers, etc. We do *not* convert
             # everything to a string first.
-            if body is None:
-                body=xmlrpclib.False # Argh, XML-RPC doesn't handle null
+            # Previously this had special handling if the response
+            # was a Python None. This is now patched in xmlrpclib to
+            # allow Nones nested inside data structures too.
             try:
                 body = xmlrpclib.dumps((body,), methodresponse=1)
             except:
