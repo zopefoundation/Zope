@@ -123,26 +123,24 @@ static PyObject *
 check_synstop(WordSequence *self, PyObject *word)
 {
     PyObject *value;
-    PyObject *t;
+    char *cword;
+    int len;
+    
+    cword = PyString_AsString(word);
+    len = PyString_Size(word) - 1;
+
+    for (len = PyString_Size(word); 
+	 (--len >= 0) && !memchr("abcdefghijklmnopqrstuvwxyz", cword[len], 26);
+	 );
+
+    if (len < 0)
+    {
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
 
     if (self->synstop == NULL)
     {
-        UNLESS(t = PyTuple_New(1))
-        {
-            return NULL;
-	}
-
-        Py_INCREF(word);
-        PyTuple_SET_ITEM((PyTupleObject *)t, 0, word);
-
-        UNLESS_ASSIGN(word, PyObject_CallObject(string_lower, t))
-        {
-            Py_DECREF(t);
-  	    return NULL;
-	}
-
-        Py_DECREF(t);
-
         Py_INCREF(word);
         return word;
     }
@@ -156,22 +154,6 @@ check_synstop(WordSequence *self, PyObject *word)
     if (value == NULL)
     {
         PyErr_Clear();
-
-        UNLESS(t = PyTuple_New(1))
-        {
-            return NULL;
-	}
-
-        Py_INCREF(word);
-        PyTuple_SET_ITEM((PyTupleObject *)t, 0, word);
-
-        UNLESS_ASSIGN(word, PyObject_CallObject(string_lower, t))
-        {
-            Py_DECREF(t);
-  	    return NULL;
-	}
-
-        Py_DECREF(t);
 
         Py_INCREF(word);
         return word;
@@ -562,7 +544,7 @@ initWordSequence()
     PyObject *m, *string;
 
     UNLESS(default_wordletters=
-	   PyString_FromString("abcdefghijklmnopqrstuvwxyz0123456789"))
+	   PyString_FromString("abcdefghijklmnopqrstuvwxyz0123456789/"))
     {
        return;
     }
