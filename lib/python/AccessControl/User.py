@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -355,7 +355,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     _nobody=nobody
             
     def validate(self,request,auth='',roles=None):
-        parent=request['PARENTS'][0]
+        parents=request.get('PARENTS', [])
+        if not parents:
+            parent=self.aq_parent
+        else: parent=parents[0]
 
         # If no authorization, only a user with a
         # domain spec and no passwd or nobody can
