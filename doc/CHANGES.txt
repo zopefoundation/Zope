@@ -4,25 +4,34 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
-  HEAD only
+  To-do
 
-    To-do
+   - Renable C permission roles by implementing recent Python
+     changes in C, brining the Python and C implementations back in
+     sync.  See lib/python/AccessControl/PermissionRole.py.
 
-     - Renable C permission roles by implementing recent Python
-       changes in C, brining the Python and C implementations back in
-       sync.  See lib/python/AccessControl/PermissionRole.py.
+   - Add cyclic-garbage collection support to C extension classes,
+     especially to acquisition wrappers.
 
-     - Add cyclic-garbage collection support to C extension classes,
-       especially to acquisition wrappers.
- 
-     - Renable C Zope security policy by implementing recent Python
-       changes in C, brining the Python and C implementations back in
-       sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
+   - Renable C Zope security policy by implementing recent Python
+     changes in C, brining the Python and C implementations back in
+     sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
-     - Change acquisition wrappers to implement the descr get slot
-       directly, this speeding the use of the slot.
+   - Change acquisition wrappers to implement the descr get slot
+     directly, this speeding the use of the slot.
 
-     - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
+   - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
+
+
+  after Zope 2.8a1
+
+    Bugs fixed
+
+      - docutils: updated to V 0.3.5
+
+      - docutils: moved from lib/python/docutils to lib/python/third_party/docutils 
+
+  Zope 2.8a1
 
 
     Features added
