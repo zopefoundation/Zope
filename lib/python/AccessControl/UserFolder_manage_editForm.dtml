@@ -2,9 +2,16 @@
 <HEAD>
 <TITLE>Change User</TITLE>
 </HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
 <H2>Change User</H2>
 <P>
+<!--#if Principia-Session-->
+<EM>You are currently working in session <!--#var Principia-Session--></EM>
+<P>
+<!--#/if Principia-Session-->
+
 <FORM ACTION="manage_editUser" METHOD="POST">
 <TABLE>
 <TR>

@@ -3,9 +3,11 @@
 <TITLE>Access Control</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<H2>Access Control</H2>
+<!--#var menu_bar-->
+<BR>
+<FONT SIZE="+2">Access Control</FONT>
 <P>
-You may restrict access to <EM><!--#var title--></EM> using the form 
+You may restrict access to <EM><!--#var title_or_id--></EM> using the form 
 below. To add or remove roles, select or deselect 
 the desired role names and click &quot;Change&quot;.
 <P>

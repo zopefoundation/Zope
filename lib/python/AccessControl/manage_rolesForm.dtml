@@ -1,22 +1,26 @@
 <HTML>
 <HEAD>
-<TITLE>Access Control</TITLE>
+<TITLE>Access Control for <!--#var title_or_id--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <!--#var manage_tabs-->
 
-<H2>Access Control</H2>
+<H2>Access Control for <EM><!--#var title_or_id--></EM></H2>
 <P>
-You may restrict access to <EM><!--#var title--></EM> using the form 
+You may restrict access to this item using the form 
 below. To add or remove roles, select or deselect 
 the desired role names and click &quot;Change&quot;.
 <P>
 <FORM ACTION="manage_editRoles" METHOD="POST">
 <TABLE>
 <TR>
+<TD VALIGN=CENTER><STRONG>Access<BR>Control</STRONG></TD>
 <TD VALIGN="TOP">
 <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"<!--#var aclEChecked-->>
 Allow users with selected roles
+<BR>
+<INPUT TYPE="RADIO" NAME="acl_type" VALUE="A"<!--#var aclAChecked-->>
+Allow based on default roles
 <BR>
 <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"<!--#var aclPChecked-->> 
 Allow all users
@@ -27,10 +31,16 @@ Allow all users
 <!--#var sequence-item-->
 <!--#/in selectedRoles-->
 </SELECT>
-<BR>
-<INPUT TYPE="SUBMIT" VALUE="Change">
 </TD>
 </TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Change">
+  </TD>
+</TR>
+
 </TABLE>
 </FORM>
 

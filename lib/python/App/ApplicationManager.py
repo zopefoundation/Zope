@@ -1,33 +1,52 @@
-
-__doc__="""Application management component"""
-__version__='$Revision: 1.14 $'[11:-2]
+__doc__="""System management components"""
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 import sys,os,time,Globals
-from Acquisition import Acquirer
-from Management import Management
 from Globals import HTMLFile
+from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
-from Persistence import Persistent
+from OFS import SimpleItem
 
-class ApplicationManager(Persistent, Acquirer,Management,CacheManager):
-    """Application management component."""
 
+
+
+class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
+    """System management"""
     __roles__=['manage',]
 
-    manage_main    =HTMLFile('App/appMain')
+    manage=manage_main=HTMLFile('App/appMain')
     manage_packForm=HTMLFile('App/pack')
     manage_undoForm=HTMLFile('App/undo')
+    manage=manage_main
 
     manage_options=(
-    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
+    {'icon':'OFS/ControlPanel_icon.gif', 'label':'System',
      'action':'manage_main',   'target':'manage_main'},
-    {'icon':'App/CacheManager_icon.gif','label':'Cache Manager',
+    {'icon':'App/CacheManager_icon.gif','label':'Cache',
      'action':'manage_cacheForm','target':'manage_main'},
+    {'icon':'App/undo_icon.gif', 'label':'Undo',
+     'action':'manage_UndoForm',   'target':'manage_main'},
+#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
+#     'action':'manage_main',   'target':'_new'},
     )
-    name=title   ='Control Panel'
-    process_id   =os.getpid()
+
+    id        ='Control_Panel'
+    name=title='Control Panel'
+    icon      ='OFS/ControlPanel_icon.gif'
+    process_id=os.getpid()
     process_start=int(time.time())
+
+    # Disable some inappropriate operations
+    manage_addObject=None
+    manage_delObjects=None
+    manage_addProperty=None
+    manage_editProperties=None
+    manage_delProperties=None
+    isPrincipiaFolderish=0
+
+    def _init(self):
+	pass
 
     def manage_app(self, URL2):
 	"""Return to the main management screen"""
@@ -80,3 +99,4 @@ class ApplicationManager(Persistent, Acquirer,Management,CacheManager):
 	products=Globals.Bobobase['products']
 	if product not in products:
 	    Globals.Bobobase['products']=tuple(products)+(product,)
+

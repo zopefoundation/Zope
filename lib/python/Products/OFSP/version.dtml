@@ -1,8 +1,9 @@
-<html> <head>
-<title><!--#var title_or_id--></title>
-</head>
-
-<body>
+<HTML>
+<HEAD>
+<TITLE><!--#var title_or_id--></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
 
 <!--#if Principia-Session-->
   <!--#if expr="_vars['Principia-Session'] != cookie"-->

@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.21 1997/11/26 23:46:59 paul Exp $"""
+$Id: Folder.py,v 1.22 1997/12/05 17:13:49 brian Exp $"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -108,7 +108,8 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	    for id in self._objects:
 		o=getattr(self, id['id'])
 		try:
-		    if subclass(o.__class__, Folder): r.append(o)
+		    if o.isPrincipiaFolderish: r.append(o)
+#		    if subclass(o.__class__, Folder): r.append(o)
 		except: pass
 
 	return r

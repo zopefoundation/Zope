@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -14,6 +14,23 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
     meta_type      ='Document'
     icon           ='OFS/Document_icon.gif'
     __state_names__=HTML.__state_names__+('title','__roles__')
+
+    manage_options=({'icon':'', 'label':'Edit',
+		     'action':'manage_main', 'target':'manage_main',
+	            },
+		    {'icon':'', 'label':'Upload',
+		     'action':'manage_uploadForm', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'View',
+		     'action':'', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Access Control',
+		     'action':'manage_rolesForm', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Undo',
+		     'action':'manage_UndoForm', 'target':'manage_main',
+		    },
+		   )
 
     def initvars(self, mapping, vars):
 	"""Hook to override signature so we can detect whether we are
@@ -46,7 +63,8 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	except AttributeError: return 0
 
     manage_editForm=HTMLFile('OFS/documentEdit')
-    manage=manage_editDocument=manage_editForm
+    manage_uploadForm=HTMLFile('OFS/documentUpload')
+    manage=manage_main=manage_editDocument=manage_editForm
 
     def manage_edit(self,data,title,acl_type='A',acl_roles=[],SUBMIT='Change',
 		    dtpref_cols='50',dtpref_rows='20',REQUEST=None):
@@ -75,6 +93,11 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	self.title=title
 	self._setRoles(acl_type,acl_roles)
 	self.munge(data)
+	if REQUEST: return self.manage_editedDialog(REQUEST)
+
+    def manage_upload(self,file='', REQUEST=None):
+	"""Change image data"""
+	self.munge(file.read())
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
     def validRoles(self):

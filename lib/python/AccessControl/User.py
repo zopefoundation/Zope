@@ -1,10 +1,11 @@
 """Access control package"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
 from Persistence import PersistentMapping
+from App.Management import Management
 from OFS.SimpleItem import Item
 from Acquisition import Implicit
 from DocumentTemplate import HTML
@@ -27,6 +28,7 @@ class SafeDtml(HTML):
     manage_editDocument=None
     manage_editForm    =None
     manage_edit        =None
+
 
 
 
@@ -85,25 +87,27 @@ class SuperUser:
 super=SuperUser()
 
 
-class UserFolder(Implicit, Persistent, Item):
+
+class UserFolder(Persistent, Item, Implicit, Management):
     """ """
     meta_type='User Folder'
     id       ='acl_users'
     title    ='User Folder'
     icon     ='AccessControl/UserFolder_icon.gif'
 
+    isPrincipiaFolderish=1
     isAUserFolder=1
 
-    manage     =SafeDtml('App/manage')
-    manage_menu=SafeDtml('App/menu')
-    manage_main=SafeDtml('AccessControl/UserFolder_manage_main')
-
-    _editForm  =SafeDtml('AccessControl/UserFolder_manage_editForm')
-    index_html =manage_main
+    manage_main=Globals.HTMLFile('AccessControl/UserFolder_manage_main')
+    _editForm  =Globals.HTMLFile('AccessControl/UserFolder_manage_editForm')
+    manage=manage_main
+    #index_html =manage_main
 
     manage_options=(
     {'icon':'AccessControl/UserFolder_icon.gif', 'label':'Contents',
      'action':'manage_main',   'target':'manage_main'},
+    {'icon':'App/undo_icon.gif', 'label':'Undo',
+     'action':'manage_UndoForm', 'target':'manage_main'},
     )
 
     def _init(self):
@@ -261,6 +265,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.20  1997/12/05 17:10:10  brian
+# New UI
+#
 # Revision 1.19  1997/11/20 13:39:54  jim
 # Added logic to check for a broken user folder.
 #

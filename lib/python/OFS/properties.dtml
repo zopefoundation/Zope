@@ -1,14 +1,20 @@
 <HTML>
 <HEAD>
-<TITLE>Properties</TITLE>
+<TITLE>Properties for <!--#var title_or_id--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Properties</H2>
+<!--#var manage_tabs-->
+
+<H2>Properties for <EM><!--#var title_or_id--></EM></H2>
+<!--#if Principia-Session-->
+<EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>
-<!--#if propertyMap-->
+<!--#/if Principia-Session-->
+
 <FORM ACTION="<!--#var URL1-->/manage_editProperties">
-The following properties are defined.  To change a property's value, 
-edit the value and click "Change".
+<!--#if propertyMap-->
+The following properties are defined for this item. 
+To change a property's value, edit the value and click "Change".
 <P>
 <TABLE CELLPADDING="4">
 <TR>
@@ -41,7 +47,8 @@ edit the value and click "Change".
 </TABLE>
 </FORM>
 <!--#else propertyMap-->
-<EM>No properties have been defined.</EM>
+<EM>No properties have been defined for 
+<STRONG><!--#var title_or_id--></STRONG></EM>
 <!--#/if propertyMap-->
 
 <P>

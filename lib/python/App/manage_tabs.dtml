@@ -1,0 +1,16 @@
+<!--#if manage_options-->
+<TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="2">
+<TR>
+<!--#in manage_options mapping-->
+<!--#if sequence-item-->
+  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
+  <FONT SIZE="-1">
+  <A HREF="<!--#var action-->"><!--#var label--></A>
+  </FONT>
+  </TD>
+<!--#/if sequence-item-->
+<!--#/in manage_options-->
+</TR>
+</TABLE>
+<!--#/if manage_options-->
+

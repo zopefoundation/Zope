@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals
 from User import SafeDtml
@@ -11,7 +11,7 @@ from string import join, strip, split
 class RoleManager:
     """Mixin role management support"""
 
-    manage_rolesForm=SafeDtml('AccessControl/RoleManager_manage_rolesForm')
+    manage_rolesForm=SafeDtml('AccessControl/manage_rolesForm')
     smallRolesWidget=SafeDtml('AccessControl/smallRolesWidget')
 
 
@@ -83,6 +83,9 @@ class RoleManager:
 
 
 # $Log: Role.py,v $
+# Revision 1.7  1997/12/05 17:10:08  brian
+# New UI
+#
 # Revision 1.6  1997/11/18 21:48:20  brian
 # Fixed bug that appeared after __roles__ were allowed to be acquired.
 #

@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -16,7 +16,25 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
     icon     ='OFS/File_icon.gif'
 
     manage_editForm   =HTMLFile('OFS/imageEdit', Kind='File', kind='file')
+    manage_uploadForm =HTMLFile('OFS/imageUpload', Kind='File', kind='file')
     manage=manage_main=manage_editForm
+
+    manage_options=({'icon':'', 'label':'Edit',
+		     'action':'manage_main', 'target':'manage_main',
+	            },
+		    {'icon':'', 'label':'Upload',
+		     'action':'manage_uploadForm', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'View',
+		     'action':'index_html', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Access Control',
+		     'action':'manage_rolesForm', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Undo',
+		     'action':'manage_UndoForm', 'target':'manage_main',
+		    },
+		   )
 
     def manage_edit(self,title,content_type,
 		    acl_type='A',acl_roles=[], REQUEST=None):
@@ -27,7 +45,7 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	self._setRoles(acl_type,acl_roles)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
 
-    def manage_editData(self,file='', REQUEST=None):
+    def manage_upload(self,file='', REQUEST=None):
 	"""Change image data"""
 	headers=file.headers
 	data=file.read()
@@ -76,7 +94,9 @@ class Image(File):
     meta_type='Image'
     icon     ='OFS/Image_icon.gif'
 
-    manage=manage_editForm=HTMLFile('OFS/imageEdit', Kind='Image', kind='image')
+    manage_editForm   =HTMLFile('OFS/imageEdit', Kind='Image', kind='image')
+    manage_uploadForm =HTMLFile('OFS/imageUpload', Kind='Image', kind='image')
+    manage=manage_main=manage_editForm
 
     def __str__(self):
 	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 

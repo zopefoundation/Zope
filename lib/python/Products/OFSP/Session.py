@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.4 1997/11/11 19:25:48 jim Exp $'''
+$Id: Session.py,v 1.5 1997/12/05 17:13:51 brian Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -48,6 +48,20 @@ class Session(Persistence.Persistent,
     meta_type='Session'
     icon='OFS/session.gif'
 
+    manage_options=({'icon':'', 'label':'Properties',
+		     'action':'manage_main', 'target':'manage_main',
+	            },
+		    {'icon':'', 'label':'Join/Leave',
+		     'action':'index_html', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Access Control',
+		     'action':'manage_rolesForm', 'target':'manage_main',
+		    },
+		    {'icon':'', 'label':'Undo',
+		     'action':'manage_UndoForm','target':'manage_main',
+		    },
+		   )
+
     def _init(self, id, title, REQUEST):
 	self.id=id
 	self.title=title
@@ -56,7 +70,7 @@ class Session(Persistence.Persistent,
 	if l >= 0: cookie=cookie[:l]
 	self.cookie="%s/%s" % (cookie, id)
 
-    manage=Globals.HTMLFile('OFS/sessionEdit')
+    manage=manage_main=Globals.HTMLFile('OFS/sessionEdit')
     index_html=Globals.HTMLFile('OFS/session')
 
     def title_and_id(self):
@@ -109,7 +123,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 
@@ -117,6 +131,9 @@ __version__='$Revision: 1.4 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.5  1997/12/05 17:13:51  brian
+# New UI
+#
 # Revision 1.4  1997/11/11 19:25:48  jim
 # Changed title_and_id method to include a flag to indicate whether a
 # session has unsaved changes.

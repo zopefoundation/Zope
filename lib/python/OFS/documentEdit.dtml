@@ -3,9 +3,9 @@
 <TITLE>Edit <!--#var title_or_id--></TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Edit Document</H2>
+<!--#var manage_tabs-->
 
-<h3>Edit Document Source and Properties</h3>
+<H2>Edit <!--#var title_or_id--></H2>
 
   <FORM ACTION="manage_edit" METHOD="POST">
     <TABLE CELLSPACING="2">
@@ -42,38 +42,13 @@
       <TR>
 	<TD></TD>
 	<TD>
-	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Edit">
+	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
 	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Smaller">
 	<INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Bigger">
 	</TD>
       </TR>
     </TABLE>
   </FORM>
-
-<hr>
-
-<h3>Upload Document Source from a File</h3>
-
- You may upload the source for <!--#var title_and_id--> using the form below. 
- Also, you may choose to upload an existing html file from your
- local computer by clicking the <I>Browse</I> button.
-
-  <FORM ACTION="manage_addDocument" METHOD="POST"
-	ENCTYPE="multipart/form-data" TARGET="manage_main">
-    <TABLE CELLSPACING="2">
-      <TR>
-	<TH ALIGN="LEFT" VALIGN="TOP">File</TH>
-	<TD ALIGN="LEFT" VALIGN="TOP">
-  	  <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
-	</TD>
-      </TR>
-      <TR>
-      	<TD></TD>
-      	<TD><BR><INPUT TYPE="SUBMIT" VALUE=" Add "></TD>
-      </TR>
-    </TABLE>
-  </FORM>
-
 </BODY>
 </HTML>
 

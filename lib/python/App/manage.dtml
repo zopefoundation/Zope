@@ -1,20 +1,28 @@
-<HTML><HEAD>
-<TITLE><!--#if title-->
-<!--#var title--><!--#else title-->
-<!--#var id--><!--#/if title--></TITLE>
+<HTML>
+<HEAD>
+<TITLE><!--#var title_or_id--></TITLE>
+<SCRIPT LANGUAGE="javascript">
+<!--
+function update(target)
+{   window.focus();
+    if((target=="l") || (target=="b"))
+    {   window.manage_menu.history.go(0);
+    }
+    if((target=="r") || (target=="b"))
+    {   window.manage_main.history.go(0);
+    }
+}
+//-->
+</SCRIPT>
 </HEAD>
-<FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="150,*">
+<FRAMESET COLS="150,*">
   <FRAME SRC="manage_menu" NAME="manage_menu"
-         MARGINWIDTH="6" MARGINHEIGHT="6" SCROLLING="auto">
+   MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
   <FRAME SRC="manage_main" NAME="manage_main"
-         MARGINWIDTH="0" MARGINHEIGHT="0" SCROLLING="auto">
+   MARGINWIDTH="0" MARGINHEIGHT="0" SCROLLING="auto">
 </FRAMESET>
 <NOFRAMES>
-Management interfaces require the use of a <B>frames-capable</B> web browser, such as:
-<UL>
-<LI> <B><A HREF="http://www.netscape.com">Netscape Navigator 3.0</A></B>
-<LI> <B><A HREF="http://www.microsoft.com">Microsoft Internet Explorer 3.0</A></B>
-</UL>
+Management interfaces require the use of a <B>frames-capable</B> web browser.
 </NOFRAMES>
 </HTML>
 

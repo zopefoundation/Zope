@@ -1,40 +1,51 @@
 <HTML>
 <HEAD>
-<TITLE><!--#var title--></TITLE>
+<TITLE>Contents of <!--#var title--></TITLE>
 </HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<H2><!--#var title--></H2>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<H2>Contents of <EM><!--#var title--></EM></H2>
+<!--#if Principia-Session-->
+<EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>
-<!--#if parentObject-->
-  <!--#in parentObject-->
-  <A HREF="<!--#var URL2-->/manage" target="_top">
-  <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0></A>
-  Return to <!--#if title-->
-            <!--#var title-->
-            <!--#else title-->
-            <!--#var id-->
-            <!--#/if title-->
-  <BR>
-  <!--#/in parentObject-->
-<!--#/if parentObject-->
-<P>
+<!--#/if Principia-Session-->
+
+
 <!--#if userNames-->
-<FORM ACTION="manage_editForm" METHOD="POST">
-The following users have been defined. To edit a user, 
-select a user and click &quot;Edit&quot;.
+<FORM ACTION="manage_deleteUser" METHOD="POST">
+The following users have been defined. Click on a user to edit 
+that user.
 <BR>
-<SELECT NAME="name">
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
 <!--#in userNames-->
-<OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<!--#var sequence-item-->">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="manage_editForm?name=<!--#var sequence-item fmt=url-quote-->">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/AccessControl/User_icon.gif"
+   ALT="Click to edit this user" BORDER="0">
+  </A>
+  <A HREF="manage_editForm?name=<!--#var sequence-item fmt=url-quote-->">
+  <!--#var sequence-item-->
+  </A>
+  </TD>
+</TR>
 <!--#/in userNames-->
-</SELECT>
-<BR>
-<INPUT TYPE="SUBMIT" VALUE=" Change ">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" VALUE="Delete">
+  </TD>
+</TR>
+</TABLE>
 </FORM>
 <!--#else userNames-->
 <EM>There are no users defined.</EM>
 <!--#/if userNames-->
-
 <P>
 <TABLE>
 <TR>
@@ -92,20 +103,5 @@ select a user and click &quot;Edit&quot;.
   </TD>
 </TR>
 </TABLE>
-
-<P>
-<!--#if userNames-->
-<FORM ACTION="manage_deleteUser" METHOD="POST">
-To delete users, select one or more users and click &quot;Delete&quot;.
-<BR>
-<SELECT NAME="names:list" MULTIPLE SIZE="4" >
-<!--#in userNames-->
-<OPTION><!--#var sequence-item-->
-<!--#/in userNames-->
-</SELECT>
-<BR>
-<INPUT TYPE="SUBMIT" VALUE="Delete">
-</FORM>
-<!--#/if userNames-->
 </BODY>
 </HTML>

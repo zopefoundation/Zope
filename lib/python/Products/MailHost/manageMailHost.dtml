@@ -1,9 +1,12 @@
 <HTML>
 <HEAD>
-<TITLE>Change MailHost</TITLE>
+<TITLE>Edit <!--#var title_or_id--></TITLE>
 </HEAD>
-<BODY BGCOLOR="#FFFFFF">
-<H2>Change MailHost</H2>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<H2>Edit <EM><!--#var title_or_id--></EM></H2>
+
 <FORM ACTION="manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">

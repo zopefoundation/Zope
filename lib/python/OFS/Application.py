@@ -11,14 +11,16 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.21 1997/11/20 13:40:28 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: Application.py,v 1.22 1997/12/05 17:13:48 brian Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 
-import Globals,Folder,regex
+import Globals,Folder,os,regex
 from string import lower, find
-from AccessControl.User import UserFolder
 from DateTime import DateTime
+from AccessControl.User import UserFolder
+from App.ApplicationManager import ApplicationManager
+
 
 class Application(Folder.Folder):
     title    ='Principia'
@@ -34,8 +36,6 @@ class Application(Folder.Folder):
      'action':'manage_propertiesForm',   'target':'manage_main'},
     {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
      'action':'manage_rolesForm',   'target':'manage_main'},
-    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
-     'action':'app/manage',   'target':'_top'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
@@ -49,6 +49,16 @@ class Application(Folder.Folder):
 		     'acl_users')
 
     def _init(self):
+	# Initialize users
+	self.__allow_groups__=UserFolder()
+	self.__allow_groups__._init()
+	self._setObject('acl_users', self.__allow_groups__)
+
+	# Initialize control panel
+	cpl=ApplicationManager()
+        cpl._init()
+	self._setObject('Control_Panel', cpl)
+
         self.manage_addDocument('standard_html_header',
 	                        'Standard Html Header',
 				'<HTML><HEAD><TITLE><!--#var title_or_id-->' \
@@ -56,9 +66,7 @@ class Application(Folder.Folder):
         self.manage_addDocument('standard_html_footer',
 				'Standard Html Footer',
 				'</BODY></HTML>')
-	self.__allow_groups__=UserFolder()
-	self.__allow_groups__._init()
-	self._setObject('acl_users', self.__allow_groups__)
+
 
     def folderClass(self): return Folder.Folder
 
@@ -119,8 +127,6 @@ class Application(Folder.Folder):
 
 
 def open_bobobase():
-    import App.ApplicationManager
-
     # Open the application database
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
     
@@ -128,8 +134,6 @@ def open_bobobase():
     except KeyError:
 	app=Application()
 	app._init()
-	app.app=App.ApplicationManager.ApplicationManager()
-
 	Bobobase['Application']=app
 	get_transaction().commit()
     
@@ -141,6 +145,14 @@ def open_bobobase():
     if not Bobobase.has_key('roles'):
 	Bobobase['roles']=('manage',)
 	get_transaction().commit()
+
+    # Backward compatibility
+    if not hasattr(app, 'Control_Panel'):
+	cpl=ApplicationManager()
+        cpl._init()
+	app._setObject('Control_Panel', cpl)
+	get_transaction().commit()
+
 
     products=Bobobase['products']
     
@@ -235,6 +247,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.22  1997/12/05 17:13:48  brian
+# New UI
+#
 # Revision 1.21  1997/11/20 13:40:28  jim
 # Added logic to make sure that the top-level user folder gets
 # initialized correctly.

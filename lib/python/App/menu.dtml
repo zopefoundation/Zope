@@ -1,61 +1,30 @@
 <HTML>
 <HEAD>
-<TITLE>Management Menu</TITLE>
+<TITLE>Principia Navigator</TITLE>
 </HEAD>
-<BODY BACKGROUND="<!--#var SOFTWARE_URL-->/App/border.gif"
-      BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<TABLE WIDTH="120" BORDER="0">
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<TABLE CELLSPACING="0">
 <TR>
-  <TD ALIGN="LEFT" COLSPAN="2">
-  <IMG SRC="<!--#var SOFTWARE_URL-->/App/logo.jpg" WIDTH="102" HEIGHT="54">
-  <BR>
-  <A HREF="manage_copyright" TARGET="manage_main">
-  <FONT SIZE="-2"><CENTER>
-  &copy; 1997 Digital Creations</FONT></CENTER></A>
+  <TD VALIGN="TOP" NOWRAP>
+  <A HREF="manage_main" TARGET="manage_main">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0"
+   ALT="Click to open this item"></A> 
+  <STRONG>
+  <A HREF="manage_main" TARGET="manage_main">
+  <!--#var title_or_id-->
+  </A>
+  </STRONG>
   </TD>
 </TR>
-<TR><TD></TD><TD></TD></TR>
-
-<!--#if parentObject-->
-  <!--#in parentObject-->
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var URL2-->/manage" target="_top">
-  <IMG BORDER="0" HEIGHT="16" ALT="Up One Folder" WIDTH="16"
-       SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif"></A></TD>
-  <TD ALIGN="LEFT">
-  <FONT SIZE="-1">
-  <A HREF="<!--#var URL2-->/manage" target="_top">Up One Folder</A></TD>
-  </FONT>
-  </TD>
-</TR>
-  <!--#/in parentObject-->
-<!--#/if parentObject-->
-
-<!--#if manage_options-->
-<!--#in manage_options mapping-->
-<!--#if sequence-item-->
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var action-->"
-     TARGET="<!--#var target-->"><IMG BORDER="0" HEIGHT="16"
-     WIDTH="16" ALT="<!--#var label-->"
-     SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"></A>
-  </TD>
-  <TD ALIGN="LEFT">
-  <FONT SIZE="-1">
-  <A HREF="<!--#var action-->"
-     TARGET="<!--#var target-->">
-  <!--#var label-->
-  </A></FONT>
-  </TD>
-</TR>
-<!--#else sequence-item-->
-<TR><TD COLSPAN="2"><HR></TD></TR>
-<!--#/if sequence-item-->
-<!--#/in manage_options-->
-<!--#/if manage_options-->
 </TABLE>
+<!--#tree sort=title_or_id nowrap=1-->
+<A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
+<IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0"
+ ALT="Click to open this item"></A> 
+<A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
+<!--#var title_or_id-->
+</A>
+<!--#/tree-->
 </BODY>
 </HTML>
 

@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.21 1997/11/26 23:47:00 paul Exp $"""
+$Id: ObjectManager.py,v 1.22 1997/12/05 17:13:50 brian Exp $"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -44,6 +44,8 @@ class ObjectManager(Acquirer,Management,Persistent):
     )
 
     isAnObjectManager=1
+
+    isPrincipiaFolderish=1
 
     def __class_init__(self):
 	try:    mt=list(self.meta_types)
@@ -453,6 +455,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.22  1997/12/05 17:13:50  brian
+# New UI
+#
 # Revision 1.21  1997/11/26 23:47:00  paul
 # if REQUEST is None added
 #

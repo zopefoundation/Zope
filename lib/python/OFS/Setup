@@ -14,11 +14,13 @@
 # install DraftFolderSupervisor.dtml
 # install documentAdd.dtml
 # install documentEdit.dtml
+# install documentUpload.dtml
 # install draftFolderAdd.dtml
 # install editedDialog.dtml
 # install folderAdd.dtml
 # install imageAdd.dtml
 # install imageEdit.dtml
+# install imageUpload.dtml
 # install main.dtml
 # install pasteDialog.dtml
 # install properties.dtml
