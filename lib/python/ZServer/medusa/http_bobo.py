@@ -3,7 +3,7 @@
 import string
 import regex
 
-RCS_ID = '$Id: http_bobo.py,v 1.2 2001/04/25 19:07:31 andreas Exp $'
+RCS_ID = '$Id: http_bobo.py,v 1.3 2001/04/26 00:07:52 andreas Exp $'
 VERSION_STRING = string.split(RCS_ID)[2]
 
 class bobo_extension:
@@ -30,7 +30,7 @@ class bobo_extension:
 		return mstatus.lines_producer ([
 			'<h2>%s</h2>'  						%self.SERVER_IDENT,
 			'<br><b>Total Hits:</b> %d'			% self.hits,
-			]
+			])
 
 	def handle_request (self, channel):
 		self.hits = self.hits + 1
