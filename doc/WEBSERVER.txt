@@ -411,7 +411,7 @@ Zope authentication with existing web servers
   
       * Like Apache, Netscape does not pass HTTP Authorization
       information to CGI scripts.  We have a plugin at our website
-      that addresses this.  http://www.digicool.com
+      that addresses this.  http://www.zope.org
   
       * Alternatively, you can allow the web server to perform the
       authentication step. See above for more information.
