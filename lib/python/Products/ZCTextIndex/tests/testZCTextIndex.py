@@ -95,6 +95,41 @@ class ZCIndexTestsBase:
                 self.assertEqual(wids, [])
         self.assertEqual(len(self.index.get_words(1)), 1)
 
+        r, num = self.zc_index.query('question')
+        self.assertEqual(num, 1)
+        self.assertEqual(r[0][0], 1)
+
+        r, num = self.zc_index.query('question AND to AND be')
+        self.assertEqual(num, 1)
+        self.assertEqual(r[0][0], 1)
+
+        r, num = self.zc_index.query('to AND NOT question')
+        self.assertEqual(num, 0)
+
+#        r, num = self.zc_index.query('question AND NOT to AND NOT be')
+#        self.assertEqual(num, 1)
+#        self.assertEqual(r[0][0], 1)
+
+#        r, num = self.zc_index.query('question OR to OR be')
+#        self.assertEqual(num, 1)
+#        self.assertEqual(r[0][0], 1)
+
+        r, num = self.zc_index.query('question to be')
+        self.assertEqual(num, 1)
+        self.assertEqual(r[0][0], 1)
+
+        r, num = self.zc_index.query('to be')
+        self.assertEqual(num, 0)
+
+        r, num = self.zc_index.query('to AND be')
+        self.assertEqual(num, 0)
+
+#        r, num = self.zc_index.query('to OR be')
+#        self.assertEqual(num, 0)
+
+        r, num = self.zc_index.query('to AND NOT be')
+        self.assertEqual(num, 0)
+
     def testDocUpdate(self):
         docid = 1   # doesn't change -- we index the same doc repeatedly
         N = len(text)
