@@ -12,6 +12,7 @@
 ##############################################################################
 
 import sys, os, unittest
+from glob import glob
 import zLOG
 
 def log_write(subsystem, severity, summary, detail, error):
@@ -65,7 +66,8 @@ class Tests(unittest.TestCase):
        get_transaction().abort()
        if hasattr(self, 'jar'):
            self.dbclose()
-           os.system('rm -f fs_tmp__*')
+           for path in glob('fs_tmp__*'):
+               os.remove(path)
        zLOG.log_write=self.old_log_write
 
    def checkSimpleAddDelete(self):
