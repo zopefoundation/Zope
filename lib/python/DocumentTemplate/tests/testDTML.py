@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.10 2002/02/06 19:13:36 chrisw Exp $'
-__version__='$Revision: 1.10 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.11 2002/04/24 14:38:41 htrd Exp $'
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os
 import unittest
@@ -381,6 +381,18 @@ foo bar
             res = v
         assert str(res) == 'success!', `res`
 
+
+    def testNoItemPush(self):
+        data=d(sec='B', name='XXX', sub=(d(name='b1'),d(name='b2',sec='XXX')))
+        html = """
+<dtml-with data mapping><dtml-in sub no_push_item>
+    <dtml-var sec>.<dtml-with sequence-item mapping><dtml-var name></dtml-with>
+</dtml-in></dtml-with>
+"""
+        expected = """
+    B.b1    B.b2"""
+        result = self.doc_class(html)(data=data)
+        assert result == expected, result
 
     def testBasicHTMLIn(self):
         data=(

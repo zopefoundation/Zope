@@ -76,8 +76,9 @@
       need of reversing on the fly.
 
       Within an 'in' block, variables are substituted from the
-      elements of the iteration.  The elements may be either
-      instance or mapping objects.  In addition, the variables:
+      elements of the iteration unless the 'no_push_item' optional
+      is specified.  The elements may be either instance or mapping
+      objects.  In addition, the variables:
 
          'sequence-item' -- The element.
 
@@ -330,8 +331,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.57 2001/11/28 15:50:54 matt Exp $'
-__version__='$Revision: 1.57 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.58 2002/04/24 14:38:40 htrd Exp $'
+__version__='$Revision: 1.58 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -355,7 +356,7 @@ In=InFactory()
 
 class InClass:
     elses=None
-    expr=sort=batch=mapping=None
+    expr=sort=batch=mapping=no_push_item=None
     start_name_re=None
     reverse=None
     sort_expr=reverse_expr=None
@@ -364,6 +365,7 @@ class InClass:
         tname, args, section = blocks[0]
         args=parse_params(args, name='', start='1',end='-1',size='10',
                           orphan='0',overlap='1',mapping=1,
+                          no_push_item=1,
                           skip_unauthorized=1,
                           previous=1, next=1, expr='', sort='',
                           reverse=1, sort_expr='', reverse_expr='',
@@ -383,6 +385,9 @@ class InClass:
 
         if has_key('reverse'):
             self.reverse=args['reverse']
+            
+        if has_key('no_push_item'):
+            self.no_push_item=args['no_push_item']
             
         if has_key('mapping'): self.mapping=args['mapping']
         for n in 'start', 'size', 'end':
@@ -453,6 +458,7 @@ class InClass:
         params=self.args
         
         mapping=self.mapping
+        no_push_item=self.no_push_item
 
         if self.sort_expr is not None:
             self.sort=self.sort_expr.eval(md)
@@ -584,7 +590,9 @@ class InClass:
                     if t is TupleType and len(client)==2:
                         client=client[1]
 
-                    if mapping:
+                    if no_push_item:
+                        pushed = 0
+                    elif mapping:
                         pushed = 1
                         push(client)
                     elif t in StringTypes:
@@ -630,7 +638,7 @@ class InClass:
 
         section=self.section        
         mapping=self.mapping
-
+        no_push_item=self.no_push_item
 
         if self.sort_expr is not None:
             self.sort=self.sort_expr.eval(md)
@@ -683,7 +691,9 @@ class InClass:
                     if t is TupleType and len(client)==2:
                         client=client[1]
 
-                    if mapping:
+                    if no_push_item:
+                        pushed = 0
+                    elif mapping:
                         pushed = 1
                         push(client)
                     elif t in StringTypes:
