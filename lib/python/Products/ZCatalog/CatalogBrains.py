@@ -40,12 +40,24 @@ class AbstractCatalogBrain(Record.Record, Acquisition.Implicit):
 
     def getObject(self, REQUEST=None):
         """Return the object for this record
-        
+
         Will return None if the object cannot be found via its cataloged path
         (i.e., it was deleted or moved without recataloging), or if the user is
-        not authorized to access an object along the path.
+        not authorized to access the object.
+
+        This method mimicks a subset of what publisher's traversal does,
+        so it allows access if the final object can be accessed even
+        if intermediate objects cannot.
         """
-        return self.aq_parent.restrictedTraverse(self.getPath(), None)
+        path = self.getPath().split('/')
+        if not path:
+            return None
+        parent = self.aq_parent
+        if len(path) > 1:
+            parent = parent.unrestrictedTraverse('/'.join(path[:-1]), None)
+            if parent is None:
+                return None
+        return parent.restrictedTraverse(path[-1], None)
 
     def getRID(self):
         """Return the record ID for this object."""

@@ -57,10 +57,14 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
- 
+
+      - Fixed brain.getObject() to correctly traverse to an object even
+        if one of its parents is not accessible, to be close to what the
+        Publisher does.
+
       - Forward ported fix for OFS.CopySupport tests which corrected
         signature of a faux security policy's 'validate' method.
-        
+
       - 'setup.py' did not install the 'Zope' compatibility module
         (the old 'Zope' package has been renamed to 'Zope2').
 

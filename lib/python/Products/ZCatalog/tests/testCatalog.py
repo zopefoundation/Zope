@@ -26,6 +26,9 @@ import random
 
 import ExtensionClass
 import OFS.Application
+from AccessControl.SecurityManagement import setSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
+from AccessControl import Unauthorized
 from Products.ZCatalog import Vocabulary
 from Products.ZCatalog.Catalog import Catalog
 from Products.ZCatalog.Catalog import CatalogError
@@ -63,6 +66,13 @@ def sort(iterable):
     L = list(iterable)
     L.sort()
     return L
+
+from OFS.Folder import Folder as OFS_Folder
+class Folder(OFS_Folder):
+    def __init__(self, id):
+        self._setId(id)
+        OFS_Folder.__init__(self)
+
 
 class CatalogBase:
     def setUp(self):
@@ -565,6 +575,77 @@ class TestMerge(unittest.TestCase):
         self.assertEqual(merged_rids, expected)
 
 
+class PickySecurityManager:
+    def __init__(self, badnames=[]):
+        self.badnames = badnames
+    def validateValue(self, value):
+        return 1
+    def validate(self, accessed, container, name, value):
+        if name not in self.badnames:
+            return 1
+        raise Unauthorized(name)
+
+
+class TestZCatalogGetObject(unittest.TestCase):
+    # Test what objects are returned by brain.getObject()
+
+    def setUp(self):
+        from Products.ZCatalog.ZCatalog import ZCatalog
+        catalog = ZCatalog('catalog')
+        catalog.addIndex('id', 'FieldIndex')
+        root = Folder('')
+        root.getPhysicalRoot = lambda: root
+        self.root = root
+        self.root.catalog = catalog
+
+    def tearDown(self):
+        noSecurityManager()
+
+    def test_getObject_found(self):
+        # Check normal traversal
+        root = self.root
+        catalog = root.catalog
+        root.ob = Folder('ob')
+        catalog.catalog_object(root.ob)
+        brain = catalog.searchResults()[0]
+        self.assertEqual(brain.getPath(), '/ob')
+        self.assertEqual(brain.getObject().getId(), 'ob')
+
+    def test_getObject_missing(self):
+        # Check that if the object is missing None is returned
+        root = self.root
+        catalog = root.catalog
+        root.ob = Folder('ob')
+        catalog.catalog_object(root.ob)
+        brain = catalog.searchResults()[0]
+        del root.ob
+        self.assertEqual(brain.getObject(), None)
+
+    def test_getObject_restricted(self):
+        # Check that if the object's security does not allow traversal,
+        # None is returned
+        root = self.root
+        catalog = root.catalog
+        root.fold = Folder('fold')
+        root.fold.ob = Folder('ob')
+        catalog.catalog_object(root.fold.ob)
+        brain = catalog.searchResults()[0]
+        # allow all accesses
+        pickySecurityManager = PickySecurityManager()
+        setSecurityManager(pickySecurityManager)
+        self.assertEqual(brain.getObject().getId(), 'ob')
+        # disallow just 'ob' access
+        pickySecurityManager = PickySecurityManager(['ob'])
+        setSecurityManager(pickySecurityManager)
+        self.assertEqual(brain.getObject(), None)
+        # disallow just 'fold' access
+        pickySecurityManager = PickySecurityManager(['fold'])
+        setSecurityManager(pickySecurityManager)
+        ob = brain.getObject()
+        self.failIf(ob is None)
+        self.assertEqual(ob.getId(), 'ob')
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestAddDelColumn ) )
@@ -573,6 +654,7 @@ def test_suite():
     suite.addTest( unittest.makeSuite( TestCatalogObject ) )
     suite.addTest( unittest.makeSuite( TestRS ) )
     suite.addTest( unittest.makeSuite( TestMerge ) )
+    suite.addTest( unittest.makeSuite( TestZCatalogGetObject ) )
     return suite
 
 if __name__ == '__main__':

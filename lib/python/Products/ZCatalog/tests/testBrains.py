@@ -23,15 +23,17 @@ class Happy(Acquisition.Implicit):
     """Happy content"""
     def __init__(self, id):
         self.id = id
+    def check(self):
+        pass
 
 class Secret(Happy):
     """Object that raises Unauthorized when accessed"""
-    def __of__(self, parent):
+    def check(self):
         raise Unauthorized
 
 class Conflicter(Happy):
     """Object that raises ConflictError when accessed"""
-    def __of__(self, parent):
+    def check(self):
         raise ConflictError
         
 class DummyRequest(Acquisition.Implicit):
@@ -50,10 +52,20 @@ class DummyCatalog(Acquisition.Implicit):
              '/conflicter':Conflicter('conflicter')}
     _paths = _objs.keys() + ['/zonked']
     _paths.sort()
-    
+
+    # This is sooooo ugly
+
+    def unrestrictedTraverse(self, path, default=None):
+        assert path == '' # for these tests...
+        return self
+
     def restrictedTraverse(self, path, default=_marker):
+        if not path.startswith('/'):
+            path = '/'+path
         try:
-            return self._objs[path].__of__(self)
+            ob = self._objs[path].__of__(self)
+            ob.check()
+            return ob
         except (KeyError, Unauthorized):
             if default is not _marker:
                 return default
