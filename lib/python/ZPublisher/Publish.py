@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.112 1998/12/08 19:08:54 jim Exp $"""
-__version__='$Revision: 1.112 $'[11:-2]
+$Id: Publish.py,v 1.113 1998/12/11 20:49:21 jim Exp $"""
+__version__='$Revision: 1.113 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -149,6 +149,7 @@ class ModulePublisher:
         form_has=form.has_key
         other={}
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
+        meth=None
         if not hasattr(fs,'list') or fs.list is None:
             form['BODY']=other['BODY']=fs.value
         else:
@@ -159,7 +160,6 @@ class ModulePublisher:
             type_search=type_re.search
             lt=type([])
             CGI_name=isCGI_NAME
-            meth=None
             for item in fslist:
                 key=unquote(item.name)
 
