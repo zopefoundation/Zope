@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ThreadLock.c,v 1.4 1998/11/17 20:23:42 jim Exp $
+  $Id: ThreadLock.c,v 1.5 1998/11/17 21:43:50 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,12 +46,17 @@
 */
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.4 1998/11/17 20:23:42 jim Exp $"
+"\n$Id: ThreadLock.c,v 1.5 1998/11/17 21:43:50 jim Exp $"
 ;
 
 #include "Python.h"
 #ifdef WITH_THREAD
+#include "listobject.h"
+#ifdef PyList_SET_ITEM
+#include "pythread.h"
+#else
 #include "thread.h"
+#endif
 #endif
 
 static PyObject *ErrorObject;
@@ -277,7 +282,7 @@ void
 initThreadLock()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
 
   m = Py_InitModule4("ThreadLock", Module_methods,
 		     ThreadLock_module_documentation,
