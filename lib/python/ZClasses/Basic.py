@@ -99,7 +99,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
         """
         if meta_type: self.setClassAttr('meta_type', meta_type)
 
-        if file and hasattr(file, 'content_type'):
+        if file:
             __traceback_info__=file
             image=self.getClassAttr('ziconImage', None)
             if image is None:
