@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -54,6 +54,9 @@ hide_key={'HTTP_AUTHORIZATION':1,
           }.has_key
 
 default_port={'http': '80', 'https': '443'}
+
+tainting_env = str(os.environ.get('ZOPE_DTML_REQUEST_AUTOQUOTE', '')).lower()
+TAINTING_ENABLED  = tainting_env not in ('disabled', '0', 'no')
 
 _marker=[]
 class HTTPRequest(BaseRequest):
@@ -1302,8 +1305,8 @@ class HTTPRequest(BaseRequest):
                     base64.decodestring(auth.split()[-1]).split(':')
                 return name, password
 
-    def taintWrapper(self):
-        return TaintRequestWrapper(self)
+    def taintWrapper(self, enabled=TAINTING_ENABLED):
+        return enabled and TaintRequestWrapper(self) or self
 
 
 class TaintRequestWrapper:

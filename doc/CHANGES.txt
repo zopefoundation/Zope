@@ -87,8 +87,10 @@ Zope Changes
       - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
         unsafe data taken implictly from the REQUEST object. Data taken
         explicitly from the REQUEST object is not affected, as well as any
-        other data not originating from REQUEST.
-    
+        other data not originating from REQUEST. This can be disabled (at
+        your own risk!) by setting the environment variable
+        ZOPE_DTML_REQUEST_AUTOQUOTE to one of 'no', '0', or 'disabled'.
+
       - ZCatalog index management ui is now integrated into ZCatalog rather
         than being a subobject managment screen with different tabs.
         
