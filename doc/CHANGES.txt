@@ -7,6 +7,8 @@ Zope Changes
   after Zope 2.5.1
 
     new Features:
+    
+      - Added ZCTextIndex plug-in index product. A replacement for TextIndex.
 
       - Removed the venerable but senile QuickStart folder from the
         default FileStorage.  "Alas, poor Yorick!  I knew him, Horatio."
@@ -44,7 +46,7 @@ Zope Changes
         The cruft associated with this functionality has been exorcised.
         No default indexes or metadata elements are defined for you when
         you create a new ZCatalog. Since we now have many new kinds of
-        plug-in indexes it no longer maked sense to do this
+        plug-in indexes it no longer made sense to do this
         anymore.        
 
       - A new permission "Copy or Move" was added.  This permission
