@@ -29,6 +29,8 @@ Zope Changes
      - DateTime: new DateTime instance can be constructed from a given
        DateTime instance: d_new = DateTime(d_old)
 
+     - The DateTime parser now throws a SyntaxError upon any parsing errors.
+
      - ZCatalog: added a new configuration option in the "Advanced" tab
        to provide optional logging of the progress of long running 
        reindexing or recataloging operations.
