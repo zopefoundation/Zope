@@ -1,5 +1,5 @@
 """Bobo call interface"""
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys,regex
 from httplib import HTTP
@@ -74,12 +74,14 @@ exceptmap   ={'AccessError'      :AccessError,
 
 
 class RemoteException:
-    def __init__(self,etype=None,evalue=None,url=None,query=None,
-		 http_code=None, http_msg=None, http_resp=None):
+    def __init__(self,etype=None,evalue=None,efile=None,eline=None,url=None,
+		 query=None,http_code=None,http_msg=None, http_resp=None):
         """Contains information about an exception which
            occurs in a remote method call"""
         self.exc_type    =etype
 	self.exc_value   =evalue
+	self.exc_file    =efile
+	self.exc_line    =eline
         self.url         =url
 	self.query       =query
 	self.http_code   =http_code
@@ -87,8 +89,9 @@ class RemoteException:
         self.response    =http_resp
 
     def __repr__(self):
-	return '%s\n%s %s for %s' % (self.exc_value,self.http_code,
-				     self.http_message,self.url)
+	return '%s (File: %s Line: %s)\n%s %s for %s' % (
+	        self.exc_value,self.exc_file,self.exc_line,
+		self.http_code,self.http_message,self.url)
 
 
 
@@ -151,12 +154,17 @@ class RemoteMethod:
 	else:
 	    try:    v=headers.dict['bobo-exception-value']
 	    except: v=ec
+	    try:    f=headers.dict['bobo-exception-file']
+	    except: f='Unknown'
+	    try:    l=headers.dict['bobo-exception-line']
+	    except: l='Unknown'
 	    try:    t=exceptmap[headers.dict['bobo-exception-type']]
 	    except:
 		if   ec >= 400 and ec < 500: t=NotFound
 		elif ec >= 500 and ec < 600: t=ServerError
 		else:                        t=NotAvailable
-	    raise t, RemoteException(t,v,self.url,query,ec,em,response)
+
+	    raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
 
 
 
@@ -245,8 +253,8 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
-# Revision 1.6  1997/04/18 16:41:36  jim
-# Machine name printed in NotFound
+# Revision 1.7  1997/04/18 19:45:47  jim
+# Brian's changes to try and get file name and line no in exceptions.
 #
 # Revision 1.5  1997/04/16 21:56:27  jim
 # repr now shows URL on Not Found.

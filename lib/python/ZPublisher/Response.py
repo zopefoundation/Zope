@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.14 1997/04/12 17:17:32 jim Exp $'''
+$Id: Response.py,v 1.15 1997/04/18 19:46:19 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.14 1997/04/12 17:17:32 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.15  1997/04/18 19:46:19  jim
+# Brian's changes to try and get file name and line no in exceptions.
+#
 # Revision 1.14  1997/04/12 17:17:32  jim
 # Brian added loggic to set bobo-specific headers to transmit exception
 # info.
@@ -119,7 +122,7 @@ $Id: Response.py,v 1.14 1997/04/12 17:17:32 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -482,9 +485,14 @@ class Response:
 	    # Try to capture exception info for bci calls
 	    et=regsub.gsub('\n','\t\n',str(t))
             ev=regsub.gsub('\n','\t\n',str(v))
+	    el=str(tb.tb_lineno)
+            ef=str(tb.tb_frame.f_code.co_filename)
 	    if string.find(ev,'<html>') >= 0: ev='bobo exception'
 	    self.setHeader('bobo-exception-type',et)
 	    self.setHeader('bobo-exception-value',ev)
+	    self.setHeader('bobo-exception-file',ef)
+	    self.setHeader('bobo-exception-line',el)
+
 	except:
 	    # Dont try so hard that we cause other problems ;)
 	    pass
