@@ -35,7 +35,7 @@ def compile_non_test(dir):
         fullname = os.path.join(dir, name)
         if (name != os.curdir and name != os.pardir and
             os.path.isdir(fullname) and not os.path.islink(fullname) and
-            name != 'test' and name != 'tests'):
+            name != 'test' and name != 'tests' and name != 'skins'):
             success = success and compile_non_test(fullname)
     return success
 

@@ -115,6 +115,8 @@ Zope Changes
       - Stop leaking FastCGI Authorization header in environment to
         prevent password compromise
 
+      - #178: Don't compile PythonScripts in skins directories
+
     Features Added
 
       - <dtml-var name> and &dtml.-name; will now automatically HTML-quote
