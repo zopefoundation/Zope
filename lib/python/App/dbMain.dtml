@@ -33,7 +33,7 @@ and &quot;undoing&quot; previous changes to your site.
 
 <TABLE CELLPADDING="4">
 <TR>
-<FORM ACTION="manage_pack" METHOD="POST" TARGET="manage_main">
+<FORM ACTION="manage_pack" METHOD="POST">
 <TD ALIGN="LEFT" VALIGN="TOP">
 <BR>Click &quot;Pack&quot; to pack the Principia database, removing 
 previous revisions of objects that are older than

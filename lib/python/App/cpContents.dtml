@@ -4,7 +4,7 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-<FORM ACTION="manage_shutdown" METHOD="POST" TARGET="_top">
+<FORM ACTION="manage_shutdown" METHOD="POST">
 The Control Panel provides access to system management functions,
 such as database and product management.  The system has been running
 (with a process ID of <!--#var process_id-->) for <!--#var
