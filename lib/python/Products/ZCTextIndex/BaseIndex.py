@@ -149,6 +149,9 @@ class BaseIndex(Persistent):
         # The wid->weight mappings are fed into _add_wordinfo, and docweight
         # becomes the value of _docweight[docid].
         raise NotImplementedError
+        
+    def has_doc(self, docid):
+        return self._docwords.has_key(docid)
 
     # A subclass may wish to extend or override this.
     def unindex_doc(self, docid):

@@ -118,8 +118,9 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         return count
 
     def unindex_object(self, docid):
-        self.index.unindex_doc(docid)
-        self._p_changed = 1 # XXX
+        if self.index.has_doc(docid):
+            self.index.unindex_doc(docid)
+            self._p_changed = 1 # XXX
 
     def _apply_index(self, request, cid=''):
         """Apply query specified by request, a mapping containing the query.
