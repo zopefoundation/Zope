@@ -161,7 +161,7 @@ class TestCase( unittest.TestCase ):
         for k, v in expectedValues:
             assert k in result
     
-    def checkEmpty( self ):
+    def testEmpty( self ):
         "Test an empty FieldIndex."
 
         assert len( self._index ) == 0
@@ -182,7 +182,7 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._max_req, [] )
         self._checkApply( self._range_req, [] )
     
-    def checkPopulated( self ):
+    def testPopulated( self ):
         """ Test a populated FieldIndex """
         self._populateIndex()
         values = self._values
@@ -207,21 +207,21 @@ class TestCase( unittest.TestCase ):
         self._checkApply( self._max_req, values[ :3 ] + values[ -2: ] )
         self._checkApply( self._range_req, values[ 2:5 ] )
 
-    def checkZero( self ):
+    def testZero( self ):
         """ Make sure 0 gets indexed """
         self._populateIndex()
         values = self._values
         self._checkApply( self._zero_req, values[ -2:-1 ] )
         assert 0 in self._index.uniqueValues( 'foo' )
 
-    def checkNone(self):
+    def testNone(self):
         """ make sure None gets indexed """
         self._populateIndex()
         values = self._values
         self._checkApply(self._none_req, values[-1:])
         assert None in self._index.uniqueValues('foo')
 
-    def checkRange(self):
+    def testRange(self):
         """Test a range search"""
         index = FieldIndex( 'foo' )
         for i in range(100):
