@@ -100,9 +100,9 @@ def setup(me):
 def main(me):
     home=setup(me)
 
-    #import compilezpy
+    import compilezpy
     print '-'*78
-    #import build_extensions
+    import build_extensions
     print '-'*78
     user=group=''
     import zpasswd; zpasswd.write_access(home, user, group)
