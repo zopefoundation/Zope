@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.31 1998/01/28 16:04:40 jim Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: DA.py,v 1.32 1998/01/28 18:13:48 jim Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -105,7 +105,7 @@ class DA(
 	self._setKey(key)
 	self.max_rows_ = max_rows
 	self.max_cache_, self.cache_time_ = max_cache, cache_time
-	self._v_cache={}
+	self._v_cache={}, IOBTree.Bucket()
 	self.class_name_, self.class_file_ = class_name, class_file
 	getBrain(self)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
@@ -337,6 +337,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.32  1998/01/28 18:13:48  jim
+# Fixed bug in clearing cache.
+#
 # Revision 1.31  1998/01/28 16:04:40  jim
 # Removed Cancel button from test input form.
 #
