@@ -22,7 +22,9 @@ DocumentTemplate releases
 
       - No longer enable the through-the-web-editing interface by default.
 
-      - Added short-hand expr usage::
+      - Added short-hand expr usage.
+
+        For example::
 
            <!--#some_tag "foo.bar"-->
 
