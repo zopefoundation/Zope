@@ -205,8 +205,13 @@ class Request:
 
         """
 
+    def text():
+        """
+        Returns information about the request as text. This is useful
+        for debugging purposes. The returned text lists form contents,
+        cookies, special variables, and evironment variables.
 
-
-
+        Permissions -- Always available
+        """
 
 
