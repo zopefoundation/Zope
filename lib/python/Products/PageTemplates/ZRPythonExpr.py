@@ -88,10 +88,11 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
+from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
 from RestrictedPython import compile_restricted_eval
 from TALES import CompilerError
 from string import strip, split, join, replace, lstrip
@@ -101,8 +102,8 @@ from PythonExpr import PythonExpr
 class PythonExpr(PythonExpr):
     _globals = {'__debug__': __debug__,
                 '__builtins__': safe_builtins,
-                '_read_': full_read_guard,
-                '_write_': full_write_guard,}
+                '_getattr_': guarded_getattr,
+                '_getitem_': guarded_getitem,}
     def __init__(self, name, expr, engine):
         self.expr = expr = replace(strip(expr), '\n', ' ')
         code, err, warn, use = compile_restricted_eval(expr, str(self))
@@ -133,7 +134,7 @@ def call_with_ns(f, ns, arg=1):
     td = TemplateDict()
     td.this = None
     td._push(ns['request'])
-    td._push(InstanceDict(ns['here'], td, full_read_guard))
+    td._push(InstanceDict(ns['here'], td, guarded_getattr))
     td._push(ns)
     try:
         if arg==2:
