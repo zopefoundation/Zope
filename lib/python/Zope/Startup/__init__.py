@@ -22,10 +22,11 @@ import socket
 
 import ZConfig
 
+logger = logging.getLogger("Zope")
 started = False
 
 def start_zope(cfg):
-    """ The function called by run.py which starts a Zope appserver """
+    """The function called by run.py which starts a Zope appserver."""
     global started
     if started:
         # dont allow any code to call start_zope twice.
@@ -73,28 +74,29 @@ def start_zope(cfg):
         started = False
 
 class ZopeStarter:
-    """ This is a class which starts a Zope server.  Making it a class
-    makes it easier to unit test. """
+    """This is a class which starts a Zope server.
+
+    Making it a class makes it easier to test.
+    """
     def __init__(self, cfg):
         self.cfg = cfg
         self.event_logger = logging.getLogger()
 
     def info(self, msg):
-        import zLOG
-        zLOG.LOG('Zope', zLOG.INFO, msg)
+        logger.info(msg)
 
     def panic(self, msg):
-        import zLOG
-        zLOG.LOG('Zope', zLOG.PANIC, msg)
+        logger.critical(msg)
 
     def error(self, msg):
-        import zLOG
-        zLOG.LOG('Zope', zLOG.ERROR, msg)
+        logger.error(msg)
 
     def registerSignals(self):
         if os.name == 'posix':
             from Signals import Signals
-            Signals.registerZopeSignals()
+            Signals.registerZopeSignals([self.cfg.eventlog,
+                                         self.cfg.access,
+                                         self.cfg.trace])
 
     def setupSecurityOptions(self):
         import AccessControl
@@ -300,7 +302,6 @@ def dropPrivileges(cfg):
     if os.getuid() != 0:
         return
 
-    import zLOG
     import pwd
 
     effective_user  = cfg.effective_user
@@ -308,7 +309,7 @@ def dropPrivileges(cfg):
         msg = ('A user was not specified to setuid to; fix this to '
                'start as root (change the effective-user directive '
                'in zope.conf)')
-        zLOG.LOG('Zope', zLOG.PANIC, msg)
+        logger.critical(msg)
         raise ZConfig.ConfigurationError(msg)
 
     try:
@@ -318,7 +319,7 @@ def dropPrivileges(cfg):
             pwrec = pwd.getpwnam(effective_user)
         except KeyError:
             msg = "Can't find username %r" % effective_user
-            zLOG.LOG("Zope", zLOG.ERROR, msg)
+            logger.error(msg)
             raise ZConfig.ConfigurationError(msg)
         uid = pwrec[2]
     else:
@@ -326,13 +327,13 @@ def dropPrivileges(cfg):
             pwrec = pwd.getpwuid(uid)
         except KeyError:
             msg = "Can't find uid %r" % uid
-            zLOG.LOG("Zope", zLOG.ERROR, msg)
+            logger.error(msg)
             raise ZConfig.ConfigurationError(msg)
     gid = pwrec[3]
 
     if uid == 0:
         msg = 'Cannot start Zope with the effective user as the root user'
-        zLOG.LOG('Zope', zLOG.INFO, msg)
+        logger.error(msg)
         raise ZConfig.ConfigurationError(msg)
 
     try:
@@ -340,11 +341,8 @@ def dropPrivileges(cfg):
         initgroups.initgroups(effective_user, gid)
         os.setgid(gid)
     except OSError:
-        zLOG.LOG("Zope", zLOG.INFO,
-                 'Could not set group id of effective user',
-                 error=sys.exc_info())
+        logger.exception('Could not set group id of effective user')
 
     os.setuid(uid)
-    zLOG.LOG("Zope", zLOG.INFO,
-             'Set effective user to "%s"' % effective_user)
+    logger.info('Set effective user to "%s"' % effective_user)
     return 1 # for unit testing purposes 

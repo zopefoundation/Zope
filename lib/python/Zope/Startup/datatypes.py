@@ -15,6 +15,8 @@
 """Datatypes for the Zope schema for use with ZConfig."""
 
 import os
+
+from ZConfig.components.logger import logger
 from ZODB.config import ZODBDatabase
 
 # generic datatypes
@@ -43,7 +45,7 @@ def cgi_environment(section):
 # Datatype for the access and trace logs
 # (the loghandler datatypes come from the zLOG package)
 
-class LoggerFactory:
+class LoggerFactory(logger.LoggerFactory):
     """
     A factory used to create loggers while delaying actual logger
     instance construction.  We need to do this because we may want to
@@ -53,24 +55,9 @@ class LoggerFactory:
     object.
     """
     def __init__(self, section):
-        self.name = section.getSectionName()
-        self.level = section.level
-        self.handler_factories = section.handlers
-        self.resolved = None
-
-    def __call__(self):
-        if self.resolved is None:
-            # set the logger up
-            import logging
-            logger = logging.getLogger(self.name)
-            logger.handlers = []
-            logger.propagate = 0
-            logger.setLevel(self.level)
-            for handler_factory in self.handler_factories:
-                handler = handler_factory()
-                logger.addHandler(handler)
-            self.resolved = logger
-        return self.resolved
+        section.name = section.getSectionName()
+        section.propagate = False
+        logger.LoggerFactory.__init__(self, section)
 
 # DNS resolver
 
