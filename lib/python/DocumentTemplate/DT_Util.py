@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.64 2000/05/26 21:37:48 shane Exp $''' 
-__version__='$Revision: 1.64 $'[11:-2]
+'''$Id: DT_Util.py,v 1.65 2000/05/26 22:06:08 shane Exp $''' 
+__version__='$Revision: 1.65 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -258,13 +258,12 @@ class namespace_:
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whos attributes are
     provided as keyword arguments."""
-    if callable(self):
-        # Use the default implementation (usually from cDocumentTemplate.)
-        return self(kw)
-    r=namespace_()
-    d=r.__dict__
-    for k, v in kw.items(): d[k]=v
-    return r,
+    try: return self(kw) # Try to use the cDocumentTemplate implementation.
+    except AttributeError:
+        r=namespace_()
+        d=r.__dict__
+        for k, v in kw.items(): d[k]=v
+        return r,
 
 d['namespace']=namespace
 
