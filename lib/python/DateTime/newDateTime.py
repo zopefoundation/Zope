@@ -38,8 +38,8 @@ class DateTime:
         else:
             self.dt = apply(mxDateTime,args)
 
-        for x in dir(self.dt):
-            setattr(self,x,getattr(self.dt,x))
+#        for x in dir(self.dt):
+#            setattr(self,x,getattr(self.dt,x))
 
 
     def strftime(self,fmt): return self.dt.strftime(fmt)
@@ -148,9 +148,12 @@ class DateTime:
     def __repr__(self):     return self.dt
 
     def __getattr__(self,fmt):
+        print 'getattr:',fmt
         if '%' in fmt:      return  strftimeFormater(self.dt,fmt)
         raise AttributeError,fmt
 
+    def __getitem__(self,item):
+        print 'getitem',item
 
 def Timezones():
     """Return the list of recognized timezone names"""
