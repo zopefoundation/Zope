@@ -103,7 +103,7 @@ function toggleSelect() {
 <tr class="list-header">
   <td>&nbsp;
   </td>
-  <td width="50%" align="left"><div class="list-item"><a 
+  <td width="30%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=id<dtml-if 
    "rkey == ''">&rkey=id</dtml-if>"
    onMouseOver="window.status='Sort objects by name'; return true"
@@ -111,7 +111,7 @@ function toggleSelect() {
    "skey == 'id' or rkey == 'id'"
    ><strong>Name</strong><dtml-else>Name</dtml-if></a></div>
   </td>
-  <td width="29%" align="left"><div class="list-item"><a 
+  <td width="30%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=meta_type<dtml-if 
    "rkey == ''">&rkey=meta_type</dtml-if
    >"
@@ -121,7 +121,7 @@ function toggleSelect() {
    ><strong>Index type</strong><dtml-else>Index type</dtml-if></a></div>
   </td>
 
-  <td width="29%" align="left"><div class="list-item"><a 
+  <td width="20%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=numObjects<dtml-if 
    "rkey == ''">&rkey=numObjects</dtml-if
    >"
@@ -131,14 +131,14 @@ function toggleSelect() {
    ><strong># objects</strong><dtml-else># objects</dtml-if></a></div>
   </td>
 
-  <td width="29%" align="left"><div class="list-item"><a 
+  <td width="20%" align="left"><div class="list-item"><a 
    href="./manage_main?skey=bobobase_modification_time<dtml-if 
    "rkey == ''">&rkey=bobobase_modification_time</dtml-if
    >"
    onMouseOver="window.status='Sort objects by modification time'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'bobobase_modification_time' or rkey == 'bobobase_modification_time'"
-   ><strong>Last Modified</strong><dtml-else>Last Modified</dtml-if></a></div>
+   ><strong>Last&nbsp;modified</strong><dtml-else>Last&nbsp;modified</dtml-if></a></div>
   </td>
 
 </tr>
@@ -207,9 +207,10 @@ function toggleSelect() {
   <td align="left" valign="top">
   <div class="form-element">
 
-  <input class="form-element" type="submit" name="manage_delIndex:method"  value="Remove index">
+  <input class="form-element" type="submit" name="manage_delIndex:method"     value="Remove index">
   <input class="form-element" type="submit" name="manage_reindexIndex:method" value="Reindex">
   <input class="form-element" type="submit" name="manage_clearIndex:method"   value="Clear index">
+  <input class="form-element" type="submit" name="manage_convertIndex:method" value="Convert index">
 
 <script type="text/javascript">
 <!-- 
@@ -258,16 +259,3 @@ window.parent.update_menu();
 </dtml-if>
 
 <dtml-var manage_page_footer>
-
-
-
-
-
-
-
-
-
-
-
-
-
