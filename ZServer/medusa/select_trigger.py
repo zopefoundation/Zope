@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.5 1999/07/20 16:53:50 amos Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.6 1999/08/17 20:29:20 brian Exp $"
 
 import asyncore
 import asynchat
@@ -98,6 +98,9 @@ else:
 		def __init__ (self):
 			a = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 			w = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+
+			# set TCP_NODELAY to true to avoid buffering
+			w.setsockopt(socket.IPPROTO_TCP, 1, 1)
 
 			# tricky: get a pair of connected sockets
 			a.bind (self.address)
