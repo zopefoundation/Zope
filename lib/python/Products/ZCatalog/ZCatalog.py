@@ -245,9 +245,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def manage_catalogReindex(self, REQUEST):
         """ iterate over the whole catalog, deleting inexistent
         references and refreshing objects"""
-	items = tuple(self._catalog.uids.items())
+        items = tuple(self._catalog.uids.items())
 
-	for path, i in items:
+        for path, i in items:
             try:
                 obj = self.getobject(i, REQUEST)
             except:
@@ -361,7 +361,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         if REQUEST is None:
             REQUEST=self.REQUEST
         url='%s/%s' %(REQUEST.script, self.getpath(rid))
-	obj = REQUEST.resolve_url(url)
+        obj = REQUEST.resolve_url(url)
         return obj
 
     def schema(self):
@@ -444,7 +444,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 ## Note: do not use, this method is depricated.  Use 'getobject'
     
     def resolve_url(self, path, REQUEST):
-	""" The use of this function is depricated.  Use 'getobject' """
+        """ The use of this function is depricated.  Use 'getobject' """
         # Attempt to resolve a url into an object in the Zope
         # namespace. The url must be a fully-qualified url. The
         # method will return the requested object if it is found
@@ -477,12 +477,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             else: name=''
                 
             if name != os.path.split(path)[-1]:
-		result = req.PARENTS[0]
-		req.close()
+                result = req.PARENTS[0]
+                req.close()
                 return result
-	    req.close()
+            req.close()
             return object
-	req.close()
+        req.close()
         raise rsp.errmsg, sys.exc_value
 
 
