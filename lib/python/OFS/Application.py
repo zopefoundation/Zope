@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.69 1998/08/05 21:04:04 brian Exp $'''
-__version__='$Revision: 1.69 $'[11:-2]
+$Id: Application.py,v 1.70 1998/08/17 19:13:03 brian Exp $'''
+__version__='$Revision: 1.70 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -224,12 +224,25 @@ def open_bobobase():
 	Bobobase['Application']=app
 	get_transaction().commit()
 
-    # Backward compatibility
+    # The following items marked b/c are backward compatibility hacks
+    # which make sure that expected system objects are added to the
+    # bobobase. This is required because the bobobase in use may pre-
+    # date the introduction of certain system objects such as those
+    # which provide Lever support.
+
+    # b/c: Ensure that Control Panel exists.
     if not hasattr(app, 'Control_Panel'):
 	cpl=ApplicationManager()
         cpl._init()
 	app._setObject('Control_Panel', cpl)
 	get_transaction().commit()
+
+    # b/c: Ensure that a ProductFolder exists.
+    if not hasattr(app.Control_Panel, 'Products'):
+        app.Control_Panel.Products=App.Product.ProductFolder()
+        get_transaction().commit()
+
+    # b/c: Ensure that std err msg exists.
     if not hasattr(app, 'standard_error_message'):
         import Document
 	Document.manage_addDocument(
@@ -419,6 +432,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.70  1998/08/17 19:13:03  brian
+# Added fix for ProductFolder with old bobobases.
+#
 # Revision 1.69  1998/08/05 21:04:04  brian
 # Added Find
 #
