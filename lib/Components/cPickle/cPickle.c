@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.30 1997/03/04 20:17:53 chris Exp $
+     $Id: cPickle.c,v 1.31 1997/03/04 21:07:59 jim Exp $
 
      Copyright 
 
@@ -912,7 +912,8 @@ save_tuple(Picklerobject *self, PyObject *args) {
     UNLESS(py_tuple_id = PyInt_FromLong((long)args))
         goto finally;
 
-    if ((has_key = len && PyMapping_HasKey(self->memo, py_tuple_id)) < 0)
+    /*    if ((has_key = len && PyMapping_HasKey(self->memo, py_tuple_id)) < 0) */
+    if ((has_key = PyMapping_HasKey(self->memo, py_tuple_id)) < 0)
         goto finally;
 
     if (has_key) {
@@ -3713,7 +3714,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.30 $";
+    char *rev="$Revision: 1.31 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
