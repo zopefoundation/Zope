@@ -38,9 +38,11 @@ and cache management.
 <table cellspacing="0" cellpadding="2" border="0">
 <tr>
   <td align="left" valign="top">
+  <span class="form-text">
   Click <em>pack</em> to pack the Zope database, removing previous revisions 
-  of objects that are older than
-  <input type="text" name="days:float" value="0" size="3"> days.
+  of objects that are older than</span>
+  <input type="text" name="days:float" value="0" size="3">
+  <span class="form-text"> days.</span>
   </td>
   <td align="left" valign="top">
   <div class="form-element">

@@ -18,7 +18,7 @@ BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0"
 alt="" />
 </td>
 <td valign="top" align="right" width="70%">
-<div class="normal-tx">
+<div class="std-text">
 Logged in as <strong><dtml-var 
 AUTHENTICATED_USER></strong> 
 <dtml-if "AUTHENTICATED_USER.getUserName() != 'Anonymous User'">

@@ -1,6 +1,6 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
-
+<br />
 <table>
 <tr>
   <td align="left">

@@ -5,6 +5,7 @@
           limit="REQUEST.get('limit', 100)" 
           stats="manage_profile_stats(sort, limit)">
 <dtml-if stats>
+<br />
 <form action="<dtml-var URL>" method="POST">
 <table>
 <tr>
@@ -40,13 +41,14 @@
 </pre>
 
 <dtml-else>
-  <em>
-  Profiling is not currently enabled or there is not yet any profiling 
-  data to report. To enable profiling, restart the Zope process with 
-  the environment variable PROFILE_PUBLISHER defined. The value of this 
-  variable should be the full system path to a file that will be used 
-  to dump a profile report when the process restarts or exits.
-  </em>
+<br />
+<div class="form-text">
+Profiling is not currently enabled or there is not yet any profiling 
+data to report. To enable profiling, restart the Zope process with 
+the environment variable PROFILE_PUBLISHER defined. The value of this 
+variable should be the full system path to a file that will be used 
+to dump a profile report when the process restarts or exits.
+</div>
 </dtml-if>
 </dtml-let>
 
