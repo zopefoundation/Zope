@@ -487,12 +487,17 @@ class DocumentClass:
                     r=r,
                 new_paragraphs=r
                 for paragraph in new_paragraphs:
-                    paragraph.setSubparagraphs(self.color_paragraphs(paragraph.getSubparagraphs()))
+                    subs = self.color_paragraphs(paragraph.getSubparagraphs())
+                    paragraph.setSubparagraphs(subs)
                 break
           else:
-             new_paragraphs=ST.StructuredTextParagraph(paragraph.getColorizableTexts()[0],
-                                                       self.color_paragraphs(paragraph.getSubparagraphs()),
-                                                       indent=paragraph.indent),
+             # copy, retain attributes
+             kw = {}
+             atts = getattr(paragraph, '_attributes', [])
+             for att in atts: kw[att] = getattr(paragraph, att)
+             subs = self.color_paragraphs(paragraph.getSubparagraphs())
+             new_paragraphs=apply(ST.StructuredTextParagraph,
+                (paragraph.getColorizableTexts()[0], subs), kw),
         
           # color the inline StructuredText types
           # for each StructuredTextParagraph
