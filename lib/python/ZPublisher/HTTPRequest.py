@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import regex, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -947,6 +947,10 @@ class FileUpload:
     containing the name of the uploaded file.
     '''
 
+    # Allow access to attributes such as headers and filename so
+    # that ZClass authors can use DTML to work with FileUploads.
+    __allow_access_to_unprotected_subobjects__=1
+
     def __init__(self, aFieldStorage):
 
         file=aFieldStorage.file
@@ -1009,6 +1013,10 @@ def parse_cookie(text,
 
 # add class
 class record:
+
+    # Allow access to record methods and values from DTML
+    __allow_access_to_unprotected_subobjects__=1
+
     def __getattr__(self, key, default=None):
         if key in ('get', 'keys', 'items', 'values', 'copy', 'has_key'):
             return getattr(self.__dict__, key)
