@@ -36,6 +36,11 @@ Zope Changes
         sense.  difference(None, X) continues to return None.
 
     Features Added
+    
+      - SimpleItem class now passes a new argument "error_log_url" to
+        the standard_error_message template on error. If the site contains
+        an error log object, this will contain the url to the applicable log
+        entry for the error.
 
       - The IOBTree module also supports multiunion() now.
 
