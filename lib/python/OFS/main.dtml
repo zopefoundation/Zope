@@ -41,9 +41,7 @@
     <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
     <!--#if sequence-var-manage_options-->
     TARGET="_top"
-    <!--#else sequence-var-manage_options-->
-    TARGET="manage_main"
-    <!--#endif sequence-var-manage_options-->>
+    <!--#/if sequence-var-manage_options-->>
     <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0">
     </A>
     <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#if title-->
