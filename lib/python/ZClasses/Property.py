@@ -309,6 +309,8 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
                 self, REQUEST, 
                 manage_tabs_message='The permission mapping has been updated')
 
+Globals.default__class_init__(ZCommonSheet)
+
 property_sheet_permissions=(
     # 'Access contents information',
     'Manage properties',
@@ -330,7 +332,8 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                                'manage',
                                )),
         ('Access contents information', ('hasProperty', 'propertyIds',
-                                         'propertyValues','propertyItems',''),
+                                         'propertyValues','propertyItems',
+                                         'propertyMap', ''),
          ),
         )
     
@@ -412,3 +415,4 @@ class ZInstanceSheets(OFS.PropertySheets.PropertySheets, Globals.Persistent):
         return propsets+tuple(r)
 
   
+Globals.default__class_init__(ZInstanceSheets)
