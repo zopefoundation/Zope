@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.90 2003/11/28 16:45:22 jim Exp $'''
-__version__='$Revision: 1.90 $'[11:-2]
+'''$Id: DT_Util.py,v 1.91 2003/12/26 23:43:11 jeremy Exp $'''
+__version__='$Revision: 1.91 $'[11:-2]
 
-import re, os
+import re
+
 from html_quote import html_quote, ustr # for import by other modules, dont remove!
 from RestrictedPython.Guards import safe_builtins
 from RestrictedPython.Utilities import utility_builtins
@@ -29,17 +30,17 @@ ParseError='Document Template Parse Error'
 from zExceptions import Unauthorized as ValidationError
 
 def int_param(params,md,name,default=0, st=type('')):
-    try: v=params[name]
-    except: v=default
+    v = params.get(name, default)
     if v:
-        try: v=int(v)
+        try:
+            v = int(v)
         except:
-            v=md[v]
-            if type(v) is st: v=int(v)
+            v = md[v]
+            if isinstance(v, str):
+                v = int(v)
     return v or 0
 
 try:
-    import ExtensionClass
     from cDocumentTemplate import InstanceDict, TemplateDict, \
          render_blocks, safe_callable, join_unicode
 except:

@@ -10,9 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"$Id: DT_String.py,v 1.51 2002/08/14 22:29:52 mj Exp $"
+"$Id: DT_String.py,v 1.52 2003/12/26 23:43:11 jeremy Exp $"
 
-import thread,re,exceptions,os
+import os
+import thread
+import re
 
 from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment

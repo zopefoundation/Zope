@@ -15,8 +15,7 @@ __doc__='''Package wrapper for Document Template
 This wrapper allows the (now many) document template modules to be
 segregated in a separate package.
 
-$Id: __init__.py,v 1.17 2002/08/14 22:29:53 mj Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: __init__.py,v 1.18 2003/12/26 23:43:11 jeremy Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
-import ExtensionClass # work-around for import bug.
 from DocumentTemplate import String, File, HTML, HTMLDefault, HTMLFile
