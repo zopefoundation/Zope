@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.159 2003/01/06 13:40:34 andreasjung Exp $"""
+$Id: ObjectManager.py,v 1.160 2003/02/02 12:19:07 andreasjung Exp $"""
 
-__version__='$Revision: 1.159 $'[11:-2]
+__version__='$Revision: 1.160 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -27,6 +27,7 @@ from webdav.NullResource import NullResource
 from webdav.Collection import Collection
 from Acquisition import aq_base
 from AccessControl.SecurityInfo import ClassSecurityInfo
+from webdav.Lockable import ResourceLockedError
 from urllib import quote
 from cStringIO import StringIO
 import marshal
@@ -59,12 +60,14 @@ def checkValidId(self, id, allow_dup=0):
     if bad_id(id) is not None:
         raise BadRequestException, (
             'The id "%s" contains characters illegal in URLs.' % escape(id))
-    if id[0]=='_': raise BadRequestException, (
-        'The id "%s" is invalid - it begins with an underscore.'  % id)
-    if id[:3]=='aq_': raise BadRequestException, (
-        'The id "%s" is invalid - it begins with "aq_".'  % id)
-    if id[-2:]=='__': raise BadRequestException, (
-        'The id "%s" is invalid - it ends with two underscores.'  % id)
+    if id in ('.', '..'): raise BadRequestException, (
+        'The id "%s" is invalid because it is not traversable.' % id)
+    if id.startswith('_'): raise BadRequestException, (
+        'The id "%s" is invalid because it begins with an underscore.' % id)
+    if id.startswith('aq_'): raise BadRequestException, (
+        'The id "%s" is invalid because it begins with "aq_".' % id)
+    if id.endswith('__'): raise BadRequestException, (
+        'The id "%s" is invalid because it ends with two underscores.' % id)
     if not allow_dup:
         obj = getattr(self, id, None)
         if obj is not None:
@@ -74,8 +77,8 @@ def checkValidId(self, id, allow_dup=0):
             if hasattr(aq_base(self), id):
                 # The object is located in this ObjectManager.
                 if not flags & REPLACEABLE:
-                    raise BadRequestException, ('The id "%s" is invalid--'
-                                          'it is already in use.' % id)
+                    raise BadRequestException, (
+                        'The id "%s" is invalid - it is already in use.' % id)
                 # else the object is replaceable even if the UNIQUE
                 # flag is set.
             elif flags & UNIQUE:
@@ -84,8 +87,7 @@ def checkValidId(self, id, allow_dup=0):
         raise BadRequestException, 'REQUEST is a reserved name.'
     if '/' in id:
         raise BadRequestException, (
-            'The id "%s" contains characters illegal in URLs.' % id
-            )
+            'The id "%s" contains characters illegal in URLs.' % id)
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
 class BreakoutException ( Exception ): pass  # raised to break out of loops
@@ -440,6 +442,10 @@ class ObjectManager(
         while ids:
             id=ids[-1]
             v=self._getOb(id, self)
+
+            if v.wl_isLocked():
+                raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % v.getId()
+
             if v is self:
                 raise 'BadRequest', '%s does not exist' % escape(ids[-1])
             self._delObject(id)

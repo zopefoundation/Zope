@@ -43,6 +43,8 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #695: Object IDs "." and ".." are no longer permitted.
+
      - Collector #771: ZCatalog failed to index DTML Document if the name
        of a catalog metadata was identical with the name of an acquired
        object.
