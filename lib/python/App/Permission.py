@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Zope registerable permissions
 
-$Id: Permission.py,v 1.1 1999/07/21 13:15:24 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Permission.py,v 1.2 2000/01/10 20:21:11 amos Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role
 
@@ -98,8 +98,10 @@ class Permission(
     icon='p_/Permission_icon'
 
     manage_options=(
-        {'label':'Edit', 'action':'manage_main'},
-        {'label':'Security', 'action':'manage_access'},
+        {'label':'Edit', 'action':'manage_main',
+         'help':('OFSP','Zope-Permission_Edit.dtml')},
+        {'label':'Security', 'action':'manage_access',
+         'help':('OFSP','Zope-Permission_Define-Permissions.dtml')},
     )
     
     def __init__(self, id, title, name):
