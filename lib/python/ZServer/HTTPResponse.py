@@ -92,7 +92,7 @@ and logging duties.
 import time, regex, string, sys, tempfile
 from cStringIO import StringIO
 import thread
-from ZPublisher.HTTPResponse import HTTPResponse, end_of_header_search
+from ZPublisher.HTTPResponse import HTTPResponse
 from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
@@ -140,21 +140,23 @@ class ZServerHTTPResponse(HTTPResponse):
                 else:
                     c='text/plain'
                 self.setHeader('content-type',c)
-            else:
-                isHTML = string.split(headers.get('content-type', ''),
-                                      ';')[0] == 'text/html'
 
-            if isHTML and end_of_header_search(self.body) < 0:
-                lhtml=html_search(body)
-                if lhtml >= 0:
-                    lhtml=lhtml+6
-                    body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
-                elif contHTML:
-                    body='<html><head></head>\n' + body
-                else:
-                    body='<html><head></head>\n' + body + '\n</html>\n'
-                self.setBody(body)
-                body=self.body
+            # Don't try to fix user HTML
+
+            #else:
+            #    isHTML = string.split(headers.get('content-type', ''),
+            #                          ';')[0] == 'text/html'
+            #if isHTML and end_of_header_search(self.body) < 0:
+            #    lhtml=html_search(body)
+            #    if lhtml >= 0:
+            #        lhtml=lhtml+6
+            #        body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
+            #    elif contHTML:
+            #        body='<html><head></head>\n' + body
+            #    else:
+            #        body='<html><head></head>\n' + body + '\n</html>\n'
+            #    self.setBody(body)
+            #    body=self.body
 
         # set 204 (no content) status if 200 and response is empty
         # and not streaming
