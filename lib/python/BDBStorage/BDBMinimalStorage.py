@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -15,20 +15,19 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.24 $'[-2:][0]
+__version__ = '$Revision: 1.25 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
-from BDBStorage import db
+from BDBStorage import db, ZERO
 from BerkeleyBase import BerkeleyBase, PackStop, _WorkThread
 
 ABORT = 'A'
 COMMIT = 'C'
 PRESENT = 'X'
-ZERO = '\0'*8
 
 try:
     True, False
@@ -78,6 +77,13 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         #     no pending entry.  It is a database invariant that if the
         #     pending table is empty, the oids table must also be empty.
         #
+        # info -- {key -> value}
+        #     This table contains storage metadata information.  The keys and
+        #     values are simple strings of variable length.   Here are the
+        #     valid keys:
+        #
+        #         version - the version of the database (reserved for ZODB4)
+        #
         # packmark -- [oid]
         #     Every object reachable from the root during a classic pack
         #     operation will have its oid present in this table.
@@ -89,6 +95,8 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         #     references exist, such that the objects can be completely packed
         #     away.
         #
+        self._packing = False
+        self._info = self._setupDB('info')
         self._serials = self._setupDB('serials', db.DB_DUP)
         self._pickles = self._setupDB('pickles')
         self._refcounts = self._setupDB('refcounts')
@@ -169,7 +177,15 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
                     soid, stid = srec
                     if soid <> oid:
                         break
-                    if stid <> tid:
+                    if stid == tid:
+                        # This is the current revision of the object, so
+                        # increment the refcounts of all referents
+                        data = self._pickles.get(oid+stid, txn=txn)
+                        assert data is not None
+                        self._update(deltas, data, 1)
+                    else:
+                        # This is the previous revision of the object, so
+                        # decref its referents and clean up its pickles.
                         cs.delete()
                         data = self._pickles.get(oid+stid, txn=txn)
                         assert data is not None
@@ -187,8 +203,16 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
             if co: co.close()
             if cs: cs.close()
         # We're done with this table
-        self._oids.truncate(txn)
         self._pending.truncate(txn)
+        # If we're in the middle of a pack, we need to add to the packmark
+        # table any objects that were modified in this transaction.
+        # Otherwise, there's a race condition where mark might have happened,
+        # then the object is added, then sweep runs, deleting the object
+        # created in the interrim.
+        if self._packing:
+            for oid in self._oids.keys():
+                self._packmark.put(oid, PRESENT, txn=txn)
+        self._oids.truncate(txn)
         # Now, to finish up, we need apply the refcount deltas to the
         # refcounts table, and do recursive collection of all refcount == 0
         # objects.
@@ -350,6 +374,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
+        self._packing = True
         try:
             # We don't wrap this in _withtxn() because we're going to do the
             # operation across several Berkeley transactions, which allows
@@ -360,6 +385,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
             # collect object revisions
             self._dopack()
         finally:
+            self._packing = False
             self._packlock.release()
         self.log('classic pack finished')
 
