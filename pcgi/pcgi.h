@@ -250,7 +250,7 @@ long pcgiWriteSocket(pcgi_socket, const char *, long);
         int val; \
         struct semid_ds *buf; \
         ushort *array; \
-    };
+    } arg;
 #endif
 
 #define PCGI_H  1
