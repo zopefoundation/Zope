@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.36 1998/02/23 14:41:26 jim Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: DA.py,v 1.37 1998/03/10 21:18:03 jim Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -259,6 +259,7 @@ class DA(
     def connected(self):
 	return getattr(getattr(self, self.connection_id), 'connected')()
 
+ListType=type([])
 class Traverse(ExtensionClass.Base):
     """Helper class for 'traversing' searches during URL traversal
     """
@@ -275,8 +276,18 @@ class Traverse(ExtensionClass.Base):
 	da=self.__dict__['_da']
 	args=self._args
 	if name:
+	    if args.has_key(name):
+		v=args[name]
+		if type(v) is not ListType: v=[v]
+		v.append(key)
+		key=v
+
 	    args[name]=key
-	    return self.__class__(da, args)
+
+	    if len(args) < len(da._arg): 	    
+		return self.__class__(da, args)
+	    key=self # "consume" key
+
 	elif da._arg.has_key(key): return self.__class__(da, args, key)
 
 	results=da(args)
@@ -286,6 +297,7 @@ class Traverse(ExtensionClass.Base):
 		except: raise KeyError, key
 	else: raise KeyError, key
 	r=self._r=results[0].__of__(da)
+	if key is self: return r
 
 	if hasattr(r,'__bobo_traverse__'):
 	    try: return r.__bobo_traverse__(REQUEST, key)
@@ -343,6 +355,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.37  1998/03/10 21:18:03  jim
+# Traversal not stops when all arguments have been given.
+#
 # Revision 1.36  1998/02/23 14:41:26  jim
 # Added code to remove module from cache on reload.
 #
