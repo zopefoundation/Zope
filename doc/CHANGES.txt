@@ -23,3 +23,10 @@ Zope changes
         - Added new BASEPATHn and URLPATHn variables in the REQUEST
           object, and changed Zope core DTML files to use BASEPATH1
           instead of SCRIPT_NAME.
+
+        - Added new getId() method to SimpleItem.Item. This should 
+          now be used instead of referencing 'object.id' directly, 
+          as it is guaranteed to always be a method and to always 
+          return the right thing regardless of how the id of the 
+          object is stored internally.
+
