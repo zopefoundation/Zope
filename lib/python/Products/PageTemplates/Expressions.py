@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -108,7 +108,7 @@ def getEngine():
 def installHandlers(engine):
     reg = engine.registerType
     pe = PathExpr
-    for pt in ('standard', 'path'):
+    for pt in ('standard', 'path', 'exists'):
         reg(pt, pe)
     reg('string', StringExpr)
     reg('python', PythonExpr)
@@ -161,11 +161,7 @@ def render(ob, ns):
                     raise
     return ob
 
-path_modifiers = {'if': 0, 'exists': 0, 'nocall':0}
-
 class PathExpr:
-    _call_name = ''
-    
     def __init__(self, name, expr, engine):
         self._s = expr
         self._name = name
@@ -173,22 +169,9 @@ class PathExpr:
 
     def _prepPath(self, path):
         path = split(strip(path), '/')
-        front = path.pop(0)
-        fronts = split(replace(replace(front, '(', '( '), ')', ' ) '))
-        base = fronts.pop()
+        base = path.pop(0)
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
-        # Parse path modifiers
-        modifiers = path_modifiers.copy()
-        if fronts:
-            if len(fronts) < 2 or (fronts.pop(0) != '(' or
-                                   fronts.pop()  != ')'):
-                raise CompilerError, 'Invalid path base "%s"' % front
-            for modifier in fronts:
-                if not modifiers.has_key(modifier):
-                    raise CompilerError, ('Unknown path modifier "%s"'
-                                          % modifier)
-                modifiers[modifier] = 1
         # Parse path
         dp = []
         for i in range(len(path)):
@@ -196,7 +179,7 @@ class PathExpr:
             if e[:1] == '?' and _valid_name(e[1:]):
                 dp.append((i, e[1:]))
         dp.reverse()
-        return (base, path, dp), modifiers
+        return base, path, dp
 
     def _eval(self, (base, path, dp), econtext):
         path = list(path) # Copy!
@@ -225,30 +208,18 @@ class PathExpr:
             return Undefined(self._s, sys.exc_info())
 
     def __call__(self, econtext):
-        for pathinfo, modifiers in self._paths:
+        for pathinfo in self._paths:
             ob = self._eval(pathinfo, econtext)
-            mod = modifiers.get
+            exists = not isinstance(ob, Undefined)
             
-            if isinstance(ob, Undefined):
-                # This path is Undefined, so skip to the next.
-                if mod('exists'):
-                    if mod('if'):
-                        return Default
-                    else:
-                        return 0
-                continue            
-            if mod('exists') and not mod('if'):
-                # This path is defined, and that's all we wanted to know.
-                return 1
-            if not mod('nocall'):
-                # Render the object, unless explicitly prevented.
-                ob = render(ob, econtext.contexts)
-            if mod('if') and not mod('exists') and not ob:
-                # Skip the object if it is false.
-                continue
-            return ob
-        # We ran out of paths to test, so return the last value.
-        return ob
+            if exists:
+                # We're done
+                break
+        if self._name == 'exists':
+            # All we wanted to know is whether one of the paths exist.
+            return exists
+        # Return the rendered object
+        return render(ob, econtext.contexts)
 
     def __str__(self):
         return '%s expression "%s"' % (self._name, self._s)

@@ -10,12 +10,6 @@ class ExpressionTests(unittest.TestCase):
         e = Expressions.getEngine()
         for p in ('x', 'x/y', 'x/y/z'):
             e.compile(p)
-            for m in range(2 ** 3):
-                mods = ''
-                if m & 1: mods = 'if'
-                if m & 2: mods = mods + ' exists'
-                if m & 4: mods = mods + ' nocall'
-                e.compile('(%s) %s' % (mods, p))
         e.compile('path:a|b|c/d/e')
         e.compile('string:Fred')
         e.compile('string:A$B')
