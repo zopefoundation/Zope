@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -171,6 +171,8 @@ safebin['hasattr'] = __careful_hasattr__
 def __careful_filter__(f, seq, skip_unauthorized=0):
     if type(seq) is type(''):
         return filter(f, seq)
+    if f is None:
+        def f(x): return x
     v = getSecurityManager().validate
     result = []
     a = result.append
