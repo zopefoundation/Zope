@@ -316,7 +316,7 @@ class SessionDataManagerTraverser(NameCaller):
         sdm = self._sessionDataManager.__of__(container)
         # Yank our session & stuff into request
         try:
-            session = sdm.getSessionData()
+            session = sdm.getSessionData
             self._v_errors = 0
         except:
             errors = getattr(self,"_v_errors", 0)
@@ -329,6 +329,6 @@ class SessionDataManagerTraverser(NameCaller):
             self._v_errors = errors + 1
             return    # Throw our hands up but dont fail 
         if self._requestSessionName is not None:
-            request[self._requestSessionName] = session
+            request.set_lazy(self._requestSessionName, session)
 
         NameCaller.__call__(self, container, request)
