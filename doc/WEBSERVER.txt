@@ -161,7 +161,7 @@ Zope authentication with existing web servers
     the flag -DSECURITY_HOLE_PASS_AUTHORIZATION when compiling the server,
     the resulting Apache binary will allow authorization headers to pass
     through to CGI programs and you can avoid using the Rewrite rules
-    described above. Note that this
+    described above.
 
 
   Allowing your server to handle authentication itself
