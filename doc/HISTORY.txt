@@ -1,8 +1,966 @@
-Zope history
+Zope History
 
   This file contains change information for previous versions of
   Zope. Change information for the current release can be found
   in the file CHANGES.txt.
+
+    Zope 2.3.2
+
+      Bugs accidentally fixed :)
+
+        - Fixed missing html_quote attribute inside some DTML methods
+                  (Collector #2170)
+
+        - Fixed logging output to the compatible with the Common Logfile
+          Format specs (Collector #2188)
+
+    Zope 2.3.2 beta 2
+
+      Bugs fixed
+
+        - Fixed Catalog "object does not support item deletion" bug.
+
+    Zope 2.3.2 beta 1
+
+      Bugs Fixed
+
+        - Catalog field index bug fixed.
+
+        - Fixed several places where filesystem paths were assembled
+          in a non-portable way.
+
+        - Fixed some places in SimpleItem that assumed that the object
+          was an Acquirer.
+
+        - Fixed layout problem in StandardCacheManagers/dtml/propsRCM.dtml
+          (Collector #2152)
+
+        - Fix bug in AcceleratedHTTPCacheManager. Sended HTTP headers
+          were depending on locale settings (Collector #2142)
+        
+        - GoLIVE is unable to handle some empty properties send from 
+          the Zope's WebDAV server. (getlastmodified is no more send 
+          when they are not available for an object)
+          (Collector #2150)
+
+        - added globbing support for the FTP server
+ 
+        - added support for fetching recursive listings from the FTP server
+          (needed by ncftp)
+
+        - fixed handling of broken objects in the WebDAV server
+         
+        - An ambiguous timezone alias (CDT) was removed from DateTime.
+
+        - It was not possible to pass 'class=...' to the tag() method 
+          of Image objects because 'class' is a Python reserved word. 
+          Image.tag() now accepts an optional 'css_class' argument 
+          that is turned into a 'class' attribute on the resulting tag 
+          to work around this.
+
+        - Fixed various places where the right tabs were not highlighted 
+          after form submissions.
+
+        - The code that produces the data for the security settings 
+          form included a misleading default ('Manager') that could 
+          make it looks as though Manager had a permission in a 
+          subobject when that permission had actually been denied 
+          in a higher level object. This only affected the form 
+          generated, not the actual security settings in effect.
+
+        - The textarea resizing buttons for DTML objects and scripts 
+          were not preserving work done in the text area during the 
+          resize.
+
+        - Some changes were made to the implemenation of User.allowed(), 
+          which will make it less expensive to do local role matching 
+          and also resolves an issue noted in the 
+          UserProgrammableSecurityObjects proposal on dev.zope.org.
+
+        - A problem in the bytecode munging done by Python scripts 
+          that could cause a core dump was fixed.
+
+    Zope 2.3.1
+
+      Bugs Fixed
+
+        - Fixed catalog length error bug.
+
+        - Fixed textindex search queries with parenthesis (which haven't
+          worked since at least 2.2.4).
+
+        - Added logic to use the value of 'textindex_operator' as
+          passed in the request to determine which query operator to
+          use (and, near, andnot, or).  Valid values to pass in to
+          textindex_operator are 'and', 'or', 'near', and 'andnot'
+          (capitalization is ignored).  This is a near-term workaround
+          for the inability to specify a default text index query
+          operator on a per-index basis.  It provides the ability to
+          override the currently module-defined default 'Or' operator
+          for textindexes on a per-search basis.
+
+          An example of the utility of textindex_operator used with a
+          ZCatalog instance:
+
+          zcatalog.searchResults(atextindex='foo', textindex_operator='and')
+
+        - The import machinery did not correctly find import files located
+          in SOFTWARE_HOME/import if SOFTWARE_HOME / INSTANCE_HOME setups 
+          were in use.
+
+	- The default view for "broken" objects was broken :)
+
+        - The FTP server now provides for more informative error handling
+          through a setMessage() method on the ftp response object (thanks
+          to Richard Jones).
+
+        - The title of HTML help files is now parsed out and used by the 
+          help engine (thanks to Richard Jones).
+
+        - Objects wrapped with Explicit acquisition wrappers were not 
+          correctly handling the __nonzero__ protocol (as well as other
+          numeric protocols).
+
+	- A bug in the sendmail tag that could cause "len of unsized object" 
+          errors has been fixed.
+
+	- Some bits of DateTime parsing were not raising the same errors
+          claimed in the documentation.
+
+        - Handling of HTTP "Destination" headers for WebDAV MOVE and COPY 
+          was not tolerant of complete URLs (including scheme, server, etc.)
+
+        - Keyword indexes generated spurious error logs when objects
+          without keywords were added.
+
+	- Fixed a memory error in the new BTree buckets that surfaced 
+          during testing on ia64.
+
+        - Fixed a multi-arg append() call in the ClassicDocumentClass
+          in StructuredText.
+
+    Zope 2.3.1 beta 3
+
+      Bugs Fixed
+
+        - ImageFile objects were not using os.path.join to build 
+          the local path to an image file, which caused oddities
+          on win32.
+
+        - Some missing casts in Splitter.c prevented the splitter 
+          from properly working with some international characters.
+
+        - Fixed documentation of dtml-var tag. Improved discussion of
+          entity syntax and fmt and url attributes.
+
+        - Fixed manage_convertBTrees method of ZCatalogs (this method was
+          failing due to a missed copying of the length value, preventing
+          Catalogs from showing their "old" items once converted).
+
+        - Changed the presentation of last-modified dates in ZMI listings 
+          to an ISO format that is a bit shorter and a better common format.
+
+        - Added a patch to load_site.py to handle entity references.
+
+        - Added a patch to load_site.py to use the new dtml syntax when 
+          adding header and footer lines.
+
+        - Handling of the __nonzero__ protocol by Acquisition wrappers 
+          was fixed.
+
+    Zope 2.3.1 beta 2
+
+      Bugs Fixed
+
+        - Fixed formatting bugs in the DTML reference. Also added a
+          note to the dtml-tree tag reference page explaining the
+          leaves attribute better.
+
+        - Fixed broken Image and File downloads when using an Apache server
+          set up to cache such data. In certain circumstances a
+          content-length of 0 would be sent, which made Internet Explorer
+          not read any more than that, resulting in broken images and
+          downloads.
+
+        - Fixed a doc string display bug in API help topics. Also
+          slightly improved the display of help topics which include
+          more than one class.
+
+        - Fixed inaccuracies in 'dtml-in' DTML reference help
+          topic. (Collector #1972)
+
+        - Merged a bug fix that was missed in the logging call when 
+          an object that is not in a Text Index tries to unindex itself.
+
+        - Removed a duplicate list item from the copyright screen.
+
+        - Fixed a bug in the docstring of DemoStorage.py
+
+        - Added ZPL to ZPublisher/BeforeTraverse.py
+
+        - The tabs behaved oddly in the "database management" part of 
+          the control panel.
+
+        - The icon for Python script objects has been updated. Thanks
+          to Chris Withers for sending it in.
+
+        - Added an entry to doc/FAQ.txt about the "checksum error" that 
+          some vendor-supplied tar implementations (Solaris) produce due 
+          to long pathnames in an archive produced by GNU tar.
+
+        - Using the 'scale' argument to the 'tag' method of an Image object
+          could produce invalid height and width values in the resulting 
+          HTML tag (floating point values).
+
+        - The tab corner .gifs for inactive tabs were not transparent in 
+          places where they should have been.
+
+        - Corrected mistakes in the logic that retries the request when
+          a ConflictError occurs.  The behavior was a little erratic.
+
+        - The problems ('attribute error: commit_sub') that some people 
+          were having with certain kinds of objects (like database 
+          connections) not playing correctly with subtransactions have 
+          been fixed.
+
+        - Applied changes from Hotfix_2001-02-23.  Some ZClass methods
+          weren't protected properly and the ObjectManager,
+          PropertyManager, and PropertySheets classes were returning
+          mutable objects that could be exploited by restricted code.
+
+        - A malformed html option tag made the add list broken for 
+          Mozilla.
+
+        - The permission declaration for 'manage_main' on ZSQLMethod
+          objects was missing, making editing effectively only available 
+          to the Manager role (the Change Database Methods permission had
+          no effect).
+
+        - A missing '/' at the end of the contents form action url caused 
+          some clients to behave strangely.
+
+        - A long-standing problem with traversal of object names with spaces 
+          in them from WebDAV tools has been resolved. Part of the DAV 
+          machinery was in some cases double-url-quoting DAV:href values.
+
+        - A long-languishing patch from Dieter Maurer to fix batching info
+          in dtml-in has been applied.
+
+        - z2.py failed to correctly pass an address:port specification for 
+          the ZSYSLOG_SERVER environment variable to the medusa syslog logger.
+
+        - The value passed for the ZSYSLOG environment variable was not being
+          used in the same way by logging machinery in ZServer and the Zope 
+          core. The file in doc/LOGGING.txt has been updated to reflect that 
+          the value passed for ZSYSLOG should be the path to the UNIX domain
+          socket to log to (usually '/dev/log').
+
+        - Using the strftime method of DateTime objects (often via the 
+          fmt attribute of a dtml tag) produced incorrect results for 
+          DateTime objects outside of the range of the native C strftime
+          implementation. A change has been made so that an exception is
+          raised in those situations rather than silently return the 
+          wrong answer.
+
+        - Corrected the aq_inContextOf() method so it always follows
+          containment wrappers.
+
+        - The headers attribute of FileUpload objects did not have any
+          security assertions, which meant that it could not be accessed
+          from DTML as advertised.
+
+        - A number of Collector patches to fix DateTime issues (mostly 
+          regarding timezone handling) were applied.
+
+        - Key errors were returned from catalog searches due to bugs
+          in unindexing objects.
+
+        - Objects that should have been included in search results
+          were excluded do to bugs in indexing objects.
+
+        - The database grew too fast when objects were routinely
+          indexed one at a time by the catalog. This was due to
+          inefficiencies in the underlying BTree implementation that
+          caused too many objects to be changed when indexing
+          incrementally. In addition, the set implementation, used for
+          keeping track of documents in field indexes, when the number
+          of documents per key was large, caused large database updates
+          when a document was added or removed, because the entire set
+          was stored in a single database record.
+
+          A new BTree and set implementation has been
+          provided to address these problems.
+
+        - The catalog is the most common source of conflict errors due
+          to a number of "hot spots" in the implementation and due to
+          the large number of objects that are typically updated when
+          indexing.  The hot spots have now been removed and the
+          number of objects modified when indexing has been
+          dramatically reduced. In addition, conflicts detected during
+          transaction commit can now usually be resolved using new
+          conflict-resolution protocols and conflict-resolution
+          support added to the catalog. These changes will not avoid
+          all conflicts, but will reduce conflicts significantly in
+          many cases.
+
+          Specific information on how to update existing Catalogs to take 
+          advantage of the data structures available can be found at:
+
+          http://www.zope.org/Members/mcdonc/HowTos/UpgradeToNewCatalog
+
+
+    Zope 2.3.1 beta 1
+
+      Bugs Fixed
+
+        - PUT on NullResource is now a public method that checks
+          whether the user can create the type of object returned by
+          a PUT_Factory.
+
+        - dtml-in sorting using unhashable types (like lists) has been
+          fixed.
+
+        - A new environment variable "FORCE_PRODUCT_LOAD" when set on
+          ZEO clients (clients which also define the "ZEO_CLIENT" env
+          var) causes product loading to be "forced" by that ZEO
+          client.  Formerly, if all ZEO clients had the "ZEO_CLIENT"
+          environment variable set, it was impossible to force
+          a product load without undefining the "ZEO_CLIENT" env var
+          on one of the ZEO clients.  Now, if one of the ZEO clients has
+          both the ZEO_CLIENT env var and the FORCE_PRODUCT_LOAD env
+          var defined, that client will push products into the ZODB.  It
+          is advisable to only set FORCE_PRODUCT_LOAD on one ZEO client
+          if it's set at all.
+
+        - A typo in CopySupport caused the wrong http error to be 
+          raised in manage_renameObjects (500 Server Error instead 
+          of Bad Request).
+
+        - A bit of PermissionMapping logic was calling manage_access
+          with too many arguments, causing an error when trying to 
+          make changes on the Security tab of ZClasses.
+
+        - The Catalog no longers throws an AttributeError if you
+          pass it a 'sort_on' parameter that isn't useful. Instead,
+          it throws a ValueError with an instructional string.
+
+        - An error in the edit form for Permission objects made it 
+          impossible to edit Permission objects in Products through
+          the Web.
+
+        - The script source in Python scripts was not being html
+          quoted on the Web edit form.
+
+        - Fixed a bug in Mount.py that made it difficult to see the
+          reason connections failed.
+
+        - Fixed a bug which made it impossible to cut and paste ZCatalog
+          instances.
+
+        - Processes spawned from a Zope process could have a bad effect 
+          if one tried to kill the Zope process while a spawned process 
+          was still active. Because the spawned process had inherited 
+          the listening sockets of the servers across the fork(), it 
+          was not possible to restart the Zope instance until the spawned 
+          process had died and release the server sockets :(
+
+        - Added a "tempfile.py" module to lib/python.  This tempfile module
+          is r1.27 from the Python CVS MAIN branch.  It fixes two race
+          condition bugs that could appear under heavy load.  This module
+          will be used by Zope instead of the tempfile.py that ships with
+          the Python source or with a Zope binary distribution.  It is
+          probably unnecessary under Python 2.0+, but won't hurt.
+
+        - Removed lib/python/App/manage.dtml, which wasn't removed when
+          dtml files were moved to a separate directory.
+
+        - Fixed two mistakes in the RAM cache cleanup code.
+
+        - Added code to handle a failed BeforeTraverse hook gracefully.
+
+        - Added help system docs for Script (Python) instance management
+          screens.
+
+        - Checked in Stephen Purcell's PyUnit 1.3, replacing PyUnit 1.2.
+
+        - Hardened ZMI contents view against subobjects w/ flaky
+          'get_size' (Collector #1900).
+
+        - Corrected a bug that could leave a cacheable object associated
+          with the wrong cache manager after switching cache managers.
+
+        - Changed the html title tag in the manage frameset to use BASE0
+          instead of SERVER_NAME, providing more useful info for virtual
+          hosted sites (patch from Chris Withers).
+
+        - The highlighted active tab wasn't correct for some security 
+          views.
+
+        - Changed undo error message wording in FileStorage, DemoStorage,
+          and POSException.  Confusing error reports that claim a
+          transaction could not be undone because the transaction was
+          "undoable" now claim that the transaction was "non-undoable".
+
+        - Some conflict errors failed to properly quote object ids, 
+          making the ids unreadable and introducting binary text into
+          output.
+
+        - Changed Product init/list code to accept all of "VERSION.TXT",
+          "VERSION.txt", and "version.txt" as the version.txt file for
+          the Product.  Additionally accept any of "README.txt",
+          "README.TXT", or "readme.txt" as the readme filename.
+
+        - When the root index_html was missing, an inappropriate error
+          was displayed to a visitor when viewing an object that didn't
+          have its own index_html.  (Collector 1954, thanks to Chris
+          Withers for the bugreport).        
+
+        - A bug prevented unchecking the "cache anonymous connections
+          only" checkbox for Accelerated HTTP Cache Managers.
+
+        - Some code that tried to workaround a DAV client bug dealing 
+          with ports in Host headers caused problems for virtual hosting
+          setups. That code has been disabled until we decide that we 
+          care enough about the buggy client to work around it in a 
+          better way.
+
+        - The isCurrent(Month|Day|Hour|Minute) methods of DateTime objects
+          returned incorrect answers. Thanks to Casey Duncan for the patch.
+
+        - The "help" links did not work if javascript was disabled in the 
+          client.
+
+        - ZCatalog getobject now uses unrestrictedTraverse during
+          getobject instead of restrictedTraverse.  This emulates Zope
+          2.2 behavior.
+
+        - A bug in the HelpTopic implementation for STX help topics caused 
+          them to be inaccessible unless Anonymous Users had the View 
+          permission.
+
+        - Structured Text did not correctly recognize CRLFs generated by 
+          windows editors as paragraph dividers.
+
+        - A bit of code that ran after an import where ZClass objects 
+          were added was removed. It was designed to fixup the ZClass
+          registry after import to resolve ZClass dependencies that 
+          could get broken if a system were moved in separate imports. 
+          It turned out to be expensive under ZEO, and the benefit is 
+          not that compelling (if a failed dependency does get 
+          introduced, it will be spotted at the next startup).
+
+        - The month name recorded in Z2.log was affected by the current 
+          locale setting, which caused problems for various logfile 
+          analysis tools.
+
+        - Product object in the control panel had a useless View tab 
+          by an accident of inheritance.
+
+        - Manual restarts and shutdowns weren't logged.
+   
+        - Unix: If processes were restarted too frequently, the daemon
+          process incorrectly inferer a startup problem and shut
+          itself down.
+
+        - Unix: On restart, the watcher daemon restarted as well, causing
+          the watchers process id to change.
+
+        - The method for enabling modules for use with Python scripts was 
+          not documented and a bit harder than it needed to be. A helper
+          function has been added in a Utility.py in the PythonScripts
+          product to make this easier and the process is documented in 
+          the README.txt in the PythonScripts package.
+
+        - Fixed OFS.CopySupport's _verifyObjectPaste to utilize the
+          permission stored in the metatype registry, if available
+          (Collector #1975).
+
+        - In certain situations using restrictedTraverse failed with the
+          wrong error if called on the application object with the name
+          of a nonexistent object.
+
+        - Subtransactions couldn't be used if some data managers
+          didn't support subtransactions. This was especially painful
+          when using RDBMS user authentication in combination with
+          large image or file uploads or catalog rebuilding, which use
+          subtransactions.
+
+          Now allow subtransaction commit (but not abort) even when some
+          participating data managers don't understand subtransactions.
+
+      New Features
+
+        - The API for cataloging objects changed slightly:
+
+          o If the object being cataloged has a 'getPhysicalPath'
+            method, as Zope objects typically (always) do, then it is
+            no longer necessary to pass a unique ID to the catalog
+            when catalling the 'catalog_object' method. It is
+            recommended to not pass a unique id and let the catalog
+            figure out the unique id on it's own.
+
+          o If a unique id is passed to the catalog 'catalog_object'
+            method, it **must** be a string. 
+
+    Zope 2.3.0
+
+      Bugs Fixed
+
+        - The authentication machinery now correctly returns a 400
+          (Bad Request) if an invalid authentication token (bad 
+          base64 encoding) is sent by a client.
+
+        - ZClasses with very minimal base classes could end up without 
+          a '_setId' method, which createInObjectManager expects.
+
+        - Fixed a bug that caused the ExtensionClass __call_method__
+          hook to fail when used with unbound C methods.
+
+        - Fixed a bug in the management interface which caused
+          the "Paste" button to not show up after a copy or cut
+          operation on the first showing of manage_main.
+
+        - Final lexicon optimizations that provide additional
+          performance over previous releases.  In addition, the number
+          of objects that have to be updated is frequently reduced.
+
+        - Merge code for Catalog Text indexes has been integrated.
+          This will now merge the changes in, rather than replacing
+          them.  This should reduce the number of objects that has
+          to be updated.  In addition, when nothing has changed, the
+          object's indexes won't be touched, saving enormous amounts
+          of space for some applications.
+
+        - Flow of the Catalog management screens cleaned up so that
+          pages are refreshed correctly.  Buttons on the Advanced
+          tab refresh to the Advanced tab now.
+
+        - Further management interface cleanup of the Lexicon to
+          bring in line with the normal ZMI.
+
+    Zope 2.3.0 beta 3
+
+      Bugs Fixed
+
+        - The import / export button did not show up if a folder was
+          empty.
+
+        - A problem in acquisition wrapping of users obtained though
+          the SecurityManager caused certain ownership operations to
+          fail (this manifested itself as a report about broken DAV
+          MOVE operations).
+
+        - The Zope management screens no longer try to set a default
+          charset with the content-type.
+
+        - Certain security related operations were failing due to 
+          argument mismatch errors (too many arguments).
+
+        - Passing unicode data to html_quote could cause problems 
+          since html_quote was trying to screen out two characters
+          that many browsers are willing to accept as html special
+          characters (to prevent "cross-site scripting" attacks). 
+          This has been moved out of html_quote and into the RESPONSE
+          object, where the chars will be quoted only if no charset 
+          is defined for the content-type or the charset is an alias
+          for Latin-1.
+
+        - Rename via FTP was not supported.
+
+        - Changed index_html, standard_html_header, standard_html_footer,
+          and standard_error_message in Data.fs.in to use "new" DTML syntax
+          (as opposed to SSI-style syntax).
+
+        - meta_type of all DTML Methods in Data.fs.in object manager
+          "_objects" lists is now "DTML Method".  It had been "Document",
+          which caused inaccurate superValues results if 'spec'
+          was used.
+
+        - Make ZClasses navigable to FTP/WebDAV; implement 'PUT_factory'
+          hook to create PythonScripts (for MIMEtype 'text/x-python')
+          and DTMLMethods (for other 'text' MIMEtypes) (Collector #998).
+
+        - Calling manage_addProperty with a list value and a type of 'lines' 
+          caused a string representation of the list to be stored.
+
+        - Submitting the proxy roles form without selecting any roles to
+          be used as proxy roles caused objects with proxy role support to 
+          silently become unexecutable (have effectively empty proxy roles)
+          rather than raising an error. The proxy role api now requires that
+          at least one role be passed in or an error will be raised.
+
+        - Mechanisms in the underbelly of the Catalog and Globbing
+          Lexicon (which is the default for all new Catalogs) has been
+          overhauled given substantial performance increases.  On
+          simple queries, performance should double (or more) in many
+          situations, whereas with globbed queries it may increase by
+          substantially more.
+
+        - A method in SQLMethod objects had been removed but the reference
+          to it in __ac_permissions__ had not, which caused failure on 
+          attempting to set permissions on SQLMethods.
+
+        - A bit of exception handing in the dtml-in tag implementation was 
+          too general and could hide subsequent rendering exceptions (thanks 
+          to Richard Jones for the patch).
+
+        - Cacheability was not fully enabled for DTML Documents.
+
+    Zope 2.3.0 beta 2
+
+      Bugs Fixed
+
+        - Changed management style sheet to explicitly set the http 
+          content-type to avoid a rendering problem on resize in 
+          NS browsers.
+
+        - Data.fs.in index_html now shows zope_quick_start instead
+          of old, inaccurate content.
+
+        - Changed index_html, standard_html_header, standard_html_footer,
+          and standard_error_message in Data.fs.in to use "new" DTML syntax
+          (as opposed to SSI-style syntax).
+
+        - The way that the default management tree view imposed sorting 
+          in its tree tag dtml made it hard for custom objects to provide
+          a sorting that would be more appropriate for the custom object. 
+          The management tree view now preserves whatever ordering is 
+          returned from tpValues. The default tpValues implementation in
+          the ObjectManager class sorts by id by default.
+
+        - Disallowed object IDs that start with "aq_".
+
+        - Changed the default support for "domain authentication mode" 
+          in UserFolder to be disabled by default. Domain auth mode 
+          was implemented for a very specific case long ago and causes 
+          a lot of overhead for anonymous accesses that are needless 
+          for the 99% case. People who actually want domain auth mode 
+          turned on may call a new 'setDomainAuthenticationMode' method
+          to enable it if they wish.
+
+        - Changed the implementation of emergency_user to be backward 
+          compatible with the expectations of third-party user folders. 
+          Third party user folders should now work with Zope 2.3 without
+          modification.
+
+        - A bug in the search interface generation for ZCatalogs was 
+          fixed.
+
+        - An integrity check for the global product registry has been 
+          added at startup to mitigate registry consistency problems 
+          caused by things like missing base classes that cannot be 
+          detected by Zope (like removing a Product that another 
+          Product depends upon).  If a problem is detected, the global
+          registry is automatically rebuilt and the action is logged.
+
+        - A bug in the rendering of 'record' type form variables when
+          rendering a request object was fixed.
+
+        - A bug that cause setting of proxy roles for Python Scripts 
+          to fail was fixed.
+
+    Zope 2.3.0 beta 1
+
+      Features Added
+
+        - Added a hook that allows user folders to provide a logout
+          action.
+
+        - Added a browser preferences screen to allow people to 
+          tweak the management UI to their liking. For the folks who 
+          complained that they didn't like the new top frame, they 
+          can (among other things) turn it off from the browser 
+          preferences screen.
+
+        - Added Michel's new QuickStart material. I haven't quite 
+          decided whether the old QuickStart should go away or 
+          stay around as a source of examples.
+
+        - The logout function has been implemented in a fairly minimal 
+          way. We may try to make this nicer by final if we get time.
+
+        - The ZCatalog interface is now cleaned up and matches the new 
+          interface look and feel better. In addition some logical
+          reorganization was made to move things onto an Advanced tab.
+
+        - Result sets from the Catalog are now much Lazier, and will
+          do concatenation with eachother in a lazy fashion.  This was
+          suggested by Casey Duncan in Collector #1712.
+
+      Bugs Fixed
+
+        - Added a deprecated alias to UnrestrictedUser, Super, for use
+          by user folder products that depend on the old class name.
+
+        - Fixed path for management interface files used for
+          CatalogPathAwareness and Aqueduct.
+
+        - Fixed a NameError in HTTPRequest.
+
+        - Made manage_page_style.css correctly available to all.
+
+        - ZCatalog objects now show up in the Add List in the same
+          naming convention that was used for all other Z* objects.
+          This does *not* affect the meta_type that is actually used
+          for the object itself.
+
+        - (Collector #1835, 1820, 1826) Eliminated errors in both
+          Field and Keyword indexes where old keys might show up in
+          'uniqueValuesFor()' because of the way the data structures
+          were kept around.
+
+        - (Collector #1823)Eliminated situation where if the Catalog
+          did not have a metadata record for 'meta_type' the Cataloged
+          Objects view would be incorrect and list everything as a
+          'ZCatalog'. Now it simply lists it as 'Unknown'.
+
+        - (Collector #1844) On the brains returned from ZCatalog
+          queries, 'getObject()' now tries to resolve URLs as well as
+          paths.  This should catch more cases.
+
+        - Tags generated for ImageFile objects attempted to use 
+          title_or_id(), which is not defined for those objects.
+
+        - Mounting now fails gracefully in when getId() is not
+          available in the mounted object.
+
+    Zope 2.3.0 alpha 2
+
+      Features Added
+
+        - The install machinery for source release has been modified 
+          to allow Zope to build out of the box for Python 2.0. Note 
+          however, that Python 2.0 is still not officially supported. 
+          You may see quite a few warnings from the extension builder 
+          when compiling for Python 2.
+
+        - A new module, AccessControl.Permissions has been added to 
+          make it easier to use the new security assertion spelling. 
+          The new module provides consistent symbolic constants for 
+          the standard Zope permissions.
+
+        - Cache manager support added.  This allows site administrators
+          to ease the burden on their site in a very configurable
+          way.  It also provides an API for developers to follow when
+          experimenting with caching strategies.
+
+        - The ZPublisher 'method' form variable type has been 
+          deprecated in favor of 'action'. The behavior is the 
+          same, only the official (and documented in the Zope
+          book) name has changed. The 'method' name is still 
+          supported for backward compatibility.
+
+        - The 'objectIds' and 'objectValues' methods of ObjectManager
+          derived objects are no longer directly Web-accessible. This 
+          is a topic that has come up over and over on the lists. Some 
+          (xml-rpc, mostly) users may depend on this behavior - applications
+          that need access to this information remotely should be modified 
+          so that a Python Script or DTML Method can explicitly pass 
+          the data. 
+          
+        - The Image.tag() and ZopeAttributionButton methods now return an
+          image tag that is XHTML compatible; a space and a slash have been
+          added.
+
+        - SQLMethods can now be edited via FTP and WebDAV tools. Thanks to 
+          Anthony Baxter for his FTP support patches.
+
+        - The Catalog has been slightly overhauled to manage object
+          paths instead of URLs in its tables.  This should not cause
+          any backward compatability concern, but everyone upgrading
+          should read the web pages on the zope.org site at:
+          http://dev.zope.org/Wikis/DevSite/Projects/ZCatalogVirtualHostFix/UpgradeFAQ
+          this will provide information about how to upgrade and new
+          features on the result sets, like getObject and
+          getPath. These are very important.
+     
+        - SiteAccess 2.0 has been added, to enable virtual hosting.
+
+        - The StandardCacheManagers product has been added as a primary
+          product, making it easier to get started with caching.
+
+        - The class DTMLFile has been added alongside of HTMLFile.
+          It supports name bindings, ignores positional parameters,
+          and puts the container on top of the namespace by default.
+          Most HTMLFiles should work the same (or more securely) if
+          converted to a DTMLFile.  Most management interface methods
+          should be converted by the final release of 2.3.
+
+        - Added a variable called PUBLISHED to REQUEST.  From now on,
+          this variable should be used instead of PARENTS for user
+          validation.
+
+        - The inituser file is now read even when one user has been
+          created.  This provides a way to reset the password after
+          a new user installs Zope but ignores the generated password.
+
+        - ZCatalogs have a reduced number of management interface tabs.
+
+        - ZCatalog keyword and field indexes have been modified to use
+          a merge strategy when existing indexes are updated.  When an
+          existing object is indexed, the contents of field and
+          keyword indexes are merged with the changes detected between
+          the existing contents of the index and the new content.
+
+        - CatalogPathAware class added.  This will eventually replace
+          CatalogAware.
+
+        - The ManagementInterfaceQuickFix project was merged in. The 
+          Zope management interface has been tweaked in various ways 
+          to improve productivity and consistency and is now at least 
+          slightly less ugly :)
+
+      Bugs Fixed
+
+        - A misspelled function name which prevented the addition of
+          properties was corrected.
+
+        - Caused PropertySheets to restrict IDs the same way
+          ObjectManager does.
+
+        - (Collector #1586) Fixed situation where the Catalog would
+          attempt to loop over a bucket as if it were a list, which
+          won't work.  This was reported by Steve Alexander with a
+          patch. 
+
+        - Corrected local role computation (Hotfix 2000-12-15)
+
+        - The basic user folder implementation in User.py was changed
+          to use the Zope security policy machinery.  see
+          http://dev.zope.org/Wikis/DevSite/Proposals/
+          ChangeUserFoldersToUseSecurityPolicyAPI for details.
+
+        - Trying to cut or copy with no items selected now returns a 
+          nicer error message.
+
+        - A roles keyword argument was added to ZopeSecurityPolicy.validate
+          to enable callers to pass in roles as opposed to allowing the
+          machinery to figure it out for itself.
+
+        - Some product context initialization related to setting roles
+          was updated.
+
+    Zope 2.3.0 alpha 1
+    
+      Features Added
+
+        - Python Scripts are now part of the Zope core. Big whopping 
+          kudos to Evan Simpson for all of the work he has put into 
+          this! Having Python Scripts in the core will allow people 
+          to much more easily separate logic and presentation (and 
+          get that logic out of DTML!) More information and prototype 
+          documentation for Python Scripts can be found in the 
+          dev.zope.org project:
+
+          http://dev.zope.org/Wikis/DevSite/Projects/PythonMethods
+
+        - Added the __replaceable__ property support to ObjectManager.
+            This is currently documented only in the Wiki.
+
+        - Added unit tests for the DateTime module.
+
+        - Added new BASEPATHn and URLPATHn variables in the REQUEST
+          object, and changed Zope core DTML files to use BASEPATH1
+          instead of SCRIPT_NAME.
+
+        - Added new getId() method to SimpleItem.Item. This should 
+          now be used instead of referencing 'object.id' directly, 
+          as it is guaranteed to always be a method and to always 
+          return the right thing regardless of how the id of the 
+          object is stored internally.
+
+        - Improved Ownership controls. Now you simply choose whether
+          or not to take ownership of sub-objects when taking
+          ownership. There is no need to control implicit/explicit
+          ownership.
+
+        - Changed the Zope installation procedure so it is only
+          necessary to create one user account and that user is
+          stored in the ZODB. The user created at startup now is 
+          simply a normal intial "Manager", not the "superuser". 
+          It is no longer necessary to login, create an initial 
+          manager, logout and log back in! Woohoo!
+
+        - Implemented the "emergency user" concept, which is the new
+          name for what was called the superuser. The emergency user 
+          doesnt even exist now until you explicitly create it.
+        
+        - Added new "WebDAV source view" HTTP handler, enabled by new
+          '-W' (note uppercase) switch to z2.py.  This handler is *not*
+          enabled by default.
+
+        - Implemented "hookable PUT creation" (allows containers to
+          override webdav.NullResource's guess at the type of object
+          to create when PUT is done to an unknown ID).
+
+        - Added testrunner.py to the utilities directory. The testrunner 
+          is a basic utility for running PyUnit based unit tests. It can 
+          be used to run all tests found in the Zope tree, all test suites
+          in a given directory or in specific files. The testrunner will 
+          be used to ensure that all checked in tests pass before releases 
+          are made. For more information, see the docstring of the actual
+          testrunner.py module.
+
+        - The Interface scarecrow package has been checked in - more work
+          will likely be done on it before it goes into wide use. See 
+          Michel's "Zope Interfaces" project on dev.zope.org for details:
+
+          http://www.zope.org/Wikis/Interfaces/FrontPage
+
+        - PyUnit has been checked into the core. Along with the testrunner,
+          this provides enough infrastructure for us to incrementally begin 
+          accumulating (and running!) test suites for various parts of the 
+          Zope core.
+
+        - The new security assertion support has been checked in. For 
+          more information and an updated version of the "Zope security 
+          for developers" guide see the project on dev.zope.org:
+
+          http://dev.zope.org/Wikis/DevSite/Projects/DeclarativeSecurity
+
+
+      Bugs Fixed
+
+        - Removed some cruft in OFS/content_types.py (an old data
+          structure was being constructed but was going unused in
+          favor of a newer structure used in conjunction with the
+          mimetypes module).
+
+        - (Collector #1650)Where the underlying object does not define
+          its own '__cmp__()', comparisons of acquisition-wrapped
+          objects fall back to comparing the identities *of the
+          wrappers* .  Fixed to unwrap the object (both, if needed)
+          before comparing identities.
+
+        - (Collector #1687 Products which register base classes
+          for ZClasses typically defer creating them until product
+          registration;  the derived ZClass needs them to be available
+          immediately after import.  Deprecated
+          'ProductContext.registerZClass' and
+          'ProductContext.registerBaseClass' in favor of a new function,
+          'ZClasses.createZClassForBase' (because none of the machinery
+          needed a ProductContext instance anyway).
+
+        - (Collector #1355) Fixed overlapping HTTP POST requests in
+          ZServer which could have been corrupted. Thanks to Jeff
+          Ragsdale. 
+
+        - Undid a bug fix that caused the DateTime unit tests to fail.
+
+        - Removed the requirement that an "access" file exist.
+          "access" is now only needed to create an emergency user
+          account.
+
+        - Disabled the monitor port by default because, initially,
+          there is no emergency user, and thus no password that
+          can be used to protect the port.
+
+        - Secured the hole that was patched by Hotfix_2000-12-08.
+
+        - Disallowed object IDs that end with two underscores.
+
+        - Caused PropertyManager to restrict id's the same way
+          ObjectManager does.
 
     Zope 2.2.5
 
