@@ -232,7 +232,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         self._zclass_=copy._zclass_
 
         copy._zclass_propertysheets_class.__dict__.update(
-            self._zclass_propertysheets_class)
+            self._zclass_propertysheets_class.__dict__)
         get_transaction().register(
             copy._zclass_propertysheets_class)
         self._p_jar.exchange(self._zclass_propertysheets_class,
