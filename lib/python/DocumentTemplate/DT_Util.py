@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.11 1997/10/29 21:03:26 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.12 1997/10/29 21:30:24 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -119,6 +119,21 @@ def careful_getslice(seq, indexes, md):
 
     return v
 
+import new, string, math
+expr_globals=new.module('_')
+d=expr_globals.__dict__
+for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
+	     'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
+    d[name]=__builtins__[name]
+d['string']=string
+d['math']=math
+
+def test(cond, t, f):
+    if cond: return t
+    return f
+
+d['test']=test
+
 def name_param(params,tag='',expr=0):
     used=params.has_key
     if used(''):
@@ -136,6 +151,7 @@ def name_param(params,tag='',expr=0):
     elif expr and used('expr'):
 	name=params['expr']
 	expr=VSEval.Eval(name,
+			 globals={'__builtins__':{}, '_': expr_globals},
 			 __mul__=VSEval.careful_mul,
 			 __getattr__=careful_getattr,
 			 __getitem__=careful_getitem,
@@ -218,6 +234,9 @@ TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.12  1997/10/29 21:30:24  jim
+# Added "builtin" objects.
+#
 # Revision 1.11  1997/10/29 21:03:26  jim
 # *** empty log message ***
 #
