@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import re, sys, os, string, urllib, time, whrandom, cgi
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -128,6 +128,12 @@ class HTTPRequest(BaseRequest):
         r.retry_count=self.retry_count
         return r
 
+    def close(self):
+        # we want to clear the lazy dict here because BaseRequests don't have
+        # one.  Without this, there's the possibility of memory leaking
+        # after every request.
+        self._lazies = {}
+        BaseRequest.close(self)
 
     def setServerURL(self, protocol=None, hostname=None, port=None):
         """ Set the parts of generated URLs. """
