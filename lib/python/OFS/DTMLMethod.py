@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -169,6 +169,8 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     getSize=get_size
     
     def oldvalidate(self, inst, parent, name, value, md):
+        if name[:3]=='aq_' and name != 'aq_parent' and name != 'aq_explicit':
+            return 0
         if hasattr(value, '__roles__'):
             roles=value.__roles__
         elif inst is parent:

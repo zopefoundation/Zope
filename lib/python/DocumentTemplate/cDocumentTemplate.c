@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.21 1999/03/10 00:15:08 klm Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.22 1999/04/23 13:48:18 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -859,10 +859,18 @@ static PyObject *
 validate(PyObject *self, PyObject *args)
 {
   PyObject *inst, *parent, *name, *value, *md, *__roles__, *i, *p;
+  char *cname;
 
   /* def validate(self, inst, parent, name, value, md): */
   UNLESS(PyArg_ParseTuple(args,"OOOOO",&inst,&parent,&name,&value,&md))
     return NULL;
+
+  UNLESS(cname=PyString_AsString(name)) return NULL;
+  if (*cname=='a' && cname[1]=='q' && cname[2]=='_'
+      && strcmp(cname, "aq_explicit") && strcmp(cname, "aq_parent"))
+    /* We disallow names beginning with "aq_" unless they are
+       aq_parent or aq_explicit */
+    return PyInt_FromLong(0);
 
   /*
         if hasattr(value, '__roles__'): roles=value.__roles__
@@ -1006,7 +1014,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.21 $";
+  char *rev="$Revision: 1.22 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
