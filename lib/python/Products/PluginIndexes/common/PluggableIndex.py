@@ -67,6 +67,9 @@ class PluggableIndexInterface(Interface.Base):
     
     def numObjects():
         """Return the number of indexed objects"""
+
+    def indexSize():
+        """Return the size of the index in terms of distinct values"""
     
     def clear():
         """Empty the index"""

@@ -116,7 +116,7 @@ class TestCase( unittest.TestCase ):
 
         assert len( self._index ) == len( values )-1 #'abce' is duplicate
         assert len( self._index.referencedObjects() ) == len( values )
-        self.assertEqual(self._index.numObjects(), len( values )-1)
+        self.assertEqual(self._index.indexSize(), len( values )-1)
 
         assert self._index.getEntryForObject( 1234 ) is None
         assert ( self._index.getEntryForObject( 1234, self._marker )

@@ -217,6 +217,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         """Return number of unique words in the index"""
         return self.index.length()
 
+    def indexSize(self):
+        """Return the number of indexes objects """
+        return self.index.document_count()
+
     def clear(self):
         """reinitialize the index (but not the lexicon)"""
         try:

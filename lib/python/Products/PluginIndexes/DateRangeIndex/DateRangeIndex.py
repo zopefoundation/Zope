@@ -25,6 +25,7 @@ from OFS.SimpleItem import SimpleItem
 
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion
+import BTrees.Length
 
 from Globals import package_home, DTMLFile, InitializeClass
 from AccessControl import ClassSecurityInfo
@@ -136,6 +137,7 @@ class DateRangeIndex(UnIndex):
         self._since         = IOBTree()
         self._until         = IOBTree()
         self._unindex       = IOBTree() # 'datum' will be a tuple of date ints
+        self._length        = BTrees.Length.Length()
 
     #
     #   PluggableIndexInterface implementation (XXX inherit assertions?)
@@ -310,9 +312,12 @@ class DateRangeIndex(UnIndex):
     #
     security.declareProtected( VIEW_PERMISSION , 'numObjects' )
     def numObjects( self ):
-        """
-        """
+        """ """
         return len( self._unindex )
+
+    def indexSize(self):
+        """ """
+        return len(self)
 
     #
     #   Helper functions.

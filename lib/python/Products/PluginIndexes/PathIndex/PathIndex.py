@@ -113,7 +113,6 @@ class PathIndex(Persistent, SimpleItem):
         comps = filter(None, path.split('/'))
        
         if not self._unindex.has_key(docid):
-            self._migrate_length()
             self._length.change(1)
 
         for i in range(len(comps)):
@@ -146,7 +145,6 @@ class PathIndex(Persistent, SimpleItem):
                 LOG.error('Attempt to unindex document with id %s failed'
                           % docid)
 
-        self._migrate_length()
         self._length.change(-1)
         del self._unindex[docid]
 
@@ -200,14 +198,15 @@ class PathIndex(Persistent, SimpleItem):
             return results
 
     def numObjects(self):
-        """ return the number of indexed objects"""
-        self._migrate_length()
-        return self._length()
+        """ return the number distinct values """
+        return len(self._unindex)
 
-    def _migrate_length(self):
-        """ migrate index to use new _length attribute """
-        if not hasattr(self, '_length'):
-            self._length = Length(len(self._unindex))
+    def indexSize(self):
+        """ return the number of indexed objects"""
+        return len(self)
+
+    def __len__(self):
+        return self._length()
 
     def _apply_index(self, request, cid=''):
         """ hook for (Z)Catalog
