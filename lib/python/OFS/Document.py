@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -187,18 +187,19 @@ default_html="""<!--#var standard_html_header-->
 the <!--#var title_and_id--> Folder.</P>
 <!--#var standard_html_footer-->"""
 
+manage_addDocumentForm=HTMLFile('documentAdd', globals())
+
+def manage_addDocument(self,id,title='',file='',REQUEST=None):
+    """ """
+    if not file: file=default_html
+    i=Document(file, __name__=id)
+    i.title=title
+    self._setObject(id,i)
+    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    return ''
 
 class DocumentHandler:
     """ """
-    manage_addDocumentForm=HTMLFile('documentAdd', globals())
-
-    def manage_addDocument(self,id,title='',file='',REQUEST=None):
-	""" """
-	if not file: file=default_html
-        i=Document(file, __name__=id)
-	i.title=title
-	self._setObject(id,i)
-	if REQUEST: return self.manage_main(self,REQUEST)
 
     def documentIds(self):
 	t=[]
@@ -213,17 +214,6 @@ class DocumentHandler:
 	    if i['meta_type']=='Document':
 		t.append(getattr(self,i['id']))
 	return t
-
-    def documentItems(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Document':
-		n=i['id']
-		t.append((n,getattr(self,n)))
-	return t
-
-Globals.default__class_init__(DocumentHandler)
-
 
 def decapitate(html, RESPONSE=None,
 	       header_re=regex.compile(
