@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -349,28 +349,40 @@ import re
 token = "[a-zA-Z0-9!#$%&'*+\-.\\\\^_`|~]+"
 hdr_start = re.compile(r'(%s):(.*)' % token).match
 
+
 def decapitate(html, RESPONSE=None):
     headers = []
-    spos = 0
+    spos  = 0
+    eolen = 1
     while 1:
         m = hdr_start(html, spos)
         if not m:
+            if html[spos:spos+2] == '\r\n':
+                eolen = 2
+                break
             if html[spos:spos+1] == '\n':
+                eolen = 1
                 break
             return html
         header = list(m.groups())
         headers.append(header)
         spos = m.end() + 1
         while spos < len(html) and html[spos] in ' \t':
-            eol = html.find( '\n', spos)
-            if eol < 0: return html
-            header.append(html[spos:eol].strip())
-            spos = eol + 1
+            eol = find(html, '\r\n', spos)            
+            if eol <> -1:
+                eolen = 2
+            else:
+                eol = find(html, '\n', spos)                
+                if eol < 0: return html
+                eolen = 1
+            header.append(strip(html[spos:eol]))
+            spos = eol + eolen
     if RESPONSE is not None:
         for header in headers:
             hkey = header.pop(0)
             RESPONSE.setHeader(hkey, ' '.join(header).strip())
-    return html[spos + 1:]
+    return html[spos + eolen:]
+
 
 default_dm_html="""<dtml-var standard_html_header>
 <h2><dtml-var title_or_id> <dtml-var document_title></h2>
