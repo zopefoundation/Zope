@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.15 1999/03/10 00:14:56 klm Exp $"""
+$Id: Management.py,v 1.16 1999/03/23 22:41:15 amos Exp $"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, Globals
 from Dialogs import MessageDialog
@@ -113,7 +113,7 @@ class Tabs:
         del path[-1]
         for p in path:
             script="%s/%s" % (script, p)
-            out.append('<a href="%s/manage_main">%s</a>' % (script, p))
+            out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
         return join(out,'&nbsp;/&nbsp;')
                 
