@@ -504,7 +504,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.26 1996/11/26 22:06:18 jim Exp $"""
+$Id: Publish.py,v 1.27 1996/12/30 14:36:12 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -557,6 +557,9 @@ $Id: Publish.py,v 1.26 1996/11/26 22:06:18 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.27  1996/12/30 14:36:12  jim
+# Fixed a spelling error.
+#
 # Revision 1.26  1996/11/26 22:06:18  jim
 # Added support for __bobo_before__ and __bobo_after__.
 #
@@ -669,7 +672,7 @@ $Id: Publish.py,v 1.26 1996/11/26 22:06:18 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 def main():
@@ -711,7 +714,7 @@ class ModulePublisher:
 
 	raise 'BadRequest',self.html(
 	    "Invalid request",
-	    "The parameter, %s, was ommitted from the request."
+	    "The parameter, %s, was omitted from the request."
 	    "<!--%s-->"
 	    % (name,self.request))
 
