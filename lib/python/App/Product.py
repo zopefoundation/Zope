@@ -386,7 +386,7 @@ class Product(Folder, PermissionManager):
         message = None
         if RefreshFuncs.performFullRefresh(self._p_jar, self.id):
             from ZODB import Connection
-            Connection.updateCodeTimestamp() # Clears cache in next connection.
+            Connection.resetCaches() # Clears cache in future connections.
             message = 'Product refreshed.'
         else:
             message = 'An exception occurred.'

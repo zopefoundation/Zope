@@ -12,7 +12,7 @@
 ##############################################################################
 '''
 Functions for refreshing products.
-$Id: RefreshFuncs.py,v 1.6 2002/08/14 21:31:40 mj Exp $
+$Id: RefreshFuncs.py,v 1.7 2003/12/10 20:03:03 shane Exp $
 '''
 
 import os, sys
@@ -318,7 +318,7 @@ def autoRefresh(jar):
     if auto_refresh_ids:
         finishAutoRefresh(jar, auto_refresh_ids)
         from ZODB import Connection
-        Connection.updateCodeTimestamp()
+        Connection.resetCaches()
         get_transaction().commit()
         jar._resetCache()
         get_transaction().begin()
