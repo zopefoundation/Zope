@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -512,6 +512,7 @@ class HTTPRequest(BaseRequest):
                                     # it to the list
                                     n=record()
                                     setattr(n,attr,item)
+                                    mapping_object[key].append(n)
                         elif flags&RECORD:
                             b=mapping_object[key]
                             if flags&SEQUENCE:
