@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.69 2000/07/05 15:52:55 shane Exp $''' 
-__version__='$Revision: 1.69 $'[11:-2]
+'''$Id: DT_Util.py,v 1.70 2000/12/19 16:24:40 shane Exp $''' 
+__version__='$Revision: 1.70 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -267,18 +267,17 @@ def namespace(self, **kw):
 
 d['namespace']=namespace
 
-def render(self, v, simple={
-    type(''): 1, type(0): 1, type(0.0): 1,
-    type([]): 1, type(()): 1,
-    }.has_key):
-    "Render an object in the way done be the 'name' attribute"
-
-    if not simple(type(v)):
-        if hasattr(v,'isDocTemp') and v.isDocTemp:
-            v=v(None, self)
-        else:
-            try: v=v()
-            except (AttributeError,TypeError): pass
+def render(self, v):
+    "Render an object in the way done by the 'name' attribute"
+    if hasattr(v, '__render_with_namespace__'):
+        v = v.__render_with_namespace__(self)
+    else:
+        vbase = getattr(v, 'aq_base', v)
+        if callable(vbase):
+            if getattr(vbase, 'isDocTemp', 0):
+                v = v(None, self)
+            else:
+                v = v()
     return v
 
 d['render']=render
