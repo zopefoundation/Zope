@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.57 1999/05/28 17:18:50 jim Exp $''' 
-__version__='$Revision: 1.57 $'[11:-2]
+'''$Id: DT_Util.py,v 1.58 1999/08/24 16:48:43 jim Exp $''' 
+__version__='$Revision: 1.58 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -117,33 +117,39 @@ def int_param(params,md,name,default=0, st=type('')):
     return v or 0
 
 def careful_getattr(md, inst, name):
+    
     if name[:1]!='_':
+
+        # Try to get the attribute normally so that we don't
+        # accidentally acquire when we shouldn't.
+        v=getattr(inst, name)
+        
         validate=md.validate
 
-        if validate is None: return getattr(inst, name)
+        if validate is None: return v
 
         if hasattr(inst,'aq_acquire'):
             return inst.aq_acquire(name, validate, md)
 
-        v=getattr(inst, name)
         if validate(inst,inst,name,v,md): return v
 
     raise ValidationError, name
 
+_marker=[]
 def careful_hasattr(md, inst, name):
-    try: 
-        if name[:1]!='_':
-            validate=md.validate
-
-            if validate is None: return hasattr(inst, name)
-
-            if hasattr(inst,'aq_acquire'):
-                inst.aq_acquire(name, validate, md)
-                return 1
-
-            v=getattr(inst, name)
-            if validate(inst,inst,name,v,md): return 1
-    except: pass
+    v=getattr(inst, name, _marker)
+    if v is not _marker:
+        try: 
+            if name[:1]!='_':
+                validate=md.validate                
+                if validate is None: return 1
+    
+                if hasattr(inst,'aq_acquire'):
+                    inst.aq_acquire(name, validate, md)
+                    return 1
+    
+                if validate(inst,inst,name,v,md): return 1
+        except: pass
     return 0
 
 def careful_getitem(md, mapping, key):
