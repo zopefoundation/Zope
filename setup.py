@@ -380,6 +380,13 @@ setup(
     packages=['logging'],
     )
 
+#nt_svcutils
+setup(
+    name='nt_svcutils',
+    author=AUTHOR,
+    packages=['nt_svcutils'],
+    )
+
 # OFS
 setup(
     name='OFS',
