@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.47 2001/10/04 14:09:38 matt Exp $
+  $Id: ExtensionClass.c,v 1.48 2001/11/08 16:57:54 bwarsaw Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.47 2001/10/04 14:09:38 matt Exp $\n"
+"$Id: ExtensionClass.c,v 1.48 2001/11/08 16:57:54 bwarsaw Exp $\n"
 ;
 
 #include <stdio.h>
@@ -3533,8 +3533,8 @@ TrueExtensionClassCAPI = {
 void
 initExtensionClass(void)
 {
-  PyObject *m, *d;
-  char *rev="$Revision: 1.47 $";
+  PyObject *m, *d, *s;
+  char *rev="$Revision: 1.48 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3549,8 +3549,9 @@ initExtensionClass(void)
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+  s = PyString_FromStringAndSize(rev+11,strlen(rev+11)-2);
+  PyDict_SetItemString(d,"__version__", s);
+  Py_XDECREF(s);
 
   init_py_names();
 
@@ -3567,8 +3568,10 @@ initExtensionClass(void)
 
   /* Export C attribute lookup API */
   PyExtensionClassCAPI=&TrueExtensionClassCAPI;
-  PyDict_SetItemString(d, "CAPI",
-		       PyCObject_FromVoidPtr(PyExtensionClassCAPI,NULL));
+  
+  s = PyCObject_FromVoidPtr(PyExtensionClassCAPI, NULL);
+  PyDict_SetItemString(d, "CAPI", s);
+  Py_XDECREF(s);
 
   CHECK_FOR_ERRORS("can't initialize module ExtensionClass");
 }
