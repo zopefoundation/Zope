@@ -42,7 +42,7 @@ class KeywordIndex(UnIndex):
     This should have an _apply_index that returns a relevance score
     """
 
-    def index_object(self, documentId, obj, threshold=None):
+    def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index an object 'obj' with integer id 'i'
 
         Ideally, we've been passed a sequence of some sort that we
@@ -55,7 +55,7 @@ class KeywordIndex(UnIndex):
         # attribute we're interested in.  If the attribute is callable,
         # we'll do so.
 
-        newKeywords = self._get_object_keywords(obj)
+        newKeywords = self._get_object_keywords(obj, attr)
 
         oldKeywords = self._unindex.get(documentId, None)
 
@@ -85,8 +85,8 @@ class KeywordIndex(UnIndex):
                         self.insertForwardIndexEntry(kw, documentId)
         return 1
 
-    def _get_object_keywords(self,obj):
-        newKeywords = getattr(obj, self.id, ())
+    def _get_object_keywords(self, obj, attr):
+        newKeywords = getattr(obj, attr, ())
         if callable(newKeywords):
             newKeywords = newKeywords()
         if hasattr(newKeywords,'capitalize'): # is it string-like ?
@@ -119,7 +119,8 @@ class KeywordIndex(UnIndex):
 
 manage_addKeywordIndexForm = DTMLFile('dtml/addKeywordIndex', globals())
 
-def manage_addKeywordIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
+def manage_addKeywordIndex(self, id, extra=None, 
+        REQUEST=None, RESPONSE=None, URL3=None):
     """Add a keyword index"""
-    return self.manage_addIndex(id, 'KeywordIndex', extra=None, \
+    return self.manage_addIndex(id, 'KeywordIndex', extra=extra, \
               REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)

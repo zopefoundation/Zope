@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -38,7 +38,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
     """UnIndex object interface"""
 
 
-    def __init__(self, id, ignore_ex=None, call_methods=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
         """Create an unindex
 
         UnIndexes are indexes that contain two index components, the
@@ -69,16 +69,27 @@ class UnIndex(Persistent, Implicit, SimpleItem):
           You will also need to pass in an object in the index and
           uninded methods for this to work.
 
+          'extra' -- a record-style object that keeps additional 
+          index-related parameters
+
+          'caller' -- reference to the calling object (usually 
+          a (Z)Catalog instance
+
         """
 
         self.id = id
         self.ignore_ex=ignore_ex        # currently unimplimented
         self.call_methods=call_methods
 
-        # experimental code for specifing the operator
-        self.operators = ['or','and']
+        self.operators = ('or', 'and')
         self.useOperator = 'or'
 
+        # allow index to index multiple attributes
+        try: 
+            self.indexed_attrs = extra.indexed_attrs.split(',')
+            self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ]
+        except: self.indexed_attrs = [ self.id ]
+        
         self.__len__=BTrees.Length.Length() # see __len__ method docstring
         self.clear()
 
@@ -214,13 +225,28 @@ class UnIndex(Persistent, Implicit, SimpleItem):
                 indexRow=IITreeSet((indexRow, documentId))
                 self._index[entry] = indexRow
 
+
     def index_object(self, documentId, obj, threshold=None):
+        """ wrapper to handle indexing of multiple attributes """
+
+        # needed for backward compatibility
+        try: fields = self.indexed_attrs
+        except: fields  = [ self.id ]
+
+        res = 0
+        for attr in fields:
+            res += self._index_object(documentId, obj, threshold, attr) 
+
+        return res > 0 
+        
+
+    def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index and object 'obj' with integer id 'documentId'"""
         global _marker
         returnStatus = 0
 
         # First we need to see if there's anything interesting to look at
-        datum = self._get_object_datum(obj)
+        datum = self._get_object_datum(obj, attr)
 
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
@@ -244,12 +270,12 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
         return returnStatus
 
-    def _get_object_datum(self,obj):
+    def _get_object_datum(self,obj, attr):
         # self.id is the name of the index, which is also the name of the
         # attribute we're interested in.  If the attribute is callable,
         # we'll do so.
         try:
-            datum = getattr(obj, self.id)
+            datum = getattr(obj, attr)
             if callable(datum):
                 datum = datum()
         except AttributeError:
@@ -389,6 +415,17 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         else:
             return 0
 
+    def getIndexSourceNames(self):
+        """ return name of indexed attributes """
+        return (self.id, )
+
+    def getIndexSourceNames(self):
+        """ return sequence of indexed attributes """
+        
+        try:
+            return self.indexed_attrs 
+        except:
+            return [ self.id ]
 
     def uniqueValues(self, name=None, withLengths=0):
         """\

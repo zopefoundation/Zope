@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Pluggable Index Interface"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Interface
 
@@ -23,6 +23,11 @@ class PluggableIndexInterface(Interface.Base):
 
     def getEntryForObject(documentId, default=None):
         """Get all information contained for 'documentId'."""
+
+    def getIndexSourceNames():
+        """ return a sequence of attribute names that are indexed 
+            by the index. 
+        """
 
     def index_object(documentId, obj, threshold=None):
         """Index an object.

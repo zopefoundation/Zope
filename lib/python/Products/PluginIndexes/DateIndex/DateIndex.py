@@ -11,8 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.9 2002/12/05 21:35:52 caseman Exp $
-"""
+"""$Id: DateIndex.py,v 1.10 2003/01/23 17:46:19 andreasjung Exp $ """
 
 from DateTime.DateTime import DateTime
 from Products.PluginIndexes import PluggableIndex

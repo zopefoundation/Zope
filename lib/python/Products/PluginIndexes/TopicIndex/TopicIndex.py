@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.11 2002/12/05 21:35:53 caseman Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.12 2003/01/23 17:46:31 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -214,6 +214,10 @@ class TopicIndex(Persistent, Implicit, SimpleItem):
             RESPONSE.redirect(URL1+'/manage_workspace?'
             'manage_tabs_message=FilteredSet(s)%20updated')
 
+    def getIndexSourceNames(self):
+        """ return names of indexed attributes """
+        return ('n/a',)
+    
 
     def manage_clearFilteredSet(self, filterIds=[], URL1=None, \
             REQUEST=None,RESPONSE=None):

@@ -131,7 +131,12 @@ function toggleSelect() {
   <td align="left" valign="top">
   <div class="list-item">
   <a href="Indexes/&dtml.url_quote-sequence-key;/manage_workspace">
-  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
+  &dtml-sequence-key; 
+  <dtml-try>
+    (indexed attrs: <dtml-var "', '.join(_['sequence-item'].getIndexSourceNames())">)
+  <dtml-except>
+    <dtml-if title> (&dtml-title;) </dtml-if>
+  </dtml-try>
   </a>
   </div>
 
@@ -141,7 +146,7 @@ function toggleSelect() {
 
     <td>
     <div class="list-item">
-      <dtml-if "_.string.find(_.str(_.getattr(this(),'__implements__','old')),'PluggableIndexInterface')>-1">
+      <dtml-if "_.string.find(_.str(_.getattr(this(),'__implements__','old')),'PluggableIndex')>-1">
         &dtml-meta_type;
       <dtml-else>
          <dtml-call "REQUEST.set('oldidx',1)">

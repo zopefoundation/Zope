@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.34 $'[11:-2]
+__version__ = '$Revision: 1.35 $'[11:-2]
 
 
 import  re
@@ -643,6 +643,10 @@ class TextIndex(Persistent, Implicit, SimpleItem):
             raise QueryError, "Malformed query"
 
         return query[0]
+
+    def getIndexSourceNames(self):
+        """ return name of indexed attributes """
+        return (self.id, )
 
 
     def numObjects(self):

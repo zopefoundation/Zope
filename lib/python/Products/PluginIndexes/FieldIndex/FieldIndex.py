@@ -12,8 +12,7 @@
 ##############################################################################
 
 """Simple column indices
-
-$Id: FieldIndex.py,v 1.11 2002/12/05 21:35:52 caseman Exp $
+$Id: FieldIndex.py,v 1.12 2003/01/23 17:46:21 andreasjung Exp $
 """
 
 from Products.PluginIndexes import PluggableIndex
@@ -44,7 +43,8 @@ class FieldIndex(UnIndex):
 
 manage_addFieldIndexForm = DTMLFile('dtml/addFieldIndex', globals())
 
-def manage_addFieldIndex(self, id, REQUEST=None, RESPONSE=None, URL3=None):
+def manage_addFieldIndex(self, id, extra=None,
+                REQUEST=None, RESPONSE=None, URL3=None):
     """Add a field index"""
-    return self.manage_addIndex(id, 'FieldIndex', extra=None, \
+    return self.manage_addIndex(id, 'FieldIndex', extra=extra, \
              REQUEST=REQUEST, RESPONSE=RESPONSE, URL1=URL3)

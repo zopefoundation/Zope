@@ -24,6 +24,19 @@ that have one or more keywords specified in a search query.
     <input type="text" name="id" size="40" />
     </td>
   </tr>
+
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Indexed attributes
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <input type="text" name="extra.indexed_attrs:record:string" size="40" />
+    <em>attribute1,attribute2,...</em> or leave empty
+    </td>
+  </tr>
+
   <tr>
     <td align="left" valign="top">
     <div class="form-optional">

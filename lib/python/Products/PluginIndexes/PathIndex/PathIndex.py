@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.30 2002/12/05 21:35:53 caseman Exp $'
+__version__ = '$Id: PathIndex.py,v 1.31 2003/01/23 17:46:27 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -339,6 +339,11 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         """ needed to be consistent with the interface """
 
         return self._index.keys()
+
+
+    def getIndexSourceNames(self):
+        """ return names of indexed attributes """
+        return ('getPhysicalPath', )
 
 
     def getEntryForObject(self,documentId,default=_marker):
