@@ -507,8 +507,8 @@ def start_pickle(self, tag, attr):
 def end_string(self, tag, data):
     v=data[2]
     a=data[1]
-    if a is not None:
-        v=unconvert(a,v)
+    if a['encoding'] is not '':
+        v=unconvert(a['encoding'],v)
     if a.has_key('id'): self._pickleids[a['id']]=v
     return v
 
@@ -581,12 +581,15 @@ def save_float(self, tag, data):
     return v
 
 def save_string(self, tag, data):
-    v=data[2]  #data[3] with encoding
+    v=data[2]
     a=data[1]
-    encoding=None # data[2] with encoding
-    if encoding is not None:
+    encoding=a['encoding']
+    if encoding is not '':
         v=base.unconvert(encoding,v)
-    v="S'"+v+"'\012"+"p"+a["id"]+"\012"
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    v="S'"+v+"'\012"+"p"+id+"\012"
     return v
 
 def save_tuple(self, tag, data):
@@ -595,13 +598,19 @@ def save_tuple(self, tag, data):
     v=''
     for x in T:
         v=v+x
-    if a.has_key('id'): v='('+v+'tp'+a['id']+'\012'
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    if a.has_key('id'): v='('+v+'tp'+id+'\012'
     return v
 
 def save_list(self, tag, data):
     L=data[2:]
     a=data[1]
-    v='(lp'+a['id']+'\012'
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    v='(lp'+id+'\012'
     x=0
     while x<len(L):
         v=v+L[x]+'a'
@@ -611,7 +620,10 @@ def save_list(self, tag, data):
 def save_dict(self, tag, data):
     D=data[2:]
     a=data[1]
-    v='(dp'+a['id']+'\012'
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    v='(dp'+id+'\012'
     x=0
     while x<len(D):
         v=v+D[x]+'s'
@@ -630,7 +642,11 @@ def save_pickle(self, tag, data):
     return v
 
 def save_reference(self, tag, data):
-    v='g'+data[1]['id']+'\012'
+    a=data[1]
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    v='g'+id+'\012'
     return v
 
 def save_object(self, tag, data):
@@ -638,14 +654,20 @@ def save_object(self, tag, data):
     v='(c'
     for x in data[2:]:
         v=v+x
-    v=v+'p'+a['id']+'\012'+'b'
+    id=a['id']
+    prefix=string.rfind(id,'.')
+    if prefix>=0: id=id[prefix:]
+    v=v+'p'+id+'\012'+'b'
     if a.has_key('id'): self._pickleids[a['id']]=v
     return v
 
 def save_global(self, tag, data):
     a=data[1]
     if a.has_key('id'):
-        v=a['module']+'\012'+a['name']+'\012op'+a['id']+'\012'
+        id=a['id']
+        prefix=string.rfind(id,'.')
+        if prefix>=0: id=id[prefix:]
+        v=a['module']+'\012'+a['name']+'\012op'+id+'\012'
         self._pickleids[a['id']]=v
     else: v=a['module']+'\012'+a['name']+'\012o'
     return v
