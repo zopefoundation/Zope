@@ -86,8 +86,7 @@
 Compile a DOM tree for efficient TAL expansion.
 
 XXX TO DO:
-- xmlns attributes
-- get macro use/define substitution right
+- get macro use/define substitution right (currently ignores prefix)
 """
 
 import string
@@ -110,6 +109,8 @@ class TALCompiler(DOMVisitor):
         self.macros = {}
         self.program = []
         self.stack = []
+        self.namespaceDict = {}
+        self.namespaceStack = [self.namespaceDict]
         DOMVisitor.__call__(self)
         assert not self.stack
         return self.program, self.macros
@@ -123,22 +124,57 @@ class TALCompiler(DOMVisitor):
         self.program = self.stack.pop()
         return program
 
+    def pushNS(self):
+        self.namespaceStack.append(self.namespaceDict)
+
+    def popNS(self):
+        self.namespaceDict = self.namespaceStack.pop()
+
+    def newNS(self, prefix, namespaceURI):
+        if self.namespaceDict is self.namespaceStack[-1]:
+            self.namespaceDict = self.namespaceDict.copy()
+        if self.namespaceDict.get(prefix) != namespaceURI:
+            self.namespaceDict[prefix] = namespaceURI
+            return 1
+        else:
+            return 0
+
+    def getFullAttrList(self, node):
+        list = []
+        if node.namespaceURI:
+            if self.newNS(node.prefix, node.namespaceURI):
+                if node.prefix:
+                    list.append(("xmlns:" + node.prefix, node.namespaceURI))
+                else:
+                    list.append(("xmlns", node.namespaceURI))
+        for attr in node.attributes.values():
+            if attr.namespaceURI:
+                if self.newNS(attr.prefix, attr.namespaceURI):
+                    list.append(("xmlns:" + attr.prefix, attr.namespaceURI))
+        list.extend(getAttributeList(node))
+        return list
+
     def emit(self, *instruction):
         self.program.append(instruction)
 
     def emitStartTag(self, node):
-        self.emit("startTag", node.nodeName, getAttributeList(node))
+        self.emit("startTag", node.nodeName, self.getFullAttrList(node))
 
     def emitStartEndTag(self, node):
-        self.emit("startEndTag", node.nodeName, getAttributeList(node))
+        self.emit("startEndTag", node.nodeName, self.getFullAttrList(node))
 
     def emitEndTag(self, node):
         self.emit("endTag", node.nodeName)
 
     def visitElement(self, node):
+        self.pushNS()
         if not node.hasAttributes():
             self.emitElement(node)
-            return
+        else:
+            self.expandElement(node)
+        self.popNS()
+
+    def expandElement(self, node):
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
         if macroName:
             slotDict = slotIndexer(node)
