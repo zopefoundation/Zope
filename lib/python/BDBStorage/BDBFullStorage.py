@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.71 $
+$Revision: 1.72 $
 """
 
 import time
@@ -245,7 +245,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         if version is None:
             self._info.put('version', BDBFULL_SCHEMA_VERSION, txn=txn)
         elif version <> BDBFULL_SCHEMA_VERSION:
-            raise StorageSystemError, 'incompatible storage version'
+            raise POSException.StorageSystemError, 'incompatible storage version'
 
     def _make_autopacker(self, event):
         config = self._config

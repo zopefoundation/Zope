@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.29 $'[-2:][0]
+__version__ = '$Revision: 1.30 $'[-2:][0]
 
 from __future__ import nested_scopes
 
@@ -133,7 +133,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
         if version is None:
             self._info.put('version', BDBMINIMAL_SCHEMA_VERSION, txn=txn)
         elif version <> BDBMINIMAL_SCHEMA_VERSION:
-            raise StorageSystemError, 'incompatible storage version'
+            raise POSException.StorageSystemError, 'incompatible storage version'
 
     def _make_autopacker(self, event):
         return _Autopack(self, event, self._config.frequency)
