@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -400,39 +400,29 @@ class DateTime:
 	elif not args:
 	    # Current time, exp in local timezone
 	    t,tz=time(),self._localzone
+	    ms=(t-int(t))
 	    yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
-	    sc=sc+(t-int(t))
-	    s=(hr/24.0+mn/1440.0+sc/86400.0)
+	    s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
 	    d=(self._julianday(yr,mo,dy)-jd1901)+s
             yr,mo,dy,hr,mn,sc=localtime(t)[:6]
-            sc=sc+(t-int(t))
+            sc=sc+ms
 	    
 	elif ac==1:
 	    arg=args[0]
 	    if type(arg)==StringType and lower(arg) in self._tzinfo._zidx:
 		# Current time, exp in specified timezone
 	        t,tz=time(),self._tzinfo._zmap[lower(arg)]
+		ms=(t-int(t))
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
-		sc=sc+(t-int(t))
-	        s=(hr/24.0+mn/1440.0+sc/86400.0)
+	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
-		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
-		yr,mo,dy=self._calendarday(_d+jd1901)
-	        _s=(_d-int(_d))*86400.0
-	        hr=int(_s/3600)
-	        _s=_s-(hr*3600)
-	        mn=int(_s/60)
-	        sc=_s-(mn*60)
-		if(hr==23 and mn==59 and sc>59.999):
-		    # Fix formatting for positives
-		    hr,mn,sc=0,0,0.0
-	        else:
-		    # Fix formatting for negatives
-		    if hr<0: hr=23+hr
-		    if mn<0: mn=59+mn
-		    if sc<0:
-		        if (sc-int(sc)>=0.999): sc=round(sc)
-		        sc=59+sc
+		x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+		yr,mo,dy=self._calendarday(x+jd1901)
+	        x=(x-int(x))*86400.0
+	        hr=int(x/3600)
+	        x=x-(hr*3600)
+	        mn=int(x/60)
+	        sc=x-(mn*60)
 
 	    elif type(arg)==StringType:
 		# Date/time string
@@ -445,18 +435,18 @@ class DateTime:
 		s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		t=(d*86400.0)-EPOCH+86400.0
-                tza=self._tzinfo[tz].info(t)[0]
-		d,t=d-(tza/86400.0),t-tza
+                a=self._tzinfo[tz].info(t)[0]
+		d,t=d-(a/86400.0),t-a
 
 	    elif (arg > 0) and (int(arg)/365+1901 > 2030):
 		# Seconds from epoch, gmt
 	        t,tz=arg,self._localzone
+		ms=(t-int(t))
 	        yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
-		sc=sc+(t-int(t))
-	        s=(hr/24.0+mn/1440.0+sc/86400.0)
+	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
-                sc=sc+(t-int(t))
+                sc=sc+ms
 
 	    else:
 		# Float days since Jan 1, 1901 machine tz
@@ -478,26 +468,26 @@ class DateTime:
 		        if (sc-int(sc)>=0.999): sc=round(sc)
 		        sc=59+sc
                 t=_j-EPOCH
-		tza=self._tzinfo[tz].info(t)[0]
-		d,t=arg-(tza/86400.0),t-tza
+		a=self._tzinfo[tz].info(t)[0]
+		d,t=arg-(a/86400.0),t-a
 		s=d-int(d)
 
 	elif ac==2:
 	    if type(args[1])==StringType:
 		# Seconds from epoch (gmt) and timezone
 	        t,tz=args
+		ms=(t-int(t))
 		tz=self._tzinfo._zmap[lower(tz)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
-		sc=sc+(t-int(t))
-	        s=(hr/24.0+mn/1440.0+sc/86400.0)
+	        s=(hr/24.0+mn/1440.0+(sc+ms)/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
-		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
-		yr,mo,dy=self._calendarday(_d+jd1901)
-	        _s=(_d-int(_d))*86400.0
-	        hr=int(_s/3600)
-	        _s=_s-(hr*3600)
-	        mn=int(_s/60)
-	        sc=_s-(mn*60)
+		x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+		yr,mo,dy=self._calendarday(x+jd1901)
+	        x=(x-int(x))*86400.0
+	        hr=int(x/3600)
+	        x=x-(hr*3600)
+	        mn=int(x/60)
+	        sc=x-(mn*60)
 		if(hr==23 and mn==59 and sc>59.999):
 		    # Fix formatting for positives
 		    hr,mn,sc=0,0,0.0
@@ -515,11 +505,11 @@ class DateTime:
 		if not yr>100: yr=yr+CENTURY
 	        d=(self._julianday(yr,1,0)-jd1901)+jul
 		yr,mo,dy=self._calendarday(d+jd1901)
-	        _s=(d-int(d))*86400.0
-	        hr=int(_s/3600)
-	        _s=_s-(hr*3600)
-	        mn=int(_s/60)
-	        sc=_s-(mn*60)
+	        x=(d-int(d))*86400.0
+	        hr=int(x/3600)
+	        x=x-(hr*3600)
+	        mn=int(x/60)
+	        sc=x-(mn*60)
 		if(hr==23 and mn==59 and sc>59.999):
 		    # Fix formatting for positives
 		    hr,mn,sc=0,0,0.0
@@ -559,8 +549,8 @@ class DateTime:
 	    s=(hr/24.0+mn/1440.0+sc/86400.0)
 	    d=(self._julianday(yr,mo,dy)-jd1901)+s
 	    t=(d*86400.0)-EPOCH+86400.0
-	    tza=self._tzinfo[tz].info(t)[0]
-	    d,t=d-(tza/86400.0),t-tza
+	    a=self._tzinfo[tz].info(t)[0]
+	    d,t=d-(a/86400.0),t-a
 
 	if hr>12:
 	    self._pmhour=hr-12
@@ -1155,40 +1145,21 @@ class DateTime:
                self._pmon,self._day,self._year,self._pmhour,
                self._minute,self._pm,self._tz)
 
-
-
-    # Python protocols
     def __add__(self,other):
 	"""A DateTime may be added to a number and a number may be 
            added to a DateTime;  two DateTimes cannot be added."""
 	if type(other)==InstanceType:
 	    raise self.DateTimeError,'Cannot add two DateTimes'
-
-	# This stuff is necessary because the old datetime always
-	# stored and assumed local machine timezone when creating
-	# a DateTime from a float... 
 	o=float(other)
-        d=self._d+o
-	t=self._t+(o*86400.0)
-	_d=d+(self._tzinfo[self._localzone].info(self._t)[0]/86400.0)
-        yr,mo,dy=self._calendarday((_d+jd1901))
-	s=(_d-int(_d))*86400.0
+        d,t,tz=(self._d+o),(self._t+(o*86400.0)),self._tz
+	x=d+(self._tzinfo[tz].info(t)[0]/86400.0)
+        yr,mo,dy=self._calendarday((x+jd1901))
+	s=(x-int(x))*86400.0
 	hr=int(s/3600)
 	s=s-(hr*3600)
 	mn=int(s/60)
-	sc=s-(mn*60)
-        if(hr==23 and mn==59 and sc>59.999):
-	    # Fix formatting for positives
-	    hr,mn,sc=0,0,0.0
-	else:
-	    # Fix formatting for negatives
-	    if hr<0: hr=23+hr
-	    if mn<0: mn=59+mn
-	    if sc<0:
-	        if (sc-int(sc)>=0.999):
-		    sc=round(sc)
-		sc=59+sc
-        return self.__class__(yr,mo,dy,hr,mn,sc,self._tz,t,d,(d-int(d)))
+	s=s-(mn*60)
+        return self.__class__(yr,mo,dy,hr,mn,s,self._tz,t,d,(d-int(d)))
     __radd__=__add__
 
     def __sub__(self,other):
