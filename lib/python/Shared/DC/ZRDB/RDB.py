@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.15 1998/02/23 17:47:13 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: RDB.py,v 1.16 1998/05/04 22:35:58 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol, find, join
@@ -23,7 +23,7 @@ from Record import Record
 from Acquisition import Implicit
 
 def parse_text(s):
-    if find(s,'\\') < 0 or (find(s,'\\t') < 0 and find(s,'\\n') < 0): return s
+    if find(s,'\\') < 0 and (find(s,'\\t') < 0 and find(s,'\\n') < 0): return s
     r=[]
     for x in split(s,'\\\\'):
 	x=join(split(x,'\\n'),'\n')
@@ -198,6 +198,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.16  1998/05/04 22:35:58  jim
+# Fixed flaw in (un)escaping logic.
+#
 # Revision 1.15  1998/02/23 17:47:13  jim
 # Fixed bug that broke acquisition by records when accessed with
 # getitem.
