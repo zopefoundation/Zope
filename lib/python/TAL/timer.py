@@ -92,6 +92,7 @@ import time
 import getopt
 
 from driver import parsefile, copytree, talizetree, printtree, FILE
+from driver import compiletree, interpretit
 
 def main():
     count = 10
@@ -109,9 +110,11 @@ def main():
         file = FILE
     doc = timefunc(count, parsefile, file)
     doc = timefunc(count, copytree, doc)
-    doc = timefunc(count, talizetree, doc)
+    doc2 = timefunc(count, talizetree, doc)
     timefunc(count, printtree, doc, open("/dev/null", "w"))
     timefunc(count, findmacros, doc)
+    it = timefunc(count, compiletree, doc)
+    timefunc(count, interpretit, it, None, open("/dev/null", "w"))
 
 def timefunc(count, func, *args):
     sys.stderr.write("%-14s: " % func.__name__)
