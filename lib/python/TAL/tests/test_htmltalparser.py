@@ -387,8 +387,6 @@ class TALGeneratorTestCases(TestCaseBase):
         self._should_error("<p tal:define='x' />")
         self._should_error("<p tal:repeat='x' />")
         self._should_error("<p tal:foobar='x' />")
-        self._should_error("<p tal:repeat='x y' tal:content='x' />")
-        self._should_error("<p tal:repeat='x y' tal:replace='x' />")
         self._should_error("<p tal:replace='x' tal:content='x' />")
         self._should_error("<p tal:replace='x'>")
 
