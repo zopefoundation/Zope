@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.137 1999/08/16 20:20:21 jim Exp $"""
-__version__='$Revision: 1.137 $'[11:-2]
+$Id: Publish.py,v 1.138 1999/08/17 16:52:54 jim Exp $"""
+__version__='$Revision: 1.138 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -213,7 +213,7 @@ def publish_module(module_name,
         except ImportError, v:
             if type(v) is type(()) and len(v)==3: must_die=v
             elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
+            else: must_die = SystemExit, v, sys.exc_info()[2]
             response.exception(1, v)
         except:
             response.exception()
@@ -228,10 +228,12 @@ def publish_module(module_name,
         if after_list[0] is not None: after_list[0]()
 
     finally:
-        if request is not None: request.other={}
+        if request is not None: request.close()
 
-    if must_die: raise must_die[0], must_die[1], must_die[2]
-    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
+    if must_die:
+        try: raise must_die[0], must_die[1], must_die[2]
+        finally: must_die=None
+
     return status
 
 
