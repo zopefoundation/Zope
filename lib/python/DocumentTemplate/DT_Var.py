@@ -96,7 +96,7 @@ __doc__='''Variable insertion parameters
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.6 1997/12/12 16:19:06 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.7 1998/01/05 21:23:01 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -150,7 +150,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.6 1997/12/12 16:19:06 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DT_Util import *
 
@@ -192,6 +192,7 @@ class Var:
 		val = getattr(val,fmt)()
 	    elif special_formats.has_key(fmt):
 		val = special_formats[fmt](val, name, md)
+	    elif fmt=='': val=''
 	    else: val = fmt % val
 
 	# next, look for upper, lower, etc
@@ -313,6 +314,9 @@ special_formats={
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.7  1998/01/05 21:23:01  jim
+# Added support for fmt="" to allow vars with side effects.
+#
 # Revision 1.6  1997/12/12 16:19:06  jim
 # Added additional special formats, structured-text and sql-quote.
 # Also changed the way formats are handled.  This has (and will)
