@@ -35,8 +35,16 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
     manage_options=(
 	{'label':'Properties', 'action':'manage_main'},
 	{'label':'Try It', 'action':''},
-	{'label':'Access Control', 'action':'manage_access'},
+	{'label':'Security', 'action':'manage_access'},
 	)
+
+    __ac_permissions__=(
+    ('View management screens', ['manage_main','manage_tabs']),
+    ('Change permissions', ['manage_access']),
+    ('Change', ['manage_edit',]),
+    ('View', ['__call__',]),
+    ('Shared permission', ['',]),
+    )
 
     def __init__(self, id, title, module, function):
 	self.id=id
@@ -86,6 +94,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 
 	return f
 
+    __call____roles__='Manager', 'Shared'
     def __call__(self, *args):
 	try: f=self._v_f
 	except: f=self.getFunction()
