@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.100 1998/09/21 23:37:09 jim Exp $"""
+$Id: Publish.py,v 1.101 1998/09/22 16:44:37 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -667,11 +667,10 @@ class ModulePublisher:
         if not (self.request.has_key('REMOTE_USER') and
                 self.request['REMOTE_USER']):
             self.response['WWW-authenticate']='basic realm="%s"' % realm
-        raise 'Unauthorized', (
-            """<strong>You are not authorized to access this resource.
-            </strong>
-            """
-            )
+        m="<strong>You are not authorized to access this resource.</strong>"
+        if not self.HTTP_AUTHORIZATION:
+            m=m+'\n<!-- No Authorization header-->'
+        raise 'Unauthorized', m
 
     def forbiddenError(self,object=None):
         raise 'NotFound',self.html(
