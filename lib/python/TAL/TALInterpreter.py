@@ -167,6 +167,7 @@ class TALInterpreter:
         self.showtal = showtal
         self.strictinsert = strictinsert
         self.html = 0
+        self.endsep = "/>"
         self.slots = {}
         self.currentMacro = None
         self.position = None, None  # (lineno, offset)
@@ -192,10 +193,6 @@ class TALInterpreter:
     def __call__(self):
         assert self.level == 0
         assert self.scopeLevel == 0
-        if self.html:
-            self.endsep = " />"
-        else:
-            self.endsep = "/>"
         self.interpret(self.program)
         assert self.level == 0
         assert self.scopeLevel == 0
@@ -233,6 +230,10 @@ class TALInterpreter:
     def do_mode(self, mode):
         assert mode in ("html", "xml")
         self.html = (mode == "html")
+        if self.html:
+            self.endsep = " />"
+        else:
+            self.endsep = "/>"
 
     def do_setPosition(self, position):
         self.position = position
