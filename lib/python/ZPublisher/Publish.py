@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.48 1997/09/08 14:47:11 jim Exp $"""
+$Id: Publish.py,v 1.49 1997/09/09 20:25:21 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.48 1997/09/08 14:47:11 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 def main():
@@ -1365,8 +1365,8 @@ def parse_cookie(text,
 		     ),
 		 ):
 
-    result=result or {}
-
+    if result is None: result={}
+    
     if parmre.match(text) >= 0:
 	name=lower(parmre.group(2))
 	value=parmre.group(3)
@@ -1457,6 +1457,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.49  1997/09/09 20:25:21  jim
+# Hopefully fixed cookie parsing.
+#
 # Revision 1.48  1997/09/08 14:47:11  jim
 # Got cookies out of request str.
 #
