@@ -84,7 +84,7 @@ AccessControl.SecurityManagement.noSecurityManager()
 # This is sneaky, but we don't want to play with Main:
 sys.modules['Main']=sys.modules['Zope']
 
-import ZODB.POSException, ZPublisher, string, ZPublisher
+import ZODB.POSException, ZPublisher,  ZPublisher
 import ExtensionClass
 from zLOG import LOG, WARNING, INFO, BLATHER, log_time
 conflict_errors = 0
@@ -179,13 +179,13 @@ class TransactionsManager:
 
     def recordMetaData(self, object, request,
                        # Optimize global var lookups:
-                       hasattr=hasattr, join=string.join, getattr=getattr,
+                       hasattr=hasattr, getattr=getattr,
                        get_transaction=get_transaction,
                        LOG=LOG, WARNING=WARNING,
                        ):
         request_get = request.get
         if hasattr(object, 'getPhysicalPath'):
-            path = join(object.getPhysicalPath(), '/')
+            path = '/'.join(object.getPhysicalPath())
         else:
             # Try hard to get the physical path of the object,
             # but there are many circumstances where that's not possible.
@@ -206,7 +206,7 @@ class TransactionsManager:
                 object = getattr(object, 'aq_parent', None)
 
             if object is not None:
-                path = join(object.getPhysicalPath() + to_append, '/')
+                path = '/'.join(object.getPhysicalPath() + to_append)
             else:
                 # As Jim would say, "Waaaaaaaa!"
                 # This may cause problems with virtual hosts
@@ -228,7 +228,7 @@ class TransactionsManager:
                     % str(type(auth_user)))
                 auth_path = request_get('AUTHENTICATION_PATH')
             else:
-                auth_path = join(auth_folder.getPhysicalPath()[1:-1], '/')
+                auth_path = '/'.join(auth_folder.getPhysicalPath()[1:-1])
                 
             T.setUser(auth_user, auth_path)
         

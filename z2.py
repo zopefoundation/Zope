@@ -221,7 +221,7 @@ if swhome != 'INSERT_SOFTWARE_HOME':
     sys.path.insert(5, '%s' % swhome)
 
 
-import os, sys, getopt, string
+import os, sys, getopt
 
 sys.setcheckinterval(120)
 
@@ -311,7 +311,7 @@ DETAILED_LOG_FILE=''
 def server_info(old, v, offset=0):
     # interpret v as a port or address/port and get new value
     if v == '-': v=''
-    l=string.find(v, ':')
+    l=v.find(':')
     if l >= 0:
         a=v[:l]
         v=v[l+1:]
@@ -321,7 +321,7 @@ def server_info(old, v, offset=0):
     if not v: return v
         
     try: 
-        v=string.atoi(v)
+        v=int(v)
         if v < 0: raise 'Invalid port', v
         v=v+offset
     except: raise 'Invalid port', v
@@ -333,8 +333,8 @@ def server_info(old, v, offset=0):
     
 
 try:
-    if string.split(sys.version)[0] < '2.1':
-        raise 'Invalid python version', string.split(sys.version)[0]
+    if sys.version.split()[0] < '2.1':
+        raise 'Invalid python version', sys.version.split()[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
                                'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:')
@@ -344,10 +344,10 @@ try:
     
     # Get environment variables
     for a in args:
-        if string.find(a,'='):
-            a=string.split(a,'=')
+        if a.find('='):
+            a=a.split('=')
             o=a[0]
-            v=string.join(a[1:],'=')
+            v='='.join(a[1:])
             if o: 
               os.environ[o]=v
               HTTP_ENV[o]=v
@@ -361,12 +361,12 @@ try:
             Zpid=v
         elif o=='-r': READ_ONLY=1
         elif o=='-t':
-            try: v=string.atoi(v)
+            try: v=int(v)
             except: raise 'Invalid number of threads', v
             NUMBER_OF_THREADS=v
 
         elif o=='-i':
-            try: v=string.atoi(v)
+            try: v=int(v)
             except: raise 'Invalid value for -i option', v
             sys.setcheckinterval(v)
 
@@ -540,7 +540,7 @@ try:
         else:
             lg = logger.syslog_logger(os.environ['ZSYSLOG'])
     elif os.environ.has_key('ZSYSLOG_SERVER'):
-        (addr, port) = string.split(os.environ['ZSYSLOG_SERVER'], ':')
+        (addr, port) = os.environ['ZSYSLOG_SERVER'].split( ':')
         lg = logger.syslog_logger((addr, int(port)))
     else:
         lg = logger.file_logger(LOG_PATH)
@@ -621,7 +621,7 @@ try:
         fcgiPort = None
         fcgiPath = None
         try:
-            fcgiPort = string.atoi(FCGI_PORT)
+            fcgiPort = int(FCGI_PORT)
         except ValueError:
             fcgiPath = FCGI_PORT
         zfcgi = FCGIServer(module=MODULE,
@@ -656,7 +656,7 @@ try:
     try:
         import pwd
         try:
-            try:    UID = string.atoi(UID)
+            try:    UID = int(UID)
             except: pass
             gid = None
             if type(UID) == type(""):

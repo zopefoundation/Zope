@@ -12,7 +12,6 @@
 ##############################################################################
 """Zope Framework Class Finder
 """
-from string import strip
 import OFS.Uninstalled
 
 def ClassFactory(jar, module, name,
