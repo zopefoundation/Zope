@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.49 2001/10/19 15:12:27 shane Exp $'''
-__version__='$Revision: 1.49 $'[11:-2]
+$Id: HTTPResponse.py,v 1.50 2001/10/22 20:07:40 jeremy Exp $'''
+__version__='$Revision: 1.50 $'[11:-2]
 
 import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -439,7 +439,7 @@ class HTTPResponse(BaseResponse):
         return text
          
 
-    def format_exception(self,etype,value,tb,limit=None):
+    def format_exception(self, etype, value, tb, limit=None):
         import traceback
         result=['Traceback (innermost last):']
         if limit is None:
@@ -462,15 +462,15 @@ class HTTPResponse(BaseResponse):
                                    str(locals['__traceback_info__']))
                 except: pass
                 tb = tb.tb_next
-                n = n+1
+                n = n + 1
         result.append(join(traceback.format_exception_only(etype, value),
                            ' '))
         return result
 
-    def _traceback(self,t,v,tb):
-        tb=self.format_exception(t,v,tb,200)
-        tb=join(tb,'\n')
-        tb=self.quoteHTML(tb)
+    def _traceback(self, t, v, tb):
+        tb = self.format_exception(t, v, tb, 200)
+        tb = join(tb, '\n')
+        tb = self.quoteHTML(tb)
         if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
         else:               _tbopen, _tbclose = '<!--',  '-->'
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
@@ -586,88 +586,91 @@ class HTTPResponse(BaseResponse):
                   tag_search=re.compile('[a-zA-Z]>').search,
                   abort=1
                   ):
-        if type(info) is type(()) and len(info)==3: t,v,tb = info
-        else: t,v,tb = sys.exc_info()
+        if type(info) is type(()) and len(info)==3:
+            t, v, tb = info
+        else:
+            t, v, tb = sys.exc_info()
 
-        if t=='Unauthorized' or t == Unauthorized or (
-            isinstance(t, types.ClassType) and issubclass(t, Unauthorized)
-            ):
+        if t == 'Unauthorized' or t == Unauthorized or (
+            isinstance(t, types.ClassType) and issubclass(t, Unauthorized)):
             t = 'Unauthorized'
             self._unauthorized()
 
-        stb=tb
+        stb = tb # note alias between tb and stb
 
         try:
             # Try to capture exception info for bci calls
-            et=translate(str(t),nl2sp)
-            self.setHeader('bobo-exception-type',et)
-            ev=translate(str(v),nl2sp)
-            if find(ev,'<html>') >= 0: ev='bobo exception'
-            self.setHeader('bobo-exception-value',ev[:255])
+            et = translate(str(t), nl2sp)
+            self.setHeader('bobo-exception-type', et)
+            ev = translate(str(v), nl2sp)
+            if find(ev, '<html>') >= 0:
+                ev = 'bobo exception'
+            self.setHeader('bobo-exception-value', ev[:255])
             # Get the tb tail, which is the interesting part:
-            while tb.tb_next is not None: tb=tb.tb_next
-            el=str(tb.tb_lineno)
-            ef=str(tb.tb_frame.f_code.co_filename)
-            self.setHeader('bobo-exception-file',ef)
-            self.setHeader('bobo-exception-line',el)
+            while tb.tb_next is not None:
+                tb = tb.tb_next
+            el = str(tb.tb_lineno)
+            ef = str(tb.tb_frame.f_code.co_filename)
+            self.setHeader('bobo-exception-file', ef)
+            self.setHeader('bobo-exception-line', el)
 
         except:
             # Dont try so hard that we cause other problems ;)
             pass
 
-        tb=stb
-        stb=None
+        tb = stb # original traceback
+        del stb
         self.setStatus(t)
         if self.status >= 300 and self.status < 400:
             if type(v) == types.StringType and absuri_match(v) is not None:
-                if self.status==300: self.setStatus(302)
+                if self.status==300:
+                    self.setStatus(302)
                 self.setHeader('location', v)
-                tb=None
+                tb = None # just one path covered
                 return self
             else:
                 try:
-                    l,b=v
-                    if type(l) == types.StringType and absuri_match(l) is not None:
-                        if self.status==300: self.setStatus(302)
+                    l, b = v
+                    if (type(l) == types.StringType
+                        and absuri_match(l) is not None):
+                        if self.status==300:
+                            self.setStatus(302)
                         self.setHeader('location', l)
                         self.setBody(b)
-                        tb=None
+                        tb = None # one more patch covered
                         return self
-                except: pass
+                except:
+                    pass # tb is not cleared in this case
 
-        b=v
-        if isinstance(b,Exception):
+        b = v
+        if isinstance(b, Exception):
             try:
-                b=str(b)
+                b = str(b)
             except:
-                b='<unprintable %s object>' % type(b).__name__
-        
-        if fatal and t is SystemExit and v.code==0:
-                tb=self.setBody(
-                    (str(t),
-                    'Zope has exited normally.<p>'
-                     + self._traceback(t,v,tb)),
-                     is_error=1)
-        #elif 1: self.setBody(v)
+                b = '<unprintable %s object>' % type(b).__name__
 
-        elif type(b) is not types.StringType or tag_search(b) is None:
-            tb=self.setBody(
+        if fatal and t is SystemExit and v.code == 0:
+            body = self.setBody(
                 (str(t),
-                'Sorry, a site error occurred.<p>'+
-                 self._traceback(t,v,tb)),
+                 'Zope has exited normally.<p>' + self._traceback(t, v, tb)),
+                is_error=1)
+        elif type(b) is not types.StringType or tag_search(b) is None:
+            body = self.setBody(
+                (str(t),
+                'Sorry, a site error occurred.<p>'
+                 + self._traceback(t, v, tb)),
                  is_error=1)
-
         elif (lower(strip(b)[:6])=='<html>' or
               lower(strip(b)[:14])=='<!doctype html'):
             # error is an HTML document, not just a snippet of html
-            tb=self.setBody(b + self._traceback(t,'(see above)',tb),
-                is_error=1)
+            body = self.setBody(b + self._traceback(t, '(see above)', tb),
+                              is_error=1)
         else:
-            tb=self.setBody(
-                (str(t), b + self._traceback(t,'(see above)',tb)),
-                 is_error=1)
-
-        return tb
+            body = self.setBody((str(t),
+                               b + self._traceback(t,'(see above)', tb)),
+                              is_error=1)
+        del tb
+        return body
 
     _wrote=None
 
