@@ -122,6 +122,14 @@ from medusa.default_handler import split_path, unquote, get_header
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
 CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
 
+ZSERVER_VERSION='1.1b1'
+try:
+    import Main
+    ZOPE_VERSION=Main.app.Control_Panel.version_txt()
+    del Main
+except:
+    ZOPE_VERSION='experimental'
+    
 # maps request some headers to environment variables.
 # (those that don't start with 'HTTP_')
 header2env={'content-length'    : 'CONTENT_LENGTH',
@@ -206,7 +214,7 @@ class zhttp_handler:
         env['REQUEST_METHOD']=string.upper(request.command)
         env['SERVER_PORT']=str(request.channel.server.port)
         env['SERVER_NAME']=request.channel.server.server_name
-        env['SERVER_SOFTWARE']=request['Server']
+        env['SERVER_SOFTWARE']=request.channel.server.SERVER_IDENT
         env['SERVER_PROTOCOL']=request.version
         if self.uri_base=='/':
             env['SCRIPT_NAME']=''
@@ -232,6 +240,7 @@ class zhttp_handler:
                 env['REMOTE_HOST']=dns_cache[env['REMOTE_ADDR']][2]
         except AttributeError:
             pass
+        
         for header in request.header:
             [key,value]=string.split(header,": ",1)
             key=string.lower(key)
@@ -316,5 +325,7 @@ class zhttp_channel(http_channel):
 
 class zhttp_server(http_server):    
     "http server"
+    
+    SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
     
     channel_class = zhttp_channel

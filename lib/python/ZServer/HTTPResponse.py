@@ -99,9 +99,6 @@ from medusa.producers import hooked_producer
 from medusa import http_server
 from Producers import ShutdownProducer, LoggingProducer, CallbackProducer
 
-__version__='1.0b1'
-__zope_version__='1.11a1' # XXX retrieve this somehow
-                          # XXX there should be a method somewhere for this
 
 class ZServerHTTPResponse(HTTPResponse):
     "Used to push data into a channel's producer fifo"
@@ -153,7 +150,7 @@ class ZServerHTTPResponse(HTTPResponse):
             del headers['status']
         
         # add zserver headers
-        append('Server: Zope/%s ZServer/%s' % (__zope_version__, __version__)) 
+        append('Server: %s' % self._server_version) 
         append('Date: %s' % build_http_date(time.time()))
         append('X-Powered-By: Zope (www.zope.org), Python (www.python.org)')
         chunk=0
@@ -256,11 +253,12 @@ class ChannelPipe:
         
 def make_response(request, headers):
     "Simple http response factory"
-	# should this be integrated into the HTTPResponse constructor?
-	
+    # should this be integrated into the HTTPResponse constructor?
+    
     response=ZServerHTTPResponse(stdout=ChannelPipe(request), stderr=StringIO())
     response._http_version=request.version
     response._http_connection=string.lower(
             http_server.get_header(http_server.CONNECTION, request.header))
+    response._server_version=request.channel.server.SERVER_IDENT
     return response
     
