@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.2 2001/04/27 20:51:20 evan Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Tree.py,v 1.3 2001/07/11 16:23:20 evan Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -122,6 +122,8 @@ class TreeNode(Explicit):
         return self._child_list[index].__of__(self)
     def __len__(self):
         return len(self._child_list)
+
+_marker = [] 
         
 class TreeMaker:
     '''Class for mapping a hierachy of objects into a tree of nodes.'''
@@ -132,7 +134,25 @@ class TreeMaker:
     _values = 'tpValues'
     _assume_children = 0
     _values_filter = None
+    _values_function = None
     _expand_root = 1
+
+    def setChildAccess(self, attrname=_marker, filter=_marker,
+                       function=_marker):
+        '''Set the criteria for fetching child nodes.
+
+        Child nodes can be accessed through either an attribute name
+        or callback function.  Children fetched by attribute name can
+        be filtered through a callback function.
+        '''
+        if function is _marker:
+            self._values_function = None
+            if attrname is not _marker:
+                self._values = str(attrname)
+            if filter is not _marker:
+                self._values_filter = filter
+        else:
+            self._values_function = function
     
     def tree(self, root, expanded=None, subtree=0):
         '''Create a tree from root, with specified nodes expanded.
@@ -183,6 +203,8 @@ class TreeMaker:
         return self.getChildren(object)
 
     def getChildren(self, object):
+        if self._values_function is not None:
+            return self._values_function(object)
         if self._values_filter and hasattr(object, 'aq_acquire'):
             return object.aq_acquire(self._values, aqcallback,
                                      self._values_filter)()
