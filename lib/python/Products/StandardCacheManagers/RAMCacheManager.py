@@ -191,6 +191,7 @@ class RAMCache (Cache):
     # Note the need to take thread safety into account.
     # Also note that objects of this class are not persistent,
     # nor do they make use of acquisition.
+    max_age = 0
 
     def __init__(self):
         # cache maps physical paths to ObjectCacheEntries.
@@ -267,17 +268,18 @@ class RAMCache (Cache):
         """
         Deletes entries that have expired.
         """
-        self.writelock.acquire()
-        try:
-            min_created = time.time() - self.max_age
-            for p, oc in self.cache.items():
-                for agindex, entry in oc.entries.items():
-                    if entry.created < min_created:
-                        del oc.entries[agindex]
-                if len(oc.entries) < 1:
-                    del self.cache[p]
-        finally:
-            self.writelock.release()
+        if self.max_age > 0:
+            self.writelock.acquire()
+            try:
+                min_created = time.time() - self.max_age
+                for p, oc in self.cache.items():
+                    for agindex, entry in oc.entries.items():
+                        if entry.created < min_created:
+                            del oc.entries[agindex]
+                    if len(oc.entries) < 1:
+                        del self.cache[p]
+            finally:
+                self.writelock.release()
 
     def cleanup(self):
         '''
@@ -356,7 +358,7 @@ class RAMCache (Cache):
         entry = oc.getEntry(lastmod, index)
         if entry is _marker:
             return default
-        if entry.created < time.time() - self.max_age:
+        if self.max_age > 0 and entry.created < time.time() - self.max_age:
             # Expired.
             self.writelock.acquire()
             try:
@@ -441,7 +443,10 @@ class RAMCacheManager (CacheManager, SimpleItem):
 
     def getSettings(self):
         'Returns the current cache settings.'
-        return self._settings.copy()
+        res = self._settings.copy()
+        if not res.has_key('max_age'):
+            res['max_age'] = 0
+        return res
 
     manage_main = DTMLFile('dtml/propsRCM', globals())
 
