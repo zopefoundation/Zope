@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, traceback
 from TAL.TALParser import TALParser
@@ -154,7 +154,9 @@ class PageTemplate:
                        html=self.html() )()
         return output.getvalue()
 
-    def __call__(self, **kwargs):
+    def __call__(self, *args, **kwargs):
+        if not kwargs.has_key('args'):
+            kwargs['args'] = args
         return self.pt_render(extra_context={'options': kwargs})
 
     def pt_errors(self):
