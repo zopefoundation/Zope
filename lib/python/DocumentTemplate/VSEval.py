@@ -84,8 +84,8 @@
 ##############################################################################
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.22 1999/08/03 20:09:02 jim Exp $'
-__version__='$Revision: 1.22 $'[11:-2]
+__rcs_id__='$Id: VSEval.py,v 1.23 1999/10/28 18:02:41 brian Exp $'
+__version__='$Revision: 1.23 $'[11:-2]
 
 from string import translate, strip
 import string
@@ -100,17 +100,23 @@ def default_slicer(env, s, *ind):
     return s[:]
 
 def careful_mul(env, *factors):
+    # r = result (product of all factors)
+    # c = count (product of all non-sequence factors)
+    # s flags whether any of the factors is a sequence
+    r=c=1
     s=None
-    r=1
     for factor in factors:
         try:
             l=len(factor)
             s=1
-        except: l=factor
-        if s and (l*r) > 1000: raise TypeError, 'Illegal sequence repeat'
+        except TypeError:
+            c=c*factor
+        if s and c > 1000:
+            raise TypeError, \
+                  'Illegal sequence repeat (too many repetitions: %d)' % c
         r=r*factor
-
     return r
+
 
 default_globals={
     '__builtins__':{},
