@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.159 2003/03/17 11:12:11 ctheune Exp $"""
-__version__='$Revision: 1.159 $'[11:-2]
+$Id: Publish.py,v 1.160 2003/03/17 13:58:43 ctheune Exp $"""
+__version__='$Revision: 1.160 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -58,6 +58,7 @@ def publish(request, module_name, after_list, debug=0,
      validated_hook, transactions_manager)= get_module_info(module_name)
 
     parents=None
+    response=None
 
     try:
         request.processInputs()
@@ -106,8 +107,10 @@ def publish(request, module_name, after_list, debug=0,
         if transactions_manager: transactions_manager.abort()
 
         # DM: provide nicer error message for FTP
-        try: sm= response.setMessage
-        except: sm= None
+        sm = None
+        if response is not None:
+            sm = getattr(response, "setMessage", None)
+
         if sm is not None:
             from ZServer.medusa.asyncore import compact_traceback
             cl,val= sys.exc_info()[:2]
