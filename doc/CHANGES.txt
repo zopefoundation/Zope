@@ -92,6 +92,10 @@ Zope Changes
 
     Bugs:
     
+      - External methods didn't properly setup func_defaults and func_code
+        when they were first loaded. This meant mapply couldn't properly map
+        arguments on the first try.
+        
       - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
         compliant browsers. This allows better control for browsers that have a
         hard time knowing what 100% means.

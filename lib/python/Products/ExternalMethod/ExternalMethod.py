@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -80,8 +80,9 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
     meta_type = 'External Method'
 
-    func_defaults = ComputedAttribute(lambda self: self._v_func_defaults)
-    func_code = ComputedAttribute(lambda self: self._v_func_code)
+    func_defaults = ComputedAttribute(lambda self: self.getFuncDefaults())
+    func_code = ComputedAttribute(lambda self: self.getFuncCode())
+
 
     ZopeTime=Acquisition.Acquired
     HelpSys=Acquisition.Acquired
@@ -141,12 +142,43 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
         self._v_func_defaults  = ff.func_defaults
         self._v_func_code = FuncCode(ff,f is not ff)
-          
+ 
         self._v_f=f
 
         return f
 
+    def reloadIfChanged(self):
+        # If the file has been modified since last loaded, force a reload.
+        ts=os.stat(self.filepath())[stat.ST_MTIME]
+        if (not hasattr(self, '_v_last_read') or 
+            (ts != self._v_last_read)):
+            self._v_f=self.getFunction(1)
+            self._v_last_read=ts
 
+    if DevelopmentMode:
+        # In development mode we do an automatic reload 
+        # if the module code changed
+        def getFuncDefaults(self):
+            self.reloadIfChanged()
+            if not hasattr(self, '_v_func_defaults'):
+                self._v_f = self.getFunction()
+            return self._v_func_defaults
+
+        def getFuncCode(self):
+            self.reloadIfChanged()
+            if not hasattr(self, '_v_func_code'):
+                self._v_f = self.getFunction()
+            return self._v_func_code
+    else:
+        def getFuncDefaults(self):
+            if not hasattr(self, '_v_func_defaults'):
+                self._v_f = self.getFunction()
+            return self._v_func_defaults
+
+        def getFuncCode(self):
+            if not hasattr(self, '_v_func_code'):
+                self._v_f = self.getFunction()
+            return self._v_func_code
 
     def __call__(self, *args, **kw):
         """Call an ExternalMethod
@@ -178,14 +210,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                 "external method could not be called " \
                 "because the file does not exist"
             
-
         if DevelopmentMode:
-            # If the file has been modified since last loaded, force a reload.
-            ts=os.stat(self.filepath())[stat.ST_MTIME]
-            if (not hasattr(self, '_v_last_read') or 
-                (ts != self._v_last_read)):
-                self._v_f=self.getFunction(1)
-                self._v_last_read=ts
+            self.reloadIfChanged()
 
         if hasattr(self, '_v_f'):
             f=self._v_f
