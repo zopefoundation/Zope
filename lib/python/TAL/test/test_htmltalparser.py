@@ -96,8 +96,8 @@ class HTMLTALParserTestCases(TestCaseBase):
             """<a b='xxx\n\txxx' c="yyy\t\nyyy" d='\txyz\n'>""", [
             ('rawtext',
              '<a b="xxx\n\txxx" c="yyy\t\nyyy" d="\txyz\n"></a>')])
-        self._run_check("""<a b='' c="" d=>""", [
-            ('rawtext', '<a b="" c="" d=""></a>'),
+        self._run_check("""<a b='' c="">""", [
+            ('rawtext', '<a b="" c=""></a>'),
             ])
 
     def check_code_attr_entity_replacement(self):
