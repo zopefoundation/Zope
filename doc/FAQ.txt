@@ -29,7 +29,17 @@ Zope Installation Frequently Asked Questions
     3. I am having trouble building Zope on a libc 5 Linux machine.
     
        Zope requires Python be built with glibc 2.x (libc 6) on Linux.
-       
+
+    4. I am trying to install Zope on a Windows NT/2000 machine, but
+       I keep getting a dialog saying "corrupt installation detected".
+       Is something wrong with the distribution file?
+
+       No, to install Windows NT / 2000 you should be logged in with 
+       "Administrator" privileges on the machine. If you are seeing
+       the "corrupt installation detected" dialog, you probably don't
+       have the required administrator privileges (your guess is as
+       good as ours as to why you get that particular error message).
+
 
   Starting/Accessing your Zope installation
 
