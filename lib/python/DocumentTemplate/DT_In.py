@@ -212,7 +212,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.6 1997/10/05 19:41:59 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.7 1997/10/05 19:50:58 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,7 +266,7 @@ __rcs_id__='$Id: DT_In.py,v 1.6 1997/10/05 19:41:59 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -342,6 +342,8 @@ class In:
 		else: v=client
 		if mapping: v=v[sort]
 		else: v=getattr(v, sort)
+		try: v=v()
+		except: pass
 		s.append((v,client))
 	    s.sort()
 	    sequence=[]
@@ -770,6 +772,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.7  1997/10/05 19:50:58  jim
+# Made sort work with methods.
+#
 # Revision 1.6  1997/10/05 19:41:59  jim
 # Added sort option.
 #
