@@ -14,7 +14,7 @@
 
 /*
 
-  $Id: ExtensionClass.h,v 1.17 2002/06/10 22:48:46 jeremy Exp $
+  $Id: ExtensionClass.h,v 1.18 2002/08/26 13:33:01 Brian Exp $
 
   Extension Class Definitions
 
@@ -81,9 +81,8 @@
   
   If you have questions regarding this software,
   contact:
- 
-    Digital Creations L.C.  
-    info@digicool.com
+    Zope Corporation
+    info@zope.com
  
     (540) 371-6909
 
