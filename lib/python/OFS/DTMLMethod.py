@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -99,7 +99,7 @@ from webdav.WriteLockInterface import WriteLockInterface
 from ZDOM import ElementWithTitle
 from DateTime.DateTime import DateTime
 from urllib import quote
-import ts_regex, Globals, sys, Acquisition
+import  Globals, sys, Acquisition
 from AccessControl import getSecurityManager
 from Cache import Cacheable
 
