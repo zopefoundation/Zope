@@ -17,7 +17,7 @@ import os
 ###
 
 # This should point to your Zope directory
-SOFTWARE_HOME = '/projects/users/zmichel'
+SOFTWARE_HOME = '/path/to/Zope'
 
 # This should point at the directory that contains your var directory.
 # Most of the time this is the same as SOFTWARE_HOME
@@ -33,16 +33,12 @@ INSTANCE_HOME = SOFTWARE_HOME
 # be visible from.  This can be changed to '' to listen on all interfaces.
 IP_ADDRESS=''
 
-# Host name of the server machine. You may use 'localhost' if your server 
-# doesn't have a host name.
-HOSTNAME='localhost'
-
 # IP address of your DNS server. If you have DNS service on your local machine
 # then you can set this to '127.0.0.1'
-DNS_IP='216.164.72.2'
+DNS_IP='127.0.0.1'
 
 # Port for HTTP Server. The standard port for HTTP services is 80.
-HTTP_PORT=9222
+HTTP_PORT=9673
 
 # Module to publish. If you are not using the Zope management framework,
 # this should be the name of your published module. Note that this module
@@ -77,30 +73,6 @@ PCGI_FILE=os.path.join(SOFTWARE_HOME,'Zope.cgi')
 #
 import sys
 sys.path.insert(0,os.path.join(SOFTWARE_HOME,'lib','python'))
-
-# open and close the log file, to make sure one is there.
-
-v = open(LOG_FILE, 'a')
-v.close()
-
-
-# if it hasn't failed at this point, create a .pid file.
-
-pf = open(PID_FILE, 'w')
-pf.write(str(os.getpid()))
-pf.close()
-
-
-# Try to become nobody. This will only work if this script is run by root.
-try:
-    import pwd
-    try:
-        nobody = pwd.getpwnam('nobody')[2]
-    except pwd.error:
-        nobody = 1 + max(map(lambda x: x[2], pwd.getpwall()))
-    os.setuid(nobody)
-except:
-    pass
 
 # import ZServer stuff
 from medusa import resolver,logger,http_server,asyncore
@@ -137,12 +109,11 @@ zh = zhttp_handler(MODULE,'')
 hs.install_handler(zh)
 
 # FTP Server    
-## zftp = FTPServer(
-##     module=MODULE,
-##     hostname=HOSTNAME,
-##     port=FTP_PORT,
-##     resolver=rs,
-##     logger_object=lg)
+# zftp = FTPServer(
+#     module=MODULE,
+#     port=FTP_PORT,
+#     resolver=rs,
+#     logger_object=lg)
 
 # PCGI Server (uncomment to turn it on)
 #zpcgi = PCGIServer(
@@ -152,8 +123,23 @@ hs.install_handler(zh)
 #    logger_object=lg)
 
 
-# Start Medusa
+# Try to become nobody. This will only work if this script is run by root.
+try:
+    import pwd
+    try:
+        nobody = pwd.getpwnam('nobody')[2]
+    except pwd.error:
+        nobody = 1 + max(map(lambda x: x[2], pwd.getpwall()))
+    os.setuid(nobody)
+except:
+    pass
 
+# if it hasn't failed at this point, create a .pid file.
+pf = open(PID_FILE, 'w')
+pf.write(str(os.getpid()))
+pf.close()
+
+# Start Medusa
 asyncore.loop()
 
 
