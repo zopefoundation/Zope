@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.142 2001/03/01 15:22:22 brian Exp $'''
-__version__='$Revision: 1.142 $'[11:-2]
+$Id: Application.py,v 1.143 2001/04/07 16:37:07 jim Exp $'''
+__version__='$Revision: 1.143 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -113,16 +113,9 @@ _standard_error_msg='''\
  <dtml-var error_message>
 <dtml-else>
 
-<TABLE BORDER="0" WIDTH="100%">
-<TR VALIGN="TOP">
+  <H2>Site Error</H2>
 
-<TD WIDTH="10%" ALIGN="CENTER">
-<IMG SRC="<dtml-var BASE1>/p_/ZButton" ALT="Zope">
-</TD>
-
-<TD WIDTH="90%">
-  <H2>Zope Error</H2>
-  <P>Zope has encountered an error while publishing this resource.
+  <P>An error was encountered while publishing this resource.
   </P>
   
   <P>
@@ -141,7 +134,8 @@ _standard_error_msg='''\
   </dtml-if>
   <LI>The URL may be incorrect.</LI>
   <LI>The parameters passed to this resource may be incorrect.</LI>
-  <LI>A resource that this resource relies on may be encountering an error.</LI>
+  <LI>A resource that this resource relies on may be encountering
+      an error.</LI>
   </UL>
 
   <P>For more detailed information about the error, please
@@ -151,13 +145,11 @@ _standard_error_msg='''\
   <P>If the error persists please contact the site maintainer.
   Thank you for your patience.
   </P>
-</TD></TR>
-</TABLE>
 
-<dtml-comment>
- Here, events like logging and other actions may also be performed, such as
- sending mail automatically to the administrator.
-</dtml-comment>
+  <dtml-comment>
+   Here, events like logging and other actions may also be performed, such as
+   sending mail automatically to the administrator.
+  </dtml-comment>
 
 </dtml-if>
 <dtml-var standard_html_footer>'''
