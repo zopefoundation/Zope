@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.32 1997/02/07 14:41:32 jim Exp $"""
+$Id: Publish.py,v 1.33 1997/02/07 16:00:46 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.32 1997/02/07 14:41:32 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 def main():
@@ -902,13 +902,14 @@ class ModulePublisher:
 		def function_with_empty_signature(): pass
 		object_as_function=function_with_empty_signature
 		
-	if type(object_as_function) is types.MethodType:
+	# First, assume we have a method:
+	try:
 	    defaults=object_as_function.im_func.func_defaults
 	    argument_names=(
 		object_as_function.im_func.
 		func_code.co_varnames[
 		    1:object_as_function.im_func.func_code.co_argcount])
-	else:
+	except:
 	    # Rather than sniff for FunctionType, assume its a
 	    # function and fall back to returning the object itself:	    
 	    try:
@@ -1406,6 +1407,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.33  1997/02/07 16:00:46  jim
+# Made "method" check more general by trying to get im_func rather than
+# by testing for type.MethodType. Du.
+#
 # Revision 1.32  1997/02/07 14:41:32  jim
 # Fixed bug in 'lines' conversion and fixed documentation for
 # 'required'.
