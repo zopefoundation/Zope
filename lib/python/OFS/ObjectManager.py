@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.107 2000/08/15 21:19:56 shane Exp $"""
+$Id: ObjectManager.py,v 1.108 2000/08/17 20:17:24 shane Exp $"""
 
-__version__='$Revision: 1.107 $'[11:-2]
+__version__='$Revision: 1.108 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -270,7 +270,8 @@ class ObjectManager(
 
         self._objects=self._objects+({'id':id,'meta_type':t},)
         # Prepare the _p_jar attribute immediately. _getCopy() may need it.
-        object._p_jar = self._p_jar
+        if hasattr(object, '_p_jar'):
+            object._p_jar = self._p_jar
         self._setOb(id,object)
         object=self._getOb(id)
 
