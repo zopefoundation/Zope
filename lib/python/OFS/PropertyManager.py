@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -185,7 +185,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                                'manage_changePropertyTypes',
                                )),
         ('Access contents information',
-         ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',''),
+         ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',
+          'getProperty', 'getPropertyType', 'propertyMap', ''),
          ('Anonymous', 'Manager'),
          ),
         )

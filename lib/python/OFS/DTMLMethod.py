@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -141,7 +141,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
       'document_src', 'PrincipiaSearchSource')),
     ('Change DTML Methods',     ('manage_edit', 'manage_upload', 'PUT')),
     ('Change proxy roles', ('manage_proxyForm', 'manage_proxy')),
-    ('View', ('__call__', '')),
+    ('View', ('__call__', 'get_size', '')),
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
     )
 
@@ -182,7 +182,6 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
 
     def get_size(self):
         return len(self.raw)
-    getSize=get_size
     
     def validate(self, inst, parent, name, value, md):
         return getSecurityManager().validate(inst, parent, name, value)

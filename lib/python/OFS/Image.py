@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.104 $'[11:-2]
+__version__='$Revision: 1.105 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -162,7 +162,7 @@ class File(Persistent,Implicit,PropertyManager,
         ('Change Images and Files',
          ('manage_edit','manage_upload','PUT')),
         ('View',
-         ('index_html', 'view_image_or_file', 'getSize',
+         ('index_html', 'view_image_or_file', 'get_size',
           'getContentType', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
@@ -362,7 +362,7 @@ class File(Persistent,Implicit,PropertyManager,
         RESPONSE.setStatus(204)
         return RESPONSE
     
-    def getSize(self):
+    def get_size(self):
         """Get the size of a file or image.
 
         Returns the size of the file or image.
@@ -371,7 +371,6 @@ class File(Persistent,Implicit,PropertyManager,
         if size is None: size=len(self.data)
         return size
     
-    get_size=getSize
     
     def getContentType(self):
         """Get the content type of a file or image.
@@ -380,7 +379,6 @@ class File(Persistent,Implicit,PropertyManager,
         """
         return self.content_type
 
-    size=getSize
 
     def __str__(self): return str(self.data)
     def __len__(self): return 1
@@ -436,7 +434,7 @@ class Image(File):
         ('Change Images and Files',
          ('manage_edit','manage_upload','PUT')),
         ('View',
-         ('index_html', 'tag', 'view_image_or_file', 'getSize',
+         ('index_html', 'tag', 'view_image_or_file', 'get_size',
           'getContentType', '')),
         ('FTP access',
          ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
