@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.88 2000/06/16 19:50:30 srichter Exp $'''
-__version__='$Revision: 1.88 $'[11:-2]
+$Id: DA.py,v 1.89 2000/06/26 19:30:30 brian Exp $'''
+__version__='$Revision: 1.89 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -123,7 +123,7 @@ class nvSQL(DocumentTemplate.HTML):
     _proxy_roles=()
 
 
-class SQL(nvSQL):
+class SQL(ExtensionClass.Base, nvSQL):
     # Validating SQL template for Zope SQL Methods.
 
     def validate(self, inst, parent, name, value, md):
