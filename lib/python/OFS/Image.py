@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -167,13 +167,16 @@ class File(Persistent,Implicit,PropertyManager,
         self.title=title
         self.precondition=precondition
         headers=hasattr(file, 'headers') and file.headers or None
-        if (headers is None) and (not content_type):
-            raise 'Bad Request', 'No content type specified.'
-        if headers and headers.has_key('content-type'):
+        data=(headers is None) and file or file.read()
+        if headers and headers.has_key('content-type') and (not content_type):
             content_type=headers['content-type']
         if not content_type:
-            raise 'Bad Request', 'No content type specified.'
-        data=(headers is None) and file or file.read()
+            content_type, enc=mimetypes.guess_type(id)
+            if not content_type:
+                if content_types.find_binary(data) >= 0:
+                    content_type='application/octet-stream'
+                else: content_type=content_types.text_type(data)
+        content_type=string.lower(content_type)
         self.update_data(data, content_type)
 
     def id(self):
@@ -232,10 +235,19 @@ class File(Persistent,Implicit,PropertyManager,
 
         The file or images contents are replaced with the contents of 'file'.
         """
-        if file.headers.has_key('content-type'):
-            content_type=file.headers['content-type']
-        else: content_type=None
-        self.update_data(file.read(), content_type)
+
+        headers=hasattr(file, 'headers') and file.headers or None
+        data=(headers is None) and file or file.read()
+        if headers and headers.has_key('content-type'):
+            content_type=headers['content-type']
+        if not content_type:
+            content_type, enc=mimetypes.guess_type(self.id())
+            if not content_type:
+                if content_types.find_binary(data) >= 0:
+                    content_type='application/octet-stream'
+                else: content_type=content_types.text_type(data)
+        content_type=string.lower(content_type)
+        self.update_data(data, content_type)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
