@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -360,6 +360,10 @@ class CopyContainer(ExtensionClass.Base):
                     factory=getattr(product, fname)
                     try: meth=getattr(factory, factory.initial)
                     except: meth=factory
+
+            # if we still have a factory, get the add method
+            try: meth=getattr(meth, meth.initial)
+            except: pass
 
             if hasattr(meth, '__roles__'):
                 roles=meth.__roles__
