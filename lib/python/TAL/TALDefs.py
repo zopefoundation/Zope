@@ -129,8 +129,8 @@ class METALError(TALError):
     pass
 
 import re
-_attr_re = re.compile(r"\s*([^\s]+)\s*(.*)")
-_subst_re = re.compile(r"\s*(?:(text|structure)\s+)?(.*)")
+_attr_re = re.compile(r"\s*([^\s]+)\s*(.*)\Z", re.S)
+_subst_re = re.compile(r"\s*(?:(text|structure)\s+)?(.*)\Z", re.S)
 del re
 
 def parseAttributeReplacements(arg):

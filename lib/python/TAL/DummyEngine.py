@@ -121,7 +121,7 @@ class DummyEngine:
         self.globals[name] = value
 
     def evaluate(self, expression):
-        m = re.match(r"(%s):(.*)" % NAME_RE, expression)
+        m = re.match(r"(?s)(%s):(.*)\Z" % NAME_RE, expression)
         if m:
             type, expr = m.group(1, 2)
         else:
