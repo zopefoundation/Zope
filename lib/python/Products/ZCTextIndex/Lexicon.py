@@ -16,9 +16,12 @@ import re
 
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
+
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
-from PipelineFactory import splitter_factory, element_factory
+from Products.ZCTextIndex.ParseTree import QueryError
+from Products.ZCTextIndex.PipelineFactory import \
+     splitter_factory, element_factory
 
 class Lexicon:
 
@@ -78,7 +81,7 @@ class Lexicon:
         return last
 
     def isGlob(self, word):
-        return "*" in word
+        return "*" in word or "?" in word
 
     def get_word(self, wid):
         return self._words[wid]
@@ -87,17 +90,41 @@ class Lexicon:
         return self._wids.get(word, 0)
 
     def globToWordIds(self, pattern):
-        # This currently only knows about trailing *;
-        # whatever splitter you use should match this
-        assert pattern.endswith("*")
-        prefix = pattern[:-1]
-        assert prefix and not prefix.endswith("*")
+        # Implement * and ? just as in the shell, except the pattern
+        # must not start with either of these
+        prefix = ""
+        while pattern and pattern[0] not in "*?":
+            prefix += pattern[0]
+            pattern = pattern[1:]
+        if not pattern:
+            # There were no globbing characters in the pattern
+            wid = self._wids.get(prefix, 0)
+            if wid:
+                return [wid]
+            else:
+                return []
+        if not prefix:
+            # The pattern starts with a globbing character.
+            # This is too efficient, so we raise an exception.
+            raise QueryError(
+                "pattern %r shouldn't start with glob character" % pattern)
+        pat = prefix
+        for c in pattern:
+            if c == "*":
+                pat += ".*"
+            elif c == "?":
+                pat += "."
+            else:
+                pat += re.escape(c)
+        pat += "$"
+        prog = re.compile(pat)
         keys = self._wids.keys(prefix) # Keys starting at prefix
         wids = []
         for key in keys:
             if not key.startswith(prefix):
                 break
-            wids.append(self._wids[key])
+            if prog.match(key):
+                wids.append(self._wids[key])
         return wids
 
     def _getWordIdCreate(self, word):
@@ -128,7 +155,7 @@ class Splitter:
 
     import re
     rx = re.compile(r"\w+")
-    rxGlob = re.compile(r"\w+\*?") # See globToWordIds() above
+    rxGlob = re.compile(r"\w+[\w*?]*") # See globToWordIds() above
 
     def process(self, lst):
         result = []
