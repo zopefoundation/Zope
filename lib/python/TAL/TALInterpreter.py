@@ -173,7 +173,7 @@ class TALInterpreter:
         self.macros = saveMacros
 
     def do_loop(self, name, expr, block):
-        iterator = self.engine.setupLoop(name, expr)
+        iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.interpret(block)
 
