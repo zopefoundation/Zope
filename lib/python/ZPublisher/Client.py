@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -113,7 +113,7 @@ from random import random
 from base64 import encodestring
 from urllib import urlopen, quote
 from types import FileType, ListType, DictType, TupleType
-from string import strip, split, atoi, join, rfind, translate, maketrans, replace
+from string import strip, split, atoi, join, rfind, translate, maketrans, replace, lower
 from urlparse import urlparse
 
 class Function:
@@ -480,9 +480,11 @@ class MultiPart:
             if hasattr(val,'name'):
                 fn=replace(val.name, '\\', '/')
                 fn=fn[(rfind(fn,'/')+1):]
-                ex=fn[(rfind(fn,'.')+1):]
-                if self._extmap.has_key(ex): ct=self._extmap[ex]
-                else: ct=self._extmap['']
+                ex=lower(fn[(rfind(fn,'.')+1):])
+                if self._extmap.has_key(ex):
+                    ct=self._extmap[ex]
+                else:
+                    ct=self._extmap['']
             else:
                 fn=''
                 ct=self._extmap[None]
@@ -619,7 +621,7 @@ def main():
             if name[-5:]==':file':
                 name=name[:-5]
                 if v=='-': v=sys.stdin
-                else: v=open(v)
+                else: v=open(v, 'rb')
             kw[name]=v
 
     except:
