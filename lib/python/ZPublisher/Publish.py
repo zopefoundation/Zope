@@ -54,8 +54,8 @@
 
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.108 1998/11/23 22:55:59 jim Exp $"""
-__version__='$Revision: 1.108 $'[11:-2]
+$Id: Publish.py,v 1.109 1998/12/02 16:56:55 jim Exp $"""
+__version__='$Revision: 1.109 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -609,7 +609,7 @@ def get_module_info(module_name, modules={},
             else:
                 try: hide_tracebacks=atoi(hide_tracebacks)
                 except: hide_tracebacks=None
-        else: hide_tracebacks=None
+        else: hide_tracebacks=1
 
         # Reset response handling of tracebacks, if necessary:
         if debug_mode or not hide_tracebacks:
