@@ -92,7 +92,8 @@ Building Zope
 Starting Zope with an existing web server
 
   See the WEBSERVERS.txt file for more information about configuring Zope
-  with an existing web server.
+  with an existing web server. See also the pcgi/README file for further
+  informations on the installation of PCGI.
 
 Running Zope
 

@@ -45,6 +45,8 @@ Using Zope in multi-threaded mode with ZServer
 
  PCGI
 
+  To install PCGI, please read the pcgi/README file.
+
   To run ZServer with PCGI, you must specify the -p option to the
   'z2.py' startup script.  From the top level Zope directory, you
   can::
