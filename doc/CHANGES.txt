@@ -8,6 +8,10 @@ Zope Changes
 
     Bugs fixed
 
+     - manage_tabs had a namespace problem with the acquisition of names from
+       the manage_options variable resulting to acquire "target" and "action"
+       from objects above in the hierachy.
+
      - PathIndex and TopicIndex are now using a counter for the number
        of indexed objects instead of using a very expensive calculation
        based on the keys of their indexes. 

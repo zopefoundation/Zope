@@ -57,15 +57,15 @@
   <td bgcolor="#ffffff" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1" color="#000000">&nbsp;<a <dtml-if 
-   action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
-   ><dtml-if target> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong>&dtml-label;</strong></span></a>&nbsp;</font></td>
+   "_['sequence-item'].has_key('action')">href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
+   ><dtml-if "_['sequence-item'].has_key('target')"> target="&dtml-target;"</dtml-if
+   >><span style="color: #000000;"><strong><dtml-var "_['sequence-item']['label']"></strong></span></a>&nbsp;</font></td>
 <dtml-else>
   <td bgcolor="#efefef" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1" color="#000000">&nbsp;<a <dtml-if 
-   action>href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
-   ><dtml-if target> target="&dtml-target;"</dtml-if
+   "_['sequence-item'].has_key('action')">href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
+   ><dtml-if "_['sequence-item'].has_key('target')"> target="&dtml-target;"</dtml-if
    >><span style="color: #000000;"><strong>&dtml-label;</strong></span></a>&nbsp;</font></td>
 </dtml-if>
 </dtml-in>
