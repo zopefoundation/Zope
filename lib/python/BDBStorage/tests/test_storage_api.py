@@ -67,6 +67,7 @@ class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
 
     def tearDown(self):
         BerkeleyTestBase.FullTestBase.tearDown(self)
+        self._dst.close()
         self._zap_dbhome(DST_DBHOME)
 
     def new_dest(self):
