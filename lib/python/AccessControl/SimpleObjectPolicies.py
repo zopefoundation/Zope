@@ -42,7 +42,7 @@ disallowed otherwise.
 XXX This descrition doesn't actually match what's done in ZopeGuards
 or in ZopeSecurityPolicy. :(
 
-$Id: SimpleObjectPolicies.py,v 1.13 2004/01/15 23:09:03 tseaver Exp $'''
+$Id: SimpleObjectPolicies.py,v 1.14 2004/01/27 20:40:22 Brian Exp $'''
 
 _noroles = [] # this is imported in various places
 
@@ -104,3 +104,34 @@ def allow_type(Type, allowed=1):
     if not (isinstance(allowed, int) or isinstance(allowed, dict)):
         raise ValueError, "The 'allowed' argument must be an int or dict."
     ContainerAssertions[Type] = allowed
+
+#
+#   WAAAA!
+#
+from BTrees.OOBTree import OOBTree, OOBucket, OOSet
+from BTrees.OIBTree import OIBTree, OIBucket, OISet
+from BTrees.IOBTree import IOBTree, IOBucket, IOSet
+from BTrees.IIBTree import IIBTree, IIBucket, IISet
+
+for tree_type, has_values in [(OOBTree, 1),
+                              (OOBucket, 1),
+                              (OOSet, 0),
+                              (OIBTree, 1),
+                              (OIBucket, 1),
+                              (OISet, 0),
+                              (IOBTree, 1),
+                              (IOBucket, 1),
+                              (IOSet, 0),
+                              (IIBTree, 1),
+                              (IIBucket, 1),
+                              (IISet, 0),
+                             ]:
+    tree = tree_type()
+    key_type = type(tree.keys())
+
+    if key_type is not ListType: # lists have their own declarations
+        allow_type(key_type)
+
+    if has_values:
+        assert key_type is type(tree.values())
+        assert key_type is type(tree.items())
