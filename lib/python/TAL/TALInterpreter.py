@@ -133,10 +133,7 @@ class TALInterpreter:
             self.endsep = " />"
         else:
             self.endsep = "/>"
-        if not self.html:
-            self.stream_write('<?xml version="1.0" ?>\n')
         self.interpret(self.program)
-        self.stream_write("\n")
 
     col = 0
 
