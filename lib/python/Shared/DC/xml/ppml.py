@@ -167,7 +167,10 @@ class Wrapper:
         if isinstance(v,Scalar):
             return '%s<%s%s> %s </%s>\n' % (i, name, id, str(v)[:-1], name)
         else:
-            v=v.__str__(indent+2)
+            try:
+                v=v.__str__(indent+2)
+            except TypeError:
+                v=v.__str__()
             return '%s<%s%s>\n%s%s</%s>\n' % (i, name, id, v, i, name)
 
 class Collection:
@@ -215,10 +218,17 @@ class Sequence(Collection):
     def __len__(self): return len(self._subs)
 
     def append(self, v): self._subs.append(v)
+    def extend(self, v): self._subs.extend(v)
+
+    def _stringify(self, v, indent):
+        try:
+            return v.__str__(indent+2)
+        except TypeError:
+            return v.__str__()
 
     def value(self, indent):
         return string.join(map(
-            lambda v, indent=indent: v.__str__(indent),
+            lambda v, indent=indent: self._stringify(v, indent),
             self._subs),'')
 
 class List(Sequence): pass
@@ -403,12 +413,16 @@ class ToXMLUnpickler(Unpickler):
 
     def load_binput(self):
         i = mloads('i' + self.read(1) + '\000\000\000')
-        self.stack[-1].id=self.idprefix+`i`
+        last = self.stack[-1]
+        if getattr(last, 'id', last) is not last:
+            last.id = self.idprefix + `i`
     dispatch[BINPUT] = load_binput
 
     def load_long_binput(self):
         i = mloads('i' + self.read(4))
-        self.stack[-1].id=self.idprefix+`i`
+        last = self.stack[-1]
+        if getattr(last, 'id', last) is not last:
+            last.id = self.idprefix + `i`
     dispatch[LONG_BINPUT] = load_long_binput
 
 

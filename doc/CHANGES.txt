@@ -55,6 +55,8 @@ Zope Changes
         so that options with characters that needs shell quoting
         doesn't break the command.
 
+      - Collector #1219:  Make XML export sane again.
+
       - Collector #945:  Allow adding empty PythonScript instances
         programmatically.
 
