@@ -1,6 +1,6 @@
 /*
 
-  $Id: Query.c,v 1.3 1997/03/22 14:56:35 jim Exp $
+  $Id: Query.c,v 1.4 1997/03/23 01:33:50 jim Exp $
 
   Query objects for building tests without python code generation.
 
@@ -95,6 +95,52 @@ typedef struct
 } Rangeobject;
 
 staticforward PyTypeObject Rangetype;
+
+static PyObject *reprformat=NULL;
+
+static PyObject *
+Field_repr(FieldTestobject *self)
+{
+  PyObject *r;
+
+  UNLESS(reprformat) UNLESS(reprformat=PyString_FromString("%s%s")) return NULL;
+
+  UNLESS(r=Py_BuildValue("s(OO)", self->ob_type->tp_name,
+			 self->key, self->tests)) return NULL;
+
+  ASSIGN(r,PyString_Format(reprformat,r));
+  return r;
+}
+
+static PyObject *
+Test_repr(Testobject *self)
+{
+  PyObject *r;
+
+  UNLESS(reprformat) UNLESS(reprformat=PyString_FromString("%s%s")) return NULL;
+
+  UNLESS(r=Py_BuildValue("s(O)", self->ob_type->tp_name, self->tests))
+    return NULL;
+
+  ASSIGN(r,PyString_Format(reprformat,r));
+  return r;
+}
+
+static PyObject *
+Range_repr(Rangeobject *self)
+{
+  PyObject *r;
+
+  UNLESS(reprformat) UNLESS(reprformat=PyString_FromString("%s%s")) return NULL;
+
+  UNLESS(r=Py_BuildValue("s(OO)", self->ob_type->tp_name,
+			 self->low, self->high)) return NULL;
+
+  ASSIGN(r,PyString_Format(reprformat,r));
+  return r;
+}
+
+  
 
 FieldTestobject *
 new_FieldTestobject(PyObject *key, PyObject *tests, PyTypeObject *type)
@@ -280,7 +326,7 @@ static PyTypeObject AttrTesttype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Field_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &AttrTest_as_mapping,		/*tp_as_mapping*/
@@ -305,7 +351,7 @@ static PyTypeObject CompAttrTesttype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Field_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &CompAttrTest_as_mapping,		/*tp_as_mapping*/
@@ -330,7 +376,7 @@ static PyTypeObject MethodTesttype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Field_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &MethodTest_as_mapping,		/*tp_as_mapping*/
@@ -385,7 +431,7 @@ static PyTypeObject ItemTesttype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Field_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &ItemTest_as_mapping,		/*tp_as_mapping*/
@@ -458,7 +504,7 @@ static PyTypeObject Andtype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Test_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &And_as_mapping,		/*tp_as_mapping*/
@@ -519,7 +565,7 @@ static PyTypeObject Ortype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Test_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &Or_as_mapping,		/*tp_as_mapping*/
@@ -561,12 +607,10 @@ Range(PyObject *self, PyObject *args)
     return (PyObject *)new_Rangeobject(low, high);
 }
 
-static char Rangetype__doc__[] = "";
-
 static PyTypeObject Rangetype = {
     PyObject_HEAD_INIT(NULL)
     0,				/*ob_size*/
-    "Or",		/*tp_name*/
+    "Range",		/*tp_name*/
     sizeof(Rangeobject),		/*tp_basicsize*/
     0,				/*tp_itemsize*/
     /* methods */
@@ -575,7 +619,7 @@ static PyTypeObject Rangetype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Range_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &Range_as_mapping,		/*tp_as_mapping*/
@@ -585,7 +629,7 @@ static PyTypeObject Rangetype = {
 
     /* Space for future expansion */
     0L,0L,0L,0L,
-    Rangetype__doc__ /* Documentation string */
+    "Range test", /* Documentation string */
 };
 
 static PyObject *
@@ -625,7 +669,7 @@ static PyTypeObject Cmptype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Test_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &Cmp_as_mapping,		/*tp_as_mapping*/
@@ -713,7 +757,7 @@ static char Regextype__doc__[] = "";
 static PyTypeObject Regextype = {
     PyObject_HEAD_INIT(NULL)
     0,				/*ob_size*/
-    "RegexMatch",		/*tp_name*/
+    "Regex",		/*tp_name*/
     sizeof(Testobject),		/*tp_basicsize*/
     0,				/*tp_itemsize*/
     /* methods */
@@ -722,7 +766,7 @@ static PyTypeObject Regextype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Test_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &Regex_as_mapping,		/*tp_as_mapping*/
@@ -782,7 +826,7 @@ static char Stringtype__doc__[] = "";
 static PyTypeObject Stringtype = {
     PyObject_HEAD_INIT(NULL)
     0,				/*ob_size*/
-    "StringMatch",		/*tp_name*/
+    "String",		/*tp_name*/
     sizeof(Testobject),		/*tp_basicsize*/
     0,				/*tp_itemsize*/
     /* methods */
@@ -791,7 +835,7 @@ static PyTypeObject Stringtype = {
     (getattrfunc)0,	/*tp_getattr*/
     (setattrfunc)0,	/*tp_setattr*/
     (cmpfunc)0,		/*tp_compare*/
-    (reprfunc)0,		/*tp_repr*/
+    (reprfunc)Test_repr,		/*tp_repr*/
     0,			/*tp_as_number*/
     0,		/*tp_as_sequence*/
     &String_as_mapping,		/*tp_as_mapping*/
@@ -846,14 +890,14 @@ static char Query_module_documentation[] =
 "against objects.  Each object type define objects that can be called\n"
 "with a single argument or with 'getitem' to check whether an object,\n"
 "such as a database record or a collection item satisfies a query.\n"
-"\n$Id: Query.c,v 1.3 1997/03/22 14:56:35 jim Exp $"
+"\n$Id: Query.c,v 1.4 1997/03/23 01:33:50 jim Exp $"
 ;
 
 void
 initQuery()
 {
     PyObject *m, *d, *regex, *string;
-    char *rev="$Revision: 1.3 $";
+    char *rev="$Revision: 1.4 $";
 
     AttrTesttype.ob_type      =&PyType_Type;
     CompAttrTesttype.ob_type  =&PyType_Type;
@@ -892,6 +936,9 @@ initQuery()
 /****************************************************************************
 
  $Log: Query.c,v $
+ Revision 1.4  1997/03/23 01:33:50  jim
+ Added repr operations.
+
  Revision 1.3  1997/03/22 14:56:35  jim
  Added RCS keywords.
  Rearranged init to handle errors better.
