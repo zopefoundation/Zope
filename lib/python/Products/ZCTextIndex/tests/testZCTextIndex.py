@@ -114,7 +114,7 @@ class IndexTests(testIndex.IndexTest):
             q = QueryParser().parseQuery(raw)
             wq = self.index.query_weight(q.terms())
             eq(wq, scaled_int(wqs[i]))
-            r = self.zc_index.query(raw)
+            r, n = self.zc_index.query(raw)
             self.assertEqual(len(r), len(results[i]))
             # convert the results to a dict for each checking
             d = {}

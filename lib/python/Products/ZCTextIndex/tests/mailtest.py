@@ -140,7 +140,7 @@ def index(rt, mboxfile, db):
 def query(rt, query_str):
     idx = rt["index"]
     docs = rt["documents"]
-    results = idx.query(query_str, BEST)
+    results, num_results = idx.query(query_str, BEST)
     print "query:", query_str
     print "# results:", len(results)
     for docid, score in results:

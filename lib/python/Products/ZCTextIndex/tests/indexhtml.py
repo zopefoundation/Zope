@@ -11,6 +11,7 @@ options:
 """
 
 import os
+from time import clock
 
 import ZODB
 from ZODB.FileStorage import FileStorage
@@ -29,15 +30,19 @@ def make_index():
     extra.lexicon_id = "lexicon"
     caller = Struct()
     caller.lexicon = Lexicon(HTMLWordSplitter(), StopWordRemover())
-    return ZCTextIndex(extra, caller)
+    return ZCTextIndex("read", extra, caller)
 
 def main(db, root, dir):
     rt["index"] = index = make_index()
     rt["files"] = paths = IOBTree()
     get_transaction().commit()
 
+    zodb_time = 0.0
+    pack_time = 0.0
+
     files = [os.path.join(dir, file) for file in os.listdir(dir)]
     docid = 0
+    t0 = clock()
     for file in files:
         if os.path.isdir(file):
             files += [os.path.join(file, sub) for sub in os.listdir(file)]
@@ -51,10 +56,25 @@ def main(db, root, dir):
             index.index_object(docid, f)
             f.close()
             if docid % TXN_INTERVAL == 0:
+                z0 = clock()
                 get_transaction().commit()
+                z1 = clock()
+                zodb_time += z1 - z0
             if docid % PACK_INTERVAL == 0:
+                p0 = clock()
                 db.pack()
+                p1 = clock()
+                zodb_time += p1 - p0
+                zodb_time += p1 - p0
+    z0 = clock()
     get_transaction().commit()
+    z1 = t1 = clock()
+    total_time = t1 - t0
+    zodb_time += z1 - z0
+    if VERBOSE:
+        print "Total index time", total_time
+        print "Non-pack time", total_time - pack_time
+        print "Non-ZODB time", total_time - zodb_time
 
 if __name__ == "__main__":
     import sys

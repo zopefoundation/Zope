@@ -93,13 +93,17 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         return  results, (self._fieldname,)
 
     def query(self, query, nbest=10):
-        # returns a mapping from docids to scores
+        """Return pair (mapping from docids to scores, num results).
+
+        The num results is the total number of results before trimming
+        to the nbest results.
+        """
         tree = QueryParser().parseQuery(query)
         results = tree.executeQuery(self.index)
         chooser = NBest(nbest)
         chooser.addmany(results.items())
-        return chooser.getbest()
-
+        return chooser.getbest(), len(results)
+    
     def numObjects(self):
         """Return number of object indexed"""
         return self.index.length()
