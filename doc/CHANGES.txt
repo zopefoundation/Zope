@@ -4,6 +4,13 @@ Zope changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+    Zope 2.3.0 ???
+
+      Bugs Fixed
+
+        - Added a deprecated alias to UnrestrictedUser, Super, for use
+          by user folder products that depend on the old class name.
+
     Zope 2.3.0 alpha 2
 
       Features Added
