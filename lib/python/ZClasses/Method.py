@@ -88,14 +88,53 @@
 import Acquisition, ExtensionClass, Globals, OFS.PropertySheets, OFS.Folder
 from AccessControl.Permission import pname
 from string import strip
-import App.Dialogs
+import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
+from ZClassOwner import ZClassOwner
 
 _marker=[]
-class ZClassMethodsSheet(OFS.PropertySheets.PropertySheet,
-                         OFS.PropertySheets.View,
-                         OFS.Folder.Folder):
+class ZClassMethodsSheet(
+    OFS.PropertySheets.PropertySheet,
+    OFS.PropertySheets.View,
+    OFS.Folder.Folder,
+    App.ProductRegistry.ProductRegistryMixin,
+    ZClassOwner):
     "Manage instance methods"
     id='contents'
+
+
+    ######################################################################
+    # Hijinks to let us create factories and classes within classes.
+
+    #meta_types=App.Product.Product.meta_types
+    
+    meta_types=(
+        {'name': 'Z Class',
+         'action':'manage_addZClassForm'},
+        {'name': App.Factory.Factory.meta_type,
+         'action': 'manage_addPrincipiaFactoryForm'
+         },
+        )
+    
+    def manage_addPrincipiaFactory(
+        self, id, title, object_type, initial, REQUEST=None):
+        ' '
+        i=App.Factory.Factory(id, title, object_type, initial, self)
+        self._setObject(id,i)
+        if REQUEST is not None:
+            return self.manage_main(self,REQUEST,update_menu=1)
+
+
+    def _getProductRegistryMetaTypes(self):
+        return self.getClassAttr('_zclass_method_meta_types',())
+    
+    def _setProductRegistryMetaTypes(self, v):
+        return self.setClassAttr('_zclass_method_meta_types', v)
+
+    def _constructor_prefix_string(self, pid): return ''
+
+    ######################################################################
+
+
 
     # This is to trigger alternate access management for methods:
     _isBeingUsedAsAMethod_=1
@@ -147,17 +186,6 @@ class ZClassMethodsSheet(OFS.PropertySheets.PropertySheet,
 
         if hasattr(r,'aq_base'): r=r.aq_base
         return r.__of__(self)
-
-    def all_meta_types(self):
-        pmt=()
-        if hasattr(self, '_product_meta_types'): pmt=self._product_meta_types
-        elif hasattr(self, 'aq_acquire'):
-            try: pmt=self.aq_acquire('_product_meta_types')
-            except:  pass
-        return (OFS.Folder.Folder.meta_types+
-                OFS.Folder.Folder.dynamic_meta_types+
-                pmt)
-
 
     def __bobo_traverse__(self, request, name):
         if hasattr(self, 'aq_base'):
