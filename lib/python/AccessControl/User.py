@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -54,7 +54,6 @@ class User(Implicit, Persistent):
     def __str__(self): return self.name
     __repr__=__str__
 
-
 try:
     f=open('%s/access' % SOFTWARE_HOME, 'r')
     data=split(strip(f.readline()),':')
@@ -63,6 +62,8 @@ try:
     del data
 except:
     super=User('superuser','123',('manage',))
+
+super.hasRole=lambda parent, roles=None: 1
 
 nobody=User('Anonymous User','',('Anonymous',))
 
