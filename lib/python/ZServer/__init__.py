@@ -65,7 +65,7 @@ except:
 # on exec. This makes it easier for folks who spawn long running
 # processes from Zope code. Thanks to Dieter Maurer for this.
 try:
-    import fcntl, FCNTL
+    import fcntl
     if not (hasattr(fcntl, 'F_SETFD') and hasattr(fcntl, 'FD_CLOEXEC')):
         # hack to be compatible with Python versions pre-2.2
         import FCNTL
