@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -679,12 +679,14 @@ class UserFolder(BasicUserFolder):
 
 def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     """ """
-    try:    self._setObject('acl_users', UserFolder())
+    f=UserFolder()
+    try:    self._setObject('acl_users', f)
     except: return MessageDialog(
                    title  ='Item Exists',
                    message='This object already contains a User Folder',
                    action ='%s/manage_main' % REQUEST['URL1'])
-    self.__allow_groups__=self.acl_users
+    self.__allow_groups__=f
+    
     if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
 
