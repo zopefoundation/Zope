@@ -84,9 +84,10 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import Persistent
+from Acquisition import Implicit
 import BTree
 import IOBTree
 from intSet import intSet
@@ -107,7 +108,7 @@ def nonEmpty(s):
         return 1
 
 
-class UnIndex(Persistent):
+class UnIndex(Persistent, Implicit):
     """UnIndex object interface"""
 
     def __init__(self, id=None, ignore_ex=None, call_methods=None):

@@ -113,15 +113,8 @@ class Lexicon(Persistent, Implicit):
 
     """
 
-    def __init__(self, globbish=None):
+    def __init__(self):
         self._lexicon = OIBTree()
-        if globbish:
-            self._ngrams = OOBTree()
-        self.counter = 0
-
-    def __getitem__(self, key):
-        """ overload mapping behavior """
-        return self._lexicon[key]
 
     def set(self, word):
         """ return the word id of 'word' """
@@ -134,19 +127,23 @@ class Lexicon(Persistent, Implicit):
             self.counter = self.counter + 1
             return self.counter
 
+    def get(self, key):
+        """  """
+        return self._lexicon[key]
+
     def __len__(self):
         return len(self._lexicon)
-
 
     def Splitter(self, astring, words):
         """ wrap the splitter """
         return Splitter(astring, words)
-        
 
     def grep(self, query):
         """
         regular expression search through the lexicon
         he he.
+
+        Do not use unless you know what your doing!!!
         """
         expr = re.compile(query)
         hits = []
@@ -154,6 +151,12 @@ class Lexicon(Persistent, Implicit):
             if expr.search(x):
                 hits.append(x)
         return hits
+
+
+
+
+
+
 
 AndNot    = 'andnot'
 And       = 'and'
@@ -166,9 +169,27 @@ def query(s, index, default_operator = Or,
     # First replace any occurences of " and not " with " andnot "
     s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
     q = parse(s)
+    q = parse_wc(q, index)
     q = parse2(q, default_operator)
     return evaluate(q, index)
 
+def parse_wc(q, index):
+    '''expand wildcards'''
+    lex = index.getLexicon(index._lexicon)
+    words = []
+    for w in q:
+        if ( (lex.multi_wc in w) or
+            (lex.single_wc in w) ):
+            wids = lex.query(w)
+            for wid in wids:
+                if words:
+                    words.append(Or)
+                words.append(lex._inverseLex[wid])
+        else:
+            words.append(w)
+
+    return words
+            
 def parse(s):
     '''Parse parentheses and quotes'''
     l = []

@@ -92,10 +92,11 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
+from Acquisition import Implicit
 BTree=BTree.BTree
 IOBTree=IOBTree.BTree
 IIBucket=IIBTree.Bucket
@@ -110,7 +111,7 @@ import string, regex, regsub, pdb
 from Lexicon import Lexicon, query, stop_word_dict
 from ResultList import ResultList
 
-class UnTextIndex(Persistent):
+class UnTextIndex(Persistent, Implicit):
 
     def __init__(self, id=None, ignore_ex=None,
                  call_methods=None, lexicon=None):
@@ -161,8 +162,19 @@ class UnTextIndex(Persistent):
         if lexicon is None:
             self._lexicon=Lexicon()
         else:
-            self._lexicon=lexicon
+            self._lexicon = lexicon
 
+
+    def getLexicon(self, vocab_id):
+        
+        """ bit of a hack, indexes have been made acquirers so that
+        they can acquire a vocabulary object from the object system in 
+        Zope.  I don't think indexes were ever intended to participate 
+        in this way, but I don't see too much of a problem with it.
+        """
+        vocab =  getattr(self, vocab_id)
+        return vocab.lexicon
+        
 
     def __len__(self):
         return len(self._unindex)
@@ -213,7 +225,7 @@ class UnTextIndex(Persistent):
 
         ## The Splitter should now be european compliant at least.
         ## Someone should test this.
-        src = self._lexicon.Splitter(k, self._syn)
+        src = self.getLexicon(self._lexicon).Splitter(k, self._syn)
         ## This returns a tuple of stemmed words.  Stopwords have been 
         ## stripped.
         
@@ -226,7 +238,7 @@ class UnTextIndex(Persistent):
 
         index = self._index
         unindex = self._unindex
-        lexicon = self._lexicon
+        lexicon = self.getLexicon(self._lexicon)
         get = index.get
         unindex[i] = []
         times = 0
@@ -297,28 +309,20 @@ class UnTextIndex(Persistent):
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
         """
-        src = tuple(self._lexicon.Splitter(word, self._syn))
-        if not src:
-            return ResultList({}, (word,), self)
-
+        src = tuple(self.getLexicon(self._lexicon).Splitter(word, self._syn))
+        if not src: return ResultList({}, (word,), self)
         if len(src) == 1:
             src=src[0]
-            if src[:1]=='"' and src[-1:]=='"':
-                return self[src]
-
-            r = self._index.get(self._lexicon[word], None)
-            if r is None:
-                r = {}
+            if src[:1]=='"' and src[-1:]=='"': return self[src]
+            r = self._index.get(self.getLexicon(self._lexicon)[word][0],None)
+            if r is None: r = {}
             return ResultList(r, (word,), self)
             
         r = None
         for word in src:
             rr = self[word]
-
-            if r is None:
-                r = rr
-            else:
-                r = r.near(rr)
+            if r is None: r = rr
+            else: r = r.near(rr)
 
         return r
 
@@ -393,13 +397,13 @@ class UnTextIndex(Persistent):
 
         r = []
         for word in words:
-            r = r+self._lexicon.Splitter(doc, self._syn).indexes(word)
+            r = r+self.getLexicon(self._lexicon).Splitter(doc, self._syn).indexes(word)
         return r
 
 
     def _subindex(self, isrc, d, old, last):
 
-        src = self._lexicon.Splitter(isrc, self._syn)  
+        src = self.getLexicon.Splitter(isrc, self._syn)  
 
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
