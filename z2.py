@@ -562,7 +562,7 @@ else:
 
 # HTTP Server
 if HTTP_PORT:
-    if type(HTTP_PORT) is type(''): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
+    if type(HTTP_PORT) is type(0): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
     for address, port in HTTP_PORT:
 	hs = zhttp_server(
 	    ip=address,
@@ -586,7 +586,7 @@ if HTTP_PORT:
 
 # FTP Server
 if FTP_PORT:
-    if type(FTP_PORT) is type(''): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
+    if type(FTP_PORT) is type(0): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
     for address, port in FTP_PORT:
         FTPServer(
            module=MODULE,
@@ -625,7 +625,7 @@ if FCGI_PORT and not READ_ONLY:
 
 # Monitor Server
 if MONITOR_PORT:
-    if type(MONITOR_PORT) is type(''): 
+    if type(MONITOR_PORT) is type(0): 
         MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
     for address, port in MONITOR_PORT:
         from AccessControl.User import super
