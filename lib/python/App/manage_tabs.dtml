@@ -76,6 +76,6 @@
   </TD>
 </TR>
 </TABLE>
-<!--#if Principia-Session-->
-<P><EM>You are currently working in session <!--#var Principia-Session--></EM>
-<!--#/if Principia-Session-->
+<!--#if Zope-Version-->
+<P><EM>You are currently working in session <!--#var Zope-Version--></EM>
+<!--#/if Zope-Version-->
