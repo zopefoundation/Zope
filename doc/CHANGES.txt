@@ -24,6 +24,9 @@ Zope changes
           as the final merge code integration for Text indexes.  This
           should reduce the bloat when things are reindexed.  
 
+        - Hardened ZMI contents view against subobjects w/ flaky
+          'get_size' (Collector #1900).
+
     Zope 2.3.0 beta 3
 
       Features Added
