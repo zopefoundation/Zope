@@ -1,5 +1,5 @@
-Welcome to Zope source release
--------------------------------------
+Welcome to the Zope source release
+----------------------------------
 
   This document provides some general information about the Zope
   source release and provides links to other documents.
@@ -16,7 +16,7 @@ Introduction:
 
   The source release is intended for tinkerers, those who want
   to use Zope components separately, Bobo hackers, people who
-  want to use  their own Python, and people who work on obscure
+  want to use their own Python, and people who work on obscure
   platforms because they love to compile everything from source.
 
   If you just want to use Zope easily and aren't a programmer
@@ -24,9 +24,8 @@ Introduction:
 
 License
 
-  A preliminary version of the Zope License is included in LICENSE.txt
-  We are still working on finalizing the license. Send your feeback about
-  the license to zope-license@zope.org. 
+  The Zope License is included in LICENSE.txt Send your feeback
+  about the license to zope-license@zope.org. 
 
 Installing Zope:
 
@@ -42,13 +41,12 @@ Using Zope Components Separately
   from Bobo here:
 
     * ZPublisher - A packagized version of the Bobo ORB you know and
-      love. It's been updated with new thinks like support for
-      __bobo_debug_mode__
+      love.
 
     * DocumentTemplate - This package includes cDocumentTemplate which
       speeds things up considerably.
 
-    * BoboPOS - This is NOT BoboPOS3. It a version of BoboPOS2 which
+    * BoboPOS - This is NOT ZODB 3. It a version of BoboPOS2 which
       include c code to make things faster.
 
   You can find most of these packages in the lib/python directory. If
@@ -58,7 +56,7 @@ Using Zope Components Separately
 
 Notes
 
-  * Zope requires Python 1.5.1
+  * Zope requires Python 1.5.1. It may work with Python 1.5.2
   * Lots more documentation is coming.
   * Don't forget to check the Zope web site and mailing list.
   * Read the source, have fun!
