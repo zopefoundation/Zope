@@ -202,8 +202,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.32 1999/10/28 19:11:23 brian Exp $'
-__version__='$Revision: 1.32 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.33 1999/10/28 19:20:06 brian Exp $'
+__version__='$Revision: 1.33 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
@@ -403,6 +403,7 @@ special_formats={
     'sql-quote': sql_quote,
     'html-quote': html_quote,
     'url-quote': url_quote,
+    'url-quote-plus': url_quote_plus,
     'multi-line': newline_to_br,
     'comma-numeric': thousands_commas,
     'dollars-with-commas': whole_dollars_with_commas,
