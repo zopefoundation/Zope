@@ -24,6 +24,8 @@ Zope Changes
 
     Features added
 
+     - Folder listings in FTP now include "." as well as "..".
+
      - When a VHM is activated, it adds the mapping
        'VIRTUAL_URL_PARTS': (SERVER_URL, BASEPATH1, virtual_url_path)
        to the request's 'other' dictionary.  If BASEPATH1 is empty, it

@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.166 2003/11/28 16:45:35 jim Exp $"""
+$Id: ObjectManager.py,v 1.167 2003/12/15 22:09:25 fdrake Exp $"""
 
-__version__='$Revision: 1.166 $'[11:-2]
+__version__='$Revision: 1.167 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -592,7 +592,7 @@ class ObjectManager(
             all_files = copy.copy(files)
             for f in files:
                 if f[1].meta_type == "Folder":
-                    all_files.extend(findChilds(f[1]))
+                    all_files.extend(findChildren(f[1]))
                 else:
                     all_files.append(f)
 
@@ -608,7 +608,7 @@ class ObjectManager(
 
         globbing = REQUEST.environ.get('GLOBBING','')
         if globbing :
-            files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g) , files)
+            files = filter(lambda x,g=globbing: fnmatch.fnmatch(x[0],g), files)
 
         try:
             files.sort()
@@ -619,12 +619,17 @@ class ObjectManager(
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
             files.insert(0,('..',self.aq_parent))
+        files.insert(0, ('.', self))
         for k,v in files:
             # Note that we have to tolerate failure here, because
             # Broken objects won't stat correctly. If an object fails
             # to be able to stat itself, we will ignore it.
             try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
-            except: stat=None
+            except:
+                stat=None
+                if k != "Control_Panel":
+                    __traceback_info__ = (k, v)
+                    raise
             if stat is not None:
                 out=out+((k,stat),)
         return marshal.dumps(out)
@@ -667,15 +672,15 @@ class ObjectManager(
                 return NullResource(self, key, request).__of__(self)
         raise KeyError, key
 
-def findChilds(obj,dirname=''):
+def findChildren(obj,dirname=''):
     """ recursive walk through the object hierarchy to
-    find all childs of an object (ajung)
+    find all children of an object (ajung)
     """
 
     lst =[]
     for name,child in obj.objectItems():
         if child.meta_type=="Folder":
-            lst.extend(findChilds(child,dirname+ obj.id + '/'))
+            lst.extend(findChildren(child,dirname+ obj.id + '/'))
         else:
             lst.append( (dirname + obj.id + "/" + name,child) )
 
