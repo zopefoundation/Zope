@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.34 1997/03/11 15:43:20 chris Exp $
+     $Id: cPickle.c,v 1.35 1997/03/11 20:03:30 jim Exp $
 
      Copyright 
 
@@ -3821,7 +3821,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.34 $";
+    char *rev="$Revision: 1.35 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3853,3 +3853,12 @@ initcPickle() {
     init_stuff(m, d);
     CHECK_FOR_ERRORS("can't initialize module cPickle");
 }
+
+/****************************************************************************
+ $Log: cPickle.c,v $
+ Revision 1.35  1997/03/11 20:03:30  jim
+ Added log comment at bottom.
+
+
+
+ ****************************************************************************/
