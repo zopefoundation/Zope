@@ -62,7 +62,6 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
         self.lexicon = lexicon
         self.index = index_factory(self.lexicon)
-        self.parser = QueryParser()
 
     ## Pluggable Index APIs ##
 
@@ -89,13 +88,13 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if record.keys is None:
             return None
         query_str = ' '.join(record.keys)
-        tree = self.parser.parseQuery(query_str)
+        tree = QueryParser().parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
 
     def query(self, query, nbest=10):
         # returns a mapping from docids to scores
-        tree = self.parser.parseQuery(query)
+        tree = QueryParser().parseQuery(query)
         results = tree.executeQuery(self.index)
         chooser = NBest(nbest)
         chooser.addmany(results.items())

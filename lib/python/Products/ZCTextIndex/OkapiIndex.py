@@ -27,6 +27,9 @@ from Products.ZCTextIndex import WidCode
 from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
                                         mass_weightedUnion
 
+import ZODB
+from Persistence import Persistent
+
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024
 # is large enough to get about 3 decimal digits of fractional info, and
@@ -43,7 +46,7 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-class Index:
+class Index(Persistent):
 
     __implements__ = IIndex
 
@@ -78,6 +81,10 @@ class Index:
         """Return the number of documents in the index."""
         return len(self._docwords)
 
+    def get_words(self, docid):
+        """Returns the wordids for a given docid"""
+        return WidCode.decode(self._docwords[docid])
+
     def index_doc(self, docid, text):
         wids = self._lexicon.sourceToWordIds(text)
         self._doclen[docid] = len(wids)
@@ -88,6 +95,7 @@ class Index:
             self._add_wordinfo(wid, count, docid)
 
         self._docwords[docid] = WidCode.encode(wids)
+        return len(wids)
 
     def unindex_doc(self, docid):
         for wid in WidCode.decode(self._docwords[docid]):

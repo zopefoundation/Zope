@@ -4,6 +4,7 @@ from Products.ZCTextIndex.tests \
 from Products.ZCTextIndex.Index import scaled_int, SCALE_FACTOR, Index
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
+from Products.ZCTextIndex.QueryParser import QueryParser
 
 import unittest
 
@@ -110,7 +111,7 @@ class IndexTests(testIndex.IndexTest):
                    [(1, 0.19), (2, 0.18), (3, 0.63), (5, 0.22), (6, 0.39)]]
         for i in range(len(queries)):
             raw = queries[i]
-            q = self.zc_index.parser.parseQuery(raw)
+            q = QueryParser().parseQuery(raw)
             wq = self.index.query_weight(q.terms())
             eq(wq, scaled_int(wqs[i]))
             r = self.zc_index.query(raw)
@@ -142,7 +143,7 @@ class QueryTests(testQueryEngine.TestQueryEngine,
         caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
                                StopWordRemover()))
         self.zc_index = ZCTextIndex('name', extra, caller)
-        self.p = self.parser = self.zc_index.parser
+        self.p = self.parser = QueryParser()
         self.index = self.zc_index.index
         self.add_docs()
 
