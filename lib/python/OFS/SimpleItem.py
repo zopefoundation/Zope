@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.12 1998/01/09 21:35:04 brian Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: SimpleItem.py,v 1.13 1998/01/12 20:33:49 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, App.Management
 from DateTime import DateTime
@@ -25,7 +25,7 @@ from CopySupport import CopySource
 
 class Item(CopySource, App.Management.Tabs):
 
-    __roles__=['Manager']
+    __roles__=['Shared']
 
     isPrincipiaFolderish=0
 
@@ -119,6 +119,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.13  1998/01/12 20:33:49  jim
+# Made shared permission shared.
+#
 # Revision 1.12  1998/01/09 21:35:04  brian
 # Security update
 #
