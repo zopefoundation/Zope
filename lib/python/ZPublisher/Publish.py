@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.38 1997/03/26 22:11:52 jim Exp $"""
+$Id: Publish.py,v 1.39 1997/04/04 15:32:11 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.38 1997/03/26 22:11:52 jim Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 def main():
@@ -657,22 +657,73 @@ class ModulePublisher:
 	try:
 	    user=realm.validate(self.env("HTTP_AUTHORIZATION"),groups)
 	    self.request['AUTHENTICATED_USER']=user
+	    get_transaction().note("%s\t%s" % (user,self.env('PATH_INFO')))
 	    return user
+	except realm.Unauthorized, v:
+	    auth,v=v
+	    self.response['WWW-authenticate']=auth
+	    raise 'Unauthorized', v
 	except:
-	    try:
-		t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
-		auth,v=v
-	    except: pass
- 	    if t == 'Unauthorized':
-		self.response['WWW-authenticate']=auth
-		raise 'Unauthorized', v
-	self.forbiddenError()
+	    self.forbiddenError()
 
     def get_request_data(self,request_params):
 	try: request_params=request_params()
 	except: pass
 	for key in request_params.keys():
 		self.request[key]=request_params[key]
+
+
+    def get_module_info(self, server_name, module_name, module):
+
+	realm_name="%s.%s" % (module_name,server_name)
+	
+	try: bobo_before=module.__bobo_before__
+	except: bobo_before=None
+
+	try: bobo_after=module.__bobo_after__
+	except: bobo_after=None
+
+	# Try to get realm from module
+	try:
+	    realm=module.__realm__
+	    if type(realm) is type(''):
+		realm_name=realm
+		realm=None
+	except: realm=None
+
+	# Get request data from outermost environment:
+	try: request_params=module.__request_data__
+	except: request_params=None
+
+	# Get initial group data:
+	default_inherited_groups={None:None}
+	inherited_groups=default_inherited_groups
+	try:
+	    groups=theModule.__allow_groups__
+	    inherited_groups=allow_group_composition(inherited_groups,groups)
+	except: groups=None
+
+	web_objects=None
+	find_object=old_find_object
+	try:
+	    object=module.bobo_application
+	    find_object=new_find_object
+	except: 
+	    try:
+		web_objects=module.web_objects
+		object=web_objects
+	    except: object=module
+	published=web_objects
+
+	try: doc=module.__doc__
+	except:
+	    if web_objects is not None: doc=' '
+	    else: doc=None
+	
+	return (bobo_before, bobo_after, realm, realm_name, request_params,
+		default_inherited_groups, inherited_groups, groups,
+		object, doc, published, find_object)
+		
 
     def publish(self, module_name, after_list, published='web_objects',
 		imported_modules={}, module_dicts={},debug=0):
@@ -690,53 +741,32 @@ class ModulePublisher:
 	self.module_name=module_name
 	response=self.response
 	response.setBase(self.base,'')
-	default_realm_name="%s.%s" % (self.module_name,self.request.SERVER_NAME)
-	realm_name=default_realm_name
+	server_name=self.request.SERVER_NAME
 
-	dict=imported_modules
 	try:
-	    theModule, object, published = module_dicts[module_name]
+	    (bobo_before, bobo_after, realm, realm_name, request_params,
+	     default_inherited_groups, inherited_groups, groups,
+	     object, doc, published, find_object
+	     ) = info = module_dicts[server_name, module_name]
 	except:
-	    try: exec 'import %s' % module_name in dict
+	    info={}
+	    try:
+		exec 'import %s' % module_name in info
+		info=self.get_module_info(server_name, module_name,
+					  info[module_name])
+		module_dicts[server_name, module_name]=info
+		(bobo_before, bobo_after, realm, realm_name, request_params,
+		 default_inherited_groups, inherited_groups, groups,
+		 object, doc, published, find_object
+		 ) = info
 	    except: raise ImportError, (
 		sys.exc_type, sys.exc_value, sys.exc_traceback)
-	    theModule=object=dict[module_name]
-	    if hasattr(theModule,published):
-		object=getattr(theModule,published)
-	    else:
-		object=theModule
-		published=None
-	    module_dicts[module_name] = theModule, object, published
-
-	self.module=theModule
-
-	try: bobo_before=theModule.__bobo_before__
-	except: bobo_before=None
-
-	try: bobo_after=theModule.__bobo_after__
-	except: bobo_after=None
+	    
 	after_list[0]=bobo_after
 
 	if bobo_before is not None: bobo_before();
 
-
-	# Try to get realm from module
-	try: realm=theModule.__realm__
-	except: realm=None
-
-	# Get request data from outermost environment:
-	try:
-	    request_params=theModule.__request_data__
-	    self.get_request_data(request_params)
-	except: pass
-
-	# Get initial group data:
-	default_inherited_groups={None:None}
-	inherited_groups=default_inherited_groups
-	try:
-	    groups=theModule.__allow_groups__
-	    inherited_groups=allow_group_composition(inherited_groups,groups)
-	except: groups=None
+	if request_params: self.get_request_data(request_params)
 
 	# Get a nice clean path list:
 	path=(string.strip(self.env('PATH_INFO')))
@@ -744,153 +774,25 @@ class ModulePublisher:
 	if path[-1:]=='/': path=path[:-1]
 	path=string.splitfields(path,'/')
 	while path and not path[0]: path = path[1:]
- 
-	# Get default doc:
-	try: doc=object.__doc__
-	except:
-	    try: doc=object['__doc__']
-	    except: doc=None
 
-	# Get default object if no path was specified:
-	if not path:
-	    entry_name='index_html'
-	    try:
-		if hasattr(object,entry_name):
-		    path=[entry_name]
-		else:
-		    try:
-			if object.has_key(entry_name):
-			    path=[entry_name]
-		    except: pass
-	    except: pass
-	    if not path: path = ['help']
+    	# Get default object if no path was specified:
+    	if not path:
+    	    entry_name='index_html'
+    	    try:
+    		if hasattr(object,entry_name):
+    		    path=[entry_name]
+    		else:
+    		    try:
+    			if object.has_key(entry_name):
+    			    path=[entry_name]
+    		    except: pass
+    	    except: pass
+    	    if not path: path = ['help']
 
-	URL=self.script
-	parents=[]
-
-	# sad_pathetic_persistence_hack:
-	try: setstate=object.__dict__['_p_setstate']
-	except: setstate=None
-	if setstate: setstate(object)
-
-	topobject=object
-
-	while path:
-
-	    if object is not topobject and topobject is not None:
-		topobject=None
-		try:  # Try to bind the top-level object to the request
-		    object=object.__of__(RequestContainer(
-			REQUEST=self.request, RESPONSE=self.response))
-		except: pass
-
-	    entry_name,path=path[0], path[1:]
-	    URL="%s/%s" % (URL,quote(entry_name))
-	    default_realm_name="%s.%s" % (entry_name,default_realm_name)
-	    if entry_name:
-		try:
-		    subobject=getattr(object,entry_name)
-
-		    # sad_pathetic_persistence_hack:
-		    try: setstate=subobject.__dict__['_p_setstate']
-		    except: setstate=None
-		    if setstate: setstate(subobject)
-
-		    try:
-			groups=subobject.__allow_groups__
-			inherited_groups=allow_group_composition(
-			    inherited_groups,groups)
-		    except:
-			try:
-			    groups=getattr(object,
-					   entry_name+'__allow_groups__')
-			    inherited_groups=allow_group_composition(
-				inherited_groups,groups)
-			except: pass
-		    try: doc=subobject.__doc__
-		    except:
-			try: doc=getattr(object,entry_name+'__doc__')
-			except: doc=None
-		    try:
-			realm=subobject.__realm__
-			realm_name=default_realm_name
-		    except:
-			try:
-			    realm=getattr(object,entry_name+'__realm__')
-			    realm_name=default_realm_name
-			except: pass
-		    try:
-			request_params=getattr(subobject,'__request_data__')
-			self.get_request_data(request_params)
-		    except: pass
-		except AttributeError:
-		    try:
-			subobject=object[entry_name]
-
-			# sad_pathetic_persistence_hack:
-			try: setstate=subobject.__dict__['_p_setstate']
-			except: setstate=None
-			if setstate: setstate(subobject)
-
-			try:
-			    request_params=getattr(subobject,'__request_data__')
-			    self.get_request_data(request_params)
-			except: pass
-			try:
-			    groups=subobject.__allow_groups__
-			    inherited_groups=allow_group_composition(
-				inherited_groups,groups)
-			except:
-			    try:
-				groups=object[entry_name+'__allow_groups__']
-				inherited_groups=allow_group_composition(
-				    inherited_groups,groups)
-			    except: pass
-			try: doc=subobject.__doc__
-			except:
-			    try: doc=object[entry_name+'__doc__']
-			    except: doc=None
-			try:
-			    realm=subobject.__realm__
-			    realm_name=default_realm_name
-			except:
-			    try:
-				realm=object[entry_name+'__realm__']
-				realm_name=default_realm_name
-			    except: pass
-		    except (TypeError,AttributeError,KeyError), mess:
-			if not path and entry_name=='help' and doc:
-			    object=doc
-			    entry_name, subobject = (
-				'__doc__', self.html
-				('Documentation for ' +
-				 ((self.env('PATH_INFO') or
-				   ('/'+self.module_name))[1:]),
-				 '<pre>\n%s\n</pre>' % doc)
-				)
-			else:
-			    self.notFoundError("%s: %s" % (entry_name,mess))
-		if published:
-		    # Bypass simple checks the first time
-		    published=None
-		else:
-		    # Perform simple checks
-		    if (type(subobject)==types.ModuleType or
-			entry_name != '__doc__' and
-			(not doc or entry_name[0]=='_')
-			):
-		        if not doc: entry_name=str(subobject)
-			self.forbiddenError(entry_name)
-
-		# Promote subobject to object
-		parents.append(object)
-		object=subobject
-
-		# Check for index_html:
-		if (not path and hasattr(object,'index_html') and
-		    entry_name != 'index_html'):
-		    path=['index_html']
-
+	# Traverse the URL to find the object:
+	(object, parents, URL, groups, realm, inherited_groups,
+	 realm_name) = find_object(self, info, path)
+	
 	# Do authorization checks
 	if groups is not None:
 	    groups=allow_group_composition(groups,inherited_groups)
@@ -908,11 +810,14 @@ class ModulePublisher:
 	# Attempt to start a transaction:
 	try:
 	    transaction=get_transaction()
-	    transaction.begin()
+	    info="\t" + self.env('PATH_INFO')
+	    try: info=self.request['AUTHENTICATED_USER']+info
+	    except: pass
+	    transaction.begin(info)
 	except: transaction=None
 
 	# Now get object meta-data to decide if and how it should be
-	# called:  
+	# called:
 	object_as_function=object	
 	if type(object_as_function) is types.ClassType:
 	    if hasattr(object_as_function,'__init__'):
@@ -983,11 +888,6 @@ class ModulePublisher:
 	result=apply(object,args) # Type s<cr> to step into published object.
 	return result
 
-def sad_pathetic_persistence_hack(object):
-    try: setstate=object.__dict__['_p_setstate']
-    except: return
-    setstate(object)
-
 def str_field(v):
     if type(v) is types.ListType:
 	return map(str_field,v)
@@ -1002,6 +902,238 @@ def str_field(v):
 		v=v.value
 	except: pass
     return v
+
+def attr_meta_data(object, subobject, entry_name, 
+		   inherited_groups, groups,
+		   realm, realm_name, default_realm_name):
+    try:
+        groups=subobject.__allow_groups__
+        inherited_groups=allow_group_composition(
+            inherited_groups,groups)
+    except:
+        try:
+            groups=getattr(object,
+			   entry_name+'__allow_groups__')
+            inherited_groups=allow_group_composition(
+                inherited_groups,groups)
+        except: pass
+    try: doc=subobject.__doc__
+    except:
+        try: doc=getattr(object,entry_name+'__doc__')
+        except: doc=None
+    try:
+        realm=subobject.__realm__
+        realm_name=default_realm_name
+    except:
+        try:
+            realm=getattr(object,entry_name+'__realm__')
+            realm_name=default_realm_name
+        except: pass
+
+    return inherited_groups, groups, realm, realm_name, doc
+
+def item_meta_data(subobject,
+		   inherited_groups, groups,
+		   realm, realm_name, default_realm_name):
+    try:
+        groups=subobject.__allow_groups__
+        inherited_groups=allow_group_composition(
+            inherited_groups,groups)
+    except: pass
+    try: doc=subobject.__doc__
+    except: doc=None
+    try:
+        realm=subobject.__realm__
+        realm_name=default_realm_name
+    except: pass
+
+    return inherited_groups, groups, realm, realm_name, doc
+    
+
+def new_find_object(self, info, path): 
+    (bobo_before, bobo_after, realm, realm_name, request_params,
+     default_inherited_groups, inherited_groups, groups,
+     object, doc, published, ignore) = info
+
+    default_realm_name=realm_name
+
+    request=self.request
+
+    URL=self.script
+    parents=[]
+
+    try:  # Try to bind the top-level object to the request
+	object=object.__of__(RequestContainer(
+	    REQUEST=self.request, RESPONSE=self.response))
+    except: pass
+
+    while path:
+        entry_name,path=path[0], path[1:]
+        URL="%s/%s" % (URL,quote(entry_name))
+        default_realm_name="%s.%s" % (entry_name,default_realm_name)
+        if entry_name:
+	    try: traverse=object.traverse
+	    except: traverse=None
+	    if traverse is not None:
+		request['URL']=URL
+                subobject=traverse(request,entry_name)
+		(inherited_groups, groups,
+		 realm, realm_name, doc) = item_meta_data(
+		    subobject,
+		    inherited_groups, groups,
+		    realm, realm_name, default_realm_name)
+		continue
+            try:
+                subobject=getattr(object,entry_name)
+		(inherited_groups, groups,
+		 realm, realm_name, doc) = attr_meta_data(
+		    object, subobject, entry_name,
+		    inherited_groups, groups,
+		    realm, realm_name, default_realm_name)
+            except AttributeError:
+                try:
+                    subobject=object[entry_name]
+		    (inherited_groups, groups,
+		     realm, realm_name, doc) = item_meta_data(
+			 subobject,
+			 inherited_groups, groups,
+			 realm, realm_name, default_realm_name)
+                except (TypeError,AttributeError,KeyError), mess:
+                    if not path and entry_name=='help' and doc:
+                        object=doc
+                        entry_name, subobject = (
+			'__doc__', self.html
+			('Documentation for ' +
+			 ((self.env('PATH_INFO') or
+			   ('/'+self.module_name))[1:]),
+			 '<pre>\n%s\n</pre>' % doc)
+			)
+                    else:
+                        self.notFoundError("%s: %s" % (entry_name,mess))
+
+            # Perform simple checks
+            if (entry_name != '__doc__' and
+                (not doc or entry_name[0]=='_')
+                ):
+                if not doc: entry_name=str(subobject)
+                self.forbiddenError(entry_name)
+
+            # Promote subobject to object
+            parents.append(object)
+            object=subobject
+
+            # Check for index_html:
+            if (not path and hasattr(object,'index_html') and
+                entry_name != 'index_html'):
+                path=['index_html']
+
+    return (object, parents, URL, groups, realm, inherited_groups,
+            realm_name)
+
+def old_find_object(self, info, path):
+    (bobo_before, bobo_after, realm, realm_name, request_params,
+     default_inherited_groups, inherited_groups, groups,
+     object, doc, published, ignore) = info
+
+    default_realm_name=realm_name
+
+    URL=self.script
+    parents=[]
+
+    # sad_pathetic_persistence_hack:
+    try: setstate=object.__dict__['_p_setstate']
+    except: setstate=None
+    if setstate: setstate(object)
+
+    topobject=object
+
+    while path:
+
+        if object is not topobject and topobject is not None:
+            topobject=None
+            try:  # Try to bind the top-level object to the request
+                object=object.__of__(RequestContainer(
+                    REQUEST=self.request, RESPONSE=self.response))
+            except: pass
+
+        entry_name,path=path[0], path[1:]
+        URL="%s/%s" % (URL,quote(entry_name))
+        default_realm_name="%s.%s" % (entry_name,default_realm_name)
+        if entry_name:
+            try:
+                subobject=getattr(object,entry_name)
+
+                # sad_pathetic_persistence_hack:
+                try: setstate=subobject.__dict__['_p_setstate']
+                except: setstate=None
+                if setstate: setstate(subobject)
+
+		(inherited_groups, groups,
+		 realm, realm_name, doc) = attr_meta_data(
+		    object, subobject, entry_name,
+		    inherited_groups, groups,
+		    realm, realm_name, default_realm_name)
+
+                try:
+                    request_params=getattr(subobject,'__request_data__')
+                    self.get_request_data(request_params)
+                except: pass
+            except AttributeError:
+                try:
+                    subobject=object[entry_name]
+
+                    # sad_pathetic_persistence_hack:
+                    try: setstate=subobject.__dict__['_p_setstate']
+                    except: setstate=None
+                    if setstate: setstate(subobject)
+
+		    (inherited_groups, groups,
+		     realm, realm_name, doc) = item_meta_data(
+			 subobject,
+			 inherited_groups, groups,
+			 realm, realm_name, default_realm_name)
+
+                    try:
+                        request_params=getattr(subobject,'__request_data__')
+                        self.get_request_data(request_params)
+                    except: pass
+
+                except (TypeError,AttributeError,KeyError), mess:
+                    if not path and entry_name=='help' and doc:
+                        object=doc
+                        entry_name, subobject = (
+                            '__doc__', self.html
+                            ('Documentation for ' +
+                             ((self.env('PATH_INFO') or
+                               ('/'+self.module_name))[1:]),
+                             '<pre>\n%s\n</pre>' % doc)
+                            )
+                    else:
+                        self.notFoundError("%s: %s" % (entry_name,mess))
+
+            if published:
+                # Bypass simple checks the first time
+                published=None
+            else:
+                # Perform simple checks
+                if (type(subobject)==types.ModuleType or
+                    entry_name != '__doc__' and
+                    (not doc or entry_name[0]=='_')
+                    ):
+                    if not doc: entry_name=str(subobject)
+                    self.forbiddenError(entry_name)
+
+            # Promote subobject to object
+            parents.append(object)
+            object=subobject
+
+            # Check for index_html:
+            if (not path and hasattr(object,'index_html') and
+                entry_name != 'index_html'):
+                path=['index_html']
+
+    return (object, parents, URL, groups, realm, inherited_groups,
+            realm_name)
 
 class FileUpload:
     '''\
@@ -1435,6 +1567,13 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.39  1997/04/04 15:32:11  jim
+# *Major* changes to:
+#
+#   - Improve speed,
+#   - Reduce stuttering,
+#   - Add request meta-data to transactions.
+#
 # Revision 1.38  1997/03/26 22:11:52  jim
 # Added support for OM's HTTP_HOST variable to get base ref.  This seems
 # to make authentication slightly less annoying.
