@@ -2,6 +2,7 @@
 
 """MH mail indexer."""
 
+import os
 import re
 import sys
 import time
@@ -9,17 +10,19 @@ import mhlib
 import getopt
 import traceback
 from StringIO import StringIO
+from stat import ST_MTIME
 
-DATAFS = "/home/guido/.Data.fs"
-ZOPECODE = "/home/guido/projects/ds9/lib/python"
+DATAFS = "~/.Data.fs"
+ZOPECODE = "~/projects/Zope/lib/python"
 
-sys.path.append(ZOPECODE)
+sys.path.append(os.path.expanduser(ZOPECODE))
 
 from ZODB import DB
 from ZODB.FileStorage import FileStorage
 from Persistence import Persistent
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
+from BTrees.IIBTree import IIBTree
 
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
@@ -33,7 +36,7 @@ MAXLINES = 3
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "bd:m:n:Opu")
+        opts, args = getopt.getopt(sys.argv[1:], "bd:m:n:Op:t:u")
     except getopt.error, msg:
         print msg
         sys.exit(2)
@@ -42,8 +45,9 @@ def main():
     optimize = 0
     nbest = NBEST
     maxlines = MAXLINES
-    datafs = DATAFS
+    datafs = os.path.expanduser(DATAFS)
     pack = 0
+    trans = 20000
     for o, a in opts:
         if o == "-b":
             bulk = 1
@@ -56,18 +60,18 @@ def main():
         if o == "-O":
             optimize = 1
         if o == "-p":
-            pack = 1
+            pack = int(a)
+        if o == "-t":
+            trans = ont(a)
         if o == "-u":
             update = 1
-    ix = Indexer(datafs, update or bulk)
+    ix = Indexer(datafs, writable=update or bulk, trans=trans, pack=pack)
     if bulk:
         if optimize:
             ix.optimize(args)
         ix.bulkupdate(args)
     elif update:
         ix.update(args)
-        if pack:
-            ix.pack()
     elif args:
         for i in range(len(args)):
             a = args[i]
@@ -79,12 +83,18 @@ def main():
         ix.query(" ".join(args), nbest, maxlines)
     else:
         ix.interact(nbest)
+    if pack:
+        ix.pack()
 
 class Indexer:
 
     filestorage = database = connection = root = None
 
-    def __init__(self, datafs, writable=0):
+    def __init__(self, datafs, writable=0, trans=0, pack=0):
+        self.trans_limit = trans
+        self.pack_limit = pack
+        self.trans_count = 0
+        self.pack_count = 0
         self.stopdict = get_stopdict()
         self.mh = mhlib.MH()
         self.filestorage = FileStorage(datafs, read_only=(not writable))
@@ -99,6 +109,14 @@ class Indexer:
             self.docpaths = self.root["docpaths"]
         except KeyError:
             self.docpaths = self.root["docpaths"] = IOBTree()
+        try:
+            self.doctimes = self.root["doctimes"]
+        except KeyError:
+            self.doctimes = self.root["doctimes"] = IIBTree()
+        try:
+            self.watchfolders = self.root["watchfolders"]
+        except KeyError:
+            self.watchfolders = self.root["watchfolders"] = {}
         self.path2docid = OIBTree()
         for docid in self.docpaths.keys():
             path = self.docpaths[docid]
@@ -195,6 +213,7 @@ class Indexer:
             path = self.docpaths[docid]
             score = min(100, int(score * factor))
             print "Rank:    %d   Score: %d%%   File: %s" % (rank, score, path)
+            path = os.path.join(self.mh.getpath(), path)
             fp = open(path)
             msg = mhlib.Message("<folder>", 0, fp)
             for header in "From", "To", "Cc", "Bcc", "Subject", "Date":
@@ -254,6 +273,7 @@ class Indexer:
         msgs.sort()
 
         self.updatefolder(f, msgs)
+        self.commit()
 
     def optimize(self, args):
         uniqwords = {}
@@ -279,19 +299,14 @@ class Indexer:
         for n in msgs:
             print "prescanning", n
             m = f.openmessage(n)
-            text = self.getmessagetext(m)
+            text = self.getmessagetext(m, f.name)
             for p in pipeline:
                 text = p.process(text)
             for word in text:
                 uniqwords[word] = uniqwords.get(word, 0) + 1
 
     def bulkupdate(self, args):
-        chunk = 5000
-        target = len(self.docpaths) + chunk
         for folder in args:
-            if len(self.docpaths) >= target:
-                self.pack()
-                target = len(self.docpaths) + chunk
             if folder.startswith("+"):
                 folder = folder[1:]
             print "\nFOLDER", folder
@@ -302,31 +317,34 @@ class Indexer:
                 continue
             self.updatefolder(f, f.listmessages())
             print "Total", len(self.docpaths)
-        self.pack()
+        self.commit()
         print "Indexed", self.index.lexicon._nbytes, "bytes and",
         print self.index.lexicon._nwords, "words;",
         print len(self.index.lexicon._words), "unique words."
 
     def updatefolder(self, f, msgs):
-        done = 0
-        new = 0
+        self.watchfolders[f.name] = self.getmtime(f.name)
         for n in msgs:
-            print "indexing", n
-            m = f.openmessage(n)
-            text = self.getmessagetext(m)
-            path = f.getmessagefilename(n)
-            self.unindexpath(path)
-            if not text:
+            path = "%s/%s" % (f.name, n)
+            docid = self.path2docid.get(path, 0)
+            if docid and self.getmtime(path) == self.doctimes.get(docid, 0):
+                print "unchanged", docid, path
                 continue
             docid = self.newdocid(path)
+            m = f.openmessage(n)
+            text = self.getmessagetext(m, f.name)
+            if not text:
+                self.unindexpath(path)
+                continue
+            print "indexing", docid, path
             self.index.index_text(docid, text)
-            done += 1
-            new = 1
-            if done%500 == 0:
-                self.commit()
-                new = 0
-        if new:
-            self.commit()
+            self.maycommit()
+        # Remove messages from the folder that no longer exist
+        for path in self.path2docid.keys(f.name):
+            if not path.startswith(f.name + "/"):
+                break
+            if self.getmtime(path) == 0:
+                self.unindexpath(path)
         print "done."
 
     def unindexpath(self, path):
@@ -334,14 +352,19 @@ class Indexer:
             docid = self.path2docid[path]
             print "unindexing", docid, path
             del self.docpaths[docid]
+            del self.doctimes[docid]
             del self.path2docid[path]
             try:
                 self.index.unindex(docid)
             except KeyError, msg:
                 print "KeyError", msg
+            self.maycommit()
 
-    def getmessagetext(self, m):
+    def getmessagetext(self, m, name=None):
         L = []
+        if name:
+            L.append("_folder " + name) # To restrict search to a folder
+            self.getheaders(m, L)
         try:
             self.getmsgparts(m, L, 0)
         except:
@@ -361,22 +384,57 @@ class Indexer:
         elif ctype == "message/rfc822":
             f = StringIO(m.getbodytext())
             m = mhlib.Message("<folder>", 0, f)
+            self.getheaders(m, L)
             self.getmsgparts(m, L, level+1)
 
+    def getheaders(self, m, L):
+        H = []
+        for key in "from", "to", "cc", "bcc", "subject":
+            value = m.get(key)
+            if value:
+                H.append(value)
+        if H:
+            L.append("\n".join(H))
+
     def newdocid(self, path):
+        docid = self.path2docid.get(path)
+        if docid is not None:
+            self.doctimes[docid] = self.getmtime(path)
+            return docid
         docid = self.maxdocid + 1
         self.maxdocid = docid
         self.docpaths[docid] = path
+        self.doctimes[docid] = self.getmtime(path)
         self.path2docid[path] = docid
         return docid
 
+    def getmtime(self, path):
+        path = os.path.join(self.mh.getpath(), path)
+        try:
+            st = os.stat(path)
+        except os.error, msg:
+            return 0
+        return st[ST_MTIME]
+
+    def maycommit(self):
+        self.trans_count += 1
+        if self.trans_count >= self.trans_limit > 0:
+            self.commit()
+
     def commit(self):
-        print "committing..."
-        get_transaction().commit()
+        if self.trans_count > 0:
+            print "committing..."
+            get_transaction().commit()
+            self.trans_count = 0
+            self.pack_count += 1
+            if self.pack_count >= self.pack_limit > 0:
+                self.pack()
 
     def pack(self):
-        print "packing..."
-        self.database.pack()
+        if self.pack_count > 0:
+            print "packing..."
+            self.database.pack()
+            self.pack_count = 0
 
 class TextIndex(Persistent):
 
