@@ -2,7 +2,7 @@
 """:"
 exec python $0 ${1+"$@"}
 """
-
+#"
 ############################################################################## 
 #
 # Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
@@ -72,7 +72,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -92,154 +92,154 @@ class Function:
     timeout=60
 
     def __init__(self,url,
-		 arguments=(),method=None,username=None,password=None,
-		 timeout=None,
-		 **headers):
-	while url[-1:]=='/': url=url[:-1]
-	self.url=url
-	self.headers=headers
-	self.func_name=url[rfind(url,'/')+1:]
-	self.__dict__['__name__']=self.func_name
-	self.func_defaults=()
-	
-	self.args=arguments
+                 arguments=(),method=None,username=None,password=None,
+                 timeout=None,
+                 **headers):
+        while url[-1:]=='/': url=url[:-1]
+        self.url=url
+        self.headers=headers
+        self.func_name=url[rfind(url,'/')+1:]
+        self.__dict__['__name__']=self.func_name
+        self.func_defaults=()
+        
+        self.args=arguments
 
-	if method is not None: self.method=method
-	if username is not None: self.username=username
-	if password is not None: self.password=password
-	if timeout is not None: self.timeout=timeout
+        if method is not None: self.method=method
+        if username is not None: self.username=username
+        if password is not None: self.password=password
+        if timeout is not None: self.timeout=timeout
 
-	if urlregex.match(url) >= 0:
-	    host,port,rurl=urlregex.group(1,2,3)
-	    if port: port=atoi(port[1:])
-	    else: port=80
-	    self.host=host
-	    self.port=port
-	    rurl=rurl or '/'
-	    self.rurl=rurl
-	else: raise ValueError, url
+        if urlregex.match(url) >= 0:
+            host,port,rurl=urlregex.group(1,2,3)
+            if port: port=atoi(port[1:])
+            else: port=80
+            self.host=host
+            self.port=port
+            rurl=rurl or '/'
+            self.rurl=rurl
+        else: raise ValueError, url
 
     def __call__(self,*args,**kw):
-	method=self.method
-	if method=='PUT' and len(args)==1 and not kw:
-	    query=[args[0]]
-	    args=()
-	else:
-	    query=[]
-	for i in range(len(args)):
-	    try:
-		k=self.args[i]
-		if kw.has_key(k): raise TypeError, 'Keyword arg redefined'
-		kw[k]=args[i]
-	    except IndexError:    raise TypeError, 'Too many arguments'
+        method=self.method
+        if method=='PUT' and len(args)==1 and not kw:
+            query=[args[0]]
+            args=()
+        else:
+            query=[]
+        for i in range(len(args)):
+            try:
+                k=self.args[i]
+                if kw.has_key(k): raise TypeError, 'Keyword arg redefined'
+                kw[k]=args[i]
+            except IndexError:    raise TypeError, 'Too many arguments'
 
-	headers={}
-	for k, v in self.headers.items(): headers[translate(k,dashtrans)]=v
-	method=self.method
-	if headers.has_key('Content-Type'):
-	    content_type=headers['Content-Type']
-	    if content_type=='multipart/form-data':
-		return self._mp_call(kw)
-	else:
-	    content_type=None
-	    if not method or method=='POST':
-		for v in kw.values():
-		    if hasattr(v,'read'): return self._mp_call(kw)
-		
-	can_marshal=type2marshal.has_key
-	for k,v in kw.items():
-	    t=type(v)
-	    if can_marshal(t): q=type2marshal[t](k,v)
-	    else: q='%s=%s' % (k,quote(v))
-	    query.append(q)
+        headers={}
+        for k, v in self.headers.items(): headers[translate(k,dashtrans)]=v
+        method=self.method
+        if headers.has_key('Content-Type'):
+            content_type=headers['Content-Type']
+            if content_type=='multipart/form-data':
+                return self._mp_call(kw)
+        else:
+            content_type=None
+            if not method or method=='POST':
+                for v in kw.values():
+                    if hasattr(v,'read'): return self._mp_call(kw)
+                
+        can_marshal=type2marshal.has_key
+        for k,v in kw.items():
+            t=type(v)
+            if can_marshal(t): q=type2marshal[t](k,v)
+            else: q='%s=%s' % (k,quote(v))
+            query.append(q)
 
-	url=self.rurl
-	if query:
-	    query=join(query,'&')
-	    method=method or 'POST'
-	    if method == 'PUT':
-		headers['Content-Length']=str(len(query))
-	    if method != 'POST':
-		url="%s?%s" % (url,query)
-		query=''
-	    elif not content_type:
-		headers['Content-Type']='application/x-www-form-urlencoded'
-		headers['Content-Length']=str(len(query))
-	else: method=method or 'GET'
+        url=self.rurl
+        if query:
+            query=join(query,'&')
+            method=method or 'POST'
+            if method == 'PUT':
+                headers['Content-Length']=str(len(query))
+            if method != 'POST':
+                url="%s?%s" % (url,query)
+                query=''
+            elif not content_type:
+                headers['Content-Type']='application/x-www-form-urlencoded'
+                headers['Content-Length']=str(len(query))
+        else: method=method or 'GET'
 
-	if (self.username and self.password and
-	    not headers.has_key('Authorization')):
-	    headers['Authorization']=(
-		"Basic %s" %
-		gsub('\012','',encodestring('%s:%s' % (
-		    self.username,self.password))))
+        if (self.username and self.password and
+            not headers.has_key('Authorization')):
+            headers['Authorization']=(
+                "Basic %s" %
+                gsub('\012','',encodestring('%s:%s' % (
+                    self.username,self.password))))
 
-	try:
-	    h=HTTP()
-	    h.connect(self.host, self.port)
-	    h.putrequest(method, self.rurl)
-	    for hn,hv in headers.items():
-		h.putheader(translate(hn,dashtrans),hv)
-	    h.endheaders()
-	    if query: h.send(query)
-	    ec,em,headers=h.getreply()
-	    response     =h.getfile().read()
-	except:
-	    raise NotAvailable, \
-		  RemoteException(NotAvailable,sys.exc_value,self.url,query)
+        try:
+            h=HTTP()
+            h.connect(self.host, self.port)
+            h.putrequest(method, self.rurl)
+            for hn,hv in headers.items():
+                h.putheader(translate(hn,dashtrans),hv)
+            h.endheaders()
+            if query: h.send(query)
+            ec,em,headers=h.getreply()
+            response     =h.getfile().read()
+        except:
+            raise NotAvailable, \
+                  RemoteException(NotAvailable,sys.exc_value,self.url,query)
 
-	if ec==200: return (headers,response)
-	self.handleError(query, ec, em, headers, response)
+        if ec==200: return (headers,response)
+        self.handleError(query, ec, em, headers, response)
 
     def handleError(self, query, ec, em, headers, response):
-	try:    v=headers.dict['bobo-exception-value']
-	except: v=ec
-	try:    f=headers.dict['bobo-exception-file']
-	except: f='Unknown'
-	try:    l=headers.dict['bobo-exception-line']
-	except: l='Unknown'
-	try:    t=exceptmap[headers.dict['bobo-exception-type']]
-	except:
-	    if   ec >= 400 and ec < 500: t=NotFound
-	    elif ec == 503:              t=NotAvailable
-	    else:                        t=ServerError
-	raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
-	
+        try:    v=headers.dict['bobo-exception-value']
+        except: v=ec
+        try:    f=headers.dict['bobo-exception-file']
+        except: f='Unknown'
+        try:    l=headers.dict['bobo-exception-line']
+        except: l='Unknown'
+        try:    t=exceptmap[headers.dict['bobo-exception-type']]
+        except:
+            if   ec >= 400 and ec < 500: t=NotFound
+            elif ec == 503:              t=NotAvailable
+            else:                        t=ServerError
+        raise t, RemoteException(t,v,f,l,self.url,query,ec,em,response)
+        
 
     
 
     def _mp_call(self,kw,
-		type2suffix={
-		    type(1.0): ':float',
-		    type(1):   ':int',
-		    type(1L):  ':long',
-		    type([]):  ':list',
-		    type(()):  ':tuple',
-		    }
-		):
+                type2suffix={
+                    type(1.0): ':float',
+                    type(1):   ':int',
+                    type(1L):  ':long',
+                    type([]):  ':list',
+                    type(()):  ':tuple',
+                    }
+                ):
         # Call a function using the file-upload protcol
 
-	# Add type markers to special values:
-	d={}
-	special_type=type2suffix.has_key
-	for k,v in kw.items():
-	    if ':' not in k:
-		t=type(v)
-		if special_type(t): d['%s%s' % (k,type2suffix[t])]=v
-		else: d[k]=v
-	    else: d[k]=v
+        # Add type markers to special values:
+        d={}
+        special_type=type2suffix.has_key
+        for k,v in kw.items():
+            if ':' not in k:
+                t=type(v)
+                if special_type(t): d['%s%s' % (k,type2suffix[t])]=v
+                else: d[k]=v
+            else: d[k]=v
 
         rq=[('POST %s HTTP/1.0' % self.rurl),]
-	for n,v in self.headers.items():
-	    rq.append('%s: %s' % (n,v))
-	if self.username and self.password:
-	    c=gsub('\012','',encodestring('%s:%s' % (
-		             self.username,self.password)))
-	    rq.append('Authorization: Basic %s' % c)
+        for n,v in self.headers.items():
+            rq.append('%s: %s' % (n,v))
+        if self.username and self.password:
+            c=gsub('\012','',encodestring('%s:%s' % (
+                             self.username,self.password)))
+            rq.append('Authorization: Basic %s' % c)
         rq.append(MultiPart(d).render())
         rq=join(rq,'\n')
 
-	try:
+        try:
             sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
             sock.connect(self.host,self.port)
             sock.send(rq)
@@ -247,25 +247,25 @@ class Function:
             sock=None
             line=reply.readline()
 
-	    try:
-		[ver, ec, em] = split(line, None, 2)
-	    except ValueError:
-		raise 'BadReply','Bad reply from server: '+line
-	    if ver[:5] != 'HTTP/':
-		raise 'BadReply','Bad reply from server: '+line
+            try:
+                [ver, ec, em] = split(line, None, 2)
+            except ValueError:
+                raise 'BadReply','Bad reply from server: '+line
+            if ver[:5] != 'HTTP/':
+                raise 'BadReply','Bad reply from server: '+line
 
             ec=atoi(ec)
             em=strip(em)
             headers=mimetools.Message(reply,0)
             response=reply.read()
-	finally:
+        finally:
           if 0:
-	    raise NotAvailable, (
-		RemoteException(NotAvailable,sys.exc_value,
-				self.url,'<MultiPart Form>'))
-		
-	if ec==200: return (headers,response)
-	self.handleError('', ec, em, headers, response)
+            raise NotAvailable, (
+                RemoteException(NotAvailable,sys.exc_value,
+                                self.url,'<MultiPart Form>'))
+                
+        if ec==200: return (headers,response)
+        self.handleError('', ec, em, headers, response)
 
 class Object:
     """Surrogate object for an object on the web"""
@@ -276,33 +276,33 @@ class Object:
     special_methods= 'GET','POST','PUT'
 
     def __init__(self, url,
-		 method=None,username=None,password=None,
-		 timeout=None,
-		 **headers):
-	self.url=url
-	self.headers=headers
-	if method is not None: self.method=method
-	if username is not None: self.username=username
-	if password is not None: self.password=password
-	if timeout is not None: self.timeout=timeout
+                 method=None,username=None,password=None,
+                 timeout=None,
+                 **headers):
+        self.url=url
+        self.headers=headers
+        if method is not None: self.method=method
+        if username is not None: self.username=username
+        if password is not None: self.password=password
+        if timeout is not None: self.timeout=timeout
 
     def __getattr__(self, name):
-	if name in self.special_methods:
-	    method=name
-	    url=self.url
-	else:
-	    method=self.method
-	    url="%s/%s" % (self.url, name)
+        if name in self.special_methods:
+            method=name
+            url=self.url
+        else:
+            method=self.method
+            url="%s/%s" % (self.url, name)
 
-	f=Function(url,
-		   method=method,
-		   username=self.username,
-		   password=self.password,
-		   timeout=self.timeout)
+        f=Function(url,
+                   method=method,
+                   username=self.username,
+                   password=self.password,
+                   timeout=self.timeout)
 
-	f.headers=self.headers
+        f.headers=self.headers
 
-	return f
+        return f
 
 def call(url,username=None, password=None, **kw):
     
@@ -322,20 +322,20 @@ def marshal_long(n,f):  return ('%s:long=%s' % (n,f))[:-1]
 sample_regex=regex.compile('')
 def marshal_regex(n,r):
     if r.translate is sample_regex.translate:
-	t='Regex'
+        t='Regex'
     elif r.translate is regex.casefold:
-	t='regex'
+        t='regex'
     else:
-	raise ValueError, 'regular expression used unsupported translation'
+        raise ValueError, 'regular expression used unsupported translation'
     return "%s:%s=%s" % (n,t,quote(r.givenpat))
 
 def marshal_list(n,l,tname='list', lt=type([]), tt=type(())):
     r=[]
     for v in l:
-	t=type(v)
-	if t is lt or t is tt:
-	    raise TypeError, 'Invalid recursion in data to be marshaled.'
-	r.append(marshal_whatever("%s:%s" % (n,tname) ,v))
+        t=type(v)
+        if t is lt or t is tt:
+            raise TypeError, 'Invalid recursion in data to be marshaled.'
+        r.append(marshal_whatever("%s:%s" % (n,tname) ,v))
     
     return join(r,'&')
 
@@ -343,12 +343,12 @@ def marshal_tuple(n,l):
     return marshal_list(n,l,'tuple')
     
 type2marshal={
-    type(1.0): 			marshal_float,
-    type(1): 			marshal_int,
-    type(1L): 			marshal_long,
-    type(regex.compile('')): 	marshal_regex,
-    type([]): 			marshal_list,
-    type(()): 			marshal_tuple,
+    type(1.0):                  marshal_float,
+    type(1):                    marshal_int,
+    type(1L):                   marshal_long,
+    type(regex.compile('')):    marshal_regex,
+    type([]):                   marshal_list,
+    type(()):                   marshal_tuple,
     }
 
 def marshal_whatever(k,v):
@@ -370,49 +370,49 @@ ServerError  ='bci.ServerError'
 NotAvailable ='bci.NotAvailable'
 
 exceptmap   ={'AttributeError'   :AttributeError,
-	      'BadRequest'       :BadRequest,
-	      'EOFError'         :EOFError,
-	      'IOError'          :IOError,
-	      'ImportError'      :ImportError,
-	      'IndexError'       :IndexError,
-	      'InternalError'    :InternalError,
-	      'KeyError'         :KeyError,
-	      'MemoryError'      :MemoryError,
-	      'NameError'        :NameError,
-	      'NotAvailable'     :NotAvailable,
-	      'NotFound'         :NotFound,
-	      'OverflowError'    :OverflowError,
-	      'RuntimeError'     :RuntimeError,
-	      'ServerError'      :ServerError,
-	      'SyntaxError'      :SyntaxError,
-	      'SystemError'      :SystemError,
-	      'SystemExit'       :SystemExit,
-	      'TypeError'        :TypeError,
-	      'Unauthorized'     :Unauthorized,
-	      'ValueError'       :ValueError,
-	      'ZeroDivisionError':ZeroDivisionError}
+              'BadRequest'       :BadRequest,
+              'EOFError'         :EOFError,
+              'IOError'          :IOError,
+              'ImportError'      :ImportError,
+              'IndexError'       :IndexError,
+              'InternalError'    :InternalError,
+              'KeyError'         :KeyError,
+              'MemoryError'      :MemoryError,
+              'NameError'        :NameError,
+              'NotAvailable'     :NotAvailable,
+              'NotFound'         :NotFound,
+              'OverflowError'    :OverflowError,
+              'RuntimeError'     :RuntimeError,
+              'ServerError'      :ServerError,
+              'SyntaxError'      :SyntaxError,
+              'SystemError'      :SystemError,
+              'SystemExit'       :SystemExit,
+              'TypeError'        :TypeError,
+              'Unauthorized'     :Unauthorized,
+              'ValueError'       :ValueError,
+              'ZeroDivisionError':ZeroDivisionError}
 
 
 class RemoteException:
 
     def __init__(self,etype=None,evalue=None,efile=None,eline=None,url=None,
-		 query=None,http_code=None,http_msg=None, http_resp=None):
+                 query=None,http_code=None,http_msg=None, http_resp=None):
         """Contains information about an exception which
            occurs in a remote method call"""
         self.exc_type    =etype
-	self.exc_value   =evalue
-	self.exc_file    =efile
-	self.exc_line    =eline
+        self.exc_value   =evalue
+        self.exc_file    =efile
+        self.exc_line    =eline
         self.url         =url
-	self.query       =query
-	self.http_code   =http_code
+        self.query       =query
+        self.http_code   =http_code
         self.http_message=http_msg
         self.response    =http_resp
 
     def __repr__(self):
-	return '%s (File: %s Line: %s)\n%s %s for %s' % (
-	        self.exc_value,self.exc_file,self.exc_line,
-		self.http_code,self.http_message,self.url)
+        return '%s (File: %s Line: %s)\n%s %s for %s' % (
+                self.exc_value,self.exc_file,self.exc_line,
+                self.http_code,self.http_message,self.url)
 
 
 
@@ -431,26 +431,26 @@ class MultiPart:
         b=t=None
 
         if dt==DictType:
-	    t=1
+            t=1
             b=self.boundary()
             d=[]
             h['Content-Type']['_v']='multipart/form-data; boundary=%s' % b
             for n,v in val.items():
-		d.append(MultiPart(n,v))
+                d.append(MultiPart(n,v))
 
         elif (dt==ListType) or (dt==TupleType):
             raise ValueError, 'Sorry, nested multipart is not done yet!'
 
         elif dt==FileType or hasattr(val,'read'):
-	    if hasattr(val,'name'):
-		fn=gsub('\\\\','/',val.name)
-		fn=fn[(rfind(fn,'/')+1):]
-		ex=fn[(rfind(fn,'.')+1):]
-		if self._extmap.has_key(ex): ct=self._extmap[ex]
-		else: ct=self._extmap['']
-	    else:
-		fn=''
-		ct=self._extmap[None]
+            if hasattr(val,'name'):
+                fn=gsub('\\\\','/',val.name)
+                fn=fn[(rfind(fn,'/')+1):]
+                ex=fn[(rfind(fn,'.')+1):]
+                if self._extmap.has_key(ex): ct=self._extmap[ex]
+                else: ct=self._extmap['']
+            else:
+                fn=''
+                ct=self._extmap[None]
             if self._encmap.has_key(ct): ce=self._encmap[ct]
             else: ce=''
 
@@ -459,11 +459,11 @@ class MultiPart:
             h['Content-Disposition']['filename']='"%s"' % fn
             h['Content-Transfer-Encoding']['_v']=ce
             h['Content-Type']['_v']             =ct
-	    d=[]
-	    l=val.read(8192)
-	    while l:
-		d.append(l)
-		l=val.read(8192)
+            d=[]
+            l=val.read(8192)
+            while l:
+                d.append(l)
+                l=val.read(8192)
         else:
             h['Content-Disposition']['_v']='form-data'
             h['Content-Disposition']['name']='"%s"' % name
@@ -483,7 +483,7 @@ class MultiPart:
         h=self._headers
         s=[]
 
-	if self._top:
+        if self._top:
             for n,v in h.items():
                 if v['_v']:
                     s.append('%s: %s' % (n,v['_v']))
@@ -502,7 +502,7 @@ class MultiPart:
             s.append(t)
             return join(s,'')
 
-	else:
+        else:
             for n,v in h.items():
                 if v['_v']:
                     s.append('%s: %s' % (n,v['_v']))
@@ -512,10 +512,10 @@ class MultiPart:
             s.append('\n')
 
             if self._boundary:
-	        p=[]
+                p=[]
                 b=self._boundary
                 for d in self._data: p.append(d.render())
-	        s.append('--%s\n' % b)
+                s.append('--%s\n' % b)
                 s.append(join(p,'\n--%s\n' % b))
                 s.append('\n--%s--\n' % b)
                 return join(s,'')
@@ -532,7 +532,7 @@ class MultiPart:
              'gif':  'image/gif',
              'jpg':  'image/jpeg',
              'exe':  'application/octet-stream',
-	     None :  'application/octet-stream',
+             None :  'application/octet-stream',
              }
 
     _encmap={'image/gif': 'binary',
@@ -572,32 +572,32 @@ def main():
     user=None
 
     try:
-	optlist, args = getopt.getopt(sys.argv[1:],'u:')
-	url=args[0]
-	u =filter(lambda o: o[0]=='-u', optlist)
-	if u:
-	    [user, pw] = split(u[0][1],':')
+        optlist, args = getopt.getopt(sys.argv[1:],'u:')
+        url=args[0]
+        u =filter(lambda o: o[0]=='-u', optlist)
+        if u:
+            [user, pw] = split(u[0][1],':')
 
-	kw={}
-	for arg in args[1:]:
-	    [name,v]=split(arg,'=')
-	    if name[-5:]==':file':
-		name=name[:-5]
-		if v=='-': v=sys.stdin
-		else: v=open(v)
-	    kw[name]=v
+        kw={}
+        for arg in args[1:]:
+            [name,v]=split(arg,'=')
+            if name[-5:]==':file':
+                name=name[:-5]
+                if v=='-': v=sys.stdin
+                else: v=open(v)
+            kw[name]=v
 
     except:
-	# print "%s: %s\n%s" % (sys.exc_type, sys.exc_value, usage)
-	print usage
-	sys.exit(1)
-	
+        # print "%s: %s\n%s" % (sys.exc_type, sys.exc_value, usage)
+        print usage
+        sys.exit(1)
+        
     # The "main" program for this module
     f=Function(url)
     if user: f.username, f.password = user, pw
     headers, body = apply(f,(),kw)
     sys.stderr.write(join(map(lambda h: "%s: %s\n" % h, headers.items()),"")
-		     +"\n\n")
+                     +"\n\n")
     print body
 
 

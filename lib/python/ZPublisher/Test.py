@@ -85,36 +85,36 @@ Options
 
    -p profiler_data_file       -- Run under profiler control,
                                   generating the profiler 
-				  data file, profiler_data_file.
+                                  data file, profiler_data_file.
 
    -t                          -- Compute the time required to
                                   complete a request, in 
-				  milliseconds.
+                                  milliseconds.
 
    -r n                        -- Specify a repeat count for timing or
                                   profiling.
 
    -d                          -- Run in debug mode.  With this
-				  option, bobo will run under Python
-				  debugger control.  Two useful
-				  breakpoints are set.  The first is
-				  at the beginning of the module
-				  publishing code.  Steping through
-				  this code shows how bobo finds
-				  objects and obtains certain
-				  meta-data.  The second breakpoint is
-				  at the point just before the
-				  published object is called.  To jump
-				  to the second breakpoint, you must
-				  enter 's' followed by a carriage
-				  return to step into the module, then
-				  enter a 'c' followed by a carriage
-				  return to jump to the first
-				  breakpoint and then another 'c'
-				  followed by a carriage return to
-				  jump to the point where the object
-				  is called.  Finally, enter 's'
-				  followed a carriage return.
+                                  option, bobo will run under Python
+                                  debugger control.  Two useful
+                                  breakpoints are set.  The first is
+                                  at the beginning of the module
+                                  publishing code.  Steping through
+                                  this code shows how bobo finds
+                                  objects and obtains certain
+                                  meta-data.  The second breakpoint is
+                                  at the point just before the
+                                  published object is called.  To jump
+                                  to the second breakpoint, you must
+                                  enter 's' followed by a carriage
+                                  return to step into the module, then
+                                  enter a 'c' followed by a carriage
+                                  return to jump to the first
+                                  breakpoint and then another 'c'
+                                  followed by a carriage return to
+                                  jump to the point where the object
+                                  is called.  Finally, enter 's'
+                                  followed a carriage return.
 
    -s                             Don\'t generate any output
 
@@ -123,16 +123,16 @@ Examples
    For example, to debug a published object (such as a method), spam,
    the following might be entered::
 
-	    bobo -d /prj/lib/python/mymod container/spam
+            bobo -d /prj/lib/python/mymod container/spam
             s
             c
             c
             s
 
 
-$Id: Test.py,v 1.17 1998/09/01 15:18:31 jim Exp $
+$Id: Test.py,v 1.18 1998/09/03 14:50:17 jim Exp $
 '''
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys,traceback, profile, os
 repeat_count=100
@@ -142,35 +142,35 @@ def main():
     global repeat_count
 
     try:
-	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:s')
-	if len(args) > 2 or len(args) < 2: raise TypeError, None
-	if len(args) == 2: path_info=args[1]
+        optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:s')
+        if len(args) > 2 or len(args) < 2: raise TypeError, None
+        if len(args) == 2: path_info=args[1]
     except:
-	sys.stderr.write(__doc__)
-	sys.exit(-1)
+        sys.stderr.write(__doc__)
+        sys.exit(-1)
 
     silent=profile=u=debug=timeit=None
     env={}
     for opt,val in optlist:
-	if opt=='-d':
-	    debug=1
-	if opt=='-s':
-	    silent=1
-	if opt=='-t':
-	    timeit=1
-	if opt=='-u':
-	    u=val
-	elif opt=='-p':
-	    profile=val
-	elif opt=='-r':
-	    repeat_count=string.atoi(val)
-	elif opt=='-e':
-	    opt=string.find(val,'=')
-	    if opt <= 0: raise 'Invalid argument to -e', val
-	    env[val[:opt]]=val[opt+1:]
+        if opt=='-d':
+            debug=1
+        if opt=='-s':
+            silent=1
+        if opt=='-t':
+            timeit=1
+        if opt=='-u':
+            u=val
+        elif opt=='-p':
+            profile=val
+        elif opt=='-r':
+            repeat_count=string.atoi(val)
+        elif opt=='-e':
+            opt=string.find(val,'=')
+            if opt <= 0: raise 'Invalid argument to -e', val
+            env[val[:opt]]=val[opt+1:]
 
     if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
-	raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
+        raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
 
     module=args[0]
 
@@ -185,7 +185,7 @@ def time(function,*args,**kwargs):
     apply(function,args,kwargs)
     start()
     for i in repeat_range:
-	apply(function,args,kwargs)
+        apply(function,args,kwargs)
     finish()
 
     return float(milli())/len(repeat_range)
@@ -197,18 +197,18 @@ def run(statement, *args):
 
     prof = profile.Profile(time.time)
     try:
-	prof = prof.run(statement)
+        prof = prof.run(statement)
     except SystemExit:
-	pass
+        pass
     if args:
-	prof.dump_stats(args[0])
+        prof.dump_stats(args[0])
     else:
-	return prof.print_stats()
+        return prof.print_stats()
 
 
 def publish_module_pm(module_name,
-		      stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
-		      environ=os.environ, debug=0):
+                      stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+                      environ=os.environ, debug=0):
 
     from CGIResponse import Response
     from cgi_module_publisher import ModulePublisher
@@ -216,18 +216,18 @@ def publish_module_pm(module_name,
     after_list=[None]
     request=None
     try:
-	response=Response(stdout=stdout, stderr=stderr)
-	publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
-				    environ=environ)
-	response = publisher.response
-	request=publisher.request
-	response = publisher.publish(module_name,after_list,debug=debug)
-	request.other={}
-	response=str(response)
+        response=Response(stdout=stdout, stderr=stderr)
+        publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
+                                    environ=environ)
+        response = publisher.response
+        request=publisher.request
+        response = publisher.publish(module_name,after_list,debug=debug)
+        request.other={}
+        response=str(response)
     finally:
-	try: request.other={}
-	except: pass
-	if after_list[0] is not None: after_list[0]()
+        try: request.other={}
+        except: pass
+        if after_list[0] is not None: after_list[0]()
 
 def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
 
@@ -261,8 +261,8 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
     else: raise TypeError, ''
 
     if u:
-	import base64
-	env['HTTP_AUTHORIZATION']="Basic %s" % base64.encodestring(u)
+        import base64
+        env['HTTP_AUTHORIZATION']="Basic %s" % base64.encodestring(u)
 
     dir,file=os.path.split(script)
     cdir=os.path.join(dir,'Components')
@@ -273,154 +273,93 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
     from cgi_module_publisher import publish_module
 
     if profile:
-	import __main__
-	__main__.publish_module=publish_module
-	__main__.file=file
-	__main__.env=env
-	print profile
-	publish_module(file, environ=env, stdout=open('/dev/null','w'))
-	c=("for i in range(%s): "
-	   "publish_module(file, environ=env, stdout=open('/dev/null','w'))"
-	   % repeat_count
-	   )
-	if profile: run(c,profile)
-	else: run(c)
+        import __main__
+        __main__.publish_module=publish_module
+        __main__.file=file
+        __main__.env=env
+        print profile
+        publish_module(file, environ=env, stdout=open('/dev/null','w'))
+        c=("for i in range(%s): "
+           "publish_module(file, environ=env, stdout=open('/dev/null','w'))"
+           % repeat_count
+           )
+        if profile: run(c,profile)
+        else: run(c)
     elif debug:
-	import cgi_module_publisher
-	from cgi_module_publisher import ModulePublisher
-	import pdb
+        import cgi_module_publisher
+        from cgi_module_publisher import ModulePublisher
+        import pdb
 
-	class Pdb(pdb.Pdb):
-	    def do_pub(self,arg):
-		if hasattr(self,'done_pub'):
-		    print 'pub already done.'
-		else:
-		    self.do_s('')
-		    self.do_s('')
-		    self.do_c('')
-		    self.done_pub=1
-	    def do_ob(self,arg):
-		if hasattr(self,'done_ob'):
-		    print 'ob already done.'
-		else:
-		    self.do_pub('')
-		    self.do_c('')
-		    self.done_ob=1
+        class Pdb(pdb.Pdb):
+            def do_pub(self,arg):
+                if hasattr(self,'done_pub'):
+                    print 'pub already done.'
+                else:
+                    self.do_s('')
+                    self.do_s('')
+                    self.do_c('')
+                    self.done_pub=1
+            def do_ob(self,arg):
+                if hasattr(self,'done_ob'):
+                    print 'ob already done.'
+                else:
+                    self.do_pub('')
+                    self.do_c('')
+                    self.done_ob=1
 
-	import codehack
-       	db=Pdb()
+        import codehack
+        db=Pdb()
 
-	def fbreak(db,meth,codehack=codehack):
-	    try: meth=meth.im_func
-	    except AttributeError: pass
-	    code=meth.func_code
-	    lineno = codehack.getlineno(code)
-	    filename = code.co_filename
-	    db.set_break(filename,lineno)
+        def fbreak(db,meth,codehack=codehack):
+            try: meth=meth.im_func
+            except AttributeError: pass
+            code=meth.func_code
+            lineno = codehack.getlineno(code)
+            filename = code.co_filename
+            db.set_break(filename,lineno)
 
-	fbreak(db,ModulePublisher.publish)
-	fbreak(db,ModulePublisher.call_object)
-	#fbreak(db,cgi_module_publisher.new_find_object)
-	#fbreak(db,cgi_module_publisher.old_find_object)
+        fbreak(db,ModulePublisher.publish)
+        fbreak(db,ModulePublisher.call_object)
+        #fbreak(db,cgi_module_publisher.new_find_object)
+        #fbreak(db,cgi_module_publisher.old_find_object)
 
-	dbdata={'breakpoints':(), 'env':env}
-	b=''
-	try: b=open('.bobodb','r').read()
-	except: pass
-	if b: exec b in dbdata
+        dbdata={'breakpoints':(), 'env':env}
+        b=''
+        try: b=open('.bobodb','r').read()
+        except: pass
+        if b: exec b in dbdata
 
-	for b in dbdata['breakpoints']:
-	    if type(b) is type(()):
-		apply(db.set_break,b)
-	    else:
-		fbreak(db,b)	
+        for b in dbdata['breakpoints']:
+            if type(b) is type(()):
+                apply(db.set_break,b)
+            else:
+                fbreak(db,b)    
 
-	db.prompt='pdb> '
-	# db.set_continue()
+        db.prompt='pdb> '
+        # db.set_continue()
 
-	print (
-	'* Type "s<cr>c<cr>" to jump to beginning of real publishing process.\n'
-	'* Then type c<cr> to jump to the beginning of the URL traversal\n'
-	'  algorithm.\n'
-	'* Then type c<cr> to jump to published object call.'
-	)
-	db.run('publish_module(file,environ=env,debug=1)',
-	       cgi_module_publisher.__dict__,
-	       {'file':file, 'env':env})
+        print (
+        '* Type "s<cr>c<cr>" to jump to beginning of real publishing process.\n'
+        '* Then type c<cr> to jump to the beginning of the URL traversal\n'
+        '  algorithm.\n'
+        '* Then type c<cr> to jump to published object call.'
+        )
+        db.run('publish_module(file,environ=env,debug=1)',
+               cgi_module_publisher.__dict__,
+               {'file':file, 'env':env})
     elif timeit:
-	stdout=sys.stdout
-	t= time(publish_module,file,
-		stdout=open('/dev/null','w'), environ=env)
-	stdout.write('%s milliseconds\n' % t)
+        stdout=sys.stdout
+        t= time(publish_module,file,
+                stdout=open('/dev/null','w'), environ=env)
+        stdout.write('%s milliseconds\n' % t)
     elif pm:
-	stdout=sys.stdout
-	publish_module_pm(file, environ=env, stdout=stdout)
-	print '\n%s\n' % ('_'*60)
+        stdout=sys.stdout
+        publish_module_pm(file, environ=env, stdout=stdout)
+        print '\n%s\n' % ('_'*60)
     else:
-	if silent: stdout=open('/dev/null','w')
-	else: stdout=sys.stdout
-	publish_module(file, environ=env, stdout=stdout)
-	print '\n%s\n' % ('_'*60)
+        if silent: stdout=open('/dev/null','w')
+        else: stdout=sys.stdout
+        publish_module(file, environ=env, stdout=stdout)
+        print '\n%s\n' % ('_'*60)
 
 if __name__ == "__main__": main()
-
-#
-# $Log: Test.py,v $
-# Revision 1.17  1998/09/01 15:18:31  jim
-# added open source copyright
-#
-# Revision 1.16  1998/05/04 21:37:32  jim
-# Added support for post-mortem debugging view pm flag to publish method.
-#
-# Revision 1.15  1998/04/29 19:08:19  jim
-# Add support for post-mortem debugging.
-#
-# Revision 1.14  1998/04/09 15:21:59  jim
-# *** empty log message ***
-#
-# Revision 1.13  1998/04/09 15:20:10  jim
-# Fixed way that Python is invoked in command-line mode.
-#
-# Revision 1.12  1997/09/02 21:15:34  jim
-# Added 'Main' as default module.
-# Took out break in non-existent xxx_find_object.
-#
-# Revision 1.11  1997/04/22 03:47:29  jim
-# *** empty log message ***
-#
-# Revision 1.10  1997/04/11 22:45:22  jim
-# Changed to require two arguments.
-#
-# Revision 1.9  1997/04/11 13:35:06  jim
-# Added -e option to specify environment variables.
-#
-# Revision 1.8  1997/04/10 13:48:56  jim
-# Modified profiling to use repeat_count.
-#
-# Revision 1.7  1997/04/09 21:08:04  jim
-# Improved profiling behavior:
-#
-#   - Do 10 trials, with a preceeding trial to warm things up,
-#   - Use time.time for timing rather than os.times.
-#
-# Revision 1.6  1997/02/14 17:28:55  jim
-# Added -r option to specify repeat count fot -t.
-#
-# Revision 1.5  1996/11/11 22:14:26  jim
-# Minor doc change
-#
-# Revision 1.4  1996/11/11 22:00:01  jim
-# Minor doc change
-#
-# Revision 1.3  1996/10/02 16:03:59  jim
-# Took out spurious line.
-#
-# Revision 1.2  1996/09/16 14:43:26  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.1  1996/09/13 22:51:52  jim
-# *** empty log message ***
-#

@@ -1,6 +1,6 @@
 '''CGI Response Output formatter
 
-$Id: Response.py,v 1.35 1998/09/01 15:18:31 jim Exp $'''
+$Id: Response.py,v 1.36 1998/09/03 14:50:16 jim Exp $'''
 #
 # Copyright (c) 1998, Digital Creations, Fredericksburg, VA, USA.
 # All rights reserved.
@@ -51,7 +51,7 @@ $Id: Response.py,v 1.35 1998/09/01 15:18:31 jim Exp $'''
 #
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -173,145 +173,145 @@ class Response:
     body=''
 
     def __init__(self,body='',status=200,headers=None,
-		 stdout=sys.stdout, stderr=sys.stderr,):
-	'''\
-	Creates a new response. In effect, the constructor calls
-	"self.setBody(body); self.setStatus(status); for name in
-	headers.keys(): self.setHeader(name, headers[name])"
-	'''
-	if headers is None: headers={}
-	self.headers=headers
+                 stdout=sys.stdout, stderr=sys.stderr,):
+        '''\
+        Creates a new response. In effect, the constructor calls
+        "self.setBody(body); self.setStatus(status); for name in
+        headers.keys(): self.setHeader(name, headers[name])"
+        '''
+        if headers is None: headers={}
+        self.headers=headers
 
-	if status==200:
-	    self.status=200
-	    headers['status']="200 OK"	    
-	else: self.setStatus(status)
-	self.base=''
-	if body: self.setBody(body)
-	self.cookies={}
-	self.stdout=stdout
-	self.stderr=stderr
+        if status==200:
+            self.status=200
+            headers['status']="200 OK"      
+        else: self.setStatus(status)
+        self.base=''
+        if body: self.setBody(body)
+        self.cookies={}
+        self.stdout=stdout
+        self.stderr=stderr
     
     def setStatus(self, status, reason=None):
-	'''\
-	Sets the HTTP status code of the response; the argument may
-	either be an integer or a string from { OK, Created, Accepted,
-	NoContent, MovedPermanently, MovedTemporarily,
-	NotModified, BadRequest, Unauthorized, Forbidden,
-	NotFound, InternalError, NotImplemented, BadGateway,
-	ServiceUnavailable } that will be converted to the correct
-	integer value. '''
-	if type(status) is types.StringType:
-	    status=lower(status)
-	if status_codes.has_key(status): status=status_codes[status]
-	else: status=500
-	self.status=status
-	if reason is None:
-	    if status_reasons.has_key(status): reason=status_reasons[status]
-	    else: reason='Unknown'
-	self.setHeader('Status', "%d %s" % (status,str(reason)))
+        '''\
+        Sets the HTTP status code of the response; the argument may
+        either be an integer or a string from { OK, Created, Accepted,
+        NoContent, MovedPermanently, MovedTemporarily,
+        NotModified, BadRequest, Unauthorized, Forbidden,
+        NotFound, InternalError, NotImplemented, BadGateway,
+        ServiceUnavailable } that will be converted to the correct
+        integer value. '''
+        if type(status) is types.StringType:
+            status=lower(status)
+        if status_codes.has_key(status): status=status_codes[status]
+        else: status=500
+        self.status=status
+        if reason is None:
+            if status_reasons.has_key(status): reason=status_reasons[status]
+            else: reason='Unknown'
+        self.setHeader('Status', "%d %s" % (status,str(reason)))
 
     def setHeader(self, name, value):
-	'''\
-	Sets an HTTP return header "name" with value "value", clearing
-	the previous value set for the header, if one exists. '''
-	n=lower(name)
-	if accumulate_header(n):
-	    self.accumulated_headers=(
-		"%s%s: %s\n" % (self.accumulated_headers, name, value))
-	else:
-	    self.headers[n]=value
+        '''\
+        Sets an HTTP return header "name" with value "value", clearing
+        the previous value set for the header, if one exists. '''
+        n=lower(name)
+        if accumulate_header(n):
+            self.accumulated_headers=(
+                "%s%s: %s\n" % (self.accumulated_headers, name, value))
+        else:
+            self.headers[n]=value
 
     __setitem__=setHeader
 
     def setBody(self, body, title='',
-		bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
-		):
-	'''\
-	Set the body of the response
-	
-	Sets the return body equal to the (string) argument "body". Also
-	updates the "content-length" return header.
+                bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
+                ):
+        '''\
+        Set the body of the response
+        
+        Sets the return body equal to the (string) argument "body". Also
+        updates the "content-length" return header.
 
-	You can also specify a title, in which case the title and body
-	will be wrapped up in html, head, title, and body tags.
+        You can also specify a title, in which case the title and body
+        will be wrapped up in html, head, title, and body tags.
 
-	If the body is a 2-element tuple, then it will be treated
-	as (title,body)
-	'''
-	if type(body) is types.TupleType:
-	    title,body=body
+        If the body is a 2-element tuple, then it will be treated
+        as (title,body)
+        '''
+        if type(body) is types.TupleType:
+            title,body=body
 
-	if type(body) is not types.StringType:
-	    if hasattr(body,'asHTML'):
-		body=body.asHTML()
+        if type(body) is not types.StringType:
+            if hasattr(body,'asHTML'):
+                body=body.asHTML()
 
-	body=str(body)
-	l=len(body)
-	if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
-	    bogus_str_search(body) > 0):
-	    raise 'NotFound', (
-		"Sorry, the requested document does not exist.<p>"
-		"\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
-	    
-	if(title):
-	    self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
-		       '<body>\n%s\n</body>\n</html>'
-		       % (str(title),str(body)))
-	else:
-	    self.body=str(body)
-	self.insertBase()
-	return self
+        body=str(body)
+        l=len(body)
+        if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
+            bogus_str_search(body) > 0):
+            raise 'NotFound', (
+                "Sorry, the requested document does not exist.<p>"
+                "\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
+            
+        if(title):
+            self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
+                       '<body>\n%s\n</body>\n</html>'
+                       % (str(title),str(body)))
+        else:
+            self.body=str(body)
+        self.insertBase()
+        return self
 
     def getStatus(self):
-	'Returns the current HTTP status code as an integer. '
-	return self.status
+        'Returns the current HTTP status code as an integer. '
+        return self.status
 
     def setBase(self,base):
-	'Set the base URL for the returned document.'
-	if base[-1:] != '/': base=base+'/'
-	self.base=base
-	self.insertBase()
+        'Set the base URL for the returned document.'
+        if base[-1:] != '/': base=base+'/'
+        self.base=base
+        self.insertBase()
 
     def insertBase(self,
-		   base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
-						regex.casefold).search
-		   ):
+                   base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
+                                                regex.casefold).search
+                   ):
         if (self.headers.has_key('content-type') and
-	    self.headers['content-type']!='text/html'): return
+            self.headers['content-type']!='text/html'): return
 
-	if self.base:
-	    body=self.body
-	    if body:
-		e=end_of_header_search(body)
-		if e >= 0:
-		    b=base_re_search(body) 
-		    if b < 0:
-			self.body=('%s\t<base href="%s">\n%s' %
-				   (body[:e],self.base,body[e:]))
+        if self.base:
+            body=self.body
+            if body:
+                e=end_of_header_search(body)
+                if e >= 0:
+                    b=base_re_search(body) 
+                    if b < 0:
+                        self.body=('%s\t<base href="%s">\n%s' %
+                                   (body[:e],self.base,body[e:]))
 
     def appendCookie(self, name, value):
-	'''\
-	Returns an HTTP header that sets a cookie on cookie-enabled
-	browsers with a key "name" and value "value". If a value for the
-	cookie has previously been set in the response object, the new
-	value is appended to the old one separated by a colon. '''
+        '''\
+        Returns an HTTP header that sets a cookie on cookie-enabled
+        browsers with a key "name" and value "value". If a value for the
+        cookie has previously been set in the response object, the new
+        value is appended to the old one separated by a colon. '''
 
-	cookies=self.cookies
-	if cookies.has_key(name): cookie=cookies[name]
-	else: cookie=cookies[name]={}
+        cookies=self.cookies
+        if cookies.has_key(name): cookie=cookies[name]
+        else: cookie=cookies[name]={}
         if cookie.has_key('value'):
             cookie['value']='%s:%s' % (cookie['value'], value)
         else: cookie['value']=value
 
     def expireCookie(self, name, **kw):
-	'''\
-	Cause an HTTP cookie to be removed from the browser
-	
-	The response will include an HTTP header that will remove the cookie
-	corresponding to "name" on the client, if one exists. This is
-	accomplished by sending a new cookie with an expiration date
-	that has already passed. Note that some clients require a path
+        '''\
+        Cause an HTTP cookie to be removed from the browser
+        
+        The response will include an HTTP header that will remove the cookie
+        corresponding to "name" on the client, if one exists. This is
+        accomplished by sending a new cookie with an expiration date
+        that has already passed. Note that some clients require a path
         to be specified - this path must exactly match the path given
         when creating the cookie. The path can be specified as a keyword
         argument.
@@ -322,304 +322,304 @@ class Response:
         apply(Response.setCookie, (self, name, 'deleted'), dict)
 
     def setCookie(self,name,value,**kw):
-	'''\
-	Set an HTTP cookie on the browser
+        '''\
+        Set an HTTP cookie on the browser
 
-	The response will include an HTTP header that sets a cookie on
-	cookie-enabled browsers with a key "name" and value
-	"value". This overwrites any previously set value for the
-	cookie in the Response object.
-	'''
-	cookies=self.cookies
-	if cookies.has_key(name):
+        The response will include an HTTP header that sets a cookie on
+        cookie-enabled browsers with a key "name" and value
+        "value". This overwrites any previously set value for the
+        cookie in the Response object.
+        '''
+        cookies=self.cookies
+        if cookies.has_key(name):
             cookie=cookies[name]
-	else: cookie=cookies[name]={}
-	for k, v in kw.items():
+        else: cookie=cookies[name]={}
+        for k, v in kw.items():
             cookie[k]=v
-	cookie['value']=value
+        cookie['value']=value
 
     def appendBody(self, body):
-	self.setBody(self.getBody() + body)
+        self.setBody(self.getBody() + body)
 
     def getHeader(self, name):
-	 '''\
-	 Get a header value
-	 
-	 Returns the value associated with a HTTP return header, or
-	 "None" if no such header has been set in the response
-	 yet. '''
-	 headers=self.headers
-	 if headers.has_key(name): return headers[name]
+         '''\
+         Get a header value
+         
+         Returns the value associated with a HTTP return header, or
+         "None" if no such header has been set in the response
+         yet. '''
+         headers=self.headers
+         if headers.has_key(name): return headers[name]
 
     def __getitem__(self, name):
-	'Get the value of an output header'
-	return self.headers[name]
+        'Get the value of an output header'
+        return self.headers[name]
 
     def getBody(self):
-	'Returns a string representing the currently set body. '
-	return self.body
+        'Returns a string representing the currently set body. '
+        return self.body
 
     def appendHeader(self, name, value, delimiter=","):
-	'''\
-	Append a value to a cookie
-	
-	Sets an HTTP return header "name" with value "value",
-	appending it following a comma if there was a previous value
-	set for the header. '''
-	headers=self.headers
-	if headers.has_key(name):
-	    h=self.header[name]
-	    h="%s%s\n\t%s" % (h,delimiter,value)
-	else: h=value
-	self.setHeader(name,h)
+        '''\
+        Append a value to a cookie
+        
+        Sets an HTTP return header "name" with value "value",
+        appending it following a comma if there was a previous value
+        set for the header. '''
+        headers=self.headers
+        if headers.has_key(name):
+            h=self.header[name]
+            h="%s%s\n\t%s" % (h,delimiter,value)
+        else: h=value
+        self.setHeader(name,h)
 
     def isHTML(self,str):
-	return lower(strip(str)[:6]) == '<html>' or find(str,'</') > 0
+        return lower(strip(str)[:6]) == '<html>' or find(str,'</') > 0
 
     def quoteHTML(self,text,
-		  subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
-		  ):
-	for ent in '&<>\"':
-	    if find(text, ent) >= 0:
-		text=join(split(text,ent),subs[ent])
+                  subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
+                  ):
+        for ent in '&<>\"':
+            if find(text, ent) >= 0:
+                text=join(split(text,ent),subs[ent])
 
-	return text
+        return text
          
 
     def format_exception(self,etype,value,tb,limit=None):
-	import traceback
-	result=['Traceback (innermost last):']
-	if limit is None:
-		if hasattr(sys, 'tracebacklimit'):
-			limit = sys.tracebacklimit
-	n = 0
-	while tb is not None and (limit is None or n < limit):
-		f = tb.tb_frame
-		lineno = tb.tb_lineno
-		co = f.f_code
-		filename = co.co_filename
-		name = co.co_name
-		locals=f.f_locals
-		result.append('  File %s, line %d, in %s'
-			      % (filename,lineno,name))
-		try: result.append('    (Object: %s)' %
-				   locals[co.co_varnames[0]].__name__)
-		except: pass
-		try: result.append('    (Info: %s)' %
-				   str(locals['__traceback_info__']))
-		except: pass
-		tb = tb.tb_next
-		n = n+1
-	result.append(join(traceback.format_exception_only(etype, value),
-			   ' '))
-	sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
-	return result
+        import traceback
+        result=['Traceback (innermost last):']
+        if limit is None:
+                if hasattr(sys, 'tracebacklimit'):
+                        limit = sys.tracebacklimit
+        n = 0
+        while tb is not None and (limit is None or n < limit):
+                f = tb.tb_frame
+                lineno = tb.tb_lineno
+                co = f.f_code
+                filename = co.co_filename
+                name = co.co_name
+                locals=f.f_locals
+                result.append('  File %s, line %d, in %s'
+                              % (filename,lineno,name))
+                try: result.append('    (Object: %s)' %
+                                   locals[co.co_varnames[0]].__name__)
+                except: pass
+                try: result.append('    (Info: %s)' %
+                                   str(locals['__traceback_info__']))
+                except: pass
+                tb = tb.tb_next
+                n = n+1
+        result.append(join(traceback.format_exception_only(etype, value),
+                           ' '))
+        sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
+        return result
 
     def _traceback(self,t,v,tb):
-	tb=self.format_exception(t,v,tb,200)
-	tb=join(tb,'\n')
-	tb=self.quoteHTML(tb)
-	return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
+        tb=self.format_exception(t,v,tb,200)
+        tb=join(tb,'\n')
+        tb=self.quoteHTML(tb)
+        return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
     def redirect(self, location):
-	"""Cause a redirection without raising an error"""
-	self.status=302
-	headers=self.headers
-	headers['status']='302 Moved Temporarily'
-	headers['location']=location
-	return location
+        """Cause a redirection without raising an error"""
+        self.status=302
+        headers=self.headers
+        headers['status']='302 Moved Temporarily'
+        headers['location']=location
+        return location
 
     def exception(self, fatal=0,
-		  absuri_match=regex.compile(
-		      "[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?"
-		      ).match,
-		  tag_search=regex.compile('[a-zA-Z]>').search,
-		  ):
-	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
-	stb=tb
+                  absuri_match=regex.compile(
+                      "[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?"
+                      ).match,
+                  tag_search=regex.compile('[a-zA-Z]>').search,
+                  ):
+        t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
+        stb=tb
 
-	# Abort running transaction, if any:
-	try: get_transaction().abort()
-	except: pass
+        # Abort running transaction, if any:
+        try: get_transaction().abort()
+        except: pass
 
-	try:
-	    # Try to capture exception info for bci calls
-	    et=translate(str(t),nl2sp)
-	    ev=translate(str(v),nl2sp)
-	    # Get the tb tail, which is the interesting part:
-	    while tb.tb_next is not None: tb=tb.tb_next
-	    el=str(tb.tb_lineno)
+        try:
+            # Try to capture exception info for bci calls
+            et=translate(str(t),nl2sp)
+            ev=translate(str(v),nl2sp)
+            # Get the tb tail, which is the interesting part:
+            while tb.tb_next is not None: tb=tb.tb_next
+            el=str(tb.tb_lineno)
             ef=str(tb.tb_frame.f_code.co_filename)
-	    if find(ev,'<html>') >= 0: ev='bobo exception'
-	    self.setHeader('bobo-exception-type',et)
-	    self.setHeader('bobo-exception-value',ev[:255])
-	    self.setHeader('bobo-exception-file',ef)
-	    self.setHeader('bobo-exception-line',el)
+            if find(ev,'<html>') >= 0: ev='bobo exception'
+            self.setHeader('bobo-exception-type',et)
+            self.setHeader('bobo-exception-value',ev[:255])
+            self.setHeader('bobo-exception-file',ef)
+            self.setHeader('bobo-exception-line',el)
 
-	except:
-	    # Dont try so hard that we cause other problems ;)
-	    pass
+        except:
+            # Dont try so hard that we cause other problems ;)
+            pass
 
-	tb=stb
-	stb=None
-	self.setStatus(t)
-	if self.status >= 300 and self.status < 400:
-	    if type(v) == types.StringType and absuri_match(v) >= 0:
-		if self.status==300: self.setStatus(302)
-		self.setHeader('location', v)
-		tb=None
-		return self
-	    else:
-		try:
-		    l,b=v
-		    if type(l) == types.StringType and absuri_match(l) >= 0:
-			if self.status==300: self.setStatus(302)
-			self.setHeader('location', l)
-			self.setBody(b)
-			tb=None
-			return self
-		except: pass
+        tb=stb
+        stb=None
+        self.setStatus(t)
+        if self.status >= 300 and self.status < 400:
+            if type(v) == types.StringType and absuri_match(v) >= 0:
+                if self.status==300: self.setStatus(302)
+                self.setHeader('location', v)
+                tb=None
+                return self
+            else:
+                try:
+                    l,b=v
+                    if type(l) == types.StringType and absuri_match(l) >= 0:
+                        if self.status==300: self.setStatus(302)
+                        self.setHeader('location', l)
+                        self.setBody(b)
+                        tb=None
+                        return self
+                except: pass
 
-	b=v
-	if fatal:
-	    if t is SystemExit and v==0:
-		tb=self.setBody(
-		    (str(t),
-		    'This application has exited normally.<p>'
-		     + self._traceback(t,v,tb)))
-	    else:
-		tb=self.setBody(
-		    (str(t),
-		    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
-		     + self._traceback(t,v,tb)))
+        b=v
+        if fatal:
+            if t is SystemExit and v==0:
+                tb=self.setBody(
+                    (str(t),
+                    'This application has exited normally.<p>'
+                     + self._traceback(t,v,tb)))
+            else:
+                tb=self.setBody(
+                    (str(t),
+                    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
+                     + self._traceback(t,v,tb)))
 
-	elif type(b) is not types.StringType or tag_search(b) < 0:
-	    tb=self.setBody(
-		(str(t),
-		 'Sorry, an error occurred.<p>'
-		 + self._traceback(t,v,tb)))
+        elif type(b) is not types.StringType or tag_search(b) < 0:
+            tb=self.setBody(
+                (str(t),
+                 'Sorry, an error occurred.<p>'
+                 + self._traceback(t,v,tb)))
 
-	elif self.isHTML(b):
-	    tb=self.setBody(b+self._traceback(t,'(see above)',tb))
-	else:
-	    tb=self.setBody((str(t),b+self._traceback(t,'(see above)',tb)))
+        elif self.isHTML(b):
+            tb=self.setBody(b+self._traceback(t,'(see above)',tb))
+        else:
+            tb=self.setBody((str(t),b+self._traceback(t,'(see above)',tb)))
 
-	return tb
+        return tb
 
     _wrote=None
 
     def _cookie_list(self):
-	cookie_list=[]
-	for name, attrs in self.cookies.items():
+        cookie_list=[]
+        for name, attrs in self.cookies.items():
 
             # Note that as of May 98, IE4 ignores cookies with
             # quoted cookie attr values, so only the value part
             # of name=value pairs may be quoted.
 
             cookie='Set-Cookie: %s="%s"' % (name, attrs['value'])
-	    for name, v in attrs.items():
+            for name, v in attrs.items():
                 name=lower(name)
-		if name=='expires': cookie = '%s; Expires=%s' % (cookie,v)
-		elif name=='domain': cookie = '%s; Domain=%s' % (cookie,v)
-		elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
-		elif name=='max_age': cookie = '%s; Max-Age=%s' % (cookie,v)
-		elif name=='comment': cookie = '%s; Comment=%s' % (cookie,v)
-		elif name=='secure': cookie = '%s; Secure' % cookie
-	    cookie_list.append(cookie)
+                if name=='expires': cookie = '%s; Expires=%s' % (cookie,v)
+                elif name=='domain': cookie = '%s; Domain=%s' % (cookie,v)
+                elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
+                elif name=='max_age': cookie = '%s; Max-Age=%s' % (cookie,v)
+                elif name=='comment': cookie = '%s; Comment=%s' % (cookie,v)
+                elif name=='secure': cookie = '%s; Secure' % cookie
+            cookie_list.append(cookie)
 
         # Should really check size of cookies here!
         
-	return cookie_list
+        return cookie_list
 
     def __str__(self,
-		html_search=regex.compile('<html>',regex.casefold).search,
-		):
-	if self._wrote: return ''	# Streaming output was used.
+                html_search=regex.compile('<html>',regex.casefold).search,
+                ):
+        if self._wrote: return ''       # Streaming output was used.
 
-	headers=self.headers
-	body=self.body
-	if body:
-	    isHTML=self.isHTML(body)
-	    if not headers.has_key('content-type'):
-		if isHTML:
-		    c='text/html'
-		else:
-		    c='text/plain'
-		self.setHeader('content-type',c)
-	    else:
-		isHTML = headers['content-type']=='text/html'
-	    if isHTML and end_of_header_search(self.body) < 0:
-		lhtml=html_search(body)
-		if lhtml >= 0:
-		    lhtml=lhtml+6
-		    body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
-		else:
-		    body='<html><head></head>\n' + body
-		self.setBody(body)
-		body=self.body
-		    
-	    if not headers.has_key('content-length'):
-		self.setHeader('content-length',len(body))
-		
+        headers=self.headers
+        body=self.body
+        if body:
+            isHTML=self.isHTML(body)
+            if not headers.has_key('content-type'):
+                if isHTML:
+                    c='text/html'
+                else:
+                    c='text/plain'
+                self.setHeader('content-type',c)
+            else:
+                isHTML = headers['content-type']=='text/html'
+            if isHTML and end_of_header_search(self.body) < 0:
+                lhtml=html_search(body)
+                if lhtml >= 0:
+                    lhtml=lhtml+6
+                    body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
+                else:
+                    body='<html><head></head>\n' + body
+                self.setBody(body)
+                body=self.body
+                    
+            if not headers.has_key('content-length'):
+                self.setHeader('content-length',len(body))
+                
 
-	if not headers.has_key('content-type') and self.status == 200:
-	    self.setStatus('nocontent')
+        if not headers.has_key('content-type') and self.status == 200:
+            self.setStatus('nocontent')
 
-	headersl=[]
-	append=headersl.append
-	for k,v in headers.items():
+        headersl=[]
+        append=headersl.append
+        for k,v in headers.items():
 
-	    k=upper(k[:1])+k[1:]
+            k=upper(k[:1])+k[1:]
 
-	    start=0
-	    l=find(k,'-',start)
-	    while l >= start:
-		k="%s-%s%s" % (k[:l],upper(k[l+1:l+2]),k[l+2:])
-		start=l+1
-		l=find(k,'-',start)
-	    append("%s: %s" % (k,v))
+            start=0
+            l=find(k,'-',start)
+            while l >= start:
+                k="%s-%s%s" % (k[:l],upper(k[l+1:l+2]),k[l+2:])
+                start=l+1
+                l=find(k,'-',start)
+            append("%s: %s" % (k,v))
 
-	if self.cookies:
-	    headersl=headersl+self._cookie_list()
-	headersl[len(headersl):]=[self.accumulated_headers,body]
+        if self.cookies:
+            headersl=headersl+self._cookie_list()
+        headersl[len(headersl):]=[self.accumulated_headers,body]
 
-	return join(headersl,'\n')
+        return join(headersl,'\n')
 
     def __repr__(self):
-	return 'CGIResponse(%s)' % `self.body`
-	
+        return 'CGIResponse(%s)' % `self.body`
+        
 
     def flush(self): pass
 
     def write(self,data):
-	"""\
-	Return data as a stream
+        """\
+        Return data as a stream
 
-	HTML data may be returned using a stream-oriented interface.
-	This allows the browser to display partial results while
-	computation of a response to proceed.
+        HTML data may be returned using a stream-oriented interface.
+        This allows the browser to display partial results while
+        computation of a response to proceed.
 
-	The published object should first set any output headers or
-	cookies on the response object.
+        The published object should first set any output headers or
+        cookies on the response object.
 
-	Note that published objects must not generate any errors
-	after beginning stream-oriented output.	
+        Note that published objects must not generate any errors
+        after beginning stream-oriented output. 
 
-	"""
-	self.body=self.body+data
-	if end_of_header_search(self.body) >= 0:
-	    headers=self.headers
-	    if headers.has_key('content-length'):
-		del headers['content-length']
-	    if not self.headers.has_key('content-type'):
-		self.setHeader('content-type', 'text/html')
-	    self.insertBase()
-	    body=self.body
-	    self.body=''
-	    self.write=write=self.stdout.write
-	    try: self.flush=self.stdout.flush
-	    except: pass
-	    write(str(self))
-	    self._wrote=1
-	    write('\n\n')
-	    write(body)
+        """
+        self.body=self.body+data
+        if end_of_header_search(self.body) >= 0:
+            headers=self.headers
+            if headers.has_key('content-length'):
+                del headers['content-length']
+            if not self.headers.has_key('content-type'):
+                self.setHeader('content-type', 'text/html')
+            self.insertBase()
+            body=self.body
+            self.body=''
+            self.write=write=self.stdout.write
+            try: self.flush=self.stdout.flush
+            except: pass
+            write(str(self))
+            self._wrote=1
+            write('\n\n')
+            write(body)
