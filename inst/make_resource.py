@@ -110,5 +110,5 @@ BOBO_DEBUG_MODE=1
 INSTANCE_HOME=%(cwd)s
 ''' % vars())
 
-    ch(name, user, group, 0711)
+    ch(name, user, group, 0755)
     
