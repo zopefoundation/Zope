@@ -15,10 +15,12 @@
 You must be in the directory containing this script.
 """
 
-from do import *
+import sys
+from do import do
 
-print
-print '-'*78
-print 'Building extension modules'
+def build():
+    print
+    print '-'*78
+    print 'Building extension modules'
 
-do('%s setup.py build_ext -i' % sys.executable)
+    do('%s setup.py build_ext -i' % sys.executable)

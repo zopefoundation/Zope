@@ -31,6 +31,7 @@ def main(me):
     walkandscrub.walkandscrub(home)
     import compilezpy
     import build_extensions
+    build_extensions.build()
     user=group=''
     import default_content; default_content.main(home, user, group)
 
