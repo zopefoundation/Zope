@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.8 1997/12/18 16:42:02 jeffrey Exp $'''
+$Id: Session.py,v 1.9 1997/12/31 16:53:42 brian Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -57,12 +57,23 @@ class Session(Persistence.Persistent,
 		     'action':'manage_propertiesForm', 'target':'manage_main',
 	            },
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_rolesForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Undo',
 		     'action':'manage_UndoForm','target':'manage_main',
 		    },
 		   )
+
+    __ac_permissions__=(
+    ('View management screens', ['manage','manage_tabs','index_html']),
+    ('Change permissions', ['manage_access']),
+    ('Edit session', ['manage_edit']),
+    ('Join/leave session' ['enter','leave','leave_another']),
+    ('Save/discard session', ['save','discard']),
+    )
+   
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		 )
 
     def _init(self, id, title, REQUEST):
 	self.id=id
@@ -125,7 +136,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 
@@ -133,6 +144,9 @@ __version__='$Revision: 1.8 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.9  1997/12/31 16:53:42  brian
+# Added security info
+#
 # Revision 1.8  1997/12/18 16:42:02  jeffrey
 # *** empty log message ***
 #

@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -36,9 +36,9 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 		   )
 
     __ac_permissions__=(
-    ('View Management Screens', ['manage','manage_tabs','manage_uploadForm']),
-    ('Change Permissions', ['manage_access']),
-    ('Change/Upload Data', ['manage_edit','manage_upload','PUT']),
+    ('View management screens', ['manage','manage_tabs','manage_uploadForm']),
+    ('Change permissions', ['manage_access']),
+    ('Change/upload data', ['manage_edit','manage_upload','PUT']),
     ('View', ['',]),
     )
    

@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.33 1997/12/19 19:11:15 jim Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: Application.py,v 1.34 1997/12/31 16:53:41 brian Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -63,15 +63,15 @@ class Application(Folder.Folder):
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
-     'action':'manage_rolesForm',   'target':'manage_main'},
+    {'icon':'', 'label':'Security',
+     'action':'manage_access',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
 #     'action':'manage_help',   'target':'_new'},
     )
 
-    manage_rolesForm=Globals.HTMLFile('rolesForm', globals())
+#    manage_rolesForm=Globals.HTMLFile('rolesForm', globals())
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
@@ -81,7 +81,7 @@ class Application(Folder.Folder):
     def _init(self):
 	# Initialize users
 	self.__allow_groups__=UserFolder()
-	self.__allow_groups__._init()
+#	self.__allow_groups__._init()
 	self._setObject('acl_users', self.__allow_groups__)
 
 	# Initialize control panel
@@ -133,29 +133,29 @@ class Application(Folder.Folder):
 	return DateTime()
 
 
-    def manage_addRole(self,REQUEST,role):
-	""" """
-        roles=list(self.__defined_roles__)
-	if role not in roles:
-	    roles.append(role)
-            roles.sort()
-	    self.__defined_roles__=tuple(roles)
-	try:    roles=self.__roles__
-	except: roles=[]
-	if roles is None: roles=[]
-        roles.append(role)
-	self.__roles__=roles
-	return self.manage_rolesForm(self, REQUEST)
+#     def manage_addRole(self,REQUEST,role):
+# 	""" """
+#         roles=list(self.__defined_roles__)
+# 	if role not in roles:
+# 	    roles.append(role)
+#             roles.sort()
+# 	    self.__defined_roles__=tuple(roles)
+# 	try:    roles=self.__roles__
+# 	except: roles=[]
+# 	if roles is None: roles=[]
+#         roles.append(role)
+# 	self.__roles__=roles
+# 	return self.manage_rolesForm(self, REQUEST)
 
-    def manage_deleteRole(self,REQUEST,role):
-	""" """
-	roles=list(self.__defined_roles__)
-	if role in roles:
-	    del roles[roles.index(role)]
-	    self.__defined_roles__=tuple(roles)
+#     def manage_deleteRole(self,REQUEST,role):
+# 	""" """
+# 	roles=list(self.__defined_roles__)
+# 	if role in roles:
+# 	    del roles[roles.index(role)]
+# 	    self.__defined_roles__=tuple(roles)
 
-    def validRoles(self):
-	return self.__defined_roles__
+#     def validRoles(self):
+# 	return self.__defined_roles__
 
 
 
@@ -284,6 +284,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.34  1997/12/31 16:53:41  brian
+# Added security info
+#
 # Revision 1.33  1997/12/19 19:11:15  jim
 # updated icon management strategy
 #
