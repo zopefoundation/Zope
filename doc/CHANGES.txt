@@ -47,8 +47,10 @@ Zope Changes
         possible to enable case-sensitive indexing. The new 
         configuration options are available through the addForm
         of the Vocabulary object.
-        
 
+      - ICP server support. For more information see
+        http://www.zope.org/Members/htrd/icp/intro
+        
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff

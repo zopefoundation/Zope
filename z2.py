@@ -154,6 +154,18 @@ Options:
 
     Multiple -m options can be provided to run multiple servers.
 
+  --icp port
+
+    The ICP port. ICP can be used to distribute load between back-end
+    zope servers, if you are using an ICP-aware front-end proxy such
+    as Squid.
+
+    The port can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple --icp options can be provided to run multiple servers.
+
   -l path
 
     Path to the ZServer log file. If this is a relative path then the
@@ -288,6 +300,9 @@ PCGI_FILE='Zope.cgi'
 ## Monitor configuration
 MONITOR_PORT=0
 
+## ICP configuration
+ICP_PORT=0
+
 # Module to be published, which must be Main or Zope
 MODULE='Zope'
 
@@ -341,7 +356,9 @@ try:
         raise 'Invalid python version', sys.version.split()[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:')
+                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:'
+                               ['icp=',
+                               ])
 
     DEBUG=0
     READ_ONLY=0
@@ -384,7 +401,7 @@ try:
             DEBUG=1
         elif o=='-S': sys.ZMANAGED=1
         elif o=='-X':
-            MONITOR_PORT=HTTP_PORT=FTP_PORT=FCGI_PORT=0
+            MONITOR_PORT=HTTP_PORT=FTP_PORT=FCGI_PORT=ICP_PORT=0
             PCGI_FILE=''
         elif o=='-m':
             MONITOR_PORT=server_info(MONITOR_PORT, v)
@@ -397,6 +414,8 @@ try:
         elif o=='-P':
             HTTP_PORT=server_info(HTTP_PORT, v, 80)
             FTP_PORT=server_info(FTP_PORT, v, 21)
+        elif o=='--icp':
+            ICP_PORT=server_info(ICP_PORT, v)
 
         elif o=='-p':
             if v=='-': v=''
@@ -665,6 +684,12 @@ try:
                     password=pw,
                     hostname=address,
                     port=port)
+
+    if ICP_PORT:
+        if type(ICP_PORT) is type(0): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
+        from ZServer.ICPServer import ICPServer
+        for address, port in ICP_PORT:
+            ICPServer(address,port)
 
     # Try to set uid to "-u" -provided uid.
     # Try to set gid to  "-u" user's primary group. 
