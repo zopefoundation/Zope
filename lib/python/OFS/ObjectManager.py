@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.82 1999/11/04 19:34:20 brian Exp $"""
+$Id: ObjectManager.py,v 1.83 2000/02/17 19:32:21 jim Exp $"""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -503,6 +503,12 @@ class ObjectManager(
             ob=ob.aq_parent
         
         files=self.objectItems()
+        try:
+            files.sort()
+        except AttributeError:
+            files=list(files)
+            files.sort()
+            
         if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
                 self.isTopLevelPrincipiaApplicationObject):
             files.insert(0,('..',self.aq_parent))
