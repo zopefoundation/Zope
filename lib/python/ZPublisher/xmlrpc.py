@@ -192,10 +192,6 @@ class Response:
         if type(info) is type(()) and len(info)==3: t,v,tb = info
         else: t,v,tb = sys.exc_info()
 
-        # Abort running transaction, if any:
-        try: get_transaction().abort()
-        except: pass
-
         # Create an appropriate Fault object. Unfortunately, we throw away
         # most of the debugging information. More useful error reporting is
         # left as an exercise for the reader.

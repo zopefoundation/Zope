@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.28 2000/05/26 15:31:47 shane Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: HTTPResponse.py,v 1.29 2000/06/02 20:07:05 jim Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -576,11 +576,6 @@ class HTTPResponse(BaseResponse):
         if str(t)=='Unauthorized': self._unauthorized()
 
         stb=tb
-
-        # Abort running transaction, if any
-        if abort:
-            try: get_transaction().abort()
-            except: pass
 
         try:
             # Try to capture exception info for bci calls
