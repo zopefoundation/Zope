@@ -124,6 +124,8 @@
       sort -- Define the sort order for sequence items.  If an item in
       the sequence does not define 
 
+      reverse -- Reverse the sequence (may be combined with sort).
+
       Within an 'in' block, variables are substituted from the
       elements of the iteration.  The elements may be either
       instance or mapping objects.  In addition, the variables:
@@ -379,8 +381,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.34 1999/04/30 18:28:57 jim Exp $'
-__version__='$Revision: 1.34 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.35 1999/06/10 15:02:55 brian Exp $'
+__version__='$Revision: 1.35 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError
@@ -410,13 +412,19 @@ class InClass:
         args=parse_params(args, name='', start='1',end='-1',size='10',
                           orphan='3',overlap='1',mapping=1,
                           skip_unauthorized=1,
-                          previous=1, next=1, expr='', sort='')
+                          previous=1, next=1, expr='', sort='',
+                          reverse=0)
         self.args=args
         has_key=args.has_key
 
         if has_key('sort'):
             self.sort=sort=args['sort']
             if sort=='sequence-item': self.sort=''
+
+        if has_key('reverse'):
+            self.reverse=1
+            self.sort=''
+        else: self.reverse=0
             
         if has_key('mapping'): self.mapping=args['mapping']
         for n in 'start', 'size', 'end':
@@ -709,6 +717,8 @@ class InClass:
             s.append((k,client))
 
         s.sort()
+        if self.reverse:
+            s.reverse()
 
         sequence=[]
         for k, client in s: sequence.append(client)
