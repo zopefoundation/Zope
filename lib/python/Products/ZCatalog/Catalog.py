@@ -86,7 +86,7 @@
 from Persistence import Persistent
 import Acquisition
 import BTree, OIBTree, IOBTree
-from SearchIndex import UnIndex, UnTextIndex, Query
+from SearchIndex import UnIndex, UnTextIndex, UnKeywordIndex, Query
 import regex, pdb
 from string import lower
 import Record
@@ -253,6 +253,8 @@ class Catalog(Persistent, Acquisition.Implicit):
             indexes[name] = UnIndex.UnIndex(name)
         elif type == 'TextIndex':
             indexes[name] = UnTextIndex.UnTextIndex(name)
+        elif type == 'KeywordIndex':
+            indexes[name] = UnKeywordIndex.UnKeywordIndex(name)
 
         self.indexes = indexes
 
@@ -282,7 +284,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         data = self.data
 
-        if uid in self.uids.keys():
+        if self.uids.has_key(uid):
             i = self.uids[uid]
         elif data:
             i = data.keys()[-1] + 1  # find the next available rid
@@ -299,7 +301,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         for x in self.indexes.values():
             if hasattr(x, 'index_object'):
                 blah = x.index_object(i, object, threshold)
-                __traceback_info__=(`total`, `blah`)
                 total = total + blah
 
         self.data = data

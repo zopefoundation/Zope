@@ -1,30 +1,68 @@
 <HTML>
-<HEAD>
-<TITLE>View Catalog Records</TITLE>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<!--#var manage_tabs-->
+  <HEAD>
+    <TITLE>View Catalog Records</TITLE>
+  </HEAD>
+  <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+    <!--#var manage_tabs-->
 
-<p>The Subtransaction threshold is the number of words the catalog
-will index before it commits a subtransaction.  If this number is low, 
-the Catalog will take much longer to index but consume much less
-memory.  If this number is higher, the Catalog will index quickly but
-consume much more memory.</p>
-<form action="manage_edit" method=POST>
-Subtransaction threshold: <input name=threshold value="<!--#var
-threshold html_quote-->"><br>
-<input type=submit value=" Change ">
-</form>
+    <p> Subtransactions allow Zope to commit small parts of a
+      transaction over a period of time instead of all at once.  For
+      ZCatalog, this means using subtransactions can signficantly
+      reduce the memory requirements needed to index huge amounts of
+      text all at once.</p>
+    
+    <p> If enabled, subtransactions will reduce the memory
+      requirements of ZCatalog, but <em>at the expense of speed</em>.
+      If you choose to enable subtransactions, you can adjust how often
+      ZCatalog commits a subtransactions by adjusting the
+      <b>threshold</b> below.</p>
+
+    <p> If you are using ZCatalog and ZSQL Methods in the same
+    transaction, you <b>must</b> disable subtransactions, they are not
+    compatible with ZSQL Methods.</p>
+
+    <h3>Subtransactions are <font color="red">
+      <dtml-if threshold>
+	<b>Enabled</b>
+      <dtml-else>
+	<b>Disabled</b>
+      </dtml-if></h3><br></font>
+
+    <form action="." method=POST>
+      <dtml-if threshold>
+	<input type=submit name="manage_subbingToggle:method" value="Disable">
+      <dtml-else>
+	<input type=submit name="manage_subbingToggle:method" value="Enable">
+      </dtml-if>
+    </form>
+
+    <form action="manage_edit" method=POST>
+    <dtml-if threshold>
+    <p>The Subtransaction threshold is the number of words the catalog
+      will index before it commits a subtransaction.  If this number is low,
+      the Catalog will take much to index but consume much less memory.  If
+      this number is higher, the Catalog will index quickly but consume much
+      more memory.</p> 
 
 
-<ul>
-<!--#in index_objects-->
- <li>
-<!--#var "_.len(_['sequence-item'])"--> object are indexed in <b><!--#var "_['sequence-item'].id"--></b></li>
-<!--#/in-->
-</ul>
+      Subtransaction threshold: <input name="threshold:int" value="<!--#var
+	threshold html_quote-->"><br> <input type=submit value=" Change ">
+    </dtml-if>
+    </form>
 
-</BODY></HTML>
+    <hr width=75%>
+    <h3>Index Status</h3>
+
+    <ul>
+      <!--#in index_objects-->
+      <li>
+	<!--#var "_.len(_['sequence-item'])"--> 
+	object are indexed in <b><!--#var "_['sequence-item'].id"--></b>
+      </li>
+      <!--#/in-->
+    </ul>
+  </BODY>
+</HTML>
 
 
 

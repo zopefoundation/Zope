@@ -29,7 +29,8 @@ Add Index: <input name="name"> <br>
 
 of Index Type: <select name="type">
          <option value="TextIndex">TextIndex</option>
-         <option value="FieldIndex">FieldIndex</options>
+         <option value="FieldIndex">FieldIndex</option>
+	 <option value="KeywordIndex">KeywordIndex</option>
          </select>
 <input name="manage_addIndex:method" type=submit value=" Add ">
 </form>

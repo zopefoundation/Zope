@@ -90,7 +90,7 @@ from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
 from DateTime import DateTime
 from SearchIndex import Query
-import string, regex, urlparse, urllib, os, sys
+import string, regex, urlparse, urllib, os, sys, time
 import Products
 from Acquisition import Implicit
 from Persistence import Persistent
@@ -163,12 +163,12 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
           'manage_addIndex', 'manage_delIndexes', 'manage_main',], 
          ['Manager']),
 
-         ('Search ZCatalog',
-          ['searchResults', '__call__', 'uniqueValuesFor',
-           'getpath', 'schema', 'indexes', 'index_objects',
-           'all_meta_types', 'valid_roles', 'resolve_url',
-           'getobject'],
-          ['Anonymous', 'Manager']), 
+	('Search ZCatalog',
+	 ['searchResults', '__call__', 'uniqueValuesFor',
+	  'getpath', 'schema', 'indexes', 'index_objects',
+	  'all_meta_types', 'valid_roles', 'resolve_url',
+	  'getobject'],
+	 ['Anonymous', 'Manager']), 
         )
 
 
@@ -180,14 +180,14 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     manage_catalogStatus = HTMLFile('catalogStatus', globals())
 
 
-    threshold=1000
+    threshold=10000
     _v_total=0
 
 
     def __init__(self,id,title=''):
         self.id=id
         self.title=title
-        self.threshold = 1000
+        self.threshold = 10000
         self._v_total = 0
         self._catalog = Catalog()
 
@@ -214,6 +214,16 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 	RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
 
+    def manage_subbingToggle(self, REQUEST, RESPONSE, URL1):
+        """ toggle subtransactions """
+        if self.threshold:
+            self.threshold = None
+        else:
+            self.threshold = 10000
+        
+      	RESPONSE.redirect(URL1 + '/manage_catalogStatus?manage_tabs_message=Catalog%20Changed')      
+
+
     def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
         """ index all Zope objects that 'urls' point to """
         if urls:
@@ -238,6 +248,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def manage_catalogReindex(self, REQUEST, RESPONSE, URL1):
         """ clear the catalog, then re-index everything """
 
+	elapse = time.time()
+	c_elapse = time.clock()
+	
         paths = tuple(self._catalog.paths.values())
 	self._catalog.clear()
 
@@ -245,8 +258,13 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 	    obj = self.resolve_url(p, REQUEST)
 	    if obj is not None:
                 self.catalog_object(obj, p)		
-		
-	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Updated')
+
+	elapse = time.time() - elapse
+	c_elapse = time.clock() - c_elapse
+	
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=' +
+			  urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
+	
 
     def manage_catalogClear(self, REQUEST, RESPONSE, URL1):
         """ clears the whole enchelada """
@@ -264,6 +282,11 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     
         """ Find object according to search criteria and Catalog them
         """
+
+	elapse = time.time()
+	c_elapse = time.clock()
+	
+        words = 0
         results = self.ZopeFind(REQUEST.PARENTS[1],
                                 obj_metatypes=obj_metatypes,
                                 obj_ids=obj_ids,
@@ -282,7 +305,11 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 					REQUEST.script)[1][1:]
             self.catalog_object(n[1], abs_path)
 
-	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Updated')
+	elapse = time.time() - elapse
+	c_elapse = time.clock() - c_elapse
+	
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=' +
+			  urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
 
 
     def manage_addColumn(self, name, REQUEST, RESPONSE, URL1):
@@ -316,10 +343,14 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """ wrapper around catalog """
         self._v_total = (self._v_total +
                          self._catalog.catalogObject(obj, uid, self.threshold))
-        
-        if self._v_total > self.threshold:
-            get_transaction().commit(1)
-            self._v_total = 0
+
+        if self.threshold is not None:
+            if self._v_total > self.threshold:
+                # commit a subtransaction
+                get_transaction().commit(1)
+                # kick the chache
+                self._p_jar.cacheFullSweep(1)
+                self._v_total = 0
 
     def uncatalog_object(self, uid):
         """ wrapper around catalog """
