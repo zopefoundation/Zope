@@ -109,6 +109,7 @@ class p_:
     ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
     ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
     DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
+    VersionManagement_icon=ImageFile('App/www/vManage.gif')
     InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
     BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
     Product_icon=ImageFile('App/www/product.gif')
