@@ -140,6 +140,9 @@ def main():
              sys.exit(1)
     errors = 0
     for arg in args:
+        locopts = []
+        if string.find(arg, "metal") >= 0 and "-m" not in opts:
+            locopts.append("-m")
         if not unittesting:
             print arg,
             sys.stdout.flush()
@@ -147,7 +150,7 @@ def main():
         try:
             try:
                 sys.stdout = stdout = StringIO()
-                sys.argv = [""] + opts + [arg]
+                sys.argv = [""] + opts + locopts + [arg]
                 driver.main()
             finally:
                 sys.stdout, sys.argv = save
