@@ -802,19 +802,6 @@ instancehome $INSTANCE
 #    max-listen-sockets 500
 
 
-# Directive: large-file-threshold
-#
-# Description:
-#     Requests bigger than this size get saved into a temporary file
-#     instead of being read completely into memory.
-#
-# Default: 512K
-#
-# Example:
-#
-#    large-file-threshold 1Mb
-
-
 # Directives: port-base
 #
 # Description:
