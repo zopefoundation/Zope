@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import re, sys
 from MultiMapping import MultiMapping
@@ -101,6 +101,11 @@ class TALESError(Exception):
     def __init__(self, expression, info=(None, None, None)):
         self.type, self.value, self.traceback = info
         self.expression = expression
+    def __str__(self):
+        if self.type is not None:
+            return '%s on %s in "%s"' % (self.type, self.value,
+                                         self.expression)
+        return self.expression
 
 class RegistrationError(Exception):
     '''TALES Type Registration Error'''
