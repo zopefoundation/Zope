@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.114 2000/10/18 15:55:18 evan Exp $"""
+$Id: ObjectManager.py,v 1.115 2000/12/11 18:24:46 shane Exp $"""
 
-__version__='$Revision: 1.114 $'[11:-2]
+__version__='$Revision: 1.115 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -111,10 +111,48 @@ customImporters={
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
 
-# Global constants: __replaceable__ flags (see ObjectManager._checkId):
+# Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
 REPLACEABLE = 1
 UNIQUE = 2
+
+def check_valid_id(self, id, allow_dup=0):
+    # If allow_dup is false, an error will be raised if an object
+    # with the given id already exists. If allow_dup is true,
+    # only check that the id string contains no illegal chars;
+    # check_valid_id() will be called again later with allow_dup
+    # set to false before the object is added.
+    if not id or (type(id) != type('')):
+        raise 'Bad Request', 'Empty or invalid id specified.'
+    if bad_id(id) != -1:
+        raise 'Bad Request', (
+            'The id "%s" contains characters illegal in URLs.' % id)
+    if id[0]=='_': raise 'Bad Request', (
+        'The id "%s" is invalid - it begins with an underscore.'  % id)
+    if id[-2:]=='__': raise 'Bad Request', (
+        'The id "%s" is invalid - it ends with two underscores.'  % id)
+    if not allow_dup:
+        obj = getattr(self, id, None)
+        if obj is not None:
+            # An object by the given id exists either in this
+            # ObjectManager or in the acquisition path.
+            flags = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
+            if hasattr(aq_base(self), id):
+                # The object is located in this ObjectManager.
+                if not flags & REPLACEABLE:
+                    raise 'Bad Request', ('The id "%s" is invalid--'
+                                          'it is already in use.' % id)
+                # else the object is replaceable even if the UNIQUE
+                # flag is set.
+            elif flags & UNIQUE:
+                raise 'Bad Request', ('The id "%s" is reserved.' % id)
+    if id == 'REQUEST':
+        raise 'Bad Request', 'REQUEST is a reserved name.'
+    if '/' in id:
+        raise 'Bad Request', (
+            'The id "%s" contains characters illegal in URLs.' % id
+            )
+
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
 
@@ -211,41 +249,7 @@ class ObjectManager(
                 meta_types.append(meta_type)
         return meta_types
 
-    def _checkId(self, id, allow_dup=0):
-        # If allow_dup is false, an error will be raised if an object
-        # with the given id already exists. If allow_dup is true,
-        # only check that the id string contains no illegal chars;
-        # _checkId() will be called again later with allow_dup
-        # set to false before the object is added.
-        if not id or (type(id) != type('')):
-            raise 'Bad Request', 'Empty or invalid id specified.'
-        if bad_id(id) != -1:
-            raise 'Bad Request', (
-            'The id "%s" contains characters illegal in URLs.' % id)
-        if id[0]=='_': raise 'Bad Request', (
-            'The id "%s" is invalid - it begins with an underscore.'  % id)
-        if not allow_dup:
-            obj = getattr(self, id, None)
-            if obj is not None:
-                # An object by the given id exists either in this
-                # ObjectManager or in the acquisition path.
-                flags = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
-                if hasattr(aq_base(self), id):
-                    # The object is located in this ObjectManager.
-                    if not flags & REPLACEABLE:
-                        raise 'Bad Request', ('The id "%s" is invalid - ' \
-                              'it is already in use.' % id)
-                    # else the object is replaceable even if the UNIQUE
-                    # flag is set.
-                elif flags & UNIQUE:
-                    raise 'Bad Request', \
-                          ('The id "%s" is reserved.' % id)
-        if id == 'REQUEST':
-            raise 'Bad Request', 'REQUEST is a reserved name.'
-        if '/' in id:
-            raise 'Bad Request', (
-                'The id "%s" contains characters illegal in URLs.' % id
-                )
+    _checkId = check_valid_id
 
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)

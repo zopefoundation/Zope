@@ -81,3 +81,10 @@ Zope changes
         - Disabled the monitor port by default because, initially,
           there is no emergency user, and thus no password that
           can be used to protect the port.
+
+        - Secured the hole that was patched by Hotfix_2000-12-08.
+
+        - Disallowed object IDs that end with two underscores.
+
+        - Caused PropertyManager to restrict id's the same way
+          ObjectManager does.

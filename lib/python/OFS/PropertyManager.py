@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -242,6 +242,11 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
+
+        # Perform additional validation checks for security.
+        from ObjectManager import checkValidId
+        checkValidId(self, id)
+
         if type in ('selection', 'multiple selection'):
             if not hasattr(self, value):
                 raise 'Bad Request', 'No select variable %s' % value
