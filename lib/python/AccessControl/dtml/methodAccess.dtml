@@ -1,5 +1,8 @@
 <dtml-var manage_page_header>
-<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if manage_tabs>
+<dtml-with "_(management_view='Define Permissions')">
+<dtml-if manage_tabs><dtml-var manage_tabs></dtml-if>
+</dtml-with>
+
 
 <p class="form-help">
 This interface is used to define how the operations of this object 
