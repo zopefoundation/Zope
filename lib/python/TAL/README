@@ -75,11 +75,6 @@ redistributed under the Zope Public License.
 TO DO
 -----
 
-- Change tal:insert to tal:content (are there other approved changes
-  to TAL?)
-
-- HTMLTALParser should reject unknown TAL keywords.
-
 - Implement on-error, when it's approved.
 
 - Finish implementing insertStructure(): attribute replacement isn't
