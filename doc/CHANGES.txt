@@ -6,6 +6,37 @@ Zope Changes
 
   Releases
 
+    Zope 1.9 beta 2
+
+      In addition to various documentation updates, this release includes:
+
+      New Features
+
+        - Changed serve.py to accept ZopeHTTPServer command-line options.
+
+        - Added a -P option to the ZopeHTTPServer to specify a file
+          to contain the process ID.  This allows a script to stop
+          the process on Unix.
+
+        - Added support for the environment variables, Z_REALM and
+          Z_DEBUG_MODE to set an authentication realm and to
+          enable debug mode.
+
+      Bugs fixed
+
+        - External methods were broken due to differences in 
+          Python 1.4 and Python 1.5 comparison semantics.
+
+        - ZopeHTTPServer command-line environment settings
+          were not available in os.environ.
+
+        - Some class references were wrong in examples in the ExtensionClass
+          documentation.
+
+        - INSTANCE_HOME was not set correctly when the debugger was run
+          with a relative path to the published module.
+
+
     Zope 1.9 beta 1
 
       Bugs fixed:
