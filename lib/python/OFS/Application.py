@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.198 2003/12/11 19:50:27 evan Exp $'''
-__version__='$Revision: 1.198 $'[11:-2]
+$Id: Application.py,v 1.199 2003/12/20 18:56:05 chrism Exp $'''
+__version__='$Revision: 1.199 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -33,6 +33,7 @@ from zExceptions import Redirect as RedirectException, Forbidden
 from HelpSys.HelpSys import HelpSys
 from Acquisition import aq_base
 from App.Product import doInstall
+from App.config import getConfiguration
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -64,6 +65,8 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     # Set the universal default method to index_html
     _object_manager_browser_default_id = 'index_html'
+
+    _initializer_registry = None
 
     def title_and_id(self): return self.title
     def title_or_id(self): return self.title
@@ -179,7 +182,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         if rebuild:
             from BTrees.OOBTree import OOBTree
             jar.root()['ZGlobals'] = OOBTree()
-            result=1
+            result = 1
 
         zglobals =jar.root()['ZGlobals']
         reg_has_key=zglobals.has_key
@@ -240,6 +243,19 @@ class Application(Globals.ApplicationDefaultPermissions,
             return 1
         return 0
 
+    _setInitializerRegistry__roles__ = ()
+    def _setInitializerFlag(self, flag):
+        if self._initializer_registry is None:
+            self._initializer_registry = {}
+        self._initializer_registry[flag] = 1
+
+    _getInitializerRegistry__roles__ = ()
+    def _getInitializerFlag(self, flag):
+        reg = self._initializer_registry
+        if reg is None:
+            reg = {}
+        return reg.get(flag)
+
 class Expired(Globals.Persistent):
     icon='p_/broken'
 
@@ -258,225 +274,317 @@ class Expired(Globals.Persistent):
     __inform_commit__=__save__
 
 def initialize(app):
-    # Initialize the application
+    initializer = AppInitializer(app)
+    initializer.initialize()
 
-    # The following items marked b/c are backward compatibility hacks
-    # which make sure that expected system objects are added to the
-    # bobobase. This is required because the bobobase in use may pre-
-    # date the introduction of certain system objects such as those
-    # which provide Lever support.
+class AppInitializer:
+    """ Initialze an Application object (called at startup) """
 
-    # b/c: Ensure that Control Panel exists.
-    if not hasattr(app, 'Control_Panel'):
-        cpl=ApplicationManager()
-        cpl._init()
-        app._setObject('Control_Panel', cpl)
-        get_transaction().note('Added Control_Panel')
+    def __init__(self, app):
+        self.app = (app,)
+
+    def getApp(self):
+        # this is probably necessary, but avoid acquisition anyway
+        return self.app[0]
+
+    def commit(self, note):
+        get_transaction().note(note)
         get_transaction().commit()
+        
+    def initialize(self):
+        app = self.getApp()
+        # make sure to preserve relative ordering of calls below.
+        self.install_cp_and_products()
+        self.install_tempfolder_and_sdc()
+        self.install_session_data_manager()
+        self.install_browser_id_manager()
+        self.install_required_roles()
+        self.install_zglobals()
+        self.install_inituser()
+        self.install_errorlog()
+        self.install_products() 
+        self.install_standards()
+        self.check_zglobals()
 
-    # b/c: Ensure that a ProductFolder exists.
-    if not hasattr(aq_base(app.Control_Panel), 'Products'):
-        app.Control_Panel.Products=App.Product.ProductFolder()
-        get_transaction().note('Added Control_Panel.Products')
-        get_transaction().commit()
+    def install_cp_and_products(self):
+        app = self.getApp()
 
-    # Ensure that a temp folder exists
-    if not hasattr(app, 'temp_folder'):
-        from Products.ZODBMountPoint.MountedObject import manage_addMounts
-        try:
-            manage_addMounts(app, ('/temp_folder',))
-            get_transaction().note('Added temp_folder')
-            get_transaction().commit()
-        except:
-            LOG('Zope Default Object Creation', ERROR,
-                'Could not add a /temp_folder mount point due to an error.',
-                error=sys.exc_info())
+        # Ensure that Control Panel exists.
+        if not hasattr(app, 'Control_Panel'):
+            cpl=ApplicationManager()
+            cpl._init()
+            app._setObject('Control_Panel', cpl)
+            self.commit('Added Control_Panel')
+        
+        # b/c: Ensure that a ProductFolder exists.
+        if not hasattr(aq_base(app.Control_Panel), 'Products'):
+            app.Control_Panel.Products=App.Product.ProductFolder()
+            self.commit('Added Control_Panel.Products')
 
-    # Ensure that there is a transient container in the temp folder
-    tf = getattr(app, 'temp_folder', None)
-    if tf is not None and not hasattr(aq_base(tf), 'session_data'):
-        env_has = os.environ.get
-        from Products.Transience.Transience import TransientObjectContainer
-        addnotify = env_has('ZSESSION_ADD_NOTIFY', None)
-        delnotify = env_has('ZSESSION_DEL_NOTIFY', None)
-        default_limit = 1000
-        limit = env_has('ZSESSION_OBJECT_LIMIT', default_limit)
-        try:
-            limit=int(limit)
-            if limit != default_limit:
-                LOG('Zope Default Object Creation', INFO,
-                    ('using ZSESSION_OBJECT_LIMIT-specified max objects '
-                     'value of %s' % limit))
-        except ValueError:
-            LOG('Zope Default Object Creation', WARNING,
-                ('Noninteger value %s specified for ZSESSION_OBJECT_LIMIT, '
-                 'defaulting to %s' % (limit, default_limit)))
-            limit = default_limit
-        if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
-            LOG('Zope Default Object Creation', WARNING,
-                ('failed to use nonexistent "%s" script as '
-                 'ZSESSION_ADD_NOTIFY' % addnotify))
-            addnotify=None
-        elif addnotify:
-            LOG('Zope Default Object Creation', INFO,
-                'using %s as add notification script' % addnotify)
-        if delnotify and app.unrestrictedTraverse(delnotify, None) is None:
-            LOG('Zope Default Object Creation', WARNING,
-                ('failed to use nonexistent "%s" script as '
-                 'ZSESSION_DEL_NOTIFY' % delnotify))
-            delnotify=None
-        elif delnotify:
-            LOG('Zope Default Object Creation', INFO,
-                'using %s as delete notification script' % delnotify)
+    def install_tempfolder_and_sdc(self):
+        app = self.getApp()
+        from Products.ZODBMountPoint.MountedObject import manage_addMounts,\
+             MountedObject
+        from Products.ZODBMountPoint.MountedObject import getConfiguration as \
+             getDBTabConfiguration
 
-        toc = TransientObjectContainer('session_data',
-              'Session Data Container', addNotification = addnotify,
-              delNotification = delnotify, limit=limit)
-        timeout_spec = env_has('ZSESSION_TIMEOUT_MINS', '')
-        if timeout_spec:
-            try:
-                timeout_spec = int(timeout_spec)
-            except ValueError:
+        dbtab_config = getDBTabConfiguration()
+
+        tf = getattr(app, 'temp_folder', None)
+
+        if getattr(tf, 'meta_type', None) == MountedObject.meta_type:
+            # tf is a MountPoint object.  This means that the temp_folder
+            # couldn't be mounted properly (the meta_type would have been
+            # the meta type of the container class otherwise).  The
+            # MountPoint object writes a message to zLOG so we don't
+            # need to.
+            return
+
+        if tf is None:
+            # do nothing if we've already installed one
+            if not app._getInitializerFlag('temp_folder'):
+                if dbtab_config is None:
+                    # DefaultConfiguration, do nothing
+                    return
+                mount_paths = [ x[0] for x in dbtab_config.listMountPaths() ]
+                if not '/temp_folder' in mount_paths:
+                    # we won't be able to create the mount point properly
+                    LOG('Zope Default Object Creation', ERROR,
+                        ('Could not initialze a Temporary Folder because '
+                         'a database was not configured to be mounted at '
+                         'the /temp_folder mount point'))
+                    return
+                try:
+                    manage_addMounts(app, ('/temp_folder',))
+                    app._setInitializerFlag('temp_folder')
+                    self.commit('Added temp_folder')
+                    tf = app.temp_folder
+                except:
+                    LOG('Zope Default Object Creation', ERROR,
+                        ('Could not add a /temp_folder mount point due to an '
+                        'error.'),
+                        error=sys.exc_info())
+                    return
+
+        # Ensure that there is a transient object container in the temp folder
+        config = getConfiguration()
+
+        if not hasattr(aq_base(tf), 'session_data'):
+            from Products.Transience.Transience import TransientObjectContainer
+            addnotify = getattr(config, 'session_add_notify_script_path', None)
+            delnotify = getattr(config, 'session_delete_notify_script_path',
+                                None)
+            default_limit = 1000
+            limit = (getattr(config, 'maximum_number_of_session_objects', None)
+                     or default_limit)
+            timeout_spec = getattr(config, 'session_timeout_minutes', None)
+
+            if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
                 LOG('Zope Default Object Creation', WARNING,
-                    ('"%s" is an illegal value for ZSESSION_TIMEOUT_MINS, '
-                     'using default timeout instead.' % timeout_spec))
-            else:
-                LOG('Zope Default Object Creation', INFO,
-                    ('using ZSESSION_TIMEOUT_MINS-specified session timeout '
-                     'value of %s' % timeout_spec))
+                    ('failed to use nonexistent "%s" script as '
+                     'session-add-notify-script-path' % addnotify))
+                addnotify=None
+
+            if delnotify and app.unrestrictedTraverse(delnotify, None) is None:
+                LOG('Zope Default Object Creation', WARNING,
+                    ('failed to use nonexistent "%s" script as '
+                     'session-delete-notify-script-path' % delnotify))
+                delnotify=None
+
+            toc = TransientObjectContainer(
+                'session_data', 'Session Data Container',
+                addNotification = addnotify,
+                delNotification = delnotify,
+                limit=limit)
+
+            if timeout_spec:
                 toc = TransientObjectContainer('session_data',
-                      'Session Data Container', timeout_mins = timeout_spec,
-                      addNotification=addnotify, delNotification = delnotify,
-                      limit=limit)
-        tf._setObject('session_data', toc)
-        tf_reserved = getattr(tf, '_reserved_names', ())
-        if 'session_data' not in tf_reserved:
-            tf._reserved_names = tf_reserved + ('session_data',)
-        get_transaction().note('Added session_data to temp_folder')
-        get_transaction().commit()
-        del toc
-        del addnotify
-        del delnotify
-        del timeout_spec
-        del env_has
+                                               'Session Data Container',
+                                               timeout_mins = timeout_spec,
+                                               addNotification = addnotify,
+                                               delNotification = delnotify,
+                                               limit=limit)
 
-    del tf
+            tf._setObject('session_data', toc)
+            tf_reserved = getattr(tf, '_reserved_names', ())
+            if 'session_data' not in tf_reserved:
+                tf._reserved_names = tf_reserved + ('session_data',)
+            self.commit('Added session_data to temp_folder')
+            return tf # return the tempfolder object for test purposes
 
-    # Ensure that a browser ID manager exists
-    if not hasattr(app, 'browser_id_manager'):
-        from Products.Sessions.BrowserIdManager import BrowserIdManager
-        bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
-        app._setObject('browser_id_manager', bid)
-        get_transaction().note('Added browser_id_manager')
-        get_transaction().commit()
-        del bid
+    def install_browser_id_manager(self):
+        app = self.getApp()
+        if app._getInitializerFlag('browser_id_manager'):
+            # do nothing if we've already installed one
+            return
+        # Ensure that a browser ID manager exists
+        if not hasattr(app, 'browser_id_manager'):
+            from Products.Sessions.BrowserIdManager import BrowserIdManager
+            bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
+            app._setObject('browser_id_manager', bid)
+            app._setInitializerFlag('browser_id_manager')
+            self.commit('Added browser_id_manager')
 
-    # Ensure that a session data manager exists
-    if not hasattr(app, 'session_data_manager'):
-        from Products.Sessions.SessionDataManager import SessionDataManager
-        sdm = SessionDataManager('session_data_manager',
-            title='Session Data Manager',
-            path='/temp_folder/session_data',
-            requestName='SESSION')
-        app._setObject('session_data_manager', sdm)
-        get_transaction().note('Added session_data_manager')
-        get_transaction().commit()
-        del sdm
+    def install_session_data_manager(self):
+        app = self.getApp()
+        if app._getInitializerFlag('session_data_manager'):
+            # do nothing if we've already installed one
+            return
+        # Ensure that a session data manager exists
+        if not hasattr(app, 'session_data_manager'):
+            from Products.Sessions.SessionDataManager import SessionDataManager
+            sdm = SessionDataManager('session_data_manager',
+                title='Session Data Manager',
+                path='/temp_folder/session_data',
+                requestName='SESSION')
+            app._setObject('session_data_manager', sdm)
+            app._setInitializerFlag('session_data_manager')
+            self.commit('Added session_data_manager')
 
-    # b/c: Ensure that Owner role exists.
-    if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
-        app.__ac_roles__=app.__ac_roles__ + ('Owner',)
-        get_transaction().note('Added Owner role')
-        get_transaction().commit()
+    def install_required_roles(self):
+        app = self.getApp()
+        
+        # Ensure that Owner role exists.
+        if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):
+            app.__ac_roles__=app.__ac_roles__ + ('Owner',)
+            self.commit('Added Owner role')
 
-    # ensure the Authenticated role exists.
-    if hasattr(app, '__ac_roles__'):
-        if not 'Authenticated' in app.__ac_roles__:
-            app.__ac_roles__=app.__ac_roles__ + ('Authenticated',)
-            get_transaction().note('Added Authenticated role')
-            get_transaction().commit()
+        # ensure the Authenticated role exists.
+        if hasattr(app, '__ac_roles__'):
+            if not 'Authenticated' in app.__ac_roles__:
+                app.__ac_roles__=app.__ac_roles__ + ('Authenticated',)
+                self.commit('Added Authenticated role')
 
-    # Make sure we have Globals
-    root=app._p_jar.root()
-    if not root.has_key('ZGlobals'):
-        from BTrees.OOBTree import OOBTree
-        app._p_jar.root()['ZGlobals'] = OOBTree()
-        get_transaction().note('Added Globals')
-        get_transaction().commit()
+    def install_zglobals(self):
+        app = self.getApp()
 
-    # Install the initial user.
-    if hasattr(app, 'acl_users'):
-        users = app.acl_users
-        if hasattr(users, '_createInitialUser'):
-            app.acl_users._createInitialUser()
-            get_transaction().note('Created initial user')
-            get_transaction().commit()
+        # Make sure we have ZGlobals
+        root=app._p_jar.root()
+        if not root.has_key('ZGlobals'):
+            from BTrees.OOBTree import OOBTree
+            root['ZGlobals'] = OOBTree()
+            self.commit('Added ZGlobals')
 
-    # Install an error_log
-    if not hasattr(app, 'error_log'):
-        from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
-        error_log = SiteErrorLog()
-        app._setObject('error_log', error_log)
-        get_transaction().note('Added site error_log at /error_log')
-        get_transaction().commit()
+    def install_inituser(self):
+        app = self.getApp()
 
-    install_products(app)
-    install_standards(app)
+        # Install the initial user.
+        if hasattr(app, 'acl_users'):
+            users = app.acl_users
+            if hasattr(users, '_createInitialUser'):
+                app.acl_users._createInitialUser()
+                self.commit('Created initial user')
 
-    # Note that the code from here on only runs if we are not a ZEO
-    # client, or if we are a ZEO client and we've specified by way
-    # of env variable that we want to force products to load.
-    if not doInstall():
-        return
+    def install_errorlog(self):
+        app = self.getApp()
+        if app._getInitializerFlag('error_log'):
+            # do nothing if we've already installed one
+            return
 
-    # Check for dangling pointers (broken zclass dependencies) in the
-    # global class registry. If found, rebuild the registry. Note that
-    # if the check finds problems but fails to successfully rebuild the
-    # registry we abort the transaction so that we don't leave it in an
-    # indeterminate state.
+        # Install an error_log
+        if not hasattr(app, 'error_log'):
+            from Products.SiteErrorLog.SiteErrorLog import SiteErrorLog
+            error_log = SiteErrorLog()
+            app._setObject('error_log', error_log)
+            app._setInitializerFlag('error_log')
+            self.commit('Added site error_log at /error_log')
 
-    did_fixups=0
-    bad_things=0
-    try:
-        if app.checkGlobalRegistry():
-            LOG('Zope', INFO,
-                'Beginning attempt to rebuild the global ZClass registry.')
-            app.fixupZClassDependencies(rebuild=1)
-            did_fixups=1
-            LOG('Zope', INFO,
-                'The global ZClass registry has successfully been rebuilt.')
-            get_transaction().note('Rebuilt global product registry')
-            get_transaction().commit()
-    except:
-        bad_things=1
-        LOG('Zope', ERROR, 'The attempt to rebuild the registry failed.',
-            error=sys.exc_info())
-        get_transaction().abort()
+    def check_zglobals(self):
+        if not doInstall():
+            return
 
-    # Now we need to see if any (disk-based) products were installed
-    # during intialization. If so (and the registry has no errors),
-    # there may still be zclasses dependent on a base class in the
-    # newly installed product that were previously broken and need to
-    # be fixed up. If any really Bad Things happened (dangling pointers
-    # were found in the registry but it couldn't be rebuilt), we don't
-    # try to do anything to avoid making the problem worse.
-    if (not did_fixups) and (not bad_things):
+        app = self.getApp()
 
-        # App.Product.initializeProduct will set this if a disk-based
-        # product was added or updated and we are not a ZEO client.
-        if getattr(Globals, '__disk_product_installed__', 0):
-            try:
-                LOG('Zope', INFO, 'New disk product detected, determining '\
-                    'if we need to fix up any ZClasses.')
-                if app.fixupZClassDependencies():
-                    LOG('Zope', INFO, 'Repaired broken ZClass dependencies.')
-                    get_transaction().commit()
-            except:
-                LOG('Zope', ERROR,
-                    'Attempt to fixup ZClass dependencies after detecting ' \
-                    'an updated disk-based product failed.',
-                    error=sys.exc_info())
-                get_transaction().abort()
+        # Check for dangling pointers (broken zclass dependencies) in the
+        # global class registry. If found, rebuild the registry. Note that
+        # if the check finds problems but fails to successfully rebuild the
+        # registry we abort the transaction so that we don't leave it in an
+        # indeterminate state.
+
+        did_fixups=0
+        bad_things=0
+        try:
+            if app.checkGlobalRegistry():
+                LOG('Zope', INFO,
+                    'Beginning attempt to rebuild the global ZClass registry.')
+                app.fixupZClassDependencies(rebuild=1)
+                did_fixups=1
+                LOG('Zope', INFO,
+                    'The global ZClass registry has successfully been rebuilt.')
+                get_transaction().note('Rebuilt global product registry')
+                get_transaction().commit()
+        except:
+            bad_things=1
+            LOG('Zope', ERROR, 'The attempt to rebuild the registry failed.',
+                error=sys.exc_info())
+            get_transaction().abort()
+
+        # Now we need to see if any (disk-based) products were installed
+        # during intialization. If so (and the registry has no errors),
+        # there may still be zclasses dependent on a base class in the
+        # newly installed product that were previously broken and need to
+        # be fixed up. If any really Bad Things happened (dangling pointers
+        # were found in the registry but it couldn't be rebuilt), we don't
+        # try to do anything to avoid making the problem worse.
+        if (not did_fixups) and (not bad_things):
+
+            # App.Product.initializeProduct will set this if a disk-based
+            # product was added or updated and we are not a ZEO client.
+            if getattr(Globals, '__disk_product_installed__', None):
+                try:
+                    LOG('Zope', INFO,
+                        ('New disk product detected, determining if we need '
+                        'to fix up any ZClasses.'))
+                    if app.fixupZClassDependencies():
+                        LOG('Zope',INFO,
+                            'Repaired broken ZClass dependencies.')
+                        self.commit('Repaired broked ZClass dependencies')
+                except:
+                    LOG('Zope', ERROR,
+                        ('Attempt to fixup ZClass dependencies after '
+                         'detecting an updated disk-based product failed.'),
+                        error=sys.exc_info())
+                    get_transaction().abort()
+
+    def install_products(self):
+        app = self.getApp()
+        # this defers to a function for b/c reasons
+        return install_products(app)
+
+    def install_standards(self):
+        app = self.getApp()
+        # this defers to a  function for b/c reasons
+        return install_standards(app)
+
+def install_products(app):
+    # Install a list of products into the basic folder class, so
+    # that all folders know about top-level objects, aka products
+
+    folder_permissions = get_folder_permissions()
+    meta_types=[]
+    done={}
+
+    debug_mode = App.config.getConfiguration().debug_mode
+
+    get_transaction().note('Prior to product installs')
+    get_transaction().commit()
+
+    products = get_products()
+
+    for priority, product_name, index, product_dir in products:
+        # For each product, we will import it and try to call the
+        # intialize() method in the product __init__ module. If
+        # the method doesnt exist, we put the old-style information
+        # together and do a default initialization.
+        if done.has_key(product_name):
+            continue
+        done[product_name]=1
+        install_product(app, product_dir, product_name, meta_types,
+                        folder_permissions, raise_exc=debug_mode)
+
+    Products.meta_types=Products.meta_types+tuple(meta_types)
+    Globals.default__class_init__(Folder.Folder)
+
 
 def get_products():
     """ Return a list of tuples in the form:
@@ -553,36 +661,6 @@ def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
                 raise exc[0], exc[1], exc[2]
     finally:
         exc = None
-
-
-def install_products(app):
-    # Install a list of products into the basic folder class, so
-    # that all folders know about top-level objects, aka products
-
-    folder_permissions = get_folder_permissions()
-    meta_types=[]
-    done={}
-
-    debug_mode = App.config.getConfiguration().debug_mode
-
-    get_transaction().note('Prior to product installs')
-    get_transaction().commit()
-
-    products = get_products()
-
-    for priority, product_name, index, product_dir in products:
-        # For each product, we will import it and try to call the
-        # intialize() method in the product __init__ module. If
-        # the method doesnt exist, we put the old-style information
-        # together and do a default initialization.
-        if done.has_key(product_name):
-            continue
-        done[product_name]=1
-        install_product(app, product_dir, product_name, meta_types,
-                        folder_permissions, raise_exc=debug_mode)
-
-    Products.meta_types=Products.meta_types+tuple(meta_types)
-    Globals.default__class_init__(Folder.Folder)
 
 
 def get_folder_permissions():
@@ -687,7 +765,7 @@ def install_product(app, product_dir, product_name, meta_types,
                 for permission, names in new_permissions:
                     folder_permissions[permission]=names
                 new_permissions.sort()
-                Folder.Folder.__ac_permissions__ = tuple(
+                Folder.Folder.__ac_permissions__=tuple(
                     list(Folder.Folder.__ac_permissions__)+new_permissions)
 
             if not doInstall():
