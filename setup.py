@@ -1212,6 +1212,7 @@ class MyDistribution(Distribution):
     # Distribution.__init__().
     def __init__(self, *attrs):
         Distribution.__init__(self, *attrs)
+        self.cmdclass['install'] = ZopeInstall
         self.cmdclass['build'] = MyBuilder
         self.cmdclass['build_ext'] = MyExtBuilder
         self.cmdclass['install_lib'] = MyLibInstaller
@@ -1258,38 +1259,33 @@ ext_modules = [
 # We're using the module docstring as the distutils descriptions.
 doclines = __doc__.split("\n")
 
-setup(name="zope",
+setup(name="zopex30",
       version="X3.0",
       maintainer="Zope Corporation",
       maintainer_email="zope3-dev@zope.org",
       url = "http://dev.zope.org/Zope3/",
       ext_modules = ext_modules,
-      # This doesn't work right at all
-      headers = ["persistent/cPersistence.h",
-                 "zope/proxy/proxy.h"],
-      scripts = [],
       license = "http://www.zope.org/Resources/ZPL",
       platforms = ["any"],
       description = doclines[0],
       long_description = "\n".join(doclines[2:]),
       packages = packages,
-      #package_dir = {'': 'src'},
       distclass = MyDistribution,
       )
 
 
-setup(
-    name='Five',
-    author='Martijn Faassen',
-
-    packages=['Products.Five'],
-    data_files=[['Products/Five', ['Products/Five/*']],
-                ['Products/Five/demo', ['Products/Five/demo/*']],
-                ['Products/Five/doc', ['Products/Five/doc/*']],
-                ['Products/Five/skel', ['Products/Five/skel/*']],
-                ['Products/Five/tests', ['Products/Five/tests/*']],
-                ],
-    )
+#setup(
+#    name='Five',
+#    author='Martijn Faassen',
+#
+#    packages=['Products.Five'],
+#    data_files=[['Products/Five', ['Products/Five/*']],
+#                ['Products/Five/demo', ['Products/Five/demo/*']],
+#                ['Products/Five/doc', ['Products/Five/doc/*']],
+#                ['Products/Five/skel', ['Products/Five/skel/*']],
+#                ['Products/Five/tests', ['Products/Five/tests/*']],
+#                ],
+#    )
 
 
 
