@@ -175,7 +175,8 @@ def zpublisher_exception_hook(
             LOG('Z2 CONFLICT', INFO,
                 'Competing writes at, %s' % REQUEST.get('PATH_INFO', ''),
                 error=sys.exc_info())
-            raise ZPublisher.Retry
+            raise ZPublisher.Retry(t, v, traceback)
+        if t is ZPublisher.Retry: v.reraise()
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
             !='text/html'): raise
