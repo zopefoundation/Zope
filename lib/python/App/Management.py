@@ -85,13 +85,13 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.39 2001/01/11 22:13:14 chrism Exp $"""
+$Id: Management.py,v 1.40 2001/01/11 22:38:41 chrism Exp $"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
-from Globals import DTMLFile
+from Globals import DTMLFile, HTMLFile
 from string import split, join, find
 from AccessControl import getSecurityManager
 
@@ -208,7 +208,7 @@ class Navigation(ExtensionClass.Base):
         )
 
     manage            =DTMLFile('dtml/manage', globals())
-    manage_menu       =DTMLFile('dtml/menu', globals())
+    manage_menu       =HTMLFile('dtml/menu', globals())
 
     manage_top_frame  =DTMLFile('dtml/manage_top_frame', globals())
     manage_page_header=DTMLFile('dtml/manage_page_header', globals())
