@@ -43,10 +43,12 @@ kind>.
   </div>
   </td>
   <td align="left" valign="top">
-    <dtml-if "height < 250">
-    <dtml-var tag>
-    <dtml-else>
+    <dtml-if "_.same_type(height, 1) and height and height > 250">
     <dtml-var "tag(scale=250.0 / height)">
+    <dtml-elif "_.same_type(height, 's') and height and _.int(height) > 250">
+    <dtml-var "tag(scale=250.0 / _.int(height))">
+    <dtml-else>
+    <dtml-var tag>
     </dtml-if>
   </td>
 </tr>
