@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.70 2000/12/19 16:24:40 shane Exp $''' 
-__version__='$Revision: 1.70 $'[11:-2]
+'''$Id: DT_Util.py,v 1.71 2000/12/22 20:14:46 evan Exp $''' 
+__version__='$Revision: 1.71 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -258,11 +258,11 @@ d['range']=careful_range
 def namespace(self, **kw):
     """Create a tuple consisting of a single instance whose attributes are
     provided as keyword arguments."""
-    if type(self) != TemplateDict:
+    if getattr(self, '__class__', None) != TemplateDict:
         raise TypeError,'''A call was made to DT_Util.namespace() with an
         incorrect "self" argument.  It could be caused by a product which
         is not yet compatible with this version of Zope.  The traceback
-        information may contain more details.'''
+        information may contain more details.)'''
     return apply(self, (), kw)
 
 d['namespace']=namespace
