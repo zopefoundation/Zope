@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -396,14 +396,6 @@ class PropertySheet(Persistent, Implicit):
         " "
         raise 'Redirect', URL1+'/manage'
 
-    def _wrapperCheck(self, object):
-        # Raise an error if object appears to be wrapped. If a
-        # PropertySheet implementation ever needs to store wrapped
-        # objects for some reason, it will need to override this
-        # method.
-        if hasattr(object, 'aq_base'):
-            raise ValueError, 'Invalid property value: wrapped object'
-
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
@@ -425,7 +417,6 @@ class PropertySheet(Persistent, Implicit):
         propdict=self._propdict()
         for name, value in props.items():
             if self.hasProperty(name):
-                self._wrapperCheck(value)
                 self._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
@@ -438,7 +429,6 @@ class PropertySheet(Persistent, Implicit):
         for prop in self.propertyMap():
             name=prop['id']
             value=REQUEST.get(name, '')
-            self._wrapperCheck(value)
             self._updateProperty(name, value)
         return MessageDialog(
                title  ='Success!',

@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.88 2000/05/16 19:34:43 brian Exp $"""
+$Id: Folder.py,v 1.89 2000/05/17 20:04:25 brian Exp $"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -112,7 +112,7 @@ def manage_addFolder(self, id, title='',
     """
     ob=Folder()
     ob.id=str(id)
-    ob.title=str(title)
+    ob.title=title
     self._setObject(id, ob)
     ob=self._getOb(id)
 
