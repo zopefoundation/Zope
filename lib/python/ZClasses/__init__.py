@@ -14,10 +14,11 @@ needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.4 1999/04/29 19:21:34 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 2000/01/10 03:36:05 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import ZClass
+import ZClassOwner
 
 # Names of objects added by this product:
 meta_types=(
@@ -30,7 +31,7 @@ meta_types=(
 methods={
     'manage_addZClassForm': ZClass.manage_addZClassForm,
     'manage_addZClass': ZClass.manage_addZClass,
-    'manage_subclassableClassNames': ZClass.manage_subclassableClassNames,
+    'manage_subclassableClassNames': ZClassOwner.manage_subclassableClassNames,
     
     }
 
