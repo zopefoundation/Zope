@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.66 $
+$Revision: 1.67 $
 """
 
 import time
@@ -52,6 +52,8 @@ try:
 except NameError:
     True = 1
     False = 0
+
+BDBFULL_SCHEMA_VERSION = 'BF01'
 
 
 
@@ -185,7 +187,10 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         #         packtime - time of the last pack.  It is illegal to undo to
         #         before the last pack time.
         #
-        #         version - the version of the database (reserved for ZODB4)
+        #         dbversion - the version of the database serialization
+        #         protocol (reserved for ZODB4)
+        #
+        #         version - the underlying Berkeley database schema version
         #
         # objrevs -- {newserial+oid -> oldserial}
         #     This table collects object revision information for packing
@@ -234,6 +239,13 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._delqueue = self._setupDB('delqueue', 0, db.DB_QUEUE, 8)
         # Do recovery and consistency checks
         self._withlock(self._dorecovery)
+
+    def _version_check(self, txn):
+        version = self._info.get('version')
+        if version is None:
+            self._info.put('version', BDBFULL_SCHEMA_VERSION, txn=txn)
+        elif version <> BDBFULL_SCHEMA_VERSION:
+            raise StorageSystemError, 'incompatible storage version'
 
     def _make_autopacker(self, event):
         config = self._config
