@@ -110,11 +110,12 @@ class FTPRequest(HTTPRequest):
         # support for cookies and cookie authentication
         self.cookies=channel.cookies
         if not self.cookies.has_key('__ac') and channel.userid != 'anonymous':
-            self.cookies['__ac']=encodestring('%s:%s' %
-                    (channel.userid, channel.password))       
+            self.other['__ac_name']=channel.userid
+            self.other['__ac_password']=channel.password
         for k,v in self.cookies.items():
             if not self.other.has_key(k):
                 self.other[k]=v
+        
    
     def retry(self):
         self.retry_count=self.retry_count+1
