@@ -83,9 +83,9 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Zope password change system"""
+"""Zope user bootstrap system"""
 
-__version__='$Revision: 1.10 $ '[11:-2]
+__version__='$Revision: 1.11 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -112,35 +112,54 @@ def generate_passwd(password, encoding):
 
     return pw
 
-def write_access(home, user='', group=''):
+def write_generated_password(home, ac_path, username):
     import whrandom
     pw_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
                  "abcdefghijklmnopqrstuvwxyz" \
                  "0123456789!"
-
+    acfile=open(ac_path, 'w')
+    pw = ''
+    for i in range(8):
+        pw = pw + whrandom.choice(pw_choices)
+    acfile.write('%s:%s' % (username, generate_passwd(pw, 'SHA')))
+    acfile.close()
+    os.system('chmod 644 %s' % ac_path)
+    return pw
+    
+def write_access(home, user='', group=''):
     ac_path=os.path.join(home, 'access')
     if not os.path.exists(ac_path):
         print '-'*78
         print 'creating default access file'
-        acfile=open(ac_path, 'w')
-        pw = ''
-        for i in range(8):
-            pw = pw + whrandom.choice(pw_choices)
-        acfile.write('superuser:' + generate_passwd(pw, 'SHA'))
-        acfile.close()
-        os.system('chmod 644 access')
-
+        pw = write_generated_password(home, ac_path, 'emergency')
         print """Note:
-        The super user name and password are 'superuser'
+        The emergency user name and password are 'emergency'
         and '%s'.
 
-        You can change the superuser name and password with the
+        You can change the emergency name and password with the
         zpasswd script.  To find out more, type:
 
         %s zpasswd.py
         """ % (pw, sys.executable)
 
         import do; do.ch(ac_path, user, group)
+
+def write_inituser(home, user='', group=''):
+    ac_path=os.path.join(home, 'inituser')
+    if not os.path.exists(ac_path):
+        print '-'*78
+        print 'creating default inituser file'
+        pw = write_generated_password(home, ac_path, 'admin')
+        print """Note:
+        The initial user name and password are 'admin'
+        and '%s'.
+
+        You can change the name and password through the web
+        interface or using the 'zpasswd.py' script.
+        """ % pw
+
+        import do; do.ch(ac_path, user, group)
+
 
 def main(argv):
     short_options = ':u:p:e:d:'
@@ -149,13 +168,12 @@ def main(argv):
                     'encoding=',
                     'domains=']
 
-    usage = """%s [options] filename
-
+    usage = """Usage: %s [options] filename
 If this program is called without command-line options, it will prompt
 for all necessary information.  The available options are:
 
     -u / --username=
-    Set the username to be used for the superuser
+    Set the username to be used for the initial user or the emergency user
 
     -p / --password=
     Set the password
@@ -167,10 +185,10 @@ for all necessary information.  The available options are:
     Set the domain names that the user user can log in from.  Defaults to
     any. OPTIONAL.
     
-    Filename is required, and should be the name of the file to store the
-    information in (usually "access").
+    Filename is required and should be the name of the file to store the
+    information in (usually "inituser" or "access").
     
-Copyright (C) 1999 Digital Creations, Inc.
+Copyright (C) 1999, 2000 Digital Creations, Inc.
 """ % argv[0]
 
     try:
@@ -186,7 +204,7 @@ Copyright (C) 1999 Digital Creations, Inc.
 
         if len(optlist) > 0:
             # Set the sane defaults
-            username = 'superuser'
+            username = ''
             encoding = 'SHA'
             domains = ''
         
@@ -240,8 +258,8 @@ CLEARTEXT - no protection.
             if domains: domains = ":" + domains
 
             access_file.write(username + ":" +
-                      generate_passwd(password, encoding) +
-                      domains)
+                              generate_passwd(password, encoding) +
+                              domains)
             
     except "CommandLineError":
         sys.stderr.write(usage)

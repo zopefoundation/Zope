@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.7 2000/11/09 14:14:09 chrism Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Owned.py,v 1.8 2000/12/05 18:49:42 shane Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -267,14 +267,14 @@ class Owned(ExtensionClass.Base):
         else:
             # Otherwise change the ownership
             user=getSecurityManager().getUser()
-            if aq_base(user) is SpecialUsers.super:
-                __creatable_by_super__=getattr(self,
-                                               '__creatable_by_super__',
-                                               None)
-                if (__creatable_by_super__ is None or
-                    (not __creatable_by_super__())):                    
-                    raise SuperCannotOwn, (
-                        "Objects cannot be owned by the superuser")
+            if (SpecialUsers.emergency_user and
+                aq_base(user) is SpecialUsers.emergency_user):
+                __creatable_by_emergency_user__=getattr(
+                    self,'__creatable_by_emergency_user__', None)
+                if (__creatable_by_emergency_user__ is None or
+                    (not __creatable_by_emergency_user__())):
+                    raise EmergencyUserCannotOwn, (
+                        "Objects cannot be owned by the emergency user")
             self.changeOwnership(user)
 
         # Force all subs to acquire ownership!
@@ -288,8 +288,8 @@ class Owned(ExtensionClass.Base):
   
 Globals.default__class_init__(Owned)
 
-class SuperCannotOwn(Exception):
-    "The superuser cannot own anything"
+class EmergencyUserCannotOwn(Exception):
+    "The emergency user cannot own anything"
 
 class EditUnowned(Exception):
     "Can't edit unowned executables"

@@ -110,6 +110,28 @@ Zope Installation Frequently Asked Questions
        be added to the environment of the process when it is started
        by PCGI.
 
+    6. I have forgotten the only password used to access the site or
+       I have modified the security settings in such a way that even
+       I can't get access.  How do I fix it?
+
+       Assuming you have write access to the directory where Zope is
+       installed, you can create a temporary "emergency user" using
+       the 'zpasswd.py' script::
+
+           python zpasswd.py access
+
+       Follow the prompts to enter a user name and password.
+       'zpasswd.py' will write the file named 'access'.  Zope will
+       look for this file the next time it starts.  After restarting,
+       browse to Zope's management interface and use the name and
+       password you entered.
+
+       As the emergency user, you are allowed to create user folders
+       and user accounts as well as adjust security settings but you
+       are not allowed to create objects like DTML methods or folders.
+       This is a safety precaution.
+
+       See more details in the file SECURITY.TXT.
 
   Managing the Zope process
 

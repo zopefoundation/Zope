@@ -143,7 +143,7 @@ def main(args):
 
     import compilezpy
     print '-'*78
-    import zpasswd; zpasswd.write_access(home, user, group)
+    import zpasswd; zpasswd.write_inituser(home, user, group)
     import default_content; default_content.main(home, user, group)
     import make_resource; make_resource.main(home, pcgi, user, group)
     import make_start; make_start.sh(home, user, group)

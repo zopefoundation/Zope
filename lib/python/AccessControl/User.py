@@ -84,18 +84,18 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.115 $'[11:-2]
+__version__='$Revision: 1.116 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
+import os
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
-from string import join,strip,split,lower
+from string import join, strip, split, lower, upper
 from App.Management import Navigation, Tabs
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
 from App.ImageFile import ImageFile
 from Role import RoleManager
-from string import split, join, upper
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 from AuthEncoding import pw_validate
 
@@ -187,7 +187,7 @@ class BasicUser(Implicit):
     
     def authenticate(self, password, request):
         passwrd=self._getPassword()
-        result = pw_validate(passwrd, password)    
+        result = pw_validate(passwrd, password)
         domains=self.getDomains()
         if domains:
             return result and domainSpecMatch(domains, request)
@@ -300,14 +300,15 @@ class SimpleUser(BasicUser):
         return tuple(self.domains)
 
 class SpecialUser(SimpleUser):
-    """Class for special users, like super and nobody"""
+    """Class for special users, like emergency user and nobody"""
     def getId(self): pass
 
 class User(SimpleUser, Persistent):
     """Standard User object"""
 
-class Super(SpecialUser):
-    """Super user
+class UnrestrictedUser(SpecialUser):
+    """User that passes all security checks.  Note, however, that modules
+    like Owner.py can still impose restrictions.
     """
     def allowed(self,parent,roles=None):
         return roles is not _what_not_even_god_should_do
@@ -318,32 +319,52 @@ class Super(SpecialUser):
 
     def has_permission(self, permission, object): return 1
 
+
+def readUserAccessFile(filename):
+    '''Reads an access file from INSTANCE_HOME.
+    Returns name, password, domains, remote_user_mode.
+    '''
+    try:
+        f = open(os.path.join(INSTANCE_HOME, filename), 'r')
+        line = f.readline()
+        f.close()
+    except IOError:
+        return None
+
+    if line:
+        data = split(strip(line), ':')
+        remote_user_mode = not data[1]
+        try:    ds = split(data[2], ' ')
+        except: ds = []
+        return data[0], data[1], ds, remote_user_mode
+    else:
+        return None
+
+
+# Create emergency user.
 _remote_user_mode=0
-try:
-    f=open('%s/access' % INSTANCE_HOME, 'r')
-except IOError:
-    raise 'InstallError', (
-        'No access file found at %s - see INSTALL.txt' % INSTANCE_HOME
-        )
-try:
-    data=split(strip(f.readline()),':')
-    f.close()
-    _remote_user_mode=not data[1]
-    try:    ds=split(data[2], ' ')
-    except: ds=[]
-    super=Super(data[0],data[1],('manage',), ds)
-    del data
-except:
-    raise 'InstallError', 'Invalid format for access file - see INSTALL.txt'
+
+info = readUserAccessFile('access')
+if info:
+    _remote_user_mode = info[3]
+    emergency_user = UnrestrictedUser(
+        info[0], info[1], ('manage',), info[2])
+else:
+    emergency_user = None
+
+super = emergency_user  # Note: use of the 'super' name is deprecated.
+del info
 
 
 nobody=SpecialUser('Anonymous User','',('Anonymous',), [])
-system=Super('System Processes','',('manage',), [])
+system=UnrestrictedUser('System Processes','',('manage',), [])
 
 # stuff these in a handier place for importing
 SpecialUsers.nobody=nobody
 SpecialUsers.system=system
-SpecialUsers.super=super
+SpecialUsers.emergency_user=emergency_user
+# Note: use of the 'super' name is deprecated.
+SpecialUsers.super=emergency_user
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
@@ -417,9 +438,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
     _remote_user_mode=_remote_user_mode
-    _super=super
+    _emergency_user=emergency_user
+    # Note: use of the '_super' name is deprecated.
+    _super=emergency_user
     _nobody=nobody
-            
+
     def validate(self,request,auth='',roles=None):
 
         if roles is _what_not_even_god_should_do:
@@ -452,11 +475,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return None
         name,password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
 
-        # Check for superuser
-        super=self._super
-        if self._isTop() and (name==super.getUserName()) and \
-        super.authenticate(password, request):
-            return super
+        # Check for emergency user
+        emergency_user=self._emergency_user
+        if (emergency_user and self._isTop() and (
+            name == emergency_user.getUserName())
+            and emergency_user.authenticate(password, request)):
+            return emergency_user
 
         # Try to get user
         user=self.getUser(name)
@@ -520,10 +544,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                     return ob
                 return None
 
-            # Check for superuser
-            super=self._super
-            if self._isTop() and (name==super.getUserName()):
-                return super
+            # Check for emergency user
+            emergency_user=self._emergency_user
+            if (emergency_user and self._isTop() and
+                name==emergency_user.getUserName()):
+                return emergency_user
 
             # Try to get user
             user=self.getUser(name)
@@ -572,7 +597,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                    title  ='Illegal value', 
                    message='Password and confirmation must be specified',
                    action ='manage_main')
-        if self.getUser(name) or (name==self._super.getUserName()):
+        if self.getUser(name) or (self._emergency_user and
+                                  name == self._emergency_user.getUserName()):
             return MessageDialog(
                    title  ='Illegal value', 
                    message='A user with the specified name already exists',
@@ -690,7 +716,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             if hasattr(self, 'aq_base'): self=self.aq_base
             container.__allow_groups__=self
 
-    def __creatable_by_super__(self): return 1
+    def __creatable_by_emergency_user__(self): return 1
 
     def _setId(self, id):
         if id != self.id:
@@ -758,6 +784,22 @@ class UserFolder(BasicUserFolder):
     def _doDelUsers(self, names):
         for name in names:
             del self.data[name]
+
+    def _createInitialUser(self):
+        """
+        If there are no users in this user folder,
+        populates from the 'inituser' file in INSTANCE_HOME.
+        Called only by OFS.Application.initialize().
+        """
+        if len(self.data) < 1:
+            info = readUserAccessFile('inituser')
+            if info:
+                name, password, domains, remote_user_mode = info
+                self._doAddUser(name, password, ('Manager',), domains)
+                try:
+                    os.remove(os.path.join(INSTANCE_HOME, 'inituser'))
+                except:
+                    pass
 
 
 Globals.default__class_init__(UserFolder)

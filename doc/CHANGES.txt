@@ -33,7 +33,16 @@ Zope changes
         - Improved Ownership controls. Now you simply choose whether
           or not to take ownership of sub-objects when taking
           ownership. There is no need to control implicit/explicit
-          ownership. 
+          ownership.
+
+        - Changed the Zope installation procedure so it is only
+          necessary to create one user account and that user is
+          stored in the ZODB.
+
+        - Implemented the "emergency user" concept, which is the new
+          name for what was called the superuser.
+
+
 
       Bugs Fixed
 
@@ -58,3 +67,10 @@ Zope changes
 
         - Undid a bug fix that caused the DateTime unit tests to fail.
 
+        - Removed the requirement that an "access" file exist.
+          "access" is now only needed to create an emergency user
+          account.
+
+        - Disabled the monitor port by default because, initially,
+          there is no emergency user, and thus no password that
+          can be used to protect the port.

@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.133 2000/09/07 16:07:20 brian Exp $'''
-__version__='$Revision: 1.133 $'[11:-2]
+$Id: Application.py,v 1.134 2000/12/05 18:49:43 shane Exp $'''
+__version__='$Revision: 1.134 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -186,7 +186,7 @@ class Application(Globals.ApplicationDefaultPermissions,
                      'Control_Panel')
 
     # This class-default __allow_groups__ ensures that the
-    # superuser can still access the system if the top-level
+    # emergency user can still access the system if the top-level
     # UserFolder is deleted. This is necessary to allow people
     # to replace the top-level UserFolder object.
     
@@ -361,6 +361,14 @@ def initialize(app):
         app._p_jar.root()['ZGlobals']=BTree.BTree()
         get_transaction().note('Added Globals')
         get_transaction().commit()
+
+    # Install the initial user.
+    if hasattr(app, 'acl_users'):
+        users = app.acl_users
+        if hasattr(users, '_createInitialUser'):
+            app.acl_users._createInitialUser()
+            get_transaction().note('Created initial user')
+            get_transaction().commit()
 
     install_products(app)
 

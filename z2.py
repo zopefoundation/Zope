@@ -204,8 +204,8 @@ Options:
     allows interactive Python style access to a running ZServer. To
     access the server see medusa/monitor_client.py or
     medusa/monitor_client_win32.py. The monitor server password is the
-    same as the Zope super manager password set in the 'access'
-    file. The default is %(MONITOR_PORT)s.
+    same as the Zope emergency user password set in the 'access'
+    file. The default is to not start up a monitor server.
 
     The port can be preeceeded by an ip address follwed by a colon
     to specify an address to listen on. This allows different servers
@@ -337,7 +337,7 @@ FTP_PORT=8021
 PCGI_FILE='Zope.cgi'
 
 ## Monitor configuration
-MONITOR_PORT=8099
+MONITOR_PORT=0
 
 # Module to be published, which must be Main or Zope
 MODULE='Zope'
@@ -444,7 +444,6 @@ try:
         elif o=='-f':
             FTP_PORT=server_info(FTP_PORT, v)
         elif o=='-P':
-            MONITOR_PORT=server_info(MONITOR_PORT, v, 99)
             HTTP_PORT=server_info(HTTP_PORT, v, 80)
             FTP_PORT=server_info(FTP_PORT, v, 21)
 
@@ -663,14 +662,21 @@ if FCGI_PORT and not READ_ONLY:
 
 # Monitor Server
 if MONITOR_PORT:
-    if type(MONITOR_PORT) is type(0): 
-        MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
-    for address, port in MONITOR_PORT:
-        from AccessControl.User import super
-        monitor=secure_monitor_server(
-            password=super._getPassword(),
-            hostname=address,
-            port=port)
+    from AccessControl.User import emergency_user
+    if emergency_user:
+        pw = emergency_user._getPassword()
+    else:
+        pw = None
+        zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
+                 ' because no emergency user exists.')
+    if pw:
+        if type(MONITOR_PORT) is type(0): 
+            MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
+        for address, port in MONITOR_PORT:
+            monitor=secure_monitor_server(
+                password=pw,
+                hostname=address,
+                port=port)
 
 # Try to set uid to "-u" -provided uid.
 # Try to set gid to  "-u" user's primary group. 
@@ -718,11 +724,3 @@ if not READ_ONLY:
 sys.ZServerExitCode=0
 asyncore.loop()
 sys.exit(sys.ZServerExitCode)
-
-
-
-
-
-
-
-

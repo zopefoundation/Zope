@@ -85,8 +85,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.8 2000/11/20 10:51:21 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: PermissionRole.py,v 1.9 2000/12/05 18:49:42 shane Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys
 
@@ -134,6 +134,7 @@ class PermissionRole(Base):
             return r
 
 
+# This is used when a permission maps explicitly to no permission.
 _what_not_even_god_should_do=[]
 
 class imPermissionRole(Base):
