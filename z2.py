@@ -337,9 +337,27 @@ if sys.platform=='win32': Zpid=''
 sys.path=[os.path.join(here,'lib','python'),here
           ]+filter(None, sys.path)
 
+
+# from this point forward we can use the zope logger
+
+import zLOG, posix
+
+
 if Zpid:
     import zdeamon, App.FindHomes 
     sys.ZMANAGED=1
+    
+    x = os.fork()
+    if x:
+        sys.exit(0)
+    elif x == -1:
+        zLOG.LOG("z2", zLOG.ERROR, "couldn't fork to detatch")
+        sys.exit(1)
+    pgrp = posix.setsid()
+    if pgrp == -1:
+        zLOG.LOG("z2", zLOG.ERROR, "setsid failed")
+        sys.exit(1)
+
     zdeamon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
 
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
@@ -441,7 +459,7 @@ try:
             uid = pwd.getpwnam(UID)[2]
         os.setuid(uid)
     except KeyError:
-        print "can't find UID %s" % UID
+        zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
     
 except:
     pass
