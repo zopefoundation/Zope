@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.56 1998/12/15 21:14:14 jim Exp $'''
-__version__='$Revision: 1.56 $'[11:-2]
+$Id: DA.py,v 1.57 1998/12/15 21:15:15 jim Exp $'''
+__version__='$Revision: 1.57 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -32,9 +32,7 @@ from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
 
-try:
-    raise 'waaa'
-    from IOBTree import Bucket
+try: from IOBTree import Bucket
 except: Bucket=lambda:{}
 
 
