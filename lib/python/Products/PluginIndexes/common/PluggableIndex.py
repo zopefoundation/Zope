@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Pluggable Index Base Class """
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Interface
 
@@ -25,7 +25,6 @@ class PluggableIndexInterface(Interface.Base):
 
     def getEntryForObject(documentId, default=None):
         """Get all information contained for a specific object by documentId"""
-        pass
 
     def index_object(documentId, obj, threshold=None):
         """Index an object:
@@ -35,38 +34,39 @@ class PluggableIndexInterface(Interface.Base):
            'obj' is the object to be indexed
 
            'threshold' is the number of words to process between committing
-           subtransactions.  If None, subtransactions are disabled"""
-
-        pass
+           subtransactions.  If None, subtransactions are disabled
+        """
 
     def unindex_object(documentId):
         """Remove the documentId from the index"""
-        pass
-
 
     def uniqueValues(name=None, withLengths=0):
         """Returns the unique values for name.
 
-        If 'withLengths' is true, returns a sequence of tuples of
-        (value, length)"""
-
-        pass
+           If 'withLengths' is true, returns a sequence of tuples of
+           (value, length)
+        """
 
     def _apply_index(request, cid=''):
         """Apply the index to query parameters given in the argument, request.
 
-        The argument should be a mapping object.
+           The argument should be a mapping object.
 
-        If the request does not contain the needed parametrs, then None is
-        returned.
+           If the request does not contain the needed parametrs, then None is
+           returned.
 
-        If the request contains a parameter with the name of the column
-        + "_usage", it is sniffed for information on how to handle applying
-        the index.
+           If the request contains a parameter with the name of the column
+           + "_usage", it is sniffed for information on how to handle applying
+           the index. (Note: this style or parameters is deprecated)
 
-        Otherwise two objects are returned.  The first object is a ResultSet
-        containing the record numbers of the matching records.  The second
-        object is a tuple containing the names of all data fields used."""
+           If the request contains a parameter with the name of the column
+           and this parameter is either a Record or a class instance then
+           it is assumed that the parameters of this index are passed as
+           attribute (Note: this is the recommended way to pass parameters
+           since Zope 2.4)
 
-        pass
+           Otherwise two objects are returned.  The first object is a ResultSet
+           containing the record numbers of the matching records.  The second
+           object is a tuple containing the names of all data fields used.
+        """
 
