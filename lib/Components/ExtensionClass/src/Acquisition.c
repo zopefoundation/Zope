@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.5 1997/06/19 19:24:21 jim Exp $
+  $Id: Acquisition.c,v 1.6 1997/06/19 19:31:39 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Acquisition.c,v $
+  Revision 1.6  1997/06/19 19:31:39  jim
+  Added ident string.
+
   Revision 1.5  1997/06/19 19:24:21  jim
   Many fixes and consolodation with Xaq.
 
@@ -712,7 +715,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -726,7 +729,8 @@ initAcquisition()
 
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
-		     "Provide base classes for acquiring objects",
+		     "Provide base classes for acquiring objects\n\n"
+		     "$Id: Acquisition.c,v 1.6 1997/06/19 19:31:39 jim Exp $\n"
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
