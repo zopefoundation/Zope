@@ -36,10 +36,10 @@ class BerkeleyTestBase(StorageTestBase):
         # subsequent tests because the next transaction commit will try to
         # commit those object.  But they're tied to closed databases, so
         # that's broken.  Aborting the transaction now saves us the headache.
-        StorageTestBase.tearDown(self)
         for file in os.listdir(DBHOME):
             os.unlink(os.path.join(DBHOME, file))
         os.removedirs(DBHOME)
+        StorageTestBase.tearDown(self)
 
 
 
