@@ -13,9 +13,9 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
-import sys, os, string, Globals, davcmds, Lockable,re
+import sys, os,  Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
 from Resource import Resource
 from AccessControl import getSecurityManager
@@ -77,7 +77,7 @@ class Collection(Resource):
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
-        name = unquote(filter(None, string.split(url, '/'))[-1])
+        name = unquote(filter(None, url.split( '/'))[-1])
         parent = self.aq_parent
         user = getSecurityManager().getUser()
         token = None
@@ -106,7 +106,7 @@ class Collection(Resource):
             for tok in tokens:
                 # We already know that the simple if handler succeeded,
                 # we just want to get the right token out of the header now
-                if string.find(ifhdr, tok) > -1:
+                if ifhdr.find(tok) > -1:
                     token = tok
         cmd = davcmds.DeleteCollection()
         result = cmd.apply(self, token, user, REQUEST['URL'])

@@ -13,9 +13,9 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
-import string, time, urllib, re
+import  time, urllib, re
 from App.Common import iso8601_date, rfc850_date, rfc1123_date
 from App.Common import aq_base
 
@@ -31,6 +31,17 @@ def urlfix(url, s):
         url=url[:-1]
     return url
 
+def is_acquired(ob):
+    # Return true if this object is not a direct
+    # subobject of its aq_parent object.
+    if not hasattr(ob, 'aq_parent'):
+        return 0
+    if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
+        return 0
+    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject') and \
+            ob.isTopLevelPrincipiaApplicationObject:
+        return 0
+    return 1
 
 def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):
     # Return a '/' based url such as '/foo/bar', removing
@@ -53,7 +64,7 @@ def tokenFinder(token):
     if not token: return None           # An empty string was passed in
     if token[0] == '[': return None     # An Etag was passed in
     if token[0] == '<': token = token[1:-1]
-    return token[string.find(token,':')+1:]
+    return token[token.find(':')+1:]
 
 
 ### If: header handling support.  IfParser returns a sequence of

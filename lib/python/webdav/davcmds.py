@@ -13,9 +13,9 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
-import sys, os, string
+import sys, os
 from common import absattr, aq_base, urlfix, urlbase
 from OFS.PropertySheets import DAVProperties
 from LockItem import LockItem
@@ -26,8 +26,8 @@ from cStringIO import StringIO
 from urllib import quote
 from AccessControl import getSecurityManager
 
-def safe_quote(url, mark=r'%', find=string.find):
-    if find(url, mark) > -1:
+def safe_quote(url, mark=r'%'):
+    if url.find(mark) > -1:
         return url
     return quote(url)
 
@@ -105,14 +105,14 @@ class PropFind:
             for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__allprop'):
                     stats.append(ps.dav__allprop())
-            stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
+            stats=''.join(stats) or '<d:status>200 OK</d:status>\n'
             result.write(stats)            
         elif self.propname:
             stats=[]
             for ps in propsets:
                 if hasattr(aq_base(ps), 'dav__propnames'):
                     stats.append(ps.dav__propnames())
-            stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
+            stats=''.join(stats) or '<d:status>200 OK</d:status>\n'
             result.write(stats)
         elif self.propnames:
             rdict={}
@@ -266,7 +266,7 @@ class PropPatch:
         # This is lame, but I cant find a way to keep ZPublisher
         # from sticking a traceback into my xml response :(
         get_transaction().abort()
-        result=string.replace(result, '200 OK', '424 Failed Dependency')
+        result=result.replace( '200 OK', '424 Failed Dependency')
         return result
 
 
@@ -282,7 +282,7 @@ class Lock:
         self.type = 'write'
         self.owner = ''
         timeout = request.get_header('Timeout', 'infinite')
-        self.timeout = string.strip(string.split(timeout,',')[-1])
+        self.timeout = timeout.split(',')[-1].strip()
         self.parse(data)
 
     def parse(self, data, dav='DAV:'):

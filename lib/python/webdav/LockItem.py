@@ -11,9 +11,9 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
-from string import lower, split, join
+
 from Globals import Persistent
 from WriteLockInterface import LockItemInterface
 from AccessControl import ClassSecurityInfo
@@ -28,8 +28,8 @@ def validateTimeout(timeout):
     # Timeout *should* be in the form "Seconds-XXX" or "Infinite"
     errors = []
     try:
-        t = split(str(timeout), '-')[-1]
-        if lower(t) == 'infinite':
+        t =str(timeout).split('-')[-1]
+        if t.lower() == 'infinite':
             timeout = DEFAULTTIMEOUT # Default to 1800 secods for infinite
         else:                       # requests
             timeout = long(t)
@@ -60,11 +60,11 @@ class LockItem(Persistent):
         # First check the values and raise value errors if outside of contract
         if not getattr(creator, 'getUserName', None):
             errors.append("Creator not a user object")
-        if lower(str(depth)) not in ('0', 'infinity'):
+        if str(depth).lower() not in ('0', 'infinity'):
             errors.append("Depth must be 0 or infinity")
-        if lower(locktype) != 'write':
+        if locktype.lower() != 'write':
             errors.append("Lock type '%s' not supported" % locktype)
-        if lower(lockscope) != 'exclusive':
+        if lockscope.lower() != 'exclusive':
             errors.append("Lock scope '%s' not supported" % lockscope)
 
         timeout, e = validateTimeout(timeout)
@@ -95,7 +95,7 @@ class LockItem(Persistent):
 
     def getCreatorPath(self):
         db, name = self._creator
-        path = join(db,'/')
+        path = '/'.join(db)
         return "/%s/%s" % (path, name)
 
     def getOwner(self):

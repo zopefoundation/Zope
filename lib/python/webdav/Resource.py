@@ -13,9 +13,9 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
-import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
+import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
 from common import IfParser
 from urllib import quote, unquote
@@ -104,7 +104,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         # if 'col' is passed in, an operation is happening on a submember
         # of a collection, while the Lock may be on the parent.  Lob off
         # the final part of the URL  (ie '/a/b/foo.html' becomes '/a/b/')
-        if col: url = url[:string.rfind(url, '/')+1]
+        if col: url = url[:url.rfind('/')+1]
 
         havetag = lambda x, self=self: self.wl_hasLock(x)
         found = 0; resourcetagged = 0
@@ -151,14 +151,14 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             content_type=absattr(self.content_type)
         if content_type is None:
             url=urlfix(REQUEST['URL'], 'HEAD')
-            name=unquote(filter(None, string.split(url, '/'))[-1])
+            name=unquote(filter(None, url.split( '/')[-1]))
             content_type, encoding=mimetypes.guess_type(name)
         if content_type is None:
             if hasattr(self, 'default_content_type'):
                 content_type=absattr(self.default_content_type)
         if content_type is None:
             content_type = 'application/octet-stream'
-        RESPONSE.setHeader('Content-Type', string.lower(content_type))
+        RESPONSE.setHeader('Content-Type', content_type.lower())
 
         if hasattr(aq_base(self), 'get_size'):
             RESPONSE.setHeader('Content-Length', absattr(self.get_size))
@@ -183,7 +183,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
         self.dav__init(REQUEST, RESPONSE)
-        RESPONSE.setHeader('Allow', string.join(self.__http_methods__,', '))
+        RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
         RESPONSE.setHeader('DAV', '1,2', 1)
         RESPONSE.setStatus(200)
@@ -206,7 +206,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         ifhdr = REQUEST.get_header('If', '')
         url = urlfix(REQUEST['URL'], 'DELETE')
-        name = unquote(filter(None, string.split(url, '/'))[-1])
+        name = unquote(filter(None, url.split( '/')[-1]))
         parent = self.aq_parent
         # Lock checking
         if Lockable.wl_isLocked(self):
@@ -301,9 +301,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             raise 'Bad Request', 'Invalid Destination header'
 
         name = path.pop()
-        parent_path = string.join(path, '/')
+        parent_path = '/'.join(path)
 
-        oflag=string.upper(REQUEST.get_header('Overwrite', 'F'))
+        oflag=REQUEST.get_header('Overwrite', 'F').upper()
         if not oflag in ('T', 'F'):
             raise 'Bad Request', 'Invalid Overwrite header.'
 
@@ -390,10 +390,10 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             raise 'Bad Request', 'No destination given'
 
         flag=REQUEST.get_header('Overwrite', 'F')
-        flag=string.upper(flag)
+        flag=flag.upper()
 
         name = path.pop()
-        parent_path = string.join(path, '/')
+        parent_path = '/'.join(path)
 
         try: parent = self.restrictedTraverse(path)
         except ValueError:

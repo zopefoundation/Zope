@@ -17,9 +17,9 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
-import sys, os, string
+import sys, os
 import Shared.DC.xml.xmllib
 from Acquisition import Implicit
 
@@ -63,12 +63,12 @@ class Node(Implicit):
                 return ''
             self=self.aq_parent
 
-    def elements(self, name=None, ns=None, lower=string.lower):
+    def elements(self, name=None, ns=None ):
         nodes=[]
-        name=name and lower(name)
+        name=name and name.lower()
         for node in self.__nodes__:
             if node.__type__==type_element and \
-               ((name is None) or (lower(node.__name__)==name)) and \
+               ((name is None) or ((node.__name__.lower())==name)) and \
                ((ns is None) or (node.namespace()==ns)):
                 nodes.append(node)
         return nodes
@@ -100,7 +100,7 @@ class Document(Node):
         result=['<?xml version="1.0" encoding="%s"?>' % self.encoding]
         for node in self.__nodes__:
             result.append(node.toxml())
-        return string.join(result, '')
+        return ''.join(result)
 
     #def __del__(self):
     #    self.document=None
@@ -119,16 +119,16 @@ class Element(Node):
             attr=Attribute(name, val)
             self.__attrs__.append(attr)
         self.ns_parse()
-        parts=string.split(self.__name__, ':')
+        parts=self.__name__.split(':')
         if len(parts) > 1:
             self.__nskey__=parts[0]
-            self.__name__=string.join(parts[1:], ':')
+            self.__name__=':'.join(parts[1:])
             
     def ns_parse(self):
         nsdef=self.__nsdef__={}
         for attr in self.attrs():
             name, val=attr.name(), attr.value()
-            key=string.lower(name)
+            key=name.lower()
             if key[:6]=='xmlns:':
                 nsdef[name[6:]]=val
             elif key=='xmlns':
@@ -198,13 +198,13 @@ class Element(Node):
             for node in self.__nodes__:
                 result.append(node.toxml())
             result.append('</%s>' % qname)
-        return string.join(result, '')
+        return ''.join(result)
 
     def strval(self, top=1):
         if not self.__value__ and not self.__nodes__:
             return ''
         result=map(lambda n: n.toxml(), self.__nodes__)
-        return string.join(result, '')
+        return ''.join(result)
 
 class Attribute(Node):
     __type__=type_attribute
@@ -212,12 +212,12 @@ class Attribute(Node):
         self.__name__=name
         self.__value__=val
         self.__nskey__=''
-        parts=string.split(name, ':')
+        parts=name.split(':')
         if len(parts) > 1:
-            pre=string.lower(parts[0])
+            pre=parts[0].lower()
             if not (pre in ('xml', 'xmlns')):
                 self.__nskey__=parts[0]
-                self.__name__=string.join(parts[1:], ':')
+                self.__name__=':'.join(parts[1:])
 
     def remap(self, dict, n=0, top=1):
         nsval=self.namespace()
@@ -344,12 +344,12 @@ class XmlParser(Shared.DC.xml.xmllib.XMLParser):
 
 
 
-def escape(data, rmap={}, replace=string.replace):
-    data=replace(data, "&", "&amp;")
-    data=replace(data, "<", "&lt;")
-    data=replace(data, ">", "&gt;")
+def escape(data, rmap={}):
+    data=data.replace( "&", "&amp;")
+    data=data.replace( "<", "&lt;")
+    data=data.replace( ">", "&gt;")
     for key, val in rmap.items():
-        data=replace(data, key, val)
+        data=data.replace( key, val)
     return data
 
 def remap(data, dict={'DAV:': 'd'}):
