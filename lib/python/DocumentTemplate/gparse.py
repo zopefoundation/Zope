@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: gparse.py,v 1.9 1999/03/10 00:15:08 klm Exp $"
+"$Id: gparse.py,v 1.10 1999/03/18 15:07:03 brian Exp $"
 import sys, parser, symbol, token
 
 from symbol import test, suite, argument, arith_expr, shift_expr
@@ -97,10 +97,11 @@ from parser import sequence2ast, compileast, ast2list
 
 ParseError='Expression Parse Error'
 
-def munge(ast):
-    if ISTERMINAL(ast[0]): return
+def munge(ast, STAR=STAR, DOT=DOT, LSQB=LSQB, COLON=COLON, trailer=trailer):
+    ast0=ast[0]
+    if ISTERMINAL(ast0): return
     else:
-        if ast[0]==term and len(ast) > 2:
+        if ast0==term and len(ast) > 2:
             keep_going=1
             while keep_going:
                 keep_going=0
@@ -113,7 +114,7 @@ def munge(ast):
                         
             for a in ast[1:]: munge(a)
 
-        elif ast[0]==power:
+        elif ast0==power:
             keep_going=1
             while keep_going:
                 keep_going=0

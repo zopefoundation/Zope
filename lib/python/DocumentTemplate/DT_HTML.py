@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.15 1999/03/10 00:15:07 klm Exp $"""
+$Id: DT_HTML.py,v 1.16 1999/03/18 15:07:03 brian Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -97,6 +97,8 @@ class dtml_re_class:
                name_match=regex.compile('[\0- ]*[a-zA-Z]+[\0- ]*').match,
                end_match=regex.compile('[\0- ]*\(/\|end\)',
                                        regex.casefold).match,
+               find=find,
+               strip=strip
                ):
         s=find(text,'<!--#',start)
         if s < 0: return s
@@ -128,13 +130,12 @@ class dtml_re_class:
 
         return s
 
-    def group(self,*args):
-        g=self.__dict__
-        if len(args)==1: return g[args[0]]
-        r=[]
-        for arg in args:
-            r.append(g[arg])
-        return tuple(r)
+    def group(self, *args):
+        get=self.__dict__.get
+        if len(args)==1:
+            return get(args[0])
+        return tuple(map(get, args))
+
         
 
 class HTML(DT_String.String):
