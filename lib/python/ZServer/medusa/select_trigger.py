@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.10 2000/05/22 14:53:27 brian Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.11 2000/05/22 16:28:42 brian Exp $"
 
 import asyncore
 import asynchat
@@ -103,7 +103,7 @@ else:
             w.setsockopt(socket.IPPROTO_TCP, 1, 1)
 
             # tricky: get a pair of connected sockets
-            host='127.9.9.9'
+            host='127.0.0.1'
             port=19999
             while 1:
                 try:
