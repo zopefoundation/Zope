@@ -6,6 +6,11 @@ Zope changes
 
     Zope 2.3.0 ???
 
+      Features Added
+
+        - Added a hook that allows user folders to provide a logout
+          action.
+
       Bugs Fixed
 
         - Added a deprecated alias to UnrestrictedUser, Super, for use
