@@ -219,6 +219,7 @@ class ZServerHTTPResponse(HTTPResponse):
         # think that that's all that is ever passed.
 
         response=self.__class__(stdout=self.stdout, stderr=self.stderr)
+        response.headers=self.headers
         response._http_version=self._http_version
         response._http_connection=self._http_connection
         response._server_version=self._server_version

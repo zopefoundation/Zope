@@ -108,6 +108,9 @@ Zope Changes
 
       - Collector #291: ZCatalog not unindexing deleted properties
 
+      - Collector #266: Retried requests losing track of http request
+        headers, causing Connection:Close requests to stall
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
