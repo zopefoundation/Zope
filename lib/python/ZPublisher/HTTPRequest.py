@@ -11,13 +11,13 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
 from cgi import FieldStorage, escape
-from urllib import quote, unquote, splittype, splitport
+from urllib import quote, unquote, unquote_plus, splittype, splitport
 from copy import deepcopy
 from Converters import get_converter
 from TaintedString import TaintedString
@@ -1458,7 +1458,7 @@ def parse_cookie(text,
 
     finally: release()
 
-    if not already_have(name): result[name]=value
+    if not already_have(name): result[name]=unquote_plus(value)
 
     return apply(parse_cookie,(text[l:],result))
 

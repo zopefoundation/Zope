@@ -12,10 +12,11 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.14 2002/06/22 14:04:56 tseaver Exp $'''
-__version__ = '$Revision: 1.14 $'[11:-2]
+$Id: BaseResponse.py,v 1.15 2002/08/14 16:45:53 rdmurray Exp $'''
+__version__ = '$Revision: 1.15 $'[11:-2]
 
 import  types, sys
+from urllib import quote_plus
 from types import StringType, InstanceType
 from zExceptions import Unauthorized
 
@@ -71,6 +72,10 @@ class BaseResponse:
         cookie-enabled browsers with a key "name" and value
         "value". This overwrites any previously set value for the
         cookie in the Response object.
+
+        The value is quoted using urllib's url_quote_plus, which
+        quoting will be undone when the value is accessed through
+        REQUEST in a later transaction.
         '''
         cookies = self.cookies
         if cookies.has_key(name):
@@ -79,7 +84,7 @@ class BaseResponse:
             cookie = cookies[name] = {}
         for k, v in kw.items():
             cookie[k] = v
-        cookie['value'] = value
+        cookie['value'] = quote_plus(value)
 
     def appendBody(self, body):
         self.setBody(self.getBody() + body)
