@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.2 1996/07/18 13:08:34 jfulton Exp $
+  $Id: cStringIO.c,v 1.3 1996/10/07 20:51:38 chris Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.3  1996/10/07 20:51:38  chris
+  *** empty log message ***
+
   Revision 1.2  1996/07/18 13:08:34  jfulton
   *** empty log message ***
 
@@ -95,12 +98,14 @@ static char cStringIO_module_documentation[] =
 ;
 
 #include "Python.h"
+#include "import.h"
 
 static PyObject *ErrorObject;
 
 #define ASSIGN(V,E) {PyObject *__e; __e=(E); Py_XDECREF(V); (V)=__e;}
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E) UNLESS(V)
+#define Py_ASSIGN(P,E) if(!PyObject_AssignExpression(&(P),(E))) return NULL
 
 /* ----------------------------------------------------- */
 
@@ -109,7 +114,7 @@ static PyObject *ErrorObject;
 typedef struct {
   PyObject_HEAD
   char *buf;
-  int pos, size;
+  int pos, string_size, buf_size, closed;
 } Oobject;
 
 staticforward PyTypeObject Otype;
@@ -121,7 +126,7 @@ staticforward PyTypeObject Otype;
 typedef struct {
   PyObject_HEAD
   char *buf;
-  int pos,size;
+  int pos, string_size, closed;
   PyObject *pbuf;
 } Iobject;
 
@@ -145,10 +150,56 @@ O_reset(self, args)
   return Py_None;
 }
 
+
+static char O_tell__doc__[] =
+"tell() -- get the current position.";
+
+static PyObject *
+O_tell(self, args)
+       Oobject *self;
+       PyObject *args;
+{
+  return PyInt_FromLong(self->pos);
+}
+
+
+static char O_seek__doc__[] =
+"seek(position)       -- set the current position\n"
+"seek(position, mode) -- mode 0: absolute; 1: relative; 2: relative to EOF";
+
+static PyObject *
+O_seek(self, args)
+       Oobject *self;
+       PyObject *args;
+{
+  int position, mode = 0;
+
+  UNLESS(PyArg_ParseTuple(args, "i|i", &position, &mode))
+  {
+    return NULL;
+  }
+
+  if (mode == 2)
+  {
+    position += self->string_size;
+  }
+  else if (mode == 1)
+  {
+    position += self->pos;
+  }
+
+  self->pos = (position > self->string_size ? self->string_size : 
+	       (position < 0 ? 0 : position));
+
+  return PyInt_FromLong(self->pos);
+}
+
+
 static char O_write__doc__[] = 
 "write(s) -- Write a string to the file"
 "\n\nNote (hack:) writing None resets the buffer"
 ;
+
 
 static PyObject *
 O_write(self, args)
@@ -157,7 +208,7 @@ O_write(self, args)
 {
   PyObject *s;
   char *c, *b;
-  int l, newl;
+  int l, newl, space_needed;
 
   UNLESS(PyArg_Parse(args, "O", &s)) return NULL;
   if(s!=Py_None)
@@ -165,23 +216,31 @@ O_write(self, args)
       UNLESS(-1 != (l=PyString_Size(s))) return NULL;
       UNLESS(c=PyString_AsString(s)) return NULL;
       newl=self->pos+l;
-	if(newl > self->size)
+	if(newl > self->buf_size)
 	  {
-	    self->size*=2;
-	    if(self->size < newl) self->size=newl;
-	    UNLESS(self->buf=(char*)realloc(self->buf, self->size*sizeof(char)))
+	    self->buf_size*=2;
+	    if(self->buf_size < newl) self->buf_size=newl;
+	    UNLESS(self->buf=(char*)realloc(self->buf, self->buf_size*sizeof(char)))
 	      {
 		PyErr_SetString(PyExc_MemoryError,"out of memory");
-		self->size=self->pos=0;
+		self->buf_size=self->pos=0;
 		return NULL;
 	      }
 	  }
+
       memcpy(self->buf+self->pos,c,l);
-      self->pos+=l;
+
+      self->pos += l;
+
+      if (self->string_size < self->pos)
+      {
+        self->string_size = self->pos;
+      }
     }
   else
     {
       self->pos=0;
+      self->string_size = 0;
     }
 
   Py_INCREF(self);
@@ -192,7 +251,7 @@ static PyObject *
 O_repr(self)
 	Oobject *self;
 {
-  return PyString_FromStringAndSize(self->buf,self->pos);
+  return PyString_FromStringAndSize(self->buf,self->string_size);
 }
 
 static PyObject *
@@ -203,10 +262,107 @@ O_getval(self,args)
   return PyString_FromStringAndSize(self->buf,self->pos);
 }
 
+static char O_truncate__doc__[] = 
+"truncate(): truncate the file at the current position.";
+
+static PyObject *
+O_truncate(self, args)
+           Oobject *self;
+           PyObject *args;
+{
+  self->string_size = self->pos;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static char O_isatty__doc__[] = "isatty(): always returns 0";
+
+static PyObject *
+O_isatty(self, args)
+           Oobject *self;
+           PyObject *args;
+{
+  return PyInt_FromLong(0);
+}
+
+static char O_close__doc__[] = "close(): explicitly release resources held.";
+
+static PyObject *
+O_close(self, args)
+        Oobject *self;
+        PyObject *args;
+{
+  free(self->buf);
+
+  self->pos = self->string_size = self->buf_size = 0;
+  self->closed = 1;
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+static char O_flush__doc__[] = "flush(): does nothing.";
+
+static PyObject *
+O_flush(self, args)
+        Oobject *self;
+        PyObject *args;
+{
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
+
+static char O_writelines__doc__[] = "blah";
+static PyObject *
+O_writelines(self, args)
+             Oobject *self;
+             PyObject *args;
+{
+  PyObject *string_module = 0;
+  static PyObject *string_joinfields = 0;
+
+  UNLESS(PyArg_Parse(args, "O", args))
+  {
+    return NULL;
+  }
+
+  if (!string_joinfields)
+  {
+    UNLESS(string_module = PyImport_ImportModule("string"))
+    {
+      return NULL;
+    }
+
+    UNLESS(string_joinfields=
+        PyObject_GetAttrString(string_module, "joinfields"))
+    {
+      return NULL;
+    }
+
+    Py_DECREF(string_module);
+  }
+
+  if (PyObject_Length(args) == -1)
+  {
+    return NULL;
+  }
+
+  return O_write(self, 
+      PyObject_CallFunction(string_joinfields, "Os", args, ""));
+}
+
 static struct PyMethodDef O_methods[] = {
-  {"write",	O_write,	0,	O_write__doc__},
-  {"reset",	O_reset,	0,	O_reset__doc__},
-  {"getvalue",	O_getval,	0,	"getvalue() -- Get the string value"},
+  {"write",	 O_write,        0,      O_write__doc__},
+  {"reset",      O_reset,        0,      O_reset__doc__},
+  {"seek",       O_seek,         1,      O_seek__doc__},
+  {"tell",       O_tell,         0,      O_tell__doc__},
+  {"getvalue",   O_getval,       0,      "getvalue() -- Get the string value"},
+  {"truncate",   O_truncate,     0,      O_truncate__doc__},
+  {"isatty",     O_isatty,       0,      O_isatty__doc__},
+  {"close",      O_close,        0,      O_close__doc__},
+  {"flush",      O_flush,        0,      O_flush__doc__},
+  {"writelines", O_writelines,   0,      O_writelines__doc__},
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -222,13 +378,17 @@ newOobject(int size)
   if (self == NULL)
     return NULL;
   self->pos=0;
+  self->closed = 0;
+  self->string_size = 0;
+
   UNLESS(self->buf=malloc(size*sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError,"out of memory");
-      self->size=0;
+      self->buf_size = 0;
       return NULL;
     }
-  self->size=size;
+
+  self->buf_size=size;
   return self;
 }
 
@@ -290,11 +450,17 @@ I_read(self, args)
 	Iobject *self;
 	PyObject *args;
 {
-  int n=-1;
+  int l, n=-1;
   PyObject *s;
 
   UNLESS(PyArg_ParseTuple(args, "|i", &n)) return NULL;
-  if(n < 0) n=self->size-self->pos;
+  
+  l = self->string_size - self->pos;
+  if (n < 0 || n > l)
+  {
+    n = l;
+  }
+
   s=PyString_FromStringAndSize(self->buf+self->pos, n);
   self->pos+=n;
   return s;
@@ -314,18 +480,37 @@ I_readline(self, args)
   char *n, *s;
   int l;
 
-  for(n=self->buf+self->pos, s=self->buf+self->size; n < s && *n != '\n'; n++);
+  for(n=self->buf+self->pos, s=self->buf+self->string_size; n < s && *n != '\n'; n++);
   if(n < s) n++;
   r=PyString_FromStringAndSize(self->buf+self->pos, n - self->buf - self->pos);
   self->pos=n-self->buf;
   return r;
 }
 
+static PyObject *
+I_close(self, args)
+        Iobject *self;
+        PyObject *args;
+{
+  Py_DECREF(self->pbuf);
+
+  self->pos = self->string_size = 0;
+  self->closed = 1;
+
+  Py_INCREF(Py_None);
+  return Py_None;
+}
 
 static struct PyMethodDef I_methods[] = {
   {"read",	I_read,	1,	I_read__doc__},
   {"readline",	I_readline,	0,	I_readline__doc__},
-  {"reset",	O_reset,	0,	O_reset__doc__},  
+  {"reset",	O_reset,	0,	O_reset__doc__},
+  {"seek",      O_seek,         1,      O_seek__doc__},  
+  {"tell",      O_tell,         0,      O_tell__doc__},
+  {"truncate",  O_truncate,     0,      O_truncate__doc__},
+  {"isatty",    O_isatty,       0,      O_isatty__doc__},
+  {"close",     I_close,        0,      O_close__doc__},
+  {"flush",     O_flush,        0,      O_flush__doc__},
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -344,9 +529,10 @@ newIobject(PyObject *s)
   UNLESS(self = PyObject_NEW(Iobject, &Itype)) return NULL;
   Py_INCREF(s);
   self->buf=buf;
-  self->size=size;
+  self->string_size=size;
   self->pbuf=s;
   self->pos=0;
+  self->closed = 0;
   
   return self;
 }
@@ -441,9 +627,11 @@ initcStringIO()
 	d = PyModule_GetDict(m);
 	ErrorObject = PyString_FromString("cStringIO.error");
 	PyDict_SetItemString(d, "error", ErrorObject);
-							     
+
 	/* XXXX Add constants here */
-	
+
+
+
 	/* Check for errors */
 	if (PyErr_Occurred())
 		Py_FatalError("can't initialize module cStringIO");
