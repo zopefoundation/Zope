@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.7 1997/04/22 00:13:58 jim Exp $"
+"\n$Id: Trie.c,v 1.8 1997/05/08 21:09:49 jim Exp $"
 ;
 
 
@@ -297,6 +297,69 @@ Trie_items(TrieObject *self, PyObject *args)
   return iork(self,0);
 }
 
+static int
+Trie_cclear(TrieObject *self)
+{
+#ifdef PERSISTENT
+  int changed=0;
+
+  if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
+
+  if(self->value)
+    {
+      Py_DECREF(self->value);
+      self->value=NULL;
+
+#ifdef PERSISTENT
+      changed=1;
+#endif
+
+    }
+
+  if(self->bins)
+    {
+      PyObject *bin;
+      int i, s=0;
+
+      for(i=0, s=PyList_SIZE(self->bins); i < s; i++)
+	{
+	  bin=PyList_GET_ITEM(LIST(self->bins), i);
+	  if(bin->ob_type==self->ob_type)
+	    {
+	      if(Trie_cclear((TrieObject*)bin) < 0) return -1;
+	    }
+	  else
+	    {
+	      Py_INCREF(Py_None);
+	      if(PyList_SetItem(self->bins, i, Py_None) < 0) return -1;
+
+#ifdef PERSISTENT
+	      changed=1;
+#endif
+
+	    }
+	}
+    }
+
+#ifdef PERSISTENT
+  if(changed && cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+#endif
+
+  return 0;
+}
+
+static PyObject *
+Trie_clear(TrieObject *self, PyObject *args)
+{
+  PyObject *r;
+
+  UNLESS(PyArg_ParseTuple(args, "")) return NULL;
+  if(Trie_cclear(self) < 0) return NULL;
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static struct PyMethodDef Trie_methods[] = {
   {"__getstate__", 	(PyCFunction)Trie___getstate__,  	METH_VARARGS,
    "__getstate__() -- Get the persistent state of the trie"},
@@ -312,6 +375,8 @@ static struct PyMethodDef Trie_methods[] = {
    "values() -- Get the values of the trie"},
   {"items", 		(PyCFunction)Trie_items,		METH_VARARGS,
    "items() -- Get the items of the trie"},
+  {"clear", 		(PyCFunction)Trie_clear,		METH_VARARGS,
+   "clear() -- Remove the items from the trie"},
   {NULL,		NULL}		/* sentinel */
 };
 
@@ -642,7 +707,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -682,6 +747,9 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.8  1997/05/08 21:09:49  jim
+  Added clear method.
+
   Revision 1.7  1997/04/22 00:13:58  jim
   Changed to use new cPersistent header.
 
