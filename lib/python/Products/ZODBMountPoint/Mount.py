@@ -13,9 +13,11 @@
 ##############################################################################
 """ZODB Mounted database support, simplified for DBTab.
 
-$Id: Mount.py,v 1.4 2004/04/15 16:41:05 jeremy Exp $"""
+$Id: Mount.py,v 1.5 2004/04/20 14:38:52 andreasjung Exp $"""
 
 import sys
+from logging import getLogger
+
 try:
     from cStringIO import StringIO
 except:
@@ -25,11 +27,11 @@ import traceback
 import Persistence, Acquisition
 from Acquisition import aq_base
 from ZODB.POSException import MountedStorageError
-from zLOG import LOG, ERROR, INFO, WARNING
 
 from ZODB.DB import DB
 from ZODB.Connection import Connection
 
+LOG = getLogger('Zope.ZODBMountPoint')
 
 class MountPoint(Persistence.Persistent, Acquisition.Implicit):
     """An object that accesses a different database when traversed.
@@ -128,8 +130,7 @@ class MountPoint(Persistence.Persistent, Acquisition.Implicit):
     def _logConnectException(self):
         """Records info about the exception that just occurred."""
         exc = sys.exc_info()
-        LOG('ZODB', ERROR, 'Failed to mount database. %s (%s)' % exc[:2],
-            error=exc)
+        LOG.error('Failed to mount database. %s (%s)' % exc[:2], exc_info=exc)
         f=StringIO()
         traceback.print_tb(exc[2], 100, f)
         self._v_connect_error = (exc[0], exc[1], f.getvalue())
