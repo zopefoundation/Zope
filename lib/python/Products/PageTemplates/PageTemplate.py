@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -111,6 +111,7 @@ class PageTemplate(Base):
     content_type = 'text/html'
     expand = 1
     _v_errors = ()
+    _v_warnings = ()
     _text = ''
     _error_start = '<!-- Page Template Diagnostics'
 
@@ -162,7 +163,16 @@ class PageTemplate(Base):
         return self.pt_render(extra_context={'options': kwargs})
 
     def pt_errors(self):
-        return self._v_errors
+        err = self._v_errors
+        if err:
+            return err
+        try:
+            self.pt_render(source=1)
+        except:
+            return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
+        
+    def pt_warnings(self):
+        return self._v_warnings
 
     def write(self, text):
         assert type(text) is type('')
@@ -209,6 +219,7 @@ class PageTemplate(Base):
         except:
             self._v_errors = ["Compilation failed",
                               "%s: %s" % sys.exc_info()[:2]]
+        self._v_warnings = parser.getWarnings()
 
     def html(self):
         return self.content_type == 'text/html'

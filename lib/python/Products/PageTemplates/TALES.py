@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -100,24 +100,41 @@ _valid_name = re.compile('%s$' % NAME_RE).match
 
 class TALESError(Exception):
     __allow_access_to_unprotected_subobjects__ = 1
-    def __init__(self, expression, info=(None, None, None)):
+    def __init__(self, expression, info=(None, None, None),
+                 position=(None, None)):
         self.type, self.value, self.traceback = info
         self.expression = expression
+        self.setPosition(position)
+    def setPosition(self, position):
+        self.lineno = position[0]
+        self.offset = position[1]        
     def __str__(self):
-        if self.type is not None:
-            return '%s on %s in "%s"' % (self.type, self.value,
-                                         self.expression)
-        return self.expression
+        if self.type is None:
+            s = self.expression
+        else:
+            s = '%s on %s in %s' % (self.type, self.value,
+                                    `self.expression`)
+        if self.lineno is not None:
+            s = "%s, at line %d" % (s, self.lineno)
+        if self.offset is not None:
+            s = "%s, column %d" % (s, self.offset + 1)
+        return s
     def __nonzero__(self):
         return 0
 
 class Undefined(TALESError):
     '''Exception raised on traversal of an undefined path'''
     def __str__(self):
-        if self.type is not None:
-            return '"%s" not found in "%s"' % (self.value,
-                                               self.expression)
-        return self.expression
+        if self.type is None:
+            s = self.expression
+        else:
+            s = '%s not found in %s' % (self.value,
+                                        `self.expression`)
+        if self.lineno is not None:
+            s = "%s, at line %d" % (s, self.lineno)
+        if self.offset is not None:
+            s = "%s, column %d" % (s, self.offset + 1)
+        return s
 
 class RegistrationError(Exception):
     '''TALES Type Registration Error'''
@@ -221,6 +238,8 @@ class Engine:
                 kwcontexts = contexts
         return Context(self, kwcontexts)
 
+    def getCompilerError(self):
+        return CompilerError
 
 class Context:
     '''Expression Context
@@ -231,6 +250,7 @@ class Context:
 
     _context_class = SafeMapping
     _nocatch = TALESError
+    position = (None, None)
 
     def __init__(self, engine, contexts):
         self._engine = engine
@@ -297,10 +317,14 @@ class Context:
                 if hasattr(v, 'traceback'):
                     raise v, None, v.traceback
                 raise v
+        except TALESError, err:
+            err.setPosition(self.position)
+            raise err, None, sys.exc_info()[2]
         except self._nocatch:
             raise
         except:
-            raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
+            raise TALESError, (`expression`, sys.exc_info(),
+                               self.position), sys.exc_info()[2]
         else:
             return v
 
@@ -329,6 +353,9 @@ class Context:
 
     def getDefault(self):
         return Default
+
+    def setPosition(self, position):
+        self.position = position
 
 class SimpleExpr:
     '''Simple example of an expression type handler'''

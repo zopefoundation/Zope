@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -114,6 +114,7 @@ def installHandlers(engine):
     reg('string', StringExpr)
     reg('python', PythonExpr)
     reg('not', NotExpr)
+    reg('defer', DeferExpr)
 
 if sys.modules.has_key('Zope'):
     import AccessControl
@@ -194,10 +195,14 @@ class PathExpr:
                     ob = econtext.contexts
                 else:
                     ob = vars[base]
+                if isinstance(ob, DeferWrapper):
+                    ob = ob()
                 if path:
                     ob = restrictedTraverse(ob, path, securityManager)
                 exists = 1
                 break
+            except Undefined, e:
+                ob = e
             except (AttributeError, KeyError, TypeError, IndexError,
                     'Unauthorized'), e:
                 ob = Undefined(self._s, sys.exc_info())
@@ -214,10 +219,10 @@ class PathExpr:
         return self._eval(econtext, getSecurityManager())
 
     def __str__(self):
-        return '%s expression "%s"' % (self._name, self._s)
+        return '%s expression %s' % (self._name, `self._s`)
 
     def __repr__(self):
-        return '<PathExpr %s:%s>' % (self._name, self._s)
+        return '%s:%s' % (self._name, `self._s`)
 
             
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/%(n)s)*)}' % {'n': NAME_RE})
@@ -242,8 +247,7 @@ class StringExpr:
                     m = _interp.search(exp)
                 if '$' in exp:
                     raise CompilerError, (
-                        '$ must be doubled or followed by a variable name '
-                        'in string expression "%s"' % expr)
+                        '$ must be doubled or followed by a simple path')
                 parts.append(exp)
             expr = join(parts, '')
         self._expr = expr
@@ -261,7 +265,7 @@ class StringExpr:
         return 'string expression %s' % `self._s`
 
     def __repr__(self):
-        return '<StringExpr %s>' % `self._s`
+        return 'string:%s' % `self._s`
 
 class NotExpr:
     def __init__(self, name, expr, compiler):
@@ -272,7 +276,29 @@ class NotExpr:
         return not econtext.evaluateBoolean(self._c)
 
     def __repr__(self):
-        return '<NotExpr %s>' % `self._s`
+        return 'not:%s' % `self._s`
+
+class DeferWrapper:
+    def __init__(self, expr, econtext):
+        self._expr = expr
+        self._econtext = econtext
+
+    def __str__(self):
+        return str(self())
+
+    def __call__(self):
+        return self._expr(self._econtext)
+
+class DeferExpr:
+    def __init__(self, name, expr, compiler):
+        self._s = expr = lstrip(expr)
+        self._c = compiler.compile(expr)
+        
+    def __call__(self, econtext):
+        return DeferWrapper(self._c, econtext)
+
+    def __repr__(self):
+        return 'defer:%s' % `self._s`
 
 
 def restrictedTraverse(self, path, securityManager,

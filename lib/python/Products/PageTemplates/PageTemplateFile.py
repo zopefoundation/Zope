@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -157,6 +157,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
 
         # Execute the template in a new security context.
         security=getSecurityManager()
+        bound_names['user'] = security.getUser()
         security.addContext(self)
         try:
             return self.pt_render(extra_context=bound_names)

@@ -201,6 +201,7 @@ class TALInterpreter:
         while self.scopeLevel > scopeLevel:
             self.engine.endScope()
             self.scopeLevel = self.scopeLevel - 1
+        self.engine.setPosition(self.position)
 
     def restoreOutputState(self, state):
         (dummy, self.col, self.stream, scopeLevel, level) = state
@@ -279,6 +280,7 @@ class TALInterpreter:
 
     def do_setPosition(self, position):
         self.position = position
+        self.engine.setPosition(position)
     bytecode_handlers["setPosition"] = do_setPosition
 
     def do_startEndTag(self, stuff):

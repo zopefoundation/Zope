@@ -102,6 +102,7 @@ class TALGenerator:
             from DummyEngine import DummyEngine
             expressionCompiler = DummyEngine()
         self.expressionCompiler = expressionCompiler
+        self.CompilerError = expressionCompiler.getCompilerError()
         self.program = []
         self.stack = []
         self.todoStack = []
@@ -229,7 +230,11 @@ class TALGenerator:
         return self.todoStack.pop()
 
     def compileExpression(self, expr):
-        return self.expressionCompiler.compile(expr)
+        try:
+            return self.expressionCompiler.compile(expr)
+        except self.CompilerError, err:
+            raise TALError('%s in expression %s' % (err.args[0], `expr`),
+                           self.position)
 
     def pushProgram(self):
         self.stack.append(self.program)
@@ -284,12 +289,13 @@ class TALGenerator:
     def emitText(self, text):
         self.emitRawText(cgi.escape(text))
 
-    def emitDefines(self, defines, position):
+    def emitDefines(self, defines):
         for part in splitParts(defines):
             m = re.match(
                 r"(?s)\s*(?:(global|local)\s+)?(%s)\s+(.*)\Z" % NAME_RE, part)
             if not m:
-                raise TALError("invalid define syntax: " + `part`, position)
+                raise TALError("invalid define syntax: " + `part`,
+                               self.position)
             scope, name, expr = m.group(1, 2, 3)
             scope = scope or "local"
             cexpr = self.compileExpression(expr)
@@ -298,9 +304,9 @@ class TALGenerator:
             else:
                 self.emit("setGlobal", name, cexpr)
 
-    def emitOnError(self, name, onError, position):
+    def emitOnError(self, name, onError):
         block = self.popProgram()
-        key, expr = parseSubstitution(onError, position)
+        key, expr = parseSubstitution(onError)
         cexpr = self.compileExpression(expr)
         if key == "text":
             self.emit("insertText", cexpr, [])
@@ -316,17 +322,18 @@ class TALGenerator:
         program = self.popProgram()
         self.emit("condition", cexpr, program)
 
-    def emitRepeat(self, arg, position=(None, None)):
+    def emitRepeat(self, arg):
         m = re.match("(?s)\s*(%s)\s+(.*)\Z" % NAME_RE, arg)
         if not m:
-            raise TALError("invalid repeat syntax: " + `arg`, position)
+            raise TALError("invalid repeat syntax: " + `arg`,
+                           self.position)
         name, expr = m.group(1, 2)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         self.emit("loop", name, cexpr, program)
 
-    def emitSubstitution(self, arg, attrDict={}, position=(None, None)):
-        key, expr = parseSubstitution(arg, position)
+    def emitSubstitution(self, arg, attrDict={}):
+        key, expr = parseSubstitution(arg)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         if key == "text":
@@ -335,14 +342,15 @@ class TALGenerator:
             assert key == "structure"
             self.emit("insertStructure", cexpr, attrDict, program)
 
-    def emitDefineMacro(self, macroName, position=(None, None)):
+    def emitDefineMacro(self, macroName):
         program = self.popProgram()
         macroName = string.strip(macroName)
         if self.macros.has_key(macroName):
             raise METALError("duplicate macro definition: %s" % `macroName`,
-                             position)
+                             self.position)
         if not re.match('%s$' % NAME_RE, macroName):
-            raise METALError("invalid macro name: %s" % `macroName`, position)
+            raise METALError("invalid macro name: %s" % `macroName`,
+                             self.position)
         self.macros[macroName] = program
         self.inMacroDef = self.inMacroDef - 1
         self.emit("defineMacro", macroName, program)
@@ -353,21 +361,23 @@ class TALGenerator:
         self.inMacroUse = 0
         self.emit("useMacro", expr, cexpr, self.popSlots(), program)
 
-    def emitDefineSlot(self, slotName, position=(None, None)):
+    def emitDefineSlot(self, slotName):
         program = self.popProgram()
         slotName = string.strip(slotName)
         if not re.match('%s$' % NAME_RE, slotName):
-            raise METALError("invalid slot name: %s" % `slotName`, position)
+            raise METALError("invalid slot name: %s" % `slotName`,
+                             self.position)
         self.emit("defineSlot", slotName, program)
 
-    def emitFillSlot(self, slotName, position=(None, None)):
+    def emitFillSlot(self, slotName):
         program = self.popProgram()
         slotName = string.strip(slotName)
         if self.slots.has_key(slotName):
             raise METALError("duplicate fill-slot name: %s" % `slotName`,
-                             position)
+                             self.position)
         if not re.match('%s$' % NAME_RE, slotName):
-            raise METALError("invalid slot name: %s" % `slotName`, position)
+            raise METALError("invalid slot name: %s" % `slotName`,
+                             self.position)
         self.slots[slotName] = program
         self.inMacroUse = 1
         self.emit("fillSlot", slotName, program)
@@ -443,6 +453,7 @@ class TALGenerator:
                 self.emitEndElement(name, isend)
             return
 
+        self.position = position
         for key, value in taldict.items():
             if key not in KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
@@ -527,7 +538,7 @@ class TALGenerator:
             self.pushProgram() # block
             todo["onError"] = onError
         if define:
-            self.emitDefines(define, position)
+            self.emitDefines(define)
             todo["define"] = define
         if condition:
             self.pushProgram()
@@ -574,7 +585,7 @@ class TALGenerator:
                 self.emitEndTag(name)
             return
 
-        position = todo.get("position", (None, None))
+        self.position = position = todo.get("position", (None, None))
         defineMacro = todo.get("defineMacro")
         useMacro = todo.get("useMacro")
         defineSlot = todo.get("defineSlot")
@@ -600,29 +611,29 @@ class TALGenerator:
                       (what, name, name), position)
 
         if content:
-            self.emitSubstitution(content, {}, position)
+            self.emitSubstitution(content, {})
         if optTag:
             self.emitOptTag(name, optTag, isend)
         elif not isend:
             self.emitEndTag(name)
         if replace:
-            self.emitSubstitution(replace, repldict, position)
+            self.emitSubstitution(replace, repldict)
         if repeat:
-            self.emitRepeat(repeat, position)
+            self.emitRepeat(repeat)
         if condition:
             self.emitCondition(condition)
         if onError:
-            self.emitOnError(name, onError, position)
+            self.emitOnError(name, onError)
         if scope:
             self.emit("endScope")
         if defineSlot:
-            self.emitDefineSlot(defineSlot, position)
+            self.emitDefineSlot(defineSlot)
         if fillSlot:
-            self.emitFillSlot(fillSlot, position)
+            self.emitFillSlot(fillSlot)
         if useMacro:
             self.emitUseMacro(useMacro)
         if defineMacro:
-            self.emitDefineMacro(defineMacro, position)
+            self.emitDefineMacro(defineMacro)
 
 def test():
     t = TALGenerator()

@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -160,7 +160,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
     security.declareProtected('View management screens',
       'pt_editForm', 'manage_main', 'read',
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
-      'document_src')
+      'document_src', 'source.html', 'source.xml')
 
     security.declareProtected('Change Page Templates',
       'pt_editAction', 'pt_setTitle', 'pt_edit',
@@ -310,6 +310,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', self.content_type)
+        if REQUEST.get('raw'):
+            return self._text
         return self.read()
 
     def __setstate__(self, state):

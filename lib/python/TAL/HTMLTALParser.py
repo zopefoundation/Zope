@@ -188,6 +188,9 @@ class HTMLTALParser(HTMLParser):
     def getCode(self):
         return self.gen.getCode()
 
+    def getWarnings(self):
+        return ()
+
     # Overriding HTMLParser methods
 
     def handle_starttag(self, tag, attrs):

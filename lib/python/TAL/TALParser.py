@@ -107,6 +107,9 @@ class TALParser(XMLParser):
     def getCode(self):
         return self.gen.getCode()
 
+    def getWarnings(self):
+        return ()
+
     def StartNamespaceDeclHandler(self, prefix, uri):
         self.nsStack.append(self.nsDict.copy())
         self.nsDict[uri] = prefix

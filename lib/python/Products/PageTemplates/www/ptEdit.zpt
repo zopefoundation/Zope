@@ -2,9 +2,9 @@
 <h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
     tal:replace="structure here/manage_tabs">Tabs</h2>
 
-<form action="" method="post"
-      tal:define="body request/other/text | request/form/text | here/read"
-      tal:attributes="action request/URL1">
+<tal:block define="global body request/other/text | request/form/text
+| here/read" /> 
+<form action="" method="post" tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
@@ -48,6 +48,24 @@
       Expand macros when editing
     </td>
   </tr>
+
+  <tr tal:define="errors here/pt_errors" tal:condition="errors">
+    <tal:block define="global body python:here.document_src({'raw':1})"/>
+    <td align="left" valign="middle" class="form-label">Errors</td>
+    <td align="left" valign="middle" style="background-color: #FFDDDD"
+    colspan="3">
+<pre tal:content="python:modules['string'].join(errors, '\n')">errors</pre>
+    </td>
+  </tr>
+
+  <tr tal:define="warnings here/pt_warnings" tal:condition="warnings">
+    <td align="left" valign="middle" class="form-label">Warnings</td>
+    <td align="left" valign="middle" style="background-color: #FFEEDD"
+     colspan="3">
+<pre tal:content="python:modules['string'].join(warnings, '\n')">errors</pre>
+    </td>
+  </tr>
+
   <tr>
     <td align="left" valign="top" colspan="4">
   <div style="width: 100%;">
