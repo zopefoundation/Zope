@@ -802,6 +802,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def addIndex(self, name, type,extra=None):
 
+
         # Convert the type by finding an appropriate product which supports
         # this interface by that name.  Bleah
 
@@ -823,7 +824,16 @@ class ZCatalog(Folder, Persistent, Implicit):
         if base is None:
             raise ValueError, "Index type %s does not support addIndex" % type
 
-        index = base(name, self)
+        # This code is somewhat lame but every index type has its own function
+        # signature *sigh* and there is no common way to pass additional parameters
+        # to the constructor. The suggested way for new index types is to use
+        # an "extra" record.
+
+        if 'extra' in base.__init__.func_code.co_varnames:
+            index = apply(base,(name,), {"extra":extra})
+        else:
+            index = base(name,self)
+        
 
         self._catalog.addIndex(name,index)
 
