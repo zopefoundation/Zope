@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -151,6 +151,7 @@ class _cache:
            'chile/easterisland':'Chile/EasterIsland',
            'cst':'Us/Central','cuba':'Cuba','est':'US/Eastern','egypt':'Egypt',
            'eastern standard time':'US/Eastern',
+           'us eastern standard time':'US/Eastern',
            'central standard time':'US/Central',
            'mountain standard time':'US/Mountain',
            'pacific standard time':'US/Pacific',
@@ -610,7 +611,8 @@ class DateTime:
 	          'thursday': 5,  'thurs': 5, 'thur': 5, 'thu': 5,
 	          'friday': 6,    'fri': 6,
 	          'saturday': 7,  'sat': 7}
-    _localzone  =_cache._zmap[lower(tzname[0])]
+    try: _localzone  =_cache._zmap[lower(tzname[0])]
+    except: _localzone=''
     _tzinfo     =_cache()
 
     def _parse(self,string):
