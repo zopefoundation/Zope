@@ -83,12 +83,14 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.5 2001/06/11 16:04:21 andreas Exp $'
+__version__ = '$Id: util.py,v 1.6 2001/06/13 14:22:52 shane Exp $'
 
 
 import re
 from types import StringType,ListType,TupleType,DictType,InstanceType
 from DateTime import DateTime
+
+SequenceTypes = (TupleType, ListType)
 
 class parseIndexRequest:
     """
@@ -125,7 +127,7 @@ class parseIndexRequest:
 
     ParserException = 'IndexRequestParseError'
 
-    def __init__(self,request,iid,options=[]): 
+    def __init__(self, request, iid, options=[]):
         """ parse a request  from the ZPublisher and return a uniform
         datastructure back to the _apply_index() method of the index
 
@@ -134,83 +136,78 @@ class parseIndexRequest:
           options -- a list of options the index is interested in 
         """
 
-        self.id         = iid
-        self.keys       = None
+        self.id = iid
 
-        if not request.has_key(iid): return
+        if not request.has_key(iid):
+            self.keys = None
+            return
 
         # We keep this for backward compatility
-        if request.has_key(iid+'_usage'):
-            self.usage = request[iid+'_usage']
+        usage_param = iid + '_usage'
+        if request.has_key(usage_param):
+            self.usage = request[usage_param]
 
-        keys = request[iid]
+        param = request[iid]
+        keys = None
+        t = type(param)
 
-        if type(keys) == InstanceType:
+        if t is InstanceType and not isinstance(param, DateTime):
+            """ query is of type record """
 
-            if isinstance(keys,DateTime):
-                """query is a DateTime instance"""
+            record = param
 
-                self.keys = keys
+            if not hasattr(record, 'query'):
+                raise self.ParserException, (
+                    "record for '%s' *must* contain a "
+                    "'query' attribute" % self.id)
+            keys = record.query
 
-
-            else:
-                """ query is of type record """
-                record = keys
-
-                if hasattr(record,'query'):           
-                    keys = record.query
-                else:
-                    raise self.ParserException,\
-                       "record for '%s' *must* contain a 'query' attribute" % self.id
-                
-                if type(keys)== StringType:
-                    self.keys = [keys.strip()]
-                elif type(keys) == ListType:
-                    self.keys = keys
-    
-                for op in options:
-                    if op in ["query"]: continue 
-    
-                    if hasattr(record,op):
-                        setattr(self,k,getattr(record,k))
-
-
-        elif type(keys)==DictType:
-            """ query is a dictionary containing all parameters """
-    
-            query = keys.get("query",[])
-            if type(query) in [TupleType,ListType]:
-                self.keys = query
-            else:
-                self.keys = [ query ]
-
-            for op in  options:         
-                if op in ["query"]: continue
-
-                if keys.has_key(op):
-                    setattr(self,op,keys[op])
- 
-
-        else:
-            """ query is tuple, list or string """
-
-            if type(keys) in [TupleType,ListType]:
-                self.keys  = keys
-            else:
-                self.keys = [keys]
+            if type(keys) is StringType:
+                keys = [keys.strip()]
 
             for op in options:
-                if request.has_key(iid+"_"+op):
-                    setattr(self,op,request[iid+"_"+op])
+                if op == "query": continue
 
+                if hasattr(record, op):
+                    setattr(self, op, getattr(record, op))
 
-        if self.keys != None:
-            self.keys = filter(lambda x: len(str(x))>0 , self.keys)
+        elif t is DictType:
+            """ query is a dictionary containing all parameters """
+    
+            query = param.get("query", ())
+            if type(query) in SequenceTypes:
+                keys = query
+            else:
+                keys = [ query ]
 
-        if len(self.keys)==0:  self.keys=None
-        
+            for op in options:         
+                if op == "query": continue
 
+                if param.has_key(op):
+                    setattr(self, op, param[op])
  
+        else:
+            """ query is tuple, list, string, number, or something else """
+
+            if t in SequenceTypes:
+                keys = param
+            else:
+                keys = [param]
+
+            for op in options:
+                field = iid + "_" + op
+                if request.has_key(field):
+                    setattr(self, op, request[field])
+
+        if keys is not None:
+            # Filter out empty strings.
+            keys = filter(lambda key: key != '', keys)
+        if not keys:
+            keys = None
+
+        self.keys = keys
+
+
     def get(self,k,default_v=None):
         
         if hasattr(self,k):
