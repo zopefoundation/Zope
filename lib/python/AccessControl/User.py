@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.164 $'[11:-2]
+__version__='$Revision: 1.165 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -493,14 +493,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            if default is _marker: raise
            return default
 
-    def _doAddUser(self, name, password, roles, domains):
+    def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user. This should be implemented by subclasses to
            do the actual adding of a user. The 'password' will be the
            original input password, unencrypted. The implementation of this
            method is responsible for performing any needed encryption."""
         raise NotImplemented
 
-    def _doChangeUser(self, name, password, roles, domains):
+    def _doChangeUser(self, name, password, roles, domains, **kw):
         """Modify an existing user. This should be implemented by subclasses 
            to make the actual changes to a user. The 'password' will be the
            original input password, unencrypted. The implementation of this
@@ -521,21 +521,20 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # Authors of custom user folders don't need to do anything special to
     # support these - they will just call the appropriate '_' methods that
     # user folder subclasses already implement.
-
-    def userFolderAddUser(self, name, password, roles, domains):
+    def userFolderAddUser(self, name, password, roles, domains, **kw):
         """API method for creating a new user object. Note that not all
            user folder implementations support dynamic creation of user
            objects."""
         if hasattr(self, '_doAddUser'):
-            return self._doAddUser(name, password, roles, domains)
+            return self._doAddUser(name, password, roles, domains, **kw)
         raise NotImplemented
 
-    def userFolderEditUser(self, name, password, roles, domains):
+    def userFolderEditUser(self, name, password, roles, domains, **kw):
         """API method for changing user object attributes. Note that not
            all user folder implementations support changing of user object
            attributes."""
         if hasattr(self, '_doChangeUser'):
-            return self._doChangeUser(name, password, roles, domains)
+            return self._doChangeUser(name, password, roles, domains, **kw)
         raise NotImplemented
 
     def userFolderDelUsers(self, names):
@@ -1024,13 +1023,13 @@ class UserFolder(BasicUserFolder):
         """Return the named user object or None"""
         return self.data.get(name, None)
 
-    def _doAddUser(self, name, password, roles, domains):
+    def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user"""
         if password is not None and self.encrypt_passwords:
             password = self._encryptPassword(password)
         self.data[name]=User(name,password,roles,domains)
 
-    def _doChangeUser(self, name, password, roles, domains):
+    def _doChangeUser(self, name, password, roles, domains, **kw):
         user=self.data[name]
         if password is not None:
             if self.encrypt_passwords:
