@@ -2,11 +2,23 @@
 
 """
     Testsuite for testing Catalogs
-    $Id: testCatalog.py,v 1.4 2001/04/05 16:15:36 chrism Exp $
+    $Id: testCatalog.py,v 1.5 2001/04/17 17:08:13 chrism Exp $
     
     Andreas Jung, andreas@digicool.com
     
     $Log: testCatalog.py,v $
+    Revision 1.5  2001/04/17 17:08:13  chrism
+    Merging into trunk.
+
+    Revision 1.1.6.5  2001/04/17 17:01:21  chrism
+    More tests.
+
+    Revision 1.1.6.4.2.1  2001/04/17 06:39:45  chrism
+    added further tests for catalog object in test_suite.
+
+    Revision 1.1.6.4  2001/04/05 16:18:05  chrism
+    Added test for empty mapping returns all.
+
     Revision 1.4  2001/04/05 16:15:36  chrism
     added test for empty mapping returns all.
 
@@ -91,6 +103,7 @@ here = os.getcwd()
 import Zope
 import ZODB, ZODB.FileStorage
 from Products.ZCatalog import Catalog,ZCatalog,Vocabulary
+from Products.ZCatalog.Catalog import CatalogError
 import Persistence
 import ExtensionClass
 from Testing import dispatcher
@@ -121,8 +134,7 @@ updateIterations = 100
 
 # input mailbox file
 mbox   = os.environ.get("TESTCATALOG_MBOX","/usr/home/andreas/zope.mbox")
-mbox2  = "/usr/home/andreas/python.mbox"
-
+mbox2  = os.environ.get("TESTCATALOG_MBOX2", "/usr/home/andreas/python.mbox")
 
 dataDir = ""
 
@@ -720,11 +732,15 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
         self._catalog.delIndex('id')
         assert self._catalog.indexes.has_key('id') != 1, 'del index failed'
 
-class TestSimultaneousAddAndRead(CatalogBase, unittest.TestCase):
-    def checkMultiThread(self):
-        pass
-
 class TestZCatalogObject(unittest.TestCase):
+    def setUp(self):
+        class dummy(ExtensionClass.Base):
+            pass
+        self.dummy = dummy()
+
+    def tearDown(self):
+        self.dummy = None
+
     def checkInstantiateWithoutVocab(self):
         v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
         zc = ZCatalog.ZCatalog('acatalog')
@@ -732,15 +748,19 @@ class TestZCatalogObject(unittest.TestCase):
         assert zc.getVocabulary().__class__ == v.__class__
 
     def checkInstantiateWithGlobbingVocab(self):
+        dummy = self.dummy
         v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-        zc = ZCatalog.ZCatalog('acatalog', vocab_id='vocab')
-        zc._setObject('vocab', v)
+        dummy.v = v
+        zc = ZCatalog.ZCatalog('acatalog', vocab_id='v', container=dummy)
+        zc = zc.__of__(dummy)
         assert zc.getVocabulary() == v
 
     def checkInstantiateWithNormalVocab(self):
+        dummy = self.dummy
         v = Vocabulary.Vocabulary('Vocabulary', 'Vocabulary', globbing=0)
-        zc = ZCatalog.ZCatalog('acatalog', vocab_id='vocab')
-        zc._setObject('vocab', v)
+        dummy.v = v
+        zc = ZCatalog.ZCatalog('acatalog', vocab_id='v', container=dummy)
+        zc = zc.__of__(dummy)
         assert zc.getVocabulary() == v
 
 class TestCatalogObject(unittest.TestCase):
@@ -758,11 +778,12 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.addIndex('att1', 'FieldIndex')
         self._catalog.addIndex('att2', 'TextIndex')
         self._catalog.addIndex('att3', 'KeywordIndex')
+        self._catalog.addIndex('num', 'FieldIndex')
         self._catalog.addColumn('att1') 
         self._catalog.addColumn('att2')
         self._catalog.addColumn('att3')
-
         self._catalog.addColumn('num')
+
         self.upper = 1000
         class dummy(ExtensionClass.Base):
             att1 = 'att1'
@@ -779,6 +800,8 @@ class TestCatalogObject(unittest.TestCase):
 
             def col3(self):
                 return ['col3']
+
+            
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(x), `x`)
         self._catalog.aq_parent = dummy('foo') # fake out acquisition
@@ -854,6 +877,60 @@ class TestCatalogObject(unittest.TestCase):
     def uncatalog(self):
         for x in range(0, self.upper):
             self._catalog.uncatalogObject(`x`)
+
+    def checkGoodSortIndex(self):
+        upper = self.upper
+        a = self._catalog(sort_on='num')
+        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        for x in range(self.upper):
+            assert a[x].num == x, x
+            
+    def checkBadSortIndex(self):
+        self.assertRaises(CatalogError, self.badsortindex)
+
+    def badsortindex(self):
+        a = self._catalog(sort_on='foofaraw')
+
+    def checkWrongKindOfIndexForSort(self):
+        self.assertRaises(CatalogError, self.wrongsortindex)
+
+    def wrongsortindex(self):
+        a = self._catalog(sort_on='att2')
+
+    def checkTextIndexQWithSortOn(self):
+        upper = self.upper
+        a = self._catalog(sort_on='num', att2='att2')
+        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        for x in range(self.upper):
+            assert a[x].num == x, x
+
+    def checkTextIndexQWithoutSortOn(self):
+        upper = self.upper
+        a = self._catalog(att2='att2')
+        assert len(a) == upper, 'length should be %s, its %s'%(upper, len(a))
+        for x in range(self.upper):
+            assert a[x].data_record_score_ == 1, a[x].data_record_score_
+
+    def checkKeywordIndexWithMinRange(self):
+        a = self._catalog(att3='att', att3_usage='range:min')
+        assert len(a) == self.upper
+
+    def checkKeywordIndexWithMaxRange(self):
+        a = self._catalog(att3='att35', att3_usage='range:max')
+        assert len(a) == self.upper
+
+    def checkKeywordIndexWithMinMaxRangeCorrectSyntax(self):
+        a = self._catalog(att3=['att', 'att35'], att3_usage='range:min:max')
+        assert len(a) == self.upper
+
+    def checkKeywordIndexWithMinMaxRangeWrongSyntax(self):
+        "checkKeywordIndex with min/max range wrong syntax - known to fail"
+        a = self._catalog(att3=['att'], att3_usage='range:min:max')
+        assert len(a) == self.upper
+
+    def checkCombinedTextandKeywordQuery(self):
+        a = self._catalog(att3='att3', att2='att2')
+        assert len(a) == self.upper
 
 class objRS(ExtensionClass.Base):
 
@@ -997,7 +1074,7 @@ def get_tests(what):
 
     if what=='basic':    
         ts = unittest.TestSuite(ts_cm)
-        for x in t_aj: ts.addTest(x)
+#        for x in t_aj: ts.addTest(x)
         return ts
 
     else:

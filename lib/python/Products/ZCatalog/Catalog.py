@@ -545,7 +545,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     for name in u:
                         used[name]=1
                     w, rs = weightedIntersection(rs, r)
-
+                        
         #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
             # return everything
@@ -635,17 +635,25 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # Compute "sort_index", which is a sort index, or none:
         if kw.has_key('sort-on'):
             sort_index=kw['sort-on']
+            del kw['sort-on']
         elif hasattr(self, 'sort-on'):
             sort_index=getattr(self, 'sort-on')
         elif kw.has_key('sort_on'):
             sort_index=kw['sort_on']
+            del kw['sort_on']
         else: sort_index=None
         sort_order=''
-        if sort_index is not None and self.indexes.has_key(sort_index):
-            sort_index=self.indexes[sort_index]
-            if not hasattr(sort_index, 'keyForDocument'):
-                raise CatalogError('Invalid sort index')
-
+        if sort_index is not None:
+            if self.indexes.has_key(sort_index):
+                sort_index=self.indexes[sort_index]
+                if not hasattr(sort_index, 'keyForDocument'):
+                    raise CatalogError(
+                        'The index chosen for sort_on is not capable of being'
+                        ' used as a sort index.'
+                        )
+            else:
+                raise CatalogError, ('Unknown sort_on index %s' % sort_index)
+        
         # Perform searches with indexes and sort_index
         r=[]
         used=self._indexedSearch(kw, sort_index, r.append, used)

@@ -85,18 +85,17 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
 import BTree
 import IOBTree
-import operator
-import string, pdb
+import string
 from zLOG import LOG, ERROR
-from types import *
+from types import StringType, ListType, IntType, TupleType
 
-from BTrees.OOBTree import OOBTree
+from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IITreeSet, IISet, union
 import BTrees.Length
@@ -104,15 +103,6 @@ import BTrees.Length
 import sys
 
 _marker = []
-
-def nonEmpty(s):
-    "returns true if a non-empty string or any other (nonstring) type"
-    if type(s) is StringType:
-        if s: return 1
-        else: return 0
-    else:
-        return 1
-
 
 class UnIndex(Persistent, Implicit):
     """UnIndex object interface"""
@@ -131,6 +121,10 @@ class UnIndex(Persistent, Implicit):
 
         self._index = {datum:[documentId1, documentId2]}
         self._unindex = {documentId:datum}
+
+        If any item in self._index has a length-one value, the value is an
+        integer, and not a set.  There are special cases in the code to deal
+        with this.
 
         The arguments are:
 
@@ -207,8 +201,12 @@ class UnIndex(Persistent, Implicit):
         elements found at each point in the index."""
 
         histogram = {}
-        for (key, value) in self._index.items():
-            entry = len(value)
+        for item in self._index.items():
+            if type(item) is IntType:
+                entry = 1 # "set" length is 1
+            else:
+                key, value = item
+                entry = len(value)
             histogram[entry] = histogram.get(entry, 0) + 1
 
         return histogram
@@ -329,28 +327,45 @@ class UnIndex(Persistent, Implicit):
                 ' with id %s' % documentId)
 
     def _apply_index(self, request, cid='', type=type, None=None): 
-        """Apply the index to query parameters given in the argument,
-        request
+        """Apply the index to query parameters given in the request arg.
 
-        The argument should be a mapping object.
+        The request argument should be a mapping object.
 
-        If the request does not contain the needed parameters, then
-        None is returned.
+        If the request does not have a key which matches the "id" of
+        the index instance, then None is returned.
+
+        If the request *does* have a key which matches the "id" of
+        the index instance, one of a few things can happen:
+
+          - if the value is a blank string, None is returned (in
+            order to support requests from web forms where
+            you can't tell a blank string from empty).
+
+          - if the value is a nonblank string, turn the value into
+            a single-element sequence, and proceed.
+
+          - if the value is a sequence, return a union search.
 
         If the request contains a parameter with the name of the
         column + '_usage', it is sniffed for information on how to
         handle applying the index.
 
-        Otherwise two objects are returned.  The first object is a
+        If None is not returned as a result of the abovementioned
+        constraints, two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
         records.  The second object is a tuple containing the names of
         all data fields used.
+
+        FAQ answer:  to search a Field Index for documents that
+        have a blank string as their value, wrap the request value
+        up in a tuple ala: request = {'id':('',)}
 
         """
         id = self.id              #name of the column
 
         cidid = "%s/%s" % (cid,id)
 
+        # i have no f'ing clue what this cdid stuff is for - chrism
         if request.has_key(cidid):
             keys = request[cidid]
         elif request.has_key(id):
@@ -359,60 +374,47 @@ class UnIndex(Persistent, Implicit):
             return None
 
         if type(keys) not in (ListType, TupleType):
-            keys = [keys]
+            if keys == '':
+                return None
+            else:
+                keys = [keys]
 
         index = self._index
         r = None
-        anyTrue = 0
         opr = None
-        IntType=type(1)
 
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
             opr=string.split(string.lower(request[id+"_usage"]),':')
             opr, opr_args=opr[0], opr[1:]
 
-        if opr=="range":
+        if opr=="range":   # range search
             if 'min' in opr_args: lo = min(keys)
             else: lo = None
             if 'max' in opr_args: hi = max(keys)
             else: hi = None
-
-            anyTrue=1
-            try:
-                if hi:
-                    setlist = index.items(lo,hi)
-                else:
-                    setlist = index.items(lo)
-
-                for k, set in setlist:
-                    r = union(r, set)
-
-            except KeyError:
-                pass
-
-        else:           #not a range
-            get = index.get
-            for key in keys:
-                if nonEmpty(key):
-                    anyTrue = 1
-                set=get(key, None)
-                if set is not None:
-                    r = union(r, set)
-
-        if type(r) is IntType: r=IISet((r,))
-        if r:
-            return r, (id,)
-
-                
-        if r is None:
-            if anyTrue:
-                r=IISet()
+            if hi:
+                setlist = index.items(lo,hi)
             else:
-                return None
+                setlist = index.items(lo)
 
-        return r, (id,)
+            for k, set in setlist:
+                if type(set) is IntType:
+                    set = IISet((set,))
+                r = union(r, set)
+        else: # not a range search
+            for key in keys:
+                set=index.get(key, None)
+                if set is not None:
+                    if type(set) is IntType:
+                        set = IISet((set,))
+                    r = union(r, set)
 
+        if type(r) is IntType:  r=IISet((r,))
+        if r is None:
+            return IISet(), (id,)
+        else:
+            return r, (id,)
 
     def hasUniqueValuesFor(self, name):
         ' has unique values for column NAME '
@@ -434,18 +436,27 @@ class UnIndex(Persistent, Implicit):
         elif name != self.id:
             return []
 
-        if not withLengths: return tuple(
-            filter(nonEmpty, self._index.keys())
-            )
+        if not withLengths:
+            return tuple(self._index.keys())
         else: 
             rl=[]
             for i in self._index.keys():
-                if not nonEmpty(i): continue
-                else: rl.append((i, len(self._index[i])))
+                set = self._index[i]
+                if type(set) is IntType:
+                    l = 1
+                else:
+                    l = len(set)
+                rl.append((i, l))
             return tuple(rl)
 
     def keyForDocument(self, id):
         return self._unindex[id]
 
-    def items(self): return self._index.items()
+    def items(self):
+        items = []
+        for k,v in self._index.items():
+            if type(v) is IntType:
+                v = IISet((v,))
+            items.append((k, v))
+        return items
 
