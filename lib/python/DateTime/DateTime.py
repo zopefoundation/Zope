@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -1215,7 +1215,14 @@ class DateTime:
 
     def __cmp__(self,obj):
 	"""Compare a DateTime with another DateTime object, or
-           a float such as those returned by time.time()."""
+           a float such as those returned by time.time().
+
+           NOTE: __cmp__ support is provided for backward 
+           compatibility only, and mixing DateTimes with
+           ExtensionClasses could cause __cmp__ to break.
+           You should use the methods lessThan, greaterThan,
+           lessThanEqualTo, greaterThanEqualTo, equalTo and
+           notEqualTo to avoid potential problems later!!"""
 	try:                   return cmp(self._d,obj._d)
 	except AttributeError: return cmp(self._t,obj)
 

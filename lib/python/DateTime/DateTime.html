@@ -224,24 +224,139 @@
 
 <dl><dt><p><strong>Instance Methods For DateTime</strong></p><dd>
 
+<dl><dt><strong>aMonth()</strong><dd>
+<p>Return the abreviated month name.</p>
+
+
+</dl>
+<dl><dt><strong>pCommon()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar. 1, 1997 1:45 pm</p>
+
+
+</dl>
+<dl><dt><strong>minute()</strong><dd>
+<p>Return the minute</p>
+
+
+</dl>
+<dl><dt><strong>isLeapYear()</strong><dd>
+<p>Return true if the current year (in the context of the object's
+           timezone) is a leap year</p>
+
+
+</dl>
+<dl><dt><strong>pMonth()</strong><dd>
+<p>Return the abreviated (with period) month name.</p>
+
+
+</dl>
+<dl><dt><strong>DayOfWeek()</strong><dd>
+<p>Compatibility: see Day</p>
+
+
+</dl>
+<dl><dt><strong>Day_()</strong><dd>
+<p>Compatibility: see pDay</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentDay()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current day, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>Mon()</strong><dd>
+<p>Compatibility: see aMonth</p>
+
+
+</dl>
+<dl><dt><strong>hour()</strong><dd>
+<p>Return the 24-hour clock representation of the hour</p>
+
+
+</dl>
+<dl><dt><strong>Date()</strong><dd>
+<p>Return the date string for the object.</p>
+
+
+</dl>
+<dl><dt><strong>aCommonZ()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: Mar 1, 1997 1:45 pm US/Eastern</p>
+
+
+</dl>
+<dl><dt><strong>fCommonZ()</strong><dd>
+<p>Return a string representing the object's value
+           in the format: March 1, 1997 1:45 pm US/Eastern</p>
+
+
+</dl>
+<dl><dt><strong>isCurrentYear()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current year, in the context
+           of this object's timezone representation</p>
+
+
+</dl>
+<dl><dt><strong>AMPMMinutes()</strong><dd>
+<p>Return the time string for an object not showing seconds.</p>
+
+
+</dl>
+<dl><dt><strong>dd()</strong><dd>
+<p>Return day as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>TimeMinutes()</strong><dd>
+<p>Return the time string for an object not showing seconds.</p>
+
+
+</dl>
+<dl><dt><strong>h_24()</strong><dd>
+<p>Return the 24-hour clock representation of the hour</p>
+
+
+</dl>
+<dl><dt><strong>isPast()</strong><dd>
+<p>Return true if this object represents a date/time
+           earlier than the time of the call</p>
+
+
+</dl>
+<dl><dt><strong>dow()</strong><dd>
+<p>Return the integer day of the week, where sunday is 0</p>
+
+
+</dl>
+<dl><dt><strong>isFuture()</strong><dd>
+<p>Return true if this object represents a date/time
+           later than the time of the call</p>
+
+
+</dl>
 <dl><dt><strong>pCommonZ()</strong><dd>
 <p>Return a string representing the object's value
            in the format: Mar. 1, 1997 1:45 pm US/Eastern</p>
 
 
 </dl>
-<dl><dt><strong>mm()</strong><dd>
-<p>Return month as a 2 digit string</p>
+<dl><dt><strong>timezone()</strong><dd>
+<p>Return the timezone in which the object is represented.</p>
 
 
 </dl>
-<dl><dt><strong>pDay()</strong><dd>
-<p>Return the abreviated (with period) name of the day of the week</p>
+<dl><dt><strong>h_12()</strong><dd>
+<p>Return the 12-hour clock representation of the hour</p>
 
 
 </dl>
-<dl><dt><strong>year()</strong><dd>
-<p>Return the calendar year of the object</p>
+<dl><dt><strong>PreciseTime()</strong><dd>
+<p>Return the time string for the object.</p>
 
 
 </dl>
@@ -252,8 +367,82 @@
 
 
 </dl>
-<dl><dt><strong>AMPMMinutes()</strong><dd>
-<p>Return the time string for an object not showing seconds.</p>
+<dl><dt><strong>rfc822()</strong><dd>
+<p>Return the date in RFC 822 format</p>
+
+
+</dl>
+<dl><dt><strong>equalTo(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time equal to the specified DateTime
+           or time module style time.</p>
+
+
+</dl>
+<dl><dt><strong>yy()</strong><dd>
+<p>Return calendar year as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>mm()</strong><dd>
+<p>Return month as a 2 digit string</p>
+
+
+</dl>
+<dl><dt><strong>Mon_()</strong><dd>
+<p>Compatibility: see pMonth</p>
+
+
+</dl>
+<dl><dt><strong>toZone(z)</strong><dd>
+<p>Return a DateTime with the value as the current
+           object, represented in the indicated timezone.</p>
+
+
+</dl>
+<dl><dt><strong>earliestTime()</strong><dd>
+<p>Return a new DateTime object that represents the earliest
+           possible time (in whole seconds) that still falls within
+           the current object's day, in the object's timezone context</p>
+
+
+</dl>
+<dl><dt><strong>aDay()</strong><dd>
+<p>Return the abreviated name of the day of the week</p>
+
+
+</dl>
+<dl><dt><strong>dayOfYear()</strong><dd>
+<p>Return the day of the year, in context of
+           the timezone representation of the object</p>
+
+
+</dl>
+<dl><dt><strong>latestTime()</strong><dd>
+<p>Return a new DateTime object that represents the latest
+           possible time (in whole seconds) that still falls within
+           the current object's day, in the object's timezone context</p>
+
+
+</dl>
+<dl><dt><strong>notEqualTo(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time not equal to the specified DateTime
+           or time module style time.</p>
+
+
+</dl>
+<dl><dt><strong>PreciseAMPM()</strong><dd>
+<p>Return the time string for the object.</p>
+
+
+</dl>
+<dl><dt><strong>day()</strong><dd>
+<p>Return the integer day</p>
 
 
 </dl>
@@ -269,41 +458,17 @@
 
 
 </dl>
-<dl><dt><strong>isCurrentMonth()</strong><dd>
-<p>Return true if this object represents a date/time
-           that falls within the current month, in the context
-           of this object's timezone representation</p>
+<dl><dt><strong>ampm()</strong><dd>
+<p>Return the appropriate time modifier (am or pm)</p>
 
 
 </dl>
-<dl><dt><strong>DayOfWeek()</strong><dd>
-<p>Compatibility: see Day</p>
-
-
-</dl>
-<dl><dt><strong>isFuture()</strong><dd>
-<p>Return true if this object represents a date/time
-           later than the time of the call</p>
-
-
-</dl>
-<dl><dt><strong>dow_1()</strong><dd>
-<p>Return the integer day of the week, where sunday is 1</p>
-
-
-</dl>
-<dl><dt><strong>aDay()</strong><dd>
-<p>Return the abreviated name of the day of the week</p>
-
-
-</dl>
-<dl><dt><strong>dow()</strong><dd>
-<p>Return the integer day of the week, where sunday is 0</p>
-
-
-</dl>
-<dl><dt><strong>Time()</strong><dd>
-<p>Return the time string for an object to the nearest second.</p>
+<dl><dt><strong>greaterThan(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time greater than the specified DateTime
+           or time module style time.</p>
 
 
 </dl>
@@ -312,109 +477,8 @@
 
 
 </dl>
-<dl><dt><strong>Date()</strong><dd>
-<p>Return the date string for the object.</p>
-
-
-</dl>
-<dl><dt><strong>h_12()</strong><dd>
-<p>Return the 12-hour clock representation of the hour</p>
-
-
-</dl>
-<dl><dt><strong>greaterThan(t)</strong><dd>
-<p>Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time greater
-           than the specified time module style time.</p>
-
-
-</dl>
-<dl><dt><strong>aCommonZ()</strong><dd>
-<p>Return a string representing the object's value
-           in the format: Mar 1, 1997 1:45 pm US/Eastern</p>
-
-
-</dl>
-<dl><dt><strong>dd()</strong><dd>
-<p>Return day as a 2 digit string</p>
-
-
-</dl>
 <dl><dt><strong>AMPM()</strong><dd>
 <p>Return the time string for an object to the nearest second.</p>
-
-
-</dl>
-<dl><dt><strong>latestTime()</strong><dd>
-<p>Return a new DateTime object that represents the latest
-           possible time (in whole seconds) that still falls within
-           the current object's day, in the object's timezone context</p>
-
-
-</dl>
-<dl><dt><strong>fCommonZ()</strong><dd>
-<p>Return a string representing the object's value
-           in the format: March 1, 1997 1:45 pm US/Eastern</p>
-
-
-</dl>
-<dl><dt><strong>isCurrentDay()</strong><dd>
-<p>Return true if this object represents a date/time
-           that falls within the current day, in the context
-           of this object's timezone representation</p>
-
-
-</dl>
-<dl><dt><strong>ampm()</strong><dd>
-<p>Return the appropriate time modifier (am or pm)</p>
-
-
-</dl>
-<dl><dt><strong>isCurrentYear()</strong><dd>
-<p>Return true if this object represents a date/time
-           that falls within the current year, in the context
-           of this object's timezone representation</p>
-
-
-</dl>
-<dl><dt><strong>h_24()</strong><dd>
-<p>Return the 24-hour clock representation of the hour</p>
-
-
-</dl>
-<dl><dt><strong>aMonth()</strong><dd>
-<p>Return the abreviated month name.</p>
-
-
-</dl>
-<dl><dt><strong>toZone(z)</strong><dd>
-<p>Return a DateTime with the value as the current
-           object, represented in the indicated timezone.</p>
-
-
-</dl>
-<dl><dt><strong>Day_()</strong><dd>
-<p>Compatibility: see pDay</p>
-
-
-</dl>
-<dl><dt><strong>isPast()</strong><dd>
-<p>Return true if this object represents a date/time
-           earlier than the time of the call</p>
-
-
-</dl>
-<dl><dt><strong>lessThan(t)</strong><dd>
-<p>Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time less
-           than the specified time module style time.</p>
-
-
-</dl>
-<dl><dt><strong>Day()</strong><dd>
-<p>Return the full name of the day of the week</p>
 
 
 </dl>
@@ -423,37 +487,27 @@
 
 
 </dl>
-<dl><dt><strong>equalTo(t)</strong><dd>
-<p>Compare this DateTime object to a floating point number
-           such as that which is returned by the python time module.
-           Return true if the object represents a date/time equal
-           to the specified time module style time.</p>
+<dl><dt><strong>parts()</strong><dd>
+<p>Return a tuple containing the calendar year, month,
+           day, hour, minute second and timezone of the object</p>
 
 
 </dl>
-<dl><dt><strong>hour()</strong><dd>
-<p>Return the 24-hour clock representation of the hour</p>
+<dl><dt><strong>greaterThanEqualTo(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time greater than or equal to the 
+           specified DateTime or time module style time.</p>
 
 
 </dl>
-<dl><dt><strong>yy()</strong><dd>
-<p>Return calendar year as a 2 digit string</p>
-
-
-</dl>
-<dl><dt><strong>aCommon()</strong><dd>
-<p>Return a string representing the object's value
-           in the format: Mar 1, 1997 1:45 pm</p>
-
-
-</dl>
-<dl><dt><strong>TimeMinutes()</strong><dd>
-<p>Return the time string for an object not showing seconds.</p>
-
-
-</dl>
-<dl><dt><strong>Month()</strong><dd>
-<p>Return the full month name</p>
+<dl><dt><strong>lessThanEqualTo(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time less than or equal to the specified 
+           DateTime or time module style time.</p>
 
 
 </dl>
@@ -464,30 +518,19 @@
 
 
 </dl>
-<dl><dt><strong>pMonth()</strong><dd>
-<p>Return the abreviated (with period) month name.</p>
-
-
-</dl>
-<dl><dt><strong>day()</strong><dd>
-<p>Return the integer day</p>
-
-
-</dl>
-<dl><dt><strong>pCommon()</strong><dd>
+<dl><dt><strong>aCommon()</strong><dd>
 <p>Return a string representing the object's value
-           in the format: Mar. 1, 1997 1:45 pm</p>
+           in the format: Mar 1, 1997 1:45 pm</p>
 
 
 </dl>
-<dl><dt><strong>rfc822()</strong><dd>
-<p>Return the date in RFC 822 format</p>
+<dl><dt><strong>dow_1()</strong><dd>
+<p>Return the integer day of the week, where sunday is 1</p>
 
 
 </dl>
-<dl><dt><strong>parts()</strong><dd>
-<p>Return a tuple containing the calendar year, month,
-           day, hour, minute second and timezone of the object</p>
+<dl><dt><strong>Day()</strong><dd>
+<p>Return the full name of the day of the week</p>
 
 
 </dl>
@@ -497,52 +540,39 @@
 
 
 </dl>
-<dl><dt><strong>Mon()</strong><dd>
-<p>Compatibility: see aMonth</p>
+<dl><dt><strong>Month()</strong><dd>
+<p>Return the full month name</p>
 
 
 </dl>
-<dl><dt><strong>timezone()</strong><dd>
-<p>Return the timezone in which the object is represented.</p>
+<dl><dt><strong>isCurrentMonth()</strong><dd>
+<p>Return true if this object represents a date/time
+           that falls within the current month, in the context
+           of this object's timezone representation</p>
 
 
 </dl>
-<dl><dt><strong>PreciseTime()</strong><dd>
-<p>Return the time string for the object.</p>
+<dl><dt><strong>year()</strong><dd>
+<p>Return the calendar year of the object</p>
 
 
 </dl>
-<dl><dt><strong>PreciseAMPM()</strong><dd>
-<p>Return the time string for the object.</p>
+<dl><dt><strong>lessThan(t)</strong><dd>
+<p>Compare this DateTime object to another DateTime object
+           OR a floating point number such as that which is returned 
+           by the python time module. Returns true if the object 
+           represents a date/time less than the specified DateTime
+           or time module style time.</p>
 
 
 </dl>
-<dl><dt><strong>Mon_()</strong><dd>
-<p>Compatibility: see pMonth</p>
+<dl><dt><strong>Time()</strong><dd>
+<p>Return the time string for an object to the nearest second.</p>
 
 
 </dl>
-<dl><dt><strong>minute()</strong><dd>
-<p>Return the minute</p>
-
-
-</dl>
-<dl><dt><strong>dayOfYear()</strong><dd>
-<p>Return the day of the year, in context of
-           the timezone representation of the object</p>
-
-
-</dl>
-<dl><dt><strong>earliestTime()</strong><dd>
-<p>Return a new DateTime object that represents the earliest
-           possible time (in whole seconds) that still falls within
-           the current object's day, in the object's timezone context</p>
-
-
-</dl>
-<dl><dt><strong>isLeapYear()</strong><dd>
-<p>Return true if the current year (in the context of the object's
-           timezone) is a leap year</p>
+<dl><dt><strong>pDay()</strong><dd>
+<p>Return the abreviated (with period) name of the day of the week</p>
 
 
 </dl>
@@ -562,11 +592,15 @@
 
 </dl>
 <dl><dt><strong>cmp(aDateTime, other)</strong><dd>
-<p>Compare a DateTime with another object. Note that the
-           value of a DateTime when doing comparisons is the 
-           number of days since 1901, in gmt. To compare a DateTime
-           with floats such as those used by the time module, use
-           the greaterThan, equalTo and lessThan methods.</p>
+<p>Compare a DateTime with another DateTime object, or
+           a float such as those returned by time.time().</p>
+<p>           NOTE: __cmp__ support is provided for backward 
+           compatibility only, and mixing DateTimes with
+           ExtensionClasses could cause __cmp__ to break.
+           You should use the methods lessThan, greaterThan,
+           lessThanEqualTo, greaterThanEqualTo, equalTo and
+           notEqualTo to avoid potential problems later!!</p>
+
 
 
 </dl>
@@ -617,5 +651,5 @@
 
 
 
-<hr>Last Modified: 13 March 1997
+<hr>Last Modified: 14 March 1997
 </body></html>
