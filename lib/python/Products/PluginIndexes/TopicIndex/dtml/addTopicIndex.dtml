@@ -7,9 +7,9 @@
 <p class="form-help">
 A <em>TopicIndex</em> is a container for so-called <em>FilteredSets</em>
 that consist of an expression and a set of internal ZCatalog document
-identifiers that fulfill this expession. <em>TopicIndexes</em> are
-usefull for performance reasons when search queries take too long
-and pre-calculated resultsets offer a better performance.
+identifiers that fulfill this expression. <em>TopicIndexes</em> are
+useful for performance reasons when search queries take too long
+and pre-calculated result sets offer a better performance.
 </p>
 
 
