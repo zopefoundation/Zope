@@ -30,7 +30,7 @@ sqlgroup: Formats complex SQL expressions
 
   Examples
 
-    Sample usage
+    Sample usage::
 
       select * from employees 
       <dtml-sqlgroup where>

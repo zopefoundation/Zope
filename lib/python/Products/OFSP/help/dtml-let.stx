@@ -4,8 +4,10 @@ let: Defines DTML variables
 
   Syntax
 
-    <dtml-let [Name=Variable][Name="Expression"]...>
-    </dtml-let>
+    'let' tag syntax::
+
+      <dtml-let [Name=Variable][Name="Expression"]...>
+      </dtml-let>
 
     The 'let' tag is a block tag. Variables are defined by tag
     arguments. Defined variables are pushed onto the DTML namespace

@@ -5,8 +5,10 @@ with: Controls DTML variable look up
 
   Syntax
 
-    <dtml-with Variable|expr="Expression">
-    </dtml-with>
+    'with' tag syntax::
+
+      <dtml-with Variable|expr="Expression">
+      </dtml-with>
 
     The 'with' tag is a block tag. It pushes the named variable or
     variable expression onto the DTML namespace for the duration of
