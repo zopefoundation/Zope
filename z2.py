@@ -538,15 +538,8 @@ if LOCALE_ID is not None:
 
 # Import ZServer before we open the database or get at interesting
 # application code so that ZServer's asyncore gets to be the
-# official one. Also gets SOFTWARE_HOME and INSTANCE_HOME
+# official one. Also gets SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME
 import ZServer
-
-# CLIENT_HOME allows ZEO clients to easily keep distinct pid and
-# log files. This is currently an *experimental* feature, as I expect
-# that increasing ZEO deployment will cause bigger changes to the
-# way that z2.py works fairly soon.
-try:    CLIENT_HOME = os.environ['CLIENT_HOME']
-except: CLIENT_HOME = os.path.join(INSTANCE_HOME, 'var')
 
 if Zpid and not READ_ONLY:
     import zdaemon, App.FindHomes, posix
