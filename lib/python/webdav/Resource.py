@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -294,8 +294,13 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                       'condition was passed in.'
         # Either we're not locked, or a succesful lock token was submitted
         # so we can delete the lock now.
-        self.aq_parent._delObject(name)
-        RESPONSE.setStatus(204)
+        # ajung: Fix for Collector # 2196
+
+        if parent.manage_delObjects([name],REQUEST=None)  is None:
+            RESPONSE.setStatus(204)
+        else:
+            RESPONSE.setStatus(403)
+
         return RESPONSE
 
     def PROPFIND(self, REQUEST, RESPONSE):

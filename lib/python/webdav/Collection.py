@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, os, string, Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
@@ -154,10 +154,10 @@ class Collection(Resource):
         user = getSecurityManager().getUser()
         token = None
 
-        if re.match("/Control_Panel",REQUEST['PATH_INFO']):
-            RESPONSE.setStatus(403)
-            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
-            return RESPONSE
+#        if re.match("/Control_Panel",REQUEST['PATH_INFO']):
+#            RESPONSE.setStatus(403)
+#            RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+#            return RESPONSE
 
         # Level 1 of lock checking (is the collection or its parent locked?)
         if Lockable.wl_isLocked(self):
@@ -190,8 +190,13 @@ class Collection(Resource):
             RESPONSE.setBody(result)
         else:
             # There were no conflicts, so we can go ahead and delete
-            self.aq_parent._delObject(name)
-            RESPONSE.setStatus(204)
+            # ajung: additional check if we really could delete the collection
+            # (Collector #2196) 
+            if parent.manage_delObjects([name],REQUEST=None)  is None:
+                RESPONSE.setStatus(204)
+            else:
+                RESPONSE.setStatus(403)
+            
         return RESPONSE
 
 
