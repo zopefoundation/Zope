@@ -9,7 +9,8 @@ MODULES = ('commitlog', 'create', 'virgin', 'zodb_simple', 'storage_api')
 
 def suite():
     alltests = unittest.TestSuite()
-    for mod in [__import__('test_'+mod) for mod in MODULES]:
+    for modname in MODULES:
+        mod = __import__('test_'+modname)
         alltests.addTest(mod.suite())
     return alltests
 
