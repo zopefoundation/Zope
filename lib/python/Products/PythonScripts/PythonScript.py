@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -102,10 +102,13 @@ from Bindings import Bindings, defaultBindings
 from Script import Script
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
+from OFS.Cache import Cacheable
 from zLOG import LOG, ERROR, INFO
 
 _www = os.path.join(package_home(globals()), 'www')
 manage_addPythonScriptForm=HTMLFile('pyScriptAdd', _www)
+
+_marker = []  # Create a new marker object
 
 def manage_addPythonScript(self, id, REQUEST=None):
     """Add a Python script to a folder.
@@ -123,7 +126,7 @@ def manage_addPythonScript(self, id, REQUEST=None):
     return ''
 
 
-class PythonScript(Script, Historical):
+class PythonScript(Script, Historical, Cacheable):
     """Web-callable scripts written in a safe subset of Python.
 
     The function may include standard python code, so long as it does
@@ -141,7 +144,8 @@ class PythonScript(Script, Historical):
         ) + Bindings.manage_options + (
         {'label':'Try It', 'action':'ZScriptHTML_tryForm'},
         {'label':'Proxy', 'action':'manage_proxyForm'},
-        ) + Historical.manage_options + SimpleItem.manage_options 
+        ) + Historical.manage_options + SimpleItem.manage_options + \
+        Cacheable.manage_options
 
     __ac_permissions__ = (
         ('View management screens',
@@ -180,9 +184,11 @@ class PythonScript(Script, Historical):
 
     def ZPythonScript_setTitle(self, title):
         self.title = str(title)
+        self.ZCacheable_invalidate()
 
     def ZPythonScript_edit(self, params, body):
         self._validateProxy()
+        self.ZCacheable_invalidate()
         if type(body) is not type(''):
             body = body.read()
         if self._params <> params or self._body <> body:
@@ -274,6 +280,7 @@ class PythonScript(Script, Historical):
                             __builtins__=safebin)
 
     def _editedBindings(self):
+        self.ZCacheable_invalidate()
         f = getattr(self, '_v_f', None)
         if f is None:
             return
@@ -284,6 +291,26 @@ class PythonScript(Script, Historical):
 
         Calling a Python Script is an actual function invocation.
         """
+        # Retrieve the value from the cache.
+        keyset = None
+        if self.ZCacheable_isCachingEnabled():
+            # Prepare a cache key.
+            keyset = kw.copy()
+            asgns = self.getBindingAssignments()
+            name_context = asgns.getAssignedName('name_context', None)
+            if name_context:
+                keyset[name_context] = self.aq_parent.getPhysicalPath()
+            name_subpath = asgns.getAssignedName('name_subpath', None)
+            if name_subpath:
+                keyset[name_subpath] = self._getTraverseSubpath()
+            # Note: perhaps we should cache based on name_ns also.
+            keyset['*'] = args
+            result = self.ZCacheable_get(keywords=keyset, default=_marker)
+            if result is not _marker:
+                # Got a cached value.
+                return result
+
+        # Prepare the function.
         f = getattr(self, '_v_f', None)
         if f is None:
             f = self._makeFunction()
@@ -294,10 +321,15 @@ class PythonScript(Script, Historical):
             # Updating func_globals directly *should* be thread-safe.
             f.func_globals.update(globals)
     
+        # Execute the function in a new security context.
         security=getSecurityManager()
         security.addContext(self)
         try:
-            return apply(f, args, kw)
+            result = apply(f, args, kw)
+            if keyset is not None:
+                # Store the result in the cache.
+                self.ZCacheable_set(result, keywords=keyset)
+            return result
         finally:
             security.removeContext(self)
 
@@ -323,6 +355,7 @@ class PythonScript(Script, Historical):
         "Change Proxy Roles"
         self._validateProxy(roles)
         self._validateProxy()
+        self.ZCacheable_invalidate()
         self._proxy_roles=tuple(roles)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
@@ -340,6 +373,7 @@ class PythonScript(Script, Historical):
 
     def write(self, text):
         self._validateProxy()
+        self.ZCacheable_invalidate()
         mdata = self._metadata_map()
         bindmap = self.getBindingAssignments().getAssignedNames()
         bup = 0
