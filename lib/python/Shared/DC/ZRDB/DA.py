@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.66 1999/05/26 13:35:55 brian Exp $'''
-__version__='$Revision: 1.66 $'[11:-2]
+$Id: DA.py,v 1.67 1999/07/01 15:22:12 brian Exp $'''
+__version__='$Revision: 1.67 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -225,6 +225,7 @@ class DA(
             return self.manage_editedDialog(REQUEST)
         return ''
 
+
     def manage_advanced(self, max_rows, max_cache, cache_time,
                         class_name, class_file, direct=None,
                         REQUEST=None):
@@ -265,6 +266,10 @@ class DA(
         self.allow_simple_one_argument_traversal=direct
         if REQUEST is not None:
             return self.manage_editedDialog(REQUEST)
+
+    def getFindContent(self):
+        """Return content for use by the Find machinery."""
+        return '%s\n%s' % (self.arguments_src, self.src)
     
     def manage_testForm(self, REQUEST):
         " "
