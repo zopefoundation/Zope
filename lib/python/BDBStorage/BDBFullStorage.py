@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.78 $
+$Revision: 1.79 $
 """
 
 import time
@@ -972,10 +972,19 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         vid, nvrevid, lrevid = unpack(">8s8s8s", rec[:24])
         if vid == ZERO:
             revid = lrevid
+            start_tid = key[8:]
         else:
-            revid = nvrevid
+            revid = start_tid = nvrevid
+            while True:
+                rec = c.next()
+                if rec is None or rec[0][:8] <> oid:
+                    end_tid = None
+                    break
+                vid = rec[1][:8]
+                if vid == ZERO:
+                    end_tid = rec[0][8:]
+                    break
         data = self._pickles[oid+revid]
-        start_tid = key[8:]
         return data, start_tid, end_tid
 
     def _getTidMissingOk(self, oid):
