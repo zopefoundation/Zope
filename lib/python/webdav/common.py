@@ -85,7 +85,7 @@
 
 """Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import string, time, urllib
 
@@ -120,13 +120,25 @@ def is_acquired(ob):
         return 0
     return 1
 
-def rfc1123_date(ts=None):
+
+def iso8601_date(ts=None, format='%Y-%m-%dT%H:%M:%SZ'):
+    # Return an ISO 8601 formatted date string, required
+    # for certain DAV properties.
+    #1997-12-01T17:42:21-08:00
+    #Monday, 12-Jan-98 09:25:56 GMT
+    if ts is None: ts=time.time()
+    return time.strftime(format, time.gmtime(ts))
+
+def rfc850_date(ts=None, format='%A, %d-%b-%y %H:%M:%S GMT'):
+    # Return an HTTP-date formatted date string.
+    if ts is None: ts=time.time()
+    return time.strftime(format, time.gmtime(ts))
+
+def rfc1123_date(ts=None, format='%a, %d %b %Y %H:%M:%S GMT'):
     # Return an RFC 1123 format date string, required for
     # use in HTTP Date headers per the HTTP 1.1 spec.
     if ts is None: ts=time.time()
-    ts=time.asctime(time.gmtime(ts))
-    ts=string.split(ts)
-    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[4],ts[3])
+    return time.strftime(format, time.gmtime(ts))
 
 
 def urlbase(url, ftype=urllib.splittype, fhost=urllib.splithost):

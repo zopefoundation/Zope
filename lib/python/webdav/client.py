@@ -1,12 +1,13 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
 from types import FileType
 from mimetypes import guess_type
 from base64 import encodestring
+from common import rfc1123_date
 from cStringIO import StringIO
 from whrandom import random
 from urllib import quote
@@ -422,14 +423,6 @@ find_xml="""<?xml version="1.0" encoding="utf-8" ?>
 # Implementation details below here
 
 urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?', regex.casefold)
-
-def rfc1123_date(ts=None):
-    # Return an RFC 1123 format date string, required for
-    # use in HTTP Date headers per the HTTP 1.1 spec.
-    if ts is None: ts=time.time()
-    ts=time.asctime(time.gmtime(ts))
-    ts=string.split(ts)
-    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[4],ts[3])
 
 def marshal_string(name, val):
     return '%s=%s' % (name, quote(str(val)))
