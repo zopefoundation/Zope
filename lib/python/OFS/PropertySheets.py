@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -341,7 +341,7 @@ class PropertySheet(Persistent, Implicit):
         if not propdict.has_key(name):
             prop='  <n:%s/>' % name
             error=propdesc % ('The property %s does not exist.' % name)
-            return propstat % (xml_id, prop, '404 Not Found', error))
+            return propstat % (xml_id, prop, '404 Not Found', error)
         else:
             item=propdict[name]
             name, type=item['id'], item.get('type','string')
@@ -359,7 +359,7 @@ class PropertySheet(Persistent, Implicit):
                 # quote non-xml items here?
                 attrs=''
             prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
-            return propstat % (xml_id, prop, '200 OK', ''))
+            return propstat % (xml_id, prop, '200 OK', '')
 
 #    del propstat
 #    del propdesc
