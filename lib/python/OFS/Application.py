@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.14 1997/09/25 14:04:56 brian Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Application.py,v 1.15 1997/10/27 15:21:22 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -147,7 +147,9 @@ def install_products(products):
 	except: pass
 
     Folder.Folder.dynamic_meta_types=tuple(meta_types)
-    Globals.Bobobase['roles']=tuple(role_names)
+    role_names=tuple(role_names)
+    if Globals.Bobobase['roles'] != role_names:
+	Globals.Bobobase['roles'] = role_names
 
 
 
@@ -166,6 +168,10 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.15  1997/10/27 15:21:22  jim
+# Fixed bug in assigning role names that caused roles record to be
+# rewritten on every start up.
+#
 # Revision 1.14  1997/09/25 14:04:56  brian
 # Added default __roles__ of None, custom roles form
 #
