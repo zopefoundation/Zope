@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.132 2000/08/10 14:22:48 brian Exp $'''
-__version__='$Revision: 1.132 $'[11:-2]
+$Id: Application.py,v 1.133 2000/09/07 16:07:20 brian Exp $'''
+__version__='$Revision: 1.133 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -255,6 +255,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         return apply(DateTime, args)
     ZopeTime=PrincipiaTime
 
+    ZopeAttributionButton__roles__=None
     def ZopeAttributionButton(self):
         """Returns an HTML fragment that displays the 'powered by zope'
         button along with a link to the Zope site."""
