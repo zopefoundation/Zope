@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.44 2000/09/29 17:21:27 tseaver Exp $
+  $Id: Acquisition.c,v 1.45 2000/10/05 23:25:01 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -117,7 +117,10 @@ CallMethodO(PyObject *self, PyObject *name,
 		     PyObject *args, PyObject *kw)
 {
   if (! args && PyErr_Occurred()) return NULL;
-  UNLESS(name=PyObject_GetAttr(self,name)) return NULL;
+  UNLESS(name=PyObject_GetAttr(self,name)) {
+    if (args) Py_DECREF(args);
+    return NULL;
+  }
   ASSIGN(name,PyEval_CallObjectWithKeywords(name,args,kw));
   if (args) Py_DECREF(args);
   return name;
@@ -1416,7 +1419,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.44 $";
+  char *rev="$Revision: 1.45 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1435,7 +1438,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.44 2000/09/29 17:21:27 tseaver Exp $\n",
+	   "$Id: Acquisition.c,v 1.45 2000/10/05 23:25:01 shane Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
