@@ -1,5 +1,5 @@
 """Bobo call interface"""
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys,regex
 from httplib import HTTP
@@ -86,7 +86,9 @@ class RemoteException:
         self.http_message=http_msg
         self.response    =http_resp
 
-    def __repr__(self): return repr(self.exc_value)
+    def __repr__(self):
+	return '%s\n%s %s for %s' % (self.exc_value,self.http_code,
+				     self.http_message,self.url)
 
 
 
@@ -243,6 +245,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.5  1997/04/16 21:56:27  jim
+# repr now shows URL on Not Found.
+#
 # Revision 1.4  1997/04/12 17:18:18  jim
 # Many wonderous changes by Brian.
 #
