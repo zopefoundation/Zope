@@ -35,18 +35,6 @@ Zope Changes
 
     Bugs Fixed
 
-     - I18n interpolation now tries to deal with the case where there is
-       a mix of Unicode and non-ascii string that are incompatible
-       (because the encoding of the latter is unknown) by substituting a
-       representation of the non-ascii string.
-
-     - I18n interpolation doesn't fail anymore if a i18n:name is not
-       provided, the ${string} in the translation is just left as is.
-
-     - Collector #696: tal:replace of a non-string (a number for
-       examlpe) associated with a i18n:name failed to be interpolated
-       properly.
-
      - Collector #771: ZCatalog failed to index DTML Document if the name
        of a catalog metadata was identical with the name of an acquired
        object.
