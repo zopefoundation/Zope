@@ -66,6 +66,10 @@ def default__class_init__(self):
         AccessControl.Permission.registerPermissions(self.__ac_permissions__)
         for acp in self.__ac_permissions__:
             pname, mnames = acp[:2]
-            pr=PermissionRole(pname)
+            if len(acp) > 2:
+                roles = acp[2]
+                pr = PermissionRole(pname, roles)
+            else:
+                pr=PermissionRole(pname)
             for mname in mnames:
                 dict[mname+'__roles__']=pr
