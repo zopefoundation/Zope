@@ -1,5 +1,8 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
+# From: "Samual M. Rushing" <rushing@nightmare.com>
+# Date: Mon, 21 Apr 1997 16:10:42 -0500
+
 # ======================================================================
 # Copyright 1997 by Sam Rushing
 # 
@@ -140,11 +143,18 @@ class syslog_client:
 	def __init__ (self, address='/dev/log'):
 		self.address = address
 		if type (address) == type(''):
-			self.socket = socket.socket (socket.AF_UNIX, socket.SOCK_STREAM)
-			self.socket.connect (address)
+			try: # APUE 13.4.2 specifes /dev/log as datagram socket
+			    self.socket = socket.socket( socket.AF_UNIX
+                                                       , socket.SOCK_DGRAM)
+			    self.socket.connect (address)
+			except: # older linux may create as stream socket
+			    self.socket = socket.socket( socket.AF_UNIX
+                                                       , socket.SOCK_STREAM)
+			    self.socket.connect (address)
 			self.unix = 1
 		else:
-			self.socket = socket.socket (socket.AF_INET, socket.SOCK_DGRAM)
+			self.socket = socket.socket( socket.AF_INET
+                                                   , socket.SOCK_DGRAM)
 			self.unix = 0
 
 	# curious: when talking to the unix-domain '/dev/log' socket, a
@@ -175,3 +185,54 @@ class syslog_client:
 		if self.unix:
 			self.socket.close()
 
+if __name__ == '__main__':
+    """
+       Unit test for syslog_client.  Set up for the test by:
+	
+	* tail -f /var/log/allstuf (to see the "normal" log messages).
+
+        * Running the test_logger.py script with a junk file name (which
+	  will be opened as a Unix-domain socket). "Custom" log messages
+	  will go here.
+
+	* Run this script, passing the same junk file name.
+
+	* Check that the "bogus" test throws, and that none of the rest do.
+
+	* Check that the 'default' and 'UDP' messages show up in the tail.
+
+	* Check that the 'non-std' message shows up in the test_logger
+	  console.
+
+	* Finally, kill off the tail and test_logger, and clean up the
+	  socket file.
+    """
+    import sys, traceback
+
+    if len( sys.argv ) != 2:
+       print "Usage: syslog.py localSocketFilename"
+       sys.exit()
+
+    def test_client( desc, address=None ):
+        try:
+	    if address:
+	        client = syslog_client( address )
+	    else:
+	        client = syslog_client()
+        except:
+	    print 'syslog_client() [%s] ctor threw' % desc
+            traceback.print_exc()
+	    return
+
+        try:
+            client.log( 'testing syslog_client() [%s]' % desc
+                      , facility='local0', priority='debug' )
+            print 'syslog_client.log() [%s] did not throw' % desc
+        except:
+            print 'syslog_client.log() [%s] threw' % desc
+            traceback.print_exc()
+
+    test_client( 'default' )
+    test_client( 'bogus file', '/some/bogus/logsocket' )
+    test_client( 'nonstd file', sys.argv[1] )
+    test_client( 'UDP',  ('localhost', 514) )
