@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import os, AccessControl
 from Globals import package_home, DevelopmentMode
@@ -37,7 +37,6 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
 
     func_defaults = None
     func_code = FuncCode((), 0)
-    _need__name__=1
     _v_last_read=0
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
@@ -53,12 +52,14 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         elif not isinstance(_prefix, str):
             _prefix = package_home(_prefix)
         name = kw.get('__name__')
+        basepath, ext = os.path.splitext(filename)
         if name:
-            self._need__name__ = 0
             self.__name__ = name
         else:
-            self.__name__ = os.path.splitext(os.path.split(filename)[-1])[0]
-        if not os.path.splitext(filename)[1]:
+            self.__name__ = os.path.basename(basepath)
+        if not ext:
+            # XXX This is pretty bogus, but can't be removed since
+            # it's been released this way.
             filename = filename + '.zpt'
         self.filename = os.path.join(_prefix, filename)
 
