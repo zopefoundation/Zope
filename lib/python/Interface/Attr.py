@@ -1,5 +1,7 @@
 
-class Attribute:
+from InterfaceBase import InterfaceBase
+
+class Attribute(InterfaceBase):
     """Attribute descriptions
     """
     
@@ -8,3 +10,9 @@ class Attribute:
         """
         self.__name__=__name__
         self.__doc__=__doc__ or __name__
+
+    def isAttr(self):
+        return 1
+
+
+
