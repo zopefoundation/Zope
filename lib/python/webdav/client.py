@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -365,6 +365,33 @@ set_xml="""<?xml version="1.0" encoding="utf-8"?>
    </d:set>
    </d:propertyupdate>
 """
+
+funny="""<?xml version="1.0" encoding="utf-8"?>
+ <d:propertyupdate xmlns:d="DAV:" 
+    xmlns:z="http://www.zope.org/propsets/default" 
+    xmlns:q="http://www.something.com/foo/bar">
+ <d:set>
+ <d:prop>
+   <z:author>Brian Lloyd</z:author>
+   <z:title>My New Title</z:title>
+   <q:Authors>
+     <q:Author>
+       <q:Person>
+         <q:Name>Brian Lloyd</q:Name>
+       </q:Person>
+     </q:Author>
+   </q:Authors>
+ </d:prop>
+ </d:set>
+ <d:remove>
+ <d:prop>
+   <q:hoohoo/>
+   <z:favorite_color/>
+ </d:prop>
+ </d:remove>
+</d:propertyupdate>
+"""
+
 
 rem_xml="""<?xml version="1.0" encoding="utf-8"?>
    <d:propertyupdate xmlns:d="DAV:"

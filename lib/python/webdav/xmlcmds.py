@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix
@@ -209,8 +209,7 @@ class PropPatch:
                 name, ns, val, md=value
                 propset=propsets.get(ns, None)
                 if propset is None:
-                    obj.propertysheets.manage_addPropertySheet('', ns)
-                    propsets=obj.propertysheets.values()
+                    propsets.manage_addPropertySheet('', ns)
                     propset=propsets.get(ns)
                 propdict=propset._propdict()
                 if propset.hasProperty(name):
