@@ -637,8 +637,11 @@ class TALInterpreter:
             engine.beginScope()
             err.lineno, err.offset = self.position
             engine.setLocal('error', err)
-            self.interpret(handler)
-            engine.endScope()
+            try:
+                self.interpret(handler)
+            finally:
+                err.takeTraceback()
+                engine.endScope()
         else:
             self.restoreOutputState(state)
             self.stream_write(stream.getvalue())

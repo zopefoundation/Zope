@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -107,7 +107,11 @@ class TALESError(Exception):
         self.setPosition(position)
     def setPosition(self, position):
         self.lineno = position[0]
-        self.offset = position[1]        
+        self.offset = position[1]
+    def takeTraceback(self):
+        t = self.traceback
+        self.traceback = None
+        return t
     def __str__(self):
         if self.type is None:
             s = self.expression
@@ -314,8 +318,8 @@ class Context:
         try:
             v = expression(self)
             if isinstance(v, Exception):
-                if hasattr(v, 'traceback'):
-                    raise v, None, v.traceback
+                if isinstance(v, TALESError):
+                    raise v, None, v.takeTraceback()
                 raise v
         except TALESError, err:
             err.setPosition(self.position)

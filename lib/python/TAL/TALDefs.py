@@ -140,6 +140,11 @@ class TALESError(TALError):
 
     # This exception can carry around another exception + traceback
 
+    def takeTraceback(self):
+        t = self.info[2]
+        self.info = self.info[:2] + (None,)
+        return t
+
     def __init__(self, msg, position=(None, None), info=(None, None, None)):
         t, v, tb = info
         if t:

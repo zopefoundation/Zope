@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -180,16 +180,17 @@ class PathExpr:
         vars = econtext.vars
         exists = 0
         for base, path, dp in self._paths:
-            path = list(path) # Copy!
             # Expand dynamic path parts from right to left.
-            for i, varname in dp:
-                val = vars[varname]
-                if isinstance(val, StringType):
-                    path[i] = val
-                else:
-                    # If the value isn't a string, assume it's a sequence
-                    # of path names.
-                    path[i:i+1] = list(val)
+            if dp:
+                path = list(path) # Copy!
+                for i, varname in dp:
+                    val = vars[varname]
+                    if isinstance(val, StringType):
+                        path[i] = val
+                    else:
+                        # If the value isn't a string, assume it's a sequence
+                        # of path names.
+                        path[i:i+1] = list(val)
             try:
                 __traceback_info__ = base
                 if base == 'CONTEXTS':
