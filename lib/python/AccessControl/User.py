@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -324,6 +324,10 @@ except:
 
 
 nobody=SpecialUser('Anonymous User','',('Anonymous',), [])
+
+import ZPublisher.BaseRequest
+# Make anonymous users always pass the watermark test.
+nobody._v__marker__ = ZPublisher.BaseRequest._marker
 
 
 class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
