@@ -12,6 +12,12 @@ Zope Changes
        objects to allow gathering of permission names for products like
        DocFinder and VerboseSecurity.
 
+    Bugs Fixed
+
+     - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path 
+       to the python executable included a space.
+
+
   Zope 2.6.1 beta 2
 
     Bugs Fixed

@@ -23,4 +23,4 @@ def build():
     print '-'*78
     print 'Building extension modules'
 
-    do('%s setup.py build_ext -i' % sys.executable)
+    do('"%s" setup.py build_ext -i' % sys.executable)
