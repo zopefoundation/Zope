@@ -1233,6 +1233,8 @@ class HTTPRequest(BaseRequest):
             if (isCGI_NAME(key) or key[:5] == 'HTTP_') and (not hide_key(key)):
                 keys[key] = 1
 
+        # Cache URLN and BASEN in self.other.
+        # This relies on a side effect of has_key.
         n=0
         while 1:
             n=n+1
