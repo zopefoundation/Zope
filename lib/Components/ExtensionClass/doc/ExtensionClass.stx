@@ -43,11 +43,8 @@ Extension Classes, Python Extension Types Become Classes
   Releases
 
     To find out what's changed in this
-    "release":ExtensionClass-1.1.tar.gz,
+    "release":ExtensionClass-1.2.tar.gz,
     see the "release notes":release.html.
-
-    A "binary release for Python-1.5 on Windows NT/95":ExtensionClass-1.1-win32-Python1.5.zip,
-    is now available.
   
   Problem
   
