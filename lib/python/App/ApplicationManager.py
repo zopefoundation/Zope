@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -134,6 +134,10 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
 
 
+
+# refcount snapshot info
+_v_rcs=None
+_v_rst=None
 
 class ApplicationManager(Folder,CacheManager):
     """System management"""
@@ -243,10 +247,6 @@ class ApplicationManager(Folder,CacheManager):
 
 
     manage_debug=HTMLFile('debug', globals())
-
-    # refcount snapshot info
-    _v_rcs=None
-    _v_rst=None
     
     def refcount(self, n=None, t=(type(Fake), type(Acquisition.Implicit))):
         # return class reference info
@@ -277,17 +277,19 @@ class ApplicationManager(Folder,CacheManager):
         return dict
 
     def rcsnapshot(self):
-        self._v_rcs=self.refdict()
-        self._v_rst=DateTime()
+        global _v_rcs
+        global _v_rst
+        _v_rcs=self.refdict()
+        _v_rst=DateTime()
 
     def rcdate(self):
-        return self._v_rst
+        return _v_rst
 
     def rcdeltas(self):
-        if self._v_rcs is None:
+        if _v_rcs is None:
             self.rcsnapshot()
         nc=self.refdict()
-        rc=self._v_rcs
+        rc=_v_rcs
         rd=[]
         for n, c in nc.items():
             prev=rc[n]
