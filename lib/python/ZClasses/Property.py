@@ -125,6 +125,13 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         self.title=title
         self._md={}
 
+    def manage_afterAdd(self,item,container):
+        if item is not self: return
+        if self._properties:
+            raise ValueError, (
+                'Non-empty propertysheets cannot currently be '
+                'added (or copied).<p>')
+
     def v_self(self):
         klass=self.aq_inner.aq_parent.aq_parent.aq_parent._zclass_
         return ClassCaretaker(klass)
