@@ -77,6 +77,9 @@ class ProductFolder(Folder):
     def _canCopy(self, op=0):
         return 0
 
+Globals.InitializeClass(ProductFolder)
+
+
 class Product(Folder, PermissionManager):
     """Model a product that can be created through the web.
     """
@@ -412,6 +415,7 @@ class Product(Folder, PermissionManager):
         if REQUEST is not None:
             return self.manage_refresh(REQUEST)
 
+Globals.InitializeClass(Product)
 
 
 class CompressedOutputFile:

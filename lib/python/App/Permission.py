@@ -12,10 +12,15 @@
 ##############################################################################
 __doc__='''Zope registerable permissions
 
-$Id: Permission.py,v 1.8 2002/08/14 21:31:40 mj Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Permission.py,v 1.9 2003/05/28 14:51:12 shane Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, ExtensionClass, AccessControl.Role
+from AccessControl import ClassSecurityInfo, Permissions
+
+view_management_screens = Permissions.view_management_screens
+define_permissions = Permissions.define_permissions
+
 
 class Permission(
     AccessControl.Role.RoleManager,
@@ -24,6 +29,7 @@ class Permission(
     "Model Permission meta-data"
     meta_type='Zope Permission'
     icon='p_/Permission_icon'
+    security = ClassSecurityInfo()
 
     manage_options=(
         (
@@ -39,6 +45,7 @@ class Permission(
         self.title=title
         self.name=name
 
+    security.declareProtected(define_permissions, 'manage_edit')
     def manage_edit(self, title, name, REQUEST=None):
         "Modify Permission properties."
         if title != self.title: self.title=title
@@ -48,9 +55,11 @@ class Permission(
             self._register()
         if REQUEST is not None: return self.manage_main(self, REQUEST)
 
+    security.declarePrivate('manage_afterAdd')
     def manage_afterAdd(self, item, container):
         self._register()
 
+    security.declarePrivate('manage_beforeDelete')
     def manage_beforeDelete(self, item, container):
         self._unregister()
 
@@ -66,22 +75,26 @@ class Permission(
         product.aq_acquire('_manage_remove_product_permission')(
             product, self.name)
 
+    security.declareProtected(view_management_screens, 'manage_main')
     manage_main=Globals.DTMLFile('dtml/editPermission',globals())
 
     index_html=None
 
+Globals.InitializeClass(Permission)
+
+
 class PermissionManager(ExtensionClass.Base):
 
-    __ac_permissions__=(
-        ('Define permissions',
-         ('manage_addPermissionForm', 'manage_addPermission')),
-        )
+    security = ClassSecurityInfo()
 
     meta_types={
         'name': Permission.meta_type, 'action': 'manage_addPermissionForm'
         },
 
+    security.declareProtected(define_permissions, 'manage_addPermissionForm')
     manage_addPermissionForm=Globals.DTMLFile('dtml/addPermission',globals())
+
+    security.declareProtected(define_permissions, 'manage_addPermission')
     def manage_addPermission(
         self, id, title, permission, REQUEST=None):
         ' '
@@ -89,3 +102,5 @@ class PermissionManager(ExtensionClass.Base):
         self._setObject(id,i)
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
+
+Globals.InitializeClass(PermissionManager)

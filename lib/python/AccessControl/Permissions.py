@@ -12,7 +12,7 @@
 ##############################################################################
 """Constant definitions for built-in Zope permissions"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 access_contents_information='Access contents information'
@@ -40,6 +40,7 @@ change_configuration='Change configuration'
 change_permissions='Change permissions'
 change_proxy_roles='Change proxy roles'
 create_class_instances='Create class instances'
+define_permissions='Define permissions'
 delete_objects='Delete objects'
 edit_factories='Edit Factories'
 ftp_access='FTP access'
