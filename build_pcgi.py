@@ -2,6 +2,9 @@
 
 You must be in the directory containing this script.
 """
+print
+print '-'*78
+print "Building the PCGI wrapper"
 
 from do import *
 

@@ -18,7 +18,7 @@ def make(*args):
     print 'Compiling extensions in %s' % string.join(args,'/')
     
     for a in args: os.chdir(a)
-    do('make -f Makefile.pre boot PYTHON=%s' % sys.executable)
+    do('make -f Makefile.pre.in boot PYTHON=%s' % sys.executable)
     do('make')
     do('make clean')
     for a in args: os.chdir('..')
