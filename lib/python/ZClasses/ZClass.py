@@ -202,6 +202,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         self._zclass_=c=type(PersistentClass)(
             id, tuple(args),
             PersistentClassDict(title or id))
+        c.__ac_permissions__=()
         
         # Create the class(/instance) prop sheet *class*
         csheets_class=type(PersistentClass)(
@@ -326,6 +327,10 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         for p in AccessControl.Role.gather_permissions(c, [], d): a(p[0])
         r.sort()
         return r
+
+    def classDefinedAndInheritedPermissions(self):
+        return (self.classDefinedPermissions()+
+                self.classInheritedPermissions())
 
     def ziconImage(self, REQUEST, RESPONSE):
         "Display a class icon"

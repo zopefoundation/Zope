@@ -274,12 +274,12 @@ class PermissionMapperManager(Acquisition.Implicit):
         
         # ugh
         perms={}
-        for p in self.classDefinedPermissions():
+        for p in self.classDefinedAndInheritedPermissions():
             perms[pname(p)]=p
         
         r=[]
         a=r.append
-        for name, who_cares in method.__ac_permissions__:
+        for name, who_cares in method.ac_inherited_permissions(1):
             p=perms.get(getPermissionMapping(name, wrapper), '')
             a({'permission_name': name, 'class_permission': p})
         return r
@@ -291,7 +291,7 @@ class PermissionMapperManager(Acquisition.Implicit):
         """
         wrapper=trueself.__dict__['_wrapper___']
 
-        perms=trueself.classDefinedPermissions()
+        perms=trueself.classDefinedAndInheritedPermissions()
         for i in range(len(permission_names)):
             name=permission_names[i]
             p=class_permissions[i]
