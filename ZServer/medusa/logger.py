@@ -155,6 +155,10 @@ import m_syslog
 syslog_logger = m_syslog.syslog_client
 
 class syslog_logger (m_syslog.syslog_client):
+
+    svc_name='medusa'
+    pid_str =str(os.getpid())
+
     def __init__ (self, address, facility='user'):
         m_syslog.syslog_client.__init__ (self, address)
         self.facility = m_syslog.facility_names[facility]
@@ -166,7 +170,7 @@ class syslog_logger (m_syslog.syslog_client):
     def log (self, message):
         m_syslog.syslog_client.log (
             self,
-            message,
+            '%s[%s]: %s' % (self.svc_name, self.pid_str, message),
             facility=self.facility,
             priority=m_syslog.LOG_INFO
             )
