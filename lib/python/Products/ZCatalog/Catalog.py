@@ -161,6 +161,10 @@ class Catalog(Item):
     __call__ = searchResults
 
     
+    def uniqueValuesFor(self, id):
+        """ return unique values for field index id """
+        return apply(self._ztable.uniqueValuesFor, (id,))
+
 
     def data_column_names(self):
         """
@@ -253,7 +257,6 @@ class Catalog(Item):
         record['description'] = obj.description
         record['summary'] = obj.summary
         record['reviewed'] = obj.reviewed
-        print '_get_record: %s' % record
 
         return record
 
