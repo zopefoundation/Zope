@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -305,7 +305,47 @@ class PropertySheet(Persistent, Implicit):
         result=join(result, '\n')
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
-    def dav__propstat(self, name, propstat=propstat, propdesc=propdesc,
+
+    def dav__propstat(self, name, result,
+                      propstat=propstat, propdesc=propdesc,
+                      join=string.join):
+        # DAV helper method - return a propstat element indicating
+        # property name and value for the requested property.
+        xml_id=self.xml_namespace()
+        propdict=self._propdict()
+        if not propdict.has_key(name):
+            prop='<n:%s xmlns:n="%s"/>\n' % (name, xml_id)
+            code='404 Not Found'
+            if not result.has_key(code):
+                result[code]=[prop]
+            else: result[code].append(prop)
+            return
+        else:
+            item=propdict[name]
+            name, type=item['id'], item.get('type','string')
+            value=self.getProperty(name)
+            if type=='tokens':
+                value=join(value, ' ')
+            elif type=='lines':
+                value=join(value, '\n')
+            # allow for xml properties
+            attrs=item.get('meta', {}).get('__xml_attrs__', None)
+            if attrs is not None:
+                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
+                attrs=join(attrs, '')
+            else:
+                # quote non-xml items here?
+                attrs=''
+            prop='<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
+                 name, attrs, xml_id, value, name)
+            code='200 OK'
+            if not result.has_key(code):
+                result[code]=[prop]
+            else: result[code].append(prop)
+            return            
+
+
+    def odav__propstat(self, name, propstat=propstat, propdesc=propdesc,
                       join=string.join):
         # DAV helper method - return a propstat element indicating
         # property name and value for the requested property.
