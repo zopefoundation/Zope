@@ -2,23 +2,33 @@
 # To run these tests, use:
 #   python unittest.py DateTime.tests.suite
 
-import unittest
-from DateTime import DateTime
-import string
 import math
-import time
-
 import os
-__basedir__ = os.getcwd()
+import time
+import unittest
 
-class DateTimeTests (unittest.TestCase):
+from DateTime import DateTime
+
+try:
+    __file__
+except NameError:
+    import sys
+    f = sys.argv[0]
+else:
+    f = __file__
+
+DATADIR = os.path.dirname(os.path.abspath(f))
+del f
+
+
+class DateTimeTests(unittest.TestCase):
 
     def _compare(self, dt1, dt2, ms=1):
         '''Compares the internal representation of dt1 with
         the representation in dt2.  Allows sub-millisecond variations.
         Primarily for testing.'''
         if ms:
-            self.assertEqual(dt1.millis(),dt2.millis())
+            self.assertEqual(dt1.millis(), dt2.millis())
         self.assertEqual(math.floor(dt1._t * 1000.0),
                          math.floor(dt2._t * 1000.0))
         self.assertEqual(math.floor(dt1._d * 86400000.0),
@@ -29,22 +39,25 @@ class DateTimeTests (unittest.TestCase):
     def testBug1203(self):
         '''01:59:60 occurred in old DateTime'''
         dt = DateTime(7200, 'GMT')
-        assert string.find(str(dt), '60') < 0, dt
+        self.assert_(str(dt).find('60') < 0, dt)
 
     def testDSTInEffect(self):
         '''Checks GMT offset for a DST date in the US/Eastern time zone'''
         dt = DateTime(2000, 5, 9, 15, 0, 0, 'US/Eastern')
-        assert dt.toZone('GMT').hour() == 19, (dt, dt.toZone('GMT'))
+        self.assertEqual(dt.toZone('GMT').hour(), 19,
+                         (dt, dt.toZone('GMT')))
 
     def testDSTNotInEffect(self):
         '''Checks GMT offset for a non-DST date in the US/Eastern time zone'''
         dt = DateTime(2000, 11, 9, 15, 0, 0, 'US/Eastern')
-        assert dt.toZone('GMT').hour() == 20, (dt, dt.toZone('GMT'))
+        self.assertEqual(dt.toZone('GMT').hour(), 20,
+                         (dt, dt.toZone('GMT')))
 
     def testAddPrecision(self):
         '''Precision of serial additions'''
         dt = DateTime()
-        assert str(dt + 0.10 + 3.14 + 6.76 - 10) == str(dt), dt
+        self.assertEqual(str(dt + 0.10 + 3.14 + 6.76 - 10), str(dt),
+                         dt)
 
     def testConstructor3(self):
         '''Constructor from date/time string'''
@@ -72,7 +85,7 @@ class DateTimeTests (unittest.TestCase):
         '''Constructor from time float and timezone'''
         dt = DateTime()
         dt1 = DateTime(float(dt), dt.timezone())
-        assert str(dt) == str(dt1), (dt, dt1)
+        self.assertEqual(str(dt), str(dt1), (dt, dt1))
 
     def testConstructor6(self):
         '''Constructor from year and julian date'''
@@ -95,19 +108,19 @@ class DateTimeTests (unittest.TestCase):
             dt.timezone())
         # Compare representations as it's the
         # only way to compare the dates to the same accuracy
-        self.assertEqual(repr(dt),repr(dt1))
+        self.assertEqual(repr(dt), repr(dt1))
         
     def testDayOfWeek(self):
         '''strftime() used to always be passed a day of week of 0.'''
         dt = DateTime('2000/6/16')
         s = dt.strftime('%A')
-        assert s == 'Friday', (dt, s)
+        self.assertEqual(s, 'Friday', (dt, s))
 
     def testOldDate(self):
         '''Fails when an 1800 date is displayed with negative signs'''
         dt = DateTime('1830/5/6 12:31:46.213 pm')
         dt1 = dt.toZone('GMT+6')
-        assert string.find(str(dt1), '-') < 0, (dt, dt1)
+        self.assert_(str(dt1).find('-') < 0, (dt, dt1))
 
     def testSubtraction(self):
         '''Reconstruction of a DateTime from its parts, with subtraction'''
@@ -121,25 +134,25 @@ class DateTimeTests (unittest.TestCase):
             dt.minute(),
             dt.second())
         dt3 = dt2 - 3.141592653
-        assert dt1 == dt3, (dt, dt1, dt2, dt3)
+        self.assertEqual(dt1, dt3, (dt, dt1, dt2, dt3))
 
     def testTZ1add(self):
         '''Time zone manipulation: add to a date'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
-        assert dt + 1.0 == dt1, (dt, dt1)
+        self.assertEqual(dt + 1.0, dt1, (dt, dt1))
 
     def testTZ1sub(self):
         '''Time zone manipulation: subtract from a date'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
-        assert dt1 - 1.0 == dt, (dt, dt1)
+        self.assertEqual(dt1 - 1.0, dt, (dt, dt1))
 
     def testTZ1diff(self):
         '''Time zone manipulation: diff two dates'''
         dt = DateTime('1997/3/8 1:45am GMT-4')
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
-        assert dt1 - dt == 1.0, (dt, dt1)
+        self.assertEqual(dt1 - dt, 1.0, (dt, dt1))
 
     def testCompareMethods(self):
         '''Compare two dates using several methods'''
@@ -179,32 +192,29 @@ class DateTimeTests (unittest.TestCase):
         dt1 = dt.toZone('GMT')
         s = dt.second()
         s1 = dt1.second()
-        assert s == s1, (dt, dt1, s, s1)
+        self.assertEqual(s, s1, (dt, dt1, s, s1))
 
     def testTZDiffDaylight(self):
         '''Diff dates across daylight savings dates'''
         dt = DateTime('2000/6/8 1:45am US/Eastern')
         dt1 = DateTime('2000/12/8 12:45am US/Eastern')
-        assert dt1 - dt == 183, (dt, dt1, dt1 - dt)
+        self.assertEqual(dt1 - dt, 183, (dt, dt1, dt1 - dt))
 
     def testY10KDate(self):
         '''Comparison of a Y10K date and a Y2K date'''
         dt = DateTime('10213/09/21')
         dt1 = DateTime(2000, 1, 1)
 
-        dsec = ( dt.millis() - dt1.millis() ) / 1000.0
-        ddays = math.floor( ( dsec / 86400.0 ) + 0.5 )
+        dsec = (dt.millis() - dt1.millis()) / 1000.0
+        ddays = math.floor((dsec / 86400.0) + 0.5)
 
-        assert ddays == 3000000L, ddays
+        self.assertEqual(ddays, 3000000L, ddays)
 
     def test_tzoffset(self):
-        '''Test time-zone given as an offset
-        '''
-        from time import gmtime
-
+        '''Test time-zone given as an offset'''
         dt = DateTime('Tue, 24 Jul 2001 09:41:03 -0400')
-        self.assertEqual(gmtime(dt.timeTime())[:6],
-                         (2001,7,24,13,41,3))
+        self.assertEqual(time.gmtime(dt.timeTime())[:6],
+                         (2001, 7, 24, 13, 41, 3))
 
     def testISO8601(self):
         ''' iso 8601 dates '''
@@ -229,8 +239,8 @@ class DateTimeTests (unittest.TestCase):
             print "Warning: testJulianWeek disabled: module gzip not found"
             return 0
 
-        lines  = gzip.GzipFile(os.path.join(__basedir__,
-                                'julian_testdata.txt.gz')).readlines()
+        fn = os.path.join(DATADIR, 'julian_testdata.txt.gz')
+        lines = gzip.GzipFile(fn).readlines()
 
         for line in lines:
             d = DateTime(line[:10])
@@ -244,21 +254,21 @@ class DateTimeTests (unittest.TestCase):
             offset = time.altzone
         else:
             offset = time.timezone
-        
-        rfc822zone = "%+03d%02d" % divmod( (-offset/60), 60)
-        wrongzone = "%+03d:%02d" % divmod( (60-offset/60), 60) #one hour off, ISO format
-        
+
+        rfc822zone = "%+03d%02d" % divmod((-offset/60), 60)
+        wrongzone = "%+03d:%02d" % divmod((60-offset/60), 60) #one hour off, ISO format
+
         # Create a local DateTime and test
         dt = DateTime(2002, 5, 2, 8, 0, 0)
-        self.assertEqual(dt.rfc822(),  'Thu, 02 May 2002 08:00:00' + ' ' + rfc822zone)
+        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00' + ' ' + rfc822zone)
 
         # Create a non-local date time and test
         dt = DateTime('2002-05-02T08:00:00Z'+wrongzone)
-        self.assertEqual(dt.rfc822(),  'Thu, 02 May 2002 08:00:00 -0000')
-        
+        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 -0000')
+
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
 
 if __name__=="__main__":
-   unittest.TextTestRunner().run(test_suite())
+    unittest.main(defaultTest='test_suite')
