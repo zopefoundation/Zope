@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -167,6 +167,8 @@ def getitems(o,names):
     r=[]
     for name in names:
         v=o[name]
+	r.append(v)
+    return r
         
 
 ##########################################################################
@@ -174,6 +176,9 @@ def getitems(o,names):
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.19  1998/11/13 20:23:45  jeffrey
+# and fixed the getitems() function
+#
 # Revision 1.18  1998/11/13 20:22:34  jeffrey
 # added jim's "attrget", and Selector/MultipleSelector classes
 #
