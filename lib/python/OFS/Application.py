@@ -12,11 +12,11 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.181 2002/03/27 21:51:03 caseman Exp $'''
-__version__='$Revision: 1.181 $'[11:-2]
+$Id: Application.py,v 1.182 2002/03/27 22:18:54 caseman Exp $'''
+__version__='$Revision: 1.182 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
-import time, traceback, os,  Products, ObjectManager
+import time, traceback, os,  Products
 from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
