@@ -36,25 +36,25 @@ from Products.ZCTextIndex.QueryParser import QueryParser
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent TextIndex"""
-    
+
     __implements__ = PluggableIndexInterface
-    
+
     meta_type = 'ZCTextIndex'
-    
+
     manage_options= (
         {'label': 'Settings', 'action': 'manage_main'},
     )
-    
+
     query_options = ['query']
 
     def __init__(self, id, extra, caller, index_factory=Index):
         self.id = id
         self._fieldname = extra.doc_attr
         lexicon = getattr(caller, extra.lexicon_id, None)
-        
+
         if lexicon is None:
             raise LookupError, 'Lexicon "%s" not found' % extra.lexicon_id
-        
+
         if not ILexicon.isImplementedBy(lexicon):
             raise ValueError, \
                 'Object "%s" does not implement lexicon interface' \
@@ -63,7 +63,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         self.lexicon = lexicon
         self.index = index_factory(self.lexicon)
         self.parser = QueryParser()
-        
+
     ## Pluggable Index APIs ##
 
     def index_object(self, docid, obj, threshold=None):
@@ -78,7 +78,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     def _apply_index(self, request, cid=''):
         """Apply query specified by request, a mapping containing the query.
-           
+
         Returns two object on success, the resultSet containing the
         matching record numbers and a tuple containing the names of
         the fields used
@@ -86,7 +86,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         Returns None if request is not valid for this index.
         """
         record = parseIndexRequest(request, self.id, self.query_options)
-        if record.keys is None: 
+        if record.keys is None:
             return None
         query_str = ' '.join(record.keys)
         tree = self.parser.parseQuery(query_str)
@@ -100,11 +100,11 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         chooser = NBest(nbest)
         chooser.addmany(results.items())
         return chooser.getbest()
-    
+
     def numObjects(self):
         """Return number of object indexed"""
         return self.index.length()
-        
+
     def getEntryForObject(self, documentId, default=None):
         """Return the list of words indexed for documentId"""
         try:
@@ -113,28 +113,28 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return default
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
-        
+
     def clear(self):
         """reinitialize the index"""
         self.index = Index(self.lexicon)
-        
+
     def _get_object_text(self, obj):
         x = getattr(obj, self._fieldname)
         if callable(x):
             return x()
         else:
             return x
-            
+
     ## User Interface Methods ##
-    
+
     manage_main = DTMLFile('dtml/manageZCTextIndex', globals())
 
 InitializeClass(ZCTextIndex)
 
-def manage_addZCTextIndex(self, id, extra=None, REQUEST=None, 
+def manage_addZCTextIndex(self, id, extra=None, REQUEST=None,
                           RESPONSE=None):
     """Add a text index"""
-    return self.manage_addIndex(id, 'ZCTextIndex', extra, 
+    return self.manage_addIndex(id, 'ZCTextIndex', extra,
                                 REQUEST, RESPONSE, REQUEST.URL3)
 
 manage_addZCTextIndexForm = DTMLFile('dtml/addZCTextIndex', globals())
@@ -155,17 +155,15 @@ def manage_addLexicon(self, id, title, splitter=None, normalizer=None,
     self._setObject(id, lexicon)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
-        
+
 class PLexicon(Lexicon, Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent Lexcion for ZCTextIndex"""
-    
+
     meta_type = 'ZCTextIndex Lexicon'
-    
+
     def __init__(self, id, title='', *pipeline):
         self.id = str(id)
         self.title = str(title)
         PLexicon.inheritedAttribute('__init__')(self, *pipeline)
-        
+
 InitializeClass(PLexicon)
-    
-    

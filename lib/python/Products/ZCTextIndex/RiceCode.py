@@ -1,7 +1,7 @@
 """Rice coding (a varaitn of Golomb coding)
 
 Based on a Java implementation by Glen McCluskey described in a Usenix
- ;login: article at 
+ ;login: article at
 http://www.usenix.org/publications/login/2000-4/features/java.html
 
 McCluskey's article explains the approach as follows.  The encoding
@@ -33,7 +33,7 @@ class BitArray:
 
     def __getitem__(self, i):
         byte, offset = divmod(i, 8)
-        mask = 2 ** offset 
+        mask = 2 ** offset
         if self.bytes[byte] & mask:
             return 1
         else:
@@ -41,12 +41,12 @@ class BitArray:
 
     def __setitem__(self, i, val):
         byte, offset = divmod(i, 8)
-        mask = 2 ** offset 
+        mask = 2 ** offset
         if val:
             self.bytes[byte] |= mask
         else:
             self.bytes[byte] &= ~mask
-        
+
     def __len__(self):
         return self.nbits
 
@@ -78,7 +78,7 @@ class RiceCode:
 
     def init(self, m):
         self.m = m
-        self.lower = (1 << m) - 1 
+        self.lower = (1 << m) - 1
         self.mask = 1 << (m - 1)
 
     def append(self, val):
@@ -123,7 +123,7 @@ class RiceCode:
 
     def tostring(self):
         """Return a binary string containing the encoded data.
-        
+
         The binary string may contain some extra zeros at the end.
         """
         return self.bits.tostring()

@@ -17,9 +17,9 @@ class HTMLWordSplitter:
         splat = []
         for t in text:
             splat += self._split(t)
-        return splat    
+        return splat
 
-    def _split(self, text):    
+    def _split(self, text):
         text = text.lower()
         remove = ["<[^>]*>",
                   "&[A-Za-z]+;",

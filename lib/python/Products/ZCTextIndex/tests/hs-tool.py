@@ -122,5 +122,5 @@ if __name__ == "__main__":
         filename, = args
     else:
         filename = "profile.dat"
-        
+
     main(filename, annotate_p)

@@ -70,13 +70,13 @@ if __name__ == "__main__":
         print msg
         print __doc__
         sys.exit(2)
-        
+
     for o, v in opts:
         if o == '-v':
             VERBOSE += 1
         if o == '-f':
             FSPATH = v
-            
+
     if len(args) != 1:
         print "Expected on argument"
         print __doc__
@@ -91,5 +91,4 @@ if __name__ == "__main__":
     print dir
     main(db, rt, dir)
     cn.close()
-    fs.close()        
-    
+    fs.close()

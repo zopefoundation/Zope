@@ -74,7 +74,7 @@ class TestQueryParser(TestCase):
 
         self.expect('"foo bar"', PhraseNode("foo bar"))
         self.expect("foo bar", AndNode([AtomNode("foo"), AtomNode("bar")]))
-    
+
         self.expect('(("foo bar"))"', PhraseNode("foo bar"))
         self.expect("((foo bar))", AndNode([AtomNode("foo"), AtomNode("bar")]))
 

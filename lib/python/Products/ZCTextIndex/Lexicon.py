@@ -59,7 +59,7 @@ class Lexicon:
             if wid is not None:
                 wids.append(wid)
         return wids
-        
+
     def get_word(self, wid):
         """Return the word for the given word id"""
         return self._words[wid]

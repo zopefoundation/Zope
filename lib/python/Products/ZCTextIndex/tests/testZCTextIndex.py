@@ -10,11 +10,11 @@ import unittest
 class Indexable:
     def __init__(self, text):
         self.text = text
-        
+
 class LexiconHolder:
     def __init__(self, lexicon):
         self.lexicon = lexicon
-        
+
 class Extra:
     pass
 
