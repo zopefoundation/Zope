@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.48 2001/03/12 16:36:46 shane Exp $
+  $Id: Acquisition.c,v 1.49 2001/03/21 21:11:11 brian Exp $
 
   If you have questions regarding this software,
   contact:
@@ -705,32 +705,7 @@ Wrapper_length(Wrapper *self)
   long l;
   PyObject *r;
 
-  UNLESS(r=PyObject_GetAttr(OBJECT(self), py__len__))
-    {
-      /* Hm. Maybe we are being checked to see if we are true.
-	 
-	 Check to see if we have a __getitem__.  If we don't, then
-	 answer that we are true, otherwise raise an error.
-	 */
-      PyErr_Clear();
-      if ((r=PyObject_GetAttr(OBJECT(self), py__getitem__)))
-	{
-	  /* Hm, we have getitem, must be error */
-	  Py_DECREF(r);
-	  PyErr_SetObject(PyExc_AttributeError, py__len__);
-	  return -1;
-	}
-      PyErr_Clear();
-
-      /* Try nonzero */
-      UNLESS(r=PyObject_GetAttr(OBJECT(self), py__nonzero__))
-	{
-	  /* No nonzero, it's true :-) */
-	  PyErr_Clear();
-	  return 1;
-	}
-    }
-  
+  UNLESS(r=PyObject_GetAttr(OBJECT(self), py__len__)) return -1;
   UNLESS_ASSIGN(r,PyObject_CallObject(r,NULL)) return -1;
   l=PyInt_AsLong(r);
   Py_DECREF(r);
@@ -990,6 +965,31 @@ Wrapper_hex(Wrapper *self)
   return CallMethodO(OBJECT(self), py__hex__, NULL, NULL);
 }
 
+static int
+Wrapper_nonzero(Wrapper *self)
+{
+  long l;
+  PyObject *r;
+
+  UNLESS(r=PyObject_GetAttr(OBJECT(self), py__nonzero__))
+    {
+      PyErr_Clear();
+
+      /* Try len */
+      UNLESS(r=PyObject_GetAttr(OBJECT(self), py__len__))
+      {
+        /* No len, it's true :-) */
+        PyErr_Clear();
+        return 1;
+      }
+    }
+
+  UNLESS_ASSIGN(r,PyObject_CallObject(r,NULL)) return -1;
+  l=PyInt_AsLong(r);
+  Py_DECREF(r);
+  return l;
+}
+
 static PyNumberMethods Wrapper_as_number = {
 	(binaryfunc)Wrapper_add,	/*nb_add*/
 	(binaryfunc)Wrapper_sub,	/*nb_subtract*/
@@ -998,22 +998,22 @@ static PyNumberMethods Wrapper_as_number = {
 	(binaryfunc)Wrapper_mod,	/*nb_remainder*/
 	(binaryfunc)Wrapper_divmod,	/*nb_divmod*/
 	(ternaryfunc)Wrapper_pow,	/*nb_power*/
-	(unaryfunc)Wrapper_neg,	/*nb_negative*/
-	(unaryfunc)Wrapper_pos,	/*nb_positive*/
-	(unaryfunc)Wrapper_abs,	/*nb_absolute*/
-	(inquiry)Wrapper_length,	/*nb_nonzero*/
+	(unaryfunc)Wrapper_neg,		/*nb_negative*/
+	(unaryfunc)Wrapper_pos,		/*nb_positive*/
+	(unaryfunc)Wrapper_abs,		/*nb_absolute*/
+	(inquiry)Wrapper_nonzero,	/*nb_nonzero*/
 	(unaryfunc)Wrapper_invert,	/*nb_invert*/
 	(binaryfunc)Wrapper_lshift,	/*nb_lshift*/
 	(binaryfunc)Wrapper_rshift,	/*nb_rshift*/
 	(binaryfunc)Wrapper_and,	/*nb_and*/
 	(binaryfunc)Wrapper_xor,	/*nb_xor*/
-	(binaryfunc)Wrapper_or,	/*nb_or*/
+	(binaryfunc)Wrapper_or,		/*nb_or*/
 	(coercion)Wrapper_coerce,	/*nb_coerce*/
-	(unaryfunc)Wrapper_int,	/*nb_int*/
+	(unaryfunc)Wrapper_int,		/*nb_int*/
 	(unaryfunc)Wrapper_long,	/*nb_long*/
 	(unaryfunc)Wrapper_float,	/*nb_float*/
-	(unaryfunc)Wrapper_oct,	/*nb_oct*/
-	(unaryfunc)Wrapper_hex,	/*nb_hex*/
+	(unaryfunc)Wrapper_oct,		/*nb_oct*/
+	(unaryfunc)Wrapper_hex,		/*nb_hex*/
 };
 
 
@@ -1427,7 +1427,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.48 $";
+  char *rev="$Revision: 1.49 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1446,7 +1446,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.48 2001/03/12 16:36:46 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.49 2001/03/21 21:11:11 brian Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
