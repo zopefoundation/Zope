@@ -157,7 +157,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     security.declareProtected(ACCESS_SESSIONDATA_PERM, 'hasSessionData')
     def hasSessionData(self):
         """ """
-        if self.getBrowserIdManager().getToken(create=0):
+        key = self.getBrowserIdManager().getToken(create=0)
+        if key:
             if self._hasSessionDataObject(key):
                 return 1
 
