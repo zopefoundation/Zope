@@ -1,5 +1,27 @@
 Principia Changes
 
+  Principia 1.8.0 beta 6
+
+    Features
+
+      - The sort attribute of the in tag now accepts
+        'sequence-item'::
+
+           <!--#in results sort=sequence-item-->
+
+        Note that this is equivalent to::
+
+           <!--#in results sort-->
+
+      - The in tag raises an error if asked to iterate over a string.
+        This is always due to some kind of error.
+
+      - The "Record" class used by AQueduct and Tabula to return
+        tabula data now has a useful string representation that is
+        equivalent to::
+
+           string.join(map(str,aRecord),', ')
+
   Principia 1.8.0
 
     To-Do before release
