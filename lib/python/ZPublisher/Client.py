@@ -71,7 +71,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -367,10 +367,8 @@ Unauthorized ='bci.Unauthorized'
 ServerError  ='bci.ServerError'
 NotAvailable ='bci.NotAvailable'
 
-exceptmap   ={'AccessError'      :AccessError,
-	      'AttributeError'   :AttributeError,
+exceptmap   ={'AttributeError'   :AttributeError,
 	      'BadRequest'       :BadRequest,
-	      'ConflictError'    :ConflictError,
 	      'EOFError'         :EOFError,
 	      'IOError'          :IOError,
 	      'ImportError'      :ImportError,
