@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.64 1998/05/11 14:55:32 jim Exp $'''
-__version__='$Revision: 1.64 $'[11:-2]
+$Id: Application.py,v 1.65 1998/05/12 19:06:18 jim Exp $'''
+__version__='$Revision: 1.65 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -236,7 +236,8 @@ def install_products():
 
     from Folder import Folder
     folder_permissions={}
-    for permission, names in Folder.__ac_permissions__:
+    for p in Folder.__ac_permissions__:
+	permission, names = p[:2]
 	folder_permissions[permission]=names
 
     meta_types=list(Folder.dynamic_meta_types)
@@ -395,6 +396,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.65  1998/05/12 19:06:18  jim
+# Changed to allow defaults in permission definitions.
+#
 # Revision 1.64  1998/05/11 14:55:32  jim
 # Added logic to recognize empty permissions so that folders can control
 # sub-object permissions.
