@@ -134,6 +134,15 @@ class TestCopySupport( unittest.TestCase ):
         self.failIf( 'file' in self.folder1.objectIds() )
         self.failUnless( 'file' in self.folder2.objectIds() )
 
+    def testCopyNewObject(self):
+        self.failIf('newfile' in self.folder1.objectIds())
+        manage_addFile(self.folder1, 'newfile',
+                       file='', content_type='text/plain')
+        cookie = self.folder1.manage_copyObjects(ids=('newfile',))
+        self.folder2.manage_pasteObjects(cookie)
+        self.failUnless('newfile' in self.folder1.objectIds())
+        self.failUnless('newfile' in self.folder2.objectIds())
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestCopySupport ) )
