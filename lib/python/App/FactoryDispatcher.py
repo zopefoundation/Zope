@@ -114,6 +114,8 @@ class FactoryDispatcher(Acquisition.Implicit):
     """Provide a namespace for product "methods"
     """
 
+    _owner=UnownableOwner
+
     def __init__(self, product, dest, REQUEST=None):
         if hasattr(product,'aq_base'): product=product.aq_base
         self._product=product
@@ -135,7 +137,11 @@ class FactoryDispatcher(Acquisition.Implicit):
 
     def DestinationURL(self):
         "Return the URL for the destination for factory output"
-        return self._u
+        url=getattr(self, '_u', None)
+        if url is None:
+            url=self.Destination().absolute_url()
+        return url
+
     DestinationURL__roles__=None
 
     def __getattr__(self, name):
