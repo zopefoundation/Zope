@@ -239,7 +239,7 @@
     <metadefault>$instancehome/Products</metadefault>
   </multikey>
 
-  <multikey name="path" datatype="existing-directory">
+  <multikey name="path" datatype="string">
     <description>
       This specifies additional paths directories which are inserted into
       the beginning of Python's module search path.  The set of directories
