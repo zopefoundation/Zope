@@ -198,7 +198,7 @@
                 batch-end-index -- The index, starting from
                    0, of the end of the batch.
 
-                batch-end-index -- The size of the batch.
+                batch-size -- The size of the batch.
 
           'next-sequence' -- This variable will be true when the last
              element is displayed and when the last element
@@ -228,7 +228,7 @@
                 batch-end-index -- The index, starting from
                    0, of the end of the batch.
 
-                batch-end-index -- The size of the batch.
+                batch-size -- The size of the batch.
 
       For each of the variables listed above with names ending in
       "-index", there are variables with names ending in "-number",
@@ -276,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.18 1998/01/15 21:06:21 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.19 1998/01/16 19:08:55 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.18 1998/01/15 21:06:21 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -848,6 +848,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.19  1998/01/16 19:08:55  jim
+# Fixed some documentation.
+#
 # Revision 1.18  1998/01/15 21:06:21  jim
 # More of the same. :-)
 #
