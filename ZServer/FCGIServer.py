@@ -337,7 +337,7 @@ class FCGIChannel(asynchat.async_chat):
     easily multiplex multiple connections in the same process, it's no
     great loss.
     """
-	closed=0
+    closed=0
 
     def __init__(self, server, sock, addr):
         self.server = server
