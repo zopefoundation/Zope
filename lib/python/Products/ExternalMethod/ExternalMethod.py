@@ -87,6 +87,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
 
     ZopeTime=Acquisition.Acquired
     HelpSys=Acquisition.Acquired
+    manage_page_header=Acquisition.Acquired
 
     manage_options=(
         (
