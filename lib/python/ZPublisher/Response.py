@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.5 1996/07/10 22:45:57 jfulton Exp $'''
+$Id: Response.py,v 1.6 1996/07/25 16:44:24 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,10 @@ $Id: Response.py,v 1.5 1996/07/10 22:45:57 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.6  1996/07/25 16:44:24  jfulton
+# - Fixed bug in recognizing HTML exception values.
+# - Added transaction support.
+#
 # Revision 1.5  1996/07/10 22:45:57  jfulton
 # Made exception handling fussier about exception values.
 # Now the value must contain white space to be considered an error
@@ -85,7 +89,7 @@ $Id: Response.py,v 1.5 1996/07/10 22:45:57 jfulton Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import string, types, sys, regex
 
@@ -197,7 +201,7 @@ class Response:
 
     If stream oriented output is used, then the response object
     passed into the object must be used.
-    """
+    """ #'
     
 
     def __init__(self,body='',status=200,headers=None,
@@ -205,7 +209,8 @@ class Response:
 	'''\
 	Creates a new response. In effect, the constructor calls
 	"self.setBody(body); self.setStatus(status); for name in
-	headers.keys(): self.setHeader(name, headers[name])"'''
+	headers.keys(): self.setHeader(name, headers[name])"
+	'''
 	if not headers:
 	    headers={}
 	self.headers=headers
@@ -374,6 +379,10 @@ class Response:
     def exception(self):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
 
+	# Abort running transaction, if any:
+	try: get_transaction().abort()
+	except: pass
+
 	self.setStatus(t)
 	if self.status >= 300 and self.status < 400:
 	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
@@ -389,7 +398,7 @@ class Response:
 		except: pass
 
 	b=v
-	if type(b) is not types.StringType or regex.search(' \t\n',b) < 0:
+	if type(b) is not types.StringType or regex.search('[ \t\n]',b) < 0:
 	    return self.setBody(
 		(str(t),
 		 'Sorry, an error occurred.<p>'
