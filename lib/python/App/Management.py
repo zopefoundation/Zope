@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.27 1999/08/11 18:19:25 jim Exp $"""
+$Id: Management.py,v 1.28 1999/08/16 20:52:38 jim Exp $"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -100,10 +100,11 @@ class Tabs(ExtensionClass.Base):
     manage_tabs__roles__=('Anonymous',)
     manage_tabs     =HTMLFile('manage_tabs', globals())
     
-    __ac_permissions__=(
-        ('View management screens', ('manage_help', )),
-        )
+    #__ac_permissions__=(
+    #    ('View management screens', ('manage_help', )),
+    #    )
 
+    manage_help__roles__=()
     def manage_help(self, RESPONSE, SCRIPT_NAME):
         "Help!"
         RESPONSE.redirect(SCRIPT_NAME+'/HelpSys/hs_index')
