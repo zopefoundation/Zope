@@ -93,11 +93,8 @@ import string
 
 import getopt
 
-try:
+if __name__ == "__main__":
     import setpath                      # Local hack to tweak sys.path etc.
-    import Products.ParsedXML
-except ImportError:
-    pass
 
 # Import local classes
 import TALDefs
