@@ -454,7 +454,12 @@ class Indexer:
                 print "unchanged", docid, path
                 continue
             docid = self.newdocid(path)
-            m = f.openmessage(n)
+            try:
+                m = f.openmessage(n)
+            except IOError:
+                print "disappeared", docid, path
+                self.unindexpath(path)
+                continue
             text = self.getmessagetext(m, f.name)
             if not text:
                 self.unindexpath(path)
