@@ -3,7 +3,7 @@
 import sys
 import unittest
 
-MODULES = ('commitlog', 'create', 'virgin', 'zodb_simple')
+MODULES = ('commitlog', 'create', 'virgin', 'zodb_simple', 'storage_api')
 
 
 
