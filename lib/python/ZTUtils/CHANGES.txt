@@ -4,48 +4,13 @@ ZTUtils changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version XXX
+    Version 1.1.2
 
       Bugs Fixed
 
-        - Changed the batch orphan default from 3 to 0. This mirrors
-          the change in the orphan default in dtml-in.
+        - Orphans defaulted to 3, which was confusing and out of sync
+          with DTML-In.
 
-    Version 1.1.1
 
-      Features Added
 
-        - Used an algorithm submitted by Tino Wildenhain to add
-          Roman numeral support to Iterators.
 
-        - TreeMakers have a setChildAccess() method that you can use
-          to control tree construction.  Child nodes can be accessed
-          through either an attribute name or callback function.
-          Children fetched by attribute name can be filtered through a
-          callback function.
-
-        - A new LazyFilter class allows you to filter a sequence using
-          Zope security and an optional filter callback function.  The
-          security and filter tests are lazy, meaning they are
-          performed as late as possible.  
-
-          The optional 'skip' argument determines the reaction when
-          access to a sequence element is refused by the Zope security
-          policy.  The default (None) is to raise the 'Unauthorized'
-          exception.  If a string is passed, such elements are
-          skipped.  If the string is non-empty, it is treated as a
-          permission name, and the element is skipped if the user
-          doesn't have that permission on the element.
-
-        - The Zope versions of TreeMaker, SimpleTreeMaker, and Batch
-          now use LazyFilter. The TreeMakers have a setSkip() method
-          that can be used to set the 'skip' value. Batch has an
-          optional 'skip_unauthorized' argument that is passed to
-          LazyFilter as 'skip'.
-
-        - Utility functions make_query(), url_query(), and
-          make_hidden_input() have been added.
-
-      Bugs Fixed
-
-        - Version 1.1.0 broke on Python 1.5.2 and Zope <2.4
