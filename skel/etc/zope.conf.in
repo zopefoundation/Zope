@@ -842,9 +842,9 @@ instancehome $INSTANCE
 #     fast-cgi, monitor-server, and icp-server.  If no servers are
 #     defined, the default servers are used.
 #
-#     Ports may be specified either in simple form (80) or in
-#     complex form including hostname 127.0.0.1:80.  If the hostname
-#     is "left off", the default-ip-address is used as the hostname.
+#     Ports may be specified using the 'address' directive either in simple
+#     form (80) or in complex form including hostname 127.0.0.1:80.  If the
+#     hostname is "left off", the default-ip-address is used as the hostname.
 #
 #     Port numbers are offset by the setting of port-base.
 #
