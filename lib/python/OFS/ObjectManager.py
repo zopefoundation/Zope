@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.137 2001/05/30 15:57:31 andreas Exp $"""
+$Id: ObjectManager.py,v 1.138 2001/07/03 18:18:34 andreas Exp $"""
 
-__version__='$Revision: 1.137 $'[11:-2]
+__version__='$Revision: 1.138 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -109,7 +109,7 @@ customImporters={
     XMLExportImport.magic: XMLExportImport.importXML,
     }
 
-bad_id=re.compile(r'[^a-zA-Z0-9-_~,. ]').search #TS
+bad_id=re.compile(r'[^a-zA-Z0-9-_~,.$ ]').search #TS
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -234,6 +234,7 @@ class ObjectManager(
         gmt = []
 
         for entry in Products.meta_types:
+
             if interfaces is None:
                 if entry.get("visibility", None) == "Global":
                     gmt.append(entry)
