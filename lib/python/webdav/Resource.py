@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -125,8 +125,32 @@ class Resource:
         if hasattr(self, 'locked_in_session') and self.locked_in_session():
             lock=Lock('xxxx', 'xxxx')
             return self.dav__locks + (lock,)
-        
-    
+
+    def dav__validate(self, methodname, REQUEST):
+        # Check whether the user is allowed to perform a particular
+        # operation. This is necessary because not all DAV HTTP methods
+        # map cleanly to existing permissions. For example, PUT may be
+        # used to add a new object or change an existing object - this
+        # would usually be handled by two different permissions in Zope.
+        # Since cant know the intention of the PUT until the time of the
+        # call (whether this is an add or change operation), we have to
+        # call dav__validate, passing the name of an existing method that
+        # has the desired protection. This can be thought of as saying
+        # "I should have the same protection as the manage_xxx method".
+        msg='<strong>You are not authorized to access this resource.</strong>'
+        if not hasattr(self, methodname):
+            raise 'Unauthorized', msg
+        method=getattr(self, methodname)
+        if hasattr(method, '__roles__'):
+            roles=method.__roles__
+            user=REQUEST.get('AUTHENTICATED_USER', None)
+            __traceback_info__=methodname, str(roles), user
+            if (not hasattr(user, 'hasRole') or not user.hasRole(None, roles)):
+                raise 'Unauthorized', msg
+            return 1
+        raise 'Unauthorized', msg
+
+
     # WebDAV class 1 support
 
     def HEAD(self, REQUEST, RESPONSE):
@@ -165,6 +189,7 @@ class Resource:
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
         self.init_headers(RESPONSE)
+        self.dav__validate('manage_delObjects', REQUEST)
         url=urlfix(REQUEST['URL'], 'DELETE')
         name=filter(None, string.split(url, '/'))[-1]
         # TODO: add lock checking here
@@ -202,7 +227,7 @@ class Resource:
         """Create a new collection resource. If called on an existing 
         resource, MKCOL must fail with 405 (Method Not Allowed)."""
         self.init_headers(RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
+        raise 'Method Not Allowed', 'The resource already exists.'
 
     def COPY(self, REQUEST, RESPONSE):
         """Create a duplicate of the source resource whose state
