@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -116,9 +116,15 @@ class Resource(ExtensionClass.Base):
 
     def dav__init(self, request, response):
         # Init expected HTTP 1.1 / WebDAV headers which are not
-        # currently set by the response object automagically.
-        # Note we set an borg-specific header for ie5 :(
-        response.setHeader('Date', rfc1123_date(), 1)
+        # currently set by the base response object automagically.
+        #
+        # Note we set an borg-specific header for ie5 :( Also, we
+        # sniff for a ZServer response object, because we don't
+        # want to write duplicate headers (since ZS writes Date
+        # and Connection itself).
+        if not hasattr(response, '_server_version'):
+            response.setHeader('Connection', 'close')
+            response.setHeader('Date', rfc1123_date(), 1)
         response.setHeader('MS-Author-Via', 'DAV')
 
     def dav__validate(self, object, methodname, REQUEST):
