@@ -25,12 +25,18 @@ Zope Installation Frequently Asked Questions
        located in the 'inst' directory of your Zope installation,
        changing the line: do('make')  to: do('make -k').
 
+    3. I am having trouble building Zope on my OpenBSD system.  I get
+       some wierd compilation errors.
 
-    3. I am having trouble building Zope on a libc 5 Linux machine.
+       Make sure you unpack Zope using GNU tar; you will not get any
+       error messages with OpenBSD's standard tar, but your installation
+       will be subtly broken due to problems with long path names.
+
+    4. I am having trouble building Zope on a libc 5 Linux machine.
     
        Zope requires Python be built with glibc 2.x (libc 6) on Linux.
 
-    4. I am trying to install Zope on a Windows NT/2000 machine, but
+    5. I am trying to install Zope on a Windows NT/2000 machine, but
        I keep getting a dialog saying "corrupt installation detected".
        Is something wrong with the distribution file?
 
