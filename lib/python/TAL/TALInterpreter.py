@@ -18,9 +18,9 @@ import sys
 import getopt
 
 from cgi import escape
-from string import join, lower, rfind
+from string import rfind
 try:
-    from strop import lower, rfind
+    from strop import rfind
 except ImportError:
     pass
 
@@ -266,7 +266,7 @@ class TALInterpreter:
             # Clear 'entering' flag
             macs[-1][2] = 0
             # Convert or drop depth-one METAL attributes.
-            i = rfind(name, ":") + 1
+            i = name.rfind(":") + 1
             prefix, suffix = name[:i], name[i:]
             if suffix == "define-macro":
                 # Convert define-macro as we enter depth one.
@@ -290,7 +290,7 @@ class TALInterpreter:
         if action > 1:
             return self.attrAction(item)
         ok = 1
-        if self.html and lower(name) in BOOLEAN_HTML_ATTRS:
+        if self.html and name.lower() in BOOLEAN_HTML_ATTRS:
             evalue = self.engine.evaluateBoolean(item[3])
             if evalue is self.Default:
                 if action == 1: # Cancelled insert
@@ -418,7 +418,7 @@ class TALInterpreter:
             return
         s = escape(text)
         self._stream_write(s)
-        i = rfind(s, '\n')
+        i = s.rfind('\n')
         if i < 0:
             self.col = self.col + len(s)
         else:
