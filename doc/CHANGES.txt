@@ -15,3 +15,5 @@ Zope changes
             branch (which is where the next bug-fix release will be 
             made from).**
 
+        - Added the __replaceable__ property support to ObjectManager.
+            This is currently documented only in the Wiki.
