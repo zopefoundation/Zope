@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.95 $'[11:-2]
+__version__='$Revision: 1.96 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -279,7 +279,7 @@ def _findLocalTimeZoneName(isDST):
                 localzone = altzone
             else:
                 localzone = timezone
-            offset=(-localzone/(60*60))
+            offset=(-localzone/(60*60.0))
             majorOffset=int(offset)
             if majorOffset != 0 :
                 minorOffset=abs(int((offset % majorOffset) * 60.0))
