@@ -39,7 +39,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.18 $'.split()[-2:][0]
+__version__ = '$Revision: 1.19 $'.split()[-2:][0]
 
 # Lock usage is inherently unbounded because there may be an unlimited number
 # of objects actually touched in any single transaction, and worst case could
@@ -92,11 +92,15 @@ class BerkeleyConfig:
     - kbytes is passed directly to txn_checkpoint()
 
     - min is passed directly to txn_checkpoint()
+
+    - logdir if not None, is passed to the environment's set_lg_dir() method
+      before it is opened.
     """
     numlocks = DEFAULT_MAX_LOCKS
     interval = 100
     kbyte = 0
     min = 0
+    logdir = None
 
 
 
@@ -321,6 +325,8 @@ def env_from_string(envname, config):
         # already exists
     env = db.DBEnv()
     env.set_lk_max_locks(config.numlocks)
+    if config.logdir is not None:
+        env.set_lg_dir(config.logdir)
     env.open(envname,
              db.DB_CREATE       # create underlying files as necessary
              | db.DB_RECOVER    # run normal recovery before opening
