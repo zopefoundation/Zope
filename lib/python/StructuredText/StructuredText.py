@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.24 1999/12/13 16:32:48 klm Exp $'''
+$Id: StructuredText.py,v 1.25 2000/02/17 00:53:24 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,11 @@ $Id: StructuredText.py,v 1.24 1999/12/13 16:32:48 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.25  2000/02/17 00:53:24  klm
+# HTML._str(): We were getting preformatted examples rendered twice,
+# second time without preformatting.  Problem was a missing 'continue'
+# in one of the cases.
+#
 # Revision 1.24  1999/12/13 16:32:48  klm
 # Incorporated pavlos christoforou's mods to handle simple tables.  From
 # his web page at http://www.zope.org/Members/gaaros/StructuredText:
@@ -733,6 +738,7 @@ class HTML(StructuredText):
             if s[0][-2:]=='::' and s[1]:
                 # Introduce an example, using pre tags:
                 r=self.normal(r,s[0][:-1],self.pre(s[1]))
+                continue
             if table.create(s[0]):
                 ## table support.
                 r=self.table(r,table.html(),self._str(s[1],level))
