@@ -1,1 +1,8 @@
 *shared*
+intSet intSet.c -I../ExtensionClass -I../cPersistence
+WordSequence WordSequence.c
+
+BTree BTree.c -I../ExtensionClass -I../cPersistence
+IIBTree IIBTree.c -I../ExtensionClass -I../cPersistence
+IOBTree IOBTree.c -I../ExtensionClass -I../cPersistence
+OIBTree OIBTree.c -I../ExtensionClass -I../cPersistence
