@@ -87,3 +87,7 @@ import DTML
 del DTML
 
 from SecurityManagement import getSecurityManager, setSecurityPolicy
+from SecurityInfo import ClassSecurityInfo
+from SecurityInfo import ACCESS_PRIVATE
+from SecurityInfo import ACCESS_PUBLIC
+from SecurityInfo import ACCESS_NONE
