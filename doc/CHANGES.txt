@@ -67,6 +67,9 @@ Zope Changes
       - Collector #259: walkandscrub.py did not delete all .pyc and .pyo
         files during installation. Fixed.
 
+      - Collector #278: DocumentWithImages could not handle URLs with
+        underscores
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
