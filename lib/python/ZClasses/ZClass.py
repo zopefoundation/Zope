@@ -163,6 +163,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     instance__meta_type='instance'
     instance__icon=''
     __propsets__=()
+    isPrincipiaFolderish=1
  
     __ac_permissions__=(
 	('View management screens', ('manage_tabs', 'manage_workspace')),
@@ -261,8 +262,11 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         folder._setObject(id, i)
 
         if REQUEST.has_key('RESPONSE'):
-            if durl is None: durl=REQUEST['URL2']
+            if durl is None: durl=REQUEST['URL3']
             REQUEST['RESPONSE'].redirect(durl+'/manage_workspace')
+        else:
+            return getattr(folder, id)
+        
 
     __call__=index_html
 
