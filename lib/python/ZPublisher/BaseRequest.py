@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -286,10 +286,7 @@ class BaseRequest:
                         try: subobject=object[entry_name]
                         except (KeyError, IndexError,
                                 TypeError, AttributeError):
-                            if entry_name=='.': subobject=object
-                            elif entry_name=='..' and parents:
-                                subobject=parents[-1]
-                            elif debug_mode:
+                            if debug_mode:
                                 return response.debugError(
                                     "Cannot locate object at: %s" %URL) 
                             else: return response.notFoundError(URL)
