@@ -293,6 +293,12 @@ class DateTimeTests(unittest.TestCase):
             result_from_mx=tuple(map(int, line[12:-2].split(',')))
             self.assertEqual(result_from_mx[1], d.week())
 
+    def testCopyConstructor(self):
+        d = DateTime('2004/04/04')
+        self.assertEqual(DateTime(d), d)
+        d = DateTime('1999/04/12')
+        self.assertEqual(DateTime(d), d)
+
     def testRFC822(self):
         '''rfc822 conversion'''
         dt = DateTime('2002-05-02T08:00:00+00:00')
