@@ -82,6 +82,108 @@
 # file.
 # 
 ##############################################################################
-import HTTPResponse
-Response=HTTPResponse.HTTPResponse
-del HTTPResponse
+'''CGI Response Output formatter
+
+$Id: BaseResponse.py,v 1.1 1999/02/18 17:17:55 jim Exp $'''
+__version__='$Revision: 1.1 $'[11:-2]
+
+import string, types, sys, regex
+from string import find, rfind, lower, upper, strip, split, join, translate
+from types import StringType, InstanceType
+
+class BaseResponse:
+    """Base Response Class
+
+    What should be here?
+    """
+    debug_mode=None
+    _auth=None
+
+    def __init__(self, stdout, stderr,
+                 body='', headers=None, status=None, cookies=None):
+        self.stdout=stdout
+        self.stderr=stderr
+        self.body=body
+        if headers is None: headers={}
+        self.headers=headers
+        self.status=status
+        if cookies is None: cookies={}
+        self.cookies=cookies
+    
+    def setStatus(self, status, reason=None):
+        self.status=status
+
+    def setHeader(self, name, value):
+        self.headers[n]=value
+
+    __setitem__=setHeader
+
+
+    def setBody(self, body):
+        self.body=body
+
+    def getStatus(self):
+        'Returns the current HTTP status code as an integer. '
+        return self.status
+
+    def setCookie(self,name,value,**kw):
+        '''\
+        Set an HTTP cookie on the browser
+
+        The response will include an HTTP header that sets a cookie on
+        cookie-enabled browsers with a key "name" and value
+        "value". This overwrites any previously set value for the
+        cookie in the Response object.
+        '''
+        cookies=self.cookies
+        if cookies.has_key(name):
+            cookie=cookies[name]
+        else: cookie=cookies[name]={}
+        for k, v in kw.items():
+            cookie[k]=v
+        cookie['value']=value
+
+    def appendBody(self, body):
+        self.setBody(self.getBody() + body)
+
+    def getHeader(self, name):
+         '''\
+         Get a header value
+         
+         Returns the value associated with a HTTP return header, or
+         "None" if no such header has been set in the response
+         yet. '''
+         return self.headers.get(name, None)
+
+    def __getitem__(self, name):
+        'Get the value of an output header'
+        return self.headers[name]
+
+    def getBody(self):
+        'Returns a string representing the currently set body. '
+        return self.body
+
+    def __str__(self):
+        return str(self.body)
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, `self.body`)
+
+    def flush(self): pass
+
+    def write(self,data):
+        """\
+        Return data as a stream
+
+        HTML data may be returned using a stream-oriented interface.
+        This allows the browser to display partial results while
+        computation of a response to proceed.
+
+        The published object should first set any output headers or
+        cookies on the response object.
+
+        Note that published objects must not generate any errors
+        after beginning stream-oriented output. 
+
+        """
+        self.body=self.body+data

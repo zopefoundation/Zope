@@ -82,6 +82,11 @@
 # file.
 # 
 ##############################################################################
-import HTTPResponse
-Response=HTTPResponse.HTTPResponse
-del HTTPResponse
+__version__='$Revision: 1.1 $'[11:-2]
+
+# Waaaa, I wish I didn't have to work this hard.
+try: from thread import allocate_lock
+except:
+    class allocate_lock:
+        def acquire(*args): pass
+        def release(*args): pass

@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.28 1998/12/04 20:15:34 jim Exp $
+$Id: Test.py,v 1.29 1999/02/18 17:17:56 jim Exp $
 '''
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -243,23 +243,15 @@ def publish_module_pm(module_name,
                       environ=os.environ, debug=0):
 
     from Response import Response
-    from Publish import ModulePublisher
+    from Request import Request
+    from Publish import publish
 
     after_list=[None]
-    request=None
-    try:
-        response=Response(stdout=stdout, stderr=stderr)
-        publisher = ModulePublisher(stdin=stdin, stdout=stdout, stderr=stderr,
-                                    environ=environ)
-        response = publisher.response
-        request=publisher.request
-        response = publisher.publish(module_name,after_list,debug=debug)
-        request.other={}
-        response=str(response)
-    finally:
-        try: request.other={}
-        except: pass
-        if after_list[0] is not None: after_list[0]()
+    response=Response(stdout=stdout, stderr=stderr)
+    request=Request(stdin, environ, response)
+    response = publish(request, module_name, after_list, debug=debug)
+
+
 
 try: from codehack import getlineno
 except:
@@ -325,7 +317,7 @@ def publish(script=None,path_info='/',
         else: run(c)
     elif debug:
         import Publish
-        from Publish import ModulePublisher
+        from Publish import publish, call_object
         import pdb
 
         class Pdb(pdb.Pdb):
@@ -355,10 +347,8 @@ def publish(script=None,path_info='/',
             filename = code.co_filename
             db.set_break(filename,lineno)
 
-        fbreak(db,ModulePublisher.publish)
-        fbreak(db,ModulePublisher.call_object)
-        #fbreak(db,Publish.new_find_object)
-        #fbreak(db,Publish.old_find_object)
+        fbreak(db,publish)
+        fbreak(db,call_object)
 
         dbdata={'breakpoints':(), 'env':env}
         b=''
