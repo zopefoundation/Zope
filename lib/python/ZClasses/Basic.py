@@ -119,9 +119,10 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                 self, REQUEST,
                 manage_tabs_message='Basic properties changed')
 
+
+    def classMetaType(self): return self.getClassAttr('meta_type','')
     
-    def classIcon(self):
-        return self.getClassAttr('icon','')
+    def classIcon(self): return self.getClassAttr('icon','')
 
 
 class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,

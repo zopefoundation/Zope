@@ -21,7 +21,7 @@ will need to be adjusted if the class is moved.</p>
   <TH ALIGN="LEFT" VALIGN="TOP">meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
-     value="<!--#var meta_type-->">
+     value="<!--#var classMetaType-->">
   </TD>
 </TR>
 <TR>
