@@ -143,8 +143,10 @@ def main():
             errors = 1
             if quiet:
                 print sys.exc_type
+                sys.stdout.flush()
             else:
                 print "Failed:"
+                sys.stdout.flush()
                 traceback.print_exc()
             continue
         head, tail = os.path.split(arg)
