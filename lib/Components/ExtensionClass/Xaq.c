@@ -1,6 +1,6 @@
 /*
 
-  $Id: Xaq.c,v 1.2 1997/02/19 22:30:22 jim Exp $
+  $Id: Xaq.c,v 1.3 1997/02/20 00:55:38 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: Xaq.c,v $
+  Revision 1.3  1997/02/20 00:55:38  jim
+  *** empty log message ***
+
   Revision 1.2  1997/02/19 22:30:22  jim
   Added $#@! missing static declaration.
 
@@ -226,7 +229,7 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
       else if(has__of__(r))
-	ASSIGN(r,CallMethodO(r,py__of__,Build("O", self), NULL));
+	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
       return r;
     }
   if(self->obj) PyErr_Clear();
@@ -283,7 +286,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname)
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,(PyObject*)self));
       else if(has__of__(r))
-	ASSIGN(r,CallMethodO(r,py__of__,Build("O", self), NULL));
+	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
       return r;
     }
   if(self->obj) PyErr_Clear();
@@ -606,7 +609,7 @@ void
 initXaq()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   PURE_MIXIN_CLASS(Acquirer,
 	"Base class for objects that acquire attributes from containers\n"
 	, Acquirer_methods);
