@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -154,7 +154,9 @@ class File(Persistent,Implicit,PropertyManager,
         self.title=title
         self.precondition=precondition
         headers=hasattr(file, 'headers') and file.headers or None
-        data=(headers is None) and file or file.read()
+        if hasattr(file, 'read'):
+            data=file.read()
+        else: data=file
         if headers and headers.has_key('content-type') and (not content_type):
             content_type=headers['content-type']
         if not content_type:
