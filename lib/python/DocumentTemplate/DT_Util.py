@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.23 1998/03/04 18:18:40 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.24 1998/03/06 23:22:36 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -141,6 +141,11 @@ def test(*args):
     if l%2: return args[-1]
 
 d['test']=test
+
+def _attr(inst, name, md={}):
+    return careful_getattr(md, inst, name)
+
+d['attr']=_attr
 
 expr_globals={
     '__builtins__':{},
@@ -307,6 +312,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.24  1998/03/06 23:22:36  jim
+# Added "builtin" 'attr' function: attr(inst,name,_vars)
+#
 # Revision 1.23  1998/03/04 18:18:40  jim
 # Extended the parse_name utility to handle other name-like tags.
 #
