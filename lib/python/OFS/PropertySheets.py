@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -375,7 +375,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
             else:
                 # Quote non-xml items here?
                 attrs='' 
-            prop='  <n:%s%s><![CDATA[%s]]></n:%s>' % (name, attrs, value, name)
+
+            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, xml_escape(value), name)
+
             result.append(prop)
         if not result: return ''
         result=join(result, '\n')
@@ -535,7 +537,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         {'id':'supportedlock',    'mode':'r'},
         {'id':'lockdiscovery',    'mode':'r'},
         )
-
+     
     def getProperty(self, id, default=None):
         method='dav__%s' % id
         if not hasattr(self, method):
@@ -804,3 +806,16 @@ def absattr(attr):
     if callable(attr):
         return attr()
     return attr
+
+
+def xml_escape(v):
+    """ convert any content from ISO-8859-1 to UTF-8
+    The main use is to escape non-US object property values
+    (e.g. containing accented characters). Also we convert "<" and ">"
+    to entities to keep the properties XML compliant. 
+    """
+
+    v = str(v).replace('<','&lt;')
+    v = v.replace('>','&gt;')
+
+    return  unicode(v,"latin-1").encode("utf-8")
