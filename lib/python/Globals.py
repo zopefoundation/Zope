@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -141,12 +141,42 @@ else:
     def package_home(globals_dict):
 	return globals_dict['__'].__path__[0]
     
+# utility stuff
+
+def attrget(o,name,default):
+    if hasattr(o,name): return getattr(o,name)
+    return default
+
+class Selector:
+    def __init__(self, key):
+        self._k=key
+    def __call__(self, o):
+        return o[key]
+
+class MultipleSelector:
+    def __init__(self, keys):
+        self._k=keys
+    def __call__(self, o):
+        r=[]
+        a=r.append
+        for key in self._k: a(o[key])
+        return r
+    
+
+def getitems(o,names):
+    r=[]
+    for name in names:
+        v=o[name]
+        
 
 ##########################################################################
 #
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.18  1998/11/13 20:22:34  jeffrey
+# added jim's "attrget", and Selector/MultipleSelector classes
+#
 # Revision 1.17  1998/10/02 15:00:22  jim
 # Added "DevelopmentMode" that auto-reloads HTMLFile objects.
 #
@@ -207,5 +237,4 @@ else:
 # initial
 #
 #
-
 
