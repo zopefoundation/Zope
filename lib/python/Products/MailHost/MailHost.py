@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.33 1998/12/04 21:38:02 jeffrey Exp $ 
-__version__ = "$Revision: 1.33 $"[11:-2]
+#$Id: MailHost.py,v 1.34 1999/02/16 14:48:54 brian Exp $ 
+__version__ = "$Revision: 1.34 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -262,7 +262,7 @@ class SendMail:
         self.conn.connect(smtpHost, smtpPort)
         self.timeout=timeout
         self.fd=self.conn.fileno()
-        self.conn.send("helo "+localHost+"\r\n")
+        self.conn.send("helo "+localHost+"\015\012")
         while 1:
             if not self._check(): break
 
@@ -289,30 +289,33 @@ class SendMail:
         except:
             raise smtpError, "Cannot convert line from SMTP: %s" % line
 
-        if code > 500:
+        if code > 400:
             raise smtpError, "Recieved error code %s from SMTP: %s"\
                   % (code, line)
         return 1
 
     def send(self, mfrom, mto, subj='No Subject', body='Blank Message'):
-        self.conn.send("mail from:<%s>\n" % mfrom)
+        self.conn.send("mail from:<%s>\015\012" % mfrom)
         self._check()
         if type(mto) in [types.ListType, types.TupleType]:
             for person in mto:
-                self.conn.send("rcpt to:<%s>\n" % person)
+                self.conn.send("rcpt to:<%s>\015\012" % person)
                 self._check()
         else:
-            self.conn.send("rcpt to:<%s>\n" % mto)
+            self.conn.send("rcpt to:<%s>\015\012" % mto)
             self._check()
-        self.conn.send("data\n")
+        self.conn.send("data\015\012")
         self._check()
         self.conn.send(body)
-        self.conn.send("\n.\n")
+        self.conn.send("\015\012.\015\012")
         self._check('354')
 
     def _close(self):
-        self.conn.send("quit\n")
+        self.conn.send("quit\015\012")
         self.conn.close()
+
+
+bin_search=ts_regex.compile('[\0-\6\177-\277]').search
 
 def decapitate(message):
     # split message into headers / body
