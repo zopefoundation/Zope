@@ -73,9 +73,9 @@ Building Zope
   
     * You should be using Python 1.5.2 to run the build scripts.
 
-    * The python you run with *must* have threads compiled in, which is
-      *not* the case for a vanilla build.  When you build,
-      'configure --with-threads' does the right thing.
+    * The python you run Zope with *must* have threads compiled in,
+      which is *not* the case for a vanilla build.  When you build the
+      python you'll use, 'configure --with-threads' does the right thing.
 
     * To build python extensions you need to have Python configuration
       information available. If your Python comes from an RPM you may need
