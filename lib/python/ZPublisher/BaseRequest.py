@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -90,7 +90,7 @@ class BaseRequest:
 
     set=__setitem__
 
-    def get(self, key, default):
+    def get(self, key, default=None):
         """Get a variable value
 
         Return a value for the required variable name.
