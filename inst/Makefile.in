@@ -72,7 +72,8 @@ uninstall:
 # extensions because it also compiles bytecode, but it's more intuitive and
 # less expensive in the common case than letting distutils
 # potentially rebuild the binaries when we've done that already.
-inplace: PREFIX=${BASE_DIR} install
+inplace: PREFIX=${BASE_DIR}
+inplace: install
 
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
