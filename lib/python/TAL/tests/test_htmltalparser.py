@@ -614,6 +614,38 @@ translated string</span>
   ('rawtextColumn', ('</span>\n', 0))
   ])
 
+    def test_i18n_name_with_content(self):
+        self._run_check('<div i18n:translate="">This is text for '
+            '<span i18n:translate="" tal:content="bar" i18n:name="bar_name"/>.'
+            '</div>', [
+('setPosition', (1, 0)),
+('beginScope', {'i18n:translate': ''}),
+('startTag', ('div', [('i18n:translate', '', 'i18n')])),
+('insertTranslation',
+ ('',
+  [('rawtextOffset', ('This is text for ', 17)),
+   ('setPosition', (1, 40)),
+   ('beginScope',
+    {'tal:content': 'bar', 'i18n:name': 'bar_name', 'i18n:translate': ''}),
+   ('i18nVariable',
+       ('bar_name',
+        [('startTag',
+           ('span',
+            [('i18n:translate', '', 'i18n'),
+             ('tal:content', 'bar', 'tal'),
+             ('i18n:name', 'bar_name', 'i18n')])),
+         ('insertTranslation',
+           ('',
+             [('insertText', ('$bar$', []))])),
+         ('rawtextOffset', ('</span>', 7))],
+      None)),
+   ('endScope', ()),
+   ('rawtextOffset', ('.', 1))])),
+('endScope', ()),
+('rawtextOffset', ('</div>', 6)) 
+  ])
+
+
     def check_i18n_name_implicit_value(self):
         # input/test22.html
         self._run_check('''\
@@ -725,31 +757,38 @@ translated string</span>
     def check_i18n_data_with_name(self):
         # input/test29.html
         self._run_check('''\
-At the tone the time will be
+<div i18n:translate="">At the tone the time will be
 <span i18n:data="here/currentTime"
       i18n:translate="timefmt"
-      i18n:name="time">2:32 pm</span>... beep!
-''', [
-  ('rawtextBeginScope',
-   ('At the tone the time will be\n',
-    0,
-    (2, 0),
-    0,
-    {'i18n:data': 'here/currentTime',
-     'i18n:name': 'time',
-     'i18n:translate': 'timefmt'})),
-  ('insertTranslation',
-   ('timefmt',
-    [('startTag',
-      ('span',
-       [('i18n:data', 'here/currentTime', 'i18n'),
-        ('i18n:translate', 'timefmt', 'i18n'),
-        ('i18n:name', 'time', 'i18n')])),
-     ('i18nVariable', ('time', [], None))],
-    '$here/currentTime$')),
-  ('endScope', ()),
-  ('rawtextColumn', ('... beep!\n', 0))
-  ])
+      i18n:name="time">2:32 pm</span>... beep!</div>
+''',
+[('setPosition', (1, 0)),
+ ('beginScope', {'i18n:translate': ''}),
+ ('startTag', ('div', [('i18n:translate', '', 'i18n')])),
+ ('insertTranslation',
+  ('',
+   [('rawtextBeginScope',
+     ('At the tone the time will be\n',
+      0,
+      (2, 0),
+      0,
+      {'i18n:data': 'here/currentTime',
+       'i18n:name': 'time',
+       'i18n:translate': 'timefmt'})),
+    ('insertTranslation',
+     ('timefmt',
+      [('startTag',
+        ('span',
+         [('i18n:data', 'here/currentTime', 'i18n'),
+          ('i18n:translate', 'timefmt', 'i18n'),
+          ('i18n:name', 'time', 'i18n')])),
+       ('i18nVariable', ('time', [], None))],
+      '$here/currentTime$')),
+    ('endScope', ()),
+    ('rawtextOffset', ('... beep!', 9))])),
+ ('endScope', ()),
+ ('rawtextColumn', ('</div>\n', 0))]
+)
 
     def check_i18n_explicit_msgid_with_name(self):
         # input/test26.html

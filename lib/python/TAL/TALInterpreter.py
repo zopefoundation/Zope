@@ -327,7 +327,7 @@ class TALInterpreter:
                 name = prefix + "use-macro"
                 value = macs[-1][0] # Macro name
             elif suffix == "define-slot":
-                name = prefix + "slot"
+                name = prefix + "fill-slot"
             elif suffix == "fill-slot":
                 pass
             else:
@@ -418,9 +418,9 @@ class TALInterpreter:
     def do_rawtextBeginScope_tal(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
         self.col = col
-        self.position = position
-        self.engine.setPosition(position)
         engine = self.engine
+        self.position = position
+        engine.setPosition(position)
         if closeprev:
             engine.endScope()
             engine.beginScope()

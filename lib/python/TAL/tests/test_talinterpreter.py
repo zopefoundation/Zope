@@ -20,11 +20,11 @@ import unittest
 
 from StringIO import StringIO
 
-from TAL.TALDefs import METALError
+from TAL.TALDefs import METALError, I18NError
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALInterpreter import TALInterpreter
+from TAL.DummyEngine import DummyEngine, DummyTranslationService
 from TAL.TALInterpreter import interpolate
-from TAL.DummyEngine import DummyEngine
 
 
 class TestCaseBase(unittest.TestCase):
@@ -59,6 +59,130 @@ class MacroErrorsTestCase(TestCaseBase):
     def check_version_error(self):
         self.macro[0] = ("version", "duh")
 
+
+class I18NCornerTestCase(TestCaseBase):
+
+    def setUp(self):
+        self.engine = DummyEngine()
+        self.engine.setLocal('bar', 'BaRvAlUe')
+
+    def _check(self, program, expected):
+        result = StringIO()
+        self.interpreter = TALInterpreter(program, {}, self.engine,
+                                          stream=result)
+        self.interpreter()
+        self.assertEqual(expected, result.getvalue())
+
+    def test_content_with_messageid_and_i18nname_and_i18ntranslate(self):
+        # Let's tell the user this is incredibly silly!
+        self.assertRaises(
+            I18NError, self._compile,
+            '<span i18n:translate="" tal:content="bar" i18n:name="bar_name"/>')
+
+    def test_content_with_plaintext_and_i18nname_and_i18ntranslate(self):
+        # Let's tell the user this is incredibly silly!
+        self.assertRaises(
+            I18NError, self._compile,
+            '<span i18n:translate="" i18n:name="color_name">green</span>')
+
+    def test_translate_static_text_as_dynamic(self):
+        program, macros = self._compile(
+            '<div i18n:translate="">This is text for '
+            '<span i18n:translate="" tal:content="bar" i18n:name="bar_name"/>.'
+            '</div>')
+        self._check(program,
+                    '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n')
+
+    def test_translate_static_text_as_dynamic_from_bytecode(self):
+        program =  [('version', '1.4'),
+ ('mode', 'html'),
+('setPosition', (1, 0)),
+('beginScope', {'i18n:translate': ''}),
+('startTag', ('div', [('i18n:translate', '', 'i18n')])),
+('insertTranslation',
+ ('',
+  [('rawtextOffset', ('This is text for ', 17)),
+   ('setPosition', (1, 40)),
+   ('beginScope',
+    {'tal:content': 'bar', 'i18n:name': 'bar_name', 'i18n:translate': ''}),
+   ('i18nVariable',
+       ('bar_name',
+        [('startTag',
+           ('span',
+            [('i18n:translate', '', 'i18n'),
+             ('tal:content', 'bar', 'tal'),
+             ('i18n:name', 'bar_name', 'i18n')])),
+         ('insertTranslation',
+           ('',
+             [('insertText', ('$bar$', []))])),
+         ('rawtextOffset', ('</span>', 7))],
+      None)),
+   ('endScope', ()),
+   ('rawtextOffset', ('.', 1))])),
+('endScope', ()),
+('rawtextOffset', ('</div>', 6)) 
+]
+        self._check(program,
+                    '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n')
+
+    def test_for_correct_msgids(self):
+
+        class CollectingTranslationService(DummyTranslationService):
+            data = []
+
+            def translate(self, domain, msgid, mapping=None,
+                          context=None, target_language=None, default=None):
+                self.data.append(msgid)
+                return DummyTranslationService.translate(
+                    self,
+                    domain, msgid, mapping, context, target_language, default)
+
+        xlatsvc = CollectingTranslationService()
+        self.engine.translationService = xlatsvc
+        result = StringIO()
+        program, macros = self._compile(
+            '<div i18n:translate="">This is text for '
+            '<span i18n:translate="" tal:content="bar" '
+            'i18n:name="bar_name"/>.</div>')
+        self.interpreter = TALInterpreter(program, {}, self.engine,
+                                          stream=result)
+        self.interpreter()
+        self.assert_('BaRvAlUe' in xlatsvc.data)
+        self.assert_('This is text for ${bar_name}.' in
+                     xlatsvc.data)
+        self.assertEqual(
+            '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n',
+            result.getvalue())
+
+
+class I18NErrorsTestCase(TestCaseBase):
+
+    def _check(self, src, msg):
+        try:
+            self._compile(src)
+        except I18NError:
+            pass
+        else:
+            self.fail(msg)
+
+    def test_id_with_replace(self):
+        self._check('<p i18n:id="foo" tal:replace="string:splat"></p>',
+                    "expected i18n:id with tal:replace to be denied")
+
+    def test_missing_values(self):
+        self._check('<p i18n:attributes=""></p>',
+                    "missing i18n:attributes value not caught")
+        self._check('<p i18n:data=""></p>',
+                    "missing i18n:data value not caught")
+        self._check('<p i18n:id=""></p>',
+                    "missing i18n:id value not caught")
+
+    def test_id_with_attributes(self):
+        self._check('''<input name="Delete"
+                       tal:attributes="name string:delete_button"
+                       i18n:attributes="name message-id">''',
+            "expected attribute being both part of tal:attributes" +
+            " and having a msgid in i18n:attributes to be denied")
 
 class OutputPresentationTestCase(TestCaseBase):
 
@@ -159,6 +283,7 @@ def test_suite():
     suite.addTest(unittest.makeSuite(MacroErrorsTestCase, "check_"))
     suite.addTest(unittest.makeSuite(OutputPresentationTestCase, "check_"))
     suite.addTest(unittest.makeSuite(InterpolateTestCase, "check_"))
+    suite.addTest(unittest.makeSuite(I18NCornerTestCase))
     return suite
 
 
