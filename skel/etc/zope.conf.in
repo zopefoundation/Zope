@@ -142,7 +142,7 @@ instancehome $INSTANCE
 # Directive: enable-product-installation
 #
 # Description:
-#     If this directive is turned, Zope performs 'product installation'
+#     If this directive is turned on, Zope performs 'product installation'
 #     (the registration of Python modules in various Products directories)
 #     at startup. Turning this off can speed Zope/ZEO startup time,
 #     but it can also cause your Control_Panel Product list to become
