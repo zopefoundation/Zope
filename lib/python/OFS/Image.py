@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -128,21 +128,13 @@ class File(Persistent,Implicit,PropertyManager,
                    )
 
     __ac_permissions__=(
-    ('View management screens', ('manage','manage_tabs','manage_uploadForm',
-                                 'manage_workspace')),
-    ('Access contents information', ('PROPFIND',)),
-    ('Change permissions', ('manage_access',)),
-    ('Change Images and Files', ('manage_edit','manage_upload','PUT')),
-    ('View', ('index_html','view_image_or_file','getSize','getContentType',
-              'HEAD', '')),
-    ('Manage properties', ('manage_addProperty',
-                           'manage_editProperties',
-                           'manage_delProperties',
-                           'manage_changeProperties',
-                           'PROPPATCH')),
-    ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
-    ('Delete objects', ('DELETE',)),
-    )
+        ('View management screens', ('manage','manage_uploadForm',)),
+        ('Change Images and Files', ('manage_edit','manage_upload','PUT')),
+        ('View', ('index_html','view_image_or_file','getSize','getContentType',
+                  '')),
+        ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
+        ('Delete objects', ('DELETE',)),
+        )
    
 
     _properties=({'id':'title', 'type': 'string'},
