@@ -24,9 +24,9 @@ ZCatalog - Cataloged Objects: Manage catalog entries
         cataloged objects. These two links will only appear if you
         have enough objects in the Catalog.
         
-        'Update' -- Clicked, Zope updates its indexes and metadata for
-        the object.
+        'Update' -- When clicked, Zope updates its indexes and
+        metadata for the object.
         
-        'Remove' -- Clicked, it removes all the selected objects from
-        the Catalog.  **Note:** No objects are deleted from the
+        'Remove' -- When clicked, it removes all the selected objects
+        from the Catalog.  **Note:** No objects are deleted from the
         database.
