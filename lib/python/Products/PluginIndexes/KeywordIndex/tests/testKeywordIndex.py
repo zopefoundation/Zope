@@ -27,7 +27,15 @@ class Dummy:
 
     __repr__ = __str__
 
-class TestCase( unittest.TestCase ):
+def sortedUnique(seq):
+    unique = {}
+    for i in seq:
+        unique[i] = None
+    unique = unique.keys()
+    unique.sort()
+    return unique
+
+class TestKeywordIndex( unittest.TestCase ):
     """
         Test KeywordIndex objects.
     """
@@ -41,7 +49,7 @@ class TestCase( unittest.TestCase ):
         self._values = [ ( 0, Dummy( ['a'] ) )
                        , ( 1, Dummy( ['a','b'] ) )
                        , ( 2, Dummy( ['a','b','c'] ) )
-                       , ( 3, Dummy( ['a','b','c', 'a'] ) )
+                       , ( 3, Dummy( ['a','b','c','a'] ) )
                        , ( 4, Dummy( ['a', 'b', 'c', 'd'] ) )
                        , ( 5, Dummy( ['a', 'b', 'c', 'e'] ) )
                        , ( 6, Dummy( ['a', 'b', 'c', 'e', 'f'] ))
@@ -135,7 +143,10 @@ class TestCase( unittest.TestCase ):
         self._index.unindex_object( 1234 ) # nothrow
 
         for k, v in values:
-            assert self._index.getEntryForObject( k ) == v.foo()
+            entry = self._index.getEntryForObject( k )
+            entry.sort()
+            kw = sortedUnique(v.foo())
+            self.assertEqual(entry, kw)
 
         assert (len( self._index.uniqueValues( 'foo' ) ) == len( values )-1,
                 len(values)-1)
@@ -184,7 +195,7 @@ class TestCase( unittest.TestCase ):
         assert result[0] == 8
 
     def testIntersectionWithRange(self):
-        """Test an 'and' search, ensuring that 'range' doesn't mess it up."""
+        # Test an 'and' search, ensuring that 'range' doesn't mess it up.
         self._populateIndex()
 
         record = { 'foo' : { 'query'  : [ 'e', 'f' ]
@@ -199,6 +210,23 @@ class TestCase( unittest.TestCase ):
         #
         record[ 'foo' ][ 'range' ] = 'min:max'
         self._checkApply( record, self._values[6:7] )
+        
+    def testDuplicateKeywords(self):
+        self._catch_log_errors()
+        try:
+            self._index.index_object(0, Dummy(['a', 'a', 'b', 'b']))
+            self._index.unindex_object(0)
+        finally:
+            self._ignore_log_errors()
 
 def test_suite():
-    return unittest.makeSuite( TestCase )
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( TestKeywordIndex ) )
+    return suite
+    
+def main():
+    unittest.main(defaultTest='test_suite')
+
+if __name__ == '__main__':
+    main()
+

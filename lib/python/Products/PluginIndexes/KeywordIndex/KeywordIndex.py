@@ -90,7 +90,13 @@ class KeywordIndex(UnIndex):
         if callable(newKeywords):
             newKeywords = newKeywords()
         if hasattr(newKeywords,'capitalize'): # is it string-like ?
-            newKeywords = (newKeywords, )
+            newKeywords = [newKeywords]
+        else:
+            # Uniqueify keywords
+            unique = {}
+            for k in newKeywords:
+                unique[k] = None
+            newKeywords = unique.keys()
         return newKeywords
 
     def unindex_objectKeywords(self, documentId, keywords):
