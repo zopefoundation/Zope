@@ -56,12 +56,15 @@ class StorageAPI(test_create.BaseFramework):
             self._storage.store,
             0, 1, 2, 3, Transaction())
 
-    def checkNonVersionStore(self):
+    def checkNonVersionStore(self, oid=None, revid=None, version=None):
         # Some objects to store
-        oid = self._storage.new_oid()
-        revid = ZERO
+        if oid is None:
+            oid = self._storage.new_oid()
+        if revid is None:
+            revid = ZERO
         data = pickle.dumps(7)
-        version = ''
+        if version is None:
+            version = ''
         # Start the transaction, store an object, and be sure the revision id
         # is different than what we passed.
         self._storage.tpc_begin(self._transaction)
@@ -79,6 +82,14 @@ class StorageAPI(test_create.BaseFramework):
         assert len(self._storage) == 1
         self.checkNonVersionStore()
         assert len(self._storage) == 2
+
+    def checkNonVersionStoreAndLoad(self):
+        oid = self._storage.new_oid()
+        self.checkNonVersionStore(oid)
+        data, revid = self._storage.load(oid, '')
+        assert revid == ZERO
+        value = pickle.loads(data)
+        assert value == 7
 
 
 
@@ -99,10 +110,12 @@ def suite():
     suite.addTest(MinimalStorageAPI('checkBasics'))
     suite.addTest(MinimalStorageAPI('checkNonVersionStore'))
     suite.addTest(MinimalStorageAPI('checkLen'))
+    suite.addTest(MinimalStorageAPI('checkNonVersionStoreAndLoad'))
     # Full storage tests
     suite.addTest(FullStorageAPI('checkBasics'))
     suite.addTest(FullStorageAPI('checkNonVersionStore'))
     suite.addTest(FullStorageAPI('checkLen'))
+    suite.addTest(FullStorageAPI('checkNonVersionStoreAndLoad'))
     return suite
 
 
