@@ -40,8 +40,9 @@ Principia Changes
       - The folder objectItems method returned all items even when
         specific item types were given.
 
-      - Domain-based security failed to authenticate users if their
-        IP could not be translated to a hostname via dns.
+      - Domain-based security failed to authenticate users if an IP
+        spec of less than 4 parts was used or if a corresponding host
+        name could not be found via dns.
 
 
 
