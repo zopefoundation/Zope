@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.7 1996/12/23 15:22:35 jim Exp $
+  $Id: cStringIO.c,v 1.8 1996/12/23 15:52:49 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,6 +58,9 @@
 
 
   $Log: cStringIO.c,v $
+  Revision 1.8  1996/12/23 15:52:49  jim
+  Added ifdef to check for CObject before using it.
+
   Revision 1.7  1996/12/23 15:22:35  jim
   Finished implementation, adding full compatibility with StringIO, and
   then some.
@@ -667,12 +670,15 @@ initcStringIO()
   ErrorObject = PyString_FromString("cStringIO.error");
   PyDict_SetItemString(d, "error", ErrorObject);
   
+#ifdef Py_COBJECT_H
+  /* Export C API */
   PyDict_SetItemString(d,"cread", PyCObject_FromVoidPtr(O_cread,NULL));
   PyDict_SetItemString(d,"creadline", PyCObject_FromVoidPtr(O_creadline,NULL));
   PyDict_SetItemString(d,"cwrite", PyCObject_FromVoidPtr(O_cwrite,NULL));
   PyDict_SetItemString(d,"cgetvalue", PyCObject_FromVoidPtr(O_getval,NULL));
   PyDict_SetItemString(d,"NewInput", PyCObject_FromVoidPtr(newIobject,NULL));
   PyDict_SetItemString(d,"NewOutput", PyCObject_FromVoidPtr(newOobject,NULL));
+#endif
   
   PyDict_SetItemString(d,"InputType",  (PyObject*)&Itype);
   PyDict_SetItemString(d,"OutputType", (PyObject*)&Otype);
