@@ -12,13 +12,13 @@ ZOPE_VERS=2.8
 
 # Place the optimal target version number for Zope (as returned by sys.version)
 # below
-TARGET="2.3.3"
+TARGET="2.3.4"
 
 # Order a list of "acceptable" python version numbers (as returned by
 # sys.version) below in "best" to "worst" order, not including the
 # target version.  Up to six acceptable python versions are allowed.
 # Do not include the target version number in this list!
-ACCEPTABLE="2.3.4 2.3.2 2.3.1 2.3"
+ACCEPTABLE="2.3.3"
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
