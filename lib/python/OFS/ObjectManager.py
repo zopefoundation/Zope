@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.128 2001/03/01 15:59:59 brian Exp $"""
+$Id: ObjectManager.py,v 1.129 2001/03/26 19:52:31 brian Exp $"""
 
-__version__='$Revision: 1.128 $'[11:-2]
+__version__='$Revision: 1.129 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -536,9 +536,15 @@ class ObjectManager(
         dirname, file=os.path.split(file)
         if dirname:
             raise 'Bad Request', 'Invalid file name %s' % file
-        for impath in (INSTANCE_HOME, SOFTWARE_HOME):
-            file=os.path.join(impath, 'import', file)
-            if os.path.exists(file):
+
+        instance_home = INSTANCE_HOME
+        software_home = os.path.join(SOFTWARE_HOME, '..%s..' % os.sep)
+        software_home = os.path.normpath(software_home)
+        
+        
+        for impath in (instance_home, software_home):
+            filepath = os.path.join(impath, 'import', file)
+            if os.path.exists(filepath):
                 break
         else:
             raise 'Bad Request', 'File does not exist: %s' % file
@@ -550,7 +556,7 @@ class ObjectManager(
             obj=obj.aq_parent
             connection=obj._p_jar
         ob=connection.importFile(
-            file, customImporters=customImporters)
+            filepath, customImporters=customImporters)
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
         #id=ob.getId()
         #can't use above getId() call, it fails on 'old' exported objects
