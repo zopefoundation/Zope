@@ -318,7 +318,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         """
         
         if uid not in self.uids.keys():
-            'no object with uid %s' % uid
             return
         
         rid = self.uids[uid]

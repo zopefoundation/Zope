@@ -201,15 +201,15 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         self._catalog.addColumn('summary')
         self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
         
-    def manage_edit(self, threshold=1000, REQUEST=None):
+
+    def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
-        self.threshold = threshold
+        self.threshold = thresholdb
 
-        message = "Object changed"
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
-    def manage_catalogObject(self, REQUEST, urls=None):
+
+    def manage_catalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
         """ index all Zope objects that 'urls' point to """
         if urls:
             for url in urls:
@@ -217,49 +217,41 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                 if obj is not None: 
                     self.catalog_object(obj, url)
 
-        message = "Objects Cataloged"
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Object%20Cataloged')
 
-    def manage_uncatalogObject(self, REQUEST, urls=None):
+
+    def manage_uncatalogObject(self, REQUEST, RESPONSE, URL1, urls=None):
         """ removes Zope object 'urls' from catalog """
 
         if urls:
             for url in urls:
-                obj = self.resolve_url(url, REQUEST)
-                if obj is not None:
-                    self.uncatalog_object(url)
+		self.uncatalog_object(url)
 
-        message = "Object UnCataloged"
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Object%20Uncataloged')
 
-    def manage_catalogReindex(self, REQUEST):
+
+    def manage_catalogReindex(self, REQUEST, RESPONSE, URL1):
         """ clear the catalog, then re-index everything """
 
-	#import pdb
-        #pdb.set_trace()
         paths = tuple(self._catalog.paths.values())
-	self.manage_catalogClear(REQUEST)
+	self._catalog.clear()
 
 	for p in paths:
 	    obj = self.resolve_url(p, REQUEST)
 	    if obj is not None:
                 self.catalog_object(obj, p)		
 		
-        message = "Catalog Reindexed"
-        return self.manage_catalogView(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Updated')
 
-    def manage_catalogClear(self, REQUEST):
+    def manage_catalogClear(self, REQUEST, RESPONSE, URL1):
         """ clears the whole enchelada """
         self._catalog.clear()
 
-        message = "Catalog Cleared"
-        return self.manage_main(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Cleared')
 
-    def manage_catalogFoundItems(self, REQUEST, URL1, obj_metatypes=None,
+
+    def manage_catalogFoundItems(self, REQUEST, RESPONSE, URL2, URL1,
+				 obj_metatypes=None,
                                  obj_ids=None, obj_searchterm=None,
                                  obj_expr=None, obj_mtime=None,
                                  obj_mspec=None, obj_roles=None,
@@ -280,45 +272,40 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                                 REQUEST=REQUEST)
 
         for n in results:
-            self.catalog_object(n[1], n[0])
+	    if REQUEST.script != "":
+		abs_path = string.split((URL2 +'/'+n[0]),
+					REQUEST.script)[1][1:]
+            self.catalog_object(n[1], abs_path)
 
-        message = "Objects Cataloged"
-        return self.manage_catalogView(self, REQUEST,
-                                manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Updated')
 
-    def manage_addColumn(self, name, REQUEST):
+
+    def manage_addColumn(self, name, REQUEST, RESPONSE, URL1):
         """ add a column """
         self._catalog.addColumn(name)
 
-        message = "Column added"
-        return self.manage_catalogSchema(self, REQUEST,
-                                          manage_tabs_message=message)
+	RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
 
-    def manage_delColumns(self, names, REQUEST):
+    def manage_delColumns(self, names, REQUEST, RESPONSE, URL1):
         """ del a column """
         for name in names:
             self._catalog.delColumn(name)
-            
-        message = "Columns deleted"
-        return self.manage_catalogSchema(self, REQUEST,
-                                          manage_tabs_message=message)
 
-    def manage_addIndex(self, name, type, REQUEST):
+	RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
+
+    def manage_addIndex(self, name, type, REQUEST, RESPONSE, URL1):
         """ add an index """
         self._catalog.addIndex(name, type)
         
-        message = "Index added"
-        return self.manage_catalogIndexes(self, REQUEST,
-                                          manage_tabs_message=message)
-
-    def manage_delIndexes(self, names, REQUEST):
+	RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
+	
+    def manage_delIndexes(self, names, REQUEST, RESPONSE, URL1):
         """ del an index """
         for name in names:
             self._catalog.delIndex(name)
+        
+	RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
-        message = "Indexes deleted"
-        return self.manage_catalogIndexes(self, REQUEST,
-                                          manage_tabs_message=message)
     
     def catalog_object(self, obj, uid):
         """ wrapper around catalog """
@@ -442,7 +429,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
             path='%s/%s' % (script, path) 
         try:    return REQUEST.resolve_url(path)
         except: return None
-
 
 
 Globals.default__class_init__(ZCatalog)
