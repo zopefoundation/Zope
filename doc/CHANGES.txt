@@ -129,6 +129,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1436: applied patch to fix a memory leak in 
+       cAccessControl. 
+
      - Collector #1431: fixed NetBSD support in initgroups.c
 
      - Collector #1406: fixed segmentation fault by acquisition

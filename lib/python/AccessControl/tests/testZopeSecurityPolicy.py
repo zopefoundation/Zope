@@ -221,6 +221,17 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         self.assertPolicyAllows(item, 'setuid_m')
         self.assertPolicyAllows(item, 'dangerous_m')
 
+    def testIdentityProxy(self):
+        eo = ImplictAcqObject()
+        eo.getOwner = lambda: None
+        self.context.stack.append(eo)
+        rc = sys.getrefcount(eo)
+        self.testUserAccess()
+        self.assertEqual(rc, sys.getrefcount(eo))
+        eo._proxy_roles = ()
+        self.testUserAccess()
+        self.assertEqual(rc, sys.getrefcount(eo))
+
     def testAccessToUnprotectedSubobjects(self):
         item = self.item
         r_item = self.a.r_item

@@ -1228,8 +1228,10 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                     }
                     goto err;
                   }
-                else 
+                else {
+                  Py_DECREF(eo);
                   Py_DECREF(proxy_roles);
+                }
 	} /* End of stack check */
 
 	/*| try:
