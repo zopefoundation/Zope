@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.5 1999/03/10 00:15:24 klm Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.6 1999/03/22 20:39:53 brian Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import *
@@ -121,15 +121,21 @@ class SendMailTag:
 
     * subject -- optional subject.  If not specified, there **must** be a
     subject: header in the message.
+
+    * encode -- optional encoding. Possible values are: 'base64',
+     'quoted-printable' and 'uuencode'.
+
     '''
 
     name='sendmail'
     blockContinuations=()
+    encode=None
 
     def __init__(self, blocks):
         tname, args, section=blocks[0]
         args=parse_params(args, mailhost=None, mailto=None, mailfrom=None,
-                          subject=None, smtphost=None, port='25')
+                          subject=None, smtphost=None, port='25',
+                          encode=None)
 
         for key in ('mailto', 'mailfrom', 'subject', 'smtphost', 'port'):
             if not args.has_key(key):args[key]=''
@@ -140,6 +146,12 @@ class SendMailTag:
         elif has_key('smtphost'): mailhost=smtphost=args['smtphost']
         elif has_key(''): mailhost=args['mailhost']=args['']
         else: raise MailHostError, 'No mailhost was specified in tag'
+
+        if has_key('encode') and args['encode'] not in \
+        ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
+         'uue', 'x-uue'):
+            raise MailHostError, (
+                'An unsupported encoding was specified in tag')
 
         if not smtphost:
             self.__name__=self.mailhost=mailhost
@@ -158,7 +170,10 @@ class SendMailTag:
             self.port=args['port']=25
         else:
             self.port=args['port']
-        
+        if has_key('encode'):
+            self.encode=args['encode']
+        else: self.encode=None
+
     def render(self, md):
         args=self.args
         has_key=args.has_key
@@ -171,7 +186,7 @@ class SendMailTag:
                         smtpPort=self.port)
 
         mhost.send(self.section(md.this, md), self.mailto, self.mailfrom,
-                   self.subject)
+                   self.subject, self.encode)
 
         return ' '
 

@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.10 1999/03/10 00:15:24 klm Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: __init__.py,v 1.11 1999/03/22 20:39:53 brian Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import MailHost, SendMailTag
 from ImageFile import ImageFile
@@ -103,3 +103,9 @@ methods={
 misc_={
     'MHIcon': ImageFile("www/MailHost_icon.gif", globals())
     }
+
+__ac_permissions__=(
+    ('Add MailHost objects', ('manage_addMailHost_form', 'manage_addMailHost')),
+    ('Change configuration', ()),
+    ('Use mailhost services',()),
+    )

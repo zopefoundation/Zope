@@ -88,15 +88,15 @@ from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *; from select import select
 from AccessControl.Role import RoleManager
 from operator import truth
-import Acquisition, sys, ts_regex, string, types, rfc822
-import OFS.SimpleItem, re, quopri
+import Acquisition, sys, ts_regex, string, types, mimetools
+import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.39 1999/03/10 00:15:24 klm Exp $ 
-__version__ = "$Revision: 1.39 $"[11:-2]
+#$Id: MailHost.py,v 1.40 1999/03/22 20:39:53 brian Exp $ 
+__version__ = "$Revision: 1.40 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -162,11 +162,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             target ='manage_main')
     
     def sendTemplate(trueself, self, messageTemplate, 
-                     statusTemplate=None, mto=None, mfrom=None, REQUEST=None):
+                     statusTemplate=None, mto=None, mfrom=None,
+                     encode=None, REQUEST=None):
         'render a mail template, then send it...'
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
-
+        messageText=_encode(messageText, encode)
         headers, message = decapitate(messageText)
         if mto: headers['to'] = mto
         if mfrom: headers['from'] = mfrom
@@ -174,7 +175,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                       % requiredHeader
-        
         Globals.Scheduler.schedule(OneTimeEvent(
             Send,
             (trueself.smtpHost, trueself.smtpPort, 
@@ -193,7 +193,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         except:
             return "SEND OK"
 
-    def send(self, messageText, mto=None, mfrom=None, subject=None):
+    def send(self, messageText, mto=None, mfrom=None, subject=None,
+             encode=None):
         headers, message = decapitate(messageText)
         
         if not headers['subject']:
@@ -210,13 +211,14 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
-    
+        messageText=_encode(messageText, encode)
         sm=SendMail(self.smtpHost, self.smtpPort, self.localHost, self.timeout)
         sm.send(mfrom=headers['from'], mto=headers['to'],
                 subj=headers['subject'] or 'No Subject',
                 body=messageText)
 
-    def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None):
+    def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
+                      encode=None):
         headers, message = decapitate(messageText)
 
         if not headers['subject']:
@@ -233,7 +235,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
- 
+        messageText=_encode(messageText, encode)
         Globals.Scheduler.schedule(OneTimeEvent(
             Send,
             (self.smtpHost, self.smtpPort, self.localHost, self.timeout,
@@ -309,26 +311,9 @@ class SendMail:
             self._check()
         self.conn.send("data\015\012")
         self._check()
-
-        bfile = StringIO(body)
-        mo=rfc822.Message(bfile)
-        for k, v in mo.items():
-            self.conn.send('%s: %s\015\012' % (string.capitalize(k), v))
-        # Add some Mime headers if not present
-        if not mo.has_key('Mime-Version'):
-            self.conn.send('Mime-Version: 1.0\015\012')
-        if not mo.has_key('Content-Type'):
-            self.conn.send(
-                'Content-Type: text/plain; charset="iso-8859-1"\015\012')
-        if not mo.has_key('Content-Transfer-Encoding'):
-            self.conn.send(
-                'Content-Transfer-Encoding: quoted-printable\015\012')
-        self.conn.send('\015\012')
-        body=bfile.read()
         body=self.singledots.sub('..', body)
         body=string.replace(body, '\r\n', '\n')
         body=string.replace(body, '\r', '\n')
-        body=encode(body, 0)
         body=string.replace(body, '\n', '\015\012')
         self.conn.send(body)
         self.conn.send("\015\012.\015\012")
@@ -340,43 +325,21 @@ class SendMail:
 
 
 
-
-
-ESCAPE = '='
-MAXLINESIZE = 76
-HEX = '0123456789ABCDEF'
-
-def needsquoting(c, quotetabs):
-    if c == '\t':
-        return not quotetabs
-    return c == ESCAPE or not(' ' <= c <= '~')
-
-def quote(c):
-    if c == ESCAPE:
-        return ESCAPE * 2
-    else:
-        i = ord(c)
-        return ESCAPE + HEX[i/16] + HEX[i%16]
-
-def encode(input, quotetabs):
-    """Encode a string to Quoted-Printable"""
-    output = ''
-    for line in string.split(input, '\n'):
-        new = ''
-        prev = ''
-        for c in line:
-            if needsquoting(c, quotetabs):
-                c = quote(c)
-            if len(new) + len(c) >= MAXLINESIZE:
-                output = output + new + ESCAPE + '\n'
-                new = ''
-            new = new + c
-            prev = c
-        if prev in (' ', '\t'):
-            output = output + new + ESCAPE + '\n\n'
-        else:
-            output = output + new + '\n'
-    return output
+def _encode(body, encode=None):
+    if encode is None:
+        return body
+    mfile=StringIO(body)
+    mo=mimetools.Message(mfile)
+    if mo.getencoding() != '7bit': 
+        raise MailHostError, 'Message already encoded'
+    newmfile=StringIO()
+    newmfile.write(string.joinfields(mo.headers, ''))
+    newmfile.write('Content-Transfer-Encoding: %s\n' % encode)
+    if not mo.has_key('Mime-Version'):
+        newmfile.write('Mime-Version: 1.0\n')
+    newmfile.write('\n')
+    mimetools.encode(mfile, newmfile, encode)
+    return newmfile.getvalue()
 
 
 def decapitate(message):
