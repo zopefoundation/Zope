@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.28 2000/05/16 17:36:00 jim Exp $"
+"\n$Id: BTree.c,v 1.29 2001/05/23 18:24:49 shane Exp $"
 ;
 
 #define PERSISTENT
@@ -389,7 +389,7 @@ PyMalloc(size_t sz)
 {
   void *r;
 
-  if(r=malloc(sz)) return r;
+  if((r=malloc(sz))) return r;
 
   PyErr_NoMemory();
   return NULL;
@@ -400,26 +400,10 @@ PyRealloc(void *p, size_t sz)
 {
   void *r;
 
-  if(r=realloc(p,sz)) return r;
+  if((r=realloc(p,sz))) return r;
 
   PyErr_NoMemory();
   return NULL;
-}
-
-static PyObject *
-Twople(PyObject *i1, PyObject *i2)
-{
-  PyObject *t;
-  
-  if(t=PyTuple_New(2))
-    {
-      Py_INCREF(i1);
-      PyTuple_SET_ITEM(t,0,i1);
-      Py_INCREF(i2);
-      PyTuple_SET_ITEM(t,1,i2);
-    }
-
-  return t;
 }
 
 static int
@@ -720,7 +704,7 @@ _bucket_set(Bucket *self, PyObject *key, PyObject *v)
   int ikey;
 #endif
 #ifdef INTVAL
-  int iv;
+  int iv = 0;
 #endif
 
 #ifdef INTKEY
@@ -1417,7 +1401,9 @@ bucket_setstate(Bucket *self, PyObject *args)
   for(i=0; i<l; i++, d++)
     {
       UNLESS(r=PySequence_GetItem(keys,i)) goto err;
-      if(i < self->len) Py_DECREF(d->key);
+      if(i < self->len) {
+        Py_DECREF(d->key);
+      }
       d->key=r;
     }
 #endif
@@ -1438,7 +1424,9 @@ bucket_setstate(Bucket *self, PyObject *args)
   for(i=0; i<l; i++, d++)
     {
       UNLESS(r=PySequence_GetItem(values,i)) goto err;
-      if(i < self->len) Py_DECREF(d->value);
+      if(i < self->len) {
+        Py_DECREF(d->value);
+      }
       d->value=r;
     }
 #endif
@@ -1780,7 +1768,7 @@ err:
 static PyObject *
 BTree_setstate(BTree *self, PyObject *args)
 {
-  PyObject *state, *v=0;
+  PyObject *state;
   BTreeItem *d;
   int l, i;
 
@@ -2094,24 +2082,24 @@ static struct PyMethodDef module_methods[] = {
 void
 #ifdef INTKEY
 #ifdef INTVAL
-initIIBTree()
+initIIBTree(void)
 #define MODNAME "IIBTree"
 #else
-initIOBTree()
+initIOBTree(void)
 #define MODNAME "IOBTree"
 #endif
 #else
 #ifdef INTVAL
-initOIBTree()
+initOIBTree(void)
 #define MODNAME "OIBTree"
 #else
-initBTree()
+initBTree(void)
 #define MODNAME "BTree"
 #endif
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.28 $";
+  char *rev="$Revision: 1.29 $";
 
 
 
@@ -2119,7 +2107,7 @@ initBTree()
       return;
 
 #ifdef PERSISTENT
-  if(cPersistenceCAPI=PyCObject_Import("cPersistence","CAPI"))
+  if((cPersistenceCAPI=PyCObject_Import("cPersistence","CAPI")))
     {
 	BucketType.methods.link=cPersistenceCAPI->methods;
 	BucketType.tp_getattro=cPersistenceCAPI->getattro;
