@@ -127,7 +127,7 @@ class HTMLTALParserTestCases(TestCaseBase):
 
     def check_code_short_endtags(self):
         self._run_check("""<html><img/></html>""", [
-            ('rawtext', '<html><img/></html>'),
+            ('rawtext', '<html><img /></html>'),
             ])
 
 
@@ -137,9 +137,9 @@ class METALGeneratorTestCases(TestCaseBase):
         self._run_check("", [])
 
     def check_define_macro(self):
-        macro = [('startTag', 'p',
-                  [('metal:define-macro', 'M', 'metal')]),
-                 ('rawtext', 'booh</p>')]
+        macro = self.initial_program + [
+            ('startTag', 'p', [('metal:define-macro', 'M', 'metal')]),
+            ('rawtext', 'booh</p>')]
         program = [
             ('setPosition', (1, 0)),
             ('defineMacro', 'M', macro),
@@ -157,7 +157,7 @@ class METALGeneratorTestCases(TestCaseBase):
             ])
 
     def check_define_slot(self):
-        macro = [
+        macro = self.initial_program + [
             ('startTag', 'p', [('metal:define-macro', 'M', 'metal')]),
             ('rawtext', 'foo'),
             ('setPosition', (1, 29)),
