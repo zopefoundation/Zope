@@ -40,16 +40,16 @@
 		</tr>
 <tr>	<td colspan=2 align='LEFT'><strong>Query template</strong><br>
 	    <textarea name="template:text"
-  	<!--#if dtpref_cols-->
-	COLS="<!--#var dtpref_cols-->"
-	<!--#else dtpref_cols-->
+  	<!--#if sql_pref__cols-->
+	COLS="<!--#var sql_pref__cols-->"
+	<!--#else sql_pref__cols-->
 	COLS="50"
-	<!--#/if dtpref_cols-->
-	<!--#if dtpref_rows-->
-	ROWS="<!--#var dtpref_rows-->"
-	<!--#else dtpref_rows-->
+	<!--#/if sql_pref__cols-->
+	<!--#if sql_pref__rows-->
+	ROWS="<!--#var sql_pref__rows-->"
+	<!--#else sql_pref__rows-->
 	ROWS="20"
-	<!--#/if dtpref_rows-->><!--#var
+	<!--#/if sql_pref__rows-->><!--#var
                src fmt=html-quote--></textarea></td></tr>
 
 <tr>
