@@ -511,6 +511,9 @@ class TALGeneratorTestCases(TestCaseBase):
               ('bar', None, 'insert', None, 1, None)])),
             ('endScope', ()),
             ])
+        self._should_error('''<input name="Delete"
+            tal:attributes="name string:delete_button"
+            i18n:attributes="name message-id">''')
 
     def test_i18n_name_bad_name(self):
         self._should_error("<span i18n:name='not a valid name' />")
