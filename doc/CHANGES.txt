@@ -63,6 +63,13 @@ Zope Changes
           then HTTP version could not be determined from the HTTP request.
           Now sending "HTTP/1.0..."
 
+        - queries for the PathIndex can now specified as tuple (path,level).
+          the level parameter inside a query overrides the optional 
+          'level' parameter for a complete search request.
+ 
+           
+   
+
     Zope 2.4 beta 2
 
       Bugs fixed

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.4 2001/06/01 18:53:39 andreas Exp $'
+__version__ = '$Id: PathIndex.py,v 1.5 2001/08/28 01:05:31 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -97,6 +97,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree,OOSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IISet,difference,intersection,union
+from types import StringType
 import re
 
 
@@ -233,12 +234,21 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         return comps
 
 
-    def search(self,path,level=0):
+    def search(self,path,default_level=0):
         """
-        path is a list of path components to be searched
+        path is either a string representing a
+        relative URL or a part of a relative URL or
+        a tuple (path,level).
+
         level>=0  starts searching at the given level
         level<0   not implemented yet
         """       
+
+        if isinstance(path,StringType):
+            level = default_level
+        else:
+            level = path[1]
+            path  = path[0]
 
         comps = self.splitPath(path)
         
