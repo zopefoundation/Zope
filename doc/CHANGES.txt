@@ -24,7 +24,7 @@ Zope Changes
 
    - check if ExtendedPathIndex might be a reasonable replacement for PathIndex
 
-  Zope 2.8 beta 1
+  After Zope 2.8a1
 
     Features added
 
@@ -58,6 +58,9 @@ Zope Changes
 
     Bugs fixed
  
+      - 'setup.py' did not install the 'Zope' compatibility module
+        (the old 'Zope' package has been renamed to 'Zope2').
+
       - Fixed Shared.DC.ZRDB.Results to behave with the new-style
         ExtensionClass. Added a test.
 
@@ -261,8 +264,7 @@ Zope Changes
         module level, thus binding it too early which would cause the
         ZConfig handler to have no real effect.
 
-  Zope 2.8a1
-
+  Zope 2.8a1 (2004/10/17)
 
     Features added
 
