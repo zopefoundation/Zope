@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -416,13 +416,14 @@ class ApplicationManager(Folder,CacheManager):
             package_dir=path_join(product_dir, product_name)
             if not isdir(package_dir):
                 continue
-            version_txt=path_join(package_dir, 'version.txt')
-            if not exists(version_txt):
-                continue
-            file=open(version_txt, 'r')
-            data=file.readline()
-            file.close()
-            info.append(strip(data))
+            for name in ('version.txt', 'VERSION.TXT', 'VERSION.txt'):
+                version_txt=path_join(package_dir, name)
+                if not exists(version_txt):
+                    continue
+                file=open(version_txt, 'r')
+                data=file.readline()
+                file.close()
+                info.append(strip(data))
         return info
 
 
