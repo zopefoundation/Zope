@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -153,7 +153,6 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
         for k, v in self.__dict__.items():
             if state_name(k) or k[-11:]=='_Permission' or k[-9:]=="__roles__":
                 r[k]=v
-
         return r
    
 
@@ -162,6 +161,7 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
+
         if client is None:
             # Called as subtemplate, so don't need error propigation!
             r=apply(HTML.__call__, (self, client, REQUEST), kw)
