@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Globals import Persistent
 import BTree
@@ -162,10 +162,8 @@ class UnIndex(Persistent):
             k=getattr(obj, id)
             if callable(k):
                 k = k()
-            print 'found %s' % k
         except:
             k = MV
-            print 'couldnt get %s of %s' % (id, obj)
  
 ##        if k is None or k == MV:
 ##            return 0
@@ -236,7 +234,6 @@ class UnIndex(Persistent):
         if request.has_key(id+'_usage'):
             # see if any usage params are sent to field
             opr=string.split(string.lower(request[id+"_usage"]),':')
-#            pdb.set_trace()
             opr, opr_args=opr[0], opr[1:]
 
         if opr=="range":
@@ -253,7 +250,6 @@ class UnIndex(Persistent):
                     setlist = index.items(lo)
 
                 for k, set in setlist:
-                    print 'adding set %s to %s' % (tuple(set), id)
                     if r is None:
                         r = set
                     else:
@@ -280,9 +276,6 @@ class UnIndex(Persistent):
             else:
                 return None
 
-#        pdb.set_trace()
-        # print 'r is %s' % tuple(r)
-        print 'UnIndex says there are %s records' % len(r)
         return r, (id,)
 
 
