@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.40 1998/03/18 13:45:04 jim Exp $'''
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: DA.py,v 1.41 1998/04/27 16:11:11 jim Exp $'''
+__version__='$Revision: 1.41 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -264,6 +264,7 @@ class DA(
 
 	argdata=self._argdata(REQUEST)
 	argdata['sql_delimiter']='\0'
+	argdata['sql_adapter__']=DB__
 	query=apply(self.template, (p,), argdata)
 
 	if src__: return query
@@ -299,6 +300,7 @@ class DA(
 	    else: p=None
 
 	    argdata['sql_delimiter']='\0'
+	    argdata['sql_adapter__']=DB__
 
 	    query=apply(self.template,(p,),argdata)
 	    if self.cache_time_:
@@ -425,6 +427,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.41  1998/04/27 16:11:11  jim
+# Stuff DA into template dict so that sqlvar and sqltest can use it.
+#
 # Revision 1.40  1998/03/18 13:45:04  jim
 # Added doc strings.
 #
