@@ -92,3 +92,6 @@ from SecurityInfo import ACCESS_PRIVATE
 from SecurityInfo import ACCESS_PUBLIC
 from SecurityInfo import ACCESS_NONE
 from SecurityInfo import secureModule
+
+msec = ModuleSecurityInfo('AccessControl')
+msec.declarePublic('getSecurityManager')

@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.3 2001/01/10 20:20:46 chrism Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: SecurityManager.py,v 1.4 2001/04/11 17:53:22 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -112,6 +112,11 @@ class SecurityManager:
     executable context and policies
     """
 
+    __allow_access_to_unprotected_subobjects__ = {
+        'validate': 1, 'validateValue': 1, 'checkPermission': 1,
+        'getUser': 1, 'calledByExecutable': 1
+        }
+    
     def __init__(self, thread_id, context):
         self._thread_id=thread_id
         self._context=context
