@@ -149,6 +149,7 @@ def zpublisher_exception_hook(
     StringType=type(''),
     lower=string.lower,
     ConflictError=ZODB.POSException.ConflictError,
+    ListType=type([]),
     ):
     try:
         if type(t) is StringType and lower(t) in ('unauthorized', 'redirect'):
@@ -160,7 +161,8 @@ def zpublisher_exception_hook(
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
             !='text/html'): raise
 
-        if published is None or published is app:
+        if (published is None or published is app or
+            type(published) is ListType):
             # At least get the top-lebel object
             published=app.__bobo_traverse__(REQUEST).__of__(
                 RequestContainer(REQUEST))
