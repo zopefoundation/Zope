@@ -82,8 +82,8 @@ class BaseIndex(Persistent):
         self._docwords = IOBTree()
 
     def length(self):
-        """Return the number of documents in the index."""
-        return len(self._docwords)
+        """Return the number of words in the index."""
+        return len(self._wordinfo)
 
     def get_words(self, docid):
         """Returns the wordids for a given docid"""
