@@ -1,0 +1,6 @@
+#shared#
+BTree BTree.c     -I../../Packages/BoboPOS -I../ExtensionClass
+IIBTree IIBTree.c -I../../Packages/BoboPOS -I../ExtensionClass
+IOBTree IOBTree.c -I../../Packages/BoboPOS -I../ExtensionClass
+OIBTree OIBTree.c -I../../Packages/BoboPOS -I../ExtensionClass
+intSet intSet.c   -I../../Packages/BoboPOS -I../ExtensionClass
