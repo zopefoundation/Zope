@@ -140,30 +140,48 @@ Options:
     or some other user with limited resouces. The only works under Unix, and
     if ZServer is started by root. The default is: %(UID)s
 
-  -P number
+  -P [ipaddress:]number
 
     Set the web, ftp and monitor port numbers simultaneously
     as offsets from the number.  The web port number will be number+80.
     The FTP port number will be number+21.  The monitor port number will
     be number+99.
+
+    The number can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple -P options can be provided to run multiple sets of servers.
     
   -w port
   
     The Web server (HTTP) port.  This defaults to %(HTTP_PORT)s. The
-    standard port for HTTP services is 80.  If this is an empty string
-    (e.g. -w ''), then HTTP is disabled.
+    standard port for HTTP services is 80.  If this is a dash
+    (e.g. -w -), then HTTP is disabled.
+
+    The number can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple -w options can be provided to run multiple servers.
 
   -f port
   
-    The FTP port.  If this is an empty string (e.g. -f ''), then FTP
+    The FTP port.  If this is a dash (e.g. -f -), then FTP
     is disabled.  The standard port for FTP services is 21.  The
     default is %(FTP_PORT)s.
+
+    The port can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple -f options can be provided to run multiple servers.
 
   -p path
 
     Path to the PCGI resource file.  The default value is
-    %(PCGI_FILE)s, relative to the Zope location.  If this is an empty
-    string (-p '') or the file does not exist, then PCGI is disabled.
+    %(PCGI_FILE)s, relative to the Zope location.  If this is a dash
+    (-p -) or the file does not exist, then PCGI is disabled.
 
   -F path_or_port
 
@@ -171,16 +189,21 @@ Options:
     domain sockets) for the FastCGI Server.  If the flag and value are
     not specified then the FastCGI Server is disabled.
 
-
   -m port
   
-    The secure monitor server port. If this is an empty string
-    (-m ''), then the monitor server is disabled. The monitor server
+    The secure monitor server port. If this is a dash
+    (-m -), then the monitor server is disabled. The monitor server
     allows interactive Python style access to a running ZServer. To
     access the server see medusa/monitor_client.py or
     medusa/monitor_client_win32.py. The monitor server password is the
     same as the Zope super manager password set in the 'access'
     file. The default is %(MONITOR_PORT)s.
+
+    The port can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple -m options can be provided to run multiple servers.
 
   -l path
 
@@ -208,6 +231,15 @@ Options:
     passed but no default locale can be found, an error will be raised
     and Zope will not start.
 
+  -X
+
+    Disable servers. This might be used to effectively disable all
+    default server settings or previous server settings in the option
+    list before providing new settings. For example to provide just a
+    web server:
+
+      %(program)s -X -w80
+      
 
 Environment settings are of the form: NAME=VALUE.
 
@@ -309,11 +341,36 @@ FCGI_PORT=None
 ########################################################################
 # Handle command-line arguments:
 
+def server_info(old, v, offset=0):
+    # interpret v as a port or address/port and get new value
+    if v == '-': v=''
+    l=string.find(v, ':')
+    if l >= 0:
+	a=v[:l]
+        v=v[l+1:]
+    else:
+        a=IP_ADDRESS
+
+    if not v: return v
+        
+    try: 
+        v=string.atoi(v)
+        if v < 1: raise 'Invalid port', v
+        v=v+offset
+    except: raise 'Invalid port', v
+
+    if type(old) is type(0): old=[(a,v)]
+    else: old.append((a,v))
+
+    return old    
+    
+
 try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
 
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:')
+    opts, args = getopt.getopt(sys.argv[1:],
+                               'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:rF:L:X')
 
     DEBUG=0
     READ_ONLY=0
@@ -332,48 +389,40 @@ try:
 
     for o, v in opts:
         if o=='-z': here=v
-        elif o=='-Z': Zpid=v
+        elif o=='-Z':
+            if v=='-': v=''
+            Zpid=v
         elif o=='-r': READ_ONLY=1
         elif o=='-t':
             try: v=string.atoi(v)
             except: raise 'Invalid number of threads', v
             NUMBER_OF_THREADS=v
         elif o=='-a': IP_ADDRESS=v
-        elif o=='-d': DNS_IP=v
+        elif o=='-d':
+            if v=='-': v=''
+            DNS_IP=v
         elif o=='-u': UID=v
         elif o=='-D':
             os.environ['Z_DEBUG_MODE']='1'
             DEBUG=1
         elif o=='-S': sys.ZMANAGED=1
+        elif o=='-X':
+            MONITOR_PORT=HTTP_PORT=FTP_PORT=FCGI_PORT=0
+            PCFI_FILE=''
         elif o=='-m':
-            if v:
-                try: 
-                    v=string.atoi(v)
-                    if v < 1: raise 'Invalid port', v
-                except: raise 'Invalid port', v
-            MONITOR_PORT=v
+            MONITOR_PORT=server_info(MONITOR_PORT, v)
         elif o=='-w':
-            if v:
-                try: 
-                    v=string.atoi(v)
-                    if v < 1: raise 'Invalid port', v
-                except: raise 'Invalid port', v
-            HTTP_PORT=v
+            HTTP_PORT=server_info(HTTP_PORT, v)
         elif o=='-f':
-            if v:
-                try:
-                    v=string.atoi(v)
-                    if v < 1: raise 'Invalid port', v
-                except: raise 'Invalid port', v
-            FTP_PORT=v
+            FTP_PORT=server_info(FTP_PORT, v)
         elif o=='-P':
-            if v:
-                try: v=string.atoi(v)
-                except: raise 'Invalid port', v
-            FTP_PORT=v+21
-            HTTP_PORT=v+80
-            MONITOR_PORT=v+99
-        elif o=='-p': PCGI_FILE=v
+            MONITOR_PORT=server_info(MONITOR_PORT, v, 99)
+            HTTP_PORT=server_info(HTTP_PORT, v, 80)
+            FTP_PORT=server_info(FTP_PORT, v, 21)
+
+        elif o=='-p':
+            if v=='-': v=''
+            PCGI_FILE=v
         elif o=='-h':
             print __doc__ % vars()
             sys.exit(0)
@@ -382,7 +431,9 @@ try:
         elif o=='-L':
             if v: LOCALE_ID=v
             else: LOCALE_ID=''
-        elif o=='-F': FCGI_PORT=v
+        elif o=='-F':
+            if v=='-': v=''
+            FCGI_PORT=v
 
 
     __builtins__.__debug__=DEBUG
@@ -511,34 +562,38 @@ else:
 
 # HTTP Server
 if HTTP_PORT:
-    hs = zhttp_server(
-        ip=IP_ADDRESS,
-        port=HTTP_PORT,
-        resolver=rs,
-        logger_object=lg)
+    if type(HTTP_PORT) is type(''): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
+    for address, port in HTTP_PORT:
+	hs = zhttp_server(
+	    ip=address,
+	    port=port,
+	    resolver=rs,
+	    logger_object=lg)
 
-    # Handler for a published module. zhttp_handler takes 3 arguments:
-    # The name of the module to publish, and optionally the URI base
-    # which is basically the SCIRPT_NAME, and optionally a dictionary
-    # with CGI environment variables which override default
-    # settings. The URI base setting is useful when you want to
-    # publish more than one module with the same HTTP server. The CGI
-    # environment setting is useful when you want to proxy requests
-    # from another web server to ZServer, and would like the CGI
-    # environment to reflect the CGI environment of the other web
-    # server.    
-    zh = zhttp_handler(MODULE, '', HTTP_ENV)
-    hs.install_handler(zh)
+	# Handler for a published module. zhttp_handler takes 3 arguments:
+	# The name of the module to publish, and optionally the URI base
+	# which is basically the SCIRPT_NAME, and optionally a dictionary
+	# with CGI environment variables which override default
+	# settings. The URI base setting is useful when you want to
+	# publish more than one module with the same HTTP server. The CGI
+	# environment setting is useful when you want to proxy requests
+	# from another web server to ZServer, and would like the CGI
+	# environment to reflect the CGI environment of the other web
+	# server.    
+	zh = zhttp_handler(MODULE, '', HTTP_ENV)
+	hs.install_handler(zh)
 
 
 # FTP Server
 if FTP_PORT:
-    zftp = FTPServer(
-        module=MODULE,
-        ip=IP_ADDRESS,
-        port=FTP_PORT,
-        resolver=rs,
-        logger_object=lg)
+    if type(FTP_PORT) is type(''): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
+    for address, port in FTP_PORT:
+        FTPServer(
+           module=MODULE,
+	   ip=address,
+           port=port,
+           resolver=rs,
+           logger_object=lg)
 
 # PCGI Server
 if PCGI_FILE and not READ_ONLY:
@@ -570,11 +625,14 @@ if FCGI_PORT and not READ_ONLY:
 
 # Monitor Server
 if MONITOR_PORT:
-    from AccessControl.User import super
-    monitor=secure_monitor_server(
-        password=super._getPassword(),
-        hostname='127.0.0.1',
-        port=MONITOR_PORT)
+    if type(MONITOR_PORT) is type(''): 
+        MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
+    for address, port in MONITOR_PORT:
+        from AccessControl.User import super
+        monitor=secure_monitor_server(
+            password=super._getPassword(),
+	    hostname=address,
+	    port=port)
 
 # Try to set uid to "-u" -provided uid.
 # Try to set gid to  "-u" user's primary group. 
