@@ -207,6 +207,40 @@ class FS:
         del tindex[:]
 
 
+class ZEXP:
+    """Zope Export format 'report' writer
+    """
+    def __init__(self, fname, file):
+        file.seek(0,2)
+        self._input_size=file.tell()
+        file.seek(0)
+        self.__name__=fname
+        self._file=open(fname,'w+b')
+        self._file.write('ZEXP')
+
+        self._pos=4
+        self._progress=None
+        
+
+    def rpt(self, pos, oid, start, tname, user, t, p, first, newtrans):
+        write=self._file.write
+        if pos is None:
+            write('\377'*16) # end marker
+            sys.stderr.write(' %% 100     \n')
+            return
+        else:
+            progress=' %% %.1f \r' % (pos*100.0/self._input_size)
+            if progress != self._progress:
+                sys.stderr.write(progress)
+                self._progress=progress
+
+        data=fixpickle(p, oid)
+        l=len(data)
+        write(p64(oid+1)+p64(l))
+        write(data)
+        self._pos=self._pos+l+16
+
+
 t32 = 1L << 32
 
 def p64(v, pack=struct.pack):
