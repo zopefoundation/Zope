@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.34 1999/08/19 11:37:02 jim Exp $
+$Id: Test.py,v 1.35 1999/09/03 21:43:53 jim Exp $
 '''
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -208,7 +208,8 @@ def main():
 
     module=args[0]
 
-    publish(module,path_info,u=u,p=profile,d=debug,t=timeit,e=env,s=silent)
+    publish(module,path_info,u=u,p=profile,d=debug,t=timeit,e=env,
+            s=silent)
 
 
 
@@ -357,6 +358,7 @@ def publish(script=None,path_info='/',
         __main__.publish_module=publish_module
         __main__.file=file
         __main__.env=env
+        __main__.extra=extra
         print profile
         publish_module(file, environ=env, stdout=open('/dev/null','w'),
                        extra=extra, stdin=stdin)
