@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.18 1997/03/05 19:21:36 chris Exp $'''
+$Id: InvertedIndex.py,v 1.19 1997/03/05 19:25:52 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.18 1997/03/05 19:21:36 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.19  1997/03/05 19:25:52  chris
+# removed references to SingleThreadedTransaction
+#
 # Revision 1.18  1997/03/05 19:21:36  chris
 # removed PersistentResultList, placing it in its own module
 #
@@ -141,7 +144,7 @@ $Id: InvertedIndex.py,v 1.18 1997/03/05 19:21:36 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -368,7 +371,7 @@ for w in string.letters:
   default_stop_words[w] = None
 
 
-class Index(SingleThreadedTransaction.Persistent):
+class Index:
   '''\
   An inverted index.
 
