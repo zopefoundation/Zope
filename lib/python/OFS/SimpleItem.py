@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.87 2001/04/03 15:13:42 brian Exp $'''
-__version__='$Revision: 1.87 $'[11:-2]
+$Id: SimpleItem.py,v 1.88 2001/04/18 18:00:07 chrism Exp $'''
+__version__='$Revision: 1.88 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -309,9 +309,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 mode=mode | 0002
                 
         # get size
-        if hasattr(self, 'get_size'):
+        if hasattr(aq_base(self), 'get_size'):
             size=self.get_size()
-        elif hasattr(self,'manage_FTPget'):
+        elif hasattr(aq_base(self),'manage_FTPget'):
             size=len(self.manage_FTPget())
         else:
             size=0
