@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -119,7 +119,7 @@ def manage_addPythonScript(self, id, REQUEST=None):
         file = REQUEST.form.get('file', None)
         if file:
             if type(file) is not type(''): file = file.read()
-            getattr(self, id).write(file)
+            self._getOb(id).write(file)
         try: u = self.DestinationURL()
         except: u = REQUEST['URL1']
         REQUEST.RESPONSE.redirect('%s/%s/manage_main' % (u, quote(id)))
