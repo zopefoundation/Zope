@@ -139,7 +139,8 @@ class CatalogAware:
         return string.join(items, ', ')
 
     def onDeleteObject(self):
-        """Object delete handler."""
+        """Object delete handler. I think this is obsoleted by
+        manage_beforeDelete """
         self.unindex_object()
 
     def url(self, ftype=urllib.splittype, fhost=urllib.splithost):
