@@ -97,6 +97,7 @@ class Packless(Base):
                                           referenceCount_get(roid, txn))[0]
                                 rc=rc-1
                                 if rc < 0:
+                                    # This should never happen
                                     raise "Bad reference count, %s" % (rc+1)
                                 referenceCount_put(roid, pack(">i", rc), txn)
                                 if rc==0: zeros[roid]=1
@@ -109,10 +110,12 @@ class Packless(Base):
                     oreferences_put(oid, roid, txn)
 
                     # Create/update refcnt
-                    rc=referenceCount_get(roid, txn)
-                    if rc:
-                        rc=unpack(">i", rc)[0]
-                        if rc=='\0\0\0\0': del zeros[roid]
+                    rcs=referenceCount_get(roid, txn)
+                    if rcs:
+                        rc=unpack(">i", rcs)[0]
+                        if rc==0:
+                            try: del zeros[roid]
+                            except: pass
                         referenceCount_put(roid, pack(">i", rc+1), txn)
                     else:
                         referenceCount_put(roid, '\0\0\0\1', txn)
