@@ -99,13 +99,7 @@ from Missing import MV
 from zLOG import LOG, ERROR
 
 from Lazy import LazyMap, LazyFilter, LazyCat
-
-class NoBrainer:
-    """ This is the default class that gets instantiated for records
-    returned by a __getitem__ on the Catalog.  By default, no special
-    methods or attributes are defined.
-    """
-    pass
+from CatalogBrains import AbstractCatalogBrain, NoBrainer
 
 class KWMultiMapping(MultiMapping):
     def has_key(self, name):
@@ -141,7 +135,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """
 
     _v_brains = NoBrainer
-    _v_result_class = NoBrainer
 
     def __init__(self, vocabulary=None, brains=None):
 
@@ -214,12 +207,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         Btree.
         """
 
-        class mybrains(Record.Record, Acquisition.Implicit, brains):
-            __doc__ = 'Data record'
-            def has_key(self, key):
-                return self.__record_schema__.has_key(key)
+        class mybrains(AbstractCatalogBrain, brains):
+            pass
         
-        scopy={}
         scopy = self.schema.copy()
 
         # it is useful for our brains to know these things
@@ -230,7 +220,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         mybrains.__record_schema__ = scopy
 
         self._v_brains = brains
-        self._v_result_class=mybrains
+        self._v_result_class = mybrains
 
     def addColumn(self, name, default_value=None):
         """

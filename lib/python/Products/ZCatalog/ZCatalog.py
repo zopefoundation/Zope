@@ -258,7 +258,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         """ index all Zope objects that 'urls' point to """
         if urls:
             for url in urls:
-                obj = self.resolve_url(url, REQUEST)
+                obj = self.resolve_path(url)
+                if not obj:
+                    obj = self.resolve_url(url, REQUEST)
                 if obj is not None: 
                     self.catalog_object(obj, url)
 
@@ -285,7 +287,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog.clear()
 
         for p in paths:
-            obj = self.resolve_url(p, REQUEST)
+            obj = self.resolve_path(p)
+            if not obj:
+                obj = self.resolve_url(p, REQUEST)
             if obj is not None:
                 self.catalog_object(obj, p)             
 
@@ -318,13 +322,11 @@ class ZCatalog(Folder, Persistent, Implicit):
         c_elapse = time.clock()
         
         words = 0
-        path=string.split(URL2, REQUEST.script)
-        if len(path) > 1:
-            path=path[1]
-        else: path=''
-        path=urllib.unquote(path)
+        obj = REQUEST.PARENTS[1]
+        path = string.join(obj.getPhysicalPath(), '/')
+
         
-        results = self.ZopeFindAndApply(REQUEST.PARENTS[1],
+        results = self.ZopeFindAndApply(obj,
                                         obj_metatypes=obj_metatypes,
                                         obj_ids=obj_ids,
                                         obj_searchterm=obj_searchterm,
@@ -590,8 +592,6 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         return result
 
-
-
     def resolve_url(self, path, REQUEST):
         """ 
         Attempt to resolve a url into an object in the Zope
@@ -604,6 +604,58 @@ class ZCatalog(Folder, Persistent, Implicit):
             path='%s/%s' % (script, path) 
         try:    return REQUEST.resolve_url(path)
         except: return None
+
+    def resolve_path(self, path):
+        """ 
+        Attempt to resolve a url into an object in the Zope
+        namespace. The url may be absolute or a catalog path
+        style url. If no object is found, None is returned.
+        No exceptions are raised.
+        """
+        try:
+            return self.restrictedTraverse(path)
+        except:
+            return None
+
+    def manage_normalize_paths(self, REQUEST):
+        """Ensure that all catalog paths are full physical paths
+
+        This should only be used with ZCatalogs in which all paths can
+        be resolved with unrestrictedTraverse."""
+
+        paths = self._catalog.paths
+        uids = self._catalog.uids
+        unchanged = 0
+        fixed = []
+        removed = []
+
+        for path, rid in uids.items():
+            ob = None
+            if path[:1] == '/':
+                ob = self.resolve_url(path[1:],REQUEST)
+            if ob is None:
+                ob = self.resolve_url(path, REQUEST)
+                if ob is None:
+                    removed.append(path)
+                    continue
+            ppath = string.join(ob.getPhysicalPath(), '/')
+            if path != ppath:
+                fixed.append((path, ppath))
+            else:
+                unchanged = unchanged + 1
+
+        for path, ppath in fixed:
+            rid = uids[path]
+            del uids[path]
+            paths[rid] = ppath
+            uids[ppath] = rid
+        for path in removed:
+            self.uncatalog_object(path)
+
+        return MessageDialog(title='Done Normalizing Paths',
+          message='%s paths normalized, %s paths removed, and '
+                  '%s unchanged.' % (len(fixed), len(removed), unchanged),
+          action='./manage_main')
 
 
 Globals.default__class_init__(ZCatalog)
