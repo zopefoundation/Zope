@@ -194,7 +194,7 @@ Zpid=''
 ## General configuration options
 ##
 
-# If you want run as a deamon, then uncomment the line below:
+# If you want run as a daemon, then uncomment the line below:
 if sys.platform=='win32': Zpid=''
 else: Zpid='var/zProcessManager.pid'
 
@@ -344,7 +344,7 @@ import zLOG, posix
 
 
 if Zpid:
-    import zdeamon, App.FindHomes 
+    import zdaemon, App.FindHomes 
     sys.ZMANAGED=1
     
     x = os.fork()
@@ -358,7 +358,7 @@ if Zpid:
         zLOG.LOG("z2", zLOG.ERROR, "setsid failed")
         sys.exit(1)
 
-    zdeamon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
+    zdaemon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
 
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
 exec "import "+MODULE in {}
