@@ -99,3 +99,5 @@ def initialize(context):
         )
     context.registerBaseClass(ZCatalog.ZCatalog)
     context.registerBaseClass(CatalogAwareness.CatalogAware)
+
+    context.registerHelp()
