@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.41 2001/04/27 20:27:39 shane Exp $"
+"$Id: DT_String.py,v 1.42 2001/04/27 20:59:34 shane Exp $"
 
 from string import split, strip
 import thread,re
@@ -158,10 +158,10 @@ class String:
             r'%('                                     # beginning
             '(?P<name>[a-zA-Z0-9_/.-]+)'                       # tag name
             '('
-            '[\0- ]+'                                # space after tag name
-            '(?P<args>([^)"]+("[^"]*")?\)*)'      # arguments
+            '[\000- ]+'                                # space after tag name
+            '(?P<args>([^)"]+("[^"]*")?)*)'      # arguments
             ')?'
-            ')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]\|[]![])' # end
+            ')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]|[]![])' # end
             , re.I) 
 
     _parseTag__roles__=()

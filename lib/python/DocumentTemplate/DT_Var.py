@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.39 2001/04/27 20:27:39 shane Exp $'
-__version__='$Revision: 1.39 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.40 2001/04/27 20:59:34 shane Exp $'
+__version__='$Revision: 1.40 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
@@ -378,7 +378,7 @@ def dollars_and_cents(v, name='(Unknown name)', md={}):
 
 def thousands_commas(v, name='(Unknown name)', md={},
                      thou=re.compile(
-                         r"([0-9])([0-9][0-9][0-9]([,.]\|$))").search):
+                         r"([0-9])([0-9][0-9][0-9]([,.]|$))").search):
     v=str(v)
     vl=split(v,'.')
     if not vl: return v
@@ -390,7 +390,7 @@ def thousands_commas(v, name='(Unknown name)', md={},
     while mo is not None:
         l = mo.start(0)
         v=v[:l+1]+','+v[l+1:]
-        l=thou(v)
+        mo=thou(v)
     return v+s
     
 def whole_dollars_with_commas(v, name='(Unknown name)', md={}):
