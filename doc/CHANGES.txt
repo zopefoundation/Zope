@@ -47,6 +47,9 @@ Zope Changes
 
      - Collector #741: Applied patch to provide better FTP error messages.
 
+     - Collector #814: PathIndexes now uses IITreeSet instead of
+       IISet. This should result in less memory usage.
+
     Bugs Fixed
 
      - Collector #790: WebDAV access is granted by default only
