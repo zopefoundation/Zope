@@ -204,6 +204,7 @@ class TALParser(XMLParser):
             self.gen.pushProgram()
         elif repeat:
             todo["repeat"] = repeat
+            self.gen.emit("beginScope")
             self.gen.pushProgram()
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
@@ -275,6 +276,7 @@ class TALParser(XMLParser):
         repeat = todo.get("repeat")
         if repeat:
             self.gen.emitRepeat(repeat)
+            self.gen.emit("endScope")
         replace = todo.get("replace")
         if replace:
             self.gen.emitSubstitution(replace)
