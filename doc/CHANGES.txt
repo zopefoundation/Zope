@@ -65,6 +65,10 @@ Zope Changes
 
       Features Changed
 
+        - Logging from ZServer modified to product Common Log Format
+          in a Combined format, where user-agent and refferer are also 
+          logged.
+
       Bugs Fixed
 
         - Some unnecessary debug mode overhead eliminated - external
