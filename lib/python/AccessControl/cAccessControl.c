@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.1 2001/06/28 15:45:14 matt Exp $
+  $Id: cAccessControl.c,v 1.2 2001/06/28 16:22:20 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -68,6 +68,14 @@ typedef struct {
 	PyObject_HEAD
 } ZopeSecurityPolicy;
 
+typedef struct {
+	PyObject_HEAD
+} PermissionRole;
+
+typedef struct {
+	PyObject_HEAD
+} imPermissionRole;
+
 /*
 ** Prototypes
 */
@@ -76,6 +84,14 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args);
 static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
 	PyObject *args);
 static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self);
+
+static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args);
+static void PermissionRole_dealloc(PermissionRole *self);
+
+static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args);
+static int imPermissionRole_length(imPermissionRole *self);
+static PyObject *imPermissionRole_item(imPermissionRole *self, int item);
+static void imPermissionRole_dealloc(imPermissionRole *self);
 
 /*
 ** Constants
@@ -135,6 +151,113 @@ static PyExtensionClass ZopeSecurityPolicyType = {
 	NULL,					/* tp_next	*/
 #endif
 	METHOD_CHAIN(ZopeSecurityPolicy_methods),/* methods	*/
+	EXTENSIONCLASS_BINDABLE_FLAG,		/* flags	*/
+};
+
+
+static char PermissionRole__doc__[] = "PermissionRole C implementation";
+
+static PyMethodDef PermissionRole_methods[] = {
+	{"__of__",
+		(PyCFunction)PermissionRole_of,
+		METH_VARARGS,
+		""
+	},
+	{ NULL, NULL }
+};
+
+static PyExtensionClass PermissionRoleType = {
+	PyObject_HEAD_INIT(NULL) 0,
+	"PermissionRole",			/* tp_name	*/
+	sizeof(PermissionRole),			/* tp_basicsize	*/
+	0,					/* tp_itemsize	*/
+	/* Standard methods 	*/
+	(destructor) PermissionRole_dealloc,	/* tp_dealloc	*/
+	NULL,					/* tp_print	*/
+	NULL,					/* tp_getattr	*/
+	NULL,					/* tp_setattr	*/
+	NULL,					/* tp_compare	*/
+	NULL,					/* tp_repr	*/
+	/* Method suites	*/
+	NULL,					/* tp_as_number	*/
+	NULL,					/* tp_as_sequence*/
+	NULL,					/* tp_as_mapping */
+	/* More standard ops  	*/
+	NULL,					/* tp_hash	*/
+	NULL,					/* tp_call	*/
+	NULL,					/* tp_str	*/
+	NULL,					/* tp_getattro	*/
+	NULL,					/* tp_setattro	*/
+	/* Reserved fields	*/
+	0,					/* tp_xxx3	*/
+	0,					/* tp_xxx4	*/
+	/* Docstring		*/
+	PermissionRole__doc__,			/* tp_doc	*/
+#ifdef COUNT_ALLOCS
+	0,					/* tp_alloc	*/
+	0,					/* tp_free	*/
+	0,					/* tp_maxalloc	*/
+	NULL,					/* tp_next	*/
+#endif
+	METHOD_CHAIN(PermissionRole_methods),	/* methods	*/
+	EXTENSIONCLASS_BINDABLE_FLAG,		/* flags	*/
+};
+
+static char imPermissionRole__doc__[] = "imPermissionRole C implementation";
+
+static PyMethodDef imPermissionRole_methods[] = {
+	{"__of__",
+		(PyCFunction)imPermissionRole_of,
+		METH_VARARGS,
+		""
+	},
+	{ NULL, NULL }
+};
+
+static PySequenceMethods imSequenceMethods = {
+	(inquiry) imPermissionRole_length,	/* sq_length	*/
+	(binaryfunc) NULL,			/* sq_concat	*/
+	(intargfunc) NULL,			/* sq_repeat	*/
+	(intargfunc) imPermissionRole_item	/* sq_item	*/
+	(intintargfunc) NULL,			/* sq_slice	*/
+	(intobjargfunc) NULL,			/* sq_ass_item	*/
+	(intintobjargproc) NULL			/* sq_ass_slice */
+};
+
+static PyExtensionClass imPermissionRoleType = {
+	PyObject_HEAD_INIT(NULL) 0,
+	"imPermissionRole",			/* tp_name	*/
+	sizeof(imPermissionRole),		/* tp_basicsize	*/
+	0,					/* tp_itemsize	*/
+	/* Standard methods 	*/
+	(destructor) imPermissionRole_dealloc,	/* tp_dealloc	*/
+	NULL,					/* tp_print	*/
+	NULL,					/* tp_getattr	*/
+	NULL,					/* tp_setattr	*/
+	NULL,					/* tp_compare	*/
+	NULL,					/* tp_repr	*/
+	/* Method suites	*/
+	NULL,					/* tp_as_number	*/
+	NULL,					/* tp_as_sequence*/
+	NULL,					/* tp_as_mapping */
+	/* More standard ops  	*/
+	NULL,					/* tp_hash	*/
+	NULL,					/* tp_call	*/
+	NULL,					/* tp_str	*/
+	NULL,					/* tp_getattro	*/
+	NULL,					/* tp_setattro	*/
+	/* Reserved fields	*/
+	0,					/* tp_xxx3	*/
+	0,					/* tp_xxx4	*/
+	/* Docstring		*/
+	imPermissionRole__doc__,		/* tp_doc	*/
+#ifdef COUNT_ALLOCS
+	0,					/* tp_alloc	*/
+	0,					/* tp_free	*/
+	0,					/* tp_maxalloc	*/
+	NULL,					/* tp_next	*/
+#endif
+	METHOD_CHAIN(imPermissionRole_methods),	/* methods	*/
 	EXTENSIONCLASS_BINDABLE_FLAG,		/* flags	*/
 };
 
@@ -808,11 +931,52 @@ static PyObject *ZopeSecurityPolicy_checkPermission(PyObject *self,
 /*
 ** ZopeSecurityPolicy_dealloc
 **
-** Probably not necessary, since we don't have a constructor! 
 */
 
 static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self) {
 	PyMem_DEL(self);  
+}
+
+
+/*
+** PermissionRole_of
+**
+*/
+
+static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args) {
+
+
+	/*|def __of__(self, parent):
+	**| r = imPermissionRole()
+	**| r._p = self._p
+	**| r._pa = parent
+	**| r._d = self._d
+	**| p = getattr(parent, 'aq_inner', None)
+	**| if p is not None:
+	**|	return r.__of__(p)
+	**| else:
+	**|	return r
+	*/
+
+}
+
+/*
+** imPermissionRole_of
+**
+*/
+
+static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
+
+	/*|def __of__(self, parent):
+	**| obj = parent
+	**| n = self._p
+	**| r = None
+	**| while 1:
+	**|    if hasattr(obj, n):
+	**|       roles = getattr(obj, n)   
+	** ...
+	*/
+
 }
 
 /* ----------------------------------------------------------------
@@ -823,7 +987,7 @@ static void ZopeSecurityPolicy_dealloc(ZopeSecurityPolicy *self) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.1 $";
+	char *rev = "$Revision: 1.2 $";
 
 	if (!ExtensionClassImported) return;
 
