@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.1 1997/07/25 16:43:05 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: DA.py,v 1.2 1997/07/25 16:49:31 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -23,6 +23,13 @@ from Globals import Persistent, ManageHTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
 
+def manage_addDAFolder(self,name,description,REQUEST):
+    """Add a new Folder object"""
+    i=Folder()
+    i.name=name
+    i.description=description
+    self._setObject(name,i)
+    return self.manage_main(self,REQUEST)
 
 class Folder(OFS.Folder.Folder):    
 
@@ -208,6 +215,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.2  1997/07/25 16:49:31  jim
+# Added manage_addDAFolder, which can be shared by various DAs.
+#
 # Revision 1.1  1997/07/25 16:43:05  jim
 # initial
 #
