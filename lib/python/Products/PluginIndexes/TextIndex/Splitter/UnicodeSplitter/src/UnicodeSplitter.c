@@ -118,7 +118,6 @@ static PySequenceMethods Splitter_as_sequence = {
 static PyObject *
 Splitter_pos(Splitter *self, PyObject *args)
 {
-
     return Py_BuildValue("(ii)", 0,0);
 }
 
@@ -291,19 +290,19 @@ get_Splitter(PyObject *modinfo, PyObject *args,PyObject *keywds)
     if (! (self = PyObject_NEW(Splitter, &SplitterType))) return NULL;
     if (! (PyArg_ParseTupleAndKeywords(args,keywds,"O|Os",splitter_args,&doc,&synstop,&encoding))) return NULL;
 
-
 #ifdef DEBUG
     puts("got text");
     PyObject_Print(doc,stdout,0);
     fflush(stdout);
 #endif
 
-
     if (PyString_Check(doc)) {
 
         unicodedoc = PyUnicode_FromEncodedObject(doc,encoding,"strict");
-        if (! unicodedoc) goto err;
-
+        if (unicodedoc ==NULL) {
+            PyErr_SetString(PyExc_UnicodeError, "Problem converting encoded string");
+            return NULL;
+        }
 
     } else if( PyUnicode_Check(doc)) {
         unicodedoc = doc;
@@ -339,7 +338,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.4 2001/10/17 15:29:50 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.5 2001/10/17 15:49:04 andreasjung Exp $\n"
     ;
 
 
@@ -347,7 +346,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.4 $";
+    char *rev="$Revision: 1.5 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
