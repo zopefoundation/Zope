@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Package of template utility classes and functions.
 
-$Id: __init__.py,v 1.3 2001/07/11 19:02:22 evan Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 2001/08/13 18:15:34 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Batch import Batch
 from Iterator import Iterator
@@ -98,4 +98,6 @@ if sys.modules.has_key('Zope'):
     __allow_access_to_unprotected_subobjects__ = 1
     __roles__ = None
 
-    from Zope import Batch, SimpleTreeMaker
+    from Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
+    from Zope import url_query, make_query, make_hidden_input
+
