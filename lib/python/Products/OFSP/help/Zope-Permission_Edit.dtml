@@ -1,7 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Zope-Permission.dtml">Zope Permission</a>&gt;Edit</h1>
-<p> This view allows you to edit permission settings. </p>
-<p> The <tt>Id</tt> field indicates the permission's id. The
-		  <tt>Title</tt> field allows you to specify the permissions's title.
-		  The <tt>Name</tt> field specifies the name of the permission. A
-		  permission's name must be unique. </p><dtml-var standard_html_footer>

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -116,11 +116,11 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     manage_options=(
         (
         {'label':'Database', 'action':'manage_main',
-         'help':('OFSP','Database-Management_Database.dtml')},
+         'help':('OFSP','Database-Management_Database.stx')},
         {'label':'Cache Parameters', 'action':'manage_cacheParameters',
-         'help':('OFSP','Database-Management_Cache-Parameters.dtml')},
+         'help':('OFSP','Database-Management_Cache-Parameters.stx')},
         {'label':'Flush Cache', 'action':'manage_cacheGC',
-         'help':('OFSP','Database-Management_Flush-Cache.dtml')},
+         'help':('OFSP','Database-Management_Flush-Cache.stx')},
         )
         )
 
@@ -137,7 +137,7 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     manage_options=(
         (
         {'label':'Version', 'action':'manage_main',
-         'help':('OFSP','Version-Management_Version.dtml')},
+         'help':('OFSP','Version-Management_Version.stx')},
         )
         )
         
@@ -160,9 +160,9 @@ class DebugManager(Fake, SimpleItem.Item, Acquisition.Implicit):
 
     manage_options=(
         (  {'label':'Debugging Info', 'action':'manage_main',
-            'help':('OFSP','DebugInfo-Debug.dtml')},
+            'help':('OFSP','Debug-Information_Debug.stx')},
            {'label':'Profiling', 'action':'manage_profile',
-            'help':('OFSP','DebugInfo-Profile.dtml')},
+            'help':('OFSP','Debug-Information_Profile.stx')},
            )
         )
 
@@ -285,7 +285,7 @@ class ApplicationManager(Folder,CacheManager):
     manage_options=(
         (
         {'label':'Contents', 'action':'manage_main',
-         'help':('OFSP','Control-Panel_Contents.dtml')},
+         'help':('OFSP','Control-Panel_Contents.stx')},
         )
         +Undo.UndoSupport.manage_options
         )

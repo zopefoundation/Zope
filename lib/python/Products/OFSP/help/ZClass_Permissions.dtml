@@ -1,9 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass.dtml">ZClass</a>&gt;Permissions</h1>
-<p> This view allows you to select permissions to be used by a ZClass.
-		  </p>
-<p> When setting permissions for individual methods or property sheets
-		  of a ZClass, you will be able to select from inherited permissions and those
-		  permission which you set with this view. </p>
-<p> To select permissions choose them from the multiple select list
-		  and click the <tt>Change</tt> button. </p><dtml-var standard_html_footer>

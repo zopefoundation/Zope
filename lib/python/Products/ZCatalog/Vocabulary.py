@@ -122,8 +122,10 @@ class Vocabulary(Item, Persistent, Implicit,
     
     manage_options=(
         (
-        {'label': 'Vocabulary', 'action': 'manage_main'},
-        {'label': 'Query', 'action': 'manage_query'},
+        {'label': 'Vocabulary', 'action': 'manage_main',
+         'help' : ('ZCatalog', 'Vocabulary_Vocabulary.stx')},
+        {'label': 'Query', 'action': 'manage_query',
+         'help': ('ZCatalog', 'Vocabulary_Query.stx')},
         )
         +Item.manage_options
         +AccessControl.Role.RoleManager.manage_options

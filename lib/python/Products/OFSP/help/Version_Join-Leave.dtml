@@ -1,9 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Version.dtml">Version</a>&gt;Join/Leave</h1>
-<p> This view allows you to start and stop working in a private
-		  version. When you are working in a version all changes you make will be hidden
-		  from other users. You may join and leave a session as many times as necessary
-		  until you are ready to commit the version or discard it. </p>
-<p> The <tt>Start Working in</tt> button allows you to join
-		  the version. The <tt>Quit Working in</tt> button allows you to leave
-		  the version. </p><dtml-var standard_html_footer>

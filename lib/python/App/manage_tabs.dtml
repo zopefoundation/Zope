@@ -137,6 +137,14 @@
       </dtml-if>
     </dtml-if>
     </td>
+
+  <dtml-if "_.has_key('help_topic') and _.has_key('help_product')">
+  <td align="right" valign="top">
+  <dtml-var "HelpSys.button(HelpSys, REQUEST, 
+      product=help_product,
+      topic=help_topic)">
+  </td>
+  <dtml-else>
   <dtml-with "_(option=manage_options[a_])">
   <dtml-if "option.has_key('help')">
   <td align="right" valign="top">
@@ -145,6 +153,8 @@
       topic=option['help'][1])">
   </td>
   </dtml-if></dtml-with>
+  </dtml-if>
+
   </tr>
   </table>
   <dtml-if Zope-Version>

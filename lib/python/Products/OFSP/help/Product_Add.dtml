@@ -1,7 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Product.dtml">Product</a>&gt;Add</h1>
-<p> This view allows you to create a new Product.</p>
-<p> The <tt>Id</tt> field specifies the id of the Product.
-		  The <tt>Title</tt> field allows you to specify the title of the
-		  Product. Click the <tt>Add</tt> button to create a new Product.
-		  </p><dtml-var standard_html_footer>

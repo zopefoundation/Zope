@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -127,7 +127,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
          'filter': _isNotBeingUsedAsAMethod,
          },
         {'label':'Define Permissions', 'action':'manage_access',
-         'help':('OFSP','Security-DefinePermissions.stx'),
+         'help':('OFSP','Security_Define-Permissions.stx'),
          'filter': _isBeingUsedAsAMethod,
          },
         )
@@ -186,7 +186,10 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         return result
 
-    manage_roleForm=HTMLFile('roleEdit', globals())
+    manage_roleForm=HTMLFile('roleEdit', globals(), management_view='Security',
+                             help_topic='Security_Manage-Role.stx',
+                             help_product='OFSP')
+
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         "Change the permissions given to the given role"
         self._isBeingUsedAsAMethod(REQUEST, 0)
@@ -197,7 +200,10 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
 
-    manage_acquiredForm=HTMLFile('acquiredEdit', globals())
+    manage_acquiredForm=HTMLFile('acquiredEdit', globals(), management_view='Security',
+                                 help_topic='Security_Manage-Acquisition.stx',
+                                 help_product='OFSP')
+
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         "Change the permissions that acquire"
         self._isBeingUsedAsAMethod(REQUEST, 0)
@@ -211,8 +217,10 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
 
         if REQUEST is not None: return self.manage_access(self,REQUEST)
         
-
-    manage_permissionForm=HTMLFile('permissionEdit', globals())
+    manage_permissionForm=HTMLFile('permissionEdit', globals(), management_view='Security',
+                                   help_topic='Security_Manage-Permission.stx',
+                                   help_product='OFSP')
+    
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
         """Change the settings for the given permission
@@ -321,8 +329,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
     
     __ac_local_roles__=None
 
-    manage_listLocalRoles=HTMLFile('listLocalRoles', globals())
-    manage_editLocalRoles=HTMLFile('editLocalRoles', globals())
+    manage_listLocalRoles=HTMLFile('listLocalRoles', globals(), management_view='Security',
+                                   help_topic='Security_Local-Roles.stx',
+                                   help_product='OFSP')
+
+    manage_editLocalRoles=HTMLFile('editLocalRoles', globals(), management_view='Security',
+                                   help_topic='Security_User-Local-Roles.stx',
+                                   help_product='OFSP')
 
     def has_local_roles(self):
         dict=self.__ac_local_roles__ or {}

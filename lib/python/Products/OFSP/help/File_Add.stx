@@ -1,8 +1,8 @@
-File - Add: Allows you to create a new File
+File/Image - Add: Create a new File or Image
 
     Description
     
-        Add a new generic file (binary contents) to the ZODB.
+        Creates a new File or Image.
 
     Controls
 

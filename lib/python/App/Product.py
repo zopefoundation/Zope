@@ -185,7 +185,7 @@ class Product(Folder, PermissionManager):
         Folder.manage_options+
         (
         {'label':'Distribution', 'action':'manage_distributionView',
-         'help':('OFSP','Product_Distribution.dtml')},
+         'help':('OFSP','Product_Distribution.stx')},
         )
         )
 

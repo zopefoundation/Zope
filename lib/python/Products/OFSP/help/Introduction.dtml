@@ -1,7 +1,0 @@
-<dtml-var standard_html_header>
-<h1>Introduction</h1>
-<p> 
-		The Zope Content Manager's Reference documents
-		standard Zope objects and how to use them. It provides content for the Zope
-		on-line help system. </p>
-<dtml-var standard_html_footer>

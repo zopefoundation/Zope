@@ -83,6 +83,13 @@
 # 
 ##############################################################################
 
+
+def manage_addDocument(self, id, title):
+    """
+    Add a DTML Document to the current ObjectManager
+    """
+
+
 class DTMLDocument:
     """
     A DTML Document is a Zope object that contains and executes DTML
@@ -188,3 +195,7 @@ class DTMLDocument:
         Document in bytes.
         
         """
+
+    __constructor__=manage_addDocument
+
+

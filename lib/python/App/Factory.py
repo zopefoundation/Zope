@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.17 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Factory.py,v 1.18 2000/06/20 01:59:40 amos Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
@@ -110,10 +110,9 @@ class Factory(
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
-         'help':('OFSP','Zope-Factory_Edit.dtml')},
-        {'label':'Define Permissions', 'action':'manage_access',
-         'help':('OFSP','Zope-Factory_Define-Permissions.dtml')},
+         'help':('OFSP','Zope-Factory_Edit.stx')},
         )
+        +AccessControl.Role.RoleManager.manage_options
         +OFS.SimpleItem.Item.manage_options
         )
     

@@ -26,6 +26,11 @@ To change property values, edit the
 values and click "Save Changes". 
 </p>
 <table border="0" cellspacing="0" cellpadding="2">
+<tr>
+  <th colspan="3">Property</th>
+  <th>Type</th>
+</tr>
+
 <dtml-in propertyMap mapping>
 <tr>
   <td align="left" valign="top" width="16">
@@ -100,8 +105,8 @@ values and click "Save Changes".
   </table>
   </dtml-if>
   </td>
-  <td align="left">
-  -- &dtml-type;
+  <td align="left" valign="top">
+  &dtml-type;
   </td>
 </tr>
 </dtml-in>

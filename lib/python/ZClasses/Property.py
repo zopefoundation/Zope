@@ -105,7 +105,8 @@ class ClassCaretaker:
         if not getattr(klass,'_p_changed',None):
             get_transaction().register(klass)
             klass._p_changed=1 
-       
+
+
 class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     "Property Sheet that has properties common to all instances"
     meta_type="Common Instance Property Sheet"
@@ -113,9 +114,9 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
     manage_options=(
         {'label':'Properties', 'action':'manage',
-         'help':('OFSP','Properties.dtml')},
+         'help':('OFSP','Properties.stx')},
         {'label':'Define Permissions', 'action':'manage_security',
-         'help':('OFSP','ZClass_Define-Permissions.stx')},
+         'help':('OFSP','Security_Define-Permissions.stx')},
         )
 
     __ac_permissions__=(

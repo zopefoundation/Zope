@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -100,7 +100,9 @@ class FindSupport(ExtensionClass.Base):
 
     manage_findFrame=HTMLFile('findFrame', globals())
     manage_findForm=HTMLFile('findForm', globals(), management_view='Find')
-    manage_findAdv=HTMLFile('findAdv', globals(), management_view='Find')
+    manage_findAdv=HTMLFile('findAdv', globals(), management_view='Find',
+                            help_topic='Find_Advanced.stx',
+                            help_product='OFSP')
     manage_findResult=HTMLFile('findResult', globals())
 
     __ac_permissions__=(

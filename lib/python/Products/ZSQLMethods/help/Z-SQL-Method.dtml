@@ -1,4 +1,0 @@
-<dtml-var standard_html_header><h1>Z SQL Method</h1>
-<p>Z SQL Methods allows you to access data in SQL databases.</p>
-<p>Z SQL Methods define and call SQL statements on databases which are
-		defined by database connection objects.</p><dtml-var standard_html_footer>

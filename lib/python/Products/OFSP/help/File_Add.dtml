@@ -1,7 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/File.dtml">File</a>&gt;Add</h1>
-<p> This view allows you to create a new File. </p>
-<p> The <tt>Id</tt> field specifies the id of the file. The
-		  <tt>Title</tt> field allows you to specify the title of the file.
-		  Click the <tt>Browse...</tt> button to locate a file to upload. Click
-		  the <tt>Add</tt> button to create a new File.</p><dtml-var standard_html_footer>

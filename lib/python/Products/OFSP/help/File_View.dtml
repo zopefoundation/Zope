@@ -1,5 +1,0 @@
-<dtml-var standard_html_header><h1>
-<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/File.dtml">File</a>&gt;View</h1>
-<p> This view allows you to preview a file. </p>
-<p> Depending on how your browser is configured and the type of the
-		  file this may download the file to your local computer. </p><dtml-var standard_html_footer>

@@ -1,2 +1,0 @@
-<dtml-var standard_html_header><h1>Image</h1>
-<p> Images allow you to store image files in Zope.</p><dtml-var standard_html_footer>

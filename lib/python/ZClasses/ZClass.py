@@ -598,9 +598,10 @@ class ZObject:
         {'label': 'Permissions',
          'action' :'propertysheets/permissions/manage',
          'help':('OFSP','ZClass_Permissions.stx')},     
-        {'label': 'Security', 'action' :'manage_access',  
+        {'label': 'Define Permissions', 'action' :'manage_access',  
          'help':('OFSP','Security-DefinePermissions.stx')},        
         )
+
     
 ZStandardSheets=ZObject
 

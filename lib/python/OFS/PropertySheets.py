@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -127,9 +127,13 @@ class View(App.Management.Tabs, Base):
         r=[]
         for d in self.aq_parent.aq_parent.manage_options:
             path=d['action']
-            r.append({'label': d['label'],
+            option={'label': d['label'],
                       'action': pre+path,
-                      'path': '../../'+path})
+                      'path': '../../'+path}
+            help=d.get('help')
+            if help is not None:
+                option['help']=help
+            r.append(option)
         return r
 
     def tabs_path_info(self, script, path):

@@ -4,7 +4,7 @@
 
 <H2>Add a Search Interface</H2>
 
-<dtml-var "HelpSys.HelpButton('ZSearch-Interface_Add.dtml','OFSP')">
+<dtml-var "HelpSys.HelpButton('ZSearch-Interface_Add.stx','OFSP')">
 
 <form action="manage_addZSearch" method="POST">
 
