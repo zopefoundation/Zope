@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 from string import split, join, find, lower
@@ -244,6 +244,18 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
         In this case, the URL parent of the object is supplied as the
         first argument.
         """
+
+        filePath = self.filepath()
+        if filePath==None:
+            raise RuntimeError,\
+                "external method could not be called " \
+                "because it is None"
+
+        if not os.path.exists(filePath):
+            raise RuntimeError,\
+                "external method could not be called " \
+                "because the file does not exist"
+            
 
         if DevelopmentMode:
             # If the file has been modified since last loaded, force a reload.
