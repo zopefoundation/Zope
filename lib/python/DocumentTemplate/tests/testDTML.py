@@ -85,8 +85,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.4 2001/04/28 22:36:45 chrism Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.5 2001/05/23 18:03:37 shane Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os
 import unittest
@@ -95,8 +95,9 @@ if __name__=='__main__':
     sys.path.append(os.path.join(os.pardir, os.pardir))
     here = os.curdir
 else:
+    from DocumentTemplate import tests
     from App.Common import package_home
-    here = package_home(globals())
+    here = package_home(tests.__dict__)
 
 def read_file(name):
     f = open(os.path.join(here, name), 'rb')
