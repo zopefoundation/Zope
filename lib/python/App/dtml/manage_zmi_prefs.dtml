@@ -71,6 +71,8 @@ button in order for some changes to take effect.
   </td>
 </tr>
 
+<dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+          rows="REQUEST.get('dtpref_rows', '20')">
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
@@ -78,8 +80,7 @@ button in order for some changes to take effect.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="dtpref_cols" value="<dtml-var
-    expr="REQUEST.get('dtpref_cols', '50')" html_quote>" size="6" />
+  <input type="text" name="dtpref_cols" value="&dtml-cols;" size="6" />
   </td>
 </tr>
 
@@ -90,8 +91,7 @@ button in order for some changes to take effect.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="dtpref_rows" value="<dtml-var
-    expr="REQUEST.get('dtpref_rows', '20')" html_quote>" size="6" />
+  <input type="text" name="dtpref_rows" value="&dtml-rows;" size="6" />
   </td>
 </tr>
 </table>
@@ -100,14 +100,19 @@ button in order for some changes to take effect.
 <input type="submit" name="submit" value="Change">
 </span>
 
-<p class="form-help">
+<div class="form-help">
+  <dtml-if expr="cols[-1]=='%'">
+    <textarea name="data:text" wrap="off" style="width:&dtml-cols;"
+              rows="&dtml-rows;"
+    >This is a sample edit textarea.</textarea>
+  <dtml-else>
+    <textarea name="data:text" wrap="off" cols="&dtml-cols;"
+              rows="&dtml-rows;"
+    >This is a sample edit textarea.</textarea>      
+  </dtml-if>
+</div>
 
-<textarea name="ignore" rows="<dtml-var
-  expr="REQUEST.get('dtpref_rows', '20')" html_quote>" cols="<dtml-var
-  expr="REQUEST.get('dtpref_cols', '50')" html_quote>"
-  >This is an example text area.</textarea>
-
-</p>
+</dtml-let>
 
 </form>
 

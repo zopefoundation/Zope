@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -221,8 +221,13 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
     def _er(self,data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
         
-        rows=max(1,int(dtpref_rows)+dr)
-        cols=max(35,int(dtpref_cols)+dc)
+        rows=str(max(1,int(dtpref_rows)+dr))
+        
+        if dtpref_cols[-1]=='%':
+            cols= str(min(100, max(25,int(dtpref_cols[:-1])+dc)))+'%'
+        else:
+            cols=str(max(35,int(dtpref_cols)+dc))
+            
         e=(DateTime('GMT') + 365).rfc822()
         resp=REQUEST['RESPONSE']
         resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
@@ -231,7 +236,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
             self,REQUEST,title=title,__str__=self.quotedHTML(data),
             dtpref_cols=cols,dtpref_rows=rows)
 
-    def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='70',
+    def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='100%',
                     dtpref_rows='20',REQUEST=None):
         """
         Replaces a Documents contents with Data, Title with Title.

@@ -25,11 +25,16 @@ the <em>browse</em> button to select a local file to upload.
 
 <tr>
   <td align="left" valign="top" colspan="2">
-  <dtml-let cols="_.int(REQUEST.get('dtpref_cols',70))"
-            width="_.min(_.int(_.float(cols)/70.0 * 100.0),100)">
-  <textarea name="data:text" wrap="off" style="width:&dtml-width;%"
-    cols="&dtml-cols;" rows="<dtml-var dtpref_rows missing="20">"
-    ><dtml-var __str__></textarea>
+  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')">
+    <dtml-if expr="cols[-1]=='%'">
+      <textarea name="data:text" wrap="off" style="width:&dtml-cols;"
+                rows="<dtml-var dtpref_rows missing="20">"
+      ><dtml-var __str__></textarea>
+    <dtml-else>
+      <textarea name="data:text" wrap="off" cols="&dtml-cols;"
+                rows="<dtml-var dtpref_rows missing="20">"
+      ><dtml-var __str__></textarea>      
+    </dtml-if>
   </dtml-let>
   </td>
 </tr>
