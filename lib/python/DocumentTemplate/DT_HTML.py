@@ -1,10 +1,11 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.2 1997/09/02 19:04:09 jim Exp $"""
+$Id: DT_HTML.py,v 1.3 1997/09/22 14:42:08 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
+from DT_Util import *
 from regsub import gsub
 from string import strip
 
@@ -177,6 +178,9 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.3  1997/09/22 14:42:08  jim
+# *** empty log message ***
+#
 # Revision 1.2  1997/09/02 19:04:09  jim
 # Got rid of ^Ms
 #
