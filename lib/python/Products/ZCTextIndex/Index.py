@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-"""Full text index with relevance ranking."""
+"""Full text index with relevance ranking, using a cosine measure."""
 
 import math
 
