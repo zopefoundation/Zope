@@ -4,7 +4,7 @@
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 
-RCS_ID =  '$Id: resolver.py,v 1.3 1999/05/26 02:08:30 amos Exp $'
+RCS_ID =  '$Id: resolver.py,v 1.4 1999/07/20 16:53:50 amos Exp $'
 
 
 # Fast, low-overhead asynchronous name resolver.  uses 'pre-cooked'
@@ -212,12 +212,14 @@ class resolver (asyncore.dispatcher):
 		pass
 
 	def handle_close (self):
-		print 'closing!'
+		self.log_info('closing!')
 		self.close()
 
 	def handle_error (self):      # don't close the connection on error
 		(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
-		print 'Problem with DNS lookup (%s:%s %s)' % (t, v, tbinfo)
+		self.log_info(
+				'Problem with DNS lookup (%s:%s %s)' % (t, v, tbinfo),
+				'error')
 
 	def get_id (self):
 		return (self.id.as_long() % (1<<16))
@@ -233,7 +235,7 @@ class resolver (asyncore.dispatcher):
 						callback (host, 0, None)   # timeout val is (0,None) 
 					except:
 						(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
-						print t,v,tbinfo
+						self.log_info('%s %s %s' % (t,v,tbinfo), 'error')
 
 	def resolve (self, host, callback):
 		self.reap()                                # first, get rid of old guys
@@ -271,7 +273,7 @@ class resolver (asyncore.dispatcher):
 				callback (host, ttl, answer)
 			except:
 				(file,fun,line), t, v, tbinfo = asyncore.compact_traceback()
-				print t,v,tbinfo
+				self.log_info('%s %s %s' % ( t,v,tbinfo), 'error')
 
 class rbl (resolver):
 
@@ -289,8 +291,7 @@ class rbl (resolver):
 	def check_reply (self, r):
 		# we only need to check RCODE.
 		rcode = (ord(r[3])&0xf)
-		print 'MAPS RBL; RCODE =%02x' % rcode
-		print repr(r)
+		self.log_info('MAPS RBL; RCODE =%02x\n %s' % (rcode, repr(r)))
 		return 0, rcode # (ttl, answer)
 
 

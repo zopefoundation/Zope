@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: select_trigger.py,v 1.4 1999/06/15 18:50:16 amos Exp $"
+VERSION_STRING = "$Id: select_trigger.py,v 1.5 1999/07/20 16:53:50 amos Exp $"
 
 import asyncore
 import asynchat
@@ -82,7 +82,9 @@ if os.name == 'posix':
 						thunk()
 					except:
 						(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
-						print 'exception in trigger thunk: (%s:%s %s)' % (t, v, tbinfo)
+						self.log_info(
+							'exception in trigger thunk: (%s:%s %s)' % (t, v, tbinfo),
+							'error')
 				self.thunks = []
 			finally:
 				self.lock.release()
@@ -145,7 +147,9 @@ else:
 						thunk()
 					except:
 						(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
-						print 'exception in trigger thunk: (%s:%s %s)' % (t, v, tbinfo)
+						self.log_info(
+							'exception in trigger thunk: (%s:%s %s)' % (t, v, tbinfo),
+							'error')
 				self.thunks = []
 			finally:
 				self.lock.release()

@@ -19,7 +19,7 @@ def max_server_sockets():
 			sl.append (s)
 		except:
 			break
-	num = len(sl) - 1
+	num = len(sl)
 	for s in sl:
 		s.close()
 	del sl
@@ -39,7 +39,7 @@ def max_client_sockets():
 			sl.append ((s,conn))
 		except:
 			break
-	num = len(sl) - 1
+	num = len(sl)
 	for s,c in sl:
 		s.close()
 		c.close()

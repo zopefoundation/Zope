@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.4 1999/05/27 21:57:23 amos Exp $
+# 	$Id: asyncore.py,v 1.5 1999/07/20 16:53:49 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -143,14 +143,12 @@ class dispatcher:
 			return '<__repr__ (self) failed for object at %x (addr=%s)>' % (id(self),ar)
 
 	def add_channel (self):
-		if __debug__:
-			self.log ('adding channel %s' % self)
+		self.log_info ('adding channel %s' % self)
 		socket_map [self] = 1
 
 	def del_channel (self):
 		if socket_map.has_key (self):
-			if __debug__:
-				self.log ('closing channel %d:%s' % (self.fileno(), self))
+			self.log_info ('closing channel %d:%s' % (self.fileno(), self))
 			del socket_map [self]
 
 	def create_socket (self, family, type):
@@ -267,8 +265,16 @@ class dispatcher:
 	def __getattr__ (self, attr):
 		return getattr (self.socket, attr)
 
+	# log and log_info maybe overriden to provide more sophisitcated
+	# logging and warning methods. In general, log is for 'hit' logging
+	# and 'log_info' is for informational, warning and error logging. 
+	
 	def log (self, message):
 		print 'log:', message
+		
+	def log_info (self, message, type='info'):
+		if __debug__ or type != 'info':
+			print '%s: %s' %(type, message)
 
 	def handle_read_event (self):
 		if self.accepting:
@@ -303,39 +309,34 @@ class dispatcher:
 		except:
 			self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
 
-		print (
+		self.log_info (
 			'uncaptured python exception, closing channel %s (%s:%s %s)' % (
 				self_repr,
 				t,
 				v,
 				tbinfo
-				)
+				),
+			'error'
 			)
 		self.close()
 
 	def handle_expt (self):
-		if __debug__:
-			self.log ('unhandled exception')
+		self.log_info ('unhandled exception', 'warning')
 
 	def handle_read (self):
-		if __debug__:
-			self.log ('unhandled read event')
+		self.log_info ('unhandled read event', 'waring')
 
 	def handle_write (self):
-		if __debug__:
-			self.log ('unhandled write event')
+		self.log_info ('unhandled write event', 'warning')
 
 	def handle_connect (self):
-		if __debug__:
-			self.log ('unhandled connect event')
+		self.log_info ('unhandled connect event', 'warning')
 
 	def handle_accept (self):
-		if __debug__:
-			self.log ('unhandled accept event')
+		self.log_info ('unhandled accept event', 'warning')
 
 	def handle_close (self):
-		if __debug__:
-			self.log ('unhandled close event')
+		self.log_info ('unhandled close event', 'warning')
 		self.close()
 
 # ---------------------------------------------------------------------------
@@ -361,7 +362,7 @@ class dispatcher_with_send (dispatcher):
 
 	def send (self, data):
 		if self.debug:
-			self.log ('sending %s' % repr(data))
+			self.log_info ('sending %s' % repr(data))
 		self.out_buffer = self.out_buffer + data
 		self.initiate_send()
 

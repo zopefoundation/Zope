@@ -5,7 +5,7 @@
 # python REPL channel.
 #
 
-RCS_ID = '$Id: monitor.py,v 1.2 1999/05/27 17:25:55 amos Exp $'
+RCS_ID = '$Id: monitor.py,v 1.3 1999/07/20 16:53:50 amos Exp $'
 
 import md5
 import socket
@@ -93,7 +93,7 @@ class monitor_channel (asynchat.async_chat):
 					result = eval (co, self.local_env)
 					method = 'eval'
 					if result is not None:
-						print repr(result)
+						self.log_info(repr(result))
 					self.local_env['_'] = result
 				except SyntaxError:
 					try:
@@ -120,15 +120,15 @@ class monitor_channel (asynchat.async_chat):
 				method = 'exception'
 				self.multi_line = []
 				(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
-				print t, v, tbinfo
+				self.log_info('%s %s %s' %(t, v, tbinfo), 'warning')
 		finally:
 			sys.stdout = oldout
 			sys.stderr = olderr
-		print '%s:%s (%s)> %s' % (
+		self.log_info('%s:%s (%s)> %s' % (
 			self.number,
 			self.line_counter,
 			method,
-			repr(line)
+			repr(line))
 			)
 		self.push_with_producer (p)
 		self.prompt()
@@ -161,7 +161,7 @@ class monitor_server (asyncore.dispatcher):
 		self.create_socket (socket.AF_INET, socket.SOCK_STREAM)
 		self.set_reuse_addr()
 		self.bind ((hostname, port))
-		print '%s started on port %d' % (self.SERVER_IDENT, port)
+		self.log_info('%s started on port %d' % (self.SERVER_IDENT, port))
 		self.listen (5)
 		self.closed		= 0
 		self.failed_auths = 0
@@ -173,7 +173,7 @@ class monitor_server (asyncore.dispatcher):
 
 	def handle_accept (self):
 		conn, addr = self.accept()
-		print 'Incoming monitor connection from %s:%d' % addr
+		self.log_info('Incoming monitor connection from %s:%d' % addr)
 		self.channel_class (self, conn, addr)
 		self.total_sessions.increment()
 
@@ -216,7 +216,7 @@ class secure_monitor_channel (monitor_channel):
 	def found_terminator (self):
 		if not self.authorized:
 			if hex_digest ('%s%s' % (self.timestamp, self.server.password)) != self.data:
-				self.log ('%s: failed authorization' % self)
+				self.log_info ('%s: failed authorization' % self, 'warning')
 				self.server.failed_auths = self.server.failed_auths + 1
 				self.close()
 			else:

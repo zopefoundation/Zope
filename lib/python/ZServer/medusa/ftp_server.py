@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.5 1999/05/26 02:08:30 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.6 1999/07/20 16:53:49 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -481,7 +481,7 @@ class ftp_channel (asynchat.async_chat):
 		else:
 			file = line[1]
 			if not self.filesystem.isfile (file):
-				print 'checking %s' % file
+				self.log_info ('checking %s' % file)
 				self.respond ('550 No such file')
 			else:
 				try:
@@ -603,7 +603,7 @@ class ftp_channel (asynchat.async_chat):
 			self.respond ('230 %s' % message)
 			self.filesystem = fs
 			self.authorized = 1
-			self.log ('Successful login: Filesystem=%s' % repr(fs))
+			self.log_info('Successful login: Filesystem=%s' % repr(fs))
 		else:
 			self.respond ('530 %s' % message)
 
@@ -732,11 +732,11 @@ class ftp_server (asyncore.dispatcher):
 		else:
 			self.logger = logger.unresolving_logger (logger_object)
 
-		print 'FTP server started at %s\n\tAuthorizer:%s\n\tHostname: %s\n\tPort: %d' % (
+		self.log_info('FTP server started at %s\n\tAuthorizer:%s\n\tHostname: %s\n\tPort: %d' % (
 			time.ctime(time.time()),
 			repr (self.authorizer),
 			self.hostname,
-			self.port
+			self.port)
 			)
 
 	def writable (self):
@@ -751,7 +751,7 @@ class ftp_server (asyncore.dispatcher):
 	def handle_accept (self):
 		conn, addr = self.accept()
 		self.total_sessions.increment()
-		print 'Incoming connection from %s:%d' % (addr[0], addr[1])
+		self.log_info('Incoming connection from %s:%d' % (addr[0], addr[1]))
 		self.ftp_channel_class (self, conn, addr)
 
 	# return a producer describing the state of the server
@@ -873,7 +873,7 @@ class xmit_channel (asynchat.async_chat):
 
 	def handle_error (self):
 		# usually this is to catch an unexpected disconnect.
-		self.log ('unexpected disconnect on data xmit channel')
+		self.log_info ('unexpected disconnect on data xmit channel', 'error')
 		try:
 			self.close()
 		except:
@@ -929,7 +929,7 @@ class recv_channel (asyncore.dispatcher):
 			try:
 				self.fd.write (block)
 			except IOError:
-				print 'got exception writing block...'
+				self.log_info ('got exception writing block...', 'error')
 
 	def handle_close (self):
 		s = self.channel.server
@@ -1060,7 +1060,7 @@ if os.name == 'posix':
 		try:
 			asyncore.loop()
 		except KeyboardInterrupt:
-			print 'FTP server shutting down. (received SIGINT)'
+			self.log_info('FTP server shutting down. (received SIGINT)', 'warning')
 			# close everything down on SIGINT.
 			# of course this should be a cleaner shutdown.
 			sm = socket.socket_map

@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.7 1999/05/26 02:08:30 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.8 1999/07/20 16:53:49 amos Exp $'
 
 # python modules
 import os
@@ -142,16 +142,18 @@ class http_request:
 		if self.collector:
 			self.collector.collect_incoming_data (data)
 		else:
-			sys.stderr.write (
-				'warning: dropping %d bytes of incoming request data\n' % len(data)
+			self.log_info(
+				'Dropping %d bytes of incoming request data' % len(data),
+				'warning'
 				)
 
 	def found_terminator (self):
 		if self.collector:
 			self.collector.found_terminator()
 		else:
-			sys.stderr.write (
-				'warning: unexpected end-of-record for incoming request\n'
+			self.log_info (
+				'Unexpected end-of-record for incoming request',
+				'warning'
 				)
 
 	def push (self, thing):
@@ -461,8 +463,9 @@ class http_channel (asynchat.async_chat):
 					except:
 						self.server.exceptions.increment()
 						(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
-						# Log this to a better place.
-						print 'Server Error: %s, %s: file: %s line: %s' % (t,v,file,line)
+						self.log_info(
+								'Server Error: %s, %s: file: %s line: %s' % (t,v,file,line),
+								'error')
 						try:
 							r.error (500)
 						except:
@@ -521,12 +524,12 @@ class http_server (asyncore.dispatcher):
 
 		host, port = self.socket.getsockname()
 		if not ip:
-			print 'Warning: computing default hostname'
+			self.log_info('Computing default hostname', 'warning')
 			ip = socket.gethostbyname (socket.gethostname())
 		try:
 			self.server_name = socket.gethostbyaddr (ip)[0]
 		except socket.error:
-			print 'Warning: cannot do reverse lookup'
+			self.log_info('Cannot do reverse lookup', 'warning')
 			self.server_name = ip       # use the IP address as the "hostname"
 
 		self.server_port = port
@@ -544,7 +547,7 @@ class http_server (asyncore.dispatcher):
 		else:
 			self.logger = logger.unresolving_logger (logger_object)
 
-		sys.stdout.write (
+		self.log_info (
 			'Medusa (V%s) started at %s'
 			'\n\tHostname: %s'
 			'\n\tPort:%d'
@@ -577,7 +580,7 @@ class http_server (asyncore.dispatcher):
 			# accept.  socketmodule.c:makesockaddr complains that the
 			# address family is unknown.  We don't want the whole server
 			# to shut down because of this.
-			sys.stderr.write ('warning: server accept() threw an exception\n')
+			self.log_info('Server accept() threw an exception', 'warning')
 			return
 
 		self.channel_class (self, conn, addr)
