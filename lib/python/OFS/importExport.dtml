@@ -13,7 +13,7 @@ in the &quot;var&quot; directory of your Zope installation
 on the server.
 </P>
 
-<FORM ACTION="manage_exportObject" METHOD="POST" TARGET="manage_main">
+<FORM ACTION="manage_exportObject" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Export object id</TH>
@@ -46,8 +46,7 @@ the &quot;import&quot; directory in the root of your Zope installation
 if it does not yet exist.
 </P>
 
-<FORM ACTION="manage_importObject" METHOD="POST"
- TARGET="manage_main">
+<FORM ACTION="manage_importObject" METHOD="POST">
 <TABLE CELLSPACING="2">
 
 <TR>
