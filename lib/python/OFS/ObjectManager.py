@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.79 1999/07/21 13:17:43 jim Exp $"""
+$Id: ObjectManager.py,v 1.80 1999/07/22 19:19:22 jim Exp $"""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -431,22 +431,29 @@ class ObjectManager(
 
     # These methods replace manage_importHack and manage_exportHack
 
-    def manage_exportObject(self, id='', download=None, RESPONSE=None):
+    def manage_exportObject(self, id='', download=None, toxml=None,
+                            RESPONSE=None):
         """Exports an object to a file and returns that file."""        
         if not id:
             id=self.id
             if callable(id): id=id()
             ob=self
         else: ob=self._getOb(id)
+
+        suffix=toxml and 'xml' or 'zexp'
+        
         if download:
             f=StringIO()
-            ob._p_jar.exportFile(ob._p_oid, f)
+            if toxml: ob._p_jar.exportXML(ob._p_oid, f)
+            else:     ob._p_jar.exportFile(ob._p_oid, f)
             RESPONSE.setHeader('Content-type','application/data')
             RESPONSE.setHeader('Content-Disposition',
-                'inline;filename=%s.bbe' % id)
+                'inline;filename=%s.%s' % (id, suffix))
             return f.getvalue()
-        f=Globals.data_dir+'/%s.bbe' % id
-        ob._p_jar.exportFile(ob._p_oid, f)
+
+        f=Globals.data_dir+'/%s.%s' % (id, suffix)
+        if toxml: ob._p_jar.exportXML(ob._p_oid, f)
+        else:     ob._p_jar.exportFile(ob._p_oid, f)
 
         if RESPONSE is not None:
             return MessageDialog(

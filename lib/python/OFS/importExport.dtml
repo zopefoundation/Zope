@@ -32,6 +32,12 @@ on the server.
   </TD>
 </TR>  
 <TR>
+  <TH ALIGN="LEFT" VALIGN="TOP"></TH>
+  <TD ALIGH="LEFT" VALIGN="TOP">
+  <INPUT TYPE="CHECKBOX" NAME="toxml" VALUE="Y"> XML format?
+  </TD>
+</TR>
+<TR>
   <TD></TD>
   <TD><INPUT TYPE="SUBMIT" VALUE="Export"></TD>
 </TR>
