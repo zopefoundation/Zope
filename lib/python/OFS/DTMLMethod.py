@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -370,8 +370,8 @@ def addDTMLMethod(self, id, title='', file='', REQUEST=None, submit=None):
     ob.title=title
     id=self._setObject(id, ob)
     if REQUEST is not None:
-        if hasattr(self, 'DestinationURL'): u=self.DestinationURL()
-        else: u=REQUEST['URL1']
+        try: u=self.DestinationURL()
+        except: u=REQUEST['URL1']
         if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
