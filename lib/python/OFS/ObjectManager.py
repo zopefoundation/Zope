@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.84 2000/03/09 18:30:07 brian Exp $"""
+$Id: ObjectManager.py,v 1.85 2000/03/14 17:15:36 brian Exp $"""
 
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -210,7 +210,10 @@ class ObjectManager(
                     'The id %s is invalid - it is already in use.' % id)
         if id == 'REQUEST':
             raise 'Bad Request', 'REQUEST is a reserved name.'
-
+        if '/' in id:
+            raise 'Bad Request', (
+                'The id %s contains characters illegal in URLs.' % id
+                )
 
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
