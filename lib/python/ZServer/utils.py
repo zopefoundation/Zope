@@ -13,10 +13,6 @@
 
 """ A set of utility routines used by asyncore initialization """
 
-def getMaxSockets():
-    from medusa.test import max_sockets
-    return max_sockets.max_select_sockets()
-
 def getZopeVersion():
     import App.version_txt
     App.version_txt.version_txt()

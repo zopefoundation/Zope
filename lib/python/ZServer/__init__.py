@@ -13,6 +13,7 @@
 
 import sys
 import utils
+from App.config import getConfiguration
 
 #########################################################
 ### declarations used by external packages
@@ -24,7 +25,7 @@ exit_code = 0
 ZSERVER_VERSION='1.1'
 
 # the maximum number of incoming connections to ZServer
-CONNECTION_LIMIT=utils.getMaxSockets()
+CONNECTION_LIMIT=1000 # may be reset by max_listen_sockets handler in Zope
 
 # the Zope version string
 ZOPE_VERSION=utils.getZopeVersion()
