@@ -8,7 +8,7 @@
 # If you are interested in using this software in a commercial context,
 # or in purchasing support, please contact the author.
 
-RCS_ID =  '$Id: ftp_server.py,v 1.8 1999/11/15 21:53:56 amos Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.9 2000/01/14 02:35:56 amos Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -335,6 +335,7 @@ class ftp_channel (asynchat.async_chat):
 		else:
 			self.current_mode = t
 			self.respond ('200 Type set to %s.' % self.type_map[t])
+
 
 	def cmd_quit (self, line):
 		'terminate session'
@@ -847,12 +848,15 @@ class xmit_channel (asynchat.async_chat):
 		self.channel = channel
 		self.client_addr = client_addr
 		asynchat.async_chat.__init__ (self)
+		
+#	def __del__ (self):
+#		print 'xmit_channel.__del__()'
+
+	def log (*args):
+		pass
 
 	def readable (self):
-		return 0
-
-	def log(self, *args):
-		pass
+		return not self.connected
 
 	def writable (self):
 		return 1
@@ -1054,13 +1058,7 @@ if os.name == 'posix':
 			self.log_info('FTP server shutting down. (received SIGINT)', 'warning')
 			# close everything down on SIGINT.
 			# of course this should be a cleaner shutdown.
-			sm = socket.socket_map
-			socket.socket_map = {}
-			for sock in sm.values():
-				try:
-					sock.close()
-				except:
-					pass
+			asyncore.close_all()
 
 	if __name__ == '__main__':
 		test (sys.argv[1])

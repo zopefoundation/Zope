@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.13 1999/11/15 21:53:56 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.14 2000/01/14 02:35:56 amos Exp $'
 
 # python modules
 import os
@@ -269,7 +269,7 @@ class http_request:
 		user_agent=self.get_header('user-agent')
 		if not user_agent: user_agent=''
 		referer=self.get_header('referer')
-		if not referer: referer=''
+		if not referer: referer=''	
 		self.channel.server.logger.log (
 			self.channel.addr[0],
 			' - - [%s] "%s" %d %d "%s" "%s"\n' % (
@@ -385,7 +385,7 @@ class http_channel (asynchat.async_chat):
 
 	def kill_zombies (self):
 		now = int (time.time())
-		for channel in asyncore.socket_map.keys():
+		for channel in asyncore.socket_map.values():
 			if channel.__class__ == self.__class__:
 				if (now - channel.creation_time) > channel.zombie_timeout:
 					channel.close()
@@ -448,7 +448,7 @@ class http_channel (asynchat.async_chat):
 			# --------------------------------------------------
 			# crack the request header
 			# --------------------------------------------------
-			
+
 			while lines and not lines[0]:
 				# as per the suggestion of http-1.1 section 4.1, (and
 				# Eric Parker <eparker@zyvex.com>), ignore a leading
@@ -461,26 +461,17 @@ class http_channel (asynchat.async_chat):
 				return
 
 			request = lines[0]
-			try:
-				command, uri, version = crack_request (request)
-			except:
-				# deal with broken HTTP requests
-				try:
-					# maybe there were spaces in the URL
-					parts=string.split(request)
-					command, uri, version = crack_request(
-							'%s %s %s' % (parts[0], parts[1], parts[-1]))
-				except:
-					self.log_info('Bad HTTP request: %s' % request, 'error')
-					r = http_request (self, request, 
-							None, None, None, join_headers(lines[1:]))
-					r.error(400)
-					return
+			command, uri, version = crack_request (request)
 			header = join_headers (lines[1:])
 
 			r = http_request (self, request, command, uri, version, header)
 			self.request_counter.increment()
 			self.server.total_requests.increment()
+
+			if command is None:
+				self.log_info('Bad HTTP request: %s' % request, 'error')
+				r.error(400)
+				return
 
 			# --------------------------------------------------
 			# handler selection and dispatch
@@ -612,7 +603,14 @@ class http_server (asyncore.dispatcher):
 			# accept.  socketmodule.c:makesockaddr complains that the
 			# address family is unknown.  We don't want the whole server
 			# to shut down because of this.
-			self.log_info('Server accept() threw an exception', 'warning')
+			self.log_info ('warning: server accept() threw an exception', 'warning')
+			return
+		except TypeError:
+			# unpack non-sequence.  this can happen when a read event
+			# fires on a listening socket, but when we call accept()
+			# we get EWOULDBLOCK, so dispatcher.accept() returns None.
+			# Seen on FreeBSD3.
+			self.log_info ('warning: server accept() threw EWOULDBLOCK', 'warning')
 			return
 
 		self.channel_class (self, conn, addr)
@@ -689,6 +687,8 @@ def crack_request (r):
 		else:
 			version = None
 		return string.lower (REQUEST.group (1)), REQUEST.group(2), version
+	else:
+		return None, None, None	
 
 class fifo:
 	def __init__ (self, list=None):

@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.6 1999/07/26 07:06:36 amos Exp $
+# 	$Id: asyncore.py,v 1.7 2000/01/14 02:35:56 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -25,6 +25,7 @@
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 # ======================================================================
 
+import exceptions
 import select
 import socket
 import string
@@ -41,60 +42,83 @@ if os.name == 'nt':
 else:
 	from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, ENOTCONN, ESHUTDOWN
 
-socket_map = {}
+try:
+	socket_map
+except NameError:
+	socket_map = {}
+
+class ExitNow (exceptions.Exception):
+	pass
+
+DEBUG = 0
 
 def poll (timeout=0.0):
+	global DEBUG
 	if socket_map:
 		r = []; w = []; e = []
-		for s in socket_map.keys():
-			if s.readable():
-				r.append (s)
-			if s.writable():
-				w.append (s)
+		for fd, obj in socket_map.items():
+			if obj.readable():
+				r.append (fd)
+			if obj.writable():
+				w.append (fd)
+		r,w,e = select.select (r,w,e, timeout)
 
-		(r,w,e) = select.select (r,w,e, timeout)
+		if DEBUG:
+			print r,w,e
 
-		for x in r:
+		for fd in r:
 			try:
-				x.handle_read_event()
-			except:
-				x.handle_error()
-		for x in w:
+				obj = socket_map[fd]
+				try:
+					obj.handle_read_event()
+				except ExitNow:
+					raise ExitNow
+				except:
+					obj.handle_error()
+			except KeyError:
+				pass
+
+		for fd in w:
 			try:
-				x.handle_write_event()
-			except:
-				x.handle_error()
+				obj = socket_map[fd]
+				try:
+					obj.handle_write_event()
+				except ExitNow:
+					raise ExitNow
+				except:
+					obj.handle_error()
+			except KeyError:
+				pass
 
 def poll2 (timeout=0.0):
 	import poll
 	# timeout is in milliseconds
 	timeout = int(timeout*1000)
 	if socket_map:
-		fd_map = {}
-		for s in socket_map.keys():
-			fd_map[s.fileno()] = s
 		l = []
-		for fd, s in fd_map.items():
+		for fd, obj in socket_map.items():
 			flags = 0
-			if s.readable():
+			if obj.readable():
 				flags = poll.POLLIN
-			if s.writable():
+			if obj.writable():
 				flags = flags | poll.POLLOUT
 			if flags:
 				l.append (fd, flags)
 		r = poll.poll (l, timeout)
 		for fd, flags in r:
-			s = fd_map[fd]
 			try:
-				if (flags & poll.POLLIN):
-					s.handle_read_event()
-				if (flags & poll.POLLOUT):
-					s.handle_write_event()
-				if (flags & poll.POLLERR):
-					s.handle_expt_event()
-			except:
-				s.handle_error()
-
+				obj = socket_map[fd]
+				try:
+					if (flags  & poll.POLLIN):
+						obj.handle_read_event()
+					if (flags & poll.POLLOUT):
+						obj.handle_write_event()
+				except ExitNow:
+					raise ExitNow
+				except:
+					obj.handle_error()
+			except KeyError:
+				pass
 
 def loop (timeout=30.0, use_poll=0):
 
@@ -143,23 +167,25 @@ class dispatcher:
 			return '<__repr__ (self) failed for object at %x (addr=%s)>' % (id(self),ar)
 
 	def add_channel (self):
-		self.log_info ('adding channel %s' % self)
-		socket_map [self] = 1
+		#self.log_info ('adding channel %s' % self)
+		socket_map [self._fileno] = self
 
 	def del_channel (self):
-		if socket_map.has_key (self):
-			self.log_info ('closing channel %d:%s' % (self.fileno(), self))
-			del socket_map [self]
+		fd = self._fileno
+		if socket_map.has_key (fd):
+			#self.log_info ('closing channel %d:%s' % (fd, self))
+			del socket_map [fd]
 
 	def create_socket (self, family, type):
 		self.family_and_type = family, type
 		self.socket = socket.socket (family, type)
 		self.socket.setblocking(0)
+		self._fileno = self.socket.fileno()
 		self.add_channel()
 
-	def set_socket (self, socket):
-		# This is done so we can be called safely from __init__
-		self.__dict__['socket'] = socket
+	def set_socket (self, sock):
+		self.__dict__['socket'] = sock
+		self._fileno = sock.fileno()
 		self.add_channel()
 
 	def set_reuse_addr (self):
@@ -261,20 +287,19 @@ class dispatcher:
 
 	# cheap inheritance, used to pass all other attribute
 	# references to the underlying socket object.
-	# NOTE: this may be removed soon for performance reasons.
 	def __getattr__ (self, attr):
 		return getattr (self.socket, attr)
 
 	# log and log_info maybe overriden to provide more sophisitcated
 	# logging and warning methods. In general, log is for 'hit' logging
 	# and 'log_info' is for informational, warning and error logging. 
-	
+
 	def log (self, message):
-		print 'log:', message
-		
+		sys.stderr.write ('log: %s\n' % str(message))
+
 	def log_info (self, message, type='info'):
 		if __debug__ or type != 'info':
-			print '%s: %s' %(type, message)
+			print '%s: %s' % (type, message)
 
 	def handle_read_event (self):
 		if self.accepting:
@@ -398,7 +423,7 @@ def compact_traceback ():
 
 def close_all ():
 	global socket_map
-	for x in socket_map.keys():
+	for x in socket_map.values():
 		x.socket.close()
 	socket_map.clear()
 
@@ -449,6 +474,7 @@ if os.name == 'posix':
 			self.set_file (fd)
 
 		def set_file (self, fd):
+			self._fileno = fd
 			self.socket = file_wrapper (fd)
 			self.add_channel()
 

@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: asynchat.py,v 1.9 1999/07/19 17:43:47 amos Exp $
+#	$Id: asynchat.py,v 1.10 2000/01/14 02:35:56 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -219,7 +219,7 @@ class async_chat (asyncore.dispatcher):
 	def discard_buffers (self):
 		# Emergencies only!
 		self.ac_in_buffer = ''
-		self.ac_out_buffer == ''
+		self.ac_out_buffer = ''
 		while self.producer_fifo:
 			self.producer_fifo.pop()
 

@@ -60,7 +60,7 @@ class monitor_client (asynchat.async_chat):
 	def handle_close (self):
 		# close all the channels, which will make the standard main
 		# loop exit.
-		map (lambda x: x.close(), asyncore.socket_map.keys())		
+		map (lambda x: x.close(), asyncore.socket_map.values())
 
 	def log (self, *ignore):
 		pass
