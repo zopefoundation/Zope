@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -253,7 +253,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
-        if REQUEST.get('raw'):
+        if REQUEST is not None and REQUEST.get('raw'):
             return self._text
         return self.read()
 
