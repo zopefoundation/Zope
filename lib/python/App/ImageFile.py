@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import os
 import time
@@ -43,9 +43,7 @@ class ImageFile(Acquisition.Explicit):
             max_age = 3600 # One hour
         self.cch = 'public,max-age=%d' % max_age
 
-        file=open(path, 'rb')
-        data=file.read()
-        file.close()
+        data = open(path, 'rb').read()
         content_type, enc=guess_content_type(path, data)
         if content_type:
             self.content_type=content_type
@@ -84,10 +82,7 @@ class ImageFile(Acquisition.Explicit):
                     RESPONSE.setStatus(304)
                     return ''
 
-        f=open(self.path,'rb')
-        data=f.read()
-        f.close()
-        return data
+        return open(self.path,'rb').read()
 
     HEAD__roles__=None
     def HEAD(self, REQUEST, RESPONSE):
