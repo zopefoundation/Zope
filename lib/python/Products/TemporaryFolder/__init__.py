@@ -13,7 +13,7 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.6 2002/08/14 22:25:13 mj Exp $
+$Id: __init__.py,v 1.7 2003/07/20 16:18:26 chrism Exp $
 """
 
 import ZODB # for testrunner to be happy
@@ -26,7 +26,8 @@ def initialize(context):
         icon='www/tempfolder.gif',
         meta_type='Temporary Folder',
         constructors=(TemporaryFolder.constructTemporaryFolderForm,
-                      TemporaryFolder.constructTemporaryFolder)
+                      TemporaryFolder.constructTemporaryFolder),
+        visibility=0 # dont show this in the add list for 2.7+ (use dbtab)
         )
 
     context.registerHelp()

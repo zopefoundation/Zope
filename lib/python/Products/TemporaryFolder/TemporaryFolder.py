@@ -22,9 +22,9 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.8 2003/05/28 15:28:27 chrism Exp $
+$Id: TemporaryFolder.py,v 1.9 2003/07/20 16:18:26 chrism Exp $
 """
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -49,11 +49,18 @@ def constructTemporaryFolder(self, id, title=None, REQUEST=None):
 
 constructTemporaryFolderForm=HTMLFile('dtml/addTemporaryFolder', globals())
 
+class SimpleTemporaryContainer(OFS.Folder.Folder):
+    # dbtab-style container class
+    meta_type = 'Temporary Folder'
+    icon = 'misc_/TemporaryFolder/tempfolder.gif'
 
 class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
     """
     A mounted RAM database with a basic interface for displaying the
     reason the database did not connect.
+
+    XXX this is only here for backwards compatibility purposes:
+    DBTab uses the SimpleTemporaryContainer class instead.
     """
     icon = 'p_/broken'
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
