@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.62 2002/06/12 21:51:39 Brian Exp $'''
-__version__='$Revision: 1.62 $'[11:-2]
+$Id: HTTPResponse.py,v 1.63 2002/06/14 15:52:49 Brian Exp $'''
+__version__='$Revision: 1.63 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -378,7 +378,8 @@ class HTTPResponse(BaseResponse):
 
         elif force or (REQUEST.get('HTTP_ACCEPT_ENCODING','').find('gzip') != -1):
             self.use_HTTP_content_compression = 1
-            
+            if not force:
+                self.appendHeader('Vary', 'Accept-Encoding')
             
         return self.use_HTTP_content_compression
 
