@@ -39,11 +39,14 @@ OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+  - 2.0a5  29 October 1998
+    - (brian) fixed arg type mismatch for semctl
 
   - 2.0a4  10 August 1998
-    -fixed Win32 local socket host address issues
+    - (jeff) fixed Win32 local socket host address issues
+
   - 2.0a4  8 August 1998
-    -added Win32 support
+    - (jeff) added Win32 support
 */
 #include "pcgi.h"
 
@@ -52,7 +55,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.1 1998/10/19 20:04:37 brian Exp $";
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.2 1998/10/29 15:37:20 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -60,6 +63,7 @@ int CloseFileDescriptors = 0;
 
 #if UNIX
 int g_lock = 0;
+union semun sem_idx;
 #endif
 
 #if PCGI_WRAPPER_MAIN
@@ -81,6 +85,11 @@ int main(int argc, char *argv[])
 #ifdef CLOSE_FDS
     CloseFileDescriptors = 1;
 #endif
+
+#ifdef UNIX
+sem_idx.val=0;
+#endif
+
     /*
     // Initialize resource info
     */
@@ -704,7 +713,7 @@ void cleanup()
 #ifdef UNIX
     if (g_lock > 0) 
     {
-        semctl(g_lock, 1, IPC_RMID, (union semun)sem_idx);
+        semctl(g_lock, 1, IPC_RMID, sem_idx);
     }
 #endif
 }
@@ -781,7 +790,7 @@ int pcgiStartProc(pcgiResource *r)
        init will inherit the grandchild (so it won't die) */
     if ((pid = fork()) < 0)
     {   
-        semctl(r->lock, 1, IPC_RMID, (union semun)0);
+        semctl(r->lock, 1, IPC_RMID, sem_idx);
         return(-1);
     }
     else if (pid == 0)
@@ -822,14 +831,14 @@ int pcgiStartProc(pcgiResource *r)
 
     /* Wait for the first child to finish */
     if (waitpid(pid, NULL, 0) < 0)
-    {   semctl(r->lock, 1, IPC_RMID, (union semun)0);
+    {   semctl(r->lock, 1, IPC_RMID, sem_idx);
         return(-1);
     }
 
     /*
     // Release restart lock!
     */
-    semctl(r->lock, 1, IPC_RMID, (union semun)0);
+    semctl(r->lock, 1, IPC_RMID, sem_idx);
 
     /*
     // Reset signal handlers
