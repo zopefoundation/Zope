@@ -61,7 +61,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                 % lexicon.getId()
 
         self.lexicon = lexicon
-        self.index = index_factory(self.lexicon)
+        self._index_factory = index_factory
+        self.clear()
 
     ## Pluggable Index APIs ##
 
@@ -103,7 +104,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         chooser = NBest(nbest)
         chooser.addmany(results.items())
         return chooser.getbest(), len(results)
-    
+
     def numObjects(self):
         """Return number of object indexed"""
         return self.index.length()
@@ -119,7 +120,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     def clear(self):
         """reinitialize the index"""
-        self.index = Index(self.lexicon)
+        self.index = self._index_factory(self.lexicon)
 
     def _get_object_text(self, obj):
         x = getattr(obj, self._fieldname)
