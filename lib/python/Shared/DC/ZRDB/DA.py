@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.115 $'[11:-2]
+__version__='$Revision: 1.116 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -399,6 +399,8 @@ class DA(
         The returned value is a sequence of record objects.
         """
 
+        __traceback_supplement__ = (SQLMethodTracebackSupplement, self)
+
         if REQUEST is None:
             if kw: REQUEST=kw
             else:
@@ -577,3 +579,10 @@ class Traverse(ExtensionClass.Base):
         r=self.__dict__['_r']
         if hasattr(r, name): return getattr(r,name)
         return getattr(self.__dict__['_da'], name)
+
+
+class SQLMethodTracebackSupplement:
+    #__implements__ = ITracebackSupplement
+    def __init__(self, sql):
+        self.object = sql
+
