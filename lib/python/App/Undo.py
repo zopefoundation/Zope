@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.5 1997/12/18 16:45:30 jeffrey Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Undo.py,v 1.6 1998/01/09 21:32:22 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -81,12 +81,15 @@ class UndoSupport:
 	RESPONSE['Location']="%s/manage_main" % REQUEST['URL1']
 	return ''
 		 
-		 
+Globals.default__class_init__(UndoSupport)		 
 
 
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.6  1998/01/09 21:32:22  brian
+# Added __class_init__
+#
 # Revision 1.5  1997/12/18 16:45:30  jeffrey
 # changeover to new ImageFile and HTMLFile handling
 #
