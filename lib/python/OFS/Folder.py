@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.19 1997/11/11 21:25:28 brian Exp $"""
+$Id: Folder.py,v 1.20 1997/11/21 15:49:48 jim Exp $"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -119,8 +119,11 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	    if hasattr(self, id): return getattr(self, id).manage_supervisor()
 	    raise KeyError, key
 
-	r=PUTer(self,key)
-	return r
+	try:
+	    if self.REQUEST['REQUEST_METHOD']=='PUT': return PUTer(self,key)
+	except: pass
+
+	raise KeyError, key
 
 class PUTer:
     'Temporary objects to handle PUT to non-existent images or documents'
