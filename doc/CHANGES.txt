@@ -157,6 +157,9 @@ Zope Changes
 
     Bugs fixed
  
+     - Collector #1457: ZCTextIndex's QueryError and ParseError 
+       are now available for import from untrusted code.
+
      - Collector #1473: zpasswd.py can now accept --username 
        without --password
 

@@ -53,3 +53,10 @@ def getElementNames(self, group):
 
 def getIndexTypes(self):
     return ZCTextIndex.index_types.keys()
+
+## Allow relevent exceptions to be caught in untrusted code
+from AccessControl import ModuleSecurityInfo
+ModuleSecurityInfo('Products').declarePublic('ZCTextIndex')
+ModuleSecurityInfo('Products.ZCTextIndex').declarePublic('ParseTree')
+ModuleSecurityInfo('Products.ZCTextIndex.ParseTree').declarePublic('QueryError')
+ModuleSecurityInfo('Products.ZCTextIndex.ParseTree').declarePublic('ParseError')
