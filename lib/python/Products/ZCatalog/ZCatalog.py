@@ -101,12 +101,12 @@ import IOBTree
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
 def manage_addZCatalog(self,id,title,REQUEST=None):
-        """Add a ZCatalog object
-        """
-        c=ZCatalog(id,title)
-        self._setObject(id,c)
-        if REQUEST is not None:
-                return self.manage_main(self,REQUEST)
+    """Add a ZCatalog object
+    """
+    c=ZCatalog(id,title)
+    self._setObject(id,c)
+    if REQUEST is not None:
+        return self.manage_main(self,REQUEST)
 
 
 class ZCatalog(Folder, FindSupport, Persistent, Implicit):
