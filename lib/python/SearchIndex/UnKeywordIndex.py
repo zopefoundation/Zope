@@ -115,7 +115,7 @@ class UnKeywordIndex(UnIndex):
             newKeywords = getattr(obj, self.id)
             if callable(newKeywords):
                 newKeywords = newKeywords()
-        except:
+        except Except:
             newKeywords = MV
 
         if type(newKeywords) is StringType:
@@ -162,7 +162,7 @@ class UnKeywordIndex(UnIndex):
             except TypeError:
                 return 0
         
-        self._unindex[documentId] = newKeywords
+        self._unindex[documentId] = newKeywords[:] # Make a copy
 
         return 1
     

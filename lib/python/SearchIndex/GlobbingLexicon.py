@@ -81,82 +81,108 @@
 # many individuals on behalf of Digital Creations.  Specific
 # attributions are listed in the accompanying credits file.
 # 
-##############################################################################
+#############################################################################
 
-__doc__=""" Lexicon object that supports 
-
-"""
 from Lexicon import Lexicon
 from Splitter import Splitter
 from intSet import intSet
 from UnTextIndex import Or
 
-import re, time
+import re, string
 import OIBTree, BTree, IOBTree, IIBTree
+
+# Short cuts for common data containers
 OIBTree = OIBTree.BTree                 # Object -> Integer
 OOBTree = BTree.BTree                   # Object -> Object
 IOBTree = IOBTree.BTree                 # Integer -> Object
 IIBucket = IIBTree.Bucket               # Integer -> Integer
 
-import pdb
-class GlobbingLexicon(Lexicon):
-    """
 
-    Base class to support globbing lexicon object.
+class GlobbingLexicon(Lexicon):
+    """Lexicon which supports basic globbing function ('*' and '?').
+
+    This lexicon keeps several data structures around that are useful
+    for searching. They are:
+
+      '_lexicon' -- Contains the mapping from word => word_id
+
+      '_inverseLex' -- Contains the mapping from word_id => word
+
+      '_digrams' -- Contains a mapping from digram => word_id
+
+    Before going further, it is necessary to understand what a digram is,
+    as it is a core component of the structure of this lexicon.  A digram
+    is a two-letter sequence in a word.  For example, the word 'zope'
+    would be converted into the digrams::
+
+      ['$z', 'zo', 'op', 'pe', 'e$']
+
+    where the '$' is a word marker.  It is used at the beginning and end
+    of the words.  Those digrams are significant.
     """
 
     multi_wc = '*'
     single_wc = '?'
     eow = '$'
 
-    def __init__(self):
 
-        self.counter = 0
+    def __init__(self):
+        self.counter = 0                # word id counter XXX
         self._lexicon = OIBTree()
         self._inverseLex = IOBTree()
         self._digrams = OOBTree()
 
-    def set(self, word):
-        """  """
+
+    def createDigrams(self, word):
+        """Returns a list with the set of digrams in the word."""
+        digrams = []
+
+        digrams.append(self.eow + word[0])    # Mark the beginning
+
+        for i in range(len(word)):
+            digrams.append(word[i:i+2])
+
+        digrams[-1] = digrams[-1] + self.eow  # Mark the end
+
+        return digrams
+
+    
+    def getWordId(self, word):
+        """Provided 'word', return the matching integer word id."""
 
         if self._lexicon.has_key(word):
             return self._lexicon[word]
-
         else:
-            word = intern(word)
-            self._lexicon[word] = self.counter
-            self._inverseLex[self.counter] = word
+            return self.assignWordId(word)
 
-            ## now, split the word into digrams and insert references
-            ## to 'word' into the digram object.  The first and last
-            ## digrams in the list are specially marked with $ to
-            ## indicate the beginning and end of the word
-
-            digrams = []
-            digrams.append(self.eow + word[0]) # mark the beginning
-
-            for i in range(len(word)):
-                digrams.append(word[i:i+2])
-
-            digrams[-1] = digrams[-1] + self.eow  # mark the end
-
-            _digrams = self._digrams
-            
-            for digram in digrams:
-                set = _digrams.get(digram)
-                if set is None:
-                    _digrams[digram] = set = intSet()
-                    
-                set.insert(self.counter)
-
-            counter = self.counter
-            self.counter = self.counter + 1
-            return counter
+    set = getWordId                     # Kludge for old code
 
 
+    def assignWordId(self, word):
+        """Assigns a new word id to the provided word, and return it."""
+
+        # Double check it's not in the lexicon already, and if it is, just
+        # return it.
+        if self._lexicon.has_key(word):
+            return self._lexicon[word]
+        
+        # First we go ahead and put the forward and reverse maps in.
+        self._lexicon[word] = self.counter
+        self._inverseLex[self.counter] = word
+
+        # Now take all the digrams and insert them into the digram map.
+        for digram in self.createDigrams(word):
+            set = self._digrams.get(digram)
+            if set is None:
+                self._digrams[digram] = set = intSet()
+            set.insert(self.counter)
+
+        self.counter = self.counter + 1
+        return self.counter - 1         # Adjust for the previous increment
+
+    
     def get(self, pattern):
-        """ Query the lexicon for words matching a pattern.
-        """
+        """ Query the lexicon for words matching a pattern."""
         wc_set = [self.multi_wc, self.single_wc]
 
         digrams = []
@@ -199,22 +225,22 @@ class GlobbingLexicon(Lexicon):
             ## may contain all matching digrams, but in the wrong
             ## order.
 
-            expr = re.compile(self.translate(pattern))
+            expr = re.compile(self.createRegex(pattern))
             words = []
             hits = []
             for x in result.keys():
                 if expr.match(self._inverseLex[x]):
                     hits.append(x)
             return hits
+
                 
     def __getitem__(self, word):
         """ """
         return self.get(word)
 
-    def query_hook(self, q):
-        """expand wildcards
 
-        """
+    def query_hook(self, q):
+        """expand wildcards"""
         words = []
         wids = []
         for w in q:
@@ -230,6 +256,7 @@ class GlobbingLexicon(Lexicon):
 
         return words
 
+
     def Splitter(self, astring, words=None):
         """ wrap the splitter """
 
@@ -239,21 +266,23 @@ class GlobbingLexicon(Lexicon):
         return Splitter(astring)
 
 
-    def translate(self, pat):
+    def createRegex(self, pat):
         """Translate a PATTERN to a regular expression.
 
         There is no way to quote meta-characters.
         """
 
-        i, n = 0, len(pat)
-        res = ''
-        while i < n:
-            c = pat[i]
-            i = i+1
-            if c == self.multi_wc:
-                res = res + '.*'
-            elif c == self.single_wc:
-                res = res + '.?'
-            else:
-                res = res + re.escape(c)
-        return res + '$'
+        transTable = string.maketrans("", "")
+        
+        # First, deal with mutli-character globbing
+        result = string.replace(pat, '*', '.*')
+
+        # Next, we need to deal with single-character globbing
+        result = string.replace(result, '?', '.?')
+
+        # Now, we need to remove all of the characters that
+        # are forbidden.
+        result = string.translate(result, transTable,
+                                  r'()&|!@#$%^{}\<>')
+
+        return "%s$" % result 

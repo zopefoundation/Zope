@@ -83,11 +83,6 @@
 # 
 ##############################################################################
 
-import string, regex, ts_regex
-import regsub
-
-
-
 __doc__=""" Module breaks out Zope specific methods and behavior.  In
 addition, provides the Lexicon class which defines a word to integer
 mapping.
@@ -137,23 +132,33 @@ class Lexicon(Persistent, Implicit):
         self.stop_syn = stop_syn
         
 
-    def set(self, word):
+    def getWordId(self, word):
         """ return the word id of 'word' """
 
         if self._lexicon.has_key(word):
             return self._lexicon[word]
-
         else:
-            if not hasattr(self, 'counter'):
-                self.counter = 0
-            self._lexicon[intern(word)] = self.counter
-            self.counter = self.counter + 1
-            return self.counter - 1 
+            return self.assignWordId(word)
+
+    set = getWordId
 
     
+    def assignWordId(self, word):
+        """Assigns a new word id to the provided word and returns it."""
+        # First make sure it's not already in there
+        if self._lexicon.has_key(word):
+            return self._lexicon[word]
+        
+        if not hasattr(self, 'counter'):
+            self.counter = 0
+        self._lexicon[intern(word)] = self.counter
+        self.counter = self.counter + 1
+        return self.counter - 1 
+
+
     def get(self, key, default=None):
-        """  """
-        return [self._lexicon.get(key, default)]
+        """Return the matched word against the key."""
+        return [self._lexicon.getWordId(key, default)]
 
 
     def __getitem__(self, key):

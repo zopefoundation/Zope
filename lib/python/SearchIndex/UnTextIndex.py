@@ -89,42 +89,57 @@ The UnTextIndex falls under the 'I didnt have a better name for it'
 excuse.  It is an 'Un' Text index because it stores a little bit of
 undo information so that objects can be unindexed when the old value
 is no longer known.
-
-
 """
-__version__='$Revision: 1.34 $'[11:-2]
+
+__version__ = '$Revision: 1.35 $'[11:-2]
 
 
-from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
-from Acquisition import Implicit
-BTree=BTree.BTree
-IOBTree=IOBTree.BTree
-IIBucket=IIBTree.Bucket
-OIBTree=OIBTree.BTree
-from intSet import intSet
-import operator
-from Splitter import Splitter
-from string import strip
 import string, regex, regsub, ts_regex
+import operator
+
+from intSet import intSet
+from Globals import Persistent
+from Acquisition import Implicit
+from Splitter import Splitter
 from zLOG import LOG, ERROR
+from Lexicon import Lexicon
+from ResultList import ResultList
 from types import *
 
-from Lexicon import Lexicon, stop_word_dict
-from ResultList import ResultList
+BTree = BTree.BTree                     # Regular generic BTree
+IOBTree = IOBTree.BTree                 # Integer -> Object 
+IIBucket = IIBTree.Bucket               # Integer -> Integer
+OIBTree = OIBTree.BTree                 # Object -> Integer
 
-
-AndNot    = 'andnot'
-And       = 'and'
-Or        = 'or'
+AndNot = 'andnot'
+And = 'and'
+Or = 'or'
 Near = '...'
-QueryError='TextIndex.QueryError'
+QueryError = 'TextIndex.QueryError'
 
             
-
 class UnTextIndex(Persistent, Implicit):
+    """Full-text index.
+
+    There is a ZCatalog UML model that sheds some light on what is
+    going on here.  '_index' is a BTree which maps word ids to mapping
+    from document id to score.  Something like:
+
+      {'bob' : {1 : 5, 2 : 3, 42 : 9}}
+      {'uncle' : {1 : 1}}
+
+
+    The '_unindex' attribute is a mapping from document id to word
+    ids.  This mapping allows the catalog to unindex an object:
+
+      {42 : ('bob', 'is', 'your', 'uncle')
+
+    This isn't exactly how things are represented in memory, many
+    optimizations happen along the way."""
 
     meta_type = 'Text Index'
+
 
     def __init__(self, id=None, ignore_ex=None,
                  call_methods=None, lexicon=None):
@@ -142,49 +157,33 @@ class UnTextIndex(Persistent, Implicit):
           of getattr or getitem to get an attribute.
 
           'lexicon' is the lexicon object to specify, if None, the
-          index will use a private lexicon.
-
-        There is a ZCatalog UML model that sheds some light on what is
-        going on here.  '_index' is a BTree which maps word ids to
-        mapping from document id to score.  Something like:
-
-          {'bob' : {1 : 5, 2 : 3, 42 : 9}}
-          {'uncle' : {1 : 1}}
-
-
-        The '_unindex' attribute is a mapping from document id to word 
-        ids.  This mapping allows the catalog to unindex an object:
-
-          {42 : ('bob', 'is', 'your', 'uncle')
-
-        This isn't exactly how things are represented in memory, many
-        optimizations happen along the way.
-
-        """
-        if not id==ignore_ex==call_methods==None:
-            self.id=id
-            self.ignore_ex=ignore_ex
-            self.call_methods=call_methods
-            self._index=IOBTree()
-            self._unindex=IOBTree()
+          index will use a private lexicon."""
+        
+        if not id == ignore_ex == call_methods == None:
+            self.id = id
+            self.ignore_ex = ignore_ex
+            self.call_methods = call_methods
+            self._index = IOBTree()
+            self._unindex = IOBTree()
 
         else:
             pass
 
         if lexicon is None:
             ## if no lexicon is provided, create a default one
-            self._lexicon=Lexicon()
+            self._lexicon = Lexicon()
         else:
             self._lexicon = lexicon
 
 
     def getLexicon(self, vocab_id):
+        """Return the Lexicon in use.
         
-        """ bit of a hack, indexes have been made acquirers so that
-        they can acquire a vocabulary object from the object system in 
-        Zope.  I don't think indexes were ever intended to participate 
-        in this way, but I don't see too much of a problem with it.
-        """
+        Bit of a hack, indexes have been made acquirers so that they
+        can acquire a vocabulary object from the object system in
+        Zope.  I don't think indexes were ever intended to participate
+        in this way, but I don't see too much of a problem with it."""
+
         if type(vocab_id) is not StringType:
             vocab = vocab_id
         else:
@@ -193,10 +192,14 @@ class UnTextIndex(Persistent, Implicit):
         
 
     def __len__(self):
+        """Return the number of objects indexed."""
+
         return len(self._unindex)
 
 
     def clear(self):
+        """Reinitialize the text index."""
+        
         self._index = IOBTree()
         self._unindex = IOBTree()
 
@@ -214,6 +217,10 @@ class UnTextIndex(Persistent, Implicit):
 
 
     def getEntryForObject(self, rid, default=None):
+        """Get all information contained for a specific object.
+
+        This takes the objects record ID as it's main argument."""
+
         wordMap = self.getLexicon(self._lexicon)._lexicon.items()
         results = self._unindex.get(rid, None)
 
@@ -239,7 +246,7 @@ class UnTextIndex(Persistent, Implicit):
             2-4    dictionary
             5+     bucket.
         """
-        
+
         indexRow = self._index.get(entry, None)
 
         if indexRow is not None:
@@ -247,12 +254,21 @@ class UnTextIndex(Persistent, Implicit):
                 # Tuples are only used for rows which have only
                 # a single entry.  Since we now need more, we'll
                 # promote it to a mapping object (dictionary).
-                indexRow = { indexRow[0]: indexRow[1] }
-                indexRow[documentId] = score
 
-                self._index[entry] = indexRow
+                # First, make sure we're not already in it, if so
+                # update the score if necessary.
+                if indexRow[0] == documentId:
+                    if indexRow[1] != score:
+                        indexRow = (documentId, score)
+                else:
+                    indexRow = { indexRow[0]: indexRow[1] }
+                    indexRow[documentId] = score
+                    self._index[entry] = indexRow
             elif type(indexRow) is DictType:
-                if len(indexRow) > 4:
+                if indexRow.has_key(documentId):
+                    if indexRow[documentId] == score:
+                        return 1    # No need to update
+                elif len(indexRow) > 4:
                     # We have a mapping (dictionary), but it has
                     # grown too large, so we'll convert it to a
                     # bucket.
@@ -266,6 +282,9 @@ class UnTextIndex(Persistent, Implicit):
                     indexRow[documentId] = score
             else:
                 # We've got a IIBucket already.
+                if indexRow.has_key(documentId):
+                    if indexRow[documentId] == score:
+                        return 1
                 indexRow[documentId] = score
         else:
             # We don't have any information at this point, so we'll
@@ -277,13 +296,43 @@ class UnTextIndex(Persistent, Implicit):
     def insertReverseIndexEntry(self, entry, documentId):
         """Insert the correct entry into the reverse indexes for future
         unindexing."""
-        newEntry = self._unindex.get(documentId, [])
-        newEntry.append(entry)
-        self._unindex[documentId] = newEntry
 
-        
+        newRow = self._unindex.get(documentId, [])
+        if newRow:
+            # Catch cases where we don't need to modify anything
+            if entry in newRow:
+                return 1
+        newRow.append(entry)
+        self._unindex[documentId] = newRow
+
+
+    def removeReverseEntry(self, entry, documentId):
+        """Removes a single entry from the reverse index."""
+
+        newRow = self._unindex.get(documentId, [])
+        if newRow:
+            try:
+                newRow.remove(entry)
+            except ValueError:
+                pass                    # We don't have it, this is bad
+        self._unindex[documentId] = newRow
+
+
+    def removeForwardEntry(self, entry, documentId):
+        """Remove a single entry from the forward index."""
+
+        currentRow = self._index.get(entry, None)
+        if type(currentRow) is TupleType:
+            del self._index[entry]
+        elif currentRow is not None:
+            try:
+                del self._index[entry][documentId]
+            except (KeyError, IndexError, TypeError):
+                LOG('UnTextIndex', ERROR,
+                    'unindex_object tried to unindex nonexistent'
+                    ' document %s' % str(i))
+
     def index_object(self, documentId, obj, threshold=None):
-        
         """ Index an object:
         'documentId' is the integer id of the document
         
@@ -301,7 +350,7 @@ class UnTextIndex(Persistent, Implicit):
                 source = str(source())
             else:
                 source = str(source)
-        except:
+        except AttributeError:
             return 0
         
 
@@ -322,32 +371,36 @@ class UnTextIndex(Persistent, Implicit):
                 else:
                     wordList[word] = 1
 
-        index = self._index
-        unindex = self._unindex
         lexicon = self.getLexicon(self._lexicon)
-        unindex[documentId] = []        # XXX
+        currentWordIds = self._unindex.get(documentId, [])
         wordCount = 0
 
+        # First deal with deleted words
+        # To do this, the first thing we have to do is convert the
+        # existing words to words, from wordIDS
+        wordListAsIds = OIBTree()
         for word, score in wordList.items():
-            if threshold is not None:
-                if ((wordCount % threshold) == 0) and not (wordCount == 0):
-                    # commit a subtransaction hack
-                    get_transaction().commit(1)
-                    # kick the cache
-                    self._p_jar.cacheFullSweep(1)
-                    
-            wordId = lexicon.set(word)
+            wordListAsIds[lexicon.getWordId(word)] = score
+        
+        for word in currentWordIds:
+            if not wordListAsIds.has_key(word):
+                self.removeForwardEntry(word, documentId)
+
+        #import pdb; pdb.set_trace()
+        # Now we can deal with new/updated entries
+        for wordId, score in wordListAsIds.items():
             self.insertForwardIndexEntry(wordId, documentId, score)
             self.insertReverseIndexEntry(wordId, documentId)
             wordCount = wordCount + 1
 
-        ## return the number of words you indexed
+        # Return the number of words you indexed
         return wordCount
 
 
     def unindex_object(self, i): 
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
+
         index = self._index
         unindex = self._unindex
         val = unindex.get(i, None)
@@ -385,7 +438,7 @@ class UnTextIndex(Persistent, Implicit):
         
             if len(splitSource) == 1:
                 splitSource = splitSource[0]
-                if splitSource[:1]=='"' and splitSource[-1:]=='"':
+                if splitSource[:1] == '"' and splitSource[-1:] == '"':
                     return self[splitSource]
 
                 r = self._index.get(
@@ -429,13 +482,13 @@ class UnTextIndex(Persistent, Implicit):
             return None
 
         if type(keys) is StringType:
-            if not keys or not strip(keys):
+            if not keys or not string.strip(keys):
                 return None
             keys = [keys]
         r = None
         
         for key in keys:
-            key = strip(key)
+            key = string.strip(key)
             if not key:
                 continue
             
@@ -480,11 +533,11 @@ class UnTextIndex(Persistent, Implicit):
 
 
     def _subindex(self, isrc, d, old, last):
-
         src = self.getLexicon(self._lexicon).Splitter(isrc)  
 
         for s in src:
-            if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
+            if s[0] == '\"':
+                last = self.subindex(s[1:-1],d,old,last)
             else:
                 if old(s):
                     if s != last: d[s] = d[s]+1
@@ -493,15 +546,12 @@ class UnTextIndex(Persistent, Implicit):
         return last
 
 
-    def query(self, s, default_operator = Or, ws = (string.whitespace,)):
-        """
+    def query(self, s, default_operator=Or, ws=(string.whitespace,)):
+        """ This is called by TextIndexes.  A 'query term' which is a
+        string 's' is passed in, along with an index object.  s is
+        parsed, then the wildcards are parsed, then something is
+        parsed again, then the whole thing is 'evaluated'. """
 
-        This is called by TextIndexes.  A 'query term' which is a string
-        's' is passed in, along with an index object.  s is parsed, then
-        the wildcards are parsed, then something is parsed again, then the 
-        whole thing is 'evaluated'
-
-        """
         # First replace any occurences of " and not " with " andnot "
         s = ts_regex.gsub(
             '[%s]+[aA][nN][dD][%s]*[nN][oO][tT][%s]+' % (ws * 3),
@@ -523,7 +573,8 @@ class UnTextIndex(Persistent, Implicit):
 
 
     def get_operands(self, q, i):
-        '''Evaluate and return the left and right operands for an operator'''
+        """Evaluate and return the left and right operands for an operator"""
+        
         try:
             left  = q[i - 1]
             right = q[i + 1]
@@ -550,7 +601,7 @@ class UnTextIndex(Persistent, Implicit):
 
 
     def evaluate(self, query):
-        '''Evaluate a parsed query'''
+        """Evaluate a parsed query"""
         # There are two options if the query passed in is only one
         # item. It means either it's an embedded query, in which case
         # we'll recursively evaluate, other wise it's nothing for us
@@ -602,7 +653,7 @@ class UnTextIndex(Persistent, Implicit):
 
 
 def parse(s):
-    '''Parse parentheses and quotes'''
+    """Parse parentheses and quotes"""
     l = []
     tmp = string.lower(s)
 
@@ -625,10 +676,10 @@ def parse(s):
     return l
 
 def parse2(q, default_operator,
-           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near}):
-    '''Find operators and operands'''
+           operator_dict={AndNot: AndNot, And: And, Or: Or, Near: Near}):
+    """Find operators and operands"""
     i = 0
-    isop=operator_dict.has_key
+    isop = operator_dict.has_key
     while (i < len(q)):
         if (type(q[i]) is ListType): q[i] = parse2(q[i], default_operator)
 
@@ -646,9 +697,9 @@ def parse2(q, default_operator,
     return q
 
 
-def parens(s, parens_re = regex.compile('(\|)').search):
+def parens(s, parens_re=regex.compile('(\|)').search):
 
-    index=open_index=paren_count = 0
+    index = open_index = paren_count = 0
 
     while 1:
         index = parens_re(s, index)
@@ -672,7 +723,7 @@ def parens(s, parens_re = regex.compile('(\|)').search):
 
 
 
-def quotes(s, ws = (string.whitespace,)):
+def quotes(s, ws=(string.whitespace,)):
      # split up quoted regions
      splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
      split=string.split

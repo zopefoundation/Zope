@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 
@@ -197,12 +197,12 @@ class UnIndex(Persistent, Implicit):
                     ('unindex_object could not remove '
                      'integer id %s from index %s.  This '
                      'should not happen.'
-                     % (str(i), str(k)))) 
+                     % (str(documentId), str(self.id)))) 
         else:
             LOG(self.__class__.__name__, ERROR,
                 ('unindex_object tried to retrieve set %s '
                  'from index %s but couldn\'t.  This '
-                 'should not happen.' % (repr(set),str(k))))
+                 'should not happen.' % (repr(entry), str(self.id))))
 
         
     def insertForwardIndexEntry(self, entry, documentId):
@@ -212,7 +212,7 @@ class UnIndex(Persistent, Implicit):
         This will also deal with creating the entire row if necessary."""
 
         indexRow = self._index.get(entry, MV)
-
+        
         # Make sure there's actually a row there already.  If not, create
         # an IntSet and stuff it in first.
         if indexRow is MV:
@@ -234,17 +234,19 @@ class UnIndex(Persistent, Implicit):
             datum = getattr(obj, self.id)
             if callable(datum):
                 datum = datum()
-        except:
+        except AttributeError:
             datum = MV
  
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
-        if not (datum == self._unindex.get(documentId, MV)):
+        oldDatum = self._unindex.get(documentId, MV)
+        if not datum == oldDatum:
+            if oldDatum is not MV:
+                self.removeForwardIndexEntry(oldDatum, documentId)
             self.insertForwardIndexEntry(datum, documentId)
             self._unindex[documentId] = datum
 
             returnStatus = 1
-            self._p_changed = 1         # Tickle the transaction
 
         return returnStatus
     
