@@ -833,7 +833,7 @@ class DocumentClass:
                 return None
             else:
                 # the .. is somewhere else, ignore it
-                return (StructuredTextInnerLink(s[start2+1:end2-1],start2,end2))
+                return (StructuredTextInnerLink(s[start2+1:end2-1]),start2,end2)
             return None
         elif expr2(s) and not expr1(s):
             start,end = expr2(s).span()
