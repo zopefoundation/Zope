@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.121 $'[11:-2]
+__version__='$Revision: 1.122 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -803,14 +803,19 @@ class UserFolder(BasicUserFolder):
 
     def _createInitialUser(self):
         """
-        If there are no users in this user folder,
+        If there are no users or only one user in this user folder,
         populates from the 'inituser' file in INSTANCE_HOME.
+        We have to do this even when there is already a user
+        just in case the initial user ignored the setup messages.
+        We don't do it for more than one user to avoid
+        abuse of this mechanism.
         Called only by OFS.Application.initialize().
         """
-        if len(self.data) < 1:
+        if len(self.data) <= 1:
             info = readUserAccessFile('inituser')
             if info:
                 name, password, domains, remote_user_mode = info
+                self._doDelUsers(self.getUserNames())
                 self._doAddUser(name, password, ('Manager',), domains)
                 try:
                     os.remove(os.path.join(INSTANCE_HOME, 'inituser'))
