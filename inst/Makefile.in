@@ -120,8 +120,7 @@ sdist_tgz: ${BASE_DIR}/lib/python/version.txt
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz ${PACKAGE_NAME} \
            --exclude=${PACKAGE_NAME}.tgz\
-           --exclude=CVS \
-           --exclude=.cvsignore \
+           --exclude=.svn\
            --exclude=makefile \
            --exclude=build-base \
            --exclude=*~ \
