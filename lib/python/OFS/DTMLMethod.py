@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -114,12 +114,18 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     func_code.co_varnames='self','REQUEST','RESPONSE'
     func_code.co_argcount=3
 
-    manage_options=({'label':'Edit', 'action':'manage_main'},
-                    {'label':'Upload', 'action':'manage_uploadForm'},
-                    {'label':'View', 'action':''},
-                    {'label':'Proxy', 'action':'manage_proxyForm'},
-                    {'label':'Security', 'action':'manage_access'},
+    manage_options=({'label':'Edit', 'action':'manage_main',
+                     'help':('OFSP','DTML-Method_Edit.dtml')},
+                    {'label':'Upload', 'action':'manage_uploadForm',
+                     'help':('OFSP','DTML-Method_Upload.dtml')},
+                    {'label':'View', 'action':'',
+                     'help':('OFSP','DTML-Method_View.dtml')},
+                    {'label':'Proxy', 'action':'manage_proxyForm',
+                     'help':('OFSP','DTML-Method_Proxy.dtml')},
+                    {'label':'Security', 'action':'manage_access',
+                     'help':('OFSP','DTML-Method_Security.dtml')},
                    )
+                   
     __ac_permissions__=(
     ('View management screens',
      ('manage_editForm', 'manage', 'manage_main', 'manage_uploadForm',

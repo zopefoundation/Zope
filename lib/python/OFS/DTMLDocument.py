@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -107,12 +107,18 @@ class DTMLDocument(PropertyManager, DTMLMethod):
     meta_type='DTML Document'
     icon     ='p_/dtmldoc'
 
-    manage_options=({'label':'Edit', 'action':'manage_main'},
-                    {'label':'Upload', 'action':'manage_uploadForm'},
-                    {'label':'Properties', 'action':'manage_propertiesForm'},
-                    {'label':'View', 'action':''},
-                    {'label':'Proxy', 'action':'manage_proxyForm'},
-                    {'label':'Security', 'action':'manage_access'},
+    manage_options=({'label':'Edit', 'action':'manage_main',
+                     'help':('OFSP','DTML-Document_Edit.dtml')},
+                    {'label':'Upload', 'action':'manage_uploadForm',
+                     'help':('OFSP','DTML-Document_Upload.dtml')},
+                    {'label':'Properties', 'action':'manage_propertiesForm',
+                     'help':('OFSP','DTML-Document_Properties.dtml')},
+                    {'label':'View', 'action':'',
+                     'help':('OFSP','DTML-Document_View.dtml')},
+                    {'label':'Proxy', 'action':'manage_proxyForm',
+                     'help':('OFSP','DTML-Document_Proxy.dtml')},
+                    {'label':'Security', 'action':'manage_access',
+                     'help':('OFSP','DTML-Document_Security.dtml')},
                    )
 
     __ac_permissions__=(
