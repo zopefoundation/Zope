@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.85 2001/01/26 16:02:45 brian Exp $'''
-__version__='$Revision: 1.85 $'[11:-2]
+$Id: SimpleItem.py,v 1.86 2001/02/05 21:48:31 chrism Exp $'''
+__version__='$Revision: 1.86 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -419,7 +419,9 @@ class SimpleItem(Item, Globals.Persistent,
     """
 
     manage_options=Item.manage_options+(
-        {'label':'Security',   'action':'manage_access'},
+        {'label':'Security',
+         'action':'manage_access',
+         'help':('OFSP', 'Security.stx')},
         )
  
     __ac_permissions__=(('View', ()),)
