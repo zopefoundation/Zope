@@ -15,6 +15,11 @@ Zope Installation Frequently Asked Questions
        changing the line: do('make')  to: do('make -k').
 
 
+    2. I am having trouble building Zope on a libc 5 Linux machine.
+    
+       Zope requires Python be built with glibc 2.x (libc 6) on Linux.
+       
+
   Starting/Accessing your Zope installation
 
     1. After installing Zope, I go to the URL in my web browser
