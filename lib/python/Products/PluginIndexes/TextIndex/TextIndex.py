@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.17 $'[11:-2]
+__version__ = '$Revision: 1.18 $'[11:-2]
 
 
 import string, re
@@ -464,6 +464,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
             result = self._index.get(word, {})
             return ResultList(result, (word,), self)
         else:
+
             splitSource = tuple(self.getLexicon().Splitter(word))
 
             if not splitSource:
@@ -629,7 +630,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         operandType = type(left)
         if operandType is IntType:
             left = self[left]
-        elif operandType is StringType:
+        elif isinstance(operandType,StringType) or \
+             isinstance(operandType,UnicodeType):
             left = self[left]        
         elif operandType is ListType:
             left = self.evaluate(left)
@@ -637,7 +639,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         operandType = type(right)
         if operandType is IntType:
             right = self[right]
-        elif operandType is StringType:
+        elif isinstance(operandType,StringType) or \
+             isinstance(operandType,UnicodeType):
             right = self[right]       
         elif operandType is ListType:
             right = self.evaluate(right)
