@@ -21,9 +21,9 @@ are made, and can be used to quickly run a particular suite or all suites in
 a particular directory."""
 
 import sys, os, imp, string, getopt, traceback
+import unittest
 
-pyunit=None
-
+VERBOSE = 2
 
 class TestRunner:
     """Test suite runner"""
@@ -42,10 +42,6 @@ class TestRunner:
         else:
             sys.path.insert(0, pjoin(path, 'lib/python'))
             sys.path.insert(1, path)
-
-        global pyunit
-        import unittest
-        pyunit=unittest
 
     def getSuiteFromFile(self, filepath):
         if not os.path.isfile(filepath):
@@ -72,7 +68,7 @@ class TestRunner:
                 (find(text, 'framework.py') > -1))
 
     def runSuite(self, suite):
-        runner=pyunit.TextTestRunner()
+        runner=unittest.TextTestRunner(verbosity=VERBOSE)
         runner.run(suite)
 
     def report(self, message):
@@ -152,15 +148,24 @@ def main(args):
           Run the test suite found in the file specified. The filepath
           should be a fully qualified path to the file to be run.
 
+       -q
+       
+          Run tests without producing verbose output.  The tests are
+          normally run in verbose mode, which produces a line of
+          output for each test that includes the name of the test and
+          whether it succeeded.  Quiet mode prints a period as
+          each test runs.
+
        -h
 
-          Display usage information.\n"""
+          Display usage information.
+    """
 
     pathname=None
     filename=None
     test_all=None
 
-    options, arg=getopt.getopt(args, 'ahd:f:')
+    options, arg=getopt.getopt(args, 'ahd:f:q')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
@@ -173,6 +178,9 @@ def main(args):
             filename=string.strip(value)
         elif name == 'h':
             err_exit(usage_msg, 0)
+        elif name == 'q':
+            global VERBOSE
+            VERBOSE = 1
         else:
             err_exit(usage_msg)
 
