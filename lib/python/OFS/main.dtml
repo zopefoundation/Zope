@@ -12,7 +12,7 @@
 <!--#in objectItems sort-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key fmt=url-quote-->">
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var sequence-key-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <!--#if icon-->
