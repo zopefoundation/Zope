@@ -38,7 +38,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         self.id=id
         self._refid=baseid
         version=PATH_INFO
-        l=version.rfind(/')
+        l=version.rfind('/')
         if l >= 0: version=version[:l]
         self._version="%s/%s" % (version, id)
         self.users__draft__=uf=AccessControl.User.UserFolder()
