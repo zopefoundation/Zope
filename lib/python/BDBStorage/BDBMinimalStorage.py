@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.16 $'[-2:][0]
+__version__ = '$Revision: 1.17 $'[-2:][0]
 
 import time
 import threading
@@ -285,7 +285,7 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
         if conflictresolved:
             return ResolvedSerial
         return newserial
-        
+
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)

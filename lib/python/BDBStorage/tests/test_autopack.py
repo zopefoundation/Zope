@@ -48,7 +48,7 @@ class TestAutopackBase(BerkeleyTestBase):
         packtime = storage._autopacker._nextcheck
         while packtime == storage._autopacker._nextcheck:
             time.sleep(1)
-        
+
     def _mk_dbhome(self, dir):
         # Create the storage
         os.mkdir(dir)
