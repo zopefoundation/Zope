@@ -723,7 +723,7 @@ setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'xmlrpclib', 'Lifetime']
+    py_modules=['Globals', 'ImageFile', 'Lifetime']
     )
 
 # Products base directory
