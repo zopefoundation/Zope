@@ -18,10 +18,10 @@
          <form action="manage_changeOwnershipType">
 	    <dtml-if explicit>
                <input type="hidden" name="explicit" value="">
-               <input type="submit" value="Make ownership implicit (acquired)">
+               <input name="submit" type="submit" value="Make ownership implicit (acquired)">
 	    <dtml-else>
                <input type="hidden" name="explicit" value="y">
-               <input type="submit" value="Make ownership explicit">
+               <input name="submit" type="submit" value="Make ownership explicit">
 	    </dtml-if>
          </form>
       </dtml-if>
@@ -33,7 +33,7 @@
 
 <dtml-if userCanTakeOwnership>
   <form action="manage_takeOwnership">
-     <input type="submit" value="Take ownership">
+     <input name="submit" type="submit" value="Take ownership">
   </form>
 </dtml-if>
 

@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.4 2000/06/16 19:42:04 srichter Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Owned.py,v 1.5 2000/07/10 13:23:15 brian Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -98,6 +98,9 @@ def ownableFilter(self,
                   UnownableOwner=UnownableOwner):
     _owner=aq_get(self, '_owner', None, 1)
     return _owner is not UnownableOwner
+
+# Marker to use as a getattr default.
+_mark=ownableFilter
 
 class Owned(ExtensionClass.Base):
 
@@ -158,10 +161,8 @@ class Owned(ExtensionClass.Base):
     def changeOwnership(self, user,
                         aq_get=aq_get, None=None,
                         ):
-        """Change the ownership to the given user.
-
-        If possible, make the ownership acquired.
-        """
+        """Change the ownership to the given user, make the
+        ownership acquired if possible."""
         new=ownerInfo(user)
         if new is None: return # Special user!
 
@@ -169,7 +170,9 @@ class Owned(ExtensionClass.Base):
 
         if old==new: return
 
-        if hasattr(self, '_owner'):
+        # See if there is an _owner in the instance. If it is a
+        # class attribute we leave it alone.
+        if self.__dict__.get('_owner', _mark) is not _mark:
             # Hm, maybe we can acquire ownership
             del self._owner
             self.changeOwnership(user)
@@ -198,7 +201,6 @@ class Owned(ExtensionClass.Base):
             raise 'Unauthorized', (
                 'manage_takeOwnership was called from an invalid context'
                 )
-
         self.changeOwnership(security.getUser())
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
@@ -215,13 +217,17 @@ class Owned(ExtensionClass.Base):
         else:
             if old is None: return
             new=aq_get(aq_parent(self), '_owner', None, 1)
-            if old is new: del self._owner
+            if old is new and (
+                self.__dict__.get('_owner', _mark) is not _mark
+                ):
+                del self._owner
 
         if RESPONSE is not None: RESPONSE.redirect(REQUEST['HTTP_REFERER'])
     
     def _deleteOwnershipAfterAdd(self):
 
-        if hasattr(self, '_owner'):
+        # Only delete _owner if it is an instance attribute.
+        if self.__dict__.get('_owner', _mark) is not _mark:
             del self._owner
 
         for object in self.objectValues():
@@ -251,7 +257,7 @@ class Owned(ExtensionClass.Base):
             return None
 
         if _owner is UnownableOwner:
-            # We want to acquire Unownable oenership!
+            # We want to acquire Unownable ownership!
             return self._deleteOwnershipAfterAdd()
         else:
             # Otherwise change the ownership
