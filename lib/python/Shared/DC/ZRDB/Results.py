@@ -71,9 +71,9 @@ class Results:
                 setattr(r,k,getattr(Record,k))
 
         # Add SQL Aliases
-        d=r.__dict__
         for k, v in aliases:
-            if not hasattr(r,k): d[k]=v
+            if not hasattr(r, k):
+                setattr(r, k, v)
 
         if hasattr(brains, '__init__'):
             binit=brains.__init__
@@ -83,7 +83,7 @@ class Results:
                 if parent is not None: self=self.__of__(parent)
                 binit(self)
 
-            r.__dict__['__init__']=__init__
+            setattr(r, '__init__', __init__)
 
         self._class=r
 
