@@ -104,7 +104,6 @@ class ProductContext:
     def registerClass(self, instance_class=None, meta_type='', 
                       permission=None, constructors=(),
                       icon=None, permissions=None, legacy=(),
-                      constructor_help=None,
         ):
         """Register a constructor
 
@@ -205,7 +204,6 @@ class ProductContext:
               'action': ('manage_addProduct/%s/%s' % (pid, name)),
               'product': pid,
               'permission': permission,
-              'help': constructor_help
               },)
 
         m[name]=initial
@@ -269,24 +267,6 @@ class ProductContext:
         """
         self.__prod.__of__(self.__app.Control_Panel.Products).Help._setObject(id, topic)
 
-    def registerHelpViews(self, klass):
-        """
-        Associates a class's views with help topics.
-        This relies on the manage_options structure of
-        the class.
-        Note: right now this just sets the permissions on
-        the help topics.
-        """
-        # this needs to be better thought out.
-        #
-        for option in klass.manage_options:
-            if option.has_key('help'):
-                prod_id, topic_id = option['help']
-                prod=getattr(self.__app.Control_Panel.Products, prod_id)
-                topic=getattr(pdoc.Help, topic_id)
-                
-                perms=topic.permissions + [permission]
-                topic._setPropValue('permissions',perms)
          
     def registerHelp(self, directory='help', clear=1):
         """
