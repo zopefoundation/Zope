@@ -57,8 +57,6 @@ def manage_addZCatalog(self, id, title,
 
 
 class ZCatalog(Folder, Persistent, Implicit):
-    __implements__ = IZCatalog
-
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -75,8 +73,9 @@ class ZCatalog(Folder, Persistent, Implicit):
     instance of the Catalog class.  An interesting feature of this
     class is that it is not Zope specific.  You can use it in any
     Python program to catalog objects.
-
     """
+
+    __implements__ = IZCatalog
 
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
