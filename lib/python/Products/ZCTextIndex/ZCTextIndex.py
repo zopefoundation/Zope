@@ -67,9 +67,9 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                  field_name=None, lexicon_id=None):
         self.id = id
 
-        # Arguments can be passed directly to the constructor or
-        # via the silly "extra" record.
-        self._fieldname = field_name or getattr(extra, 'doc_attr', '') or id
+        # indexed attributes
+        self._indexed_attrs = getattr(extra, 'doc_attr', '').split(',') or [field_name] or [id]
+        self._indexed_attrs = [ attr.strip() for attr in  self._indexed_attrs if attr ]
 
         lexicon_id = lexicon_id or extra.lexicon_id
         lexicon = getattr(caller, lexicon_id, None)
@@ -95,6 +95,9 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             self._index_factory = index_factory
 
         self.index = self._index_factory(aq_base(self.getLexicon()))
+
+
+
 
     ## Private Methods ##
 
@@ -148,9 +151,22 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     ## Pluggable Index APIs ##
 
-    def index_object(self, docid, obj, threshold=None):
+    def index_object(self, documentId, obj, threshold=None):
+        """ wrapper to handle indexing of multiple attributes """
+
+        # needed for backward compatibility
+        try: fields = self._indexed_attrs
+        except: fields  = [ self._fieldname ]
+
+        res = 0
+        for attr in fields:
+            res += self._index_object(documentId, obj, threshold, attr) 
+
+        return res > 0 
+
+    def _index_object(self, docid, obj, threshold=None, attr=""):
         # XXX We currently ignore subtransaction threshold
-        text = getattr(obj, self._fieldname, None)
+        text = getattr(obj, attr, None)
         if text is None:
             return 0
         if callable(text):
@@ -181,7 +197,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return None
         tree = QueryParser(self.getLexicon()).parseQuery(query_str)
         results = tree.executeQuery(self.index)
-        return  results, (self._fieldname,)
+        return  results, (self.id,)
 
     def getEntryForObject(self, documentId, default=None):
         """Return the list of words indexed for documentId"""
@@ -217,15 +233,15 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     def getIndexSourceNames(self):
         """Return sequence of names of indexed attributes"""
-        return [self._fieldname]
+        try:
+            return self._indexed_attrs 
+        except:
+            return [self._fieldname]
 
     def getIndexType(self):
         """Return index type string"""
         return getattr(self, '_index_type', self._index_factory.__name__)
 
-    def getFieldName(self):
-        """Return indexed attribute name"""
-        return self._fieldname
 
     def getLexiconURL(self):
         """Return the url of the lexicon used by the index"""

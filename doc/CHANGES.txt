@@ -29,7 +29,7 @@ Zope Changes
        enforce this behaviour inside the ZPublisher. See also 
        doc/ENVIRONMENT.txt to check with the DATETIME_FORMAT 
  
-     - KeywordIndex and  FieldIndex are now capable to index more
+     - KeywordIndex, FieldIndex and ZCTextIndex  are now able to index more
        than one attribute of an object. This removes the ties between the
        indexes ID and the attribute name to be indexed. 
 
