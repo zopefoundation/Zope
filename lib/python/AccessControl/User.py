@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.95 $'[11:-2]
+__version__='$Revision: 1.96 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -333,9 +333,14 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     )
 
     __ac_permissions__=(
-        ('Manage users', ('manage_users','getUserNames','getUser','getUsers',
-                          )),
+        ('Manage users',
+         ('manage_users','getUserNames','getUser','getUsers',
+          )
+         ),
         )
+
+    # This prevents sneaky access to internal data.
+    __roles__=[]
 
     # ----------------------------------
     # Public UserFolder object interface
@@ -639,7 +644,7 @@ class UserFolder(BasicUserFolder):
 
     A UserFolder holds User objects which contain information
     about users including name, password domain, and roles.
-    UserFolders function chiefly to contol access by authenticating
+    UserFolders function chiefly to control access by authenticating
     users and binding them to a collection of roles."""
 
     meta_type='User Folder'
@@ -669,9 +674,7 @@ class UserFolder(BasicUserFolder):
 
     def getUser(self, name):
         """Return the named user object or None"""
-        if self.data.has_key(name):
-            return self.data[name]
-        return None
+        return self.data.get(name, None)
 
     def _doAddUser(self, name, password, roles, domains):
         """Create a new user"""
