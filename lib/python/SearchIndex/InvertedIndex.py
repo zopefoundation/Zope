@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.7 1996/12/10 21:17:57 chris Exp $'''
+$Id: InvertedIndex.py,v 1.8 1996/12/13 13:53:11 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.7 1996/12/10 21:17:57 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.8  1996/12/13 13:53:11  jim
+# Checked in so I could edit.
+#
 # Revision 1.7  1996/12/10 21:17:57  chris
 # Experimenting....
 #
@@ -110,7 +113,7 @@ $Id: InvertedIndex.py,v 1.7 1996/12/10 21:17:57 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -250,6 +253,28 @@ class ResultList:
 
     self._list.sort()
     self._list.reverse()    
+
+
+  def __getstate__(self):
+    l = self._list
+    new_l = []
+    for key, freq in l:
+      new_l = new_l + [ key, freq ]
+        
+    return marshal.dumps(new_l)
+
+
+  def __setstate__(self, marshaled_state):
+    l = marshal.loads(marshaled_state)
+
+    if (len(l) and l[0] is not TupleType):
+      new_l = []
+      for i in range(0, len(l), 2):
+        new_l.append(tuple(l[i : (i + 2)]))
+
+      l = new_l
+
+    self._list = l
 
 
 RegexType = type(regex.compile(''))
@@ -472,29 +497,6 @@ class Index:
 
 class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
-  def __getstate__(self):
-    l = self._list
-    new_l = []
-    for key, freq in l:
-      new_l = new_l + [ key, freq ]
- 
-    new_l = self._list       
-    return marshal.dumps(new_l)
-
-
-  def __setstate__(self, marshaled_state):
-      l = marshal.loads(marshaled_state)
-
-      if (len(l) and l[0] is not TupleType):
-        new_l = []
-	for i in range(0, len(l), 2):
-          new_l.append(tuple(l[i : (i + 2)]))
-
-        l = new_l
-
-      self._list = l
-
-
   def addentry(self, freq, key):
     '''Add a frequency/key pair to this object'''
 
@@ -503,29 +505,6 @@ class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
 
 class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
-
-  def __getstate__(self):
-      l = self._list
-      new_l = []
-      for key, freq in l:
-        new_l = new_l + [ key, freq ]
-        
-      return marshal.dumps(new_l)
-
-
-  def __setstate__(self, marshaled_state):
-      l = marshal.loads(marshaled_state)
-
-      if (len(l) and l[0] is not TupleType):
-        new_l = []
-	for i in range(0, len(l), 2):
-          new_l.append(tuple(l[i : (i + 2)]))
-
-        l = new_l
-
-      self._list = l
-
-
 
   def addentry(self, freq, key):
     '''Add a frequency/key pair to this object'''
