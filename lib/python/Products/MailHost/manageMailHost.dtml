@@ -19,12 +19,6 @@
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TH ALIGN="LEFT">Local Host</TH>
-  <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localHost" SIZE="40" VALUE="<dtml-var localHost html_quote>">
-  </TD>
-</TR>
-<TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<dtml-var smtpHost html_quote>">
@@ -35,12 +29,6 @@
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<dtml-var smtpPort html_quote>">
   </TD>
-</TR>
-<TR VALIGN="TOP">
- <TH ALIGN="LEFT">Max. Timeout</TH>
- <TD ALIGN="LEFT">
-   <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="<dtml-var timeout html_quote>">
- </TD>
 </TR>
 
 <TR VALIGN="TOP">

@@ -38,12 +38,6 @@ when trying to send mail.
   </TD>
 </TR>
 <TR VALIGN="TOP">
-  <TH ALIGN="LEFT">Local Host</TH>
-  <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="localhost" SIZE="40" VALUE="<dtml-var localhost html_quote>">
-  </TD>
-</TR>
-<TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_host" SIZE="40">
@@ -53,12 +47,6 @@ when trying to send mail.
   <TH ALIGN="LEFT">SMTP Port</TH>
   <TD ALIGN="LEFT">
     <INPUT TYPE="TEXT" NAME="smtp_port:int" SIZE="4" VALUE="25">
-  </TD>
-</TR>
-<TR VALIGN="TOP">
-  <TH ALIGN="LEFT">Max. Timeout</TH>
-  <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="timeout:float" SIZE="4" VALUE="1">
   </TD>
 </TR>
 <TR VALIGN="TOP">

@@ -85,7 +85,7 @@
 """SMTP mail objects"""
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
-from socket import *; from select import select
+from smtplib import SMTP
 from AccessControl.Role import RoleManager
 from operator import truth
 import Acquisition, sys, string, types, mimetools
@@ -93,20 +93,18 @@ import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.46 2000/01/10 23:48:36 amos Exp $ 
-__version__ = "$Revision: 1.46 $"[11:-2]
+#$Id: MailHost.py,v 1.47 2000/04/21 14:10:20 tseaver Exp $ 
+__version__ = "$Revision: 1.47 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
-addForm=HTMLFile('addMailHost_form', globals(), localhost=gethostname())
-def add(self, id, title='', smtp_host=None, 
-        localhost='localhost', smtp_port=25, timeout=1.0, REQUEST=None):
+addForm=HTMLFile('addMailHost_form', globals())
+def add(self, id, title='', smtp_host=None, smtp_port=25, REQUEST=None):
     ' add a MailHost into the system '
     i=MailHost()            #create new mail host
     i.id=id                 #give it id
     i.title=title           #title
-    i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port,
-            timeout=timeout)
+    i._init(smtpHost=smtp_host, smtpPort=smtp_port)
     self._setObject(id,i)   #register it
     if REQUEST: return self.manage_main(self,REQUEST)
 
@@ -138,20 +136,15 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         'nothing yet'
         pass
 
-    def _init(self, localHost, smtpHost, smtpPort, timeout=1):
-        self.localHost=localHost
+    def _init(self, smtpHost, smtpPort):
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        self.timeout=timeout
 
-    def manage_makeChanges(self,title,localHost,smtpHost,smtpPort,
-                           timeout, REQUEST=None):
+    def manage_makeChanges(self,title,smtpHost,smtpPort, REQUEST=None):
         'make the changes'
         self.title=title
-        self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        self.timeout=timeout
         if REQUEST: return MessageDialog(
             title  ='Changed %s' % self.__name__,
             message='%s has been updated' % self.id,
@@ -165,18 +158,15 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
         messageText=_encode(messageText, encode)
-        headers, message = decapitate(messageText)
+        headers = extractheaders(messageText)
         if mto: headers['to'] = mto
         if mfrom: headers['from'] = mfrom
         for requiredHeader in ('to', 'from'):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                       % requiredHeader
-        Send(trueself.smtpHost, trueself.smtpPort, 
-             trueself.localHost, trueself.timeout, 
-             headers['from'], headers['to'],
-             headers['subject'] or 'No Subject', messageText
-             )
+        mailserver = SMTP(trueself.smtpHost, trueself.smtpPort)
+        mailserver.sendmail(headers['from'], headers['to'], messageText)
 
         if not statusTemplate: return "SEND OK"
 
@@ -188,7 +178,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
-        headers, message = decapitate(messageText)
+        headers = extractheaders(messageText)
         
         if not headers['subject']:
             messageText="subject: %s\n%s" % (subject or '[No Subject]',
@@ -205,14 +195,12 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        sm=SendMail(self.smtpHost, self.smtpPort, self.localHost, self.timeout)
-        sm.send(mfrom=headers['from'], mto=headers['to'],
-                subj=headers['subject'] or 'No Subject',
-                body=messageText)
+        smtpserver = SMTP(self.smtpHost, self.smtpPort)
+        smtpserver.sendmail(headers['from'],headers['to'], messageText)
 
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
                       encode=None):
-        headers, message = decapitate(messageText)
+        headers = extractheaders(messageText)
 
         if not headers['subject']:
             messageText="subject: %s\n%s" % (subject or '[No Subject]',
@@ -229,90 +217,16 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        Send(self.smtpHost, self.smtpPort, self.localHost, self.timeout,
-             headers['from'], headers['to'],
-             headers['subject'] or 'No Subject', messageText
-             )
+        smtpserver = SMTP(self.smtpHost, self.smtpPort)
+        smtpserver.sendmail(headers['from'], headers['to'], messageText)
 
     def simple_send(self, mto, mfrom, subject, body):
-        body="subject: %s\n\n%s" % (subject, body)
-        SendMail(self.smtpHost, self.smtpPort, self.localHost,
-                 self.timeout).send( 
-                     mfrom=mfrom, mto=mto, subj=subject, body=body
-                     )
+        body="from: %s\nto: %s\nsubject: %s\n\n%s" % (mfrom, mto, subject, body)
+        mailserver = SMTP(self.smtphost, self.smtpport)
+        mailserver.sendmail(mfrom, mto, body)
 
 class MailHost(Persistent, MailBase):
     "persistent version"
-
-def Send(host, port, localhost, timeout, from_, to, subject, body):
-    SendMail(host, port, localhost, timeout).send(from_, to, subject, body)
-        
-class SendMail:
-    singledots=re.compile('^\.$', re.M)
-    
-    def __init__(self, smtpHost, smtpPort, localHost="localhost", timeout=1):
-        self.conn = socket(AF_INET, SOCK_STREAM)
-        self.conn.connect(smtpHost, smtpPort)
-        self.timeout=timeout
-        self.fd=self.conn.fileno()
-        self.conn.send("helo "+localHost+"\015\012")
-        while 1:
-            if not self._check(): break
-
-    def __del__(self):
-        self._close()
-
-    def getLine(self):
-        line=''
-        tm=self.timeout
-        while 1:
-            if not select([self.fd],[],[],tm)[0]:       #check the socket
-                break
-            data=self.conn.recv(1)
-            if (not data) or (data == '\n'):
-                break
-            line=line+data
-        return line
-
-    def _check(self, lev='250'):
-        line = self.getLine()
-        if not line: return 0
-        try:
-            code=string.atoi(line[:3])
-        except:
-            raise smtpError, \
-                  "Cannot convert line from SMTP: %s" % line
-        if code > 400:
-            raise smtpError, \
-                  "Recieved error code %s from SMTP: %s"\
-                  % (code, line)
-        return 1
-
-    def send(self, mfrom, mto, subj='No Subject', body='Blank Message'):
-        self.conn.send("mail from:<%s>\015\012" % mfrom)
-        self._check()
-        if type(mto) in [types.ListType, types.TupleType]:
-            for person in mto:
-                self.conn.send("rcpt to:<%s>\015\012" % person)
-                self._check()
-        else:
-            self.conn.send("rcpt to:<%s>\015\012" % mto)
-            self._check()
-        self.conn.send("data\015\012")
-        self._check()
-        body=self.singledots.sub('..', body)
-        body=string.replace(body, '\r\n', '\n')
-        body=string.replace(body, '\r', '\n')
-        body=string.replace(body, '\n', '\015\012')
-        self.conn.send(body)
-        self.conn.send("\015\012.\015\012")
-        self._check('354')
-
-    def _close(self):
-        self.conn.send("quit\015\012")
-        self.conn.close()
-
-
 
 def _encode(body, encode=None):
     if encode is None:
@@ -331,8 +245,8 @@ def _encode(body, encode=None):
     return newmfile.getvalue()
 
 
-def decapitate(message):
-    # split message into headers / body
+def extractheaders(message):
+    # return headers of message
     mfile=StringIO(message)
     mo=rfc822.Message(mfile)
 
@@ -347,5 +261,4 @@ def decapitate(message):
     
     hd['from']=mo.getaddr('from')[1]
     hd['subject']=mo.getheader('subject') or "No Subject"
-
-    return hd, mfile.read()
+    return hd
