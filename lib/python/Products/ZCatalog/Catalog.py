@@ -44,7 +44,7 @@ except:
             if hasattr(ob, '__call__'):
                 return 1
             else:
-                return type(ob) in ClassTypes
+                return type(ob) in [types.ClassType]
         else:
             return callable(ob)
 
