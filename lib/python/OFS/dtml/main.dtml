@@ -110,8 +110,8 @@ function toggleSelect() {
   <td align="left" valign="top">
   <dtml-if icon>
   <a href="&dtml.url_quote-sequence-key;/manage_workspace">
-  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="[&dtml-meta_type;]" 
-   border="0" /></a>
+  <img src="&dtml-BASEPATH1;/&dtml-icon;" alt="&dtml-meta_type;" 
+   title="&dtml-meta_type;" border="0" /></a>
   <dtml-else>
   &nbsp;
   </dtml-if>
