@@ -52,5 +52,9 @@ Zope changes
           'ZClasses.createZClassForBase' (because none of the machinery
           needed a ProductContext instance anyway).
 
+        - (Collector #1355) Fixed overlapping HTTP POST requests in
+          ZServer which could have been corrupted. Thanks to Jeff
+          Ragsdale. 
+
         - Undid a bug fix that caused the DateTime unit tests to fail.
 
