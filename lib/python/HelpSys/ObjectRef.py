@@ -84,7 +84,7 @@
 ##############################################################################
 """Object Reference implementation"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 import sys, os, string, Globals, Acquisition
@@ -176,6 +176,7 @@ class ObjectRef(HelpBase):
                 dict=self.hs_search_mod(v, dict)
         keys=dict.keys()
         keys.sort()
+        __traceback_info__=(`dict`,)
         for key in keys:
             setattr(self, key, dict[key])
         self.__names__=keys
@@ -183,12 +184,19 @@ class ObjectRef(HelpBase):
     def hs_search_mod(self, mod, dict):
         # Root through a module for things that look like
         # createable object classes.
-        hidden=('Control Panel', 'Principia Draft', 'simple item')
+        hidden=('Control Panel', 'Principia Draft', 'simple item',
+                'Broken Because Product is Gone')
         for k, v in mod.__dict__.items():
             if is_class(v) and hasattr(v, 'meta_type') and \
-               hasattr(v, '__ac_permissions__') and \
-               (v.meta_type not in hidden):
-                dict[v.meta_type]=ObjectItem(k, v)
+               hasattr(v, '__ac_permissions__'):
+                if callable(v.meta_type):
+                    try: meta_type=v.meta_type()
+                    except:
+                        # Ack. probably a ZClass :(
+                        meta_type=None
+                else: meta_type=v.meta_type
+                if (meta_type is not None) and (meta_type not in hidden):
+                    dict[meta_type]=ObjectItem(k, v)
             if is_module(v) and hasattr(v, '__path__'):
                 dict=self.hs_search_mod(v, dict)
         return dict
