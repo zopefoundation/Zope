@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.34 2000/10/09 18:17:35 brian Exp $"""
+$Id: Management.py,v 1.35 2000/12/13 20:11:20 brian Exp $"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -170,7 +170,7 @@ class Tabs(ExtensionClass.Base):
             script = '%s/%s' % (script, step)
             out.append(linkpat % (script, unquote(step)))
         out.append(unquote(last))
-        return '%s&nbsp;%s' % (url, join(out,'&nbsp;/&nbsp;'))
+        return '%s%s' % (url, join(out,'/'))
 
     def tabs_path_info(self, script, path,
                        # Static vars
