@@ -1,25 +1,18 @@
-Mail Host - Edit: Edit mail host properties
+MailHost - Edit: Edit mail host properties
   
-    Description
-      
-        This view allows you to manage the attributes of the mail host.
-  
-    Controls
+  Description
 
-        A mail host allows Zope to send mail with the SMTP protocol.
-  
-        'ID' -- Indicates the id of the mail host.
-        
-        'Title' -- Allows you to specify the title of the mail host.
-        
-        'SMTP host' -- Allows you to specify the name of the mail server. You can simply
-        specify the host to be 'localhost', which should be true
-        for most cases.
-        *Important:* The mailhost must allow relaying from the the
-        server you are on. If the mail server is the same as the Web 
-        server then your mail server needs to allow relaying from
-        'localhost' (often the default).
-        
-        'SMTP port' -- Allows you to specify the port on which the mail server accepts 
-        SMTP requests. Zope suggests port 25, which is the standard UNIX 
-        mail port.
+    This view allows you edit the MailHost.
+
+ Controls
+
+    'ID' -- The id of the MailHost.
+
+    'Title' -- The title of the MailHost.
+
+    'SMTP host' -- The domain name or address of the SMTP mail server
+      to relay mail through.
+
+    'SMTP port' -- The port of the SMTP mail server to relay mail
+      through.
+
