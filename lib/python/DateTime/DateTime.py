@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -187,7 +187,7 @@ class _cache:
 
            'UT','BST','CDT','MEST','SST','FST','WADT','EADT','NZDT',
            'WET','WAT','AT','AST','NT','IDLW','CET','MET',
-           'MEWT','SWT','FWT','EET','BT','ZP4','ZP5','ZP6',
+           'MEWT','SWT','FWT','EET','EEST','BT','ZP4','ZP5','ZP6',
            'WAST','CCT','JST','EAST','GST','NZT','NZST','IDLE']
 
 
@@ -292,6 +292,7 @@ class _cache:
            'nt':'GMT-11', 'idlw':'GMT-12', 'cet':'GMT+1', 'cest':'GMT+2',
            'met':'GMT+1',
            'mewt':'GMT+1', 'swt':'GMT+1', 'fwt':'GMT+1', 'eet':'GMT+2',
+           'eest':'GMT+3',
            'bt':'GMT+3', 'zp4':'GMT+4', 'zp5':'GMT+5', 'zp6':'GMT+6',
            'wast':'GMT+7', 'cct':'GMT+8', 'jst':'GMT+9', 'east':'GMT+10',
            'gst':'GMT+10', 'nzt':'GMT+12', 'nzst':'GMT+12', 'idle':'GMT+12',
@@ -325,26 +326,21 @@ def _findLocalTimeZoneName(isDST):
         _localzone = _cache._zmap[lower(tzname[isDST])]
     except:
         try:
-            # Get the name of the current time zone, not
-            # depending on DST.
-            _localzone = _cache._zmap[lower(tzname[0])]
+            # Generate a GMT-offset zone name.
+            if isDST:
+                localzone = altzone
+            else:
+                localzone = timezone
+            offset=(-localzone/(60*60))
+            majorOffset=int(offset)
+            if majorOffset != 0 :
+                minorOffset=abs(int((offset % majorOffset) * 60.0))
+            else: minorOffset = 0
+            m=majorOffset >= 0 and '+' or ''
+            lz='%s%0.02d%0.02d' % (m, majorOffset, minorOffset)
+            _localzone = _cache._zmap[lower('GMT%s' % lz)]
         except:
-            try:
-                # Generate a GMT-offset zone name.
-                if isDST:
-                    localzone = altzone
-                else:
-                    localzone = timezone
-                offset=(-localzone/(60*60))
-                majorOffset=int(offset)
-                if majorOffset != 0 :
-                    minorOffset=abs(int((offset % majorOffset) * 60.0))
-                else: minorOffset = 0
-                m=majorOffset >= 0 and '+' or ''
-                lz='%s%0.02d%0.02d' % (m, majorOffset, minorOffset)
-                _localzone = _cache._zmap[lower('GMT%s' % lz)]
-            except:
-                _localzone = ''
+            _localzone = ''
     return _localzone
     
 # Some utility functions for calculating dates:
