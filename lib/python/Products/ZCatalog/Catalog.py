@@ -602,60 +602,46 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             return val
         return kw.get("sort_%s" % attr, None)
 
-    def searchResults(self, REQUEST=None, used=None, **kw):
-        # Get search arguments:
-        args = CatalogSearchArgumentsMap(REQUEST, kw)
 
-        # Compute "sort_index", which is a sort index, or none:
-        sort_index = self._get_sort_attr("on", args)
-        if sort_index is not None:
+    def _getSortIndex(self, args):
+        """Returns a search index object or None."""
+        sort_index_name = self._get_sort_attr("on", args)
+        if sort_index_name is not None:
             # self.indexes is always a dict, so get() w/ 1 arg works
-            sort_index = self.indexes.get(sort_index)
+            sort_index = self.indexes.get(sort_index_name)
             if sort_index is None:
-                raise CatalogError, ('Unknown sort_on index')
+                raise CatalogError, 'Unknown sort_on index'
             else:
                 if not hasattr(sort_index, 'keyForDocument'):
                     raise CatalogError(
                         'The index chosen for sort_on is not capable of being'
                         ' used as a sort index.'
                         )
-        
+            return sort_index
+        else:
+            return None
+
+
+    def searchResults(self, REQUEST=None, used=None, _merge=1, **kw):
+        args = CatalogSearchArgumentsMap(REQUEST, kw)
+        sort_index = self._getSortIndex(args)
         # Perform searches with indexes and sort_index
         r = []
         used = self._indexedSearch(args, sort_index, r.append, used)
-        if not r:
-            return LazyCat(r)
-
-        # Sort/merge sub-results
-
-        # The contents of r depend on whether sort_index is set.
-        # If sort_index is None, r contains sequences of records.
-        # If sort_index is not None, r contains pairs of (sort_key, sequence)
-        # and now we have to sort the results.
-        if len(r) == 1:
-            if sort_index is None:
-                r = r[0]
-            else:
-                r = r[0][1]
+        if not _merge:
+            # Postpone merging and sorting.  This provides a way to
+            # sort results merged from multiple catalogs.
+            return r
         else:
-            if sort_index is None:
-                r = LazyCat(r, len(r))
-            else:
-                r.sort()
-                so = self._get_sort_attr("order", args)
-                if (isinstance(so, types.StringType) and
-                    so.lower() in ('reverse', 'descending')):
-                    r.reverse()
-
-                size = 0
-                tmp = []
-                for i in r:
-                    elt = i[1]
-                    tmp.append(elt)
-                    size += len(elt)
-                r = LazyCat(tmp, size)
-
-        return r
+            has_sort_keys = 0
+            reverse = 0
+            if sort_index is not None:
+                has_sort_keys = 1
+                order = self._get_sort_attr("order", args)
+                if (isinstance(order, types.StringType) and
+                    order.lower() in ('reverse', 'descending')):
+                    reverse = 1
+            return mergeResults(r, has_sort_keys, reverse)
 
     __call__ = searchResults
 
@@ -701,4 +687,33 @@ class CatalogSearchArgumentsMap:
             return 1
         
         
-        
+def mergeResults(r, has_sort_keys, reverse):
+    """Sort/merge sub-results, generating a flat sequence.
+
+    The contents of r depend on whether has_sort_keys is set.
+    If not has_sort_keys, r contains sequences of records.
+    If has_sort_keys, r contains pairs of (sort_key, sequence)
+    and now we have to sort the results.
+    """
+    if not r:
+        return LazyCat(r)
+    elif len(r) == 1:
+        if not has_sort_keys:
+            return r[0]
+        else:
+            return r[0][1]
+    else:
+        if not has_sort_keys:
+            return LazyCat(r, len(r))
+        else:
+            r.sort()
+            if reverse:
+                r.reverse()
+            size = 0
+            tmp = []
+            for i in r:
+                elt = i[1]
+                tmp.append(elt)
+                size += len(elt)
+            return LazyCat(tmp, size)
+    
