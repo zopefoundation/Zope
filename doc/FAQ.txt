@@ -26,7 +26,7 @@ Zope Installation Frequently Asked Questions
        out of requests passed to cgi programs. If you keep getting password
        prompts that never accept your password, this means that your web
        server is not properly configured to pass authentication info on to
-       Zope. See the file WEBVSERVER.txt for information on correctly
+       Zope. See the doc/WEBVSERVER.txt file for information on correctly
        configuring your web server to pass authentication information.
 
 
@@ -39,8 +39,8 @@ Zope Installation Frequently Asked Questions
        PCGI resource file, or a problem with your Zope installation
        such as incorrect permissions on certain directories.
 
-       You should always run the install script (as root!!) to ensure
-       that a correct PCGI resource file is generated. If you have changed
+       You should always run the install script to ensure that a
+       correct PCGI resource file is generated. If you have changed
        this file by hand, ensure that all of the pathnames in the file
        are valid and that there are no typos.
 
@@ -79,7 +79,7 @@ Zope Installation Frequently Asked Questions
        can reduce startup time.
 
 
-    5. I have Zope with the Oracle Database adapter installed, and cant
+    5. I have Zope with the Oracle Database adapter installed, and can't
        get it running. Why?
 
        If you have Oracle installed, you need to ensure that the
@@ -97,39 +97,29 @@ Zope Installation Frequently Asked Questions
 
     1. How do I find the application server in my process listing?
 
-       Under Unix, the Zope application will be running as a
-       process entry starting with 'pricipia-p'.  The process ID is
-       recorded in 'var/Main.pid'.
-
+       Whether running Zope with ZServer (yay) or straight PCGI (not
+       so yay), there will be a .pid file in var with the pid of the
+       process.  For ZServer, the pid file is named 'z2.pid' (and it
+       contains two pids).  For PCGI, the file will be 'pcgi.pid'.
 
     2. If I have more than one Zope process running on the same
        machine, how do I tell them apart in "ps" listings?
 
-       Currently, all running Zope processes will show up in ps
-       listings as something like "principia -p". The actual
-       Zope executable is in the bin subdirectory of your 
-       installation. You can rename the executable to something more
-       useful in ps listings if you wish. YOU MUST, however edit your
-       PCGI resource file to ensure that the SOFTWARE_EXE line points
-       to the new name of your executable.
-
+       When running under ZServer, the Zope processes will show up in
+       the listings with 'z2.py'.  (You may need to do a long listing
+       to see it.)  PCGI mastered zopes will have 'pcgi-wrapper'.
 
     3. What files are used by the object database?
 
        The state of the application is stored in files in the 'var'
-       subdirectory inside the installation.  There are several files
-       that are used:
+       subdirectory inside the installation.  There is currently one
+       file:
 
-         o Data.bbb -- Primary database file
+         o Data.fs -- Primary database file
 
-         o Data.bbb.index -- File created on shutdown to speed startup
-           for large databases
-
-         o Data.trans -- Used to store information in unsaved sessions
-           and unapproved work in draft folders
-
-         o Data.trans.index -- File created on shutdown to speed
-           startup for large transaction databases
+       Data.fs replaces the database file of prior versions,
+       Data.bbb.  To convert an existing Data.bbb file to the new
+       format, see doc/ZODB.txt.
 
        Other files in the 'var' directory are associated with each
        process and are only temporary.       
@@ -139,7 +129,9 @@ Zope Installation Frequently Asked Questions
 
        It is best to shutdown the process using the Shutdown button in
        the Control Panel. Alternatively, the URL:
-       'Control_Panel/manage_shutdown'
+
+          'Control_Panel/manage_shutdown'
+
        will, with a suitable username and password, shutdown the
        application. If you need a non-interactive way to shutdown your
        application, e.g. from a script, then write a program that sends
@@ -147,8 +139,9 @@ Zope Installation Frequently Asked Questions
        password.
 
        If you must, you can shutdown the application by killing it.
-       This can have negative side effects and is not supported.
-
+       The respective var/*.pid file will have the pids - for ZServer
+       (yay) it's var/z2.pid, for pcgi (not so yay), it's
+       var/pcgi.pid.
 
   General
 
