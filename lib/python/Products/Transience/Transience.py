@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.9 2001/11/07 06:46:36 chrism Exp $
+$Id: Transience.py,v 1.10 2001/11/07 20:13:16 matt Exp $
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -267,6 +267,7 @@ class TransientObjectContainer(SimpleItem):
     def setAddNotificationTarget(self, f):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
+        print "setting addNotificationTarget to %s" % f
         self._addCallback = f             
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getDelNotificationTarget')
@@ -278,6 +279,7 @@ class TransientObjectContainer(SimpleItem):
     def setDelNotificationTarget(self, f):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
+        print "setting delNotificationTarget to %s" % f
         self._delCallback = f
 
 
@@ -369,6 +371,12 @@ class TransientObjectContainer(SimpleItem):
         self._timeout_secs = timeout_mins * 60
 
     def _reset(self):
+
+        if hasattr(self,'_ring'):
+            for k in self.keys():
+                self.notifyDestruct(self[k])
+                del self[k]
+        
         t_secs = self._timeout_secs
         r_secs = self._resolution_secs = int(t_secs * self._err_margin) or 1
         numbuckets = int(math.floor(t_secs/r_secs)) or 1
