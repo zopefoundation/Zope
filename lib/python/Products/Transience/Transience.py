@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.12 2001/11/07 22:09:53 matt Exp $
+$Id: Transience.py,v 1.13 2001/11/08 21:02:43 matt Exp $
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -223,7 +223,9 @@ class TransientObjectContainer(SimpleItem):
         if type(key) is not type(''):
             raise TypeError, (key, "key is not a string type")
         if self.has_key(key):
-            raise KeyError, key         # Not allowed to dup keys
+            if self[key].isValid():
+                raise KeyError, key         # Not allowed to dup keys
+             del self[key]      
         
         item = TransientObject(key)
         self[key] = item
@@ -460,7 +462,7 @@ class TransientObjectContainer(SimpleItem):
             index[k] = current
         # change the value
         current[k] = v
-        v.setLastAccessed()
+        self._setLastAccessed(v)
         
     def __getitem__(self, k):
         current = self._getCurrentBucket()
@@ -473,11 +475,17 @@ class TransientObjectContainer(SimpleItem):
             # we accessed the object, so it should become current.
             index[k] = current # change the index to the current bucket.
             current[k] = v # add the value to the current bucket.
-            v.setLastAccessed()
+            self._setLastAccessed(v)
             del b[k] # delete the item from the old bucket.
         return v
 
-    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'get')
+    def _setLastAccessed(self, transientObject):
+        # A safety valve; dont try to set the last accessed time if the
+        # object we were given doesnt support it
+        sla = getattr(transientObject, 'setLastAccessed', None)
+        if sla is not None: sla()
+
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'set')
     def set(self, k, v):
         """ """
         if type(k) is not type(''):
