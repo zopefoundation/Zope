@@ -280,15 +280,19 @@ class HTMLClass:
             output("<tr>\n")
             for column in row.getColumns()[0]:
                 if hasattr(column,"getAlign"):
-                    str = "<td colspan=%s align=%s valign=%s>" % (column.getSpan(),column.getAlign(),column.getValign())
+                    str = "<%s colspan=%s align=%s valign=%s>" % (column.getType(),
+                                                                  column.getSpan(),
+                                                                  column.getAlign(),
+                                                                  column.getValign())
                 else:
                     str = "<td colspan=%s>" % column.getSpan()
                 output(str)
-                #for c in doc.getChildNodes():
-                #    getattr(self, self.element_types[c.getNodeName()])(c, level, output)
                 for c in column.getChildNodes():
                     getattr(self, self.element_types[c.getNodeName()])(c, level, output)
-                output("</td>\n")
+                if hasattr(column,"getType"):
+                    output("</"+column.getType()+">\n")
+                else:
+                    output("</td>\n")
             output("</tr>\n")
         output("</table>\n")
           
