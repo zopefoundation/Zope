@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import os, sys, traceback
 from TAL.TALParser import TALParser
@@ -200,10 +200,11 @@ class PageTemplate:
         A Page Template must always be cooked, and cooking must not
         fail due to user input.
         """
-        gen = TALGenerator(getEngine())
         if self.html():
+            gen = TALGenerator(getEngine(), xml=0)
             parser = HTMLTALParser(gen)
         else:
+            gen = TALGenerator(getEngine())
             parser = TALParser(gen)
 
         self._v_errors = ()

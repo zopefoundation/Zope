@@ -89,11 +89,11 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE
-from string import strip, split, join, replace
+from string import strip, split, join, replace, lstrip
 from DocumentTemplate.DT_Util import TemplateDict
 
 _engine = None
@@ -211,7 +211,7 @@ class StringExpr:
 
 class NotExpr:
     def __init__(self, name, expr, compiler):
-        self._s = expr
+        self._s = expr = lstrip(expr)
         self._c = compiler.compile(expr)
         
     def __call__(self, econtext):
@@ -268,6 +268,7 @@ else:
         def validate(self, *args, **kwargs):
             return 1
         validateValue = validate
+    _marker = []
 
     class PythonExpr:
         def __init__(self, name, expr):
