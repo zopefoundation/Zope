@@ -102,6 +102,7 @@ else:
 make('lib','python')
 make('lib','python','DocumentTemplate')
 make('lib','python','ZODB')
+make('lib','python','BTrees')
 make('lib','python','SearchIndex')
 make('lib','python','Shared','DC','xml','pyexpat')
 
