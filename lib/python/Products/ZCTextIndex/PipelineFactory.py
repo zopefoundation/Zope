@@ -14,36 +14,36 @@
 
 from Products.ZCTextIndex.IPipelineElementFactory \
      import IPipelineElementFactory
-     
+
 class PipelineElementFactory:
-    
+
     __implements__ = IPipelineElementFactory
-    
+
     def __init__(self):
         self._groups = {}
-    
+
     def registerFactory(self, group, name, factory):
         if self._groups.has_key(group) and \
            self._groups[group].has_key(name):
             raise ValueError('ZCTextIndex lexicon element "%s" '
-                             'already registered in group "%s"' 
+                             'already registered in group "%s"'
                              % (name, group))
-                             
+
         elements = self._groups.get(group)
         if elements is None:
             elements = self._groups[group] = {}
         elements[name] = factory
-        
+
     def getFactoryGroups(self):
         groups = self._groups.keys()
         groups.sort()
         return groups
-        
+
     def getFactoryNames(self, group):
         names = self._groups[group].keys()
         names.sort()
         return names
-        
+
     def instantiate(self, group, name):
         factory = self._groups[group][name]
         if factory is not None:

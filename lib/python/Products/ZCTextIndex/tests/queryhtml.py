@@ -54,7 +54,7 @@ def main(rt):
                         chooser = NBest(10)
                         chooser.addmany(b.items())
                         results = chooser.getbest()
-                        
+
                 else:
                     try:
                         for _ in ITERS:

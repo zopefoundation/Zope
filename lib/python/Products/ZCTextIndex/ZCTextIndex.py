@@ -35,7 +35,7 @@ from PipelineFactory import element_factory
 
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
-index_types = {'Okapi BM25 Rank':OkapiIndex, 
+index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
@@ -77,7 +77,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             self._index_type = extra.index_type
         else:
             self._index_factory = index_factory
-            
+
         self.clear()
 
     ## External methods not in the Pluggable Index API ##
@@ -157,7 +157,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     ## User Interface Methods ##
 
     manage_main = DTMLFile('dtml/manageZCTextIndex', globals())
-    
+
     def getIndexType(self):
         """Return index type string"""
         return getattr(self, '_index_type', self._index_factory.__name__)
@@ -176,10 +176,10 @@ manage_addLexiconForm = DTMLFile('dtml/addLexicon', globals())
 
 def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
     """Add ZCTextIndex Lexicon"""
-    
+
     pipeline = []
     for el_record in elements:
-        if not hasattr(el_record, 'name'): 
+        if not hasattr(el_record, 'name'):
             continue # Skip over records that only specify element group
         element = element_factory.instantiate(el_record.group, el_record.name)
         if element is not None:
@@ -199,7 +199,7 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     """Lexicon for ZCTextIndex"""
 
     meta_type = 'ZCTextIndex Lexicon'
-    
+
     manage_options = ({'label':'Overview', 'action':'manage_main'},) + \
                      SimpleItem.manage_options
 
@@ -207,13 +207,13 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
         self.id = str(id)
         self.title = str(title)
         PLexicon.inheritedAttribute('__init__')(self, *pipeline)
-        
+
     ## User Interface Methods ##
-        
+
     def getPipelineNames(self):
         """Return list of names of pipeline element classes"""
         return [element.__class__.__name__ for element in self._pipeline]
-         
+
     manage_main = DTMLFile('dtml/manageLexicon', globals())
 
 InitializeClass(PLexicon)

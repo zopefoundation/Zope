@@ -19,21 +19,21 @@ class IPipelineElementFactory(Interface):
 
     def registerFactory(group, name, factory):
         """Registers a pipeline factory by name and element group.
-        
-        Each name can be registered only once for a given group. Duplicate 
+
+        Each name can be registered only once for a given group. Duplicate
         registrations will raise a ValueError
         """
-        
+
     def getFactoryGroups():
         """Returns a sorted list of element group names
         """
-        
+
     def getFactoryNames(group):
         """Returns a sorted list of registered pipeline factory names
         in the specified element group
         """
-        
+
     def instantiate(group, name):
-        """Instantiates a pipeline element by group and name. If name is not 
+        """Instantiates a pipeline element by group and name. If name is not
         registered raise a KeyError.
         """

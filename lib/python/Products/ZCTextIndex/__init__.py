@@ -39,15 +39,14 @@ def initialize(context):
                         getElementGroups, getElementNames),
         icon='www/lexicon.gif'
     )
-    
+
 ## Functions below are for use in the ZMI constructor forms ##
-    
+
 def getElementGroups(self):
     return element_factory.getFactoryGroups()
-    
+
 def getElementNames(self, group):
     return element_factory.getFactoryNames(group)
-    
+
 def getIndexTypes(self):
     return ZCTextIndex.index_types.keys()
-    
