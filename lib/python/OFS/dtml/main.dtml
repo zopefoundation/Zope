@@ -142,6 +142,7 @@ function toggleSelect() {
   <dtml-with sequence-key>
   <td>
   <div class="list-item">
+  <dtml-try>
   <dtml-if get_size>
   <dtml-let ob_size=get_size>
   <dtml-if "ob_size < 1024">
@@ -155,6 +156,9 @@ function toggleSelect() {
   <dtml-else>
   &nbsp;
   </dtml-if>
+  <dtml-except>
+  &nbsp;
+  </dtml-try>
   </div>
   </td>
 
