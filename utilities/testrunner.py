@@ -246,6 +246,10 @@ class TimingTestResult(unittest._TextTestResult):
 
 
 class TimingTestRunner(unittest.TextTestRunner):
+    def __init__(self, *args, **kw):
+        unittest.TextTestRunner.__init__(self, *args, **kw)
+        self.timings = []
+
     def _makeResult(self):
         r = TimingTestResult(self.stream, self.descriptions, self.verbosity)
         self.timings = r.timings
