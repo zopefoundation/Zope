@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.7 1997/12/05 17:13:52 brian Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: SimpleItem.py,v 1.8 1997/12/12 21:49:44 brian Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -39,6 +39,7 @@ class Item(CopySource):
     title=''
 
     manage_tabs   =Globals.HTMLFile('App/manage_tabs')
+    manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=({'icon':'', 'label':'Manage',
 		     'action':'manage_main', 'target':'manage_main',
 	            },
@@ -118,6 +119,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.8  1997/12/12 21:49:44  brian
+# ui update
+#
 # Revision 1.7  1997/12/05 17:13:52  brian
 # New UI
 #

@@ -12,7 +12,7 @@ __doc__='''A drop-in object that represents a session.
 
 
 
-$Id: Session.py,v 1.5 1997/12/05 17:13:51 brian Exp $'''
+$Id: Session.py,v 1.6 1997/12/12 21:49:44 brian Exp $'''
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 from string import rfind
@@ -54,7 +54,7 @@ class Session(Persistence.Persistent,
 		    {'icon':'', 'label':'Join/Leave',
 		     'action':'index_html', 'target':'manage_main',
 		    },
-		    {'icon':'', 'label':'Access Control',
+		    {'icon':'', 'label':'Security',
 		     'action':'manage_rolesForm', 'target':'manage_main',
 		    },
 		    {'icon':'', 'label':'Undo',
@@ -123,7 +123,7 @@ class Session(Persistence.Persistent,
 	
     def nonempty(self): return Globals.SessionBase[self.cookie].nonempty()
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 
@@ -131,6 +131,9 @@ __version__='$Revision: 1.5 $'[11:-2]
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.6  1997/12/12 21:49:44  brian
+# ui update
+#
 # Revision 1.5  1997/12/05 17:13:51  brian
 # New UI
 #

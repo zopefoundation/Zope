@@ -1,11 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Upload <!--#var kind--> data</TITLE>
+<TITLE>Upload</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
-<H2>Upload data to <EM><!--#var title_or_id--></EM></H2>
 
 You can update data in the <!--#var kind--> using the form below. 
 Select a data file from your local computer by clicking the <EM>Browse</EM> 

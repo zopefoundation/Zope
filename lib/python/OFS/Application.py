@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.23 1997/12/05 20:33:02 brian Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Application.py,v 1.24 1997/12/12 21:49:41 brian Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 import Globals,Folder,os,regex
@@ -24,7 +24,7 @@ from App.ApplicationManager import ApplicationManager
 
 class Application(Folder.Folder):
     title    ='Principia'
-    id       =title
+#    id       =title
     __roles__=None
     __defined_roles__=('manage',)
     web__form__method='GET'
@@ -34,8 +34,8 @@ class Application(Folder.Folder):
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
-     'action':'manage_rolesForm',   'target':'manage_main'},
+    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
+     'action':'manage_changeAccess',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
@@ -68,6 +68,10 @@ class Application(Folder.Folder):
 				'Standard Html Footer',
 				'</BODY></HTML>')
 
+
+    def id(self):
+	try:    return self.REQUEST['SCRIPT_NAME'][1:]
+	except: return self.title
 
     def folderClass(self): return Folder.Folder
 
@@ -248,6 +252,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.24  1997/12/12 21:49:41  brian
+# ui update
+#
 # Revision 1.23  1997/12/05 20:33:02  brian
 # *** empty log message ***
 #

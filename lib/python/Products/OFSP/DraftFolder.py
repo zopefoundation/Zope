@@ -14,8 +14,8 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.3 1997/12/05 20:33:02 brian Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DraftFolder.py,v 1.4 1997/12/12 21:49:42 brian Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 import AccessControl.User, Session
@@ -38,7 +38,7 @@ def hack(self):
 	    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
 	     'action':'manage_propertiesForm',   'target':'manage_main'},
 	    {'icon':'AccessControl/AccessControl_icon.gif',
-	     'label':'Access Control',
+	     'label':'Security',
 	     'action':'manage_rolesForm',   'target':'manage_main'},
 	    {'icon':'App/undo_icon.gif', 'label':'Undo',
 	     'action':'manage_UndoForm',   'target':'manage_main'},
@@ -62,7 +62,7 @@ class DraftFolder(Persistence.Persistent,
      'action':'manage_main',   'target':'manage_main'},
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Access Control',
+    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
      'action':'manage_rolesForm',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
@@ -210,6 +210,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.4  1997/12/12 21:49:42  brian
+# ui update
+#
 # Revision 1.3  1997/12/05 20:33:02  brian
 # *** empty log message ***
 #

@@ -4,14 +4,12 @@
 </HEAD> 
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <!--#var manage_tabs-->
-
-<H2>Undo Changes</H2>
 <P>
 <FORM ACTION="manage_undo_transactions" METHOD="POST">
 This application's transactional feature allows you to easily undo changes
 made to the application's settings or data. You can revert the application
 to a &quot;snapshot&quot; of it's state at a previous point in time.
-
+<P>
 Select one or more transactions below and then click on the &quot;Undo&quot;
 button to undo the transactions.  Note that even though a transaction
 is shown below, you will not be able to undo it if later transactions

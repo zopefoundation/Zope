@@ -1,11 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Upload document data</TITLE>
+<TITLE>Upload</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
-<H2>Upload document data</H2>
 
  You may upload the source for <!--#var title_and_id--> using the form below. 
  Choose an existing html file from your local computer by clicking the

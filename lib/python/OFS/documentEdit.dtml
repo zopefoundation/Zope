@@ -1,11 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Edit <!--#var title_or_id--></TITLE>
+<TITLE>Edit</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
-<H2>Edit <!--#var title_or_id--></H2>
 
   <FORM ACTION="manage_edit" METHOD="POST">
     <TABLE CELLSPACING="2">

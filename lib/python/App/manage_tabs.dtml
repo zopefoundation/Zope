@@ -1,11 +1,13 @@
 <!--#if manage_options-->
-<TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="2">
+<TABLE WIDTH="100%" BORDER="1" CELLSPACING="0" CELLPADDING="0">
 <TR>
 <!--#in manage_options mapping-->
 <!--#if sequence-item-->
   <!--#if expr="_vars['PATH_INFO'][-(_.len(action)):]==action"-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
   <FONT SIZE="-1">
+  <IMG ALIGN="LEFT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/ltab.gif">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/rtab.gif">
   <STRONG>
     <!--#if action-->
     <A HREF="<!--#var action-->"><!--#var label--></A>
@@ -13,12 +15,15 @@
     <A HREF="<!--#var URL1-->"><!--#var label--></A>
     <!--#/if action-->
   </STRONG>
+
   </FONT>
   </TD>
   <!--#else-->
   <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
   <FONT SIZE="-1">
-    <!--#if action-->
+  <IMG ALIGN="LEFT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/ltab.gif">
+  <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SOFTWARE_URL-->/App/rtab.gif">
+  <!--#if action-->
     <A HREF="<!--#var action-->"><!--#var label--></A>
     <!--#else action-->
     <A HREF="<!--#var URL1-->"><!--#var label--></A>
@@ -31,3 +36,21 @@
 </TR>
 </TABLE>
 <!--#/if manage_options-->
+<BR>
+<TABLE WIDTH="100%" BORDER="0" CELLSPACING="0" CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" 
+       ALT="<!--#var meta_type-->" BORDER="0">
+  <STRONG>
+  <!--#if meta_type-->
+  <!--#var meta_type-->
+  <!--#else-->
+  Object
+  <!--#/if-->
+  at <!--#var SCRIPT_NAME--><!--#var 
+  expr="PATH_INFO[:(_.string.rfind(PATH_INFO,'/'))]"-->
+  </STRONG>
+  </TD>
+</TR>
+</TABLE>

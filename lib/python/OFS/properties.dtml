@@ -1,11 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>Properties for <!--#var title_or_id--></TITLE>
+<TITLE>Properties</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<H2>Properties for <EM><!--#var title_or_id--></EM></H2>
 <!--#if Principia-Session-->
 <EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>

@@ -1,16 +1,14 @@
 <HTML>
 <HEAD>
-<TITLE>Contents of <!--#var title_or_id--></TITLE>
+<TITLE>Contents</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<H2>Contents of <EM><!--#var title_or_id--></EM></H2>
 <!--#if Principia-Session-->
 <EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>
 <!--#/if Principia-Session-->
-
 
 <FORM ACTION="manage_delObjects" METHOD="POST">
 <!--#if objectValues-->
@@ -27,7 +25,11 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var id-->/manage_main">
-  <!--#var title_and_id--></A> 
+  <!--#var id--> 
+  <!--#if title-->
+  (<!--#var title-->)
+  <!--#/if title-->
+  </A> 
   <!--#if modified_in_session-->
   <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/modified.gif"
    ALT="This item has been modified in a session">

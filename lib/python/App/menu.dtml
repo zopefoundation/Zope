@@ -1,6 +1,6 @@
 <HTML>
 <HEAD>
-<TITLE>Principia Navigator</TITLE>
+<TITLE>Navigator</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <TABLE CELLSPACING="0">
@@ -11,7 +11,7 @@
    ALT="Click to open this item"></A> 
   <STRONG>
   <A HREF="manage_main" TARGET="manage_main">
-  <!--#var title_or_id-->
+  <!--#var expr="SCRIPT_NAME[1:]"-->
   </A>
   </STRONG>
   </TD>
@@ -22,10 +22,20 @@
 <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0"
  ALT="Click to open this item"></A> 
 <A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
-<!--#var title_or_id-->
+<!--#var id-->
 </A>
 <!--#/tree-->
 <TABLE CELLSPACING="0">
+<TR>
+  <TD WIDTH="16"></TD>
+  <TD VALIGN="TOP" NOWRAP>
+  <STRONG>
+  <A HREF="manage_copyright" TARGET="manage_main">
+  &copy Digital Creations
+  </A>
+  </STRONG>
+  </TD>
+</TR>
 <TR>
   <TD WIDTH="16"></TD>
   <TD VALIGN="TOP" NOWRAP>
