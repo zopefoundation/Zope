@@ -46,7 +46,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.1 1998/03/17 19:31:22 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.2 1998/03/18 13:44:51 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: sqltest.py,v 1.1 1998/03/17 19:31:22 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 
@@ -123,7 +123,9 @@ class SQLTest:
 	    raise 'Missing Input', (
 		'No input was provided for <em>%s</em>' % name)
 
-	if len(vs) > 1: return "%s in (%s)" % (self.column,`vs`[1:-1])
+	if len(vs) > 1:
+	    vs=join(map(str,vs),', ')
+	    return "%s in (%s)" % (self.column,vs)
 	return "%s=%s" % (self.column,vs[0])
 
     __call__=render
@@ -132,6 +134,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqltest.py,v $
+# Revision 1.2  1998/03/18 13:44:51  jim
+# Fixed bug in rendering SQL in tests.
+#
 # Revision 1.1  1998/03/17 19:31:22  jim
 # added new sql tags
 #
