@@ -63,6 +63,8 @@ class SGMLParser:
         self.lasttag = '???'
         self.nomoretags = 0
         self.literal = 0
+        self.lineno = 1
+        self.offset = 0
 
     # For derived classes only -- enter literal mode (CDATA) till EOF
     def setnomoretags(self):
@@ -84,6 +86,27 @@ class SGMLParser:
     def close(self):
         self.goahead(1)
 
+    # Internal -- update line number and offset.  This should be
+    # called for each piece of data exactly once, in order -- in other
+    # words the concatenation of all the input strings to this
+    # function should be exactly the entire input.
+    def updatepos(self, i, j):
+        if i >= j:
+            return j
+        rawdata = self.rawdata
+        nlines = string.count(rawdata, "\n", i, j)
+        if nlines:
+            self.lineno = self.lineno + nlines
+            pos = string.rindex(rawdata, "\n", i, j) # Should not fail
+            self.offset = j-(pos+1)
+        else:
+            self.offset = self.offset + j-i
+        return j
+
+    # Interface -- return current line number and offset.
+    def getpos(self):
+        return self.lineno, self.offset
+
     # Internal -- handle data as far as reasonable.  May leave state
     # and data to be processed by a subsequent call.  If 'end' is
     # true, force handling all data as if followed by EOF marker.
@@ -94,70 +117,75 @@ class SGMLParser:
         while i < n:
             if self.nomoretags:
                 self.handle_data(rawdata[i:n])
-                i = n
+                i = self.updatepos(i, n)
                 break
             match = interesting.search(rawdata, i)
             if match: j = match.start(0)
             else: j = n
             if i < j: self.handle_data(rawdata[i:j])
-            i = j
+            i = self.updatepos(i, j)
             if i == n: break
             if rawdata[i] == '<':
                 if starttagopen.match(rawdata, i):
                     if self.literal:
                         self.handle_data(rawdata[i])
-                        i = i+1
+                        i = self.updatepos(i, i+1)
                         continue
                     k = self.parse_starttag(i)
                     if k < 0: break
-                    i = k
+                    i = self.updatepos(i, k)
                     continue
                 if endtagopen.match(rawdata, i):
                     k = self.parse_endtag(i)
                     if k < 0: break
-                    i =  k
+                    i = self.updatepos(i, k)
                     self.literal = 0
                     continue
                 if commentopen.match(rawdata, i):
                     if self.literal:
                         self.handle_data(rawdata[i])
-                        i = i+1
+                        i = self.updatepos(i, i+1)
                         continue
                     k = self.parse_comment(i)
                     if k < 0: break
-                    i = i+k
+                    i = self.updatepos(i, i+k)
                     continue
                 if piopen.match(rawdata, i):
                     if self.literal:
                         self.handle_data(rawdata[i])
-                        i = i+1
+                        i = self.updatepos(i, i+1)
                         continue
                     k = self.parse_pi(i)
                     if k < 0: break
-                    i = i+k
+                    i = self.updatepos(i, i+k)
                     continue
                 match = special.match(rawdata, i)
                 if match:
                     if self.literal:
                         self.handle_data(rawdata[i])
-                        i = i+1
+                        i = self.updatepos(i, i+1)
                         continue
-                    i = match.end(0)
+                    k = match.end(0)
+                    i = self.updatepos(i, k)
                     continue
             elif rawdata[i] == '&':
                 match = charref.match(rawdata, i)
                 if match:
                     name = match.group(1)
                     self.handle_charref(name)
-                    i = match.end(0)
-                    if rawdata[i-1] != ';': i = i-1
+                    k = match.end(0)
+                    if rawdata[i-1] != ';':
+                        k = k-1
+                    i = self.updatepos(i, k)
                     continue
                 match = entityref.match(rawdata, i)
                 if match:
                     name = match.group(1)
                     self.handle_entityref(name)
-                    i = match.end(0)
-                    if rawdata[i-1] != ';': i = i-1
+                    k = match.end(0)
+                    if rawdata[i-1] != ';':
+                        k = k-1
+                    i = self.updatepos(i, k)
                     continue
             else:
                 raise RuntimeError, 'neither < nor & ??'
@@ -166,17 +194,17 @@ class SGMLParser:
             match = incomplete.match(rawdata, i)
             if not match:
                 self.handle_data(rawdata[i])
-                i = i+1
+                i = self.updatepos(i, i+1)
                 continue
             j = match.end(0)
             if j == n:
                 break # Really incomplete
             self.handle_data(rawdata[i:j])
-            i = j
+            i = self.updatepos(self, i, j)
         # end while
         if end and i < n:
             self.handle_data(rawdata[i:n])
-            i = n
+            i = self.updatepos(i, n)
         self.rawdata = rawdata[i:]
         # XXX if end: check for empty stack
 
