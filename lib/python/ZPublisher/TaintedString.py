@@ -131,13 +131,21 @@ def createSimpleWrapper(func):
 def createOneArgWrapper(func):
     return lambda s, a, f=func: s.__class__(getattr(s._value, f)(a))
 
+def createOneOptArgWrapper(func):
+    return lambda s, a=None, f=func: s.__class__(getattr(s._value, f)(a))
+    
 simpleWrappedMethods = \
-    "capitalize lower lstrip rstrip strip swapcase title upper".split()
+    "capitalize lower swapcase title upper".split()
 
 oneArgWrappedMethods = "center join ljust rjust".split()
+
+oneOptArgWrappedMethods = "lstrip rstrip strip".split()
 
 for f in simpleWrappedMethods:
     setattr(TaintedString, f, createSimpleWrapper(f))
 
 for f in oneArgWrappedMethods:
     setattr(TaintedString, f, createOneArgWrapper(f))
+
+for f in oneOptArgWrappedMethods:
+    setattr(TaintedString, f, createOneOptArgWrapper(f))

@@ -90,6 +90,12 @@ class TestTaintedString(unittest.TestCase):
             else:
                 self.failIf(isinstance(v, self._getClass()))
 
+        optArg = "lstrip rstrip strip".split()
+        for f in optArg:
+            v = getattr(tainted, f)(" ")
+            self.assertEquals(v, getattr(unquoted, f)(" "))
+            self.assert_(isinstance(v, self._getClass()))        
+
         justify = "center ljust rjust".split()
         for f in justify:
             v = getattr(tainted, f)(30)

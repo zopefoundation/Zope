@@ -157,6 +157,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1477: TaintedString.strip() now implements the
+       same signature as str.strip()
+
      - TAL: tal:on-error does not trap ConflictError anymore.
 
      - OFS.CopySupport: Enforced "Delete objects" permission during
