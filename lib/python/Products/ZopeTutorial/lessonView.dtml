@@ -27,6 +27,8 @@ PRE {
 }
 </style>
 
+<h2><dtml-var title></h2>
+
 <dtml-var obj>
 <dtml-unless "id=='glossary'">
 <hr>
