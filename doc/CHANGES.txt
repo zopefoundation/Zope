@@ -103,6 +103,11 @@ Zope Changes
 
     Bugs fixed
 
+     - Minor usability tweaks:
+
+       * Increased FindSupport meta type selection widgets
+         height to 8 lines
+
      - The DateTime module did not recognize the settings for
        "datetime-format".
 
