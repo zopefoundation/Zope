@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.26 1999/04/20 04:00:35 amos Exp $"
+"$Id: DT_String.py,v 1.27 1999/06/24 20:21:20 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -386,22 +386,6 @@ class String:
         self.globals=vars
         self._vars={}
 
-    __state_names__=('raw', 'globals', '__name__', '_vars')
-
-    def __getstate__(self):
-        r={}
-        for k in self.__state_names__:
-            try: r[k]=getattr(self,k)
-            except: pass
-        return r
-
-    def __setstate__(self,s,hack=('',{},'<string>',{},'')):
-        try:
-            for k in s.keys(): self.__dict__[k]=s[k]
-        except: 
-            self.raw,self.globals,self.__dict__['name'],self._vars,dummy=(
-                s+hack[len(s)-len(hack):])
-
     def __call__(self,client=None,mapping={},**kw):
         '''\
         Generate a document from a document template.
@@ -524,9 +508,6 @@ class String:
 class FileMixin:
     # Mix-in class to abstract certain file-related attributes
     edited_source=''
-    __state_names__=(
-        String.__state_names__ +
-        ('edited_source',))
     
     def __init__(self, file_name='', mapping=None, __name__='', **vars):
         """\
