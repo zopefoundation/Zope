@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.31 1998/04/02 17:37:37 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.32 1998/05/13 21:09:23 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -92,6 +92,22 @@ def careful_getattr(md, inst, name):
 
     raise ValidationError, name
 
+def careful_hasattr(md, inst, name):
+    try: 
+        if name[:1]!='_':
+            validate=md.validate
+
+            if validate is None: return hasattr(inst, name)
+
+            if hasattr(inst,'aq_acquire'):
+                inst.aq_acquire(name, validate, md)
+                return 1
+
+            v=getattr(inst, name)
+            if validate(inst,inst,name,v,md): return 1
+    except: pass
+    return 0
+
 def careful_getitem(md, mapping, key):
     v=mapping[key]
 
@@ -119,21 +135,20 @@ def careful_getslice(md, seq, *indexes):
 
     return v
 
-import string, math, rand, whrandom
+import string, math, whrandom
 
-class expr_globals: pass
-expr_globals=expr_globals()
+try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
-d=expr_globals.__dict__
+d=TemplateDict.__dict__
 for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
 	     'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
     d[name]=__builtins__[name]
 d['string']=string
 d['math']=math
-d['rand']=rand
 d['whrandom']=whrandom
 
-def test(*args):
+def test(self, *args):
     l=len(args)
     for i in range(1, l, 2):
 	if args[i-1]: return args[i]
@@ -142,14 +157,13 @@ def test(*args):
 
 d['test']=test
 
-def _attr(inst, name, md={}):
-    return careful_getattr(md, inst, name)
-
-d['attr']=_attr
+d['attr']=careful_getattr
+d['getattr']=careful_getattr
+d['hasattr']=careful_hasattr
 
 class namespace_: pass
 
-def namespace(**kw):
+def namespace(self, **kw):
     r=namespace_()
     d=r.__dict__
     for k, v in kw.items(): d[k]=v
@@ -159,7 +173,6 @@ d['namespace']=namespace
 
 expr_globals={
     '__builtins__':{},
-    '_': expr_globals,
     '__guarded_mul__':      VSEval.careful_mul,
     '__guarded_getattr__':  careful_getattr,
     '__guarded_getitem__':  careful_getitem,
@@ -221,15 +234,15 @@ Python expression support
 
   In addition, certain special additional names are available:
 
-  '_vars' -- Provides access to the document template namespace as a
+  '_' -- Provides access to the document template namespace as a
      mapping object.  This variable can be useful for accessing
      objects in a document template namespace that have names that are
      not legal Python variable names::
 
-        <!--#var expr="_vars['sequence-number']*5"-->
+        <!--#var expr="_['sequence-number']*5"-->
 
-  '_' -- Provides access to a Python module containing standard
-     utility objects.  These utility objects include:
+     This variable also has attributes that provide access to standard
+     utility objects.  These attributes include:
 
      - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
           'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
@@ -252,7 +265,7 @@ Python expression support
 
        <!--#var expr="_.string.lower(title)"-->
 
-""" #"
+"""
 
 def parse_params(text,
 		 result=None,
@@ -324,13 +337,11 @@ def parse_params(text,
     if text: return apply(parse_params,(text,result),parms)
     else: return result
 
-try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
-except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
-
-#from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
-
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.32  1998/05/13 21:09:23  jim
+# Changed the way that '_' is handled.  It is now an alias for the template dict.
+#
 # Revision 1.31  1998/04/02 17:37:37  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and
