@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.6 1997/02/24 15:43:57 jim Exp $
+  $Id: ExtensionClass.c,v 1.7 1997/02/24 23:17:47 jim Exp $
 
   Extension Class
 
@@ -56,6 +56,9 @@
       (540) 371-6909
 
   $Log: ExtensionClass.c,v $
+  Revision 1.7  1997/02/24 23:17:47  jim
+  Fixed bug in subclass_nonzero.
+
   Revision 1.6  1997/02/24 15:43:57  jim
   Added __version__ string.
 
@@ -94,7 +97,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.6 1997/02/24 15:43:57 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.7 1997/02/24 23:17:47 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1950,7 +1953,17 @@ subclass_nonzero(PyObject *self)
   PyObject *m;
   long r;
 
-  UNLESS(m=subclass_getspecial(self,py__nonzero__)) return -1;
+  UNLESS(m=subclass_getspecial(self,py__nonzero__))
+    { /* We are being asked is we are true
+	 Check out len, and if that fails, say we are true.
+       */
+      PyErr_Clear();
+      UNLESS(m=subclass_getspecial(self,py__len__))
+	{
+	  PyErr_Clear();
+	  return 1;
+	}
+    }
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==nonzero_by_name
      && SubclassInstance_Check(self,AsCMethod(m)->type))
     r=AsCMethod(m)->type->tp_as_number->nb_nonzero(self);
@@ -2789,7 +2802,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
+  char *rev="$Revision: 1.7 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
