@@ -172,7 +172,6 @@ class TALInterpreter:
         self.html = 0
         self.endsep = "/>"
         self.macroStack = []
-        self.definingMacro = None
         self.position = None, None  # (lineno, offset)
         self.col = 0
         self.level = 0
@@ -192,6 +191,23 @@ class TALInterpreter:
         (dummy, self.col, self.stream, scopeLevel, level) = state
         assert self.level == level
         assert self.scopeLevel == scopeLevel
+
+    def pushMacro(self, what, macroName, slots):
+        if len(self.macroStack) >= self.stackLimit:
+            raise METALError("macro nesting limit (%d) exceeded "
+                             "by %s %s" % (self.stackLimit, what, `macroName`))
+        self.macroStack.append((what, macroName, slots))
+
+    def popMacro(self):
+        return self.macroStack.pop()
+
+    def macroContext(self, what):
+        i = len(self.macroStack)
+        while i > 0:
+            i = i-1
+            if self.macroStack[i][0] == what:
+                return i
+        return -1
 
     def __call__(self):
         assert self.level == 0
@@ -303,33 +319,40 @@ class TALInterpreter:
                     value = evalue
                     if value is None:
                         ok = 0
-        elif action == 2 and self.macroStack:
+        elif action == 2 and self.metal:
             i = string.rfind(name, ":") + 1
             prefix, suffix = name[:i], name[i:]
+            ##self.dumpMacroStack(prefix, suffix, value)
+            what, macroName, slots = self.macroStack[-1]
             if suffix == "define-macro":
-                if len(self.macroStack) == 1:
-                    macroName, slots = self.macroStack[-1]
+                if what == "use-macro":
                     name = prefix + "use-macro"
                     value = macroName
                 else:
-                    ok = 0
-            if suffix == "fill-slot":
-                macroName, slots = self.macroStack[0]
-                if not slots.has_key(value):
-                    ok = 0
-            if suffix == "define-slot" and not self.definingMacro:
-                name = prefix + "fill-slot"
+                    assert what == "define-macro"
+                    i = self.macroContext("use-macro")
+                    if i >= 0:
+                        j = self.macroContext("define-slot")
+                        if j > i:
+                            name = prefix + "use-macro"
+                        else:
+                            ok = 0
+            elif suffix == "define-slot":
+                assert what == "define-slot"
+                if self.macroContext("use-macro") >= 0:
+                    name = prefix + "fill-slot"
+
         elif action == 1: # Unexecuted insert
             ok = 0
         return ok, name, value
 
-##    def dumpMacroStack(self, prefix, suffix, value):
-##        sys.stderr.write("+-- %s%s = %s\n" % (prefix, suffix, value))
-##        for i in range(len(self.macroStack)):
-##            macroName, slots = self.macroStack[i]
-##            sys.stderr.write("|   %3d. %-20s %s\n" %
-##                             (i, macroName, slots.keys()))
-##        sys.stderr.write("+--------------------------------------\n")
+    def dumpMacroStack(self, prefix, suffix, value):
+        sys.stderr.write("+---- %s%s = %s\n" % (prefix, suffix, value))
+        for i in range(len(self.macroStack)):
+            what, macroName, slots = self.macroStack[i]
+            sys.stderr.write("| %2d. %-12s %-12s %s\n" %
+                             (i, what, macroName, slots and slots.keys()))
+        sys.stderr.write("+--------------------------------------\n")
 
     def do_endTag(self, name):
         self.stream_write("</%s>" % name)
@@ -428,10 +451,12 @@ class TALInterpreter:
             self.interpret(block)
 
     def do_defineMacro(self, macroName, macro):
-        save = self.definingMacro
-        self.definingMacro = macroName
+        if not self.metal:
+            self.interpret(macro)
+            return
+        self.pushMacro("define-macro", macroName, None)
         self.interpret(macro)
-        self.definingMacro = save
+        self.popMacro()
 
     def do_useMacro(self, macroName, macroExpr, compiledSlots, block):
         if not self.metal:
@@ -449,24 +474,32 @@ class TALInterpreter:
         if mode != (self.html and "html" or "xml"):
             raise METALError("macro %s has incompatible mode %s" %
                              (`macroName`, `mode`), self.position)
-        if len(self.macroStack) >= self.stackLimit:
-            raise METALError("macro nesting limit (%d) exceeded "
-                             "by macro %s" % (self.stackLimit, `macroName`))
-        self.macroStack.append((macroName, compiledSlots))
+        self.pushMacro("use-macro", macroName, compiledSlots)
         self.interpret(macro)
-        self.macroStack.pop()
+        self.popMacro()
 
     def do_fillSlot(self, slotName, block):
+        if not self.metal:
+            self.interpret(block)
+            return
+        self.pushMacro("fill-slot", slotName, None)
         self.interpret(block)
+        self.popMacro()
 
     def do_defineSlot(self, slotName, block):
+        if not self.metal:
+            self.interpret(block)
+            return
         slot = None
-        for macroName, slots in self.macroStack:
-            slot = slots.get(slotName) or slot
+        for what, macroName, slots in self.macroStack:
+            if what == "use-macro" and slots is not None:
+                slot = slots.get(slotName, slot)
+        self.pushMacro("define-slot", slotName, None)
         if slot:
             self.interpret(slot)
         else:
             self.interpret(block)
+        self.popMacro()
 
     def do_onError(self, block, handler):
         if not self.tal:
