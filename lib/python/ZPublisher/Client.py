@@ -71,7 +71,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -226,6 +226,7 @@ class Function:
 		t=type(v)
 		if special_type(t): d['%s%s' % (k,type2suffix[t])]=v
 		else: d[k]=v
+	    else: d[k]=v
 
         rq=[('POST %s HTTP/1.0' % self.rurl),]
 	for n,v in self.headers.items():
