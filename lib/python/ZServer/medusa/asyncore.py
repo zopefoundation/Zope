@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-# 	$Id: asyncore.py,v 1.3 1999/05/26 02:08:30 amos Exp $
+# 	$Id: asyncore.py,v 1.4 1999/05/27 21:57:23 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 
 # ======================================================================
@@ -37,7 +37,7 @@ if os.name == 'nt':
 	EALREADY	= 10037
 	ECONNRESET  = 10054
 	ENOTCONN	= 10057
-	ESHUTDOWN   = 10058
+	ESHUTDOWN	= 10058
 else:
 	from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, ENOTCONN, ESHUTDOWN
 
