@@ -96,12 +96,6 @@ or at least create a Zope 2.7 Install HowTo
   At least create a HowTo which summarizes the differences between
   installing 2.6 and installing 2.7.
 
-ZConfig replacement errors are too cryptic
-
-  If you specify an unknown replacement key, ZConfig complains at you
-  but a) shows you the replacement key without its original capitalization
-  and b) doesn't give you a line number.
-
 More storage type examples in zope.conf.in
 
   Temporary storage, bdbstorage, etc.
