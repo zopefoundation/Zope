@@ -15,6 +15,8 @@ categories:
   BEFORE RELEASE OF ZOPE 2.7A
 --------------------------------
 
+Reimplement "restart" button in control panel
+
 Config file needs better inline docs
 
   The Zope ZConfig config file has some inline docs.  They need to be
