@@ -79,7 +79,7 @@
 <p>    We have need, in a number of projects, for semantics that are
     slightly different than the usual class and instance semantics,
     yet we don't want to do most of our development in C.  For
-    example, we have developed a persistence mechanism <a href="#1">[1]</a> that
+    example, we have developed a persistence mechanism <a href="#ref1">[1]</a> that
     redefines <code>__getattr__</code> and <code>__setattr__</code> to take storage-related
     actions when object state is accessed or modified.  We want to be
     able to take certain actions on <em>every</em> attribute reference, but
@@ -91,7 +91,7 @@
     instance in a method object <em>if and only if</em> the attribute value is a
     python function.  For some applications, we might also want to be
     able to bind extension functions, or other types of callable
-    objects, such as HTML document templates <a href="#2">[2]</a>. Furthermore,
+    objects, such as HTML document templates <a href="#ref2">[2]</a>. Furthermore,
     we might want to have greater control over how objects are bound.
     For example, we might want to bind instances and callable objects
     with special method objects that assure that no more than one thread
@@ -99,7 +99,7 @@
 <p>    We can provide these special semantics in extension types, but we
     wish to provide them for classes developed in Python.</p>
 <h2>  Background</h2>
-<p>    At the first Python Workshop, Don Beaudry presented work <a href="#3">[3]</a> done
+<p>    At the first Python Workshop, Don Beaudry presented work <a href="#ref3">[3]</a> done
     at V.I. Corp to integrate Python with C++ frameworks.  This system
     provided a number of important features, including:</p>
 
@@ -117,16 +117,16 @@
 </ul>
 <p>    This work was not released, initially.</p>
 <p>    Shortly after the workshop, changes were made to Python to support
-    the sub-classing features described in <a href="#3">[3]</a>.  These changes were not
-    documented until the fourth Python Workshop <a href="#4">[4]</a>.</p>
+    the sub-classing features described in <a href="#ref3">[3]</a>.  These changes were not
+    documented until the fourth Python Workshop <a href="#ref4">[4]</a>.</p>
 <p>    At the third Python workshop, I presented some work I had done on
     generating module documentation for extension types.  Based on the
-    discussion at this workshop, I developed a meta-type proposal <a href="#5">[5]</a>.
+    discussion at this workshop, I developed a meta-type proposal <a href="#ref5">[5]</a>.
     This meta-type proposal was for an object that simply stored
     meta-information for a type, for the purpose of generating module
     documentation.</p>
 <p>    In the summer of 1996, Don Beaudry released the system described in
-    <a href="#3">[3]</a> under the name MESS <a href="#6">[6]</a>. MESS addresses a number of needs but
+    <a href="#ref3">[3]</a> under the name MESS <a href="#ref6">[6]</a>. MESS addresses a number of needs but
     has a few drawbacks:</p>
 
 <ul>
@@ -148,9 +148,9 @@
 </ul>
 <p>    As MESS matures, we expect most of these problems to be addressed.</p>
 <h2>  Extension Classes</h2>
-<p>    To meet short term needs for a C-based persistence mechanism <a href="#1">[1]</a>, an
+<p>    To meet short term needs for a C-based persistence mechanism <a href="#ref1">[1]</a>, an
     extension class module was developed using the mechanism described
-    in <a href="#4">[4]</a> and building on ideas from MESS <a href="#6">[6]</a>.  The extension class module
+    in <a href="#ref4">[4]</a> and building on ideas from MESS <a href="#ref6">[6]</a>.  The extension class module
     recasts extension types as "extension classes" by seeking to
     eliminate, or at least reduce semantic differences between types and
     classes. The module was designed to meet the following goal:</p>
@@ -508,7 +508,7 @@
     and that deserve mention.</p>
 
 <ul>
-<li><p>In Python 1.4, the class extension mechanism described in <a href="#4">[4]</a> required
+<li><p>In Python 1.4, the class extension mechanism described in <a href="#ref4">[4]</a> required
       that the first superclass in a list of super-classes must be of the
       extended class type.  This may not be convenient if mix-in
       behavior is desired.  If a list of base classes starts with a
@@ -573,7 +573,7 @@
 <h2>  Applications</h2>
 <p>    Aside from test and demonstration applications, the extension class
     mechanism has been used to provide an extension-based implementation
-    of the persistence mechanism described in <a href="#1">[1]</a>.  We have developed
+    of the persistence mechanism described in <a href="#ref1">[1]</a>.  We have developed
     this further to provide features such as automatic deactivation of
     objects not used after some period of time and to provide more
     efficient persistent-object cache management.</p>
@@ -593,22 +593,22 @@
 </p>
 <p>    In addition, the extension class module provides a relatively
     concise example of the use of mechanisms that were added to Python
-    to support MESS <a href="#6">[6]</a>, and that were described at the fourth Python
-    Workshop <a href="#4">[4]</a>.  It is hoped that this will spur research in improved
+    to support MESS <a href="#ref6">[6]</a>, and that were described at the fourth Python
+    Workshop <a href="#ref4">[4]</a>.  It is hoped that this will spur research in improved
     and specialized models for class implementation in Python.</p>
 <p>  References</p>
-<p><a name="1">[1]</a> Fulton, J., <a href="http://www.digicool.com/papers/Persistence.html">Providing Persistence for World-Wide-Web Applications</a>,
+<p><a name="ref1">[1]</a> Fulton, J., <a href="http://www.digicool.com/papers/Persistence.html">Providing Persistence for World-Wide-Web Applications</a>,
  Proceedings of the 5th Python Workshop.</p>
-<p><a name="2">[2]</a> Page, R. and Cropper, S., <a href="http://www.digicool.com/papers/DocumentTemplate.html">Document Template</a>,
+<p><a name="ref2">[2]</a> Page, R. and Cropper, S., <a href="http://www.digicool.com/papers/DocumentTemplate.html">Document Template</a>,
  Proceedings of the 5th Python Workshop.</p>
-<p><a name="3">[3]</a> Beaudry, D., <a href="http://www.python.org/workshops/1994-11/BuiltInClasses/BuiltInClasses_1.html">Deriving Built-In Classes in Python</a>,
+<p><a name="ref3">[3]</a> Beaudry, D., <a href="http://www.python.org/workshops/1994-11/BuiltInClasses/BuiltInClasses_1.html">Deriving Built-In Classes in Python</a>,
  Proceedings of the First International Python Workshop.</p>
-<p><a name="4">[4]</a> Van Rossum, G., <a href="http://www.python.org/workshops/1996-06/notes/thursday.html">Don Beaudry Hack - MESS</a>,
+<p><a name="ref4">[4]</a> Van Rossum, G., <a href="http://www.python.org/workshops/1996-06/notes/thursday.html">Don Beaudry Hack - MESS</a>,
  presented in the Developer's Future Enhancements session of the 
  4th Python Workshop. </p>
-<p><a name="5">[5]</a> Fulton, J., <a href="http://www.digicool.com/jim/MetaType.c">Meta-Type Object</a>,
+<p><a name="ref5">[5]</a> Fulton, J., <a href="http://www.digicool.com/jim/MetaType.c">Meta-Type Object</a>,
  This is a small proposal, the text of which is contained in a 
  sample implementation source file,  </p>
-<p><a name="6">[6]</a> Beaudry, D., and Ascher, D., <a href="http://starship.skyport.net/~da/mess/">The Meta-Extension Set</a>.</p>
+<p><a name="ref6">[6]</a> Beaudry, D., and Ascher, D., <a href="http://starship.skyport.net/~da/mess/">The Meta-Extension Set</a>.</p>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <body>
 <h1>Acquisition</h1>
 <p>  <a href="COPYRIGHT.html">Copyright (C) 1996-1998, Digital Creations</a>.</p>
-<p>  Acquisition <a href="#1">[1]</a> is a mechanism that allows objects to obtain
+<p>  Acquisition <a href="#ref1">[1]</a> is a mechanism that allows objects to obtain
   attributes from their environment.  It is similar to inheritence,
   except that, rather than traversing an inheritence hierarchy
   to obtain attributes, a containment hierarchy is traversed.</p>
@@ -253,7 +253,7 @@
     lookups. For example, in the expression: <code>a.b.c.x.foo</code>, the object
     <code>a</code> is searched no more than once, even though it is wrapped three
     times.</p>
-<p><a name="1">[1]</a> Gil, J., Lorenz, D., 
+<p><a name="ref1">[1]</a> Gil, J., Lorenz, D., 
    <a href="http://www.bell-labs.com/people/cope/oopsla/Oopsla96TechnicalProgramAbstracts.html#GilLorenz">Environmental Acquisition--A New Inheritance-Like Abstraction Mechanism</a>, 
    OOPSLA '96 Proceedings, ACM SIG-PLAN, October, 1996</p>
 </body>

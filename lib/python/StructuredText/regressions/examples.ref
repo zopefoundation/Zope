@@ -6,7 +6,7 @@
 <h1>Small Trials for Structured Text Formatting</h1>
 <p>  This paragraph should be preceded by a level 1 header.  It should
   not, itself, be made into a header, just a regular paragraph.</p>
-<p>  Here are a few presentation styles, in a list <a href="#1">[1]</a>:</p>
+<p>  Here are a few presentation styles, in a list <a href="#ref1">[1]</a>:</p>
 
 <ul>
 <li><p>A word: <em>emphasized</em>.</p></li>
@@ -28,8 +28,8 @@
 </p></li>
 
 </ul>
-<p><a name="1">[1]</a> (The referring text should be a paragraph, not a header, and
-should contain a reference to this footnote, footnote "<a href="#1">[1]</a>".)<p>  Some hrefs, in a definition list:</p>
+<p><a name="ref1">[1]</a> (The referring text should be a paragraph, not a header, and
+should contain a reference to this footnote, footnote "<a href="#ref1">[1]</a>".)<p>  Some hrefs, in a definition list:</p>
 <dl>
 <dt>  _Regular_</dt>
 <dd><a href="http://www.zope.org">http://www.zope.org/</a></dd>
