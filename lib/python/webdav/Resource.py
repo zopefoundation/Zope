@@ -85,13 +85,12 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os, string, time
 import mimetypes, xmlcmds
-
-zpns='http://www.zope.org/propertysets/default/'
-
+from common import absattr, aq_base
+from common import urlfix, rfc1123_date
 
 
 class Resource:
@@ -101,13 +100,12 @@ class Resource:
     such as PUT should be overridden to ensure correct behavior in
     the context of the object type."""
 
+    __dav_resource__=1
     __http_methods__=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'OPTIONS',
                       'TRACE', 'PROPFIND', 'PROPPATCH', 'MKCOL', 'COPY',
                       'MOVE',
                       )
 
-    __dav_resource__=1
-    
     def init_headers(self, r):
         # Init expected HTTP 1.1 / WebDAV headers which are not
         # currently set by the response object automagically.
@@ -130,35 +128,16 @@ class Resource:
             lock=Lock('xxxx', 'xxxx')
             return self.dav__locks + (lock,)
         
-    def dav__is_acquired(self, ob=None):
-        # Return true if this object is not a direct
-        # subobject of its aq_parent object.
-        if ob is None: ob=self
-        if not hasattr(ob, 'aq_parent'):
-            return 0
-        if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
-            return 0
-        if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject'):
-            return 0
-        return 1
-
-
-
-    
     
     # WebDAV class 1 support
 
     def HEAD(self, REQUEST, RESPONSE):
-        """Retrieve resource information without a response message
-        body. It would be great if we had a standard way to ask an
-        arbitrary object for its headers -- that would allow the
-        default HEAD implementation to handle most needs."""
+        """Retrieve resource information without a response body."""
         self.init_headers(RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
 
     def PUT(self, REQUEST, RESPONSE):
-        """Replace the GET response entity of an existing resource.
-        
+        """Replace the GET response entity of an existing resource.        
         Because this is often object-dependent, objects which handle
         PUT should override the default PUT implementation with an
         object-specific implementation. By default, PUT requests
@@ -176,11 +155,11 @@ class Resource:
 
     def TRACE(self, REQUEST, RESPONSE):
         """Return the HTTP message received back to the client as the
-           entity-body of a 200 (OK) response. This will often actually
-           be intercepted by the web server in use. If not, the TRACE
-           request will fail with a 405 (Method Not Allowed), since it
-           is not often possible to reproduce the HTTP request verbatim
-           from within the Zope environment."""
+        entity-body of a 200 (OK) response. This will often usually
+        be intercepted by the web server in use. If not, the TRACE
+        request will fail with a 405 (Method Not Allowed), since it
+        is not often possible to reproduce the HTTP request verbatim
+        from within the Zope environment."""
         self.init_headers(RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
 
@@ -188,12 +167,8 @@ class Resource:
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
         self.init_headers(RESPONSE)
-        if self.dav__is_acquired():
-            raise 'Not Found', 'The requested resource does not exist.'
-        path=filter(None, string.split(REQUEST['URL'], '/'))
-        if path[-1]=='DELETE':
-            del path[-1]
-        name=path[-1]
+        url=urlfix(REQUEST['URL'], 'DELETE')
+        name=filter(None, string.split(url, '/'))[-1]
         # TODO: add lock checking here
         self.aq_parent._delObject(name)
         RESPONSE.setStatus(204)
@@ -202,11 +177,9 @@ class Resource:
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
         self.init_headers(RESPONSE)
-        if self.dav__is_acquired():
-            raise 'Not Found', 'The requested resource does not exist.'
-        try: request=xmlcmds.PropFind(REQUEST)
+        try: cmd=xmlcmds.PropFind(REQUEST)
         except: raise 'Bad Request', 'Invalid xml request.'
-        result=request.apply(self)
+        result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
         RESPONSE.setBody(result)
@@ -215,15 +188,13 @@ class Resource:
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
         self.init_headers(RESPONSE)
-        if self.dav__is_acquired():
-            raise 'Not Found', 'The requested resource does not exist.'
         if not hasattr(self, '__propsets__'):
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
         # TODO: add lock checking here
-        try: request=xmlcmds.PropPatch(REQUEST)
+        try: cmd=xmlcmds.PropPatch(REQUEST)
         except: raise 'Bad Request', 'Invalid xml request.'
-        result=request.apply(self)
+        result=cmd.apply(self)
         RESPONSE.setStatus(207)
         RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
         RESPONSE.setBody(result)
@@ -245,8 +216,6 @@ class Resource:
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
            not self.cb_isCopyable():
             raise 'Method Not Allowed', 'This object may not be copied.'
-        if self.dav__is_acquired():
-            raise 'Not Found', 'The requested resource does not exist.'
         depth=REQUEST.get_header('Depth', 'infinity')
         dest=REQUEST.get_header('Destination', '')
         if not dest: raise 'Bad Request', 'No destination given'
@@ -261,7 +230,7 @@ class Resource:
         except 'Not Found':
             raise 'Conflict', 'The resource %s must exist.' % path
         except: raise sys.exc_type, sys.exc_value
-        if hasattr(parent, '_isNullResource'):
+        if hasattr(parent, '__dav_null__'):
             raise 'Conflict', 'The resource %s must exist.' % path
         if self.dav__is_acquired(parent):
             raise 'Conflict', 'The resource %s must exist.' % path
@@ -296,8 +265,6 @@ class Resource:
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
            not self.cb_isMoveable():
             raise 'Method Not Allowed', 'This object may not be moved.'
-        if self.dav__is_acquired():
-            raise 'Not Found', 'The requested resource does not exist.'
         dest=REQUEST.get_header('Destination', '')
         if not dest: raise 'Bad Request', 'No destination given'
         flag=REQUEST.get_header('Overwrite', 'F')
@@ -311,7 +278,7 @@ class Resource:
         except 'Not Found':
             raise 'Conflict', 'The resource %s must exist.' % path
         except: raise sys.exc_type, sys.exc_value
-        if hasattr(parent, '_isNullResource'):
+        if hasattr(parent, '__dav_null__'):
             raise 'Conflict', 'The resource %s must exist.' % path
         if self.dav__is_acquired(parent):
             raise 'Conflict', 'The resource %s must exist.' % path
@@ -377,25 +344,3 @@ class Lock:
             '<d:href>opaquelocktoken:%(token)s</d:href>\n' \
             '</d:locktoken>\n' \
             '</d:activelock>\n' % self.__dict__
-
-
-
-
-
-def absattr(attr):
-    if callable(attr):
-        return attr()
-    return attr
-
-def aq_base(ob):
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob
-
-def rfc1123_date(ts=None):
-    # Return an RFC 1123 format date string, required for
-    # use in HTTP Date headers per the HTTP 1.1 spec.
-    if ts is None: ts=time.time()
-    ts=time.asctime(time.gmtime(ts))
-    ts=string.split(ts)
-    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[3],ts[4])

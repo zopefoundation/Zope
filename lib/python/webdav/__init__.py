@@ -84,7 +84,10 @@
 ##############################################################################
 
 """The webdav package provides WebDAV class 1 functionality within
-   the Zope environment. Based on RFC 2518."""
+   the Zope environment. Based on:
 
-__version__='$Revision: 1.2 $'[11:-2]
+   [WebDAV] Y. Y. Goland, E. J. Whitehead, Jr., A. Faizi, S. R. Carter, D. 
+   Jensen, "HTTP Extensions for Distributed Authoring - WebDAV." RFC 2518.  
+   Microsoft, U.C. Irvine, Netscape, Novell.  February, 1999."""
 
+__version__='$Revision: 1.3 $'[11:-2]

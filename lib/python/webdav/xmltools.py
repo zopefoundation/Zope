@@ -84,7 +84,8 @@
 ##############################################################################
 
 """WebDAV XML parsing tools."""
-__version__='$Revision: 1.1 $'[11:-2]
+
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os, string, xmllib
 from Acquisition import Implicit

@@ -83,24 +83,20 @@
 # 
 ##############################################################################
 
-"""WebDAV XML request objects."""
-__version__='$Revision: 1.1 $'[11:-2]
+"""WebDAV xml request objects."""
 
-import sys, os, string, xmllib
+__version__='$Revision: 1.2 $'[11:-2]
+
+import sys, os, string
+from common import absattr, aq_base, urlfix
 from xmltools import XmlParser
 from cStringIO import StringIO
 
-zope_id='http://www.zope.org/propsets/default'
-dav_id='DAV:'
 
-
-
-def compact(self, data):
-    root=XmlParser().parse(data)
-    
 
 
 class PropFind:
+    """Model a PROPFIND request."""
     def __init__(self, request):
         self.request=request
         data=request.get('BODY', '')
@@ -110,17 +106,17 @@ class PropFind:
         self.propnames=[]
         self.parse(data)
         
-    def parse(self, data):
+    def parse(self, data, dav='DAV:'):
         if not data: return
         root=XmlParser().parse(data)
-        e=root.elements('propfind', ns=dav_id)[0]
-        if e.elements('allprop', ns=dav_id):
+        e=root.elements('propfind', ns=dav)[0]
+        if e.elements('allprop', ns=dav):
             self.allprop=1
             return
-        if e.elements('propname', ns=dav_id):
+        if e.elements('propname', ns=dav):
             self.propname=1
             return
-        prop=e.elements('prop', ns=dav_id)[0]
+        prop=e.elements('prop', ns=dav)[0]
         for val in prop.elements():
             self.propnames.append((val.name(), val.namespace()))
         return
@@ -129,19 +125,15 @@ class PropFind:
         if result is None:
             result=StringIO()
             depth=self.depth
-            url=self.request['URL']
-            if url[-9:]=='/PROPFIND':
-                url=url[:-9]
+            url=urlfix(self.request['URL'], 'PROPFIND')
             result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
-                         '<d:multistatus xmlns:d="DAV:" ' \
-                         'xmlns:z="%s">\n' % zope_id)
+                         '<d:multistatus xmlns:d="DAV:">\n'
         iscol=hasattr(aq_base(obj), 'isAnObjectManager') and \
               obj.isAnObjectManager
         if iscol and url[-1] != '/': url=url+'/'
         result.write('<d:response>\n<d:href>%s</d:href>\n' % url)
-
         if hasattr(obj, '__propsets__'):
-            for ps in obj.propertysheets.items():
+            for ps in obj.propertysheets.values():
                 if hasattr(aq_base(ps), 'dav__propstat'):
                     stat=ps.dav__propstat(self.allprop, self.propnames)
                     result.write(stat)
@@ -160,18 +152,19 @@ class PropFind:
 
 
 class PropPatch:
+    """Model a PROPPATCH request."""
     def __init__(self, request):
         self.request=request
         data=request.get('BODY', '')
         self.values=[]
         self.parse(data)
 
-    def parse(self, data):
+    def parse(self, data, dav='DAV:'):
         root=XmlParser().parse(data)
-        e=root.elements('propertyupdate', ns=dav_id)[0]
+        e=root.elements('propertyupdate', ns=dav)[0]
         for ob in e.elements():
-            if ob.name()=='set' and ob.namespace()==dav_id:
-                prop=ob.elements('prop', ns=dav_id)[0]
+            if ob.name()=='set' and ob.namespace()==dav:
+                prop=ob.elements('prop', ns=dav)[0]
                 for val in prop.elements():
                     # We have to ensure that all tag attrs (including
                     # an xmlns attr for all xml namespaces used by the
@@ -183,25 +176,23 @@ class PropPatch:
                     md={'attrs':attrs, 'nsid': val.__nskey__}
                     item=(val.name(), val.namespace(), val.strval(), md)
                     self.values.append(item)
-            if ob.name()=='remove' and ob.namespace()==dav_id:
-                prop=ob.elements('prop', ns=dav_id)[0]
+            if ob.name()=='remove' and ob.namespace()==dav:
+                prop=ob.elements('prop', ns=dav)[0]
                 for val in prop.elements():
                     item=(val.name(), val.namespace())
                     self.values.append(item)
 
     def apply(self, obj):
-        url=self.request['URL']
-        if url[-10:]=='/PROPPATCH':
-            url=url[:-10]
+        url=urlfix(self.request['URL'], 'PROPPATCH')
         if hasattr(aq_base(obj), 'isAnObjectManager') and \
            obj.isAnObjectManager and url[-1] != '/':
             url=url+'/'
         result=StringIO()
         errors=[]
         result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
-                     '<d:multistatus xmlns:d="DAV:" xmlns:z="%s">\n' \
+                     '<d:multistatus xmlns:d="DAV:">\n' \
                      '<d:response>\n' \
-                     '<d:href>%s</d:href>\n' % (zope_id, url))
+                     '<d:href>%s</d:href>\n' % url)
         propsets=obj.propertysheets
         for value in self.values:
             status='200 OK'
@@ -210,7 +201,7 @@ class PropPatch:
                 propset=propsets.get(ns, None)
                 if propset is None:
                     obj.propertysheets.manage_addPropertySheet('', ns)
-                    propsets=obj.propertysheets.items()
+                    propsets=obj.propertysheets.values()
                     propset=propsets.get(ns)
                 if propset.hasProperty(name):
                     try: propset._updateProperty(name, val, meta=md)
@@ -234,9 +225,9 @@ class PropPatch:
                         errors.append('%s cannot be deleted.' % name)
                         status='409 Conflict'
             if result != '200 OK': abort=1
-            result.write('<d:propstat xmlns:ps="%s">\n' \
+            result.write('<d:propstat xmlns:n="%s">\n' \
                          '  <d:prop>\n' \
-                         '  <ps:%s/>\n' \
+                         '  <n:%s/>\n' \
                          '  </d:prop>\n' \
                          '  <d:status>HTTP/1.1 %s</d:status>\n' \
                          '</d:propstat>\n' % (ns, name, status))
@@ -256,117 +247,21 @@ class PropPatch:
 
 
 class Lock:
-    def __init__(self, data):
+    """Model a LOCK request."""
+    def __init__(self, request):
+        self.request=request
+        data=request.get('BODY', '')
         self.scope='exclusive'
         self.type='write'
         self.owner=''
         self.parse(data)
 
-    def parse(self, data):
+    def parse(self, data, dav='DAV:'):
         root=XmlParser().parse(data)
-        info=root.elements('lockinfo', ns=dav_id)[0]
-        ls=info.elements('lockscope', ns=dav_id)[0]
+        info=root.elements('lockinfo', ns=dav)[0]
+        ls=info.elements('lockscope', ns=dav)[0]
         self.scope=ls.elements()[0].name()
-        lt=info.elements('locktype', ns=dav_id)[0]
+        lt=info.elements('locktype', ns=dav)[0]
         self.type=lt.elements()[0].name()
-        lo=info.elements('owner', ns=dav_id)
+        lo=info.elements('owner', ns=dav)
         if lo: self.owner=lo[0].toxml()
-
-
-
-
-
-def absattr(attr):
-    if callable(attr):
-        return attr()
-    return attr
-
-def aq_base(ob):
-    if hasattr(ob, 'aq_base'):
-        return ob.aq_base
-    return ob
-
-propfind_xml="""<?xml version="1.0" encoding="utf-8" ?>
-   <d:propfind xmlns:d="DAV:">
-     <d:prop xmlns:z="http://www.zope.org/propsets/default">
-          <z:title/>
-          <z:author/>
-          <z:content_type/>
-     </d:prop>
-   </d:propfind>
-"""
-
-rem_xml="""<?xml version="1.0" encoding="utf-8"?>
-   <d:propertyupdate xmlns:d="DAV:"
-   xmlns:z="http://www.zope.org/propsets/default">
-   <d:remove>
-   <d:prop>
-   <z:author/>
-   <z:title/>
-   </d:prop>
-   </d:remove>
-   </d:propertyupdate>
-"""
-
-proppatch_xml="""<?xml version="1.0" encoding="utf-8" ?>
-   <d:propertyupdate xmlns:d="DAV:"
-    xmlns:z="http://www.w3.com/standards/z39.50/">
-     <d:set>
-          <d:prop>
-               <z:authors>
-                    <z:Author>Jim Whitehead</z:Author>
-                    <z:Author>Roy Fielding</z:Author>
-               </z:authors>
-          </d:prop>
-     </d:set>
-     <d:remove>
-          <d:prop><z:Copyright-Owner/></d:prop>
-     </d:remove>
-   </d:propertyupdate>
-"""
-
-lock_xml="""<?xml version="1.0" encoding="utf-8" ?>
-   <D:lockinfo xmlns:D='DAV:'>
-     <D:lockscope><D:exclusive/></D:lockscope>
-     <D:locktype><D:write/></D:locktype>
-     <D:owner>
-          <D:href>http://www.ics.uci.edu/~ejw/contact.html</D:href>
-     </D:owner>
-   </D:lockinfo>
-"""
-
-multistatus_xml="""<?xml version="1.0" encoding="utf-8" ?>
-   <multistatus xmlns="DAV:">
-     <response xmlns:z="http://www.zope.org/dav/">
-          <href>http://www.foo.bar/container/</href>
-          <propstat>
-               <prop xmlns:R="http://www.foo.bar/boxschema/">
-                    <R:bigbox z:type="int"/>
-                    <R:author/>
-                    <creationdate/>
-                    <displayname/>
-                    <resourcetype/>
-                    <supportedlock/>
-               </prop>
-               <status>HTTP/1.1 200 OK</status>
-          </propstat>
-     </response>
-     <response>
-          <href>http://www.foo.bar/container/front.html</href>
-          <propstat>
-               <prop xmlns:R="http://www.foo.bar/boxschema/">
-                    <R:bigbox/>
-                    <creationdate/>
-                    <displayname/>
-                    <getcontentlength/>
-                    <getcontenttype/>
-                    <getetag/>
-                    <getlastmodified/>
-                    <resourcetype/>
-                    <supportedlock/>
-               </prop>
-               <status>HTTP/1.1 200 OK</status>
-          </propstat>
-     </response>
-   </multistatus>
-"""

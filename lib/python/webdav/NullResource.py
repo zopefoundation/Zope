@@ -85,22 +85,25 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
-from Resource import Resource, aq_base
+from common import absattr, aq_base, urlfix
+from Resource import Resource
+from Globals import Persistent
 
 
-class NullResource(Acquisition.Implicit, Resource):
+class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
     objects which do not yet exist in the url namespace."""
-    _isNullResource=1
+
+    __dav_null__=1
     
     def __init__(self, parent, id):
         self.id=id
         self.__parent__=parent
-        self.__roles__=None # fix this!!
+        self.__roles__=parent.__roles__
 
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
@@ -143,8 +146,7 @@ class NullResource(Acquisition.Implicit, Resource):
         parent=self.__parent__
         if hasattr(aq_base(parent), self.id):
             raise 'Method Not Allowed', 'The name %s is in use.' % self.id
-        if (not hasattr(parent.aq_base, 'isAnObjectManager')) or \
-           (not parent.isAnObjectManager):
+        if not hasattr(parent, '__dav_collection__'):
             raise 'Forbidden', 'Unable to create collection resource.'
         # This should probably do self.__class__(id, ...), except Folder
         # doesn't currently have a constructor.
@@ -161,5 +163,4 @@ class NullResource(Acquisition.Implicit, Resource):
     def UNLOCK(self):
         """Remove a lock-null resource."""
         self.init_headers(RESPONSE)
-        
         raise 'Method Not Allowed', 'Method not supported for this resource.'

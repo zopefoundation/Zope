@@ -83,58 +83,50 @@
 # 
 ##############################################################################
 
-"""WebDAV support - collection objects."""
+"""Commonly used functions for WebDAV support modules."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.1 $'[11:-2]
 
-import sys, os, string
-from Resource import Resource
-from common import urlfix
+import string, time
 
 
-class Collection(Resource):
-    """The Collection class provides basic WebDAV support for
-    collection objects. It provides default implementations 
-    for all supported WebDAV HTTP methods. The behaviors of some
-    WebDAV HTTP methods for collections are slightly different
-    than those for non-collection resources."""
 
-    __dav_collection__=1
 
-    def redirect_check(self, req, rsp):
-        # By the spec, we are not supposed to accept /foo for a
-        # collection, we have to redirect to /foo/.
-        if req['PATH_INFO'][-1]=='/':
-            return
-        raise 'Moved Permanently', req['URL1']+'/'
+def absattr(attr):
+    if callable(attr):
+        return attr()
+    return attr
 
-    def HEAD(self, REQUEST, RESPONSE):
-        """Retrieve resource information without a response body."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
-        RESPONSE.setStatus(200)
-        return RESPONSE
+def aq_base(ob):
+    if hasattr(ob, 'aq_base'):
+        return ob.aq_base
+    return ob
 
-    def PUT(self, REQUEST, RESPONSE):
-        """The PUT method has no inherent meaning for collection
-        resources, though collections are not specifically forbidden
-        to handle PUT requests. The default response to a PUT request
-        for collections is 405 (Method Not Allowed)."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
+def urlfix(url, s):
+    n=len(s)
+    if url[-n:]==s: url=url[:-n]
+    if len(url) > 1 and url[-1]=='/':
+        url=url[:-1]
+    return url
 
-    def DELETE(self, REQUEST, RESPONSE):
-        """Delete a collection resource. For collection resources, DELETE
-        may return either 200 (OK) or 204 (No Content) to indicate total
-        success, or may return 207 (Multistatus) to indicate partial
-        success. Note that in Zope a DELETE never returns 207."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
-        url=urlfix(REQUEST['URL'], 'DELETE')
-        name=filter(None, string.split(url, '/'))[-1]
-        # TODO: add lock checking here
-        self.aq_parent._delObject(name)
-        RESPONSE.setStatus(204)
-        return RESPONSE
+def is_acquired(ob):
+    # Return true if this object is not a direct
+    # subobject of its aq_parent object.
+    if not hasattr(ob, 'aq_parent'):
+        return 0
+    if hasattr(aq_base(ob.aq_parent), absattr(ob.id)):
+        return 0
+    if hasattr(aq_base(ob), 'isTopLevelPrincipiaApplicationObject'):
+        return 0
+    return 1
+
+def rfc1123_date(ts=None):
+    # Return an RFC 1123 format date string, required for
+    # use in HTTP Date headers per the HTTP 1.1 spec.
+    if ts is None: ts=time.time()
+    ts=time.asctime(time.gmtime(ts))
+    ts=string.split(ts)
+    return '%s, %s %s %s %s GMT' % (ts[0],ts[2],ts[1],ts[3],ts[4])
+
+
 
