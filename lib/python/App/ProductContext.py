@@ -289,7 +289,7 @@ class ProductContext:
         HelpTopics are created for these kind of files
 
         .dtml            -- DTMLHelpTopic
-        .html .htm .txt  -- TextHelpTopic        
+        .html .htm       -- TextHelpTopic        
         .stx .txt        -- STXHelpTopic
         .jpg .png .gif   -- ImageHelpTopic
         .py              -- APIHelpTopic
