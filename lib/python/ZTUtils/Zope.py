@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.4 2001/09/24 20:13:14 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Zope.py,v 1.5 2001/11/02 20:04:01 evan Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -178,7 +178,7 @@ class TreeMaker(TreeSkipMixin, TreeMaker):
 
 class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
     _getChildren = SimpleTreeMaker.getChildren
-    def cookieTree(self, root_object):
+    def cookieTree(self, root_object, default_state=None):
         '''Make a tree with state stored in a cookie.'''
         tree_pre = self.tree_pre
         state_name = '%s-state' % tree_pre
@@ -202,6 +202,8 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
                     del m[obid]
             else:
                 state = decodeExpansion(state)
+        else:
+            state = default_state
         tree = self.tree(root_object, state)
         rows = tree.flat()
         req.RESPONSE.setCookie(state_name, encodeExpansion(rows))
