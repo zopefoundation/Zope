@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -156,8 +156,9 @@ class Document(cDocumentTemplate.cDocument, HTML, Explicit,
         resp=REQUEST['RESPONSE']
         resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
         resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-        return self.manage_main(self,REQUEST,title=title,__str__=data,
-                                dtpref_cols=cols,dtpref_rows=rows)
+        return self.manage_main(
+	    self,REQUEST,title=title,__str__=self.quotedHTML(data),
+	    dtpref_cols=cols,dtpref_rows=rows)
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
 		    dtpref_rows='20',REQUEST=None):
