@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.137 $'[11:-2]
+__version__='$Revision: 1.138 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -514,7 +514,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     def identify(self, auth):
         if auth and lower(auth[:6])=='basic ':
-            name, password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
+            try: name, password=tuple(split(decodestring(
+                                      split(auth)[-1]), ':', 1))
+            except:
+                raise 'Bad Request', 'Invalid authentication token'
             return name, password
         else:
             return None, None
