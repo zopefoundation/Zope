@@ -10,13 +10,14 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.7 1997/09/22 18:43:46 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Aqueduct.py,v 1.8 1997/09/25 18:40:57 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Globals import HTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
+import binascii
 DateTime.now=DateTime.DateTime
-
+from cStringIO import StringIO
 
 dtml_dir="%s/lib/python/Aqueduct/" % SOFTWARE_HOME
 default_report_src=open(dtml_dir+'defaultReport.dtml').read()
@@ -34,7 +35,7 @@ class BaseQuery:
     MissingArgumentError='Bad Request'
 
     def _argdata(self,REQUEST,raw=0,return_missing_keys=0):
-	args=self.arguments
+	args=self._arg
 	argdata={}
 	id=self.id
 	missing_keys=[]
@@ -98,7 +99,6 @@ class BaseQuery:
 
 
 def default_input_form(id,arguments,action='query'):
-    id=nicify(id)
     if arguments:
 	return (
 	    "%s\n%s%s" % (
@@ -113,9 +113,17 @@ def default_input_form(id,arguments,action='query'):
 		    map(
 			lambda a:
 			('<tr>\t<td><strong>%s</strong>:</td>\n'
-		         '\t<td><input name="%s" width=30></td></tr>'
-			 % (nicify(detypify(a)),a))
-			, arguments.keys()
+		         '\t<td><input name="%s" width=30 value="%s">'
+			 '</td></tr>'
+			 % (nicify(a[0]),
+			    (
+				a[1].has_key('type') and
+				("%s:%s" % (a[0],a[1]['type'])) or
+				a[0]
+				),
+			    a[1].has_key('default') and a[1]['default'] or ''
+			    ))
+			, arguments.items()
 			),
 		'\n'),
 		'\n<tr><td></td><td>\n'
@@ -149,28 +157,29 @@ def default_input_form(id,arguments,action='query'):
 custom_default_report_src=DocumentTemplate.File(
     dtml_dir+'customDefaultReport.dtml')
 
-def custom_default_report(result, action=''):
-    names=result.names()
+def custom_default_report(id, result, action=''):
+    columns=result._searchable_result_columns()
     heading=('<tr>\n%s</tr>' %
 		 string.joinfields(
-		     map(lambda name:
-			 '\t<th>%s</th>\n' % nicify(name),
-			 names),
+		     map(lambda c:
+			 '\t<th>%s</th>\n' % nicify(c['name']),
+			 columns),
 		     ''
 		     )
 		 )
     row=('<tr>\n%s</tr>' %
 	     string.joinfields(
-		 map(lambda name, meta:
+		 map(lambda c:
 		     '\t\t<td><!--#var %s%s--></td>\n'
-		     % (urllib.quote(name),
-			meta['type']!='s' and ' null=""' or '',
+		     % (urllib.quote(c['name']),
+			c['type']!='s' and ' null=""' or '',
 			),
-		     names, result.__items__),
+		     columns),
 		 ''
 		 )
 	     )
-    return custom_default_report_src(heading=heading,row=row,action=action)
+    return custom_default_report_src(
+	id=id,heading=heading,row=row,action=action)
 
 def detypify(arg):
     l=string.find(arg,':')
@@ -224,6 +233,45 @@ def parse(text,
 	raise InvalidParameter, text
 
     if prefix: name="%s.%s" % (prefix,name)
+    result[name]=value
+
+    return parse(text[l:],prefix,result)
+
+def parse(text,
+	     result=None,
+	     unparmre=regex.compile(
+		 '\([\0- ]*\([^\0- =\"]+\)\)'),
+	     parmre=regex.compile(
+		 '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
+	     qparmre=regex.compile(
+		 '\([\0- ]*\([^\0- =\"]+\)="\([^"]+\)\"\)'),
+	     ):
+
+    if result is None: result = {}
+
+    __traceback_info__=text
+
+    if parmre.match(text) >= 0:
+	name=parmre.group(2)
+	value={'default':parmre.group(3)}
+	l=len(parmre.group(1))
+    elif qparmre.match(text) >= 0:
+	name=qparmre.group(2)
+	value={'default':qparmre.group(3)}
+	l=len(qparmre.group(1))
+    elif unparmre.match(text) >= 0:
+	name=unparmre.group(2)
+	l=len(unparmre.group(1))
+	value={}
+    else:
+	if not text or not strip(text): return result
+	raise InvalidParameter, text
+
+    lt=string.find(name,':')
+    if lt > 0:
+	value['type']=name[lt+1:]
+	name=name[:lt]
+
     result[name]=value
 
     return parse(text[l:],prefix,result)
@@ -312,22 +360,12 @@ def delimited_output(results,REQUEST,RESPONSE):
 	)
 
 
-
-############################################################################## 
-# Test functions:
-#
-
-def main():
-    # The "main" program for this module
-    import sys
-    print sys.argv[0]+" is a pure module and doesn't do anything by itself."
-
-
-if __name__ == "__main__": main()
-
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.8  1997/09/25 18:40:57  jim
+# new interfaces and RDB
+#
 # Revision 1.7  1997/09/22 18:43:46  jim
 # Got rid of ManageHTML
 #
