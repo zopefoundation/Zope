@@ -107,7 +107,7 @@ from the list below and click &quot;Delete&quot;.
   <TD ALIGN="LEFT" VALIGN="TOP">
   <SELECT NAME="ids:list" SIZE="5" MULTIPLE>
   <!--#in propertyMap_d mapping-->
-    <OPTION VALUE="<!--#var id-->"><!--#var id fmt=nicify-->
+    <OPTION VALUE="<!--#var id-->"><!--#var id-->
   <!--#/in propertyMap_d-->
   </SELECT>
   <BR>
