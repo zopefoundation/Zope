@@ -3,7 +3,7 @@
 import os
 import errno
 import unittest
-import CommitLog
+from bsddb3Storage import CommitLog
 
 # BAW: Lots of other things to check:
 # - creating with a named directory

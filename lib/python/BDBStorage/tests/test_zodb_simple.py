@@ -51,12 +51,12 @@ class CommitAndRead:
 
 
 class MinimalCommitAndRead(ZODBTestBase, CommitAndRead):
-    import Minimal
+    from bsddb3Storage import Minimal
     ConcreteStorage = Minimal.Minimal
 
 
 class FullCommitAndRead(ZODBTestBase, CommitAndRead):
-    import Full
+    from bsddb3Storage import Full
     ConcreteStorage = Full.Full
 
 
