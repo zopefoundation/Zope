@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.102 1999/04/29 19:21:29 jim Exp $'''
-__version__='$Revision: 1.102 $'[11:-2]
+$Id: Application.py,v 1.103 1999/04/29 21:49:17 amos Exp $'''
+__version__='$Revision: 1.103 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -116,7 +116,7 @@ _standard_error_msg='''\
 <TR VALIGN="TOP">
 
 <TD WIDTH="10%" ALIGN="CENTER">
-<STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
+<IMG SRC="<!--#var BASE1-->/p_/ZButton" ALT="Zope">
 </TD>
 
 <TD WIDTH="90%">
