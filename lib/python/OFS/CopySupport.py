@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -92,7 +92,7 @@ from zlib import compress, decompress
 from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
 from Acquisition import aq_base, aq_inner, aq_parent
-
+from zExceptions import Unauthorized
 
 CopyError='Copy Error'
 
