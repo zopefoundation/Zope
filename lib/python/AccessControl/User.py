@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.127 $'[11:-2]
+__version__='$Revision: 1.128 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -465,6 +465,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     _super=emergency_user
     _nobody=nobody
     _check_for_domain_defined_nobody=1
+    _do_dns_lookup_caching=1
 
     def identify(self, auth):
         if auth and lower(auth[:6])=='basic ':
@@ -531,7 +532,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         folders or to raise an unauthorized by returning None from this
         method.
         """
-        self._setRemote(request)
+        if self._do_dns_lookup_caching:
+            self._setRemote(request)
         v = request['PUBLISHED'] # the published object
         a, c, n, v = self._getobcontext(v, request)
 
@@ -585,7 +587,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     if _remote_user_mode:
         
         def validate(self, request, auth='', roles=None):
-            self._setRemote(request)
+            if self._do_dns_lookup_caching:
+                self._setRemote(request)
             v = request['PUBLISHED']
             a, c, n, v = self._getobcontext(v, request)
             name = request.environ.get('REMOTE_USER', None)
@@ -799,8 +802,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             names=reqattr(REQUEST, 'names')
             return self._delUsers(names,REQUEST)
 
-        if submit=='Toggle':
+        if submit=='Toggle Domain Defined Anonymous Mode':
             self.toggleDomainDefinedNobodyMode()
+
+        if submit=='Toggle DNS Lookup Caching':
+            self.toggleDNSLookupCaching()
 
         return self._mainUser(self, REQUEST)
 
@@ -813,6 +819,13 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def toggleDomainDefinedNobodyMode(self):
         ck = self._check_for_domain_defined_nobody
         self._check_for_domain_defined_nobody = not ck
+
+    def getDNSLookupCaching(self):
+        return self._do_dns_lookup_caching
+
+    def toggleDNSLookupCaching(self):
+        ck = self._do_dns_lookup_caching
+        self._do_dns_lookup_caching = not ck
 
     def manage_beforeDelete(self, item, container):
         if item is self:
