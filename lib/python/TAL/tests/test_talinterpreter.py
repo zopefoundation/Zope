@@ -62,30 +62,31 @@ class OutputPresentationTestCase(TestCaseBase):
               attributes=", so" the="output" needs="to"
               be="line" wrapped=".">
         </html>''' "\n"
-        program, macros = self._compile(INPUT)
-        sio = StringIO()
-        interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
-        interp()
-        self.assertEqual(sio.getvalue(), EXPECTED)
+        self.compare(INPUT, EXPECTED)
 
     def check_unicode_content(self):
         INPUT = """<p tal:content="python:u'déjà-vu'">para</p>"""
         EXPECTED = u"""<p>déjà-vu</p>""" "\n"
-        program, macros = self._compile(INPUT)
-        sio = StringIO()
-        interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
-        interp()
-        self.assertEqual(sio.getvalue(), EXPECTED)
+        self.compare(INPUT, EXPECTED)
 
     def check_unicode_structure(self):
         INPUT = """<p tal:replace="structure python:u'déjà-vu'">para</p>"""
         EXPECTED = u"""déjà-vu""" "\n"
+        self.compare(INPUT, EXPECTED)
+
+    def check_entities(self):
+        INPUT = ('<img tal:define="foo nothing" '
+                 'alt="&a; &#1; &#x0a; &a &#45 &; &#0a; <>" />')
+        EXPECTED = ('<img alt="&a; &#1; &#x0a; '
+                    '&amp;a &amp;#45 &amp;; &amp;#0a; &lt;&gt;" />\n')
+        self.compare(INPUT, EXPECTED)
+        
+    def compare(self, INPUT, EXPECTED):
         program, macros = self._compile(INPUT)
         sio = StringIO()
         interp = TALInterpreter(program, {}, DummyEngine(), sio, wrap=60)
         interp()
         self.assertEqual(sio.getvalue(), EXPECTED)
-
 
 def test_suite():
     suite = unittest.TestSuite()

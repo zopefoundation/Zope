@@ -162,7 +162,7 @@ class TALGenerator:
                 if item[1] is None:
                     s = item[0]
                 else:
-                    s = '%s="%s"' % (item[0], cgi.escape(item[1], 1))
+                    s = '%s="%s"' % (item[0], TALDefs.attrEscape(item[1]))
                 attrlist[i] = item[0], s
                 new.append(" " + s)
         # if no non-optimizable attributes were found, convert to plain text
