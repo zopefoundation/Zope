@@ -13,8 +13,8 @@
 """Tests of PermissionRole
 """
 
-__rcs_id__='$Id: testPermissionRole.py,v 1.3 2002/08/14 21:28:08 mj Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testPermissionRole.py,v 1.4 2002/12/16 19:15:05 chrism Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, unittest
 
@@ -122,6 +122,12 @@ class PermissionRoleTests (unittest.TestCase):
         assertPRoles(o, EditThingsPermission, ())
         assertPRoles(o, DeletePermission,     ())
 
+    def testPermissionRoleSupportsGetattr(self):
+        a = PermissionRole('a')
+        self.failUnless(getattr(a, '__roles__') == ('Manager',))
+        self.failUnless(getattr(a, '_d') == ('Manager',))
+        self.failUnless(getattr(a, '__name__') == 'a')
+        self.failUnless(getattr(a, '_p') == '_a_Permission')
 
 def test_suite():
     suite = unittest.TestSuite()
