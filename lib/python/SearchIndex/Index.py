@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -107,7 +107,7 @@ def nonEmpty(s):
 class Index(Persistent):
     """Index object interface"""
 
-    def _init(self,data,schema,id):
+    def __init__(self,data,schema,id):
         """Create an index
 
         The arguments are:
@@ -126,6 +126,9 @@ class Index(Persistent):
         self._index=BTree()
         
         self._reindex()
+
+    # for b/w compatability
+    _init = __init__
 
     def dpHasUniqueValuesFor(self, name):
         ' has unique values for column NAME '

@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -217,7 +217,7 @@ import string, regex, regsub
 
 class TextIndex(Persistent):
 
-    def _init(self,data,schema,id):
+    def __init__(self,data,schema,id):
         """Create an index
 
         The arguments are:
@@ -236,6 +236,9 @@ class TextIndex(Persistent):
         self._index=BTree()
         self._syn=stop_word_dict
         self._reindex()
+
+    # for backwards compatability
+    _init = __init__
 
     def clear(self):
         self._index=BTree()
