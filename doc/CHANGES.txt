@@ -13,6 +13,8 @@ Zope Changes
         header for DTMLMethods and DTMLDocuments. Many thanks to
         Joachim Schmitz for this hint. 
 
+      - PathIndex: fixed minor bugs, enhanced testsuite
+
 
     Features Added
 
