@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -43,6 +43,8 @@ class User(Implicit, Persistent):
 		    obj_roles=['Shared',]
 		if hasattr(obj, 'aq_parent'):
 		    obj=obj.aq_parent
+	        elif hasattr(obj, 'im_self'):
+                    obj=obj.im_self
 		else:
 		    obj=None
 		continue
