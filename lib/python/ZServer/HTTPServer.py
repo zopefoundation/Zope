@@ -117,7 +117,7 @@ from HTTPResponse import make_response
 from ZPublisher.HTTPRequest import HTTPRequest
 
 from medusa.http_server import http_server, http_channel
-from medusa import counter, producers, asyncore
+from medusa import counter, producers, asyncore, max_sockets
 from medusa.default_handler import split_path, unquote, get_header
 
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
@@ -337,5 +337,12 @@ class zhttp_server(http_server):
     "http server"
     
     SERVER_IDENT='Zope/%s ZServer/%s' % (ZOPE_VERSION,ZSERVER_VERSION)
+    CONNECTION_LIMIT=max_sockets.max_select_sockets()
     
     channel_class = zhttp_channel
+
+    def handle_accept(self):
+        if len(asyncore.socket_map.keys()) >= self.CONNECTION_LIMIT:
+	    return
+        http_server.handle_accept(self)
+
