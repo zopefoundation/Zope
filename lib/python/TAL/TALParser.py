@@ -89,21 +89,6 @@ Parse XML and compile to TALInterpreter intermediate code.
 import string
 from XMLParser import XMLParser
 from TALDefs import *
-
-_metal = ZOPE_METAL_NS + " "
-METAL_DEFINE_MACRO = _metal + "define-macro"
-METAL_USE_MACRO = _metal + "use-macro"
-METAL_DEFINE_SLOT = _metal + "define-slot"
-METAL_FILL_SLOT = _metal + "fill-slot"
-
-_tal = ZOPE_TAL_NS + " "
-TAL_DEFINE = _tal + "define"
-TAL_CONDITION = _tal + "condition"
-TAL_INSERT = _tal + "insert"
-TAL_REPLACE = _tal + "replace"
-TAL_REPEAT = _tal + "repeat"
-TAL_ATTRIBUTES = _tal + "attributes"
-
 from TALGenerator import TALGenerator
 
 class TALParser(XMLParser):
@@ -140,30 +125,27 @@ class TALParser(XMLParser):
     def StartElementHandler(self, name, attrs):
         if self.ordered_attributes:
             # attrs is a list of alternating names and values
-            attrdict = {}
             attrlist = []
             for i in range(0, len(attrs), 2):
                 key = attrs[i]
                 value = attrs[i+1]
-                attrdict[key] = value
                 attrlist.append((key, value))
         else:
             # attrs is a dict of {name: value}
-            attrdict = attrs
             attrlist = attrs.items()
             attrlist.sort() # For definiteness
-        self.checkattrs(attrlist)
+        attrlist, taldict, metaldict = self.extractattrs(attrlist)
         todo = {}
-        defineMacro = attrdict.get(METAL_DEFINE_MACRO)
-        useMacro = attrdict.get(METAL_USE_MACRO)
-        defineSlot = attrdict.get(METAL_DEFINE_SLOT)
-        fillSlot = attrdict.get(METAL_FILL_SLOT)
-        defines = attrdict.get(TAL_DEFINE)
-        condition = attrdict.get(TAL_CONDITION)
-        insert = attrdict.get(TAL_INSERT)
-        replace = attrdict.get(TAL_REPLACE)
-        repeat = attrdict.get(TAL_REPEAT)
-        attrsubst = attrdict.get(TAL_ATTRIBUTES)
+        defineMacro = metaldict.get("define-macro")
+        useMacro = metaldict.get("use-macro")
+        defineSlot = metaldict.get("define-slot")
+        fillSlot = metaldict.get("fill-slot")
+        defines = taldict.get("define")
+        condition = taldict.get("condition")
+        insert = taldict.get("insert")
+        replace = taldict.get("replace")
+        repeat = taldict.get("repeat")
+        attrsubst = taldict.get("attributes")
         n = 0
         if defineMacro: n = n+1
         if useMacro: n = n+1
@@ -217,31 +199,47 @@ class TALParser(XMLParser):
         else:
             repldict = {}
         self.gen.emitStartTag(self.fixname(name),
-                                  self.fixattrs(attrlist, repldict))
+                                  self.replattrs(attrlist, repldict))
         if insert:
             self.gen.pushProgram()
         self.todoPush(todo)
 
-    def checkattrs(self, attrlist):
-        talprefix = _tal
+    def extractattrs(self, attrlist):
+        talprefix = ZOPE_TAL_NS + " "
         ntal = len(talprefix)
-        metalprefix = _metal
+        metalprefix = ZOPE_METAL_NS + " "
         nmetal = len(metalprefix)
+        taldict = {}
+        metaldict = {}
+        fixedattrlist = []
         for key, value in attrlist:
+            item = self.fixname(key), value
             if key[:nmetal] == metalprefix:
                 if key[nmetal:] not in KNOWN_METAL_ATTRIBUTES:
-                    raise METALError(
-                        "bad METAL attribute: %s;\nallowed are: %s" %
-                        (repr(key[nmetal:]),
-                         string.join(KNOWN_METAL_ATTRIBUTES)))
+                    self.attrerror(key, "METAL")
+                metaldict[key[nmetal:]] = value
+                if key[nmetal:] == "define-macro":
+                    item = item + ("macroHack",)
             elif key[:ntal] == talprefix:
                 if key[ntal:] not in KNOWN_TAL_ATTRIBUTES:
-                    raise TALError(
+                    self.attrerror(key, "TAL")
+                taldict[key[ntal:]] = value
+            fixedattrlist.append(item)
+        return fixedattrlist, taldict, metaldict
+
+    def attrerror(self, key, mode):
+        if mode == "METAL":
+            raise METALError(
+                        "bad METAL attribute: %s;\nallowed are: %s" %
+                        (repr(key[len(ZOPE_METAL_NS)+1:]),
+                         string.join(KNOWN_METAL_ATTRIBUTES)))
+        if mode == "TAL":
+            raise TALError(
                         "bad TAL attribute: %s;\nallowed are: %s" %
-                        (repr(key[ntal:]),
+                        (repr(key[len(ZOPE_TAL_NS)+1:]),
                          string.join(KNOWN_TAL_ATTRIBUTES)))
 
-    def fixattrs(self, attrlist, repldict):
+    def replattrs(self, attrlist, repldict):
         newlist = []
         for prefix, uri in self.nsNew:
             if prefix:
@@ -249,15 +247,13 @@ class TALParser(XMLParser):
             else:
                 newlist.append(("xmlns", uri))
         self.nsNew = []
-        for fullkey, value in attrlist:
-            key = self.fixname(fullkey)
+        if not repldict:
+            return newlist + attrlist
+        for item in attrlist:
+            key = item[0]
             if repldict.has_key(key):
-                item = (key, value, "replace", repldict[key])
+                item = item[:2] + ("replace", repldict[key])
                 del repldict[key]
-            elif fullkey == METAL_DEFINE_MACRO:
-                item = (key, value, "macroHack")
-            else:
-                item = (key, value)
             newlist.append(item)
         for key, value in repldict.items(): # Add dynamic-only attributes
             item = (key, "", "replace", value)
