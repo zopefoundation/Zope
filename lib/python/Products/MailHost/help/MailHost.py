@@ -38,7 +38,10 @@ class MailHost:
         Sends an email message.
         The arguments are:
 
-          messageText -- The body of the mail message.
+          messageText -- The mail message. It can either be a rfc822 
+          formed text with header fields, or just a body without any 
+          header fields. The other arguments given will override the
+          header fields in the message, if they exist.
 
           mto -- A string or list of recipient(s) of the message.
 

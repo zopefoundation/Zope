@@ -11,9 +11,8 @@
 # 
 ##############################################################################
 """SMTP mail objects
-
-$Id: MailHost.py,v 1.70 2002/03/11 15:54:38 andreasjung Exp $"""
-__version__ = "$Revision: 1.70 $"[11:-2]
+$Id: MailHost.py,v 1.71 2002/03/20 17:47:48 Torped Exp $"""
+__version__ = "$Revision: 1.71 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -68,7 +67,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.id = id
         self.title = title
         self.smtp_host = str( smtp_host )
-        self.smtp_port = str( smtp_port )
+        self.smtp_port = int(smtp_port)
 
 
     # staying for now... (backwards compatibility)
@@ -83,8 +82,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
         title=str(title)
         smtp_host=str(smtp_host)
-        if type(smtp_port) is not type(1):
-            smtp_port=int(smtp_port)
+        smtp_port=int(smtp_port)
 
         self.title=title
         self.smtp_host=smtp_host
@@ -104,16 +102,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         'render a mail template, then send it...'
         mtemplate = getattr(self, messageTemplate)
         messageText = mtemplate(self, trueself.REQUEST)
+        messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom)
         messageText=_encode(messageText, encode)
-        headers = extractheaders(messageText)
-        if mto: headers['to'] = mto
-        if mfrom: headers['from'] = mfrom
-        for requiredHeader in ('to', 'from'):
-            if not headers.has_key(requiredHeader):
-                raise MailHostError,"Message missing SMTP Header '%s'"\
-                      % requiredHeader
-
-        self._send( headers, messageText )
+        self._send(mfrom, mto, messageText)
 
         if not statusTemplate: return "SEND OK"
 
@@ -127,78 +118,30 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declareProtected( use_mailhost_services, 'send' )
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
-        headers = extractheaders(messageText)
 
-        messageText = messageText.lstrip()
-
-        if not headers['subject'] and len(headers)==0:
-            messageText="subject: %s\n\n%s" % (subject or '[No Subject]',
-                                             messageText)
-
-        elif not headers['subject']: 
-            messageText="subject: %s\n%s" % (subject or '[No Subject]',
-                                             messageText)
+        messageText, mto, mfrom = _mungeHeaders( messageText, mto, mfrom, subject)
+        messageText = _encode(messageText, encode)
+        self._send(mfrom, mto, messageText)
 
 
-        if mto:
-            if type(mto) is type('s'):
-                mto=[ x.strip() for x in mto.split(',')]
-            headers['to'] = filter(None, mto)
-        if mfrom:
-            headers['from'] = mfrom
-            
-        for requiredHeader in ('to', 'from'):
-            if not headers.has_key(requiredHeader):
-                raise MailHostError,"Message missing SMTP Header '%s'"\
-                % requiredHeader
-        messageText=_encode(messageText, encode)
-
-        self._send( headers, messageText )
-
-
+    # This is here for backwards compatibility only. Possibly it could be used to send messages
+    # at a sceduled future time, or via a mail queue?
     security.declareProtected( use_mailhost_services, 'scheduledSend' )
-    def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
-                      encode=None):
-        """Looks like the same function as send() - scheduledSend() is nowhere 
-        used in Zope. No idea if it is still needed/used (ajung)
-        """
-        headers = extractheaders(messageText)
-
-        if not headers['subject']:
-            messageText="subject: %s\n%s" % (subject or '[No Subject]',
-                                             messageText)
-        if mto:
-            if type(mto) is type('s'):
-                mto=[ x.strip() for x in mto.split(',')]
-            headers['to'] = filter(truth, mto)
-        if mfrom:
-            headers['from'] = mfrom
-
-        for requiredHeader in ('to', 'from'):
-            if not headers.has_key(requiredHeader):
-                raise MailHostError,"Message missing SMTP Header '%s'"\
-                % requiredHeader
-        messageText=_encode(messageText, encode)
-
-        self._send( headers, messageText )
-
+    scheduledSend = send
 
     security.declareProtected( use_mailhost_services, 'simple_send' )
     def simple_send(self, mto, mfrom, subject, body):
-        body="from: %s\nto: %s\nsubject: %s\n\n%s" % (
+        body="From: %s\nTo: %s\nSubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
-        headers = {}
-        headers['from'] = mfrom
-        headers['to'] = mto
 
-        self._send( headers, body )
+        self._send( mto, mfrom, body )
 
 
     security.declarePrivate( '_send' )
-    def _send( self, headers, body ):
+    def _send( self, mfrom, mto, messageText ):
         """ Send the message """
-        smtpserver = SMTP( self.smtp_host, int( self.smtp_port ) )
-        smtpserver.sendmail( headers['from'], headers['to'], body )
+        smtpserver = SMTP( self.smtp_host, self.smtp_port )
+        smtpserver.sendmail( mfrom, mto, messageText )
         smtpserver.quit()
 
         
@@ -223,21 +166,45 @@ def _encode(body, encode=None):
     mimetools.encode(mfile, newmfile, encode)
     return newmfile.getvalue()
 
-
-def extractheaders(message):
-    # return headers of message
-    mfile=StringIO(message.strip())
+def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
+    """Sets missing message headers, and deletes Bcc.
+       returns fixed message, fixed mto and fixed mfrom"""
+    mfile=StringIO(messageText.strip())
     mo=rfc822.Message(mfile)
 
-    hd={}
-    hd['to']=[]
-    for header in (mo.getaddrlist('to'),
-                   mo.getaddrlist('cc'),
-                   mo.getaddrlist('bcc')):
-        if not header: continue
-        for name, addr in header:
-            hd['to'].append(addr)
-    
-    hd['from']=mo.getaddr('from')[1]
-    hd['subject']=mo.getheader('subject') or ''
-    return hd
+    # Parameters given will *always* override headers in the messageText.
+    # This is so that you can't override or add to subscribers by adding them to
+    # the message text.
+    if subject:
+        mo['Subject'] = subject
+    elif not mo.getheader('Subject'):
+        mo['Subject'] = '[No Subject]'
+
+    if mto:
+        if isinstance(mto, types.StringType):
+            mto=map(lambda x:x.strip(), mto.split(','))
+        mo['To'] = ','.join(mto)
+    else:
+        if not mo.getheader('To'):
+            raise MailHostError,"Message missing SMTP Header 'To'"
+        mto = map(lambda x:x.strip(), mo['To'].split(','))
+        if mo.getheader('Cc'):
+            mto = mto + map(lambda x:x.strip(), mo['Cc'].split(','))
+        if mo.getheader('Bcc'):
+            mto = mto + map(lambda x:x.strip(), mo['Bcc'].split(','))
+
+    if mfrom:
+        mo['From'] = mfrom
+    else:
+        if mo.getheader('From') is None:
+            raise MailHostError,"Message missing SMTP Header 'From'"
+        mfrom = mo['From']
+
+    if mo.getheader('Bcc'):
+        mo.__delitem__('Bcc')
+
+    mo.rewindbody()
+    finalmessage = mo
+    finalmessage = mo.__str__() + '\n' + mfile.read()
+    mfile.close()
+    return finalmessage, mto, mfrom
