@@ -46,6 +46,10 @@ def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
         - 'report_level' - verbosity of reST parser
 
         - 'stylesheet' - Stylesheet to be used
+
+        - 'input_encoding' - encoding of the reST input string
+
+        - 'output_encoding' - encoding of the rendered HTML output
     """
 
     pub = docutils.core.Publisher()
