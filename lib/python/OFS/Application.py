@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.57 1998/03/23 20:18:17 jeffrey Exp $'''
-__version__='$Revision: 1.57 $'[11:-2]
+$Id: Application.py,v 1.58 1998/03/24 18:08:51 jeffrey Exp $'''
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -99,7 +99,7 @@ class Application(Folder.Folder):
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
-		     #'standard_error_message',
+		     'standard_error_message',
 		     'acl_users',
 		     'Control_Panel')
 
@@ -398,6 +398,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.58  1998/03/24 18:08:51  jeffrey
+# Added standard_error_message to reserved names
+#
 # Revision 1.57  1998/03/23 20:18:17  jeffrey
 # Made friendlier default Standard Error Message
 #
