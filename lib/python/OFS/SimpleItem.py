@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.63 1999/10/12 17:40:20 amos Exp $'''
-__version__='$Revision: 1.63 $'[11:-2]
+$Id: SimpleItem.py,v 1.64 1999/10/21 14:09:24 jim Exp $'''
+__version__='$Revision: 1.64 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -304,23 +304,18 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         else: id=self.id
         return marshal.dumps((id,stat))
 
-    def absolute_url(self, relative=0):
-        """Return an absolute url to the object. Note that the url
-        will reflect the acquisition path of the object if the object
-        has been acquired."""
-        obj=self
-        url=[]
-        while hasattr(obj, 'aq_parent') and hasattr(obj.aq_parent, 'id'):
-            id=callable(obj.id) and obj.id() or str(obj.id)
-            url.append(quote(id))
-            obj=obj.aq_parent
-        if not relative: url.append(self.aq_acquire('REQUEST').script)
-        url.reverse()
-        return join(url, '/')
-
     def __len__(self):
         return 1
-       
+
+    def absolute_url(self, relative=0):
+        id=quote(self.id)
+        
+        p=getattr(self,'aq_inner', None)
+        if p is not None: 
+            url=p.aq_parent.absolute_url(relative)
+            if url: id=url+'/'+id
+            
+        return id
 
 Globals.default__class_init__(Item)
 
