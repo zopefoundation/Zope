@@ -1,4 +1,3 @@
-#!/usr/bin/python
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
