@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.10 1997/10/28 22:09:17 jim Exp $
+  $Id: Acquisition.c,v 1.11 1997/11/07 19:00:34 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -218,7 +218,11 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
   if(self->obj) PyErr_Clear();
 
   name=PyString_AsString(oname);
-  if(*name != '_')
+  if(*name != '_'
+#ifdef IMPLICIT_ACQUIRE___ROLES__
+     || strcmp(name,"__roles__")==0
+#endif
+     )
     {      
       if(*name++=='a' && *name++=='q' && *name++=='_')
 	{
@@ -751,7 +755,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -766,7 +770,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 		     "Provide base classes for acquiring objects\n\n"
-		     "$Id: Acquisition.c,v 1.10 1997/10/28 22:09:17 jim Exp $\n",
+		     "$Id: Acquisition.c,v 1.11 1997/11/07 19:00:34 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -788,6 +792,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.11  1997/11/07 19:00:34  jim
+  Added compile option to implicitly acquire __roles__.
+
   Revision 1.10  1997/10/28 22:09:17  jim
   Added another argument to the aq_acquire filter signature.
   Changed name of acquire method to aq_acquire.  Explicit.acquire is

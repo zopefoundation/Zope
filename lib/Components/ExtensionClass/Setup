@@ -1,6 +1,6 @@
 *shared*
 ExtensionClass ExtensionClass.c
-Acquisition Acquisition.c
+Acquisition Acquisition.c -DIMPLICIT_ACQUIRE___ROLES__
 MethodObject MethodObject.c
 MultiMapping MultiMapping.c
 ThreadLock ThreadLock.c
