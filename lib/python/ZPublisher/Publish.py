@@ -373,7 +373,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.85 1998/04/20 16:24:52 jim Exp $"""
+$Id: Publish.py,v 1.86 1998/04/20 21:42:56 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -428,7 +428,7 @@ $Id: Publish.py,v 1.85 1998/04/20 16:24:52 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -1151,7 +1151,8 @@ class Request:
 			
 	self.base="%s/%s" % (server_url,b)
 	while script[:1]=='/': script=script[1:]
-	self.script="%s/%s" % (server_url,script)
+	if script: self.script="%s/%s" % (server_url,script)
+	else:  self.script=server_url
 
     def __setitem__(self,key,value):
 	"""Set application variables
