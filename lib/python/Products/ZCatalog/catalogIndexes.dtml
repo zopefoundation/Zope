@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>View Catalog Records</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<form action="<!--#var URL1-->">
+
+<ul>
+<!--#in indexes-->
+ <li>
+  <input type="checkbox" name="names:list" value="<!--#var sequence-item-->">
+<!--#var sequence-item--></li>
+<!--#/in-->
+</ul>
+<br>
+<input name="manage_delIndexes:method" type=submit value=" Delete "><br>
+Add Index: <input name="name"> <br>
+
+of Index Type: <select name="type">
+         <option value="TextIndex">TextIndex</option>
+         <option value="FieldIndex">FieldIndex</options>
+         </select>
+<input name="manage_addIndex:method" type=submit value=" Add ">
+</form>
+
+</BODY></HTML>
+
+
+
+
+
+

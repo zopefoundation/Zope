@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+<TITLE>View Catalog Records</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<form action="<!--#var URL1-->">
+
+<ul>
+<!--#in schema-->
+ <li>
+  <input type="checkbox" name="names:list" value="<!--#var sequence-item-->">
+<!--#var sequence-item--></li>
+<!--#/in-->
+</ul>
+<br>
+<input name="manage_delColumns:method" type=submit value=" Delete "><br>
+Add column: <input name="name"> 
+<input name="manage_addColumn:method" type=submit value=" Add ">
+</form>
+
+</BODY></HTML>
+
+
+
+
+
+

@@ -1,0 +1,21 @@
+<HTML>
+<HEAD>
+<TITLE>View Catalog Records</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<ul>
+<!--#in index_objects-->
+ <li>
+<!--#var "_.len(_['sequence-item'])"--> object are indexed in <b><!--#var "_['sequence-item'].id"--></b></li>
+<!--#/in-->
+</ul>
+
+</BODY></HTML>
+
+
+
+
+
+

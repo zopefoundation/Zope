@@ -46,7 +46,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         self.schema = {}    # mapping from attribute name to column number
         self.names = ()     # sequence of column names
-        self.indexes = {}
+        self.indexes = {}   # maping from index name to index object
 
         # the catalog maintains a BTree of object meta_data for
         # convienient display on result pages.  meta_data attributes
@@ -95,7 +95,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         for key, value in self.schema.items():
             scopy[key]=value
         scopy['data_record_id_']=len(self.schema.keys())
-        scopy['data_record_unique_id_'] = self.paths[scopy['data_record_id_']]
 
         mybrains.__theCircularGottaCoverUpABugRefOfJoy = mybrains
         mybrains.__record_schema__ = scopy
@@ -109,6 +108,9 @@ class Catalog(Persistent, Acquisition.Implicit):
         
         schema = self.schema
         names = list(self.names)
+
+        if schema.has_key(name):
+            raise 'Column Exists', 'The column exists'
         
         if not schema.has_key(name):
             if schema.values():
@@ -162,11 +164,14 @@ class Catalog(Persistent, Acquisition.Implicit):
         """ adds an index """
         if self.indexes.has_key(name):
             raise 'Index Exists', 'The index specified allready exists'
-        
+
+        indexes = self.indexes
         if type == 'FieldIndex':
-            self.indexes[name] = UnIndex.UnIndex(name)
+            indexes[name] = UnIndex.UnIndex(name)
         elif type == 'TextIndex':
-            self.indexes[name] = UnTextIndex.UnTextIndex(name)
+            indexes[name] = UnTextIndex.UnTextIndex(name)
+
+        self.indexes = indexes
 
     def delIndex(self, name):
         """ deletes an index """
@@ -241,6 +246,11 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         for x in self.indexes.values():
             x.clear()
+
+
+    def uniqueValuesFor(self, name):
+        """ return unique values for FieldIndex name """
+        return self.indexes[name].uniqueValues()
 
 
     def recordify(self, object):

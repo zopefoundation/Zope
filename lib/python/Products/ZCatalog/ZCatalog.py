@@ -99,6 +99,7 @@ from Acquisition import Implicit
 from Persistence import Persistent
 from Catalog import Catalog, orify
 import pdb, traceback
+from SearchIndex import UnIndex, UnTextIndex
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
@@ -120,7 +121,14 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
         {'label': 'Contents', 'action': 'manage_catalogView',
          'target': 'manage_main'},
         {'label': 'Find Items to ZCatalog', 'action': 'manage_catalogFind', 
-         'target':'manage_main'},)
+         'target':'manage_main'},
+        {'label': 'Schema', 'action': 'manage_catalogSchema', 
+         'target':'manage_main'},
+        {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
+         'target':'manage_main'},
+	{'label': 'Status', 'action': 'manage_catalogStatus', 
+         'target':'manage_main'},
+	)
 
     
     __ac_permissions__=(
@@ -142,6 +150,8 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
     manage_catalogFind = HTMLFile('catalogFind',globals())
     manage_catalogFindResult = HTMLFile('catalogFindResult',globals())
     manage_catalogSchema = HTMLFile('catalogSchema', globals())
+    manage_catalogIndexes = HTMLFile('catalogIndexes', globals())
+    manage_catalogStatus = HTMLFile('catalogStatus', globals())
 
     manage_main = HTMLFile('catalogView',globals())
     
@@ -157,7 +167,10 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 	self._catalog.addIndex('title', 'TextIndex')
 
 	self._catalog.addColumn('meta_type')
-	self._catalog.addIndex('meta_type', 'TextIndex')
+	self._catalog.addIndex('meta_type', 'FieldIndex')
+
+	self._catalog.addColumn('bobobase_modification_time')
+	self._catalog.addIndex('bobobase_modification_time', 'FieldIndex')
 
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
@@ -170,16 +183,13 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
                     # object.
                     obj = self.resolve_url(url, REQUEST)
                 except:
-##                    print 'resolve_url failed while cataloging'
-##                    c, i, t = sys.exc_info()
-##                    traceback.print_exc()
                     continue
                 
 		self.catalog_object(obj, url)
 
-	return MessageDialog(title="Bah!",
-			     message="Say hello to my little friend",
-			     action="manage_main")
+	message = "Objects Cataloged"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
 
 
     def manage_uncatalogObject(self, REQUEST, urls=None):
@@ -190,16 +200,12 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
                 try:
                     obj = self.resolve_url(url, REQUEST)
                 except:
-                    print 'resolve_url failed while uncataloging'
-                    c, i, t = sys.exc_info()
-                    traceback.print_exc()
                     continue
-                print 'uncataloging %s' % url
 		self.uncatalog_object(url)
 
-	return MessageDialog(title="Bah!",
-			     message="Say hello to my little friend",
-			     action="manage_main")
+	message = "Object UnCataloged"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
 
 
     def manage_catalogReindex(self, REQUEST):
@@ -218,19 +224,54 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 		self.uncatalog_object(path)
 		self.catalog_object(obj, path)
 
-	return MessageDialog(title="Bah!",
-			     message="Say hello to my little friend",
-			     action="manage_main")
+	message = "Catalog Reindexed"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
 
 
     def manage_catalogClear(self, REQUEST):
 	""" clears the whole enchelada """
 	self._catalog.clear()
 
-	return MessageDialog(title="Bah!",
-			     message="Say hello to my little friend",
-			     action="manage_main")	
+	message = "Catalog Cleared"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
+
+
+    def manage_addColumn(self, name, REQUEST):
+	""" add a column """
+	self._catalog.addColumn(name)
+
+	message = "Column added"
+	return self.manage_catalogSchema(self, REQUEST,
+					  manage_tabs_message=message)
+
+    def manage_delColumns(self, names, REQUEST):
+	""" del a column """
+	for name in names:
+	    self._catalog.delColumn(name)
+	    
+	message = "Columns deleted"
+	return self.manage_catalogSchema(self, REQUEST,
+					  manage_tabs_message=message)
+
+    def manage_addIndex(self, name, type, REQUEST):
+	""" add an index """
+	self._catalog.addIndex(name, type)
 	
+	message = "Index added"
+	return self.manage_catalogIndexes(self, REQUEST,
+					  manage_tabs_message=message)
+
+    def manage_delIndexes(self, names, REQUEST):
+	""" del an index """
+	for name in names:
+	    self._catalog.delIndex(name)
+
+	message = "Indexes deleted"
+	return self.manage_catalogIndexes(self, REQUEST,
+					  manage_tabs_message=message)
+    
 
     def catalog_object(self, obj, uid):
 	""" wrapper around catalog """
@@ -242,36 +283,37 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
 	self._catalog.uncatalogObject(uid)
 
 
-#miscilany
-
-
-    def manage_enterDebuger(self, REQUEST):
-	""" debugger VOODOO """
-	pdb.set_trace()
-	if REQUEST is not None:
-	    	return MessageDialog(title="Bah!",
-			     message="Say hello to my little friend",
-			     action="manage_main")	
+    def uniqueValuesFor(self, name):
+	""" returns the unique values for a given FieldIndex """
+	return self._catalog.uniqueValuesFor(name)
 
 
     def getpath(self, rid):
 	return self._catalog.paths[rid]
 
 
-# impliment the searching interface
+    def schema(self):
+	return self._catalog.schema.keys()
+
+
+    def indexes(self):
+	return self._catalog.indexes.keys()
+
+    def index_objects(self):
+	return self._catalog.indexes.values()
 
 
     def _searchable_arguments(self):
 	r = {}
         n={'optional':1}
-        for name in self._catalog.names:
+        for name in self._catalog.indexes.keys():
             r[name]=n
         return r
 
 
     def _searchable_result_columns(self):
 	r = []
-	for name in self._catalog.names:
+	for name in self._catalog.indexes.keys():
 	    i = {}
 	    i['name'] = name
 	    i['type'] = 's'

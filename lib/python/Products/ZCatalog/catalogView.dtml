@@ -50,8 +50,7 @@ NAME="manage_enterDebuger:method">
 
      <tr valign=top>
 	    <td valign="middle" align="center">
-	    <INPUT TYPE="checkbox" NAME="urls:list" VALUE="<!--#var
-data_record_unique_id_-->">
+	    <INPUT TYPE="checkbox" NAME="urls:list" VALUE="<!--#var "getpath(data_record_id_)"-->"
 	    </TD>
 	    <td valign="top"><!--#var meta_type--></td>
 	    <td valign="top" align="left">
@@ -65,8 +64,8 @@ data_record_unique_id_-->">
      <!--#/in-->
   </table>
 
-<input type="submit" value=" Remove " NAME="unindexObject:method">
-<input type="submit" value=" Update " NAME="indexObject:method">
+<input type="submit" value=" Remove " NAME="manage_uncatalogObject:method">
+<input type="submit" value=" Update " NAME="manage_catalogObject:method">
 
 </form>
 
