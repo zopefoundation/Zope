@@ -833,6 +833,19 @@ instancehome $INSTANCE
 #     port-base 1000
 
 
+# Directive: large-file-threshold
+#
+# Description:
+#     Requests bigger than this size get saved into a temporary file
+#     instead of being read completely into memory.
+#
+# Default: 512K
+#
+# Example:
+#
+#    large-file-threshold 1Mb
+
+
 # Directives: servers
 #
 # Description:
