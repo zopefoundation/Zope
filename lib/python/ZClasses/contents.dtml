@@ -5,10 +5,6 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 <P>
-<!--#if Principia-Version-->
-<EM>You are currently working in version <!--#var Principia-Version--></EM>
-<P>
-<!--#/if Principia-Version-->
 
 <FORM ACTION="." METHOD="POST">
 <!--#if objectItems-->
