@@ -28,6 +28,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #372: tal:attributes failed when combined with tal:replace.
+
       - Don't try to close network connections in the signal handler
         for shutdown.  This hosed ZEO clients.
 

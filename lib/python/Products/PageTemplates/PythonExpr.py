@@ -14,7 +14,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -47,7 +47,7 @@ class PythonExpr:
         # Bind template variables
         names = {}
         vars = econtext.vars
-        getType = econtext._engine.getTypes().get
+        getType = econtext.getCompiler().getTypes().get
         for vname in self._f_varnames:
             val = vars.get(vname, _marker)
             if val is _marker:
@@ -78,5 +78,5 @@ class ExprTypeProxy:
         self._econtext = econtext
     def __call__(self, text):
         return self._handler(self._name, text,
-                             self._econtext._engine)(self._econtext)
+                             self._econtext.getCompiler())(self._econtext)
 

@@ -594,7 +594,7 @@ class TALInterpreter:
 
     def insertHTMLStructure(self, text, repldict):
         from HTMLTALParser import HTMLTALParser
-        gen = AltTALGenerator(repldict, self.engine, 0)
+        gen = AltTALGenerator(repldict, self.engine.getCompiler(), 0)
         p = HTMLTALParser(gen) # Raises an exception if text is invalid
         p.parseString(text)
         program, macros = p.getCode()
@@ -602,7 +602,7 @@ class TALInterpreter:
 
     def insertXMLStructure(self, text, repldict):
         from TALParser import TALParser
-        gen = AltTALGenerator(repldict, self.engine, 0)
+        gen = AltTALGenerator(repldict, self.engine.getCompiler(), 0)
         p = TALParser(gen)
         gen.enable(0)
         p.parseFragment('<!DOCTYPE foo PUBLIC "foo" "bar"><foo>')

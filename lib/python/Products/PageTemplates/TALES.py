@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -152,8 +152,8 @@ class Context:
     position = (None, None)
     source_file = None
 
-    def __init__(self, engine, contexts):
-        self._engine = engine
+    def __init__(self, compiler, contexts):
+        self._compiler = compiler
         self.contexts = contexts
         contexts['nothing'] = None
         contexts['default'] = Default
@@ -169,6 +169,9 @@ class Context:
 
         # Keep track of what needs to be popped as each scope ends.
         self._scope_stack = []
+
+    def getCompiler(self):
+        return self._compiler
 
     def beginScope(self):
         self._scope_stack.append([self.local_vars.copy()])
@@ -198,8 +201,8 @@ class Context:
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
         if not expr:
-            return self._engine.Iterator(name, (), self)
-        it = self._engine.Iterator(name, expr, self)
+            return self._compiler.Iterator(name, (), self)
+        it = self._compiler.Iterator(name, expr, self)
         old_value = self.repeat_vars.get(name)
         self._scope_stack[-1].append((name, old_value))
         self.repeat_vars[name] = it
@@ -208,7 +211,7 @@ class Context:
     def evaluate(self, expression,
                  isinstance=isinstance, StringType=StringType):
         if isinstance(expression, StringType):
-            expression = self._engine.compile(expression)
+            expression = self._compiler.compile(expression)
         __traceback_supplement__ = (
             TALESTracebackSupplement, self, expression)
         return expression(self)

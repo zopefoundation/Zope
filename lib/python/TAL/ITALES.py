@@ -41,6 +41,9 @@ class ITALESEngine(Interface):
     ITALESCompiler.compile().
     """
 
+    def getCompiler():
+        """Return an object that supports ITALESCompiler."""
+
     def getDefault():
         """Return the value of the 'default' TALES expression.
 

@@ -62,6 +62,9 @@ class DummyEngine:
     def getCompilerError(self):
         return CompilerError
 
+    def getCompiler(self):
+        return self
+
     def setSourceFile(self, source_file):
         self.source_file = source_file
 
