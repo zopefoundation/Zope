@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.60 1999/10/20 21:56:43 klm Exp $''' 
-__version__='$Revision: 1.60 $'[11:-2]
+'''$Id: DT_Util.py,v 1.61 1999/10/22 18:08:45 jim Exp $''' 
+__version__='$Revision: 1.61 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -116,14 +116,20 @@ def int_param(params,md,name,default=0, st=type('')):
             if type(v) is st: v=atoi(v)
     return v or 0
 
-def careful_getattr(md, inst, name):
+_marker=[]
+
+def careful_getattr(md, inst, name, default=_marker):
     
     if name[:1]!='_':
 
         # Try to get the attribute normally so that we don't
         # accidentally acquire when we shouldn't.
-        v=getattr(inst, name)
-        
+        try: v=getattr(inst, name)
+        except:
+            if default is not _marker:
+                return default
+            raise
+
         validate=md.validate
 
         if validate is None: return v
@@ -135,7 +141,6 @@ def careful_getattr(md, inst, name):
 
     raise ValidationError, name
 
-_marker=[]
 def careful_hasattr(md, inst, name):
     v=getattr(inst, name, _marker)
     if v is not _marker:
