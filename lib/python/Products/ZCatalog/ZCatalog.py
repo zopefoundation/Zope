@@ -333,7 +333,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 			 self._catalog.catalogObject(obj, uid, self.threshold))
 	
         if self._v_total > self.threshold:
-	    print 'commiting in ZCatalog'
             get_transaction().commit(1)
             self._v_total = 0
 
