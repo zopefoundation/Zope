@@ -13,7 +13,8 @@ import string
 
 # Regular expressions used for parsing
 
-interesting = re.compile('[&<]')
+interesting_normal = re.compile('[&<]')
+interesting_cdata = re.compile('</')
 incomplete = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*|#[0-9]*)?')
 
 entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
@@ -85,9 +86,11 @@ class HTMLParseError(Exception):
 
 class HTMLParser:
 
+    CDATA_CONTENT_ELEMENTS = ("script", "style")
+
+
     # Interface -- initialize and reset this instance
-    def __init__(self, verbose=0):
-        self.verbose = verbose
+    def __init__(self):
         self.reset()
 
     # Interface -- reset this instance.  Loses all unprocessed data
@@ -97,6 +100,7 @@ class HTMLParser:
         self.lasttag = '???'
         self.lineno = 1
         self.offset = 0
+        self.interesting = interesting_normal
 
     # Interface -- feed some data to the parser.  Call this as
     # often as you want, with as little or as much text as you
@@ -137,6 +141,9 @@ class HTMLParser:
     def get_starttag_text(self):
         return self.__starttag_text
 
+    def set_cdata_mode(self):
+        self.interesting = interesting_cdata
+
     # Internal -- handle data as far as reasonable.  May leave state
     # and data to be processed by a subsequent call.  If 'end' is
     # true, force handling all data as if followed by EOF marker.
@@ -145,9 +152,12 @@ class HTMLParser:
         i = 0
         n = len(rawdata)
         while i < n:
-            match = interesting.search(rawdata, i) # < or &
-            if match: j = match.start()
-            else: j = n
+            match = self.interesting.search(rawdata, i) # < or &
+            if match:
+                j = match.start()
+                self.interesting = interesting_normal
+            else:
+                j = n
             if i < j: self.handle_data(rawdata[i:j])
             i = self.updatepos(i, j)
             if i == n: break
@@ -312,6 +322,8 @@ class HTMLParser:
             self.handle_startendtag(tag, attrs)
         else:
             self.handle_starttag(tag, attrs)
+            if tag in self.CDATA_CONTENT_ELEMENTS:
+                self.set_cdata_mode()
         return endpos
 
     # Internal -- check to see if we have a complete starttag; return end
