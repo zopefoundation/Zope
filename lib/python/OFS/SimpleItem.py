@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.90 2001/06/11 16:30:23 andreas Exp $'''
-__version__='$Revision: 1.90 $'[11:-2]
+$Id: SimpleItem.py,v 1.91 2001/08/07 17:19:12 evan Exp $'''
+__version__='$Revision: 1.91 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -259,10 +259,17 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 else:
                     client = client.aq_parent
                     s=getattr(client, 'standard_error_message')
-                v=HTML.__call__(s, client, REQUEST, error_type=error_type,
-                                error_value=error_value,
-                                error_tb=error_tb,error_traceback=error_tb,
-                                error_message=error_message)
+                kwargs = {'error_type': error_type,
+                          'error_value': error_value,
+                          'error_tb': error_tb,
+                          'error_traceback': error_tb,
+                          'error_message': error_message}
+                if isinstance(s, HTML):
+                    v = s(client, REQUEST, **kwargs)
+                elif callable(s):
+                    v = s(**kwargs)
+                else:
+                    v = HTML.__call__(s, client, REQUEST, **kwargs)
             except: v = error_value or "Sorry, an error occurred"
             raise error_type, v, tb
         finally:
