@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.125 2000/05/24 20:53:34 shane Exp $'''
-__version__='$Revision: 1.125 $'[11:-2]
+$Id: Application.py,v 1.126 2000/05/31 15:58:11 shane Exp $'''
+__version__='$Revision: 1.126 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -289,7 +289,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         be used with getPhysicalRoot().
         '''
         # We're at the base of the path.
-        return ''
+        return ('',)
 
     def getPhysicalRoot(self): return self
 

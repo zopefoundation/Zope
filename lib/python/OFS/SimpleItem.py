@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.72 2000/05/26 15:43:07 brian Exp $'''
-__version__='$Revision: 1.72 $'[11:-2]
+$Id: SimpleItem.py,v 1.73 2000/05/31 15:58:11 shane Exp $'''
+__version__='$Revision: 1.73 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -101,7 +101,7 @@ from CopySupport import CopySource
 from string import join, lower, find, split
 from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
-from urllib import quote
+from urllib import quote, unquote
 from AccessControl import getSecurityManager
 
 import marshal
@@ -348,18 +348,18 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         return id
 
     def getPhysicalPath(self):
-        '''Returns a path that can be used to access this object again
+        '''Returns a path (an immutable sequence of strings)
+        that can be used to access this object again
         later, for example in a copy/paste operation.  getPhysicalRoot()
         and getPhysicalPath() are designed to operate together.
         '''
-        id=quote(self.id)
+        path = (self.id,)
         
-        p=getattr(self,'aq_inner', None)
+        p = getattr(self,'aq_inner', None)
         if p is not None: 
-            url=p.aq_parent.getPhysicalPath()
-            if url: id=url+'/'+id
-            
-        return id
+            path = p.aq_parent.getPhysicalPath() + path
+        print path
+        return path
 
     unrestrictedTraverse__roles__=()
     def unrestrictedTraverse(self, path, default=_marker):
@@ -371,12 +371,18 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         N=None
         M=_marker
 
-        if type(path) is StringType: path=split(path,'/')
+        if type(path) is StringType:
+            path = map(unquote, split(path,'/'))
         else: path=list(path)
 
         REQUEST={'path': path}
         path.reverse()
         pop=path.pop
+
+        # If the path starts with an empty string, go to the root first.
+        if len(path) > 0 and not path[-1]:
+            object = self.getPhysicalRoot()
+            pop()
         
         try:
             while path:
@@ -437,18 +443,19 @@ class Item_w__name__(Item):
         return id
 
     def getPhysicalPath(self):
-        '''Returns a path that can be used to access this object again
+        '''Returns a path (an immutable sequence of strings)
+        that can be used to access this object again
         later, for example in a copy/paste operation.  getPhysicalRoot()
         and getPhysicalPath() are designed to operate together.
         '''
-        id=quote(self.__name__)
+        path = (self.__name__,)
         
-        p=getattr(self,'aq_inner', None)
+        p = getattr(self,'aq_inner', None)
         if p is not None: 
-            url=p.aq_parent.getPhysicalPath()
-            if url: id=url+'/'+id
+            path = p.aq_parent.getPhysicalPath() + path
             
-        return id
+        return path
+
 
 def format_exception(etype,value,tb,limit=None):
     import traceback
