@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.142 $'[11:-2]
+__version__='$Revision: 1.143 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -248,12 +248,17 @@ class BasicUser(Implicit):
                             # Fail the access attempt.  Otherwise
                             # this would be a security hole.
                             return None
-                    if not object.aq_inContextOf(ucontext, 1):
+                    # -----------------------------------------------------
+                    # FIXME: this is a workaround for broken aq_inContextOf
+                    # -----------------------------------------------------
+                    # if not object.aq_inContextOf(ucontext, 1):
+                    if not isInContext(ucontext, object):
                         if 'Shared' in object_roles:
                             # Damn, old role setting. Waaa
                             object_roles=self._shared_roles(object)
                             if 'Anonymous' in object_roles: return 1
                         return None
+
                 # Note that if self were not wrapped, it would
                 # not be possible to determine the user's context
                 # and this method would return 1.
@@ -536,7 +541,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             return None
 
     def authorize(self, user, accessed, container, name, value, roles):
-        newSecurityManager(None, user.__of__(self))
+        user = getattr(user, 'aq_base', user).__of__(self)
+        newSecurityManager(None, user)
         security = getSecurityManager()
         try:
             try:
@@ -592,8 +598,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         elif user is None:
             # either we didn't find the username, or the user's password
             # was incorrect.  try to authorize and return the anonymous user.
-            if self._isTop() and self.authorize(self._nobody.__of__(self),a,
-                                                c,n,v,roles):
+            if self._isTop() and self.authorize(self._nobody, a,c,n,v,roles):
                 return self._nobody.__of__(self)
             else:
                 # anonymous can't authorize or we're not top-level user folder
@@ -1062,5 +1067,15 @@ def absattr(attr):
 def reqattr(request, attr):
     try:    return request[attr]
     except: return None
+
+from Acquisition import aq_base, aq_inner, aq_parent
+def isInContext(fixed, variable):
+    fixed = aq_base(fixed)
+    while variable is not None:
+        v = aq_base(variable)
+        if v is fixed:
+            return 1
+        variable = aq_parent(aq_inner(variable))
+    return 0
 
 Super = UnrestrictedUser  # Note: use of the Super alias is deprecated.
