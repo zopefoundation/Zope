@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.37 1999/12/16 14:31:04 jim Exp $
+  $Id: ExtensionClass.c,v 1.38 1999/12/16 18:30:24 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.37 1999/12/16 14:31:04 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.38 1999/12/16 18:30:24 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2491,10 +2491,13 @@ subclass_coerce(PyObject **self, PyObject **v)
       if (m==Py_None) r=-1;
       else
 	{
-	  PyArg_ParseTuple(m,"OO", self, v);
-	  Py_INCREF(*self);
-	  Py_INCREF(*v);
-	  r=0;
+	  if (PyArg_ParseTuple(m,"OO", self, v))
+	    {
+	      Py_INCREF(*self);
+	      Py_INCREF(*v);
+	      r=0;
+	    }
+	  else r=-1;
 	}
     } 
   Py_DECREF(m);
@@ -3418,7 +3421,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.37 $";
+  char *rev="$Revision: 1.38 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
