@@ -87,6 +87,9 @@ from syslog import LOG_INFO, LOG_DEBUG
 
 import os, string
 
+pid_str='[%s]: ' % os.getpid()
+
+
 class syslogLogger:
     """ a syslog Logger """
 
@@ -121,4 +124,4 @@ class syslogLogger:
                 sev=LOG_DEBUG
         
         if self.on:
-            self.client.log(sum, priority=sev)
+            self.client.log(sub + pid_str + sum, priority=sev)
