@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -229,6 +229,9 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     def propertyLabel(self, id):
         """Return a label for the given property id
         """
+        for p in self._properties:
+            if p['id'] == id:
+                return p.get('label', id)
         return id
 
     def propdict(self):

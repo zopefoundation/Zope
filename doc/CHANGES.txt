@@ -28,6 +28,11 @@ Zope Changes
        "import" new schema components to allow 3rd-party components
        (such as storages, databases, or logging handlers) to be used.
 
+     - The standard ProperyManager now includes the same label
+       functionality as the CMF SimpleItemWithProperties object.
+       By adding a 'label' entry to the property definition you
+       can now display a prettier label for the property.
+
     Bugs fixed
 
      - Made the control panel properly reflect the cache-size setting
