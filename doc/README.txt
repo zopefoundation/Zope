@@ -27,7 +27,7 @@ Installing Zope:
   selected Zope components since the install script compiles
   Python extensions for you that you may want, like cDocumentTemplate.
 
-Using Zope Components Seperately
+Using Zope Components Separately
 
   Zope consists of many Python packages which can be profitably
   used by themselves. For example you will find all your old friends
@@ -46,7 +46,7 @@ Using Zope Components Seperately
   You can find most of these packages in the lib/python directory. If
   you poke around, you might find other goodies too, like StructuredText.
 
-  We plan on making sperate releases of these packages soon.
+  We plan on making separate releases of these packages soon.
 
 Notes:
 
