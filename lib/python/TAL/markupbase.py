@@ -195,7 +195,7 @@ class ParserBase:
                     j = rawdata.find(")", j) + 1
                 else:
                     return -1
-                while rawdata[j:j+1] in string.whitespace:
+                while rawdata[j:j+1].isspace():
                     j = j + 1
                 if not rawdata[j:]:
                     # end of buffer, incomplete

@@ -294,6 +294,12 @@ DOCTYPE html [
             ("endtag", "script"),
             ])
 
+    def check_enumerated_attr_type(self):
+        s = "<!DOCTYPE doc [<!ATTLIST doc attr (a | b) >]>"
+        self._run_check(s, [
+            ('decl', 'DOCTYPE doc [<!ATTLIST doc attr (a | b) >]'),
+            ])
+
 
 # Support for the Zope regression test framework:
 def test_suite():
