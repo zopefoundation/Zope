@@ -18,7 +18,7 @@ Zope Changes
      sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
    - Change acquisition wrappers to implement the descr get slot
-     directly, this speeding the use of the slot.
+     directly, thus speeding the use of the slot.
 
    - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
@@ -58,6 +58,9 @@ Zope Changes
 
     Bugs fixed
  
+      - Fixed Shared.DC.ZRDB.Results to behave with the new-style
+        ExtensionClass. Added a test.
+
       - Collector #1507: Zope now binds again to all available IP addresses if
         ip-address is unset
 
