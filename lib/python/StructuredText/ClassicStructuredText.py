@@ -134,9 +134,7 @@ Special symbology is used to indicate special constructs:
 '''
 
 import ts_regex
-import regex
-from ts_regex import gsub
-import string,re
+import string, re
 
 
 def untabify(aString,
@@ -282,7 +280,7 @@ class StructuredText:
     """
 
     def __init__(self, aStructuredString, level=0,
-                 paragraph_divider=regex.compile('\(\r?\n *\)+\r?\n'),
+                 paragraph_divider=ts_regex.compile('\(\r?\n *\)+\r?\n'),
                  ):
         '''Convert a structured text string into a structured text object.
 
