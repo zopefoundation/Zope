@@ -89,8 +89,7 @@ Dummy TALES engine so that I can test out the TAL implementation.
 import re
 import string
 
-from TALDefs import NAME_RE, macroIndexer
-from TALCompiler import TALCompiler, TALError
+from TALDefs import NAME_RE, macroIndexer, TALError
 
 class TALESError(TALError):
     pass
