@@ -67,6 +67,8 @@ class DictionaryLike(Interface.Base):
         Merge dictionary d into ourselves.
         """
 
+    # DictionaryLike does NOT support copy()
+
 class ItemWithId(Interface.Base):
     def getId(self):
         """
@@ -178,7 +180,12 @@ class TransientItemContainer(Interface.Base):
         before expiration.
         """
 
-    def setExecuteAfterAddFunc(self, f):
+    def getAddNotificationTarget(self):
+        """
+        Returns the current 'after add' function, or None.
+        """
+
+    def setAddNotificationTarget(self, f):
         """
         Cause the 'after add' function to be 'f'.
 
@@ -189,7 +196,12 @@ class TransientItemContainer(Interface.Base):
         is the item being added to the container.
         """
 
-    def setExecuteBeforeDestructFunc(self, f):
+    def getDelNotificationTarget(self):
+        """
+        Returns the current 'before destruction' function, or None.
+        """
+
+    def setDelNotificationTarget(self, f):
         """
         Cause the 'before destruction' function to be 'f'.
 
@@ -200,3 +212,38 @@ class TransientItemContainer(Interface.Base):
         which is the item being destroyed.
         """
 
+    def notifyAdd(self, item):
+        """
+        Calls the registered ExecuteAfterAdd function on item.
+
+        Raises no errors (traps errors).
+        """
+
+    def notifyDestruct(self, item):
+        """
+        Calls the registered ExecuteBeforeDestruct function on item.
+
+        Raises no errors (traps errors).
+        """
+
+
+class TransientNotification(Interface.Base):
+
+    """
+    Specfies what something must conform to to receive callbacks from
+    the setExecuteAfterAdd and SetExecuteBeforeDestruct functions.  Note
+    that this isn't a true interface -- the callbacks are registered, not
+    evaluated by name.
+    """
+
+    def executeAfterAdd(self, item, context):
+        """
+        Called when an item is added.  Item is the item being added,
+        context is the environment context, where appropriate.
+        """
+
+    def executeBeforeDestruct(self, item, context):
+        """
+        Called when an item is deleted.  Item is the item being deleted,
+        context is the environment context, where appropriate.
+        """

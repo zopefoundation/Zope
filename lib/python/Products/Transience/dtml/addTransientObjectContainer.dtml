@@ -1,0 +1,95 @@
+<dtml-var manage_page_header>
+
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Transient Object Container',
+           help_product='Transience',
+           help_topic='Transience.stx'
+	   )">
+
+<FORM ACTION="constructTransientObjectContainer" METHOD="POST">
+<TABLE CELLSPACING="2">
+<tr>
+<div class="form-help">
+<p>
+Transient Object Containers are used to store transient data in Zope; this
+transient data persists, but only for a limited period of time.
+</p>
+
+<p>
+It is recommended that Transient Object Containers be added to storages which
+do not support undo operations; transient objects are write-intensive, and
+can generate considerable load on the storage.
+</p>
+
+<p>
+Transient Object Containers support <b>Notification Targets</b> which
+are methods which are invoked when transient objects are added or deleted
+from the container.  A notification target is invoked with the item being
+operated upon, and the transient object container as arguments.
+</p>
+</div>
+</tr>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="id" SIZE="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      <em>Title</em>
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Data object timeout in minutes
+   </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="timeout_mins:int" SIZE="10" value="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      <em>Add Notification Target</em>
+   </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="addNotification" SIZE="40">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      <em>Delete Notification Target</em>
+   </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="delNotification" SIZE="40">
+  </TD>
+</TR>
+
+<TR> 
+  <TD>
+  </TD> 
+  <TD> <BR><INPUT class="form-element" TYPE="SUBMIT" VALUE=" Add "> </TD> 
+</TR> 
+</TABLE> 
+</FORM> 
+<dtml-var manage_page_footer>

@@ -1,0 +1,101 @@
+<dtml-var manage_page_header>
+<dtml-var manage_tabs>
+
+<table cellspacing="2">
+<form action="manage_changeTransientObjectContainer" method="post">
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <font color="green">
+  <dtml-let l=getLen>
+  <dtml-if l>
+    <dtml-if "l == 1">1 item is in this transient object container.
+    <dtml-else><dtml-var l> items are in this transient object container.
+    </dtml-if>
+  <dtml-else>
+    There are no items in this transient object container.
+  </dtml-if>
+  </dtml-let>
+  </font>
+  </div>
+  </td>
+</tr>
+<tr>
+  <td>
+   &nbsp;
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      <em>Title</em>
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="title" size=20 value="&dtml-title;">
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Data object timeout value in minutes
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="timeout_mins:int" size=10
+     value=&dtml-getTimeoutMinutes;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      <em>Add Notification Target</em>
+    </div>
+  </td>
+  <td align="left" valign="top".
+     <input type="text" name="addNotification"
+     	value="&dtml-getAddNotificationTarget;" size=40>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+      <em>Delete Notification Target</em>
+    </div>
+  </td>
+  <td align="left" valign="top".
+     <input type="text" name="delNotification"
+     	value="&dtml-getDelNotificationTarget;" size=40>
+  </td>
+</tr>
+
+
+
+<tr>
+  <td>
+   &nbsp;
+  </td>
+</tr>
+<tr>
+  <td align="center" valign="top">
+  <input class="form-element" type=submit name=submit value=" Change ">
+  </td>
+</tr>
+<tr>
+  <td>
+   &nbsp;
+  </td>
+</tr>
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
+  <font color="red">WARNING!</font>
+  The data objects currently existing in this session data container
+  will be deleted when the data object timeout is changed.
+  </div>
+  </td>
+</tr>
+</form>
+</table>
