@@ -85,7 +85,8 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find, rstrip
-from STletters import letters
+from STletters import letters, digits, literal_punc, under_punc,\
+     strongem_punc, phrase_delimiters
 
 StringType=type('')
 ListType=type([])
@@ -364,7 +365,7 @@ class DocumentClass:
     
     #'doc_inner_link',
     #'doc_named_link',
-    #'doc_underline',
+    #'doc_underline'
     text_types = [
         'doc_sgml',
         'doc_href',
@@ -790,7 +791,7 @@ class DocumentClass:
 
     def doc_numbered(
         self, paragraph,
-        expr = re.compile(r'(\s*[%s]+\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)' % letters).match):
+        expr = re.compile(r'(\s*[%s]\.)|(\s*[0-9]+\.)|(\s*[0-9]+\s+)' % letters).match):
         
         # This is the old expression. It had a nasty habit
         # of grabbing paragraphs that began with a single
@@ -838,8 +839,7 @@ class DocumentClass:
            indent=paragraph.indent,
            delim=d)
 
-    def doc_header(self, paragraph,
-                   expr=re.compile(r'[ %s0-9.:/,-_*<>\?\'\"]+' % letters).match):
+    def doc_header(self, paragraph):
         subs=paragraph.getSubparagraphs()
         if not subs: return None
         top=paragraph.getColorizableTexts()[0]
@@ -858,11 +858,14 @@ class DocumentClass:
 
     def doc_literal(
         self, s,
-        expr=re.compile(
-          r"(?:\s|^)'"                                                  # open
-          r"([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n']*[^ \t\n\r\f\v'])" # contents
-          r"'(?:\s|[,.;:!?]|$)"                                        # close
-          ).search):
+        expr = re.compile(r"'([%s%s%s\s]+)'[%s]+" % (letters, digits, literal_punc, phrase_delimiters)).search):
+
+        # old expr... failed to cross newlines.
+        #        expr=re.compile(
+        #          r"(?:\s|^)'"           # open
+        #          r"([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n\r']*[^ \t\n\r\f\v'])" # contents
+        #          r"'(?:\s|[,.;:!?]|$)"  # close
+        #          ).search):
         
         r=expr(s)
         if r:
@@ -873,7 +876,8 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile(r'\s*\*([ \n%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
+        expr = re.compile(r'\*([%s%s%s\s]+?)\*' % (letters, digits, strongem_punc)).search
+        #expr = re.compile(r'\s*\*([ \n\r%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search       # old expr, inconsistent punctuation
         ):
 
         r=expr(s)
@@ -886,7 +890,7 @@ class DocumentClass:
     def doc_inner_link(self,
                        s,
                        expr1 = re.compile(r"\.\.\s*").search,
-                       expr2 = re.compile(r"\[[%s0-9]+\]" % letters ).search):
+                       expr2 = re.compile(r"\[[%s%s]+\]" % (letters, digits) ).search):
         
         # make sure we dont grab a named link
         if expr2(s) and expr1(s):
@@ -920,9 +924,12 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile(r"\_([%s0-9\s\.,\?]+)\_" % letters).search):
+                      #expr=re.compile(r"\_([a-zA-Z0-9\s\.,\?]+)\_").search, # old expr, inconsistent punc, failed to cross newlines
+                      expr=re.compile(r'_([%s%s%s\s]+)_' % (letters, digits, under_punc)).search):
         result = expr(s)
         if result:
+            if result.group(1)[:1] == '_':
+               return None # no double unders
             start,end = result.span(1)
             st,e = result.span()
             return (StructuredTextUnderline(s[start:end]),st,e)
@@ -931,7 +938,8 @@ class DocumentClass:
     
     def doc_strong(self,
                    s,
-                   expr = re.compile(r'\s*\*([ \n%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*(?!\*|-)' % letters).search
+                   expr = re.compile(r'\*\*([%s%s%s\s]+?)\*\*' % (letters, digits, strongem_punc)).search
+                   #expr = re.compile(r'\s*\*\*([ \n\r%s0-9.:/;,\'\"\?\-\_\/\=\-\>\<\(\)]+)\*\*(?!\*|-)' % letters).search, # old expr, inconsistent punc, failed to cross newlines.
         ):
 
         r=expr(s)
@@ -942,8 +950,8 @@ class DocumentClass:
            return None
 
     ## Some constants to make the doc_href() regex easier to read.
-    _DQUOTEDTEXT = r'("[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+")' % letters ## double quoted text
-    _URL_AND_PUNC = r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
+    _DQUOTEDTEXT = r'("[ %s0-9\n\r\-\.\,\;\(\)\/\:\/\*\']+")' % letters ## double quoted text
+    _URL_AND_PUNC = r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~]+)' % letters
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
@@ -989,7 +997,7 @@ class DocumentClass:
 
 
     def doc_xref(self, s,
-        expr = re.compile('\[([%s0-9\-.:/;,\n\~]+)\]' % letters).search
+        expr = re.compile('\[([%s0-9\-.:/;,\n\r\~]+)\]' % letters).search
         ):
         r = expr(s)
         if r:
