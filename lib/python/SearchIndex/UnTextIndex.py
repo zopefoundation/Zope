@@ -91,8 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.43 $'[11:-2]
-
+__version__ = '$Revision: 1.44 $'[11:-2]
 
 import string, regex, regsub, ts_regex
 import operator
@@ -117,7 +116,7 @@ Or = 'or'
 Near = '...'
 QueryError = 'TextIndex.QueryError'
 
-            
+
 class UnTextIndex(Persistent, Implicit):
     """Full-text index.
 
@@ -478,11 +477,25 @@ class UnTextIndex(Persistent, Implicit):
         records.  The second object is a tuple containing the names of
         all data fields used.  
         """
-
         if request.has_key(self.id):
             keys = request[self.id]
         else:
             return None
+
+        operators = {
+            'andnot':AndNot,
+            'and':And,
+            'near':Near,
+            'or':Or
+            }
+
+        query_operator = Or
+        # We default to 'or' if we aren't passed an operator in the request
+        # or if we can't make sense of the passed-in operator
+
+        if request.has_key('textindex_operator'):
+            op=string.lower(str(request['textindex_operator']))
+            query_operator = operators.get(op, query_operator)
 
         if type(keys) is StringType:
             if not keys or not string.strip(keys):
@@ -496,7 +509,7 @@ class UnTextIndex(Persistent, Implicit):
             if not key:
                 continue
 
-            b = self.query(key).bucket()
+            b = self.query(key, query_operator).bucket()
             w, r = weightedIntersection(r, b)
 
         if r is not None:
