@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.13 2002/10/16 21:26:32 chrism Exp $
+$Id: SiteErrorLog.py,v 1.14 2003/01/05 16:19:57 yuppie Exp $
 """
 
 import os
@@ -78,7 +78,7 @@ class SiteErrorLog (SimpleItem):
         {'label': 'Log', 'action': 'manage_main'},
         ) + SimpleItem.manage_options
 
-    security.declareProtected(use_error_logging, 'getProperties')
+    security.declareProtected(use_error_logging, 'manage_main')
     manage_main = PageTemplateFile('main.pt', _www)
 
     security.declareProtected(use_error_logging, 'showEntry')
