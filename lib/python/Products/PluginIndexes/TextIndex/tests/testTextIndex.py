@@ -12,7 +12,6 @@
 ##############################################################################
 
 import sys, os, unittest
-from glob import glob
 import zLOG
 
 def log_write(subsystem, severity, summary, detail, error):
@@ -20,7 +19,8 @@ def log_write(subsystem, severity, summary, detail, error):
         assert 0, "%s(%s): %s" % (subsystem, severity, summary)
 
 
-import ZODB, ZODB.DemoStorage, ZODB.FileStorage
+import ZODB
+from ZODB.MappingStorage import MappingStorage
 from Products.PluginIndexes.TextIndex import TextIndex
 from Products.PluginIndexes.TextIndex import GlobbingLexicon
 
@@ -37,7 +37,11 @@ class Dummy:
 
     __repr__ = __str__
 
+
 class Tests(unittest.TestCase):
+
+    db = None
+    jar = None
 
     def setUp(self):
         self.index=TextIndex.TextIndex('text')
@@ -47,31 +51,33 @@ class Tests(unittest.TestCase):
 
 
     def dbopen(self):
-        n = 'fs_tmp__%s' % os.getpid()
-        s = ZODB.FileStorage.FileStorage(n)
-        db=self.db=ZODB.DB(s)
-        self.jar=db.open()
-        if not self.jar.root().has_key('index'):
-            self.jar.root()['index']=TextIndex.TextIndex('text')
+        if self.db is None:
+            s = MappingStorage()
+            self.db = ZODB.DB(s)
+        db = self.db
+        if self.jar is not None:
+            raise RuntimeError, 'test needs to dbclose() before dbopen()'
+        jar = db.open()
+        self.jar = jar
+        if not jar.root().has_key('index'):
+            jar.root()['index'] = TextIndex.TextIndex('text')
             get_transaction().commit()
-        return self.jar.root()['index']
+        return jar.root()['index']
 
     def dbclose(self):
         self.jar.close()
-        self.db.close()
-        del self.jar
-        del self.db
+        self.jar = None
 
     def tearDown(self):
         get_transaction().abort()
-        if hasattr(self, 'jar'):
+        if self.jar is not None:
             self.dbclose()
-            for path in glob('fs_tmp__*'):
-                os.remove(path)
+        if self.db is not None:
+            self.db.close()
+            self.db = None
         zLOG.log_write=self.old_log_write
 
     def checkSimpleAddDelete(self):
-        "Check that we can add and delete an object without error"
         self.index.index_object(0, self.doc)
         self.index.index_object(1, self.doc)
         self.doc.text='spam is good, spam is fine, span span span'
@@ -79,7 +85,7 @@ class Tests(unittest.TestCase):
         self.index.unindex_object(0)
 
     def checkPersistentUpdate1(self):
-        "Check simple persistent indexing"
+        # Check simple persistent indexing
         index=self.dbopen()
 
         self.doc.text='this is the time, when all good zopes'
@@ -105,7 +111,7 @@ class Tests(unittest.TestCase):
         assert  r == [0,1], r
 
     def checkPersistentUpdate2(self):
-        "Check less simple persistent indexing"
+        # Check less simple persistent indexing
         index=self.dbopen()
 
         self.doc.text='this is the time, when all good zopes'
@@ -171,107 +177,88 @@ class Tests(unittest.TestCase):
         return index._apply_index
 
     def checkStarQuery(self):
-        "Check a star query"
         self.globTest({'text':'m*n'}, [0,2])
 
     def checkAndQuery(self):
-        "Check an AND query"
         self.globTest({'text':'time and country'}, [0,])
 
     def checkOrQuery(self):
-        "Check an OR query"
         self.globTest({'text':'time or country'}, [0,1,6])
 
-    def checkDefOrQuery(self):
-        "Check a default OR query"
+    def checkDefaultOrQuery(self):
         self.globTest({'text':'time country'}, [0,1,6])
 
     def checkNearQuery(self):
-        """Check a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!)"""
+        # Check a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!)
         # NEAR never worked, so Zopes post-2.3.1b3 define near to mean AND
         self.globTest({'text':'time ... country'}, [0,])
 
     def checkQuotesQuery(self):
-        """Check a quoted query"""
         ai = self.globTest({'text':'"This is the time"'}, [0,])
 
         r = list(ai({'text':'"now is the time"'})[0].keys())
         assert  r == [], r
 
     def checkAndNotQuery(self):
-        "Check an ANDNOT query"
         self.globTest({'text':'time and not country'}, [6,])
 
     def checkParenMatchingQuery(self):
-        "Check a query with parens"
         ai = self.globTest({'text':'(time and country) men'}, [0,])
 
         r = list(ai({'text':'(time and not country) or men'})[0].keys())
         assert  r == [0, 6], r
 
     def checkTextIndexOperatorQuery(self):
-        "Check a query with 'operator' in the request"
         self.globTest({'text': {'query': 'time men', 'operator':'and'}}, [0,])
 
     def checkNonExistentWord(self):
-        """ Check for nonexistent word """
         self.globTest({'text':'zop'}, [])
 
     def checkComplexQuery1(self):
-        """ Check complex query 1 """
         self.globTest({'text':'((?ount* or get) and not wait) '
                        '"been *ert*"'}, [0, 1, 5, 6])
 
     # same tests, unicode strings
     def checkStarQueryUnicode(self):
-        "Check a star query (unicode)"
         self.globTest({'text':u'm*n'}, [0,2])
 
     def checkAndQueryUnicode(self):
-        "Check an AND query (unicode)"
         self.globTest({'text':u'time and country'}, [0,])
 
     def checkOrQueryUnicode(self):
-        "Check an OR query (unicode)"
         self.globTest({'text':u'time or country'}, [0,1,6])
 
-    def checkDefOrQueryUnicode(self):
-        "Check a default OR query (unicode)"
+    def checkDefaultOrQueryUnicode(self):
         self.globTest({'text':u'time country'}, [0,1,6])
 
     def checkNearQueryUnicode(self):
-        """Check a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!) (unicode)"""
+        # Check a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!) (unicode)
         # NEAR never worked, so Zopes post-2.3.1b3 define near to mean AND
         self.globTest({'text':u'time ... country'}, [0,])
 
     def checkQuotesQueryUnicode(self):
-        """Check a quoted query (unicode)"""
         ai = self.globTest({'text':u'"This is the time"'}, [0,])
 
         r = list(ai({'text':'"now is the time"'})[0].keys())
         assert  r == [], r
 
     def checkAndNotQueryUnicode(self):
-        "Check an ANDNOT query (unicode)"
         self.globTest({'text':u'time and not country'}, [6,])
 
     def checkParenMatchingQueryUnicode(self):
-        "Check a query with parens (unicode)"
         ai = self.globTest({'text':u'(time and country) men'}, [0,])
 
         r = list(ai({'text':u'(time and not country) or men'})[0].keys())
         assert  r == [0, 6], r
 
     def checkTextIndexOperatorQueryUnicode(self):
-        "Check a query with 'operator' in the request (unicode)"
-        self.globTest({'text': {u'query': u'time men', 'operator':'and'}}, [0,])
+        self.globTest({'text': {u'query': u'time men', 'operator':'and'}},
+                      [0,])
 
     def checkNonExistentWordUnicode(self):
-        """ Check for nonexistent word  (unicode)"""
         self.globTest({'text':u'zop'}, [])
 
     def checkComplexQuery1Unicode(self):
-        """ Check complex query 1  (unicode)"""
         self.globTest({'text':u'((?ount* or get) and not wait) '
                        '"been *ert*"'}, [0, 1, 5, 6])
 
@@ -279,18 +266,5 @@ class Tests(unittest.TestCase):
 def test_suite():
     return unittest.makeSuite(Tests, 'check')
 
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
 if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
+    unittest.main(defaultTest='test_suite')
