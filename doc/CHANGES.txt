@@ -6,6 +6,42 @@ Zope Changes
 
   Releases
 
+    Zope ?.?.? ?
+
+      BACKWARD INCOMPATABILITY
+
+        - A change was made to the way ZClasses are constructed.
+
+	  Previously, the __call__ method was an alias for the
+	  index_html method which took took an id and a request
+	  and created a new instance and added the instance to
+	  the destination.
+	  
+	  Now, the __call__ method simply calls the underlying
+	  managed class with the supplied arguments to create and
+	  return an instance.  The instance is not added to a
+	  folder.
+	  
+	  The index_html method is now an alias for the
+	  createInObjectManager method, which does what the
+	  index_html method did before.
+	  
+	  There is a new method, fromRequest, that takes an id
+	  and a request and creates a new instance.  It does not
+	  at the instance to a destination.
+
+      Features Added
+
+        - The ZClass construction interface has been cleaned up to
+          make construction of ZClasses a little easier from Python.
+
+        - When adding ZClasses, there is now an option to
+          automatically create construction methods and a factory.
+
+        - "Management" screens now *only* show tabs a user permitted
+          to see.  Used in combination with carefully selected roles, 
+          this change provides an adaptable management interface.
+
     Zope 1.11.0 pr1
       
       Lots has changed in this release. The major news is ZClasses and WebDAV.
