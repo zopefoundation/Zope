@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -371,20 +371,14 @@ class PythonScript(Script, Historical, Cacheable):
     def manage_haveProxy(self,r): return r in self._proxy_roles
 
     def _validateProxy(self, roles=None):
-        if roles is None: roles=self._proxy_roles
+        if roles is None: roles = self._proxy_roles
         if not roles: return
-        user=u=getSecurityManager().getUser()
-        if user is not None:
-            user=user.hasRole
-            for r in roles:
-                if r and not user(None, (r,)):
-                    user=None
-                    break
-            if user is not None: return
-
+        user = getSecurityManager().getUser()
+        if user is not None and user.allowed(self, roles):
+            return
         raise 'Forbidden', ('You are not authorized to change <em>%s</em> '
             'because you do not have proxy roles.\n<!--%s, %s-->' 
-            % (self.id, u, roles))
+            % (self.id, user, roles))
 
     security.declareProtected('Change proxy roles',
       'manage_proxyForm', 'manage_proxy')
