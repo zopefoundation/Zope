@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.33 1999/08/04 18:05:29 jim Exp $
+$Id: Test.py,v 1.34 1999/08/19 11:37:02 jim Exp $
 '''
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -260,12 +260,12 @@ def publish_module(module_name,
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
             if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
+            else: must_die = SystemExit, v, sys.exc_info()[2]
             response.exception(must_die)
         except ImportError, v:
             if type(v) is type(()) and len(v)==3: must_die=v
             elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_traceback
+            else: must_die = SystemExit, v, sys.exc_info()[2]
             response.exception(1, v)
         except:
             response.exception()
@@ -278,10 +278,12 @@ def publish_module(module_name,
         if after_list[0] is not None: after_list[0]()
 
     finally:
-        if request is not None: request.other={}
+        if request is not None: request.close()
 
-    if must_die: raise must_die[0], must_die[1], must_die[2]
-    sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
+    if must_die:
+        try: raise must_die[0], must_die[1], must_die[2]
+        finally: must_die=None
+
     return status
 
 def publish_module_pm(module_name,
@@ -307,13 +309,15 @@ except:
 defaultModule='Main'
 def publish(script=None,path_info='/',
             u=None,p=None,d=None,t=None,e=None,s=None,pm=0,
-            extra={}):
+            extra=None, request_method='GET',
+            stdin=sys.stdin):
 
     profile=p
     debug=d
     timeit=t
     silent=s
     if e is None: e={}
+    if extra is None: extra={}
 
     if script is None: script=defaultModule
     if script[0]=='+': script='../../lib/python/'+script[1:]
@@ -321,7 +325,7 @@ def publish(script=None,path_info='/',
     env=e
     env['SERVER_NAME']='bobo.server'
     env['SERVER_PORT']='80'
-    env['REQUEST_METHOD']='GET'
+    env['REQUEST_METHOD']=request_method
     env['REMOTE_ADDR']='204.183.226.81 '
     env['REMOTE_HOST']='bobo.remote.host'
     env['HTTP_USER_AGENT']='Bobo/%s' % __version__
@@ -355,7 +359,7 @@ def publish(script=None,path_info='/',
         __main__.env=env
         print profile
         publish_module(file, environ=env, stdout=open('/dev/null','w'),
-                       extra=extra)
+                       extra=extra, stdin=stdin)
         c=("for i in range(%s): "
            "publish_module(file, environ=env, stdout=open('/dev/null','w'),"
            "extra=extra)"
@@ -398,7 +402,7 @@ def publish(script=None,path_info='/',
         fbreak(db,publish)
         fbreak(db,call_object)
 
-        dbdata={'breakpoints':(), 'env':env}
+        dbdata={'breakpoints':(), 'env':env, 'extra': extra}
         b=''
         try: b=open('.bobodb','r').read()
         except: pass
@@ -419,10 +423,11 @@ def publish(script=None,path_info='/',
         '  algorithm.\n'
         '* Then type c<cr> to jump to published object call.'
         )
-        db.run('publish_module(file,environ=env,debug=1,extra=extra)',
+        db.run('publish_module(file,environ=env,debug=1,extra=extra,'
+               ' stdin=stdin)',
                Publish.__dict__,
                {'publish_module': publish_module,
-                'file':file, 'env':env, 'extra': extra})
+                'file':file, 'env':env, 'extra': extra, 'stdin': stdin})
     elif timeit:
         stdout=sys.stdout
         t= time(publish_module,file,
