@@ -13,9 +13,9 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.92 $'[11:-2]
+__version__='$Revision: 1.93 $'[11:-2]
 
-import time,  App.Management, Globals
+import time,  App.Management, Globals, sys
 from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters
 from Globals import DTMLFile, MessageDialog
@@ -30,7 +30,7 @@ from AccessControl import getSecurityManager
 from webdav.common import isDavCollection
 from zExceptions import BadRequest, Redirect
 from cgi import escape
-
+from types import ListType
 
 # DM: we would like to import this from somewhere
 BadRequestException= 'Bad Request'
@@ -214,6 +214,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
             prop['select_variable']=value
             if type=='selection': value=None
             else: value=[]
+
+        # bleah - can't change kw name in api, so use ugly workaround.
+        if sys.modules['__builtin__'].type(value) == ListType:
+            value = tuple(value)
         setattr(self, id, value)
 
     def _updateProperty(self, id, value, meta=None):
@@ -238,6 +242,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 if prop['id']==id: prop['meta']=meta
                 props.append(prop)
             pself._properties=tuple(props)
+
+        if type(value) == ListType:
+            value = tuple(value)
         setattr(self.v_self(), id, value)
 
     def _delProperty(self, id):

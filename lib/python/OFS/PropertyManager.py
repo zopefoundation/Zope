@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -23,7 +23,7 @@ from Acquisition import Implicit, aq_base
 from Globals import Persistent
 from zExceptions import BadRequest
 from cgi import escape
-
+from types import ListType
 
 
 class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
@@ -157,6 +157,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def _setPropValue(self, id, value):
         self._wrapperCheck(value)
+        if type(value) == ListType:
+            value = tuple(value)
         setattr(self,id,value)
 
     def _delPropValue(self, id):
@@ -337,7 +339,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             if (not 'd' in propdict[id].get('mode', 'wd')) or (id in nd):
                 return MessageDialog(
                 title  ='Cannot delete %s' % id,
-                message='The property <em>%s</em> cannot be deleted.' % id,
+                message='The property <em>%s</em> cannot be deleted.' % escape(id),
                 action ='manage_propertiesForm')
             self._delProperty(id)
 
