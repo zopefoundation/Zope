@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.4 1997/10/28 21:52:06 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.5 1997/10/29 16:59:28 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import regex, string
 
@@ -157,7 +157,7 @@ class TemplateDict:
 		except (AttributeError,TypeError): pass
         return v
 
-    get=__getitem__
+    getitem=__getitem__
 
 def render_blocks(self, md):
     rendered = []
@@ -172,6 +172,9 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.5  1997/10/29 16:59:28  jim
+# Changed name of get to getitem.
+#
 # Revision 1.4  1997/10/28 21:52:06  jim
 # Changed to not call document templates if not calling other functions.
 #
