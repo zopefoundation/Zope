@@ -38,6 +38,7 @@ from Products.PluginIndexes.TextIndex import Splitter
 import urllib, time, sys
 import string,logging
 from IZCatalog import IZCatalog
+from ProgressHandler import ZLogHandler
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -510,7 +511,9 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        self.reindexIndex(ids, REQUEST)
+        pgthreshold = self._getProgressThreshold()
+        handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
+        self.reindexIndex(ids, REQUEST, handler)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
@@ -885,6 +888,11 @@ class ZCatalog(Folder, Persistent, Implicit):
         if RESPONSE:
             RESPONSE.redirect(
                 URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
+
+    def _getProgressThreshold(self):
+        if not hasattr(self, 'pgthreshold'):
+            self.pgthreshold = 0
+        return self.pgthreshold
 
     def manage_convertBTrees(self, threshold=200):
         """Convert the catalog's data structures to use BTrees package"""
