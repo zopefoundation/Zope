@@ -23,6 +23,10 @@ Zope Changes
        directly, this speeding the use of the slot.
 
     Features added
+    
+     - MailHost now has two additional properties, a user id and a 
+       password. These are used to attempt ESMTP authentication
+       before sending a mail. 
 
      - Folder listings in FTP now include "." as well as "..".
 
@@ -634,7 +638,7 @@ Zope Changes
 
       - Made all PluginIndexes and ZCTextIndex use 'safe_callable',
         which is aware of extension classes that fill 'tp_callable'
-	but don't define '__call__'.
+    but don't define '__call__'.
 
       - Made KeywordIndex be more robust about receiving a value that
         is not a string or an iterable type.

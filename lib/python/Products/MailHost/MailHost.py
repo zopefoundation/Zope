@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.81 2003/11/18 13:17:05 tseaver Exp $"""
-__version__ = "$Revision: 1.81 $"[11:-2]
+$Id: MailHost.py,v 1.82 2003/12/18 21:42:06 regebro Exp $"""
+__version__ = "$Revision: 1.82 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -49,6 +49,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     manage_main._setName('manage_main')
     index_html=None
     security = ClassSecurityInfo()
+    smtp_uid='' # Class attributes for smooth upgrades
+    smtp_pwd=''
 
     timeout=1.0
 
@@ -63,12 +65,15 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         )
 
 
-    def __init__( self, id='', title='', smtp_host='localhost', smtp_port=25 ):
+    def __init__( self, id='', title='', smtp_host='localhost', smtp_port=25, 
+                  smtp_uid='', smtp_pwd=''):
         """Initialize a new MailHost instance """
         self.id = id
         self.title = title
         self.smtp_host = str( smtp_host )
         self.smtp_port = int(smtp_port)
+        self.smtp_uid = smtp_uid
+        self.smtp_pwd = smtp_pwd
 
 
     # staying for now... (backwards compatibility)
@@ -78,7 +83,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
 
     security.declareProtected( 'Change configuration', 'manage_makeChanges' )
-    def manage_makeChanges(self,title,smtp_host,smtp_port, REQUEST=None):
+    def manage_makeChanges(self,title,smtp_host,smtp_port,smtp_uid,smtp_pwd, REQUEST=None):
         'make the changes'
 
         title=str(title)
@@ -88,6 +93,8 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         self.title=title
         self.smtp_host=smtp_host
         self.smtp_port=smtp_port
+        self.smtp_uid = smtp_uid
+        self.smtp_pwd = smtp_pwd
         if REQUEST is not None:
             msg = 'MailHost %s updated' % self.id
             return self.manage_main( self
@@ -141,7 +148,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     security.declarePrivate( '_send' )
     def _send( self, mfrom, mto, messageText ):
         """ Send the message """
-        smtpserver = SMTP( self.smtp_host, int(self.smtp_port) )
+        smtpserver = SMTP(self.smtp_host, int(self.smtp_port) )
+        if self.smtp_uid:
+            smtpserver.login(self.smtp_uid, self.smtp_pwd)
         smtpserver.sendmail( mfrom, mto, messageText )
         smtpserver.quit()
 
