@@ -11,7 +11,7 @@ math: DTML Math Functions
 
     atan(x) -- Return the arc tangent of *x*
 
-    atan2(x, y) -- Return *atan(y / x)*. 
+    atan2(x, y) -- Return 'atan(y / x)'. 
 
     ceil(x) -- Return the ceiling of *x* as a real.
 
@@ -25,24 +25,24 @@ math: DTML Math Functions
 
     floor(x) -- Return the floor of *x* as a real.
 
-    fmod(x, y) -- Return fmod(x, y), as defined by the platform C
-      library. Note that the Python expression *x % y* may not return the
-      same result.
+    fmod(x, y) -- Return 'fmod(x, y)', as defined by the platform C
+      library. Note that the Python expression 'x % y' may not return
+      the same result.
 
-    fexp(x) -- Return the mantissa and exponent of *x* as the pair (m, e). m
-      is a float and e is an integer such that 'x == m * 2**e'. If x is zero,
-      returns (0.0, 0), otherwise 0.5 <= abs(m) < 1.
+    fexp(x) -- Return the mantissa and exponent of *x* as the pair '(m, e)'. *m*
+      is a float and *e* is an integer such that 'x == m * 2**e'. If
+      *x* is zero, returns '(0.0, 0)', otherwise '0.5 <= abs(m) < 1'.
 
-    hypot(x, y) -- Return the Euclidean distance, sqrt(x*x + y*y). 
+    hypot(x, y) -- Return the Euclidean distance, 'sqrt(x*x + y*y)'. 
 
-    ldexp(x, y) -- Return x * (2**i). 
+    ldexp(x, y) -- Return 'x * (2**i)'. 
 
     log(x) -- Return the natural logarithm of *x*.
 
     log10(x) -- Return the base-10 logarithm of *x*.
 
-    modf(x) -- Return the fractional and integer parts of x. Both results
-      carry the sign of x. The integer part is returned as a real.
+    modf(x) -- Return the fractional and integer parts of *x*. Both results
+      carry the sign of *x*. The integer part is returned as a real.
 
     pow(x, y) -- Return *x* to the power of *y*.
 

@@ -20,17 +20,19 @@ var: Inserts a variable
       &dtml-variableName;
 
     Entity syntax is a short cut which inserts and HTML quotes the
-    variable. It is useful when inserting variables into HTML tags.
+    variable. It is useful when inserting variables into HTML
+    tags.
 
     'var' tag entity syntax with attributes::
 
       &dtml.attribute1[.attribute2]...-variableName;
 
     To a limited degree you may specify attributes with the entity
-    syntax. You may include one or more attributes delimited by
+    syntax. You may include zero or more attributes delimited by
     periods. You cannot provide arguments for attributes using the
-    entity syntax. If you provide attributes, then the variable is not
-    automatically HTML quoted.
+    entity syntax. If you provide zero or more attributes, then the
+    variable is not automatically HTML quoted. Thus you can avoid HTML
+    quoting with this syntax, '&dtml.-variableName;'.
 
   Attributes
 

@@ -9,39 +9,41 @@ functions: DTML Functions
     be a plain or long integer or a floating point number. If the argument
     is a complex number, its magnitude is returned.
 
-    chr(integer) -- Return a string of one character whose ASCII code is
-    the integer i, e.g., chr(97) returns the string 'a'. This is the
-    inverse of ord(). The argument must be in the range [0..255],
-    inclusive; ValueError will be raised if i is outside that range.
+    chr(integer) -- Return a string of one character whose ASCII code
+    is the integer, e.g., 'chr(97)' returns the string 'a'. This is
+    the inverse of ord(). The argument must be in the range 0 to 255,
+    inclusive; 'ValueError' will be raised if the integer is outside
+    that range.
 
     DateTime() -- Returns a Zope 'DateTime' object given constructor
     arguments. See the "DateTime":DateTime.py API reference for more
     information on constructor arguments.
 
-    divmod(number, number) -- Take two numbers as arguments and return a
-    pair of numbers consisting of their quotient and remainder when using
-    long division. With mixed operand types, the rules for binary
-    arithmetic operators apply. For plain and long integers, the result
-    is the same as (a / b, a % b). For floating point numbers the result
-    is (q, a % b), where q is usually math.floor(a / b) but may be 1
-    less than that. In any case q * b + a % b is very close to a, if a %
-    b is non-zero it has the same sign as b, and 0 <= abs(a % b) <
-    abs(b).
+    divmod(number, number) -- Take two numbers as arguments and return
+    a pair of numbers consisting of their quotient and remainder when
+    using long division. With mixed operand types, the rules for
+    binary arithmetic operators apply. For plain and long integers,
+    the result is the same as '(a / b, a % b)'. For floating point
+    numbers the result is '(q, a % b)', where *q* is usually
+    'math.floor(a / b)' but may be 1 less than that. In any case 'q *
+    b + a % b' is very close to *a*, if 'a % b' is non-zero it has the
+    same sign as *b*, and '0 <= abs(a % b) < abs(b)'.
 
-    float(number) -- Convert a string or a number to floating point. If the
-    argument is a string, it must contain a possibly signed decimal or
-    floating point number, possibly embedded in whitespace; this
-    behaves identical to string.atof(x). Otherwise, the argument may be
-    a plain or long integer or a floating point number, and a floating
-    point number with the same value (within Python's floating point
+    float(number) -- Convert a string or a number to floating
+    point. If the argument is a string, it must contain a possibly
+    signed decimal or floating point number, possibly embedded in
+    whitespace; this behaves identical to
+    'string.atof(number)'. Otherwise, the argument may be a plain or
+    long integer or a floating point number, and a floating point
+    number with the same value (within Python's floating point
     precision) is returned.
 
-    getattr(object, string) -- Return the value of the named attributed of
-    object. name must be a string. If the string is the name of one of the
-    object's attributes, the result is the value of that attribute. For
-    example, getattr(x, 'foobar') is equivalent to x.foobar. If the named
-    attribute does not exist, default is returned if provided, otherwise
-    AttributeError is raised.
+    getattr(object, string) -- Return the value of the named
+    attributed of object. name must be a string. If the string is the
+    name of one of the object's attributes, the result is the value of
+    that attribute. For example, 'getattr(x, "foobar")' is equivalent
+    to 'x.foobar'. If the named attribute does not exist, default is
+    returned if provided, otherwise 'AttributeError' is raised.
 
     getitem(variable, render=0) -- Returns the value of a DTML variable.
     If 'render' is true, the variable is rendered.
@@ -63,22 +65,23 @@ functions: DTML Functions
 
     hex(integer) -- Convert an integer number (of any size) to a
     hexadecimal string. The result is a valid Python expression. Note: this
-    always yields an unsigned literal, e.g. on a 32-bit machine, hex(-1)
+    always yields an unsigned literal, e.g. on a 32-bit machine, 'hex(-1)'
     yields '0xffffffff'. When evaluated on a machine with the same word
     size, this literal is evaluated as -1; at a different word size, it
-    may turn up as a large positive number or raise an OverflowError
+    may turn up as a large positive number or raise an 'OverflowError'
     exception.
 
-    int(number) -- Convert a string or number to a plain integer. If the
-    argument is a string, it must contain a possibly signed decimal number
-    representable as a Python integer, possibly embedded in whitespace;
-    this behaves identical to string.atoi(x[, radix]). The radix parameter
-    gives the base for the conversion and may be any integer in the range
-    [2, 36]. If radix is specified and x is not a string, TypeError is
-    raised. Otherwise, the argument may be a plain or long integer or a
-    floating point number. Conversion of floating point numbers to integers
-    is defined by the C semantics; normally the conversion truncates
-    towards zero.
+    int(number) -- Convert a string or number to a plain integer. If
+    the argument is a string, it must contain a possibly signed
+    decimal number representable as a Python integer, possibly
+    embedded in whitespace; this behaves identical to
+    'string.atoi(number[, radix]'). The 'radix' parameter gives the
+    base for the conversion and may be any integer in the range 2 to
+    36. If 'radix' is specified and the number is not a string,
+    'TypeError' is raised. Otherwise, the argument may be a plain or
+    long integer or a floating point number. Conversion of floating
+    point numbers to integers is defined by the C semantics; normally
+    the conversion truncates towards zero.
 
     len(sequence) -- Return the length (the number of items) of an
     object. The argument may be a sequence (string, tuple or list) or a
@@ -98,36 +101,37 @@ functions: DTML Functions
 
     oct(integer) -- Convert an integer number (of any size) to an octal
     string. The result is a valid Python expression. Note: this always
-    yields an unsigned literal, e.g. on a 32-bit machine, oct(-1) yields
+    yields an unsigned literal, e.g. on a 32-bit machine, 'oct(-1)' yields
     '037777777777'. When evaluated on a machine with the same word size,
     this literal is evaluated as -1; at a different word size, it may
     turn up as a large positive number or raise an OverflowError
     exception.
 
     ord(character) -- Return the ASCII value of a string of one
-    character. E.g., ord('a') returns the integer 97. This is the
-    inverse of chr().
+    character. E.g., 'ord("a")' returns the integer 97. This is the
+    inverse of 'chr()'.
 
-    pow(x, y [,z]) -- Return x to the power y; if z is present, return
-    x to the power y, modulo z (computed more efficiently than pow(x, y) %
-    z). The arguments must have numeric types. With mixed operand types,
-    the rules for binary arithmetic operators apply. The effective operand
-    type is also the type of the result; if the result is not expressible
-    in this type, the function raises an exception; e.g., pow(2, -1) or
-    pow(2, 35000) is not allowed.
+    pow(x, y [,z]) -- Return *x* to the power *y*; if *z* is present,
+    return *x* to the power *y*, modulo *z* (computed more efficiently
+    than 'pow(x, y) % z'). The arguments must have numeric types. With
+    mixed operand types, the rules for binary arithmetic operators
+    apply. The effective operand type is also the type of the result;
+    if the result is not expressible in this type, the function raises
+    an exception; e.g., 'pow(2, -1)' or 'pow(2, 35000)' is not
+    allowed.
 
     range([start,] stop [,step]) -- This is a versatile function to
-      create lists containing arithmetic progressions.
-      The arguments must be plain integers. If the
-      step argument is omitted, it defaults to 1. If the start argument
-      is omitted, it defaults to 0. The full form returns a
-      list of plain integers [start, start + step, start + 2 * step,
-      ...]. If step is positive, the last element is the largest
-      start + i * step less than stop; if step is negative, the last
-      element is the largest start + i * step greater than stop. step
-      must not be zero (or else ValueError is raised).
+      create lists containing arithmetic progressions.  The arguments
+      must be plain integers. If the step argument is omitted, it
+      defaults to 1. If the start argument is omitted, it defaults to
+      0. The full form returns a list of plain integers '[start, start
+      + step, start + 2 * step, ...]'. If step is positive, the last
+      element is the largest 'start + i * step' less than *stop*; if
+      *step* is negative, the last element is the largest 'start + i *
+      step' greater than *stop*. *step* must not be zero (or else
+      'ValueError' is raised).
 
-    round(x [,n]) -- Return the floating point value x rounded to n
+    round(x [,n]) -- Return the floating point value *x* rounded to *n*
     digits after the decimal point. If n is omitted, it defaults to
     zero. The result is a floating point number. Values are rounded to the
     closest multiple of 10 to the power minus n; if two multiples are
