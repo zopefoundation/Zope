@@ -4,7 +4,7 @@
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.2 1997/08/06 14:26:45 jim Exp $'''
+$Id: dbi_db.py,v 1.3 1997/09/11 23:53:28 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -56,6 +56,9 @@ $Id: dbi_db.py,v 1.2 1997/08/06 14:26:45 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: dbi_db.py,v $
+# Revision 1.3  1997/09/11 23:53:28  jim
+# Made RDB rendered remove 'l' from ends if ints.
+#
 # Revision 1.2  1997/08/06 14:26:45  jim
 # *** empty log message ***
 #
@@ -70,7 +73,7 @@ $Id: dbi_db.py,v 1.2 1997/08/06 14:26:45 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, sys
 
@@ -99,9 +102,11 @@ class DB:
 	db=self.db=self.Database_Connection(connection)
 	self.cursor=db.cursor()
 	
-    def str(self,v):
+    def str(self,v, StringType=type('')):
 	if v is None: return ''
-	return str(v)
+	r=str(v)
+	if r[-1:]=='L' and type(v) is not StringType: r=r[:-1]
+	return r
 
     def query(self,query_string):
 	global failures, calls
