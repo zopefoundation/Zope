@@ -184,7 +184,7 @@ class TALParser(XMLParser):
 def test():
     import sys
     p = TALParser()
-    file = "test/test1.xml"
+    file = "tests/input/test01.xml"
     if sys.argv[1:]:
         file = sys.argv[1]
     p.parseFile(file)

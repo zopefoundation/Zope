@@ -125,7 +125,7 @@ def main():
         opts.append(args[0])
         del args[0]
     if not args:
-        prefix = os.path.join("test", "input", "test*.")
+        prefix = os.path.join("tests", "input", "test*.")
         xmlargs = glob.glob(prefix + "xml")
         xmlargs.sort()
         htmlargs = glob.glob(prefix + "html")

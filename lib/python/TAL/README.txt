@@ -36,18 +36,18 @@ How To Play
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
-defaults to test/test1.xml.
+defaults to tests/input/test01.xml.
 
 Regression test
 ---------------
 
-There are a number of test files in the test subdirectory, named
-test/input/test<number>.xml and test/input/test<number>.html.  The
+There are a number of test files in the 'tests' subdirectory, named
+tests/input/test<number>.xml and tests/input/test<number>.html.  The
 Python script ./runtest.py calls driver.main() for each test file, and
 should print "<file> OK" for each one.
 
-In addition, there are unit test suites in the test subdirectory;
-these can be run with test/run.py.  This should print a number of
+In addition, there are unit test suites in the 'tests' subdirectory;
+these can be run with tests/run.py.  This should print a number of
 testcase names plus progress info, ending with a line saying "OK".
 It requires that ../unittest.py exists.
 
@@ -67,7 +67,7 @@ setpath.py		hack to set sys.path and import ZODB
 __init__.py		empty file that makes this directory a package
 runtest.py		Python script to run regression tests
 ndiff.py		helper for runtest.py to produce diffs
-test/			drectory with test files and output
+tests/			drectory with test files and output
 
 Author and License
 ------------------

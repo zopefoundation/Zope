@@ -157,6 +157,7 @@ class TALInterpreter:
         self.macros = macros
         self.engine = engine
         self.TALESError = engine.getTALESError()
+        self.CancelAction = engine.getCancelAction()
         self.stream = stream or sys.stdout
         self.debug = debug
         self.wrap = wrap
@@ -268,6 +269,8 @@ class TALInterpreter:
                         value = self.engine.evaluateText(item[3])
                         if value is None:
                             continue
+                        if value is self.CancelAction:
+                            value = item[1]
                 elif (action == "metal" and self.currentMacro and
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
@@ -314,6 +317,9 @@ class TALInterpreter:
         text = self.engine.evaluateText(expr)
         if text is None:
             return
+        if text is self.CancelAction:
+            self.interpret(block)
+            return
         text = cgi.escape(text)
         self.stream_write(text)
 
@@ -323,6 +329,9 @@ class TALInterpreter:
             return
         structure = self.engine.evaluateStructure(expr)
         if structure is None:
+            return
+        if structure is self.CancelAction:
+            self.interpret(block)
             return
         text = str(structure)
         if not repldict and not self.strictinsert:
@@ -378,6 +387,9 @@ class TALInterpreter:
             self.interpret(block)
             return
         macro = self.engine.evaluateMacro(macroExpr)
+        if macro is self.CancelAction:
+            self.interpret(block)
+            return
         if not isCurrentVersion(macro):
             raise METALError("macro %s has incompatible version %s" %
                              (`macroName`, `getProgramVersion(macro)`),

@@ -103,7 +103,7 @@ except ImportError:
 import TALDefs
 from DummyEngine import DummyEngine
 
-FILE = "test/input/test01.xml"
+FILE = "tests/input/test01.xml"
 
 def main():
     versionTest = 1
