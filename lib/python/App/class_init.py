@@ -36,9 +36,10 @@ def default__class_init__(self):
                     try: classname = '%s.%s' % (
                         self.__module__, self.__name__)
                     except AttributeError: classname = `self`
-                    from zLOG import LOG, WARNING
-                    LOG('Init', WARNING, 'Ambiguous name for method of %s: '
-                        '"%s" != "%s"' % (classname, d['__name__'], name))
+                    import logging
+                    logging.getLogger("Init").warning(
+                        'Ambiguous name for method of %s: %r != %r',
+                        classname, d['__name__'], name)
             else:
                 # Supply a name implicitly so that the method can
                 # find the security assertions on its container.
