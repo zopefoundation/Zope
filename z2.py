@@ -213,6 +213,24 @@ Environment settings are of the form: NAME=VALUE.
 
 Note: you *must* use Python 1.5.2 or later!
 """
+
+
+# This is required path hackery for the win32 binary distribution
+# that ensures that the bundled python libraries are used. In a
+# win32 binary distribution, the installer will have replaced the
+# marker string with the actual software home. If that has not
+# happened, then the path munging code is skipped.
+swhome=r'INSERT_SOFTWARE_HOME'
+if swhome != 'INSERT_SOFTWARE_HOME':
+    import sys
+    sys.path.insert(0, '%s/lib/python' % swhome)
+    sys.path.insert(1, '%s/bin/lib' % swhome)
+    sys.path.insert(2, '%s/bin/lib/plat-win' % swhome)
+    sys.path.insert(3, '%s/bin/lib/win32' % swhome)
+    sys.path.insert(4, '%s/bin/lib/win32/lib' % swhome)
+    sys.path.insert(5, '%s' % swhome)
+
+
 import os, sys, getopt, string
 
 program=sys.argv[0]
