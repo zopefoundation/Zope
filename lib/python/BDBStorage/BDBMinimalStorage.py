@@ -4,11 +4,12 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 __version__ = '0.1'
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
-# http://pybsddb.sourceforge.net
+# http://pybsddb.sourceforge.net.  It is compatible with release 3.0 of
+# PyBSDDB3.
 from bsddb3 import db
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
@@ -92,7 +93,8 @@ class Minimal(BerkeleyBase):
             # BAW: all objects have the same serial number?  JF: all the
             # existing storages re-use the transaction's serial number for all
             # the objects, but they don't have to.  In Jeremy's SimpleStorage,
-            # it's just a counter.
+            # it's just a counter.  _serial is set in BaseStorage.py during
+            # tpc_begin().
             serial = self._serial
             while 1:
                 rec = self._commitlog.next_object()
@@ -184,9 +186,9 @@ class Minimal(BerkeleyBase):
         try:
             oserial = self._serials.get(oid)
             if oserial is not None and serial <> oserial:
-                # The object exists in the database, so let's make sure that
-                # the serial number given in the call is the same as the last
-                # stored serial number.  If not, raise a ConflictError
+                # The object exists in the database, but the serial number
+                # given in the call is not the same as the last stored serial
+                # number.  Raise a ConflictError.
                 raise POSException.ConflictError(
                     'serial number mismatch (was: %s, has: %s)' %
                     (oserial, utils.U64(serial)))
