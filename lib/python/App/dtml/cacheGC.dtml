@@ -27,19 +27,6 @@
 </table>
 
 
-<dtml-if cacheStatistics>
-<h3>Cache Statistics</h3>
-<table>
-
-<dtml-in cacheStatistics>
-<tr><th align=left>&dtml-sequence-key;</th>
-    <td>&dtml-sequence-item;</td>
-</tr>
-</dtml-in>
-
-</table>
-</dtml-if>
-
 <dtml-if show_cache_detail>
   <h4>Cache Details</h4><P>
 

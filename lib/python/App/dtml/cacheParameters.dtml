@@ -41,18 +41,6 @@
   </td>
 </tr>
 
-
-<dtml-in cacheStatistics>
-<tr>
-  <th align=left>
-  &dtml-sequence-key;
-  </th>
-  <td>
-  &dtml-sequence-item;
-  </td>
-</tr>
-</dtml-in>
-
 <tr>
   <td align="left" colspan=2>
   <div class="form-label">

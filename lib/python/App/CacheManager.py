@@ -92,9 +92,6 @@ class CacheManager:
             response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
 
 
-    def cacheStatistics(self):
-        return self._getDB().cacheStatistics()
-
     # BoboPOS 2
     def cache_mean_age(self):
         return Globals.Bobobase._jar.cache.cache_mean_age/60.0
