@@ -299,7 +299,7 @@ class TALInterpreter:
         namelen = _len(name)
         col = self.col + namelen + 1
         wrap = self.wrap
-        align = col + 1 + namelen
+        align = col + 1
         if align >= wrap/2:
             align = 4  # Avoid a narrow column far to the right
         attrAction = self.dispatch["<attrAction>"]
