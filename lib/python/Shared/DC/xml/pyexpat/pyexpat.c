@@ -32,6 +32,11 @@ PERFORMANCE OF THIS SOFTWARE.
 #include "Python.h"
 #include "xmlparse.h"
 
+/*
+** The version number should match the one in _checkversion
+*/
+#define VERSION "1.2"
+
 static PyObject *ErrorObject;
 
 /* ----------------------------------------------------- */
@@ -408,8 +413,11 @@ initpyexpat()
 	PyDict_SetItemString(d, "error", ErrorObject);
 
 	/* XXXX Add constants here */
+	PyDict_SetItemString(d, "version", PyString_FromString(VERSION));
+		
 #define MYCONST(name) \
 	PyDict_SetItemString(d, #name, PyInt_FromLong(name))
+		
 	MYCONST(XML_ERROR_NONE);
 	MYCONST(XML_ERROR_NO_MEMORY);
 	MYCONST(XML_ERROR_SYNTAX);
