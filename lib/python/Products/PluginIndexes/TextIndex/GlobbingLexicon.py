@@ -26,6 +26,7 @@ from randid import randid
 from Products.PluginIndexes.TextIndex.TextIndex import Or
 from Products.PluginIndexes.TextIndex.TextIndex import Op
 
+from types import UnicodeType 
 
 class GlobbingLexicon(Lexicon):
     """Lexicon which supports basic globbing function ('*' and '?').
@@ -250,10 +251,16 @@ class GlobbingLexicon(Lexicon):
         """
 
         # Remove characters that are meaningful in a regex
-        transTable = string.maketrans("", "")
-        result = string.translate(pat, transTable,
-                                  r'()&|!@#$%^{}\<>.')
-        
+        if not isinstance(pat, UnicodeType):
+            transTable = string.maketrans("", "")
+            result = string.translate(pat, transTable,
+                                      r'()&|!@#$%^{}\<>.')
+        else:
+            transTable={}
+            for ch in r'()&|!@#$%^{}\<>.':
+                transTable[ord(ch)]=None
+            result=pat.translate(transTable)
+
         # First, deal with multi-character globbing
         result = result.replace( '*', '.*')
 

@@ -221,6 +221,59 @@ class Tests(unittest.TestCase):
        """ Check complex query 1 """
        self.globTest({'text':'((?ount* or get) and not wait) '
                       '"been *ert*"'}, [0, 1, 5, 6])
+
+   # same tests, unicode strings    
+   def checkStarQueryUnicode(self):
+       "Check a star query (unicode)"
+       self.globTest({'text':u'm*n'}, [0,2])
+
+   def checkAndQueryUnicode(self):
+       "Check an AND query (unicode)"
+       self.globTest({'text':u'time and country'}, [0,])
+
+   def checkOrQueryUnicode(self):
+       "Check an OR query (unicode)"
+       self.globTest({'text':u'time or country'}, [0,1,6])
+
+   def checkDefOrQueryUnicode(self):
+       "Check a default OR query (unicode)"
+       self.globTest({'text':u'time country'}, [0,1,6])
+
+   def checkNearQueryUnicode(self):
+       """Check a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!) (unicode)"""
+       # NEAR never worked, so Zopes post-2.3.1b3 define near to mean AND
+       self.globTest({'text':u'time ... country'}, [0,])
+
+   def checkQuotesQueryUnicode(self):
+       """Check a quoted query (unicode)"""
+       ai = self.globTest({'text':u'"This is the time"'}, [0,])
+
+       r = list(ai({'text':'"now is the time"'})[0].keys())
+       assert  r == [], r
+
+   def checkAndNotQueryUnicode(self):
+       "Check an ANDNOT query (unicode)"
+       self.globTest({'text':u'time and not country'}, [6,])
+
+   def checkParenMatchingQueryUnicode(self):
+       "Check a query with parens (unicode)"
+       ai = self.globTest({'text':u'(time and country) men'}, [0,])
+
+       r = list(ai({'text':u'(time and not country) or men'})[0].keys())
+       assert  r == [0, 6], r
+
+   def checkTextIndexOperatorQueryUnicode(self):
+       "Check a query with 'operator' in the request (unicode)"
+       self.globTest({'text': {u'query': u'time men', 'operator':'and'}}, [0,])
+
+   def checkNonExistentWordUnicode(self):
+       """ Check for nonexistent word  (unicode)"""
+       self.globTest({'text':u'zop'}, [])
+       
+   def checkComplexQuery1Unicode(self):
+       """ Check complex query 1  (unicode)"""
+       self.globTest({'text':u'((?ount* or get) and not wait) '
+                      '"been *ert*"'}, [0, 1, 5, 6])
        
 
 def test_suite():

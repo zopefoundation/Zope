@@ -35,6 +35,9 @@ Zope Changes
         to display unicode strings in the vocabulary properly (now using
         UTF-8 encoding for display purposes)
 
+      - Collector #250: applied several patches for TextIndex for better
+        unicode support for the GlobbingLexicon
+
 
   Zope 2.5.1 beta 1
     
