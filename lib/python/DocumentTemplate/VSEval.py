@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.10 1998/03/10 17:30:41 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.11 1998/03/12 21:37:01 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -11,7 +11,7 @@ __rcs_id__='$Id: VSEval.py,v 1.10 1998/03/10 17:30:41 jim Exp $'
 #       rights reserved.  
 #
 ############################################################################ 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from string import join, find, split, translate
 import sys, gparse, string
@@ -85,7 +85,7 @@ class Eval:
 	# 'manage'. This is a DC specific rule and probably needs to be
 	# made customizable!
 	for name in names:
-	    if name[:1]=='_' and name != '_' and name != '_vars':
+	    if name[:1]=='_' and name not in ('_', '_vars', '_getattr'):
 		raise TypeError, 'illegal name used in expression'
 		
 	used={}
@@ -111,18 +111,29 @@ class Eval:
     def eval(self, mapping):
 	d={'_vars': mapping}
 	code=self.code
+	globals=self.globals
 	for name in self.used:
 	    try: d[name]=mapping.getitem(name,0)
-	    except KeyError: pass
+	    except KeyError:
+		if name=='_getattr':
+		    d['__builtins__']=globals
+		    exec compiled_getattr in d
 
-	return eval(code,self.globals,d)
+	return eval(code,globals,d)
 
     def __call__(self, **kw):
 	return eval(self.code, self.globals, kw)
 
+compiled_getattr=compile(
+    'def _getattr(o,n): return __guarded_getattr__(_vars,o,n)',
+    '<string>','exec')
+
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.11  1998/03/12 21:37:01  jim
+# Added _getattr.
+#
 # Revision 1.10  1998/03/10 17:30:41  jim
 # Newlines (and carriage-returns are now allowed in expressions.
 #
