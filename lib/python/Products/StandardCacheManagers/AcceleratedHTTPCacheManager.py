@@ -238,7 +238,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
             settings = REQUEST
         self.title = str(title)
         self._settings = {
-            'anonymous_only':settings['anonymous_only'] and 1 or 0,
+            'anonymous_only':settings.get('anonymous_only') and 1 or 0,
             'interval':int(settings['interval']),
             'notify_urls':tuple(settings['notify_urls']),}
         cache = self.ZCacheManager_getCache()
