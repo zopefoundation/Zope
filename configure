@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.22 2004/04/13 20:52:06 fdrake Exp $
-# $Revision: 1.22 $
+# $Id: configure,v 1.23 2004/04/13 20:52:50 fdrake Exp $
+# $Revision: 1.23 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -154,8 +154,8 @@ get_python() {
 
 out() {
     
-   if [ -z "$QUIET" ]; then
-      echo $1
+    if [ -z "$QUIET" ]; then
+        echo $1
     fi
 }
 
