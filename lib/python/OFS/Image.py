@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -398,8 +398,8 @@ class Image(File):
     renders an HTML 'IMG' tag.
     """
     meta_type='Image'
-    height=0
-    width=0
+    height=''
+    width=''
 
     _properties=({'id':'title', 'type': 'string'},
                  {'id':'content_type', 'type':'string'},
