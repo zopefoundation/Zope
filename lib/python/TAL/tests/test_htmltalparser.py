@@ -221,8 +221,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('beginScope', {'tal:define': 'xyzzy string:spam'}),
             ('setLocal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p', [('tal:define', 'xyzzy string:spam', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_define_2(self):
@@ -232,8 +232,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setLocal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p',
              [('tal:define', 'local xyzzy string:spam', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_define_3(self):
@@ -243,8 +243,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setGlobal', ('xyzzy', '$string:spam$')),
             ('startTag', ('p',
              [('tal:define', 'global xyzzy string:spam', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_define_4(self):
@@ -254,8 +254,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setLocal', ('x', '$string:spam$')),
             ('setLocal', ('y', '$x$')),
             ('startTag', ('p', [('tal:define', 'x string:spam; y x', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_define_5(self):
@@ -265,8 +265,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setLocal', ('x', '$string:;;$')),
             ('setLocal', ('y', '$x$')),
             ('startTag', ('p', [('tal:define', 'x string:;;;;; y x', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_define_6(self):
@@ -280,8 +280,8 @@ class TALGeneratorTestCases(TestCaseBase):
             ('setLocal', ('z', '$y$')),
             ('startTag', ('p',
              [('tal:define', 'x string:spam; global y x; local z y', 3)])),
-            rawtext('</p>'),
             ('endScope', ()),
+            rawtext('</p>'),
             ])
 
     def check_condition(self):
@@ -303,8 +303,8 @@ class TALGeneratorTestCases(TestCaseBase):
              ('beginScope', {'tal:content': 'string:foo'}), 
              ('startTag', ('p', [('tal:content', 'string:foo', 3)])),
              ('insertText', ('$string:foo$', [rawtext('bar')])),
-             rawtext('</p>'),
              ('endScope', ()),
+             rawtext('</p>'),
              ])
 
     def check_content_2(self):
@@ -313,8 +313,8 @@ class TALGeneratorTestCases(TestCaseBase):
              ('beginScope', {'tal:content': 'text string:foo'}),
              ('startTag', ('p', [('tal:content', 'text string:foo', 3)])),
              ('insertText', ('$string:foo$', [rawtext('bar')])),
-             rawtext('</p>'),
              ('endScope', ()),
+             rawtext('</p>'),
              ])
 
     def check_content_3(self):
@@ -325,8 +325,8 @@ class TALGeneratorTestCases(TestCaseBase):
               [('tal:content', 'structure string:<br>', 3)])),
              ('insertStructure',
               ('$string:<br>$', {}, [rawtext('bar')])),
-             rawtext('</p>'),
              ('endScope', ()),
+             rawtext('</p>'),
              ])
 
     def check_replace_1(self):
@@ -393,8 +393,8 @@ class TALGeneratorTestCases(TestCaseBase):
               ('tal:attributes',
                'href string:http://www.zope.org; x string:y', 3),
               ('x', None, 1, '$string:y$')])),
-            rawtext('link</a>'),
             ('endScope', ()),
+            rawtext('link</a>'),
             ])
 
     def check_attributes_2(self):
