@@ -289,9 +289,9 @@ class zhttp_handler:
         return producers.simple_producer("""
             <li>Zope Handler
             <ul>
-            <li><b>Published Module:</b> % s
-            <li><b>Hits:</b> %d
-            </ul>""" %(self.module_name,int(self.hits))
+            <li><b>Published Module:</b> %s
+            <li><b>Hits:</b> %s
+            </ul>""" %(self.module_name, self.hits)
             )
 
     # put and post collection methods
