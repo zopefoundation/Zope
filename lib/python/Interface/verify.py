@@ -1,4 +1,3 @@
-
 from Exceptions import BrokenImplementation, DoesNotImplement, BrokenMethodImplementation
 from Method import Method
 import types
@@ -29,16 +28,9 @@ def verify_class_implementation(iface, klass):
         elif type(attr) is types.MethodType:
             meth = Method().fromMethod(attr, n)
         else:
-            break # must be an attribute...
-        
+            continue # must be an attribute...
+
         if d.getSignatureInfo() != meth.getSignatureInfo():
                 raise BrokenMethodImplementation(n)
-            
+
     return 1
-
-
-
-
-
-
-
