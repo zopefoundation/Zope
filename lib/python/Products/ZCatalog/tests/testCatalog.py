@@ -299,10 +299,7 @@ class TestCatalogObject(unittest.TestCase):
         assert len(a) == self.upper
 
     def testKeywordIndexWithMinMaxRangeWrongSyntax(self):
-        """checkKeywordIndex with min/max range wrong syntax - known to fail.
-           But because it will fail we need to change the assert statement
-           so the unittest will pass *crazy world*
-        """
+        # checkKeywordIndex with min/max range wrong syntax.
         a = self._catalog(att3=['att'], att3_usage='range:min:max')
         assert len(a) != self.upper
 
