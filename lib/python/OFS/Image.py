@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.110 $'[11:-2]
+__version__='$Revision: 1.111 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -479,7 +479,6 @@ class Image(File):
     manage=manage_main=manage_editForm
 
     def update_data(self, data, content_type=None, size=None):
-        if content_type is not None: self.content_type=content_type
         if size is None: size=len(data)
 
         self.size=size
@@ -488,6 +487,9 @@ class Image(File):
 
         # handle GIFs   
         if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+            # Check to see if content_type is correct
+            if content_type != 'image/gif':
+                content_type = 'image/gif'
             w, h = struct.unpack("<HH", data[6:10])
             self.width=str(int(w))
             self.height=str(int(h))
@@ -511,6 +513,10 @@ class Image(File):
                 self.width=str(int(w))
                 self.height=str(int(h))
             except: pass
+
+            # Check to see if we have the right content type
+            if content_type != 'image/jpeg':
+                content_type = 'image/jpeg'
             
         # handle PNGs
 
@@ -521,6 +527,9 @@ class Image(File):
         # and finally the 4-byte width, height
         elif (size >= 24) and (data[:8] == '\211PNG\r\n\032\n') \
            and (data[12:16] == 'IHDR'):
+            # Check to see if we have the right content type
+            if content_type != 'image/png':
+                content_type = 'image/png'
             w, h = struct.unpack(">LL", data[16:24])
             self.width=str(int(w))
             self.height=str(int(h))
@@ -528,10 +537,17 @@ class Image(File):
         # But we had this before. I have no clue, so I'll keep both. :)
         # Maybe this is for an older PNG version.
         elif (size >= 16) and (data[:8] == '\x89PNG\r\n\x1a\n'):
+            # Check to see if we have the right content type
+            if content_type != 'image/png':
+                content_type = 'image/png'
+
             w, h = struct.unpack(">LL", data[8:16])
             self.width=str(int(w))
             self.height=str(int(h))
             
+        # Now we should have the correct content type, or still None
+        if content_type is not None: self.content_type = content_type
+
 
     def __str__(self):
         width=self.width and ('width="%s" ' % self.width) or ''
