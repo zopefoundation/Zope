@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.8 $ '[11:-2]
+__version__='$Revision: 1.9 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -217,7 +217,7 @@ Copyright (C) 1999 Digital Creations, Inc.
                
             while 1:
                 password = getpass.getpass("Password: ")
-                verify = getpass.getpass("Vefify password: ")
+                verify = getpass.getpass("Verify password: ")
                 if verify == password:
                     break
                 else:
