@@ -8,13 +8,6 @@ Zope changes
     
       Features Added
 
-	- **This is the trunk version of CHANGES.txt. Please put only 
-            new features here. Bug fixes should be fixed on both the 
-            trunk and current release branch, but the note for a bug 
-            fix should go into the CHANGES.txt of the current release 
-            branch (which is where the next bug-fix release will be 
-            made from).**
-
         - Added the __replaceable__ property support to ObjectManager.
             This is currently documented only in the Wiki.
 
