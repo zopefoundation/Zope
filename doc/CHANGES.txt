@@ -213,9 +213,21 @@ Zope Changes
 
           Note that version data are not converted.
 
+        - In Z Classes, Methods and Property Sheets now have a "Define
+          Permissions" management tab to map permissions. This tab used
+          to be labeled "Security".
+
+        - ZServer's FTP server now attempts to display an object's owner
+          as defined in local roles.  
+
       Bugs fixed
 
         - The cache management screens were broken
+
+        - Local roles on DTML Methods and Documents were not persistent.
+
+        - ZServer's select trigger has been updated and now shouldn't give
+          errors when running ZServer as another users.   
 
     Zope 2.0 alpha 2
 
