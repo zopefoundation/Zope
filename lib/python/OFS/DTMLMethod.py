@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -92,17 +92,18 @@ from SimpleItem import Item_w__name__, pretty_tb
 from DocumentTemplate.DT_Util import cDocument
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
-from Acquisition import Explicit
-import regex, Globals, sys
+from urllib import quote
+import regex, Globals, sys, Acquisition
 
 
-
-class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
+class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
+                 Item_w__name__):
     """DTML Method objects are DocumentTemplate.HTML objects that act
        as methods of their containers."""
     meta_type='DTML Method'
     icon     ='p_/dtmlmethod'
     _proxy_roles=()
+    index_html=None # Prevent accidental acquisition
 
     # Documents masquerade as functions:
     class func_code: pass
@@ -369,10 +370,10 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     if not file: file=default_dm_html
     ob=DTMLMethod(file, __name__=id)
     ob.title=title
-    self._setObject(id, ob)
+    id=self._setObject(id, ob)
     if REQUEST is not None:
         u=REQUEST['URL1']
-        if submit==" Add and Edit ": u="%s/%s" % (u,id)
+        if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
