@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ThreadLock.c,v 1.11 2002/01/25 15:34:06 gvanrossum Exp $
+  $Id: ThreadLock.c,v 1.12 2002/03/08 18:34:23 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,7 +46,7 @@
 */
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.11 2002/01/25 15:34:06 gvanrossum Exp $"
+"\n$Id: ThreadLock.c,v 1.12 2002/03/08 18:34:23 jeremy Exp $"
 ;
 
 #include "Python.h"
@@ -213,7 +213,7 @@ ThreadLock_dealloc(ThreadLockObject *self)
 #ifdef WITH_THREAD
   free_lock(self->lock);
 #endif
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
 
 static PyObject *
@@ -274,7 +274,7 @@ newThreadLockObject(ThreadLockObject *self, PyObject *args)
 #ifdef WITH_THREAD
   self->lock = allocate_lock();
   if (self->lock == NULL) {
-    PyMem_DEL(self);
+    PyObject_DEL(self);
     self = NULL;
     PyErr_SetString(ErrorObject, "can't allocate lock");
   }

@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.56 2002/01/25 17:23:06 evan Exp $
+  $Id: Acquisition.c,v 1.57 2002/03/08 18:34:23 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -256,7 +256,7 @@ Wrapper_dealloc(Wrapper *self)
     }
   else 
     {
-      PyMem_DEL(self);
+      PyObject_DEL(self);
     }
 }
 
@@ -1546,7 +1546,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.56 2002/01/25 17:23:06 evan Exp $\n",
+	   "$Id: Acquisition.c,v 1.57 2002/03/08 18:34:23 jeremy Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);

@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.50 2002/01/25 15:34:06 gvanrossum Exp $
+  $Id: ExtensionClass.c,v 1.51 2002/03/08 18:34:23 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.50 2002/01/25 15:34:06 gvanrossum Exp $\n"
+"$Id: ExtensionClass.c,v 1.51 2002/03/08 18:34:23 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1610,7 +1610,7 @@ CCL_dealloc(PyExtensionClass *self)
   if (((PyExtensionClass*)self->ob_type) != self) {
       Py_XDECREF(self->ob_type);
   }
-  PyMem_DEL(self);
+  PyObject_DEL(self);
 }
   
 static PyObject *
@@ -3074,7 +3074,7 @@ subclass_dealloc(PyObject *self)
   UNLESS(base_dealloced) 
     {
       Py_DECREF(self->ob_type);
-      PyMem_DEL(self);
+      PyObject_DEL(self);
     }
 
   PyErr_Restore(t,v,tb);
