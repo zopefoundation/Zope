@@ -332,7 +332,7 @@ class Server:
             if verbose: 
                print "set of REUSEADDR failed", sys.exc_type, sys.exc_value
             pass
-        sock.bind(self.HOST, self.port)
+        sock.bind((self.HOST, self.port))
         sock.listen(self.BACKLOG)
         self.socket = sock
         return sock

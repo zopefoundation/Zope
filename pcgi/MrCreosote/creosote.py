@@ -9,12 +9,12 @@ PORT = 7739
 
 def spew(msg, host='localhost', port=PORT):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind('', 0)
+    s.bind(('', 0))
     s.sendto(msg, (host, port))
 
 def bucket(port=PORT, logfile=None):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.bind('', port)
+    s.bind(('', port))
     print 'creosote bucket waiting on port: %s' % port
     if logfile:
         f = open(logfile, 'a+')
@@ -41,10 +41,10 @@ class MrCreosote:
             return
         if self.redirect_server == None:
             self.redirect_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.redirect_server.bind('', self.port)
+            self.redirect_server.bind(('', self.port))
         if self.redirect_client == None:
             self.redirect_client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.redirect_client.bind('', 0)
+            self.redirect_client.bind(('', 0))
         while 1:
             data, addr = self.redirect_server.recvfrom(BUFSIZE)
             self.redirect_client.sendto(data, (host, port))
@@ -53,7 +53,7 @@ class MrCreosote:
             return
         if self.client == None:
             self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.client.bind('', 0)
+            self.client.bind(('', 0))
         self.client.sendto(msg, (self.host, self.port))
 
 if __name__ == '__main__':

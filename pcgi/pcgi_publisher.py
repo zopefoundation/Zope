@@ -192,7 +192,7 @@ class PCGIPublisher:
                 self.hostname = socket.gethostname()
             try:
                 self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.sock.bind(self.hostname, self.port)
+                self.sock.bind((self.hostname, self.port))
             except socket.error:
                 return self.fatalError("error binding to socket: %s" % self.socketFile)
             try:
