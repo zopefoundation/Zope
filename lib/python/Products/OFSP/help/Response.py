@@ -209,10 +209,14 @@ class Response:
         
         '''
 
-    def redirect(self, location):
+    def redirect(self, location, lock=0):
         """
 
-        Cause a redirection without raising an error
+        Cause a redirection without raising an error. If the "lock"
+        keyword argument is passed with a true value, then the HTTP
+        redirect response code will not be changed even if an error
+        occurs later in request processing (after redirect() has
+        been called).
 
         Permission -- Always available
         
