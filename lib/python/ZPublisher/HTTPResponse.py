@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.23 1999/11/03 19:24:45 sroberts Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: HTTPResponse.py,v 1.24 1999/11/11 16:45:39 brian Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -658,7 +658,7 @@ class HTTPResponse(BaseResponse):
                 elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
                 elif name=='max_age': cookie = '%s; Max-Age=%s' % (cookie,v)
                 elif name=='comment': cookie = '%s; Comment=%s' % (cookie,v)
-                elif name=='secure': cookie = '%s; Secure' % cookie
+                elif name=='secure' and v: cookie = '%s; Secure' % cookie
             cookie_list.append(cookie)
 
         # Should really check size of cookies here!
