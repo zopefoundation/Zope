@@ -43,7 +43,7 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-class Index(Persistent):
+class CosineIndex(Persistent):
 
     __implements__ = IIndex
 

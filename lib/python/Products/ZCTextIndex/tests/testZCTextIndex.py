@@ -2,8 +2,8 @@ from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.tests \
      import testIndex, testQueryEngine, testQueryParser
 from Products.ZCTextIndex.CosineIndex import scaled_int, SCALE_FACTOR
-from Products.ZCTextIndex.CosineIndex import Index as CosineIndex
-from Products.ZCTextIndex.OkapiIndex import Index as OkapiIndex
+from Products.ZCTextIndex.CosineIndex import CosineIndex
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser

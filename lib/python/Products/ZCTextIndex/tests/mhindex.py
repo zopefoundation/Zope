@@ -22,7 +22,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 
 from Products.ZCTextIndex.NBest import NBest
-from Products.ZCTextIndex.OkapiIndex import Index
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex as Index
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.QueryParser import QueryParser
