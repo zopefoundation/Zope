@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.19 1998/01/12 19:19:48 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Aqueduct.py,v 1.20 1998/01/12 20:36:26 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -207,13 +207,13 @@ def custom_default_report(id, result, action='', no_table=0):
     if no_table: tr, _tr, td, _td, delim = '<p>', '</p>', '', '', ', '
     else: tr, _tr, td, _td, delim = '<tr>', '</tr>', '<td>', '</td>', ''
 
-    if no_table: tr='<p>'
-    else: tr, _tr = '<tr>', '</p>'
+    if no_table: tr='<p>', '</p>'
+    else: tr, _tr = '<tr>', '</tr>'
 
-    row=('%s\n%s\t\t%s' %
+    row=('%s\n%s\t%s' %
 	 (tr,string.joinfields(
 	     map(lambda c, td=td, _td=_td:
-		 '\t\t%s<!--#var %s%s-->%s\n'
+		 '\t%s<!--#var %s%s-->%s\n'
 		 % (td,urllib.quote(c['name']),
 		    c['type']!='s' and ' null=""' or '',_td),
 		 columns),
@@ -366,6 +366,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.20  1998/01/12 20:36:26  jim
+# Fixed bug in report generation.
+#
 # Revision 1.19  1998/01/12 19:19:48  jim
 # *** empty log message ***
 #

@@ -1,5 +1,6 @@
 <!--#in %(id)s size=50 start=query_start-->
    <!--#if sequence-start-->
+
       <!--#if previous-sequence-->
         <a href="<!--#var URL-->/<!--#var sequence-query
                  -->&query_start=<!--#var
@@ -8,8 +9,9 @@
         </a>
       <!--#/if previous-sequence-->
       %(else no_table)[<table border>
-	%(heading)
-      s%(else)]
+	%(heading)s
+      %(else)]
+
    <!--#/if sequence-start-->
 
    %(row)s
