@@ -309,7 +309,8 @@ class Product(Folder):
             self._objects))
             }
         f.write(cPickle.dumps(meta,1))
-        self._p_jar.db.exportoid(self._p_oid, f)
+
+        self._p_jar.exportFile(self._p_oid, f)
         ar.add(prefix+'product.dat', f.getdata())
 
         ar.finish()
@@ -430,7 +431,7 @@ def initializeProduct(productp, name, home, app):
     try:
         f=CompressedInputFile(open(home+'/product.dat','rb'),name+' shshsh')
         meta=cPickle.Unpickler(f).load()
-        product=Globals.Bobobase._jar.import_file(f)
+        product=app._p_jar.importFile(f)
         product._objects=meta['_objects']
     except:
         f=fver and (" (%s)" % fver)

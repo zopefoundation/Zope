@@ -82,120 +82,35 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''short description
 
+"""Commonly used utility functions."""
 
-$Id: Undo.py,v 1.13 1999/04/29 19:16:04 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.1 $'[11:-2]
 
-import Globals, ExtensionClass
-from DateTime import DateTime
-from string import atof, find, atoi, split, rfind
+import os, sys
+from Common import package_home
 
-class UndoSupport(ExtensionClass.Base):
+try: home=os.environ['SOFTWARE_HOME']
+except:
+    import Products
+    home=package_home(Products.__dict__)
+    if not os.path.isabs(home):
+        home=os.path.join(os.getcwd(), home)
+        
+    home,e=os.path.split(home)
+    if os.path.split(home)[1]=='.': home=os.path.split(home)[0]
+    if os.path.split(home)[1]=='..':
+        home=os.path.split(os.path.split(home)[0])[0]
 
-    __ac_permissions__=(
-        ('Undo changes', (
-            'manage_undo_transactions', 'undoable_transactions',
-            )),
-        ('View management screens', ('manage_UndoForm',)),
-        )
+sys.modules['__builtin__'].SOFTWARE_HOME=SOFTWARE_HOME=home
 
-    manage_UndoForm=Globals.HTMLFile(
-        'undo', globals(),
-        PrincipiaUndoBatchSize=20,
-        first_transaction=0, last_transaction=20)
-
-    def get_request_var_or_attr(self, name, default):
-        if hasattr(self, 'REQUEST'):
-            REQUEST=self.REQUEST
-            if REQUEST.has_key(name): return REQUEST[name]
-            if hasattr(self, name): v=getattr(self, name)
-            else: v=default
-            REQUEST[name]=v
-            return v
-        else:
-            if hasattr(self, name): v=getattr(self, name)
-            else: v=default
-            return v
-
-    def undoable_transactions(self, AUTHENTICATION_PATH=None,
-                              first_transaction=None,
-                              last_transaction=None,
-                              PrincipiaUndoBatchSize=None):
-
-        if AUTHENTICATION_PATH is None:
-            path=self.REQUEST['AUTHENTICATION_PATH']
-        else: path=AUTHENTICATION_PATH
-
-        if first_transaction is None:
-            first_transaction=self.get_request_var_or_attr(
-                'first_transaction', 0)
-
-        if PrincipiaUndoBatchSize is None:
-            PrincipiaUndoBatchSize=self.get_request_var_or_attr(
-                'PrincipiaUndoBatchSize', 20)
-
-        if last_transaction is None:
-            last_transaction=self.get_request_var_or_attr(
-                'last_transaction',
-                first_transaction+PrincipiaUndoBatchSize)
-
-        db=self._p_jar.db
-        try:
-            r=db().undoLog()
-        except:
-            # BoboPOS2
-            r=[]
-            add=r.append
-            h=['','']
-            try:
-                if Globals.Bobobase.has_key('_pack_time'):
-                    since=Globals.Bobobase['_pack_time']
-                else: since=0
-                trans_info=db.transaction_info(
-                    first_transaction,last_transaction,path,since=since)
-
-            except: trans_info=[]
-
-            for info in trans_info:
-                while len(info) < 4: info.append('')
-                t=info[1]
-                l=find(t,' ')
-                if l >= 0: t=t[l:]
-                add(
-                    {'time': DateTime(atof(t)),
-                     'id': "%s %s" % (info[1], info[0]),
-                     'user_name': info[2],
-                     'description': info[3],
-                     })
-
-        else:
-            # ZODB 3
-            for d in r: r['time']=DateTime(r['time'])
-
-        return r
+try: chome=os.environ['INSTANCE_HOME']
+except:
+    chome=home
+    d,e=os.path.split(chome)
+    if e=='python':
+        d,e=os.path.split(d)
+        if e=='lib': chome=d or os.getcwd()
     
-    def manage_undo_transactions(self, transaction_info, REQUEST=None):
-        """
-        """
-        jar=self._p_jar
-        db=jar.db
-        try: undo=db().undo
-        except:
-            # BoboPOS 2
-            for i in transaction_info:
-                l=rfind(i,' ')
-                oids=db.Toops( (i[:l],), atoi(i[l:]))
-                jar.reload_oids(oids)
+sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
 
-        else:
-            # ZODB 3
-            for i in transaction_info: undo(i)
-            
-            
-        if REQUEST is None: return
-        REQUEST['RESPONSE'].redirect("%s/manage_main" % REQUEST['URL1'])
-        return ''
-                 
-Globals.default__class_init__(UndoSupport)               

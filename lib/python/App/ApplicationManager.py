@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -205,7 +205,14 @@ class ApplicationManager(Folder,CacheManager):
         s='%d sec' % s
         return '%s %s %s %s' % (d, h, m, s)
 
-    def db_name(self): return Globals.Bobobase._jar.db.file_name
+    def db_name(self):
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS 2
+            return Globals.BobobaseName
+        else:
+            # ZODB 3
+            return db.getName()
 
     def db_size(self):
         s=os.stat(self.db_name())[6]
@@ -214,21 +221,23 @@ class ApplicationManager(Folder,CacheManager):
 
     def manage_shutdown(self):
         """Shut down the application"""
-        db=Globals.Bobobase._jar.db
-        db.save_index()
-        db.file.close()
-        db=Globals.VersionBase.TDB
-        db.save_index()
-        db.file.close()
+        for db in Globals.opened: db.close()
         sys.exit(0)
 
     def manage_pack(self, days=0, REQUEST=None):
         """Pack the database"""
+
+        t=time.time()-days*86400
+
+        try: db=self._p_jar.db()
+        except: pass
+        else: return db.pack(t)
+
+        # BoboPOS2:
         if self._p_jar.db is not Globals.Bobobase._jar.db:
             raise 'Version Error', (
                 '''You may not pack the application database while
                 working in a <em>version</em>''')
-        t=time.time()-days*86400
         if Globals.Bobobase.has_key('_pack_time'):
             since=Globals.Bobobase['_pack_time']
             if t <= since:

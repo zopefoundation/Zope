@@ -82,120 +82,62 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''short description
 
-
-$Id: Undo.py,v 1.13 1999/04/29 19:16:04 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
-
-import Globals, ExtensionClass
+from class_init import default__class_init__
+from Persistence import Persistent
+import Globals
 from DateTime import DateTime
-from string import atof, find, atoi, split, rfind
 
-class UndoSupport(ExtensionClass.Base):
+Persistent.__dict__['__class_init__']=default__class_init__
 
-    __ac_permissions__=(
-        ('Undo changes', (
-            'manage_undo_transactions', 'undoable_transactions',
-            )),
-        ('View management screens', ('manage_UndoForm',)),
-        )
+class PersistentUtil:
 
-    manage_UndoForm=Globals.HTMLFile(
-        'undo', globals(),
-        PrincipiaUndoBatchSize=20,
-        first_transaction=0, last_transaction=20)
-
-    def get_request_var_or_attr(self, name, default):
-        if hasattr(self, 'REQUEST'):
-            REQUEST=self.REQUEST
-            if REQUEST.has_key(name): return REQUEST[name]
-            if hasattr(self, name): v=getattr(self, name)
-            else: v=default
-            REQUEST[name]=v
-            return v
-        else:
-            if hasattr(self, name): v=getattr(self, name)
-            else: v=default
-            return v
-
-    def undoable_transactions(self, AUTHENTICATION_PATH=None,
-                              first_transaction=None,
-                              last_transaction=None,
-                              PrincipiaUndoBatchSize=None):
-
-        if AUTHENTICATION_PATH is None:
-            path=self.REQUEST['AUTHENTICATION_PATH']
-        else: path=AUTHENTICATION_PATH
-
-        if first_transaction is None:
-            first_transaction=self.get_request_var_or_attr(
-                'first_transaction', 0)
-
-        if PrincipiaUndoBatchSize is None:
-            PrincipiaUndoBatchSize=self.get_request_var_or_attr(
-                'PrincipiaUndoBatchSize', 20)
-
-        if last_transaction is None:
-            last_transaction=self.get_request_var_or_attr(
-                'last_transaction',
-                first_transaction+PrincipiaUndoBatchSize)
-
-        db=self._p_jar.db
+    def bobobase_modification_time(self):
+        jar=self._p_jar
+        oid=self._p_oid
+        if jar is None or oid is None: return DateTime()
+        
         try:
-            r=db().undoLog()
-        except:
-            # BoboPOS2
-            r=[]
-            add=r.append
-            h=['','']
-            try:
-                if Globals.Bobobase.has_key('_pack_time'):
-                    since=Globals.Bobobase['_pack_time']
-                else: since=0
-                trans_info=db.transaction_info(
-                    first_transaction,last_transaction,path,since=since)
+            t=self._p_mtime
+            if t is None: return DateTime()
+        except: t=0
+        return DateTime(t)
 
-            except: trans_info=[]
-
-            for info in trans_info:
-                while len(info) < 4: info.append('')
-                t=info[1]
-                l=find(t,' ')
-                if l >= 0: t=t[l:]
-                add(
-                    {'time': DateTime(atof(t)),
-                     'id': "%s %s" % (info[1], info[0]),
-                     'user_name': info[2],
-                     'description': info[3],
-                     })
-
-        else:
-            # ZODB 3
-            for d in r: r['time']=DateTime(r['time'])
-
-        return r
-    
-    def manage_undo_transactions(self, transaction_info, REQUEST=None):
-        """
+    def locked_in_version(self):
+        """Was the object modified in any version?
         """
         jar=self._p_jar
-        db=jar.db
-        try: undo=db().undo
-        except:
-            # BoboPOS 2
-            for i in transaction_info:
-                l=rfind(i,' ')
-                oids=db.Toops( (i[:l],), atoi(i[l:]))
-                jar.reload_oids(oids)
+        oid=self._p_oid
+        if jar is None or oid is None: return None
+        try: mv=jar.db().modifiedInVersion
+        except: pass
+        else: return mv()
+        
+        # BoboPOS 2 code:
+        oid=self._p_oid
+        return (oid
+                and Globals.VersionBase.locks.has_key(oid)
+                and Globals.VersionBase.verify_lock(oid))
 
-        else:
-            # ZODB 3
-            for i in transaction_info: undo(i)
-            
-            
-        if REQUEST is None: return
-        REQUEST['RESPONSE'].redirect("%s/manage_main" % REQUEST['URL1'])
-        return ''
-                 
-Globals.default__class_init__(UndoSupport)               
+    def modified_in_version(self):
+        """Was the object modified in this version?
+        """
+        jar=self._p_jar
+        oid=self._p_oid
+        if jar is None or oid is None: return None
+        try: mv=jar.db().modifiedInVersion
+        except: pass
+        else: return mv()==jar.getVersion()
+
+        # BoboPOS 2 code:
+        jar=self._p_jar
+        if jar is None:
+            if hasattr(self,'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
+                jar=self.aq_parent._p_jar
+            if jar is None: return 0
+        if not jar.name: return 0
+        try: jar.db[self._p_oid]
+        except: return 0
+        return 1
+    
+for k, v in PersistentUtil.__dict__.items(): Persistent.__dict__[k]=v

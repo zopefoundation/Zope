@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.12 1999/03/22 18:13:41 michel Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: CacheManager.py,v 1.13 1999/04/29 19:16:03 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, time, sys
 
@@ -95,17 +95,49 @@ class CacheManager:
     """
     _cache_age=60
     _cache_size=400
+    _vcache_age=60
+    _vcache_size=400
 
     manage_cacheParameters=Globals.HTMLFile('cacheParameters', globals())
     manage_cacheGC=Globals.HTMLFile('cacheGC', globals())
 
-    def cache_length(self): return len(Globals.Bobobase._jar.cache)
+    def cache_length(self):
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2
+            return len(Globals.Bobobase._jar.cache)
+        else: return db.cacheSize()
 
-    def database_size(self): return len(Globals.Bobobase._jar.db.index)*4
+    def database_size(self):
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2
+            return len(Globals.Bobobase._jar.db.index)*4
+        else: return db.getSize()
 
-    def cache_age(self): return self._cache_age
+    def cache_age(self):
+        try:
+            if self._p_jar.getVersion():
+                return self._vcache_age
+        except: pass
+
+        return self._cache_age
+
     def manage_cache_age(self,value,REQUEST):
         "set cache age"
+        try:
+            v=self._p_jar.getVersion()
+        except: pass
+        else:
+            if v:
+                self._vcache_age=value
+                self._p_jar.db().setVersionCacheDeactivateAfter(value)
+            else:
+                self._cache_age=value
+                self._p_jar.db().setCacheDeactivateAfter(value)
+            return
+
+        # BoboPOS2:
         if self._p_jar.db is not Globals.Bobobase._jar.db:
             raise 'Version Error', (
                 '''You may not change the database cache age
@@ -113,9 +145,29 @@ class CacheManager:
         self._cache_age=Globals.Bobobase._jar.cache.cache_age=value
         return self.manage_CacheParameters(self,REQUEST)
 
-    def cache_size(self): return self._cache_size
+    def cache_size(self):
+        try:
+            if self._p_jar.getVersion():
+                return self._vcache_size
+        except: pass
+
+        return self._cache_size
+
     def manage_cache_size(self,value,REQUEST):
         "set cache size"
+        try:
+            v=self._p_jar.getVersion()
+        except: pass
+        else:
+            if v:
+                self._vcache_size=value
+                self._p_jar.db().setVersionCacheSize(value)
+            else:
+                self._cache_size=value
+                self._p_jar.db().setCacheSize(value)
+            return
+
+        # BoboPOS2:
         if self._p_jar.db is not Globals.Bobobase._jar.db:
             raise 'Version Error', (
                 '''You may not change the database cache size
@@ -123,61 +175,128 @@ class CacheManager:
         self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
         return self.manage_cacheParameters(self,REQUEST)
 
+    def cacheStatistics(self):
+        try: return self._p_jar.db().cacheStatistics()
+        except: pass
+
+        # BoboPOS 2
+        return (
+            ('Mean time since last access (minutes)',
+             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_age/60.0)),
+            ('Deallocation rate (objects/minute)',
+             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_deal*60)),
+            ('Deactivation rate (objects/minute)',
+             "%.4g" % (Globals.Bobobase._jar.cache.cache_mean_deac*60)),
+            ('Time of last cache garbage collection',
+             time.asctime(time.localtime(
+                 Globals.Bobobase._jar.cache.cache_last_gc_time
+                 ))
+             ),
+            )
+        
+
+    # BoboPOS 2
     def cache_mean_age(self):
         return Globals.Bobobase._jar.cache.cache_mean_age/60.0
 
+    # BoboPOS 2
     def cache_mean_deal(self):
         return Globals.Bobobase._jar.cache.cache_mean_deal*60
 
+    # BoboPOS 2
     def cache_mean_deac(self):
         return Globals.Bobobase._jar.cache.cache_mean_deac*60
 
+    # BoboPOS 2
     def cache_last_gc_time(self):
         t=Globals.Bobobase._jar.cache.cache_last_gc_time
         return time.asctime(time.localtime(t))
 
     def manage_full_sweep(self,value,REQUEST):
         "Perform a full sweep through the cache"
-        Globals.Bobobase._jar.cache.full_sweep(value)
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2
+            Globals.Bobobase._jar.cache.full_sweep(value)
+        else: db.cacheFullSweep(value)
+
         return self.manage_cacheGC(self,REQUEST)
 
     def manage_minimize(self,value,REQUEST):
         "Perform a full sweep through the cache"
-        Globals.Bobobase._jar.cache.minimize(value)
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2
+            Globals.Bobobase._jar.cache.minimize(value)
+        else: db.cacheMinimize(value)
+
         return self.manage_cacheGC(self,REQUEST)
 
     def initialize_cache(self):
-        Globals.Bobobase._jar.cache.cache_size=self._cache_size
-        Globals.Bobobase._jar.cache.cache_age =self._cache_age
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2
+            Globals.Bobobase._jar.cache.cache_size=self._cache_size
+            Globals.Bobobase._jar.cache.cache_age =self._cache_age
+        else:
+            db.SetCacheSize(self._cache_size)
+            db.SetCacheDeactivateAfter(self._cache_age)
+            db.SetVersionCacheSize(self._vcache_size)
+            db.SetVersionCacheDeactivateAfter(self._vcache_age)
 
     def cache_detail(self):
-        detail={}
-        for oid, ob in Globals.Bobobase._jar.cache.items():
-            c="%s.%s" % (ob.__class__.__module__, ob.__class__.__name__)
-            if detail.has_key(c): detail[c]=detail[c]+1
-            else: detail[c]=1
-        detail=detail.items()
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2            
+            detail={}
+            for oid, ob in Globals.Bobobase._jar.cache.items():
+                if hasattr(ob, '__class__'):
+                    ob=ob.__class__
+                    decor=''
+                else: decor=' class'
+                c="%s.%s%s" % (ob.__module__ or '', ob.__name__, decor)
+                if detail.has_key(c): detail[c]=detail[c]+1
+                else: detail[c]=1
+            detail=detail.items()
+        else:
+            # ZODB 3
+            detail=db.cacheDetail()
+            detail=map(lambda d:
+                       (("%s.%s" % (d[0].__module__, d[0].__name__)), d[1]),
+                       detail.items())
+
         detail.sort()
         return detail
 
     def cache_extreme_detail(self):
-        detail=[]
-        rc=sys.getrefcount
-        db=Globals.Bobobase._jar.db
-        for oid, ob in Globals.Bobobase._jar.cache.items():
-            id=oid
-            if hasattr(ob,'__dict__'):
-                d=ob.__dict__
-                if d.has_key('id'):
-                    id="%s (%s)" % (oid, d['id'])
-                elif d.has_key('__name__'):
-                    id="%s (%s)" % (oid, d['__name__'])
+        try: db=self._p_jar.db()
+        except:
+            # BoboPOS2            
+            detail=[]
+            rc=sys.getrefcount
+            db=Globals.Bobobase._jar.db
+            for oid, ob in Globals.Bobobase._jar.cache.items():
+                id=oid
 
-            detail.append({
-                'oid': id,
-                'klass': "%s.%s" % (ob.__class__.__module__,
-                                    ob.__class__.__name__),
-                'rc': rc(ob)-4,
-                'references': db.objectReferencesIn(oid),
-                })
-        return detail
+                if hasattr(ob, '__class__'):
+                    if hasattr(ob,'__dict__'):
+                        d=ob.__dict__
+                        if d.has_key('id'):
+                            id="%s (%s)" % (oid, d['id'])
+                        elif d.has_key('__name__'):
+                            id="%s (%s)" % (oid, d['__name__'])
+                    ob=ob.__class__
+                    decor=''
+
+                else: decor=' class'
+
+                detail.append({
+                    'oid': id,
+                    'klass': "%s.%s%s" % (ob.__module__, ob.__name__, decor),
+                    'rc': rc(ob)-4,
+                    'references': db.objectReferencesIn(oid),
+                    })
+            return detail
+        else:
+            # ZODB 3
+            return db.cacheExtremeDetail()
