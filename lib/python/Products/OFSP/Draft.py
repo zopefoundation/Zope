@@ -226,6 +226,9 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
             raise 'Copy Error', (
                 "This object can only be copied through the web.<p>")
 
+
+Globals.default__class_init__(Draft)
+
 def getdraft(ob, jar):
 
     if hasattr(ob,'aq_parent'):
