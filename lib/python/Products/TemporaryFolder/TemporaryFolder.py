@@ -84,8 +84,8 @@
 ##############################################################################
 """Mounted database support
 
-$Id: TemporaryFolder.py,v 1.1 2001/11/01 20:18:12 matt Exp $"""
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: TemporaryFolder.py,v 1.2 2001/11/13 21:44:33 matt Exp $"""
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -151,18 +151,3 @@ class MountedTemporaryFolder(MountPoint, OFS.SimpleItem.Item):
         folder.title = self.title
 
         folder.icon = "misc_/TemporaryFolder/tempfolder.gif"
-
-        importdir = os.path.join(Globals.data_dir,self.id+"Imports")
-
-        #conn = folder._p_jar                    # Can we do that yet?
-        conn = root._p_jar
-
-        try:
-            for file in os.listdir(importdir):
-                if file[-5:] == ".zexp":
-                    id = file[:-5]
-                    # Import this!
-                    ob = conn.importFile(os.path.join(importdir, file))
-                    folder._setObject(id, ob)
-        except OSError: pass # (no such dir)
-

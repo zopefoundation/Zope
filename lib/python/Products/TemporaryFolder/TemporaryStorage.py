@@ -88,10 +88,10 @@ A storage implementation which uses RAM to persist objects, much like
 MappingStorage, but unlike MappingStorage needs not be packed to get rid of
 non-cyclic garbage.  This is a ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.1 2001/11/01 20:18:12 matt Exp $
+$Id: TemporaryStorage.py,v 1.2 2001/11/13 21:44:33 matt Exp $
 """
 
-__version__ ='$Revision: 1.1 $'[11:-2]
+__version__ ='$Revision: 1.2 $'[11:-2]
 
 from zLOG import LOG
 from struct import pack, unpack
@@ -169,8 +169,11 @@ class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
+
+
         if version:
-            raise POSException.Unsupported, "Versions aren't supported"
+            raise POSException.Unsupported, ("TemporaryStorage is incompatible "
+                "with versions",)
 
         self._lock_acquire()
         try:
