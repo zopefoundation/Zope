@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 from Globals import Persistent
@@ -227,7 +227,7 @@ class UnIndex(Persistent, Implicit):
 
         self.removeForwardIndexEntry(unindexRecord, documentId)
         
-        del self._unindex[i]
+        del self._unindex[documentId]
         
 
     def _apply_index(self, request, cid=''): 
