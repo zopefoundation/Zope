@@ -89,12 +89,13 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE
 from string import strip, split, join, replace, lstrip
 from DocumentTemplate.DT_Util import TemplateDict
+from Acquisition import aq_base
 
 _engine = None
 def getEngine():
@@ -113,6 +114,24 @@ def installHandlers(engine):
     reg('python', PythonExpr)
     reg('not', NotExpr)
     reg('import', ImportExpr)
+
+def render(ob):
+    """
+    Calls the object, possibly a document template, or just returns it if
+    not callable.  (From DT_Util.py)
+    """
+    base = aq_base(ob)
+    if callable(base):
+        try:
+            if getattr(base, 'isDocTemp', 0):
+                ob = ob(ob, ob.REQUEST)
+            else:
+                ob = ob()
+        except AttributeError, n:
+            if n != '__call__':
+                raise
+    return ob
+
 
 class PathExpr:
     def __init__(self, name, expr):
@@ -158,10 +177,7 @@ class PathExpr:
                 return 1
         if self._name == 'nocall':
             return ob
-        mm = TemplateDict()
-        mm._push(var)
-        mm._push({'_ob': ob})
-        return mm['_ob']
+        return render(ob)
 
     def __str__(self):
         return '%s expression "%s"' % (self._name, self._s)
@@ -310,6 +326,8 @@ def restrictedTraverse(self, path):
 
     if not path: return self
 
+    __traceback_info__ = path
+
     get=getattr
     N=None
     M=[] #marker
@@ -335,7 +353,7 @@ def restrictedTraverse(self, path):
             raise 'NotFound', name
 
         if name=='..':
-            o=getattr(object, 'aq_parent', M)
+            o = getattr(object, 'aq_parent', M)
             if o is not M:
                 if not securityManager.validate(object, object, name, o):
                     raise 'Unauthorized', name
@@ -354,19 +372,13 @@ def restrictedTraverse(self, path):
         else:
             o=get(object, name, M)
             if o is not M:
-                # waaaa
-                if hasattr(get(object,'aq_base',object), name):
-                    # value wasn't acquired
-                    if not securityManager.validate(
-                        object, object, name, o):
-                        raise 'Unauthorized', name
-                    pass
+                # Check security.
+                if hasattr(object, 'aq_acquire'):
+                    object.aq_acquire(
+                        name, validate2, securityManager.validate)
                 else:
-                    if not securityManager.validate(
-                        object, None, name, o):
+                    if not securityManager.validate(object, object, name, o):
                         raise 'Unauthorized', name
-                    pass
-                        
             else:
                 o=object[name]
                 if not securityManager.validate(object, object, None, o):
@@ -374,3 +386,9 @@ def restrictedTraverse(self, path):
         object = o
 
     return object
+
+
+def validate2(orig, inst, name, v, real_validate):
+    if not real_validate(orig, inst, name, v):
+        raise 'Unauthorized', name
+    return 1
