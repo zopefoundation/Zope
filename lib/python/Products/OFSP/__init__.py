@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.23 1999/03/22 16:59:33 jim Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: __init__.py,v 1.24 1999/03/22 17:06:36 jim Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import Version, Draft
 import OFS.Image, OFS.Folder, AccessControl.User
@@ -101,19 +101,19 @@ klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 meta_types=(
     {'name': Draft.Draft.meta_type,
      'action':'manage_addPrincipiaDraftForm'},
-    {'name': 'User Folder',
+    {'name': AccessControl.User.UserFolder.meta_type,
      'action':'manage_addUserFolder'},
-    {'name': 'Session',
-     'action':'manage_addSessionForm'},
-    {'name': 'File',
+    {'name': Version.Version.meta_type,
+     'action':'manage_addVersionForm'},
+    {'name': OFS.Image.File.meta_type,
      'action':'manage_addFileForm'},
-    {'name': 'Image',
+    {'name': OFS.Image.Image.meta_type,
      'action':'manage_addImageForm'},
-    {'name': 'Folder',
+    {'name': OFS.Folder.Folder.meta_type,
      'action':'manage_addFolderForm'},
-    {'name': 'DTML Method',
+    {'name': OFS.DTMLMethod.DTMLMethod.meta_type,
      'action':'manage_addDTMLMethodForm'},
-    {'name': 'DTML Document',
+    {'name': OFS.DTMLDocument.DTMLDocument.meta_type,
      'action':'manage_addDTMLDocumentForm'},
     )
 
