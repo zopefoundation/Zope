@@ -1,12 +1,9 @@
-<HTML>
-<HEAD>
-<TITLE>New Database Adapter</TITLE>
+<HTML><HEAD><TITLE>New <!--#var database_type--> Database Adapter</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>New Database Adapter</H2>
-<P>
+<H2>New <!--#var database_type--> Database Adapter</H2>
 
-<form action="manage_addDA" method="post">
+<form action="manage_addAqueduct<!--#var database_type-->DA" method="post">
 
 <table>     
             
@@ -26,19 +23,8 @@ from data
 
 <tr><td></td><td>
 <input type="SUBMIT" name="SUBMIT" value="Add Server Query">
-<input type="SUBMIT" name="SUBMIT" value="Cancel">
-<!--#if HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
-<!--#else HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-   VALUE="manage">
-<!--#/if HTTP_REFERER-->
 </td></tr>
 
 </table>
-
 </form>
-</body>
-
-</html>
-
+</body></html>

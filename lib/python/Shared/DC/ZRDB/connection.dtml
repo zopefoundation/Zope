@@ -1,42 +1,24 @@
 <HTML>
 <HEAD>
-<TITLE>DA Database Connection Information</TITLE>
-</HEAD>
+<TITLE>DA Database Connection Information</TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>
-<!--#if title-->
-<!--#var title-->
-<!--#else title-->
-<!--#var id-->
-<!--#/if title-->
-<BR>
-Database Connection Information</H2>
-<P>
+<H2><!--#var database_type--> Database Connection</H2>
 
-<!--#var bad_connection_string-->
+<form action="<!--#var action-->" method="get">
 
-<form action="manage_connection" method="get">
+  <strong>Enter the database connection string:</strong><br>
+  <input name="value" size="60" value="<!--#var connection_string-->"><p>
 
-<strong>Enter the database connection string:</strong><br>
-<input name="value" size="60" value="<!--#var manage_connection-->"><p>
+  <strong>Check here to test connection string:</strong>
+  <input name="check" type="CHECKBOX" value="YES" CHECKED>
 
-<strong>Check here to test connection string:</strong>
-<input name="check" type="CHECKBOX" value="YES" CHECKED>
-
-<hr>
-<input type="SUBMIT" name="SUBMIT" value="Change Connection String">
-<input type="SUBMIT" name="SUBMIT" value="Cancel">
-<!--#if HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
-<!--#else HTTP_REFERER-->
-  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var URL1-->">
-<!--#/if HTTP_REFERER-->
+  <input type="SUBMIT" name="SUBMIT" value="Change Connection String">
 </form>
 
-<!--#else bad_connection_string-->
-<form action="manage_close_connection" method="get">
-<input type="SUBMIT" value="Close Database Connection">
-</form>
-<!--#/else bad_connection_string-->
+<!--#if connected-->
+  <form action="manage_close_connection" method="get">
+     <input type="SUBMIT" value="Close Database Connection">
+  </form>
+<!--#/if-->
 
 </body> </html>

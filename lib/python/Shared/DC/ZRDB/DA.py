@@ -11,123 +11,54 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.14 1997/10/29 18:45:33 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: DA.py,v 1.15 1997/11/26 20:06:03 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
-import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
+import string, OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
 from Aqueduct.Aqueduct import quotedHTML, decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
-from Globals import Persistent, HTMLFile, MessageDialog
+from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
 import sys, traceback
 from DocumentTemplate import HTML
+import Globals, OFS.SimpleItem, AccessControl.Role, Persistence
 
-class Folder(OFS.Folder.Folder):    
-    icon       ='AqueductDA/DBAdapterFolder_icon.gif'
-    meta_type='Aqueduct Database Adapter Folder'
+addForm=HTMLFile('AqueductDA/daAdd')
 
-    manage_options=OFS.Folder.Folder.manage_options+(
-	{'icon':'App/arrow.jpg', 'label':'Database Connection',
-	'action':'manage_connectionForm',   'target':'manage_main'},
-	)
+def add(self,klass,id,title,key,arguments,template,REQUEST=None):
+    'Add a query'
+    q=klass()
+    q.id=id
+    q.manage_edit(key,title,arguments,template)
+    self._setObject(id,q)
+    if REQUEST: return self.manage_main(self,REQUEST)
 
-    manage_main          =HTMLFile('AqueductDA/main')
+class DA(
+    Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
+    Persistence.Persistent,
+    AccessControl.Role.RoleManager,
+    OFS.SimpleItem.Item,
+    ):
+    'Database Adapter'
 
-    manage_connectionForm=HTMLFile('AqueductDA/connection')
-    manage_addDAForm=HTMLFile('AqueductDA/daAdd')
-    start_time=DateTime.now()
-    bad_connection_string=(
-	"""<p><strong>Warning</strong>: The database is not connected.<p>
-	""")
-
-    def manage_connection(self,value=None,check=None,REQUEST=None):
-	'change database connection data'
-	if value is None: return self.database_connection_string()
-	if check: self.database_connect(value)
-	else: self.manage_close_connection(REQUEST)
-	self.database_connection_string(value)
-	return self.manage_main(self,REQUEST)
-
-    def manage_close_connection(self, REQUEST):
-	" "
-	try: self._v_database_connection.close()
-	except: pass
-	self.bad_connection_string=(
-	    """<p><strong>Warning</strong>: The database is not connected.<p>
-	    """)
-	return self.manage_main(self,REQUEST)
-
-
-    def database_connect(self,s=''):
-	try: self._v_database_connection.close()
-	except: pass
-	self.bad_connection_string=(
-	    """<p><strong>Warning</strong>: The database is not connected.<p>
-	    """)
-	if not s: s=self.folder_database_connection_string()
-	if not s: return 
-	DB=self.database_connection_factory()
-	try:
-	    self._v_database_connection=DB(s)
-	    self.connect_time=DateTime.now()
-	except:
-	    raise 'BadRequest', (
-	    '<strong>Invalid connection string:</strong><br>'
-	    + s)
-	self.bad_connection_string=''
-	
-    def __setstate__(self, v):
-	Folder.inheritedAttribute('__setstate__')(self, v)
-	try:
-	    if self._v_database_connection is not None:
-		return
-	except: pass
-	try: self.database_connect()
-	except: pass
-
-    def manage_addDA(self,id,title,key,arguments,template,REQUEST=None):
-	'Add a query'
-
-	q=Query()
-	q.id=id
-	q.manage_edit(key,title,arguments,template)
-	self._setObject(id,q)
-	if REQUEST: return self.manage_main(self,REQUEST)
+    icon       ='AqueductDA/DBAdapter_icon.gif'
+    hasAqueductClientInterface=1
+    _col=None
+    sql_delimiter='\0'
+    
+    manage=HTMLFile('AqueductDA/edit')
 
     test_url___roles__=None
     def test_url_(self):
 	'Method for testing server connection information'
 	return 'PING'
 
-class Query(Aqueduct.Aqueduct.Searchable):
-
-    'Database query object'
-
-    icon       ='AqueductDA/DBAdapter_icon.gif'
-    meta_type='Aqueduct Database Adapter'
-    _col=None
-    
-    manage=HTMLFile('AqueductDA/edit')
-
     def quoted_src(self): return quotedHTML(self.src)
-  
-    def _convert(self):
-	try:
-	    del self.manage_testForm
-	    del self.arguments
-	    del self.result_names
-	    del self.report_src
-	except: pass
-	try: self._arg=parse(self.arguments_src)
-	except: pass
 
     def manage_edit(self,key,title,arguments,template,REQUEST=None):
 	'change query properties'
-
-	if self.__dict__.has_key('manage_testForm'): self._convert
-
 	self.title=title
 	self.key=key
 	self.rotor=Rotor(key)
@@ -142,13 +73,33 @@ class Query(Aqueduct.Aqueduct.Searchable):
 		action=REQUEST['URL2']+'/manage_main',
 		)
 
+    
+    def manage_testForm(self, REQUEST):
+	"""Provide testing interface"""
+	input_src=default_input_form(self.title_or_id(),
+				     self._arg, 'manage_test')
+	return HTML(input_src)(self, REQUEST)
 
-    def __call__(self,REQUEST=None):
-	try: DB__=self.database_connection()
+    def manage_test(self, REQUEST):
+	'Perform an actual query'
+	
+	result=self(REQUEST)
+	report=HTML(custom_default_report(self.id, result))
+	return apply(report,(self,REQUEST),{self.id:result})
+
+    def index_html(self, PARENT_URL):
+	" "
+	raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
+
+    def _searchable_arguments(self): return self._arg
+
+    def _searchable_result_columns(self): return self._col
+
+    def __call__(self,REQUEST):
+	try: DB__=getattr(self, self.connection_id)()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
-
-	if REQUEST is None: REQUEST=self.REQUEST
+	
 	argdata=self._argdata(REQUEST)
 	query=self.template(self,argdata)
 	result=DB__.query(query)
@@ -159,7 +110,7 @@ class Query(Aqueduct.Aqueduct.Searchable):
 	
     def query(self,REQUEST,RESPONSE):
 	' '
-	try: DB__=self.database_connection()
+	try: DB__=getattr(self, self.connection_id)()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 
@@ -181,7 +132,7 @@ class Query(Aqueduct.Aqueduct.Searchable):
 	    RESPONSE['Content-Length']=len(result)
 	    RESPONSE.write(result)
 	except:
-	    t,v=sys.exc_type, sys.exc_value
+	    t,v,tb=sys.exc_type, sys.exc_value, sys.exc_traceback
 	    result=str(RESPONSE.exception())
 	    serial=str(DateTime.now())
 	    if log_file:
@@ -201,12 +152,8 @@ class Query(Aqueduct.Aqueduct.Searchable):
 ############################################################################## 
 #
 # $Log: DA.py,v $
-# Revision 1.14  1997/10/29 18:45:33  jim
-# Fixed leak in query exception handling.
-#
-# Revision 1.13  1997/10/29 14:49:29  jim
-# Updated to inherit testing methods from Aqueduct.Aqueduct.Searchable.
-# Updated __call__ so queries can be used in documents.
+# Revision 1.15  1997/11/26 20:06:03  jim
+# New Architecture, note that backward compatibility tools are needed
 #
 # Revision 1.12  1997/09/26 22:17:45  jim
 # more
