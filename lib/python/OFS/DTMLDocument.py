@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -180,7 +180,6 @@ class DTMLDocument(DTMLMethod, PropertyManager):
                 raise sys.exc_type, sys.exc_value, sys.exc_traceback
             return self.raise_standardErrorMessage(client, REQUEST)
         if RESPONSE is None: return r
-        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
 
         # Try to handle content types intelligently...
         if self.__dict__.has_key('content_type'):
