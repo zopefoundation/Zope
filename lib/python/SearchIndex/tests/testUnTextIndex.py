@@ -83,20 +83,18 @@
 # 
 ##############################################################################
 
-import sys, os
+import sys, os, glob, unittest
 
 sys.path.insert(0, os.getcwd())
-try: import unittest
+try: import zLOG
 except:
     sys.path[0]=os.path.join(sys.path[0],'..','..')
-    import unittest
-
+    import zLOG
+    
 class Dummy:
 
     def __init__(self, **kw):
         self.__dict__.update(kw)
-
-import zLOG
 
 def log_write(subsystem, severity, summary, detail, error):
     if severity >= zLOG.PROBLEM:
@@ -134,7 +132,8 @@ class Tests(unittest.TestCase):
        get_transaction().abort()
        if hasattr(self, 'jar'):
            self.dbclose()
-           os.system('rm -f fs_tmp__*')
+           for fn in glob.glob('fs_tmp__*'):
+               os.remove(fn)
 
    def checkSimpleAddDelete(self):
        "Check that we can add and delete an object without error"
