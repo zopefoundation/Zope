@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -264,7 +264,7 @@ class Resource:
         headers=self.__get_headers(kw)
         token='<opaquelocktoken:%s>' % str(token)
         headers['Lock-Token']=token
-        return self.__snd_request('UNLOCK', self.uri, headers, body)
+        return self.__snd_request('UNLOCK', self.uri, headers)
 
     def allprops(self, depth=0):
         return self.propfind('', depth)
