@@ -502,7 +502,7 @@ setup(
     name='Testing',
     author=AUTHOR,
 
-    packages=['Testing'],
+    packages=['Testing', 'Testing.ZopeTestCase'],
     data_files=[['Testing', ['Testing/README.txt']],
                 ['Testing/var', ['Testing/var/README.txt']]],
     )
