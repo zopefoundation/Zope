@@ -16,7 +16,6 @@ import Acquisition
 import ExtensionClass
 from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
 from MultiMapping import MultiMapping
-from string import lower
 import Record
 from Missing import MV
 from zLOG import LOG, ERROR
@@ -593,7 +592,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     so=kw['sort_order']
                 else: so=None
                 if (type(so) is type('') and
-                    lower(so) in ('reverse', 'descending')):
+                    so.lower() in ('reverse', 'descending')):
                     r.reverse()
 
                 r=map(lambda i: i[1], r)

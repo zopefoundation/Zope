@@ -12,13 +12,12 @@
 ##############################################################################
 """Mounted database support
 
-$Id: TemporaryFolder.py,v 1.4 2001/11/28 15:51:08 matt Exp $"""
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: TemporaryFolder.py,v 1.5 2002/03/11 16:09:19 andreasjung Exp $"""
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
 from ZODB.Mount import MountPoint
-import string
 import OFS
 import os, os.path
 

@@ -13,7 +13,7 @@
 
 """ZCatalog Findable class"""
 
-import urllib, string
+import urllib
 from Globals import DTMLFile
 from Acquisition import aq_base
 
@@ -71,7 +71,7 @@ class CatalogAware:
         for user, roles in self.get_local_roles():
             if 'Owner' in roles:
                 users.append(user)
-        return string.join(users, ', ')
+        return ', '.join(users, ', ')
 
     def onDeleteObject(self):
         """Object delete handler. I think this is obsoleted by
@@ -80,7 +80,7 @@ class CatalogAware:
 
     def getPath(self):
         """Return the physical path for an object."""
-        return string.join(self.getPhysicalPath(), '/')
+        return '/'.join(self.getPhysicalPath())
     
     def summary(self, num=200):
         """Return a summary of the text content of the object."""

@@ -32,7 +32,7 @@ from ZCatalogIndexes import ZCatalogIndexes
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 from Products.PluginIndexes.TextIndex import Splitter
-import string,  urllib, os, sys, time, types
+import urllib, os, sys, time, types
 
 
 
@@ -211,7 +211,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
         if type(threshold) is not type(1):
-            threshold=string.atoi(threshold)
+            threshold=int(threshold)
         self.threshold = threshold
 
         RESPONSE.redirect(URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
@@ -312,7 +312,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         
         words = 0
         obj = REQUEST.PARENTS[1]
-        path = string.join(obj.getPhysicalPath(), '/')
+        path = '/'.join(obj.getPhysicalPath())
 
         
         results = self.ZopeFindAndApply(obj,

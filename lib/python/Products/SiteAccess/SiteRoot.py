@@ -7,7 +7,6 @@ from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, ImplicitAcquisitionWrapper
 from ExtensionClass import Base
-from string import split, strip
 from ZPublisher import BeforeTraverse
 import os
 
@@ -81,9 +80,9 @@ class SiteRoot(Traverser, Implicit):
 
     def __init__(self, title, base, path):
         '''Title'''
-        self.title = strip(title)
-        self.base = base = strip(base)
-        self.path = path = strip(path)
+        self.title = title.strip()
+        self.base = base = base.strip()
+        self.path = path = path.strip()
         if base: self.SiteRootBASE = base
         else:
             try: del self.SiteRootBASE

@@ -17,7 +17,7 @@
   backward-compatibility.  All new code should use CatalogPathAwareness.
 """
 
-import urllib, string
+import urllib
 from Globals import DTMLFile
 
 class CatalogAware:
@@ -74,7 +74,7 @@ class CatalogAware:
         for user, roles in self.get_local_roles():
             if 'Owner' in roles:
                 users.append(user)
-        return string.join(users, ', ')
+        return ', '.join(users)
 
     def onDeleteObject(self):
         """Object delete handler. I think this is obsoleted by
@@ -92,7 +92,7 @@ class CatalogAware:
         script_name=self.REQUEST['SCRIPT_NAME']
         __traceback_info__=(`uri`, `script_name`)
         if script_name:
-            uri=filter(None, string.split(uri, script_name))[0]
+            uri=filter(None, uri.split(script_name))[0]
         if not uri:
             uri = '/'
         if uri[0] != '/':

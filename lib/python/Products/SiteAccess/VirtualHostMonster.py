@@ -6,7 +6,6 @@ Defines the VirtualHostMonster class
 from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, aq_inner, aq_parent
-from string import split, strip, join, find, lower, replace
 from ZPublisher import BeforeTraverse
 import os
 
@@ -34,22 +33,22 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     def set_map(self, map_text, RESPONSE=None):
         "Set domain to path mappings."
-        lines = split(map_text, '\n')
+        lines = map_text.split('\n')
         self.fixed_map = fixed_map = {}
         self.sub_map = sub_map = {}
         new_lines = []
         for line in lines:
-            line = strip(split(line, '#!')[0])
+            line = line.split('#!')[0].strip()
             if not line:
                 continue
             try:
                 # Drop the protocol, if any
-                line = split(line, '://')[-1]
+                line = line.split('://')[-1]
                 try:
-                    host, path = map(strip, split(line, '/', 1))
+                    host, path = [x.strip() for x in  line.split('/', 1)]
                 except:
                     raise 'LineError', 'Needs a slash between host and path'
-                pp = filter(None, split(path, '/'))
+                pp = filter(None, path.split( '/'))
                 if pp:
                     obpath = pp[:]
                     if obpath[0] == 'VirtualHostBase':
@@ -71,7 +70,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         pp.append('/')
                     pp.reverse()
                 try:
-                    int(replace(host,'.',''))
+                    int(host.replace('.',''))
                     raise 'LineError',  'IP addresses are not mappable'
                 except ValueError:
                     pass
@@ -80,7 +79,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     host = host[2:]
                 else:
                     host_map = fixed_map
-                hostname, port = (split(host, ':', 1) + [None])[:2]
+                hostname, port = (host.split( ':', 1) + [None])[:2]
                 if not host_map.has_key(hostname):
                     host_map[hostname] = {}
                 host_map[hostname][port] = pp
@@ -130,7 +129,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 protocol = stack.pop()
                 host = stack.pop()
                 if ':' in host:
-                    host, port = split(host, ':')
+                    host, port = host.split(':')
                     request.setServerURL(protocol, host, port)
                 else:
                     request.setServerURL(protocol, host)
@@ -148,9 +147,9 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                     if vh >= 0:
                         for jj in range(vh, ii):
                             pp.insert(1, stack[jj][4:])
-                        stack[vh:ii + 1] = [join(pp, '/'), self.id]
+                        stack[vh:ii + 1] = ['/'.join(pp), self.id]
                     elif ii > 0 and stack[ii - 1][:1] == '/':
-                        pp = split(stack[ii - 1], '/')
+                        pp = stack[ii - 1].split('/')
                         stack[ii] = self.id
                     else:
                         stack[ii] = self.id
@@ -169,8 +168,8 @@ class VirtualHostMonster(Persistent, Item, Implicit):
             vh_used = 1 # Only retry once.
             # Try to apply the host map if one exists, and if no
             # VirtualHost directives were found.
-            host = lower(split(request['SERVER_URL'], '://')[1])
-            hostname, port = (split(host, ':', 1) + [None])[:2]
+            host = request['SERVER_URL'].split('://')[1].lower()
+            hostname, port = (host.split( ':', 1) + [None])[:2]
             ports = self.fixed_map.get(hostname, 0)
             if not ports and self.sub_map:
                 get = self.sub_map.get
@@ -180,7 +179,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         break
                     if '.' not in hostname:
                         return
-                    hostname = split(hostname, '.', 1)[1]
+                    hostname = hostname.split('.', 1)[1]
             if ports:
                 pp = ports.get(port, 0)
                 if pp == 0 and port is not None:
