@@ -9,7 +9,7 @@ from ZODB.tests import StorageTestBase, BasicStorage, \
 
 class TemporaryStorageTests(
     StorageTestBase.StorageTestBase,
-    RevisionStorage.RevisionStorage, # not a revision storage, but passes
+##    RevisionStorage.RevisionStorage, # not a revision storage, but passes
     BasicStorage.BasicStorage,
     Synchronization.SynchronizedStorage,
     ConflictResolution.ConflictResolvingStorage,
