@@ -29,7 +29,7 @@ class UserFolder:
         Permission -- Manage users
         """
 
-    def manage_addUser(name, password, roles, domains):
+    def userFolderAddUser(name, password, roles, domains):
         """
         API method for creating a new user object. Note that not all
         user folder implementations support dynamic creation of user
@@ -39,7 +39,7 @@ class UserFolder:
         Permission -- Manage users
         """
 
-    def manage_editUser(name, password, roles, domains):
+    def userFolderEditUser(name, password, roles, domains):
         """
         API method for changing user object attributes. Note that not
         all user folder implementations support changing of user object
@@ -49,7 +49,7 @@ class UserFolder:
         Permission -- Manage users
         """
 
-    def manage_delUsers(names):
+    def userFolderDelUsers(names):
         """
         API method for deleting one or more user objects. Note that not
         all user folder implementations support deletion of user objects.
