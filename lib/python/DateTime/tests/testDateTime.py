@@ -7,6 +7,8 @@ from DateTime import DateTime
 import string
 import math
 
+import os
+__basedir__ = os.getcwd()
 
 class DateTimeTests (unittest.TestCase):
 
@@ -227,7 +229,8 @@ class DateTimeTests (unittest.TestCase):
             print "Warning: testJulianWeek disabled: module gzip not found"
             return 0
 
-        lines  = gzip.GzipFile('julian_testdata.txt.gz').readlines()
+        lines  = gzip.GzipFile(os.path.join(__basedir__,
+                                'julian_testdata.txt.gz')).readlines()
     
         for line in lines:
             d = DateTime(line[:10])
