@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -116,7 +116,7 @@ Script_magic = 1
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 _default_file = os.path.join(package_home(globals()),
-                             'www', 'default.py')
+                             'www', 'default_py')
 
 _marker = []  # Create a new marker object
 
