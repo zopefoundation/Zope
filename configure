@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.20 2004/03/09 05:19:07 chrism Exp $
-# $Revision: 1.20 $
+# $Id: configure,v 1.21 2004/03/09 05:25:14 chrism Exp $
+# $Revision: 1.21 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -23,7 +23,7 @@ ACCEPTABLE="2.3.2 2.3.1 2.3"
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
-EXENAMES="python python2 python2.1 python2.2 python2.3"
+EXENAMES="python python2 python2.3"
 
 #####################################################################
 #                    END EDITABLE PARAMETERS                        #
