@@ -373,6 +373,14 @@ The default object
   publish the object 'index_html', if it exists, otherwise the module's
   doc string will be published.
 
+Pre- and post-call hooks
+
+  If a published module defines objects '__bobo_before__' or
+  '__bobo_after__', then these functions will be called before 
+  or after a request is processed.  One possible use for this is to
+  acquire and release application locks in applications with
+  background threads.
+
 Examples
 
   Consider the following example:
@@ -496,27 +504,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-Publishing a module using the ILU Requestor (future)
-
-    o Copy the files: cgi_module_publisher.pyc and CGIResponse.pyc,
-      Realm.pyc, and newcgi.pyc, to the directory containing the
-      module to be published, or to a directory in the standard
-      (compiled in) Python search path.
-
-    o Copy the file ilu-module-publisher to the directory containing the
-      module to be published.
-
-    o Create a symbolic link from ilu-module-publisher (in the directory
-      containing the module to be published) to the module name
-      (perhaps in a different directory). 
-	
-    o Start the module server process by running the symbolically
-      linked file, giving the server name as an argument.
-
-    o Configure the web server to call module_name@server_name with
-      the requestor.
-
-$Id: Publish.py,v 1.25 1996/11/06 14:27:09 jim Exp $"""
+$Id: Publish.py,v 1.26 1996/11/26 22:06:18 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -569,6 +557,9 @@ $Id: Publish.py,v 1.25 1996/11/06 14:27:09 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.26  1996/11/26 22:06:18  jim
+# Added support for __bobo_before__ and __bobo_after__.
+#
 # Revision 1.25  1996/11/06 14:27:09  jim
 # Added logic to return status code from publish method.
 # This is needed by the Bobo server.
@@ -678,7 +669,7 @@ $Id: Publish.py,v 1.25 1996/11/06 14:27:09 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 
 def main():
@@ -770,7 +761,7 @@ class ModulePublisher:
 	for key in request_params.keys():
 		self.request[key]=request_params[key]
 
-    def publish(self, module_name, published='web_objects',
+    def publish(self, module_name, after_list, published='web_objects',
 		imported_modules={}, module_dicts={},debug=0):
 
         # First check for "cancel" redirect:
@@ -805,6 +796,15 @@ class ModulePublisher:
 	    module_dicts[module_name] = theModule, object, published
 
 	self.module=theModule
+
+	try: bobo_before=theModule.__bobo_before__
+	except: bobo_before=None
+
+	try: bobo_after=theModule.__bobo_after__
+	except: bobo_after=None
+	after_list[0]=bobo_after
+
+	if bobo_before is not None: bobo_before();
 
 
 	# Try to get realm from module
@@ -1424,13 +1424,14 @@ def publish_module(module_name,
 		   environ=os.environ, debug=0):
     must_die=0
     status=200
+    after_list=[None]
     try:
 	response=Response(stdout=stdout, stderr=stderr)
 	publisher = CGIModulePublisher(stdin=stdin, stdout=stdout,
 				       stderr=stderr,
 				       environ=environ)
 	response = publisher.response
-	response = publisher.publish(module_name,debug=debug)
+	response = publisher.publish(module_name,after_list,debug=debug)
     except SystemExit:
 	must_die=1
 	response.exception(must_die)
@@ -1445,6 +1446,10 @@ def publish_module(module_name,
     if response:
 	response=str(response)
     if response: stdout.write(response)
+
+    # The module defined a post-access function, call it
+    if after_list[0] is not None: after_list[0]()
+
     if must_die:
 	raise sys.exc_type, sys.exc_value, sys.exc_traceback
     sys.exc_type, sys.exc_value, sys.exc_traceback = None, None, None
