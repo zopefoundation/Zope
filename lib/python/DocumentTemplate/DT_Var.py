@@ -145,11 +145,11 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.49 2001/11/28 15:50:55 matt Exp $'
-__version__='$Revision: 1.49 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.50 2002/02/07 17:47:42 andreasjung Exp $'
+__version__='$Revision: 1.50 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
-import re, string, sys
+import string, re,  sys
 from urllib import quote, quote_plus
 from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!

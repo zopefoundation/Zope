@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 
-import string, sys, traceback
-from StringIO import StringIO
+import  sys, traceback
+from cStringIO import StringIO
 from DT_Util import ParseError, parse_params, render_blocks
 from DT_Util import namespace, InstanceDict
 from DT_Return import DTReturn

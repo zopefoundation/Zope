@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
-import string, sys
+import  sys
 
 class ReturnTag: 
     name='return'

@@ -14,10 +14,10 @@
 Advanced sort support by Oleg Broytmann <phd@@phd.pp.ru> 23 Apr 2001
 eg Sort(sequence, (("akey", "nocase"), ("anotherkey", "cmp", "desc")))
 
-$Id: SortEx.py,v 1.3 2001/11/28 15:50:55 matt Exp $
+$Id: SortEx.py,v 1.4 2002/02/07 17:47:42 andreasjung Exp $
 """
 
-from string import lower
+
 TupleType=type(())
 
 
@@ -132,14 +132,14 @@ basic_type={type(''): 1, type(0): 1, type(0.0): 1, type(()): 1, type([]): 1,
             type(None) : 1 }.has_key
 
 def nocase(str1, str2):
-    return cmp(lower(str1), lower(str2))
+    return cmp(str1.lower(), str2.lower())
 
 import sys
 if sys.modules.has_key("locale"): # only if locale is already imported
     from locale import strcoll
 
     def strcoll_nocase(str1, str2):
-        return strcoll(lower(str1), lower(str2))
+        return strcoll(str1.lower(), str2.lower())
 
 
 def make_sortfunctions(sortfields, _):
@@ -175,7 +175,7 @@ def make_sortfunctions(sortfields, _):
         else: # no - look it up in the namespace
             func = _.getitem(f_name, 0)
 
-        sort_order = lower(f[2])
+        sort_order = f[2].lower()
 
         if sort_order == "asc":
             multiplier = +1

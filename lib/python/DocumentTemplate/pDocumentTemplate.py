@@ -13,10 +13,10 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.33 2001/11/28 15:50:55 matt Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.34 2002/02/07 17:47:42 andreasjung Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
-import string, sys, types
+import  sys, types
 
 ClassTypes = [types.ClassType]
 
