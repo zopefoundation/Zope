@@ -92,7 +92,7 @@ import getopt
 import cgi
 
 from XMLParser import XMLParser
-from TALDefs import quote
+from TALDefs import TALError, quote
 
 BOOLEAN_HTML_ATTRS = [
     # List of Boolean attributes in HTML that should be rendered in

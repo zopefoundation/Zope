@@ -377,6 +377,9 @@ class TALGenerator:
             repldict = parseAttributeReplacements(attrsubst)
         else:
             repldict = {}
+        if replace:
+            todo["repldict"] = repldict
+            repldict = {}
         self.emitStartTag(name, self.replaceAttrs(attrlist, repldict))
         if content:
             self.pushProgram()
@@ -398,7 +401,8 @@ class TALGenerator:
             self.emit("endScope")
         replace = todo.get("replace")
         if replace:
-            self.emitSubstitution(replace)
+            repldict = todo.get("repldict", {})
+            self.emitSubstitution(replace, repldict)
         condition = todo.get("condition")
         if condition:
             self.emitCondition(condition)
