@@ -12,11 +12,10 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
-from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
 from time import timezone, strftime
 from time import daylight, timezone, altzone
@@ -77,7 +76,7 @@ class _timezone:
     def info(self,t=None):
         idx=self.index(t)[0]
         zs =self.az[self.tinfo[idx][2]:]
-        return self.tinfo[idx][0],self.tinfo[idx][1],zs[:find(zs,'\000')]
+        return self.tinfo[idx][0],self.tinfo[idx][1],zs[:zs.find('\000')]
 
 
 
@@ -232,7 +231,7 @@ class _cache:
         self._d,self._zidx={},self._zmap.keys()
 
     def __getitem__(self,k):
-        try:   n=self._zmap[lower(k)]
+        try:   n=self._zmap[k.lower()]
         except KeyError:
             if numericTimeZoneMatch(k) == None:
                 raise 'DateTimeError','Unrecognized timezone: %s' % k
@@ -251,7 +250,7 @@ def _findLocalTimeZoneName(isDST):
     try:
         # Get the name of the current time zone depending
         # on DST.
-        _localzone = _cache._zmap[lower(tzname[isDST])]
+        _localzone = _cache._zmap[tzname[isDST].lower()]
     except:
         try:
             # Generate a GMT-offset zone name.
@@ -266,7 +265,7 @@ def _findLocalTimeZoneName(isDST):
             else: minorOffset = 0
             m=majorOffset >= 0 and '+' or ''
             lz='%s%0.02d%0.02d' % (m, majorOffset, minorOffset)
-            _localzone = _cache._zmap[lower('GMT%s' % lz)]
+            _localzone = _cache._zmap[('GMT%s' % lz).lower()]
         except:
             _localzone = ''
     return _localzone
@@ -628,9 +627,9 @@ class DateTime:
             if arg=='':
                 raise self.SyntaxError, arg
             
-            if type(arg) in [StringType,UnicodeType] and lower(arg) in self._tzinfo._zidx:
+            if type(arg) in [StringType,UnicodeType] and arg.lower() in self._tzinfo._zidx:
                 # Current time, to be displayed in specified timezone
-                t,tz=time(),self._tzinfo._zmap[lower(arg)]
+                t,tz=time(),self._tzinfo._zmap[arg.lower()]
                 ms=(t-math.floor(t))
                 # Use integer arithmetic as much as possible.
                 s,d = _calcSD(t)
@@ -654,7 +653,7 @@ class DateTime:
                 x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
 
                 if tz:
-                    try: tz=self._tzinfo._zmap[lower(tz)]
+                    try: tz=self._tzinfo._zmap[tz.lower()]
                     except KeyError:
                         if numericTimeZoneMatch(tz) is None:
                             raise self.DateTimeError, \
@@ -678,7 +677,7 @@ class DateTime:
                 # Seconds from epoch (gmt) and timezone
                 t,tz=args
                 ms = (t - math.floor(t))
-                tz=self._tzinfo._zmap[lower(tz)]
+                tz=self._tzinfo._zmap[tz.lower()]
                 # Use integer arithmetic as much as possible.
                 s,d = _calcSD(t)
                 x = _calcDependentSecond(tz, t)
@@ -722,7 +721,7 @@ class DateTime:
             x = _calcDependentSecond2(yr,mo,dy,hr,mn,sc)
             ms = sc - math.floor(sc)
             if tz:
-                try: tz=self._tzinfo._zmap[lower(tz)]
+                try: tz=self._tzinfo._zmap[tz.lower()]
                 except KeyError:
                     if numericTimeZoneMatch(tz) is None:
                         raise self.DateTimeError, \
@@ -838,7 +837,7 @@ class DateTime:
         tz = self.localZone(ltm)
         return tz
 
-    def _parse(self,string):
+    def _parse(self,st):
         # Parse date-time components from a string
         month=year=tz=tm=None
         spaces        =self.space_chars
@@ -853,22 +852,22 @@ class DateTime:
 
         # Find timezone first, since it should always be the last
         # element, and may contain a slash, confusing the parser.
-        string = strip(string)
-        sp=split(string)
+        st= st.strip()
+        sp=st.split()
         tz=sp[-1]
-        if tz and (lower(tz) in ValidZones): string=join(sp[:-1])
+        if tz and (tz.lower() in ValidZones): st=' '.join(sp[:-1])
         else: tz = None  # Decide later, since the default time zone
         # could depend on the date.
 
         ints,dels=[],[]
-        i,l=0,len(string)
+        i,l=0,len(st)
         while i < l:
-            while i < l and string[i] in spaces    : i=i+1
-            if i < l and string[i] in delimiters:
-                d=string[i]
+            while i < l and st[i] in spaces    : i=i+1
+            if i < l and st[i] in delimiters:
+                d=st[i]
                 i=i+1
             else: d=''
-            while i < l and string[i] in spaces    : i=i+1
+            while i < l and st[i] in spaces    : i=i+1
 
             # The float pattern needs to look back 1 character, because it
             # actually looks for a preceding colon like ':33.33'. This is
@@ -877,15 +876,15 @@ class DateTime:
             if i > 0: b=i-1
             else: b=i
 
-            ts_results = fltpat.match(string, b)
+            ts_results = fltpat.match(st, b)
             if ts_results:
                 s=ts_results.group(1)
                 i=i+len(s)
-                ints.append(atof(s))
+                ints.append(float(s))
                 continue
             
             #AJ
-            ts_results = intpat.match(string, i)
+            ts_results = intpat.match(st, i)
             if ts_results: 
                 s=ts_results.group(0)
 
@@ -895,31 +894,31 @@ class DateTime:
                     (len(ints) + (not not month) >= 3)):
                     tz='%s%s' % (d,s)
                 else:
-                    v=atoi(s)
+                    v=int(s)
                     ints.append(v)
                 continue
 
 
-            ts_results = wordpat.match(string, i)
+            ts_results = wordpat.match(st, i)
             if ts_results:
-                o,s=ts_results.group(0),lower(ts_results.group(0))
+                o,s=ts_results.group(0),ts_results.group(0).lower()
                 i=i+len(s)
-                if i < l and string[i]=='.': i=i+1
+                if i < l and st[i]=='.': i=i+1
                 # Check for month name:
                 if MonthNumbers.has_key(s):
                     v=MonthNumbers[s]
                     if month is None: month=v
-                    else: raise self.SyntaxError, string
+                    else: raise self.SyntaxError, st
                     continue
                 # Check for time modifier:
                 if s in TimeModifiers:
                     if tm is None: tm=s
-                    else: raise self.SyntaxError, string
+                    else: raise self.SyntaxError, st
                     continue
                 # Check for and skip day of week:
                 if DayOfWeekNames.has_key(s):
                     continue
-            raise self.SyntaxError, string
+            raise self.SyntaxError, st
 
         day=None
         if ints[-1] > 60 and d not in ['.',':'] and len(ints) > 2:
@@ -977,34 +976,34 @@ class DateTime:
             year,month,day = localtime(time())[:3]
 
         year = _correctYear(year)
-        if year < 1000: raise self.SyntaxError, string
+        if year < 1000: raise self.SyntaxError, st
         
         leap = year%4==0 and (year%100!=0 or year%400==0)
         try:
             if not day or day > self._month_len[leap][month]:
-                raise self.DateError, string
+                raise self.DateError, st
         except IndexError:
-            raise self.DateError, string
+            raise self.DateError, st
         tod=0
         if ints:
             i=ints[0]
             # Modify hour to reflect am/pm
             if tm and (tm=='pm') and i<12:  i=i+12
             if tm and (tm=='am') and i==12: i=0
-            if i > 24: raise self.DateTimeError, string
+            if i > 24: raise self.DateTimeError, st
             tod = tod + int(i) * 3600
             del ints[0]
             if ints:
                 i=ints[0]
-                if i > 60: raise self.DateTimeError, string
+                if i > 60: raise self.DateTimeError, st
                 tod = tod + int(i) * 60
                 del ints[0]
                 if ints:
                     i=ints[0]
-                    if i > 60: raise self.DateTimeError, string
+                    if i > 60: raise self.DateTimeError, st
                     tod = tod + i
                     del ints[0]
-                    if ints: raise self.SyntaxError,string
+                    if ints: raise self.SyntaxError,st
 
         
         tod_int = int(math.floor(tod))
@@ -1046,7 +1045,7 @@ class DateTime:
     def toZone(self, z):
         """Return a DateTime with the value as the current
            object, represented in the indicated timezone."""
-        t,tz=self._t,self._tzinfo._zmap[lower(z)]
+        t,tz=self._t,self._tzinfo._zmap[z.lower()]
         millis = self.millis()
         #if (t>0 and ((t/86400.0) < 24837)):
         try:
@@ -1537,7 +1536,7 @@ class DateTime:
                 try:
                     # For the seconds, print two digits
                     # before the decimal point.
-                    subsec = split('%g' % s, '.')[1]
+                    subsec = ('%g' % s).split('.')[1]
                     return '%4.4d/%2.2d/%2.2d %2.2d:%2.2d:%2.2d.%s %s' % (
                         y,m,d,h,mn,s,subsec,t)
                 except:
@@ -1603,7 +1602,7 @@ class DateTime:
         try:
             return self.__parse_iso8601(s)
         except IndexError:
-            raise self.DateError,'Not an ISO 8601 compliant date string: "%s"' %  string
+            raise self.DateError,'Not an ISO 8601 compliant date string: "%s"' %  s
 
 
     def __parse_iso8601(self,s):
@@ -1619,24 +1618,24 @@ class DateTime:
     
         fields = datereg.split(s.strip())
         
-        if fields[1]:   year  = atoi(fields[1])
-        if fields[3]:   month = atoi(fields[3])
-        if fields[5]:   day   = atoi(fields[5])
+        if fields[1]:   year  = int(fields[1])
+        if fields[3]:   month = int(fields[3])
+        if fields[5]:   day   = int(fields[5])
     
         if s.find('T')>-1:
             fields = timereg.split(s[s.find('T')+1:])
     
-            if fields[1]:   hour     = atoi(fields[1])
-            if fields[3]:   minute   = atoi(fields[3])
-            if fields[5]:   seconds  = atoi(fields[5])
-            if fields[6]:   seconds  = seconds+atof(fields[6])
+            if fields[1]:   hour     = int(fields[1])
+            if fields[3]:   minute   = int(fields[3])
+            if fields[5]:   seconds  = int(fields[5])
+            if fields[6]:   seconds  = seconds+float(fields[6])
     
         if s.find('Z')>-1:
             pass
     
         if s[-3]==':' and s[-6] in ['+','-']:
-            hour_off = atoi(s[-6:-3])
-            min_off  = atoi(s[-2:])
+            hour_off = int(s[-6:-3])
+            min_off  = int(s[-2:])
 
         return year,month,day,hour,minute,seconds,'GMT%+03d%02d' % (hour_off,min_off)
 
