@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.14 2003/01/05 16:19:57 yuppie Exp $
+$Id: SiteErrorLog.py,v 1.15 2003/02/07 18:16:37 evan Exp $
 """
 
 import os
@@ -151,6 +151,10 @@ class SiteErrorLog (SimpleItem):
                 username = None
                 userid   = None
                 req_html = None
+                try:
+                    strv = str(info[1])
+                except:
+                    strv = '<unprintable %s object>' % type(info[1]).__name__
                 if request:
                     url = request.get('URL', '?')
                     usr = getSecurityManager().getUser()
@@ -160,11 +164,13 @@ class SiteErrorLog (SimpleItem):
                         req_html = str(request)
                     except:
                         pass
-
-                try:
-                    strv = str(info[1])
-                except:
-                    strv = '<unprintable %s object>' % str(type(info[1]).__name__)
+                    if strtype == 'NotFound':
+                        strv = url
+                        next = request['TraversalRequestNameStack']
+                        if next:
+                            next = list(next)
+                            next.reverse()
+                            strv = '%s [ /%s ]' % (strv, '/'.join(next))
 
                 log = self._getLog()
                 entry_id = str(now) + str(random()) # Low chance of collision
