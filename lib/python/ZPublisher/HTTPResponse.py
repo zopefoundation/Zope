@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.18 1999/08/04 20:50:22 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: HTTPResponse.py,v 1.19 1999/08/18 00:23:50 amos Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -625,7 +625,7 @@ class HTTPResponse(BaseResponse):
                  self._traceback(t,v,tb)),
                  is_error=1)
 
-        elif lower(strip(b))[:6]=='<html>':
+        elif lower(strip(b))[:6]=='<html>' or lower(strip(b))[:14]=='<!doctype html':
             # error is an HTML document, not just a snippet of html
             tb=self.setBody(b + self._traceback(t,'(see above)',tb),
                 is_error=1)
