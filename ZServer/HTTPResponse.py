@@ -158,7 +158,6 @@ class ZServerHTTPResponse(HTTPResponse):
         # add zserver headers
         append('Server: %s' % self._server_version) 
         append('Date: %s' % build_http_date(time.time()))
-        append('X-Powered-By: Zope (www.zope.org), Python (www.python.org)')
         chunk=0
         if self._http_version=='1.0':
             if self._http_connection=='keep alive':
@@ -238,7 +237,7 @@ class ChannelPipe:
         
     def close(self):
         self._channel.push(LoggingProducer(self._request, self._bytes), 0)
-        self._channel.push(CallbackProducer(self._channel.done))
+        self._channel.push(CallbackProducer(self._channel.done), 0)
         if self._shutdown:
             self._channel.push(ShutdownProducer(), 0)
         elif self._close:
