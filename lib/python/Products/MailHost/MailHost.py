@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.49 2000/05/11 19:20:20 jim Exp $"""
-__version__ = "$Revision: 1.49 $"[11:-2]
+$Id: MailHost.py,v 1.50 2000/05/16 18:35:14 brian Exp $"""
+__version__ = "$Revision: 1.50 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -102,10 +102,18 @@ MailHostError = "MailHost Error"
 addForm=HTMLFile('addMailHost_form', globals())
 def add(self, id, title='', smtp_host=None, smtp_port=25, REQUEST=None):
     ' add a MailHost into the system '
+
+    id=str(id)
+    title=str(title)
+    if smtp_host is not None:
+        smtp_host=str(smtp_host)
+    if type(smtp_port) is not type(1):
+        smtp_port=string.atoi(smtp_port)
+
     i=MailHost()            #create new mail host
     i.id=id                 #give it id
     i.title=title           #title
-    i._init(smtpHost=smtp_host, smtpPort=smtp_port)
+    i._init(smtp_host=smtp_host, smtp_port=smtp_port)
     self._setObject(id,i)   #register it
     if REQUEST: return self.manage_main(self,REQUEST)
 
@@ -139,15 +147,21 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         'nothing yet'
         pass
 
-    def _init(self, smtpHost, smtpPort):
-        self.smtpHost=smtpHost
-        self.smtpPort=smtpPort
+    def _init(self, smtp_host, smtp_port):
+        self.smtp_host=smtp_host
+        self.smtp_port=smtp_port
 
-    def manage_makeChanges(self,title,smtpHost,smtpPort, REQUEST=None):
+    def manage_makeChanges(self,title,smtp_host,smtp_port, REQUEST=None):
         'make the changes'
+
+        title=str(title)
+        smtp_host=str(smtp_host)
+        if type(smtp_port) is not type(1):
+            smtp_port=string.atoi(smtp_port)
+
         self.title=title
-        self.smtpHost=smtpHost
-        self.smtpPort=smtpPort
+        self.smtp_host=smtp_host
+        self.smtp_port=smtp_port
         if REQUEST: return MessageDialog(
             title  ='Changed %s' % self.__name__,
             message='%s has been updated' % self.id,
@@ -168,7 +182,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                       % requiredHeader
-        mailserver = SMTP(trueself.smtpHost, trueself.smtpPort)
+        mailserver = SMTP(trueself.smtp_host, trueself.smtp_port)
         mailserver.sendmail(headers['from'], headers['to'], messageText)
 
         if not statusTemplate: return "SEND OK"
@@ -198,7 +212,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        smtpserver = SMTP(self.smtpHost, self.smtpPort)
+        smtpserver = SMTP(self.smtp_host, self.smtp_port)
         smtpserver.sendmail(headers['from'],headers['to'], messageText)
 
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
@@ -220,13 +234,13 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
         messageText=_encode(messageText, encode)
-        smtpserver = SMTP(self.smtpHost, self.smtpPort)
+        smtpserver = SMTP(self.smtp_host, self.smtp_port)
         smtpserver.sendmail(headers['from'], headers['to'], messageText)
 
     def simple_send(self, mto, mfrom, subject, body):
         body="from: %s\nto: %s\nsubject: %s\n\n%s" % (
             mfrom, mto, subject, body)
-        mailserver = SMTP(self.smtphost, self.smtpport)
+        mailserver = SMTP(self.smtp_host, self.smtp_port)
         mailserver.sendmail(mfrom, mto, body)
 
         
