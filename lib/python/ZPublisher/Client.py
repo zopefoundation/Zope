@@ -56,7 +56,7 @@
 #
 ############################################################################## 
 __doc__="""Bobo call interface"""
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys,regex,socket,mimetools
 from httplib import HTTP, replyprog
@@ -103,6 +103,16 @@ type2marshal={
     type([]): 			marshal_list,
     type(()): 			marshal_tuple,
     }
+
+
+def querify(items):
+    query=[]
+    for k,v in items:
+        try: q=type2marshal[type(v)](k,v)
+        except KeyError: q='%s=%s' % (k,quote(v))
+        query.append(q)
+
+    return query and join(query,'&') or ''
 
 urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)', regex.casefold)
 
@@ -571,6 +581,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.14  1997/09/11 22:30:36  jim
+# Added querify utility method.
+#
 # Revision 1.13  1997/09/11 22:27:27  jim
 # Added logic to usef GET when no query parameters.
 #
