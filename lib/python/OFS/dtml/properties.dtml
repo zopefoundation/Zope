@@ -1,5 +1,5 @@
 <dtml-call "REQUEST.set('management_page_charset','UTF-8')">
-<dtml-var "u''">
+<dtml-var "u' '">
 <dtml-var manage_page_header>
 <dtml-with "_(management_view='Properties')">
 <dtml-var manage_tabs>
@@ -44,7 +44,7 @@ property values, edit the values and click &quot;Save Changes&quot;.
 <tr>
   <td align="left" valign="top" width="16">
   <dtml-if "'d' in _['sequence-item'].get('mode', 'awd')">
-  <input type="checkbox" name="_ids:utf8:list" value="<dtml-var id html_quote>"
+  <input type="checkbox" name="_ids:utf8:string:list" value="<dtml-var id html_quote>"
    id="cb-<dtml-var id>">
   <dtml-else>
   </dtml-if>
