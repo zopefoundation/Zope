@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.14 1997/12/04 23:15:38 brian Exp $'
-__version__='$Revision: 1.14 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.15 1997/12/04 23:30:29 brian Exp $'
+__version__='$Revision: 1.15 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -157,9 +157,10 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
     have_arg=args.has_key
 
-    tpUrl=self.tpURL()
-    url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
-    root_url = root_url or tpUrl
+    if level >= 0:
+	tpUrl=self.tpURL()
+	url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
+	root_url = root_url or tpUrl
 
     treeData['tree-item-url']=url
     treeData['tree-level']=level
