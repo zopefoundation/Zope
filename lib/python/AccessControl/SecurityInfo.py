@@ -88,7 +88,11 @@
    a declarative style of associating access control information
    with class attributes.
 
-   add example here
+   More information on using SecurityInfo and guide to Zope security
+   for developers can be found in the dev.zope.org "Declarative Security"
+   project:
+   
+   http://dev.zope.org/Wikis/DevSite/Projects/DeclarativeSecurity
 
    While SecurityInfo objects largely remove the need for Python
    programmers to care about the underlying implementation, there
@@ -144,20 +148,35 @@ class SecurityInfo(Acquisition.Implicit):
                 self._warnings = 1
             self.names[name] = access
 
-    public__roles__=ACCESS_PRIVATE    
-    def public(self, *names):
+    declarePublic__roles__=ACCESS_PRIVATE    
+    def declarePublic(self, *names):
         """Declare names to be publicly accessible."""
         self._setaccess(names, ACCESS_PUBLIC)
 
-    private__roles__=ACCESS_PRIVATE
-    def private(self, *names):
+    declarePrivate__roles__=ACCESS_PRIVATE
+    def declarePrivate(self, *names):
         """Declare names to be inaccessible to restricted code."""
         self._setaccess(names, ACCESS_PRIVATE)
 
-    protected__roles__=ACCESS_PRIVATE
-    def protected(self, permission_name, *names):
+    declareProtected__roles__=ACCESS_PRIVATE
+    def declareProtected(self, permission_name, *names):
         """Declare names to be associated with a permission."""
         self._setaccess(names, permission_name)
+
+    objectPublic__roles__=ACCESS_PRIVATE    
+    def objectPublic(self):
+        """Declare names to be publicly accessible."""
+        self._setaccess((), ACCESS_PUBLIC)
+
+    objectPrivate__roles__=ACCESS_PRIVATE
+    def objectPrivate(self):
+        """Declare names to be inaccessible to restricted code."""
+        self._setaccess((), ACCESS_PRIVATE)
+
+    objectProtected__roles__=ACCESS_PRIVATE
+    def objectProtected(self, permission_name):
+        """Declare names to be associated with a permission."""
+        self._setaccess((), permission_name)
 
     setDefaultRoles__roles__=ACCESS_PRIVATE
     def setDefaultRoles(self, permission_name, roles):
@@ -179,6 +198,7 @@ class SecurityInfo(Acquisition.Implicit):
         booleans, or a callable (name, value) -> boolean.
         """
         self.access = access
+
 
 class ClassSecurityInfo(SecurityInfo):
     """Encapsulate security information for class objects."""
@@ -288,10 +308,12 @@ class ModuleSecurityInfo(SecurityInfo):
             LOG('SecurityInfo', WARNING, 'Module "%s" had conflicting '
                 'security declarations' % dict['__name__'])
 
-    def protected(self, permission_name, *names):
+    declareProtected__roles__=ACCESS_PRIVATE
+    def declareProtected(self, permission_name, *names):
         """Cannot declare module names protected."""
         pass
 
+    setDefaultRoles__roles__=ACCESS_PRIVATE
     def setDefaultRoles(self, permission_name, roles):
         """Cannot set default roles for permissions in a module."""
         pass
