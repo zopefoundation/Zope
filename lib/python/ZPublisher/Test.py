@@ -162,9 +162,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.36 2001/06/05 20:24:57 fred Exp $
+$Id: Test.py,v 1.37 2001/10/01 14:56:14 andreasjung Exp $
 '''
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -311,6 +311,7 @@ defaultModule='Main'
 def publish(script=None,path_info='/',
             u=None,p=None,d=None,t=None,e=None,s=None,pm=0,
             extra=None, request_method='GET',
+            fp=None,
             stdin=sys.stdin):
 
     profile=p
@@ -359,7 +360,6 @@ def publish(script=None,path_info='/',
         __main__.file=file
         __main__.env=env
         __main__.extra=extra
-        print profile
         publish_module(file, environ=env, stdout=open('/dev/null','w'),
                        extra=extra, stdin=stdin)
         c=("for i in range(%s): "
@@ -440,8 +440,14 @@ def publish(script=None,path_info='/',
         publish_module_pm(file, environ=env, stdout=stdout, extra=extra)
         print '\n%s\n' % ('_'*60)
     else:
-        if silent: stdout=open('/dev/null','w')
-        else: stdout=sys.stdout
+        if silent: 
+            stdout=open('/dev/null','w')
+        else: 
+            if fp and hasattr(fp,'write'):
+                stdout = fp
+            else:
+                stdout=sys.stdout
+
         publish_module(file, environ=env, stdout=stdout, extra=extra)
         print '\n%s\n' % ('_'*60)
 
