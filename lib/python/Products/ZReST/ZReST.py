@@ -32,7 +32,7 @@ def manage_addZReST(self, id, file='', REQUEST=None):
     # validate the instance_home
     self._setObject(id, ZReST(id))
     self._getOb(id).manage_upload(file)
-    if REQUEST:
+    if REQUEST is not None:
         return self.manage_main(self, REQUEST)
 
 class Warnings:
@@ -87,7 +87,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def index_html(self, REQUEST=None):
         ''' Getting the formatted text
         '''
-        if REQUEST:
+        if REQUEST is not None:
             REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset=%s' % self.output_encoding)
         return self.formatted
 
@@ -95,7 +95,8 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def source_txt(self, REQUEST=None):
         ''' Getting the source text
         '''
-        REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=%s' % self.input_encoding)
+        if REQUEST is not None:
+            REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=%s' % self.input_encoding)
         return self.source
 
     # edit form, which is also the primary interface
@@ -114,7 +115,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             self.source = data
             self.render()
 
-        if REQUEST:
+        if REQUEST is not None:
             message="Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
@@ -166,7 +167,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
             self.source = file.read()
         self.render()
 
-        if REQUEST:
+        if REQUEST is not None:
             message="Saved changes."
             return self.manage_main(self, REQUEST, manage_tabs_message=message)
 
