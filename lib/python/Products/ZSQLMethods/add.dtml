@@ -27,8 +27,11 @@
             <textarea name="template:text" rows=9 cols=50>select *
 from data</textarea></td></tr>
 
-<tr><td><input type="hidden" name="key" value=""></td><td>
-<input type="SUBMIT" name="SUBMIT" value="Add">
+<tr><td colspan=2>
+<input type="hidden" name="key" value="">
+<input type="SUBMIT" name="submit" value=" Add ">
+<input type="SUBMIT" name="submit" value=" Add and Edit ">
+<input type="SUBMIT" name="submit" value=" Add and Test ">
 </td></tr>
 
 </table>

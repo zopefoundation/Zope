@@ -28,11 +28,12 @@
 	</tr>
 	<tr>
 	  <td align="LEFT" valign="TOP"><strong>Select a Data Source</strong>
-	  <br><em><font -1>Additional data sources may be created by making additional
+	  <br><em><font -1>
+	  Additional data sources may be created by making additional
 	  directories in the <code>var/gadfly</code> subdirectory of
           your Principia installation.</font></em>
           </td>
-	  <td align="LEFT" valign="TOP"><select name=connection size=7>
+	  <td align="LEFT" valign="TOP"><select name=connection size=5>
             <!--#in data_sources-->
               <option value="<!--#var sequence-key-->">
                 <!--#var sequence-key--><!--#if 

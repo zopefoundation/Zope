@@ -95,13 +95,14 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.4 1998/12/16 15:28:47 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+'''$Id: db.py,v 1.5 1998/12/17 18:48:36 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
-import string, sys, os
-from string import strip, split, find, join
+import os
+from string import strip, split
 from gadfly import gadfly
 import Globals
+from DateTime import DateTime
 
 data_dir=os.path.join(Globals.data_dir,'gadfly')
 
@@ -136,20 +137,24 @@ def manage_DataSources():
 class DB:
 
     database_error=gadfly.error
+    opened=''
 
     def tables(self,*args,**kw):
+        if self.db is None: self.open()
         return map(lambda name: {
             'TABLE_NAME': name,
             'TABLE_TYPE': 'TABLE',
             }, self.db.table_names())
 
     def columns(self, table_name):
+        if self.db is None: self.open()
         return map(lambda col: {
             'Name': col.colid, 'Type': col.datatype, 'Precision': 0,
             'Scale': 0, 'Nullable': 'with Null'
             }, self.db.database.datadefs[table_name].colelts)
 
-    def __init__(self,connection):
+    def open(self):
+        connection=self.connection
         path=os.path
         dir=path.join(data_dir,connection)
         if not path.isdir(dir):
@@ -159,45 +164,57 @@ class DB:
             db=gadfly.gadfly()
             db.startup(connection,dir)
         else: db=gadfly.gadfly(connection,dir)
-
-        self.connection=connection
         self.db=db
-        self.cursor=db.cursor()
+        self.opened=DateTime()
+
+    def close(self):
+        self.db=None
+        del self.opened
+
+    def __init__(self,connection):
+        self.connection=connection
+        self.open()
 
     def query(self,query_string, max_rows=9999999):
+        if self.db is None: self.open()
         self._register()
         c=self.db.cursor()
         queries=filter(None, map(strip,split(query_string, '\0')))
         if not queries: raise 'Query Error', 'empty query'
-        names=None
-        result='cool\ns\n'
+        desc=None
+        result=[]
         for qs in queries:
             c.execute(qs)
             d=c.description
             if d is None: continue
-            if names is not None:
+            if desc is None: desc=d
+            elif d != desc:
                 raise 'Query Error', (
-                    'select in multiple sql-statement query'
+                    'Multiple incompatible selects in '
+                    'multiple sql-statement query'
                     )
-            names=map(lambda d: d[0], d)
-            results=c.fetchmany(max_rows)
-            nv=len(names)
-            indexes=range(nv)
-            row=['']*nv
-            defs=[maybe_int]*nv
-            j=join
-            rdb=[j(names,'\t'),None]
-            append=rdb.append
-            for result in results:
-                for i in indexes:
-                    try: row[i]=defs[i](result[i])
-                    except NewType, v: row[i], defs[i] = v
-                append(j(row,'\t'))
-            rdb[1]=j(map(lambda d, Defs=Defs: Defs[d], defs),'\t')
-            rdb.append('')
-            result=j(rdb,'\n')
+            
+            if not result: result=c.fetchmany(max_rows)
+            elif len(result) < max_rows:
+                result=result+c.fetchmany(max_rows-len(result))
 
-        return result
+        if desc is None: return (),()
+
+        items=[]
+        for name, type, width, ds, p, scale, null_ok in desc:
+            if type=='NUMBER':
+                if scale==0: type='i'
+                else: type='n'
+            elif type=='DATE':
+                type='d'
+            else: type='s'
+            items.append({
+                'name': name,
+                'type': type,
+                'width': width,
+                'null': null_ok,
+                })
+        return items, result
 
     class _p_jar:
         # This is place holder for new transaction machinery 2pc
@@ -223,35 +240,3 @@ class DB:
         self.db.rollback()
         self.db.checkpoint()
         self._registered=0
-
-
-NewType="Excecption to raise when sniffing types, blech"
-def maybe_int(v, int_type=type(0), float_type=type(0.0), t=type):
-    t=t(v)
-    if t is int_type: return str(v)
-    if v is None or v=='': return ''
-    if t is float_type: raise NewType, (maybe_float(v), maybe_float)
-
-    raise NewType, (maybe_string(v), maybe_string)
-
-def maybe_float(v, int_type=type(0), float_type=type(0.0), t=type):
-    t=t(v)
-    if t is int_type or t is float_type: return str(v)
-    if v is None or v=='': return ''
-
-    raise NewType, (maybe_string(v), maybe_string)
-
-def maybe_string(v):
-    v=str(v)
-    if find(v,'\t') >= 0 or find(v,'\t'):
-        raise NewType, (must_be_text(v), must_be_text)
-    return v
-
-def must_be_text(v, f=find, j=join, s=split):
-    if f(v,'\\'):
-        v=j(s(v,'\\'),'\\\\')
-        v=j(s(v,'\t'),'\\t')
-        v=j(s(v,'\n'),'\\n')
-    return v
-
-Defs={maybe_int: 'i', maybe_float:'n', maybe_string:'s', must_be_text:'t'}

@@ -97,8 +97,8 @@
 __doc__='''SQL Methods
 
 
-$Id: SQL.py,v 1.8 1998/12/16 15:29:22 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: SQL.py,v 1.9 1998/12/17 18:49:09 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Shared.DC.ZRDB.DA
 from Globals import HTMLFile
@@ -133,7 +133,7 @@ def SQLConnectionIDs(self):
 manage_addZSQLMethodForm=HTMLFile('add', globals())
 def manage_addZSQLMethod(self, id, title,
                                 connection_id, arguments, template,
-                                REQUEST=None):
+                                REQUEST=None, submit=None):
     """Add an SQL Method
 
     The 'connection_id' argument is the id of a database connection
@@ -147,7 +147,17 @@ def manage_addZSQLMethod(self, id, title,
     SQL Template.
     """
     self._setObject(id, SQL(id, title, connection_id, arguments, template))
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        u=REQUEST['URL1']
+        if submit==" Add and Edit ":
+            u="%s/%s/manage_main" % (u,id)
+        elif submit==" Add and Test ":
+            u="%s/%s/manage_testForm" % (u,id)
+        else:
+            u=u+'/manage_main'
+            
+        REQUEST.RESPONSE.redirect(u)
+    return ''
 
 class SQL(Shared.DC.ZRDB.DA.DA):
     """SQL Database methods

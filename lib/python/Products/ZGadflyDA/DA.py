@@ -97,17 +97,17 @@
 database_type='Gadfly'
 __doc__='''%s Database Connection
 
-$Id: DA.py,v 1.5 1998/12/16 15:28:47 jim Exp $''' % database_type
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DA.py,v 1.6 1998/12/17 18:48:36 jim Exp $''' % database_type
+__version__='$Revision: 1.6 $'[11:-2]
 
 from db import DB, manage_DataSources
 import sys, DABase, Globals
+import Shared.DC.ZRDB.Connection
+_Connection=Shared.DC.ZRDB.Connection.Connection
 
 _connections={}
 
-def data_sources():
-    return filter(lambda ds, used=_connections.has_key: not used(ds[0]),
-                  manage_DataSources())
+data_sources=manage_DataSources
 
 addConnectionForm=Globals.HTMLFile('connectionAdd',globals())
 def manage_addZGadflyConnection(
@@ -122,28 +122,53 @@ class Connection(DABase.Connection):
     " "
     database_type=database_type
     id='%s_database_connection' % database_type
-    meta_type=title='Zope %s Database Connection' % database_type
+    meta_type=title='Z %s Database Connection' % database_type
     icon='misc_/Z%sDA/conn' % database_type
 
-    def factory(self): return DB
+    manage_properties=Globals.HTMLFile('connectionEdit', globals(),
+                                       data_sources=data_sources)
+
+    def connected(self):
+        if hasattr(self, '_v_database_connection'):
+            return self._v_database_connection.opened
+        return ''
+    
+    def title_and_id(self):
+        s=_Connection.inheritedAttribute('title_and_id')(self)
+        if (hasattr(self, '_v_database_connection') and
+            self._v_database_connection.opened):
+            s="%s, which is connected" % s
+        else: 
+            s="%s, which is <font color=red> not connected</font>" % s
+        return s
+
+    def title_or_id(self):
+        s=_Connection.inheritedAttribute('title_and_id')(self)
+        if (hasattr(self, '_v_database_connection') and
+            self._v_database_connection.opened):
+            s="%s (connected)" % s
+        else: 
+            s="%s (<font color=red> not connected</font>)" % s
+        return s
 
     def connect(self,s):
         c=_connections
-        if c.has_key(s) and c[s] != self._p_oid:
-            raise 'In Use', (
-                'The database <em>%s</em> is in use.' % s)
-        c[s]=self._p_oid
-        return Connection.inheritedAttribute('connect')(self, s)
+        if c.has_key(s):
+            c=self._v_database_connection=c[s]
+            if not c.opened: c.open()
+            return self
 
-    def __del__(self):
-        s=self.connection_string
-        c=_connections
-        if c.has_key(s) and c[s] == self._p_oid: del c[s]
+        try:
+            try:
+                self._v_database_connection=c[s]=DB(s)
+            except:
+                t, v, tb = sys.exc_info()
+                raise 'BadRequest', (
+                    '<strong>Invalid connection string: </strong>'
+                    '<CODE>%s</CODE><br>\n'
+                    '<!--\n%s\n%s\n-->\n'
+                    % (s,t,v)), tb
+        finally: tb=None
 
-    def manage_close_connection(self, REQUEST):
-        " "
-        s=self.connection_string
-        c=_connections
-        if c.has_key(s) and c[s] == self._p_oid: del c[s]
-        return Connection.inheritedAttribute('manage_close_connection')(
-            self, REQUEST)
+        return self
+
