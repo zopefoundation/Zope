@@ -116,11 +116,10 @@ class HelpSystem(Acquisition.Implicit, ObjectManager, Item, Persistent):
         self.id=id
     
     def helpValues(self, spec=None):
-        "Help topics"
+        "ProductHelp objects of all Products"
         hv=[]
         for product in self.Control_Panel.Products.objectValues():
-            if hasattr(product, 'Help'):
-                hv.append(product.Help)
+            hv.append(product.getProductHelp())
         return hv
 
     # Seaching does an aggregated search of all ProductHelp
