@@ -89,7 +89,7 @@ import Acquisition, ExtensionClass, Globals, OFS.PropertySheets, OFS.Folder
 from AccessControl.Permission import pname
 from string import strip
 import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
-from ZClassOwner import ZClassOwner
+import ZClassOwner
 from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 
 _marker=[]
@@ -98,7 +98,7 @@ class ZClassMethodsSheet(
     OFS.PropertySheets.View,
     OFS.Folder.Folder,
     App.ProductRegistry.ProductRegistryMixin,
-    ZClassOwner):
+    ZClassOwner.ZClassOwner):
     "Manage instance methods"
     id='contents'
     icon='p_/Methods_icon'
