@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1525,8 +1525,12 @@ class DateTime:
         """Either a DateTime or a number may be subtracted from a
            DateTime, however, a DateTime may not be subtracted from 
            a number."""
-        try:    return self._d-other._d
-        except: return self.__add__(-(other))
+        if hasattr(other, '_d'):
+            my_t = self._t + _tzoffset(self._tz, self._t)
+            ob_t = other._t + _tzoffset(other._tz, other._t)
+            return (my_t - ob_t) / 86400.0
+        else:
+            return self.__add__(-(other))
 
     def __repr__(self):
         """Convert a DateTime to a string that 
