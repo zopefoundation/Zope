@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.15 2003/08/22 14:06:01 chrism Exp $
-# $Revision: 1.15 $
+# $Id: configure,v 1.16 2003/09/18 16:10:13 ctheune Exp $
+# $Revision: 1.16 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -111,7 +111,7 @@ get_python() {
     done
     if [ "$VERSION" = "$TARGET" ]; then
         out ""
-        out "  The optimimum Python version ($TARGET) was found at $FOUND."
+        out "  The optimum Python version ($TARGET) was found at $FOUND."
     elif [ -z "$FOUND1" ] && [ -z "$FOUND2" ] && [ -z "$FOUND3" ] &&
          [ -z "$FOUND4" ] && [ -z "$FOUND5" ] && [ -z "$FOUND6" ] ; then
         out ""
