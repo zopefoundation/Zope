@@ -1,11 +1,11 @@
 # Test creation of a brand new database, and insertion of root objects.
 
 import unittest
-from test_create import DBHomeTest
+from test_create import BaseFramework
 
 
 
-class NewInsertsTest(DBHomeTest):
+class NewInsertsTest(BaseFramework):
     def checkIsEmpty(self):
         """Checks that a newly created database is empty"""
         assert not self._root.has_key('names')
