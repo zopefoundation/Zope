@@ -25,8 +25,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var sequence-key-->/manage_main">
-  <!--#if title_and_id--><!--#var title_and_id-->
-  <!--#else--><!--#var sequence-key--><!--#/if-->
+  <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
   </A>
   <!--#if locked_in_session-->
     <!--#if modified_in_session-->
