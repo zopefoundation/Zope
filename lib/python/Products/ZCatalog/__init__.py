@@ -84,11 +84,17 @@
 ##############################################################################
 """Site Index product"""
 
-import Catalog
+import ZCatalog
 
 
 def initialize(context):
+    context.registerClass(
+        ZCatalog.ZCatalog, 
+        permission='Add ZCatalogs',
+        constructors=(ZCatalog.manage_addZCatalogForm,
+                      ZCatalog.manage_addZCatalog),
+        icon='www/catalog.gif',
+        )
 
-    context.registerBaseClass(Catalog.Catalog)
 
 
