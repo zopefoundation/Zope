@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.8 1999/04/22 23:37:11 amos Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: HTTPResponse.py,v 1.9 1999/04/27 17:26:47 amos Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -650,7 +650,8 @@ class HTTPResponse(BaseResponse):
 #        if not headers.has_key('content-type') and self.status == 200:
 #            self.setStatus('nocontent')
 
-        if not headers.has_key('content-length'):
+        if not headers.has_key('content-length') and \
+                not headers.has_key('transfer-encoding'):
             self.setHeader('content-length',len(body))
 
         headersl=[]
@@ -658,6 +659,7 @@ class HTTPResponse(BaseResponse):
 
         # status header must come first.
         append("Status: %s" % headers.get('status', '200 OK'))
+        append("X-Powered-By: Zope (www.zope.org), Python (www.python.org)")
         if headers.has_key('status'):
             del headers['status']
         for key, val in headers.items():
