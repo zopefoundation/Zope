@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -454,9 +454,8 @@ class RoleManager(ExtensionClass.Base):
         data=list(self.__ac_roles__)
         data.append(role)
         self.__ac_roles__=tuple(data)
-        return self.manage_access(self, REQUEST)
-
-
+        if REQUEST is not None:
+            return self.manage_access(self, REQUEST)
 
 
     def _delRoles(self, roles, REQUEST):
@@ -470,8 +469,13 @@ class RoleManager(ExtensionClass.Base):
             try:    data.remove(role)
             except: pass
         self.__ac_roles__=tuple(data)
-        return self.manage_access(self, REQUEST)
+        if REQUEST is not None:
+            return self.manage_access(self, REQUEST)
 
+
+    def _has_user_defined_role(self, role):
+        return role in self.__ac_roles__
+        
 
     # Compatibility names only!!
 
