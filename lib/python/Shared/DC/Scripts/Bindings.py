@@ -15,6 +15,7 @@ __version__='$Revision$'[11:-2]
 
 import Globals
 from AccessControl import getSecurityManager
+from AccessControl.ZopeGuards import guarded_getattr
 from Persistence import Persistent
 from string import join, strip
 import re
@@ -161,19 +162,26 @@ class UnauthorizedBinding:
        actually using the container binding (for ex. workflow scripts)
        need to take explicit action to fix existing sites."""
 
-    def __init__(self, name):
+    def __init__(self, name, wrapped):
         self._name = name
+        self._wrapped = wrapped
 
     __allow_access_to_unprotected_subobjects__ = 1
 
     def __getattr__(self, name, default=None):
+
+        # Make *extra* sure that the wrapper isn't used to access
+        # __call__, __str__, __repr__, etc.
+        if name.startswith('__'):
+            self.__you_lose()
+
+        return guarded_getattr(self._wrapped, name, default)
+
+    def __you_lose(self):
         name = self.__dict__['_name']
         raise Unauthorized('Not authorized to access binding: %s' % name)
 
-    def __getitem__(self, key, default=None):
-        name = self.__dict__['_name']
-        raise Unauthorized('Not authorized to access binding: %s' % name)
-
+    __str__ = __call__ = index_html = __you_lose
 
 class Bindings:
 
@@ -256,7 +264,7 @@ class Bindings:
                 container = getattr(inner, 'aq_parent', None)
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
-                    return UnauthorizedBinding('context')
+                    return UnauthorizedBinding('context', self)
                 return self
 
     def _getContainer(self):
@@ -269,7 +277,7 @@ class Bindings:
                 container = getattr(inner, 'aq_parent', None)
                 try: getSecurityManager().validate(parent, container, '', self)
                 except Unauthorized:
-                    return UnauthorizedBinding('container')
+                    return UnauthorizedBinding('container', self)
                 return self
 
     def _getTraverseSubpath(self):
@@ -320,10 +328,18 @@ class Bindings:
         bindcode = getattr(self, '_v_bindcode', _marker)
         if bindcode is _marker:
             bindcode = self._prepareBindCode()
-        if bindcode is None:
-            bound_data = {}
-        else:
-            bound_data = []
-            exec bindcode
-            bound_data = bound_data[0]
-        return self._exec(bound_data, args, kw)
+
+        # Execute the script in a new security context (including the
+        # bindings preparation).
+        security = getSecurityManager()
+        security.addContext(self)
+        try:
+            if bindcode is None:
+                bound_data = {}
+            else:
+                bound_data = []
+                exec bindcode
+                bound_data = bound_data[0]
+            return self._exec(bound_data, args, kw)
+        finally:
+            security.removeContext(self)
