@@ -62,6 +62,23 @@ Transient Objects
       # the following is *necessary* to repersist the data
       transient_object['foo'] = foo
 
+  Notifications
+
+     Transient Object Containers support notification targets; these
+     represent objecs in Zope which are called when the transient object
+     container adds or deletes a transient object.
+
+     The notification target is called as the "Anonymous User," 'nobody.'
+     If the notification target requires special permissions, add proxy roles
+     to the notification target object.  The notification target is ALWAYS
+     callable by the Transient Object Container, so no users in Zope need
+     to be able to access them directly if they contain secure functions.
+     Thus, if the target object performs sensitive information, it may be
+     protected with the security machinery, by restricting what roles may
+     access it, and granting it proxy roles to access other objects, and
+     the notification process will drop permissions to 'nobody' when
+     invoking the target.
+
   See Also
 
      - "Transient Object API":TransienceInterfaces.py
