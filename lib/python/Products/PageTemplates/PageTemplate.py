@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys
 
@@ -139,8 +139,7 @@ class PageTemplate(Base):
         self._cook()
 
     def read(self):
-        if not self._v_cooked:
-            self._cook()
+        self._cook_check()
         if not self._v_errors:
             if not self.expand:
                 return self._text
@@ -154,6 +153,10 @@ class PageTemplate(Base):
         return ('%s\n %s\n-->\n%s' % (self._error_start,
                                       '\n '.join(self._v_errors),
                                       self._text))
+
+    def _cook_check(self):
+        if not self._v_cooked:
+            self._cook()
 
     def _cook(self):
         """Compile the TAL and METAL statments.
