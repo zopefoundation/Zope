@@ -117,6 +117,10 @@ class TestNotifications(TestBase):
         self.assertEqual(type(k), type(now))
         self.assert_(k <= now)
 
+    def testMissingCallbackGetCallbackReturnsNone(self):
+        # in response to http://zope.org/Collectors/Zope/1403
+        self.assertEqual(None, self.app.sm._getCallback('/foo/bar/baz'))
+
 def addNotificationTarget(item, context):
     item['starttime'] = fauxtime.time()
 

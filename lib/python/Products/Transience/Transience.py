@@ -717,10 +717,10 @@ class TransientObjectContainer(SimpleItem):
                 method = self.unrestrictedTraverse(callback)
             except (KeyError, AttributeError):
                 path = self.getPhysicalPath()
-                err = 'No such method %s in %s %s'
+                err = 'No such onAdd/onDelete method %s referenced via %s'
                 LOG('Transience',
                     WARNING,
-                    err % (callback, '/'.join(path), name),
+                    err % (callback, '/'.join(path)),
                     error=sys.exc_info()
                     )
                 return
