@@ -6,7 +6,7 @@ exec python $0 ${1+"$@"}
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.32 1998/04/09 15:21:41 jim Exp $'''
+$Id: Response.py,v 1.33 1998/05/20 16:55:34 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -56,7 +56,7 @@ $Id: Response.py,v 1.32 1998/04/09 15:21:41 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -301,17 +301,30 @@ class Response:
 	browsers with a key "name" and value "value". If a value for the
 	cookie has previously been set in the response object, the new
 	value is appended to the old one separated by a colon. '''
-	self.setCookie(name,value)
 
-    def expireCookie(self, name):
+	cookies=self.cookies
+	if cookies.has_key(name): cookie=cookies[name]
+	else: cookie=cookies[name]={}
+        if cookie.has_key('value'):
+            cookie['value']='%s:%s' % (cookie['value'], value)
+        else: cookie['value']=value
+
+    def expireCookie(self, name, **kw):
 	'''\
 	Cause an HTTP cookie to be removed from the browser
 	
 	The response will include an HTTP header that will remove the cookie
 	corresponding to "name" on the client, if one exists. This is
 	accomplished by sending a new cookie with an expiration date
-	that has already passed. '''
-	self.setCookie(name,'deleted', max_age=0)
+	that has already passed. Note that some clients require a path
+        to be specified - this path must exactly match the path given
+        when creating the cookie. The path can be specified as a keyword
+        argument.
+        '''
+        dict={'max_age':0, 'expires':'Wed, 31-Dec-97 23:59:59 GMT'}
+        for k, v in kw.items():
+            dict[k]=v
+        apply(Response.setCookie, (self, name, 'deleted'), dict)
 
     def setCookie(self,name,value,**kw):
 	'''\
@@ -323,12 +336,12 @@ class Response:
 	cookie in the Response object.
 	'''
 	cookies=self.cookies
-	if cookies.has_key(name): cookie=cookies[name]
+	if cookies.has_key(name):
+            cookie=cookies[name]
 	else: cookie=cookies[name]={}
-
-	for k, v in kw.items(): cookie[k]=v
+	for k, v in kw.items():
+            cookie[k]=v
 	cookie['value']=value
-
 
     def appendBody(self, body):
 	self.setBody(self.getBody() + body)
@@ -504,18 +517,23 @@ class Response:
 	cookie_list=[]
 	for name, attrs in self.cookies.items():
 
-            cookie='set-cookie: %s="%s"' % (name,attrs['value'])
+            # Note that as of May 98, IE4 ignores cookies with
+            # quoted cookie attr values, so only the value part
+            # of name=value pairs may be quoted.
+
+            cookie='Set-Cookie: %s="%s"' % (name, attrs['value'])
 	    for name, v in attrs.items():
-		if name=='expires': cookie = '%s; Expires="%s"' % (cookie,v)
-		elif name=='domain': cookie = '%s; Domain="%s"' % (cookie,v)
+                name=lower(name)
+		if name=='expires': cookie = '%s; Expires=%s' % (cookie,v)
+		elif name=='domain': cookie = '%s; Domain=%s' % (cookie,v)
 		elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
-		elif name=='max_age': cookie = '%s; Max-Age="%s"' % (cookie,v)
-		elif name=='comment': cookie = '%s; Comment="%s"' % (cookie,v)
+		elif name=='max_age': cookie = '%s; Max-Age=%s' % (cookie,v)
+		elif name=='comment': cookie = '%s; Comment=%s' % (cookie,v)
 		elif name=='secure': cookie = '%s; Secure' % cookie
-		#elif name!='value':
-		#    raise ValueError, (
-		#	'Invalid cookie attribute, <em>%s</em>' % name)
 	    cookie_list.append(cookie)
+
+        # Should really check size of cookies here!
+        
 	return cookie_list
 
     def __str__(self,
