@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: filesys.py,v 1.2 1999/04/09 00:37:33 amos Exp $
+#	$Id: filesys.py,v 1.3 1999/06/21 16:30:46 amos Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 # Generic filesystem interface.
@@ -395,7 +395,7 @@ def unix_longify (file, stat_info):
 	else:
 		dirchar = '-'
 	date = ls_date (long(time.time()), stat_info[stat.ST_MTIME])
-	return '%s%s %3d %-8d %-8d %8d %s %s' % (
+	return '%s%s %3d %-8s %-8s %8d %s %s' % (
 		dirchar,
 		mode,
 		stat_info[stat.ST_NLINK],
