@@ -188,6 +188,7 @@ function toggleSelect() {
   <input class="form-element" type="submit" 
    name="manage_importExportForm:method" 
    value="Import/Export" />
+  </dtml-if>
 <script type="text/javascript">
 <!-- 
 if (document.forms[0]) {
@@ -195,7 +196,6 @@ if (document.forms[0]) {
   }
 //-->
 </script>
-  </dtml-if>
   </div>
   </td>
 </tr>
@@ -217,6 +217,10 @@ There are currently no items in <em>&dtml-title_or_id;</em>
 </div>
 </dtml-if>
 </dtml-unless>
+<dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
+<input class="form-element" type="submit"
+  name="manage_importExportForm:method" value="Import/Export" />
+</dtml-if>
 </td>
 </tr>
 </table>
