@@ -2,6 +2,7 @@
 # install __init__.py
 # install add.dtml
 # install edit.dtml
+# install release
 
 # package Aqueduct
 # package AqueductDA

@@ -11,10 +11,12 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.1 1998/01/07 16:29:29 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1998/01/29 16:29:47 brian Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 from ImageFile import ImageFile
 import Aqueduct.Search, SQL
+
+classes=('SQL.SQL',)
 
 meta_types=(
     {'name':'Aqueduct SQL Database Method',
@@ -43,6 +45,9 @@ misc_={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.2  1998/01/29 16:29:47  brian
+# Added eval support
+#
 # Revision 1.1  1998/01/07 16:29:29  jim
 # Split out Database Methods
 #
