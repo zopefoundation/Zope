@@ -237,7 +237,10 @@ class FancyTestResult(unittest._TextTestResult):
     def addError(self, test, err):
         unittest.TestResult.addError(self, test, err)
         if self.showAll:
-            self.stream.writeln(excname(err[0]))
+            if isinstance(err[0], str):
+                self.stream.writeln(err[0])
+            else:
+                self.stream.writeln(excname(err[0]))
         elif self.verbose_on_error:
             if not self.have_blank_line:
                 self.stream.writeln()
