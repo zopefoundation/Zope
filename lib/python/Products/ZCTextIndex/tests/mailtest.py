@@ -152,9 +152,14 @@ def index(rt, mboxfile, db):
 def query(rt, query_str):
     idx = rt["index"]
     docs = rt["documents"]
+
+    start = time.clock()
     results, num_results = idx.query(query_str, BEST)
+    elapsed = time.clock() - start
+
     print "query:", query_str
-    print "# results:", len(results)
+    print "# results:", len(results), "of", num_results, \
+          "in %.2f ms" % (elapsed * 1000)
     for docid, score in results:
         print "docid %4d score %2d" % (docid, score)
         if VERBOSE:
