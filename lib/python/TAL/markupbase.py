@@ -192,7 +192,7 @@ class ParserBase:
             if c == "(":
                 # an enumerated type; look for ')'
                 if ")" in rawdata[j:]:
-                    j = awdata.find(")", j) + 1
+                    j = rawdata.find(")", j) + 1
                 else:
                     return -1
                 while rawdata[j:j+1] in string.whitespace:
