@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-import struct, tempfile, string, time, pickle
+import struct, tempfile, string, time, pickle, os, sys
 from struct import pack, unpack
 from cStringIO import StringIO
 
@@ -92,7 +92,10 @@ class FS:
     """
 
 
-    def __init__(self, fname):
+    def __init__(self, fname, file):
+        file.seek(0,2)
+        self._input_size=file.tell()
+        file.seek(0)
         self.__name__=fname
         self._file=open(fname,'w+b')
         self._file.write('FS21')
@@ -103,12 +106,20 @@ class FS:
         self._tappend=self._tindex.append
         self._tfile=tempfile.TemporaryFile()
         self._pos=4
+        self._progress=None
         
 
     def rpt(self, pos, oid, start, tname, user, t, p, first, newtrans):
         if pos is None:
             self.tpc_finish()
+            sys.stderr.write(' %% 100     \n')
             return
+        else:
+            progress=' %% %.1f \r' % (pos*100.0/self._input_size)
+            if progress != self._progress:
+                sys.stderr.write(progress)
+                self._progress=progress
+
         if newtrans:
             try: string.atof(tname)
             except:
