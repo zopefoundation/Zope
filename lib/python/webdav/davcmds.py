@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
@@ -97,6 +97,11 @@ from xmltools import XmlParser
 from cStringIO import StringIO
 from urllib import quote
 from AccessControl import getSecurityManager
+
+def safe_quote(url, mark=r'%', find=string.find):
+    if find(url, mark) > -1:
+        return url
+    return quote(url)
 
 class DAVProps(DAVProperties):
     """Emulate required DAV properties for objects which do
@@ -159,7 +164,7 @@ class PropFind:
                          '<d:multistatus xmlns:d="DAV:">\n')
         iscol=hasattr(obj, '__dav_collection__')
         if iscol and url[-1] != '/': url=url+'/'
-        result.write('<d:response>\n<d:href>%s</d:href>\n' % quote(url))
+        result.write('<d:response>\n<d:href>%s</d:href>\n' % safe_quote(url))
         if hasattr(aq_base(obj), 'propertysheets'):
             propsets=obj.propertysheets.values()
             obsheets=obj.propertysheets
