@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.4 1997/11/10 14:55:14 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: SimpleItem.py,v 1.5 1997/11/11 19:26:09 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -76,7 +76,10 @@ class Item:
 
     def modified_in_session(self):
 	jar=self._p_jar
-	if jar is None: return 1
+	if jar is None:
+	    if hasattr(self, 'aq_parent') and hasattr(self.aq_parent, '_p_jar'):
+		jar=self.aq_parent._p_jar
+	    if jar is None: return 0
 	if not jar.name: return 0
 	try: jar.db[self._p_oid]
 	except: return 0
@@ -100,6 +103,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.5  1997/11/11 19:26:09  jim
+# Fixed bug in modified_in_session.
+#
 # Revision 1.4  1997/11/10 14:55:14  jim
 # Added two new methods, bobobase_modification_time, and
 # modified_in_session, to support flagging new and session objects.
