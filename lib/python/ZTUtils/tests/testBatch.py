@@ -1,9 +1,11 @@
-import os, sys, unittest
+import os, sys
+
+from unittest import TestCase, makeSuite, main
 
 import string
 from ZTUtils import Batch
 
-class BatchTests(unittest.TestCase):
+class BatchTests(TestCase):
 
     def testEmpty(self):
         '''Test empty Batch'''
@@ -21,6 +23,7 @@ class BatchTests(unittest.TestCase):
             assert b.next is None
             assert b.start == 1, b.start
             assert len(b) ==  b.end == bsize
+            assert b.total == len(seq)
             for i in seq:
                 assert b[i] == i, (b[i], i)
                 neg = -1 - i
@@ -33,12 +36,14 @@ class BatchTests(unittest.TestCase):
             assert b.next is None
             assert len(b) == bsize
             assert b[bsize - 1] == bsize - 1
+            assert b.total == bsize
         b = Batch(range(8), 5)
         assert len(b) == 5
+        assert b.total == 8
         assert len(b.next) == 3
 
 def test_suite():
-    return unittest.makeSuite(BatchTests)
+    return makeSuite(BatchTests)
 
 if __name__=='__main__':
     main()
