@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.5 1997/02/17 16:27:53 jim Exp $
+  $Id: ExtensionClass.c,v 1.6 1997/02/24 15:43:57 jim Exp $
 
   Extension Class
 
@@ -56,6 +56,9 @@
       (540) 371-6909
 
   $Log: ExtensionClass.c,v $
+  Revision 1.6  1997/02/24 15:43:57  jim
+  Added __version__ string.
+
   Revision 1.5  1997/02/17 16:27:53  jim
   Many changes.
 
@@ -91,7 +94,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.5 1997/02/17 16:27:53 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.6 1997/02/24 15:43:57 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2786,6 +2789,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
+  char *rev="$Revision: 1.6 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2793,13 +2797,13 @@ initExtensionClass()
   ECTypeType.ob_type=&PyType_Type;
   ECType.ob_type=&ECTypeType;
   
-  /* Create the module and add the functions */
   m = Py_InitModule4("ExtensionClass", CC_methods,
 		     ExtensionClass_module_documentation,
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
-  /* Add some symbolic constants to the module */
   d = PyModule_GetDict(m);
+  PyDict_SetItemString(d,"__version__",
+		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   init_py_names();
 
