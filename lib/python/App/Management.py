@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.25 1999/06/15 01:01:46 amos Exp $"""
+$Id: Management.py,v 1.26 1999/07/08 11:58:10 jim Exp $"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -133,8 +133,9 @@ class Tabs(ExtensionClass.Base):
         for d in options:
 
             label=d.get('label', None)
-            if label=='Security' and hasattr(self, '_isBeingUsedAsAMethod') \
-                    and self._isBeingUsedAsAMethod():
+            if (label=='Security'
+                and hasattr(self, '_isBeingUsedAsAMethod')
+                and self._isBeingUsedAsAMethod()):
                 d['label']='Define Permissions'
 
             path=d.get('path', None)
