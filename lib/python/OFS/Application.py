@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.74 1998/11/20 18:16:37 jim Exp $'''
-__version__='$Revision: 1.74 $'[11:-2]
+$Id: Application.py,v 1.75 1998/12/01 17:28:24 brian Exp $'''
+__version__='$Revision: 1.75 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -20,11 +20,13 @@ import time, rotor, marshal
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
+from HelpSys.HelpSys import HelpSys
 from App.ApplicationManager import ApplicationManager
 from Globals import Persistent
 from FindSupport import FindSupport
 from ImageFile import ImageFile
 from urllib import quote
+
 
 _standard_error_msg='''\
 <!--#var standard_html_header-->
@@ -66,6 +68,9 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
     web__form__method='GET'
     isTopLevelPrincipiaApplicationObject=1
 
+
+    HelpSys=HelpSys()
+    
     class misc_:
 	"Miscellaneous product information"
 	__roles__=None
@@ -150,6 +155,8 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
             'standard_error_message',
             'Standard Error Message',
             _standard_error_msg)
+
+
 
 
     def id(self):
@@ -382,6 +389,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.75  1998/12/01 17:28:24  brian
+# Added Help support
+#
 # Revision 1.74  1998/11/20 18:16:37  jim
 # First crack at new layout and 1.5 support
 #
