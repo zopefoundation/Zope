@@ -1,3 +1,4 @@
+from __future__ import generators
 import os, sys, unittest
 
 from ZTUtils import Iterator
@@ -7,6 +8,26 @@ try:
     do_piter_test = 1
 except NameError:
     do_piter_test = 0
+
+class itemIterator:
+    'Ignore the __getitem__ argument in order to catch non-monotonic access.'
+    def __init__(self, n):
+        self.n = n
+        self.i = 0
+    def __getitem__(self, i):
+        if self.i >= self.n:
+            raise IndexError
+        i = self.i
+        self.i = self.i + 1
+        return i
+
+class genIterator:
+    'Generator-based iteration'
+    def __init__(self, n):
+        self.n = n
+    def __iter__(self):
+      for i in range(self.n):
+        yield i
 
 class IteratorTests(unittest.TestCase):
 
@@ -48,13 +69,20 @@ class IteratorTests(unittest.TestCase):
                     assert not it.end, (
                         "End false on element %s of %s" % (el, size))
 
-    def testIndex(self):
-        it = Iterator(range(5))
-        for el in range(5):
+    def assertRangeMatch(self, ob, n):
+        it = Iterator(ob)
+        for el in range(n):
             assert it.next(), "Iterator stopped too soon"
             assert it.index == el, "Incorrect index"
             assert it.number() == el + 1, "Incorrect number"
             assert it.item == el, "Incorrect item"
+
+    def testIndex(self):
+        self.assertRangeMatch(range(5), 5)
+        self.assertRangeMatch((0,1,2,3,4), 5)
+        self.assertRangeMatch({0:0, 1:1, 2:2, 3:3, 4:4}, 5)
+        self.assertRangeMatch(itemIterator(5), 5)
+        self.assertRangeMatch(genIterator(5), 5)
 
     def testFirstLast(self):
         it = Iterator([1])

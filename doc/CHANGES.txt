@@ -8,6 +8,10 @@ Zope Changes
     
     Features Added
 
+      - ZTUtils.Iterator now handles any object that has a Python
+        iterator, resolving Collector #385 and #577.  The
+        implementation is somwhat simpler, as well.
+
       - ZTUtils.Tree.TreeMaker now has additional methods for setting
         various flags and attributes that influence how the tree is built,
         making these aspects accessible to PythonScripts.

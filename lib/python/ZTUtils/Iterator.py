@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.8 2002/09/26 17:29:45 evan Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Iterator.py,v 1.9 2002/10/09 17:33:49 evan Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 class Iterator:
     '''Simple Iterator class'''
@@ -29,11 +29,10 @@ class Iterator:
     nextIndex = 0
     def __init__(self, seq):
         self.seq = seq
-        for inner in seqInner, iterInner:
-            if inner._supports(seq):
-                self._inner = inner
-                self._prep_next = inner.prep_next
-                return
+        if iterInner._supports(seq, self):
+            self._inner = iterInner
+            self._prep_next = iterInner.prep_next
+            return
         raise TypeError, "Iterator does not support %s" % `seq`
 
     def __getattr__(self, name):
@@ -130,48 +129,19 @@ class InnerBase:
             return 0
         return not self.prep_next(it)
 
-class SeqInner(InnerBase):
-    '''Inner class for sequence Iterators'''
-
-    def _supports(self, ob):
-        try: ob[0]
-        except (TypeError, AttributeError): return 0
-        except: pass
-        return 1
-
-    def prep_next(self, it):
-        i = it.nextIndex
-        try:
-            it._next = it.seq[i]
-        except IndexError:
-            it._prep_next = self.no_next
-            it.end = 1
-            return 0
-        it.end = 0
-        return 1
-
-    def it_length(self, it):
-        it.length = l = len(it.seq)
-        return l
-
-try:
-    StopIteration=StopIteration
-except NameError:
-    StopIteration="StopIteration"
-
 class IterInner(InnerBase):
-    '''Iterator inner class for Python iterators'''
+    '''Iterator inner class for objects with Python iterators'''
 
-    def _supports(self, ob):
+    def _supports(self, ob, it):
         try:
-            if hasattr(ob, 'next') and (ob is iter(ob)):
-                return 1
+            it.iter = iter(ob)
+            return 1
         except:
             return 0
 
     def prep_next(self, it):
         try:
-            it._next = it.seq.next()
+            it._next = it.iter.next()
         except StopIteration:
             it._prep_next = self.no_next
             it.end = 1
@@ -192,5 +162,4 @@ class IterIter:
             return it.item
         raise StopIteration
 
-seqInner = SeqInner()
 iterInner = IterInner()
