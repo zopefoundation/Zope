@@ -296,6 +296,8 @@ Zope Changes
 	- The Python 1.5.2 cgi module didn't work with Zope.  
 	  Zope now includes its own fixed version of the module.
 
+	  This bug caused FTP, Netscape Publishing and WebDAV to fail.
+
 	- A bug in transaction management caused Gadfly requests to
           fail. Other database adapters need to be updated.
 
