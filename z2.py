@@ -103,7 +103,7 @@ Options:
 
     If this option is specified, a separate managemnt process will
     be created that restarts Zope after a shutdown (or crash).
-    The path must point to a pid file that the process will record it's
+    The path must point to a pid file that the process will record its
     process id in. The path may be relative, in which case it will be
     relative to the Zope location.
 
@@ -114,19 +114,21 @@ Options:
 
   a ipaddress
 
-    The IP address to listen on.  If this is a empty string, then all
+    The IP address to listen on.  If this is an empty string, then all
     addresses on the machine are used. The default is %(IP_ADDRESS)s.
-
-  n hostname
-
-    Host name of the server machine. You may use 'localhost' if your server 
-    doesn't have a host name. The default is %(HOSTNAME)s.
 
   d ipaddress
 
-    IP address of your DNS server. If you have DNS service on your
+    IP address of your DNS server. If this is an empty string, then
+    IP addresses will not be logged. If you have DNS service on your
     local machine then you can set this to 127.0.0.1.
     The default is: %(DNS_IP)s.
+    
+  u username or uid number
+  
+    The username to run ZServer as. You may want to run ZServer as 'nobody'
+    or some other user with limited resouces. The only works under Unix, and
+    if ZServer is started by root. The default is: %(UID)s
     
   w port
   
@@ -144,6 +146,15 @@ Options:
     Path to the PCGI resource file.  The default value is
     %(PCGI_FILE)s, relative to the Zope location.  If this is an empty
     string or the file does not exist, then PCGI is disabled.
+
+  m port
+  
+    The secure monitor server port. IF this is an empty string, then the
+    monitor server is disabled. The monitor server allows interactive
+    Python style access to a running ZServer. To access the server see
+    medusa/monitor_client.py or medusa/monitor_client_win32.py. The monitor
+    server password is the same as the Zope super manager password set in
+    the 'access' file. The default is %(MONITOR_PORT)s.
 
   2
 
@@ -173,13 +184,14 @@ else: Zpid='var/zProcessManager.pid'
 # be visible from.  This can be changed to '' to listen on all interfaces.
 IP_ADDRESS=''
 
-# Host name of the server machine. You may use 'localhost' if your server 
-# doesn't have a host name.
-HOSTNAME='localhost'
+# IP address of your DNS server. Set to '' if you do not want to resolve
+# IP addresses. If you have DNS service on your local machine then you can
+# set this to '127.0.0.1'
+DNS_IP=''
 
-# IP address of your DNS server. If you have DNS service on your local machine
-# then you can set this to '127.0.0.1'
-DNS_IP='127.0.0.1'
+# User id to run ZServer as. Note that this only works under Unix, and if
+# ZServer is started by root.
+UID='nobody'
 
 ## HTTP configuration
 ##
@@ -188,7 +200,6 @@ DNS_IP='127.0.0.1'
 HTTP_PORT=9673
 
 ## FTP configuration
-##
 
 # Port for the FTP Server. The standard port for FTP services is 21.
 FTP_PORT=9221
@@ -198,6 +209,9 @@ FTP_PORT=9221
 # You can configure the PCGI server manually, or have it read its
 # configuration information from a PCGI info file.
 PCGI_FILE='Zope.cgi'
+
+## Monitor configuration
+MONITOR_PORT=9999
 
 # Module to be published, which must be Main or Zope
 MODULE='Zope'
@@ -235,8 +249,12 @@ try:
             except: raise 'Invalid number of threads', v
             NUMBER_OF_THREADS=v
         elif o=='-a': IP_ADDRESS=v
-        elif o=='-n': HOSTNAME=v
         elif o=='-d': DNS_IP=v
+        elif o=='-m':
+            if v:
+                try: v=string.atoi(v)
+                except: raise 'Invalid port', v
+            MONITOR_PORT=v
         elif o=='-w':
             if v:
                 try: v=string.atoi(v)
@@ -270,15 +288,13 @@ if sys.platform=='win32': Zpid=''
 # OK, let's get going!
 
 # Jigger path:
-sys.path=[os.path.join(here,'lib','python'),
-          os.path.join(here,'ZServer'),
+sys.path=[os.path.join(here,'lib','python'),here
           ]+filter(None, sys.path)
 
 if Zpid:
     import zdeamon, App.FindHomes 
     sys.ZMANAGED=1
     zdeamon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
-
 
 # Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
 exec "import "+MODULE in {}
@@ -292,44 +308,26 @@ LOG_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.log')
 # its PID to this file.
 PID_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.pid')
 
-# Try to become nobody. This will only work if this script is run by root.
-try:
-    import pwd
-    try:
-        nobody = pwd.getpwnam('nobody')[2]
-    except pwd.error:
-        nobody = 1 + max(map(lambda x: x[2], pwd.getpwall()))
-    os.setuid(nobody)
-except:
-    pass
-
-# open and close the log file, to make sure one is there.
-v = open(LOG_FILE, 'a')
-v.close()
-
-# if it hasn't failed at this point, create a .pid file.
-pf = open(PID_FILE, 'w')
-pf.write(str(os.getpid()))
-pf.close()
-
 
 # import ZServer stuff
 
 # First, we need to increase the number of threads
 if MODULE=='Zope':
-    import PubCore
-    PubCore.setNumberOfThreads(NUMBER_OF_THREADS)
+    from ZServer import setNumberOfThreads
+    setNumberOfThreads(NUMBER_OF_THREADS)
 
-from medusa import resolver,logger,asyncore
-from HTTPServer import zhttp_server, zhttp_handler
-from PCGIServer import PCGIServer
-from FTPServer import FTPServer
+from ZServer import resolver, logger, asyncore
+from ZServer import zhttp_server, zhttp_handler, PCGIServer,FTPServer
+from ZServer import secure_monitor_server
 
 ## ZServer startup
 ##
 
 # Resolver and Logger, used by other servers
-rs = resolver.caching_resolver(DNS_IP)
+if DNS_IP:
+    rs = resolver.caching_resolver(DNS_IP)
+else:
+    rs=None
 lg = logger.file_logger(LOG_FILE)
 
 # HTTP Server
@@ -358,7 +356,6 @@ if HTTP_PORT:
 if FTP_PORT:
     zftp = FTPServer(
         module=MODULE,
-        hostname=HOSTNAME,
         port=FTP_PORT,
         resolver=rs,
         logger_object=lg)
@@ -373,6 +370,38 @@ if PCGI_FILE:
             pcgi_file=PCGI_FILE,
             resolver=rs,
             logger_object=lg)
+
+# Monitor Server
+if MONITOR_PORT:
+    from AccessControl.User import super
+    monitor=secure_monitor_server(
+        password=super._getPassword(),
+        hostname=IP_ADDRESS,
+        port=MONITOR_PORT)
+
+# Try to set uid to server's uid. 
+# This will only work if this script is run by root.
+try:
+    import pwd
+    try:
+        try:
+            uid=string.atoi(UID)
+        except:
+            pass
+        if type(UID) == type(""):
+            uid = pwd.getpwnam(UID)[2]
+        os.setuid(uid)
+    except KeyError:
+        print "can't find UID %s" % UID
+    
+except:
+    pass
+
+
+# if it hasn't failed at this point, create a .pid file.
+pf = open(PID_FILE, 'w')
+pf.write(str(os.getpid()))
+pf.close()
 
 # Start Medusa, Ye Hass!
 sys.ZServerExitCode=0
