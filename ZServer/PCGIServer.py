@@ -117,6 +117,7 @@ import DebugLogger
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
+from types import StringType
 
 tz_for_log=compute_timezone_for_log()
 
@@ -124,6 +125,8 @@ class PCGIChannel(asynchat.async_chat):
     """Processes a PCGI request by collecting the env and stdin and
     then passing them to ZPublisher. The result is wrapped in a
     producer and sent back."""
+
+    closed=0
     
     def __init__(self,server,sock,addr):
         self.server = server
@@ -175,9 +178,10 @@ class PCGIChannel(asynchat.async_chat):
                         string.strip(self.env['PATH_INFO']),'/'))
                 self.env['PATH_INFO'] = '/' + string.join(path[len(script):],'/')
             self.data=StringIO()
-            
+
             DebugLogger.log('B', id(self), 
-                '%s %s' % (self.env['REQUEST_METHOD'], self.env['PATH_INFO']))
+                '%s %s' % (self.env['REQUEST_METHOD'],
+                           self.env.get('PATH_INFO' ,'/')))
                 
             # now read the next size header
             self.set_terminator(10)
@@ -249,31 +253,14 @@ class PCGIChannel(asynchat.async_chat):
     def __repr__(self):
         return "<PCGIChannel at %x>" % id(self)
 
-    def handle_close(self):
+    def close(self):
+        self.closed=1
         while self.producer_fifo:
+            p=self.producer_fifo.first()
+            if p is not None and type(p) != StringType:
+                p.more() # free up resources held by producer
             self.producer_fifo.pop()
-        self.close()
-
-    def handle_error (self):
-        (file,fun,line), t, v, tbinfo = compact_traceback()
-
-        # sometimes a user repr method will crash.
-        try:
-            self_repr = repr (self)
-        except:
-            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
-
-        self.log_info (
-            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
-                    self_repr,
-                    t,
-                    v,
-                    tbinfo
-                    ),
-            'error'
-            )
-        self.handle_close()
-           
+        asyncore.dispatcher.close(self)          
 
 
 class PCGIServer(asyncore.dispatcher):
@@ -405,7 +392,7 @@ class PCGIResponse(HTTPResponse):
             self.stdout.write(str(self))
             self._wrote=1
         self.stdout.write(data)
-    
+                                            
     def _finish(self):
         self.stdout.finish(self)
         self.stdout.close()
@@ -434,27 +421,25 @@ class PCGIPipe:
         self._data.write(text)
         
     def close(self):
-        data=self._data.getvalue()
-        l=len(data)
-        
-        DebugLogger.log('A', id(self._channel), 
-            '%s %s' % (self._channel.reply_code, l))
-        
-        self._channel.push('%010d%s%010d' % (l, data, 0), 0)
-        self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)
-        
-        self._channel.push(CallbackProducer(
-            lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)))
-        
-        if self._shutdown:
-            try: r=self._shutdown[0]
-            except: r=0
-            sys.ZServerExitCode=r
-            self._channel.push(ShutdownProducer(), 0)
-            Wakeup(lambda: asyncore.close_all())
-        else:
-            self._channel.push(None, 0)
-            Wakeup()
+        if not self._channel.closed:
+            data=self._data.getvalue()
+            l=len(data)
+            DebugLogger.log('A', id(self._channel), 
+                '%s %s' % (self._channel.reply_code, l))
+            self._channel.push('%010d%s%010d' % (l, data, 0), 0)
+            self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)        
+            self._channel.push(CallbackProducer(
+                lambda t=('E', id(self._channel)): apply(DebugLogger.log,t)))
+
+            if self._shutdown:
+                try: r=self._shutdown[0]
+                except: r=0
+                sys.ZServerExitCode=r
+                self._channel.push(ShutdownProducer(), 0)
+                Wakeup(lambda: asyncore.close_all())
+            else:
+                self._channel.push(None, 0)
+                Wakeup()
         self._data=None
         self._channel=None
         
