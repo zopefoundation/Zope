@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.21 1998/09/21 23:48:59 jim Exp $
+$Id: Test.py,v 1.22 1998/09/21 23:50:01 jim Exp $
 '''
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string, time
 repeat_count=100
@@ -231,9 +231,6 @@ try: from codehack import getlineno
 except:
     def getlineno(code):
         return code.co_firstlineno
-
-
-def setenv(env, 
 
 def publish(script,path_info,u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
 
