@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -212,7 +212,7 @@ from intSet import intSet
 import operator
 from Splitter import Splitter
 from string import strip
-import string, regex, regsub
+import string, ts_regex, regex
 
 class TextIndex(Persistent):
 
@@ -539,7 +539,7 @@ QueryError='TextIndex.QueryError'
 def query(s, index, default_operator = Or,
           ws = (string.whitespace,)):
     # First replace any occurences of " and not " with " andnot "
-    s = regsub.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
+    s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
     q = parse(s)
     q = parse2(q, default_operator)
     return evaluate(q, index)
@@ -590,31 +590,36 @@ def parse2(q, default_operator,
 
     return q
 
-def parens(s, parens_regex = regex.compile("(\|)")):
-    '''Find the beginning and end of the first set of parentheses'''
 
-    if (parens_regex.search(s) < 0): return None
+def parens(s, parens_re = regex.compile('(\|)').search):
 
-    if (parens_regex.group(0) == ")"):
-        raise QueryError, "Mismatched parentheses"
+    index=open_index=paren_count = 0
 
-    open = parens_regex.regs[0][0] + 1
-    start = parens_regex.regs[0][1]
-    p = 1
+    while 1:
+	index = parens_re(s, index)
+	if index < 0 : break
+    
+	if s[index] == '(':
+	    paren_count = paren_count + 1
+	    if open_index == 0 : open_index = index + 1
+	else:
+	    paren_count = paren_count - 1
 
-    while (parens_regex.search(s, start) >= 0):
-        if (parens_regex.group(0) == ")"): p = p - 1
-        else: p = p + 1
+	if paren_count == 0:
+	    return open_index, index
+	else:
+	    index = index + 1
 
-        start = parens_regex.regs[0][1]
-  
-        if (p == 0): return (open, parens_regex.regs[0][0])
+    if paren_count == 0: # No parentheses Found
+	return None
+    else:
+	raise QueryError, "Mismatched parentheses"	
 
-    raise QueryError, "Mismatched parentheses"    
+
 
 def quotes(s, ws = (string.whitespace,)):
      # split up quoted regions
-     splitted = regsub.split(s, '[%s]*\"[%s]*' % (ws * 2))
+     splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
      split=string.split
 
      if (len(splitted) > 1):
