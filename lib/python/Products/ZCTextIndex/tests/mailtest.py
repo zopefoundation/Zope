@@ -74,7 +74,7 @@ class Message:
 class Extra:
     pass
 
-def index(rt, mboxfile, db):
+def index(rt, mboxfile, db, profiler):
     global NUM
     idx_time = 0
     pack_time = 0
@@ -97,6 +97,41 @@ def index(rt, mboxfile, db):
         print "opened", mboxfile
     if not NUM:
         NUM = sys.maxint
+
+    if profiler:
+        itime, ptime, i = profiler.runcall(indexmbox, mbox, idx, docs, db)
+    else:
+        itime, ptime, i = indexmbox(mbox, idx, docs, db)
+    idx_time += itime
+    pack_time += ptime
+
+    get_transaction().commit()
+
+    if PACK_INTERVAL and i % PACK_INTERVAL != 0:
+        if VERBOSE >= 2:
+            print "packing one last time..."
+        p0 = time.clock()
+        db.pack(time.time())
+        p1 = time.clock()
+        if VERBOSE:
+            print "pack took %s sec" % (p1 - p0)
+        pack_time += p1 - p0
+
+    if VERBOSE:
+        finish_time = time.time()
+        print
+        print "Index time", round(idx_time / 60, 3), "minutes"
+        print "Pack time", round(pack_time / 60, 3), "minutes"
+        print "Index bytes", Message.total_bytes
+        rate = (Message.total_bytes / idx_time) / 1024
+        print "Index rate %.2f KB/sec" % rate
+        print "Indexing began", time.ctime(start_time)
+        print "Indexing ended", time.ctime(finish_time)
+        print "Wall clock minutes", round((finish_time - start_time)/60, 3)
+
+def indexmbox(mbox, idx, docs, db):
+    idx_time = 0
+    pack_time = 0
     i = 0
     while i < NUM:
         _msg = mbox.next()
@@ -126,37 +161,22 @@ def index(rt, mboxfile, db):
             if VERBOSE:
                 print "pack took %s sec" % (p1 - p0)
             pack_time += p1 - p0
+    return idx_time, pack_time, i
 
-    get_transaction().commit()
 
-    if PACK_INTERVAL and i % PACK_INTERVAL != 0:
-        if VERBOSE >= 2:
-            print "packing one last time..."
-        p0 = time.clock()
-        db.pack(time.time())
-        p1 = time.clock()
-        if VERBOSE:
-            print "pack took %s sec" % (p1 - p0)
-        pack_time += p1 - p0
-
-    if VERBOSE:
-        finish_time = time.time()
-        print
-        print "Index time", round(idx_time / 60, 3), "minutes"
-        print "Pack time", round(pack_time / 60, 3), "minutes"
-        print "Index bytes", Message.total_bytes
-        rate = (Message.total_bytes / idx_time) / 1024
-        print "Index rate %.2f KB/sec" % rate
-        print "Indexing began", time.ctime(start_time)
-        print "Indexing ended", time.ctime(finish_time)
-        print "Wall clock minutes", round((finish_time - start_time)/60, 3)
-
-def query(rt, query_str):
+def query(rt, query_str, profiler):
     idx = rt["index"]
     docs = rt["documents"]
 
     start = time.clock()
-    results, num_results = idx.query(query_str, BEST)
+    if profiler is None:
+        results, num_results = idx.query(query_str, BEST)
+    else:
+        if WARM_CACHE:
+            print "Warming the cache..."
+            idx.query(query_str, BEST)
+        start = time.clock()
+        results, num_results = profiler.runcall(idx.query, query_str, BEST)
     elapsed = time.clock() - start
 
     print "query:", query_str
@@ -180,16 +200,16 @@ def query(rt, query_str):
             print "-" * 60
 
 
-def main(fs_path, mbox_path, query_str):
+def main(fs_path, mbox_path, query_str, profiler):
     f = ZODB.FileStorage.FileStorage(fs_path)
     db = ZODB.DB(f, cache_size=CACHE_SIZE)
     cn = db.open()
     rt = cn.root()
 
     if mbox_path is not None:
-        index(rt, mbox_path, db)
+        index(rt, mbox_path, db, profiler)
     if query_str is not None:
-        query(rt, query_str)
+        query(rt, query_str, profiler)
 
     cn.close()
     db.close()
@@ -206,12 +226,13 @@ if __name__ == "__main__":
     TXN_SIZE = 1
     BEST = 10
     CONTEXT = 5
+    WARM_CACHE = 0
     query_str = None
     mbox_path = None
     profile = None
     old_profile = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vn:p:i:q:b:c:xt:',
+        opts, args = getopt.getopt(sys.argv[1:], 'vn:p:i:q:b:c:xt:w',
                                    ['profile=', 'old-profile='])
     except getopt.error, msg:
         usage(msg)
@@ -235,23 +256,30 @@ if __name__ == "__main__":
         elif o == '-t':
             TXN_SIZE = int(v)
         elif o == '-c':
-           CONTEXT = int(v)
+            CONTEXT = int(v)
+        elif o == '-w':
+            WARM_CACHE = 1
         elif o == '--profile':
             profile = v
         elif o == '--old-profile':
             old_profile = v
     fs_path, = args
+
     if profile:
         import hotshot
         profiler = hotshot.Profile(profile, lineevents=1, linetimings=1)
-        profiler.runcall(main, fs_path, mbox_path, query_str)
+    elif old_profile:
+        import profile
+        profiler = profile.Profile()
+    else:
+        profiler = None
+
+    main(fs_path, mbox_path, query_str, profiler)
+
+    if profile:
         profiler.close()
     elif old_profile:
-        import profile, pstats
-        profiler = profile.Profile()
-        profiler.runcall(main, fs_path, mbox_path, query_str)
+        import pstats
         profiler.dump_stats(old_profile)
         stats = pstats.Stats(old_profile)
         stats.strip_dirs().sort_stats('time').print_stats(20)
-    else:
-        main(fs_path, mbox_path, query_str)
