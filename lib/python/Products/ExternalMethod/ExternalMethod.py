@@ -16,7 +16,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 from Globals import Persistent, DTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, Acquisition
 import AccessControl.Role, sys, os, stat, traceback
@@ -58,7 +58,8 @@ def manage_addExternalMethod(self, id, title, module, function, REQUEST=None):
     
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
-    return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        return self.manage_main(self,REQUEST)
 
 class ExternalMethod(OFS.SimpleItem.Item, Persistent, Acquisition.Explicit,
                      AccessControl.Role.RoleManager, Navigation):
