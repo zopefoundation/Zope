@@ -174,6 +174,23 @@ class TestZCatalog(unittest.TestCase):
         sr = self._catalog.search(query)
         self.assertEqual(len(sr), 3)
 
+
+class dummy(ExtensionClass.Base):
+    att1 = 'att1'
+    att2 = 'att2'
+    att3 = ['att3']
+    def __init__(self, num):
+        self.num = num
+
+    def col1(self):
+        return 'col1'
+
+    def col2(self):
+        return 'col2'
+
+    def col3(self):
+        return ['col3']
+
 class TestCatalogObject(unittest.TestCase):
 
     upper = 1000
@@ -214,23 +231,6 @@ class TestCatalogObject(unittest.TestCase):
         self._catalog.addColumn('att2')
         self._catalog.addColumn('att3')
         self._catalog.addColumn('num')
-
-        class dummy(ExtensionClass.Base):
-            att1 = 'att1'
-            att2 = 'att2'
-            att3 = ['att3']
-            def __init__(self, num):
-                self.num = num
-
-            def col1(self):
-                return 'col1'
-
-            def col2(self):
-                return 'col2'
-
-            def col3(self):
-                return ['col3']
-
 
         for x in range(0, self.upper):
             self._catalog.catalogObject(dummy(self.nums[x]), `x`)
@@ -404,6 +404,19 @@ class TestCatalogObject(unittest.TestCase):
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, self.upper - 1)
 
+    def testUpdateIndexLeavesMetadataAlone(self):
+        ob = dummy(9999)
+        self._catalog.catalogObject(ob, `9999`)
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'att1')
+        ob.att1 = 'foobar'
+        self._catalog.catalogObject(ob, `9999`, idxs=['num'])
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'att1')
+        self._catalog.catalogObject(ob, `9999`)
+        brain = self._catalog(num=9999)[0]
+        self.assertEqual(brain.att1, 'foobar')
+        
 
 class objRS(ExtensionClass.Base):
 

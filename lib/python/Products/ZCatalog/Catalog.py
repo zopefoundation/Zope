@@ -287,35 +287,14 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         """ get an index wrapped in the catalog """
         return self.indexes[name].__of__(self)
 
-    # the cataloging API
-
-    def catalogObject(self, object, uid, threshold=None,idxs=[]):
-        """
-        Adds an object to the Catalog by iteratively applying it
-        all indexes.
-
-        'object' is the object to be cataloged
-
-        'uid' is the unique Catalog identifier for this object
-
-        """
-
+    def updateMetadata(self, object, uid):
+        """ Given an object and a uid, update the column data for the
+        uid with the object data iff the object has changed """
         data = self.data
-
-        # meta_data is stored as a tuple for efficiency
+        index = self.uids.get(uid, None)
         newDataRecord = self.recordify(object)
 
-        index=self.uids.get(uid, None)
-        if index is not None:
-            # old data
-
-            if data.get(index, 0) != newDataRecord:
-                # Update the meta-data, if necessary
-                data[index] = newDataRecord
-
-        else:
-            # new data
-
+        if index is None:
             if type(data) is IOBTree:
                 # New style, get random id
 
@@ -340,13 +319,48 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     index = data.keys()[-1] + 1
                 else:
                     index=0
+                # meta_data is stored as a tuple for efficiency
                 data[index] = newDataRecord
+        else:
+            if data.get(index, 0) != newDataRecord:
+                data[index] = newDataRecord
+        return index
+        
+    # the cataloging API
+
+    def catalogObject(self, object, uid, threshold=None,idxs=None):
+        """
+        Adds an object to the Catalog by iteratively applying it
+        all indexes.
+
+        'object' is the object to be cataloged
+
+        'uid' is the unique Catalog identifier for this object
+
+        """
+
+        if idxs is None:
+            idxs = []
+
+        data = self.data
+        index = self.uids.get(uid, None)
+
+        if index is None:  # we are inserting new data
+            index = self.updateMetadata(object, uid)
 
             try: self.__len__.change(1)
             except AttributeError: pass # No managed length (old-style)
 
             self.uids[uid] = index
             self.paths[index] = uid
+
+        else:  # we are updating old data
+            if not idxs:
+                # if the caller specifies that we should update only a
+                # specific set of indexes, we don't do a metadata update.
+                self.updateMetadata(object, uid)
+
+        # do indexing
 
         total = 0
 
