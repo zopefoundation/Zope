@@ -46,6 +46,9 @@ Zope Changes
 
     Bugs fixed
 
+      - the 'trusted-proxy' directive in zope.conf now also accepts
+        hostnames instead of IP addresses only (patch by Dieter Maurer)
+
       - Fixed test.py to not over-resolve symbolic links. Needed to run
         tests when the Products directory and a product are symlinks.
 

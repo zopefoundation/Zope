@@ -16,9 +16,10 @@
 
 import logging
 import os
-import re
 import sys
 import socket
+from re import compile
+from socket import gethostbyaddr
 
 import ZConfig
 
@@ -138,8 +139,10 @@ class ZopeStarter:
             filename = self.cfg.publisher_profile_file
             ZPublisher.Publish.install_profiling(filename)
         if self.cfg.trusted_proxies:
-            proxies = tuple(self.cfg.trusted_proxies)
-            ZPublisher.HTTPRequest.trusted_proxies = proxies
+            # DM 2004-11-24: added host name mapping (such that examples in conf file really have a chance to work
+            mapped = []
+            for name in self.cfg.trusted_proxies: mapped.extend(_name2Ips(name))
+            ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
 
     def setupSecurityOptions(self):
         import AccessControl
@@ -403,3 +406,14 @@ def dropPrivileges(cfg):
     os.setuid(uid)
     logger.info('Set effective user to "%s"' % effective_user)
     return 1 # for unit testing purposes 
+
+
+# DM 2004-11-24: added
+def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
+    '''map a name *host* to the sequence of its ip addresses;
+    use *host* itself (as sequence) if it already is an ip address.
+    Thus, if only a specific interface on a host is trusted,
+    identify it by its ip (and not the host name).
+    '''
+    if isIp_(host): return [host]
+    return gethostbyaddr(host)[2]

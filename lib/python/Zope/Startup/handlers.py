@@ -153,3 +153,4 @@ def handleConfig(config, multihandler):
         if not name.startswith('_'):
             handlers[name] = value
     return multihandler(handlers)
+
