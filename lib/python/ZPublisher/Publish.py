@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.120 1999/01/25 16:42:32 brian Exp $"""
-__version__='$Revision: 1.120 $'[11:-2]
+$Id: Publish.py,v 1.121 1999/01/25 20:48:46 brian Exp $"""
+__version__='$Revision: 1.121 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -145,6 +145,8 @@ class ModulePublisher:
     def __init__(self,
                  stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                  environ=os.environ):
+
+        environ=sane_environment(environ)
         fp=None
         try:
             if environ['REQUEST_METHOD'] != 'GET': fp=stdin
