@@ -19,7 +19,7 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-__version__='$Revision'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import re, string, sys
 import Interface
