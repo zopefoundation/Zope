@@ -1,0 +1,2 @@
+*shared*
+pyexpat pyexpat.o expat/libexpat.a -Iexpat/xmlparse
