@@ -29,7 +29,7 @@ from BTrees.IOBTree import IOBTree
 import BTrees.Length
 from Products.PluginIndexes.common.randid import randid
 
-import time, sys
+import time, sys, types
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog
@@ -67,7 +67,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # we instantiate a lexicon to be shared by all text indexes.
         # This may change.
 
-        if type(vocabulary) is type(''):
+        if isinstance(vocabulary, types.StringType):
             self.lexicon = vocabulary
         else:
             self.lexicon = Lexicon()
@@ -116,7 +116,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             index._convertBTrees(threshold)
 
         lexicon=self.lexicon
-        if type(lexicon) is type(''):
+        if isistance(lexicon, types.StringType):
            lexicon=getattr(self, lexicon).lexicon
         lexicon._convertBTrees(threshold)
 
@@ -271,7 +271,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         indexes = self.indexes
 
-        if type(index_type) == type(''):
+        if isinstance(index_type, types.StringType):
             raise TypeError,"""Catalog addIndex now requires the index type to
             be resolved prior to adding; create the proper index in the caller."""
 
@@ -446,12 +446,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 ## on below here...  Most of this stuff came from ZTables with tweaks.
 ## But I worry about :-)
 
-    def _indexedSearch(self, request , sort_index, append, used, optimize):
+    def _indexedSearch(self, request, sort_index, append, used, optimize):
         """
         Iterate through the indexes, applying the query to each one.
         """
-
-        rs   = None             # resultset
+        rs = None             # resultset
         data = self.data
 
         # We can optimize queries by only calling index._apply_index()
@@ -468,40 +467,35 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         #   what they are looking for (WYGIWYSF - what you get is what
         #   you search for).
 
-        if hasattr(request,'environ'):   # we have a request instance
+        if hasattr(request, 'environ'):   # we have a request instance
             optimize = 0
 
-        if used is None: used={}
+        if used is None:
+            used = {}
         for i in self.indexes.keys():
-
             index = self.indexes[i].__of__(self)
-            if hasattr(index,'_apply_index'):
+            _apply_index = getattr(index, "_apply_index", None)
+            if _apply_index is None:
+                continue
+            r = _apply_index(request)
 
-                r = None
-
-                # Optimization: we check if there is some work for the index.
-                # 
-
-                if optimize and request.has_key(index.getId()) :
-                        r=index._apply_index(request)
-                else:
-                    r=index._apply_index(request)
-
-                if r is not None:
-                    r, u = r
-                    for name in u: used[name]=1
-                    w, rs = weightedIntersection(rs, r)
+            if r is not None:
+                r, u = r
+                for name in u:
+                    used[name] = 1
+                w, rs = weightedIntersection(rs, r)
 
         #assert rs==None or hasattr(rs, 'values') or hasattr(rs, 'keys')
         if rs is None:
             # return everything
             if sort_index is None:
-                rs=data.items()
+                rs = data.items()
                 append(LazyMap(self.instantiate, rs, len(self)))
             else:
-                self._build_sorted_results(data,sort_index,append)
+                self._build_sorted_results(data, sort_index, append)
         elif rs:
             # this is reached by having an empty result set (ie non-None)
+            # XXX Isn't this reached by having a non-empty, non-None set?
             if sort_index is None and hasattr(rs, 'values'):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
@@ -511,12 +505,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 rs = []
                 for score, key in rset:
                     # compute normalized scores
-                    rs.append(( int((score/max)*100), score, key))
+                    rs.append((int(100. * score / max), score, key))
                 append(LazyMap(self.__getitem__, rs))
                     
             elif sort_index is None and not hasattr(rs, 'values'):
                 # no scores?  Just Lazify.
-                if hasattr(rs, 'keys'): rs=rs.keys() 
+                if hasattr(rs, 'keys'):
+                    rs = rs.keys() 
                 append(LazyMap(self.__getitem__, rs))
             else:
                 # sort.  If there are scores, then this block is not
@@ -530,7 +525,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     def _build_sorted_results(self,rs,sort_index,append):
         # This function will .append pairs where the first item
         # in the pair is a sort key, and the second item in the
-        # pair is a squence of results which share the same
+        # pair is a sequence of results which share the same
         # sort key. Later on the list to which these things
         # are .append()ed will be .sort()ed, and the first element
         # of each pair stripped.
@@ -555,14 +550,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # keys is much less then the number of results.
                 intset = _intersection(rs, intset)
                 if intset:
-                    keys = getattr(intset,'keys',_None)
+                    keys = getattr(intset, 'keys', _None)
                     if keys is not _None:
                         # Is this ever true?
                         intset = keys()
-                    append((k,_lazymap(_self__getitem__, intset)))
+                    append((k, _lazymap(_self__getitem__, intset)))
                     # Note that sort keys are unique.
         else:
-            if hasattr(rs, 'keys'): rs=rs.keys()
+            if hasattr(rs, 'keys'):
+                rs = rs.keys()
             _sort_index_keyForDocument = sort_index.keyForDocument
             _keyerror = KeyError
             for did in rs:
@@ -579,72 +575,87 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                     # uniqueness the first element of each pair is
                     # actually a tuple of:
                     # (real sort key, some unique number)
-                    lm = _lazymap(_self__getitem__,[did])
-                    key = (key,id(lm))
+                    lm = _lazymap(_self__getitem__, [did])
+                    key = key, id(lm)
                     append((key,lm))
 
+    def _get_sort_attr(self, attr, kw):
+        """Helper function to find sort-on or sort-order."""
+        # There are three different ways to find the attribute:
+        # 1. kw[sort-attr]
+        # 2. self.sort-attr
+        # 3. kw[sort_attr]
+        # kw may be a dict or an ExtensionClass MultiMapping, which
+        # differ in what get() returns with no default value.
+        name = "sort-%s" % attr
+        val = kw.get(name, None)
+        if val is not None:
+            return val
+        val = getattr(self, name, None)
+        if val is not None:
+            return val
+        return kw.get("sort_%s" % attr, None)
+
     def searchResults(self, REQUEST=None, used=None, optimize=1, **kw):
-        
         # Get search arguments:
-        if REQUEST is None and not kw:
-            try: REQUEST=self.REQUEST
-            except AttributeError: pass
         if kw:
             if REQUEST:
-                m=MultiMapping()
+                m = MultiMapping()
                 m.push(REQUEST)
                 m.push(kw)
-                kw=m
-        elif REQUEST: kw=REQUEST
+                kw = m
+        else:
+            if REQUEST is None:
+                try:
+                    REQUEST = self.REQUEST
+                except AttributeError:
+                    pass
+            if REQUEST:
+                kw = REQUEST
 
         # Compute "sort_index", which is a sort index, or none:
-        if kw.has_key('sort-on'):
-            sort_index=kw['sort-on']
-        elif hasattr(self, 'sort-on'):
-            sort_index=getattr(self, 'sort-on')
-        elif kw.has_key('sort_on'):
-            sort_index=kw['sort_on']
-        else: sort_index=None
-        sort_order=''
+        sort_index = self._get_sort_attr("on", kw)
         if sort_index is not None:
-            if self.indexes.has_key(sort_index):
-                sort_index=self.indexes[sort_index]
+            # self.indexes is always a dict, so get() w/ 1 arg works
+            sort_index = self.indexes.get(sort_index)
+            if sort_index is None:
+                raise CatalogError, ('Unknown sort_on index %s' % sort_index)
+            else:
                 if not hasattr(sort_index, 'keyForDocument'):
                     raise CatalogError(
                         'The index chosen for sort_on is not capable of being'
                         ' used as a sort index.'
                         )
-            else:
-                raise CatalogError, ('Unknown sort_on index %s' % sort_index)
         
         # Perform searches with indexes and sort_index
-        r=[]
-        
-        used=self._indexedSearch(kw, sort_index, r.append, used, optimize)
+        r = []
+        used = self._indexedSearch(kw, sort_index, r.append, used, optimize)
         if not r:
             return LazyCat(r)
 
         # Sort/merge sub-results
-        if len(r)==1:
-            if sort_index is None: r=r[0]
-            else: r=r[0][1]
+        if len(r) == 1:
+            if sort_index is None:
+                r = r[0]
+            else:
+                r = r[0][1]
         else:
-            if sort_index is None: r=LazyCat(r, len(r))
+            if sort_index is None:
+                r = LazyCat(r, len(r))
             else:
                 r.sort()
-                if kw.has_key('sort-order'):
-                    so=kw['sort-order']
-                elif hasattr(self, 'sort-order'):
-                    so=getattr(self, 'sort-order')
-                elif kw.has_key('sort_order'):
-                    so=kw['sort_order']
-                else: so=None
-                if (type(so) is type('') and
+                so = self._get_sort_attr("order", kw)
+                if (isinstance(so, types.StringType) and
                     so.lower() in ('reverse', 'descending')):
                     r.reverse()
 
-                r= [i[1] for i in r]
-                r=LazyCat(r, reduce(lambda x,y: x+len(y), r, 0))
+                size = 0
+                tmp = []
+                for i in r:
+                    elt = i[1]
+                    tmp.append(elt)
+                    size += len(elt)
+                r = LazyCat(tmp, size)
 
         return r
 
