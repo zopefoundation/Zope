@@ -89,7 +89,7 @@ This must be run from the top-level directory of the installation.
 
 """
 
-import sys, os
+import sys, os, getopt
 from do import *
 
 def setup(me):
@@ -97,8 +97,8 @@ def setup(me):
     if not home or home=='.': home=os.getcwd()
     home=os.path.split(home)[0]
     if not home or home=='.': home=os.getcwd()
-    sys.path.insert(os.path.join(home,'inst'))
-    sys.path.insert(os.path.join(home,'inst'))
+    sys.path.insert(0, os.path.join(home))
+    sys.path.insert(0, os.path.join(home,'inst'))
     return home
 
 def main(args):
@@ -148,4 +148,4 @@ def main(args):
     print
     print 'Done!'
 
-if __name__=='__main__': main(sys.argv[0])
+if __name__=='__main__': main(sys.argv)
