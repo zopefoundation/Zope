@@ -1,11 +1,11 @@
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
-from socket import *
+from socket import *; from select import select
 from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.12 1997/09/16 18:15:17 jeffrey Exp $ 
-__version__ = "$Revision: 1.12 $"[11:-2]
+#$Id: MailHost.py,v 1.13 1997/09/17 15:40:09 jeffrey Exp $ 
+__version__ = "$Revision: 1.13 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -102,9 +102,10 @@ class SendMail:
     def __init__(self, smtpHost, smtpPort, localHost="localhost"):
         self.conn = socket(AF_INET, SOCK_STREAM)
         self.conn.connect(smtpHost, smtpPort)
+	self.fd=self.conn.fileno()
         self.conn.send("helo "+localHost+"\r\n")
-        self._check('220')
-	self.getLine()			  #extra lines for some servers
+	while 1:
+	    if not self._check(): break
 
     def __del__(self):
         self._close()
@@ -112,6 +113,8 @@ class SendMail:
     def getLine(self):
 	line=''
 	while 1:
+	    if not select([self.fd],[],[],1.0)[0]:
+		break
 	    data=self.conn.recv(1)
 	    if (not data) or (data == '\n'):
 		break
@@ -120,6 +123,7 @@ class SendMail:
 
     def _check(self, lev='250'):
 	line = self.getLine()
+	if not line: return 0	#can't check an empty line, eh?
 	try:
 	    code=string.atoi(line[:3])
 	except:
@@ -127,7 +131,9 @@ class SendMail:
 
 	if code > 500:
             #raise smtpError, "Expected %s, got %s from SMTP" % (lev, data[:3])
-	    raise smtpError, "Recieved error code %s from SMTP: %s" % (code, line)
+	    raise smtpError, "Recieved error code %s from SMTP: %s"\
+		  % (code, line)
+	return 1
 
     def send(self, mfrom, mto, subj, body):
         self.conn.send("mail from:<%s>\n"%mfrom)
@@ -183,6 +189,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.13  1997/09/17 15:40:09  jeffrey
+#Further SMTP and socket improvements
+#
 #Revision 1.12  1997/09/16 18:15:17  jeffrey
 #Further SMTP updates...
 #
