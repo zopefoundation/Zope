@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.25 2001/04/27 18:07:09 andreas Exp $"""
+$Id: DT_HTML.py,v 1.26 2001/04/28 04:59:13 chrism Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, re
@@ -94,8 +94,8 @@ from string import strip, find, split, join, rfind, replace
 class dtml_re_class:
     """ This needs to be replaced before 2.4.  It's a hackaround. """
     def search(self, text, start=0,
-               name_match=re.compile(r'[\0- ]*[a-zA-Z]+[\0- ]*').match,
-               end_match=re.compile(r'[\0- ]*(/|end)', re.I).match,
+               name_match=re.compile(r'[\000- ]*[a-zA-Z]+[\000- ]*').match,
+               end_match=re.compile(r'[\000- ]*(/|end)', re.I).match,
                start_search=re.compile(r'[<&]').search,
                ent_name=re.compile(r'[-a-zA-Z0-9_.]+').match,
                find=find,

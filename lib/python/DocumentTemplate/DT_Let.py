@@ -154,12 +154,10 @@ class Let:
 def parse_let_params(text,
             result=None,
             tag='let',
-            parmre=re.compile(
-                r'([\0- ]*([^\0- =\"]+)=([^\0- =\"]+))'),
-            qparmre=re.compile(
-                r'([\0- ]*([^\0- =\"]+)="([^"]*)\")'),
+            parmre=re.compile(r'([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
+            qparmre=re.compile(r'([\000- ]*([^\000- ="]+)="([^"]*)")'),
             **parms):
-
+    
     result=result or []
 
     mo = parmre.match(text)
