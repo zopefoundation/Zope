@@ -16,6 +16,14 @@ Zope Changes
 
       Bugs fixed
 
+        - Product import ordering has been changed.  Now, the total set of
+          all Products are initialized in ascending alphabetical order by
+          product name, regardless of whether an INSTANCE_HOME exists.
+          If two products with the same name exist in both SOFTWARE_HOME
+          and INSTANCE_HOME, the order in which they appear in
+          Application.Products.__path__ determines whether they
+          are loaded first or second.
+
         - Collector #2318: html_quote function re-aliased into
           DT_Util so as not to break existing user code.
 
