@@ -443,12 +443,19 @@ class TALGenerator:
                 self.emitEndElement(name, isend)
             return
 
-        for key in taldict.keys():
+        for key, value in taldict.items():
             if key not in KNOWN_TAL_ATTRIBUTES:
                 raise TALError("bad TAL attribute: " + `key`, position)
-        for key in metaldict.keys():
+            if not (value or key == 'omit-tag'):
+                raise TALError("missing value for TAL attribute: " +
+                               `key`, position)
+        for key, value in metaldict.items():
             if key not in KNOWN_METAL_ATTRIBUTES:
-                raise METALError("bad METAL attribute: " + `key`, position)
+                raise METALError("bad METAL attribute: " + `key`,
+                position)
+            if not value:
+                raise TALError("missing value for METAL attribute: " +
+                               `key`, position)
         todo = {}
         defineMacro = metaldict.get("define-macro")
         useMacro = metaldict.get("use-macro")
