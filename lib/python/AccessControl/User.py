@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.125 $'[11:-2]
+__version__='$Revision: 1.126 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -251,7 +251,7 @@ class BasicUser(Implicit):
                         if 'Shared' in object_roles:
                             # Damn, old role setting. Waaa
                             object_roles=self._shared_roles(object)
-                            if 'Anonymous' in roles: return 1
+                            if 'Anonymous' in object_roles: return 1
                         return None
                 # Note that if self were not wrapped, it would
                 # not be possible to determine the user's context
@@ -260,12 +260,12 @@ class BasicUser(Implicit):
                 # wrapped user objects, this is safe.
                 return 1
 
-        if 'Shared' in roles:
+        if 'Shared' in object_roles:
             # Damn, old role setting. Waaa
-            roles=self._shared_roles(object)
-            if roles is None or 'Anonymous' in roles: return 1
-            while 'Shared' in roles: roles.remove('Shared')
-            return self.allowed(object,roles)
+            object_roles=self._shared_roles(object)
+            if object_roles is None or 'Anonymous' in object_roles: return 1
+            while 'Shared' in object_roles: object_roles.remove('Shared')
+            return self.allowed(object,object_roles)
 
         return None
 
