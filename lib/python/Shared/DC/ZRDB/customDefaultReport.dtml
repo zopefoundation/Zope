@@ -1,39 +1,31 @@
+<!--#in %(id)s size=50 start=query_start-->
+   <!--#if sequence-start-->
+      <!--#if previous-sequence-->
+        <a href="<!--#var URL-->/<!--#var sequence-query
+                 -->&query_start=<!--#var
+                 previous-sequence-start-number-->">
+        (Previous <!--#var previous-sequence-size--> results)
+        </a>
+      <!--#/if previous-sequence-->
+      %(else no_table)[<table border>
+      %(heading)s%(else)]
+   <!--#/if sequence-start-->
 
-  <!--#in %(id)s size=50 start=query_start-->
-     <!--#if sequence-start-->
-        <!--#if previous-sequence-->
-          <a href="<!--#var URL-->/<!--#var sequence-query
-                   -->&query_start=<!--#var
-                   previous-sequence-start-number-->">
-          (Previous <!--#var previous-sequence-size--> results)
-          </a>
-        <!--#/if previous-sequence-->
-        <table border>
+   %(row)s
 
+   <!--#if sequence-end-->
+      %(else no_table)[</table>%(else)]
+      <!--#if next-sequence-->
+         <a href="<!--#var URL-->/<!--#var sequence-query
+            -->&query_start=<!--#var
+            next-sequence-start-number-->">
+         (Next <!--#var next-sequence-size--> results)
+         </a>
+      <!--#/if next-sequence-->
+   <!--#/if sequence-end-->
 
-        %(heading)s
+<!--#else-->
 
+  There was no data matching this <!--#var title_or_id--> query.
 
-     <!--#/if sequence-start-->
-
-
-     %(row)s
-
-
-     <!--#if sequence-end-->
-        </table>
-        <!--#if next-sequence-->
-           <a href="<!--#var URL-->/<!--#var sequence-query
-              -->&query_start=<!--#var
-              next-sequence-start-number-->">
-           (Next <!--#var next-sequence-size--> results)
-           </a>
-        <!--#/if next-sequence-->
-     <!--#/if sequence-end-->
-
-  <!--#else-->
-
-    There was no data matching this <!--#var title_or_id--> query.
-
-  <!--#/in-->
-
+<!--#/in-->

@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.16 1997/12/12 23:38:04 jim Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Aqueduct.py,v 1.17 1998/01/09 13:58:14 jim Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -191,7 +191,7 @@ def default_input_form(id,arguments,action='query',
 custom_default_report_src=DocumentTemplate.File(
     dtml_dir+'customDefaultReport.dtml')
 
-def custom_default_report(id, result, action=''):
+def custom_default_report(id, result, action='', no_table=0):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
     heading=('<tr>\n%s</tr>' %
@@ -202,19 +202,24 @@ def custom_default_report(id, result, action=''):
 		     ''
 		     )
 		 )
-    row=('<tr>\n%s</tr>' %
-	     string.joinfields(
-		 map(lambda c:
-		     '\t\t<td><!--#var %s%s--></td>\n'
-		     % (urllib.quote(c['name']),
-			c['type']!='s' and ' null=""' or '',
-			),
-		     columns),
-		 ''
-		 )
-	     )
+
+    if no_table: tr, _tr, td, _td, delim = '<p>', '</p>', '', '', ', '
+    else: tr, _tr, td, _td, delim = '<tr>', '</tr>', '<td>', '</td>', ''
+
+    if no_table: tr='<p>'
+    else: tr, _tr = '<tr>', '</p>'
+
+    row=('%s\n%s\t\t%s' %
+	 (tr,string.joinfields(
+	     map(lambda c, td=td, _td=_td:
+		 '\t\t%s<!--#var %s%s-->%s\n'
+		 % (td,urllib.quote(c['name']),
+		    c['type']!='s' and ' null=""' or '',_td),
+		 columns),
+	     delim), _tr))
+
     return custom_default_report_src(
-	id=id,heading=heading,row=row,action=action)
+	id=id,heading=heading,row=row,action=action,no_table=no_table)
 
 def detypify(arg):
     l=string.find(arg,':')
@@ -360,6 +365,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.17  1998/01/09 13:58:14  jim
+# added option for tabular vs record reports
+#
 # Revision 1.16  1997/12/12 23:38:04  jim
 # Added debugging info.
 #

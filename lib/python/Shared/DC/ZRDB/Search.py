@@ -10,15 +10,16 @@
 ########################################################################## 
 __doc__='''Aqueduct Search Interface Wizard
 
-$Id: Search.py,v 1.2 1998/01/07 16:32:48 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Search.py,v 1.3 1998/01/09 13:58:15 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from Globals import HTMLFile
 from Aqueduct import custom_default_report, nicify
 from string import join
 
 addForm=HTMLFile('searchAdd', globals())
-def add(self, report_id, report_title, input_id, input_title, queries=[],
+def add(self, report_id, report_title, report_style,
+	input_id, input_title, queries=[],
 	REQUEST=None):
     'add a report'
 
@@ -56,7 +57,8 @@ def add(self, report_id, report_title, input_id, input_title, queries=[],
 	report_id,report_title,
 	('<!--#var standard_html_header-->\n%s\n'
 	 '<!--#var standard_html_footer-->' % 
-	 join(map(lambda q: custom_default_report(q.id, q), qs),
+	 join(map(lambda q, report_style=report_style:
+		  custom_default_report(q.id, q, no_table=report_style), qs),
 	      '\n<hr>\n')))
 
     if REQUEST: return self.manage_main(self,REQUEST)
@@ -171,6 +173,9 @@ def default_input_form(arguments,action='query',
 ############################################################################## 
 #
 # $Log: Search.py,v $
+# Revision 1.3  1998/01/09 13:58:15  jim
+# added option for tabular vs record reports
+#
 # Revision 1.2  1998/01/07 16:32:48  jim
 # Brought up to date with latest Principia models.
 #
