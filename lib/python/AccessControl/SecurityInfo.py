@@ -193,6 +193,10 @@ class ClassSecurityInfo(SecurityInfo):
             LOG('SecurityInfo', WARNING, 'Class "%s" had conflicting '
                 'security declarations' % classobj.__name__)
 
+class ClassSecurityInformation(ClassSecurityInfo):
+    # Default policy is disallow
+    access = 0
+
 _moduleSecurity = {}
 
 def secureModule(mname, *imp):
