@@ -95,8 +95,8 @@ __doc__='''Variable insertion parameters
        is used.  For example, if the value of spam is
        '"blah blah blah blah"', then the tag       
        '<!--#var spam size=10-->' inserts '"blah blah ..."'.
-'''
-__rcs_id__='$Id: DT_Var.py,v 1.4 1997/10/23 14:27:47 jim Exp $'
+''' # '
+__rcs_id__='$Id: DT_Var.py,v 1.5 1997/10/27 17:39:27 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -150,7 +150,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.4 1997/10/23 14:27:47 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DT_Util import *
 
@@ -298,6 +298,9 @@ special_formats={
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.5  1997/10/27 17:39:27  jim
+# removed a comment burp.
+#
 # Revision 1.4  1997/10/23 14:27:47  jim
 # Added truncation support via size and etc parameters.
 #
