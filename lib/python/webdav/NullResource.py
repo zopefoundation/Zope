@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -96,6 +96,7 @@ from Resource import Resource
 from Globals import Persistent, DTMLFile
 from WriteLockInterface import WriteLockInterface
 import OFS.SimpleItem
+from zExceptions import Unauthorized
 
 class NullResource(Persistent, Acquisition.Implicit, Resource):
     """Null resources are used to handle HTTP method calls on
@@ -179,8 +180,8 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         # check the clipboard.
         try:
             parent._verifyObjectPaste(ob.__of__(parent), 0)
-        except 'Unauthorized':
-            raise 'Unauthorized', sys.exc_info()[1]
+        except Unauthorized:
+            raise
         except:
             raise 'Forbidden', sys.exc_info()[1]
 
@@ -429,8 +430,8 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
         # Verify that the user can create this type of object
         try:
             parent._verifyObjectPaste(ob.__of__(parent), 0)
-        except 'Unauthorized':
-            raise 'Unauthorized', sys.exc_info()[1]
+        except Unauthorized:
+            raise
         except:
             raise 'Forbidden', sys.exc_info()[1]
 

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-Unauthorized = 'Unauthorized'
+from unauthorized import Unauthorized
 
 import DTML
 del DTML

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.159 $'[11:-2]
+__version__='$Revision: 1.160 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -98,7 +98,8 @@ from App.ImageFile import ImageFile
 from Role import RoleManager, DEFAULTMAXLISTUSERS
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
 import AuthEncoding
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
+from zExceptions import Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeSecurityPolicy import _noroles

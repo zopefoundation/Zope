@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.6 2001/10/01 21:03:15 matt Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: SecurityManager.py,v 1.7 2001/10/19 15:12:25 shane Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -145,8 +145,12 @@ class SecurityManager:
         """
         policy=self._policy
         if policy is None: policy=_defaultPolicy
-        return policy.validate(accessed, container, name, value,
-                               self._context, roles)
+        if roles is _noroles:
+            return policy.validate(accessed, container, name, value,
+                                   self._context)
+        else:
+            return policy.validate(accessed, container, name, value,
+                                   self._context, roles)
 
     def DTMLValidate(self, accessed=None, container=None, name=None,
                     value=None,md=None):
@@ -175,15 +179,19 @@ class SecurityManager:
         policy=self._policy
         if policy is None: policy=_defaultPolicy
         return policy.validate(accessed, container, name, value,
-                               self._context, _noroles)
+                               self._context)
 
     def validateValue(self, value, roles=_noroles):
         """Convenience for common case of simple value validation.
         """
         policy=self._policy
         if policy is None: policy=_defaultPolicy
-        return policy.validate(None, None, None, value,
-                               self._context, roles)
+        if roles is _noroles:
+            return policy.validate(None, None, None, value,
+                                   self._context)
+        else:
+            return policy.validate(None, None, None, value,
+                                   self._context, roles)
 
     def checkPermission(self, permission, object):
         """Check whether the security context allows the given permission on

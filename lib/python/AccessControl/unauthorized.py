@@ -82,95 +82,25 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""Access control exceptions
+"""
 
-"""Folder object
+import zExceptions
 
-Folders are the basic container objects and are analogous to directories.
+class Unauthorized(zExceptions.Unauthorized):
+                            
+    def getValueName(self):
+        v=self.value
+        n=getattr(v, 'getId', v)
+        if n is v:  n=getattr(v, 'id', v)
+        if n is v:  n=getattr(v, '__name__', v)
+        if n is not v:
+            if callable(n):
+                try: n = n()
+                except TypeError: pass
+            return n
 
-$Id: Folder.py,v 1.96 2001/10/19 15:12:26 shane Exp $"""
-
-__version__='$Revision: 1.96 $'[11:-2]
-
-import Globals, SimpleItem, ObjectManager, PropertyManager
-import AccessControl.Role, webdav.Collection, FindSupport
-from webdav.WriteLockInterface import WriteLockInterface
-from AccessControl import Unauthorized
-
-from Globals import DTMLFile
-from AccessControl import getSecurityManager
-
-
-manage_addFolderForm=DTMLFile('dtml/folderAdd', globals())
-
-def manage_addFolder(self, id, title='',
-                     createPublic=0,
-                     createUserF=0,
-                     REQUEST=None):
-    """Add a new Folder object with id *id*.
-
-    If the 'createPublic' and 'createUserF' parameters are set to any true
-    value, an 'index_html' and a 'UserFolder' objects are created respectively
-    in the new folder.
-    """
-    ob=Folder()
-    ob.id=str(id)
-    ob.title=title
-    self._setObject(id, ob)
-    ob=self._getOb(id)
-
-    checkPermission=getSecurityManager().checkPermission    
-
-    if createUserF:
-        if not checkPermission('Add User Folders', ob):
-            raise Unauthorized, (
-                  'You are not authorized to add User Folders.'
-                  )
-        ob.manage_addUserFolder()
-
-    if createPublic:
-        if not checkPermission('Add Page Templates', ob):
-            raise Unauthorized, (
-                  'You are not authorized to add Page Templates.'
-                  )
-        ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-            id='index_html', title='')
-
-    if REQUEST is not None:
-        return self.manage_main(self, REQUEST, update_menu=1)
-
-
-
-class Folder(
-    ObjectManager.ObjectManager,
-    PropertyManager.PropertyManager,
-    AccessControl.Role.RoleManager,
-    webdav.Collection.Collection,
-    SimpleItem.Item,
-    FindSupport.FindSupport,
-    ):
-    """
-    Folders are basic container objects that provide a standard
-    interface for object management. Folder objects also implement
-    a management interface and can have arbitrary properties.
-    """
-    __implements__ = (WriteLockInterface,)
-    meta_type='Folder'
-
-    _properties=({'id':'title', 'type': 'string'},)
-
-    manage_options=(
-        (ObjectManager.ObjectManager.manage_options[0],)+
-        (
-        {'label':'View', 'action':'index_html',
-         'help':('OFSP','Folder_View.stx')},
-        )+
-        PropertyManager.PropertyManager.manage_options+
-        AccessControl.Role.RoleManager.manage_options+
-        SimpleItem.Item.manage_options+
-        FindSupport.FindSupport.manage_options
-        )
-
-    __ac_permissions__=()
-
-
-Globals.default__class_init__(Folder)
+        c = getattr(v, '__class__', type(v))
+        c = getattr(c, '__name__', 'object')
+        return "a particular %s" % c
+        

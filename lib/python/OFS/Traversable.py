@@ -84,12 +84,13 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.11 2001/09/11 14:31:25 evan Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Traversable.py,v 1.12 2001/10/19 15:12:26 shane Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
+from AccessControl import Unauthorized
 from string import split, join
 from urllib import quote
 
@@ -165,7 +166,7 @@ class Traversable:
             pop()
             self=self.getPhysicalRoot()
             if (restricted and not securityManager.validateValue(self)):
-                raise 'Unauthorized', name
+                raise Unauthorized, name
                     
         try:
             object = self
@@ -181,7 +182,7 @@ class Traversable:
                     if o is not M:
                         if (restricted and not securityManager.validate(
                             object, object,name, o)):
-                            raise 'Unauthorized', name
+                            raise Unauthorized, name
                         object=o
                         continue
 
@@ -198,7 +199,7 @@ class Traversable:
                             container = object
                         if (not securityManager.validate(object,
                                                          container, name, o)):
-                            raise 'Unauthorized', name
+                            raise Unauthorized, name
                       
                 else:
                     o=get(object, name, M)
@@ -209,17 +210,17 @@ class Traversable:
                                 # value wasn't acquired
                                 if not securityManager.validate(
                                     object, object, name, o):
-                                    raise 'Unauthorized', name
+                                    raise Unauthorized, name
                             else:
                                 if not securityManager.validate(
                                     object, N, name, o):
-                                    raise 'Unauthorized', name
+                                    raise Unauthorized, name
                         
                     else:
                         o=object[name]
                         if (restricted and not securityManager.validate(
                             object, object, N, o)):
-                            raise 'Unauthorized', name
+                            raise Unauthorized, name
 
                 object=o
 

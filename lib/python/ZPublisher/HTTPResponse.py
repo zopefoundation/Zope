@@ -84,13 +84,14 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.48 2001/08/07 18:36:48 evan Exp $'''
-__version__='$Revision: 1.48 $'[11:-2]
+$Id: HTTPResponse.py,v 1.49 2001/10/19 15:12:27 shane Exp $'''
+__version__='$Revision: 1.49 $'[11:-2]
 
 import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
 from types import StringType, InstanceType, LongType
 from BaseResponse import BaseResponse
+from zExceptions import Unauthorized
 
 nl2sp=string.maketrans('\n',' ')
 
@@ -578,7 +579,7 @@ class HTTPResponse(BaseResponse):
                 m=m+'<p>\nUsername and password are not correct.'
             else:
                 m=m+'<p>\nNo Authorization header found.'
-        raise 'Unauthorized', m
+        raise Unauthorized, m
 
     def exception(self, fatal=0, info=None,
                   absuri_match=re.compile(r'\w+://[\w\.]+').match,
@@ -588,7 +589,11 @@ class HTTPResponse(BaseResponse):
         if type(info) is type(()) and len(info)==3: t,v,tb = info
         else: t,v,tb = sys.exc_info()
 
-        if str(t)=='Unauthorized': self._unauthorized()
+        if t=='Unauthorized' or t == Unauthorized or (
+            isinstance(t, types.ClassType) and issubclass(t, Unauthorized)
+            ):
+            t = 'Unauthorized'
+            self._unauthorized()
 
         stb=tb
 

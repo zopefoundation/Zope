@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.74 $'[11:-2]
+__version__='$Revision: 1.75 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -410,9 +410,9 @@ class CopyContainer(ExtensionClass.Base):
                 except: parent=None
                 if getSecurityManager().validate(None, parent, None, object):
                     return
-                raise 'Unauthorized', absattr(object.id)
+                raise Unauthorized, absattr(object.id)
             else:
-                raise 'Unauthorized', mt_permission
+                raise Unauthorized(permission=mt_permission)
         #
         #   XXX:    Ancient cruft, left here in true co-dependent fashion
         #           to keep from breaking old products which don't put
@@ -434,9 +434,9 @@ class CopyContainer(ExtensionClass.Base):
                 except: parent=None
                 if getSecurityManager().validate(None, parent, None, object):
                     return
-                raise 'Unauthorized', absattr(object.id)
+                raise Unauthorized, absattr(object.id)
             else:
-                raise 'Unauthorized', method_name
+                raise Unauthorized, method_name
 
         raise CopyError, MessageDialog(
               title='Not Supported',

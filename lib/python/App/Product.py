@@ -118,6 +118,7 @@ from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
 from HelpSys.HelpSys import ProductHelp
 import RefreshFuncs
+from AccessControl import Unauthorized
 
 
 class ProductFolder(Folder):
@@ -447,7 +448,7 @@ class Product(Folder, PermissionManager):
         Attempts to perform a refresh operation.
         '''
         if self._readRefreshTxt() is None:
-            raise 'Unauthorized', 'refresh.txt not found'
+            raise Unauthorized, 'refresh.txt not found'
         message = None
         if RefreshFuncs.performFullRefresh(self._p_jar, self.id):
             from ZODB import Connection
@@ -463,7 +464,7 @@ class Product(Folder, PermissionManager):
         Changes the auto refresh flag for this product.
         '''
         if self._readRefreshTxt() is None:
-            raise 'Unauthorized', 'refresh.txt not created'
+            raise Unauthorized, 'refresh.txt not created'
         RefreshFuncs.enableAutoRefresh(self._p_jar, self.id, enable)
         if enable:
             message = 'Enabled auto refresh.'
@@ -477,7 +478,7 @@ class Product(Folder, PermissionManager):
         Selects which products to refresh simultaneously.
         '''
         if self._readRefreshTxt() is None:
-            raise 'Unauthorized', 'refresh.txt not created'
+            raise Unauthorized, 'refresh.txt not created'
         RefreshFuncs.setDependentProducts(self._p_jar, self.id, selections)
         if REQUEST is not None:
             return self.manage_refresh(REQUEST)

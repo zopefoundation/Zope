@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Cacheable object and cache management base classes.
 
-$Id: Cache.py,v 1.6 2001/02/08 15:24:16 shane Exp $"""
+$Id: Cache.py,v 1.7 2001/10/19 15:12:26 shane Exp $"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import time, sys
 from string import join
@@ -96,6 +96,7 @@ from Acquisition import aq_get, aq_acquire, aq_inner, aq_parent, aq_base
 from zLOG import LOG, WARNING
 from AccessControl import getSecurityManager
 from AccessControl.Role import _isBeingUsedAsAMethod
+from AccessControl import Unauthorized
 
 ZCM_MANAGERS = '__ZCacheManager_ids__'
 
@@ -585,7 +586,7 @@ class CacheManager:
                 path = key[10:]
                 ob = parent.restrictedTraverse(path)
                 if not sm.checkPermission('Change cache settings', ob):
-                    raise 'Unauthorized'
+                    raise Unauthorized
                 if not isCacheable(ob):
                     # Not a cacheable object.
                     continue

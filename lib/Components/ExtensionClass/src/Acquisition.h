@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.h,v 1.1 2001/07/03 19:38:20 matt Exp $
+  $Id: Acquisition.h,v 1.2 2001/10/19 15:12:24 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -77,15 +77,13 @@ typedef struct {
 static ACQUISITIONCAPI *AcquisitionCAPI = NULL;
 
 #define aq_init() { \
-	PyObject *module; \
-	PyObject *api; \
-	if ((module = PyImport_ImportModule("Acquisition")) == NULL) \
-		Py_FatalError("Acquisition CAPI failed to load Acquisition"); \
-	if ((api = PyObject_GetAttrString(module,"AcquisitionCAPI")) \
-		== NULL) Py_FatalError("Acquisition CAPI failed to load AcquistionCAPI"); \
-	Py_DECREF(module); \
-	AcquisitionCAPI = PyCObject_AsVoidPtr(api); \
-	Py_DECREF(api); \
+    PyObject *module; \
+    PyObject *api; \
+    if (! (module = PyImport_ImportModule("Acquisition"))) return; \
+    if (! (api = PyObject_GetAttrString(module,"AcquisitionCAPI"))) return; \
+    Py_DECREF(module); \
+    AcquisitionCAPI = PyCObject_AsVoidPtr(api); \
+    Py_DECREF(api); \
 }
 
 

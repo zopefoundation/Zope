@@ -85,15 +85,15 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.50 2001/09/04 16:50:48 shane Exp $"""
+$Id: Management.py,v 1.51 2001/10/19 15:12:25 shane Exp $"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from string import split, join, find
-from AccessControl import getSecurityManager
+from AccessControl import getSecurityManager, Unauthorized
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
@@ -145,8 +145,8 @@ class Tabs(ExtensionClass.Base):
             m=options[0]['action']
             if m=='manage_workspace': raise TypeError
         except:
-            raise 'Unauthorized', (
-                'You are not authorized to view this object.<p>')
+            raise Unauthorized, (
+                'You are not authorized to view this object.')
 
         if find(m,'/'):
             raise 'Redirect', (

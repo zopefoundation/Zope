@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -91,8 +91,7 @@ from RestrictedPython.Utilities import utility_builtins
 from SecurityManagement import getSecurityManager
 from SecurityInfo import secureModule
 from SimpleObjectPolicies import Containers
-
-Unauthorized = 'Unauthorized'
+from zExceptions import Unauthorized
 
 _marker = []  # Create a new marker object.
 

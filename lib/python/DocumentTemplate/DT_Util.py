@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.83 2001/09/04 13:46:43 evan Exp $''' 
-__version__='$Revision: 1.83 $'[11:-2]
+'''$Id: DT_Util.py,v 1.84 2001/10/19 15:12:26 shane Exp $''' 
+__version__='$Revision: 1.84 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -98,7 +98,7 @@ LIMITED_BUILTINS = 1
 str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
 
 ParseError='Document Template Parse Error'
-ValidationError='Unauthorized'
+from zExceptions import Unauthorized as ValidationError
 
 def int_param(params,md,name,default=0, st=type('')):
     try: v=params[name]

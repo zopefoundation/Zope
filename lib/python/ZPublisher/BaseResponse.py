@@ -84,12 +84,13 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.8 2001/04/26 14:40:07 andreas Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: BaseResponse.py,v 1.9 2001/10/19 15:12:27 shane Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, types, sys
 from string import find, rfind, lower, upper, strip, split, join, translate
 from types import StringType, InstanceType
+from zExceptions import Unauthorized
 
 class BaseResponse:
     """Base Response Class
@@ -226,4 +227,4 @@ class BaseResponse:
 
         Make sure to generate an appropriate challenge, as appropriate.
         """
-        raise 'Unauthorized'
+        raise Unauthorized

@@ -82,69 +82,57 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''Objects that implement Permission-based roles.
+"""
+$Id: unauthorized.py,v 1.2 2001/10/19 15:12:28 shane Exp $
+"""
 
+class Unauthorized(Exception):
+    """Some user wasn't allowed to access a resource"""
 
-$Id: cPermissionRole.py,v 1.1 2001/08/08 15:57:49 matt Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+    def __init__(self, message=None, value=None, needed=None, name=None, **kw):
+        """Possible signatures:
 
-import cAccessControl
-rolesForPermissionOn=cAccessControl.rolesForPermissionOn
-PermissionRole=cAccessControl.PermissionRole
-imPermisionRole=cAccessControl.imPermissionRole
-_what_not_even_god_should_do= cAccessControl._what_not_even_god_should_do
+        Unauthorized()
+        Unauthorized(message) # Note that message includes a space
+        Unauthorized(name)
+        Unauthorized(name, value)
+        Unauthorized(name, value, needed)
+        Unauthorized(message, value, needed, name)
+        
+        Where needed is a mapping objects with items represnting requirements
+        (e.g. {'permission': 'add spam'}). Any extra keyword arguments
+        provides are added to needed.
+        """
+        if name is None and message is not None and len(message.split()) <= 1:
+            # First arg is a name, not a message
+            name=message
+            message=None
+            
+        self.name=name
+        self.message=message
+        self.value=value
 
-############################################################################## 
-# Test functions:
-#
+        if kw:
+            if needed: needed.update(kw)
+            else: needed=kw
+            
+        self.needed=needed
 
-def main():
-    # The "main" program for this module
-
-    import sys
-    sys.path.append('/projects/_/ExtensionClass')
-
-    from Acquisition import Implicit
-    class I(Implicit):
-        x__roles__=PermissionRole('x')
-        y__roles__=PermissionRole('y')
-        z__roles__=PermissionRole('z')
-        def x(self): pass
-        def y(self): pass
-        def z(self): pass
-
-
-
-    a=I()
-    a.b=I()
-    a.b.c=I()
-    a.q=I()
-    a.q._x_Permission=('foo',)
-    a._y_Permission=('bar',)
-    a._z_Permission=('zee',)
-    a.b.c._y_Permission=('Manage',)
-    a.b._z_Permission=['also']
+    def __str__(self):
+        if self.message is not None: return self.message
+        if self.name is not None:
+            return ("You are not allowed to access %s in this context"
+                    % self.name)
+        elif self.value is not None:
+            return ("You are not allowed to access %s in this context"
+                    % self.getValueName(self.value))
+                
+                            
+    def getValueName(self):
+        v=self.value
+        vname=getattr(v, '__name__', None)
+        if vname: return vname
+        c = getattr(v, '__class__', type(v))
+        c = getattr(c, '__name__', 'object')
+        return "a particular %s" % c
     
-    print a.x.__roles__, list(a.x.__roles__)
-    print a.b.x.__roles__
-    print a.b.c.x.__roles__
-    print a.q.x.__roles__
-    print a.b.q.x.__roles__
-    print a.b.c.q.x.__roles__
-    print
-    
-    print a.y.__roles__, list(a.y.__roles__)
-    print a.b.y.__roles__
-    print a.b.c.y.__roles__
-    print a.q.y.__roles__
-    print a.b.q.y.__roles__
-    print a.b.c.q.y.__roles__
-    print
-    
-    print a.z.__roles__, list(a.z.__roles__)
-    print a.b.z.__roles__
-    print a.b.c.z.__roles__
-    print a.q.z.__roles__
-    print a.b.q.z.__roles__
-    print a.b.c.q.z.__roles__
-    print

@@ -85,19 +85,16 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.6 2001/07/02 16:30:46 shane Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.7 2001/10/19 15:12:26 shane Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os
 import unittest
 
 if __name__=='__main__':
-    sys.path.append(os.path.join(os.pardir, os.pardir))
     here = os.curdir
 else:
-    from DocumentTemplate import tests
-    from App.Common import package_home
-    here = package_home(tests.__dict__)
+    here = os.path.split(__file__)[0]
 
 def read_file(name):
     f = open(os.path.join(here, name), 'rb')
@@ -122,7 +119,7 @@ class DTMLTests (unittest.TestCase):
 
     doc_class = HTML
 
-    def checkBatchingEtc(self):
+    def testBatchingEtc(self):
 
         def item(key,**kw): return (key,kw)
         def item2(key,**kw): return kw
@@ -239,7 +236,7 @@ class DTMLTests (unittest.TestCase):
         expected = read_file('dealers.out')
         assert res == expected, res
 
-    def checkSequenceSummaries(self):
+    def testSequenceSummaries(self):
         def d(**kw): return kw
         data=(d(name='jim', age=38),
               # d(name='kak', age=40),
@@ -274,7 +271,7 @@ class DTMLTests (unittest.TestCase):
                     'median=5 mean=12.5 s.d.=17')
         assert res == expected, res
 
-    def checkDTMLDateFormatting(self):
+    def testDTMLDateFormatting(self):
         import DateTime
         html = self.doc_class(
         "<dtml-var name capitalize spacify> is "
@@ -285,13 +282,13 @@ class DTMLTests (unittest.TestCase):
         expected = 'Christmas day is 1995/12/25'
         assert res == expected, res
 
-    def checkSimpleString(self):
+    def testSimpleString(self):
         dt = String('%(name)s')
         res = dt(name='Chris')
         expected = 'Chris'
         assert res == expected, res
 
-    def checkStringDateFormatting(self):
+    def testStringDateFormatting(self):
         import DateTime
         html = String("%(name capitalize spacify)s is "
                       "%(date fmt=year)s/%(date fmt=month)s/%(date fmt=day)s")
@@ -300,7 +297,7 @@ class DTMLTests (unittest.TestCase):
         expected = 'The date is 2001/4/27'
         assert res == expected, res
 
-    def checkSequence1(self):
+    def testSequence1(self):
         html=self.doc_class(
             '<dtml-in spam><dtml-in sequence-item><dtml-var sequence-item> '
             '</dtml-in sequence-item></dtml-in spam>')
@@ -308,7 +305,7 @@ class DTMLTests (unittest.TestCase):
         res = html(spam=[[1,2,3],[4,5,6]])
         assert res == expected, res
 
-    def checkSequence2(self):
+    def testSequence2(self):
         html=self.doc_class(
             '<dtml-in spam><dtml-in sequence-item><dtml-var sequence-item>-'
             '</dtml-in sequence-item></dtml-in spam>')
@@ -316,14 +313,14 @@ class DTMLTests (unittest.TestCase):
         res = html(spam=[[1,2,3],[4,5,6]])
         assert res == expected, res
 
-    def checkNull(self):
+    def testNull(self):
         html=self.doc_class('<dtml-var spam fmt="$%.2f bobs your uncle" '
                   'null="spam%eggs!|">')
         expected = '$42.00 bobs your unclespam%eggs!|'
         res = html(spam=42) + html(spam=None)
         assert res == expected, res
 
-    def check_fmt(self):
+    def test_fmt(self):
         html=self.doc_class(
             """
             <dtml-var spam>
@@ -369,7 +366,7 @@ foo bar
             spam='<a href="spam">\nfoo bar')
         assert res == expected, res
 
-    def checkPropogatedError(self):
+    def testPropogatedError(self):
 
         class foo:
             def __len__(self): return 9
@@ -408,7 +405,7 @@ foo bar
         else:
             assert 0, 'Puke error not propogated'
 
-    def checkRenderCallable(self):
+    def testRenderCallable(self):
         "Test automatic rendering of callable objects"
         class C (Base):
             __allow_access_to_unprotected_subobjects__ = 1
@@ -433,7 +430,7 @@ foo bar
             <dtml-var expr="_.render(i.h2)">''')(i=C())
         assert res == expected, res
 
-    def checkWith(self):
+    def testWith(self):
         class person:
             __allow_access_to_unprotected_subobjects__ = 1
             name='Jim'
@@ -448,7 +445,7 @@ foo bar
             'cm.</dtml-with>')(person=person)
         assert res == expected, res
 
-    def checkRaise(self):
+    def testRaise(self):
         try:
             res = self.doc_class(
             "<dtml-raise IndexError>success!</dtml-raise>")()
@@ -457,7 +454,7 @@ foo bar
         assert str(res) == 'success!', `res`
 
 
-    def checkBasicHTMLIn(self):
+    def testBasicHTMLIn(self):
         data=(
             d(name='jim', age=39),
             d(name='kak', age=29),
@@ -481,7 +478,7 @@ foo bar
         result = self.doc_class(html)(data=data)
         assert result == expected, result
 
-    def checkBasicHTMLIn2(self):
+    def testBasicHTMLIn2(self):
         xxx=(D(name=1), D(name=2), D(name=3))
         html = """
 <!--#in xxx-->
@@ -496,7 +493,7 @@ foo bar
         result = self.doc_class(html)(xxx=xxx)
         assert result == expected, result
 
-    def checkBasicHTMLIn3(self):
+    def testBasicHTMLIn3(self):
         ns = {'prop_ids': ('title', 'id'), 'title': 'good', 'id': 'times'}
         html = """:<dtml-in prop_ids><dtml-var sequence-item>=<dtml-var
         expr="_[_['sequence-item']]">:</dtml-in>"""
@@ -505,7 +502,7 @@ foo bar
 
         assert result == expected, result
 
-    def checkHTMLInElse(self):
+    def testHTMLInElse(self):
         xxx=(D(name=1), D(name=2), D(name=3))
         html="""
 <!--#in data mapping-->
@@ -524,7 +521,7 @@ foo bar
         result = self.doc_class(html)(xxx=xxx, data={})
         assert result == expected, result
         
-    def checkBasicStringIn(self):
+    def testBasicStringIn(self):
         data=(
             d(name='jim', age=39),
             d(name='kak', age=29),
@@ -548,22 +545,12 @@ foo bar
         assert expected == result, result
         
 def test_suite():
-    return unittest.makeSuite(DTMLTests, 'check')
+    suite = unittest.TestSuite()
+    suite.addTest( unittest.makeSuite( DTMLTests ) )
+    return suite
 
 def main():
-    alltests = test_suite()
-    runner = unittest.TextTestRunner()
-    runner.run(alltests)
+    unittest.TextTestRunner().run(test_suite())
 
-def debug():
-   test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
+if __name__ == '__main__':
+    main()

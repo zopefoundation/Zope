@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -95,6 +95,7 @@ from AccessControl import getSecurityManager
 from WriteLockInterface import WriteLockInterface
 import Globals, time
 from ZPublisher.HTTPRangeSupport import HTTPRangeInterface
+from zExceptions import Unauthorized
 
 class Resource(ExtensionClass.Base, Lockable.LockableItem):
     """The Resource mixin class provides basic WebDAV support for
@@ -155,7 +156,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                                                      method)
             except: pass
 
-        raise 'Unauthorized', msg
+        raise Unauthorized, msg
 
     def dav__simpleifhandler(self, request, response, method='PUT',
                              col=0, url=None, refresh=0):
@@ -394,8 +395,8 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         try: parent._checkId(name, allow_dup=1)
         except: raise 'Forbidden', sys.exc_info()[1]
         try: parent._verifyObjectPaste(self)
-        except 'Unauthorized':
-            raise 'Unauthorized', sys.exc_info()[1]
+        except Unauthorized:
+            raise
         except: raise 'Forbidden', sys.exc_info()[1]
 
         # Now check locks.  The If header on a copy only cares about the
@@ -483,8 +484,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         except:
             raise 'Forbidden', sys.exc_info()[1]
         try: parent._verifyObjectPaste(self)
-        except 'Unauthorized':
-            raise 'Unauthorized', sys.exc_info()[1]
+        except Unauthorized: raise
         except: raise 'Forbidden', sys.exc_info()[1]
 
         # Now check locks.  Since we're affecting the resource that we're
