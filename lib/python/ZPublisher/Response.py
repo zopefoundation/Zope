@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.22 1997/11/18 19:45:56 jim Exp $'''
+$Id: Response.py,v 1.23 1997/12/31 17:22:56 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.22 1997/11/18 19:45:56 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -171,7 +171,7 @@ class Response:
     """ #'
 
     accumulated_headers=''
-    
+    body=''
 
     def __init__(self,body='',status=200,headers=None,
 		 stdout=sys.stdout, stderr=sys.stderr,):
@@ -180,12 +180,15 @@ class Response:
 	"self.setBody(body); self.setStatus(status); for name in
 	headers.keys(): self.setHeader(name, headers[name])"
 	'''
-	if not headers:
-	    headers={}
+	if headers is None: headers={}
 	self.headers=headers
-	self.setStatus(status)
+
+	if status==200:
+	    self.status=200
+	    headers['status']="200 OK"	    
+	else: self.setStatus(status)
 	self.base=''
-	self.setBody(body)
+	if body: self.setBody(body)
 	self.cookies={}
 	self.stdout=stdout
 	self.stderr=stderr
@@ -201,12 +204,12 @@ class Response:
 	integer value. '''
 	if type(status) is types.StringType:
 	    status=lower(status)
-	try: status=status_codes[status]
-	except: status=500
+	if status_codes.has_key(status): status=status_codes[status]
+	else: status=500
 	self.status=status
 	if reason is None:
-	    try: reason=status_reasons[status]
-	    except: reason='Unknown'
+	    if status_reasons.has_key(status): reason=status_reasons[status]
+	    else: reason='Unknown'
 	self.setHeader('Status', "%d %s" % (status,str(reason)))
 
     def setHeader(self, name, value):
@@ -330,11 +333,14 @@ class Response:
 	'''\
 	Set an HTTP cookie on the browser
 
-	The response will include an HTTP header that sets a cookie on cookie-enabled
-	browsers with a key "name" and value "value". This overwrites
-	any previously set value for the cookie in the Response object. '''
-	try: cookie=self.cookies[name]
-	except: cookie=self.cookies[name]={}
+	The response will include an HTTP header that sets a cookie on
+	cookie-enabled browsers with a key "name" and value
+	"value". This overwrites any previously set value for the
+	cookie in the Response object.
+	'''
+	cookies=self.cookies
+	if cookies.has_key(name): cookie=cookies[name]
+	else: cookie=cookies[name]={}
 
 	for k, v in kw.items(): cookie[k]=v
 	cookie['value']=value
@@ -350,8 +356,8 @@ class Response:
 	 Returns the value associated with a HTTP return header, or
 	 "None" if no such header has been set in the response
 	 yet. '''
-	 try: return self.headers[name]
-	 except: return None
+	 headers=self.headers
+	 if headers.has_key(name): return headers[name]
 
     def __getitem__(self, name):
 	'Get the value of an output header'
@@ -368,10 +374,11 @@ class Response:
 	Sets an HTTP return header "name" with value "value",
 	appending it following a comma if there was a previous value
 	set for the header. '''
-	try:
+	headers=self.headers
+	if headers.has_key(name):
 	    h=self.header[name]
 	    h="%s%s\n\t%s" % (h,delimiter,value)
-	except: h=value
+	else: h=value
 	self.setHeader(name,h)
 
     def isHTML(self,str):
@@ -412,7 +419,8 @@ class Response:
 		except: pass
 		tb = tb.tb_next
 		n = n+1
-	result.append(join(traceback.format_exception_only(etype, value), ' '))
+	result.append(join(traceback.format_exception_only(etype, value),
+			   ' '))
 	sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
 	return result
 
@@ -421,6 +429,14 @@ class Response:
 	tb=join(tb,'\n')
 	tb=self.quoteHTML(tb)
 	return "\n<!--\n%s\n-->" % tb
+
+    def redirect(self, location):
+	"""Cause a redirection without raising an error"""
+	self.status=302
+	headers=self.headers
+	headers['status']='302 Moved Temporarily'
+	headers['location']=location
+	return location
 
     def exception(self, fatal=0):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
@@ -550,10 +566,20 @@ class Response:
 	if not headers.has_key('content-type') and self.status == 200:
 	    self.setStatus('nocontent')
 
-	headersl=map(
-	    lambda k,d=headers, upcase=upcase:
-	    "%s: %s" % (upcase(k),d[k]),
-	    headers.keys())
+	headersl=[]
+	append=headersl.append
+	for k,v in headers.items():
+
+	    k=upper(k[:1])+k[1:]
+
+	    start=0
+	    l=find(k,'-',start)
+	    while l >= start:
+		k="%s-%s%s" % (k[:l],upper(k[l+1:l+2]),k[l+2:])
+		start=l+1
+		l=find(k,'-',start)
+	    append("%s: %s" % (k,v))
+
 	if self.cookies:
 	    headersl=headersl+self._cookie_list()
 	headersl[len(headersl):]=[self.accumulated_headers,body]
@@ -583,8 +609,9 @@ class Response:
 	"""
 	self.body=self.body+data
 	if end_of_header_re.search(self.body) >= 0:
-	    try: del self.headers['content-length']
-	    except: pass
+	    headers=self.headers
+	    if headers.has_key('content-length'):
+		del headers['content-length']
 	    if not self.headers.has_key('content-type'):
 		self.setHeader('content-type', 'text/html')
 	    self.insertBase()
@@ -597,122 +624,3 @@ class Response:
 	    self._wrote=1
 	    write('\n\n')
 	    write(body)
-
-
-def upcase(s):
-    s=upper(s[:1])+s[1:]
-    l=find(s,'-')
-    if l > 0:
-	l=l+1
-	return s[:l]+upcase(s[l:])
-    else:
-	return s
-
-
-def main():
-    print Response('hello world')
-    print '-' * 70
-    print Response(('spam title','spam spam spam'))
-    print '-' * 70
-    try:
-	1.0/0.0
-    except: print ExceptionResponse()
-
-
-if __name__ == "__main__": main()
-
-############################################################################
-#
-# $Log: Response.py,v $
-# Revision 1.22  1997/11/18 19:45:56  jim
-# Added support for (uh ahem) accumulated headers, like set-cookie, so
-# that multiple calls to setHeader to not replace earlier header
-# settings for accumulated headers.
-#
-# Revision 1.21  1997/11/07 19:55:17  jim
-# Added check for responses that look like bogus default object strings:
-# <some damn instance as 123ab34c>
-#
-# Revision 1.20  1997/11/07 14:59:18  jim
-# Fixed bug in printing tracebacks.
-#
-# Revision 1.19  1997/10/29 18:46:55  jim
-# Fixed leak in exception handler.
-#
-# Revision 1.18  1997/10/22 14:48:26  jim
-# Added simple repr method top support printing requests.
-#
-# Revision 1.17  1997/09/15 19:20:56  brian
-# NS Server apparently chokes on multi-line headers, so bci exception info
-# no longer uses ml.
-#
-# Revision 1.16  1997/04/29 18:29:00  jim
-# Changed bobo-exception header code to use tb tail, rather than head
-# for reporting errors.
-#
-# Revision 1.15  1997/04/18 19:46:19  jim
-# Brian's changes to try and get file name and line no in exceptions.
-#
-# Revision 1.14  1997/04/12 17:17:32  jim
-# Brian added loggic to set bobo-specific headers to transmit exception
-# info.
-#
-# Revision 1.13  1997/04/11 23:13:23  jim
-# Fixed cookies.
-#
-# Revision 1.12  1997/01/28 22:59:19  jim
-# Fixed bug that caused html didling of non-html data
-#
-# Revision 1.11  1996/09/16 14:43:25  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.10  1996/09/13 22:52:10  jim
-# *** empty log message ***
-#
-# Revision 1.9  1996/08/30 23:28:29  jfulton
-# Added code to map 300 redirects to 302.
-#
-# Revision 1.8  1996/08/29 22:11:35  jfulton
-# Bug fixes.
-#
-# Revision 1.7  1996/08/05 11:27:59  jfulton
-# Added check for asHTML method.
-# Added traceback comment quoting.
-# Added code to add header of response doesn't contain one.
-#
-# Revision 1.6  1996/07/25 16:44:24  jfulton
-# - Fixed bug in recognizing HTML exception values.
-# - Added transaction support.
-#
-# Revision 1.5  1996/07/10 22:45:57  jfulton
-# Made exception handling fussier about exception values.
-# Now the value must contain white space to be considered an error
-# message.
-#
-# Revision 1.4  1996/07/08 20:34:09  jfulton
-# Many changes, including:
-#
-#   - Butter realm management
-#   - Automatic type conversion
-#   - Improved documentation
-#   - ...
-#
-# Revision 1.3  1996/07/03 18:25:50  jfulton
-# Added support for file upload via newcgi module.
-#
-# Revision 1.2  1996/07/01 11:51:54  jfulton
-# Updated code to:
-#
-#   - Provide a first cut authentication.authorization scheme
-#   - Fix several bugs
-#   - Provide better error messages
-#   - Provide automagic insertion of base
-#   - Support Fast CGI module publisher.
-#
-# Revision 1.1  1996/06/17 18:57:18  jfulton
-# Almost initial version.
-#
-#
