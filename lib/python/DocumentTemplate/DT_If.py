@@ -117,8 +117,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.6 1997/12/31 20:32:11 jim Exp $'
-__version__='$Revision: 1.6 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.7 1998/01/14 18:03:25 jim Exp $'
+__version__='$Revision: 1.7 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -180,8 +180,8 @@ class If:
 
     __call__=render
 
-class Else:
-    name='else'
+class Unless:
+    name='unless'
     blockContinuations=()
 
     def __init__(self, blocks):
@@ -205,9 +205,17 @@ class Else:
 
     __call__=render
 
+class Else(Unless):
+    # The else tag is included for backward compatibility and is deprecated.
+    name='else'
+
+
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.7  1998/01/14 18:03:25  jim
+# Added Unless tag as replacement for else tag.
+#
 # Revision 1.6  1997/12/31 20:32:11  jim
 # If and else blocks now cache variables.
 #

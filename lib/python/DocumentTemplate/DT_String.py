@@ -27,6 +27,7 @@ class String:
 	'var': DT_Var.Var,
 	'in': DT_In.In,
 	'if': DT_If.If,
+	'unless': DT_If.Unless,
 	'else': DT_If.Else,
 	}
 
