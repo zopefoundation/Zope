@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.18 1997/11/07 16:09:59 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Application.py,v 1.19 1997/11/07 17:11:48 brian Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -89,6 +89,34 @@ class Application(Folder.Folder):
     def PrincipiaTime(self):
 	"""Utility function to return current date/time"""
 	return DateTime()
+
+
+    def manage_addRole(self,REQUEST,role):
+	""" """
+        roles=list(self.__defined_roles__)
+	if role not in roles:
+	    roles.append(role)
+            roles.sort()
+	    self.__defined_roles__=tuple(roles)
+	try:    roles=self.__roles__
+	except: roles=[]
+	if roles is None: roles=[]
+        roles.append(role)
+	self.__roles__=roles
+	return self.manage_rolesForm(self, REQUEST)
+
+    def manage_deleteRole(self,REQUEST,role):
+	""" """
+	roles=list(self.__defined_roles__)
+	if role in roles:
+	    del roles[roles.index(role)]
+	    self.__defined_roles__=tuple(roles)
+
+    def validRoles(self):
+	return self.__defined_roles__
+
+
+
 
 def open_bobobase():
     # Open the application database
@@ -196,6 +224,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.19  1997/11/07 17:11:48  brian
+# Added role mgmt to Application object
+#
 # Revision 1.18  1997/11/07 16:09:59  jim
 # Added __bobo_traverse__ machinery in support of sessions.
 # Updated product installation logic to give OFS special treatment.
