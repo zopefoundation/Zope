@@ -43,7 +43,7 @@ def setConfiguration(cfg):
 
     if cfg is None:
         return
-	
+
     from App import FindHomes
     import __builtin__
     __builtin__.CLIENT_HOME = FindHomes.CLIENT_HOME = cfg.clienthome
@@ -72,11 +72,15 @@ def setConfiguration(cfg):
         Globals.ZOPE_HOME = cfg.zopehome
 
 class DefaultConfiguration:
+    """
+    This configuration should be used effectively only during unit tests
+    """
     def __init__(self):
         from App import FindHomes
         self.clienthome = FindHomes.CLIENT_HOME
         self.instancehome = FindHomes.INSTANCE_HOME
         self.softwarehome = FindHomes.SOFTWARE_HOME
         self.zopehome = FindHomes.ZOPE_HOME
+        self.dbtab = None
         self.debug_mode = True
         self.enable_product_installation = True
