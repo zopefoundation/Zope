@@ -7,6 +7,8 @@
 
 <h2>Add External Method</h2>
 
+<dtml-var "HelpSys.HelpButton('External-Method_Add.dtml', 'ExternalMethod')">
+
 <P>
 External Methods allow you to add functionality to Zope by writing Python
 functions which are exposed as callable Zope objects.
