@@ -85,10 +85,10 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.20 2001/01/11 22:07:02 chrism Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: CacheManager.py,v 1.21 2001/08/27 19:25:19 shane Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
-import Globals, time, sys
+import Globals, time, sys, string
 
 class CacheManager:
     """Cache management mix-in
@@ -252,62 +252,59 @@ class CacheManager:
             db.setVersionCacheSize(self._vcache_size)
             db.setVersionCacheDeactivateAfter(self._vcache_age)
 
-    def cache_detail(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2            
-            detail={}
-            for oid, ob in Globals.Bobobase._jar.cache.items():
-                if hasattr(ob, '__class__'):
-                    ob=ob.__class__
-                    decor=''
-                else: decor=' class'
-                c="%s.%s%s" % (ob.__module__ or '', ob.__name__, decor)
-                if detail.has_key(c): detail[c]=detail[c]+1
-                else: detail[c]=1
-            detail=detail.items()
+    def cache_detail(self, REQUEST=None):
+        """
+        Returns the name of the classes of the objects in the cache
+        and the number of objects in the cache for each class.
+        """
+        db=self._p_jar.db()
+        detail = db.cacheDetail()
+        if REQUEST is not None:
+            # format as text
+            REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
+            return string.join(map(lambda (name, count): '%6d %s' %
+                                   (count, name), detail), '\n')
         else:
-            # ZODB 3
-            detail=db.cacheDetail()
-            detail=map(lambda d:
-                       (("%s.%s" % (d[0].__module__, d[0].__name__)), d[1]),
-                       detail.items())
-
-        detail.sort()
-        return detail
-
-    def cache_extreme_detail(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2            
-            detail=[]
-            rc=sys.getrefcount
-            db=Globals.Bobobase._jar.db
-            for oid, ob in Globals.Bobobase._jar.cache.items():
-                id=oid
-
-                if hasattr(ob, '__class__'):
-                    if hasattr(ob,'__dict__'):
-                        d=ob.__dict__
-                        if d.has_key('id'):
-                            id="%s (%s)" % (oid, d['id'])
-                        elif d.has_key('__name__'):
-                            id="%s (%s)" % (oid, d['__name__'])
-                    ob=ob.__class__
-                    decor=''
-
-                else: decor=' class'
-
-                detail.append({
-                    'oid': id,
-                    'klass': "%s.%s%s" % (ob.__module__, ob.__name__, decor),
-                    'rc': rc(ob)-4,
-                    'references': db.objectReferencesIn(oid),
-                    })
+            # raw
             return detail
+
+    def cache_extreme_detail(self, REQUEST=None):
+        """
+        Returns information about each object in the cache.
+        """
+        db=self._p_jar.db()
+        detail = db.cacheExtremeDetail()
+        if REQUEST is not None:
+            # sort the list.
+            lst = map(lambda dict: ((dict['conn_no'], dict['oid']), dict),
+                      detail)
+            lst.sort()
+            # format as text.
+            res = [
+                '# Table shows connection number, oid, refcount, state, '
+                'and class.',
+                '# States: L = loaded, G = ghost, C = changed']
+            for sortkey, dict in lst:
+                id = dict.get('id', None)
+                if id:
+                    idinfo = ' (%s)' % id
+                else:
+                    idinfo = ''
+                s = dict['state']
+                if s == 0:
+                    state = 'L'  # loaded
+                elif s == 1:
+                    state = 'C'  # changed
+                else:
+                    state = 'G'  # ghost
+                res.append('%d %-34s %6d %s %s%s' % (
+                    dict['conn_no'], `dict['oid']`, dict['rc'],
+                    state, dict['klass'], idinfo))
+            REQUEST.RESPONSE.setHeader('Content-Type', 'text/plain')
+            return string.join(res, '\n')
         else:
-            # ZODB 3
-            return db.cacheExtremeDetail()
+            # raw
+            return detail
 
 Globals.default__class_init__(CacheManager)
 
