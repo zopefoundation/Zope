@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.28 1997/12/18 17:10:40 jim Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: Application.py,v 1.29 1997/12/18 17:17:46 jim Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -167,14 +167,16 @@ def install_products():
     path_join=os.path.join
     product_dir=path_join(SOFTWARE_HOME,'Products')
     isdir=os.path.isdir
+    exists=os.path.exists
 
     app       =Globals.Bobobase['Application']
     meta_types=list(Folder.Folder.dynamic_meta_types)
     role_names=list(app.__defined_roles__)
 
     for product_name in os.listdir(product_dir):
-	if not isdir(path_join(product_dir, product_name)): continue
-	if product_name=='CVS': continue
+	package_dir=path_join(product_dir, product_name)
+	if not isdir(package_dir): continue
+	if not exists(path_join(package_dir, '__init__.py')): continue
 	product=__import__(product_name)
 	for meta_type in product.meta_types:
 	    if product_name=='OFS': meta_types.insert(0,meta_type)
@@ -236,6 +238,10 @@ def install_products():
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.29  1997/12/18 17:17:46  jim
+# Added rule: only treat a directory in Products as a product if it
+# has __init__.py
+#
 # Revision 1.28  1997/12/18 17:10:40  jim
 # Added check for CVS directory.
 #
