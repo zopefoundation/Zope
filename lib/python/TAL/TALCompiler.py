@@ -100,6 +100,28 @@ from TALVisitor import macroIndexer, slotIndexer
 from TALVisitor import splitParts, parseAttributeReplacements
 from TALVisitor import parseSubstitution
 
+class TALError(Exception):
+    pass
+
+class METALError(TALError):
+    pass
+
+KNOWN_METAL_ATTRIBUTES = [
+    "define-macro",
+    "use-macro",
+    "define-slot",
+    "fill-slot",
+    ]
+
+KNOWN_TAL_ATTRIBUTES = [
+    "define",
+    "condition",
+    "insert",
+    "replace",
+    "repeat",
+    "attributes",
+    ]
+
 class METALCompiler(DOMVisitor):
 
     def __init__(self, document):
@@ -183,8 +205,19 @@ class METALCompiler(DOMVisitor):
         if not node.hasAttributes():
             self.emitElement(node)
         else:
+            self.checkSpuriousAttributes(node)
             self.expandElement(node)
         self.popNS()
+
+    def checkSpuriousAttributes(self, node,
+                                ns=ZOPE_METAL_NS,
+                                known=KNOWN_METAL_ATTRIBUTES):
+        for attr in node.attributes.values():
+            if attr.namespaceURI == ns:
+                if attr.localName not in known:
+                    raise METALError(
+                        "bad METAL attribute: %s;\nallowed are: %s" %
+                        (repr(attr.name), string.join(known)))
 
     def expandElement(self, node):
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
@@ -253,7 +286,7 @@ class METALCompiler(DOMVisitor):
 
 class TALCompiler(METALCompiler):
 
-    # Overriding METAL method to add attribute replacements
+    # Extending METAL method to add attribute replacements
     def getAttributeList(self, node):
         attrList = METALCompiler.getAttributeList(self, node)
         attrDict = getAttributeReplacements(node)
@@ -280,6 +313,12 @@ class TALCompiler(METALCompiler):
             self.emit("endScope")
         else:
             self.conditionalElement(node)
+
+    # Extending METAL method to check for TAL statements
+    def checkSpuriousAttributes(self, node):
+        METALCompiler.checkSpuriousAttributes(self, node)
+        METALCompiler.checkSpuriousAttributes(
+            self, node, ZOPE_TAL_NS, KNOWN_TAL_ATTRIBUTES)
 
     def emitDefines(self, defines):
         for part in splitParts(defines):
