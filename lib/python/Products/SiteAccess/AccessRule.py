@@ -16,18 +16,18 @@ class AccessRule(NameCaller):
 
     def __call__(self, container, request):
         if SUPPRESS_ACCESSRULE: return
-        if '_SUPPRESS_ACCESSRULE' in _swallow(request):
+        if '_SUPPRESS_ACCESSRULE' in _swallow(request, '_SUPPRESS'):
             request.setVirtualRoot(request.steps)
             return
         NameCaller.__call__(self, container, request)
 
-def _swallow(request):
+def _swallow(request, prefix):
     path = request['TraversalRequestNameStack']
     steps = request.steps
     i = len(steps)
     while i > 0 and steps[i - 1][:1] == '_':
         i = i - 1
-    while path and path[-1][:1] == '_':
+    while path and path[-1][:len(prefix)] == prefix:
         steps.append(path.pop())
     return steps[i:]
 

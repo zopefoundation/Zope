@@ -105,7 +105,7 @@ class SiteRoot(Traverser, Implicit):
     def __call__(self, client, request, response=None):
         '''Traversing'''
         if SUPPRESS_SITEROOT: return
-        if '_SUPPRESS_SITEROOT' in _swallow(request):
+        if '_SUPPRESS_SITEROOT' in _swallow(request, '_SUPPRESS'):
             request.setVirtualRoot(request.steps)
             return
         srd = [None, None]

@@ -7,9 +7,11 @@ from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, ImplicitAcquisitionWrapper
 from ExtensionClass import Base
-from string import split, strip
+from string import split, strip, join
 from ZPublisher import BeforeTraverse
 import os
+
+from AccessRule import _swallow
 
 class VirtualHostMonster(Persistent, Item, Implicit):
     """Provide a simple drop-in solution for virtual hosting.
@@ -74,21 +76,38 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                 request.setServerURL(protocol, host, port)
             else:
                 request.setServerURL(protocol, host)
-            #request.setVirtualRoot([])
+        # Find and convert VirtualHostRoot directive
+        # If it is followed by one or more path elements that each
+        # start with '_vh_', use them to construct the path to the
+        # virtual root.
+        vh = -1
         for ii in range(len(stack)):
             if stack[ii] == 'VirtualHostRoot':
-                stack[ii] = self.id
+                if vh >= 0:
+                    pp = ['']
+                    for jj in range(vh, ii):
+                        pp.insert(1, stack[jj][4:])
+                    stack[vh:ii + 1] = [join(pp, '/'), self.id]
+                elif ii > 0 and stack[ii - 1][:1] == '/':
+                    stack[ii] = self.id
+                else:
+                    stack[ii] = self.id
+                    stack.insert(ii, '/')
                 break
+            elif vh < 0 and stack[ii][:4] == '_vh_':
+                vh = ii
 
     def __bobo_traverse__(self, request, name):
         '''Traversing away'''
-        if name in ('manage_main', 'manage_workspace'):
-            return self.manage_main
+        if name[:1] != '/':
+            return getattr(self, name)
         parents = request.PARENTS
         parents.pop() # I don't belong there
-        request.setVirtualRoot([])
-        stack = request['TraversalRequestNameStack']
-        stack.append(name)
+
+        if len(name) > 1:
+            request.setVirtualRoot(split(name[1:], '/'))
+        else:
+            request.setVirtualRoot([])
         return parents.pop() # He'll get put back on
 
 def manage_addVirtualHostMonster(self, id, REQUEST=None, **ignored):
