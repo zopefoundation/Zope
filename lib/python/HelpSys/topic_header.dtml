@@ -41,4 +41,3 @@ padding: 12pt;
 
 </head>
 <body bgcolor="#FFFFFF">
-<dtml-if title><h2><dtml-var title></h2></dtml-if>
