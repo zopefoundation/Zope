@@ -119,17 +119,20 @@ class Test(TestCase):
         import locale
         loc = locale.setlocale(locale.LC_ALL) # get current locale
          # set German locale
-        if sys.platform != 'win32':
-            locale.setlocale(locale.LC_ALL, 'de_DE.ISO8859-1')
-        else:
-            locale.setlocale(locale.LC_ALL, 'German_Germany.1252')
-        words = ['mülltonne waschbär behörde überflieger']
+        try:
+            if sys.platform != 'win32':
+                locale.setlocale(locale.LC_ALL, 'de_DE.ISO8859-1')
+            else:
+                locale.setlocale(locale.LC_ALL, 'German_Germany.1252')
+        except locale.Error:
+            return # This test doesn't work here :-(
+        expected = ['m\xfclltonne', 'waschb\xe4r',
+                    'beh\xf6rde', '\xfcberflieger']
+        words = [" ".join(expected)]
         words = Splitter().process(words)
-        self.assertEqual(
-            words, ['mülltonne', 'waschbär', 'behörde', 'überflieger'])
+        self.assertEqual(words, expected)
         words = HTMLWordSplitter().process(words)
-        self.assertEqual(
-            words, ['mülltonne', 'waschbär', 'behörde', 'überflieger'])        
+        self.assertEqual(words, expected)
         locale.setlocale(locale.LC_ALL, loc) # restore saved locale
 
 def test_suite():
