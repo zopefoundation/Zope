@@ -97,10 +97,13 @@ property values, edit the values and click &quot;Save Changes&quot;.
   <input type="text" name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" size="35"
    value="<dtml-in "getProperty(id)">&dtml-sequence-item; </dtml-in>">
   <dtml-elif "type in ['text','utext']">
-  <textarea name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" rows="6" cols="35"><dtml-var "getProperty(id)" html_quote></textarea>
+  <textarea class="form-element" name="&dtml-id;:<dtml-var
+   "REQUEST['management_page_charset_tag']">&dtml-type;"
+   rows="6" cols="35"><dtml-var "getProperty(id)" html_quote></textarea>
   <dtml-elif "type in ['lines','ulines']">
-  <textarea name="&dtml-id;:<dtml-var "REQUEST['management_page_charset_tag']">&dtml-type;" rows="6" cols="35"><dtml-in
-  "getProperty(id)">&dtml-sequence-item;<dtml-if
+  <textarea class="form-element" name="&dtml-id;:<dtml-var
+   "REQUEST['management_page_charset_tag']">&dtml-type;" rows="6"
+   cols="35"><dtml-in "getProperty(id)">&dtml-sequence-item;<dtml-if
    sequence-end><dtml-else><dtml-var "'\n'"></dtml-if></dtml-in></textarea>
 
   <dtml-elif "type=='selection'">
@@ -177,9 +180,10 @@ property values, edit the values and click &quot;Save Changes&quot;.
   </div>
   </td>
   
-  <dtml-if "id=='title'">
+  <dtml-if "id=='title' and 'd' in _['sequence-item'].get('mode', 'awd')">
     <td align="center" valign="top">
-      <div class="list-item"><b>Warning:</b> be aware that removing 'title' without re-adding it might be dangerous.</div>
+      <div class="list-item"><b>Warning:</b> be aware that removing 'title'
+       without re-adding it might be dangerous.</div>
    </td>
   </dtml-if>
 </tr>
@@ -291,5 +295,3 @@ property and click the &quot;Add&quot; button.
 </dtml-if>
 
 <dtml-var manage_page_footer>
-
-
