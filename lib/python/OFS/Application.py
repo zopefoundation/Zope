@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.151 2001/06/18 20:52:33 chrism Exp $'''
-__version__='$Revision: 1.151 $'[11:-2]
+$Id: Application.py,v 1.152 2001/06/18 21:02:38 chrism Exp $'''
+__version__='$Revision: 1.152 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -502,14 +502,19 @@ def initialize(app):
 
 def get_products():
     """ Return a list of tuples in the form:
-    [(priority, dir_name, base_dir), ...] for each Product directory
+    [(priority, dir_name, index, base_dir), ...] for each Product directory
     found, sort before returning """
     products = []
+    i = 0
     for product_dir in Products.__path__:
         product_names=os.listdir(product_dir)
         for name in product_names:
             priority = (name != 'PluginIndexes') # import PluginIndexes 1st
-            products.append((priority, name, product_dir))
+            # i is used as sort ordering in case a conflict exists
+            # between Product names.  Products will be found as
+            # per the ordering of Products.__path__
+            products.append((priority, name, i, product_dir))
+        i = i + 1
     products.sort()
     return products
 
@@ -519,7 +524,7 @@ def import_products():
 
     products = get_products()
 
-    for priority, product_name, product_dir in products:
+    for priority, product_name, index, product_dir in products:
         if done.has_key(product_name): continue
         done[product_name]=1
         import_product(product_dir, product_name)
@@ -579,7 +584,7 @@ def install_products(app):
 
     products = get_products()
 
-    for priority, product_name, product_dir in products:
+    for priority, product_name, index, product_dir in products:
         # For each product, we will import it and try to call the
         # intialize() method in the product __init__ module. If
         # the method doesnt exist, we put the old-style information
