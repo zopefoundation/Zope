@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.8 1997/10/09 15:21:49 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: RDB.py,v 1.9 1997/12/05 21:27:58 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol
@@ -20,6 +20,7 @@ import DateTime
 from Missing import MV
 from array import array
 from Record import Record
+from Acquisition import Implicit
 
 Parsers={'n': atof,
 	 'i': atoi,
@@ -30,12 +31,14 @@ Parsers={'n': atof,
 
 record_classes={}
 
+class NoBrains: pass
+
 class File:
     """Class for reading RDB files
     """
     _index=None
 
-    def __init__(self,file):
+    def __init__(self,file,brains=NoBrains):
 
 	self._file=file
 	readline=file.readline
@@ -104,13 +107,15 @@ class File:
 	# Create a record class to hold the records.
 	names=tuple(names)
 	if record_classes.has_key(names):
-	    r=record_classes[names]
+	    r=record_classes[names,brains]
 	else:
-	    class r(Record): pass
+	    class r(Record, Implicit, brains):
+		'Result record class'
+
 	    r.__record_schema__=schema
 	    for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
 		setattr(r,k,getattr(Record,k))
-		record_classes[names]=r
+		record_classes[names,brains]=r
 
 	self._class=r
 
@@ -168,6 +173,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.9  1997/12/05 21:27:58  jim
+# Better brain and record-as-instance support.
+#
 # Revision 1.8  1997/10/09 15:21:49  jim
 # Fixed name error in exception handler.
 #
