@@ -120,4 +120,52 @@ class CallbackProducer:
         self.callback()
         self.callback=None
         return ''
-        
+
+
+class file_part_producer:
+    "producer wrapper for part of a file[-like] objects"
+
+    # match http_channel's outgoing buffer size
+    out_buffer_size = 1<<16
+    
+    def __init__(self, file, start, end):
+        self.file=file
+        self.start=start
+        self.end=end
+
+    def more(self):
+        end=self.end
+        if not end: return ''
+        start=self.start
+        if start >= end: return ''
+
+        file=self.file
+        file.seek(start)
+        size=end-start
+        bsize=self.out_buffer_size
+        if size > bsize: size=bsize
+
+        data = file.read(size)
+        if data:
+            start=start+len(data)
+            if start < end:
+                self.start=start
+                return data
+
+        self.end=0
+        del self.file
+
+        return data
+
+
+class file_close_producer:
+    def __init__(self, file):
+        self.file=file
+
+    def more(self):
+        file=self.file
+        if file is not None:
+            file.close()
+            self.file=None
+        return ''
+

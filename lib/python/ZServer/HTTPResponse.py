@@ -97,7 +97,8 @@ from medusa.http_date import build_http_date
 from PubCore.ZEvent import Wakeup
 from medusa.producers import hooked_producer
 from medusa import http_server, asyncore
-from Producers import ShutdownProducer, LoggingProducer, CallbackProducer
+from Producers import ShutdownProducer, LoggingProducer, CallbackProducer, \
+    file_part_producer, file_close_producer
 import DebugLogger
 
 
@@ -357,53 +358,4 @@ def make_response(request, headers):
     response._server_version=request.channel.server.SERVER_IDENT
     return response
     
-
-
-class file_part_producer:
-    "producer wrapper for part of a file[-like] objects"
-
-    # match http_channel's outgoing buffer size
-    out_buffer_size = 1<<16
-    
-    def __init__(self, file, start, end):
-        self.file=file
-        self.start=start
-        self.end=end
-
-    def more(self):
-        end=self.end
-        if not end: return ''
-        start=self.start
-        if start >= end: return ''
-
-        file=self.file
-        file.seek(start)
-        size=end-start
-        bsize=self.out_buffer_size
-        if size > bsize: size=bsize
-
-        data = file.read(size)
-        if data:
-            start=start+len(data)
-            if start < end:
-                self.start=start
-                return data
-
-        self.end=0
-        del self.file
-
-        return data
-
-class file_close_producer:
-
-    def __init__(self, file):
-        self.file=file
-
-    def more(self):
-        file=self.file
-        if file is not None:
-            file.close()
-            self.file=None
-        return ''
-
 
