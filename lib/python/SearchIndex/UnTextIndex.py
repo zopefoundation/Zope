@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.50 $'[11:-2]
+__version__ = '$Revision: 1.51 $'[11:-2]
 
 
 import string, re
@@ -684,13 +684,14 @@ def parse2(q, default_operator,
            operator_dict={AndNot: AndNot, And: And, Or: Or, Near: Near}):
     """Find operators and operands"""
     isop = operator_dict.has_key
-    i = len(q) - 1
-    while i >= 0:
+    i = 0
+    while i < len(q):
         e = q[i]
         if isinstance(e, ListType):
             q[i] = parse2(e, default_operator)
             if i % 2:
                 q.insert(i, default_operator)
+                i = i + 1
         elif i % 2:
             # This element should be an operator
             if isop(e):
@@ -699,7 +700,8 @@ def parse2(q, default_operator,
             else:
                 # Insert the default operator.
                 q.insert(i, default_operator)
-        i = i - 1
+                i = i + 1
+        i = i + 1
 
     return q
 

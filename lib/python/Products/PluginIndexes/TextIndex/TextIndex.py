@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.13 $'[11:-2]
+__version__ = '$Revision: 1.14 $'[11:-2]
 
 
 import string, re
@@ -197,6 +197,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         else:           
             self.vocabulary_id = "Vocabulary"
             self.catalog       = None
+
+        
 
         
 
@@ -700,7 +702,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
             else: i = i + 1
 
         if (len(query) != 1):
-            import pdb; pdb.set_trace()
             raise QueryError, "Malformed query"
 
         return query[0]
@@ -748,13 +749,14 @@ def parse(s):
 def parse2(q, default_operator, operator_dict=operator_dict):
     """Find operators and operands"""
     isop = operator_dict.has_key
-    i = len(q) - 1
-    while i >= 0:
+    i = 0
+    while i < len(q):
         e = q[i]
         if isinstance(e, ListType):
             q[i] = parse2(e, default_operator)
             if i % 2:
                 q.insert(i, default_operator)
+                i = i + 1
         elif i % 2:
             # This element should be an operator
             if isop(e):
@@ -763,7 +765,8 @@ def parse2(q, default_operator, operator_dict=operator_dict):
             else:
                 # Insert the default operator.
                 q.insert(i, default_operator)
-        i = i - 1
+                i = i + 1
+        i = i + 1
 
     return q
 

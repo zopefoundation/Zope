@@ -233,6 +233,7 @@ class Tests(unittest.TestCase):
    def testDefOrQuery(self):
        "Test a default OR query"
        self.globTest({'text':'time country'}, [0,1,6])
+       self.globTest({'text':'time good country'}, [0,1,6])
 
    def testNearQuery(self):
        """Test a NEAR query.. (NOTE:ACTUALLY AN 'AND' TEST!!)"""
