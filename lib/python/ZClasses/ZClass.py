@@ -449,11 +449,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         the instance will be returned.
         """
         i=mapply(self._zclass_, (), REQUEST)
-        if not hasattr(i, 'id') or not i.id: i.id=id
-        # Temporary band-aid:
-        if getattr(i, '__name__', None) == '<string>':
-            i.__name__ = id
-
+        i._setId(id)
         folder=durl=None
         if hasattr(self, 'Destination'):
             d=self.Destination
