@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.81 1998/12/18 21:46:07 jim Exp $'''
-__version__='$Revision: 1.81 $'[11:-2]
+$Id: Application.py,v 1.82 1998/12/19 15:43:46 jim Exp $'''
+__version__='$Revision: 1.82 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -365,7 +365,7 @@ def import_products():
         try:
             product=__import__(pname, global_dict, global_dict, silly)
             if hasattr(product, '__module_aliases__'):
-                for k, v in product.__aliases__:
+                for k, v in product.__module_aliases__:
                     if not sys.modules.has_key(k):
                         sys.modules[k]=v
         except:
