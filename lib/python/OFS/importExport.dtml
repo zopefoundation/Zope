@@ -40,9 +40,9 @@ on the server.
 
 <P>
 You may import Zope objects which have been previously
-exported to a file, by placing the file in the &quot;Import&quot;
+exported to a file, by placing the file in the &quot;import&quot;
 directory of your Zope installation on the server. You should create 
-the &quot;Import&quot; directory in the root of your Zope installation 
+the &quot;import&quot; directory in the root of your Zope installation 
 if it does not yet exist.
 </P>
 

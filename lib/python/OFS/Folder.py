@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.62 1999/02/15 23:10:19 brian Exp $"""
+$Id: Folder.py,v 1.63 1999/02/16 15:55:43 brian Exp $"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -182,7 +182,7 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
           'manage_cutObjects', 'manage_copyObjects', 'manage_pasteObjects',
           'manage_renameForm', 'manage_renameObject',
           'manage_findFrame', 'manage_findForm', 'manage_findAdv',
-          'manage_findResult', 'manage_findOpt')),
+          'manage_findResult')),
         ('Access contents information',
          ('objectIds', 'objectValues', 'objectItems','hasProperty',
           'propertyIds', 'propertyValues','propertyItems',''),
@@ -293,17 +293,22 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
 
     manage_importExportForm=HTMLFile('importExport',globals())
 
-    def manage_importObject(self,file,REQUEST=None):
-        "Import an object from a file"
-        if find(file,'..') != -1:
-            raise ValueError, 'Bad file name %s' % file
-        f=os.path.join(INSTANCE_HOME,'Import',file)
-        o=self._p_jar.import_file(f)
-        id=o.id
-        if hasattr(id,'im_func'): id=id()
-        self._setObject(id,o)
+    def manage_importObject(self, file, REQUEST=None):
+        """Import an object from a file"""
+        dirname, file=os.path.split(file)
+        if dirname:
+            raise 'Bad Request', 'Invalid file name %s' % file
+        file=os.path.join(INSTANCE_HOME, 'import', file)
+        if not os.path.exists(file):
+            raise 'Bad Request', 'File does not exist: %s' % file
+        ob=self._p_jar.import_file(file)
+        if REQUEST: self._verifyObjectPaste(ob, REQUEST)
+        id=ob.id
+        if hasattr(id, 'im_func'): id=id()
+        self._setObject(id, ob)
         if REQUEST is not None:
-            return MessageDialog(title='Object imported',
+            return MessageDialog(
+                title='Object imported',
                 message='<EM>%s</EM> sucessfully imported' % id,
                 action='manage_main'
                 )
