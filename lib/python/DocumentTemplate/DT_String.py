@@ -82,13 +82,15 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.28 1999/06/28 22:04:32 michel Exp $"
+"$Id: DT_String.py,v 1.29 1999/06/30 13:59:38 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
 
 from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
 from DT_Var import Var, Call, Comment
+from DT_Return import ReturnTag, DTReturn
+
 
 
 class String:
@@ -137,6 +139,7 @@ class String:
         'raise': ('raise', 'DT_Raise','Raise'),
         'try': ('try', 'DT_Try','Try'),
         'let': ('let', 'DT_Let', 'Let'),
+        'return': ReturnTag,
         }
 
     def SubTemplate(self, name): return String('', __name__=name)
@@ -496,7 +499,8 @@ class String:
             pushed=pushed+1
 
         try:
-            return render_blocks(self._v_blocks, md)
+            try: return render_blocks(self._v_blocks, md)
+            except DTReturn, v: return v.v
         finally:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level
