@@ -265,17 +265,23 @@ try:
         elif o=='-D': os.environ['Z_DEBUG_MODE']='1'
         elif o=='-m':
             if v:
-                try: v=string.atoi(v)
+                try: 
+                    v=string.atoi(v)
+                    if v < 1: raise 'Invalid port', v
                 except: raise 'Invalid port', v
             MONITOR_PORT=v
         elif o=='-w':
             if v:
-                try: v=string.atoi(v)
+                try: 
+                    v=string.atoi(v)
+                    if v < 1: raise 'Invalid port', v
                 except: raise 'Invalid port', v
             HTTP_PORT=v
         elif o=='-f':
             if v:
-                try: v=string.atoi(v)
+                try:
+                    v=string.atoi(v)
+                    if v < 1: raise 'Invalid port', v
                 except: raise 'Invalid port', v
             FTP_PORT=v
         elif o=='-p': PCGI_FILE=v
