@@ -13,13 +13,12 @@
 
 """WebDAV support - resource objects.
 
-$Id: Resource.py,v 1.59 2003/12/27 00:05:48 jeremy Exp $
+$Id: Resource.py,v 1.60 2004/03/21 16:39:58 sf Exp $
 """
 
 import sys
 import mimetypes
-import time
-from urllib import quote, unquote
+from urllib import unquote
 
 import Globals
 import ExtensionClass

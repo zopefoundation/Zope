@@ -11,11 +11,10 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 from WriteLockInterface import WriteLockInterface, LockItemInterface
 from EtagSupport import EtagSupport
-from LockItem import LockItem
 from AccessControl import ClassSecurityInfo
 from Globals import PersistentMapping
 import Acquisition

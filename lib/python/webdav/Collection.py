@@ -13,14 +13,13 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
-import sys, os,  Globals, davcmds, Lockable,re
+import Globals, davcmds, Lockable
 from common import urlfix, rfc1123_date
 from Resource import Resource
 from AccessControl import getSecurityManager
 from urllib import unquote
-from WriteLockInterface import WriteLockInterface
 from zExceptions import MethodNotAllowed, NotFound
 from webdav.common import Locked, PreconditionFailed
 

@@ -13,12 +13,11 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
-import sys, os,  mimetypes, Globals, davcmds
+import sys, Globals, davcmds
 import Acquisition, OFS.content_types
-from common import absattr, aq_base, urlfix, tokenFinder, IfParser
-from AccessControl.Permission import Permission
+from common import aq_base, tokenFinder, IfParser
 from AccessControl import getSecurityManager
 from Resource import Resource
 from Globals import Persistent, DTMLFile

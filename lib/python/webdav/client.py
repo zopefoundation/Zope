@@ -1,9 +1,9 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, os,  time, types,re
-import socket, httplib, mimetools
+import httplib, mimetools
 from types import FileType
 from mimetypes import guess_type
 from base64 import encodestring
