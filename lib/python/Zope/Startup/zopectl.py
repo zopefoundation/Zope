@@ -117,6 +117,11 @@ class ZopeCmd(ZDCmd):
             args = [opt, svalue]
         return args
 
+    def do_start(self, arg):
+        # signal to Zope that it is being managed
+        #(to indicate it's web-restartable)
+        os.putenv('ZMANAGED', '1')
+        ZDCmd.do_start(self, arg)
 
 def main(args=None):
     # This is exactly like zdctl.main(), but uses ZopeCtlOptions and

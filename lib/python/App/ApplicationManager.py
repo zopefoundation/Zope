@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.87 $'[11:-2]
+__version__='$Revision: 1.88 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -318,10 +318,7 @@ class ApplicationManager(Folder,CacheManager):
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
 
-
-
-    if hasattr(sys, 'ZMANAGED'):
-
+    if os.environ.has_key('ZMANAGED'):
         manage_restartable=1
         def manage_restart(self, URL1):
             """Shut down the application"""
