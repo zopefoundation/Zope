@@ -1,4 +1,4 @@
-define-slot - Define a macro customization point
+metal:define-slot - Define a macro customization point
 
   Syntax
 

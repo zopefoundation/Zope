@@ -1,4 +1,4 @@
-omit-tag - Remove an element, leaving its contents
+tal:omit-tag - Remove an element, leaving its contents
 
   Syntax
 
