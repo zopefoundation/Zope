@@ -166,6 +166,9 @@ class HTMLTALParser(SGMLParser):
         f = open(file)
         data = f.read()
         f.close()
+        self.parseString(data)
+
+    def parseString(self, data):
         self.feed(data)
         self.close()
         while self.tagstack:
