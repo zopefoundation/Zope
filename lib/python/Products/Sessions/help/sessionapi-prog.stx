@@ -1,0 +1,371 @@
+Session API Programming
+
+  Overview
+
+    Developers generally interact with a Session Data Manager
+    instance in order to make use of sessioning in Zope.  Methods
+    named in this section are those of session data managers unless
+    otherwise specified.
+
+    All of the methods implemented by Session Data Managers, Session
+    Id Managers and Session Data objects are fully documented in the
+    "SessioningInterfaces.py" file accompanying this software.
+    This section of the documentation will concentrate on explaining
+    common operations having to do with session-tracking and why
+    they might be important to you.
+
+  Terminology
+
+    Here's a mini-glossary of terminology used by the session
+    tracking product:
+
+      token (aka 'token value') -- the string or integer used to
+      represent a single anonymous visitor to the part of the Zope
+      site managed by a single session id manager.
+      E.g. "12083789728".
+
+      token key namespaces -- the session token key/value pair will
+      be found in one of these namespaces.  They refer to namespaces
+      codified in the Zope REQUEST object.  E.g. "cookies" or
+      "form".
+
+      token key -- the key which is looked for in the REQUEST
+      namespaces enumerated by the token key namespaces configured.
+      This references the token as its value.  E.g. "_ZopeId".
+
+      session data object -- an instance of the session data object
+      class that is found by asking a transient object container for the
+      item with a key that is a token value.
+
+  Obtaining the Token Value
+
+    You can obtain the token value associated with the current
+    request from a session data manager::
+
+      <dtml-var "sessiondatamanager.getToken()">
+
+    This snippet will print the token value to the remote browser.
+    If no token exists for the current request, a new token is
+    created implicitly and returned.
+
+    If you wish to obtain the current token value without implicitly
+    creating a new token for the current request, you can use the
+    'create' argument to the 'getToken()' method to suppress this
+    behavior::
+
+      <dtml-var "sessiondatamanager.getToken(create=0)">
+
+    This snippet will print a representation of the None value if
+    there isn't a session token associated with the current request,
+    or it will print the token value if there is one associated with
+    the current request.  Using 'create=0' is useful if you do not
+    wish to cause the sessioning machinery to attach a new session
+    token to the current request, perhaps if you do not wish a
+    session cookie to be set.
+
+    The token value *is not* the session data.  The token value
+    represents the key by which the 'getSessionData' method obtains
+    a session data object representing the visitor marked by the
+    token.  The token value is either a string or an integer and has
+    no business meaning.  In your code, you should not rely on the
+    session token composition, length, or type as a result, as it is
+    subject to change.
+
+  Determining Which Token Key Namespace Holds The Session Token
+
+    For some applications, it is advantageous to know from which
+    token key namespace (currently either 'cookies' or 'form') the
+    token has been gathered.  There are two methods of session data
+    managers which allow you to accomplish this,
+    'isTokenFromCookie()', and 'isTokenFromForm()'::
+
+      <dtml-if "sessiondatamanager.isTokenFromCookie()">
+        The token came from a cookie.
+      </dtml-if>
+
+      <dtml-if "sessiondatamanager.isTokenFromForm()">
+        The token came from a form.
+      </dtml-if>
+
+    The 'isTokenFromCookie()' method will return true if the token
+    in the current request comes from the 'REQUEST.cookies'
+    namespace.  This is true if the token was sent to the Zope
+    server as a cookie.
+
+    The 'isTokenFromForm()' method will return true if the token in
+    the current request comes from the 'REQUEST.form' namespace.
+    This is true if the token key/value pair was sent to the Zope
+    server encoded in a URL or as part of a form element.
+
+    If a token doesn't actually exist in the current request when
+    one of these methods is called, an error will be raised.
+
+    During typical operations, you shouldn't need to use these
+    methods, as you shouldn't care from which REQUEST namespace the
+    token key/value pair was obtained.  However, for highly
+    customized applications, this pair of methods may be useful.
+
+  Obtaining the Token Key/Value Pair and Embedding It Into A Form
+
+    You can obtain the "token key" from a session data manager
+    instance.  The token key is the name which is looked for in
+    token key namespaces by a session id manager.  We've already
+    determined how to obtain the token value.  It is useful to
+    obtain the token key/value pair if you wish to embed a session
+    token key/value pair as a hidden form field for use in POST
+    requests::
+
+      <html>
+      <body>
+      <form action="thenextmethod">
+      <input type=submit name="submit" value=" GO ">
+      <input type=hidden name="<dtml-var "sessiondatamanager.getTokenKey()">"
+       value="<dtml-var "sessiondatamanager.getToken()">">
+      </form>
+      </body>
+      </html>
+
+  Determining Whether A Session Token is "New"
+
+    A session token is "new" if it has been set in the current
+    request but has not yet been acknowledged by the client --
+    meaning it has not been sent back by the client in a request.
+    This is the case when a new session token is created by the
+    sessioning machinery due to a call to 'getSessionData()' or
+    similar as opposed to being received by the sessioning machinery
+    in a token key namespace.  You can use the 'isTokenNew()' method
+    of session data managers to determine whether the session is
+    new::
+
+      <dtml-if "sessiondatamanager.isTokenNew()">
+        Token is new.
+      <dtml-else>
+        Token is not new.
+      </dtml-if>
+
+    This method may be useful in cases where applications wish to
+    prevent or detect the regeneration of new tokens when the same
+    client visits repeatedly without sending back a token in the
+    request (such as may be the case when a visitor has cookies
+    "turned off" in their browser and the session id manager only
+    uses cookies).
+
+    If there is no session token associated with the current
+    request, this method will raise an error.
+
+    You shouldn't need to use this method during typical operations,
+    but it may be useful in advanced applications.
+
+  Determining Whether A Session Data Object Exists For The Token Associated
+    With This Request
+
+    If you wish to determine whether a session data object with a
+    key that is the current request's token exists in the data
+    manager's associated transient object container, you can use the
+    'hasSessionData()' method of the session data manager.  This
+    method returns true if there is session data associated with the
+    current session token::
+
+      <dtml-if "sessiondatamanager.hasSessionData()">
+         The sessiondatamanager object has session data for the token
+         associated with this request.
+      <dtml-else>
+         The sessiondatamanager object does not have session data for
+         the token associated with this request.
+      </dtml-if>
+
+    The 'hasSessionData()' method is useful in highly customized
+    applications, but is probably less useful otherwise.  It is
+    recommended that you use 'getSessionData()' instead, allowing
+    the session data manager to determine whether or not to create a
+    new data object for the current request.
+
+  Embedding A Session Token Into An HTML Link
+
+    You can embed the token key/value pair into an HTML link for use
+    during HTTP GET requests.  When a user clicks on a link with a
+    URL encoded with the session token, the token will be passed
+    back to the server in the REQUEST.form namespace.  If you wish
+    to use formvar-based session tracking, you will need to encode
+    all of your "public" HTML links this way.  You can use the
+    'encodeUrl()' method of session data managers in order to
+    perform this encoding::
+
+      <html>
+      <body>
+      <a href="<dtml-var "sessiondatamgr.encodeUrl('/amethod')">">Here</a>
+       is a link.
+      </body>
+      </html>
+
+    The above dtml snippet will encode the URL "/amethod" (the
+    target of the word "Here") with the session token key/value pair
+    appended as a query string.  You can additionally pass URLs
+    which already contain query strings to the 'encodeUrl()' method
+    successfully.
+
+  Obtaining A Session Data Object
+
+    Use the 'getSessionData()' method of session data managers to
+    obtain the session data object associated with the session token
+    in the current request::
+
+      <dtml-let data="sessiondatamanager.getSessionData()">
+        The 'data' name now refers to a new or existing session data object.
+      </dtml-let>
+
+    The 'getSessionData()' method implicitly creates a new session
+    token and data object if either does not exist in the current
+    request.  To inhibit this behavior, use the create=0 flag to the
+    'getSessionData()' method::
+ 
+      <dtml-let data="sessiondatamanager.getSessionData(create=0)">
+         The 'data' name now refers to an existing session data object or
+         None if there was no existing token or session data object.
+      </dtml-let>
+
+    The 'getSessionData()' method is a highly used method.  It is
+    probably the most-commonly used method of session data managers.
+ 
+  Modifying A Session Data Object
+
+    Once you've used 'getSessionData()' to obtain a session data
+    object, you can set key/value pairs of the returned session data
+    object.  These key/value pairs are where you store information
+    related to a particular anonymous visitor.  You can use the
+    'set', 'get', and 'has_key' methods of session data objects to
+    perform actions related to it::
+
+      <dtml-let data="sessiondatamanager.getSessionData()">
+        <dtml-call "data.set('foo', 'bar')">
+        <dtml-comment>Set 'foo' key to 'bar' value.</dtml-comment>
+        <dtml-var "data.get('foo')">
+        <dtml-comment>Will print 'bar'</dtml-comment>
+        <dtml-if "data.has_key('foo')">
+          This will be printed.
+        <dtml-else>
+          This will not be printed.
+        </dtml-if>
+      </dtml-let>
+
+    An essentially arbtrary set of key/value pairs can be placed
+    into a session data object.  Keys and values can be any kinds of
+    Python objects (note: see Concepts and Caveats section for
+    exceptions to this rule).  The transient object container which
+    houses the session data object determines its expiration policy.
+    Session data objects will be available across client requests
+    for as long as they are not expired.
+
+   Manually Invalidating A Session Data Object
+
+    Developers can manually invalidate a session data object.  When
+    a session data object is invalidated, it will be flushed from
+    the system, and will not be returned on subsequent requests to
+    'getSessionData()'.  The 'invalidate()' method of a session data
+    object causes this to happen::
+
+      <dtml-let data="sessiondatamanager.getSessionData()">
+        <dtml-call "data.invalidate()">
+      </dtml-let>
+
+    Subsequent calls to 'getSessionData()' in this same request will
+    return a new session data object.  Manual invalidation of
+    session data is useful in cases where you know the session data
+    is stale and you wish to flush it from the data manager.
+
+  Manually Invalidating A Session Token Cookie
+
+    Developers may manually invalidate the cookie associated with
+    the session token, if any.  To do so, they can use the
+    'flushTokenCookie()' method of a session data manager.  For
+    example::
+
+      <dtml-call "sessiondatamanager.flushTokenCookie()">
+
+    If the 'cookies' namespace isn't a valid token key namespace
+    when this call is performed, an exception will be raised.
+
+  An Example Of Using Session Data from DTML
+
+    An example of obtaining a session data object from a session
+    data manager named 'sessiondatamgr' and setting one of its
+    key-value pairs in DTML follows::
+
+      <dtml-with sessiondatamgr>
+        <dtml-let a=getSessionData>
+          Before change: <dtml-var a><br>
+          <dtml-call "a.set('zopetime', ZopeTime())">
+          <dtml-comment>
+          'zopetime' will be set to a datetime object for the current
+          session
+          </dtml-comment>
+          After change:  <dtml-var a><br>
+        </dtml-let>
+      </dtml-with>
+ 
+    The first time you run this method, the "before change"
+    representation of the session data object will be that of an
+    empty dictionary, and the "after change" representation will
+    show a key/value pair of 'zopetime' associated with a DateTime
+    object.  Assuming you've configured your session id manager with
+    cookies and they're working on your browser properly, the second
+    and subsequent times you view this method, the "before change"
+    representation of the session data object will have a datetime
+    object in it that was the same as the last call's "after change"
+    representation of the same session data object.  This
+    demonstrates the very basics of session management, because it
+    demonstrates that we are able to associate an object (the
+    session data object obtained via getSessionData) with an
+    anonymous visitor between HTTP requests.
+
+    NOTE: To use this method in conjunction with formvar-based
+    sessioning, you'd need to encode a link to its URL with the
+    session token by using the session data manager's 'encodeUrl()'
+    method.
+
+    Using the 'mapping' Keyword With A Session Data Object in a 'dtml-with'
+
+      DTML has the facility to treat a session data object as a
+      mapping, making it easier to spell some of the more common
+      methods of access to session data objects.  The 'mapping'
+      keyword to dtml-with means "treat name lookups that follow
+      this section as queries to my contents by name."  For
+      example::
+
+        <dtml-let a="sm.getSessionData()">
+            <dtml-call "a.set('zopetime', ZopeTime())">
+            <dtml-comment>
+              'zopetime' will be set to a datetime object for the current
+              session... the "set" it calls is the set method of the
+              session data object.
+            </dtml-comment>
+        </dtml-let>
+
+        <dtml-with "sm.getSessionData()" mapping>
+            <dtml-var zopetime>
+            <dtml-comment>
+              'dtml-var zopetime' will print the DateTime object just set
+              because we've used the mapping keyword to map name lookups
+              into the current session data object.
+            </dtml-comment>
+        </dtml-with>
+
+  Using Session Data From Python
+
+    Here's an example of using a session data manager and session
+    data object from a set of Python external methods::
+
+      import time
+      def setCurrentTime(self):
+          sessiondatamgr = self.sessiondatamgr
+          a = sessiondatamgr.getSessionData()
+          a.set('thetime', time.time())
+
+      def getLastTime(self):
+          sessiondatamgr = self.sessiondatamgr
+          a = sessiondatamgr.getSessionData()
+          return a.get('thetime')
+
+See Also
+
+  - "Session API":SessionInterfaces.py
