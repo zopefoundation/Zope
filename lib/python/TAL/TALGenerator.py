@@ -157,6 +157,8 @@ class TALGenerator:
             collect = []
         return output
 
+    actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4,
+                   0: 0, 1: 1, 2: 2, 3: 3, 4: 4}
     def optimizeStartTag(self, collect, name, attrlist, end):
         if not attrlist:
             collect.append("<%s%s" % (name, end))
@@ -167,6 +169,9 @@ class TALGenerator:
             item = attrlist[i]
             if len(item) > 2:
                 opt = 0
+                name, value, action = item[:3]
+                action = self.actionIndex[action]
+                attrlist[i] = (name, value, action) + item[3:]
             else:
                 if item[1] is None:
                     s = item[0]

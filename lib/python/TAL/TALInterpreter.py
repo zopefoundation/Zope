@@ -170,6 +170,10 @@ class TALInterpreter:
         self.wrap = wrap
         self.metal = metal
         self.tal = tal
+        if tal:
+            self.dispatch = self.bytecode_handlers_tal
+        else:
+            self.dispatch = self.bytecode_handlers
         assert showtal in (-1, 0, 1)
         if showtal == -1:
             showtal = (not tal)
@@ -178,7 +182,9 @@ class TALInterpreter:
         self.stackLimit = stackLimit
         self.html = 0
         self.endsep = "/>"
+        self.endlen = len(self.endsep)
         self.macroStack = []
+        self.popMacro = self.macroStack.pop
         self.position = None, None  # (lineno, offset)
         self.col = 0
         self.level = 0
@@ -229,7 +235,8 @@ class TALInterpreter:
             self._stream_write("\n")
             self.col = 0
 
-    def stream_write(self, s):
+    def stream_write(self, s,
+                     len=len, rfind=rfind):
         self._stream_write(s)
         i = rfind(s, '\n')
         if i < 0:
@@ -241,7 +248,7 @@ class TALInterpreter:
 
     def interpret(self, program):
         self.level = self.level + 1
-        handlers = self.bytecode_handlers
+        handlers = self.dispatch
         _apply = apply
         _tuple = tuple
         tup = (self,)
@@ -272,29 +279,29 @@ class TALInterpreter:
             self.endsep = " />"
         else:
             self.endsep = "/>"
+        self.endlen = len(self.endsep)
     bytecode_handlers["mode"] = do_mode
 
     def do_setPosition(self, position):
         self.position = position
     bytecode_handlers["setPosition"] = do_setPosition
 
-    def do_startEndTag(self, (name, attrList)):
-        self.do_startTag((name, attrList), self.endsep)
+    def do_startEndTag(self, stuff):
+        self.do_startTag(stuff, self.endsep, self.endlen)
     bytecode_handlers["startEndTag"] = do_startEndTag
 
-    def do_startTag(self, (name, attrList), end=">"):
-        if not attrList:
-            s = "<%s%s" % (name, end)
-            self._stream_write(s)
-            self.col = self.col + len(s)
-            return
-        _len = len
-        _quote = quote
+    def do_startTag(self, (name, attrList),
+                    end=">", endlen=1, _len=len, _quote=quote):
+        # The bytecode generator does not cause calls to this method
+        # for start tags with no attributes; those are optimized down
+        # to rawtext events.  Hence, there is no special "fast path"
+        # for that case.
         _stream_write = self._stream_write
         _stream_write("<" + name)
-        col = self.col + _len(name) + 1
+        namelen = _len(name)
+        col = self.col + namelen + 1
         wrap = self.wrap
-        align = col + 1 + _len(name)
+        align = col + 1 + namelen
         if align >= wrap/2:
             align = 4  # Avoid a narrow column far to the right
         try:
@@ -309,25 +316,24 @@ class TALInterpreter:
                         s = name
                     else:
                         s = "%s=%s" % (name, _quote(value))
+                slen = _len(s)
                 if (wrap and
                     col >= align and
-                    col + 1 + _len(s) > wrap):
+                    col + 1 + slen > wrap):
                     _stream_write("\n" + " "*align)
-                    col = align + _len(s)
+                    col = align + slen
                 else:
                     s = " " + s
-                    col = col + 1 + _len(s)
+                    col = col + 1 + slen
                 _stream_write(s)
             _stream_write(end)
-            col = col + _len(end)
+            col = col + endlen
         finally:
             self.col = col
     bytecode_handlers["startTag"] = do_startTag
 
-    actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4}
     def attrAction(self, item):
-        name, value = item[:2]
-        action = self.actionIndex[item[2]]
+        name, value, action = item[:3]
         if not self.showtal and action > 1:
             return 0, name, value
         ok = 1
@@ -349,8 +355,7 @@ class TALInterpreter:
                 else:
                     if evalue is None:
                         ok = 0
-                    else:
-                        value = evalue
+                    value = evalue
         elif action == 2 and self.metal:
             i = rfind(name, ":") + 1
             prefix, suffix = name[:i], name[i:]
@@ -387,12 +392,13 @@ class TALInterpreter:
         sys.stderr.write("+--------------------------------------\n")
 
     def do_beginScope(self, dict):
-        if self.tal:
-            engine = self.engine
-            engine.beginScope()
-            engine.setLocal("attrs", dict)
-        else:
-            self.engine.beginScope()
+        self.engine.beginScope()
+        self.scopeLevel = self.scopeLevel + 1
+
+    def do_beginScope_tal(self, dict):
+        engine = self.engine
+        engine.beginScope()
+        engine.setLocal("attrs", dict)
         self.scopeLevel = self.scopeLevel + 1
     bytecode_handlers["beginScope"] = do_beginScope
 
@@ -401,22 +407,23 @@ class TALInterpreter:
         self.scopeLevel = self.scopeLevel - 1
     bytecode_handlers["endScope"] = do_endScope
 
-    def do_setLocal(self, (name, expr)):
-        if self.tal:
-            value = self.engine.evaluateValue(expr)
-            self.engine.setLocal(name, value)
+    def do_setLocal(self, junk):
+        pass
+
+    def do_setLocal_tal(self, (name, expr)):
+        value = self.engine.evaluateValue(expr)
+        self.engine.setLocal(name, value)
     bytecode_handlers["setLocal"] = do_setLocal
 
-    def do_setGlobal(self, (name, expr)):
-        if self.tal:
-            value = self.engine.evaluateValue(expr)
-            self.engine.setGlobal(name, value)
-    bytecode_handlers["setGlobal"] = do_setGlobal
+    def do_setGlobal_tal(self, (name, expr)):
+        value = self.engine.evaluateValue(expr)
+        self.engine.setGlobal(name, value)
+    bytecode_handlers["setGlobal"] = do_setLocal
 
     def do_insertText(self, (expr, block)):
-        if not self.tal:
-            self.interpret(block)
-            return
+        self.interpret(block)
+
+    def do_insertText_tal(self, (expr, block)):
         text = self.engine.evaluateText(expr)
         if text is None:
             return
@@ -469,9 +476,9 @@ class TALInterpreter:
         self.interpret(program)
 
     def do_loop(self, (name, expr, block)):
-        if not self.tal:
-            self.interpret(block)
-            return
+        self.interpret(block)
+
+    def do_loop_tal(self, (name, expr, block)):
         iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.interpret(block)
@@ -548,9 +555,9 @@ class TALInterpreter:
     bytecode_handlers["defineSlot"] = do_defineSlot
 
     def do_onError(self, (block, handler)):
-        if not self.tal:
-            self.interpret(block)
-            return
+        self.interpret(block)
+
+    def do_onError_tal(self, (block, handler)):
         state = self.saveState()
         self.stream = stream = StringIO()
         self._stream_write = stream.write
@@ -568,6 +575,14 @@ class TALInterpreter:
             self.restoreOutputState(state)
             self.stream_write(stream.getvalue())
     bytecode_handlers["onError"] = do_onError
+
+    bytecode_handlers_tal = bytecode_handlers.copy()
+    bytecode_handlers_tal["beginScope"] = do_beginScope_tal
+    bytecode_handlers_tal["setLocal"] = do_setLocal_tal
+    bytecode_handlers_tal["setGlobal"] = do_setGlobal_tal
+    bytecode_handlers_tal["insertText"] = do_insertText_tal
+    bytecode_handlers_tal["loop"] = do_loop_tal
+    bytecode_handlers_tal["onError"] = do_onError_tal
 
 
 def test():
