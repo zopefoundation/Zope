@@ -87,6 +87,11 @@ Zope Changes
         - Added Martijn Pieters' patches to DT_Try.py to implement 
           try/except/else and try/finally constructs.
 
+	- Virtual Hosting and SiteObjects.  Virtual Hosting allows a
+	  server that can multi-host, like Apache, to serve different
+	  hosts from different Zope folders.  'SiteObjects' act as a
+	  placeholder for a virtualhost.
+
       Bugs Fixed
 
         - Some problems with the product distribution machinery that
