@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.103 2002/08/30 18:29:57 caseman Exp $'''
-__version__='$Revision: 1.103 $'[11:-2]
+$Id: SimpleItem.py,v 1.104 2002/08/30 19:17:07 caseman Exp $'''
+__version__='$Revision: 1.104 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -156,13 +156,6 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             elif type(tb) is type('') and not error_tb:
                 error_tb = tb
 
-            try:
-                log = aq_acquire(self, '__error_log__', containment=1)
-            except AttributeError:
-                error_log_url = ''
-            else:
-                error_log_url = log.raising((error_type, error_value, tb))
-
             # turn error_type into a string
             if hasattr(error_type, '__name__'):
                 error_type=error_type.__name__
@@ -190,41 +183,38 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             if client is None: client=self
             if not REQUEST: REQUEST=self.aq_acquire('REQUEST')
 
-            if REQUEST.RESPONSE._error_format == 'text/html':
-                try:
-                    if hasattr(client, 'standard_error_message'):
-                        s=getattr(client, 'standard_error_message')
-                    else:
-                        client = client.aq_parent
-                        s=getattr(client, 'standard_error_message')
-                    kwargs = {'error_type': error_type,
-                              'error_value': error_value,
-                              'error_tb': error_tb,
-                              'error_traceback': error_tb,
-                              'error_message': error_message,
-                              'error_log_url': error_log_url}
+            try:
+                if hasattr(client, 'standard_error_message'):
+                    s=getattr(client, 'standard_error_message')
+                else:
+                    client = client.aq_parent
+                    s=getattr(client, 'standard_error_message')
+                kwargs = {'error_type': error_type,
+                          'error_value': error_value,
+                          'error_tb': error_tb,
+                          'error_traceback': error_tb,
+                          'error_message': error_message,
+                          'error_log_url': error_log_url}
 
-                    if isinstance(s, HTML):
-                        v = s(client, REQUEST, **kwargs)
-                    elif callable(s):
-                        v = s(**kwargs)
-                    else:
-                        v = HTML.__call__(s, client, REQUEST, **kwargs)
+                if isinstance(s, HTML):
+                    v = s(client, REQUEST, **kwargs)
+                elif callable(s):
+                    v = s(**kwargs)
+                else:
+                    v = HTML.__call__(s, client, REQUEST, **kwargs)
+            except:
+                LOG('OFS', BLATHER,
+                    'Exception while rendering an error message',
+                    error=sys.exc_info())
+                try:
+                    strv = str(error_value)
                 except:
-                    LOG('OFS', BLATHER,
-                        'Exception while rendering an error message',
-                        error=sys.exc_info())
-                    try:
-                        strv = str(error_value)
-                    except:
-                        strv = ('<unprintable %s object>' % 
-                                str(type(error_value).__name__))
-                    v = strv + (
-                        " (Also, an error occurred while attempting "
-                        "to render the standard error message.)")
-                raise error_type, v, tb
-            else:
-                raise error_type, error_value, tb
+                    strv = ('<unprintable %s object>' % 
+                            str(type(error_value).__name__))
+                v = strv + (
+                    " (Also, an error occurred while attempting "
+                    "to render the standard error message.)")
+            raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
             tb=None

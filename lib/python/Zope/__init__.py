@@ -91,6 +91,7 @@ sys.modules['Main']=sys.modules['Zope']
 import ZODB.POSException, ZPublisher,  ZPublisher
 import ExtensionClass
 from zLOG import LOG, WARNING, INFO, BLATHER, log_time
+from Acquisition import aq_acquire
 conflict_errors = 0
 startup_time = log_time()
 def debug(*args, **kw):
@@ -128,6 +129,13 @@ def zpublisher_exception_hook(
                 LOG('Conflict traceback', BLATHER, '', error=sys.exc_info())
                 raise ZPublisher.Retry(t, v, traceback)
             if t is ZPublisher.Retry: v.reraise()
+            
+        try:
+            log = aq_acquire(published, '__error_log__', containment=1)
+        except AttributeError:
+            error_log_url = ''
+        else:
+            error_log_url = log.raising((t, v, traceback))
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
             !='text/html'): raise
