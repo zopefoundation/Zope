@@ -17,11 +17,11 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
-     TALESError, Undefined, Default
+     TALESError, Undefined, Default, _parse_expr
 from string import strip, split, join, replace, lstrip
 from Acquisition import aq_base, aq_inner, aq_parent
 
@@ -30,7 +30,8 @@ _engine = None
 def getEngine():
     global _engine
     if _engine is None:
-        _engine = Engine()
+        from PathIterator import Iterator
+        _engine = Engine(Iterator)
         installHandlers(_engine)
         _engine._nocatch = (TALESError, 'Redirect')
     return _engine
@@ -71,6 +72,9 @@ else:
         else:
             return f(ns)
     
+Undefs = (Undefined, AttributeError, KeyError,
+          TypeError, IndexError, Unauthorized)
+
 def render(ob, ns):
     """
     Calls the object, possibly a document template, or just returns it if
@@ -91,75 +95,98 @@ def render(ob, ns):
                     raise
     return ob
 
-class PathExpr:
-    def __init__(self, name, expr, engine):
-        self._s = expr
-        self._name = name
-        self._paths = map(self._prepPath, split(expr, '|'))
-
-    def _prepPath(self, path):
-        path = split(strip(path), '/')
-        base = path.pop(0)
+class SubPathExpr:
+    def __init__(self, path):
+        self._path = path = split(strip(path), '/')
+        self._base = base = path.pop(0)
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
         # Parse path
-        dp = []
+        self._dp = dp = []
         for i in range(len(path)):
             e = path[i]
             if e[:1] == '?' and _valid_name(e[1:]):
                 dp.append((i, e[1:]))
         dp.reverse()
-        return base, path, dp
 
-    def _eval(self, econtext, securityManager,
-              list=list, isinstance=isinstance, StringType=type(''),
-              render=render):
+    def _eval(self, econtext,
+              list=list, isinstance=isinstance, StringType=type('')):
         vars = econtext.vars
-        exists = 0
-        more_paths = len(self._paths)
-        for base, path, dp in self._paths:
-            more_paths = more_paths - 1
-            # Expand dynamic path parts from right to left.
-            if dp:
-                path = list(path) # Copy!
-                for i, varname in dp:
-                    val = vars[varname]
-                    if isinstance(val, StringType):
-                        path[i] = val
-                    else:
-                        # If the value isn't a string, assume it's a sequence
-                        # of path names.
-                        path[i:i+1] = list(val)
-            try:
-                __traceback_info__ = base
-                if base == 'CONTEXTS':
-                    ob = econtext.contexts
+        path = self._path
+        if self._dp:
+            path = list(path) # Copy!
+            for i, varname in self._dp:
+                val = vars[varname]
+                if isinstance(val, StringType):
+                    path[i] = val
                 else:
-                    ob = vars[base]
-                if isinstance(ob, DeferWrapper):
-                    ob = ob()
-                if path:
-                    ob = restrictedTraverse(ob, path, securityManager)
-                exists = 1
-                break
-            except Undefined:
-                if self._name != 'exists' and not more_paths:
-                    raise
-            except (AttributeError, KeyError, TypeError, IndexError,
-                    Unauthorized), e:
-                if self._name != 'exists' and not more_paths:
-                    raise Undefined(self._s, sys.exc_info())
+                    # If the value isn't a string, assume it's a sequence
+                    # of path names.
+                    path[i:i+1] = list(val)
+        __traceback_info__ = base = self._base
+        if base == 'CONTEXTS':
+            ob = econtext.contexts
+        else:
+            ob = vars[base]
+        if isinstance(ob, DeferWrapper):
+            ob = ob()
+        if path:
+            ob = restrictedTraverse(ob, path, getSecurityManager())
+        return ob
 
-        if self._name == 'exists':
-            # All we wanted to know is whether one of the paths exist.
-            return exists
+class PathExpr:
+    def __init__(self, name, expr, engine):
+        self._s = expr
+        self._name = name
+        paths = split(expr, '|')
+        self._subexprs = []
+        add = self._subexprs.append
+        for i in range(len(paths)):
+            path = lstrip(paths[i])
+            if _parse_expr(path):
+                # This part is the start of another expression type,
+                # so glue it back together and compile it.
+                add(engine.compile(lstrip(join(paths[i:], '|'))))
+                break
+            add(SubPathExpr(path)._eval)
+
+    def _exists(self, econtext):
+        for expr in self._subexprs:
+            try:
+                expr(econtext)
+            except Undefs:
+                pass
+            else:
+                return 1
+        return 0
+
+    def _eval(self, econtext,
+              isinstance=isinstance, StringType=type(''), render=render):
+        for expr in self._subexprs[:-1]:
+            # Try all but the last subexpression, skipping undefined ones
+            try:
+                ob = expr(econtext)
+            except Undefs:
+                pass
+            else:
+                break
+        else:
+            # On the last subexpression allow exceptions through, but
+            # wrap ones that indicate that the subexpression was undefined
+            try:
+                ob = self._subexprs[-1](econtext)
+            except Undefs[1:]:
+                raise Undefined(self._s, sys.exc_info())
+
         if self._name == 'nocall' or isinstance(ob, StringType):
             return ob
         # Return the rendered object
-        return render(ob, vars)
+        return render(ob, econtext.vars)
 
     def __call__(self, econtext):
-        return self._eval(econtext, getSecurityManager())
+        if self._name == 'exists':
+            return self._exists(econtext)
+        return self._eval(econtext)
 
     def __str__(self):
         return '%s expression %s' % (self._name, `self._s`)
@@ -247,21 +274,21 @@ class DeferExpr:
 def restrictedTraverse(self, path, securityManager,
                        get=getattr, has=hasattr, N=None, M=[]):
 
-    i = 0
+    REQUEST = {'path': path}
+    REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
     if not path[0]:
         # If the path starts with an empty string, go to the root first.
         self = self.getPhysicalRoot()
         if not securityManager.validateValue(self):
             raise Unauthorized, name
-        i = 1
-
-    REQUEST={'TraversalRequestNameStack': path}
+        path.pop(0)
+        
+    path.reverse()
     validate = securityManager.validate
     object = self
-    while i < len(path):
-        __traceback_info__ = (path, i)
-        name = path[i]
-        i = i + 1
+    while path:
+        __traceback_info__ = REQUEST
+        name = path.pop()
 
         if name[0] == '_':
             # Never allowed in a URL.

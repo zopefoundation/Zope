@@ -58,6 +58,13 @@ class HTMLTests(unittest.TestCase):
    def tearDown(self):
       SecurityManager.setSecurityPolicy( self.oldPolicy )
 
+   def assert_expected(self, t, fname, *args, **kwargs):
+      t.write(util.read_input(fname))
+      assert not t._v_errors, 'Template errors: %s' % t._v_errors
+      expect = util.read_output(fname)
+      out = apply(t, args, kwargs)
+      util.check_html(expect, out)
+
    def getProducts(self):
       return [
          {'description': 'This is the tee for those who LOVE Zope. '
@@ -71,86 +78,49 @@ class HTMLTests(unittest.TestCase):
          ]
 
    def check1(self):
-      laf = self.folder.laf
-      laf.write(util.read_input('TeeShopLAF.html'))
-      expect = util.read_output('TeeShopLAF.html')
-      util.check_html(expect, laf())
+      self.assert_expected(self.folder.laf, 'TeeShopLAF.html')
 
    def check2(self):
       self.folder.laf.write(util.read_input('TeeShopLAF.html'))
 
-      t = self.folder.t
-      t.write(util.read_input('TeeShop2.html'))
-      expect = util.read_output('TeeShop2.html')
-      out = t(getProducts=self.getProducts)
-      util.check_html(expect, out)
-      
+      self.assert_expected(self.folder.t, 'TeeShop2.html',
+                           getProducts=self.getProducts)
 
    def check3(self):
       self.folder.laf.write(util.read_input('TeeShopLAF.html'))
 
-      t = self.folder.t
-      t.write(util.read_input('TeeShop1.html'))
-      expect = util.read_output('TeeShop1.html')
-      out = t(getProducts=self.getProducts)
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'TeeShop1.html',
+                           getProducts=self.getProducts)
 
    def checkSimpleLoop(self):
-      t = self.folder.t
-      t.write(util.read_input('Loop1.html'))
-      expect = util.read_output('Loop1.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'Loop1.html')
+
+   def checkFancyLoop(self):
+      self.assert_expected(self.folder.t, 'Loop2.html')
 
    def checkGlobalsShadowLocals(self):
-      t = self.folder.t
-      t.write(util.read_input('GlobalsShadowLocals.html'))
-      expect = util.read_output('GlobalsShadowLocals.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'GlobalsShadowLocals.html')
 
    def checkStringExpressions(self):
-      t = self.folder.t
-      t.write(util.read_input('StringExpression.html'))
-      expect = util.read_output('StringExpression.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'StringExpression.html')
       
    def checkReplaceWithNothing(self):
-      t = self.folder.t
-      t.write(util.read_input('CheckNothing.html'))
-      expect = util.read_output('CheckNothing.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'CheckNothing.html')
 
    def checkWithXMLHeader(self):
-      t = self.folder.t
-      t.write(util.read_input('CheckWithXMLHeader.html'))
-      expect = util.read_output('CheckWithXMLHeader.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'CheckWithXMLHeader.html')
 
    def checkNotExpression(self):
-      t = self.folder.t
-      t.write(util.read_input('CheckNotExpression.html'))
-      expect = util.read_output('CheckNotExpression.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'CheckNotExpression.html')
       
    def checkPathNothing(self):
-      t = self.folder.t
-      t.write(util.read_input('CheckPathNothing.html'))
-      expect = util.read_output('CheckPathNothing.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'CheckPathNothing.html')
       
    def checkPathAlt(self):
-      t = self.folder.t
-      t.write(util.read_input('CheckPathAlt.html'))
-      expect = util.read_output('CheckPathAlt.html')
-      out = t()
-      util.check_html(expect, out)
+      self.assert_expected(self.folder.t, 'CheckPathAlt.html')
 
+   def checkBatchIteration(self):
+      self.assert_expected(self.folder.t, 'CheckBatchIteration.html')
 
 def test_suite():
    return unittest.makeSuite(HTMLTests, 'check')
