@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -117,6 +117,7 @@ class BaseRequest:
     collection of variable to value mappings.
     """
 
+    _file=None
     common={} # Common request data
     _auth=None
 
@@ -153,6 +154,20 @@ class BaseRequest:
         if v is not _marker: return v
         v=self.common.get(key, default)
         if v is not _marker: return v
+
+        if key=='BODY' and self._file is not None:
+            p=self._file.tell()
+            self._file.seek(0)
+            v=self._file.read()
+            self._file.seek(p)
+            self.other[key]=v
+            return v
+
+        if key=='BODYFILE' and self._file is not None:
+            v=self._file
+            self.other[key]=v
+            return v
+        
         raise KeyError, key
 
     __getattr__=get=__getitem__

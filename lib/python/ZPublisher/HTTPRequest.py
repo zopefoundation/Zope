@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -212,7 +212,7 @@ class HTTPRequest(BaseRequest):
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response=xmlrpc.response(response)
             else:
-                form['BODY']=fs.value
+                self._file=fs.file
         else:
             fslist=fs.list
             tuple_items={}
@@ -638,21 +638,35 @@ class HTTPRequest(BaseRequest):
 
         if key=='REQUEST': return self
 
-        if key[:1]=='B' and BASEmatch(key) >= 0:
-            n=ord(key[4])-ord('0')
-            if n:
-                if self.environ.get('SCRIPT_NAME',''): n=n-1
-                if len(self.steps) < n:
-                    raise KeyError, key
+        if key[:1]=='B':
+            if BASEmatch(key) >= 0:
+                n=ord(key[4])-ord('0')
+                if n:
+                    if self.environ.get('SCRIPT_NAME',''): n=n-1
+                    if len(self.steps) < n:
+                        raise KeyError, key
 
-                v=self.script
-                while v[-1:]=='/': v=v[:-1]
-                v=join([v]+self.steps[:n],'/')
-            else:
-                v=self.base
-                while v[-1:]=='/': v=v[:-1]
-            other[key]=v
-            return v
+                    v=self.script
+                    while v[-1:]=='/': v=v[:-1]
+                    v=join([v]+self.steps[:n],'/')
+                else:
+                    v=self.base
+                    while v[-1:]=='/': v=v[:-1]
+                other[key]=v
+                return v
+
+            if key=='BODY' and self._file is not None:
+                p=self._file.tell()
+                self._file.seek(0)
+                v=self._file.read()
+                self._file.seek(p)
+                self.other[key]=v
+                return v
+
+            if key=='BODYFILE' and self._file is not None:
+                v=self._file
+                self.other[key]=v
+                return v
 
         v=self.common.get(key, default)
         if v is not _marker: return v
