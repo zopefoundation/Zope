@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -92,7 +92,7 @@ from cgi import FieldStorage
 from urllib import quote, unquote
 from Converters import type_converters
 from maybe_lock import allocate_lock
-
+xmlrpc=None # Placeholder for module that we'll import if we have to.
 
 isCGI_NAME = {
         'SERVER_SOFTWARE' : 1, 
@@ -167,16 +167,20 @@ class HTTPRequest(BaseRequest):
     other variables, form data, and then cookies.
     """
     _hacked_path=None
+    args=()
     
     def __init__(self, stdin, environ, response, clean=0):
         # Avoid the overhead of scrubbing the environment in the
         # case of request cloning for traversal purposes. If the
         # clean flag is set, we know we can use the passed in
         # environ dict directly.
+
         if not clean: environ=sane_environment(environ)
+
+        method=environ.get('REQUEST_METHOD','GET')
         
-        if environ.get('REQUEST_METHOD','GET') != 'GET': fp=stdin
-        else:                                            fp=None
+        if method != 'GET': fp=stdin
+        else:               fp=None
 
         if environ.has_key('HTTP_AUTHORIZATION'):
             self._auth=environ['HTTP_AUTHORIZATION']
@@ -188,7 +192,17 @@ class HTTPRequest(BaseRequest):
         meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
-            form['BODY']=fs.value
+            # Hm, maybe it's an XML-RPC
+            if (fs.headers.has_key('content-type') and
+                fs.headers['content-type'] == 'text/xml' and
+                method == 'POST'):
+                # Ye haaa, XML-RPC!
+                global xmlrpc
+                if xmlrpc is None: import xmlrpc
+                meth, self.args = xmlrpc.parse_input(fs.value)
+                response=xmlrpc.response(response)
+            else:
+                form['BODY']=fs.value
         else:
             fslist=fs.list
             tuple_items={}
