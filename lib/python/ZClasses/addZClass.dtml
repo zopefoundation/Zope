@@ -52,7 +52,7 @@
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
     <INPUT TYPE="CHECKBOX" NAME="CreateAFactory:int" VALUE="1"
     <dtml-if CreateAFactory>CHECKED</dtml-if>>
-    <STRONG>Create constructor objects.</STRONG>
+    <STRONG>Create constructor objects?</STRONG>
   </TD>
 </TR> 
 
@@ -89,6 +89,14 @@
      </SELECT>
   </TD>
 </TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
+    <INPUT TYPE="CHECKBOX" NAME="zope_object:int" VALUE="1"
+    <!--#if zope_object-->CHECKED<!--#/if-->>
+    <STRONG>Include standard Zope persistent object base classes?</STRONG>
+  </TD>
+</TR> 
 
 <TR><TD></TD>
 <TD colspan=3><BR><INPUT TYPE="SUBMIT" NAME="manage_addZClass:method" 
