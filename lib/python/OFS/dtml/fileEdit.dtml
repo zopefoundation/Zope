@@ -48,48 +48,51 @@ text type and small enough to be edited in a text area.
   </td>
 </tr>
 
-<dtml-if "this().getContentType()[:4] == 'text' and this().get_size() < 65536">
-<tr>
-  <td align="left" valign="top" colspan="2">
-  <div style="width: 100%;">
-  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
-            rows="REQUEST.get('dtpref_rows', '20')">
-  <dtml-if "cols[-1]=='%'">
-  <textarea name="filedata:text" wrap="off" style="width: &dtml-cols;;"
+<dtml-let ct=getContentType>
+  <dtml-if "(ct.startswith('text') or ct.endswith('javascript')) 
+            and this().get_size() < 65536">
+  <tr>
+    <td align="left" valign="top" colspan="2">
+    <div style="width: 100%;">
+    <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+              rows="REQUEST.get('dtpref_rows', '20')">
+    <dtml-if "cols[-1]=='%'">
+    <textarea name="filedata:text" wrap="off" style="width: &dtml-cols;;"
+    <dtml-else>
+    <textarea name="filedata:text" wrap="off" cols="&dtml-cols;"
+    </dtml-if>
+              rows="&dtml-rows;"><dtml-var __str__ html_quote></textarea>
+    </dtml-let>
+    </div>
+    </td>
+  </tr>
   <dtml-else>
-  <textarea name="filedata:text" wrap="off" cols="&dtml-cols;"
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Last Modified
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
+    </div>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    File Size
+    </div>
+    </td>
+    <td align="left" valign="top">
+    <div class="form-text">
+    <dtml-var size thousands_commas> bytes
+    </div>
+    </td>
+  </tr>
   </dtml-if>
-            rows="&dtml-rows;"><dtml-var __str__ html_quote></textarea>
-  </dtml-let>
-  </div>
-  </td>
-</tr>
-<dtml-else>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  Last Modified
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  <dtml-var bobobase_modification_time fmt="%Y-%m-%d %H:%M">
-  </div>
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <div class="form-label">
-  File Size
-  </div>
-  </td>
-  <td align="left" valign="top">
-  <div class="form-text">
-  <dtml-var size thousands_commas> bytes
-  </div>
-  </td>
-</tr>
-</dtml-if>
+</dtml-let>
 
 <tr>
   <td></td>

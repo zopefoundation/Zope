@@ -35,6 +35,10 @@ Zope Changes
       - RAMCacheManager: Allow invalidation of a cache entry from the
         Statistics view in the ZMI
 
+      - Collector #1454/OFS.File: Accept content types ending with
+        "javascript" as editable through the File edit form, just like
+        text/<foo> types
+
     Bugs fixed
     
       - Collector #1127: strftime did not take timezone into account.
