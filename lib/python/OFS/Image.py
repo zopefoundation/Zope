@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -42,7 +42,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     )
    
 
-    def __init__(self,id,title,file,content_type=''):
+    def __init__(self,id,title,file,content_type='application/octet-stream'):
 	try:    headers=file.headers
 	except: headers=None
 	if headers is None:
