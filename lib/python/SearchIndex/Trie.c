@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.1 1997/03/14 23:20:28 jim Exp $"
+"\n$Id: Trie.c,v 1.2 1997/03/17 21:29:39 jim Exp $"
 ;
 
 
@@ -496,15 +496,9 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
-  /* Create the module and add the functions */
-  m = Py_InitModule4("Trie", Triem_methods,
-		     Trie_module_documentation,
-		     PyOb(NULL),PYTHON_API_VERSION);
-
-  /* Add some symbolic constants to the module */
-  d = PyModule_GetDict(m);
+  UNLESS(ExtensionClassImported) return;
 
 #ifdef PERSISTENT
   if(cPersistenceCAPI=PyCObject_Import("cPersistence","CAPI"))
@@ -516,7 +510,16 @@ initTrie()
       TrieType.tp_getattro=cPersistenceCAPI->getattro;
       TrieType.tp_setattro=cPersistenceCAPI->setattro;
     }
+  else return;
 #endif
+
+  /* Create the module and add the functions */
+  m = Py_InitModule4("Trie", Triem_methods,
+		     Trie_module_documentation,
+		     PyOb(NULL),PYTHON_API_VERSION);
+
+  /* Add some symbolic constants to the module */
+  d = PyModule_GetDict(m);
 
   PyExtensionClass_Export(d, "Trie", TrieType);
   PyDict_SetItemString(d, "__version__",
@@ -533,6 +536,10 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.2  1997/03/17 21:29:39  jim
+  Moved external imports before module initialization to give
+  better error handling.
+
   Revision 1.1  1997/03/14 23:20:28  jim
   initial
 
