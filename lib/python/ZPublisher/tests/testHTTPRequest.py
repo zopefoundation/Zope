@@ -80,6 +80,27 @@ class ProcessInputsTests(unittest.TestCase):
         self.assertEquals(req['num'], 42)
         self.assertEquals(req['words'], 'Some words')
 
+    def testUnicodeConversions(self):
+        inputs = (('ustring:ustring:utf8', 'test\xc2\xae'),
+                  ('utext:utext:utf8', 'test\xc2\xae\ntest\xc2\xae\n'),
+                  ('utokens:utokens:utf8', 'test\xc2\xae test\xc2\xae'),
+                  ('ulines:ulines:utf8', 'test\xc2\xae\ntest\xc2\xae'),
+                  
+                  ('nouconverter:string:utf8', 'test\xc2\xae'))
+        req = self._processInputs(inputs)
+
+        formkeys = list(req.form.keys())
+        formkeys.sort()
+        self.assertEquals(formkeys, ['nouconverter', 'ulines', 'ustring',
+            'utext', 'utokens'])
+
+        self.assertEquals(req['ustring'], u'test\u00AE')
+        self.assertEquals(req['utext'], u'test\u00AE\ntest\u00AE\n')
+        self.assertEquals(req['utokens'], [u'test\u00AE', u'test\u00AE'])
+        self.assertEquals(req['ulines'], [u'test\u00AE', u'test\u00AE'])
+
+        self.assertEquals(req['nouconverter'], 'test\xae')
+
     def testSimpleContainers(self):
         inputs = (
             ('oneitem:list', 'one'),
