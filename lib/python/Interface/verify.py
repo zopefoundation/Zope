@@ -29,13 +29,16 @@ def verify_class_implementation(iface, klass):
         elif type(attr) is types.MethodType:
             meth = Method().fromMethod(attr, n)
         else:
-            raise "NotAMethod", "%s is not a method or function" % attr
+            pass # must be an attribute...
         
-        methinfo = meth.getSignatureInfo()
-        attrinfo = meth.getSignatureInfo()
-        
-        for k in d.getSignatureInfo().keys():
-            if not (methinfo[k] is attrinfo[k] or methinfo[k] == attrinfo[k]):
-                raise BrokenMethodImplementation(n, k)
+        if d.getSignatureInfo() != meth.getSignatureInfo():
+                raise BrokenMethodImplementation(n)
             
-        
+    return 1
+
+
+
+
+
+
+
