@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.16 1997/11/19 15:33:32 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.17 1997/11/19 15:42:47 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -285,10 +285,11 @@ def parse_params(text,
 try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
-# TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
-
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.17  1997/11/19 15:42:47  jim
+# added _ prefix to push and pop methods to make them private
+#
 # Revision 1.16  1997/11/19 15:33:32  jim
 # Updated parse_params so that you can define an attribute that, if
 # used, must have a value.  This is done by specifying None as a default

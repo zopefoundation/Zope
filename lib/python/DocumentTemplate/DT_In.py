@@ -230,7 +230,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.11 1997/11/12 23:25:56 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.12 1997/11/19 15:42:46 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.11 1997/11/12 23:25:56 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -397,7 +397,7 @@ class In:
 	    kw['sequence-step-end']=end
 	    kw['sequence-step-orphan']=orphan
 	try:
-	    md.push(vars)
+	    md._push(vars)
 	    if previous:
 		if first > 0:
 		    pstart,pend,psize=opt(None,first+overlap,
@@ -463,7 +463,7 @@ class In:
 		    result.append(section(client,md))
 		result=join(result, '')
 	finally:
-	    md.pop(1)
+	    md._pop(1)
 
 	return result
 
@@ -791,6 +791,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.12  1997/11/19 15:42:46  jim
+# added _ prefix to push and pop methods to make them private
+#
 # Revision 1.11  1997/11/12 23:25:56  jim
 # Fixed bug in expr handling.
 #

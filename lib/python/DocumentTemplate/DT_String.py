@@ -329,13 +329,13 @@ class String:
 	if pushed is not None:
 	    # We were passed a TemplateDict, so we must be a sub-template
 	    md=mapping
-	    push=md.push
+	    push=md._push
 	    if globals:
 		push(self.globals)
 		pushed=pushed+1
 	else:
 	    md=TemplateDict()
-	    push=md.push
+	    push=md._push
 	    shared_globals=self.shared_globals
 	    if shared_globals: push(shared_globals)
 	    if globals: push(globals)
@@ -367,7 +367,7 @@ class String:
 	try:
 	    return render_blocks(self,md)
 	finally:
-	    if pushed: md.pop(pushed) # Get rid of circular reference!
+	    if pushed: md._pop(pushed) # Get rid of circular reference!
 	    md.level=level # Restore previous level
 
     validate=None

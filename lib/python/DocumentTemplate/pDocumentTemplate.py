@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.6 1997/11/11 18:39:29 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.7 1997/11/19 15:42:48 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import regex, string
 
@@ -140,13 +140,13 @@ class TemplateDict:
 
     level=0
 
-    def pop(self, n): return self.dicts.pop(n)
-    def push(self, d): return self.dicts.push(d)
+    def _pop(self, n): return self.dicts.pop(n)
+    def _push(self, d): return self.dicts.push(d)
 
     def __init__(self):
 	m=self.dicts=MultiMapping()
-	self.pop=m.pop
-	self.push=m.push
+	self._pop=m.pop
+	self._push=m.push
 	try: self.keys=m.keys
 	except: pass
 
@@ -177,6 +177,9 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.7  1997/11/19 15:42:48  jim
+# added _ prefix to push and pop methods to make them private
+#
 # Revision 1.6  1997/11/11 18:39:29  jim
 # Added a little compatibility with cDocumentTemplate.
 #

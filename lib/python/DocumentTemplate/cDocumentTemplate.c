@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.7 1997/11/07 18:51:47 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.8 1997/11/19 15:42:47 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -341,10 +341,10 @@ MM_has_key(MM *self, PyObject *args)
 static struct PyMethodDef MM_methods[] = {
   {"__init__", (PyCFunction)MM__init__, 0,
    "__init__() -- Create a new empty multi-mapping"},
-  {"push", (PyCFunction) MM_push, 0,
-   "push(mapping_object) -- Add a data source"},
-  {"pop",  (PyCFunction) MM_pop,  0,
-   "pop() -- Remove and return the last data source added"}, 
+  {"_push", (PyCFunction) MM_push, 0,
+   "_push(mapping_object) -- Add a data source"},
+  {"_pop",  (PyCFunction) MM_pop,  0,
+   "_pop() -- Remove and return the last data source added"}, 
   {"getitem",  (PyCFunction) MM_get,  METH_VARARGS,
    "getitem(key[,call]) -- Get a value\n\n"
    "Normally, callable objects that can be called without arguments are\n"
@@ -529,7 +529,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
@@ -561,6 +561,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.8  1997/11/19 15:42:47  jim
+  added _ prefix to push and pop methods to make them private
+
   Revision 1.7  1997/11/07 18:51:47  jim
   Fixed bug in new call logic.
 
