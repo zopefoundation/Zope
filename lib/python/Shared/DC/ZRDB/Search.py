@@ -10,16 +10,16 @@
 ########################################################################## 
 __doc__='''Aqueduct Search Interface Wizard
 
-$Id: Search.py,v 1.1 1997/12/17 21:01:20 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Search.py,v 1.2 1998/01/07 16:32:48 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from Globals import HTMLFile
-from Aqueduct.Aqueduct import custom_default_report, nicify
+from Aqueduct import custom_default_report, nicify
 from string import join
 
-addForm=HTMLFile('AqueductReport/searchAdd')
+addForm=HTMLFile('searchAdd', globals())
 def add(self, report_id, report_title, input_id, input_title, queries=[],
-	acl_type='A',acl_roles=[], REQUEST=None):
+	REQUEST=None):
     'add a report'
 
     if not queries: raise ValueError, (
@@ -50,16 +50,14 @@ def add(self, report_id, report_title, input_id, input_title, queries=[],
     if input_id:
 	self.manage_addDocument(
 	    input_id,input_title,
-	    default_input_form(arguments, report_id),
-	    acl_type,acl_roles)
+	    default_input_form(arguments, report_id))
 
     self.manage_addDocument(
 	report_id,report_title,
 	('<!--#var standard_html_header-->\n%s\n'
 	 '<!--#var standard_html_footer-->' % 
 	 join(map(lambda q: custom_default_report(q.id, q), qs),
-	      '\n<hr>\n')),
-	acl_type,acl_roles)
+	      '\n<hr>\n')))
 
     if REQUEST: return self.manage_main(self,REQUEST)
 
@@ -173,6 +171,9 @@ def default_input_form(arguments,action='query',
 ############################################################################## 
 #
 # $Log: Search.py,v $
+# Revision 1.2  1998/01/07 16:32:48  jim
+# Brought up to date with latest Principia models.
+#
 # Revision 1.1  1997/12/17 21:01:20  jim
 # *** empty log message ***
 #
