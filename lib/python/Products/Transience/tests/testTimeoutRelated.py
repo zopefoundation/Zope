@@ -1,5 +1,9 @@
 import sys, os, time, unittest
 
+if __name__=='__main__':
+    sys.path.insert(0, '..')
+    sys.path.insert(0, '../../..')
+
 import ZODB # in order to get Persistence.Persistent working
 from Testing import makerequest
 import Acquisition
@@ -74,7 +78,7 @@ class TestLastAccessed(TestBase):
         sdo = self.app.sm.new_or_existing('TempObject')
         la1 = sdo.getLastAccessed()
         fauxtime.sleep(WRITEGRANULARITY + 1)
-        sdo = self.app.sm['TempObject']
+        sdo = self.app.sm.get('TempObject')
         assert sdo.getLastAccessed() > la1, (sdo.getLastAccessed(), la1)
 
 class TestNotifications(TestBase):
@@ -90,13 +94,15 @@ class TestNotifications(TestBase):
         self.app.sm.setDelNotificationTarget(delNotificationTarget)
         sdo = self.app.sm.new_or_existing('TempObject')
         timeout = self.timeout * 60
-        fauxtime.sleep(timeout + (timeout * .33))
-        try: sdo1 = self.app.sm['TempObject']
-        except KeyError: pass
+        fauxtime.sleep(timeout + (timeout * .75))
+        sdo1 = self.app.sm.get('TempObject')
+        for x in range(1, 100):
+            # force the sdm to do housekeeping
+            self.app.sm._getCurrentBucket()
         now = fauxtime.time()
         k = sdo.get('endtime')
-        assert type(k) == type(now)
-        assert k <= now
+        assert (type(k) == type(now)), type(k)
+        assert k <= now, (k, now)
 
 def addNotificationTarget(item, context):
     item['starttime'] = fauxtime.time()

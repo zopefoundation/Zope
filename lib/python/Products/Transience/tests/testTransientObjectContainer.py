@@ -12,6 +12,9 @@
 ##############################################################################
 import sys, os, time, random, unittest
 
+if __name__ == "__main__":
+    sys.path.insert(0, '../../..')
+
 import ZODB
 from Products.Transience.Transience import TransientObjectContainer,\
      MaxTransientObjectsExceeded
@@ -23,7 +26,7 @@ from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 import time as oldtime
 import fauxtime
 
-class TestTransientObjectContainer(TestCase):
+class TestBase(TestCase):
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
         Products.Transience.TransientObject.time = fauxtime
@@ -36,6 +39,7 @@ class TestTransientObjectContainer(TestCase):
         Products.Transience.Transience.time = oldtime
         Products.Transience.TransientObject.time = oldtime
 
+class TestTransientObjectContainer(TestBase):
     def testGetItemFails(self):
         self.assertRaises(KeyError, self._getitemfail)
 
@@ -280,6 +284,36 @@ class TestTransientObjectContainer(TestCase):
             except KeyError:
                 if self.t.has_key(x): assert 1==2,"failed to delete %s" % x
 
+    def testChangingTimeoutWorks(self):
+        # 1 minute
+        for x in range(10, 110):
+            self.t[x] = x
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        assert len(self.t.keys()) == 0, len(self.t.keys())
+
+        # 2 minutes
+        self.t._setTimeout(self.timeout/60*2)
+        self.t._reset()
+        for x in range(10, 110):
+            self.t[x] = x
+        fauxtime.sleep(self.timeout)
+        assert len(self.t.keys()) == 100, len(self.t.keys())
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        assert len(self.t.keys()) == 0, len(self.t.keys())
+
+        # 3 minutes
+        self.t._setTimeout(self.timeout/60*3)
+        self.t._reset()
+        for x in range(10, 110):
+            self.t[x] = x
+        fauxtime.sleep(self.timeout)
+        assert len(self.t.keys()) == 100, len(self.t.keys())
+        fauxtime.sleep(self.timeout)
+        assert len(self.t.keys()) == 100, len(self.t.keys())
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
+        assert len(self.t.keys()) == 0, len(self.t.keys())
+
+
     def testItemsGetExpired(self):
         for x in range(10, 110):
             self.t[x] = x
@@ -326,32 +360,6 @@ class TestTransientObjectContainer(TestCase):
         fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())
 
-    def testGetItemDelaysTimeout(self):
-        for x in range(10, 110):
-            self.t[x] = x
-        # current bucket will become old after we sleep for a while.
-        fauxtime.sleep(self.timeout/2)
-        # these items will be added to the new current bucket by getitem
-        for x in range(10, 110):
-            self.t[x]
-        fauxtime.sleep(self.timeout/2)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
-        for x in range(10, 110):
-            assert self.t[x] == x
-
-    def testSetItemDelaysTimeout(self):
-        for x in range(10, 110):
-            self.t[x] = x
-        # current bucket will become old after we sleep for a while.
-        fauxtime.sleep(self.timeout/2)
-        # these items will be added to the new current bucket by getitem
-        for x in range(10, 110):
-            self.t[x] = x + 1
-        fauxtime.sleep(self.timeout/2)
-        assert len(self.t.keys()) == 100, len(self.t.keys())
-        for x in range(10, 110):
-            assert self.t[x] == x + 1
-
     def testGetDelaysTimeout(self):
         for x in range(10, 110):
             self.t[x] = x
@@ -364,6 +372,19 @@ class TestTransientObjectContainer(TestCase):
         assert len(self.t.keys()) == 100, len(self.t.keys())
         for x in range(10, 110):
             assert self.t[x] == x
+
+    def testSetItemDelaysTimeout(self):
+        for x in range(10, 110):
+            self.t[x] = x
+        # current bucket will become old after we sleep for a while.
+        fauxtime.sleep(self.timeout/2)
+        # these items will be added to the new current bucket by setitem
+        for x in range(10, 110):
+            self.t[x] = x + 1
+        fauxtime.sleep(self.timeout/2)
+        assert len(self.t.keys()) == 100, len(self.t.keys())
+        for x in range(10, 110):
+            assert self.t[x] == x + 1
 
     def testLen(self):
         added = {}
@@ -428,6 +449,7 @@ def lsubtract(l1, l2):
 
 def test_suite():
     testsuite = makeSuite(TestTransientObjectContainer, 'test')
+    #testsuite = makeSuite(TestBase, 'test')
     alltests = TestSuite((testsuite,))
     return alltests
 

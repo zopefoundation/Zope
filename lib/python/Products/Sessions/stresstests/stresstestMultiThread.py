@@ -24,7 +24,9 @@ from Products.Sessions.SessionDataManager import \
 from Products.Transience.Transience import \
     TransientObjectContainer, TransientObject
 from Products.TemporaryFolder.TemporaryFolder import MountedTemporaryFolder
-from ZODB.POSException import InvalidObjectReference, ConflictError
+from Products.TemporaryFolder.LowConflictConnection import LowConflictConnection
+from ZODB.Connection import Connection
+from ZODB.POSException import InvalidObjectReference, ConflictError, ReadConflictError, BTreesConflictError
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 import time, threading, random
@@ -32,6 +34,7 @@ from cPickle import UnpickleableError
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
 import sys
+from zLOG import log_time
 sys.setcheckinterval(200)
 
 tf_name = 'temp_folder'
@@ -65,7 +68,7 @@ def _populate(app):
     bidmgr = BrowserIdManager(idmgr_name)
     tf = MountedTemporaryFolder(tf_name, title="Temporary Folder")
     toc = TransientObjectContainer(toc_name, title='Temporary '
-        'Transient Object Container', timeout_mins=20)
+        'Transient Object Container', timeout_mins=1)
     session_data_manager=SessionDataManager(id='session_data_manager',
         path='/'+tf_name+'/'+toc_name, title='Session Data Manager')
 
@@ -89,35 +92,6 @@ def _populate(app):
     get_transaction().commit()
 
 class TestMultiThread(TestCase):
-    def testNonOverlappingBrowserIds(self):
-        readers = []
-        writers = []
-        readiters = 20
-        writeiters = 5
-        readout = []
-        writeout = []
-        numreaders = 20
-        numwriters = 5
-        sdm_name = 'session_data_manager'
-        db = _getDB()
-        for i in range(numreaders):
-            thread = ReaderThread(db, readiters, sdm_name)
-            readers.append(thread)
-        for i in range(numwriters):
-            thread = WriterThread(db, writeiters, sdm_name)
-            writers.append(thread)
-        for thread in readers:
-            thread.start()
-            time.sleep(0.1)
-        for thread in writers:
-            thread.start()
-            time.sleep(0.1)
-        while threading.activeCount() > 1:
-            time.sleep(1)
-        
-        for thread in readers:
-            assert thread.out == [], thread.out
-
     def testOverlappingBrowserIds(self):
         readers = []
         writers = []
@@ -144,9 +118,32 @@ class TestMultiThread(TestCase):
         while threading.activeCount() > 1:
             time.sleep(1)
         
+    def testNonOverlappingBrowserIds(self):
+        readers = []
+        writers = []
+        readiters = 20
+        writeiters = 5
+        readout = []
+        writeout = []
+        numreaders = 20
+        numwriters = 5
+        sdm_name = 'session_data_manager'
+        db = _getDB()
+        for i in range(numreaders):
+            thread = ReaderThread(db, readiters, sdm_name)
+            readers.append(thread)
+        for i in range(numwriters):
+            thread = WriterThread(db, writeiters, sdm_name)
+            writers.append(thread)
         for thread in readers:
-            assert thread.out == [], thread.out
-
+            thread.start()
+            time.sleep(0.1)
+        for thread in writers:
+            thread.start()
+            time.sleep(0.1)
+        while threading.activeCount() > 1:
+            time.sleep(1)
+        
 class BaseReaderWriter(threading.Thread):
     def __init__(self, db, iters, sdm_name):
         self.conn = db.open()
@@ -166,13 +163,23 @@ class BaseReaderWriter(threading.Thread):
                 try:
                     self.run1()
                     return
+                except ReadConflictError:
+                    print "read conflict"
+                except BTreesConflictError:
+                    print "btrees conflict"
                 except ConflictError:
-                    i = i + 1
-                    #print "conflict %d" % i
-                    if i > 3: raise
+                    print "general conflict"
+                except:
+                    get_transaction().abort()
+                    print log_time()
+                    raise
+                i = i + 1
+                get_transaction().abort()
+                time.sleep(random.randrange(5) * .1)
         finally:
             self.conn.close()
             del self.app
+            print i
             
 class ReaderThread(BaseReaderWriter):
     def run1(self):

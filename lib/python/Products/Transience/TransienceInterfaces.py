@@ -149,8 +149,8 @@ class DictionaryLike(Interface.Base):
 
     def get(k, default='marker'):
         """
-        Return value associated with key k.  If k does not exist and default
-        is not marker, return default, else raise KeyError.
+        Return value associated with key k.  Return None or default if k
+        does not exist.
         """
 
     def has_key(k):

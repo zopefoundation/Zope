@@ -13,10 +13,10 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.6 2002/06/11 15:19:38 chrism Exp $
+$Id: TransientObject.py,v 1.7 2002/06/21 01:51:43 chrism Exp $
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
@@ -74,6 +74,13 @@ class TransientObject(Persistent, Implicit):
     #
 
     def invalidate(self):
+        if hasattr(self, '_invalid'):
+            # we dont want to invalidate twice
+            return
+        trans_ob_container = getattr(self, 'aq_parent', None)
+        if trans_ob_container is not None:
+            if trans_ob_container.has_key(self.token):
+                del trans_ob_container[self.token]
         self._invalid = None
 
     def isValid(self):
