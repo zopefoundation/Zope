@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.43 2001/09/25 13:37:02 andreasjung Exp $'
-__version__='$Revision: 1.43 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.44 2001/10/02 14:23:32 shane Exp $'
+__version__='$Revision: 1.44 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
@@ -288,11 +288,15 @@ class Var:
 
         # handle special formats defined using fmt= first
         if have_arg('fmt'):
+            _get = getattr(md, 'guarded_getattr', None)
+            if _get is None:
+                _get = getattr
+
             fmt=args['fmt']
             if have_arg('null') and not val and val != 0:
                 try:
                     if hasattr(val, fmt):
-                        val = getattr(val,fmt)()
+                        val = _get(val, fmt)()
                     elif special_formats.has_key(fmt):
                         val = special_formats[fmt](val, name, md)
                     elif fmt=='': val=''
@@ -307,7 +311,7 @@ class Var:
                 # We duplicate the code here to avoid exception handler
                 # which tends to screw up stack or leak
                 if hasattr(val, fmt):
-                    val = getattr(val,fmt)()
+                    val = _get(val, fmt)()
                 elif special_formats.has_key(fmt):
                     val = special_formats[fmt](val, name, md)
                 elif fmt=='': val=''
