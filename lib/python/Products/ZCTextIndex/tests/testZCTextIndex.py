@@ -1,7 +1,8 @@
 from Products.ZCTextIndex.ZCTextIndex import ZCTextIndex
 from Products.ZCTextIndex.tests \
      import testIndex, testQueryEngine, testQueryParser
-from Products.ZCTextIndex.BaseIndex import scaled_int, SCALE_FACTOR
+from Products.ZCTextIndex.BaseIndex import \
+     scaled_int, SCALE_FACTOR, inverse_doc_frequency
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
@@ -282,19 +283,21 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
 
     # A white-box test.
     def testAbsoluteScores(self):
-        from Products.ZCTextIndex.OkapiIndex import inverse_doc_frequency
-
         docs = ["one",
                 "one two",
                 "one two three"]
+
         for i in range(len(docs)):
             self.zc_index.index_object(i + 1, Indexable(docs[i]))
 
-        # A brief digression to exercise re-indexing.  This should leave
-        # things exactly as they were.
+        self._checkAbsoluteScores()
+
+        # Exercise re-indexing.  This should leave things exactly as they were.
         for variant in "one xyz", "xyz two three", "abc def", docs[-1]:
             self.zc_index.index_object(len(docs), Indexable(variant))
+        self._checkAbsoluteScores()
 
+    def _checkAbsoluteScores(self):
         self.assertEqual(self.index._totaldoclen, 6)
         # So the mean doc length is 2.  We use that later.
 
@@ -341,7 +344,14 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
         for i in range(1, 10):
             doc = "one " + "two " * i + "xyz " * (9 - i)
             self.zc_index.index_object(i, Indexable(doc))
+        self._checkRelativeScores()
 
+        # Exercise re-indexing.  This should leave things exactly as they were.
+        self.zc_index.index_object(9, Indexable("two xyz"))
+        self.zc_index.index_object(9, Indexable(doc))
+        self._checkRelativeScores()
+
+    def _checkRelativeScores(self):
         r, num = self.zc_index.query("one two")
         self.assertEqual(num, 9)
         self.assertEqual(len(r), 9)
