@@ -85,8 +85,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.5 2000/06/01 13:46:15 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.6 2000/06/29 14:08:07 shane Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=[]
@@ -115,6 +115,7 @@ class ZopeSecurityPolicy:
         ############################################################
         # Try to get roles
         roles=getattr(value, '__roles__', _noroles)
+
         if roles is _noroles:
 
             ############################################################
@@ -184,7 +185,7 @@ class ZopeSecurityPolicy:
                         % cleanupName(name, value))
                 return 0
 
-            # Proxy roles, which are alot safer now.
+            # Proxy roles, which are a lot safer now.
             proxy_roles=getattr(eo, '_proxy_roles', None)
             if proxy_roles:
                 for r in proxy_roles:
@@ -221,6 +222,11 @@ def cleanupName(name, value):
     # If name is not available, tries to get it from the value.
     _name = name
     if _name is None and value is not None:
-        try: _name = value.__name__
-        except: pass
+        try: _name = value.id
+        except:
+            try: _name = value.__name__
+            except: pass
+        if callable(_name):
+            try: _name = _name()
+            except: pass
     return _name
