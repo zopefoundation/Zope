@@ -139,7 +139,35 @@ class HTMLTests(unittest.TestCase):
       expect = open('output/TeeShop1.html').read()
       out = t(getProducts=self.getProducts)
       util.check_html(expect, out)
+
+   def checkSimpleLoop(self):
+      t = self.folder.t
+      t.write(open('input/Loop1.html').read())
+      expect = open('output/Loop1.html').read()
+      out = t()
+      util.check_html(expect, out)
+
+   def checkGlobalsShadowLocals(self):
+      t = self.folder.t
+      t.write(open('input/GlobalsShadowLocals.html').read())
+      expect = open('output/GlobalsShadowLocals.html').read()
+      out = t()
+      util.check_html(expect, out)
+
+   def checkStringExpressions(self):
+      t = self.folder.t
+      t.write(open('input/StringExpression.html').read())
+      expect = open('output/StringExpression.html').read()
+      out = t()
+      util.check_html(expect, out)
       
+   def checkReplaceWithNothing(self):
+      t = self.folder.t
+      t.write(open('input/CheckNothing.html').read())
+      expect = open('output/CheckNothing.html').read()
+      out = t()
+      util.check_html(expect, out)
+              
 def test_suite():
    return unittest.makeSuite(HTMLTests, 'check')
 
