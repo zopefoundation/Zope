@@ -176,7 +176,7 @@ class zope_handler:
     def handle_request(self,request):
         self.hits.increment()
         size=get_header(CONTENT_LENGTH, request.header)
-        if size:
+        if size and size != '0':
             size=string.atoi(size)
             if size > 1048576:
                 # write large upload data to a file
