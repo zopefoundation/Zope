@@ -17,11 +17,12 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
 import AccessControl, OFS, RestrictedPython
+from Acquisition import aq_parent
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
 from urllib import quote
@@ -193,7 +194,7 @@ class PythonScript(Script, Historical, Cacheable):
 
             name = name.strip()
             if name and name[0] != '*' and re.match('\w',name):
-                param_names.append(name.split('=', 1)[0])
+                param_names.append(name.split('=', 1)[0].strip())
         return param_names
 
     def manage_historyCompare(self, rev1, rev2, REQUEST,
@@ -270,6 +271,9 @@ class PythonScript(Script, Historical, Cacheable):
     def _makeFunction(self, dummy=0): # CMFCore.FSPythonScript uses dummy arg.
         self.ZCacheable_invalidate()
         self._compile()
+        if not (aq_parent(self) is None or hasattr(self, '_filepath')):
+            # It needs a _filepath, and has an acquisition wrapper.
+            self._filepath = self.get_filepath()
 
     def _editedBindings(self):
         if getattr(self, '_v_ft', None) is not None:
@@ -288,7 +292,7 @@ class PythonScript(Script, Historical, Cacheable):
             asgns = self.getBindingAssignments()
             name_context = asgns.getAssignedName('name_context', None)
             if name_context:
-                keyset[name_context] = self.aq_parent.getPhysicalPath()
+                keyset[name_context] = aq_parent(self).getPhysicalPath()
             name_subpath = asgns.getAssignedName('name_subpath', None)
             if name_subpath:
                 keyset[name_subpath] = self._getTraverseSubpath()
@@ -313,6 +317,7 @@ class PythonScript(Script, Historical, Cacheable):
             g.update(bound_names)
         g['__traceback_supplement__'] = (
             PythonScriptTracebackSupplement, self, -1)
+        g['__file__'] = getattr(self, '_filepath', None) or self.get_filepath()
         f = new.function(fcode, g, None, fadefs)
 
         result = f(*args, **kw)
@@ -320,6 +325,14 @@ class PythonScript(Script, Historical, Cacheable):
             # Store the result in the cache.
             self.ZCacheable_set(result, keywords=keyset)
         return result
+
+    def manage_afterAdd(self, item, container):
+        if item is self:
+            self._filepath = self.get_filepath()
+
+    get_filepath=None # Public
+    def get_filepath(self):
+        return self.meta_type + ':' + '/'.join(self.getPhysicalPath())
 
     def manage_haveProxy(self,r): return r in self._proxy_roles
 

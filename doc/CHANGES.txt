@@ -103,6 +103,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Script (Python) objects now have a _filepath attribute, also
+       used as the '__file__' global at runtime.  This prevents an
+       import problem caused by the fix to #1074.
+
      - Minor usability tweaks:
 
        * Increased FindSupport meta type selection widgets

@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, unittest
+import os, unittest, warnings
 
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
@@ -55,18 +55,15 @@ class PythonScriptTestBase(unittest.TestCase):
         return ps
 
     def _filePS(self, fname, bind=None):
-        ps = PythonScript(fname)
+        ps = VerifiedPythonScript(fname)
         ps.ZBindings_edit(bind or {})
         ps.write(readf(fname))
         ps._makeFunction()
+        if ps.errors:
+            raise SyntaxError, ps.errors[0]
         return ps
 
-
 class TestPythonScriptNoAq(PythonScriptTestBase):
-
-    def fail(self):
-        'Fail if called'
-        assert 0, 'Fail called'
 
     def testEmpty(self):
         empty = self._newPS('')()
@@ -238,9 +235,12 @@ class TestPythonScriptGlobals(PythonScriptTestBase):
         self.assertEqual(results, 8)
 
     def test__name__(self):
-        fname = 'class.__name__'
-        f = self._filePS(fname)
+        f = self._filePS('class.__name__')
         self.assertEqual(f(), ('?.foo', "'string'"))
+
+    def test_filepath(self):
+        f = self._filePS('filepath')
+        self.assertEqual(f(), [0])
 
 def test_suite():
     suite = unittest.TestSuite()
