@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.21 1998/01/12 16:48:40 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.22 1998/01/13 19:35:55 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -129,6 +129,8 @@ for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
     d[name]=__builtins__[name]
 d['string']=string
 d['math']=math
+d['rand']=math
+d['whrand']=math
 
 def test(*args):
     l=len(args)
@@ -302,6 +304,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.22  1998/01/13 19:35:55  jim
+# Added rand and whrand.
+#
 # Revision 1.21  1998/01/12 16:48:40  jim
 # Fixed error reporting bug.
 #
