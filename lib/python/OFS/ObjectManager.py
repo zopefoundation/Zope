@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.174 2004/03/31 22:41:13 shane Exp $"""
+$Id: ObjectManager.py,v 1.175 2004/04/29 20:59:43 chrism Exp $"""
 
-__version__='$Revision: 1.174 $'[11:-2]
+__version__='$Revision: 1.175 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -41,6 +41,9 @@ from zExceptions import BadRequest
 import sys,fnmatch,copy
 from cgi import escape
 from types import StringType, UnicodeType
+
+# the name BadRequestException is relied upon by 3rd-party code
+BadRequestException = BadRequest
 
 import XMLExportImport
 customImporters={
