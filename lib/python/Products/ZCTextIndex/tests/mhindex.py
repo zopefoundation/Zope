@@ -327,7 +327,11 @@ class Indexer:
             score = 100.0*score/qw
             print "Rank:    %d   Score: %d%%   File: %s" % (rank, score, path)
             path = os.path.join(self.mh.getpath(), path)
-            fp = open(path)
+            try:
+                fp = open(path)
+            except (IOError, OSError), msg:
+                print "Can't open:", msg
+                continue
             msg = mhlib.Message("<folder>", 0, fp)
             for header in "From", "To", "Cc", "Bcc", "Subject", "Date":
                 h = msg.getheader(header)
