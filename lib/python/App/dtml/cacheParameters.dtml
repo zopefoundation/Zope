@@ -35,12 +35,9 @@
   </div>
   </td>
   <td>
-  <form action="&dtml-URL1;/manage_cache_size" method="get">
-  <input type="text" name="value:int" value="&dtml-cache_size;" size="6" />
-  <span class="form-element">
-  <input type="submit" name="submit" value="Change">
-  </span>
-  </form>
+  <div class="form-text">
+  &dtml-cache_size;
+  </div>
   </td>
 </tr>
 
