@@ -83,6 +83,8 @@
 # 
 ##############################################################################
 
+import os
+
 def version_txt():
     try: return open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
     except: return '(unreleased version)'
