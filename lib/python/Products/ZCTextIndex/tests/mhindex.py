@@ -290,7 +290,7 @@ class Indexer:
         n = path[i+1:]
         cmd = "show +%s %s" % (folder, n)
         if os.getenv("DISPLAY"):
-            os.system("xterm -e %s &" % cmd)
+            os.system("xterm -e  sh -c '%s | less' &" % cmd)
         else:
             os.system(cmd)
 
@@ -320,12 +320,11 @@ class Indexer:
         prog = re.compile(pattern, re.IGNORECASE)
         print '='*70
         rank = lo
-        qw = max(1, self.index.query_weight(text))
-        factor = 100.0 / qw / 1024
+        qw = self.index.query_weight(text)
         for docid, score in results[lo:hi]:
             rank += 1
             path = self.docpaths[docid]
-            score = min(100, int(score * factor))
+            score = 100.0*score/qw
             print "Rank:    %d   Score: %d%%   File: %s" % (rank, score, path)
             path = os.path.join(self.mh.getpath(), path)
             fp = open(path)
