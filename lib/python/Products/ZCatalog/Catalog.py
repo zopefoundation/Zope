@@ -29,7 +29,7 @@ from BTrees.IOBTree import IOBTree
 import BTrees.Length
 from Products.PluginIndexes.common.randid import randid
 
-import time
+import time, sys
 
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog
@@ -509,6 +509,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         return used
 
     def _build_sorted_results(self,rs,sort_index,append):
+        # This function will .append pairs where the first item
+        # in the pair is a sort key, and the second item in the
+        # pair is a squence of results which share the same
+        # sort key. Later on the list to which these things
+        # are .append()ed will be .sort()ed, and the first element
+        # of each pair stripped.
+        #
         # The two 'for' loops in here contribute a significant
         # proportion of the time to perform an indexed search.
         # Try to avoid all non-local attribute lookup inside
@@ -534,16 +541,28 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                         # Is this ever true?
                         intset = keys()
                     append((k,_lazymap(_self__getitem__, intset)))
+                    # Note that sort keys are unique.
         else:
             if hasattr(rs, 'keys'): rs=rs.keys()
             _sort_index_keyForDocument = sort_index.keyForDocument
             _keyerror = KeyError
             for did in rs:
                 try:
-                    append((_sort_index_keyForDocument(did),
-                           _lazymap(_self__getitem__,[did])))
+                    key = _sort_index_keyForDocument(did)
                 except _keyerror:
+                    # This document is not in the sort key index.
+                    # skip it.
                     pass
+                else:
+                    # We want the sort keys to be unique so that
+                    # .sort()ing the list does not involve comparing
+                    # _lazymap objects, which is slow. To ensure
+                    # uniqueness the first element of each pair is
+                    # actually a tuple of:
+                    # (real sort key, some unique number)
+                    lm = _lazymap(_self__getitem__,[did])
+                    key = (key,id(lm))
+                    append((key,lm))
 
     def searchResults(self, REQUEST=None, used=None, **kw):
         
