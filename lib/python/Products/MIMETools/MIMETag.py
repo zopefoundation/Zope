@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.4 2000/03/16 17:18:26 evan Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.5 2000/05/10 18:43:34 tseaver Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -106,12 +106,25 @@ class MIMETag:
 
         for tname, args, section in blocks:
             if tname == 'mime':
-                args = parse_params(args, type=None, disposition=None,
-                         encode=None, name=None, multipart=None)
+                args = parse_params( args
+                                   , type=None, type_expr=None
+                                   , disposition=None, disposition_expr=None
+                                   , encode=None, encode_expr=None
+                                   , name=None, name_expr=None
+                                   , filename=None, filename_expr=None
+                                   , skip_expr=None
+                                   , multipart=None
+                                   )
                 self.multipart = args.get('multipart', 'mixed')
             else:
-                args = parse_params(args, type=None, disposition=None,
-                                encode=None, name=None)
+                args = parse_params( args
+                                   , type=None, type_expr=None
+                                   , disposition=None, disposition_expr=None
+                                   , encode=None, encode_expr=None
+                                   , name=None, name_expr=None
+                                   , filename=None, filename_expr=None
+                                   , skip_expr=None
+                                   )
 
             has_key=args.has_key
 
@@ -120,29 +133,51 @@ class MIMETag:
             else:
                 type = 'application/octet-stream'
 
-            if has_key('disposition'):
-                disposition = args['disposition']
-            else:
-                disposition = ''
+            if has_key('type_expr'):
+                if has_key('type'):
+                    raise ParseError, _tm('type and type_expr given', 'mime')
+                args['type_expr']=VSEval.Eval(args['type_expr'], expr_globals)
+            elif not has_key('type'):
+                args['type']='application/octet-stream'
 
-            if has_key('encode'):
-                encode = args['encode']
-            else:
-                encode = 'base64'
+            if has_key('disposition_expr'):
+                if has_key('disposition'):
+                    raise ParseError, _tm('disposition and disposition_expr given', 'mime')
+                args['disposition_expr']=VSEval.Eval(args['disposition_expr'], expr_globals)
+            elif not has_key('disposition'):
+                args['disposition']=''
 
-            if has_key('name'):
-                name = args['name']
-            else:
-                name = ''
+            if has_key('encode_expr'):
+                if has_key('encode'):
+                    raise ParseError, _tm('encode and encode_expr given', 'mime')
+                args['encode_expr']=VSEval.Eval(args['encode_expr'], expr_globals)
+            elif not has_key('encode'):
+                args['encode']='base64'
 
-            if encode not in \
+            if has_key('name_expr'):
+                if has_key('name'):
+                    raise ParseError, _tm('name and name_expr given', 'mime')
+                args['name_expr']=VSEval.Eval(args['name_expr'], expr_globals)
+            elif not has_key('name'):
+                args['name']=''
+
+            if has_key('filename_expr'):
+                if has_key('filename'):
+                    raise ParseError, _tm('filename and filename_expr given', 'mime')
+                args['filename_expr']=VSEval.Eval(args['filename_expr'], expr_globals)
+            elif not has_key('filename'):
+                args['filename']=''
+
+            if has_key('skip_expr'):
+                args['skip_expr']=VSEval.Eval(args['skip_expr'], expr_globals)
+
+            if args['encode'] not in \
             ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
              'uue', 'x-uue', '7bit'):
                 raise MIMEError, (
                     'An unsupported encoding was specified in tag')
 
-            self.sections.append((type, disposition, encode, 
-                                  name,  section.blocks))
+            self.sections.append((args, section.blocks))
 
 
     def render(self, md):
@@ -150,11 +185,34 @@ class MIMETag:
         mw = MimeWriter(StringIO())
         outer = mw.startmultipartbody(self.multipart)
         for x in self.sections:
+            a, b = x
+            has_key=a.has_key
+
+            if has_key('skip_expr') and a['skip_expr'].eval(md):
+                continue
+                
             inner = mw.nextpart()
-            t, d, e, n, b = x
+
+            if has_key('type_expr'): t=a['type_expr'].eval(md)
+            else: t=a['type']
+
+            if has_key('disposition_expr'): d=a['disposition_expr'].eval(md)
+            else: d=a['disposition']
+
+            if has_key('encode_expr'): e=a['encode_expr'].eval(md)
+            else: e=a['encode']
+
+            if has_key('name_expr'): n=a['name_expr'].eval(md)
+            else: n=a['name']
+            
+            if has_key('filename_expr'): f=a['filename_expr'].eval(md)
+            else: f=a['filename']
 
             if d:
-                inner.addheader('Content-Disposition', d)
+                if f:
+                    inner.addheader('Content-Disposition', '%s;\n filename="%s"' % (d, f))
+                else:
+                    inner.addheader('Content-Disposition', d)
 
             inner.addheader('Content-Transfer-Encoding', e)
             if n:
@@ -168,14 +226,16 @@ class MIMETag:
             if e == '7bit':
                 innerfile.write(render_blocks(b, md))
             else:
-                mimetools.encode(StringIO(render_blocks(b, md)), 
+                mimetools.encode(StringIO(render_blocks(b, md)),
                                  output, e)
                 output.seek(0)
                 innerfile.write(output.read())
 
-            if x is self.sections[-1]:
-                mw.lastpart()
-                  
+        # XXX what if self.sections is empty ??? does it matter that mw.lastpart() is called
+        # right after mw.startmultipartbody() ?
+        if x is self.sections[-1]:
+            mw.lastpart()
+
         outer.seek(0)
         return outer.read()
 
