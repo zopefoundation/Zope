@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.48 2001/11/08 16:57:54 bwarsaw Exp $
+  $Id: ExtensionClass.c,v 1.49 2001/12/27 22:30:51 fdrake Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.48 2001/11/08 16:57:54 bwarsaw Exp $\n"
+"$Id: ExtensionClass.c,v 1.49 2001/12/27 22:30:51 fdrake Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1782,21 +1782,6 @@ CCL_getattr(PyExtensionClass *self, PyObject *oname, int look_super)
   else if (PyMethod_Check(r) && ! PyMethod_Self(r))
     ASSIGN(r,newPMethod(self, PyMethod_Function(r)));
 
-  return r;
-}
-
-static PyObject *
-CCL_getattrne(PyExtensionClass *self, PyObject *oname)
-{
-  PyObject *r=0;
-
-  if ((r=CCL_getattr2(OBJECT(self), oname, 0)))
-    {
-      if (PyFunction_Check(r) || NeedsToBeBound(r))
-        ASSIGN(r,newPMethod(self,r));
-      else if (PyMethod_Check(r) && ! PyMethod_Self(r))
-        ASSIGN(r,newPMethod(self, PyMethod_Function(r)));
-    }
   return r;
 }
 
@@ -3534,7 +3519,7 @@ void
 initExtensionClass(void)
 {
   PyObject *m, *d, *s;
-  char *rev="$Revision: 1.48 $";
+  char *rev="$Revision: 1.49 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
