@@ -84,13 +84,13 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 from Globals import package_home
 from Common import rfc1123_date
+from string import rfind, split
 from DateTime import DateTime
-from string import rfind
 from time import time
 from os import stat
 import Acquisition
@@ -116,6 +116,9 @@ class ImageFile(Acquisition.Explicit):
         # attempt aggressive caching!
         ms=request.get_header('If-Modified-Since', None)
         if ms is not None:
+            # Netscape inexplicably adds a length component
+            # to the IMS header. Waaaa....
+            ms=split(ms, ';')[0]
             mst=DateTime(ms).timeTime()
             if mst >= self.lmt:
                 response.setStatus(304)
