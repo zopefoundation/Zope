@@ -112,10 +112,7 @@ from Producers import ShutdownProducer, LoggingProducer
 
 from cStringIO import StringIO
 from tempfile import TemporaryFile
-import socket
-import string
-import os
-import time
+import socket, string, os, sys, time
 
 tz_for_log=compute_timezone_for_log()
 
@@ -376,16 +373,20 @@ class PCGIPipe:
         self._channel.push('%010d%s%010d' % (l, data, 0), 0)
         self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)
         if self._shutdown:
+            try: r=self._shutdown[0]
+            except: r=0
+            sys.ZServerExitCode=r
             self._channel.push(ShutdownProducer(), 0)
+            Wakeup(lambda: asyncore.close_all())
         else:
              self._channel.push(None, 0)
-        Wakeup()
+             Wakeup()
         self._channel=None
         
     def finish(self,request):
         if request.headers.get('bobo-exception-type','') == \
                 'exceptions.SystemExit':
-            r=response.headers.get('bobo-exception-value','0')
+            r=request.headers.get('bobo-exception-value','0')
             try: r=string.atoi(r)
             except: r = r and 1 or 0
             self._shutdown=r,
