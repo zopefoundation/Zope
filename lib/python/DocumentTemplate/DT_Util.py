@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.56 1999/04/29 19:00:01 jim Exp $''' 
-__version__='$Revision: 1.56 $'[11:-2]
+'''$Id: DT_Util.py,v 1.57 1999/05/28 17:18:50 jim Exp $''' 
+__version__='$Revision: 1.57 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -114,7 +114,7 @@ def int_param(params,md,name,default=0, st=type('')):
         except:
             v=md[v]
             if type(v) is st: v=atoi(v)
-    return v
+    return v or 0
 
 def careful_getattr(md, inst, name):
     if name[:1]!='_':
