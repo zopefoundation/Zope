@@ -416,10 +416,7 @@ setup(
     name='RestrictedPython',
     author=AUTHOR,
 
-    packages=['RestrictedPython', 'RestrictedPython.compiler_2_1',
-              'RestrictedPython.tests'],
-    data_files=[['RestrictedPython/compiler_2_1',
-                    ['RestrictedPython/compiler_2_1/ast.txt']]],
+    packages=['RestrictedPython', 'RestrictedPython.tests'],
     )
 
 # SearchIndex
