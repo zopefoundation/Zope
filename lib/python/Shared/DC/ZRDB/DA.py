@@ -11,15 +11,15 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.6 1997/08/15 22:29:12 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: DA.py,v 1.7 1997/09/22 18:44:38 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
 from Aqueduct.Aqueduct import quotedHTML, decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Aqueduct.Aqueduct import default_report_src
-from Globals import Persistent, ManageHTMLFile, MessageDialog
+from Globals import Persistent, HTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
 import sys, traceback
@@ -33,10 +33,10 @@ class Folder(OFS.Folder.Folder):
 	'action':'manage_connectionForm',   'target':'manage_main'},
 	)
 
-    manage_main          =ManageHTMLFile('AqueductDA/main')
+    manage_main          =HTMLFile('AqueductDA/main')
 
-    manage_connectionForm=ManageHTMLFile('AqueductDA/connection')
-    manage_addDAForm=ManageHTMLFile('AqueductDA/daAdd')
+    manage_connectionForm=HTMLFile('AqueductDA/connection')
+    manage_addDAForm=HTMLFile('AqueductDA/daAdd')
     start_time=DateTime.now()
     bad_connection_string=(
 	"""<p><strong>Warning</strong>: The database is not connected.<p>
@@ -107,7 +107,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
     meta_type='Aqueduct Database Adapter'
     hasAqueductClientInterface=1
 
-    manage=ManageHTMLFile('AqueductDA/edit')
+    manage=HTMLFile('AqueductDA/edit')
 
     def __init__(self,id='',key='',arguments='',template='',title=''):
 	if not id: return
@@ -160,9 +160,14 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	query=self.template(self,argdata)
 	result=DB__.query(query)
 	result=Aqueduct.RDB.RDB(StringIO(result))
-	self.result_names=result.names()
-	self.report_src=custom_default_report(result,action='/manage_testForm')
-	report=DocumentTemplate.HTML(self.report_src)
+	result_names=result.names()
+	report_src=custom_default_report(result,action='/manage_testForm')
+
+	if result_names != self.result_names or report_src != self.report_src:
+	    self.result_names=names
+	    self.report_src=report_src
+
+	report=DocumentTemplate.HTML(report_src)
 	return report(self,REQUEST,
 		      query_results=result,
 		      query_string=query_string,
@@ -213,6 +218,10 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.7  1997/09/22 18:44:38  jim
+# Got rid of ManageHTML
+# Fixed bug in manage_test that caused extra database updates.
+#
 # Revision 1.6  1997/08/15 22:29:12  jim
 # Fixed bug in passing query arguments.
 #
