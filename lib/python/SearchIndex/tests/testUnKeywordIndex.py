@@ -10,8 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
 
 import ZODB
 from SearchIndex.UnKeywordIndex import UnKeywordIndex
@@ -29,7 +28,7 @@ class Dummy:
     
     __repr__ = __str__
 
-class TestCase( unittest.TestCase ):
+class Tests( unittest.TestCase ):
     """
         Test KeywordIndex objects.
     """
@@ -172,4 +171,10 @@ class TestCase( unittest.TestCase ):
         assert len(result) == 1
         assert result[0] == 8
 
-framework()
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(Tests),
+        ))
+
+if __name__=='__main__':
+    unittest.main(defaultTest='test_suite')

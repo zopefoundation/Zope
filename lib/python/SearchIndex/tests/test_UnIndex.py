@@ -11,8 +11,7 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
 
 import ZODB
 from SearchIndex.UnIndex import UnIndex
@@ -30,7 +29,7 @@ class Dummy:
     
     __repr__ = __str__
 
-class TestCase( unittest.TestCase ):
+class Tests( unittest.TestCase ):
     """
         Test FieldIndex objects.
     """
@@ -171,4 +170,10 @@ class TestCase( unittest.TestCase ):
         assert r==expect, r 
             
         
-framework()
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(Tests),
+        ))
+
+if __name__=='__main__':
+    unittest.main(defaultTest='test_suite')

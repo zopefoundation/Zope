@@ -12,12 +12,7 @@
 ##############################################################################
 
 import sys
-sys.path.insert(0, '.')
-try:
-    from ZPublisher.HTTPRangeSupport import parseRange, optimizeRanges
-except ImportError:
-    sys.path[0]='../..'
-    from ZPublisher.HTTPRangeSupport import parseRange, optimizeRanges
+from ZPublisher.HTTPRangeSupport import parseRange, optimizeRanges
 
 import unittest
 

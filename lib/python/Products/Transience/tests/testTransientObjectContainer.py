@@ -12,9 +12,6 @@
 ##############################################################################
 import sys, os, time, random, unittest
 
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
-
 import ZODB
 from Products.Transience.Transience import TransientObjectContainer,\
      MaxTransientObjectsExceeded

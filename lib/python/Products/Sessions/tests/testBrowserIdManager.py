@@ -13,14 +13,11 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.7 2001/11/28 15:51:08 matt Exp $
+$Id: testBrowserIdManager.py,v 1.8 2002/06/12 20:39:18 shane Exp $
 """
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 import sys
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
-    sys.path.insert(0, '..')
 import ZODB
 from Products.Sessions.BrowserIdManager import BrowserIdManager, BrowserIdManagerErr
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite

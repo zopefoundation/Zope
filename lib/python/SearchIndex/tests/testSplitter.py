@@ -10,12 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
 
 from SearchIndex.Splitter import Splitter
 
-class TestSplitter(unittest.TestCase):
+class Tests(unittest.TestCase):
    def testSplitNormalText(self):
        text = 'this is a long string of words'
        a = Splitter(text)
@@ -40,4 +39,10 @@ class TestSplitter(unittest.TestCase):
        r = map(None, a)
        assert r == ['without', 'you', 'nothing'], r
        
-framework()
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(Tests),
+        ))
+
+if __name__=='__main__':
+    unittest.main(defaultTest='test_suite')

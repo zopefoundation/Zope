@@ -11,8 +11,7 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+import unittest
 
 from Testing.ZODButil import makeDB, cleanDB
 
@@ -205,4 +204,10 @@ class Tests(unittest.TestCase):
        self.globTest({'text':'((?ount* or get) and not wait) '
                       '"been *ert*"'}, [0, 1, 5, 6])
        
-framework()
+def test_suite():
+    return unittest.TestSuite((
+        unittest.makeSuite(Tests),
+        ))
+
+if __name__=='__main__':
+    unittest.main(defaultTest='test_suite')

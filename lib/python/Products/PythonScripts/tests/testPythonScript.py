@@ -19,12 +19,11 @@ from AccessControl.SecurityManagement import noSecurityManager
 
 
 if __name__=='__main__':
-    sys.path.append(os.path.join(os.pardir, os.pardir, os.pardir))
-    here = os.curdir
+    here = os.getcwd()
 else:
-    from Products.PythonScripts import tests
-    from App.Common import package_home
-    here = package_home(tests.__dict__)
+    here = os.path.dirname(__file__)
+    if not here:
+        here = os.getcwd()
 
 # Test Classes
 

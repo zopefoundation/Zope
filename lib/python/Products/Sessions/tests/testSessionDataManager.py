@@ -11,8 +11,6 @@
 # 
 ##############################################################################
 import sys, os, time
-if __name__ == "__main__":
-    sys.path.insert(0, '../../..')
 
 from Testing import makerequest
 import ZODB # in order to get Persistence.Persistent working

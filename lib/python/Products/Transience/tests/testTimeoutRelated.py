@@ -1,9 +1,5 @@
 import sys, os, time, unittest
 
-if __name__=='__main__':
-    sys.path.insert(0, '..')
-    sys.path.insert(0, '../../..')
-
 import ZODB # in order to get Persistence.Persistent working
 from Testing import makerequest
 import Acquisition
