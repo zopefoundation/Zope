@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__ = '$Revision: 1.29 $'[11:-2]
+__version__ = '$Revision: 1.30 $'[11:-2]
 
 import os, AccessControl
 from Globals import package_home, DevelopmentMode
@@ -29,8 +29,9 @@ from Expressions import SecureModuleImporter
 from ComputedAttribute import ComputedAttribute
 from Acquisition import aq_parent, aq_inner
 from App.config import getConfiguration
+from OFS.SimpleItem import Item_w__name__
 
-class PageTemplateFile(Script, PageTemplate, Traversable):
+class PageTemplateFile(Item_w__name__, Script, PageTemplate, Traversable):
     "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
 
     meta_type = 'Page Template (File)'

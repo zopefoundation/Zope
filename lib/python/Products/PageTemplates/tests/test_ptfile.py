@@ -1,6 +1,6 @@
 """Tests of PageTemplateFile."""
 
-import os
+import os, os.path
 import tempfile
 import unittest
 
@@ -118,6 +118,33 @@ class TypeSniffingTestCase(unittest.TestCase):
         self.check_content_type("<doc><element/></doc>",
                                 "text/xml")
 
+    def test_getId(self):
+        desired_id = os.path.splitext(os.path.split(self.TEMPFILENAME)[-1])[0]
+        f = open(self.TEMPFILENAME, 'w')
+        print >> f, 'Boring'
+        f.close()
+        pt = PageTemplateFile(self.TEMPFILENAME)
+        pt_id = pt.getId()
+        self.failUnlessEqual(
+                pt_id, desired_id,
+                'getId() returned %r. Expecting %r' % (pt_id, desired_id)
+                )
+
+    def test_getPhysicalPath(self):
+        desired_id = os.path.splitext(os.path.split(self.TEMPFILENAME)[-1])[0]
+        desired_path = (desired_id,)
+        f = open(self.TEMPFILENAME, 'w')
+        print >> f, 'Boring'
+        f.close()
+        pt = PageTemplateFile(self.TEMPFILENAME)
+        pt_path = pt.getPhysicalPath()
+        self.failUnlessEqual(
+                pt_path, desired_path,
+                'getPhysicalPath() returned %r. Expecting %r' % (
+                    desired_path, pt_path,
+                    )
+                )
+ 
 
 def test_suite():
     return unittest.makeSuite(TypeSniffingTestCase)

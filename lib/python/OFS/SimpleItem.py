@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id: SimpleItem.py,v 1.108 2003/11/28 16:45:42 jim Exp $'''
-__version__='$Revision: 1.108 $'[11:-2]
+$Id: SimpleItem.py,v 1.109 2003/12/13 07:57:49 Zen Exp $'''
+__version__='$Revision: 1.109 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -312,6 +312,10 @@ Globals.default__class_init__(Item)
 
 class Item_w__name__(Item):
     """Mixin class to support common name/id functions"""
+
+    def getId(self):
+        """Returns the id"""
+        return self.__name__
 
     def title_or_id(self):
         """Utility that returns the title if it is not blank and the id

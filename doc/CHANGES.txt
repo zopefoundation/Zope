@@ -91,6 +91,11 @@ Zope Changes
 
     Bugs fixed
 
+     - Item_w__name__ now has a working getId() method
+
+     - PageTemplateFile now using Item_w__name__ mixin, fixing
+       its getId() and absolute_url() methods.
+
      - Only one VirtualHostMonster is allowed per container.
 
      - Collector #1133: TreeTag choked on Ids of type long.
