@@ -140,7 +140,6 @@ class PCGIChannel(asynchat.async_chat):
             # and prepare to read env or stdin
             self.data.seek(0)
             self.size=string.atoi(self.data.read())
-            print "got size", self.size
             self.set_terminator(self.size)
             if self.size==0:
                 self.set_terminator('\r\n') 
@@ -171,13 +170,11 @@ class PCGIChannel(asynchat.async_chat):
                 path = filter(None,string.split(
                         string.strip(self.env['PATH_INFO']),'/'))
                 self.env['PATH_INFO'] = '/' + string.join(path[len(script):],'/')
-            print "REQUEST", self.env['REQUEST_METHOD']
             self.data=StringIO()
             # now read the next size header
             self.set_terminator(10)
         else:
             # we're done, we've got both env and stdin
-            print "got stdin", len(self.data.getvalue())
             self.set_terminator('\r\n')
             self.data.seek(0)
             self.send_response()
@@ -208,17 +205,30 @@ class PCGIChannel(asynchat.async_chat):
             method=self.env['REQUEST_METHOD']
         else:
             method="GET"
-        self.server.logger.log (
-            self.addr[0],
-            '%d - - [%s] "%s %s" %d' % (
-                self.addr[1],
-                time.strftime (
-                '%d/%b/%Y:%H:%M:%S ',
-                time.gmtime(time.time())
-                ) + tz_for_log,
-                method, path, bytes
-                )
-            )
+		if self.addr:
+			self.server.logger.log (
+				self.addr[0],
+				'%d - - [%s] "%s %s" %d' % (
+					self.addr[1],
+					time.strftime (
+					'%d/%b/%Y:%H:%M:%S ',
+					time.gmtime(time.time())
+					) + tz_for_log,
+					method, path, bytes
+					)
+				)
+		else:
+			self.server.logger.log (
+				'127.0.0.1',
+				'- - [%s] "%s %s" %d' % (
+					time.strftime (
+					'%d/%b/%Y:%H:%M:%S ',
+					time.gmtime(time.time())
+					) + tz_for_log,
+					method, path, bytes
+					)
+				)		
+
 
     def push(self, producer, send=1):
         # this is thread-safe when send is false
@@ -227,6 +237,9 @@ class PCGIChannel(asynchat.async_chat):
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
         
+
+	def __repr__(self):
+		return "<PCGIChannel at %x>" % id(self)
 
 class PCGIServer(asyncore.dispatcher):
     """Accepts PCGI requests and hands them off to the PCGIChannel for
