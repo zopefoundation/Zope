@@ -80,6 +80,8 @@ def poll (timeout=0.0, map=None):
         except select.error, err:
             if err[0] != EINTR:
                 raise
+            else:
+                return
 
         if DEBUG:
             print r,w,e
