@@ -1,5 +1,6 @@
 <dtml-unless zmi_embedded_css>
 <dtml-call "RESPONSE.setHeader('Content-Type','text/css')">
+<dtml-call "RESPONSE.setHeader('Cache-Control','public,max-age=3600')">
 </dtml-unless>
 h1 {
   font-family: Verdana, Helvetica, sans-serif; 

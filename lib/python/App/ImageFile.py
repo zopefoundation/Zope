@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -21,8 +21,8 @@ from DateTime import DateTime
 from time import time
 from os import stat
 import Acquisition
+import Globals
 import  os
-
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""
@@ -33,6 +33,13 @@ class ImageFile(Acquisition.Explicit):
             _prefix=package_home(_prefix)
         path = os.path.join(_prefix, path)
         self.path=path
+        if Globals.DevelopmentMode:
+            # In development mode, shorter is handy
+            max_age = 60
+        else:
+            # In production mode, longer reduces latency
+            max_age = 600
+        self.cch = 'public,max-age=%d' % max_age
 
         file=open(path, 'rb')
         data=file.read()
@@ -52,6 +59,9 @@ class ImageFile(Acquisition.Explicit):
         # HTTP If-Modified-Since header handling. This is duplicated
         # from OFS.Image.Image - it really should be consolidated
         # somewhere...
+        RESPONSE.setHeader('Content-Type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', self.lmh)
+        RESPONSE.setHeader('Cache-Control', self.cch)
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header=header.split(';')[0]
@@ -72,8 +82,6 @@ class ImageFile(Acquisition.Explicit):
                     RESPONSE.setStatus(304)
                     return ''
 
-        RESPONSE.setHeader('Content-Type', self.content_type)
-        RESPONSE.setHeader('Last-Modified', self.lmh)
         f=open(self.path,'rb')
         data=f.read()
         f.close()
