@@ -63,12 +63,27 @@ ZCatalog
        Example to reindex a catalog using zopectl:
 
            > zopectl debug    
-           >
+           
            From the zopectl shell: 
+
            > from Products.ZCatalog.ProgressHandler import StdoutHandler
            > from Products.ZCatalog.ProgressHandler import ZLogHandler
+           >
+           > # Reference to the portal catalog of some CMF site unter
+           > # /cmfsite/portal_catalog
            > cat = app.cmfsite.portal_catalog
+           >
+           > # Refreshing a single index
            > cat.reindexIndex('SearchableText', None, pghandler=StdoutHandler())
+           >
+           > # Let's refresh the whole catalog
            > cat.refreshCatalog(pghandler=ZLogHandler())
+           > 
+           > # Don't forget to commit
+           > get_transaction().commit()
+           
 
- 
+        The constructor of the handler can be given an optional parameter 
+        'steps' (default is 100) that specifies after how much iterations 
+        the progress should be reported.
+         
