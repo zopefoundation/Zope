@@ -3,7 +3,7 @@
 <!--#var title--><!--#else title-->
 <!--#var id--><!--#/if title--></TITLE>
 </HEAD>
-<FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="140,*">
+<FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="150,*">
   <FRAME SRC="<!--#var PARENT_URL-->/manage_menu" NAME="manage_menu"
          MARGINWIDTH="6" MARGINHEIGHT="6" SCROLLING="auto">
   <FRAME SRC="<!--#var PARENT_URL-->/manage_main" NAME="manage_main"

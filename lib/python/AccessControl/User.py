@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -16,7 +16,7 @@ from string import join,strip,split,lower
 class SafeDtml(HTML):
     """Lobotomized document template"""
     def __init__(self,name='',*args,**kw):
-        f=open('%s/lib/python/AccessControl/%s.dtml' % (SOFTWARE_HOME, name))
+        f=open('%s/lib/python/%s.dtml' % (SOFTWARE_HOME, name))
         s=f.read()
         f.close()
         args=(self,s,)+args
@@ -83,18 +83,18 @@ class UserFolder(Implicit, Persistent):
 
     isAUserFolder=1
 
-    manage     =SafeDtml('Generic_manage')
-    manage_menu=SafeDtml('Generic_manage_menu')
-    manage_main=SafeDtml('UserFolder_manage_main')
-    manage_help=SafeDtml('UserFolder_manage_help')
-    _editForm  =SafeDtml('UserFolder_manage_editForm')
+    manage     =SafeDtml('App/manage')
+    manage_menu=SafeDtml('App/menu')
+    manage_main=SafeDtml('AccessControl/UserFolder_manage_main')
+    manage_help=SafeDtml('AccessControl/UserFolder_manage_help')
+    _editForm  =SafeDtml('AccessControl/UserFolder_manage_editForm')
     index_html =manage_main
 
     manage_options=(
     {'icon':'AccessControl/UserFolder_icon.gif', 'label':'Contents',
      'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-     'action':'manage_help',   'target':'_new'},
+#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
+#     'action':'manage_help',   'target':'_new'},
     )
 
     def _init(self):
@@ -227,6 +227,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.10  1997/09/08 23:01:33  brian
+# Style mods
+#
 # Revision 1.9  1997/09/04 20:35:36  brian
 # Fixed truth test bug in UserFolder
 #
