@@ -11,20 +11,25 @@
 __doc__='''Collected utilities to support database indexing.
 
 
-$Id: __init__.py,v 1.3 1997/12/05 21:34:30 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1998/11/25 17:02:27 jeffrey Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
-import sys, string
+import Query
 
-__.__path__.append("%s/bin-%s/%s" % (
-    __.__path__[0], string.split(sys.version)[0], sys.platform))
+## import sys, string
+
+## __.__path__.append("%s/bin-%s/%s" % (
+##     __.__path__[0], string.split(sys.version)[0], sys.platform))
     
-for m in 'BTree', 'IIBTree', 'IOBTree', 'OIBTree', 'intSet':
-    sys.modules['SearchIndex.%s' % m]=__import__(m)
+## for m in 'BTree', 'IIBTree', 'IOBTree', 'OIBTree', 'intSet':
+##     sys.modules['SearchIndex.%s' % m]=__import__(m)
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.4  1998/11/25 17:02:27  jeffrey
+# got rid of __ for 1.5.x happiness
+#
 # Revision 1.3  1997/12/05 21:34:30  jim
 # Delamification
 #
