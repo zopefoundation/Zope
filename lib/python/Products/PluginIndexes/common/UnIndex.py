@@ -10,10 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Base for bi-directional indexes
 
-"""Simple column indices"""
-
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: UnIndex.py,v 1.24 2004/04/23 15:04:24 caseman Exp $"""
 
 import sys
 from cgi import escape
@@ -36,8 +35,7 @@ _marker = []
 LOG = getLogger('Zope.UnIndex')
 
 class UnIndex(Persistent, Implicit, SimpleItem):
-    """UnIndex object interface"""
-
+    """Simple forward and reverse index"""
 
     def __init__(
         self, id, ignore_ex=None, call_methods=None, extra=None, caller=None):
@@ -76,9 +74,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
           'caller' -- reference to the calling object (usually 
           a (Z)Catalog instance
-
         """
-
         self.id = id
         self.ignore_ex=ignore_ex        # currently unimplimented
         self.call_methods=call_methods
@@ -103,9 +99,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         self.clear()
 
     def __len__(self):
-        """Return the number of objects indexed.
-        """
-
+        """Return the number of objects indexed."""
         # The instance __len__ attr isn't effective because
         # Python cached this method in a slot,
         __len__ = self.__dict__.get('__len__')
@@ -158,8 +152,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def histogram(self):
         """Return a mapping which provides a histogram of the number of
-        elements found at each point in the index."""
-
+        elements found at each point in the index.
+        """
         histogram = {}
         for item in self._index.items():
             if type(item) is IntType:
@@ -179,7 +173,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def getEntryForObject(self, documentId, default=_marker):
         """Takes a document ID and returns all the information we have
-        on that specific object."""
+        on that specific object.
+        """
         if default is _marker:
             return self._unindex.get(documentId)
         else:
@@ -188,7 +183,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
-        in its entry in the index."""
+        in its entry in the index.
+        """
         global _marker
         indexRow = self._index.get(entry, _marker)
         if indexRow is not _marker:
@@ -220,7 +216,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         """Take the entry provided and put it in the correct place
         in the forward index.
 
-        This will also deal with creating the entire row if necessary."""
+        This will also deal with creating the entire row if necessary.
+        """
         global _marker
         indexRow = self._index.get(entry, _marker)
 
@@ -300,8 +297,8 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def unindex_object(self, documentId):
         """ Unindex the object with integer id 'documentId' and don't
-        raise an exception if we fail """
-
+        raise an exception if we fail 
+        """
         global _marker
         unindexRecord = self._unindex.get(documentId, _marker)
         if unindexRecord is _marker:
@@ -353,10 +350,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         FAQ answer:  to search a Field Index for documents that
         have a blank string as their value, wrap the request value
         up in a tuple ala: request = {'id':('',)}
-
         """
-
-
         record = parseIndexRequest(request, self.id, self.query_options)
         if record.keys==None: return None
 
@@ -432,15 +426,13 @@ class UnIndex(Persistent, Implicit, SimpleItem):
 
     def getIndexSourceNames(self):
         """ return sequence of indexed attributes """
-        
         try:
             return self.indexed_attrs 
         except:
             return [ self.id ]
 
     def uniqueValues(self, name=None, withLengths=0):
-        """\
-        returns the unique values for name
+        """returns the unique values for name
 
         if withLengths is true, returns a sequence of
         tuples of (value, length)
