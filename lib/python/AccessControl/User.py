@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.133 $'[11:-2]
+__version__='$Revision: 1.134 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -413,7 +413,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     __ac_permissions__=(
         ('Manage users',
-         ('manage_users','getUserNames','getUser','getUsers',
+         ('manage_users','getUserNames', 'getUser', 'getUsers',
+          'getUserById', 'user_names', 'setDomainAuthenticationMode',
           )
          ),
         )
@@ -461,12 +462,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     # -----------------------------------
 
     _remote_user_mode=_remote_user_mode
+    _domain_auth_mode=0
     _emergency_user=emergency_user
     # Note: use of the '_super' name is deprecated.
     _super=emergency_user
     _nobody=nobody
-    _check_for_domain_defined_nobody=1
-    _do_dns_lookup_caching=1
+
 
     def identify(self, auth):
         if auth and lower(auth[:6])=='basic ':
@@ -500,25 +501,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 raise
         except 'Unauthorized': pass
         return 0
-        
-    def _setRemote(self, request):
-        # If no authorization, only a user with a domain spec and no
-        # passwd or nobody can match. We cache reverse DNS before
-        # checking the users, otherwise it can get real slow looking
-        # it up for every user.
-        host=request.get('REMOTE_HOST', '')
-        addr=request.get('REMOTE_ADDR', '')
-        if host or addr:
-            if not host:
-                try:
-                    host=socket.gethostbyaddr(addr)[0]
-                    request.set('REMOTE_HOST', host)
-                except: pass
-            if not addr:
-                try:
-                    addr=socket.gethostbyname(host)
-                    request.set('REMOTE_ADDR', addr)
-                except: pass
 
     def validate(self, request, auth='', roles=_noroles):
         """
@@ -533,8 +515,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         folders or to raise an unauthorized by returning None from this
         method.
         """
-        if self._do_dns_lookup_caching:
-            self._setRemote(request)
         v = request['PUBLISHED'] # the published object
         a, c, n, v = self._getobcontext(v, request)
 
@@ -543,7 +523,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # database has no password and he has domain restrictions,
         # return him as the authorized user.
         if not auth:
-            if self._check_for_domain_defined_nobody:
+            if self._domain_auth_mode:
+                self._lookupRemoteHostAddr(request)
                 for user in self.getUsers():
                     if user.getDomains():
                         if self.authenticate(user.getUserName(), '', request):
@@ -588,13 +569,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     if _remote_user_mode:
         
         def validate(self, request, auth='', roles=_noroles):
-            if self._do_dns_lookup_caching:
-                self._setRemote(request)
             v = request['PUBLISHED']
             a, c, n, v = self._getobcontext(v, request)
             name = request.environ.get('REMOTE_USER', None)
             if name is None:
-                if self._check_for_domain_defined_nobody:
+                if self._domain_auth_mode:
+                    self._lookupRemoteHostAddr(request)
                     for user in self.getUsers():
                         if user.getDomains():
                             if self.authenticate(
@@ -809,30 +789,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             names=reqattr(REQUEST, 'names')
             return self._delUsers(names,REQUEST)
 
-        if submit=='Toggle Domain Defined Anonymous Mode':
-            self.toggleDomainDefinedNobodyMode()
-
-        if submit=='Toggle DNS Lookup Caching':
-            self.toggleDNSLookupCaching()
-
         return self._mainUser(self, REQUEST)
 
     def user_names(self):
         return self.getUserNames()
-
-    def getDomainDefinedNobodyMode(self):
-        return self._check_for_domain_defined_nobody
-
-    def toggleDomainDefinedNobodyMode(self):
-        ck = self._check_for_domain_defined_nobody
-        self._check_for_domain_defined_nobody = not ck
-
-    def getDNSLookupCaching(self):
-        return self._do_dns_lookup_caching
-
-    def toggleDNSLookupCaching(self):
-        ck = self._do_dns_lookup_caching
-        self._do_dns_lookup_caching = not ck
 
     def manage_beforeDelete(self, item, container):
         if item is self:
@@ -853,6 +813,38 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                 message='Cannot change the id of a UserFolder',
                 action ='./manage_main',)
 
+
+    # Domain authentication support. This is a good candidate to
+    # become deprecated in future Zope versions.
+
+    def setDomainAuthenticationMode(self, domain_auth_mode):
+        """Set the domain-based authentication mode. By default, this
+           mode is off due to the high overhead of the operation that
+           is incurred for all anonymous accesses. If you have the
+           'Manage Users' permission, you can call this method via
+           the web, passing a boolean value for domain_auth_mode to
+           turn this behavior on or off."""
+        v = self._domain_auth_mode = domain_auth_mode and 1 or 0
+        return 'Domain authentication mode set to %d' % v
+        
+    def _lookupRemoteHostAddr(self, request):
+        # If no authorization, only a user with a domain spec and no
+        # passwd or nobody can match. We cache reverse DNS before
+        # checking the users, otherwise it can get real slow looking
+        # it up for every user.
+        host=request.get('REMOTE_HOST', '')
+        addr=request.get('REMOTE_ADDR', '')
+        if host or addr:
+            if not host:
+                try:
+                    host=socket.gethostbyaddr(addr)[0]
+                    request.set('REMOTE_HOST', host)
+                except: pass
+            if not addr:
+                try:
+                    addr=socket.gethostbyname(host)
+                    request.set('REMOTE_ADDR', addr)
+                except: pass
 
 
 
