@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.77 $
+$Revision: 1.78 $
 """
 
 import time
@@ -924,7 +924,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         self._lock_acquire()
         try:
             # Get the current revision information for the object.  As per the
-            # protocol, let Key errors percolate up.
+            # protocol, let KeyErrors percolate up.
             tid = self._getTid(oid)
             return self._load(oid, tid, version)
         finally:
@@ -950,7 +950,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     assert cur_tid < tid
                     data, tid, ver = self._load(oid, cur_tid, "")
                     return data, cur_tid, None
-
+                # p is the transaction after the one we're looking for.
+                # Grab its tid to use as the end tid return value.
                 next_tid = p[0][8:]
                 return self._search_before(c, oid, tid, next_tid)
             finally:
@@ -968,18 +969,14 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
         # there is no matching record.
         if key[:8] != oid:
             return None
-        # It's possible that the range search hits oid, tid + 1 exactly,
-        # but only the first time.
-        if key == oid + tid:
-            return self._noncurrent_search(c, oid, tid, tid)
         vid, nvrevid, lrevid = unpack(">8s8s8s", rec[:24])
         if vid == ZERO:
             revid = lrevid
         else:
             revid = nvrevid
         data = self._pickles[oid+revid]
-        tid = key[8:]
-        return data, tid, end_tid
+        start_tid = key[8:]
+        return data, start_tid, end_tid
 
     def _getTidMissingOk(self, oid):
         # For the object, return the curent serial number and transaction id
