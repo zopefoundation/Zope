@@ -37,6 +37,9 @@ from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 index_types = {'Okapi BM25 Rank':OkapiIndex,
                'Cosine Measure':CosineIndex}
+               
+IndexMgmtPerm = 'Manage ZCatalogIndex Entries'
+IndexSearchPerm = 'Search ZCatalogIndex'
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent TextIndex"""
@@ -52,6 +55,9 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     )
 
     query_options = ['query']
+    
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(IndexMgmtPerm)
 
     ## Constructor ##
 
@@ -82,6 +88,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     ## External methods not in the Pluggable Index API ##
 
+    security.declareProtected('query', IndexSearchPerm)
+    
     def query(self, query, nbest=10):
         """Return pair (mapping from docids to scores, num results).
 
@@ -195,6 +203,11 @@ def manage_addLexicon(self, id, title='', elements=[], REQUEST=None):
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
+# I am borrowing the existing vocabulary permissions for now to avoid
+# adding new permissions. This may change when old style Vocabs go away
+LexiconQueryPerm = 'Query Vocabulary'
+LexiconMgmtPerm = 'Manage Vocabulary'
+
 class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     """Lexicon for ZCTextIndex"""
 
@@ -203,6 +216,9 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     manage_options = ({'label':'Overview', 'action':'manage_main'},
                       {'label':'Query', 'action':'queryLexicon'},
                      ) + SimpleItem.manage_options
+                     
+    security = ClassSecurityInfo()
+    security.declareObjectProtected(LexiconQueryPerm)
 
     def __init__(self, id, title='', *pipeline):
         self.id = str(id)
@@ -217,6 +233,8 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
     
     _queryLexicon = DTMLFile('dtml/queryLexicon', globals())
     
+    security.declareProtected(LexiconQueryPerm, 'queryLexicon')
+    
     def queryLexicon(self, REQUEST, words=None, page=0, rows=20, cols=4):
         """Lexicon browser/query user interface
         """
@@ -229,7 +247,7 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
             words = self.words()
                     
         word_count = len(words)
-        rows = max(min(rows, 500),1)
+        rows = max(min(rows, 500), 1)
         cols = max(min(cols, 12), 1)
         page_count = word_count / (rows * cols) + \
                      (word_count % (rows * cols) > 0)
@@ -256,8 +274,10 @@ class PLexicon(Lexicon, Acquisition.Implicit, SimpleItem):
                                   end_word=end,
                                   word_count=word_count,
                                   page_count=page_count,
+                                  page_range=xrange(page_count),
                                   page_columns=columns)
-        
+                                  
+    security.declareProtected(LexiconMgmtPerm, 'manage_main')        
     manage_main = DTMLFile('dtml/manageLexicon', globals())
 
 InitializeClass(PLexicon)

@@ -34,7 +34,7 @@
           <td align="right"><span class="form-label">
             Page:
             <select name="page:int" onchange="this.form.submit()">
-              <dtml-in expr="_.range(page_count)" prefix="page">
+              <dtml-in name="page_range" prefix="page">
                 <option value="&dtml-page_item;"
                 <dtml-if expr="page == page_item">
                   selected
