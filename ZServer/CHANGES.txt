@@ -25,6 +25,8 @@ ZServer Changes
         Using PCGI under IIS, now PATH_INFO begins with a /
         
         Fixed FTP passive mode response message IP address.
+        
+        Fixed multiple file upload problem where response gets out of synch.
 
       Known Bugs
       
@@ -44,6 +46,8 @@ ZServer Changes
         test ftp with emacs. (done)
 
         remove cruft.
+        
+        test with latest Zope from CVS. (done)
         
         fix medusa select_trigger under win32.
 

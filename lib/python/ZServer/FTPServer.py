@@ -137,7 +137,7 @@ FTP Authorization
 """
 
 from PubCore import handle
-from medusa.ftp_server import ftp_channel, ftp_server
+from medusa.ftp_server import ftp_channel, ftp_server, recv_channel
 from medusa import asyncore, asynchat, filesys
 from FTPResponse import make_response
 from FTPRequest import FTPRequest
@@ -373,9 +373,9 @@ class zope_ftp_channel(ftp_channel):
             self.respond ('553 restart on STOR not yet supported')
             return
             
-        # XXX Check for possible problems first? Like authorization...
-        #     But how? Once we agree to receive the file, can we still
-        #     bail later?
+        # XXX Check for possible problems first?
+        #     Right now we are limited in the errors we can issue, since
+        #     we agree to accept the file before checking authorization
         
         fd=ContentReceiver(self.stor_callback, line[1])
         self.respond (
@@ -384,8 +384,8 @@ class zope_ftp_channel(ftp_channel):
                 line[1]
                 )
             )
-        self.make_recv_channel (fd)
-        
+        self.make_recv_channel(fd)
+    
     def stor_callback(self,path,data):
         'callback to do the STOR, after we have the input'
         response=make_response(self.stor_completion)
@@ -393,13 +393,14 @@ class zope_ftp_channel(ftp_channel):
         handle(self.module,request,response)       
            
     def stor_completion(self,response):
-        status=response.getStatus()
+        status=response.getStatus()        
         if status in (200,201,204,302):
-            self.respond('257 STOR command successful.')
+            self.client_dc.channel.respond('226 Transfer complete.')
         elif status==401:
-            self.respond('530 Unauthorized.')
+            self.client_dc.channel.respond('426 Unauthorized.')
         else:
-            self.respond('550 Error creating file.')       
+            self.client_dc.channel.respond('426 Error creating file.')       
+        self.client_dc.close()
         
     def cmd_dele(self, line):
         if len (line) != 2:
@@ -459,7 +460,7 @@ class zope_ftp_channel(ftp_channel):
         elif status==401:
             self.respond('530 Unauthorized.') 
         else:
-            repond('550 Error removing directory.')          
+            self.respond('550 Error removing directory.')          
 
     def cmd_user(self, line):
         'specify user name'
@@ -519,7 +520,21 @@ class zope_ftp_channel(ftp_channel):
     def cmd_appe(self, line):
         self.respond('502 Command not implemented.')
 
-    
+
+# Override ftp server receive channel reponse mechanism 
+# XXX hack alert, this should probably be redone in a more OO way.
+
+def handle_close (self):
+    """response and closure of channel is delayed."""
+    s = self.channel.server
+    s.total_files_in.increment()
+    s.total_bytes_in.increment(self.bytes_in.as_long())
+    self.fd.close()
+    self.readable=lambda :0 # don't call close again
+
+recv_channel.handle_close=handle_close
+
+  
 class ContentReceiver:
     "Write-only file object used to receive data from FTP"
     
