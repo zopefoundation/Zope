@@ -109,6 +109,10 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1124: The ZReST product now uses the same reST encoding
+       parameters from zope.conf as the low-level reStructuredText
+       implementation.
+
      - Collector #1259: removed the "uninstall" target from the Makefile
        since the uninstall routine could also remove non-Zope files. Because
        this was to dangerous it has been removed completely. 
