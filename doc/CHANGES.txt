@@ -24,6 +24,9 @@ Zope Changes
 
     Features added
     
+     - Using "_usage" parameters in a ZCatalog query is deprecated and
+       logged as DeprecationWarning.
+
      - MailHost now has two additional properties, a user id and a 
        password. These are used to attempt ESMTP authentication
        before sending a mail. 
