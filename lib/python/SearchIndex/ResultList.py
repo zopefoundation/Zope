@@ -118,7 +118,7 @@ class ResultList:
         xdict = x._dict
         xhas = xdict.has_key
         for id, score in dict.items():
-            if not xhas(id): result[id] = xdict[id]+score
+            if not xhas(id): result[id] = score
     
         return self.__class__(result, self._words, self._index)
   
