@@ -17,13 +17,13 @@ MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
 non-cyclic garbage and it does rudimentary conflict resolution.  This is a
 ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.4 2003/12/24 16:46:15 jeremy Exp $
+$Id: TemporaryStorage.py,v 1.5 2004/02/19 18:35:23 jeremy Exp $
 """
 
-__version__ ='$Revision: 1.4 $'[11:-2]
+__version__ ='$Revision: 1.5 $'[11:-2]
 
 from zLOG import LOG, BLATHER
-from ZODB.referencesf import referencesf
+from ZODB.serialize import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial

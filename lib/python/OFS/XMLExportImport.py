@@ -14,7 +14,7 @@ import Shared.DC.xml.ppml
 ppml=Shared.DC.xml.ppml
 from base64 import encodestring
 from cStringIO import StringIO
-from ZODB.referencesf import referencesf
+from ZODB.serialize import referencesf
 from ZODB.ExportImport import TemporaryFile, export_end_marker
 
 StringType=type('')
