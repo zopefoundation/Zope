@@ -11,7 +11,7 @@
 # 
 #############################################################################
 
-__version__ = '$Id: util.py,v 1.8 2001/11/28 16:09:07 matt Exp $'
+__version__ = '$Id: util.py,v 1.9 2002/03/29 15:33:03 andreasjung Exp $'
 
 
 import re
@@ -126,14 +126,6 @@ class parseIndexRequest:
                 field = iid + "_" + op
                 if request.has_key(field):
                     setattr(self, op, request[field])
-
-        # This was some kind of over-optimimization and broke
-        # queries with ("",) to search for empty fields
-        # (See Collector 2423)
-        
-#      if keys is not None:
-#           # Filter out empty strings.
-#            keys = filter(lambda key: key != '', keys)
 
         if not keys:
             keys = None
