@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -203,6 +203,16 @@ class PropertySheet(Traversable, Persistent, Implicit):
         if hasattr(object, 'aq_base'):
             raise ValueError, 'Invalid property value: wrapped object'
         return
+
+    def getPropertyType(self, id):
+        """Get the type of property 'id', returning None if no
+           such property exists"""
+        pself=self.p_self()
+        self=self.v_self()
+        for md in pself._properties:
+            if md['id']==id:
+                return md.get('type', 'string')
+        return None
 
     def _setProperty(self, id, value, type='string', meta=None):
         # Set a new property with the given id, value and optional type.
