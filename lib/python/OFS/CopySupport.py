@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -196,7 +196,6 @@ class CopyContainer(ExtensionClass.Base):
                 if not ob.cb_isCopyable():
                      raise CopyError, eNotSupported % absattr(ob.id)
                 ob=ob._getCopy(self)
-                __traceback_info__=(`ob`, `ob.manage_afterClone`)
                 ob.manage_afterClone(ob)
                 id=_get_id(self, absattr(ob.id))
                 ob._setId(id)
