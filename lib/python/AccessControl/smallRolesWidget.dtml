@@ -7,13 +7,13 @@
   <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
   <TR>
   <TD VALIGN="TOP">
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E">
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"<!--#var aclEChecked-->>
     Allow users with selected roles
     <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A" CHECKED>
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A"<!--#var aclAChecked-->>
     Allow based on default roles
     <BR>
-    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"> 
+    <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"<!--#var aclPChecked-->> 
     Allow all users
   </TD>
   <TD VALIGN="TOP">
