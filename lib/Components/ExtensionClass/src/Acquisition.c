@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.15 1998/01/21 19:00:48 jim Exp $
+  $Id: Acquisition.c,v 1.16 1998/03/23 20:23:35 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -153,6 +153,7 @@ staticforward PyExtensionClass Wrappertype, XaqWrappertype;
 
 #define isWrapper(O) ((O)->ob_type==(PyTypeObject*)&Wrappertype || \
 		      (O)->ob_type==(PyTypeObject*)&XaqWrappertype)
+#define WRAPPER(O) ((Wrapper*)(O))
 
 static PyObject *
 Wrapper__init__(Wrapper *self, PyObject *args)
@@ -171,6 +172,23 @@ Wrapper__init__(Wrapper *self, PyObject *args)
 /* ---------------------------------------------------------------- */
 
 /* ---------- */
+
+static PyObject *
+__of__(PyObject *inst, PyObject *parent)
+{
+  PyObject *r, *t;
+
+  UNLESS(r=PyObject_GetAttr(inst, py__of__)) return NULL;
+  UNLESS(t=PyTuple_New(1)) goto err;
+  PyTuple_SET_ITEM(t,0,parent);
+  ASSIGN(r,PyObject_CallObject(r,t));
+  PyTuple_SET_ITEM(t,0,NULL);
+  Py_DECREF(t);
+  return r;
+err:
+  Py_DECREF(r);
+  return NULL;
+}
 
 static PyObject *
 newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
@@ -205,14 +223,57 @@ Wrapper_dealloc(Wrapper *self)
 }
 
 static PyObject *
-Wrapper_getattro(Wrapper *self, PyObject *oname)
+Wrapper_special(Wrapper *self, char *name, PyObject *oname)
+{
+  PyObject *r=0;
+
+  if(strcmp(name,"base")==0)
+    {
+      if(self->obj)
+	{
+	  r=self->obj;
+	  while(isWrapper(r) && WRAPPER(r)->obj) r=WRAPPER(r)->obj;
+	}
+      else r=Py_None;
+      Py_INCREF(r);
+      return r;
+    }
+  if(strcmp(name,"parent")==0)
+    {
+      if(self->container) r=self->container;
+      else r=Py_None;
+      Py_INCREF(r);
+      return r;
+    }
+  if(strcmp(name,"self")==0)
+    {
+      if(self->obj) r=self->obj;
+      else r=Py_None;
+      Py_INCREF(r);
+      return r;
+    }
+  if(strcmp(name,"acquire")==0)
+    {
+      return Py_FindAttr(OBJECT(self),oname);
+    }
+}
+
+static PyObject *
+Wrapper_acquire(Wrapper *self, PyObject *oname,
+		PyObject *filter, PyObject *extra, PyObject *orig,
+		int sob, int sco)
 {
   PyObject *r;
   char *name;
+  int ir;
 
-  if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
+  name=PyString_AsString(oname);
+  if(*name++=='a' && *name++=='q' && *name++=='_'
+     && (r=Wrapper_special(self, name, oname))) return r;
+
+  if(sob && self->obj)
     {
-      if(r != Acquired)
+      if(r=PyObject_GetAttr(self->obj,oname))
 	{
 	  if(r->ob_type==self->ob_type)
 	    {
@@ -222,54 +283,142 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 		  ASSIGN(((Wrapper*)r)->container,OBJECT(self));
 		}
 	      else
-		ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
-				     OBJECT(self),self->ob_type));
+		ASSIGN(r,newWrapper(((Wrapper*)r)->obj,
+				    OBJECT(self), self->ob_type));
 	    }
 	  else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	    ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
-	  else if(has__of__(r))
-	    ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
-	  return r;
+	  else if(has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
+	  if(filter)
+	    switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
+	      {
+	      case -1: return NULL;
+	      case 1: return r;
+	      }
+	  else return r;
 	}
+      PyErr_Clear();
+    }
+  
+  if(sco && self->container) 
+    {
+      if(isWrapper(self->container))
+	{
+	  if(self->obj && self->obj->ob_type == (PyTypeObject*)&Wrappertype)
+	    {
+	      if(WRAPPER(self->obj)->container==
+		 WRAPPER(self->container)->container) sob=1, sco=0;
+	      else if(WRAPPER(self->obj)->container==
+		      WRAPPER(self->container)->obj)  sob=0, sco=1;
+	      else                                    sob=1, sco=1;
+	      r=Wrapper_acquire((Wrapper*)self->container,
+				oname,filter,extra,orig, sob, sco);
+	   }
+	  else
+	    r=Wrapper_acquire((Wrapper*)self->container,
+			      oname,filter,extra,orig,1,1);
+
+	  
+	  if(r) goto acquired;
+	}
+      else
+	{
+	  if((r=PyObject_GetAttr(self->container,oname)))
+	    if(filter)
+	      switch(apply_filter(filter,self->container,oname,r,extra,orig))
+		{
+		case -1: return NULL;
+		case 1: goto acquired;
+		}
+	    else goto acquired;
+	}
+      PyErr_Clear();
+    }
+
+  PyErr_SetObject(PyExc_AttributeError,oname);
+  return NULL;
+
+acquired:
+  if(has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
+  return r;
+}
+
+static PyObject *
+handle_Acquired(Wrapper *self, PyObject *oname, PyObject *r)
+{
+  UNLESS(self->container)
+    {
+      PyErr_SetObject(PyExc_AttributeError, oname);
+      return NULL;
+    }
+  if(isWrapper(self->container))
+    ASSIGN(r,Wrapper_acquire(WRAPPER(self->container),
+			     oname,NULL,NULL,NULL,1,1));
+  else
+    ASSIGN(r,PyObject_GetAttr(self->container,oname));
+  
+  if(r && has__of__(r)) ASSIGN(r, __of__(r,OBJECT(self)));
+  return r;
+}
+
+static PyObject *
+Wrapper_getattro_(Wrapper *self, PyObject *oname, int sob, int sco)
+{
+  PyObject *r;
+  char *name;
+
+  name=PyString_AsString(oname);
+  if(*name=='a' && name[1]=='q' && name[2]=='_'
+     && (r=Wrapper_special(self, name+3, oname))) return r;
+
+  if(sob && self->obj && (r=PyObject_GetAttr(self->obj,oname)))
+    {
+      if(r == Acquired) return handle_Acquired(self, oname, r);
+      if(r->ob_type==self->ob_type)
+	{
+	  if(r->ob_refcnt==1)
+	    {
+	      Py_INCREF(self);
+	      ASSIGN(((Wrapper*)r)->container,OBJECT(self));
+	    }
+	  else
+	    ASSIGN(r, newWrapper(((Wrapper*)r)->obj,
+				 OBJECT(self),self->ob_type));
+	}
+      else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
+	ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
+      else if(has__of__(r))
+	ASSIGN(r,__of__(r,OBJECT(self)));
+      return r;
     }
   if(self->obj) PyErr_Clear();
 
-  name=PyString_AsString(oname);
-  if(*name != '_'
+  if((*name != '_'
 #ifdef IMPLICIT_ACQUIRE___ROLES__
-     || strcmp(name,"__roles__")==0
+      || strcmp(name,"__roles__")==0
 #endif
-     || r==Acquired
-     )
-    {      
-      if(*name++=='a' && *name++=='q' && *name++=='_')
+      )
+     && self->container && sco)
+    {
+      if(self->container->ob_type == self->ob_type &&
+	 self->obj->ob_type==self->ob_type)
 	{
-	  if(strcmp(name,"acquire")==0)
-	    {
-	      return Py_FindAttr(OBJECT(self),oname);
-	    }
-	  if(strcmp(name,"parent")==0)
-	    {
-	      if(self->container) r=self->container;
-	      else r=Py_None;
-	      Py_INCREF(r);
-	      return r;
-	    }
-	  if(strcmp(name,"self")==0)
-	    {
-	      if(self->obj) r=self->obj;
-	      else r=Py_None;
-	      Py_INCREF(r);
-	      return r;
-	    }
+	  if(WRAPPER(self->obj)->container==
+	     WRAPPER(self->container)->container) sob=1, sco=0;
+	  else if(WRAPPER(self->obj)->container==
+		  WRAPPER(self->container)->obj)  sob=0, sco=1;
+	  else                                    sob=1, sco=1;
+	  r=Wrapper_getattro_(WRAPPER(self->container), oname, sob, sco);
 	}
+      else r=PyObject_GetAttr(self->container,oname);
 
-      if(self->container) 
+      if(r)
 	{
-	  if((r=PyObject_GetAttr(self->container,oname)))
-	    return r;
-	  PyErr_Clear();
+	  if(has__of__(r))
+	    ASSIGN(r, __of__(r,OBJECT(self)));
+	  return r;
 	}
+      PyErr_Clear();
     }
 
   if(*name++=='_' && strcmp(name,"_init__")==0)
@@ -280,14 +429,41 @@ Wrapper_getattro(Wrapper *self, PyObject *oname)
 }
 
 static PyObject *
+Wrapper_getattro(Wrapper *self, PyObject *oname)
+{
+  return Wrapper_getattro_(self, oname, 1, 1);
+}
+
+static PyObject *
 Xaq_getattro(Wrapper *self, PyObject *oname)
 {
   PyObject *r;
   char *name;
 
+  name=PyString_AsString(oname);
+
+  if(*name=='_')
+    {
+      if(strcmp(name,"__init__")==0) return Py_FindAttr(OBJECT(self),oname);
+#ifdef IMPLICIT_ACQUIRE___ROLES__
+      if(strcmp(name,"__roles__")==0) return Wrapper_getattro_(self,oname,1,1);
+#endif
+    }  
+
+  if(*name=='a')
+    {
+      if(name[1]=='c')
+	{
+	  if(strcmp(name+2,"quire")==0)
+	    return Py_FindAttr(OBJECT(self),oname);
+	}      
+      else if(name[1]=='q' && name[2]=='_'
+	      && (r=Wrapper_special(self, name+3, oname))) return r;
+    }
+
   if(self->obj && (r=PyObject_GetAttr(self->obj,oname)))
     {
-      if(r==Acquired) return Wrapper_getattro(self,oname);
+      if(r==Acquired) return handle_Acquired(self,oname,r);
       if(r->ob_type==self->ob_type)
 	{
 	  if(r->ob_refcnt==1)
@@ -301,48 +477,10 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
 	}
       else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
 	ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
-      else if(has__of__(r))
-	ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
+      else if(has__of__(r)) ASSIGN(r,__of__(r,OBJECT(self)));
       return r;
     }
   if(self->obj) PyErr_Clear();
-
-  name=PyString_AsString(oname);
-
-  if(*name=='a' && strcmp(name,"acquire")==0)
-    return Py_FindAttr(OBJECT(self),oname);
-
-  if(*name=='_')
-    {
-      if(strcmp(name,"__init__")==0) return Py_FindAttr(OBJECT(self),oname);
-#ifdef IMPLICIT_ACQUIRE___ROLES__
-      if(strcmp(name,"__roles__")==0) return Wrapper_getattro(self,oname);
-#endif
-    }  
-
-  if(*name++=='a' && *name++=='q' && *name++=='_')
-    {
-      if(strcmp(name,"acquire")==0)
-	{
-	  return Py_FindAttr(OBJECT(self),oname);
-	}
-      if(strcmp(name,"parent")==0)
-	{
-	  if(self->container) r=self->container;
-	  else r=Py_None;
-	  Py_INCREF(r);
-	  return r;
-	}
-      if(strcmp(name,"self")==0)
-	{
-	  if(self->obj) r=self->obj;
-	  else r=Py_None;
-	  Py_INCREF(r);
-	  return r;
-	}
-    }
-
-  
 
   PyErr_SetObject(PyExc_AttributeError,oname);
   return NULL;
@@ -375,89 +513,6 @@ apply_filter(PyObject *filter, PyObject *inst, PyObject *oname, PyObject *r,
 err:
   Py_DECREF(r);
   return -1;
-}
-
-static PyObject *
-Wrapper_acquire(Wrapper *self, PyObject *oname,
-		PyObject *filter, PyObject *extra, PyObject *orig)
-{
-  PyObject *r;
-  char *name;
-  int ir;
-
-  if(self->obj)
-    {
-      if(r=PyObject_GetAttr(self->obj,oname))
-	{
-	  if(r->ob_type==self->ob_type)
-	    {
-	      if(r->ob_refcnt==1)
-		{
-		  Py_INCREF(self);
-		  ASSIGN(((Wrapper*)r)->container,OBJECT(self));
-		}
-	      else
-		ASSIGN(r,newWrapper(((Wrapper*)r)->obj,
-				    OBJECT(self), self->ob_type));
-	    }
-	  else if(PyECMethod_Check(r) && PyECMethod_Self(r)==self->obj)
-	    ASSIGN(r,PyECMethod_New(r,OBJECT(self)));
-	  else if(has__of__(r))
-	    ASSIGN(r,CallMethodO(r,py__of__,Build("(O)", self), NULL));
-	  if(filter)
-	    switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
-	      {
-	      case -1: return NULL;
-	      case 1: return r;
-	      }
-	  else return r;
-	}
-      PyErr_Clear();
-    }
-
-  name=PyString_AsString(oname);
-  if(*name++=='a' && *name++=='q' && *name++=='_')
-    {
-      if(strcmp(name,"parent")==0)
-	{
-	  if(self->container) r=self->container;
-	  else r=Py_None;
-	  Py_INCREF(r);
-	  return r;
-	}
-      if(strcmp(name,"self")==0)
-	{
-	  if(self->obj) r=self->obj;
-	  else r=Py_None;
-	  Py_INCREF(r);
-	  return r;
-	}
-    }
-  
-  if(self->container) 
-    {
-      if(isWrapper(self->container))
-	{
-	  if((r=Wrapper_acquire((Wrapper*)self->container,
-				oname,filter,extra,orig)))
-	    return r;
-	}
-      else
-	{
-	  if((r=PyObject_GetAttr(self->container,oname)))
-	    if(filter)
-	      switch(apply_filter(filter,self->container,oname,r,extra,orig))
-		{
-		case -1: return NULL;
-		case 1: return r;
-		}
-	    else return r;
-	}
-      PyErr_Clear();
-    }
-
-  PyErr_SetObject(PyExc_AttributeError,oname);
-  return NULL;
 }
 
 static int
@@ -519,8 +574,6 @@ Wrapper_call(Wrapper *self, PyObject *args, PyObject *kw)
   Py_INCREF(args);
   return CallMethodO(OBJECT(self),py__call__,args,kw);
 }
-
-
 
 /* Code to handle accessing Wrapper objects as sequence objects */
 
@@ -679,7 +732,7 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args)
 
   UNLESS(PyArg_ParseTuple(args,"O|OO",&name,&filter,&extra)) return NULL;
 
-  return Wrapper_acquire(self,name,filter,extra,OBJECT(self));
+  return Wrapper_acquire(self,name,filter,extra,OBJECT(self),1,1);
 }
 
 static struct PyMethodDef Wrapper_methods[] = {
@@ -804,7 +857,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.15 $";
+  char *rev="$Revision: 1.16 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -823,7 +876,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.15 1998/01/21 19:00:48 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.16 1998/03/23 20:23:35 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -846,6 +899,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.16  1998/03/23 20:23:35  jim
+  Added lots of new machinery to handle wrapping of acquired objects.
+
   Revision 1.15  1998/01/21 19:00:48  jim
   Fixed __len__ bugs and added free lists for methods and wrappers
 
