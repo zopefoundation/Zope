@@ -132,7 +132,7 @@ class ZServerHTTPResponse(HTTPResponse):
         headers=self.headers
         body=self.body
         if body:
-            isHTML=self.isHTML(body)
+            isHTML=contHTML=self.isHTML(body)
             if not headers.has_key('content-type'):
                 if isHTML:
                     c='text/html'
@@ -140,14 +140,17 @@ class ZServerHTTPResponse(HTTPResponse):
                     c='text/plain'
                 self.setHeader('content-type',c)
             else:
-                isHTML = headers['content-type']=='text/html'
+                isHTML = string.split(headers.get('content_type', ''),
+                                      ';')[0] == 'text/html'
             if isHTML and end_of_header_search(self.body) < 0:
                 lhtml=html_search(body)
                 if lhtml >= 0:
                     lhtml=lhtml+6
                     body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
-                else:
+                elif contHTML:
                     body='<html><head></head>\n' + body
+                else:
+                    body='<html><head></head>\n' + body + '\n</html>\n'
                 self.setBody(body)
                 body=self.body
 
