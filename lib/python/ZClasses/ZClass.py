@@ -505,6 +505,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         "Display a class icon"
         return self._zclass_.ziconImage.index_html(REQUEST, RESPONSE)
 
+    ziconImage__roles__=None
+
     def tpValues(self):
         return self.propertysheets.common, self.propertysheets.methods
 
