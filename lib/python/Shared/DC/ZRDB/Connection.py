@@ -10,31 +10,13 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.3 1997/12/18 13:35:09 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Connection.py,v 1.4 1998/01/07 16:27:15 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
 from App.Dialogs import MessageDialog
-from ImageFile import ImageFile
-
-connection_page=Globals.HTMLFile('AqueductDA/connection')
-
-def addForm(self, REQUEST, database_type):
-    return connection_page(
-	self, REQUEST,
-	action='manage_addAqueduct%sConnection' % database_type,
-	database_type=database_type,
-	connection_string='',
-	connected='')
-
-def add(self,class_,connection_string,check,REQUEST):
-    """Add a new Folder object"""
-    i=class_()
-    i.connection_string=connection_string
-    if check: i.connect(connection_string)
-    self._setObject(i.id,i)
-    return self.manage_main(self,REQUEST)
+from Globals import HTMLFile
 
 class Connection(
     Persistence.Persistent,
@@ -42,11 +24,34 @@ class Connection(
     OFS.SimpleItem.Item,
     Acquisition.Implicit,
     ):    
-    icon     ='Icon'
-    Icon=ImageFile('www/DBAdapterFolder_icon.gif',globals())
-    meta_type='Aqueduct Database Adapter Folder'
+
+    # Specify definitions for tabs:
+    manage_options=(
+	{'label':'Status', 'action':'manage_main'},
+	{'label':'Properties', 'action':'manage_properties'},
+	{'label':'Security',   'action':'manage_access'},
+	)
+ 
+    # Specify how individual operations add up to "permissions":
+    __ac_permissions__=(
+	('View management screens', ('manage_tabs','manage_main',
+				     'manage_properties')),
+	('Change permissions',      ('manage_access',)            ),
+	('Change',                  ('manage_edit',)              ),
+	('Open/Close',              ('manage_open_connection',
+				     'manage_close_connection')),
+	)
+   
+    # Define pre-defined types of access:
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		  )
+
     _v_connected=''
     connection_string=''
+
+    def __init__(self, id, title, connection_string, check=None):
+	self.id=id
+	self.edit(title, connection_string, check)
 
     def __setstate__(self, state):
 	Persistence.Persistent.__setstate__(self, state)
@@ -68,34 +73,39 @@ class Connection(
 	    s="%s (<font color=red> not connected</font>)" % s
 	return s
 
-    def manage(self, REQUEST):
-	"Change the database connection string"
-	return connection_page(self, REQUEST, action='manage_connection',
-			       database_type=self.database_type)
-
     def connected(self): return self._v_connected
+
+    def edit(self, title, connection_string, check=1):
+	self.title=title
+	self.connection_string=connection_string
+	if check: self.connect(connection_string)
     
-    def manage_connection(self,value,check=None,action='',REQUEST=None):
-	'change database connection data'
-	if check: self.connect(value)
-	else: self.manage_close_connection(REQUEST)
-	self.connection_string=value
-	if REQUEST: return MessageDialog(
-	    title='Connection Modified',
-	    message='The connection information has been changed',
-	    action='manage',
-	    )
+    manage_properties=HTMLFile('connectionEdit', globals())
+    def manage_edit(self, title, connection_string, check=None, REQUEST=None):
+	"""Change connection
+	"""
+	self.edit(title, connection_string, check)
+	if REQUEST is not None:
+	    return MessageDialog(
+		title='Edited',
+		message='<strong>%s</strong> has been edited.' % self.id,
+		action ='./manage_main',
+		)
+
+
+    manage_main=HTMLFile('connectionStatus', globals())
 
     def manage_close_connection(self, REQUEST):
 	" "
 	try: self._v_database_connection.close()
 	except: pass
 	self._v_connected=''
-	if REQUEST: return MessageDialog(
-	    title='Connection Closed',
-	    message='The connection has been closed',
-	    action='manage',
-	    )
+	return self.manage_main(self, REQUEST)
+
+    def manage_open_connection(self, REQUEST=None):
+	" "
+	self.connect(self.connection_string)
+	return self.manage_main(self, REQUEST)
 
     def __call__(self, v=None):
 	try: return self._v_database_connection
@@ -122,6 +132,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.4  1998/01/07 16:27:15  jim
+# Brought up to date with latest Principia models.
+#
 # Revision 1.3  1997/12/18 13:35:09  jim
 # Added ImageFile usage.
 #

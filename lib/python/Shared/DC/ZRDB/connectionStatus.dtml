@@ -1,0 +1,43 @@
+<html>
+  <head><title><!--#var title_or_id--> Status</title></head>
+  <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+    <!--#var manage_tabs-->
+    
+    <h2><!--#var title_or_id--> Status</h2>
+
+      <table cellspacing="2">
+
+        <tr>
+	  <th align="LEFT" valign="TOP">Id</th>
+	  <td align="LEFT" valign="TOP"><!--#var id--></td>
+	</tr>
+
+	<tr>
+	  <th align="LEFT" valign="TOP"><em>Title</em></th>
+	  <td align="LEFT" valign="TOP"><!--#var title--></td>
+	</tr>
+
+	<tr>
+	  <th align="LEFT" valign="TOP">Database Connection String</th>
+	  <td align="LEFT" valign="TOP"><!--#var connection_string--></td>
+	</tr>
+
+<tr></tr><tr>
+<td colspan=2>
+<!--#if connected-->
+  The database connection is <em>open</em>.<br>
+  <form action="manage_close_connection" method="get">
+     <input type="SUBMIT" value="Close Database Connection">
+  </form>
+<!--#else-->
+  The database connection is <em>not open</em>.<br>
+  <form action="manage_open_connection" method="get">
+     <input type="SUBMIT" value="Open Database Connection">
+  </form>
+<!--#/if-->
+</td>
+<tr>
+  </table>
+
+  </body>
+</html>

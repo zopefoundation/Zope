@@ -11,12 +11,12 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.17 1997/12/18 13:35:31 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: DA.py,v 1.18 1998/01/07 16:27:16 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
-from Aqueduct.Aqueduct import quotedHTML, decodestring, parse, Rotor
+from Aqueduct.Aqueduct import decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
@@ -30,17 +30,6 @@ from time import time
 from zlib import compress, decompress
 md5new=md5.new
 
-addForm=HTMLFile('AqueductDA/daAdd')
-from ImageFile import ImageFile
-
-def add(self,klass,id,title,key,arguments,template,REQUEST=None):
-    'Add a query'
-    q=klass()
-    q.id=id
-    q.manage_edit(title,arguments,template,key)
-    self._setObject(id,q)
-    if REQUEST: return self.manage_main(self,REQUEST)
-
 class DA(
     Aqueduct.Aqueduct.BaseQuery,Acquisition.Implicit,
     Persistence.Persistent,
@@ -49,8 +38,6 @@ class DA(
     ):
     'Database Adapter'
 
-    icon       ='Icon'
-    Icon=ImageFile('www/DBAdapter_icon.gif',globals())
     _col=None
     sql_delimiter='\0'
     max_rows_=1000
@@ -61,29 +48,36 @@ class DA(
     class_name_=class_file_=''
     
     manage_options=(
-	{'icon':icon,              'label':'Basic',
-	'action':'manage_main',   'target':'manage_main'},
-	{'icon':icon,              'label':'Advanced',
-	 'action':'manage_advancedForm',
-	 'target':'manage_main'},
-	{'icon':'AccessControl/AccessControl_icon.gif',
-	 'label':'Access Control',
-	 'action':'manage_rolesForm',   'target':'manage_main'},
-	{'icon':icon,
-	 'label':'Try It',
-	 'action':'index_html',   'target':'manage_main'},
+	{'label':'Edit', 'action':'manage_main'},
+	{'label':'Test', 'action':'index_html'},
+	{'label':'Advanced', 'action':'manage_advancedForm'},
+	{'label':'Access Control', 'action':'manage_access'},
 	)
+ 
+    # Specify how individual operations add up to "permissions":
+    __ac_permissions__=(
+	('View management screens', ('manage_tabs','manage_main', 'index_html',
+				     'manage_properties', 'manage_advancedForm',
+				     )),
+	('Change permissions',      ('manage_access',)            ),
+	('Change',                  ('manage_edit',)              ),
+	)
+   
+    # Define pre-defined types of access:
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		  )
 
+
+    def __init__(self, id, title, connection_id, arguments, template):
+	self.id=id
+	self.manage_edit(title, connection_id, arguments, template)
     
-    manage_main=HTMLFile('AqueductDA/edit')
     manage_advancedForm=HTMLFile('AqueductDA/advanced')
 
     test_url___roles__=None
     def test_url_(self):
 	'Method for testing server connection information'
 	return 'PING'
-
-    def quoted_src(self): return quotedHTML(self.src)
 
     def _setKey(self, key):
 	if key:
@@ -93,10 +87,10 @@ class DA(
 	    del self.key
 	    del self.rotor
 
-    def manage_edit(self,title,arguments,template,key=None, REQUEST=None):
+    def manage_edit(self,title,connection_id,arguments,template,REQUEST=None):
 	'change query properties'
 	self.title=title
-	if key is not None: self._setKey(key)
+	self.connection_id=connection_id
 	self.arguments_src=arguments
 	self._arg=parse(arguments)
 	self.src=template
@@ -241,6 +235,13 @@ class DA(
 	self._arg[key] # raise KeyError if not an arg
 	return Traverse(self,{},key)
 
+    def connectionIsValid(self):
+	return (hasattr(self, self.connection_id) and
+		hasattr(getattr(self, self.connection_id), 'connected'))
+
+    def connected(self):
+	return getattr(getattr(self, self.connection_id), 'connected')()
+
 class Traverse:
     """Helper class for 'traversing' searches during URL traversal
     """
@@ -284,6 +285,7 @@ class Traverse:
 	if hasattr(r, name): return getattr(r,name)
 	return getattr(self._da, name)
 
+
 braindir=SOFTWARE_HOME+'/Extensions'    
 
 def getBrain(self,
@@ -323,6 +325,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.18  1998/01/07 16:27:16  jim
+# Brought up to date with latest Principia models.
+#
 # Revision 1.17  1997/12/18 13:35:31  jim
 # Added ImageFile usage.
 #

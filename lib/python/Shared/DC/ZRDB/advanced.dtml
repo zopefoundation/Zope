@@ -11,7 +11,7 @@
 <tr>	<th>Title</th>
         <td><!--#var title--></td></tr>
 <tr>	<th>Remote access encyption key</th>
-	<td><input name="key" size="40"
+	<td><input name="key" size="30"
              value="<!--#var key-->"></td></tr>
 <tr>	<th>Maximum number of rows retrieved</th>
 	<td><input name="max_rows:int" size="10"
@@ -30,10 +30,10 @@ class must be defined in a file that resides in the <code>Extensions</code>
 directory of this Principia installation.
 </td>
 <tr>	<th>Class name</th>
-	<td><input name="class_name" size="40"
+	<td><input name="class_name" size="30"
              value="<!--#var class_name_-->"></td></tr>
 <tr>	<th>Class file</th>
-	<td><input name="class_file" size="40"
+	<td><input name="class_file" size="30"
              value="<!--#var class_file_-->"></td></tr>
 
 <tr><td> </td></tr>
