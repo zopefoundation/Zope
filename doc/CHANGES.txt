@@ -35,6 +35,14 @@ Zope Changes
           so any WebDAV client  was unable to unlock the destination 
           object. Locks are now cleared from the destination object.
 
+        - Error message AttributeError/_v_blocks when a DTMLfile is
+          not present or could not be read replaced by a more
+          informative message.
+
+        - Collector #2497: SERVER_PROTOCOL variable is now compliant
+          with the CGI specification and looks like "HTTP/1.1" instead
+          of "1.1"
+
     Zope 2.4 beta 2
 
       Bugs fixed

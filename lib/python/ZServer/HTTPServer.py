@@ -254,7 +254,7 @@ class zhttp_handler:
         env['SERVER_PORT']=str(server.port)
         env['SERVER_NAME']=server.server_name
         env['SERVER_SOFTWARE']=server.SERVER_IDENT
-        env['SERVER_PROTOCOL']=request.version
+        env['SERVER_PROTOCOL']="HTTP/"+request.version
         env['channel.creation_time']=request.channel.creation_time
         if self.uri_base=='/':
             env['SCRIPT_NAME']=''
