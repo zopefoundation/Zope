@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.53 1999/03/10 00:15:15 klm Exp $"""
+$Id: ObjectManager.py,v 1.54 1999/03/22 17:34:50 jim Exp $"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher, ts_regex
@@ -96,6 +96,7 @@ from urllib import quote
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match
 
+_marker=[]
 class ObjectManager(
     App.Management.Navigation,
     App.Management.Tabs,
@@ -171,29 +172,22 @@ class ObjectManager(
                 raise 'Bad Request', (
                     'The id %s is invalid - it is already in use.' % id)
 
-    def _checkObject(self, object):
-        t=object.meta_type
-        if callable(t): t=t()
-        for d in self.all_meta_types():
-            if d['name']==t: return
-        raise 'Bad Request', 'Object type is not supported'
-
-    def parentObject(self):
-        try:
-            if self.aq_parent.isAnObjectManager:
-                return (self.aq_parent,)
-        except: pass
-        return ()
-
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
+    def _getOb(self, id, default=_marker):
+        if hasattr(self, 'aq_base'): self=self.aq_base
+        if default is _marker: return getattr(self, id)
+        try: return getattr(self, id)
+        except: return default
 
     def _setObject(self,id,object,roles=None,user=None):
-        self._checkId(id)
-        self._setOb(id,object)
+        v=self._checkId(id)
+        if v is not None: id=v
+        
         try:    t=object.meta_type
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
+        self._setOb(id,object)
 
         # This is a nasty hack that provides a workaround for any
         # existing customers with the acl_users/__allow_groups__
@@ -203,16 +197,16 @@ class ObjectManager(
         if have('__allow_groups__') and (not have('acl_users')):
             delattr(self, '__allow_groups__')
 
-
+        return id
 
     def _delObject(self,id):
-        self._delOb(id)
         if id=='acl_users':
             # Yikes - acl_users is referred to by two names and
             # must be treated as a special case!
             try:    delattr(self, '__allow_groups__')
             except: pass
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
+        self._delOb(id)
 
     def objectIds(self, spec=None):
         """Return a list of subobject ids.
@@ -236,15 +230,7 @@ class ObjectManager(
         Returns a list of actual subobjects of the current object.  If
         'spec' is specified, returns only objects whose meta_type match 'spec'
         """
-        if spec is not None:
-            if type(spec)==type('s'):
-                spec=[spec]
-            set=[]
-            for ob in self._objects:
-                if ob['meta_type'] in spec:
-                    set.append(getattr(self, ob['id']))
-            return set
-        return map(lambda i,s=self: getattr(s,i['id']), self._objects)
+        return map(self._getOb, self.objectIds(spec))
 
     def objectItems(self, spec=None):
         """Return a list of (id, subobject) tuples.
@@ -253,65 +239,51 @@ class ObjectManager(
         If 'spec' is specified, returns only objects whose meta_type match
         'spec'
         """
-        if spec is not None:
-            if type(spec)==type('s'):
-                spec=[spec]
-            set=[]
-            for ob in self._objects:
-                if ob['meta_type'] in spec:
-                    set.append((ob['id'], getattr(self, ob['id'])))
-            return set
-        return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
-                                    self._objects)
+        r=[]
+        a=r.append
+        g=self._getOb
+        for id in self.objectIds(spec): a((id, g(id)))
+        return r
+
     def objectMap(self):
         # Return a tuple of mappings containing subobject meta-data
         return self._objects
 
     def objectIds_d(self,t=None):
-        v=self.objectIds(t)
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x not in r, v)
+        if hasattr(self, '_reserved_names'): n=self._reserved_names
+        else: n=()
+        if not n: return self.objectIds(t)
+        r=[]
+        a=r.append
+        for id in self.objectIds(t):
+            if id not in n: a(id)
+        return r
 
     def objectValues_d(self,t=None):
-        v=self.objectIds(t)
-        try:    n=self._reserved_names
-        except: return map(lambda i,s=self: getattr(s,i), v)
-        return map(lambda i,s=self: getattr(s,i),
-                    filter(lambda x,r=n: x not in r, v))
+        return map(self._getOb, self.objectIds_d(t))
 
     def objectItems_d(self,t=None):
-        v=self.objectItems(t)
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x[0] not in r, v)
+        r=[]
+        a=r.append
+        g=self._getOb
+        for id in self.objectIds_d(spec): a((id, g(id)))
+        return r
 
     def objectMap_d(self,t=None):
-        v=self._objects
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x['id'] not in r, v)
-
-    def superIds(self,t):
-        if type(t)==type('s'): t=(t,)
-        obj=self
-        vals=[]
-        x=0
-        while x < 100:
-            try:    set=obj._objects
-            except: set=()
-            for i in set:
-                try:
-                    if i['meta_type'] in t:
-                        id=i['id']
-                        if not id in vals: vals.append(id)
-                except: pass
-            try:    obj=obj.aq_parent
-            except: return vals
-            x=x+1
-        return vals
+        if hasattr(self, '_reserved_names'): n=self._reserved_names
+        else: n=()
+        if not n: return self._objects
+        r=[]
+        a=r.append
+        for d in self._objects:
+            if d['id'] not in n: a(d)
+        return r
 
     def superValues(self,t):
+        """Return all of the objects of a given type
+
+        The search is performed in this folder and in folders above.
+        """
         if type(t)==type('s'): t=(t,)
         obj=self
         seen={}
@@ -319,68 +291,24 @@ class ObjectManager(
         have=seen.has_key
         x=0
         while x < 100:
-            try:    set=obj._objects
-            except: set=()
-            for i in set:
-                try:
-                    id=i['id']
-                    if (not have(id)) and (i['meta_type'] in t):
-                        vals.append(getattr(obj,id))
-                        seen[id]=1
-                except: pass
-            try:    obj=obj.aq_parent
-            except: return vals
-            x=x+1
-        return vals
-
-    def superItems(self,t):
-        if type(t)==type('s'): t=(t,)
-        obj=self
-        seen={}
-        vals=[]
-        have=seen.has_key
-        x=0
-        while x < 100:
-            try:    set=obj._objects
-            except: set=()
-            for i in set:
-                try:
-                    id=i['id']
-                    if (not have(id)) and (i['meta_type'] in t):
-                        vals.append((id,getattr(obj,id),))
-                        seen[id]=1
-                except: pass
-            try:    obj=obj.aq_parent
-            except: return vals
-            x=x+1
-        return vals
-
-    def superHasAttr(self,attr):
-        obj=self
-        seen={}
-        vals=[]
-        have=seen.has_key
-        x=0
-        while x < 100:
-            try:    set=obj._objects
-            except: set=()
-            for i in set:
-                try:
-                    id=i['id']
-                    if not have(id):
-                        v=getattr(obj,id)
-                        if hasattr(v,attr):
-                            vals.append(v)
+            if not hasattr(obj,'_getOb'): break
+            get=obj._getOb
+            if hasattr(obj,'_objects'):
+                for i in obj._objects:
+                    try:
+                        id=i['id']
+                        if (not have(id)) and (i['meta_type'] in t):
+                            vals.append(get(id))
                             seen[id]=1
-                except: pass
-            try:    obj=obj.aq_parent
-            except: return vals
+                    except: pass
+                    
+            if hasattr(obj,'aq_parent'): obj=obj.aq_parent
+            else:                        return vals
             x=x+1
         return vals
 
 
     manage_addProduct=App.FactoryDispatcher.ProductDispatcher()
-
 
     def manage_delObjects(self, ids=[], REQUEST=None):
         """Delete a subordinate object
@@ -401,11 +329,11 @@ class ObjectManager(
                        action ='./manage_main',)
         while ids:
             id=ids[-1]
-            if not hasattr(self, id) or not self.__dict__.has_key(id):
+            v=self._getOb(id, self)
+            if v is self:
                 raise 'BadRequest', '%s does not exist' % ids[-1]
             self._delObject(id)
             del ids[-1]
         if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1)
-
 
