@@ -1,5 +1,6 @@
+<!--#with "_(manage_options=filtered_manage_options())"-->
 <!--#if manage_options-->
-<!--#call "REQUEST.set('n_', _.len(manage_options))"-->
+<!--#call "REQUEST.set('n_', _.len(manage_options)-1)"-->
 <!--#call "REQUEST.set('a_', 0)"-->
 <!--#in manage_options mapping-->
 <!--#if expr="URL[-(_.len(action)):]==action or
@@ -45,16 +46,6 @@
    SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 <!--#endif-->
 <!--#endin-->
-  <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="left"><img src="<!--#var SCRIPT_NAME-->/p_/ltab" width="5" 
-   height="5"></td>
-  <td bgcolor="#efefef"><img src="<!--#var 
-   SCRIPT_NAME-->/p_/sp" width="1" height="2"></td>
-  <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="right"><img src="<!--#var SCRIPT_NAME-->/p_/rtab" width="5" 
-   height="5"></td>
-  <td bgcolor="#003366" rowspan="4"><img src="<!--#var 
-   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 </tr>
 <tr>
 <!--#in manage_options mapping-->
@@ -74,11 +65,6 @@
    label--></strong></font></a>&nbsp;</font></td>
 <!--#endif-->
 <!--#endin-->
-  <td bgcolor="#efefef" valign="bottom" 
-   align="center"><font face="Verdana, Arial, Helvetica" 
-   size="1">&nbsp;<a 
-   href="<!--#var SCRIPT_NAME-->/HelpSys/hs_index" target="z_help_wnd"><font 
-   color="#000000"><strong>Help</strong></font></a>&nbsp;</font></td>
 </tr>
 <tr>
 <!--#in manage_options-->
@@ -90,8 +76,6 @@
    SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 <!--#endif-->
 <!--#endin-->
-  <td colspan="3" bgcolor="#efefef"><img src="<!--#var 
-   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 </tr>
 <tr>
 <!--#in manage_options-->
@@ -103,8 +87,6 @@
    SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 <!--#endif-->
 <!--#endin-->
-  <td colspan="3" bgcolor="#c0c0c0"><img src="<!--#var 
-   SCRIPT_NAME-->/p_/sp" width="2" height="1"></td>
 </tr>
 </table>
 <!--#endif-->
@@ -140,3 +122,4 @@
 <em>You are currently working in version <!--#var Zope-Version--></em>
 </p>
 <!--#endif-->
+<!--#/with-->
