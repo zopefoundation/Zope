@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -199,7 +199,21 @@ class UserFolder(Implicit, Persistent, Item):
             del self._data[n]
         return self.manage_main(self, REQUEST)
 
+    def _getCopy(self, container):
+	try:    obj=container.aq_self
+	except: obj=container
+	if hasattr(obj,'acl_users'):
+	    raise ('Copy Error',
+		   '<EM>This object already contains a UserFolder</EM>')
+	return loads(dumps(self))
 
+    def _postCopy(self, container):
+	container.__allow_groups__=container.acl_users
+
+    def _setId(self, clip_id):
+	if clip_id != self.id:
+	     raise ('Copy Error',
+		    '<EM>Cannot change the id of a UserFolder</EM>')
 
 
 
@@ -245,6 +259,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.18  1997/11/11 22:38:26  brian
+# Added copy logic to UF
+#
 # Revision 1.17  1997/11/07 20:57:41  jim
 # Made manage_addUserFolder accept and ignore keyword arguments to be
 # compatible with the new addObject protocol.
