@@ -25,6 +25,13 @@ import ZServer.datatypes
 
 TEMPFILENAME = tempfile.mktemp()
 
+# For address kinds of values that don't specify a hostname, ZConfig
+# supplies a platform-dependent default.
+import sys
+DEFAULT_HOSTNAME = ''
+if sys.platform in ['win32',]:
+    DEFAULT_HOSTNAME = 'localhost'
+del sys
 
 class BaseTest(unittest.TestCase):
     schema = None
@@ -135,7 +142,7 @@ class ZServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.FCGIServerFactory))
-        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
         self.assertEqual(factory.port, 83)
         self.assertEqual(factory.path, None)
         self.check_prepare(factory)
