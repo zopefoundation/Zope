@@ -120,7 +120,7 @@ function toggleSelect() {
    onMouseOver="window.status='Sort objects by number of distinct values indexed'; return true"
    onMouseOut="window.status=''; return true"><dtml-if 
    "skey == 'indexSize' or rkey == 'indexSize'"
-   ><strong>Size</strong><dtml-else>Size</dtml-if></a></div>
+   ><strong># distinct values</strong><dtml-else># distinct values</dtml-if></a></div>
   </td>
 
   <td width="20%" align="left"><div class="list-item"><a 
