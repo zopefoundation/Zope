@@ -19,6 +19,7 @@ See http://www.xmlrpc.com/ and http://linux.userland.com/ for more
 information about XML-RPC and Zope.
 """
 
+import re
 import sys, types
 from HTTPResponse import HTTPResponse
 import xmlrpclib
@@ -64,8 +65,6 @@ def parse_input(data):
 #     r=Response()
 #     r.__dict__.update(anHTTPResponse.__dict__)
 #     return r
-
-
 
 ########################################################################
 # Possible implementation helpers:
@@ -129,18 +128,31 @@ class Response:
                                    and issubclass(t, Unauthorized)):
             return self._real.exception(fatal=fatal, info=info)
 
-        # Create an appropriate Fault object. Unfortunately, we throw away
-        # most of the debugging information. More useful error reporting is
-        # left as an exercise for the reader.
+        # Create an appropriate Fault object. Containing error information
         Fault=xmlrpclib.Fault
         f=None
         try:
+            # Strip HTML tags and format the error value
+            v = str(v)
+            v = re.sub(r"<br\s*/?>", "\n", v)
+            remove = [r"<[^<>]*>", r"&[A-Za-z]+;"]
+            for pat in remove:
+                v = re.sub(pat, " ", v)
+            v = re.sub(r"\n(?:\s*\n)+", "\n\n", v)
+                
+            from Globals import DevelopmentMode
+            if DevelopmentMode:
+                from traceback import format_exception
+                value = ''.join(format_exception(t, v, tb))
+            else:
+                value = '%s\n\n%s' % (t, v)
+                
             if isinstance(v, Fault):
                 f=v
             elif isinstance(v, Exception):
-                f=Fault(-1, "Unexpected Zope exception: " + str(v))
+                f=Fault(-1, 'Unexpected Zope exception: %s' % value)
             else:
-                f=Fault(-2, "Unexpected Zope error value: " + str(v))
+                f=Fault(-2, 'Unexpected Zope error value: %s' % value)
         except:
             f=Fault(-3, "Unknown Zope fault type")
 
