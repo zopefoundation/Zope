@@ -243,18 +243,22 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
                                 manage_tabs_message=message)
 
     def manage_catalogReindex(self, REQUEST):
-        """ iterate over the whole catalog, deleting inexistent
-        references and refreshing objects"""
-        items = tuple(self._catalog.uids.items())
+        """ clear the catalog, then re-index everything """
+	
+        paths = tuple(self._catalog.paths.values())
+	self.manage_catalogClear()
 
-        for path, i in items:
-            try:
-                obj = self.getobject(i, REQUEST)
-            except:
-                self.uncatalog_object(path)
-            else:
-                self.uncatalog_object(path)
-                self.catalog_object(obj, path)
+	for p in paths:
+		self.catalog_object(REQUEST.resolve_url(p), p)
+
+##        for path, i in items:
+##            try:
+##                obj = self.getobject(i, REQUEST)
+##            except:
+##                self.uncatalog_object(path)
+##            else:
+##                self.uncatalog_object(path)
+##                self.catalog_object(obj, path)
 
         message = "Catalog Reindexed"
         return self.manage_catalogView(self, REQUEST,
