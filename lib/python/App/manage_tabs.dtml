@@ -3,18 +3,31 @@
 <TR>
 <!--#in manage_options mapping-->
 <!--#if sequence-item-->
-  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
+  <!--#if expr="_vars['PATH_INFO'][-(_.len(action)):]==action"-->
+  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#FFFFFF">
   <FONT SIZE="-1">
-  <!--#if action-->
-  <A HREF="<!--#var action-->"><!--#var label--></A>
-  <!--#else action-->
-  <A HREF="<!--#var URL1-->"><!--#var label--></A>
-  <!--#/if action-->
+  <STRONG>
+    <!--#if action-->
+    <A HREF="<!--#var action-->"><!--#var label--></A>
+    <!--#else action-->
+    <A HREF="<!--#var URL1-->"><!--#var label--></A>
+    <!--#/if action-->
+  </STRONG>
   </FONT>
   </TD>
+  <!--#else-->
+  <TD ALIGN="CENTER" VALIGN="TOP" BGCOLOR="#EFEFEF">
+  <FONT SIZE="-1">
+    <!--#if action-->
+    <A HREF="<!--#var action-->"><!--#var label--></A>
+    <!--#else action-->
+    <A HREF="<!--#var URL1-->"><!--#var label--></A>
+    <!--#/if action-->
+  </FONT>
+  </TD>
+  <!--#/if-->
 <!--#/if sequence-item-->
 <!--#/in manage_options-->
 </TR>
 </TABLE>
 <!--#/if manage_options-->
-
