@@ -1,11 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>Access Control for <!--#var title_or_id--></TITLE>
+<TITLE>Security</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <!--#var manage_tabs-->
 
-<H2>Access Control for <EM><!--#var title_or_id--></EM></H2>
 <P>
 You may restrict access to this item using the form 
 below. To add or remove roles, select or deselect 

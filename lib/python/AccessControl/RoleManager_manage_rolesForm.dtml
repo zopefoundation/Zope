@@ -1,11 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>Access Control</TITLE>
+<TITLE>Security</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<!--#var menu_bar-->
-<BR>
-<FONT SIZE="+2">Access Control</FONT>
+<!--#var manage_tabs-->
+
 <P>
 You may restrict access to <EM><!--#var title_or_id--></EM> using the form 
 below. To add or remove roles, select or deselect 

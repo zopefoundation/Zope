@@ -1,18 +1,12 @@
 <HTML>
 <HEAD>
-<TITLE>Cache Manager</TITLE>
+<TITLE>Cache</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<H2>Cache Manager</H2>
-<!--#if Principia-Session-->
-<EM>You are currently working in session <!--#var Principia-Session--></EM>
-<P>
-<!--#/if Principia-Session-->
-<P>
-<h3>Cache Statistics</h3>
 
+<h3>Cache Statistics</h3>
 <table>
 <tr><th align=right>Total number of objects in the database:</th>
 <td><!--#var database_size--></td></tr>

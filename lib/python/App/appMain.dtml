@@ -5,12 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<H2><!--#var title--></H2>
-<!--#if Principia-Session-->
-<EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>
-<!--#/if Principia-Session-->
-
 The Control Panel allows you to view application status information.
 It also allows you to perform maintenance tasks such as process control,
 database packing, and &quot;undoing&quot; previous changes to your site.

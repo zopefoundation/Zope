@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -33,6 +33,7 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 
     id        ='Control_Panel'
     name=title='Control Panel'
+    meta_type ='Control Panel'
     icon      ='OFS/ControlPanel_icon.gif'
     process_id=os.getpid()
     process_start=int(time.time())
