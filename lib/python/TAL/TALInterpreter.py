@@ -165,22 +165,33 @@ class TALInterpreter:
         self.position = None, None  # (lineno, offset)
         self.col = 0
         self.level = 0
+        self.scopeLevel = 0
 
     def saveState(self):
-        return (self.position, self.col, self.stream)
+        return (self.position, self.col, self.stream,
+                self.scopeLevel, self.level)
 
     def restoreState(self, state):
-        (self.position, self.col, self.stream) = state
+        (self.position, self.col, self.stream, scopeLevel, level) = state
+        assert self.level == level
+        while self.scopeLevel > scopeLevel:
+            self.do_endScope()
 
     def restoreOutputState(self, state):
-        (dummy, self.col, self.stream) = state
+        (dummy, self.col, self.stream, scopeLevel, level) = state
+        assert self.level == level
+        assert self.scopeLevel == scopeLevel
 
     def __call__(self):
+        assert self.level == 0
+        assert self.scopeLevel == 0
         if self.html:
             self.endsep = " />"
         else:
             self.endsep = "/>"
         self.interpret(self.program)
+        assert self.level == 0
+        assert self.scopeLevel == 0
         if self.col > 0:
             self.stream_write("\n")
 
@@ -194,17 +205,20 @@ class TALInterpreter:
 
     def interpret(self, program):
         self.level = self.level + 1
-        for item in program:
-            methodName = "do_" + item[0]
-            args = item[1:]
-            if self.debug:
-                s = "%s%s%s\n" % ("    "*self.level, methodName, repr(args))
-                if len(s) > 80:
-                    s = s[:76] + "...\n"
-                sys.stderr.write(s)
-            method = getattr(self, methodName)
-            apply(method, args)
-        self.level = self.level - 1
+        try:
+            for item in program:
+                methodName = "do_" + item[0]
+                args = item[1:]
+                if self.debug:
+                    s = "%s%s%s\n" % ("    "*self.level, methodName,
+                                      repr(args))
+                    if len(s) > 80:
+                        s = s[:76] + "...\n"
+                    sys.stderr.write(s)
+                method = getattr(self, methodName)
+                apply(method, args)
+        finally:
+            self.level = self.level - 1
 
     def do_version(self, version):
         assert version == TAL_VERSION
@@ -262,9 +276,11 @@ class TALInterpreter:
 
     def do_beginScope(self):
         self.engine.beginScope()
+        self.scopeLevel = self.scopeLevel + 1
 
     def do_endScope(self):
         self.engine.endScope()
+        self.scopeLevel = self.scopeLevel - 1
 
     def do_setLocal(self, name, expr):
         if not self.tal:
