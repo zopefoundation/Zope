@@ -26,7 +26,10 @@ class FTPResponse(ZServerHTTPResponse):
     """
 
     def __str__(self):
-        return ZServerHTTPResponse.__str__(self)
+#        return ZServerHTTPResponse.__str__(self)
+        # ZServerHTTPResponse.__str__(self) return HTTP headers
+        # Why should be send them to the FTP client ??? (ajung)
+        return ''
 
     def outputBody(self):
         pass

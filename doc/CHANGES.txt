@@ -19,6 +19,10 @@ Zope Changes
       - Collector #166: ObjectManger.all_meta_types() implemented only
         an incomplete filter based on interfaces.
 
+      - FTP: Downloading files through FTP has been broken since 2.4.0
+        because the downloaded file has been stored with a HTTP 
+        header at the beginning of the file. Fixed!
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
