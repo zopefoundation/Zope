@@ -56,6 +56,9 @@ Zope Changes
         - Fixed conflict resolution problem in BTrees (BTreeTemplace/
           _p_resolveConflict)
 
+        - Collector #2524: Medusa sent "HTTP/None..." as response header when
+          then HTTP version could not be determined from the HTTP request.
+          Now sending "HTTP/1.0..."
 
     Zope 2.4 beta 2
 
