@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.14 2004/01/27 14:39:34 tseaver Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Zope.py,v 1.15 2004/01/27 15:47:02 fdrake Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -21,7 +21,6 @@ from SimpleTree import SimpleTreeMaker
 from Batch import Batch
 from Products.ZCatalog.Lazy import Lazy
 from AccessControl import getSecurityManager
-from types import StringType, ListType, IntType, FloatType
 from DateTime import DateTime
 
 try:
@@ -36,7 +35,6 @@ except ImportError:
 else:
     from AccessControl import Unauthorized
 
-from types import BooleanType
 
 class LazyFilter(Lazy):
     # A LazyFilter that checks with the security policy
@@ -233,14 +231,14 @@ def complex_marshal(pairs):
         k, v = pairs[i]
         m = ''
         sublist = None
-        if isinstance(v, StringType):
+        if isinstance(v, str):
             pass
         elif hasattr(v, 'items'):
             sublist = []
             for sk, sv in v.items():
                 sm = simple_marshal(sv)
                 sublist.append(('%s.%s' % (k, sk), '%s:record' % sm,  sv))
-        elif isinstance(v, ListType):
+        elif isinstance(v, list):
             sublist = []
             for sv in v:
                 sm = simple_marshal(sv)
@@ -255,13 +253,13 @@ def complex_marshal(pairs):
     return pairs
 
 def simple_marshal(v):
-    if isinstance(v, StringType):
+    if isinstance(v, str):
         return ''
-    if isinstance(v, BooleanType):
+    if isinstance(v, bool):
         return ':boolean'
-    if isinstance(v, IntType):
+    if isinstance(v, int):
         return ':int'
-    if isinstance(v, FloatType):
+    if isinstance(v, float):
         return ':float'
     if isinstance(v, DateTime):
         return ':date'
@@ -283,7 +281,7 @@ def url_query(request, req_name="URL", omit=None):
     if qs and omit:
         qsparts = qs.split('&')
 
-        if isinstance(omit, StringType):
+        if isinstance(omit, str):
             omits = {omit: None}
         else:
             omits = {}
