@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.31 2000/05/11 18:54:13 jim Exp $"""
+$Id: Management.py,v 1.32 2000/06/27 14:25:35 brian Exp $"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -127,7 +127,7 @@ class Tabs(ExtensionClass.Base):
             if o is None: continue
 
             try:
-                if validate(value=o):
+                if validate(container=self, value=o):
                     result.append(d)
             except:
                 if not hasattr(o, '__roles__'):
