@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -275,7 +275,7 @@ class PythonScript(Script, Historical, Cacheable):
         from Guarded import GuardedBlock, theGuard, safebin
         from Guarded import WriteGuard, ReadGuard
         # Was the cached bytecode compiled with a compatible Python?
-        if getattr(self, Python_magic, None) != Python_magic:
+        if getattr(self, 'Python_magic', None) != Python_magic:
             allowSideEffect = 1
         if allowSideEffect:
             self._checkCBlock(GuardedBlock)
