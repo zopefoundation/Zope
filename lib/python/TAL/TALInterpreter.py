@@ -159,9 +159,8 @@ class TALInterpreter:
         self.stream.write(str(text))
 
     def do_loop(self, name, expr, block):
-        sequence = self.engine.evaluateSequence(expr)
-        for item in sequence:
-            self.engine.setLocal(name, item)
+        iterator = self.engine.setupLoop(name, expr)
+        while iterator.next():
             self.interpret(block)
 
     def do_text(self, text):
