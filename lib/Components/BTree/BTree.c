@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.23 1999/06/23 22:49:08 jim Exp $"
+"\n$Id: BTree.c,v 1.24 1999/07/12 21:57:49 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -278,13 +278,18 @@ BTreeItems_item_BTree(char kind, int i, BTree *btree)
 static PyObject *
 BTreeItems_item(BTreeItems *self, int i)
 {
-  int j, l;
+  int j, l, L;
 
   j=i;
   l=self->len;
   if(j < 0) j += l;
   i=j+self->first;
-  if(j < 0 || j >= l || i >= self->data->count)
+
+  PER_USE_OR_RETURN(self->data, NULL);
+  L=self->data->count;
+  PER_ALLOW_DEACTIVATION(self->data);
+
+  if(j < 0 || j >= l || i >= L)
     {
       PyObject *v;
       v=PyInt_FromLong(i);
@@ -1842,7 +1847,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.23 $";
+  char *rev="$Revision: 1.24 $";
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
