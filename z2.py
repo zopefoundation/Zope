@@ -144,7 +144,7 @@ Options:
 
     Set the web, ftp and monitor port numbers simultaneously
     as offsets from the number.  The web port number will be number+80.
-    The FTP port number will be number+21.  The monitoe port number will
+    The FTP port number will be number+21.  The monitor port number will
     be number+99.
     
   -w port
