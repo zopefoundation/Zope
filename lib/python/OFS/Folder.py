@@ -15,9 +15,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.102 2003/06/12 10:20:59 yuppie Exp $"""
+$Id: Folder.py,v 1.103 2003/07/24 15:24:28 sf Exp $"""
 
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
