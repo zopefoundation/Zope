@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import MessageDialog, HTMLFile, package_home
@@ -113,6 +113,10 @@ def manage_addPythonScript(self, id, REQUEST=None):
     id = str(id)
     id = self._setObject(id, PythonScript(id))
     if REQUEST is not None:
+        file = REQUEST.form.get('file', None)
+        if file:
+            if type(file) is not type(''): file = file.read()
+            getattr(self, id).write(file)
         try: u = self.DestinationURL()
         except: u = REQUEST['URL1']
         REQUEST.RESPONSE.redirect('%s/%s/manage_main' % (u, quote(id)))
@@ -337,6 +341,8 @@ class PythonScript(Script, Historical):
     def write(self, text):
         self._validateProxy()
         mdata = self._metadata_map()
+        bindmap = self.getBindingAssignments().getAssignedNames()
+        bup = 0
         st = 0
         try:
             while 1:
@@ -371,8 +377,13 @@ class PythonScript(Script, Historical):
                     self.title = v
                 elif k == 'parameters':
                     self._params = v
+                elif k[:5] == 'bind ':
+                    bindmap[_nice_bind_names[k[5:]]] = v
+                    bup = 1
 
             self._body = rstrip(body)
+            if bup:
+                self._setupBindings(bindmap)
             self._makeFunction(1)
         except:
             LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
@@ -384,10 +395,14 @@ class PythonScript(Script, Historical):
         return self.read()
 
     def _metadata_map(self):
-        return {
+        m = {
             'title': self.title,
             'parameters': self._params,
            }
+        bindmap = self.getBindingAssignments().getAssignedNames()
+        for k, v in _nice_bind_names.items():
+            m['bind '+k] = bindmap.get(v, '')
+        return m
 
     def read(self):
         # Construct metadata header lines, indented the same as the body.
@@ -396,7 +411,9 @@ class PythonScript(Script, Historical):
         else: prefix = '##'
 
         hlines = ['%s %s "%s"' % (prefix, self.meta_type, self.id)]
-        for kv in self._metadata_map().items():
+        mm = self._metadata_map().items()
+        mm.sort()
+        for kv in mm: 
             hlines.append('%s=%s' % kv)
         hlines.append('')
         return join(hlines, '\n' + prefix) + '\n' + self._body
@@ -419,3 +436,7 @@ class PythonScript(Script, Historical):
 
 _first_indent = re.compile('(?m)^ *(?! |$)')
 _nonempty_line = re.compile('(?m)^(.*\S.*)$')
+
+_nice_bind_names = {'context': 'name_context', 'container': 'name_container',
+                    'script': 'name_m_self', 'namespace': 'name_ns',
+                    'subpath': 'name_subpath'}

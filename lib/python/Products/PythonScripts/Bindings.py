@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals
 from Globals import Persistent, HTMLFile, package_home
@@ -147,6 +147,10 @@ class NameAssignments:
         if val is _marker:
             raise KeyError, name
         return val
+
+    def getAssignedNames(self):
+        # Returns a copy of the assigned names mapping
+        return self._asgns.copy()
 
     def getAssignedNamesInOrder(self):
         # Returns the assigned names in the same order as that of
