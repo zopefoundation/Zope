@@ -230,7 +230,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.10 1997/11/11 18:38:03 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.11 1997/11/12 23:25:56 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.10 1997/11/11 18:38:03 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -315,7 +315,7 @@ class In:
 			'=[0-9]+\(&\|$\)')
 		    
 	name,expr=name_param(args,'in',1)
-	self.__name__, expr = name, expr
+	self.__name__, self.expr = name, expr
 	self.section=section
 	if len(blocks) > 1:
 	    if len(blocks) != 2: raise ParseError, (
@@ -791,6 +791,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.11  1997/11/12 23:25:56  jim
+# Fixed bug in expr handling.
+#
 # Revision 1.10  1997/11/11 18:38:03  jim
 # Made sequence-items work when iterating over mapping items.
 #
