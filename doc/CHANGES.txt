@@ -6,6 +6,11 @@ Zope Changes
 
     Bugs Fixed
 
+      - Added 'url_unquote' and 'url_unquote_plus' modifiers
+        to DTML (also fmt=url-unquote and fmt=url-unquote-plus),
+        and made the same functions available in the PythonScripts.standard
+        module.
+
       - The "Add Browser ID Manager" permission was renamed to
         "Add Browser Id Manager".
 
