@@ -165,6 +165,9 @@ Zope Changes
         - Fixed a bug that caused External Methods to be reloaded every
           time they were used in development mode.
 
+        - A bug that prevented setting permissions on External Methods
+          in ZClasses was fixed.
+
         - Fixed a permission typo in ZCatalog and a sort_on bug.
 
         - Fix for missing REQUEST in a method signature in the 
@@ -189,6 +192,13 @@ Zope Changes
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
+
+        - A thread-safety problem with PCGI handling was fixed.
+
+        - A bug that caused installation of through-the-web product
+          distributions to fail.
+
+        
 
 
     Zope 2.0.1
