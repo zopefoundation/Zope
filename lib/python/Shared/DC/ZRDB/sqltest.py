@@ -46,7 +46,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.4 1998/04/27 18:57:23 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.5 1998/04/27 18:58:39 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: sqltest.py,v 1.4 1998/04/27 18:57:23 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 
@@ -118,7 +118,7 @@ class SQLTest:
 			'Invalid floating-point value for <em>%s</em>' % name)
 	    else:
 		v=str(v)
-		v=md.getitem('sql_quote',0)(v)
+		v=md.getitem('sql_quote__',0)(v)
 	        #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
 		#v="'%s'" % v
     
@@ -140,6 +140,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqltest.py,v $
+# Revision 1.5  1998/04/27 18:58:39  jim
+# Now use exported sql_quote__ function to quote strings.
+#
 # Revision 1.4  1998/04/27 18:57:23  jim
 # Now use exported sql quote function to quote strings.
 #

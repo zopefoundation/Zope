@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.43 1998/04/27 18:56:13 jim Exp $'''
-__version__='$Revision: 1.43 $'[11:-2]
+$Id: DA.py,v 1.44 1998/04/27 18:59:56 jim Exp $'''
+__version__='$Revision: 1.44 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -270,7 +270,7 @@ class DA(
 
 	argdata=self._argdata(REQUEST)
 	argdata['sql_delimiter']='\0'
-	argdata['sql_quote']=dbc.sql_quote__
+	argdata['sql_quote__']=dbc.sql_quote__
 	query=apply(self.template, (p,), argdata)
 
 	if src__: return query
@@ -311,7 +311,7 @@ class DA(
 	    else: p=None
 
 	    argdata['sql_delimiter']='\0'
-	    argdata['sql_quote']=dbc.sql_quote__
+	    argdata['sql_quote__']=dbc.sql_quote__
 	    query=apply(self.template,(p,),argdata)
 
 	    if self.cache_time_:
@@ -438,6 +438,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.44  1998/04/27 18:59:56  jim
+# Now use exported sql_quote__ function to quote strings.
+#
 # Revision 1.43  1998/04/27 18:56:13  jim
 # Now export an sql_quote function that is used by sqlvar and sqltest
 # to quote strings.

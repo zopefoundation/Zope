@@ -38,7 +38,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.1 1998/03/17 19:31:22 jim Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.2 1998/04/27 18:58:14 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -48,7 +48,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.1 1998/03/17 19:31:22 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from string import find, split, join, atoi, atof
@@ -98,8 +98,10 @@ class SQLVar:
 	    if not v and t=='nb':
 		raise ValueError, (
 		    'Invalid empty string value for <em>%s</em>' % name)
-	    if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
-	    v="'%s'" % v
+	    
+	    v=md.getitem('sql_quote__',0)(v)
+	    #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
+	    #v="'%s'" % v
 
 	return v
 
@@ -109,6 +111,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqlvar.py,v $
+# Revision 1.2  1998/04/27 18:58:14  jim
+# Now use exported sql_quote__ function to quote strings.
+#
 # Revision 1.1  1998/03/17 19:31:22  jim
 # added new sql tags
 #
