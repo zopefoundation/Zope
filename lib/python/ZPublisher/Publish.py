@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.54 1997/09/24 18:47:18 jim Exp $"""
+$Id: Publish.py,v 1.55 1997/09/26 19:15:47 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.54 1997/09/24 18:47:18 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 
 def main():
@@ -559,7 +559,7 @@ if __name__ == "__main__": main()
 import sys, os, string, types, cgi, regex, regsub, base64
 from string import *
 from CGIResponse import Response
-from urllib import quote
+from urllib import quote, unquote
 from cgi import FieldStorage, MiniFieldStorage
 
 UNSPECIFIED_ROLES=''
@@ -607,12 +607,12 @@ class ModulePublisher:
 	else:
 	    tuple_items={}
 
-	    type_re=regex.compile('\(:\|%3[aA]\)\([a-zA-Z][a-zA-Z0-9_]+\)')
+	    type_re=regex.compile(':[a-zA-Z][a-zA-Z0-9_]+')
 	    type_search=type_re.search
 	    lt=type([])
 	    CGI_name=isCGI_NAME
 	    for item in fslist:
-		key=item.name
+		key=unquote(item.name)
 		
 		try:
 		    if (item.file and
@@ -628,8 +628,8 @@ class ModulePublisher:
 
 		l=type_search(key)
 		while l >= 0:
-		    type_name=type_re.group(2)
-		    key=key[:l]+key[l+len(type_re.group(0)):]
+		    type_name=type_re.group(0)[1:]
+		    key=key[:l]+key[l+len(type_name)+1:]
 		    if type_name == 'list':
 			seqf=list
 		    elif type_name == 'tuple':
@@ -1465,6 +1465,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.55  1997/09/26 19:15:47  jim
+# Added url unquoting of form field names.
+#
 # Revision 1.54  1997/09/24 18:47:18  jim
 # Fixed bug in handling of case with body and no form data.
 #
