@@ -51,8 +51,8 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.47 1998/09/14 22:03:33 jim Exp $''' 
-__version__='$Revision: 1.47 $'[11:-2]
+'''$Id: DT_Util.py,v 1.48 1998/11/23 15:20:40 jim Exp $''' 
+__version__='$Revision: 1.48 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -144,7 +144,9 @@ def careful_getslice(md, seq, *indexes):
 
 import string, math, whrandom
 
-try: from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+try:
+    from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+    from cDocumentTemplate import cDocument
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 d=TemplateDict.__dict__
