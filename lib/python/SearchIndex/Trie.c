@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.2 1997/03/17 21:29:39 jim Exp $"
+"\n$Id: Trie.c,v 1.3 1997/03/17 23:17:30 jim Exp $"
 ;
 
 
@@ -130,6 +130,28 @@ Trie___getstate__(TrieObject *self, PyObject *args)
   Py_INCREF(Py_None);
   return Py_None;
 }
+
+static PyObject *
+Trie__p___reinit__(TrieObject *self, PyObject *args)
+{
+  PyObject *oid, *jar, *copy;
+
+  UNLESS(PyArg_ParseTuple(args, "OOO", &oid, &jar, &copy)) return NULL;
+  UNLESS(self->oid)
+    {
+      Py_INCREF(oid);
+      ASSIGN(self->oid, oid);
+    }
+  if(self->oid==oid || PyObject_Compare(self->oid, oid)==0)
+    {
+      Py_XDECREF(self->bins);
+      Py_XDECREF(self->value);
+      self->state=cPersistent_GHOST_STATE;
+    }
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 
 typedef struct {
   char *data;
@@ -254,6 +276,8 @@ static struct PyMethodDef Trie_methods[] = {
    "__getstate__() -- Get the persistent state of the trie"},
   {"__setstate__", 	(PyCFunction)Trie___setstate__, 	METH_VARARGS,
    "__setstate__(v) -- Set the persistent state of the trie"},
+  {"_p___reinit__",	(PyCFunction)Trie__p___reinit__,	METH_VARARGS,
+   "_p___reinit__(oid,jar,copy) -- Reinitialize from a newly created copy"},
   {"keys", 		(PyCFunction)Trie_keys,		METH_VARARGS,
    "keys() -- Get the keys of the trie"},
   {"values", 		(PyCFunction)Trie_values,		METH_VARARGS,
@@ -409,6 +433,8 @@ static PyMappingMethods Trie_as_mapping = {
 static void
 Trie_dealloc(TrieObject *self)
 {
+  Py_XDECREF(self->bins);
+  Py_XDECREF(self->value);
   PyMem_DEL(self);
 }
 
@@ -496,7 +522,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -536,6 +562,10 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.3  1997/03/17 23:17:30  jim
+  Added reinit method.  Need something better than this.
+  Fixed dealloc bug.
+
   Revision 1.2  1997/03/17 21:29:39  jim
   Moved external imports before module initialization to give
   better error handling.
