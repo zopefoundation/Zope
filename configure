@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.13 2003/06/24 22:35:34 chrism Exp $
-# $Revision: 1.13 $
+# $Id: configure,v 1.14 2003/07/08 19:27:16 chrism Exp $
+# $Revision: 1.14 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -152,7 +152,8 @@ out ""
 }
 
 out() {
-    if [ -z $QUIET ]; then
+    
+   if [ -z "$QUIET" ]; then
       echo $1
     fi
 }
