@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.26 $'[-2:][0]
+__version__ = '$Revision: 1.27 $'[-2:][0]
 
 from ZODB import POSException
 from ZODB.utils import p64, U64
@@ -177,13 +177,7 @@ class BDBMinimalStorage(BerkeleyBase, ConflictResolvingStorage):
                     soid, stid = srec
                     if soid <> oid:
                         break
-                    if stid == tid:
-                        # This is the current revision of the object, so
-                        # increment the refcounts of all referents
-                        data = self._pickles.get(oid+stid, txn=txn)
-                        assert data is not None
-                        self._update(deltas, data, 1)
-                    else:
+                    if stid <> tid:
                         # This is the previous revision of the object, so
                         # decref its referents and clean up its pickles.
                         cs.delete()
