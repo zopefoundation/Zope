@@ -49,7 +49,7 @@ Details
     Interfaces can be created in several ways.  The class statement
     can be used with one or more interfaces provided as base classes.
     This approach is convenient, syntactically, although it is a
-    little missleading, since interfaces are *not* classes.  A minimal
+    little misleading, since interfaces are *not* classes.  A minimal
     interface that can be used as a base is Interface.Base.
   
     You can also call Interface.new:
@@ -123,9 +123,9 @@ Details
     where I1, I2, and I3 are interfaces.
 
     Classes may provide (default) assertions for their instances
-    (and subclass instances).  The usual inheritence rules apply.
+    (and subclass instances).  The usual inheritance rules apply.
     Note that the definition of interface assertions makes composition
-    of interfaces straightforword.  For example:
+    of interfaces straightforward.  For example:
 
       class A:
 
@@ -203,7 +203,7 @@ Details
 
     When a class statement is used to define an interface, method
     definitions may be provided.  These get converted to Method
-    objects during interface creation.  For examle:
+    objects during interface creation.  For example:
 
       class I1(Interface.Base):
          
@@ -240,15 +240,15 @@ Details
     Attempts to call methods inherited from a deferred class will
     raise Interface.BrokenImplementation exceptions.
 
-  Trial baloon: abstract implementations
+  Trial balloon: abstract implementations
 
-    Tim Peter's has expressed the desire to provide abstract
-    implementations in an interface definitions, where, presumably, an
+    Tim Peters has expressed the desire to provide abstract
+    implementations in interface definitions, where, presumably, an
     abstract implementation uses only features defined by the
-    interface.  
+    interface.
 
     Perhaps if a method definition has a body (other than a doc
-    string) then the corresponding method in the deferred class
+    string), then the corresponding method in the deferred class
     will not be deferred. This would not be hard to do in CPython
     if I cheat and sniff at method bytecodes.
 
@@ -275,9 +275,9 @@ Details
   Standard interfaces
 
     The module Interface.Standard defines interfaces for standard
-    python obnjects.
+    python objects.
 
-    This module, and the modules it uses need a lot more work!
+    This module and the modules it uses need a lot more work!
 
   Handling existing built-in types
 
@@ -310,6 +310,6 @@ Issues
   o When the interface interfaces are finalized, C implementations
     will be highly desirable for performance reasons.
 
-  o Alot more work is needed on the standard interface hierarchy.    
+  o A lot more work is needed on the standard interface hierarchy.    
 
   ...
