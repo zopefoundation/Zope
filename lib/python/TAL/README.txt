@@ -1,7 +1,7 @@
 TAL - Template Attribute Language
 ---------------------------------
 
-This is a prototype implementation of TAL, the Zope Template Attribute
+This is an implementation of TAL, the Zope Template Attribute
 Language.  For TAL, see the Zope Presentation Templates ZWiki:
 
     http://dev.zope.org/Wikis/DevSite/Projects/ZPT/FrontPage
@@ -26,14 +26,13 @@ You need:
   unless you specify the -n option; this is done so that I don't
   accidentally use Python 2.x features.
 
-- Edit the setpath.py script to set the proper module search path; the
-  variable libPython should be set to the <Zope2>/lib/python directory
-  that you want to use.  (Again, optional.)
+- Create a .path file containing proper module search path; it should
+  point the <Zope2>/lib/python directory that you want to use.
 
 How To Play
 -----------
 
-(If you want to use Zope, don't forget to edit setpath.py, see above!)
+(Don't forget to edit .path, see above!)
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
@@ -86,7 +85,9 @@ TO DO
 
 - Should we preserve case of tags and attribute names in HTML?
 
-- If use-macro fails, it seems to omit the entire macro except for
-  slots, instead of leaving the existing text alone.
-
-- Create more unittest testcases.
+- The implementation of insertStructure is very heavy-handed, and
+  maybe should be simplified (possibly all it should do is not to
+  escape <, > and &).  It's also possible that the combination of
+  tal:replace and tal:attributes should not be required to do
+  attribute replacement on the inserted text -- this would require a
+  change to the TAL spec though.
