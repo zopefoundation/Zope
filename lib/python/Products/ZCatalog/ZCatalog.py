@@ -127,6 +127,7 @@ class ZCatalog(Folder, Persistent, Implicit):
           'manage_catalogClear', 'manage_addColumn', 'manage_delColumn',
           'manage_addIndex', 'manage_delIndex', 'manage_clearIndex',
           'manage_reindexIndex', 'manage_main', 'availableSplitters',
+          'manage_setProgress',
 
           # these two are deprecated:
           'manage_delColumns', 'manage_deleteIndex'
@@ -874,6 +875,16 @@ class ZCatalog(Folder, Persistent, Implicit):
           message='%s paths normalized, %s paths removed, and '
                   '%s unchanged.' % (len(fixed), len(removed), unchanged),
           action='./manage_main')
+
+    def manage_setProgress(self, pgthreshold=0, RESPONSE=None, URL1=None):
+        """Set parameter to perform logging of reindexing operations very 
+           'pgthreshold' objects
+        """
+
+        self.pgthreshold = pgthreshold
+        if RESPONSE:
+            RESPONSE.redirect(
+                URL1 + '/manage_main?manage_tabs_message=Catalog%20Changed')
 
     def manage_convertBTrees(self, threshold=200):
         """Convert the catalog's data structures to use BTrees package"""
