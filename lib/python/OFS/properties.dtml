@@ -23,7 +23,7 @@ The following properties are defined for this item.
 <dtml-if property_extensible_schema__>
 To <a href="#addpropform">
 add a new property</a>, enter a name, type and value for the new property 
-and click the &quot;Add&quot; button. 
+and click the &quot;Add&quot; button.
 </dtml-if>
 To change property values, edit the 
 values and click "Save Changes". 
@@ -45,7 +45,7 @@ values and click "Save Changes".
   <dtml-if "type == 'int'">
   <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
    value="<dtml-if "hasProperty(id)"><dtml-var 
-   "'%d' % getProperty(id)" html_quote></dtml-if>">
+   "'%s' % getProperty(id)" html_quote></dtml-if>">
   <dtml-elif "type == 'long'">
   <input type="text" name="<dtml-var id>:<dtml-var type>" size="35"
    value="<dtml-if "hasProperty(id)"><dtml-var 
@@ -103,17 +103,28 @@ values and click "Save Changes".
   </table>
   </dtml-if>
   </td>
+  <td align="left">
+  -- &dtml-type;
+  </td>
 </tr>
 </dtml-in>
 <tr>
-  <td align="left" valign="top" width="16">
-  </td>
-  <td align="left" valign="top" width="16">
-  </td>
+  <td colspan="2">&nbsp;</td>
   <td align="left" valign="top">
   <input type="submit" name="manage_editProperties:method" 
    value="Save Changes">
+<dtml-if property_extensible_schema__>
   <input type="submit" name="manage_delProperties:method" value="Delete">
+  </td>
+  <td>
+  <dtml-comment>
+  This needs some community review before exposing it officially.
+  <input type="submit" name="manage_propertyTypeForm:method" value="Change Names/Types">
+  </dtml-comment>
+  </td>
+<dtml-else>
+  <td>&nbsp;</td>
+</dtml-if>
   </td>
 </tr>
 </table>
@@ -142,7 +153,7 @@ of strings from which the selection(s) can be chosen.
 </p>
 <table>
 <tr>
-  <th align="left" valign="top">Id</th>
+  <th align="left" valign="top">Name</th>
   <td align="left" valign="top"><input type="text" name="id" size="20"></td>
   <th align="left" valign="top">Type</th>
   <td align="left" valign="top">

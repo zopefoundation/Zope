@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -169,6 +169,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     
     manage_propertiesForm=HTMLFile('properties', globals(),
                                    property_extensible_schema__=1)
+    manage_propertyTypeForm=HTMLFile('propertyType', globals())
 
     title=''
     _properties=({'id':'title', 'type': 'string', 'mode':'w'},)
@@ -180,6 +181,8 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                                'manage_delProperties',
                                'manage_changeProperties',
                                'manage_propertiesForm',
+                               'manage_propertyTypeForm',
+                               'manage_changePropertyTypes',
                                )),
         ('Access contents information',
          ('hasProperty', 'propertyIds', 'propertyValues','propertyItems',''),
@@ -337,6 +340,26 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 message='Your changes have been saved',
                 action ='manage_propertiesForm')
 
+    # Note - this is experimental, pending some community input.
+    
+    def manage_changePropertyTypes(self, old_ids, props, REQUEST=None):
+        """Replace one set of properties with another
+
+        Delete all properties that have ids in old_ids, then add a
+        property for each item in props.  Each item has a new_id,
+        new_value, and new_type.  The type of new_value should match
+        new_type.
+        """
+        err = self.manage_delProperties(old_ids)
+        if err:
+            if REQUEST is not None:
+                return err
+            return
+        for prop in props:
+            self._setProperty(prop.new_id, prop.new_value, prop.new_type)
+        if REQUEST is not None:
+            return self.manage_propertiesForm(self, REQUEST)
+            
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
