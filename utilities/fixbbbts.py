@@ -30,6 +30,7 @@ Copy file1 to file2 restamping the records.
 InvalidFormat='Format Error'
 Corrupted='Data Corruption'
 
+
 def main():
     import getopt, string, struct, time
     file__version__=3.0
@@ -88,4 +89,4 @@ def main():
         pos=pos+tlen
 
 if __name__=='__main__': main()
-            
+

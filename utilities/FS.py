@@ -107,7 +107,7 @@ class FS:
         self._tfile=tempfile.TemporaryFile()
         self._pos=4
         self._progress=None
-        
+
 
     def rpt(self, pos, oid, start, tname, user, t, p, first, newtrans):
         if pos is None:
@@ -184,7 +184,7 @@ class FS:
         id=self._serial
         user, desc = self._ud
         self._ud=None
-                        
+
         tlen=self._thl
         pos=self._pos
         tl=tlen+dlen
@@ -195,9 +195,9 @@ class FS:
             ))
         if user: write(user)
         if desc: write(desc)
-            
+
         cp(tfile, file, dlen)
-                
+
         write(stl)
         self._pos=pos+tl+8
 
@@ -220,7 +220,7 @@ class ZEXP:
 
         self._pos=4
         self._progress=None
-        
+
 
     def rpt(self, pos, oid, start, tname, user, t, p, first, newtrans):
         write=self._file.write
@@ -254,19 +254,19 @@ def cp(f1, f2, l):
     read=f1.read
     write=f2.write
     n=8192
-    
+
     while l > 0:
         if n > l: n=l
         d=read(n)
         write(d)
         l = l - len(d)
 
-    
+
 class Ghost: pass
 
 class Global:
     __safe_for_unpickling__=1
-    
+
     def __init__(self, m, n):
         self._module, self._name = m, n
 
@@ -289,12 +289,12 @@ def _global(m, n):
     elif m=='PersistentMapping': m='Persistence'
 
     return Global(m,n)
-    
+
 
 class Inst:
 
     _state=None
-    
+
     def __init__(self, c, args):
         self._cls=c
         self._args=args
@@ -320,7 +320,7 @@ class Unpickler(pickle.Unpickler):
         klass = _global(module, name)
         value=Inst(klass, args)
         self.append(value)
-            
+
     dispatch[INST] = load_inst
 
     def load_global(self):
@@ -339,7 +339,7 @@ class Unpickler(pickle.Unpickler):
             oid = p64(oid+1), klass
         else:
             oid = p64(oid+1)
-            
+
         Ghost=Ghost()
         Ghost.oid=oid
         return Ghost
@@ -398,10 +398,10 @@ class Pickler(pickle.Pickler):
         memo[id(object)] = (memo_len, object)
 
     dispatch[type(Ghost)] = save_global
-    
-    
+
+
 def fixpickle(p, oid):
-    
+
     pfile=StringIO(p)
     unpickler=Unpickler(pfile)
 
@@ -415,3 +415,4 @@ def fixpickle(p, oid):
     p=newp.getvalue()
 
     return p
+
