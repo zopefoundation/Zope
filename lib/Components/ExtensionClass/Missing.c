@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Missing.c,v 1.9 1999/06/10 20:09:47 jim Exp $
+  $Id: Missing.c,v 1.10 1999/08/25 20:15:29 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,9 +47,10 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.9 1999/06/10 20:09:47 jim Exp $"
+"\n$Id: Missing.c,v 1.10 1999/08/25 20:15:29 jim Exp $"
 ;
 
+#include <string.h>
 #include "ExtensionClass.h"
 
 /* Declarations for objects of type Missing */
@@ -207,11 +208,25 @@ static struct PyMethodDef reduce_ml[] = {
 static PyObject *
 Missing_getattr(PyObject *self, PyObject *name)
 {
-  char *c;
+  char *c, *legal;
 
   if(!(c=PyString_AsString(name))) return NULL;
 
-  if(*c=='_')
+  legal=c;
+  if (strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", 
+	     *legal) != NULL)
+    {
+      for (legal++; *legal; legal++)
+	if (strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", 
+		   *legal) == NULL) 
+	  {
+	    legal=NULL;
+	    break;
+	  }
+    }
+  else legal=NULL;
+
+  if(! legal)
     {
       if(strcmp(c,"__reduce__")==0)
 	{
@@ -289,7 +304,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -325,6 +340,9 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.10  1999/08/25 20:15:29  jim
+  Made getattr a bit pickler to prevent getting attributes like "%f5.3".
+
   Revision 1.9  1999/06/10 20:09:47  jim
   Updated to use new ExtensionClass destructor protocol.
 
