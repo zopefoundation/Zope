@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.31 1997/03/04 21:07:59 jim Exp $
+     $Id: cPickle.c,v 1.32 1997/03/04 23:14:16 chris Exp $
 
      Copyright 
 
@@ -912,24 +912,26 @@ save_tuple(Picklerobject *self, PyObject *args) {
     UNLESS(py_tuple_id = PyInt_FromLong((long)args))
         goto finally;
 
-    /*    if ((has_key = len && PyMapping_HasKey(self->memo, py_tuple_id)) < 0) */
-    if ((has_key = PyMapping_HasKey(self->memo, py_tuple_id)) < 0)
-        goto finally;
-
-    if (has_key) {
-        static char pop = POP;
-
-        while (i-- > 0) {
-            if ((*self->write_func)(self, &pop, 1) < 0)
-                goto finally;
-        }
-        
-        if (get(self, py_tuple_id) < 0)
+    if (len) {
+        if (has_key = PyMapping_HasKey(self->memo, py_tuple_id) < 0)
             goto finally;
 
-        res = 0;
-        goto finally;
+        if (has_key) {
+            static char pop = POP;
+
+            while (i-- > 0) {
+                if ((*self->write_func)(self, &pop, 1) < 0)
+                    goto finally;
+            }
+        
+            if (get(self, py_tuple_id) < 0)
+                goto finally;
+
+            res = 0;
+           goto finally;
+        }
     }
+
 
     if ((*self->write_func)(self, &tuple, 1) < 0) {
         goto finally;
@@ -3714,7 +3716,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.31 $";
+    char *rev="$Revision: 1.32 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
