@@ -17,7 +17,7 @@ $Id$"""
 import sys
 from cgi import escape
 from logging import getLogger
-from types import StringType, ListType, IntType, TupleType
+from types import IntType
 
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
@@ -115,35 +115,6 @@ class UnIndex(SimpleItem):
         self._index = OOBTree()
         self._unindex = IOBTree()
 
-    def _convertBTrees(self, threshold=200):
-        if type(self._index) is OOBTree: return
-
-        from BTrees.convert import convert
-
-        _index=self._index
-        self._index=OOBTree()
-
-        def convertSet(s,
-                       IITreeSet=IITreeSet, IntType=type(0),
-                       type=type, len=len,
-                       doneTypes = (IntType, IITreeSet)):
-
-            if type(s) in doneTypes: return s
-
-            if len(s) == 1:
-                try: return s[0]  # convert to int
-                except: pass # This is just an optimization.
-
-            return IITreeSet(s)
-
-        convert(_index, self._index, threshold, convertSet)
-
-        _unindex=self._unindex
-        self._unindex=IOBTree()
-        convert(_unindex, self._unindex, threshold)
-
-        self.__len__=BTrees.Length.Length(len(_index))
-
     def __nonzero__(self):
         return not not self._unindex
 
@@ -161,7 +132,6 @@ class UnIndex(SimpleItem):
             histogram[entry] = histogram.get(entry, 0) + 1
 
         return histogram
-
 
     def referencedObjects(self):
         """Generate a list of IDs for which we have referenced objects."""
@@ -182,7 +152,6 @@ class UnIndex(SimpleItem):
         """Take the entry provided and remove any reference to documentId
         in its entry in the index.
         """
-        global _marker
         indexRow = self._index.get(entry, _marker)
         if indexRow is not _marker:
             try:
@@ -215,7 +184,6 @@ class UnIndex(SimpleItem):
 
         This will also deal with creating the entire row if necessary.
         """
-        global _marker
         indexRow = self._index.get(entry, _marker)
 
         # Make sure there's actually a row there already.  If not, create
@@ -248,7 +216,6 @@ class UnIndex(SimpleItem):
 
     def _index_object(self, documentId, obj, threshold=None, attr=''):
         """ index and object 'obj' with integer id 'documentId'"""
-        global _marker
         returnStatus = 0
 
         # First we need to see if there's anything interesting to look at
@@ -296,7 +263,6 @@ class UnIndex(SimpleItem):
         """ Unindex the object with integer id 'documentId' and don't
         raise an exception if we fail 
         """
-        global _marker
         unindexRecord = self._unindex.get(documentId, _marker)
         if unindexRecord is _marker:
             return None
