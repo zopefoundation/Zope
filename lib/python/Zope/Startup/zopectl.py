@@ -147,6 +147,14 @@ class ZopeCmd(ZDCmd):
                'Zope object)')
         os.system(cmdline)
 
+    def do_foreground(self, arg):
+        self.options.program[1:1] = ["-X", "debug-mode=on"]
+        try:
+            ZDCmd.do_foreground(self, arg)
+        finally:
+            self.options.program.remove("-X")
+            self.options.program.remove("debug-mode=on")
+
     def help_debug(self):
         print "debug -- run the Zope debugger to inspect your database"
         print "         manually using a Python interactive shell"
