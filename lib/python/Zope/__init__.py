@@ -33,6 +33,8 @@
 # old behavior is likely to cause problems as ZODB backends, like ZEO,
 # gain new features.
 
+from Zope.Startup.run import configure
+
 _began_startup = 0
 
 def startup():
@@ -61,8 +63,6 @@ def debug(*args, **kw):
     startup()
     import ZPublisher
     return ZPublisher.test('Zope', *args, **kw)
-
-from Zope.Startup.run import configure
 
 # Zope.App.startup.startup() sets the following variables in this module.
 DB = None
