@@ -11,11 +11,11 @@ Zope Logging
  example::
 
   $ python1.5.2 z2.py ZSYSLOG_SERVER="syslog.mydomain.com:514" \
-     STUPID_FILE_LOGGER=var/Zope.log"
+     STUPID_LOG_FILE=var/Zope.log"
 
  Currently, the following environment variables can be set:
 
-  STUPID_FILE_LOGGER="path"
+  STUPID_LOG_FILE="path"
 
    The stupid file logger writes Zope logging information to a file.
    It is not very smart about it - it just dumps it to a file and the
