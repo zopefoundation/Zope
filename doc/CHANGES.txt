@@ -242,9 +242,13 @@ Zope Changes
       - Collector #348: decapitate() now recognizes both \r\n and \n\n
         to be compliant with the HTTP RFC
 
-      - Collector 386: workaround for hanging FTP connections
+      - Collector #386: workaround for hanging FTP connections
         with NcFTP
 
+      - Collector #419: repaired off-by-1 errors and IndexErrors
+        when slicing BTree-based data structures.  For example,
+        an_IIBTree.items()[0:0] had length 1 (should be empty) if
+        the tree wsan't empty.
 
   Zope 2.5.1 beta 1
     
