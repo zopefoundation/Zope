@@ -82,8 +82,21 @@ __doc__='''Variable insertion parameters
 
        The parameter 'spacify' may be provided to cause underscores in
        the inserted value to be converted to spaces.
+
+    Truncation
+
+       The parameters 'size' and 'etc'  can be used to truncate long
+       strings.  If the 'size' parameter is specified, the string to
+       be inserted is truncated at the given length.  If a space
+       occurs in the second half of the truncated string, then the
+       string is further truncated to the right-most space.  After
+       truncation, the value given for the 'etc' parameter is added to
+       the string.  If the 'etc' parameter is not provided, then '...'
+       is used.  For example, if the value of spam is
+       '"blah blah blah blah"', then the tag       
+       '<!--#var spam size=10-->' inserts '"blah blah ..."'.
 '''
-__rcs_id__='$Id: DT_Var.py,v 1.3 1997/10/23 13:30:16 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.4 1997/10/23 14:27:47 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -137,7 +150,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.3 1997/10/23 13:30:16 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DT_Util import *
 
@@ -147,7 +160,8 @@ class Var:
 
     def __init__(self, args, fmt=''):
 	args = parse_params(args, name='', lower=1, upper=1, expr='',
-			    capitalize=1, spacify=1, null='', fmt='s')
+			    capitalize=1, spacify=1, null='', fmt='s',
+			    size=0, etc='...')
 	self.args=args
 	used=args.has_key
 
@@ -164,40 +178,60 @@ class Var:
 	else:
 	    val=val.eval(md)
 
-	__traceback_info__=name, val
+	args=self.args
+	have_arg=args.has_key
+
+	__traceback_info__=name, val, args
 
 	# handle special formats defined using fmt= first
-	if self.args.has_key('fmt'):
+	if have_arg('fmt'):
 	    try:
 		# first try a parameterless method of val
-		val = getattr(val,self.args['fmt'])()
+		val = getattr(val,args['fmt'])()
 	    except AttributeError:
 		try:
 		    # failing that, try a special format
-		    val = special_formats[self.args['fmt']](val)
+		    val = special_formats[args['fmt']](val)
 		except KeyError:
 		    try:
 			# last chance - a format string itself?
-			val = self.args['fmt'] % val
+			val = args['fmt'] % val
 		    except:
 			pass
 
 	# next, look for upper, lower, etc
-	if self.args.has_key('upper'):
+	if have_arg('upper'):
 	    val = upper(val)
-	if self.args.has_key('lower'):
+	if have_arg('lower'):
 	    val = lower(val)
-	if self.args.has_key('capitalize'):
+	if have_arg('capitalize'):
 	    val = capitalize(val)
-	if self.args.has_key('spacify'):
+	if have_arg('spacify'):
 	    val = gsub('_', ' ', val)
 
 	# after this, if it's null and a null= option was given, return that
-	if not val and self.args.has_key('null'):
-	    return self.args['null']
+	if not val and have_arg('null'):
+	    return args['null']
 
 	# finally, pump it through the actual string format...
-	return ('%'+self.fmt) % val
+	val = ('%'+self.fmt) % val
+
+	if have_arg('size'):
+	    size=args['size']
+	    try: size=atoi(size)
+	    except: raise 'Document Error',(
+		'''a <code>size</code> attribute was used in a <code>var</code>
+		tag with a non-integer value.''')
+	    if len(val) > size:
+		val=val[:size]
+		l=rfind(val,' ')
+		if l > size/2:
+		    val=val[:l+1]
+		if have_arg('etc'): l=args['etc']
+		else: l='...'
+		val=val+l
+
+	return val
 
     __call__=render
 
@@ -264,6 +298,9 @@ special_formats={
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.4  1997/10/23 14:27:47  jim
+# Added truncation support via size and etc parameters.
+#
 # Revision 1.3  1997/10/23 13:30:16  jim
 # Added comma-numeric format.
 #
