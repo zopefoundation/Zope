@@ -18,7 +18,7 @@ import os
 import sys
 import test.regrtest
 
-ec_tests = ["test_AqAlg", "test_MultiMapping", "test_Sync",
+ec_tests = ["test_AqAlg", "test_MultiMapping", "test_Missing",
             "test_ThreadLock", "test_acquisition", "test_add",
             "test_binding", "test_explicit_acquisition",
             "test_method_hook"]
