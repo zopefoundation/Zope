@@ -108,6 +108,7 @@ make('lib','python','SearchIndex')
 make('lib','python','Shared','DC','xml','pyexpat')
 make('lib','python','Products','PluginIndexes','TextIndex','Splitter','ZopeSplitter')
 make('lib','python','Products','PluginIndexes','TextIndex','Splitter','ISO_8859_1_Splitter')
+make('lib','python','Products','PluginIndexes','TextIndex','Splitter','UnicodeSplitter')
 
 # Try to link/copy cPickle.so to BoboPOS to out-fox
 # stock Python cPickle if using Python 1.5.2.
