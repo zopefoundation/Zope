@@ -4,8 +4,8 @@ from AccessControl.Role import RoleManager
 import Acquisition, sys, regex, string, types
 import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.11 1997/09/16 16:59:01 jeffrey Exp $ 
-__version__ = "$Revision: 1.11 $"[11:-2]
+#$Id: MailHost.py,v 1.12 1997/09/16 18:15:17 jeffrey Exp $ 
+__version__ = "$Revision: 1.12 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -104,6 +104,7 @@ class SendMail:
         self.conn.connect(smtpHost, smtpPort)
         self.conn.send("helo "+localHost+"\r\n")
         self._check('220')
+	self.getLine()			  #extra lines for some servers
 
     def __del__(self):
         self._close()
@@ -126,7 +127,7 @@ class SendMail:
 
 	if code > 500:
             #raise smtpError, "Expected %s, got %s from SMTP" % (lev, data[:3])
-	    raise smtpError "Recieved error code %s from SMTP: %s" % (code, line)
+	    raise smtpError, "Recieved error code %s from SMTP: %s" % (code, line)
 
     def send(self, mfrom, mto, subj, body):
         self.conn.send("mail from:<%s>\n"%mfrom)
@@ -182,6 +183,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.12  1997/09/16 18:15:17  jeffrey
+#Further SMTP updates...
+#
 #Revision 1.11  1997/09/16 16:59:01  jeffrey
 #New SMTP checking..?
 #
