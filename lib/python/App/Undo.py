@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.17 1999/11/24 12:12:29 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Undo.py,v 1.18 1999/12/02 00:43:34 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -141,9 +141,9 @@ class UndoSupport(ExtensionClass.Base):
                 'last_transaction',
                 first_transaction+PrincipiaUndoBatchSize)
 
-        db=self._p_jar.db
-        r=db().undoInfo(first_transaction, last_transaction,
-                        {'user_name': Prefix(path)})
+        r=Globals.UndoManager.undoInfo(
+            first_transaction, last_transaction,
+            {'user_name': Prefix(path)})
 
         for d in r: d['time']=DateTime(d['time'])
 
@@ -152,9 +152,7 @@ class UndoSupport(ExtensionClass.Base):
     def manage_undo_transactions(self, transaction_info, REQUEST=None):
         """
         """
-        jar=self._p_jar
-        db=jar.db
-        undo=db().undo
+        undo=Globals.UndoManager.undo
         for i in transaction_info: undo(i)
             
             
