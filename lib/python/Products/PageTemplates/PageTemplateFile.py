@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -102,11 +102,6 @@ from Expressions import SecureModuleImporter
 from ComputedAttribute import ComputedAttribute
 from ExtensionClass import Base
 
-class MacroCollection(Base):
-    def __of__(self, parent):
-        parent._cook_check()
-        return parent._v_macros
-
 class PageTemplateFile(Script, PageTemplate, Traversable):
     "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
      
@@ -116,7 +111,6 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
     func_code = FuncCode((), 0)
     _need__name__=1
     _v_last_read=0
-    macros = MacroCollection()
 
     _default_bindings = {'name_subpath': 'traverse_subpath'}
 
@@ -173,6 +167,10 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         finally:
             security.removeContext(self)
 
+    def pt_macro(self):
+        self._cook_check()
+        return PageTemplate.pt_macro(self)
+
     def _cook_check(self):
         if self._v_last_read and not DevelopmentMode:
             return
@@ -193,7 +191,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         """Return expanded document source."""
 
         if RESPONSE is not None:
-            RESPONSE.setHeader('Content-Type', self.content_type)
+            RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
     def _get__roles__(self):
