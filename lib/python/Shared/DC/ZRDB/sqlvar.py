@@ -38,7 +38,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.3 1998/07/29 15:09:14 jim Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.4 1998/09/04 20:45:03 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -48,11 +48,13 @@ __rcs_id__='$Id: sqlvar.py,v 1.3 1998/07/29 15:09:14 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
-from DocumentTemplate.DT_Util import *
+from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
 StringType=type('')
+
+str=__builtins__['str']
 
 class SQLVar: 
     name='sqlvar'
@@ -120,6 +122,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqlvar.py,v $
+# Revision 1.4  1998/09/04 20:45:03  jim
+# fixed namespace screw up due to from DT_Util import *
+#
 # Revision 1.3  1998/07/29 15:09:14  jim
 # Added expr to sqlvar
 #

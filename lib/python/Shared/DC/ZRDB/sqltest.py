@@ -46,7 +46,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.5 1998/04/27 18:58:39 jim Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.6 1998/09/04 20:45:02 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,9 +56,10 @@ __rcs_id__='$Id: sqltest.py,v 1.5 1998/04/27 18:58:39 jim Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
-from DocumentTemplate.DT_Util import *
+from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
+str=__builtins__['str']
 
 from string import find, split, join, atoi, atof
 from types import ListType, TupleType, StringType
@@ -140,6 +141,9 @@ valid_type={'int':1, 'float':1, 'string':1, 'nb': 1}.has_key
 
 ############################################################################
 # $Log: sqltest.py,v $
+# Revision 1.6  1998/09/04 20:45:02  jim
+# fixed namespace screw up due to from DT_Util import *
+#
 # Revision 1.5  1998/04/27 18:58:39  jim
 # Now use exported sql_quote__ function to quote strings.
 #

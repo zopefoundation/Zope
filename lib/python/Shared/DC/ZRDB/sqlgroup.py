@@ -57,10 +57,11 @@
 #       rights reserved.
 #
 ############################################################################ 
-__rcs_id__='$Id: sqlgroup.py,v 1.3 1998/04/02 21:33:38 jim Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: sqlgroup.py,v 1.4 1998/09/04 20:45:02 jim Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
-from DocumentTemplate.DT_Util import *
+from DocumentTemplate.DT_Util import parse_params
+str=__builtins__['str']
 from string import strip, join
 import sys
 
@@ -106,6 +107,9 @@ class SQLGroup:
 ##########################################################################
 #
 # $Log: sqlgroup.py,v $
+# Revision 1.4  1998/09/04 20:45:02  jim
+# fixed namespace screw up due to from DT_Util import *
+#
 # Revision 1.3  1998/04/02 21:33:38  jim
 # Added where attribute.
 #
