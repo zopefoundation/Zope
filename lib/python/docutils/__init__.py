@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.2.10.3.8.1 $
-# Date: $Date: 2004/05/12 19:57:37 $
+# Revision: $Revision: 1.2.10.5 $
+# Date: $Date: 2004/06/19 06:33:31 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -161,3 +161,8 @@ class Component(SettingsSpec, TransformSpec):
         a certain input context or output format.
         """
         return format in self.supported
+
+import sys, os
+home = os.path.dirname(__file__)
+if not home in sys.path:
+    sys.path.append(home) 
