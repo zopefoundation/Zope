@@ -84,12 +84,10 @@
 ##############################################################################
 
 import sys
-from medusa import max_sockets
+sys.path.append("ZServer/medusa/test")
 
-# We want to use updated asynchat and asyncore if using Python1
-if sys.version[:1] < '2':
-    import async1x
-    del async1x
+import max_sockets
+
 
 CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
