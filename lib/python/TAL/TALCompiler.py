@@ -127,6 +127,7 @@ class DummyCompiler:
 class METALCompiler(DOMVisitor):
 
     def __init__(self, document, expressionCompiler=None):
+        self.document = document
         DOMVisitor.__init__(self, document)
         if not expressionCompiler:
             expressionCompiler = DummyCompiler()
@@ -378,10 +379,12 @@ class TALCompiler(METALCompiler):
         if insert:
             ok = self.doInsert(node, insert)
         if not ok and replace:
-            # XXX Check that this isn't the documentElement
+            if node.isSameNode(self.document.documentElement):
+                raise TALError("can't use replace on the document element")
             ok = self.doReplace(node, replace)
         if not ok and repeat:
-            # XXX Check that this isn't the documentElement
+            if node.isSameNode(self.document.documentElement):
+                raise TALError("can't use repeat on the document element")
             ok = self.doRepeat(node, repeat)
         if not ok:
             self.emitElement(node)
