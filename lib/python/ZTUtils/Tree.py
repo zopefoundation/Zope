@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.14 2002/10/07 19:43:14 mj Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Tree.py,v 1.15 2003/04/25 16:32:02 evan Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -271,8 +271,10 @@ def encodeExpansion(nodes, compress=1):
         node.expansion_number = n
         n = n + 1
     result = ':'.join(steps)
-    if compress:
-        result = ':'  + b2a(zlib.compress(result, 9))
+    if compress and len(result) > 2:
+        zresult = ':'  + b2a(zlib.compress(result, 9))
+        if len(zresult) < len(result):
+            result = zresult
     return result
 
 def decodeExpansion(s, nth=None):
