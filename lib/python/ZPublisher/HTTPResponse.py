@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.26 2000/03/31 17:11:33 jim Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: HTTPResponse.py,v 1.27 2000/05/12 20:12:29 shane Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -188,6 +188,7 @@ class HTTPResponse(BaseResponse):
     body=''
     realm='Zope'
     _error_format='text/html'
+    _locked_status = 0
 
     def __init__(self,body='',status=200,headers=None,
                  stdout=sys.stdout, stderr=sys.stderr,):
@@ -229,6 +230,11 @@ class HTTPResponse(BaseResponse):
         NotFound, InternalError, NotImplemented, BadGateway,
         ServiceUnavailable } that will be converted to the correct
         integer value. '''
+        if self._locked_status:
+            # Don't change the response status.
+            # It has already been determined.
+            return
+                
         if type(status) is types.StringType:
             status=lower(status)
         if status_codes.has_key(status): status=status_codes[status]
@@ -448,6 +454,7 @@ class HTTPResponse(BaseResponse):
     def redirect(self, location):
         """Cause a redirection without raising an error"""
         self.status=302
+        self._locked_status = 1  # Don't let anything change the status code.
         headers=self.headers
         headers['status']='302 Moved Temporarily'
         headers['location']=location
