@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.38 1999/03/09 16:05:12 klm Exp $'''
-__version__='$Revision: 1.38 $'[11:-2]
+$Id: SimpleItem.py,v 1.39 1999/03/09 16:10:54 klm Exp $'''
+__version__='$Revision: 1.39 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from webdav.Resource import Resource
@@ -146,9 +146,9 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         try:
             m=self.manage_options[0]['action']
             if m=='manage_workspace': raise TypeError
-	except: return 'This object has no management interface'
+        except: return 'This object has no management interface'
         
-	return getattr(self, m)(self, REQUEST)
+        return getattr(self, m)(self, REQUEST)
 
     def title_or_id(self):
         """
