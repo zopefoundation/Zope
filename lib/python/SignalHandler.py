@@ -13,7 +13,7 @@
 
 """Signal handling dispatcher."""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from ZServer import asyncore
 import sys, os, zdaemon, ZLogger
@@ -60,9 +60,12 @@ class SignalHandler:
         for handler in self.registry.get(signum, []):
             # Never let a bad handler prevent the standard signal
             # handlers from running.
-            try:    handler()
-            except: pass
-
+            try: handler()
+            except SystemExit:
+                # if we trap SystemExit, we can't restart
+                raise
+            except:
+                pass
 
     # Builtin signal handlers for clean shutdown, restart and log rotation.
 
