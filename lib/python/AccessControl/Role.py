@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -283,7 +283,7 @@ class Permission:
 		if hasattr(attr, '__roles__'):
 		    data=attr.__roles__
 		    if data is None: data=[]
-		    elif type(data) is not ListType: data=list(data)
+		    else: data=list(data)
 		else: data=[]
 		for role in roles: data.append(role)
 		first=0
@@ -308,7 +308,7 @@ class Permission:
 		if hasattr(attr, '__roles__'):
 		    data=attr.__roles__
 		    if data is None: data=[]
-		    elif type(data) is not ListType: data=list(data)
+		    else: data=list(data)
 		else: data=['Shared']
 		for role in roles:
 		    if role in data: data.remove(role)
