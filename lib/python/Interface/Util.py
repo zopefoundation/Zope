@@ -14,7 +14,7 @@ def _ii(klass, items):
     for k, v in klass.__dict__.items():
         if type(v) is not FunctionType or not v.__doc__:
             continue
-        if k[:1]=='_' and not (len(k) > 4 and k[:2]=='__' and k[-2:]=='__'):
+        if k[:1]=='_' and not (k[:2]=='__' and k[-2:]=='__'):
             continue
         items[k]=v
     for b in klass.__bases__: _ii(b)
