@@ -129,7 +129,7 @@ class Lexicon(Persistent, Implicit):
 
     def get(self, key):
         """  """
-        return self._lexicon[key]
+        return list(self._lexicon[key])
 
     def __len__(self):
         return len(self._lexicon)
@@ -151,10 +151,6 @@ class Lexicon(Persistent, Implicit):
             if expr.search(x):
                 hits.append(x)
         return hits
-
-
-
-
 
 
 
