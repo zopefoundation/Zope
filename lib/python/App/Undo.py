@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.7 1998/01/12 16:50:32 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Undo.py,v 1.8 1998/01/12 17:58:39 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -20,25 +20,47 @@ from string import atof, find, atoi, split, rfind
 
 class UndoSupport:
 
-    manage_UndoForm=Globals.HTMLFile('undo', globals(),
-				     batch_size=20, first_transaction=0,
-				     last_transaction=20)
+    manage_UndoForm=Globals.HTMLFile(
+	'undo', globals(),
+	PrincipiaUndoBatchSize=20,
+	first_transaction=0, last_transaction=20)
+
+    def get_request_var_or_attr(self, name, default):
+	if hasattr(self, 'REQUEST'):
+	    REQUEST=self.REQUEST
+	    if REQUEST.has_key(name): return REQUEST[name]
+	    if hasattr(self, name): v=getattr(self, name)
+	    else: v=default
+	    REQUEST[name]=v
+	    return v
+	else:
+	    if hasattr(self, name): v=getattr(self, name)
+	    else: v=default
+	    return v
+	    
+		
 
     def undoable_transactions(self, AUTHENTICATION_PATH=None,
 			      first_transaction=None,
 			      last_transaction=None,
-			      batch_size=20):
+			      PrincipiaUndoBatchSize=None):
 
 	if AUTHENTICATION_PATH is None:
 	    path=self.REQUEST['AUTHENTICATION_PATH']
 	else: path=AUTHENTICATION_PATH
 
 	if first_transaction is None:
-	    try: first_transaction=self.REQUEST['first_transaction']
-	    except: first_transaction=0
+	    first_transaction=self.get_request_var_or_attr(
+		'first_transaction', 0)
+
+	if PrincipiaUndoBatchSize is None:
+	    PrincipiaUndoBatchSize=self.get_request_var_or_attr(
+		'PrincipiaUndoBatchSize', 20)
+
 	if last_transaction is None:
-	    try: last_transaction=self.REQUEST['last_transaction']
-	    except: last_transaction=first_transaction+batch_size
+	    last_transaction=self.get_request_var_or_attr(
+		'last_transaction',
+		first_transaction+PrincipiaUndoBatchSize)
 
 	db=self._p_jar.db
 
@@ -90,6 +112,9 @@ Globals.default__class_init__(UndoSupport)
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.8  1998/01/12 17:58:39  jim
+# Additional changes to support supplying batch size as a parameter.
+#
 # Revision 1.7  1998/01/12 16:50:32  jim
 # Made some changes to enhance batch processing.
 # Batch size is also now a parameter.
