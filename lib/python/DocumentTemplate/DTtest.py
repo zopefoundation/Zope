@@ -2,7 +2,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.4 1998/04/02 17:37:38 jim Exp $'
+__rcs_id__='$Id: DTtest.py,v 1.5 1998/05/14 16:24:34 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: DTtest.py,v 1.4 1998/04/02 17:37:38 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -485,6 +485,21 @@ def test12():
     except: return
     raise 'DocumentTemplate bug', (
 	'Puke error not properly propigated in test 12')
+   
+def test13():
+   "Test automatic rendering of callable obnjects"
+   class C:
+      x=1
+      def y(self): return self.x*2
+      h=HTML("The h method, <!--#var x--> <!--#var y-->")
+      h2=HTML("The h2 method")
+
+   print HTML("<!--#var x-->, <!--#var y-->, <!--#var h-->")(C())
+   print HTML(
+      """
+      <!--#var expr="_.render(i.x)"-->, 
+      <!--#var expr="_.render(i.y)"-->, 
+      <!--#var expr="_.render(i.h2)"-->""")(i=C())
 
 def main():
 	import traceback
@@ -518,13 +533,6 @@ def main():
 	print 'Test 11', '='*60
 	try: test11()
 	except: traceback.print_exc()
-
-def test13():
-    print HTML('''
-    <!--#in items-->
-      <!--#var sequence-key-->: <!--#var sequence-item-->
-    <!--#/in items-->
-    ''')({'spam':'eggs', 'cool':'DC'})
     
 
 if __name__ == "__main__":
@@ -534,6 +542,9 @@ if __name__ == "__main__":
 
 ############################################################################
 # $Log: DTtest.py,v $
+# Revision 1.5  1998/05/14 16:24:34  jim
+# Add method to test automatic rendering of vars.
+#
 # Revision 1.4  1998/04/02 17:37:38  jim
 # Major redesign of block rendering. The code inside a block tag is
 # compiled as a template but only the templates blocks are saved, and
