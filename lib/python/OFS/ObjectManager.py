@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.15 1997/11/06 15:39:30 jim Exp $"""
+$Id: ObjectManager.py,v 1.16 1997/11/06 15:41:48 jim Exp $"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -323,7 +323,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 	        return MessageDialog(
 	        title  ='Cannot delete %s' % n,
 	        message='The property <I>%s</I> cannot be deleted.' % n,
-	        action =REQUEST['PARENT_URL']+'/manage_propertiesForm',
+	        action ='manage_propertiesForm',
 	        target ='manage_main')
 
 	    try:    self._delProperty(n)
@@ -399,6 +399,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.16  1997/11/06 15:41:48  jim
+# Got rid of PARENT_URL in deleteProperties error dialog.
+#
 # Revision 1.15  1997/11/06 15:39:30  jim
 # Modified to pass access radio box settings into add templates.
 #
