@@ -2,12 +2,12 @@
 <HEAD>
 <TITLE>Zope Help System</TITLE>
 </HEAD>
-<FRAMESET COLS="225,*">
+<FRAMESET COLS="200,*">
 <FRAME SRC="menu" NAME="help_menu"
 MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
 <FRAME
 <dtml-if "_.has_key('help_url')">
-SRC="<dtml-var help_url>"
+SRC="<dtml-var SCRIPT_NAME><dtml-var help_url>"
 <dtml-else>
 SRC="main"
 </dtml-if>

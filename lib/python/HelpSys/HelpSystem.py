@@ -154,7 +154,7 @@ class HelpSystem(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         Insert a help button linked to a help topic.
         """
-        return self.button(self, product=product, topic=topic)
+        return self.button(self, self.REQUEST, product=product, topic=topic)
 
         
 class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
