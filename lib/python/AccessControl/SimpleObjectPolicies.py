@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.7 2001/04/27 20:27:37 shane Exp $''' 
-__version__='$Revision: 1.7 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.8 2001/06/21 17:15:05 shane Exp $''' 
+__version__='$Revision: 1.8 $'[11:-2] 
 
 _noroles=[] # this is imported from various places
 
@@ -98,6 +98,8 @@ ContainerAssertions={
     type(()): 1,
     type([]): 1,
     type({}): 1,
+    type(''): 1,
+    type(u''): 1,
     }
 
 class _dummy_class: pass
