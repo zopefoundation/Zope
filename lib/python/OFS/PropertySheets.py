@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 import time,  App.Management, Globals, sys
 from webdav.WriteLockInterface import WriteLockInterface
@@ -331,10 +331,9 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 # Quote non-xml items here?
                 attrs=''
 
-            if hasattr(self,"dav__"+name):
-                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
-            else:
-                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, xml_escape(value), name)
+            if not hasattr(self,"dav__"+name):
+                value = xml_escape(value)
+            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
 
             result.append(prop)
         if not result: return ''
@@ -382,8 +381,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
             else:
                 # quote non-xml items here?
                 attrs=''
+            if not hasattr(self, 'dav__%s' % name):
+                value = xml_escape(value)
             prop='<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
-                 name, attrs, xml_id, value, name)
+                name, attrs, xml_id, value, name)
             code='200 OK'
             if not result.has_key(code):
                 result[code]=[prop]
