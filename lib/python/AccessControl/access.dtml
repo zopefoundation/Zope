@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<TITLE>Security</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+
+<P>
+The listing below shows the current security settings for this item. 
+Permissions are rows and roles are columns.  Checkboxes are used to
+indicate where roles are assigned permissions.  
+
+<!--#with expr="_.namespace(valid_roles=valid_roles())"-->
+<FORM ACTION="manage_changePermissions" METHOD="POST">
+<TABLE>
+<tr>
+  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <td> </td>
+  <!--#/unless-->
+  <td> </td>
+  <td aligh=left colspan=<!--#var expr="_.len(valid_roles)"-->>
+  <strong>Roles:</strong></th>
+</tr>
+<tr>
+  <!--#unless isTopLevelPrincipiaApplicationObject-->
+  <th>Acquire permission settings</th>
+  <!--#/unless-->
+  <th>Permission</th>
+  <!--#in valid_roles-->
+  <th><a href="manage_roleForm?role_to_manage=<!--#
+               var sequence-item url_quote-->">
+      <!--#var sequence-item--></a></th>
+  <!--#/in valid_roles-->
+</tr>
+<!--#in permission_settings mapping-->
+  <tr>
+    <!--#unless isTopLevelPrincipiaApplicationObject-->
+    <td align=center>
+        <input type=checkbox
+               name=a<!--#var sequence-index-->
+               <!--#var acquire-->>
+    </td>
+    <!--#/unless-->
+    <th align=left>
+        <a href="manage_permissionForm?permission_to_manage=<!--#
+               var name url_quote-->">
+        <!--#var name--></a></th>
+    <!--#in roles mapping-->
+    <td align=center>
+       <input type=checkbox name=<!--#var name--> <!--#var checked-->>
+    </td>
+    <!--#/in-->
+  </tr>
+<!--#/in permission_settings-->
+<tr>
+<!--#if isTopLevelPrincipiaApplicationObject-->
+<td colspan=<!--#var expr="_.len(valid_roles)+1"--> align=center>
+<!--#else-->
+<td colspan=<!--#var expr="_.len(valid_roles)+2"--> align=center>
+<!--#/if-->
+<input type=submit value="Change">
+</td></tr>
+</table>
+</form>
+<!--#/with-->
+
+<P> 
+<FORM ACTION="manage_defined_roles" METHOD="POST">
+<TABLE CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>
+  User defined roles
+  </STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="role" SIZE="16">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add Role">
+  </TD>
+</TR>
+<!--#if userdefined_roles-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="roles:list">
+  <!--#in userdefined_roles-->
+  <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/in userdefined_roles-->
+  </SELECT>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete Role">
+  </TD>
+</TR>
+<!--#/if userdefined_roles-->
+</TABLE>
+</FORM>
+
+</BODY>
+</HTML>

@@ -1,0 +1,24 @@
+<html><head><title>Manage Permission</title></head>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<!--#if manage_tabs-->
+<!--#var manage_tabs-->
+<!--#/if manage_tabs-->
+
+<FORM ACTION="manage_permission" METHOD="POST">
+
+<input type=hidden name=permission_to_manage
+       value="<!--#var permission_to_manage-->">
+Roles assigned to permission
+<strong><em><!--#var permission_to_manage--></em></strong>:<br>
+<select name=roles:list multiple size=10>
+<!--#in expr="rolesOfPermission(permission_to_manage)" mapping=1-->
+    <option <!--#var selected-->><!--#var name--></option>
+<!--#/in-->
+</select>
+<!--#unless isTopLevelPrincipiaApplicationObject-->
+  <br>Also use roles acquired from folders containing this object:
+        <input type=checkbox name=acquire
+           <!--#var expr="acquiredRolesAreUsedBy(permission_to_manage)"-->>
+<!--#/unless-->
+<p><input type=submit value="Change">
+</form></body></html>
