@@ -125,7 +125,7 @@ class Image:
     You can control the image display more precisely with the 'tag'
     method. For example::
 
-      <dtml-var "ImageObject.tag(border=5, align=left)">
+      <dtml-var "ImageObject.tag(border='5', align='left')">
     
     """
 
