@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -276,8 +276,11 @@ class PropertySheet(Persistent, Implicit):
 
     def propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
-        __traceback_info__=(`self`, `self.p_self()`, `self.id`, `self.xml_namespace()`, `hasattr(self.p_self(), '__propsets__')`)
+        # Some ZClass instances dont seem to have an _properties, so
+        # we have to fake it...
         return self.p_self()._properties
+
+
 
 
     def _propdict(self):
@@ -537,13 +540,14 @@ class PropertySheets(Implicit, App.Management.Tabs):
     
     id='propertysheets'
 
-    default=DefaultProperties()
     webdav =DAVProperties()
-
+    def _get_defaults(self):
+        return (self.webdav,)
+    
     def __propsets__(self):
         propsets=self.aq_parent.__propsets__
         __traceback_info__= propsets, type(propsets)
-        return (self.default, self.webdav) + propsets
+        return self._get_defaults() + propsets
 
     def __bobo_traverse__(self, REQUEST, name=None):
         for propset in self.__propsets__():
@@ -630,6 +634,15 @@ class PropertySheets(Implicit, App.Management.Tabs):
         return PropertySheets.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
+
+class DefaultPropertySheets(PropertySheets):
+    """A PropertySheets container that contains a default property
+       sheet for compatibility with the arbitrary property mgmt
+       design of Zope PropertyManagers."""
+    default=DefaultProperties()
+    webdav =DAVProperties()
+    def _get_defaults(self):
+        return (self.default, self.webdav)
 
 
 class FixedSchema(PropertySheet):

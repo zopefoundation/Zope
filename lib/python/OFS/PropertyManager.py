@@ -84,9 +84,10 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import ExtensionClass
+from PropertySheets import DefaultPropertySheets, vps
 from ZPublisher.Converters import type_converters
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split
@@ -95,7 +96,7 @@ from Acquisition import Implicit
 from Globals import Persistent
 from DateTime import DateTime
 
-from PropertySheets import vps
+
 
 class PropertyManager(ExtensionClass.Base):
     """
@@ -173,7 +174,7 @@ class PropertyManager(ExtensionClass.Base):
         )
 
     __propsets__=()
-    propertysheets=vps()
+    propertysheets=vps(DefaultPropertySheets)
 
     def valid_property_id(self, id):
         if not id or id[:1]=='_' or (' ' in id) \

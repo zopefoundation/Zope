@@ -84,15 +84,16 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.67 1999/04/19 22:30:29 jim Exp $"""
+$Id: ObjectManager.py,v 1.68 1999/04/22 15:55:39 brian Exp $"""
 
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
 from webdav.NullResource import NullResource
+from webdav.Collection import Collection
 from urllib import quote
 from cStringIO import StringIO
 import marshal
@@ -107,6 +108,7 @@ class ObjectManager(
     Acquisition.Implicit,
     Persistent,
     App.Undo.UndoSupport,
+    Collection,
     ):
     """Generic object manager
 
@@ -199,11 +201,16 @@ class ObjectManager(
     def _setObject(self,id,object,roles=None,user=None):
         v=self._checkId(id)
         if v is not None: id=v
-        
         try:    t=object.meta_type
         except: t=None
         self._objects=self._objects+({'id':id,'meta_type':t},)
         self._setOb(id,object)
+        # Try to give user the local role "Owner".
+        if hasattr(self, 'REQUEST') and hasattr(object, '__ac_local_roles__'):
+            user=self.REQUEST['AUTHENTICATED_USER']
+            name=user.getUserName()
+            if name != 'Anonymous':
+                object.manage_setLocalRoles(name, ['Owner'])
         return id
 
     def _delObject(self,id):
