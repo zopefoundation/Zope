@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -915,7 +915,7 @@ class DateTime:
         return d<=self._month_len[(y%4==0 and (y%100!=0 or y%400==0))][m]
 
     def _validTime(self,h,m,s):
-        return h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=59
+        return h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s < 60
 
     def __getattr__(self, name):
         if '%' in name: return strftimeFormatter(self, name)
