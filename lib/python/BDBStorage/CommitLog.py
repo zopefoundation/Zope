@@ -16,6 +16,8 @@
 # using the CommitLog instance, and derived classes provide a more specific
 # interface for the storage.
 
+__version__ = '$Revision: 1.9 $'.split()[-2:][0]
+
 import sha
 import struct
 import os

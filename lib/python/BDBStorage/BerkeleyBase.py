@@ -25,8 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.10 $
-__version__ = '0.1'
+__version__ = '$Revision: 1.11 $'.split()[-2:][0]
 
 
 
