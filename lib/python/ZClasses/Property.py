@@ -194,20 +194,21 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
             --><!--#var sequence-item-->\n<!--#/in--></textarea>'''
                     % (id, id) 
                     )
+
                     
         if t=='selection':
             return ('''
-            <!--#if "_.has_key('%(select_variable)s')"-->
+            <!--#if "_.has_key('%(id)s')"-->
             <select name="%(id)s">
-              <!--#in %(select_variable)s-->
+              <!--#in "_.string.split('%(select_variable)s')"-->
                 <option
-                  <!--#if "_['sequence-item']==%(id)s"-->
+                  <!--#if "_['sequence-item']=='%(id)s'"-->
                   SELECTED<!--#/if-->
                   ><!--#var sequence-item--></option>
               <!--#/in-->
             </select>
             <!--#else-->
-              No value for %(select_variable)s
+              No value for %(id)s
             <!--#/if-->'''            
                     % p
                     )
