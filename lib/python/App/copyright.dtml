@@ -99,12 +99,6 @@ met:
   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 
-<p>
-This software consists of contributions made by Digital Creations and
-many individuals on behalf of Digital Creations.  Specific
-attributions are listed in the accompanying credits file.
-</p>
-
 <hr>
 
 <A NAME="PYTHON">
@@ -180,35 +174,52 @@ OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</p>
   the Zope Hall of Fame:
 </P>
 <UL>
+
     <LI>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
-    kept pushing it forward through the years.
-</LI>
+    kept pushing it forward through the years.</LI>
+
     <LI>Sam Rushing worked with us at Digital Creations to make Medusa
-    the publishing platform for ZServer and the concurrency of Zope2.
-</LI>
-    <LI>The DateTime module was based on work from Ted Horst.
-</LI>
+    the publishing platform for ZServer and the concurrency of Zope2.</LI>
+
+    <LI>Martijn Pieters and Brian Hooper contributed the DTML 'in' tag reverse
+    attribute.</LI>
+
+    <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
+      other useful ideas, including the inspiration for the DTML
+      <code>call</code>, <code>with</code> and <code>return</code>
+      tags.</LI>
+
+    <LI>The DateTime module was based on work from Ted Horst.</LI>
+
     <LI>Jordan Baker contributed the 'try' tag, something I've wanted
-    for a long, long time.
-</LI>
-    <LI>Martijn Pieters chipped in with a safe range function.
-</LI>
-    <LI>Michael Hauser came up with the name "Zope".
-</LI>
+    for a long, long time.</LI>
+
+    <LI>Martijn Pieters chipped in with a safe range function.</LI>
+
+    <LI>Michael Hauser came up with the name "Zope".</LI>
+
     <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
-        XML-RPC</a>
-</LI>
+        XML-RPC</a></LI>
 
     <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
         other useful ideas, including the inspiration for the DTML
         <code>call</code>, <code>with</code> and <code>return</code>
-        tags.
+        tags.</LI>
 
-</LI>
+    <LI>Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
+    him extremely cool in our book.</LI>
+
+    <LI>Jephte CLAIN made some patches to European TimeZope.</LI>
+
     <LI>All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
-    app server on this or any other planet.
-</LI>
+    app server on this or any other planet.</LI>
+
+    <LI>Of course the list of credits would be quite incomplete without
+    mentioning Guido van Rossum, benevolent dictator of Python and
+    long-time friend of Digital Creations.  Zope Power is Python
+    Power.</LI>
+
 </UL>
  <P> 
   Of course the list of credits would be quite incomplete without
