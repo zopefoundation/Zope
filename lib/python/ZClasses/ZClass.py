@@ -124,7 +124,7 @@ def dbVersionEquals(ver):
 
 
 def manage_addZClass(self, id, title='', baseclasses=[],
-                     meta_type='', CreateFactory=0, REQUEST=None):
+                     meta_type='', CreateAFactory=0, REQUEST=None):
     """Add a Z Class
     """
     bases=[]

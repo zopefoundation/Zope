@@ -49,8 +49,8 @@
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="2">
-    <INPUT TYPE="CHECKBOX" NAME="CreateFactory:int" VALUE="1"
-    <!--#if CreateFactory-->CHECKED<!--#/if-->>
+    <INPUT TYPE="CHECKBOX" NAME="CreateAFactory:int" VALUE="1"
+    <!--#if CreateAFactory-->CHECKED<!--#/if-->>
     <STRONG>Create Factory and add methods.</STRONG>
   </TD>
 </TR> 
@@ -101,4 +101,19 @@
 <!--#/with-->
 
 </BODY></HTML>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
