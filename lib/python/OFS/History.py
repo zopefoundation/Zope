@@ -84,9 +84,9 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
-import Globals, ndiff
+import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
 from Acquisition import Implicit
 from string import join, split, atoi, strip
@@ -143,7 +143,7 @@ class Historian(Implicit):
         "We aren\'t real, so we delegate to that that spawned us!"
         raise 'Redirect', REQUEST['URL2']+'/manage_change_history_page'
 
-class Historical:
+class Historical(ExtensionClass.Base):
     """Mix-in class to provide a veiw that shows hystorical changes
 
     The display is similar to that used for undo, except that the transactions
@@ -158,7 +158,7 @@ class Historical:
     HistoricalRevisions=Historian()
 
     __ac_permissions__=(
-        ('View management screens',
+        ('Undo changes',
          ('manage_change_history_page','manage_change_history')),
         )
     
