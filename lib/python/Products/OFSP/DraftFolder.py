@@ -14,8 +14,8 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.2 1997/11/11 21:25:28 brian Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: DraftFolder.py,v 1.3 1997/12/05 20:33:02 brian Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 import AccessControl.User, Session
@@ -32,6 +32,20 @@ def add(self,id,baseid,title='',REQUEST=None):
     self._setObject(id,i)
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
+def hack(self):
+    return ({'icon':icon, 'label':'Contents',
+	     'action':'manage_main',   'target':'manage_main'},
+	    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
+	     'action':'manage_propertiesForm',   'target':'manage_main'},
+	    {'icon':'AccessControl/AccessControl_icon.gif',
+	     'label':'Access Control',
+	     'action':'manage_rolesForm',   'target':'manage_main'},
+	    {'icon':'App/undo_icon.gif', 'label':'Undo',
+	     'action':'manage_UndoForm',   'target':'manage_main'},
+	    {'icon':'OFS/DraftFolderControl.gif', 'label':'Supervise',
+	     'action':'manage_Supervise',   'target':'manage_main'},
+	   )
+
 class DraftFolder(Persistence.Persistent,
 		  AccessControl.Role.RoleManager,
 		  SimpleItem.Item,
@@ -41,6 +55,7 @@ class DraftFolder(Persistence.Persistent,
 
     meta_type='Draft Folder'
     icon='OFS/DraftFolder.gif'
+    isPrincipiaFolderish=1
 
     manage_options=(
     {'icon':icon, 'label':'Contents',
@@ -113,12 +128,11 @@ class DraftFolder(Persistence.Persistent,
 	    oid=oids[-1]
 	    del oids[-1]
 	    base=pd.jar[oid].__of__(base)
-
+	base.manage_options=hack
 	return base
 
 
     def __bobo_traverse__(self, REQUEST, name):
-	
 	cookie_name=self.cookie_name
 	cookie=''
 	if REQUEST.has_key(cookie_name):
@@ -146,9 +160,14 @@ class DraftFolder(Persistence.Persistent,
 		"%s/manage_draftFolder-%s/manage"
 		% (REQUEST['URL2'], self.id))
 
-	if not cookie: raise 'Redirect', (
-	    REQUEST['URL1']+'/manage')
-
+	if not cookie:
+	    # Just set cookie here, rather than redirect!
+	    cookie=self.cookie
+	    cookie_name=self.cookie_name
+	    REQUEST['RESPONSE'].setCookie(cookie_name, cookie,
+					 expires="Mon, 27-Dec-99 23:59:59 GMT",
+					 path=REQUEST['SCRIPT_NAME']+cookie,)
+	    REQUEST[cookie_name]=cookie
 
 
 	__traceback_info__=PATH_INFO, cookie, self.cookie
@@ -172,18 +191,6 @@ class DraftFolder(Persistence.Persistent,
 		    "Sorry, the requested document does not exist.<p>"
 		    "\n<!--\n%s\n%s\n-->" % (name,REQUEST['REQUEST_METHOD']))
 
-    def manage(self, REQUEST):
-	"Access management interface making sure that user gets a cookie"
-	cookie=self.cookie
-	cookie_name=self.cookie_name
-	REQUEST['RESPONSE'].setCookie(
-	    cookie_name, cookie,
-	    expires="Mon, 27-Dec-99 23:59:59 GMT",
-	    path=REQUEST['SCRIPT_NAME']+cookie,
-	    )
-	REQUEST[cookie_name]=cookie
-	return Management.manage(self, REQUEST)
-
     def manage_supervisor(self): return self.__allow_groups__
     
     def parentObject(self):
@@ -203,6 +210,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.3  1997/12/05 20:33:02  brian
+# *** empty log message ***
+#
 # Revision 1.2  1997/11/11 21:25:28  brian
 # Added copy/paste support, restricted unpickling, fixed DraftFolder bug
 #

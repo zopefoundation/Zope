@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.22 1997/12/05 17:13:48 brian Exp $'''
-__version__='$Revision: 1.22 $'[11:-2]
+$Id: Application.py,v 1.23 1997/12/05 20:33:02 brian Exp $'''
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 import Globals,Folder,os,regex
@@ -46,7 +46,8 @@ class Application(Folder.Folder):
 
     _reserved_names=('standard_html_header',
 		     'standard_html_footer',
-		     'acl_users')
+		     'acl_users',
+		     'Control_Panel')
 
     def _init(self):
 	# Initialize users
@@ -247,6 +248,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.23  1997/12/05 20:33:02  brian
+# *** empty log message ***
+#
 # Revision 1.22  1997/12/05 17:13:48  brian
 # New UI
 #
