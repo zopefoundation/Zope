@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.10 1998/04/27 18:56:29 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Connection.py,v 1.11 1998/04/29 18:18:09 jeffrey Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
 from DateTime import DateTime
@@ -132,7 +132,7 @@ class Connection(
 		raise 'BadRequest', (
 		    '<strong>Invalid connection string:</strong><br>\n'
 		    '<!--\n%s\n%s\n-->\n'
-		    + (s,t,v)), tb
+		    % (s,t,v)), tb
 	finally: tb=None
 	self._v_connected=DateTime()
 
@@ -146,6 +146,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.11  1998/04/29 18:18:09  jeffrey
+# fixed formatting error
+#
 # Revision 1.10  1998/04/27 18:56:29  jim
 # Now export an sql_quote function that is used by sqlvar and sqltest
 # to quote strings.
