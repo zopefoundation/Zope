@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -529,7 +529,6 @@ class DAVProperties(Virtual, PropertySheet, View):
     pm=({'id':'creationdate',     'mode':'r'},
         {'id':'displayname',      'mode':'r'},
         {'id':'resourcetype',     'mode':'r'},
-        {'id':'getlastmodified',  'mode':'r'},
         {'id':'getcontenttype',   'mode':'r'},
         {'id':'getcontentlength', 'mode':'r'},
         {'id':'source',           'mode':'r'},
@@ -553,6 +552,9 @@ class DAVProperties(Virtual, PropertySheet, View):
         raise ValueError, '%s cannot be deleted.' % id
 
     def _propertyMap(self):
+        # Only use getlastmodified if returns a value
+        if hasattr(self.v_self(), '_p_mtime'):
+            return self.pm + ({'id':'getlastmodified',  'mode':'r'},)
         return self.pm
     
     def propertyMap(self):
@@ -572,10 +574,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         return ''
 
     def dav__getlastmodified(self):
-        vself=self.v_self()
-        if hasattr(vself, '_p_mtime'):
-            return rfc1123_date(vself._p_mtime)
-        return ''
+        return rfc1123_date(self.v_self()._p_mtime)
 
     def dav__getcontenttype(self):
         vself=self.v_self()
