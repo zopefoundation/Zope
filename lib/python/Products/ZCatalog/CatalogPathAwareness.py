@@ -71,7 +71,7 @@ class CatalogAware:
         for user, roles in self.get_local_roles():
             if 'Owner' in roles:
                 users.append(user)
-        return ', '.join(users, ', ')
+        return ', '.join(users)
 
     def onDeleteObject(self):
         """Object delete handler. I think this is obsoleted by
