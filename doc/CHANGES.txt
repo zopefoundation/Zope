@@ -96,6 +96,16 @@ Zope Changes
 
 	If you want any changes to made to be saved.
 
+      Note: Converting ZODB 2 (aka BoboPOS) data files to ZODB 3.
+
+        The bbb.py script in utilities can be used to convert data
+        files from ZODB 2 to ZODB 3 format::
+
+	  utilities/bbb.py -f output_file input_file
+
+        Here's a example::
+
+           utilities/bbb.py -f var/Data.fs var/Data.bbb
 
       ZODB 3 To-do
 
@@ -103,21 +113,9 @@ Zope Changes
 
         - Multiple database support isn't done yet,
 
-        - Undo of version saves and discards isn't completely working.
-
-	- Temporary versions aren't implemented yet.
-
-        - Only the FileStorage is available at this time.  Additional
-          storage managers will be provided in coming weeks.
-
-        - FileStorage packing isn't available yet,
-
 	- OPTIMIZATION: FileStorage will get a more efficient data
           structure for maintaining index information and key methods
           in the ZODB framework will move to C.
-
-        - Tools to convert ZODB 2 databases to ZODB 3 File
-          Storages or import files are needed.
 
         - Zope needs to be updated to be thread-safe.  This is not as
           hard as it sounds, since persistent objects are always
@@ -139,9 +137,6 @@ Zope Changes
 
           This is only a problem when running Zope 2 with multiple
 	  threads.
-	
-	- The default content needs to be provided for the new
-          database format.
 
     ZClasses
 
@@ -155,40 +150,23 @@ Zope Changes
       business/domain logic and then augmented with Zope web methods
       to provide a web interface.
 
-      ZClasses To-do
-
-        There are a number of significant tasks remaining before
-        ZClasses can be considered ready for production use:
-
-        - When ZClass instances are exported, their classes are
-          exported too.  This essentially copies the classes. When the
-          instances are imported, their classes will not be accessible
-          and will not be connected to any classes in the control
-          panel. Since copy and paste work via export/import, this
-          happens whenever objects are copied.  This was an
-          intentional feature to make the instances self-contained,
-          however, it is now recognized as a significant misfeature
-          that needs to be fixed.
-
-        - ZClasses need to be documented!
-
     Zope 2.0 Road-map
 
       In short
  
-        We hope and expect to provide a stable Zope 2.0 release by the 
-        end of June.
+        We expect and expect to provide a stable Zope 2.0 release in
+        early August.
 
       Zope 2.0 releases
 
         We expend to make a number of Zope 2.0 alpha, beta, or
         candidate releases over the next several weeks.
 
-        Early releases will support both the ZODB 2 (aka 
-        BoboPOS) and ZODB 3.  We may even support ZODB 2 in Zope 2.0
-        final, but ZODB 2 support will be phased out by Zope 2.1 or
-        sooner.  Some features (e.g. the new control panel version
-        manager) may require ZODB 3.
+        Early releases will support both the ZODB 2 (aka BoboPOS) and
+        ZODB 3.  We may even support ZODB 2 in Zope 2.0 betas, but
+        ZODB 2 support will be phased out by the final Zope 2.0
+        release.  Some features (e.g. the new control panel version
+        manager) will require ZODB 3.
 
   Releases
 
@@ -196,7 +174,31 @@ Zope Changes
 
       Features added
 
-        The let and return tags were added to DTML.
+        - The let and return tags were added to DTML.
+
+	- The startup script, z2.py, has additional documentation on
+	  providing empty strings as arguments.
+
+        - Added a -P option to the startup script, z2.py, to specify a
+          base port for the various servers. For example::
+
+            python z2.py -P8000 
+
+          is equivalent to:
+
+            python z2.py -w8080 -f8021 -m8099
+
+          This is a convenient short-hand for systes with many zserver
+          instances running.
+
+        - Added an -l option to the startup script, z2.py, to specify
+          the location of the ZServer hit log.
+
+        - A progress indicator was added to the database conversion
+          utility, utilities/bbb.py.
+
+	- Cookie support was added to the ZServer FTP server to make
+          FTP access more compatible with cookie-based authentication.
 
       Bugs fixed
 
@@ -205,6 +207,14 @@ Zope Changes
 
         - Fixed a NameError (missing TupleType) definition in
           the export/import (copy/paste) machinery.
+
+        - The startup script failed on Windows because it imported the
+          posix module without checking the os.
+
+        - ZServer crashed when the number of simultaneous connections
+          exceeded a system limit, especially on Windows. ZServer now
+          stops accepting new connections when the number of active
+          connections exceeds a threshold.
 
     Zope 2.0 alpha 3
 
