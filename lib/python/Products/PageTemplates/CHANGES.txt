@@ -15,6 +15,8 @@ Page Template changes
         - A template can be marked explicitly as XML or HTML by giving
         it a boolean 'is_html' property.
 
+        - New icon, provided by Michael R. Bernstein.
+
       Bugs Fixed
 
         - The starting properties could be deleted.  This is only
