@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -69,11 +69,22 @@ class ApplicationManager(Folder,CacheManager):
 
     def __init__(self):
         self.Products=ProductFolder()
-        
-    def __setstate__(self, v):
-        ApplicationManager.inheritedAttribute('__setstate__')(self, v)
-        if not hasattr(self, 'Products'):
-            self.Products=ProductFolder()
+
+
+# Note by brian:
+#
+# This __setstate__ does not seem to work - it creates a new ProductFolder
+# and adds it to the CP instance if needed, but the resulting PF does not
+# seem to be persistent ;( Rather than spend much time figuring out why,
+# I just added a check in Application.open_bobobase to create the PF if
+# it is needed (this is where several other b/c checks are done anyway.)
+#
+#
+#    def __setstate__(self, v):
+#        ApplicationManager.inheritedAttribute('__setstate__')(self, v)
+#        if not hasattr(self, 'Products'):
+#            self.Products=ProductFolder()
+
 
     def _canCopy(self, op=0):
         return 0
