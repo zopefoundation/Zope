@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.155 2001/06/26 13:45:48 andreas Exp $'''
-__version__='$Revision: 1.155 $'[11:-2]
+$Id: Application.py,v 1.156 2001/08/07 18:36:48 evan Exp $'''
+__version__='$Revision: 1.156 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -203,14 +203,14 @@ class Application(Globals.ApplicationDefaultPermissions,
         Document.manage_addDocument(
             self,
             'standard_html_header',
-            'Standard Html Header',
-            '<HTML><HEAD><TITLE><dtml-var title_or_id>' \
-            '</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">')
+            'Standard Html Header', (
+            '<html><head><title>&dtml-title_or_id;' 
+            '</title></head><body bgcolor="#FFFFFF">') )
         Document.manage_addDocument(
             self,
             'standard_html_footer',
             'Standard Html Footer',
-            '</BODY></HTML>')
+            '</body></html>')
         Document.manage_addDocument(
             self,
             'standard_error_message',

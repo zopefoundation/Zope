@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.47 2001/08/07 16:07:42 chrism Exp $'''
-__version__='$Revision: 1.47 $'[11:-2]
+$Id: HTTPResponse.py,v 1.48 2001/08/07 18:36:48 evan Exp $'''
+__version__='$Revision: 1.48 $'[11:-2]
 
 import string, types, sys,  re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -496,10 +496,6 @@ class HTTPResponse(BaseResponse):
     def _error_html(self,title,body):
         # XXX could this try to use standard_error_message somehow?
         return ("""\
-<HTML>
-<HEAD><TITLE>Site Error</TITLE></HEAD>
-<BODY>
-
 <TABLE BORDER="0" WIDTH="100%">
 <TR VALIGN="TOP">
 
@@ -535,10 +531,7 @@ class HTTPResponse(BaseResponse):
   Thank you for your patience.
   </P>
 </TD></TR>
-</TABLE>
-
-</BODY>
-</HTML>""")
+</TABLE>""")
 
     def notFoundError(self,entry='Unknown'):
         self.setStatus(404)
@@ -546,7 +539,7 @@ class HTTPResponse(BaseResponse):
             "Resource not found",
             "Sorry, the requested resource does not exist." +
             "<p>Check the URL and try again.</p>" +
-            "<p><b>Reason:</b> %s</p>" % self.quoteHTML(entry))
+            "<p><b>Resource:</b> %s</p>" % self.quoteHTML(entry))
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
