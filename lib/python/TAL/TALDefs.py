@@ -86,6 +86,7 @@
 Common definitions used by TAL and METAL compilation an transformation.
 """
 
+XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
 
 ZOPE_TAL_NS = "http://xml.zope.org/namespaces/tal"
