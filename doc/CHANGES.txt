@@ -10,6 +10,25 @@ Principia Changes
 
           <!--#if "x < y"-->
 
+      - Revamped folder security:
+
+         - No longer a separate "add objects" permission.
+
+         - Must have "view management screens" to copy.
+
+         - Must have "delete objects" to cut ot delete.
+
+         - Must be able to add an object of the type being pasted.
+
+      - The security view nor provides a link to manage property
+        acquisition separately.  This makes it much easier to
+        quickly enable or disable acquisition for all permissions.
+
+      - New folderish control panel that separates database and
+        product management into separate interfaces.
+
+      - Through-the-web creation of products and factories.
+
     Bugs Fixed
 
       - The folder objectItems method returned all items even when
