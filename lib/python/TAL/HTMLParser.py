@@ -32,7 +32,20 @@ attrfind = re.compile(
     r'\s*([a-zA-Z_][-.:a-zA-Z_0-9]*)(\s*=\s*'
     r'(\'[^\']*\'|"[^"]*"|[-a-zA-Z0-9./:;+*%?!&$\(\)_#=~]*))?')
 
-locatestarttagend = re.compile("('[^']*'|\"[^\"]*\"|[^'\">]+)*/?>")
+locatestarttagend = re.compile(r"""
+  <[a-zA-Z][-.a-zA-Z0-9:_]*          # tag name
+  (?:\s+                             # whitespace before attribute name
+    (?:[a-zA-Z_][-.:a-zA-Z0-9_]*     # attribute name
+      (?:\s*=\s*                     # value indicator
+        (?:'[^']*'                   # LITA-enclosed value
+          |\"[^\"]*\"                # LIT-enclosed value
+          |[^'\">\s]+                # bare value
+         )
+       )?
+     )
+   )*
+  \s*                                # trailing whitespace
+""", re.VERBOSE)
 endstarttag = re.compile(r"\s*/?>")
 endendtag = re.compile('>')
 endtagfind = re.compile('</\s*([a-zA-Z][-.a-zA-Z0-9:_]*)\s*>')
@@ -45,7 +58,7 @@ class HTMLParseError(Exception):
     """Exception raised for all parse errors."""
 
     def __init__(self, msg, position=(None, None)):
-        assert msg != ""
+        assert msg
         self.msg = msg
         self.lineno = position[0]
         self.offset = position[1]
@@ -255,11 +268,10 @@ class HTMLParser:
     # Internal -- handle starttag, return end or -1 if not terminated
     def parse_starttag(self, i):
         self.__starttag_text = None
+        endpos = self.check_for_whole_start_tag(i)
+        if endpos < 0:
+            return endpos
         rawdata = self.rawdata
-        m = locatestarttagend.match(rawdata, i) # > outside quotes
-        if not m:
-            return -1
-        endpos = m.end()
         self.__starttag_text = rawdata[i:endpos]
 
         # Now parse the data between i+1 and j into a tag and attrs
@@ -275,7 +287,7 @@ class HTMLParser:
                 break
             attrname, rest, attrvalue = m.group(1, 2, 3)
             if not rest:
-                attrvalue = attrname
+                attrvalue = None
             elif attrvalue[:1] == '\'' == attrvalue[-1:] or \
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
@@ -301,6 +313,29 @@ class HTMLParser:
         else:
             self.handle_starttag(tag, attrs)
         return endpos
+
+    # Internal -- check to see if we have a complete starttag; return end
+    # or -1 if incomplete.
+    def check_for_whole_start_tag(self, i):
+        rawdata = self.rawdata
+        m = locatestarttagend.match(rawdata, i)
+        if m:
+            j = m.end()
+            next = rawdata[j:j+1]
+            if next == ">":
+                return j + 1
+            if rawdata[j:j+2] == "/>":
+                return j + 2
+            if next == "":
+                # end of input
+                return -1
+            if next in ("abcdefghijklmnopqrstuvwxyz="
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
+                # end of input in or before attribute value
+                return -1
+            self.updatepos(i, j)
+            raise HTMLParseError("malformed start tag", self.getpos())
+        raise AssertionError("we should not gt here!")
 
     # Internal -- parse endtag, return end or -1 if incomplete
     def parse_endtag(self, i):
