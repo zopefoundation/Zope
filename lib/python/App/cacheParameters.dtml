@@ -10,7 +10,7 @@
 <tr><th align=left>Total number of objects in the database</th>
 <td><!--#var database_size--></td></tr>
 
-<tr><th align=left>Number of objects in the cache</th>
+<tr><th align=left>Total number of objects in all of the caches combined</th>
 <td><!--#var cache_length--></td></tr>
 
 <tr><th valign=top align=left>Target size</th><td>
