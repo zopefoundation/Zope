@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.140 $'[11:-2]
+__version__='$Revision: 1.141 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -227,9 +227,8 @@ class File(Persistent, Implicit, PropertyManager,
                     RESPONSE.setStatus(416)
                     return ''
 
-                # Can we optimize?
-                ranges = HTTPRangeSupport.optimizeRanges(ranges, self.size)
-
+                ranges = HTTPRangeSupport.expandRanges(ranges, self.size)
+                                
                 if len(ranges) == 1:
                     # Easy case, set extra header and return partial set.
                     start, end = ranges[0]
@@ -275,9 +274,6 @@ class File(Persistent, Implicit, PropertyManager,
                     return ''
 
                 else:
-                    # When we get here, ranges have been optimized, so they are
-                    # in order, non-overlapping, and start and end values are
-                    # positive integers.
                     boundary = choose_boundary()
 
                     # Calculate the content length
@@ -304,8 +300,11 @@ class File(Persistent, Implicit, PropertyManager,
                             draftprefix, boundary))
                     RESPONSE.setStatus(206) # Partial content
 
-                    pos = 0
                     data = self.data
+                    # The Pdata map allows us to jump into the Pdata chain
+                    # arbitrarily during out-of-order range searching.
+                    pdata_map = {}
+                    pdata_map[0] = data
 
                     for start, end in ranges:
                         RESPONSE.write('\r\n--%s\r\n' % boundary)
@@ -319,7 +318,14 @@ class File(Persistent, Implicit, PropertyManager,
                             RESPONSE.write(data[start:end])
 
                         else:
-                            # Yippee. Linked Pdata objects.
+                            # Yippee. Linked Pdata objects. The following
+                            # calculations allow us to fast-forward through the
+                            # Pdata chain without a lot of dereferencing if we
+                            # did the work already.
+                            closest_pos = start - (start % (1<<16))
+                            pos = min(closest_pos, max(pdata_map.keys()))
+                            data = pdata_map[pos]
+
                             while data is not None:
                                 l = len(data.data)
                                 pos = pos + l
@@ -335,16 +341,18 @@ class File(Persistent, Implicit, PropertyManager,
 
                                         # Send and loop to next range
                                         RESPONSE.write(data[lstart:lend])
-                                        # Back up the position marker, it will
-                                        # be incremented again for the next
-                                        # part.
-                                        pos = pos - l
                                         break
 
                                     # Not yet at the end, transmit what we have.
                                     RESPONSE.write(data[lstart:])
 
                                 data = data.next
+                                # Store a reference to a Pdata chain link so we
+                                # don't have to deref during this request again.
+                                pdata_map[pos] = data
+
+                    # Do not keep the link references around.
+                    del pdata_map
 
                     RESPONSE.write('\r\n--%s--\r\n' % boundary)
                     return ''

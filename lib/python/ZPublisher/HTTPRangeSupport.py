@@ -19,7 +19,7 @@ flag-interface and some support functions for implementing this functionality.
 For an implementation example, see the File class in OFS/Image.py.
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import re, sys
 import Interface
@@ -96,12 +96,10 @@ def parseRange(header):
 
     return ranges
 
-def optimizeRanges(ranges, size):
-    """Optimize Range sets, given those sets and the length of the resource.
+def expandRanges(ranges, size):
+    """Expand Range sets, given those sets and the length of the resource.
 
-    Optimisation is done by first expanding relative start values and open
-    ends, then sorting and combining overlapping ranges. We also remove
-    unsatisfiable ranges (where the start lies beyond the size of the resource).
+    Expansion means relative start values and open ends
 
     """
 
@@ -116,31 +114,7 @@ def optimizeRanges(ranges, size):
         if start < size:
             add((start, end))
 
-    ranges = expanded
-    ranges.sort()
-    ranges.reverse()
-    optimized = []
-    add = optimized.append
-    start, end = ranges.pop()
-
-    while ranges:
-        nextstart, nextend = ranges.pop()
-        # If the next range overlaps
-        if nextstart < end:
-            # If it falls within the current range, discard
-            if nextend <= end:
-                continue
-
-            # Overlap, adjust end
-            end = nextend
-        else:
-            add((start, end))
-            start, end = nextstart, nextend
-
-    # Add the remaining optimized range
-    add((start, end))
-
-    return optimized
+    return expanded
 
 class HTTPRangeInterface(Interface.Base):
     """Objects implementing this Interface support the HTTP Range header.

@@ -303,7 +303,7 @@ class TestRequestRange(unittest.TestCase):
 
     # Multiple ranges
     def testAdjacentRanges(self):
-        self.expectMultipleRanges('21-25,10-20', [(10, 21), (21, 26)])
+        self.expectMultipleRanges('21-25,10-20', [(21, 26), (10, 21)])
 
     def testMultipleRanges(self):
         self.expectMultipleRanges('3-7,10-15', [(3, 8), (10, 16)])
@@ -314,7 +314,13 @@ class TestRequestRange(unittest.TestCase):
     def testMultipleRangesBigFile(self):
         self.uploadBigFile()
         self.expectMultipleRanges('3-700,10-15,-10000',
-            [(3, 701), (len(self.data) - 10000, len(self.data))])
+            [(3, 701), (10, 16), (len(self.data) - 10000, len(self.data))])
+
+    def testMultipleRangesBigFileOutOfOrder(self):
+        self.uploadBigFile()
+        self.expectMultipleRanges('10-15,-10000,70000-80000', 
+            [(10, 16), (len(self.data) - 10000, len(self.data)),
+             (70000, 80001)])
 
     def testMultipleRangesBigFileEndOverflow(self):
         self.uploadBigFile()
@@ -327,10 +333,10 @@ class TestRequestRange(unittest.TestCase):
     def testIllegalIfRange(self):
         # We assume that an illegal if-range is to be ignored, just like an
         # illegal if-modified since.
-        self.expectSingleRange('21-25,10-21', 10, 26, if_range='garbage')
+        self.expectSingleRange('10-25', 10, 26, if_range='garbage')
 
     def testEqualIfRangeDate(self):
-        self.expectSingleRange('21-25,10-21', 10, 26,
+        self.expectSingleRange('10-25', 10, 26,
             if_range=self.createLastModifiedDate())
 
     def testIsModifiedIfRangeDate(self):
@@ -338,15 +344,15 @@ class TestRequestRange(unittest.TestCase):
             if_range=self.createLastModifiedDate(offset=-100))
 
     def testIsNotModifiedIfRangeDate(self):
-        self.expectSingleRange('21-25,10-21', 10, 26,
+        self.expectSingleRange('10-25', 10, 26,
             if_range=self.createLastModifiedDate(offset=100))
 
     def testEqualIfRangeEtag(self):
-        self.expectSingleRange('21-25,10-21', 10, 26,
+        self.expectSingleRange('10-25', 10, 26,
             if_range=self.file.http__etag())
 
     def testNotEqualIfRangeEtag(self):
-        self.expectOK('21-25,10-20',
+        self.expectOK('10-25',
             if_range=self.file.http__etag() + 'bar')
 
 

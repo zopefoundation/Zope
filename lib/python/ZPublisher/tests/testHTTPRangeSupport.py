@@ -12,7 +12,7 @@
 ##############################################################################
 
 import sys
-from ZPublisher.HTTPRangeSupport import parseRange, optimizeRanges
+from ZPublisher.HTTPRangeSupport import parseRange, expandRanges
 
 import unittest
 
@@ -77,10 +77,10 @@ class TestRangeHeaderParse(unittest.TestCase):
         self.expectSets('bytes=-0', [(sys.maxint, None)])
 
 
-class TestOptimizeRanges(unittest.TestCase):
+class TestExpandRanges(unittest.TestCase):
 
     def expectSets(self, sets, size, expect):
-        result = optimizeRanges(sets, size)
+        result = expandRanges(sets, size)
         self.failUnless(result == expect,
             'Expected %s, got %s' % (`expect`, `result`))
 
@@ -96,26 +96,26 @@ class TestOptimizeRanges(unittest.TestCase):
 
     def testNoOverlapOutOfOrder(self):
         self.expectSets([(1000, 2000), (3000, None), (1, 5)], 5000,
-            [(1, 5), (1000, 2000), (3000, 5000)])
+            [(1000, 2000), (3000, 5000), (1, 5)])
 
     def testOverlapInOrder(self):
         self.expectSets([(1, 10), (8, 20), (25, None)], 5000,
-            [(1, 20), (25, 5000)])
+            [(1, 10), (8, 20), (25, 5000)])
 
     def testOverlapOutOfOrder(self):
         self.expectSets([(25, 50), (8, None), (1, 10)], 5000,
-            [(1, 5000)])
+            [(25, 50), (8, 5000), (1, 10)])
 
     def testAdjacentInOrder(self):
         self.expectSets([(1, 10), (10, 20), (25, 50)], 5000,
             [(1, 10), (10, 20), (25, 50)])
 
     def testAdjacentOutOfOrder(self):
-        self.expectSets([(-5, None), (40, 45)], 50, [(40, 45), (45, 50)])
+        self.expectSets([(-5, None), (40, 45)], 50, [(45, 50), (40, 45)])
 
-    def testOverLapAndOverflow(self):
+    def testOverlapAndOverflow(self):
         # Note that one endpoint lies beyond the end.
-        self.expectSets([(-5, None), (40, 100)], 50, [(40, 50)])
+        self.expectSets([(-5, None), (40, 100)], 50, [(45, 50), (40, 50)])
 
     def testRemoveUnsatisfiable(self):
         self.expectSets([(sys.maxint, None), (10, 20)], 50, [(10, 20)])
@@ -124,7 +124,7 @@ class TestOptimizeRanges(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestRangeHeaderParse, 'test'))
-    suite.addTest(unittest.makeSuite(TestOptimizeRanges, 'test'))
+    suite.addTest(unittest.makeSuite(TestExpandRanges, 'test'))
     return suite
 
 def main():
