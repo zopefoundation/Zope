@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.127 $'[11:-2]
+__version__='$Revision: 1.128 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -589,7 +589,7 @@ class Image(File):
         return self.tag()
 
     def tag(self, height=None, width=None, alt=None,
-            scale=0, xscale=0, yscale=0, **args):
+            scale=0, xscale=0, yscale=0, css_class=None, **args):
         """
         Generate an HTML IMG tag for this image, with customization.
         Arguments to self.tag() can be any valid attributes of an IMG tag.
@@ -598,6 +598,12 @@ class Image(File):
         'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
         and 'yscale' keyword arguments will be used to automatically adjust
         the output height and width values of the image tag.
+
+        Since 'class' is a Python reserved word, it cannot be passed in
+        directly in keyword arguments which is a problem if you are
+        trying to use 'tag()' to include a CSS class. The tag() method
+        will accept a 'css_class' argument that will be converted to
+        'class' in the output tag to work around this.
         """
         if height is None: height=self.height
         if width is None:  width=self.width
@@ -625,6 +631,9 @@ class Image(File):
 
         if not 'border' in map(string.lower, args.keys()):
             result = '%s border="0"' % result
+
+        if css_class is not None:
+            result = '%s class="%s"' % (result, css_class)
 
         for key in args.keys():
             value = args.get(key)
