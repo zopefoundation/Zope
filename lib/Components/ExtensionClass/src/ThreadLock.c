@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ThreadLock.c,v 1.9 2001/04/02 16:38:58 jeremy Exp $
+  $Id: ThreadLock.c,v 1.10 2001/11/08 17:02:09 bwarsaw Exp $
 
   If you have questions regarding this software,
   contact:
@@ -46,7 +46,7 @@
 */
 static char ThreadLock_module_documentation[] = 
 ""
-"\n$Id: ThreadLock.c,v 1.9 2001/04/02 16:38:58 jeremy Exp $"
+"\n$Id: ThreadLock.c,v 1.10 2001/11/08 17:02:09 bwarsaw Exp $"
 ;
 
 #include "Python.h"
@@ -305,8 +305,8 @@ static struct PyMethodDef Module_methods[] = {
 void
 initThreadLock(void)
 {
-  PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  PyObject *m, *d, *s;
+  char *rev="$Revision: 1.10 $";
 
   m = Py_InitModule4("ThreadLock", Module_methods,
 		     ThreadLock_module_documentation,
@@ -320,8 +320,9 @@ initThreadLock(void)
   ErrorObject = PyString_FromString("ThreadLock.error");
   PyDict_SetItemString(d, "error", ErrorObject);
 
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
+  s = PyString_FromStringAndSize(rev+11,strlen(rev+11)-2);
+  PyDict_SetItemString(d, "__version__", s);
+  Py_XDECREF(s);
 
 #ifdef WITH_THREAD
   PyDict_SetItemString(d, "WITH_THREAD", PyInt_FromLong(1));
