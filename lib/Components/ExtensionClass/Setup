@@ -1,9 +1,9 @@
 *shared*
 ExtensionClass ExtensionClass.c
 Acquisition Acquisition.c
-Xaq Xaq.c
 MethodObject MethodObject.c
 MultiMapping MultiMapping.c
 ThreadLock ThreadLock.c
 
 # install Sync.py
+# install Xaq.py
