@@ -7,7 +7,7 @@ Extension Classes, Python Extension Types Become Classes
   Abstract
   
     A lightweight mechanism, named "ExtensionClass",
-    http://www.digicool.com/releases/ExtensionClass/ExtensionClass-1.0.1.tar.gz,
+    http://www.digicool.com/releases/ExtensionClass/ExtensionClass-1.0.2.tar.gz,
     has been developed for making Python
     extension types more class-like.  Classes can be developed in an
     extension language, such as C or C++, and these classes can be
@@ -987,8 +987,8 @@ Extension Classes, Python Extension Types Become Classes
 
   Status
 
-    The current release of the extension class module is "1.0.1",
-    http://www.digicool.com/releases/ExtensionClass/ExtensionClass-1.0.1.tar.gz.
+    The current release of the extension class module is "1.0.2",
+    http://www.digicool.com/releases/ExtensionClass/ExtensionClass-1.0.2.tar.gz.
     The core implementation has less than four thousand lines of code,
     including comments.  This release requires Python 1.4.
 
