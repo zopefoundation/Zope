@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -155,17 +155,21 @@ class Resource:
             headers['Content-Length']=str(len(body))
             return self.__snd_request('POST', self.uri, headers, body)
 
-    def put(self, file='', content_type='', content_enc='', **kw):
+    def put(self, file='', content_type='', content_enc='',
+            isbin=regex.compile('[\0-\6\177-\277]').search,
+            **kw):
         headers=self.__get_headers(kw)
-        if type(file) is type('') and os.path.exists(file):
+        filetype=type(file)
+        if filetype is type('') and (isbin(file) < 0) and \
+           os.path.exists(file):
             ob=open(file, 'rb')
             body=ob.read()
             ob.close()
             c_type, c_enc=guess_type(file)
-        elif type(file) is FileType:
+        elif filetype is FileType:
             body=file.read()
             c_type, c_enc=guess_type(file.name)
-        elif type(file) is type(''):
+        elif filetype is type(''):
             body=file
             c_type, c_enc=guess_type(self.url)
         else:
@@ -467,6 +471,7 @@ for name, tp, func in vartypes:
 
 def marshal_var(name, val):
     return varfuncs.get(type(val), marshal_string)(name, val)
+
 
 
 class MultiPart:
