@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.39 2000/12/15 16:14:01 evan Exp $'''
-__version__='$Revision: 1.39 $'[11:-2]
+$Id: HTTPResponse.py,v 1.40 2000/12/27 16:36:12 brian Exp $'''
+__version__='$Revision: 1.40 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -160,8 +160,6 @@ status_codes['redirect']=300
 
 
 start_of_header_search=re.compile('(<head[^>]*>)', re.IGNORECASE).search
-
-#end_of_header_search=regex.compile('</head>',regex.casefold).search
 
 accumulate_header={'set-cookie': 1}.has_key
 
@@ -578,7 +576,7 @@ class HTTPResponse(BaseResponse):
                       "\\(#[^\000- \"\\#<>]*\\)?"
                       "$"
                       ).match,
-                  tag_search=regex.compile('[a-zA-Z]>').search,
+                  tag_search=re.compile('[a-zA-Z]>').search,
                   abort=1
                   ):
         if type(info) is type(()) and len(info)==3: t,v,tb = info
@@ -627,7 +625,11 @@ class HTTPResponse(BaseResponse):
                 except: pass
 
         b=v
-        if isinstance(b,Exception): b=str(b)
+        if isinstance(b,Exception):
+            try:
+                b=str(b)
+            except:
+                b='<unprintable %s object>' % type(b).__name__
         
         if fatal and t is SystemExit and v.code==0:
                 tb=self.setBody(
@@ -637,7 +639,7 @@ class HTTPResponse(BaseResponse):
                      is_error=1)
         #elif 1: self.setBody(v)
 
-        elif type(b) is not types.StringType or tag_search(b) < 0:
+        elif type(b) is not types.StringType or tag_search(b) is None:
             tb=self.setBody(
                 (str(t),
                 'Sorry, a Zope error occurred.<p>'+
@@ -695,23 +697,6 @@ class HTTPResponse(BaseResponse):
                 else:
                     c='text/plain'
                 self.setHeader('content-type',c)
-
-            # Don't try to fix user HTML! 
-            
-            #else:
-            #    isHTML = split(headers.get('content-type', ''),
-            #                   ';')[0] == 'text/html'
-            #if isHTML and end_of_header_search(self.body) < 0:
-            #    lhtml=html_search(body)
-            #    if lhtml >= 0:
-            #        lhtml=lhtml+6
-            #        body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
-            #    elif contHTML:
-            #        body='<html><head></head>\n' + body
-            #    else:
-            #        body='<html><head></head>\n' + body + '\n</html>\n'
-            #    self.setBody(body)
-            #    body=self.body
 
         if not headers.has_key('content-length') and \
                 not headers.has_key('transfer-encoding'):

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -871,14 +871,14 @@ class HTTPRequest(BaseRequest):
         result="<h3>form</h3><table>"
         row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k,v in self.form.items():
-            result=result + row % (html_quote(k), html_quote(v))
+            result=result + row % (html_quote(k), html_quote(repr(v)))
         result=result+"</table><h3>cookies</h3><table>"
         for k,v in self.cookies.items():
-            result=result + row % (html_quote(k), html_quote(v))
+            result=result + row % (html_quote(k), html_quote(repr(v)))
         result=result+"</table><h3>other</h3><table>"
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
-            result=result + row % (html_quote(k), html_quote(v))
+            result=result + row % (html_quote(k), html_quote(repr(v)))
     
         for n in "0123456789":
             key = "URL%s"%n
@@ -1051,7 +1051,10 @@ class record:
         L1.sort()
         return join(map(lambda item: "%s: %s" %item, L1), ", ") 
 
-    __repr__ = __str__
+    def __repr__(self):
+        L1 = self.__dict__.items()
+        L1.sort()
+        return join(map(lambda item: "%s: %s" %item, repr(L1)), ", ") 
 
 # Flags
 SEQUENCE=1
