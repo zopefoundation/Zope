@@ -192,6 +192,7 @@ home=os.path.split(os.path.split(sys.executable)[0])[0]
 if sys.executable[-10:]!='python.exe':
     home=os.path.split(home)[0]
     home=os.path.split(home)[0]
+sys.path.append(os.path.join(home, 'bin'))
 sys.path.append(os.path.join(home, 'ZServer'))
 sys.path.append(os.path.join(home, 'bin', 'lib', 'win32'))
 sys.path.append(os.path.join(home, 'bin', 'lib', 'win32', 'lib'))
