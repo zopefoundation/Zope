@@ -27,17 +27,40 @@ def path2url(p):
     i += len(marker)
     return "http://www.python.org" + p[i:]
 
+from Products.PluginIndexes.TextIndex.TextIndex import And, Or
+from Products.ZCTextIndex.tests.indexhtml import MySplitter
+from Products.ZCTextIndex.NBest import NBest
+
 def main(rt):
     index = rt["index"]
     files = rt["files"]
     times = {}
+    ITERS = range(50)
     for i in range(11):
         for q in QUERIES:
             terms = q.split()
             for c in " OR ", " AND ":
                 query = c.join(terms)
                 t0 = clock()
-                results, num = index.query(query)
+                if TEXTINDEX:
+                    if c == " OR ":
+                        op = Or
+                    else:
+                        op = And
+                    _q = " ".join(terms)
+                    for _ in ITERS:
+                        b = index.query(_q, op).bucket()
+                        num = len(b)
+                        chooser = NBest(10)
+                        chooser.addmany(b.items())
+                        results = chooser.getbest()
+                        
+                else:
+                    try:
+                        for _ in ITERS:
+                            results, num = index.query(query)
+                    except:
+                        continue
                 t1 = clock()
                 print "<p>Query: \"%s\"" % query
                 print "<br>Num results: %d" % num
@@ -69,9 +92,10 @@ if __name__ == "__main__":
 
     VERBOSE = 0
     FSPATH = "Data.fs"
+    TEXTINDEX = 0
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'vf:')
+        opts, args = getopt.getopt(sys.argv[1:], 'vf:T')
     except getopt.error, msg:
         print msg
         print __doc__
@@ -82,6 +106,8 @@ if __name__ == "__main__":
             VERBOSE += 1
         if o == '-f':
             FSPATH = v
+        if o == '-T':
+            TEXTINDEX = 1
 
     fs = FileStorage(FSPATH, read_only=1)
     db = ZODB.DB(fs, cache_size=10000)
