@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.32 $'.split()[-2:][0]
+__version__ = '$Revision: 1.33 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -15,7 +15,7 @@ import time
 from bsddb3 import db
 
 from ZODB import POSException
-from ZODB import utils
+from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
@@ -70,7 +70,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         #     serial number that is different than the current serial number
         #     for the object, a ConflictError is raised.
         #
-        # pickles -- {(oid+revid) -> pickle}
+        # pickles -- {oid+revid -> pickle}
         #     Maps the concrete object referenced by oid+revid to that
         #     object's data pickle.
         #
@@ -158,15 +158,13 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Convert to a Python long integer.  Note that cursor.last()
             # returns key/value, and we want the key (which for the _version
             # table is is the vid).
-            self.__nextvid = utils.U64(record[0])
+            self.__nextvid = U64(record[0])
         else:
             self.__nextvid = 0L
         # DEBUGGING
         #self._nextserial = 0L
         
     def close(self):
-        if self._commitlog is not None:
-            self._commitlog.close()
         self._serials.close()
         self._pickles.close()
         self._vids.close()
@@ -182,7 +180,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def _begin(self, tid, u, d, e):
         # DEBUGGING
         #self._nextserial += 1
-        #self._serial = utils.p64(self._nextserial)
+        #self._serial = p64(self._nextserial)
         # Begin the current transaction.  Currently, this just makes sure that
         # the commit log is in the proper state.
         if self._commitlog is None:
@@ -270,7 +268,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                         referencesf(pickle, refdoids)
                         for roid in refdoids:
                             refcount = self._refcounts.get(roid, ZERO, txn=txn)
-                            refcount = utils.p64(utils.U64(refcount) + 1)
+                            refcount = p64(U64(refcount) + 1)
                             self._refcounts.put(roid, refcount, txn=txn)
                     # Update the metadata table
                     self._metadata.put(key, vid+nvrevid+lrevid+prevrevid,
@@ -287,7 +285,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     # refcount is stored as a string, so we have to do the
                     # string->long->string dance.
                     refcount = self._pickleRefcounts.get(key, ZERO, txn=txn)
-                    refcount = utils.p64(utils.U64(refcount) + 1)
+                    refcount = p64(U64(refcount) + 1)
                     self._pickleRefcounts.put(key, refcount, txn=txn)
                 elif op == 'v':
                     # This is a "create-a-version" record
@@ -432,7 +430,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if curvid <> svid:
                     raise POSException.StorageSystemError(
                         'oid: %s, moving from v%s to v%s, but lives in v%s' %
-                        tuple(map(utils.U64, (oid, svid, dvid, curvid))))
+                        tuple(map(U64, (oid, svid, dvid, curvid))))
                 # If we're committing to a non-version, then the non-version
                 # revision id ought to be zero also, regardless of what it was
                 # for the source version.
@@ -549,7 +547,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         if vid is None:
             self.__nextvid = self.__nextvid + 1
             # Convert the int/long version ID into an 8-byte string
-            vid = utils.p64(self.__nextvid)
+            vid = p64(self.__nextvid)
             self._commitlog.write_new_version(version, vid)
         return vid
 
@@ -583,7 +581,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 else:
                     raise POSException.ConflictError(
                         'serial number mismatch (was: %s, has: %s)' %
-                        (utils.U64(oserial), utils.U64(serial)))
+                        (U64(oserial), U64(serial)))
             # Do we already know about this version?  If not, we need to
             # record the fact that a new version is being created.  `version'
             # will be the empty string when the transaction is storing on the
@@ -616,7 +614,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     # current version.  That's a no no.
                     raise POSException.VersionLockError(
                         'version mismatch for object %s (was: %s, got: %s)' %
-                        tuple(map(utils.U64, (oid, ovid, vid))))
+                        tuple(map(U64, (oid, ovid, vid))))
                 else:
                     nvrevid = onvrevid
             # Record the update to this object in the commit log.
@@ -932,7 +930,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
 
     def _zapobject(self, oid, referencesf):
         # Delete all records referenced by this object
-        self._serials.delete(oid)
+        try:
+            self._serials.delete(oid)
+        except db.DBNotFoundError:
+            pass
         self._refcounts.delete(oid)
         # Run through all the metadata records associated with this object,
         # and recursively zap all its revisions.  Keep track of the tids and
@@ -1007,9 +1008,9 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # pickle, and decref all the objects pointed to by the pickle (with of
         # course, cascading garbage collection).
         pkey = key[:8] + lrevid
-        refcount = utils.U64(self._pickleRefcounts[pkey]) - 1
+        refcount = U64(self._pickleRefcounts[pkey]) - 1
         if refcount > 0:
-            self._pickleRefcounts.put(pkey, utils.p64(refcount))
+            self._pickleRefcounts.put(pkey, p64(refcount))
         else:
             # The refcount of this pickle has gone to zero, so we need to
             # garbage collect it, and decref all the objects it points to.
@@ -1022,9 +1023,9 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # recursively zap its metadata records too.
             collectables = {}
             for oid in refoids:
-                refcount = utils.U64(self._refcounts[oid]) - 1
+                refcount = U64(self._refcounts[oid]) - 1
                 if refcount > 0:
-                    self._refcounts.put(oid, utils.p64(refcount))
+                    self._refcounts.put(oid, p64(refcount))
                 else:
                     collectables[oid] = 1
             # Garbage collect all objects with refcounts that just went to
@@ -1100,7 +1101,9 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                         continue
                     self._zaprevision(key, referencesf)
                 # Now look and see if the object has a reference count of
-                # zero, and if so garbage collect it.
+                # zero, and if so garbage collect it.  refcounts will be None
+                # if the reference count of this object is zero, i.e. it won't
+                # be in the table.
                 refcounts = self._refcounts.get(oid)
                 if not refcounts:
                     # The current revision should be the only revision of this
@@ -1110,7 +1113,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     # And delete a few other records that _zaprevisions()
                     # doesn't clean up
                     self._serials.delete(oid)
-                    if refcounts <> None:
+                    if refcounts is not None:
                         self._refcounts.delete(oid)
         finally:
             if c:
@@ -1135,7 +1138,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             c = self._metadata.cursor()
             for oid in oids:
                 # Convert to a string
-                oid = utils.p64(oid)
+                oid = p64(oid)
                 # Delete all the metadata records
                 rec = c.set(oid)
                 while rec:
@@ -1155,7 +1158,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         """
         self._lock_acquire()
         try:
-            return utils.U64(self._refcounts[utils.p64(oid)])
+            return U64(self._refcounts[p64(oid)])
         finally:
             self._lock_release()
 
@@ -1170,7 +1173,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         self._lock_acquire()
         try:
             c = self._pickles.cursor()
-            rec = c.set(utils.p64(oid))
+            rec = c.set(p64(oid))
             while rec:
                 # We don't care about the key
                 pickle = rec[1]
@@ -1179,7 +1182,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 tmpoids = []
                 referencesf(pickle, tmpoids)
                 # Convert to unsigned longs
-                oids.extend(map(utils.U64, tmpoids))
+                oids.extend(map(U64, tmpoids))
                 # Make sure there's no duplicates, and convert to int
             return oids
         finally:
