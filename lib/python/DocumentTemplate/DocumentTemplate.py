@@ -1,13 +1,13 @@
 #!/usr/local/bin/python 
 # $What$
 
-from DT_Util import *
-import DT_Doc, DT_Var, DT_In, DT_If
+import DT_Doc, DT_Var, DT_In, DT_If, DT_Util
 __doc__=DT_Doc.__doc__ % {
     'In': DT_In.__doc__,
     'If': DT_If.__doc__,
     'Var': DT_Var.__doc__,
-    'id': '$Id: DocumentTemplate.py,v 1.3 1997/09/02 20:35:36 jim Exp $'
+    'Expr': DT_Util.Expr_doc,
+    'id': '$Id: DocumentTemplate.py,v 1.4 1997/10/29 22:06:32 jim Exp $'
     }
 
 ############################################################################
@@ -62,7 +62,7 @@ __doc__=DT_Doc.__doc__ % {
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 
@@ -73,6 +73,9 @@ from DT_Var import html_quote
 
 ############################################################################
 # $Log: DocumentTemplate.py,v $
+# Revision 1.4  1997/10/29 22:06:32  jim
+# Cleaned up imports.
+#
 # Revision 1.3  1997/09/02 20:35:36  jim
 # export html_quote
 #
