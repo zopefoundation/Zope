@@ -86,7 +86,7 @@
 import Acquisition
 from OFS.SimpleItem import Item
 from OFS.ObjectManager import ObjectManager
-from Globals import Persistent, HTMLFile, HTML
+from Globals import Persistent, DTMLFile, HTMLFile, HTML
 from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
 import Products
@@ -146,15 +146,15 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         
     searchResults=__call__
     
-    index_html=HTMLFile('dtml/frame', globals())
+    index_html=DTMLFile('dtml/frame', globals())
     menu=HTMLFile('dtml/menu', globals())
-    search=HTMLFile('dtml/search', globals())
-    results=HTMLFile('dtml/results', globals())
+    search=DTMLFile('dtml/search', globals())
+    results=DTMLFile('dtml/results', globals())
     main=HTML("""<html></html>""")
-    standard_html_header=HTMLFile('dtml/menu_header', globals())
-    standard_html_footer=HTMLFile('dtml/menu_footer', globals())
+    standard_html_header=DTMLFile('dtml/menu_header', globals())
+    standard_html_footer=DTMLFile('dtml/menu_footer', globals())
 
-    button=HTMLFile('dtml/button', globals())
+    button=DTMLFile('dtml/button', globals())
 
     def HelpButton(self, topic, product):
         """
@@ -162,7 +162,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         return self.button(self, self.REQUEST, product=product, topic=topic)
 
-    helpURL=HTMLFile('dtml/helpURL',globals())
+    helpURL=DTMLFile('dtml/helpURL',globals())
 
     def helpLink(self, product='OFSP', topic='ObjectManager_Contents.stx'):
         # Generate an <a href...> tag linking to a help topic. This
@@ -292,7 +292,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         c.addColumn('url')
         c.addColumn('id')
 
-    addTopicForm=HTMLFile('dtml/addTopic', globals())
+    addTopicForm=DTMLFile('dtml/addTopic', globals())
 
     def addTopic(self, id, title, REQUEST=None):
         "Add a Help Topic"
@@ -351,8 +351,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         """
         return apply(self.catalog.__call__, args, kw)
 
-    standard_html_header=HTMLFile('dtml/topic_header', globals())
-    standard_html_footer=HTMLFile('dtml/topic_footer', globals())
+    standard_html_header=DTMLFile('dtml/topic_header', globals())
+    standard_html_footer=DTMLFile('dtml/topic_footer', globals())
 
 
 Globals.default__class_init__(ProductHelp)

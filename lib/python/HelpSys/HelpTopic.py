@@ -86,7 +86,7 @@
 import Acquisition
 from ComputedAttribute import ComputedAttribute
 from OFS.SimpleItem import Item
-from Globals import Persistent, HTML, HTMLFile, ImageFile
+from Globals import Persistent, HTML, DTMLFile, ImageFile
 from OFS.DTMLDocument import DTMLDocument
 from OFS.PropertyManager import PropertyManager
 import os.path
@@ -228,7 +228,7 @@ class DTMLTopic(HelpTopic):
         self.title=title
         file,ext=os.path.splitext(file)
         prefix,file=os.path.split(file)
-        self.index_html=HTMLFile(file,prefix)
+        self.index_html=DTMLFile(file,prefix)
         if permissions is not None:
             self.permissions=permissions
         if categories is not None:
