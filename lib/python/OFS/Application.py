@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.40 1998/01/16 16:02:32 brian Exp $'''
-__version__='$Revision: 1.40 $'[11:-2]
+$Id: Application.py,v 1.41 1998/01/22 00:15:00 jim Exp $'''
+__version__='$Revision: 1.41 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -41,6 +41,7 @@ class Application(Folder.Folder):
 	image =ImageFile('www/Image_icon.gif', globals())
 	file  =ImageFile('www/File_icon.gif', globals())
 	doc   =ImageFile('www/Document_icon.gif', globals())
+	broken=ImageFile('www/broken.gif', globals())
 
 	UserFolder=ImageFile('AccessControl/www/UserFolder_icon.gif')
 	User_icon =ImageFile('AccessControl/www/User_icon.gif')
@@ -257,6 +258,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.41  1998/01/22 00:15:00  jim
+# Added machinery to handle broken objects
+#
 # Revision 1.40  1998/01/16 16:02:32  brian
 # Fixed bug: install_products only recognized __init__.py files, not .pycs
 #

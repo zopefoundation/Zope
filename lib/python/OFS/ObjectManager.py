@@ -1,11 +1,11 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.31 1998/01/08 17:40:42 jim Exp $"""
+$Id: ObjectManager.py,v 1.32 1998/01/22 00:15:01 jim Exp $"""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
-import Persistence, App.Management, Acquisition, App.Undo
+import Persistence, App.Management, Acquisition, App.Undo, sys
 from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog, default__class_init__
 from string import find,join,lower
@@ -126,6 +126,27 @@ class ObjectManager(
 	    return filter(None, map(lambda x,v=t,s=self: 
 			  (x['meta_type'] in v) and getattr(s,x['id']) or None,
 			  self._objects))
+
+
+	r=[]
+	for i in self._objects:
+	    c='Unknown class'
+	    oid='Unknown id'
+	    id=i['id']
+	    try:
+		o=getattr(self,id)
+		oid=o._p_oid
+		c=o.__class__.__name__
+		o.id
+	    except:
+		o=Broken(id,
+			 "<strong>Broken</strong>: %s: %s\n class=%s, id=%s" %
+			 (sys.exc_type, sys.exc_value, c, oid))
+		
+	    r.append(o)
+
+	return r
+
 	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
     def objectItems(self,t=None):
@@ -453,13 +474,21 @@ class ObjectManager(
 	try: jar.db[self._p_oid]
 	except: return 0
 	return 1
+	
+class Broken:
+    icon='p_/broken'
+    modified_in_session=0
 
-
-
+    def __init__(self, id, title):
+	self.id=id
+	self.title=title
 
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.32  1998/01/22 00:15:01  jim
+# Added machinery to handle broken objects
+#
 # Revision 1.31  1998/01/08 17:40:42  jim
 # Modified __class_init__ to use default class init defined in Globals.
 #
