@@ -86,7 +86,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -269,8 +269,8 @@ class Cumulative:
                 i2 = i + 1
                 v1 = all[i]
                 v2 = all[i2]
-                if v1 == "NA" or v2 == "NA": return "I"
-                else: return (all[i] + all[i2]) / 2
+                if type(v1) is type('') or type(v2) is type(''): return "I"
+                else: return (v1 + v2) / 2
     
     def total(self):
         t = 0
