@@ -117,6 +117,8 @@ def start_zope(cfg):
                 os.unlink(lock_filename)
             LOCK_FILE = open(lock_filename, 'w')
             lock_file(LOCK_FILE)
+            LOCK_FILE.write(str(os.getpid()))
+            LOCK_FILE.flush()
         except IOError:
             pass
 
