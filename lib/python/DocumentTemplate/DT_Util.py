@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.55 1999/04/20 04:02:23 amos Exp $''' 
-__version__='$Revision: 1.55 $'[11:-2]
+'''$Id: DT_Util.py,v 1.56 1999/04/29 19:00:01 jim Exp $''' 
+__version__='$Revision: 1.56 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -194,6 +194,7 @@ def careful_range(md, iFirst, *args):
 import string, math, whrandom
 
 try:
+    import ExtensionClass
     from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
     from cDocumentTemplate import cDocument
 except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
