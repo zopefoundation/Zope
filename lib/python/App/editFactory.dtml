@@ -23,10 +23,11 @@
     </tr>
   
   <tr><th ALIGN="LEFT">Method</th>
-      <td ALIGN="LEFT"><select name="initial">
+      <td ALIGN="LEFT">
+      <select name="initial">
 	<!--#in objectIds-->
 	   <option
-	   <!--#if expr="_['sequence-item']==initial"-->SELECTED<!--#/if-->
+	   <!--#if expr="_.string.strip(_['sequence-item'])==initial"-->SELECTED<!--#/if-->
            ><!--#var sequence-item--></option>
 	<!--#/in-->
       </select></td></tr>
