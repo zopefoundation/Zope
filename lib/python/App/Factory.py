@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.11 1999/06/24 19:24:55 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Factory.py,v 1.12 1999/07/13 13:40:40 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 import Product
@@ -107,8 +107,6 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         self.title=title
         self.object_type=object_type
         self.initial=initial
-        if product is not None:
-            self.__of__(product)._register()
 
     def manage_edit(self, title, object_type, initial, REQUEST=None):
         "Modify factory properties."
@@ -125,7 +123,8 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         elif item is not self:
             container=None
 
-        if getattr(container, '__class__', None) is Product.Product:
+        if (item is self or
+            getattr(container, '__class__', None) is Product.Product):
             self._register()
 
     def manage_beforeDelete(self, item, container):
@@ -134,7 +133,8 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         elif item is not self:
             container=None
 
-        if getattr(container, '__class__', None) is Product.Product:
+        if (item is self or
+            getattr(container, '__class__', None) is Product.Product):
             self._unregister()
 
     def _register(self):
