@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.42 2000/06/01 13:48:08 jim Exp $'
-__version__='$Revision: 1.42 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.43 2000/08/23 20:51:25 brian Exp $'
+__version__='$Revision: 1.43 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -119,8 +119,11 @@ class Tree:
                           urlparam=None)
         has_key=args.has_key
 
-        if has_key('name'): name=args['name']
-        elif has_key(''): name=args['name']=args['']
+        if has_key('') or has_key('name') or has_key('expr'):
+            name,expr=name_param(args,'tree',1)
+
+            if expr is not None: args['expr']=expr
+            elif has_key(''): args['name']=name
         else: name='a tree tag'
 
         if has_key('branches_expr'):
@@ -139,10 +142,6 @@ class Tree:
         self.__name__ = name
         self.section=section.blocks
         self.args=args
-        if args.has_key('expr'):
-            if args.has_key('name'):
-                raise ParseError, _tm('name and expr given', 'tree')
-            args['expr']=VSEval.Eval(args['expr'], expr_globals)
             
 
     def render(self,md):
