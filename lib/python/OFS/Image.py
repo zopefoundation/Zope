@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -121,7 +121,8 @@ def manage_addFile(self,id,file,title='',precondition='', content_type='',
     # object can use a database trick to make the upload more efficient.
     self._getOb(id).manage_upload(file)
     
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    if REQUEST is not None:
+        REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
 
 class File(Persistent,Implicit,PropertyManager,
