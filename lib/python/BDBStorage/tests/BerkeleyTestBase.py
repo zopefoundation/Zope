@@ -48,7 +48,7 @@ class BerkeleyTestBase(StorageTestBase):
         # XXX Pre-Python 2.3 doesn't ignore errors if the first arg doesn't
         # exist, even if the second is True.
         try:
-            shutil.rmtree(dir, True)
+            shutil.rmtree(dir, 1)
         except OSError, e:
             if e.errno <> errno.ENOENT: raise
 
