@@ -66,11 +66,11 @@ Zope Changes
 
       Features Added
 
-        - The ZCatalog now supports relevance raking.  Instead of
+        - The ZCatalog now supports relevance ranking.  Instead of
           search results being returned in an essentially random
           order, results are now sorted by 'score'.  For text indexes, 
           the score is the number of occurrences of the search term in 
-          a document.  The score can be access by an attribute on
+          a document.  The score can be accessed by an attribute on
           Catalog results 'data_record_score_' and
           'data_record_normalized_score_' contain the score and
           normalized score for the result object.
@@ -122,6 +122,11 @@ Zope Changes
 
       Bugs Fixed
 
+        - The build procedure for source checkouts now sets the
+          directory structure permissions to something (775) readable
+          by anyone, including, e.g., the web server running under a
+          different user id and group than the installer...
+
         - A bug in the DTML tree tag that prevented expand_all from
           working correctly has been fixed.
 
@@ -142,7 +147,7 @@ Zope Changes
         - Fix for missing REQUEST in a method signature in the 
           CatalogAwareness module.
 
-        - Changed to propigate errors raised by _begin for thunked
+        - Changed to propagate errors raised by _begin for thunked
           database adapters. Also changed completion code to check 
           registered status and avoid completion logic if not registered, 
           which would be the case if _begin failed.
