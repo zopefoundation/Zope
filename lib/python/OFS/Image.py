@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.87 $'[11:-2]
+__version__='$Revision: 1.88 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -483,29 +483,39 @@ class Image(File):
             )
 
 
-    def tag(self, height=None, width=None, alt=None, **args):
+    def tag(self, height=None, width=None, alt=None,
+            scale=0, xscale=0, yscale=0, **args):
         """
         Generate an HTML IMG tag for this image, with customization.
         Arguments to self.tag() can be any valid attributes of an IMG tag.
         'src' will always be an absolute pathname, to prevent redundant
         downloading of images. Defaults are applied intelligently for
-        'height', 'width', and 'alt'.
+        'height', 'width', and 'alt'. If specified, the 'scale', 'xscale',
+        and 'yscale' keyword arguments will be used to automatically adjust
+        the output height and width values of the image tag.
         """
+        if height is None: height=self.height
+        if width is None:  width=self.width
+
+        # Auto-scaling support
+        xdelta = xscale or scale
+        ydelta = yscale or scale
+        if xdelta and width==None:
+            width = int(width) * xdelta
+        if ydelta and height==None:
+            height = int(height) * ydelta
+
 
         string='<img src="%s"' % (self.absolute_url())
 
-        if alt==None:
+        if alt is None:
             alt=self.title_or_id()
         if alt:
             string = '%s alt="%s"' % (string, alt)
 
-        if height==None:
-            height = self.height
         if height:
             string = '%s height="%s"' % (string, height)
 
-        if width==None:
-            width = self.width
         if width:
             string = '%s width="%s"' % (string, width)
 
