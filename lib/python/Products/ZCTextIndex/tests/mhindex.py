@@ -468,7 +468,7 @@ class Indexer:
             self.index.index_text(docid, text)
             self.maycommit()
         # Remove messages from the folder that no longer exist
-        for path in self.path2docid.keys(f.name):
+        for path in list(self.path2docid.keys(f.name)):
             if not path.startswith(f.name + "/"):
                 break
             if self.getmtime(path) == 0:
