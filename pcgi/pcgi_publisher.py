@@ -345,7 +345,7 @@ def stdlog(name):
         f=os.environ[NAME]
     else:
         f='/dev/null'
-    try: f=open(f,'w')
+    try: f=open(f,'a')
     except: f=None
     getattr(sys, name).close()
     if f is not None: setattr(sys, name, f)
