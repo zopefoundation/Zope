@@ -212,7 +212,7 @@ class MonitorServerConfigurationTestCase(BaseTest):
             """)
         self.assert_(isinstance(factory,
                                 ZServer.datatypes.MonitorServerFactory))
-        self.assertEqual(factory.host, '')
+        self.assertEqual(factory.host, DEFAULT_HOSTNAME)
         self.assertEqual(factory.port, 85)
         self.check_prepare(factory)
         return factory.create()
