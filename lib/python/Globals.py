@@ -1,12 +1,13 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
 from string import atof, rfind
 import Acquisition
+DevelopmentMode=None
 
 try:
     home=CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL
@@ -104,6 +105,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     func_code.co_varnames='trueself', 'self', 'REQUEST'
     func_code.co_argcount=3
     _need__name__=1
+    _v_last_read=0
 
     def __init__(self,name,_prefix=None, **kw):
 	if _prefix is None: _prefix=SOFTWARE_HOME+'/lib/python'
@@ -113,6 +115,11 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
 	apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
 
     def __call__(self, *args, **kw):
+        if DevelopmentMode:
+            t=os.stat(self.raw)
+            if t != self._v_last_read:
+                self.cook()
+                self._v_last_read=t
 	return apply(HTMLFile.inheritedAttribute('__call__'),
 		     (self,)+args[1:],kw)
 
@@ -140,6 +147,9 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.17  1998/10/02 15:00:22  jim
+# Added "DevelopmentMode" that auto-reloads HTMLFile objects.
+#
 # Revision 1.16  1998/09/29 19:22:03  jim
 # Added Acquisition
 #
