@@ -20,12 +20,12 @@ from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
 
 class Lexicon:
-    
+
     __implements__ = ILexicon
 
     def __init__(self, *pipeline):
-        self.__wids = OIBTree()
-        self.__words = IOBTree()
+        self.__wids = OIBTree()  # word -> wid
+        self.__words = IOBTree() # wid -> word
         # XXX we're reserving wid 0, but that might be yagni
         self.__nextwid = 1
         self.__pipeline = pipeline
