@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
 
@@ -141,7 +141,7 @@ class NameCaller:
                        2)
 
         try:
-            apply(meth, (container, request, None)[:args])
+            meth(*(container, request, None)[:args])
         except (ArithmeticError, AttributeError, FloatingPointError,
                 IOError, ImportError, IndexError, KeyError,
                 OSError, OverflowError, TypeError, ValueError,

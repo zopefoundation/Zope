@@ -88,12 +88,19 @@ class ZopeStarterTestCase(unittest.TestCase):
         # XXX this almost certainly won't work on all systems
         import locale
         try:
-            conf = self.load_config_text("locale en_GB")
+            try:
+                conf = self.load_config_text("locale en_GB")
+            except ZConfig.DataConversionError, e:
+                # Skip this test if we don't have support.
+                if e.message.startswith(
+                    'The specified locale "en_GB" is not supported'):
+                    return
+                raise
             starter = ZopeStarter(conf)
             starter.setupLocale()
             self.assertEqual(locale.getlocale(), ['en_GB', 'ISO8859-1'])
         finally:
-            # resest to system-defined locale
+            # reset to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
 
     def testSetupStartupHandler(self):
