@@ -41,3 +41,7 @@ Control Panel - Contents: Zope system controls
     may take a few moments until the Zope comes back up after being
     restarted.**
 
+    If your browser supports JavaScript, you should be able to add the
+    following link to your bookmarks/favorites and use it to restart
+    any Zope site: <a href="javascript:window.open('Control_Panel/manage_restart'+'','restart','width=200,height=200,menubar=no,toolbar=no,scrollbars=no,resizable=yes').focus()" class="std-text">(Restart Zope)</a>.
+
