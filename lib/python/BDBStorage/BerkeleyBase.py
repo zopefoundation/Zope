@@ -29,10 +29,11 @@ from ZODB import POSException
 from ZODB.lock_file import lock_file
 from ZODB.BaseStorage import BaseStorage
 from ZODB.referencesf import referencesf
+import ThreadLock
 
 GBYTES = 1024 * 1024 * 1000
 
-__version__ = '$Revision: 1.21 $'.split()[-2:][0]
+__version__ = '$Revision: 1.22 $'.split()[-2:][0]
 
 
 
@@ -89,12 +90,13 @@ class BerkeleyConfig:
 
     - packtime is the time in seconds marking the moment in the past at which
       to autopack to.  E.g. if packtime is 14400, autopack will pack to 4
-      hours in the past.
+      hours in the past.  For Minimal storage, this value is ignored.
 
     - classicpack is an integer indicating how often an autopack phase should
       do a full classic pack.  E.g. if classicpack is 24 and frequence is
       3600, a classic pack will be performed once per day.  Set to zero to
-      never automatically do classic packs.
+      never automatically do classic packs.  For Minimal storage, this value
+      is ignored -- all packs are classic packs.
     """
     interval = 100
     kbyte = 0
@@ -162,6 +164,9 @@ class BerkeleyBase(BaseStorage):
 
         BaseStorage.__init__(self, name)
 
+        # Instantiate a pack lock
+        self._packlock = ThreadLock.allocate_lock()
+        self._autopacker = None
         # Initialize a few other things
         self._prefix = prefix
         # Give the subclasses a chance to interpose into the database setup
@@ -306,6 +311,20 @@ class BerkeleyBase(BaseStorage):
             return meth(*args)
         finally:
             self._lock_release()
+
+    def _withtxn(self, meth, *args, **kws):
+        txn = self._env.txn_begin()
+        try:
+            ret = meth(txn, *args, **kws)
+        except:
+            #import traceback ; traceback.print_exc()
+            txn.abort()
+            self._docheckpoint()
+            raise
+        else:
+            txn.commit()
+            self._docheckpoint()
+            return ret
 
 
 
