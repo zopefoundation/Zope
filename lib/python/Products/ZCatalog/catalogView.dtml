@@ -35,7 +35,7 @@ can also remove or update individual catalog records.
     </a>
   </dtml-in>
 
-<form action="<dtml-var URL1>/">
+<form action="<dtml-var URL1>">
 <input type="submit" value=" Remove " NAME="manage_uncatalogObject:method">
 <input type="submit" value=" Update " NAME="manage_catalogObject:method">
 
@@ -48,7 +48,8 @@ can also remove or update individual catalog records.
       </TD>
       <td valign="top"><dtml-var meta_type></td>
       <td valign="top" align="left">
-        <a href="<dtml-var "getpath(data_record_id_)">/manage_workspace"><dtml-var "getpath(data_record_id_)">
+        <a href="<dtml-var
+        "getpath(data_record_id_)" url_quote>/manage_workspace"><dtml-var "getpath(data_record_id_)">
         <dtml-if title> (<dtml-var title>)</dtml-if></a>
       </td> 
     </tr>
