@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.26 2002/09/24 11:03:24 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.27 2002/10/03 13:10:49 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -126,8 +126,8 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
         comps = self.splitPath(path,obj)
 
-        if obj.meta_type != 'Folder':
-            comps = comps[:-1]
+#        if obj.meta_type != 'Folder':
+#            comps = comps[:-1]
 
         for i in range(len(comps)):
             self.insertEntry( comps[i],documentId,i)
@@ -146,7 +146,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         path = self._unindex[documentId]
         comps = path.split('/')
 
-        for level in range(len(comps[1:])-1):
+        for level in range(len(comps[1:])):
             comp = comps[level+1]
 
             self._index[comp][level].remove(documentId)
@@ -190,8 +190,8 @@ class PathIndex(Persistent, Implicit, SimpleItem):
         relative URL or a part of a relative URL or
         a tuple (path,level).
 
-        level >= 0  starts searching at the given level
-        level <  0  not implemented yet
+        level>=0  starts searching at the given level
+        level<0   not implemented yet
         """
 
         if isinstance(path,StringType):
@@ -202,10 +202,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
         comps = self.splitPath(path)
 
-        if len(comps) == 0:
-            return IISet(self._unindex.keys())
-
-        if level >= 0:
+        if level >=0:
 
             results = []
             for i in range(len(comps)):
@@ -228,7 +225,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
             results = IISet()
 
-            for level in range(0,self._depth):
+            for level in range(0,self._depth + 1):
 
                 ids = None
                 error = 0
@@ -238,7 +235,7 @@ class PathIndex(Persistent, Implicit, SimpleItem):
 
                     try:
                         ids = intersection(ids,self._index[comp][level+cn])
-                    except:
+                    except KeyError:
                         error = 1
 
                 if error==0:

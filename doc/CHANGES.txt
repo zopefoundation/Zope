@@ -6,6 +6,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #449: PathIndex did not index the last part of path.
+
       - Collector #539: Fixed rendering of TAL namespace tags with an
         'on-error' statement.
 

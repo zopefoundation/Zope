@@ -53,8 +53,8 @@ class TestCase( unittest.TestCase ):
           14 : Dummy("/bb/bb/bb/14.html"),
           15 : Dummy("/bb/bb/cc/15.html"),
           16 : Dummy("/bb/cc/aa/16.html"),
-          17 : Dummy("/bb/cc/bb/17html"),
-          18 : Dummy("/bb/cc/cc/18html")
+          17 : Dummy("/bb/cc/bb/17.html"),
+          18 : Dummy("/bb/cc/cc/18.html")
         }
 
     def _populateIndex(self):
@@ -84,16 +84,21 @@ class TestCase( unittest.TestCase ):
         self._populateIndex()
 
         tests = [
-            ("aa",0, [1,2,3,4,5,6,7,8,9]),
-            ("aa",1, [1,2,3,10,11,12] ),
-            ("bb",0, [10,11,12,13,14,15,16,17,18]),
-            ("bb",1, [4,5,6,13,14,15] ),
-            ("bb/cc",0, [16,17,18] ),
-            ("bb/cc",1, [6,15] ),
-            ("bb/aa",0, [10,11,12] ),
-            ("bb/aa",1, [4,13] ),
-            ("aa/cc",-1, [3,7,8,9,12] ),
-            ("bb/bb",-1, [5,13,14,15] )
+            ("aa", 0, [1,2,3,4,5,6,7,8,9]),
+            ("aa", 1, [1,2,3,10,11,12] ),
+            ("bb", 0, [10,11,12,13,14,15,16,17,18]),
+            ("bb", 1, [4,5,6,13,14,15] ),
+            ("bb/cc", 0, [16,17,18] ),
+            ("bb/cc", 1, [6,15] ),
+            ("bb/aa", 0, [10,11,12] ),
+            ("bb/aa", 1, [4,13] ),
+            ("aa/cc", -1, [3,7,8,9,12] ),
+            ("bb/bb", -1, [5,13,14,15] ),
+            ("18.html", 3, [18] ),
+            ("18.html", -1, [18] ),
+            ("cc/18.html", -1, [18] ),
+            ("cc/18.html", 2, [18] ),
+
         ]
 
         for comp,level,results in tests:
@@ -146,3 +151,9 @@ class TestCase( unittest.TestCase ):
 
 def test_suite():
     return unittest.makeSuite( TestCase )
+
+def main():
+    unittest.TextTestRunner().run(test_suite())
+
+if __name__ == '__main__':
+    main()
