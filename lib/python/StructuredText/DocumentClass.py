@@ -575,7 +575,7 @@ class DocumentClass:
                 while innertable(tmpstr):
                     start,end   = innertable(tmpstr).span()
                     if not (start,end-1) in ignore:
-                        ignore.append(start,end-1)
+                        ignore.append((start,end-1))
                     tmpstr = " " + tmpstr[end:]
 
             # find the location of column dividers
@@ -768,7 +768,7 @@ class DocumentClass:
                 else:
                     align="left"
                 
-                cols.append(row[index][0],row[index][1],align,valign,row[index][2])
+                cols.append((row[index][0],row[index][1],align,valign,row[index][2]))
             rows.append(cols)
             cols = []
         return StructuredTextTable(rows,text,subs,indent=paragraph.indent)
