@@ -74,6 +74,10 @@ Zope Changes
      - Some calls to os.system('chmod') has been replaced with the more 
        portable os.chmod() call, to make install work properly on Windows.
 
+     - Fixed an isinstance() check in SimpleItem on standard_error_message
+       handling that would always break if the first argument was not
+       an extension class because the second argument was a type.
+
 
   Zope 2.6.1 beta 2
     
