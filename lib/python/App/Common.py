@@ -13,7 +13,7 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, os, time
 
@@ -118,13 +118,14 @@ def realpath(p):
         orig_len = len(path_list)
         changed = 0
         i = 1
-        while not changed and i < orig_len:
+        while not changed and i <= orig_len:
             head = path_list[:i]
             tail = path_list[i:]
             head_s = os.sep.join(head)
             tail_s = os.sep.join(tail)
             if os.path.islink(head_s):
-                head_s = os.readlink(head_s)
+                head_s = os.path.join(os.sep.join(head[:-1]),
+                                      os.readlink(head_s))
                 path_list = head_s.split(os.sep)
                 path_list.extend(tail)
                 p = os.sep.join(path_list)
