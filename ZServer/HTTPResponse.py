@@ -276,7 +276,7 @@ class ChannelPipe:
         response._http_version=self._http_version
         response._http_connection=self._http_connection
         response._server_version=self._server_version
-        return r
+        return response
         
     
         
