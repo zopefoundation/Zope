@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.49 1997/06/16 13:37:53 jim Exp $'''
+$Id: InvertedIndex.py,v 1.50 1997/06/23 19:31:42 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,7 +82,7 @@ $Id: InvertedIndex.py,v 1.49 1997/06/16 13:37:53 jim Exp $'''
 #   (540) 371-6909
 #
 # 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 
 import regex, string, copy
@@ -621,7 +621,7 @@ class Index:
     	else:
             s = WordSequence(s, self.synstop)
     	    for key in s:
-		if (key[0] == '"'):
+		if (key[0] == '\"'):
                     self.remove_document(doc_key, key)
 	        else:
                     self.rmdoc(doc_key, key)
@@ -641,6 +641,14 @@ class Index:
 	    except: o=None
 
 	    if o is None:
+
+		for id in v.keys():
+		    d=v[id]
+		    if d==UnindexData:
+			# Remove this doc
+			try: del v[id]
+			except: pass
+		
 		my_map[key]=v
 		continue
 
@@ -742,6 +750,10 @@ class Index:
 
 ############################################################################
 # $Log: InvertedIndex.py,v $
+# Revision 1.50  1997/06/23 19:31:42  jim
+# Fixed bug in merge when first thing merged had 'UnindexedData'.
+# Note that this "should" never occur.
+#
 # Revision 1.49  1997/06/16 13:37:53  jim
 # Added logic to work with IntermediateIndex.
 #
