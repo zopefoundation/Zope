@@ -564,7 +564,7 @@ class DocumentClass:
                 indexes.append("cell")
 
         for index in range(len(indexes)):
-            if indexes[index] is "TDdivider" or indexes[index] is THdivider:
+            if indexes[index] is "TDdivider" or indexes[index] is "THdivider":
                 ignore = [] # reset ignore
                 #continue    # skip dividers
 
