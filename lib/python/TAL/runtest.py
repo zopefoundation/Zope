@@ -120,7 +120,8 @@ def main():
         opts.append(args[0])
         del args[0]
     if not args:
-        args = glob.glob(os.path.join("test", "test*.xml"))
+        prefix = os.path.join("test", "test*.")
+        args = glob.glob(prefix + "xml") + glob.glob(prefix + "html")
     for arg in args:
         print arg,
         sys.stdout.flush()
