@@ -4,6 +4,14 @@ Zope Changes
   Change information for previous versions of Zope can be found in the
   file HISTORY.txt.
 
+  after Zope 2.5 Alpha 2
+
+    Bugs Fixed
+
+      - WebDAV: The long outstanding read-only problem with WinWord
+        and .html is finally solved. Zope sends now an additional ETag
+        header for DTMLMethods and DTMLDocuments. Many thanks to
+        Joachim Schmitz for this hint. 
 
 
     Features Added
