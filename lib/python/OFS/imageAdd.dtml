@@ -13,6 +13,11 @@
  to the application.
 </P>
 
+<P>
+ <EM>Note</EM>, if you do not provide an <CODE>id</CODE> then the file name
+ will be used.
+</P>
+
 <FORM ACTION="manage_add<dtml-var Kind>" METHOD="POST"
       ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
