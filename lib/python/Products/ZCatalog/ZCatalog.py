@@ -252,8 +252,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogAdvanced?manage_tabs_message=' +
-            urllib.quote('Catalog Updated<br>'
-                         'Total time: %s<br>'
+            urllib.quote('Catalog Updated \n'
+                         'Total time: %s\n'
                          'Total CPU time: %s' % (`elapse`, `c_elapse`)))
         
 
@@ -321,10 +321,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         RESPONSE.redirect(
             URL1 +
             '/manage_catalogView?manage_tabs_message=' +
-            urllib.quote(
-            'Catalog Updated<br>Total time: %s<br>Total CPU time: %s' %
-            (`elapse`, `c_elapse`)))
-
+            urllib.quote('Catalog Updated\n'
+                         'Total time: %s\n'
+                         'Total CPU time: %s' 
+                         % (`elapse`, `c_elapse`))
+            )
+                         
 
     def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
         """ add a column """
