@@ -1,0 +1,6 @@
+ZopeTestCase 0.9.0
+(c) 2002-2004, Stefan H. Holek, stefan@epy.co.at 
+http://zope.org/Members/shh/ZopeTestCase
+License: ZPL
+Zope: 2.5-2.7
+

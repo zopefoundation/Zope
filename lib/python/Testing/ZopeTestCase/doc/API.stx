@@ -1,0 +1,273 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+ZopeTestCase API Reference
+
+    A nicely rendered version of this document can be found at
+    http://zope.org/Members/shh/ZopeTestCaseWiki/ApiReference
+
+
+
+Module Testing.ZopeTestCase
+
+    Top-level package exposing names from contained modules
+
+    Constants
+
+        folder_name
+
+        user_name
+
+        user_role
+
+        standard_permissions
+
+        portal_name
+
+    Functions
+
+        hasProduct(name)
+
+        installProduct(name, quiet=0)
+
+        app()
+
+        close(app)
+
+        main()
+
+        _print(msg)
+
+    Classes
+
+        ZopeTestCase
+
+        PortalTestCase
+
+        Profiled
+
+        Sandboxed
+
+        Functional
+
+    Modules
+
+        ZopeLite as Zope
+
+        utils
+
+
+
+Module ZopeLite
+
+    Lightweight replacement for the Zope module
+
+    Constants
+
+        DB
+
+    Functions
+
+        hasProduct(name)
+
+        installProduct(name, quiet=0)
+
+        app(connection=None)
+
+        sandbox(base=None)
+
+        startup()
+
+        _print(msg)
+
+
+
+Module ZopeTestCase
+
+    Default test case and fixture for Zope testing
+
+    Constants
+
+        folder_name
+
+        user_name
+
+        user_role
+
+        standard_permissions
+
+    Functions
+
+        app()
+
+        close(app)
+
+    Classes
+
+        ZopeTestCase
+        
+        
+
+Class ZopeTestCase
+
+    Base test case for Zope testing
+
+    Attributes
+
+        _setup_fixture = 1
+
+    Methods
+
+        afterSetUp()
+
+        beforeTearDown()
+
+        afterClear()
+
+        beforeSetUp()
+
+        beforeClose()
+
+        setRoles(roles, name=user_name)
+
+        setPermissions(permissions, role=user_role)
+
+        login(name=user_name)
+
+        logout()
+
+
+
+Module PortalTestCase
+
+    Test case and fixture for testing CMF-based applications
+
+    Constants
+
+        portal_name
+
+        user_name
+
+    Classes
+
+        PortalTestCase
+
+ 
+
+Class PortalTestCase
+
+    Base test case for CMF testing
+
+    Attributes
+
+        _configure_portal = 1
+
+    Methods
+
+        getPortal()
+
+        createMemberarea(name)
+
+        afterSetUp()
+
+        beforeTearDown()
+
+        afterClear()
+
+        beforeSetUp()
+
+        beforeClose()
+
+        setRoles(roles, name=user_name)
+
+        setPermissions(permissions, role=user_role)
+
+        login(name=user_name)
+
+        logout()
+
+
+
+Module profiler
+
+    Profiling support
+
+    Functions
+
+        runcall(func, *args, **kw)
+
+        print_stats()
+
+        dump_stats(filename)
+
+    Classes
+
+        Profiled
+
+
+
+Class Profiled
+
+    Profiling support mix-in for xTestCases
+
+    Methods
+
+        runcall(func, *args, **kw)
+
+
+
+Module sandbox
+
+    ZODB sandbox support
+
+    Classes
+
+        Sandboxed
+
+
+
+Class Sandboxed
+
+    Sandbox support mix-in for xTestCases
+
+    Methods
+
+        *No public methods*
+
+
+
+Module functional
+
+    Functional testing support
+
+    Classes
+
+        Functional
+
+
+
+Class Functional
+
+    Functional testing mix-in for xTestCases
+
+    Methods
+
+        publish(path, basic=None, env=None, extra=None, request_method='GET')
+
+
+
+Module utils
+
+    Utility functions to extend the test environment
+
+    Functions
+
+        setupCoreSessions(app=None)
+
+        setupZGlobals(app=None)
+
+        setupSiteErrorLog(app=None)
+
+        startZServer(number_of_threads=1, log=None)
+
+        importObjectFromFile(container, filename, quiet=0)
+

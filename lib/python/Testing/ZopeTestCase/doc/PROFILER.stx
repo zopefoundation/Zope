@@ -1,0 +1,19 @@
+<style type="text/css"> <!-- li { margin: 1em } --> </style>
+
+Profiler Readme
+
+    Since version 0.9.0 all xTestCases are profiler aware by default. 
+
+    You can run your tests under profiler control like this::
+
+        python testSomething.py profile
+
+    If you want to profile fixture creation or destruction type one of::
+
+        python testSomething.py profile-setup
+        python testSomething.py profile-teardown
+
+    Profiler statistics will be printed after the test results.
+
+    See the API reference for more on the 'profiler' module.
+

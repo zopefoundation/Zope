@@ -1,0 +1,104 @@
+0.9.0
+- No longer support Zope 2.4 as its DemoStorage is broken.
+- Made PortalTestCase derive from ZopeTestCase (again).
+- Made all xTestCases profiler aware by default.
+- Renamed the Profiler module to profiler.py (lowercase).
+- Added support for ZODB sandboxes, sandbox.py.
+- Added support for functional unit testing, functional.py.
+- The profiler module now provides a dump_stats() method to write
+  profiler statistics to a file for manual inspection.
+- The REQUEST now fakes a published object to make the URL1
+  request variable available to tests. Thanks to Alan Runyan.
+- startZServer() now accepts a log argument, allowing to pass
+  a stream which the ZServer access log (Z2.log) will be written to.
+- The 'app' argument of utility functions is now optional.
+- Fixed custom_zodb.py support for Zope 2.7.
+- Most mercilessly refactored ztc_common.py.
+- ZopeLite now loads silently if it does not control the import process.
+
+0.8.6
+- Revised and amended much of the existing documentation. 
+- Added an API reference (skeleton), API.stx.
+- Documented what's going on when tests are run in TIMELINES.txt.
+- Fixed issues with testZODBCompat.py and Zope < 2.6.
+- setupZGlobals() now uses a new-style BTrees.OOBTree.
+- Profiling can now be activated from the command line.
+
+0.8.4
+- framework.py now flushes stdout to not mess up the output in batch mode.
+- framework.py no longer adds os.pardir to the sys.path. Thanks to 
+  Yoshinori Okuji.
+- Made sure user objects are not inadvertently wrapped twice by login().
+- Made sure "renegade" transactions are aborted if something goes wrong 
+  during the setup phase.
+- initialize_cache() is no longer called for Zope 2.7.
+
+0.8.2
+- Removed the leading underscores from all constant names. They proved 
+  non-private in "real life" anyway. The old names are still available
+  for backward compatibility, but are deprecated.
+- Removed NO_PRODUCT_LOAD for reasons of obscureness and YAGNI.
+- Added a test for ZODB behavior in ZTC, testZODBCompat.py.
+
+0.8.0
+- Added a PortalTestCase base class to aid testing of CMF-style portals.
+- Added simple profiling support using the Python profile library.
+- Got rid of the ill-conceived FX interface (don't even ask).
+- ZopeLite now supports Zope 2.7.
+
+0.7.2 (not released)
+- ZopeLite gained a do-nothing startup() method for API compliance.
+- The ZopeTestCase module now has a main() method like unittest has.
+- Made sure the test user's 'roles' attribute is a list because CMF
+  role-mapping assumes it can append to it. :-/
+
+0.7.0
+- Fixed a bug that caused setRoles() to only work with the 
+  default user folder. Refactored the fixture code in the process.
+- Reworked the connection registry and wrote tests for it.
+- Made afterClear() largely redundant because it turned out to be just that.
+- Added close() method to be able to close ZODB connections individually.
+- Added ISimpleSecurity and IExtensibleSecurity interfaces.
+
+0.6.4
+- installProduct() now immediately fails if a product throws an
+  exception during installation. Thanks to Tom Jenkins.
+- The REQUEST no longer contains the entire shell environment.
+- Moved all documentation files to the 'doc' subdirectory.
+- Added IZopeTestCase and IZopeTestCaseFX interfaces.
+
+0.6.2
+- The effects of setting INSTANCE_HOME have been changed to something 
+  less surprising. Please see ENVIRONMENT.txt for details.
+- Now uses the environment variable ZEO_INSTANCE_HOME to enable ZEO 
+  support.
+
+0.6.0
+- Use a module-level database connection registry to avoid freezing 
+  after too many errors.
+- All tests are now transactional by default.
+- Added beforeSetUp() and beforeClose() hooks to the ZopeTestCase class.
+- Added utility method importObjectFromFile()
+- Added utility method setupSiteErrorLog().
+- Added utility method startZServer().
+- Added accompanying test, testWebserver.py.
+- Added first incarnation of a How-To.
+- Revised the example tests.
+
+0.5.3
+- Zope 2.6 compatibility adjustments.
+- Hardening in the face of incomplete Zope installations.
+
+0.5.2
+- Delete ZEO_CLIENT environment variable to enforce a temporary client 
+  cache. Repair Zope 2.4 Testing package issue in the process.
+- Provide NO_PRODUCT_LOAD environment variable for completeness.
+- Added hasProduct() method to allow testing for product availability.
+- Added new utility method setupZGlobals().
+- Added a skeleton test suite, testSkeleton.py.
+- Added runalltests.py script.
+- Added CHANGES, INSTALL, and VERSION documents.
+
+0.5.0
+- Unit and regression testing framework for Zope. Initial release.
+
