@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -304,11 +304,16 @@ class HTTPRequest(BaseRequest):
                  host = strip(environ['HTTP_HOST'])
                  hostname, port = splitport(host)
 
-                 # some clients manage to forget the port :(
-                 if port is None and environ.has_key('SERVER_PORT'):
-                     s_port=environ['SERVER_PORT']
-                     if s_port not in ('80', '443'):
-                         port=s_port
+                 # NOTE: some (DAV) clients manage to forget the port. This
+                 # can be fixed with the commented code below - the problem
+                 # is that it causes problems for virtual hosting. I've left
+                 # the commented code here in case we care enough to come
+                 # back and do anything with it later.
+                 #
+                 # if port is None and environ.has_key('SERVER_PORT'):
+                 #     s_port=environ['SERVER_PORT']
+                 #     if s_port not in ('80', '443'):
+                 #         port=s_port
 
              else:
                  hostname = strip(environ['SERVER_NAME'])
