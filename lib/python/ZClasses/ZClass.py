@@ -158,6 +158,12 @@ class ZClass(OFS.SimpleItem.SimpleItem):
     instance__meta_type='instance'
     instance__icon=''
     __propsets__=()
+ 
+    __ac_permissions__=(
+	('View management screens', ('manage_tabs', 'manage_workspace')),
+	('Change permissions',      ('manage_access',)                 ),
+	('View',                    ('', '__call__', 'index_html')     ),
+	)
 
     def __init__(self, id, title, bases):
         """Build a Zope class
@@ -251,6 +257,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             if durl is None: durl=REQUEST['URL2']
             REQUEST['RESPONSE'].redirect(durl+'/manage_workspace')
 
+    __call__=index_html
 
     def zclass_builtins(self):
         r=find_builtins(self._zclass_).keys()
