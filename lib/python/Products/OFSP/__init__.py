@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.27 1999/03/30 19:08:42 jim Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: __init__.py,v 1.28 1999/03/31 00:02:50 amos Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Version, Draft, OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
@@ -118,7 +118,7 @@ def initialize(context):
     context.registerClass(
         OFS.Image.Image,
         permission=perm,
-        constructors=(OFS.Image.manage_addImageForm,
+        constructors=(('imageAdd',OFS.Image.manage_addImageForm),
                       OFS.Image.manage_addImage),
         icon='images/Image_icon.gif',
         legacy=(OFS.Image.manage_addImage,),
@@ -127,7 +127,7 @@ def initialize(context):
     context.registerClass(
         OFS.Image.File,
         permission=perm,
-        constructors=(OFS.Image.manage_addFileForm,
+        constructors=(('fileAdd',OFS.Image.manage_addFileForm),
                       OFS.Image.manage_addFile),
         icon='images/File_icon.gif',
         legacy=(OFS.Image.manage_addFile,),
