@@ -26,6 +26,11 @@ Zope Changes
 
     Features added
 
+      - Fixed ObjectManager to not swallow exceptions during object
+        deletion (in debug mode and if the user is not Manager). This
+        allows for better debugging, while still keeping the possibility
+        for a Manager to delete buggy objects.
+
       - Added a ZConfig directive 'large-file-threshold' to control
         the request content-size threshold at which a temporary file
         gets created. Use the same value for deciding between reading

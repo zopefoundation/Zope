@@ -307,7 +307,10 @@ class ObjectManager(
             except:
                 LOG('Zope',ERROR,'manage_beforeDelete() threw',
                     error=sys.exc_info())
-                pass
+                # In debug mode when non-Manager, let exceptions propagate.
+                if getConfiguration().debug_mode:
+                    if not getSecurityManager().getUser().has_role('Manager'):
+                        raise
             if s is None: object._p_deactivate()
 
     def _delObject(self, id, dp=1):
@@ -319,9 +322,12 @@ class ObjectManager(
         except ConflictError:
             raise
         except:
-            LOG('Zope',ERROR,'manage_beforeDelete() threw',
+            LOG('Zope', ERROR, '_delObject() threw',
                 error=sys.exc_info())
-            pass
+            # In debug mode when non-Manager, let exceptions propagate.
+            if getConfiguration().debug_mode:
+                if not getSecurityManager().getUser().has_role('Manager'):
+                    raise
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
 

@@ -17,6 +17,8 @@ class DummyObject(CopySource):
         return 1
     def manage_afterAdd(self, item, container):
         return
+    def manage_beforeDelete(self, item, container):
+        return
     def wl_isLocked(self):
         return 0
 
