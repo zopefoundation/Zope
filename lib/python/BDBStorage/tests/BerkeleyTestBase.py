@@ -45,12 +45,8 @@ class BerkeleyTestBase(StorageTestBase):
     def _zap_dbhome(self, dir=None):
         if dir is None:
             dir = self._envdir()
-        # XXX Pre-Python 2.3 doesn't ignore errors if the first arg doesn't
-        # exist, even if the second is True.
-        try:
-            shutil.rmtree(dir, 1)
-        except OSError, e:
-            if e.errno <> errno.ENOENT: raise
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
 
     def _mk_dbhome(self, dir=None):
         if dir is None:
