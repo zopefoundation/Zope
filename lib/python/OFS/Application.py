@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.49 1998/02/12 23:03:29 brian Exp $'''
-__version__='$Revision: 1.49 $'[11:-2]
+$Id: Application.py,v 1.50 1998/02/14 21:24:31 brian Exp $'''
+__version__='$Revision: 1.50 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -117,7 +117,7 @@ class Application(Folder.Folder):
 		alternate_self=alternate_self.__of__(self.aq_parent)
 	    return alternate_self
 
-	try: self._p_jar.cache.incrgc() # Perform incremental GC
+	try:    self._p_jar.cache.incrgc() # Perform incremental GC
 	except: pass
 
 	try: return getattr(self, name)
@@ -295,8 +295,7 @@ def lic_check(product_name):
     product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
     package_dir=path_join(product_dir, product_name)
     bobobase   =Globals.Bobobase
-    if bobobase is None:
-	return 1
+    safe=bobobase.has_key('Application')
     try: f=open(path_join(package_dir,'%s.lic' % product_name), 'rb')
     except:
 	try:
@@ -329,12 +328,12 @@ def lic_check(product_name):
     else:
 	if not bobobase.has_key('_t_'):
 	    bobobase['_t_']={}
-	    get_transaction().commit()
+	    if safe: get_transaction().commit()
 	t=bobobase['_t_']
 	if not t.has_key(product_name):
 	    t[product_name]=time.time()
 	    bobobase['_t_']=t
-	    get_transaction().commit()
+	    if safe: get_transaction().commit()
 	if (t[product_name] + (86400.0 * val)) < time.time():
 	    product=getattr(__import__("Products.%s" % product_name),
 			    product_name)
@@ -378,6 +377,10 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.50  1998/02/14 21:24:31  brian
+# Fixed the licensing code to not call get_transaction().commit() during the
+# initial request that creates a new bobobase.
+#
 # Revision 1.49  1998/02/12 23:03:29  brian
 # *** empty log message ***
 #
