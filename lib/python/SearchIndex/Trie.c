@@ -53,7 +53,7 @@
 
 static char Trie_module_documentation[] = 
 ""
-"\n$Id: Trie.c,v 1.4 1997/03/17 23:23:09 jim Exp $"
+"\n$Id: Trie.c,v 1.5 1997/03/20 19:30:04 jim Exp $"
 ;
 
 
@@ -71,7 +71,9 @@ static void PyVar_Assign(PyObject **v, PyObject *e) { Py_XDECREF(*v); *v=e;}
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 #define PyOb(O) ((PyObject*)(O))
-#define PyList_SIZE(O) (((PyListObject *)(O)) -> ob_size)
+#define LIST(O) ((PyListObject*)(O))
+#define STRING(O) ((PyStringObject*)(O))
+#define PyList_SIZE(O) (((PyListObject*)(O))->ob_size)
 
 static PyObject *py___class__, *py_Trief;
 
@@ -82,7 +84,7 @@ typedef struct {
   cPersistent_HEAD
 #endif
   int min;
-  PyListObject *bins;
+  PyObject *bins;
   PyObject *value;
 } TrieObject;
 
@@ -104,7 +106,7 @@ Trie___setstate__(TrieObject *self, PyObject *args)
 	return NULL;
       if(self->min < 0)
 	{
-	  self->value=PyOb(self->bins);
+	  self->value=self->bins;
 	  self->bins=NULL;
 	}
       Py_XINCREF(self->value);
@@ -118,7 +120,11 @@ static PyObject *
 Trie___getstate__(TrieObject *self, PyObject *args)
 {
   UNLESS(PyArg_ParseTuple(args, "")) return NULL;
+
+#ifdef PERSISTENT
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
+
   if(self->value)
     if(self->bins)
       return Py_BuildValue("(iOO)", self->min, self->bins, self->value);
@@ -131,6 +137,7 @@ Trie___getstate__(TrieObject *self, PyObject *args)
   return Py_None;
 }
 
+#ifdef PERSISTENT
 static PyObject *
 Trie__p___reinit__(TrieObject *self, PyObject *args)
 {
@@ -142,19 +149,20 @@ Trie__p___reinit__(TrieObject *self, PyObject *args)
       Py_INCREF(oid);
       ASSIGN(self->oid, oid);
     }
-  if(self->oid==oid || PyObject_Compare(self->oid, oid)==0)
+  if((self->oid==oid || PyObject_Compare(self->oid, oid)==0)
+     && self->state==cPersistent_UPTODATE_STATE)
     {
       Py_XDECREF(self->bins);
       Py_XDECREF(self->value);
       self->bins=NULL;
       self->value=NULL;
-      self->min=0
+      self->min=0;
       self->state=cPersistent_GHOST_STATE;
     }
   Py_INCREF(Py_None);
   return Py_None;
 }
-
+#endif
 
 typedef struct {
   char *data;
@@ -165,13 +173,14 @@ static PyObject *
 getiork(TrieObject *self, PyObject * r, keybuf *buf, int l, int dokeys)
 {
   int i;
+  PyObject *item=0;
   
+#ifdef PERSISTENT
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
 
   if(self->value)
     {
-      PyObject *item=0;
-
       if(dokeys)
 	{
 	  UNLESS(item=PyString_FromStringAndSize(buf->data,l)) return NULL;
@@ -190,15 +199,28 @@ getiork(TrieObject *self, PyObject * r, keybuf *buf, int l, int dokeys)
   if(self->bins)
     {
       PyObject *bin;
-      int s, l1;
+      int s, l1, ibin;
 
-      for(i=0, l1=l+1, s=PyList_SIZE(self->bins); i < s; i++)
+      for(ibin=0, l1=l+1, s=PyList_SIZE(self->bins); ibin < s; ibin++)
 	{
-	  bin=PyList_GET_ITEM(self->bins, i);
-	  if(bin != Py_None)
+	  bin=PyList_GET_ITEM(LIST(self->bins), ibin);
+	  if(bin->ob_type==self->ob_type)
 	    {
-	      buf->data[l]=self->min+i;
+	      buf->data[l]=self->min+ibin;
 	      UNLESS(getiork((TrieObject*)bin,r,buf,l1,dokeys)) return NULL;
+	    }
+	  else if(PyTuple_Check(bin))
+	    {
+	      buf->data[l]=self->min+ibin;
+	      UNLESS(item=PyString_FromStringAndSize(buf->data,l1))
+		return NULL;
+	      ASSIGN(item,PySequence_Concat(item,PyTuple_GET_ITEM(bin,0)));
+	      if(! dokeys && item)
+		ASSIGN(item, Py_BuildValue("OO",item,PyTuple_GET_ITEM(bin,1)));
+	      UNLESS(item) return NULL;
+	      i=PyList_Append(r,item);
+	      Py_DECREF(item);
+	      if(i < 0) return NULL;
 	    }
 	}
     }
@@ -234,7 +256,10 @@ Trie_keys(TrieObject *self, PyObject *args)
 static PyObject *
 Trie_cvalues(TrieObject *self, PyObject *r)
 {
+#ifdef PERSISTENT
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
+
   if(self->value)
     if(PyList_Append(r,self->value) < 0) return NULL;
   if(self->bins)
@@ -244,9 +269,13 @@ Trie_cvalues(TrieObject *self, PyObject *r)
 
       for(i=0, s=PyList_SIZE(self->bins); i < s; i++)
 	{
-	  bin=PyList_GET_ITEM(self->bins, i);
-	  if(bin != Py_None) UNLESS(Trie_cvalues((TrieObject*)bin,r))
-	    return NULL;
+	  bin=PyList_GET_ITEM(LIST(self->bins), i);
+	  if(bin->ob_type==self->ob_type)
+	    {
+	      UNLESS(Trie_cvalues((TrieObject*)bin,r)) return NULL;
+	    }
+	  else if(PyTuple_Check(bin))
+	    if(PyList_Append(r,PyTuple_GET_ITEM(bin,1)) < 0) return NULL;
 	}
     }
   return r;
@@ -279,8 +308,10 @@ static struct PyMethodDef Trie_methods[] = {
    "__getstate__() -- Get the persistent state of the trie"},
   {"__setstate__", 	(PyCFunction)Trie___setstate__, 	METH_VARARGS,
    "__setstate__(v) -- Set the persistent state of the trie"},
+#ifdef PERSISTENT
   {"_p___reinit__",	(PyCFunction)Trie__p___reinit__,	METH_VARARGS,
    "_p___reinit__(oid,jar,copy) -- Reinitialize from a newly created copy"},
+#endif
   {"keys", 		(PyCFunction)Trie_keys,		METH_VARARGS,
    "keys() -- Get the keys of the trie"},
   {"values", 		(PyCFunction)Trie_values,		METH_VARARGS,
@@ -301,19 +332,33 @@ static PyObject *
 Trie_cget(TrieObject *self, char *word)
 {
   int c;
-  PyListObject *bins;
+  char *k;
+  PyObject *bins;
+  PyTypeObject *typ;
+  PyObject *key;
 
+#ifdef PERSISTENT
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
 
+  typ=self->ob_type;
   while(c=*word++)
     {
-      c=toupper(c);
       if(! (bins=self->bins) || c < self->min) return NotFoundError();
       c-=self->min;
       if(c >= PyList_SIZE(bins)) return NotFoundError();
-      self=(TrieObject *)PyList_GET_ITEM(bins, c);
-      if(self==(TrieObject *)Py_None) return NotFoundError();
+      self=(TrieObject *)PyList_GET_ITEM(LIST(bins), c);
+      if(self->ob_type != typ)
+	if(PyTuple_Check(PyOb(self)) &&
+	   PyString_Check((key=PyTuple_GET_ITEM(PyOb(self),0))) &&
+	   strcmp(word,PyString_AS_STRING(STRING(key)))==0)
+	  return PySequence_GetItem(PyOb(self),1);
+	else
+	  return NotFoundError();
+	  
+#ifdef PERSISTENT
       if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
     }
   if(! self->value) return NotFoundError();
   Py_INCREF(self->value);
@@ -325,32 +370,50 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
 {
   PyObject *bin;
   int c, r, max;
+#ifdef PERSISTENT
   int ch=0;
 
-
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return -1;
+#endif
 
-  c=*word;
+  c=*word++;
   if(! c)
     {
+      if(!v && !self->value)
+	{
+	  NotFoundError();
+	  return -1;
+	}
       Py_XINCREF(v);
       ASSIGN(self->value, v);
+#ifdef PERSISTENT
       if(cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+#endif
       return 0;
     }
-  c=toupper(c);
+  if(!v &&
+     (!self->bins || c < self->min || c-self->min >= PyList_SIZE(self->bins))
+     )
+    {
+      NotFoundError();
+      return -1;
+    }
   if(! self->bins)
     {
-      UNLESS(self->bins=(PyListObject*)PyList_New(1)) return -1;
+      UNLESS(self->bins=PyList_New(1)) return -1;
       self->min=c;
+#ifdef PERSISTENT
       ch=1;
+#endif
     }
   else if(c < self->min)
     while(c < self->min)
       {
-	if(PyList_Insert(PyOb(self->bins),0,Py_None) < 0) return -1;
+	if(PyList_Insert(self->bins,0,Py_None) < 0) return -1;
 	self->min--;
+#ifdef PERSISTENT
 	ch=1;
+#endif
       }
   else
     {
@@ -358,22 +421,69 @@ Trie_cset(TrieObject *self, char *word, PyObject *v)
       if(c > max)
 	while(c > max)
 	  {
-	    if(PyList_Append(PyOb(self->bins),Py_None) < 0) return -1;
+	    if(PyList_Append(self->bins,Py_None) < 0) return -1;
 	    max++;
+#ifdef PERSISTENT
 	    ch=1;
+#endif
 	  }
     }
   c-=self->min;
-  bin=PyList_GET_ITEM(self->bins, c);
-  if(! bin || bin==Py_None)
+  bin=PyList_GET_ITEM(LIST(self->bins), c);
+  if(!bin || bin->ob_type != self->ob_type)
     {
-      UNLESS(bin=PyObject_GetAttr(PyOb(self),py___class__)) return -1;
-      UNLESS_ASSIGN(bin,PyObject_CallObject(bin,NULL)) return -1;
-      if(PyList_SetItem(PyOb(self->bins), c, bin) < 0) return -1;
-      ch=1;
+      PyObject *key;
+
+      if(!v)
+	if(bin && PyTuple_Check(bin) && (key=PyTuple_GET_ITEM(bin,0)) &&
+	   PyString_Check(key) &&
+	   strcmp(word,PyString_AS_STRING(STRING(key))) == 0
+	   )
+	  {
+	    Py_INCREF(Py_None);
+	    bin=Py_None;
+	  }
+	else
+	  {
+	    NotFoundError();
+	    return -1;
+	  }
+      else
+	{
+	  if(bin && PyTuple_Check(bin) && (key=PyTuple_GET_ITEM(bin,0)) &&
+	     PyString_Check(key) &&
+	     strcmp(word,PyString_AS_STRING(STRING(key))) != 0
+	     )
+	    {
+	      PyObject *o;
+	      
+	      o=PyTuple_GET_ITEM(bin,1);
+	      UNLESS(bin=PyObject_GetAttr(PyOb(self),py___class__)) return -1;
+	      UNLESS_ASSIGN(bin,PyObject_CallObject(bin,NULL)) return -1;
+	      if(Trie_cset((TrieObject*)bin,
+			   PyString_AS_STRING(STRING(key)),o) < 0 ||
+		 Trie_cset((TrieObject*)bin,word,v) < 0
+		 ) goto err;
+	    }
+	  else
+	    UNLESS(bin=Py_BuildValue("sO",word,v)) goto err;
+	}
+  
+#ifdef PERSISTENT
+      if(cPersistenceCAPI->changed(PyOb(self)) < 0) goto err;
+#endif
+
+      return PyList_SetItem(self->bins, c, bin);
     }
+
+#ifdef PERSISTENT
   if(ch && cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
-  return Trie_cset((TrieObject*)bin,word+1,v);
+#endif
+
+  return Trie_cset((TrieObject*)bin,word,v);
+err:
+  Py_DECREF(bin);
+  return -1;
 }
 
 static int 
@@ -382,21 +492,33 @@ Trie_length(TrieObject *self)
   int i, li, l=0;
   PyObject *bin;
 
+#ifdef PERSISTENT
   if(cPersistenceCAPI->setstate(PyOb(self)) < 0) return NULL;
+#endif
+
   if(self->bins)
     for(i=PyList_SIZE(self->bins); --i >= 0; )
-      if((bin=PyList_GET_ITEM(self->bins, i)) != Py_None)
-	{
-	  li=Trie_length((TrieObject*)bin);
-	  if(li < 0) return li;
-	  if(li)
-	    l+=li;
-	  else
-	    {      
-	      Py_INCREF(Py_None);
-	      PyList_SetItem(PyOb(self->bins), i, Py_None);
-	    }
-	}
+      {
+	bin=PyList_GET_ITEM(LIST(self->bins), i);
+	if(bin->ob_type==self->ob_type)
+	  {
+	    li=Trie_length((TrieObject*)bin);
+	    if(li < 0) return li;
+	    if(li)
+	      l+=li;
+	    else
+	      {      
+#ifdef PERSISTENT
+		if(cPersistenceCAPI->changed(PyOb(self)) < 0) return -1;
+#endif
+		/* Database management concerns make us leery of this
+		Py_INCREF(Py_None);
+		if(PyList_SetItem(self->bins, i, Py_None) < 1) return -1;
+		*/
+	      }
+	  }
+	else if(PyTuple_Check(bin)) l++;
+      }
   if(self->value) l++;
   return l;
 }
@@ -525,7 +647,7 @@ void
 initTrie()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -565,6 +687,11 @@ initTrie()
  Revision Log:
 
   $Log: Trie.c,v $
+  Revision 1.5  1997/03/20 19:30:04  jim
+  Major rewrite to use more efficient data structure.  In particular,
+  try to avoid one-element tries by storing partial-key/value tuples
+  instead of sub-tries.
+
   Revision 1.4  1997/03/17 23:23:09  jim
   Fixed reinit bug.
 
