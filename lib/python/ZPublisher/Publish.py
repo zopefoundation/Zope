@@ -116,8 +116,8 @@ Access Control
    
           'request' -- a mapping object that contains request information,
    
-          'http_authorization' -- the value of the HTTP Authorization header,
-          and 
+          'http_authorization' -- the value of the HTTP Authorization header
+	           or 'None' is no authorization header was provided, and 
    
           'roles' -- a list of user role names
    
@@ -140,7 +140,6 @@ Access Control
        role names matching the roles in the published object's
        __roles__ attribute.
 
-
        If validation succeeds Bobo assigns the user name to the
        request variable, 'AUTHENTICATED_USER'.
     
@@ -148,7 +147,23 @@ Access Control
 
        When a user first accesses a protected object, Bobo returns an
        error response to the web browser that causes a password dialog
-       to be. 
+       to be displayed. 
+
+     Using the web server to perform authentication
+
+       Some web servers cannot be coaxed into passing authentication
+       information to applications.  In this case, Bobo applications
+       cannot perform authentication.  If the web server is configured
+       to authenticate access to a Bobo application, then the Bobo
+       application can still perform authorization using the
+       'REMOTE_USER' variable.  Bobo does this automatically when
+       mapping user databases are used, and custom user databases may
+       do this too.
+
+       In this case, it may be necessary to provide more than one path
+       to an application, one that is authenticated, and one that
+       isn't, if public methods and non-public methods are
+       interspursed.
 
   Fixed-attribute objects
 
@@ -362,7 +377,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.77 1998/03/10 17:44:28 jim Exp $"""
+$Id: Publish.py,v 1.78 1998/03/18 19:19:47 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -417,7 +432,7 @@ $Id: Publish.py,v 1.77 1998/03/10 17:44:28 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.77 $'[11:-2]
+__version__='$Revision: 1.78 $'[11:-2]
 
 
 def main():
@@ -588,7 +603,9 @@ class ModulePublisher:
 	    % (name,self.request))
 
     def unauthorized(self, realm):
-	self.response['WWW-authenticate']='basic realm="%s"' % realm
+	if not (self.request.has_key('REMOTE_USER') and
+		self.request['REMOTE_USER']):
+	    self.response['WWW-authenticate']='basic realm="%s"' % realm
 	raise 'Unauthorized', (
 	    """<strong>You are not authorized to access this resource.
 	    </strong>
@@ -835,8 +852,7 @@ class ModulePublisher:
 			auth=''
 
 		if v is old_validation:
-		    if auth is None: self.unauthorized(realm)
-		    user=old_validation(groups, auth, roles)
+		    user=old_validation(groups, request, auth, roles)
 		elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		else: user=v(request, auth, roles)
 
@@ -849,8 +865,7 @@ class ModulePublisher:
 		    if hasattr(groups,'validate'): v=groups.validate
 		    else: v=old_validation
 		    if v is old_validation:
-			if auth is None: self.unauthorized(realm)
-			user=old_validation(groups, auth, roles)
+			user=old_validation(groups, request, auth, roles)
 		    elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
 		    else: user=v(request, auth, roles)
 		    
@@ -1291,16 +1306,24 @@ def parse_cookie(text,
     return apply(parse_cookie,(text[l:],result))
 
 base64=None
-def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
+def old_validation(groups, request, HTTP_AUTHORIZATION,
+		   roles=UNSPECIFIED_ROLES):
     global base64
     if base64 is None: import base64
 
-    if lower(HTTP_AUTHORIZATION[:6]) != 'basic ':
-	if roles is None: return ''
-	return None
-    [name,password] = string.splitfields(
+    if HTTP_AUTHORIZATION:
+	if lower(HTTP_AUTHORIZATION[:6]) != 'basic ':
+	    if roles is None: return ''
+	    return None
+	[name,password] = string.splitfields(
 	    base64.decodestring(
 		split(HTTP_AUTHORIZATION)[-1]), ':')
+    elif request.environ.has_key('REMOTE_USER'):
+	name=request.environ['REMOTE_USER']
+	password=None
+    else:
+	if roles is None: return ''
+	return None
 
     if roles is None: return name
 
@@ -1323,7 +1346,8 @@ def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
 	groups=g
 
     for d in groups:
-	if d.has_key(name) and d[name]==password: return name
+	if d.has_key(name) and (d[name]==password or password is None):
+	    return name
 
     if keys is None:
 	# Not a named group, so don't go further
