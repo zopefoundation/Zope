@@ -1,11 +1,11 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.32 1998/01/22 00:15:01 jim Exp $"""
+$Id: ObjectManager.py,v 1.33 1998/01/26 16:33:13 brian Exp $"""
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
-import Persistence, App.Management, Acquisition, App.Undo, sys
+import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
 from Globals import MessageDialog, default__class_init__
 from string import find,join,lower
@@ -126,27 +126,6 @@ class ObjectManager(
 	    return filter(None, map(lambda x,v=t,s=self: 
 			  (x['meta_type'] in v) and getattr(s,x['id']) or None,
 			  self._objects))
-
-
-	r=[]
-	for i in self._objects:
-	    c='Unknown class'
-	    oid='Unknown id'
-	    id=i['id']
-	    try:
-		o=getattr(self,id)
-		oid=o._p_oid
-		c=o.__class__.__name__
-		o.id
-	    except:
-		o=Broken(id,
-			 "<strong>Broken</strong>: %s: %s\n class=%s, id=%s" %
-			 (sys.exc_type, sys.exc_value, c, oid))
-		
-	    r.append(o)
-
-	return r
-
 	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
     def objectItems(self,t=None):
@@ -363,7 +342,10 @@ class ObjectManager(
 	except: pass
 	self._setProperty(id,value,type)
 	if REQUEST is not None:
-	    return self.manage_propertiesForm(self,REQUEST)
+	    return MessageDialog(
+		   title  ='Success!',
+		   message='Your changes have been saved',
+		   action ='manage_propertiesForm')
 
     def manage_editProperties(self,REQUEST):
 	"""Edit object properties"""
@@ -371,25 +353,34 @@ class ObjectManager(
 	    n=p['id']
 	    try:    setattr(self,n,REQUEST[n])
 	    except: setattr(self,n,'')
-	return self.manage_propertiesForm(self,REQUEST)
+	return MessageDialog(
+	       title  ='Success!',
+	       message='Your changes have been saved',
+	       action ='manage_propertiesForm')
 
-    def manage_delProperties(self,ids,REQUEST):
+    def manage_delProperties(self,ids,REQUEST=None):
 	"""Delete one or more properties"""
 	try:    p=self._reserved_names
 	except: p=()
+	if ids is None:
+	    return MessageDialog(title='No property specified',
+		   message='No properties were specified!',
+		   action ='./manage_propertiesForm',)
 	for n in ids:
 	    if n in p:
 	        return MessageDialog(
 	        title  ='Cannot delete %s' % n,
 	        message='The property <I>%s</I> cannot be deleted.' % n,
-	        action ='manage_propertiesForm',
-	        target ='manage_main')
-
+	        action ='manage_propertiesForm')
 	    try:    self._delProperty(n)
 	    except: raise 'BadRequest', (
 		          'The property <I>%s</I> does not exist' % n)
+	if REQUEST is not None:
+	    return MessageDialog(
+	           title  ='Success!',
+	           message='Your changes have been saved',
+	           action ='manage_propertiesForm')
 
-	return self.manage_propertiesForm(self,REQUEST)
 
     def _defaultInput(self,n,t,v):
         return '<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>' % (n,t,v)
@@ -474,20 +465,15 @@ class ObjectManager(
 	try: jar.db[self._p_oid]
 	except: return 0
 	return 1
-	
-class Broken:
-    icon='p_/broken'
-    modified_in_session=0
 
-    def __init__(self, id, title):
-	self.id=id
-	self.title=title
+
+
 
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
-# Revision 1.32  1998/01/22 00:15:01  jim
-# Added machinery to handle broken objects
+# Revision 1.33  1998/01/26 16:33:13  brian
+# Added confirmation to property editing
 #
 # Revision 1.31  1998/01/08 17:40:42  jim
 # Modified __class_init__ to use default class init defined in Globals.
