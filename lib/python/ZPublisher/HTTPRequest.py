@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -297,7 +297,6 @@ class HTTPRequest(BaseRequest):
         if p >= 0: b=b[:p+1]
         else: b=''
         while b and b[0]=='/': b=b[1:]
-        
         if have_env('SERVER_URL'):
              server_url=strip(environ['SERVER_URL'])
         else:
@@ -411,6 +410,7 @@ class HTTPRequest(BaseRequest):
                 l=rfind(URL,'/')
                 if l >= 0: URL=URL[:l]
                 else: raise KeyError, key
+                if len(URL) < len(self.base) and n > 1: raise KeyError, key
             other[key]=URL
             return URL
 
@@ -425,9 +425,11 @@ class HTTPRequest(BaseRequest):
         if key[:1]=='B' and BASEmatch(key) >= 0:
             n=ord(key[4])-ord('0')
             if n:
+                if len(self.steps) < n:
+                    raise KeyError, key
                 v=self.script
                 while v[-1:]=='/': v=v[:-1]
-                v=join([v]+self.steps[:n-1],'/')
+                v=join([v]+self.steps[:n],'/')
             else:
                 v=self.base
                 while v[-1:]=='/': v=v[:-1]
@@ -473,6 +475,36 @@ class HTTPRequest(BaseRequest):
                 pass
 
         return keys.keys()
+
+    def __str__(self):
+        result="<h3>form</h3><table>"
+        row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
+        for k,v in self.form.items():
+            result=result + row % (k,v)
+        result=result+"</table><h3>cookies</h3><table>"
+        for k,v in self.cookies.items():
+            result=result + row % (k,v)
+        result=result+"</table><h3>other</h3><table>"
+        for k,v in self.other.items():
+            if k in ('PARENTS','RESPONSE'): continue
+            result=result + row % (k,v)
+    
+        for n in "0123456789":
+            key = "URL%s"%n
+            try: result=result + row % (key,self[key]) 
+            except KeyError: pass
+        for n in "0123456789":
+            key = "BASE%s"%n
+            try: result=result + row % (key,self[key]) 
+            except KeyError: pass
+
+        result=result+"</table><h3>environ</h3><table>"
+        for k,v in self.environ.items():
+            if not hide_key(k):
+                result=result + row % (k,v)
+        return result+"</table>"
+
+    __repr__=__str__
 
     def _authUserPW(self):
         global base64
