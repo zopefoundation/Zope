@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.170 2001/11/26 15:52:07 evan Exp $'''
-__version__='$Revision: 1.170 $'[11:-2]
+$Id: Application.py,v 1.171 2001/11/26 16:07:07 evan Exp $'''
+__version__='$Revision: 1.171 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -103,56 +103,7 @@ from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR, WARNING, INFO
 from HelpSys.HelpSys import HelpSys
-
-
-_standard_error_msg='''\
-<dtml-var standard_html_header>
-
-<dtml-if error_message>
- <dtml-var error_message>
-<dtml-else>
-
-  <H2>Site Error</H2>
-
-  <P>An error was encountered while publishing this resource.
-  </P>
-  
-  <P>
-  <STRONG>Error Type: <dtml-var error_type html_quote></STRONG><BR>
-  <STRONG>Error Value: <dtml-var error_value html_quote></STRONG><BR> 
-  </P>
- 
-  <HR NOSHADE>
- 
-  <P>Troubleshooting Suggestions</P>
-
-  <UL>
-  <dtml-if "error_type in ('KeyError','NameError')">
-  <LI>This resource may be trying to reference a
-  nonexistent object or variable <STRONG><dtml-var error_value></STRONG>.</LI>
-  </dtml-if>
-  <LI>The URL may be incorrect.</LI>
-  <LI>The parameters passed to this resource may be incorrect.</LI>
-  <LI>A resource that this resource relies on may be encountering
-      an error.</LI>
-  </UL>
-
-  <P>For more detailed information about the error, please
-  refer to the HTML source for this page.
-  </P>
-
-  <P>If the error persists please contact the site maintainer.
-  Thank you for your patience.
-  </P>
-
-  <dtml-comment>
-   Here, events like logging and other actions may also be performed, such as
-   sending mail automatically to the administrator.
-  </dtml-comment>
-
-</dtml-if>
-<dtml-var standard_html_footer>'''
-
+from Products.PageTemplates.PageTemplateFile import PageTemplateFile
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -171,12 +122,8 @@ class Application(Globals.ApplicationDefaultPermissions,
     p_=misc_.p_
     misc_=misc_.misc_
 
-    _reserved_names=('standard_html_header',
-                     'standard_html_footer',
-                     'standard_error_message',
-                     'Control_Panel',
+    _reserved_names=('Control_Panel',
                      'browser_id_manager',
-                     'session_data_manager',
                      'temp_folder')
 
     # This class-default __allow_groups__ ensures that the
@@ -199,26 +146,6 @@ class Application(Globals.ApplicationDefaultPermissions,
         cpl=ApplicationManager()
         cpl._init()
         self._setObject('Control_Panel', cpl)
-
-        # Note that this may happen before products are
-        # installed, so we have to use addDocument as stand-alone.
-        import Document
-        Document.manage_addDocument(
-            self,
-            'standard_html_header',
-            'Standard Html Header', (
-            '<html><head><title>&dtml-title_or_id;' 
-            '</title></head><body bgcolor="#FFFFFF">') )
-        Document.manage_addDocument(
-            self,
-            'standard_html_footer',
-            'Standard Html Footer',
-            '</body></html>')
-        Document.manage_addDocument(
-            self,
-            'standard_error_message',
-            'Standard Error Message',
-            _standard_error_msg)
 
     def id(self):
         try:    return self.REQUEST['SCRIPT_NAME'][1:]
@@ -366,8 +293,6 @@ class Application(Globals.ApplicationDefaultPermissions,
             return 1
         return 0
 
-
-
 class Expired(Globals.Persistent):
     icon='p_/broken'
 
@@ -411,18 +336,7 @@ def initialize(app):
         get_transaction().note('Added Control_Panel.Products')
         get_transaction().commit()
 
-    # b/c: Ensure that std err msg exists.
-    if not hasattr(app, 'standard_error_message'):
-        import Document
-        Document.manage_addDocument(
-            app,
-            'standard_error_message',
-            'Standard Error Message',
-            _standard_error_msg)
-        get_transaction().note('Added standard_error_message')
-        get_transaction().commit()
-
-    # b/c: Ensure that a temp folder exists
+    # Ensure that a temp folder exists
     if not hasattr(app, 'temp_folder'):
         from Products.TemporaryFolder.TemporaryFolder import \
              MountedTemporaryFolder
@@ -432,7 +346,7 @@ def initialize(app):
         get_transaction().commit()
         del tf
         
-    # b/c: Ensure that there is a transient container in the temp folder
+    # Ensure that there is a transient container in the temp folder
     tf = app.temp_folder
     if not hasattr(tf, 'session_data'):
         env_has = os.environ.get
@@ -502,7 +416,7 @@ def initialize(app):
         
     del tf
 
-    # b/c: Ensure that a browser ID manager exists
+    # Ensure that a browser ID manager exists
     if not hasattr(app, 'browser_id_manager'):
         from Products.Sessions.BrowserIdManager import BrowserIdManager
         bid = BrowserIdManager('browser_id_manager', 'Browser Id Manager')
@@ -511,7 +425,7 @@ def initialize(app):
         get_transaction().commit()
         del bid
 
-    # b/c: Ensure that a session data manager exists
+    # Ensure that a session data manager exists
     if not hasattr(app, 'session_data_manager'):
         from Products.Sessions.SessionDataManager import SessionDataManager
         sdm = SessionDataManager('session_data_manager',
@@ -523,7 +437,7 @@ def initialize(app):
         get_transaction().commit()
         del sdm
 
-    # b/c: Ensure that there's an Examples folder with examples.
+    # Ensure that there's an Examples folder with examples.
     # However, make sure that if the examples have been added already
     # and then deleted that we don't add them again.
     if not hasattr(app, 'Examples') and not \
@@ -568,6 +482,7 @@ def initialize(app):
             get_transaction().commit()
 
     install_products(app)
+    install_standards(app)
 
     # Note that the code from here on only runs if we are not a ZEO
     # client, or if we are a ZEO client and we've specified by way
@@ -852,6 +767,31 @@ def install_product(app, product_dir, product_name, meta_types,
                 if raise_exc:
                     raise
 
+def install_standards(app):
+    # Install the replaceable standard objects
+    std_dir = os.path.join(Globals.package_home(globals()), 'standard')
+    wrote = 0
+    for fn in os.listdir(std_dir):
+        base, ext = os.path.splitext(fn)
+        if ext == '.dtml':
+            ob = Globals.DTMLFile(base, std_dir)
+            fn = base
+            if hasattr(app, fn):
+                continue
+            app.manage_addProduct['OFSP'].manage_addDTMLMethod(
+                id=fn, file=open(ob.raw))
+        elif ext in ('.pt', '.zpt'):
+            ob = PageTemplateFile(fn, std_dir, __name__=fn)
+            if hasattr(app, fn):
+                continue
+            app.manage_addProduct['PageTemplates'].manage_addPageTemplate(
+                id=fn, title='', text=open(ob.filename))
+        wrote = 1
+        ob.__replaceable__ = Globals.REPLACEABLE
+        setattr(Application, fn, ob)
+    if wrote:
+        get_transaction().note('Installed standard objects')
+        get_transaction().commit()
 
 def reinstall_product(app, product_name):
     folder_permissions = get_folder_permissions()

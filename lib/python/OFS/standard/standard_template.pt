@@ -1,0 +1,12 @@
+<html metal:define-macro="page">
+  <head>
+   <metal:block define-slot="head">
+   <title tal:content="template/title">The Title</title>
+   </metal:block>
+  </head>
+  <body> 
+    <div metal:define-slot="body">
+    This is where the page's body text goes.
+    </div>
+  </body>
+</html>
