@@ -1,10 +1,11 @@
 # install Role.py
 # install User.py
-# install addAccess.dtml
 # install addUser.dtml
-# install delAccess.dtml
-# install editAccess.dtml
 # install editUser.dtml
-# install mainAccess.dtml
 # install mainUser.dtml
 # install www
+# install Permission.py
+# install PermissionRole.py
+# install access.dtml
+# install permissionEdit.dtml
+# install roleEdit.dtml
