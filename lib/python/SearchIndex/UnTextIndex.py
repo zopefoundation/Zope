@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.35 $'[11:-2]
+__version__ = '$Revision: 1.36 $'[11:-2]
 
 
 import BTree, IIBTree, IOBTree, OIBTree
@@ -330,7 +330,7 @@ class UnTextIndex(Persistent, Implicit):
             except (KeyError, IndexError, TypeError):
                 LOG('UnTextIndex', ERROR,
                     'unindex_object tried to unindex nonexistent'
-                    ' document %s' % str(i))
+                    ' document %s' % str(documentId))
 
     def index_object(self, documentId, obj, threshold=None):
         """ Index an object:
