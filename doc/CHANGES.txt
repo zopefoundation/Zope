@@ -27,10 +27,6 @@ Zope Changes
 
     Features added
 
-     - ZSQL methods: added  workaround for a problem where a 'string' argument
-       variable was included into the generated query if the 'optional' flag inside
-       dtml-sqltest was set an if the value of the string was empty.
-
      - Included Stefan Holek's ZopeTestCase 0.9
 
      - The SiteErrorLog allows you to acknowledge (or delete) exceptions,

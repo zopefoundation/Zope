@@ -159,13 +159,6 @@ class SQLTest:
                     raise ValueError, (
                         'Invalid floating-point value for <em>%s</em>' % name)
 
-            ## ZSQL methods: added  workaround for a problem where a 'string' argument
-            ## variable was included into the generated query if the 'optional' flag inside
-            ## dtml-sqltest was set an if the value of the string was empty.
-
-            elif t=='string' and len(str(v)) == 0  and args.get('optional', 0):
-                continue
-
             else:
                 v=str(v)
                 v=md.getitem('sql_quote__',0)(v)
