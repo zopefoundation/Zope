@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.67 1998/08/03 13:28:24 jim Exp $'''
-__version__='$Revision: 1.67 $'[11:-2]
+$Id: Application.py,v 1.68 1998/08/03 13:58:32 jim Exp $'''
+__version__='$Revision: 1.68 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -262,7 +262,6 @@ def open_bobobase():
             _standard_error_msg)
 	get_transaction().commit()
 
-    import jim; jim.debug()
     install_products(app)
     get_transaction().commit()
 
@@ -443,6 +442,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.68  1998/08/03 13:58:32  jim
+# Took out debugging code.
+#
 # Revision 1.67  1998/08/03 13:28:24  jim
 #       - New folderish control panel that separates database and
 #         product management into separate interfaces.
