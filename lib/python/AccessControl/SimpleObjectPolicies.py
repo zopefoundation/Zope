@@ -42,7 +42,7 @@ disallowed otherwise.
 XXX This descrition doesn't actually match what's done in ZopeGuards
 or in ZopeSecurityPolicy. :(
 
-$Id: SimpleObjectPolicies.py,v 1.15 2004/01/27 20:44:04 Brian Exp $'''
+$Id: SimpleObjectPolicies.py,v 1.16 2004/01/27 21:39:34 fdrake Exp $'''
 
 _noroles = [] # this is imported in various places
 
@@ -94,7 +94,6 @@ except:
 
 Containers = ContainerAssertions.get
 
-from types import IntType, DictType, TypeType, ListType
 def allow_type(Type, allowed=1):
     """Allow a type and all of its methods and attributes to be used from
     restricted code.  The argument Type must be a type."""
@@ -130,7 +129,7 @@ for tree_type, has_values in [(OOBTree, 1),
     tree = tree_type()
     key_type = type(tree.keys())
 
-    if key_type is not ListType: # lists have their own declarations
+    if key_type is not list: # lists have their own declarations
         allow_type(key_type)
 
     if has_values:
