@@ -161,8 +161,10 @@ class CatalogAware:
         __traceback_info__=(`uri`, `script_name`)
         if script_name:
             uri=filter(None, string.split(uri, script_name))[0]
-        if uri[0] != '/': uri = '/' + uri
-        uri=uri or '/'
+        if not uri:
+            uri = '/'
+        if uri[0] != '/':
+            uri = '/' + uri
         return urllib.unquote(uri)
 
     def summary(self, num=200):
