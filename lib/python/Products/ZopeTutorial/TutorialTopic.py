@@ -130,7 +130,7 @@ class GlossaryTopic(TutorialTopic):
         Returns the URL to a API documentation for a given class.
         """
         names=klass.split('.')
-        url="%s/Control_Panel/Products/%s/Help/%s.py#%s" % (REQUEST['SCRIPT_NAME'],
+        url="%s/Control_Panel/Products/%s/Help/%s.py#%s" % (REQUEST['BASEPATH1'],
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
 
@@ -138,7 +138,7 @@ class GlossaryTopic(TutorialTopic):
         """
         Returns the URL to a DTML Reference page for a given tag.
         """
-        url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['SCRIPT_NAME'], tag)
+        url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['BASEPATH1'], tag)
         return '<a href="%s">DTML Reference</a>' % url
 
 

@@ -12,8 +12,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.53 2002/08/14 22:02:25 mj Exp $'
-__version__='$Revision: 1.53 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.54 2003/11/04 21:17:22 evan Exp $'
+__version__='$Revision: 1.54 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -332,7 +332,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             s=translate(s, tplus)
             ####################################
 
-            script=md['SCRIPT_NAME']
+            script=md['BASEPATH1']
 
             # Propagate extra args through tree.
             if args.has_key( 'urlparam' ):
