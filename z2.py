@@ -117,7 +117,8 @@ Options:
 
   -D
 
-    Run in Zope debug mode.  This is equivalent to
+    Run in Zope debug mode.  This causes the Zope process not to
+    detach from the controlling terminal, and is equivalent to
     supplying the environment variable setting Z_DEBUG_MODE=1
 
   -a ipaddress
@@ -345,7 +346,9 @@ sys.path=[os.path.join(here,'lib','python'),here
 
 # from this point forward we can use the zope logger
 
-import zLOG
+import zLOG, ZLogger
+
+zLOG.log_write = ZLogger.ZLogger.log_write
 
 if Zpid:
     import zdaemon, App.FindHomes, posix
