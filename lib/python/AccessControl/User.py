@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.136 $'[11:-2]
+__version__='$Revision: 1.137 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -589,7 +589,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         elif user is None:
             # either we didn't find the username, or the user's password
             # was incorrect.  try to authorize and return the anonymous user.
-            if self._isTop() and self.authorize(self._nobody,a,c,n,v,roles):
+            if self._isTop() and self.authorize(self._nobody.__of__(self),a,
+                                                c,n,v,roles):
                 return self._nobody.__of__(self)
             else:
                 # anonymous can't authorize or we're not top-level user folder
@@ -598,10 +599,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             # We found a user, his password was correct, and the user
             # wasn't the emergency user.  We need to authorize the user
             # against the published object.
-            if self.authorize(user, a, c, n, v, roles):
+            if self.authorize(user.__of__(self), a, c, n, v, roles):
                 return user.__of__(self)
             # That didn't work.  Try to authorize the anonymous user.
-            elif self._isTop() and self.authorize(self._nobody,a,c,n,v,roles):
+            elif self._isTop() and self.authorize(self._nobody.__of__(self),
+                                                  a,c,n,v,roles):
                 return self._nobody.__of__(self)
             else:
                 # we can't authorize the user, and we either can't authorize
@@ -621,7 +623,8 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
                             if self.authenticate(
                                 user.getUserName(), '', request
                                 ):
-                                if self.authorize(user, a, c, n, v, roles):
+                                if self.authorize(user.__of__(self), a, c,
+                                                  n, v, roles):
                                     return user.__of__(self)
 
             user = self.getUser(name)
@@ -639,7 +642,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             elif user is None:
                 # we didn't find the username in this database
                 # try to authorize and return the anonymous user.
-                if self._isTop() and self.authorize(self._nobody,
+                if self._isTop() and self.authorize(self._nobody.__of__(self),
                                                     a, c, n, v, roles):
                     return self._nobody.__of__(self)
                 else:
@@ -649,11 +652,11 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             else:
                 # We found a user and the user wasn't the emergency user.
                 # We need to authorize the user against the published object.
-                if self.authorize(user, a, c, n, v, roles):
+                if self.authorize(user.__of__(self), a, c, n, v, roles):
                     return user.__of__(self)
                 # That didn't work.  Try to authorize the anonymous user.
                 elif self._isTop() and self.authorize(
-                    self._nobody, a, c, n, v, roles):
+                    self._nobody.__of__(self), a, c, n, v, roles):
                     return self._nobody.__of__(self)
                 else:
                     # we can't authorize the user, and we either can't
