@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.83 1999/09/14 15:35:44 brian Exp $"""
+$Id: Folder.py,v 1.84 1999/12/09 23:38:30 amos Exp $"""
 
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -150,13 +150,20 @@ class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
     _properties=({'id':'title', 'type': 'string'},)
 
     manage_options=(
-        {'label':'Contents', 'action':'manage_main'},
-        {'label':'View', 'action':'index_html'},
-        {'label':'Properties', 'action':'manage_propertiesForm'},
-        {'label':'Import/Export', 'action':'manage_importExportForm'},
-        {'label':'Security', 'action':'manage_access'},
-        {'label':'Undo', 'action':'manage_UndoForm'},
-        {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main'},
+        {'label':'Contents', 'action':'manage_main',
+         'help':('OFSP','Folder_Contents.dtml')},
+        {'label':'View', 'action':'index_html',
+         'help':('OFSP','Folder_View.dtml')},
+        {'label':'Properties', 'action':'manage_propertiesForm',
+         'help':('OFSP','Folder_Properties.dtml')},         
+        {'label':'Import/Export', 'action':'manage_importExportForm',
+         'help':('OFSP','Folder_Import-Export.dtml')},         
+        {'label':'Security', 'action':'manage_access',
+         'help':('OFSP','Folder_Security.dtml')},         
+        {'label':'Undo', 'action':'manage_UndoForm',
+         'help':('OFSP','Folder_Undo.dtml')},         
+        {'label':'Find', 'action':'manage_findFrame', 'target':'manage_main',
+         'help':('OFSP','Folder_Find.dtml')},         
     )
 
     __ac_permissions__=()
