@@ -53,7 +53,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.3 1997/10/28 21:52:58 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.4 1997/10/28 21:57:31 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -535,11 +535,11 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
-  UNLESS(py_acquire=PyString_FromString("acquire")) return;
+  UNLESS(py_acquire=PyString_FromString("aq_acquire")) return;
   UNLESS(py_=PyString_FromString("")) return;
   UNLESS(join=PyImport_ImportModule("string")) return;
   ASSIGN(join,PyObject_GetAttrString(join,"join"));
@@ -565,6 +565,9 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.4  1997/10/28 21:57:31  jim
+  Changed to use aq_acquire.
+
   Revision 1.3  1997/10/28 21:52:58  jim
   Fixed bug in get.
   Added latest validation rules.
