@@ -1,9 +1,8 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.8 1997/03/08 12:44:31 jim Exp $
+  $Id: ExtensionClass.c,v 1.9 1997/04/11 21:47:05 jim Exp $
 
   Extension Class
-
 
      Copyright 
 
@@ -50,44 +49,10 @@
     If you have questions regarding this software,
     contact:
    
-      Jim Fulton, jim@digicool.com
       Digital Creations L.C.  
+      info@digicool.com
    
       (540) 371-6909
-
-  $Log: ExtensionClass.c,v $
-  Revision 1.8  1997/03/08 12:44:31  jim
-  Moved INSTANCE_DICT macro to public interface.
-
-  Revision 1.7  1997/02/24 23:17:47  jim
-  Fixed bug in subclass_nonzero.
-
-  Revision 1.6  1997/02/24 15:43:57  jim
-  Added __version__ string.
-
-  Revision 1.5  1997/02/17 16:27:53  jim
-  Many changes.
-
-  Revision 1.4  1996/12/06 17:12:29  jim
-  Major speed enhancements for attribute lookup and calling special
-  methods.
-
-  Revision 1.3  1996/10/24 21:07:49  jim
-  Fixed bug in returning __bases__ for base classes.
-  Added missing PyErr_Clear() call.
-
-  Revision 1.2  1996/10/23 18:36:56  jim
-  Changed a bunch of single quotes to double and got rid of
-  some superfluous semicolns that caused warning on SGI.
-
-  Fixed bug in CCL_getattr when getting the __base__ attribute of a base
-  class.
-
-  Fixed a doc string.
-
-  Revision 1.1  1996/10/22 22:26:08  jim
-  *** empty log message ***
-
 
 */
 
@@ -100,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.8 1997/03/08 12:44:31 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.9 1997/04/11 21:47:05 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -118,7 +83,6 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 #define UNLESS(E) if(!(E))
 #define UNLESS_ASSIGN(V,E) ASSIGN(V,E); UNLESS(V)
 
-
 /* Declarations for objects of type ExtensionClass */
 #include "ExtensionClass.h"
 
@@ -134,15 +98,20 @@ staticforward PyExtensionClass ECType;
    ((O)->ob_type->ob_type == (PyTypeObject*)&ECType && \
     (((PyExtensionClass*)((O)->ob_type))->class_flags & \
      EXTENSIONCLASS_BINDABLE_FLAG))
+#define HasMethodHook(O) \
+   ((O)->ob_type->ob_type == (PyTypeObject*)&ECType && \
+    (((PyExtensionClass*)((O)->ob_type))->class_flags & \
+     EXTENSIONCLASS_METHODHOOK_FLAG))
 
 static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__mod__, *py__pow__, *py__divmod__, *py__lshift__, *py__rshift__,
   *py__and__, *py__or__, *py__xor__, *py__coerce__, *py__neg__,
   *py__pos__, *py__abs__, *py__nonzero__, *py__inv__, *py__int__,
   *py__long__, *py__float__, *py__oct__, *py__hex__,
+  *py__of__, *py__call__, *py__call_method__,
   *py__getitem__, *py__setitem__, *py__delitem__,
   *py__getslice__, *py__setslice__, *py__delslice__,
-  *py__concat__, *py__repeat__, *py__len__, *py__of__, *py__call__,
+  *py__concat__, *py__repeat__, *py__len__,
   *py__getattr__, *py__setattr__, *py__delattr__,
   *py__del__, *py__repr__, *py__str__, *py__class__,
   *py__hash__, *py__cmp__, *py__var_size__, *py__init__, *py__getinitargs__,
@@ -186,6 +155,7 @@ init_py_names()
   INIT_PY_NAME(__len__);
   INIT_PY_NAME(__of__);
   INIT_PY_NAME(__call__);
+  INIT_PY_NAME(__call_method__);
   INIT_PY_NAME(__getattr__);
   INIT_PY_NAME(__setattr__);
   INIT_PY_NAME(__delattr__);
@@ -348,12 +318,54 @@ call_cmethod(CMethod *self, PyObject *inst, PyObject *args, PyObject *kw)
     }
 }
 
+static char *hook_mark="C method being called through a hook.";
+
+static PyObject *
+callCMethodWithHook(CMethod *self, PyObject *inst,
+		    PyObject *args, PyObject *kw)
+{
+  PyObject *hook, *m;
+
+  UNLESS(m=newCMethod(AsExtensionClass(self->type),
+		      inst, self->name, self->meth,
+		      self->flags, hook_mark)) return NULL;
+
+  if(hook=PyObject_GetAttr(inst,py__call_method__))
+    {
+      if(CMethod_Check(hook) && ((CMethod*)hook)->meth==self->meth)
+	{
+	  /* Oops, we are already calling the hook! */
+	  Py_DECREF(hook);
+	  return PyEval_CallObjectWithKeywords(m,args,kw);
+	}
+      if(kw)
+	ASSIGN(hook,PyObject_CallFunction(hook,"OOO",m,args,kw));
+      else
+	ASSIGN(hook,PyObject_CallFunction(hook,"OO",m,args));
+    }
+  else
+    {
+      PyErr_Clear();
+      hook=PyEval_CallObjectWithKeywords(m,args,kw);
+    }
+
+  Py_DECREF(m);
+  return hook;
+}
+
 static PyObject *
 CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
 {
   int size;
 
-  if(self->self) return call_cmethod(self,self->self,args,kw);
+  if(self->self)
+    {
+      if(HasMethodHook(self->self) &&
+	 self->doc != hook_mark	/* This check prevents infinite recursion */
+	 )
+	return callCMethodWithHook(self,self->self,args,kw);
+      return call_cmethod(self,self->self,args,kw);
+    }
 
   if((size=PyTuple_Size(args)) > 0)
     {
@@ -369,6 +381,10 @@ CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
 	 );
       {
 	PyObject *rest=0;
+	if(HasMethodHook(first) &&
+	   self->doc != hook_mark /* This check prevents infinite recursion */
+	   )
+	  return callCMethodWithHook(self,first,args,kw);
 	UNLESS(rest=PySequence_GetSlice(args,1,size)) return NULL;
 	ASSIGN(rest,call_cmethod(self,first,rest,kw));
 	return rest;
@@ -528,13 +544,39 @@ PMethod_dealloc(PMethod *self)
 }  
 
 static PyObject *
+callMethodWithPossibleHook(PyObject *inst,
+			   PyObject *meth, PyObject *args, PyObject *kw)
+{
+  if(HasMethodHook(inst))
+    {
+      PyObject *hook;
+      if(hook=PyObject_GetAttr(inst,py__call_method__))
+	{
+	  if(PMethod_Check(hook) && ((PMethod*)hook)->meth==meth)
+	    {
+	      /* Oops, we are already calling the hook! */
+	      Py_DECREF(hook);
+	      return PyEval_CallObjectWithKeywords(meth,args,kw);
+	    }
+	  if(kw)
+	    ASSIGN(hook,PyObject_CallFunction(hook,"OOO",meth,args,kw));
+	  else
+	    ASSIGN(hook,PyObject_CallFunction(hook,"OO",meth,args));
+	  return hook;
+	}
+      PyErr_Clear();
+    }
+  return PyEval_CallObjectWithKeywords(meth,args,kw);
+}
+
+static PyObject *
 call_PMethod(PMethod *self, PyObject *inst, PyObject *args, PyObject *kw)
 {
   PyObject *a;
 
   a=Py_BuildValue("(O)",inst);
   if(a) ASSIGN(a,PySequence_Concat(a,args));
-  if(a) ASSIGN(a,PyEval_CallObjectWithKeywords(self->meth,a,kw));
+  if(a) ASSIGN(a,callMethodWithPossibleHook(inst,self->meth,a,kw));
   return a;
 }
 
@@ -571,12 +613,12 @@ PMethod_call(PMethod *self, PyObject *args, PyObject *kw)
 		  Py_DECREF(r);
 		  return NULL;
 		}
-	      ASSIGN(r,PyEval_CallObjectWithKeywords(r,rest,kw));
+	      ASSIGN(r,callMethodWithPossibleHook(first,r,rest,kw));
 	      Py_DECREF(rest);
 	      return r;
 	    }
 	  Py_DECREF(ftype);
-	  return PyEval_CallObjectWithKeywords(self->meth,args,kw);
+	  return callMethodWithPossibleHook(first,self->meth,args,kw);
 	}
       Py_XDECREF(ftype);
     }
@@ -695,7 +737,7 @@ setattr_by_name(PyObject *self, PyObject *args)
 {
   char *name;
   PyObject *v;
-  UNLESS(PyArg_Parse(args,"sO",&name,&v)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"sO",&name,&v)) return NULL;
   UNLESS(-1 != self->ob_type->tp_setattr(self,name,v)) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -714,7 +756,7 @@ setattro_by_name(PyObject *self, PyObject *args)
 {
   PyObject *name;
   PyObject *v;
-  UNLESS(PyArg_Parse(args,"OO",&name,&v)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"OO",&name,&v)) return NULL;
   UNLESS(-1 != self->ob_type->tp_setattro(self,name,v)) return NULL;
   Py_INCREF(Py_None);
   return Py_None;
@@ -763,7 +805,7 @@ setitem_by_name(PyObject *self, PyObject *args)
   PyObject *key, *v;
   long r;
   
-  UNLESS(PyArg_Parse(args,"OO",&key,&v)) return NULL; 
+  UNLESS(PyArg_ParseTuple(args,"OO",&key,&v)) return NULL; 
   if(self->ob_type->tp_as_mapping)
     r=self->ob_type->tp_as_mapping->mp_ass_subscript(self,key,v);
   else
@@ -785,7 +827,7 @@ slice_by_name(PyObject *self, PyObject *args)
 {
   int i1,i2;
 
-  UNLESS(PyArg_Parse(args,"ii",&i1,&i2)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"ii",&i1,&i2)) return NULL;
   return self->ob_type->tp_as_sequence->sq_slice(self,i1,i2);
 }
 
@@ -796,7 +838,7 @@ ass_slice_by_name(PyObject *self, PyObject *args)
   PyObject *v;
   long r;
 
-  UNLESS(PyArg_Parse(args,"iiO",&i1,&i2,&v)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"iiO",&i1,&i2,&v)) return NULL;
   r=self->ob_type->tp_as_sequence->sq_ass_slice(self,i1,i2,v);
   if(r<0) return NULL;
   Py_INCREF(Py_None);
@@ -914,9 +956,9 @@ getBaseDictionary(PyExtensionClass *type)
   FILLENTRY(type->tp, call, call, 2, "call as a function");
   FILLENTRY(type->tp, compare, comp, 0, "compare with another object");
   FILLENTRY(type->tp, getattr, getattr, 0, "Get an attribute");
-  FILLENTRY(type->tp, setattr, setattr, 0, "Set an attribute");
+  FILLENTRY(type->tp, setattr, setattr, 1, "Set an attribute");
   FILLENTRY(type->tp, getattro, getattr, 0, "Get an attribute");
-  FILLENTRY(type->tp, setattro, setattr, 0, "Set an attribute");
+  FILLENTRY(type->tp, setattro, setattr, 1, "Set an attribute");
 
   if(sm=type->tp_as_sequence)
     {
@@ -926,9 +968,9 @@ getBaseDictionary(PyExtensionClass *type)
       FILLENTRY(sm->sq, repeat, repeat, 0,
 		"Get a new object that is the object repeated.");
       FILLENTRY(sm->sq, item, getitem, 0, "Get an item");
-      FILLENTRY(sm->sq, slice, getslice, 0, "Get a slice");
-      FILLENTRY(sm->sq, ass_item, setitem, 0, "Assign an item");
-      FILLENTRY(sm->sq, ass_slice, setslice, 0, "Assign a slice");
+      FILLENTRY(sm->sq, slice, getslice, 1, "Get a slice");
+      FILLENTRY(sm->sq, ass_item, setitem, 1, "Assign an item");
+      FILLENTRY(sm->sq, ass_slice, setslice, 1, "Assign a slice");
     }      
 
   if(mm=type->tp_as_mapping)
@@ -1025,30 +1067,54 @@ err:
 }
 
 static PyObject *
-inheritedAttribute(PyExtensionClass *self, PyObject *name)
+inheritedAttribute(PyObject *self, PyObject *args)
 {
-  UNLESS(name) return PyErr_Format(PyExc_TypeError,
-				   "expected one argument, and none given",
-				   NULL);
-  return CCL_getattr(self,name,1);
-}
+  PyObject *cls, *name;
 
-static PyObject *
-inheritedClassAttribute(PyExtensionClass *self, PyObject *name)
-{
-  UNLESS(name) return PyErr_Format(PyExc_TypeError,
-				   "expected one argument, and none given",
-				   NULL);
-  UNLESS(name=PySequence_Concat(pyclass_,name)) return NULL;
-  UNLESS_ASSIGN(name,CCL_getattr(self,name,1)) return NULL;
-  if(UnboundPMethod_Check(name))
-    ASSIGN(name,bindPMethod((PMethod*)name,(PyObject*)self));
+  UNLESS(PyArg_ParseTuple(args,"OO",&cls,&name));
+  UNLESS(ExtensionClass_Check(cls))
+    {
+      PyErr_SetString(PyExc_TypeError,
+		      "inheritedAttribute must be called with an extension "
+		      "class first argument");
+      return NULL;
+    }
+  UNLESS(PyString_Check(name))
+    {
+      PyErr_SetString(PyExc_TypeError,
+		      "inheritedAttribute must be called with a "
+		      "string second argument");
+      return NULL;
+    }
+
+  UNLESS(name=CCL_getattr(AsExtensionClass(cls),name,1)) return NULL;
+  
+  /* We got something from our class, maybe its an unbound method. */
+  if(UnboundCMethod_Check(name))
+    ASSIGN(name,(PyObject*)bindCMethod((CMethod*)name,self));
+  else if(UnboundPMethod_Check(name))
+    ASSIGN(name,bindPMethod((PMethod*)name,self));
   return name;
 }
 
 struct PyMethodDef ECI_methods[] = {
   {"__reduce__",(PyCFunction)EC_reduce,0,
    "__reduce__() -- Reduce an instance into it's class and creation data"
+  },
+  {"inheritedAttribute",(PyCFunction)inheritedAttribute,1,
+   "inheritedAttribute(class,name) -- Get an inherited attribute\n\n"
+   "Get an attribute that would be inherited if the given (extension)\n"
+   "class did not define it.  This method is used when overriding\n"
+   "inherited methods.  It provides 2 advantages over accessing\n"
+   "\n"
+   "attributes directly through a superclass:\n"
+   "\n"
+   "1. The superclass need not be known,\n"
+   "\n"
+   "2. The superclass may be a Python class.  Without this method, it would\n"
+   "   be possible to override methods inherited from python classes because\n"
+   "   unbound methods gotten from Python classes cannot be called with \n"
+   "   extension class instances.  \n"
   },
   {NULL,		NULL}		/* sentinel */
 };
@@ -1165,7 +1231,7 @@ ExtensionClass_FindInstanceAttribute(PyObject *inst, PyObject *oname,
 	  Py_INCREF(self);
 	  return (PyObject*)self;
 	}
-      if(self->bases && *n=='d' && strcmp(n,"dict__")==0)
+      if(ClassHasInstDict(self) && *n=='d' && strcmp(n,"dict__")==0)
 	{
 	  r = INSTANCE_DICT(inst);
 	  Py_INCREF(r);
@@ -1173,7 +1239,7 @@ ExtensionClass_FindInstanceAttribute(PyObject *inst, PyObject *oname,
 	}
     }
 
-  if(self->bases)
+  if(ClassHasInstDict(self))
     {
       r= INSTANCE_DICT(inst);
       if((r = PyObject_GetItem(r,oname)) && NeedsToBeBound(r))
@@ -1278,6 +1344,15 @@ CCL_reduce(PyExtensionClass *self, PyObject *args)
   return PyString_FromString(self->tp_name);
 }
 
+static PyObject *
+obsolete_inheritedAttribute(PyExtensionClass *self, PyObject *name)
+{
+  UNLESS(name) return PyErr_Format(PyExc_TypeError,
+				   "expected one argument, and none given",
+				   NULL);
+  return CCL_getattr(self,name,1);
+}
+
 PyObject *
 CCL_getattro(PyExtensionClass *self, PyObject *name)
 {
@@ -1330,17 +1405,9 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
   if(strcmp(nm,"inheritedAttribute")==0)
     {
       return newCMethod(self,(PyObject*)self,
-			"inheritedAttribute",(PyCFunction)inheritedAttribute,0,
+			"inheritedAttribute",
+			(PyCFunction)obsolete_inheritedAttribute,0,
 			"look up an attribute in a class's super classes");
-    }
-
-  if(nm && *nm++=='c' && *nm++=='l' && *nm++=='a' && *nm++=='s' && *nm++=='s'
-     && *nm=='_')
-    {
-      UNLESS(r=CCL_getattr(self,name,0)) return NULL;
-      if(UnboundPMethod_Check(r))
-	ASSIGN(r,bindPMethod((PMethod*)r,(PyObject*)self));
-      return r;
     }
   
   if(r=CCL_getattr(self,name,0)) return r;
@@ -1532,10 +1599,9 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
     }
 
   Py_INCREF(self);
-  if(self->bases)
-    {
-      UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
-    }
+
+  if(ClassHasInstDict(self))
+    UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
 
   if(init=CCL_getattr(self,py__init__,0))
     {
@@ -2637,7 +2703,7 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   char *name, *p;
   int dynamic=1, l;
 
-  UNLESS(PyArg_Parse(args,"(sOO)", &name, &bases, &methods)) return NULL;
+  UNLESS(PyArg_ParseTuple(args,"sOO", &name, &bases, &methods)) return NULL;
   l=strlen(name)+1;
   UNLESS(p=(char*)malloc(l*sizeof(char))) return PyErr_NoMemory();
   memcpy(p,name,l);
@@ -2661,7 +2727,6 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   UNLESS(type=(PyExtensionClass *)datafull_baseclass(self))
     UNLESS(type=(PyExtensionClass *)extension_baseclass(self)) return NULL;
     
-
   self->tp_name=name;
 
   UNLESS(self->class_dictionary=CopyMethods(type,methods)) return NULL;
@@ -2696,6 +2761,12 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   if(subclass_hasattr(self,py__of__))
     self->class_flags |= EXTENSIONCLASS_BINDABLE_FLAG;
 
+  if(subclass_hasattr(self,py__call_method__))
+    self->class_flags |= EXTENSIONCLASS_METHODHOOK_FLAG;
+
+  UNLESS(self->class_flags & EXTENSIONCLASS_NOINSTDICT_FLAG)
+    self->class_flags |= EXTENSIONCLASS_INSTDICT_FLAG;
+
   if(dynamic || has_number_methods(self))
     {
       self->tp_as_number=(PyNumberMethods*)malloc(sizeof(PyNumberMethods));
@@ -2727,9 +2798,11 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   self->tp_doc=0;
 
   /* Check for and use __class_init__ */
-  if(class_init=PyObject_GetAttrString(AsPyObject(self),"class__init__"))
+  if(class_init=PyObject_GetAttrString(AsPyObject(self),"__class_init__"))
     {
-      UNLESS_ASSIGN(class_init,PyObject_CallObject(class_init,NULL))
+      UNLESS_ASSIGN(class_init,PyObject_GetAttrString(class_init,"im_func"))
+        return NULL;
+      UNLESS_ASSIGN(class_init,PyObject_CallFunction(class_init,"O",self))
 	return NULL;
       Py_DECREF(class_init);
     }
@@ -2741,7 +2814,7 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
 }
 
 struct PyMethodDef ExtensionClass_methods[] = {
-  {"__init__",(PyCFunction)subclass__init__,0,""},
+  {"__init__",(PyCFunction)subclass__init__,1,""},
   
   {NULL,		NULL}		/* sentinel */
 };
@@ -2802,7 +2875,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2836,3 +2909,43 @@ initExtensionClass()
 
   CHECK_FOR_ERRORS("can't initialize module ExtensionClass");
 }
+
+/****************************************************************************
+  $Log: ExtensionClass.c,v $
+  Revision 1.9  1997/04/11 21:47:05  jim
+  Got rid of class attributes.
+  Added method hooks.
+
+  Revision 1.8  1997/03/08 12:44:31  jim
+  Moved INSTANCE_DICT macro to public interface.
+
+  Revision 1.7  1997/02/24 23:17:47  jim
+  Fixed bug in subclass_nonzero.
+
+  Revision 1.6  1997/02/24 15:43:57  jim
+  Added __version__ string.
+
+  Revision 1.5  1997/02/17 16:27:53  jim
+  Many changes.
+
+  Revision 1.4  1996/12/06 17:12:29  jim
+  Major speed enhancements for attribute lookup and calling special
+  methods.
+
+  Revision 1.3  1996/10/24 21:07:49  jim
+  Fixed bug in returning __bases__ for base classes.
+  Added missing PyErr_Clear() call.
+
+  Revision 1.2  1996/10/23 18:36:56  jim
+  Changed a bunch of single quotes to double and got rid of
+  some superfluous semicolns that caused warning on SGI.
+
+  Fixed bug in CCL_getattr when getting the __base__ attribute of a base
+  class.
+
+  Fixed a doc string.
+
+  Revision 1.1  1996/10/22 22:26:08  jim
+  *** empty log message ***
+
+ ****************************************************************************/

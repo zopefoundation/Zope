@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.5 1997/03/08 12:44:13 jim Exp $
+  $Id: ExtensionClass.h,v 1.6 1997/04/11 21:47:51 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,10 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.6  1997/04/11 21:47:51  jim
+  Got rid of class attributes.
+  Added method hooks.
+
   Revision 1.5  1997/03/08 12:44:13  jim
   Moved INSTANCE_DICT macro to public interface.
 
@@ -188,13 +192,33 @@ typedef struct {
      */
   PyMethodChain methods;
 
-  /* You may set certain flags here. Only two flags are
-     defined at this point, the first of which is not currently
-     used.
-     */
+  /* You may set certain flags here. */
   long class_flags;
-#define EXTENSIONCLASS_DYNAMIC_FLAG 1
-#define EXTENSIONCLASS_BINDABLE_FLAG 2
+
+  /* The following flags are used by ExtensionClass */
+#define EXTENSIONCLASS_DYNAMIC_FLAG       1 << 0
+#define EXTENSIONCLASS_BINDABLE_FLAG      1 << 2
+#define EXTENSIONCLASS_METHODHOOK_FLAG    1 << 3
+#define EXTENSIONCLASS_INSTDICT_FLAG      1 << 4
+#define EXTENSIONCLASS_NOINSTDICT_FLAG    1 << 5
+
+  /* The following flags are for use by extension class developers. */
+#define EXTENSIONCLASS_USER_FLAG1  	  1 << 16
+#define EXTENSIONCLASS_USER_FLAG2  	  1 << 17
+#define EXTENSIONCLASS_USER_FLAG3  	  1 << 18
+#define EXTENSIONCLASS_USER_FLAG4  	  1 << 19
+#define EXTENSIONCLASS_USER_FLAG5  	  1 << 20
+#define EXTENSIONCLASS_USER_FLAG6  	  1 << 21
+#define EXTENSIONCLASS_USER_FLAG7  	  1 << 22
+#define EXTENSIONCLASS_USER_FLAG8  	  1 << 23
+#define EXTENSIONCLASS_USER_FLAG9  	  1 << 24
+#define EXTENSIONCLASS_USER_FLAG10 	  1 << 25
+#define EXTENSIONCLASS_USER_FLAG11 	  1 << 26
+#define EXTENSIONCLASS_USER_FLAG12 	  1 << 27
+#define EXTENSIONCLASS_USER_FLAG13 	  1 << 28
+#define EXTENSIONCLASS_USER_FLAG14 	  1 << 29
+#define EXTENSIONCLASS_USER_FLAG15 	  1 << 30
+#define EXTENSIONCLASS_USER_FLAG16 	  1 << 31
 
   /* This is the class dictionary, which is normally created for you.
      If you wish, you can provide your own class dictionary object.
@@ -282,6 +306,10 @@ typedef struct {
 /* Export an Extension Base class in a given module dictionary with a
    given name and ExtensionClass structure.
    */
+
+#define ExtensionClassImported \
+  (PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
+
 #define PyExtensionClass_Export(D,N,T) \
  if(PyExtensionClassCAPI || \
    (PyExtensionClassCAPI= PyCObject_Import("ExtensionClass","CAPI"))) \
@@ -353,9 +381,18 @@ static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
     (((PyExtensionClass*)((O)->ob_type))->class_flags & \
      EXTENSIONCLASS_BINDABLE_FLAG))
 
+/* The following macros are used to check whether an instance
+   or a class' instanses have instance dictionaries: */
+#define HasInstDict(O) \
+   ((((PyExtensionClass*)((O)->ob_type))->class_flags & \
+     EXTENSIONCLASS_INSTDICT_FLAG))
+#define ClassHasInstDict(O) (O->class_flags & EXTENSIONCLASS_INSTDICT_FLAG)
+
 /* Get an object's instance dictionary.  Use with caution */
 #define INSTANCE_DICT(inst) \
 *(((PyObject**)inst) + (inst->ob_type->tp_basicsize/sizeof(PyObject*) - 1))
+
+
 
 
 /*****************************************************************************
