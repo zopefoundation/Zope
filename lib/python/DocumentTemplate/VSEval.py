@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.1 1997/09/22 14:41:13 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.2 1997/10/27 17:40:35 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -55,7 +55,7 @@ __rcs_id__='$Id: VSEval.py,v 1.1 1997/09/22 14:41:13 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from string import join
 import new, sys
@@ -75,6 +75,7 @@ class Eval:
     or to disallow or limit attribute access.
 
     """
+    validate=None
 
     def __init__(self, expr, custom=None, globals={'__builtins__':{}}, **kw):
 	"""Create a 'safe' expression
@@ -100,6 +101,8 @@ class Eval:
 		custom=d
 	else: custom=kw
 
+	if custom.has_key('validate'): self.validate=custom['validate']
+
 	self.expr=expr
 	self.globals=globals
 
@@ -107,12 +110,23 @@ class Eval:
 
 	out=[]
 	names=list(co.co_names)
+
+	# Check for valid names, disallowing names that begin with '_' or
+	# 'manage'. This is a DC specific rule and probably needs to be
+	# made customizable!
+	for name in names:
+	    if name[:1]=='_' or name[:6]=='manage':
+		raise TypeError, 'illegal name used in expression'
+	
+	
 	consts=list(co.co_consts)
 	used={}
 
 	i=0
 	code=co.co_code
 	l=len(code)
+	envpos=-1
+
 	while(i < l):
 	    c=ord(code[i])
 	    if binops.has_key(c) and custom.has_key(binops[c]):
@@ -132,7 +146,8 @@ class Eval:
 		if custop==None:
 		    raise TypeError, ("illegal operation, %s, in %s"
 				      % (name, expr))
-
+		
+		# Old code, simple getattr insertion
 		self._const(out, custop, consts)
 		self._ufunc(out)
 		i=i+1
@@ -146,12 +161,41 @@ class Eval:
 			Attribute access is not allowed.
 			"""
 			% expr)
-		
+
+		# Old code that uses a simple getattr method:
+		#self._const(out, names[ord(code[i+1])+256*ord(code[i+2])],
+		#	    consts)
+		#self._const(out, custop, consts)
+		#self._bfunc(out)
+
+		# New code that assumes a three-parameter method that
+		# take's three arguments, an environment object, an 
+		# instance, and a name
+
+		# push name of special environment variable, '_env':
+		if envpos < 0:
+		    envpos=len(names)
+		    names.append('_env')
+		out.append(LOAD_NAME)
+		out.append(envpos%256)
+		out.append(envpos/256)
+		out.append(ROT_TWO)
+
+		# push function:
+		self._const(out, custop, consts)
+		out.append(ROT_THREE)
+
+		# push name as constant:
 		self._const(out, names[ord(code[i+1])+256*ord(code[i+2])],
 			    consts)
-		self._const(out, custop, consts)
-		self._bfunc(out)
+
+		# Call function w 3 args
+		out.append(CALL_FUNCTION)
+		out.append(3)
+		out.append(0)
+		
 		i=i+3
+		
 
 	    elif c==LOAD_NAME:
 		out.append(c)
@@ -200,10 +244,14 @@ class Eval:
 	out.append(0)
 
     def eval(self, mapping):
-	d={}
+	d={'_env': mapping}
 	code=self.code
+	validate=self.validate
 	for name in self.used:
-	    try: d[name]=mapping[name]
+	    try:
+		v=mapping[name]
+		if validate is not None: validate(name, v)
+		d[name]=v
 	    except: pass
 
 	return eval(code,self.globals,d)
@@ -395,6 +443,10 @@ if __name__=='__main__': globals()[sys.argv[1]]()
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.2  1997/10/27 17:40:35  jim
+# Added some new experimental validation machinery.
+# This is, still a work in progress.
+#
 # Revision 1.1  1997/09/22 14:41:13  jim
 # Initial revision.
 #
