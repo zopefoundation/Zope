@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-$Id: StructuredText.py,v 1.6 1997/12/12 15:27:25 jim Exp $'''
+$Id: StructuredText.py,v 1.7 1997/12/12 15:39:54 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,9 @@ $Id: StructuredText.py,v 1.6 1997/12/12 15:27:25 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.7  1997/12/12 15:39:54  jim
+# Added level as argument for html_with_references.
+#
 # Revision 1.6  1997/12/12 15:27:25  jim
 # Added additional pattern matching for HTML references.
 #
@@ -362,7 +365,7 @@ def html_quote(v,
 	    text=gsub(re,name,text)
 	return text
 
-def html_with_references(text):
+def html_with_references(text, level=1):
     text = gsub(
 	'[\0\n].. \[\([-_0-9_a-zA-Z-]+\)\]',
 	'\n  <a name="\\1">[\\1]</a>',
@@ -378,7 +381,7 @@ def html_with_references(text):
 	'\\1<a href="\\2.html">[\\2]</a>\\3',
 	text)
 
-    return HTML(text,level=1)
+    return HTML(text,level=level)
     
 
 def main():
