@@ -22,6 +22,7 @@ import unittest
 
 import ZConfig
 import Zope.Startup
+from Zope.Startup import handlers
 from Zope.Startup import ZopeStarter
 
 from App.config import getConfiguration, setConfiguration
@@ -76,7 +77,7 @@ class ZopeStarterTestCase(unittest.TestCase):
             if why == 17:
                 # already exists
                 pass
-        conf, handler = ZConfig.loadConfigFile(schema, sio)
+        conf, self.handler = ZConfig.loadConfigFile(schema, sio)
         self.assertEqual(conf.instancehome, TEMPNAME)
         return conf
 
@@ -361,9 +362,25 @@ class ZopeStarterTestCase(unittest.TestCase):
                 pass
             setConfiguration(old_config)
 
+    def testInitializeSecurityOptions(self):
+        from AccessControl import Implementation
+        orig = Implementation.getImplementationName()
+        conf = self.load_config_text("""
+            instancehome <<INSTANCE_HOME>>
+            security-policy-implementation python
+            skip-authentication-checking   yes
+            skip-ownership-checking        yes
+            """)
+        self.assertEqual(conf.security_policy_implementation, "PYTHON")
+        starter = ZopeStarter(conf)
+        try:
+            starter.setupSecurityOptions()
+            self.assertEqual(Implementation.getImplementationName(), "PYTHON")
+        finally:
+            Implementation.setImplementation(orig)
+
 def test_suite():
     return unittest.makeSuite(ZopeStarterTestCase)
 
 if __name__ == "__main__":
     unittest.main(defaultTest="test_suite")
-

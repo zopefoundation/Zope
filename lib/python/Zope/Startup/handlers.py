@@ -39,14 +39,6 @@ def automatically_quote_dtml_request_data(value):
     not value and _setenv('ZOPE_DTML_REQUEST_AUTOQUOTE', '0')
     return value
 
-def skip_authentication_checking(value):
-    value and _setenv('ZSP_AUTHENTICATED_SKIP', '1')
-    return value
-
-def skip_ownership_checking(value):
-    value and _setenv('ZSP_OWNEROUS_SKIP', '1')
-    return value
-
 def maximum_number_of_session_objects(value):
     default = 1000
     value not in (None, default) and _setenv('ZSESSION_OBJECT_LIMIT', value)
@@ -97,10 +89,6 @@ def rest_output_encoding(value):
     value and _setenv('REST_OUTPUT_ENCODING' , value)
     return value
 
-def maximum_security_manager_stack_size(value):
-    value is not None and _setenv('Z_MAX_STACK_SIZE', value)
-    return value
-
 def publisher_profile_file(value):
     value is not None and _setenv('PROFILE_PUBLISHER', value)
     from ZPublisher.Publish import install_profiling
@@ -110,9 +98,6 @@ def publisher_profile_file(value):
 def http_realm(value):
     value is not None and _setenv('Z_REALM', value)
     return value
-
-def security_policy_implementation(value):
-    value not in ('C', None) and _setenv('ZOPE_SECURITY_POLICY', value)
 
 def max_listen_sockets(value):
     import ZServer

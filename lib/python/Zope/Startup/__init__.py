@@ -40,6 +40,7 @@ def start_zope(cfg):
     # are set up, we flush accumulated messages in StartupHandler's
     # buffers to the real logger.
     starter.setupStartupHandler()
+    starter.setupSecurityOptions()
     # Start ZServer servers before we drop privileges so we can bind to
     # "low" ports:
     starter.setupZServerThreads()
@@ -97,6 +98,14 @@ class ZopeStarter:
         if os.name == 'posix':
             from Signals import Signals
             Signals.registerZopeSignals()
+
+    def setupSecurityOptions(self):
+        import AccessControl
+        AccessControl.setImplementation(
+            self.cfg.security_policy_implementation)
+        AccessControl.setDefaultBehaviors(
+            not self.cfg.skip_ownership_checking,
+            not self.cfg.skip_authentication_checking)
 
     def setupStartupHandler(self):
         # set up our initial logging environment (log everything to stderr

@@ -452,16 +452,6 @@
     <metadefault>unset</metadefault>
   </key>
 
-  <key name="maximum-security-manager-stack-size" datatype="integer"
-       default="100" handler="maximum_security_manager_stack_size">
-     <description>
-     This variable allows you to customize the size of the Zope
-     SecurityManager stack. You shouldn't change this unless you know what
-     it means.
-     </description>
-     <metadefault>100</metadefault>
-  </key>
-
   <key name="publisher-profile-file" handler="publisher_profile_file">
     <description>
      Causing this directive to point to a file on the filesystem will
@@ -533,7 +523,7 @@
 
   <key name="security-policy-implementation"
        datatype=".security_policy_implementation"
-       default="C" handler="security_policy_implementation">
+       default="C">
      <description>
      The default Zope "security policy" implementation is written in C.
      Set this key to "PYTHON" to use the Python implementation
@@ -544,7 +534,7 @@
   </key>
 
   <key name="skip-authentication-checking" datatype="boolean"
-       default="off" handler="skip_authentication_checking">
+       default="off">
      <description>
      Set this directive to 'on' to cause Zope to prevent Zope from
      attempting to authenticate users during normal operation.
@@ -555,7 +545,7 @@
   </key>
 
   <key name="skip-ownership-checking" datatype="boolean"
-       default="off" handler="skip_ownership_checking">
+       default="off">
      <description>
      Set this directive to 'on' to cause Zope to ignore ownership checking
      when attempting to execute "through the web" code. By default, this
