@@ -135,20 +135,25 @@ class ZCatalog(Folder, Persistent, Implicit):
     meta_type = "ZCatalog"
     icon='misc_/ZCatalog/ZCatalog.gif'
     
-    manage_options=(
-            
+    manage_options=(  
         {'label': 'Contents', 'action': 'manage_main',
-         'target': 'manage_main'},
+         'target': 'manage_main',
+         'help':('ZCatalog','ZCatalog_Contents.dtml')},
         {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
-         'target': 'manage_main'},
+         'target': 'manage_main',
+         'help':('ZCatalog','ZCatalog_Cataloged-Objects.dtml')},
         {'label': 'Find Items to ZCatalog', 'action': 'manage_catalogFind', 
-         'target':'manage_main'},
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_Find-Items-to-ZCatalog.dtml')},
         {'label': 'MetaData Table', 'action': 'manage_catalogSchema', 
-         'target':'manage_main'},
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_MetaData-Table.dtml')},
         {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
-         'target':'manage_main'},
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_Indexes.dtml')},
         {'label': 'Status', 'action': 'manage_catalogStatus', 
-         'target':'manage_main'},
+         'target':'manage_main',
+         'help':('ZCatalog','ZCatalog_Status.dtml')},
         )
 
     __ac_permissions__=(
