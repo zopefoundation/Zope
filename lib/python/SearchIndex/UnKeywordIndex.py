@@ -52,7 +52,7 @@ class UnKeywordIndex(UnIndex):
         kws = unindex.get(i, None)
         if kws is None:
             LOG('UnKeywordIndex', ERROR,('unindex_object was called with bad '
-                                          'integer id' % str(i)))
+                                         'integer id %s' % str(i)))
         for kw in kws:
             set = index.get(kw, None)
             if set is not None:
