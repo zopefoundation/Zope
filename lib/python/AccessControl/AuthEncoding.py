@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sha, binascii
 from binascii import b2a_base64, a2b_base64
@@ -119,6 +119,29 @@ if crypt is not None:
             return (a == reference)
 
     registerScheme('CRYPT', CryptDigestScheme())
+
+
+class MySQLDigestScheme:
+
+    def encrypt(self, pw):
+        nr = 1345345333L
+        add = 7
+        nr2 = 0x12345671L
+        for i in pw:
+            if i == ' ' or i == '\t':
+                continue
+            nr ^= (((nr & 63) add) * ord(i)) + (nr << 8)
+            nr2 += (nr2 << 8) ^ nr
+            add += ord(i)
+        r0 = nr & ((1L << 31) - 1L)
+        r1 = nr2 & ((1L << 31) - 1L)
+        return "%08lx%08lx" % (r0, r1)
+
+    def validate(self, reference, attempt):
+        a = self.encrypt(attempt)
+        return (a == reference)
+
+registerScheme('MYSQL', MySQLDigestScheme())
 
 
 def pw_validate(reference, attempt):

@@ -8,6 +8,9 @@ Zope Changes
 
     Features added
 
+     - Collector #435: Support for passwords encoded using MySQL's 
+       PASSWORD() function add to lib/python/AccessControl/AuthEncoding.py.
+
      - Collector #167: Support __getattr__ on cAccessControl PermissionRole
        objects to allow gathering of permission names for products like
        DocFinder and VerboseSecurity.
