@@ -103,13 +103,13 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
 from os import getpid
 from time import time
-from rand import rand
+from random import random
 from regsub import gsub
 from base64 import encodestring
 from urllib import urlopen, quote
@@ -507,7 +507,7 @@ class MultiPart:
 
 
     def boundary(self):
-        return '%s_%s_%s' % (int(time()), getpid(), rand())
+        return '%s_%s_%s' % (int(time()), getpid(), int(random()*1000000000))
 
 
     def render(self):
