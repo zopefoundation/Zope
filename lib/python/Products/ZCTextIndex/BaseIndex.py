@@ -53,8 +53,6 @@ def unique(L):
 class BaseIndex(Persistent):
 
     __implements__ = IIndex
-    
-    word_count = 0
 
     def __init__(self, lexicon):
         self._lexicon = lexicon
