@@ -493,8 +493,15 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 # having a 'values' means we have a data structure with
                 # scores.  Build a new result set, sort it by score, reverse
                 # it, compute the normalized score, and Lazify it.
-                
-                # For now we cannot return raw scores for later merging :^(
+                                
+                if not merge:
+                    # Don't bother to sort here, return a list of 
+                    # three tuples to be passed later to mergeResults
+                    # note that data_record_normalized_score_ cannot be
+                    # calculated and will always be 1 in this case
+                    getitem = self.__getitem__
+                    return [(score, (1, score, rid), getitem) 
+                            for rid, score in rs.items()]
                 
                 rs = rs.byValue(0) # sort it by score
                 max = float(rs[0][0])
