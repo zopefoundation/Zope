@@ -258,7 +258,7 @@ class TALGenerator:
     def emitUseMacro(self, expr):
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
-        self.emit("useMacro", cexpr, self.popSlots(), program)
+        self.emit("useMacro", expr, cexpr, self.popSlots(), program)
 
     def emitDefineSlot(self, slotName):
         program = self.popProgram()

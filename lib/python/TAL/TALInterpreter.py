@@ -277,11 +277,11 @@ class TALInterpreter:
     def do_defineMacro(self, macroName, macro):
         self.interpret(macro)
 
-    def do_useMacro(self, macroName, compiledSlots, block):
+    def do_useMacro(self, macroName, macroExpr, compiledSlots, block):
         if not self.metal:
             self.interpret(block)
             return
-        macro = self.engine.evaluateMacro(macroName)
+        macro = self.engine.evaluateMacro(macroExpr)
         save = self.slots, self.currentMacro
         self.slots = compiledSlots
         self.currentMacro = macroName
