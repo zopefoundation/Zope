@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.62 2001/06/08 11:29:07 andreas Exp $"""
-__version__ = "$Revision: 1.62 $"[11:-2]
+$Id: MailHost.py,v 1.63 2001/06/08 13:30:35 andreas Exp $"""
+__version__ = "$Revision: 1.63 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -206,9 +206,15 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
         messageText = messageText.lstrip()
 
-        if not headers['subject']:
+        if not headers['subject'] and len(headers)==0:
             messageText="subject: %s\n\n%s" % (subject or '[No Subject]',
                                              messageText)
+
+        elif not headers['subject']: 
+            messageText="subject: %s\n%s" % (subject or '[No Subject]',
+                                             messageText)
+
+
         if mto:
             if type(mto) is type('s'):
                 mto=map(string.strip, string.split(mto,','))
@@ -224,8 +230,13 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         smtpserver = SMTP(self.smtp_host, self.smtp_port)
         smtpserver.sendmail(headers['from'],headers['to'], messageText)
 
+
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None,
                       encode=None):
+        """Looks like the same function as send() - scheduledSend() is nowhere 
+        used in Zope. No idea if it is still needed/used (ajung)
+        """
+
         headers = extractheaders(messageText)
 
         if not headers['subject']:
