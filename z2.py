@@ -227,6 +227,7 @@ Environment settings are of the form: NAME=VALUE.
 Note: you *must* use Python 2.2 or later!
 """
 
+import sys
 
 # This is required path hackery for the win32 binary distribution
 # that ensures that the bundled python libraries are used. In a
@@ -235,19 +236,19 @@ Note: you *must* use Python 2.2 or later!
 # happened, then the path munging code is skipped.
 swhome=r'INSERT_SOFTWARE_HOME'
 if swhome != 'INSERT_SOFTWARE_HOME':
-    import sys
     sys.path.insert(0, '%s/lib/python' % swhome)
     sys.path.insert(1, '%s/bin/lib' % swhome)
     sys.path.insert(2, '%s/bin/lib/plat-win' % swhome)
     sys.path.insert(3, '%s/bin/lib/win32' % swhome)
     sys.path.insert(4, '%s/bin/lib/win32/lib' % swhome)
-    sys.path.insert(5, '%s' % swhome)
+    sys.path.insert(5, swhome)
 
 
-import os, sys, getopt, codecs, string
+import codecs
+import getopt
+import os
 import socket
 
-from types import StringType, IntType
 # workaround to allow unicode encoding conversions in DTML
 dummy = codecs.lookup('iso-8859-1')
 
@@ -356,8 +357,10 @@ def server_info(old, v, offset=0):
         v=v+offset
     except: raise 'Invalid port', v
 
-    if isinstance(old, IntType): old=[(a,v)]
-    else: old.append((a,v))
+    if isinstance(old, int):
+        old=[(a,v)]
+    else:
+        old.append((a,v))
 
     return old
 
@@ -637,7 +640,8 @@ try:
 
     # HTTP Server
     if HTTP_PORT:
-        if isinstance(HTTP_PORT, IntType): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
+        if isinstance(HTTP_PORT, int):
+            HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
         for address, port in HTTP_PORT:
             try:
                 hs = zhttp_server(
@@ -670,7 +674,7 @@ try:
     # WebDAV source Server (runs HTTP, but munges request to return
     #  'manage_FTPget').
     if WEBDAV_SOURCE_PORT:
-        if isinstance(WEBDAV_SOURCE_PORT, IntType):
+        if isinstance(WEBDAV_SOURCE_PORT, int):
             WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
         for address, port in WEBDAV_SOURCE_PORT:
             try:
@@ -713,7 +717,8 @@ try:
 
     # FTP Server
     if FTP_PORT:
-        if isinstance(FTP_PORT, IntType): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
+        if isinstance(FTP_PORT, int):
+            FTP_PORT=((IP_ADDRESS, FTP_PORT),)
         for address, port in FTP_PORT:
             try:
                 FTPServer(
@@ -776,7 +781,7 @@ try:
             zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
                      ' because no emergency user exists.')
         if pw:
-            if isinstance(MONITOR_PORT, IntType):
+            if isinstance(MONITOR_PORT, int):
                 MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
             for address, port in MONITOR_PORT:
                 try:
@@ -793,7 +798,8 @@ try:
                     raise
 
     if ICP_PORT:
-        if isinstance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
+        if isinstance(ICP_PORT, int):
+            ICP_PORT=((IP_ADDRESS, ICP_PORT),)
         from ZServer.ICPServer import ICPServer
         for address, port in ICP_PORT:
             try:
@@ -848,13 +854,13 @@ try:
                 raise SystemExit, err
 
             try:
-                try:    UID = string.atoi(UID)
+                try:    UID = int(UID)
                 except: pass
                 gid = None
-                if isinstance(UID, StringType):
+                if isinstance(UID, str):
                     uid = pwd.getpwnam(UID)[2]
                     gid = pwd.getpwnam(UID)[3]
-                elif isinstance(UID, IntType):
+                elif isinstance(UID, int):
                     uid = pwd.getpwuid(UID)[2]
                     gid = pwd.getpwuid(UID)[3]
                     UID = pwd.getpwuid(UID)[0]
