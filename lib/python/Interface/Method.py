@@ -3,6 +3,8 @@
 import Exceptions
 from Attr import Attribute
 
+sig_traits = ['positional', 'required', 'optional', 'varargs', 'kwargs']
+
 class MethodClass:
 
     def fromFunction(self, func, interface=''):
@@ -28,6 +30,10 @@ class MethodClass:
         m.interface=interface
         return m
 
+    def fromMethod(self, meth, interface=''):
+        func = meth.im_func
+        return self.fromFunction(func, interface)
+
 class Method(Attribute):
     """Method interfaces
 
@@ -36,6 +42,7 @@ class Method(Attribute):
     """
 
     fromFunction=MethodClass().fromFunction
+    fromMethod=MethodClass().fromMethod
     interface=''
 
     def __init__(self, __name__=None, __doc__=None):
@@ -46,5 +53,58 @@ class Method(Attribute):
 
     def __call__(self, *args, **kw):
         raise Exceptions.BrokenImplementation(self.interface, self.__name__)
+
+    def isMethod(self):
+        return 1
         
-    
+    def getSignatureInfo(self):
+        info = {}
+        for t in sig_traits:
+            info[t] = getattr(self, t) 
+
+        return info
+
+    def getSignatureRepr(self):
+        sig = "("
+        for v in self.positional:
+            sig = sig + v
+            if v in self.optional.keys():
+                sig = sig + "=%s" % `self.optional[v]`
+            sig = sig + ", "
+        if self.varargs:
+            sig = sig + "*args, "
+        if self.kwargs:
+            sig = sig + "**kws, "
+
+        # slice off the last comma and space
+        if self.positional or self.varargs or self.kwargs:
+            sig = sig[:-2]
+
+        sig = sig + ")"
+        return sig
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
