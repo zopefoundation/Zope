@@ -93,7 +93,7 @@ CONNECTION_LIMIT=max_sockets.max_select_sockets()
 
 ZSERVER_VERSION='1.1b1'
 try:
-    import App.version_txt
+    import App.version_txt, App.FindHomes
     ZOPE_VERSION=App.version_txt.version_txt()
 except:
     ZOPE_VERSION='experimental'
