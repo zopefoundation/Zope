@@ -2,12 +2,21 @@
 
 """
     Testsuite for testing Catalogs
-    $Id: testCatalog.py,v 1.2 2001/03/15 13:16:24 jim Exp $
+    $Id: testCatalog.py,v 1.3 2001/03/23 23:34:14 chrism Exp $
     
     Andreas Jung, andreas@digicool.com
     
     $Log: testCatalog.py,v $
-    Revision 1.2  2001/03/15 13:16:24  jim
+    Revision 1.3  2001/03/23 23:34:14  chrism
+    Merge from branch.
+
+    Revision 1.1.6.3  2001/03/23 23:32:02  chrism
+    Added catalog length test.
+
+    Revision 1.1.6.2  2001/03/23 19:38:52  chrism
+    added checkUncatalogTwice test.
+
+    Revision 1.1.6.1  2001/03/15 13:10:32  jim
     Merged changes from Catalog-BTrees-Integration branch.
 
     Revision 1.1.4.11  2001/03/14 18:43:16  andreas
@@ -821,6 +830,18 @@ class TestCatalogObject(unittest.TestCase):
     def checkUniqueValuesForContent(self):
         a = self._catalog.uniqueValuesFor('att1')
         assert a[0] == 'att1', 'bad content %s' % str(a[0])
+
+    def checkUncatalogTwice(self):
+        self._catalog.uncatalogObject(`0`)
+        self.assertRaises(Exception, '_second')
+
+    def checkCatalogLength(self):
+        for x in range(0, self.upper):
+            self._catalog.uncatalogObject(`x`)
+        assert len(self._catalog) == 0
+
+    def _second(self):
+        self._catalog.uncatalogObject(`0`)
 
     def uncatalog(self):
         for x in range(0, self.upper):
