@@ -16,18 +16,17 @@
 
 import os
 import errno
-import unittest
 
 from ZODB import DB
+from bsddb3Storage.tests.BerkeleyTestBase import BerkeleyTestBase
 
 DBHOME = 'test-db'
 
 
 
-class ZODBTestBase(unittest.TestCase):
+class ZODBTestBase(BerkeleyTestBase):
     def setUp(self):
-        os.mkdir(DBHOME)
-
+        BerkeleyTestBase.setUp(self)
         try:
             self._storage = self.ConcreteStorage(DBHOME)
             self._db = DB(self._storage)
@@ -45,8 +44,8 @@ class ZODBTestBase(unittest.TestCase):
         # subsequent tests because the next transaction commit will try to
         # commit those object.  But they're tied to closed databases, so
         # that's broken.  Aborting the transaction now saves us the headache.
-        get_transaction().abort()
-        self._close()
-        for file in os.listdir(DBHOME):
-            os.unlink(os.path.join(DBHOME, file))
-        os.removedirs(DBHOME)
+        try:
+            get_transaction().abort()
+            self._close()
+        finally:
+            BerkeleyTestBase.tearDown(self)
