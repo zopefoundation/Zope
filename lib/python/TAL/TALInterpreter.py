@@ -143,7 +143,7 @@ class AltTALGenerator(TALGenerator):
         metaldict = {}
         taldict = {}
         if self.enabled and self.repldict:
-            taldict["attributes"] = ""
+            taldict["attributes"] = "x x"
         TALGenerator.emitStartElement(self, name, attrlist,
                                       taldict, metaldict, position, isend)
 
@@ -208,14 +208,11 @@ class TALInterpreter:
         assert self.level == level
         assert self.scopeLevel == scopeLevel
 
-    def pushMacro(self, what, macroName, slots):
+    def pushMacro(self, macroName, slots, entering=1):
         if len(self.macroStack) >= self.stackLimit:
             raise METALError("macro nesting limit (%d) exceeded "
-                             "by %s %s" % (self.stackLimit, what, `macroName`))
-        self.macroStack.append((what, macroName, slots))
-
-    def popMacro(self):
-        return self.macroStack.pop()
+                             "by %s" % (self.stackLimit, `macroName`))
+        self.macroStack.append([macroName, slots, entering])
 
     def macroContext(self, what):
         macroStack = self.macroStack
@@ -331,89 +328,63 @@ class TALInterpreter:
         name, value, action = item[:3]
         if action == 1 or (action > 1 and not self.showtal):
             return 0, name, value
-        ok = 1
-        if action == 2 and self.metal:
+        macs = self.macroStack
+        if action == 2 and self.metal and macs:
+            if len(macs) > 1 or not macs[-1][2]:
+                # Drop all METAL attributes at a use-depth above one.
+                return 0, name, value
+            # Clear 'entering' flag
+            macs[-1][2] = 0
+            # Convert or drop depth-one METAL attributes.
             i = rfind(name, ":") + 1
             prefix, suffix = name[:i], name[i:]
-            ##self.dumpMacroStack(prefix, suffix, value)
-            what, macroName, slots = self.macroStack[-1]
             if suffix == "define-macro":
-                if what == "use-macro":
-                    name = prefix + "use-macro"
-                    value = macroName
-                else:
-                    assert what == "define-macro"
-                    i = self.macroContext("use-macro")
-                    if i >= 0:
-                        j = self.macroContext("define-slot")
-                        if j > i:
-                            name = prefix + "use-macro"
-                        else:
-                            return 0, name, value
+                # Convert define-macro as we enter depth one.
+                name = prefix + "use-macro"
+                value = macs[-1][0] # Macro name
             elif suffix == "define-slot":
-                assert what == "define-slot"
-                if self.macroContext("use-macro") >= 0:
-                    name = prefix + "fill-slot"
+                name = prefix + "fill-slot"
+            elif suffix == "fill-slot":
+                pass
+            else:
+                return 0, name, value
 
         if value is None:
             value = name
         else:
             value = "%s=%s" % (name, quote(value))
-        return ok, name, value
+        return 1, name, value
 
     def attrAction_tal(self, item):
         name, value, action = item[:3]
-        if action > 1 and not self.showtal:
-            return 0, name, value
+        if action > 1:
+            return self.attrAction(item)
         ok = 1
-        if action <= 1:
-            if self.html and lower(name) in BOOLEAN_HTML_ATTRS:
-                evalue = self.engine.evaluateBoolean(item[3])
-                if evalue is self.Default:
-                    if action == 1: # Cancelled insert
-                        ok = 0
-                elif evalue:
-                    value = None
-                else:
+        if self.html and lower(name) in BOOLEAN_HTML_ATTRS:
+            evalue = self.engine.evaluateBoolean(item[3])
+            if evalue is self.Default:
+                if action == 1: # Cancelled insert
+                    ok = 0
+            elif evalue:
+                value = None
+            else:
+                ok = 0
+        else:
+            evalue = self.engine.evaluateText(item[3])
+            if evalue is self.Default:
+                if action == 1: # Cancelled insert
                     ok = 0
             else:
-                evalue = self.engine.evaluateText(item[3])
-                if evalue is self.Default:
-                    if action == 1: # Cancelled insert
-                        ok = 0
-                else:
-                    if evalue is None:
-                        ok = 0
-                    value = evalue
-        elif action == 2 and self.metal:
-            i = rfind(name, ":") + 1
-            prefix, suffix = name[:i], name[i:]
-            ##self.dumpMacroStack(prefix, suffix, value)
-            what, macroName, slots = self.macroStack[-1]
-            if suffix == "define-macro":
-                if what == "use-macro":
-                    name = prefix + "use-macro"
-                    value = macroName
-                else:
-                    assert what == "define-macro"
-                    i = self.macroContext("use-macro")
-                    if i >= 0:
-                        j = self.macroContext("define-slot")
-                        if j > i:
-                            name = prefix + "use-macro"
-                        else:
-                            ok = 0
-            elif suffix == "define-slot":
-                assert what == "define-slot"
-                if self.macroContext("use-macro") >= 0:
-                    name = prefix + "fill-slot"
-
+                if evalue is None:
+                    ok = 0
+                value = evalue
         if ok:
             if value is None:
                 value = name
             else:
                 value = "%s=%s" % (name, quote(value))
         return ok, name, value
+
     bytecode_handlers["<attrAction>"] = attrAction
 
     def no_tag(self, start, program):
@@ -592,12 +563,15 @@ class TALInterpreter:
     bytecode_handlers["condition"] = do_condition
 
     def do_defineMacro(self, (macroName, macro)):
-        if not self.metal:
-            self.interpret(macro)
-            return
-        self.pushMacro("define-macro", macroName, None)
+        macs = self.macroStack
+        if len(macs) == 1:
+            entering = macs[-1][2]
+            if not entering:
+                macs.append(None)
+                self.interpret(macro)
+                macs.pop()
+                return
         self.interpret(macro)
-        self.popMacro()
     bytecode_handlers["defineMacro"] = do_defineMacro
 
     def do_useMacro(self, (macroName, macroExpr, compiledSlots, block)):
@@ -606,44 +580,44 @@ class TALInterpreter:
             return
         macro = self.engine.evaluateMacro(macroExpr)
         if macro is self.Default:
-            self.interpret(block)
-            return
-        if not isCurrentVersion(macro):
-            raise METALError("macro %s has incompatible version %s" %
-                             (`macroName`, `getProgramVersion(macro)`),
-                             self.position)
-        mode = getProgramMode(macro)
-        if mode != (self.html and "html" or "xml"):
-            raise METALError("macro %s has incompatible mode %s" %
-                             (`macroName`, `mode`), self.position)
-        self.pushMacro("use-macro", macroName, compiledSlots)
+            macro = block
+        else:
+            if not isCurrentVersion(macro):
+                raise METALError("macro %s has incompatible version %s" %
+                                 (`macroName`, `getProgramVersion(macro)`),
+                                 self.position)
+            mode = getProgramMode(macro)
+            if mode != (self.html and "html" or "xml"):
+                raise METALError("macro %s has incompatible mode %s" %
+                                 (`macroName`, `mode`), self.position)
+        self.pushMacro(macroName, compiledSlots)
         self.interpret(macro)
         self.popMacro()
     bytecode_handlers["useMacro"] = do_useMacro
 
     def do_fillSlot(self, (slotName, block)):
-        if not self.metal:
-            self.interpret(block)
-            return
-        self.pushMacro("fill-slot", slotName, None)
+        # This is only executed if the enclosing 'use-macro' evaluates
+        # to 'default'.
         self.interpret(block)
-        self.popMacro()
     bytecode_handlers["fillSlot"] = do_fillSlot
 
     def do_defineSlot(self, (slotName, block)):
         if not self.metal:
             self.interpret(block)
             return
-        slot = None
-        for what, macroName, slots in self.macroStack:
-            if what == "use-macro" and slots is not None:
-                slot = slots.get(slotName, slot)
-        self.pushMacro("define-slot", slotName, None)
-        if slot:
-            self.interpret(slot)
-        else:
-            self.interpret(block)
-        self.popMacro()
+        macs = self.macroStack
+        if macs and macs[-1] is not None:
+            macroName, slots = self.popMacro()[:2]
+            slot = slots.get(slotName)
+            if slot is not None:
+                self.interpret(slot)
+                self.pushMacro(macroName, slots, entering=0)
+                return
+            self.pushMacro(macroName, slots)
+            if len(macs) == 1:
+                self.interpret(block)
+                return
+        self.interpret(block)
     bytecode_handlers["defineSlot"] = do_defineSlot
 
     def do_onError(self, (block, handler)):
