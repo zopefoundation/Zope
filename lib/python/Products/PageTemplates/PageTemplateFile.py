@@ -82,124 +82,116 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""Filesystem Page Template module
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
+Zope object encapsulating a Page Template from the filesystem.
+"""
 
-import util
-from Products.PageTemplates.PageTemplate import PageTemplate
+__version__='$Revision: 1.1 $'[11:-2]
 
-from Acquisition import Implicit
-class AqPageTemplate(Implicit, PageTemplate):
-   pass
+import os, AccessControl, Acquisition, sys
+from Globals import package_home, DevelopmentMode
+from zLOG import LOG, ERROR, INFO
+from string import join, strip, rstrip, split, replace, lower
+from Shared.DC.Scripts.Script import Script, BindingsUI
+from Shared.DC.Scripts.Signature import FuncCode
+from AccessControl import getSecurityManager
+from OFS.Traversable import Traversable
+from PageTemplate import PageTemplate
+from ZopePageTemplate import SecureModuleImporter
+from ComputedAttribute import ComputedAttribute
 
-class Folder(util.Base):
-   pass
+class PageTemplateFile(Script, PageTemplate, Traversable):
+    "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
+     
+    meta_type = 'Page Template (File)'
 
-class HTMLTests(unittest.TestCase):
+    func_defaults = None
+    func_code = FuncCode((), 0)
+    _need__name__=1
+    _v_last_read=0
 
-   def setUp(self):
-      self.folder = f = Folder()
-      f.laf = AqPageTemplate()
-      f.t = AqPageTemplate()
+    _default_bindings = {'name_subpath': 'traverse_subpath'}
 
-   def getProducts(self):
-      return [
-         {'description': 'This is the tee for those who LOVE Zope. '
-          'Show your heart on your tee.',
-          'price': 12.99, 'image': 'smlatee.jpg'
-          },
-         {'description': 'This is the tee for Jim Fulton. '
-          'He\'s the Zope Pope!',
-          'price': 11.99, 'image': 'smpztee.jpg'
-          },
-         ]
+    security = AccessControl.ClassSecurityInfo()
+    security.declareObjectProtected('View')
+    security.declareProtected('View', '__call__')
+    security.declareProtected('View management screens',
+      'read', 'document_src')
 
-   def check1(self):
-      laf = self.folder.laf
-      laf.write(read_input('TeeShopLAF.html'))
-      expect = read_output('TeeShopLAF.html')
-      util.check_html(expect, laf())
+    def __init__(self, filename, _prefix=None, **kw):
+        self.ZBindings_edit(self._default_bindings)
+        if _prefix is None: _prefix=SOFTWARE_HOME
+        elif type(_prefix) is not type(''):
+            _prefix = package_home(_prefix)
+        name = kw.get('__name__')
+        if not name:
+            name = os.path.split(filename)[-1]
+        self.__name__ = name
+        self.filename = filename = os.path.join(_prefix, filename + '.zpt')
 
-   def check2(self):
-      self.folder.laf.write(read_input('TeeShopLAF.html'))
+    def pt_getContext(self):
+        root = self.getPhysicalRoot()
+        c = {'template': self,
+             'here': self._getContext(),
+             'container': self._getContainer(),
+             'nothing': None,
+             'options': {},
+             'root': root,
+             'request': getattr(root, 'REQUEST', None),
+             'modules': SecureModuleImporter,
+             }
+        return c
 
-      t = self.folder.t
-      t.write(read_input('TeeShop2.html'))
-      expect = read_output('TeeShop2.html')
-      out = t(getProducts=self.getProducts)
-      util.check_html(expect, out)
-      
+    def _exec(self, bound_names, args, kw):
+        """Call a Page Template"""
+        self._cook_check()
+        if not kw.has_key('args'):
+            kw['args'] = args
+        bound_names['options'] = kw
 
-   def check3(self):
-      self.folder.laf.write(read_input('TeeShopLAF.html'))
+        try:
+            self.REQUEST.RESPONSE.setHeader('content-type',
+                                            self.content_type)
+        except AttributeError: pass
 
-      t = self.folder.t
-      t.write(read_input('TeeShop1.html'))
-      expect = read_output('TeeShop1.html')
-      out = t(getProducts=self.getProducts)
-      util.check_html(expect, out)
+        # Execute the template in a new security context.
+        security=getSecurityManager()
+        security.addContext(self)
+        try:
+            return self.pt_render(extra_context=bound_names)
+        finally:
+            security.removeContext(self)
 
-   def checkSimpleLoop(self):
-      t = self.folder.t
-      t.write(read_input('Loop1.html'))
-      expect = read_output('Loop1.html')
-      out = t()
-      util.check_html(expect, out)
+    def _cook_check(self):
+        if self._v_last_read and not DevelopmentMode:
+            return
+        __traceback_info__ = self.filename
+        try:    mtime=os.stat(self.filename)[8]
+        except: mtime=0
+        if mtime == self._v_last_read:
+                return
+        self.pt_edit(open(self.filename), None)
+        self._cook()
+        self._v_last_read = mtime
 
-   def checkGlobalsShadowLocals(self):
-      t = self.folder.t
-      t.write(read_input('GlobalsShadowLocals.html'))
-      expect = read_output('GlobalsShadowLocals.html')
-      out = t()
-      util.check_html(expect, out)
+    def document_src(self, REQUEST=None, RESPONSE=None):
+        """Return expanded document source."""
 
-   def checkStringExpressions(self):
-      t = self.folder.t
-      t.write(read_input('StringExpression.html'))
-      expect = read_output('StringExpression.html')
-      out = t()
-      util.check_html(expect, out)
-      
-   def checkReplaceWithNothing(self):
-      t = self.folder.t
-      t.write(read_input('CheckNothing.html'))
-      expect = read_output('CheckNothing.html')
-      out = t()
-      util.check_html(expect, out)
+        if RESPONSE is not None:
+            RESPONSE.setHeader('Content-Type', self.content_type)
+        return self.read()
 
-   def checkWithXMLHeader(self):
-      t = self.folder.t
-      t.write(read_input('CheckWithXMLHeader.html'))
-      expect = read_output('CheckWithXMLHeader.html')
-      out = t()
-      util.check_html(expect, out)
+    def _get__roles__(self):
+        imp = getattr(aq_parent(aq_inner(self)),
+                      '%s__roles__' % self.__name__)
+        if hasattr(imp, '__of__'):
+            return imp.__of__(self)
+        return imp
 
-   def checkNotExpression(self):
-      t = self.folder.t
-      t.write(read_input('CheckNotExpression.html'))
-      expect = read_output('CheckNotExpression.html')
-      out = t()
-      util.check_html(expect, out)
-      
-   def checkPathNothing(self):
-      t = self.folder.t
-      t.write(read_input('CheckPathNothing.html'))
-      expect = read_output('CheckPathNothing.html')
-      out = t()
-      util.check_html(expect, out)
-      
-   def checkPathAlt(self):
-      t = self.folder.t
-      t.write(read_input('CheckPathAlt.html'))
-      expect = read_output('CheckPathAlt.html')
-      out = t()
-      util.check_html(expect, out)
+    __roles__ = ComputedAttribute(_get__roles__, 1)
 
-
-def test_suite():
-   return unittest.makeSuite(HTMLTests, 'check')
-
-if __name__=='__main__':
-   main()
+    def __setstate__(self, state):
+        raise StorageError, ("Instance of AntiPersistent class %s "
+                             "cannot be stored." % self.__class__.__name__)
 

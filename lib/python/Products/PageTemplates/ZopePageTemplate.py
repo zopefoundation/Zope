@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -149,11 +149,6 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
       'ZScriptHTML_tryForm', 'PrincipiaSearchSource',
       'document_src')
 
-    pt_editForm = DTMLFile('dtml/ptEdit', globals())
-    manage = manage_main = pt_editForm
-
-    pt_diagnostic = DTMLFile('dtml/ptDiagnostic', globals())
-
     security.declareProtected('Change Page Templates',
       'pt_editAction', 'pt_setTitle', 'pt_edit',
       'pt_upload', 'pt_changePrefs')
@@ -168,7 +163,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>" 
                        % join(self._v_warnings, '<br>'))
-        return self.pt_editForm(self, REQUEST, manage_tabs_message=message)
+        return self.pt_editForm(manage_tabs_message=message)
 
     def pt_setTitle(self, title):
         title = str(title)
@@ -183,7 +178,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         if type(file) is not type(''): file = file.read()
         self.write(file)
         message = 'Saved changes.'
-        return self.pt_editForm(self, REQUEST, manage_tabs_message=message)
+        return self.pt_editForm(manage_tabs_message=message)
 
     def pt_changePrefs(self, REQUEST, height=None, width=None,
                        dtpref_cols='50', dtpref_rows='20'):
@@ -199,7 +194,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         setc('dtpref_rows', str(rows), path='/', expires=e)
         setc('dtpref_cols', str(cols), path='/', expires=e)
         REQUEST.form.update({'dtpref_cols': cols, 'dtpref_rows': rows})
-        return apply(self.manage_main, (self, REQUEST), REQUEST.form)
+        return self.manage_main()
 
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
@@ -341,9 +336,15 @@ def manage_addPageTemplate(self, id, REQUEST=None, submit=None):
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 
-manage_addPageTemplateForm = DTMLFile('dtml/ptAdd', globals())
+#manage_addPageTemplateForm = DTMLFile('dtml/ptAdd', globals())
 
 def initialize(context):
+    from PageTemplateFile import PageTemplateFile
+    manage_addPageTemplateForm = PageTemplateFile('www/ptAdd', globals())
+    _editForm = PageTemplateFile('www/ptEdit', globals())
+    ZopePageTemplate.manage = _editForm
+    ZopePageTemplate.manage_main = _editForm
+    ZopePageTemplate.pt_editForm = _editForm
     context.registerClass(
         ZopePageTemplate,
         permission='Add Page Templates',
@@ -353,3 +354,4 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
+

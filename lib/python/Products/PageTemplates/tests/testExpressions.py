@@ -16,6 +16,7 @@ class ExpressionTests(unittest.TestCase):
                 if m & 2: mods = mods + ' exists'
                 if m & 4: mods = mods + ' nocall'
                 e.compile('(%s) %s' % (mods, p))
+        e.compile('path:a|b|c/d/e')
         e.compile('string:Fred')
         e.compile('string:A$B')
         e.compile('string:a ${x/y} b ${y/z} c')

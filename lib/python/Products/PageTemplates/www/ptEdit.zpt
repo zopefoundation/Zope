@@ -1,9 +1,10 @@
-<dtml-var manage_page_header>
-<dtml-var manage_tabs>
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
+<h2 tal:define="manage_tabs_message options/manage_tabs_message | nothing"
+    tal:replace="structure here/manage_tabs">Tabs</h2>
 
-<dtml-comment>Do read at top so we can catch errors</dtml-comment>
-<dtml-let read=read>
-<form action="&dtml-URL1;" method="post">
+<form action="" method="post"
+      tal:define="body request/text | here/read"
+      tal:attributes="action request/URL1">
 <input type="hidden" name=":default_method" value="pt_changePrefs">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   <tr>
@@ -14,7 +15,7 @@
     </td>
     <td align="left" valign="middle">
     <input type="text" name="title" size="40" 
-     value="&dtml-title;" />
+           tal:attributes="value request/title | here/title" />
     </td>
     <td align="left" valign="middle">
     <div class="form-optional">
@@ -23,7 +24,7 @@
     </td>
     <td align="left" valign="middle">
     <input type="text" name="content_type" size="14" 
-     value="&dtml-content_type;" />
+           tal:attributes="value request/content_type | here/content_type" />
     </td>
   </tr>
   <tr>
@@ -33,23 +34,17 @@
     </div>
     </td>
     <td align="left" valign="middle">
-    <div class="form-text">
-    <dtml-var bobobase_modification_time fmt="%Y-%m-%d %I:%M %p">
+    <div class="form-text" 
+     tal:content="python:here.bobobase_modification_time().strftime('%Y-%m-%d %I:%M %p')">1/1/2000
     </div>
     </td>
     <td align="left" valign="top" colspan=2>
-      <dtml-if html>
-         <a href="source.html">Browse HTML source</a>
-      <dtml-else>
-         <a href="source.xml">Browse XML source</a>
-      </dtml-if>
+      <a href="source.html" tal:condition="here/html">Browse HTML source</a>
+      <a href="source.xml" tal:condition="not:here/html">Browse XML source</a>
       <br>
       <input type="hidden" name="expand:int:default" value="0">
-      <dtml-if expand>
-        <input type="checkbox" value="1" name="expand:int" checked>
-      <dtml-else>
-        <input type="checkbox" value="1" name="expand:int">
-      </dtml-if>
+      <input type="checkbox" value="1" name="expand:int"
+       tal:attributes="checked request/expand | here/expand">
       Expand macros when editing
     </td>
   </tr>
@@ -57,8 +52,9 @@
     <td align="left" valign="top" colspan="4">
   <div style="width: 100%;">
   <textarea name="text:text" wrap="off" style="width: 100%;"
-   cols=<dtml-var dtpref_cols html_quote missing="50">
-   rows=<dtml-var dtpref_rows html_quote missing="20">>&dtml-read;</textarea>
+   cols="50" rows="20"
+   tal:attributes="cols request/form/dtpref_cols | request/dtpref_cols | default; rows request/form/dtpref_rows | request/dtpref_rows | default"
+   tal:content="body">Template Body</textarea>
   </div>
     </td>
   </tr>
@@ -66,12 +62,10 @@
 <tr>
   <td align="left" valign="top" colspan="4">
   <div class="form-element">
-  <dtml-if wl_isLocked>
-    <em>Locked by WebDAV</em>
-  <dtml-else>
-    <input class="form-element" type="submit" 
+    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:here/wl_isLocked"
+     class="form-element" type="submit" 
      name="pt_editAction:method" value="Save Changes">
-  </dtml-if>
   &nbsp;&nbsp;
   <input class="form-element" type="submit" name="height" value="Taller">
   <input class="form-element" type="submit" name="height" value="Shorter">
@@ -82,10 +76,10 @@
 </tr>
 </table>
 </form>
-</dtml-let>
 
 <p class="form-help">
-You may upload the text for &dtml-title_and_id; using the form below.
+You may upload the text for <span tal:replace="here/title_and_id" />
+ using the form below.
 Choose an existing file from your local computer by clicking
 <em>browse</em> The contents of the file should be HTML or XML.  You
 may click the following link to <a href="document_src">view or
@@ -109,15 +103,13 @@ download</a> the current text.
   <td></td>
   <td align="left" valign="top">
   <div class="form-element">
-  <dtml-if wl_isLocked>
-    <em>Locked by WebDAV</em>
-  <dtml-else>
-    <input class="form-element" type="submit" value="Upload File">
-  </dtml-if>
+    <em tal:condition="here/wl_isLocked">Locked by WebDAV</em>
+    <input tal:condition="not:here/wl_isLocked"
+    class="form-element" type="submit" value="Upload File">
   </div>
   </td>
 </tr>
 </table>
 </form>
 
-<dtml-var manage_page_footer>
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>

@@ -1,8 +1,8 @@
-<dtml-var manage_page_header>
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
 
-<dtml-var expr="manage_form_title(this(), _,
-           form_title='Add Page Template',
-	   )">
+<h2 tal:define="form_title string:Add Page Template"
+    tal:replace="structure here/manage_form_title">Form Title</h2>
+
 <p class="form-help">
 Page Templates allow you to use simple HTML or XML attributes to
 create dynamic templates.  You may choose to upload the template text
@@ -48,4 +48,4 @@ button.
 </table>
 </form>
 
-<dtml-var manage_page_footer>
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>

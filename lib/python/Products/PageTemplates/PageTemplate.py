@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -142,7 +142,7 @@ class PageTemplate:
     def pt_render(self, source=0, extra_context={}):
         """Render this Page Template"""
         if self._v_errors:
-            return self.pt_diagnostic()
+            raise RuntimeError, 'Page Template %s has errors.' % self.id
         output = StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
@@ -163,12 +163,6 @@ class PageTemplate:
     def pt_errors(self):
         return self._v_errors
 
-    def pt_diagnostic(self):
-        return ('<html><body>\n'
-                '<h4>Page Template Diagnostics</h4>\n'
-                '<pre> %s\n</pre>'
-                '</body></html>\n') % join(self._v_errors, ' \n')
-        
     def write(self, text):
         assert type(text) is type('')
         if text[:len(self._error_start)] == self._error_start:

@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -106,6 +106,8 @@ class TALESError(Exception):
             return '%s on %s in "%s"' % (self.type, self.value,
                                          self.expression)
         return self.expression
+    def __nonzero__(self):
+        return 0
 
 class Undefined(TALESError):
     '''Exception raised on traversal of an undefined path'''
@@ -121,8 +123,22 @@ class RegistrationError(Exception):
 class CompilerError(Exception):
     '''TALES Compiler Error'''
 
-class SecureMultiMap:
-    '''MultiMapping wrapper with security declarations'''
+class Default:
+    '''Retain Default'''
+    def __nonzero__(self):
+        return 0
+Default = Default()
+
+_marker = []
+
+class SafeMapping(MultiMapping):
+    '''Mapping with security declarations and limited method exposure.
+
+    Since it subclasses MultiMapping, this class can be used to wrap
+    one or more mapping objects.  Restricted Python code will not be
+    able to mutate the SafeMapping or the wrapped mappings, but will be
+    able to read any value.
+    '''
     __allow_access_to_unprotected_subobjects__ = 1
     def __init__(self, *dicts):
         self._mm = apply(MultiMapping, dicts)
@@ -196,10 +212,7 @@ class Engine:
         except KeyError:
             raise CompilerError, (
                 'Unrecognized expression type "%s".' % type)
-        try:
-            return handler(type, expr, self)
-        except TypeError:
-            return handler(type, expr)
+        return handler(type, expr, self)
     
     def getContext(self, contexts=None, **kwcontexts):
         if contexts is not None:
@@ -220,21 +233,23 @@ class Context:
     def __init__(self, engine, contexts):
         self._engine = engine
         self.contexts = contexts
+        contexts['nothing'] = None
+        contexts['default'] = Default
 
         # Keep track of what contexts get pushed as each scope begins.
         self._ctxts_pushed = []
         # These contexts will need to be pushed.
         self._current_ctxts = {'local': 1, 'repeat': 1}
         
-        contexts['local'] = lv = SecureMultiMap()
+        lv = self._context_class()
         init_local = contexts.get('local', None)
         if init_local:
             lv._push(init_local)
-        contexts['repeat'] = rep =  SecureMultiMap()
+        contexts['local'] = lv
+        contexts['repeat'] = rep =  self._context_class()
         contexts['loop'] = rep # alias
         contexts['global'] = gv = contexts.copy()
-        gv['standard'] = contexts
-        contexts['var'] = SecureMultiMap(gv, lv)
+        contexts['var'] = self._context_class(gv, lv)
         
     def beginScope(self):
         oldctxts = self._current_ctxts
@@ -254,20 +269,14 @@ class Context:
             ctx.clear()
 
     def setLocal(self, name, value):
-        if value is not Undefined:
-            self._current_ctxts['local'][name] = value
+        self._current_ctxts['local'][name] = value
 
     def setGlobal(self, name, value):
-        if value is not Undefined:
-            self.contexts['global'][name] = value
+        self.contexts['global'][name] = value
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
-        if expr is Undefined:
-            # Not sure of this
-            it = self._engine.Iterator(name, [Undefined], self)
-        else:
-            it = self._engine.Iterator(name, expr, self)
+        it = self._engine.Iterator(name, expr, self)
         self._current_ctxts['repeat'][name] = it
         return it
 
@@ -275,7 +284,10 @@ class Context:
         if type(expression) is type(''):
             expression = self._engine.compile(expression)
         try:
-            return expression(self)
+            v = expression(self)
+            if isinstance(v, Exception):
+                raise v
+            return v
         except TALESError:
             raise
         except:
@@ -285,13 +297,11 @@ class Context:
 
     def evaluateBoolean(self, expr):
         bool = self.evaluate(expr)
-        if bool is Undefined:
-            return bool
         return not not bool
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
-        if text not in (None, Undefined):
+        if text not in (None, Default):
             text = str(text)
         return text
 
@@ -305,12 +315,12 @@ class Context:
     def getTALESError(self):
         return TALESError
 
-    def getCancelAction(self):
-        return Undefined
+    def getDefault(self):
+        return Default
 
 class SimpleExpr:
     '''Simple example of an expression type handler'''
-    def __init__(self, name, expr):
+    def __init__(self, name, expr, engine):
         self._name = name
         self._expr = expr
     def __call__(self, econtext):

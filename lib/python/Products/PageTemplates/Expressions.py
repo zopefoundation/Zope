@@ -89,13 +89,12 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
-     TALESError, Undefined
+     TALESError, Undefined, Default
 from string import strip, split, join, replace, lstrip
-from DocumentTemplate.DT_Util import TemplateDict
 from Acquisition import aq_base, aq_inner, aq_parent
 
 _engine = None
@@ -109,26 +108,50 @@ def getEngine():
 def installHandlers(engine):
     reg = engine.registerType
     pe = PathExpr
-    for pt in ('standard', 'path', 'nocall', 'exists'):
+    for pt in ('standard', 'path'):
         reg(pt, pe)
     reg('string', StringExpr)
     reg('python', PythonExpr)
     reg('not', NotExpr)
     reg('import', ImportExpr)
 
+if sys.modules.has_key('Zope'):
+    from AccessControl import getSecurityManager
+    from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
+    def call_with_ns(f, ns, arg=1):
+        td = TemplateDict()
+        td.validate = getSecurityManager().validate
+        td.this = None
+        td._push(ns['request'])
+        td._push(InstanceDict(ns['here'], td))
+        td._push(ns['var'])
+        try:
+            if arg==2:
+                return f(None, td)
+            else:
+                return f(td)
+        finally:
+            td._pop(3)
+else:
+    def call_with_ns(f, ns, arg=1):
+        if arg==2:
+            return f(None, ns)
+        else:
+            return f(ns)
+    
 def render(ob, ns):
     """
     Calls the object, possibly a document template, or just returns it if
     not callable.  (From DT_Util.py)
     """
     if hasattr(ob, '__render_with_namespace__'):
-        ob = ob.__render_with_namespace__(ns)
+        ob = call_with_ns(ob.__render_with_namespace__, ns)
     else:
         base = aq_base(ob)
         if callable(base):
             try:
                 if getattr(base, 'isDocTemp', 0):
-                    ob = ob(aq_parent(ob), ns)
+                    ob = call_with_ns(ob, ns, 2)
                 else:
                     ob = ob()
             except AttributeError, n:
@@ -139,17 +162,22 @@ def render(ob, ns):
 path_modifiers = {'if': 0, 'exists': 0, 'nocall':0}
 
 class PathExpr:
-    def __init__(self, name, expr):
+    _call_name = ''
+    
+    def __init__(self, name, expr, engine):
         self._s = expr
         self._name = name
-        self._path = path = split(expr, '/')
+        self._paths = map(self._prepPath, split(expr, '|'))
+
+    def _prepPath(self, path):
+        path = split(strip(path), '/')
         front = path.pop(0)
         fronts = split(replace(replace(front, '(', '( '), ')', ' ) '))
-        self._base = base = fronts.pop()
+        base = fronts.pop()
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
         # Parse path modifiers
-        self.modifiers = modifiers = path_modifiers.copy()
+        modifiers = path_modifiers.copy()
         if fronts:
             if len(fronts) < 2 or (fronts.pop(0) != '(' or
                                    fronts.pop()  != ')'):
@@ -160,54 +188,20 @@ class PathExpr:
                                           % modifier)
                 modifiers[modifier] = 1
         # Parse path
-        self._dynparts = dp = []
+        dp = []
         for i in range(len(path)):
             e = path[i]
             if e[:1] == '?' and _valid_name(e[1:]):
                 dp.append((i, e[1:]))
         dp.reverse()
-        # Choose call method
-        on = modifiers.get
-        callname = on('if') + on('exists') * 2
-        callname = ('Render', 'If', 'Exists', 'IfExists')[callname]
-        if on('nocall') and callname == 'Render':
-            callname = ''
-        self._call_name = '_eval' + callname
+        return (base, path, dp), modifiers
 
-    def _evalRender(self, econtext):
-        return render(self._eval(econtext), econtext.contexts)
-
-    def _evalIf(self, econtext):
-        val = self._eval(econtext)
-        if not val:
-            return Undefined
-        if self.modifiers.has_key('nocall'):
-            return val
-        return render(val, econtext.contexts)
-
-    def _evalExists(self, econtext):
-        try:
-            self._eval(econtext)
-        except (Undefined, 'Unauthorized'):
-            return 0
-        return 1
-
-    def _evalIfExists(self, econtext):
-        try:
-            val = self._eval(econtext)
-        except (Undefined, 'Unauthorized'):
-            return Undefined
-        if self.modifiers.has_key('nocall'):
-            return val
-        return render(val, econtext.contexts)
-
-    def _eval(self, econtext):
-        base = self._base
-        path = list(self._path) # Copy!
+    def _eval(self, (base, path, dp), econtext):
+        path = list(path) # Copy!
         contexts = econtext.contexts
         var = contexts['var']
         # Expand dynamic path parts from right to left.
-        for i, varname in self._dynparts:
+        for i, varname in dp:
             val = var[varname]
             if type(val) is type(''):
                 path[i] = val
@@ -217,15 +211,42 @@ class PathExpr:
                 path[i:i+1] = list(val)
         try:
             __traceback_info__ = base
-            has, ob = var.has_get(base)
-            if not has:
-                ob = contexts[base]
+            if base == 'CONTEXTS':
+                ob = contexts
+            else:
+                has, ob = var.has_get(base)
+                if not has:
+                    ob = contexts[base]
             return restrictedTraverse(ob, path)
-        except (AttributeError, KeyError, TypeError, IndexError), e:
-            raise Undefined, (self._s, sys.exc_info()), sys.exc_info()[2]
+        except (AttributeError, KeyError, TypeError, IndexError,
+                'Unauthorized'), e:
+            return Undefined(self._s, sys.exc_info())
 
     def __call__(self, econtext):
-        return getattr(self, self._call_name)(econtext)
+        for pathinfo, modifiers in self._paths:
+            ob = self._eval(pathinfo, econtext)
+            mod = modifiers.get
+            
+            if isinstance(ob, Undefined):
+                # This path is Undefined, so skip to the next.
+                if mod('exists'):
+                    if mod('if'):
+                        return Default
+                    else:
+                        return 0
+                continue            
+            if mod('exists') and not mod('if'):
+                # This path is defined, and that's all we wanted to know.
+                return 1
+            if not mod('nocall'):
+                # Render the object, unless explicitly prevented.
+                ob = render(ob, econtext.contexts)
+            if mod('if') and not mod('exists') and not ob:
+                # Skip the object if it is false.
+                continue
+            return ob
+        # We ran out of paths to test, so return the last value.
+        return ob
 
     def __str__(self):
         return '%s expression "%s"' % (self._name, self._s)
@@ -237,7 +258,7 @@ class PathExpr:
 _interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/%(n)s)*)}' % {'n': NAME_RE})
 
 class StringExpr:
-    def __init__(self, name, expr):
+    def __init__(self, name, expr, engine):
         self._s = expr
         if '%' in expr:
             expr = replace(expr, '%', '%%')
@@ -250,7 +271,8 @@ class StringExpr:
                 while m is not None:
                     parts.append(exp[:m.start()])
                     parts.append('%s')
-                    vars.append(PathExpr('path', m.group(1) or m.group(2)))
+                    vars.append(PathExpr('path', m.group(1) or m.group(2),
+                                         engine))
                     exp = exp[m.end():]
                     m = _interp.search(exp)
                 if '$' in exp:
@@ -285,14 +307,24 @@ class NotExpr:
         return '<NotExpr %s>' % `self._s`
 
 
+class ExprTypeProxy:
+    '''Class that proxies access to an expression type handler'''
+    def __init__(self, name, handler, econtext):
+        self._name = name
+        self._handler = handler
+        self._econtext = econtext
+    def __call__(self, text):
+        return self._handler(self._name, text,
+                             self._econtext._engine)(self._econtext)
+
 if sys.modules.has_key('Zope'):
     from AccessControl import getSecurityManager
     from Products.PythonScripts.Guarded import _marker, \
       GuardedBlock, theGuard, safebin, WriteGuard, ReadGuard, UntupleFunction
 
     class PythonExpr:
-        def __init__(self, name, expr):
-            self.expr = expr = strip(expr)
+        def __init__(self, name, expr, engine):
+            self.expr = expr = replace(strip(expr), '\n', ' ')
             blk = GuardedBlock('def f():\n return %s\n' % expr)
             if blk.errors:
                 raise CompilerError, ('Python expression error:\n%s' %
@@ -310,8 +342,13 @@ if sys.modules.has_key('Zope'):
 
             # Bind template variables
             var = econtext.contexts['var']
+            getType = econtext._engine.getTypes().get
             for vname in self._f_varnames:
                 has, val = var.has_get(vname)
+                if not has:
+                    has = val = getType(vname)
+                    if has:
+                        val = ExprTypeProxy(vname, val, econtext)
                 if has:
                     f.func_globals[vname] = val
 
@@ -339,7 +376,8 @@ else:
     _marker = []
 
     class PythonExpr:
-        def __init__(self, name, expr):
+        def __init__(self, name, expr, engine):
+            self.expr = expr = replace(strip(expr), '\n', ' ')
             try:
                 d = {}
                 exec 'def f():\n return %s\n' % strip(expr) in d
@@ -362,12 +400,15 @@ else:
                 if has:
                     f.func_globals[vname] = val
 
-            # Execute the function in a new security context.
-            template = econtext.contexts['template']
             return f()
+
+        def __str__(self):
+            return 'Python expression "%s"' % self.expr
+        def __repr__(self):
+            return '<PythonExpr %s>' % self.expr
     
 class ImportExpr:
-    def __init__(self, name, expr):
+    def __init__(self, name, expr, engine):
         self._s = expr
     def __call__(self, econtext):
         return safebin['__import__'](self._s)
