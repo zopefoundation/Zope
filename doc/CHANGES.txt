@@ -8,6 +8,8 @@ Zope Changes
 
     Features added
 
+     - Add 'parity' method to ZTUtils Iterators.
+
      - Allow untrusted code to mutate ZPublisher record objects.
 
      - Added a "mime-types" configuration value which names a file

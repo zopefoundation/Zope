@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.10 2003/10/21 12:21:52 andreasjung Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: Iterator.py,v 1.11 2003/11/04 19:27:16 evan Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 class Iterator:
     '''Simple Iterator class'''
@@ -62,6 +62,11 @@ class Iterator:
     def even(self): return not self.index % 2
 
     def odd(self): return self.index % 2
+
+    def parity(self):
+        if self.index % 2:
+            return 'odd'
+        return 'even'
 
     def letter(self, base=ord('a'), radix=26):
         index = self.index
