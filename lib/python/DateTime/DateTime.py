@@ -84,22 +84,17 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
 from time import timezone, strftime, mktime
-# Added by SDH:
 from time import daylight, timezone, altzone
 from types import InstanceType,IntType,FloatType,StringType
 try: from time import tzname
 except: tzname=('UNKNOWN','UNKNOWN')
-
-
-
-
 
 
 # Determine machine epoch
@@ -110,7 +105,6 @@ i=int(yr-1)
 to_year =int(i*365+i/4-i/100+i/400-693960.0)
 to_month=tm[yr%4==0 and (yr%100!=0 or yr%400==0)][mo]
 EPOCH  =(to_year+to_month+dy+(hr/24.0+mn/1440.0+sc/86400.0))*86400
-CENTURY=1900
 jd1901 =2415385L
 
 
@@ -414,6 +408,16 @@ def _tzoffset(tz, t):
         else:
             return 0 # ??
 
+def _correctYear(year):
+    # Y2K patch.
+    if year >= 0 and year < 100:
+        # 00-69 means 2000-2069, 70-99 means 1970-1999.
+        if year < 70:
+            year = 2000 + year
+        else:
+            year = 1900 + year
+    return year
+
 def safegmtime(t):
     '''gmtime with a safety zone.'''
     try:
@@ -712,7 +716,7 @@ class DateTime:
                 lt = safelocaltime(t)
                 tz = self.localZone(lt)
                 yr,jul=args
-                if not yr>100: yr=yr+CENTURY
+                yr = _correctYear(yr)
                 d=(_julianday(yr,1,0)-jd1901)+jul
                 x_float = d * 86400.0
                 x_floor = math.floor(x_float)
@@ -724,7 +728,7 @@ class DateTime:
             # Explicit format
             yr,mo,dy=args[:3]
             hr,mn,sc,tz=0,0,0,0
-            yr=(yr>100) and yr or yr+CENTURY
+            yr = _correctYear(yr)
             if not self._validDate(yr,mo,dy):
                 raise self.DateTimeError, 'Invalid date: %s' % (args,)
             args=args[3:]
@@ -1001,42 +1005,42 @@ class DateTime:
             # Use today's date.
             year,month,day = localtime(time())[:3]
 
-        if year < 100: year=year+CENTURY
-        elif year < 1000: raise self.SyntaxError, string
+        year = _correctYear(year)
+        if year < 1000: raise self.SyntaxError, string
         
         leap = year%4==0 and (year%100!=0 or year%400==0)
         if not day or day > self._month_len[leap][month]:
             raise self.SyntaxError, string
-        t=0
+        tod=0
         if ints:
             i=ints[0]
             # Modify hour to reflect am/pm
             if tm and (tm=='pm') and i<12:  i=i+12
             if tm and (tm=='am') and i==12: i=0
             if i > 24: raise self.SyntaxError, string
-            t=t+i/24.0
+            tod = tod + int(i) * 3600
             del ints[0]
             if ints:
                 i=ints[0]
                 if i > 60: raise self.SyntaxError, string
-                t=t+i/1440.0
+                tod = tod + int(i) * 60
                 del ints[0]
                 if ints:
                     i=ints[0]
                     if i > 60: raise self.SyntaxError, string
-                    t=t+i/86400.0
+                    tod = tod + i
                     del ints[0]
                     if ints: raise self.SyntaxError,string
 
         
-        t=t*86400.0
-        t_int = long(math.floor(t))
-        hr,mn,sc = _calcHMS(t_int, t - t_int)
+        tod_int = int(math.floor(tod))
+        ms = tod - tod_int
+        hr,mn,sc = _calcHMS(tod_int, ms)
         if not tz:
             # Figure out what time zone it is in the local area
             # on the given date.
             x = _calcDependentSecond2(year,month,day,hr,mn,sc)
-            tz = self._calcTimezoneName(x, t - t_int)
+            tz = self._calcTimezoneName(x, ms)
         return year,month,day,hr,mn,sc,tz
 
     # Internal methods
