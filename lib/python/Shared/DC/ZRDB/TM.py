@@ -65,6 +65,14 @@ class TM:
 
     tpc_abort = abort
 
+    def sortKey(self, *ignored):
+        """ The sortKey method is used for recent ZODB compatibility which
+            needs to have a known commit order for lock acquisition.  Most
+            DA's talking to RDBMS systems do not care about commit order, so
+            return the constant 1
+        """
+        return 1
+
 class Surrogate:
 
     def __init__(self, db):

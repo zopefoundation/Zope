@@ -73,6 +73,8 @@ Zope Changes
       - Collector #256: Added a check in _doChangeUser to make sure 
         passwords isn't encrypted twice.
 
+      - Added a sortKey() method to Shared.DC.ZRDB.TM to silence warnings
+        from updated ZODB that DAs dont have that method.
 
   Zope 2.6.1 beta 1
 
