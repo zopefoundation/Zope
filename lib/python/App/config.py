@@ -94,3 +94,6 @@ class DefaultConfiguration:
         self.rest_output_encoding = default_enc
         self.rest_header_level = 3
         self.rest_language_code = 'en'
+
+        # ZServer.HTTPServer
+        self.http_header_max_length = 8196
