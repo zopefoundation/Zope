@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.33 2000/06/16 19:31:37 shane Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.34 2000/11/13 16:46:05 brian Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -355,6 +355,49 @@ MM__init__(self, args)
   return Py_None;
 }
 
+
+
+static int 
+dtObjectIsCallable(PyObject *ob) {
+  PyObject *base=0;
+  int result=0;
+
+  /* Ensure that an object is really callable by unwrapping it */
+  UNLESS(base=PyObject_GetAttr(ob, py_aq_base)) {
+    PyErr_Clear();
+    return PyCallable_Check(ob);
+  }
+  result=PyCallable_Check(base);
+  Py_DECREF(base);
+  return result;
+}
+
+static int
+dtObjectIsDocTemp(PyObject *ob) {
+  PyObject *base=0;
+  PyObject *value=0;
+  int result=0;
+
+  /* Ensure that 'isDocTemp' is not acquired */
+  UNLESS(base=PyObject_GetAttr(ob, py_aq_base)) {
+    PyErr_Clear();
+    base = ob;
+    Py_INCREF(base);
+  }
+
+  if ( value = PyObject_GetAttr(base, py_isDocTemp) ) {
+    if (PyObject_IsTrue(value)) {
+      result = 1;
+    }
+    Py_DECREF(value);
+  }
+  else PyErr_Clear();
+
+  Py_DECREF(base);
+  return result;
+}
+
+
 static PyObject *
 MM_cget(MM *self, PyObject *key, int call)
 {
@@ -370,15 +413,25 @@ MM_cget(MM *self, PyObject *key, int call)
 	{
 	  dt=0;
 
-	  if (PyCallable_Check(e))
+
+
+	  /*	  if (PyCallable_Check(e)) */
+
+	  if (dtObjectIsCallable(e))
 	    {
-	      /* Decide whether we have a document template */
+
+	      
+	      /* Decide whether we have a document template 
 	      if (rr=PyObject_GetAttr(e,py_isDocTemp))
 		{
 		  if (PyObject_IsTrue(rr)) dt=1;
 		  Py_DECREF(rr);
 		}
 	      else PyErr_Clear();
+	      */
+
+	      dt = dtObjectIsDocTemp(e);
+
 
 	      /* Try calling the object */
 	      if (call)
@@ -878,7 +931,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.33 $";
+  char *rev="$Revision: 1.34 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
