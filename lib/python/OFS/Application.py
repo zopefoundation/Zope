@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.61 1998/04/20 16:44:53 jim Exp $'''
-__version__='$Revision: 1.61 $'[11:-2]
+$Id: Application.py,v 1.62 1998/04/20 19:48:14 jim Exp $'''
+__version__='$Revision: 1.62 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -321,7 +321,7 @@ def lcd(e):
 
 
 def lic_check(product_name):
-    default_license=0
+    default_license=30
 
     path_join  =os.path.join
     product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
@@ -391,6 +391,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.62  1998/04/20 19:48:14  jim
+# Fixed default license timeout.
+#
 # Revision 1.61  1998/04/20 16:44:53  jim
 # Simplified and changed lic_check so that a 30-day license is assumed
 # if a license file cannot be read or is for the wrong product.
