@@ -158,7 +158,11 @@ Zope Changes
     Bugs fixed
 
      - Collector #1332: Added in-place migration of the Catalog.__len__
-       attribute to avoid new-style class caching problems.
+       attribute to avoid new-style class caching problems. Instances of
+       ZCatalog or instances of classes with ZCatalog as base class will be
+       migrated automatically. Instances of Catalog or classes with Catalog
+       as base class must be migrated manually by calling the migrate__len__()
+       method on the every instance.
  
      - Collector #1457: ZCTextIndex's QueryError and ParseError 
        are now available for import from untrusted code.
