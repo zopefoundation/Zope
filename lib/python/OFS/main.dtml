@@ -23,7 +23,8 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="<!--#var sequence-key url_quote-->/manage_workspace">
-  <!--#var sequence-key--> <!--#if title-->(<!--#var title-->)<!--#/if-->
+  <!--#var sequence-key fmt="html-quote"--> <!--#if title-->(<!--#var 
+   title fmt="html-quote"-->)<!--#/if-->
   </A>
   <!--#if locked_in_version-->
     <!--#if modified_in_version-->
