@@ -373,7 +373,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.82 1998/04/07 18:32:52 jim Exp $"""
+$Id: Publish.py,v 1.83 1998/04/15 11:27:45 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -428,7 +428,7 @@ $Id: Publish.py,v 1.82 1998/04/07 18:32:52 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -885,6 +885,15 @@ def get_module_info(module_name, modules={},
     
 	realm=module_name
 		
+	# Let the app specify a realm
+	if hasattr(module,'__bobo_realm__'): realm=module.__bobo_realm__
+	else: realm=module_name
+
+	# Check whether tracebacks should be hidden:
+	if (hasattr(module,'__bobo_hide_tracebacks__')
+	    and not module.__bobo_hide_tracebacks__):
+	    CGIResponse._tbopen, CGIResponse._tbclose = '<PRE>', '</PRE>'
+	
 	if hasattr(module,'__bobo_before__'): bobo_before=module.__bobo_before__
 	else: bobo_before=None
 		
