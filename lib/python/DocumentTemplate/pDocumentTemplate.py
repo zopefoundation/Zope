@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.30 2001/06/21 19:08:59 shane Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.31 2001/06/21 19:43:44 shane Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -160,6 +160,9 @@ class InstanceDict:
         self.cache[key]=r
         return r
 
+    def __len__(self):
+        return 1
+
 class MultiMapping:
 
     def __init__(self): self.dicts=[]
@@ -219,6 +222,12 @@ class TemplateDict:
                 else:
                     v = v()
         return v
+
+    def __len__(self):
+       total = 0
+       for d in self.dicts.dicts:
+           total = total + len(d)
+       return total
 
     def has_key(self,key):
         try:
