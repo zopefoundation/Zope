@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Batch class, for iterating over a sequence in batches
 
-$Id: Batch.py,v 1.8 2002/03/15 16:01:52 chrisw Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Batch.py,v 1.9 2002/03/15 21:47:38 evan Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from ExtensionClass import Base
 
@@ -31,12 +31,18 @@ class LazyNextBatch(Base):
                      parent.end - parent.overlap, 0,
                      parent.orphan, parent.overlap)
 
+class LazySequenceLength(Base):
+    def __of__(self, parent):
+        parent.sequence_length = l = len(parent._sequence)
+        return l
+
 class Batch(Base):
     """Create a sequence batch"""
     __allow_access_to_unprotected_subobjects__ = 1
 
     previous = LazyPrevBatch()
     next = LazyNextBatch()
+    sequence_length = LazySequenceLength()
     
     def __init__(self, sequence, size, start=0, end=0,
                  orphan=0, overlap=0):
@@ -54,7 +60,7 @@ class Batch(Base):
         0-based index.  "length" is the actual number of elements in
         the batch.
 
-        "total" is the length of the original, unbatched, sequence
+        "sequence_length" is the length of the original, unbatched, sequence
         '''
 
         start = start + 1
@@ -70,7 +76,6 @@ class Batch(Base):
         self.overlap = overlap
         self.first = max(start - 1, 0)
         self.length = self.end - self.first
-        self.total = len(sequence)
         if self.first == 0:
             self.previous = None
         

@@ -23,7 +23,7 @@ class BatchTests(TestCase):
             assert b.next is None
             assert b.start == 1, b.start
             assert len(b) ==  b.end == bsize
-            assert b.total == len(seq)
+            assert b.sequence_length == len(seq)
             for i in seq:
                 assert b[i] == i, (b[i], i)
                 neg = -1 - i
@@ -36,10 +36,10 @@ class BatchTests(TestCase):
             assert b.next is None
             assert len(b) == bsize
             assert b[bsize - 1] == bsize - 1
-            assert b.total == bsize
+            assert b.sequence_length == bsize
         b = Batch(range(8), 5)
         assert len(b) == 5
-        assert b.total == 8
+        assert b.sequence_length == 8
         assert len(b.next) == 3
 
 def test_suite():
