@@ -164,12 +164,12 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.19 1998/09/08 15:55:46 jim Exp $'
-__version__='$Revision: 1.19 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.20 1998/09/08 16:12:24 jim Exp $'
+__version__='$Revision: 1.20 $'[11:-2]
 
 from DT_Util import parse_params, name_param, html_quote, str
 import regex, string, sys, regex
-from string import find, split, join, atoi
+from string import find, split, join, atoi, rfind
 
 class Var: 
     name='var'
@@ -390,6 +390,9 @@ class Comment:
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.20  1998/09/08 16:12:24  jim
+# cleaned up some imports
+#
 # Revision 1.19  1998/09/08 15:55:46  jim
 # Added atoi to string import.
 #

@@ -54,12 +54,12 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.10 1998/09/08 15:05:30 jim Exp $"""
+$Id: DT_HTML.py,v 1.11 1998/09/08 16:12:23 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
 from DT_Util import ParseError, str
-from string import strip, find, split, join
+from string import strip, find, split, join, rfind
 
 class dtml_re_class:
 

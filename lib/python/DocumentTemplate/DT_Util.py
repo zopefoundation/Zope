@@ -51,11 +51,11 @@
 #   (540) 371-6909
 #
 ##############################################################################
-'''$Id: DT_Util.py,v 1.44 1998/09/08 16:06:53 jim Exp $''' 
-__version__='$Revision: 1.44 $'[11:-2]
+'''$Id: DT_Util.py,v 1.45 1998/09/08 16:12:23 jim Exp $''' 
+__version__='$Revision: 1.45 $'[11:-2]
 
 import regex, string, math, os
-from string import rfind, strip, join, atoi,lower,capitalize,split,find
+from string import strip, join, atoi, lower, split, find
 import VSEval
 
 str=__builtins__['str'] # Waaaaa, waaaaaaaa needed for pickling waaaaa
