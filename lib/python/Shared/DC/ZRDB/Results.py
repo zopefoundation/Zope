@@ -176,6 +176,20 @@ class Results:
         if parent is None: return fields
         return fields.__of__(parent)
 
+    def tuples(self):
+        return map(tuple, self)
+
+    def dictionaries(self):
+        r=[]
+        a=r.append
+        names=self.names()
+        for row in self:
+            d={}
+            for n in names: d[n]=row[n]
+            a(d)
+
+        return r
+
     def asRDB(self): # Waaaaa
         r=[]
         append=r.append
