@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from User import SafeDtml
@@ -15,9 +15,8 @@ class RoleManager:
     smallRolesWidget=SafeDtml('AccessControl/smallRolesWidget')
 
 
-
     def selectedRoles(self):
-	try:    roles=self.__roles__
+	try:    roles=self.aq_self.__roles__
 	except: roles=[]
 	if roles is None: roles=[]
 	return map(lambda i, r=roles:
@@ -25,11 +24,15 @@ class RoleManager:
 		   or  ('<OPTION VALUE="%s">%s' % (i,i)), self.validRoles())
 
     def aclAChecked(self):
+	if hasattr(self,'aq_self'):
+	    self=self.aq_self
 	try:    roles=self.__roles__
 	except: return ' CHECKED'
 	return ''
 
     def aclPChecked(self):
+	if hasattr(self,'aq_self'):
+	    self=self.aq_self
 	try:    roles=self.__roles__
 	except: return ''
 	if roles is None: 
@@ -37,6 +40,8 @@ class RoleManager:
 	return ''
 
     def aclEChecked(self):
+	if hasattr(self,'aq_self'):
+	    self=self.aq_self
 	try:    roles=self.__roles__
 	except: return 0
 	if roles is None: 
@@ -46,8 +51,9 @@ class RoleManager:
 
     def manage_editRoles(self,REQUEST,acl_type='A',acl_roles=[]):
         """ """
-	try:    del self.__roles__
-	except: pass
+	if hasattr(self,'aq_self'):
+	    try:    del self.aq_self.__roles__
+	    except: pass
 	if acl_type=='A':
 	    return self.manage_rolesForm(self,REQUEST)
 	if acl_type=='P':
@@ -59,25 +65,11 @@ class RoleManager:
         return self.manage_rolesForm(self,REQUEST)
 
 
-    def oldmanage_editRoles(self,REQUEST,roles=[]):
-	try:    del self.__roles__
-	except: pass
-	if not roles:
-	    return self.manage_rolesForm(self,REQUEST)
-	if roles==['Public',]:
-	    self.__roles__=None
-	    return self.manage_rolesForm(self,REQUEST)
-	if ('Acquire' in roles) or ('Public' in roles):
-	    raise 'Bad Request',('<EM>Acquired</EM> and <EM>Public</EM> ' \
-				 'cannot be combined with other roles!')
-	self.__roles__=roles
-        return self.manage_rolesForm(self,REQUEST)
-
-
     def _setRoles(self,acl_type,acl_roles):
 	# Non-web helper to correctly set roles
-	try:    del self.__roles__
-	except: pass
+	if hasattr(self,'aq_self'):
+	    try:    del self.aq_self.__roles__
+	    except: pass
 	if acl_type=='A':
 	    return
 	if acl_type=='P':
@@ -91,6 +83,9 @@ class RoleManager:
 
 
 # $Log: Role.py,v $
+# Revision 1.6  1997/11/18 21:48:20  brian
+# Fixed bug that appeared after __roles__ were allowed to be acquired.
+#
 # Revision 1.5  1997/11/07 17:10:03  brian
 # Moved validRoles manage_addRole and manage_deleteRole to app object
 #
