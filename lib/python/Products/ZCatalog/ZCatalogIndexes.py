@@ -11,7 +11,8 @@
 # 
 ##############################################################################
 
-from  Globals import DTMLFile
+from  Globals import DTMLFile, InitializeClass
+from AccessControl.SecurityInfo import ClassSecurityInfo
 import Globals
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
@@ -44,6 +45,9 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
         Historical.manage_options +
         SimpleItem.manage_options
     )
+    
+    security = ClassSecurityInfo()
+    security.declareObjectProtected('Manage ZCatalogIndex Entries')
 
     manage_main = DTMLFile('dtml/manageIndex',globals())
     addIndexForm= DTMLFile('dtml/addIndexForm',globals())
@@ -61,7 +65,9 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
              'valid_roles', 'getobject'],
 
             ['Anonymous', 'Manager']
-        )
+        ),
+        
+        ('Manage ZCatalogIndex Entries', ('',)),
     )
 
 
@@ -122,6 +128,8 @@ class ZCatalogIndexes (IFAwareObjectManager, Folder, Persistent, Implicit):
             return o.__of__(self)
 
         return getattr(self, name)
+
+InitializeClass(ZCatalogIndexes)
 
 class OldCatalogWrapperObject(SimpleItem, Implicit):
 

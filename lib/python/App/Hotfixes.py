@@ -16,6 +16,8 @@ from zLOG import LOG, INFO, WARNING
 
 merged_hotfixes = {
     'Hotfix_2001-09-28': 1,
+    'Hotfix_2002-03-01': 1,
+    'Hotfix_2002-06-14': 1,
     }
 
 
