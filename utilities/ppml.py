@@ -143,7 +143,7 @@ def unconvert(encoding,S):
         original = base64.decodestring(S)
     else:
         x = string.replace(S, '\n', '')
-	original = eval("'"+x+"'")
+        original = eval("'"+x+"'")
     return original
 
 t32 = 1L << 32
@@ -177,15 +177,15 @@ def cp(f1, f2, l):
 class Global:
 
     def __init__(self, module, name): 
-	self.module=module
-	self.name=name
+        self.module=module
+        self.name=name
 
     def __str__(self, indent=0):
-	if hasattr(self, 'id'): id=' id="%s"' % self.id
-	else: id=''
-	name=string.lower(self.__class__.__name__)
-	return '%s<%s%s name="%s" module="%s"/>\n' % (
-	    ' '*indent, name, id, self.name, self.module)
+        if hasattr(self, 'id'): id=' id="%s"' % self.id
+        else: id=''
+        name=string.lower(self.__class__.__name__)
+        return '%s<%s%s name="%s" module="%s"/>\n' % (
+            ' '*indent, name, id, self.name, self.module)
 
 class Scalar:
 
@@ -195,16 +195,16 @@ class Scalar:
     def value(self): return self._v
 
     def __str__(self, indent=0):
-	if hasattr(self, 'id'): id=' id="%s"' % self.id
-	else: id=''
-	name=string.lower(self.__class__.__name__)
-	return '%s<%s%s>%s</%s>\n' % (
-	    ' '*indent, name, id, self.value(), name)
+        if hasattr(self, 'id'): id=' id="%s"' % self.id
+        else: id=''
+        name=string.lower(self.__class__.__name__)
+        return '%s<%s%s>%s</%s>\n' % (
+            ' '*indent, name, id, self.value(), name)
 
 def xmlstr(v):
     v=`v`
     if v[:1]=='\'':
-	v=string.replace(v,'"','\\"')
+        v=string.replace(v,'"','\\"')
     v=replace(v,'%','\\045')
     v=replace(v,'&','\\046')
     return v[1:-1]
@@ -234,29 +234,29 @@ class Wrapper:
     def value(self): return self._v
 
     def __str__(self, indent=0):
-	if hasattr(self, 'id'): id=' id="%s"' % self.id
-	else: id=''
-	name=string.lower(self.__class__.__name__)
-	v=self._v
-	i=' '*indent
-	if isinstance(v,Scalar):
-	    return '%s<%s%s> %s </%s>\n' % (i, name, id, str(v)[:-1], name)
-	else:
-	    v=v.__str__(indent+2)
-	    return '%s<%s%s>\n%s%s</%s>\n' % (i, name, id, v, i, name)
+        if hasattr(self, 'id'): id=' id="%s"' % self.id
+        else: id=''
+        name=string.lower(self.__class__.__name__)
+        v=self._v
+        i=' '*indent
+        if isinstance(v,Scalar):
+            return '%s<%s%s> %s </%s>\n' % (i, name, id, str(v)[:-1], name)
+        else:
+            v=v.__str__(indent+2)
+            return '%s<%s%s>\n%s%s</%s>\n' % (i, name, id, v, i, name)
 
 class Collection:
 
     def __str__(self, indent=0):
-	if hasattr(self, 'id'): id=' id="%s"' % self.id
-	else: id=''
-	name=string.lower(self.__class__.__name__)
-	i=' '*indent
-	if self:
-	    return '%s<%s%s>\n%s%s</%s>\n' % (
-		i, name, id, self.value(indent+2), i, name)
-	else:
-	    return '%s<%s%s/>\n' % (i, name, id)
+        if hasattr(self, 'id'): id=' id="%s"' % self.id
+        else: id=''
+        name=string.lower(self.__class__.__name__)
+        i=' '*indent
+        if self:
+            return '%s<%s%s>\n%s%s</%s>\n' % (
+                i, name, id, self.value(indent+2), i, name)
+        else:
+            return '%s<%s%s/>\n' % (i, name, id)
 
 class Key(Wrapper): pass
 class Value(Wrapper): pass
@@ -266,35 +266,35 @@ class Dictionary(Collection):
     def __len__(self): return len(self._d)
     def __setitem__(self, k, v): self._d[k]=v
     def value(self, indent):
-	return string.join(
-	    map(lambda i, ind=' '*indent, indent=indent+4:
-		'%s<item>\n'
-		'%s'
-		'%s'
-		'%s</item>\n' 
-		%
-		(ind,
-		 Key(i[0]).__str__(indent),
-		 Value(i[1]).__str__(indent),
-		 ind),
-		self._d.items()
-		),
-	    '')
+        return string.join(
+            map(lambda i, ind=' '*indent, indent=indent+4:
+                '%s<item>\n'
+                '%s'
+                '%s'
+                '%s</item>\n' 
+                %
+                (ind,
+                 Key(i[0]).__str__(indent),
+                 Value(i[1]).__str__(indent),
+                 ind),
+                self._d.items()
+                ),
+            '')
 
 class Sequence(Collection):
 
     def __init__(self, v=None): 
-	if not v: v=[]
-	self._subs=v
+        if not v: v=[]
+        self._subs=v
 
     def __len__(self): return len(self._subs)
 
     def append(self, v): self._subs.append(v)
 
     def value(self, indent):
-	return string.join(map(
-	    lambda v, indent=indent: v.__str__(indent),
-	    self._subs),'')
+        return string.join(map(
+            lambda v, indent=indent: v.__str__(indent),
+            self._subs),'')
 
 class List(Sequence): pass
 class Tuple(Sequence): pass
@@ -311,15 +311,15 @@ none=none()
 class Reference(Scalar):
     def __init__(self, v): self._v=v
     def __str__(self, indent=0):
-	v=self._v
-	name=string.lower(self.__class__.__name__)
-	return '%s<%s id="%s"/>\n' % (' '*indent,name,v) 
+        v=self._v
+        name=string.lower(self.__class__.__name__)
+        return '%s<%s id="%s"/>\n' % (' '*indent,name,v) 
 
 Get=Reference
 
 class Object(Sequence):
     def __init__(self, klass, args):
-	self._subs=[Klass(klass), args]
+        self._subs=[Klass(klass), args]
 
     def __setstate__(self, v): self.append(State(v))
 
@@ -447,7 +447,7 @@ class ToXMLUnpickler(Unpickler):
     dispatch.update(Unpickler.dispatch)
 
     def persistent_load(self, v):
-	return Persistent(v)
+        return Persistent(v)
 
     def load_persid(self):
         pid = self.readline()[:-1]
@@ -488,7 +488,7 @@ class ToXMLUnpickler(Unpickler):
 
     def load_string(self):
         self.append(String(eval(self.readline()[:-1],
-				{'__builtins__': {}}))) # Let's be careful
+                                {'__builtins__': {}}))) # Let's be careful
     dispatch[STRING] = load_string
 
     def load_binstring(self):
@@ -540,7 +540,7 @@ class ToXMLUnpickler(Unpickler):
         del self.stack[k:]
         module = self.readline()[:-1]
         name = self.readline()[:-1]
-	value=Object(Global(module, name), args)
+        value=Object(Global(module, name), args)
         self.append(value)
     dispatch[INST] = load_inst
 
@@ -551,7 +551,7 @@ class ToXMLUnpickler(Unpickler):
         del stack[k + 1]
         args = Tuple(stack[k + 1:]) 
         del stack[k:]
-	value=Object(klass,args)
+        value=Object(klass,args)
         self.append(value)
     dispatch[OBJ] = load_obj                
 
@@ -568,7 +568,7 @@ class ToXMLUnpickler(Unpickler):
         arg_tup  = stack[-1]
         del stack[-2:]
 
-	value=Object(callable, arg_tup)
+        value=Object(callable, arg_tup)
         self.append(value)
     dispatch[REDUCE] = load_reduce
 
@@ -589,17 +589,17 @@ class ToXMLUnpickler(Unpickler):
     dispatch[LONG_BINGET] = load_long_binget
 
     def load_put(self):
-	self.stack[-1].id=self.idprefix+self.readline()[:-1]
+        self.stack[-1].id=self.idprefix+self.readline()[:-1]
     dispatch[PUT] = load_put
 
     def load_binput(self):
         i = mloads('i' + self.read(1) + '\000\000\000')
-	self.stack[-1].id=self.idprefix+`i`
+        self.stack[-1].id=self.idprefix+`i`
     dispatch[BINPUT] = load_binput
 
     def load_long_binput(self):
         i = mloads('i' + self.read(4))
-	self.stack[-1].id=self.idprefix+`i`
+        self.stack[-1].id=self.idprefix+`i`
     dispatch[LONG_BINPUT] = load_long_binput
 
 

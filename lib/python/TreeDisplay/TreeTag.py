@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.32 1999/07/08 19:48:04 petrilli Exp $'
-__version__='$Revision: 1.32 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.33 1999/07/13 14:21:57 jim Exp $'
+__version__='$Revision: 1.33 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -336,8 +336,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             for i in size:
                 items[i]=items[i][1]
 
-	if have_arg('reverse'):
-	    items.reverse()
+        if have_arg('reverse'):
+            items.reverse()
 
     diff.append(id)
 
@@ -655,14 +655,3 @@ def oid(self):
 #icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
 #icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'
 #icoMinus='<IMG SRC="Minus_icon" BORDER="0">'
-
-
-
-
-
-
-
-
-
-
-
