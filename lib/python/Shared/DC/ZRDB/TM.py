@@ -34,11 +34,12 @@ class TM:
             try:
                 get_transaction().register(Surrogate(self))
                 self._begin()
-                self._registered=1
+                self._registered = 1
+                self._finalize = 0
             except: pass
 
     def tpc_begin(self, *ignored): pass
-    commit=tpc_abort=tpc_begin
+    commit=tpc_begin
 
     def _finish(self):
         self.db.commit()
@@ -46,13 +47,20 @@ class TM:
     def _abort(self):
         self.db.rollback()
 
+    def tpc_vote(self, *ignored):
+        self._finalize = 1
+
     def tpc_finish(self, *ignored):
-        try: self._finish()
-        finally: self._registered=0
+
+        if self._finalize:	
+            try: self._finish()
+            finally: self._registered=0
 
     def abort(self, *ignored):
         try: self._abort()
         finally: self._registered=0
+
+    tpc_abort = abort
 
 class Surrogate:
 
