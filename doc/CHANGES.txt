@@ -30,6 +30,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Made the control panel properly reflect the cache-size setting
+       of ZODB's object cache once again.
+
      - ConflictError was swallowed in ObjectManager by
        manage_beforeDelete and _delObject. This could break code
        expecting to do cleanups before deletion.

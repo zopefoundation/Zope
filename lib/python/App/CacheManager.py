@@ -13,8 +13,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.27 2002/10/09 15:11:25 shane Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: CacheManager.py,v 1.28 2003/11/03 16:40:37 fdrake Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals, time, sys
 from DateTime import DateTime
@@ -23,9 +23,7 @@ class CacheManager:
     """Cache management mix-in
     """
     _cache_age=60
-    _cache_size=400
     _vcache_age=60
-    _vcache_size=400
     _history_length = 3600  # Seconds
 
     manage_cacheParameters=Globals.DTMLFile('dtml/cacheParameters', globals())
@@ -86,14 +84,12 @@ class CacheManager:
             response=REQUEST['RESPONSE']
             response.redirect(REQUEST['URL1']+'/manage_cacheParameters')
 
-
-
     def cache_size(self):
         try:
             if self._p_jar.getVersion():
-                return self._vcache_size
+                return self._p_jar.db().getVersionCacheSize()
         except: pass
-        return self._cache_size
+        return self._p_jar.db().getCacheSize()
 
     def manage_cache_size(self,value,REQUEST):
         "set cache size"
@@ -105,14 +101,13 @@ class CacheManager:
                 raise 'Version Error', (
                     '''You may not change the database cache size
                     while working in a <em>version</em>''')
-            self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
+            Globals.Bobobase._jar.cache.cache_size = value
         else:
+            db = self._p_jar.db()
             if v:
-                self._vcache_size=value
-                self._p_jar.db().setVersionCacheSize(value)
+                db.setVersionCacheSize(value)
             else:
-                self._cache_size=value
-                self._p_jar.db().setCacheSize(value)
+                db.setCacheSize(value)
 
         if REQUEST is not None:
             response=REQUEST['RESPONSE']
@@ -181,19 +176,8 @@ class CacheManager:
             response.redirect(REQUEST['URL1']+'/manage_cacheGC')
 
     def initialize_cache(self):
-        try: db=self._p_jar.db()
-        except:
-            # BoboPOS2
-            Globals.Bobobase._jar.cache.cache_size=self._cache_size
-            Globals.Bobobase._jar.cache.cache_age =self._cache_age
-        else:
-            db.setCacheSize(self._cache_size)
-            db.setCacheDeactivateAfter(self._cache_age)
-            db.setVersionCacheSize(self._vcache_size)
-            db.setVersionCacheDeactivateAfter(self._vcache_age)
-            am = self._getActivityMonitor()
-            if am is not None:
-                am.setHistoryLength(self._history_length)
+        # Cache is always initialized from the configuration file.
+        pass
 
     def cache_detail(self, REQUEST=None):
         """
