@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.9 $
+# $Revision: 1.10 $
 __version__ = '0.1'
 
 import struct
@@ -34,11 +34,6 @@ UNDOABLE_TRANSACTION = 'Y'
 PROTECTED_TRANSACTION = 'N'
 
 zero = '\0'*8
-
-
-
-class InternalInconsistencyError(POSException.POSError, AssertionError):
-    """Raised when we detect an internal inconsistency in our tables."""
 
 
 
@@ -297,7 +292,7 @@ class Full(BerkeleyBase):
                         rec = c.set(vid)
                         while rec:
                             c.delete()
-                            rec = c.next()
+                            rec = c.next_dup()
                     finally:
                         c.close()
                     
@@ -345,29 +340,28 @@ class Full(BerkeleyBase):
             # information for undo.
             while rec:
                 oid = rec[1]                      # ignore the key
-                rec = c.next()
+                rec = c.next_dup()
                 if oids.has_key(oid):
                     # We've already dealt with this oid...
                     continue
                 revid = self._serials[oid]
                 meta = self._metadata[oid+revid]
-                curvid, nvrevid = struct.unpack('8s8s', meta[:16])
+                curvid, nvrevid = struct.unpack('>8s8s', meta[:16])
                 # Make sure that the vid in the metadata record is the same as
                 # the vid we sucked out of the vids table.
                 if curvid <> vid:
-                    raise POSException.VersionError(
-                        'aborting a non-current version')
+                    raise POSException.StorageSystemError
                 if nvrevid == zero:
                     # This object was created in the version, so we don't need
                     # to do anything about it.
                     continue
                 # Get the non-version data for the object
                 nvmeta = self._metadata[oid+nvrevid]
-                curvid, nvrevid, lrevid = struct.unpack('8s8s8s', nvmeta[:24])
+                curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', nvmeta[:24])
                 # We expect curvid to be zero because we just got the
                 # non-version entry.
                 if curvid <> zero:
-                    raise InternalInconsistencyError
+                    raise POSException.StorageSystemError
                 # Write the object id, live revision id, the current revision
                 # id (which serves as the previous revid to this transaction)
                 # to the commit log.
@@ -393,11 +387,13 @@ class Full(BerkeleyBase):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
+        # Sanity checks
+        if not src or src == dest:
+            raise POSException.VersionCommitError
+
         c = None                                  # the currentVersions cursor
         self._lock_acquire()
         try:
-            # The transaction id for this commit
-            tid = self._serial
             # Get the version ids associated with the source and destination
             # version strings.
             svid = self._vids[src]
@@ -407,34 +403,38 @@ class Full(BerkeleyBase):
                 # Find the vid for the destination version, or create one if
                 # necessary.
                 dvid = self.__findcreatevid(dest)
-            # Keep track of the oids affected by this commit.
-            oids = []
+            # Keep track of the oids affected by this commit.  For why this is
+            # a dictionary (really a set), see abortVersion() above.
+            oids = {}
             c = self._currentVersions.cursor()
-            rec = c.set(vid)
+            rec = c.set(svid)
             # Now cruise through all the records for this version, writing to
             # the commit log all the objects changed in this version.
             while rec:
                 oid = rec[1]                      # ignore the key
+                rec = c.next_dup()
+                if oids.has_key(oid):
+                    continue
                 revid = self._serials[oid]
                 meta = self._metadata[oid+revid]
-                curvid, nvrevid, lrevid = struct.unpack('8s8s8s', meta[:24])
+                curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', meta[:24])
                 # Our database better be consistent.
                 if curvid <> svid:
-                    raise InternalInconsistencyError
+                    raise POSException.StorageSystemError(
+                        'oid: %s, moving from v%s to v%s, but lives in v%s' %
+                        tuple(map(utils.U64, (oid, svid, dvid, curvid))))
                 # If we're committing to a non-version, then the non-version
                 # revision id ought to be zero also, regardless of what it was
                 # for the source version.
                 if not dest:
                     nvrevid = zero
                 self._commitlog.write_moved_object(
-                    oid, dvid, nvrevid, lrevid, tid)
+                    oid, dvid, nvrevid, lrevid, revid)
                 # Remember to return the oid...
-                oids.append(oid)
-                # ...and get the next record for this vid
-                rec = c.next()
+                oids[oid] = 1
             # Now that we're done, we can discard this version
-            self._commitlog.write_discard_version(vid)
-            return oids
+            self._commitlog.write_discard_version(svid)
+            return oids.keys()
         finally:
             if c:
                 c.close()
@@ -487,6 +487,9 @@ class Full(BerkeleyBase):
             # object is living in is equal to the version that's being
             # requested, then we can simply return the pickle referenced by
             # the revid.
+            if vid == zero and version:
+                raise POSException.VersionError(
+                    'Object not found in version: %s' % version)
             if vid == zero or self._versions[vid] == version:
                 return self._pickles[oid+lrevid], revid
             # Otherwise, we recognize that an object cannot be stored in more
@@ -494,8 +497,11 @@ class Full(BerkeleyBase):
             # "Unlocked" versions are added).  So we return the non-version
             # revision of the object.  Make sure the version is empty though.
             if version:
-                raise POSException.VersionError(
-                    'Undefined version: %s' % version)
+                if not self._vids.has_key(version):
+                    errmsg = 'Undefined version: %s' % version
+                else:
+                    errmsg = 'Object not found in version: %s' % version
+                raise POSException.VersionError(errmsg)
             lrevid = self._metadata[oid+nvrevid][16:24]
             return self._pickles[oid+lrevid], nvrevid
         finally:
@@ -654,7 +660,7 @@ class Full(BerkeleyBase):
             oids = []
             for oid, rec in newrevs:
                 vid, nvrevid, lrevid, prevrevid = struct.unpack(
-                    '8s8s8s8s', rec)
+                    '>8s8s8s8s', rec)
                 self._commitlog.write_moved_object(oid, vid, nvrevid, lrevid,
                                                    prevrevid)
                 oids.append(oid)
