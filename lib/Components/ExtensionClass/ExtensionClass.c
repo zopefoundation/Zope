@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.25 1998/02/12 20:53:01 jim Exp $
+  $Id: ExtensionClass.c,v 1.26 1998/03/13 22:05:47 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.25 1998/02/12 20:53:01 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.26 1998/03/13 22:05:47 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -3313,13 +3313,14 @@ TrueExtensionClassCAPI = {
   (PyObject*)&ECType,
   (PyObject*)&PMethodType,
   PMethod_New,
+  CMethod_issubclass,
 };
 
 void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.25 $";
+  char *rev="$Revision: 1.26 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3360,6 +3361,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.26  1998/03/13 22:05:47  jim
+  Exposed issubclass test in CAPI.
+
   Revision 1.25  1998/02/12 20:53:01  jim
   Fixed some lame return values.
 
