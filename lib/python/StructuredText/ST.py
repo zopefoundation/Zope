@@ -223,7 +223,7 @@ def StructuredText(paragraphs):
          run.append([paragraph,[]])
          levels[current_level] = indent
       elif indent < current_indent:
-         l = parent_level(levels,current_level)
+         l = parent_level(levels,current_level)         
          if indent > 0 and indent < levels[0]:
             levels[0]      = indent
             current_indent = indent
@@ -232,6 +232,12 @@ def StructuredText(paragraphs):
             current_level  = find_level(levels,indent)
             current_indent = indent
             run,numbers    = runner(struct,top,current_level,numbers)
+            tmp   = {}
+            K     = levels.keys()
+            for key in K:
+               if key <= current_level:
+                  tmp[key] = levels[key]
+            levels = tmp
          elif levels[current_level] > indent and levels[l] < indent:
             levels[current_level] = indent
             current_indent        = indent
@@ -239,6 +245,7 @@ def StructuredText(paragraphs):
             current_level         = l
          else:
             tmp = {}
+            j   = 0
             for i in range(current_level):
                if indent > levels[i]:
                   tmp[i] = levels[i]
@@ -246,8 +253,8 @@ def StructuredText(paragraphs):
                   current_level  = i
                   current_indent = indent
                   run,numbers    = runner(struct,top,current_level,numbers)
-            levels = tmp
-         run.append([paragraph,[]])
+            levels = tmp         
+         run.append([paragraph,[]])         
    return struct
 
 class doc_text:
