@@ -50,6 +50,9 @@ Quick Start
   You will be prompted for a user name and password, which may
   be found in the 'access' file in the Zope installation directory.
 
+  If you wish to enable Zope logging you must specify options on the
+  command line.  See LOGGING.txt in the doc directory.
+
   Now you're off and running! You should be looking at the Zope management
   screen which is divided into two frames. On the left you can navigate
   between Zope object and on the right you can edit them by selecting
@@ -62,6 +65,18 @@ Quick Start
     'http://www.zope.org/'
   
   Have fun!
+
+Running Zope in Debug Mode
+
+  If you wish to run Zope in debug mode, use the -D command line
+  switch.  This will have the following effect::
+
+   o On UNIX, Zope will not detach from the controlling terminal.
+
+   o Zope will print logging information to standard error.
+
+   o The Z_DEBUG_MODE environment variable gets set, which causes some 
+     other cool stuff in Zope to happen.
 
 Building Zope
   
