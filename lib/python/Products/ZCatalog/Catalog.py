@@ -206,7 +206,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         for key in self.data.keys():
             rec = list(self.data[key])
-            rec.append(default_value, name)
+            rec.append(default_value)
             self.data[key] = tuple(rec)
 
         self.names = tuple(names)
@@ -330,9 +330,14 @@ class Catalog(Persistent, Acquisition.Implicit):
                 except KeyError:
                     pass  #fugedaboudit
 
-        del self.data[rid]
-        del self.uids[uid]
-        del self.paths[rid]
+        # I think if your data gets out of sync due to crashes or
+        # ZClass problems, some items might not be here.  The try's
+        # catch any inconsistencies and lets 'Update Catalog' sanify
+        # the situation
+        try: del self.data[rid] except: pass
+        try: del self.uids[uid] except: pass
+        try: del self.paths[rid] except: pass
+
 
     def clear(self):
 
