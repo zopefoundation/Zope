@@ -84,12 +84,12 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.22 1999/08/26 14:45:48 jim Exp $"""
+$Id: DT_HTML.py,v 1.23 1999/10/22 14:17:00 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
 from DT_Util import ParseError, str
-from string import strip, find, split, join, rfind
+from string import strip, find, split, join, rfind, replace
 
 class dtml_re_class:
 
@@ -100,7 +100,8 @@ class dtml_re_class:
                start_search=regex.compile('[<&]').search,
                ent_name=regex.compile('[-a-zA-Z0-9_.]+').match,
                find=find,
-               strip=strip
+               strip=strip,
+               replace=replace,
                ):
 
         while 1:
@@ -143,19 +144,30 @@ class dtml_re_class:
                 end='/'
 
             else:
-                if text[s:s+6] == '&dtml-':
+                if text[s:s+5] == '&dtml' and text[s+5] in '.-':
                     n=s+6
-                    while 1:
-                        e=find(text,';',n)
-                        if e < 0: break
+                    e=find(text,';',n)                        
+                    if e >= 0:
                         args=text[n:e]
-                        if ent_name(args) < 0: break
-                        d=self.__dict__
-                        d[0]=text[s:e+1]
-                        d[1]=d['end']=''
-                        d[2]=d['name']='var'
-                        d[3]=d['args']=args+' html_quote'
-                        return s
+                        l=len(args)
+                        if ent_name(args) == l:
+                            d=self.__dict__
+                            if text[s+5]=='-':
+                                d[1]=d['end']=''
+                                d[2]=d['name']='var'
+                                d[0]=text[s:e+1]
+                                d[3]=d['args']=args+' html_quote'
+                                return s
+                            else:
+                                nn=find(args,'-')
+                                if nn >= 0 and nn < l-1:
+                                    d[1]=d['end']=''
+                                    d[2]=d['name']='var'
+                                    d[0]=text[s:e+1]
+                                    args=(args[nn+1:]+' '+
+                                          replace(args[:nn],'.',' '))
+                                    d[3]=d['args']=args
+                                    return s
                         
                 start=s+1
                 continue
