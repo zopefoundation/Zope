@@ -78,7 +78,7 @@ Zope Changes
           support subtransactions.  Images and files now use
           subtransactions only of the image or file is greater than
           128K bytes in size.  Also, subtransactions are not used if
-          data are uploaded as atring by using the ':string'
+          data are uploaded as a string by using the ':string'
           ZPublisher type in the upload form.
 
 	  More advanced DA's could, and probably should support
@@ -90,6 +90,9 @@ Zope Changes
           errors occurred and handled by reexecuting requests.  When 7
           connections leaked, the site would accept no more web
           requests. 
+
+        - Fixed a bug which prevented ZPublisher.Client from uploading
+          files to ZServer.
 
         - Added some logic to the win32 binary installer to fix some
           dll loading problems people were getting on international
