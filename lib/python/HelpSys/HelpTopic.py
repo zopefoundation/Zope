@@ -142,7 +142,7 @@ class HelpTopicBase:
 
     def url(self):
         "URL for indexing purposes"
-        return self.getPhysicalPath()
+        return string.join(self.getPhysicalPath(), '/')
 
     # Private indexing methods
     # ------------------------
