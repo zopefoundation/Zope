@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testDTML.py,v 1.11 2002/04/24 14:38:41 htrd Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: testDTML.py,v 1.12 2002/05/23 13:19:16 chrisw Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, os
 import unittest
@@ -283,7 +283,7 @@ foo bar
             html=&lt;a href=&quot;spam&quot;&gt;
 foo bar
             url=%3Ca%20href%3D%22spam%22%3E%0Afoo%20bar
-            multi=<a href="spam"><br>
+            multi=<a href="spam"><br />
 foo bar
             dollars=
             cents=
@@ -292,7 +292,7 @@ foo bar
 
         res = html(spam=4200000) + html(spam=None) + html(
             spam='<a href="spam">\nfoo bar')
-        assert res == expected, res
+        self.assertEqual(res,expected)
 
     def testPropogatedError(self):
 
