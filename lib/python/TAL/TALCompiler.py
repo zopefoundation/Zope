@@ -211,13 +211,15 @@ class METALCompiler(DOMVisitor):
 
     def checkSpuriousAttributes(self, node,
                                 ns=ZOPE_METAL_NS,
-                                known=KNOWN_METAL_ATTRIBUTES):
+                                known=KNOWN_METAL_ATTRIBUTES,
+                                error=METALError,
+                                what="METAL"):
         for attr in node.attributes.values():
             if attr.namespaceURI == ns:
                 if attr.localName not in known:
-                    raise METALError(
-                        "bad METAL attribute: %s;\nallowed are: %s" %
-                        (repr(attr.name), string.join(known)))
+                    raise error(
+                        "bad %s attribute: %s;\nallowed are: %s" %
+                        (what, repr(attr.name), string.join(known)))
 
     def expandElement(self, node):
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
@@ -318,7 +320,7 @@ class TALCompiler(METALCompiler):
     def checkSpuriousAttributes(self, node):
         METALCompiler.checkSpuriousAttributes(self, node)
         METALCompiler.checkSpuriousAttributes(
-            self, node, ZOPE_TAL_NS, KNOWN_TAL_ATTRIBUTES)
+            self, node, ZOPE_TAL_NS, KNOWN_TAL_ATTRIBUTES, TALError, "TAL")
 
     def emitDefines(self, defines):
         for part in splitParts(defines):
