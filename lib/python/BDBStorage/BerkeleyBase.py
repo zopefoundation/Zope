@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.4 $
+# $Revision: 1.5 $
 __version__ = '0.1'
 
 
@@ -147,6 +147,11 @@ class BerkeleyBase(BaseStorage):
         """Return the size of the database."""
         # TBD: this is expensive to calculate and many not be necessary.
         return 0
+
+    def _vote(self):
+        # Make a promise to commit all the registered changes.  Rewind and put
+        # our commit log in the PROMISED state.
+        self._commitlog.promise()
 
     def _finish(self, tid, user, desc, ext):
         """Called from BaseStorage.tpc_finish(), this commits the underlying
