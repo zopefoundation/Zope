@@ -8,6 +8,12 @@ Zope Changes
 
     Features added
 
+     - New module: App.config.  New API for getting a configuration
+       object.  This should be the preferred way for all code in Zope
+       to get configured values for many settings.  For settings made
+       available via this module, alternate locations are deprecated,
+       though will to be supported for Zope 2.7.
+
      - Collector #435: Support for passwords encoded using MySQL's 
        PASSWORD() function add to lib/python/AccessControl/AuthEncoding.py.
 

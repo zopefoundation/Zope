@@ -13,17 +13,17 @@
 """
 Set up testing environment
 
-$Id: __init__.py,v 1.7 2003/02/07 21:28:13 fdrake Exp $
+$Id: __init__.py,v 1.8 2003/02/11 17:17:08 fdrake Exp $
 """
 import os
 
+import App.config
+
+cfg = App.config.getConfiguration()
+
 # Set the INSTANCE_HOME to the Testing package directory
-os.environ['INSTANCE_HOME'] = INSTANCE_HOME = os.path.dirname(__file__)
+cfg.instancehome = os.path.dirname(__file__)
 
-# Set the SOFTWARE_HOME to the directory containing the Testing package
-# XXX This isn't a change, so why?
-os.environ['SOFTWARE_HOME'] = SOFTWARE_HOME = os.path.dirname(INSTANCE_HOME)
-
-# Note: we don't set os.environ['ZEO_CLIENT'] anymore because we
-# really do need all the products to be initialized.  Some tests
-# use the product registry.
+# Make sure this change is propogated to all the legacy locations for
+# this information.
+App.config.setConfiguration(cfg)

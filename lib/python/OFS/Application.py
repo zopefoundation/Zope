@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.188 2002/08/20 19:37:52 jim Exp $'''
-__version__='$Revision: 1.188 $'[11:-2]
+$Id: Application.py,v 1.189 2003/02/11 17:17:05 fdrake Exp $'''
+__version__='$Revision: 1.189 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -373,13 +373,13 @@ def initialize(app):
     # However, make sure that if the examples have been added already
     # and then deleted that we don't add them again.
 
-
     if not hasattr(app, 'Examples') and not \
        hasattr(app, '_Zope25_examples_have_been_added'):
 
-        examples_path = os.path.join(Globals.ZOPE_HOME, \
-             'import', 'Examples.zexp')
-
+        import App.config
+        cfg = App.config.getConfiguration()
+        examples_path = os.path.join(cfg.zopehome, 'import',
+                                     'Examples.zexp')
         if os.path.isfile(examples_path):
             app._importObjectFromFile(examples_path, verify=0)
             app._Zope25_examples_have_been_added=1

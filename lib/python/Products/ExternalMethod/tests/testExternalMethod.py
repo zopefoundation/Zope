@@ -14,29 +14,29 @@
 """
 
 Revision information:
-$Id: testExternalMethod.py,v 1.5 2002/08/14 22:14:11 mj Exp $
+$Id: testExternalMethod.py,v 1.6 2003/02/11 17:17:06 fdrake Exp $
 """
 
-import math, os
-from unittest import TestCase, TestSuite, main, makeSuite
+import math
+import os
+import unittest
+
 import ZODB # dead goat
 import Products.ExternalMethod.tests
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
+import App.config
 
-builtinsdict = getattr(__builtins__, '__dict__', __builtins__)
-
-class Test(TestCase):
+class TestExternalMethod(unittest.TestCase):
 
     def setUp(self):
-        self._old = builtinsdict.get('INSTANCE_HOME')
-        builtinsdict['INSTANCE_HOME'] = os.path.split(
-            Products.ExternalMethod.tests.__file__)[0]
+        self._old = App.config.getConfiguration()
+        cfg = App.config.DefaultConfiguration()
+        cfg.instancehome = os.path.dirname(
+            Products.ExternalMethod.tests.__file__)
+        App.config.setConfiguration(cfg)
 
     def tearDown(self):
-        if self._old is None:
-            del builtinsdict['INSTANCE_HOME']
-        else:
-            builtinsdict['INSTANCE_HOME'] = self._old
+        App.config.setConfiguration(self._old)
 
     def testStorage(self):
         em1 = ExternalMethod('em', 'test method', 'Test', 'testf')
@@ -60,9 +60,7 @@ class Test(TestCase):
 
 
 def test_suite():
-    return TestSuite((
-        makeSuite(Test),
-        ))
+    return unittest.makeSuite(TestExternalMethod)
 
 
 def package_home(globals_dict):
@@ -71,11 +69,11 @@ def package_home(globals_dict):
     if hasattr(m,'__path__'):
         r=m.__path__[0]
     elif "." in __name__:
-        r=sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+        r=sys.modules[__name__.split('.',1)[0]].__path__[0]
     else:
         r=__name__
-    return os.path.join(os.getcwd(), r)
+    return os.path.abspath(r)
 
 
 if __name__=='__main__':
-    main(defaultTest='test_suite')
+    unittest.main(defaultTest='test_suite')

@@ -14,6 +14,7 @@
 import DocumentTemplate, Common, Persistence, MethodObject, Globals, os, sys
 from types import InstanceType
 from zLOG import LOG,WARNING
+from App.config import getConfiguration
 
 class HTML(DocumentTemplate.HTML,Persistence.Persistent,):
     "Persistent HTML Document Templates"
@@ -29,7 +30,7 @@ class ClassicHTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     _v_last_read=0
 
     def __init__(self,name,_prefix=None, **kw):
-        if _prefix is None: _prefix=SOFTWARE_HOME
+        if _prefix is None: _prefix=getConfiguration().softwarehome
         elif type(_prefix) is not type(''):
             _prefix=Common.package_home(_prefix)
         args=(self, os.path.join(_prefix, name + '.dtml'))

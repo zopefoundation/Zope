@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Generic Database Adapter Package Registration
 
-$Id: __init__.py,v 1.14 2002/08/14 22:25:17 mj Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: __init__.py,v 1.15 2003/02/11 17:17:07 fdrake Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, os
 
@@ -78,8 +78,9 @@ __ac_permissions__=(
     )
 
 
+# from App.config import getConfiguration
 # j=os.path.join
-# d=j(j(INSTANCE_HOME,'var'),'gadfly')
+# d=j(getConfiguration().clienthome,'gadfly')
 # if not os.path.exists(d):
 #     os.mkdir(d)
 #     os.mkdir(j(d,'demo'))

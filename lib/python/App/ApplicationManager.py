@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -22,6 +22,7 @@ from CacheManager import CacheManager
 from DavLockManager import DavLockManager
 from DateTime.DateTime import DateTime
 from OFS import SimpleItem
+from App.config import getConfiguration
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
@@ -374,7 +375,8 @@ class ApplicationManager(Folder,CacheManager):
         isdir=os.path.isdir
         exists=os.path.exists
 
-        product_dir=path_join(SOFTWARE_HOME,'Products')
+        cfg = getConfiguration()
+        product_dir=path_join(cfg.softwarehome,'Products')
         product_names=os.listdir(product_dir)
         product_names.sort()
         info=[]
@@ -424,16 +426,16 @@ class ApplicationManager(Folder,CacheManager):
             REQUEST['RESPONSE'].redirect(REQUEST['URL1']+'/manage_main')
 
     def getSOFTWARE_HOME(self):
-        return SOFTWARE_HOME
+        return getConfiguration().softwarehome
 
     def getZOPE_HOME(self):
-        return ZOPE_HOME
+        return getConfiguration().zopehome
 
     def getINSTANCE_HOME(self):
-        return INSTANCE_HOME
+        return getConfiguration().instancehome
 
     def getCLIENT_HOME(self):
-        return CLIENT_HOME
+        return getConfiguration().clienthome
 
     def objectIds(self, spec=None):
         """ this is a patch for pre-2.4 Zope installations. Such

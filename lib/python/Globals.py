@@ -13,7 +13,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 # Global constants: __replaceable__ flags:
 NOT_REPLACEABLE = 0
@@ -23,8 +23,8 @@ UNIQUE = 2
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay
 
-from App.FindHomes import INSTANCE_HOME, SOFTWARE_HOME, ZOPE_HOME
 from App.Common import package_home, attrget, Dictionary
+from App.config import getConfiguration as _getConfiguration
 from Persistence import Persistent, PersistentMapping
 from App.special_dtml import HTML, HTMLFile, DTMLFile
 from App.class_init import default__class_init__, ApplicationDefaultPermissions
@@ -37,7 +37,14 @@ from App.ImageFile import ImageFile
 
 VersionNameName='Zope-Version'
 
-data_dir = os.path.join(INSTANCE_HOME, 'var')
+_cfg = _getConfiguration()
+data_dir = _cfg.clienthome
+
+# backward compatibility
+INSTANCE_HOME = _cfg.instancehome
+SOFTWARE_HOME = _cfg.softwarehome
+ZOPE_HOME = _cfg.zopehome
+
 opened=[]
 
 # Check,if DEBUG variables are set

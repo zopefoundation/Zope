@@ -13,6 +13,8 @@
 
 import os,sys,re
 
+from App.config import getConfiguration
+
 v=sys.version_info
 
 _version_string = None
@@ -38,7 +40,8 @@ def _prep_version_data():
     global _version_string, _zope_version
     if _version_string is None:
         try:
-            s = open(os.path.join(SOFTWARE_HOME,'version.txt')).read()
+            cfg = getConfiguration()
+            s = open(os.path.join(cfg.softwarehome,'version.txt')).read()
             ss = re.sub("\(.*?\)\?","",s)
             ss = '%s, python %d.%d.%d, %s' % (ss,v[0],v[1],v[2],sys.platform)
             _version_string = ss

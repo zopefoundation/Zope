@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.161 2003/02/04 06:48:26 anthony Exp $"""
+$Id: ObjectManager.py,v 1.162 2003/02/11 17:17:06 fdrake Exp $"""
 
-__version__='$Revision: 1.161 $'[11:-2]
+__version__='$Revision: 1.162 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -32,6 +32,7 @@ from urllib import quote
 from cStringIO import StringIO
 import marshal
 import App.Common
+from App.config import getConfiguration
 from AccessControl import getSecurityManager
 from zLOG import LOG, ERROR
 import sys,fnmatch,copy
@@ -499,7 +500,8 @@ class ObjectManager(
                                    'inline;filename=%s.%s' % (id, suffix))
             return f.getvalue()
 
-        f = os.path.join(CLIENT_HOME, '%s.%s' % (id, suffix))
+        cfg = getConfiguration()
+        f = os.path.join(cfg.clienthome, '%s.%s' % (id, suffix))
         if toxml:
             XMLExportImport.exportXML(ob._p_jar, ob._p_oid, f)
         else:
@@ -520,8 +522,9 @@ class ObjectManager(
         if dirname:
             raise BadRequestException, 'Invalid file name %s' % escape(file)
 
-        instance_home = INSTANCE_HOME
-        zope_home = ZOPE_HOME
+        cfg = getConfiguration()
+        instance_home = cfg.instancehome
+        zope_home = cfg.zopehome
 
         for impath in (instance_home, zope_home):
             filepath = os.path.join(impath, 'import', file)

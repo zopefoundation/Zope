@@ -12,23 +12,25 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
+import os
+import time
+
+from App.config import getConfiguration
 from OFS.content_types import guess_content_type
 from Globals import package_home
 from Common import rfc1123_date
 from DateTime import DateTime
-from time import time
-from os import stat
 import Acquisition
 import Globals
-import  os
 
 class ImageFile(Acquisition.Explicit):
     """Image objects stored in external files."""
 
     def __init__(self,path,_prefix=None):
-        if _prefix is None: _prefix=SOFTWARE_HOME
+        if _prefix is None:
+            _prefix=getConfiguration().softwarehome
         elif type(_prefix) is not type(''):
             _prefix=package_home(_prefix)
         path = os.path.join(_prefix, path)
@@ -50,7 +52,7 @@ class ImageFile(Acquisition.Explicit):
         else:
             self.content_type='image/%s' % path[path.rfind('.')+1:]
         self.__name__=path[path.rfind('/')+1:]
-        self.lmt=float(stat(path)[8]) or time()
+        self.lmt=float(os.stat(path)[8]) or time.time()
         self.lmh=rfc1123_date(self.lmt)
 
 

@@ -20,7 +20,7 @@ from types import StringType, ListType
 
 import Zope
 from Acquisition import aq_acquire
-import App.FindHomes
+from App.config import getConfiguration
 import ZODB
 import ZODB.ZApplication
 from ZODB.POSException import ConflictError
@@ -36,7 +36,8 @@ from zLOG import LOG, WARNING, INFO, BLATHER, log_time
 def startup():
     global ZODB, app
 
-    Globals.BobobaseName = os.path.join(Globals.data_dir, 'Data.fs')
+    Globals.BobobaseName = os.path.join(getConfiguration().clienthome,
+                                        'Data.fs')
     Globals.DatabaseVersion='3'
 
     # Import products
@@ -45,7 +46,7 @@ def startup():
     # Open the database
     try:
         # Try to use custom storage
-        m=imp.find_module('custom_zodb',[INSTANCE_HOME])
+        m=imp.find_module('custom_zodb',[getConfiguration().instancehome])
     except:
         import ZODB.FileStorage
         storage = ZODB.FileStorage.FileStorage(Globals.BobobaseName)

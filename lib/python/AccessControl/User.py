@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.175 $'[11:-2]
+__version__='$Revision: 1.176 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -387,11 +387,13 @@ class NullUnrestrictedUser(SpecialUser):
 
 
 def readUserAccessFile(filename):
-    '''Reads an access file from INSTANCE_HOME.
+    '''Reads an access file from the instance home.
     Returns name, password, domains, remote_user_mode.
     '''
+    import App.config
+    cfg = App.config.getConfiguration()
     try:
-        f = open(os.path.join(INSTANCE_HOME, filename), 'r')
+        f = open(os.path.join(cfg.instancehome, filename), 'r')
         line = f.readline()
         f.close()
     except IOError:
@@ -1034,7 +1036,8 @@ class UserFolder(BasicUserFolder):
     def _doChangeUser(self, name, password, roles, domains, **kw):
         user=self.data[name]
         if password is not None:
-            if self.encrypt_passwords and not self._isPasswordEncrypted(password):
+            if (  self.encrypt_passwords
+                  and not self._isPasswordEncrypted(password)):
                 password = self._encryptPassword(password)
             user.__=password
         user.roles=roles
@@ -1047,7 +1050,7 @@ class UserFolder(BasicUserFolder):
     def _createInitialUser(self):
         """
         If there are no users or only one user in this user folder,
-        populates from the 'inituser' file in INSTANCE_HOME.
+        populates from the 'inituser' file in the instance home.
         We have to do this even when there is already a user
         just in case the initial user ignored the setup messages.
         We don't do it for more than one user to avoid
@@ -1057,11 +1060,13 @@ class UserFolder(BasicUserFolder):
         if len(self.data) <= 1:
             info = readUserAccessFile('inituser')
             if info:
+                import App.config
                 name, password, domains, remote_user_mode = info
                 self._doDelUsers(self.getUserNames())
                 self._doAddUser(name, password, ('Manager',), domains)
+                cfg = App.config.getConfiguration()
                 try:
-                    os.remove(os.path.join(INSTANCE_HOME, 'inituser'))
+                    os.remove(os.path.join(cfg.instancehome, 'inituser'))
                 except:
                     pass
 

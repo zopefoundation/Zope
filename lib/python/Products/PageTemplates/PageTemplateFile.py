@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -29,6 +29,7 @@ from Expressions import SecureModuleImporter
 from ComputedAttribute import ComputedAttribute
 from ExtensionClass import Base
 from Acquisition import aq_parent, aq_inner
+from App.config import getConfiguration
 
 class PageTemplateFile(Script, PageTemplate, Traversable):
     "Zope wrapper for filesystem Page Template using TAL, TALES, and METAL"
@@ -48,7 +49,8 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
 
     def __init__(self, filename, _prefix=None, **kw):
         self.ZBindings_edit(self._default_bindings)
-        if _prefix is None: _prefix=SOFTWARE_HOME
+        if _prefix is None:
+            _prefix = getConfiguration().softwarehome
         elif type(_prefix) is not type(''):
             _prefix = package_home(_prefix)
         name = kw.get('__name__')

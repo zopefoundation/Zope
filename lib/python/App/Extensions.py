@@ -14,8 +14,8 @@ __doc__='''Standard routines for handling extensions.
 
 Extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.20 2003/02/10 18:26:03 fdrake Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Extensions.py,v 1.21 2003/02/11 17:17:04 fdrake Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 import os, zlib, rotor, imp
 import Products
@@ -69,9 +69,9 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
       suffixes -- a sequences of file suffixes to check.
         By default, the name is used without a suffix.
 
-    The search takes on multiple homes which are INSTANCE_HOME,
-    the directory containing the directory containing SOFTWARE_HOME, and
-    possibly product areas.
+    The search takes on multiple homes which are the instance home,
+    the directory containing the directory containing the software
+    home, and possibly product areas.
     """
     d,n = path_split(name)
     if d: raise ValueError, (
@@ -86,8 +86,10 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
                 r = _getPath(product_dir, os.path.join(p, prefix), n, suffixes)
                 if r is not None: return r
 
-    sw=path_split(path_split(SOFTWARE_HOME)[0])[0]
-    for home in (INSTANCE_HOME, sw):
+    import App.config
+    cfg = App.config.getConfiguration()
+    sw=os.path.dirname(os.path.dirname(cfg.softwarehome))
+    for home in (cfg.instancehome, sw):
         r=_getPath(home, prefix, name, suffixes)
         if r is not None: return r
 
@@ -98,7 +100,7 @@ def getObject(module, name, reload=0,
               ):
 
     # The use of modules here is not thread safe, however, there is
-    # no real harm in a rece condition here.  If two threads
+    # no real harm in a race condition here.  If two threads
     # update the cache, then one will have simply worked a little
     # harder than need be.  So, in this case, we won't incur
     # the expense of a lock.
@@ -117,7 +119,6 @@ def getObject(module, name, reload=0,
             "The specified module, <em>%s</em>, couldn't be found." % module)
 
     __traceback_info__=p, module
-
 
     base, ext = os.path.splitext(p)
     if ext=='.pyc':

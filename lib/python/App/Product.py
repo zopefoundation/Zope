@@ -47,6 +47,7 @@ import ZClasses, ZClasses.ZClass
 from HelpSys.HelpSys import ProductHelp
 import RefreshFuncs
 from AccessControl import Unauthorized
+from App.config import getConfiguration
 
 
 class ProductFolder(Folder):
@@ -207,7 +208,7 @@ class Product(Folder, PermissionManager):
         # Extensions
         pp=id+'.'
         lpp=len(pp)
-        ed=os.path.join(INSTANCE_HOME,'Extensions')
+        ed=os.path.join(getConfiguration().instancehome,'Extensions')
         if os.path.exists(ed):
             for name in os.listdir(ed):
                 suffix=''
