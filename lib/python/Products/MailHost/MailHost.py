@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.37 1999/02/16 19:13:15 brian Exp $ 
-__version__ = "$Revision: 1.37 $"[11:-2]
+#$Id: MailHost.py,v 1.38 1999/02/18 13:46:01 brian Exp $ 
+__version__ = "$Revision: 1.38 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -257,7 +257,7 @@ def Send(host, port, localhost, timeout, from_, to, subject, body):
     SendMail(host, port, localhost, timeout).send(from_, to, subject, body)
         
 class SendMail:
-    singledots=re.compile('^\.$')
+    singledots=re.compile('^\.$', re.M)
     
     def __init__(self, smtpHost, smtpPort, localHost="localhost", timeout=1):
         self.conn = socket(AF_INET, SOCK_STREAM)
@@ -291,8 +291,7 @@ class SendMail:
         except:
             raise smtpError, \
                   "Cannot convert line from SMTP: %s" % line
-    
-        if code > 400: # my change...
+        if code > 400:
             raise smtpError, \
                   "Recieved error code %s from SMTP: %s"\
                   % (code, line)
@@ -310,20 +309,27 @@ class SendMail:
             self._check()
         self.conn.send("data\015\012")
         self._check()
-        replace=string.replace
+
+        bfile = StringIO(body)
+        mo=rfc822.Message(bfile)
+        for k, v in mo.items():
+            self.conn.send('%s: %s\015\012' % (string.capitalize(k), v))
+        # Add some Mime headers if not present
+        if not mo.has_key('Mime-Version'):
+            self.conn.send('Mime-Version: 1.0\015\012')
+        if not mo.has_key('Content-Type'):
+            self.conn.send(
+                'Content-Type: text/plain; charset="iso-8859-1"\015\012')
+        if not mo.has_key('Content-Transfer-Encoding'):
+            self.conn.send(
+                'Content-Transfer-Encoding: quoted-printable\015\012')
+        self.conn.send('\015\012')
+        body=bfile.read()
         body=self.singledots.sub('..', body)
-        body=replace(body, '\r\n', '\n')
-        body=replace(body, '\r', '\n')
-
-        # This snippet encodes the body as quoted-printable; there
-        # seem to be some issues with this, so I'm leaving it out
-        # for now.
-        # inbody=StringIO(body)
-        # outbody=StringIO()
-        # quopri.encode(inbody, outbody, 0)
-        # body=outbody.getvalue()
-
-        body=replace(body, '\n', '\015\012')
+        body=string.replace(body, '\r\n', '\n')
+        body=string.replace(body, '\r', '\n')
+        body=encode(body, 0)
+        body=string.replace(body, '\n', '\015\012')
         self.conn.send(body)
         self.conn.send("\015\012.\015\012")
         self._check('354')
@@ -331,6 +337,46 @@ class SendMail:
     def _close(self):
         self.conn.send("quit\015\012")
         self.conn.close()
+
+
+
+
+
+ESCAPE = '='
+MAXLINESIZE = 76
+HEX = '0123456789ABCDEF'
+
+def needsquoting(c, quotetabs):
+    if c == '\t':
+        return not quotetabs
+    return c == ESCAPE or not(' ' <= c <= '~')
+
+def quote(c):
+    if c == ESCAPE:
+        return ESCAPE * 2
+    else:
+        i = ord(c)
+        return ESCAPE + HEX[i/16] + HEX[i%16]
+
+def encode(input, quotetabs):
+    """Encode a string to Quoted-Printable"""
+    output = ''
+    for line in string.split(input, '\n'):
+        new = ''
+        prev = ''
+        for c in line:
+            if needsquoting(c, quotetabs):
+                c = quote(c)
+            if len(new) + len(c) >= MAXLINESIZE:
+                output = output + new + ESCAPE + '\n'
+                new = ''
+            new = new + c
+            prev = c
+        if prev in (' ', '\t'):
+            output = output + new + ESCAPE + '\n\n'
+        else:
+            output = output + new + '\n'
+    return output
 
 
 def decapitate(message):
