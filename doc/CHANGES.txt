@@ -5,6 +5,8 @@ Zope Changes
   file HISTORY.txt.
 
     Bugs Fixed
+
+      - Fixed broken management form for TopicIndexes.
     
       - Fixed bug in z2.py where it would eat certain socket error exceptions
         at startup.
