@@ -87,7 +87,8 @@ class TransientObject(Persistent, Implicit):
     #
 
     def invalidate(self):
-        if hasattr(self, '_invalid'):
+        # hasattr hides conflicts
+        if getattr(self, '_invalid', _notfound) is not _notfound:
             # we dont want to invalidate twice
             return
         trans_ob_container = None
@@ -103,7 +104,9 @@ class TransientObject(Persistent, Implicit):
         self._invalid = None
 
     def isValid(self):
-        return not hasattr(self, '_invalid')
+        # hasattr hides conflicts
+        if getattr(self, '_invalid', _notfound) is _notfound:
+            return 1
 
     def getLastAccessed(self):
         return self._last_accessed
