@@ -72,7 +72,7 @@ class DUP_TOP(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack.append(stack[-1])
+        stack.append((self, self))
 
 _bytecodes[DUP_TOP.opc]=DUP_TOP
 
@@ -84,7 +84,7 @@ class UNARY_POSITIVE(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[UNARY_POSITIVE.opc]=UNARY_POSITIVE
 
@@ -96,7 +96,7 @@ class UNARY_NEGATIVE(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[UNARY_NEGATIVE.opc]=UNARY_NEGATIVE
 
@@ -108,7 +108,7 @@ class UNARY_NOT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[UNARY_NOT.opc]=UNARY_NOT
 
@@ -120,7 +120,7 @@ class UNARY_CONVERT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[UNARY_CONVERT.opc]=UNARY_CONVERT
 
@@ -132,7 +132,7 @@ class UNARY_INVERT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[UNARY_INVERT.opc]=UNARY_INVERT
 
@@ -144,7 +144,7 @@ class BINARY_POWER(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_POWER.opc]=BINARY_POWER
 
@@ -156,7 +156,7 @@ class BINARY_MULTIPLY(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_MULTIPLY.opc]=BINARY_MULTIPLY
 
@@ -168,7 +168,7 @@ class BINARY_DIVIDE(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_DIVIDE.opc]=BINARY_DIVIDE
 
@@ -180,7 +180,7 @@ class BINARY_MODULO(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_MODULO.opc]=BINARY_MODULO
 
@@ -192,7 +192,7 @@ class BINARY_ADD(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_ADD.opc]=BINARY_ADD
 
@@ -204,7 +204,7 @@ class BINARY_SUBTRACT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_SUBTRACT.opc]=BINARY_SUBTRACT
 
@@ -216,7 +216,7 @@ class BINARY_SUBSCR(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_SUBSCR.opc]=BINARY_SUBSCR
 
@@ -228,7 +228,7 @@ class SLICE_0(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-1:]=[self]
+        self.consume(stack, 1)
 
 _bytecodes[SLICE_0.opc]=SLICE_0
 
@@ -240,7 +240,7 @@ class SLICE_1(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[SLICE_1.opc]=SLICE_1
 
@@ -252,7 +252,7 @@ class SLICE_2(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[SLICE_2.opc]=SLICE_2
 
@@ -264,7 +264,7 @@ class SLICE_3(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-3:]=[self]
+        self.consume(stack, 3)
 
 _bytecodes[SLICE_3.opc]=SLICE_3
 
@@ -396,7 +396,7 @@ class BINARY_LSHIFT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_LSHIFT.opc]=BINARY_LSHIFT
 
@@ -408,7 +408,7 @@ class BINARY_RSHIFT(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
 
 _bytecodes[BINARY_RSHIFT.opc]=BINARY_RSHIFT
 
@@ -420,7 +420,8 @@ class BINARY_AND(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
+
 
 _bytecodes[BINARY_AND.opc]=BINARY_AND
 
@@ -432,7 +433,8 @@ class BINARY_XOR(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
+
 
 _bytecodes[BINARY_XOR.opc]=BINARY_XOR
 
@@ -444,7 +446,8 @@ class BINARY_OR(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-2:]=[self]
+        self.consume(stack, 2)
+
 
 _bytecodes[BINARY_OR.opc]=BINARY_OR
 
@@ -504,7 +507,7 @@ class LOAD_LOCALS(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[LOAD_LOCALS.opc]=LOAD_LOCALS
 
@@ -564,7 +567,7 @@ class BUILD_CLASS(_opbases.GenericOneByteCode):
         if cs is not None:
             _opbases.GenericOneByteCode.__init__(self,cs,code)
     def execute(self,stack):
-        stack[-3:] = [self]
+        self.consume(stack, 3)
 
 _bytecodes[BUILD_CLASS.opc]=BUILD_CLASS
 
@@ -606,7 +609,8 @@ class UNPACK_TUPLE(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append([self] * self.arg)    
+        op = stack.pop()[0]
+        stack.extend([(op, self)] * self.arg)    
 
 _bytecodes[UNPACK_TUPLE.opc]=UNPACK_TUPLE
 
@@ -620,7 +624,8 @@ class UNPACK_LIST(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append([self] * self.arg)    
+        op = stack.pop()[0]
+        stack.extend([(op, self)] * self.arg)    
 
 _bytecodes[UNPACK_LIST.opc]=UNPACK_LIST
 
@@ -690,7 +695,7 @@ class LOAD_CONST(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[LOAD_CONST.opc]=LOAD_CONST
 
@@ -704,7 +709,7 @@ class LOAD_NAME(_opbases.NameOpcode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[LOAD_NAME.opc]=LOAD_NAME
 
@@ -719,9 +724,9 @@ class BUILD_TUPLE(_opbases.GenericThreeByteCode):
             self.user_init(csorarg)
     def execute(self,stack):
         if self.arg>0:
-            stack[-self.arg:]=[self]
+            self.consume(stack, self.arg)
         else:
-            stack.append(self)
+            stack.append((self, self))
 
 _bytecodes[BUILD_TUPLE.opc]=BUILD_TUPLE
 
@@ -736,9 +741,9 @@ class BUILD_LIST(_opbases.GenericThreeByteCode):
             self.user_init(csorarg)
     def execute(self,stack):
         if self.arg>0:
-            stack[-self.arg:]=[self]
+            self.consume(stack, self.arg)
         else:
-            stack.append(self)
+            stack.append((self, self))
 
 _bytecodes[BUILD_LIST.opc]=BUILD_LIST
 
@@ -752,7 +757,7 @@ class BUILD_MAP(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[BUILD_MAP.opc]=BUILD_MAP
 
@@ -766,7 +771,7 @@ class LOAD_ATTR(_opbases.NameOpcode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack[-1] = self
+        self.consume(stack, 1)
 
 _bytecodes[LOAD_ATTR.opc]=LOAD_ATTR
 
@@ -780,7 +785,7 @@ class COMPARE_OP(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack[-2:]=[self] # ????
+        self.consume(stack, 2) # ????
 
 _bytecodes[COMPARE_OP.opc]=COMPARE_OP
 
@@ -794,7 +799,7 @@ class IMPORT_NAME(_opbases.NameOpcode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[IMPORT_NAME.opc]=IMPORT_NAME
 
@@ -912,7 +917,7 @@ class LOAD_GLOBAL(_opbases.NameOpcode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[LOAD_GLOBAL.opc]=LOAD_GLOBAL
 
@@ -980,7 +985,7 @@ class LOAD_FAST(_opbases.LocalOpcode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack.append(self)
+        stack.append((self, self))
 
 _bytecodes[LOAD_FAST.opc]=LOAD_FAST
 
@@ -1052,7 +1057,7 @@ class CALL_FUNCTION(_opbases.GenericThreeByteCode):
     def execute(self,stack):
         num_keyword_args=self.arg>>8
         num_regular_args=self.arg&0xFF
-        stack[-2*num_keyword_args-num_regular_args-1:]=[self]
+        self.consume(stack, 2*num_keyword_args + num_regular_args + 1)
 
 _bytecodes[CALL_FUNCTION.opc]=CALL_FUNCTION
 
@@ -1066,7 +1071,7 @@ class MAKE_FUNCTION(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack[-self.arg-1:]=[self]
+        self.consume(stack, self.arg + 1)
 
 _bytecodes[MAKE_FUNCTION.opc]=MAKE_FUNCTION
 
@@ -1080,7 +1085,7 @@ class BUILD_SLICE(_opbases.GenericThreeByteCode):
         else:
             self.user_init(csorarg)
     def execute(self,stack):
-        stack[-self.arg:]=[self]
+        self.consume(stack, self.arg)
 
 _bytecodes[BUILD_SLICE.opc]=BUILD_SLICE
 

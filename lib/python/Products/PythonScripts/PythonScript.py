@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, MessageDialog
@@ -145,10 +145,16 @@ class PythonScript(Script, Historical, Cacheable):
     _params = _body = ''
 
     manage_options = (
-        {'label':'Edit', 'action':'ZPythonScriptHTML_editForm'},
+        {'label':'Edit',
+         'action':'ZPythonScriptHTML_editForm',
+         'help': ('PythonScripts', 'PythonScript_edit.stx')},
         ) + BindingsUI.manage_options + (
-        {'label':'Test', 'action':'ZScriptHTML_tryForm'},
-        {'label':'Proxy', 'action':'manage_proxyForm'},
+        {'label':'Test',
+         'action':'ZScriptHTML_tryForm',
+         'help': ('PythonScripts', 'PythonScript_test.stx')},
+        {'label':'Proxy',
+         'action':'manage_proxyForm',
+         'help': ('OFSP','DTML-DocumentOrMethod_Proxy.stx')},
         ) + Historical.manage_options + SimpleItem.manage_options + \
         Cacheable.manage_options
 

@@ -110,15 +110,18 @@ class Munge_window:
             if not stack:
                 self.last_empty_stack = op
 
-    def after_code_for(self, stack_idx):
+    def after_code_for(self, stack_idx, separt=1):
         stack = self.stack
         if stack_idx < 0 and len(stack) + stack_idx < 0:
             whichop = self.last_empty_stack
             if whichop is None:
                 return 0
         else:
-            whichop = stack[stack_idx]
-        return self.code.index(whichop)+1
+            whichop = stack[stack_idx][separt]
+        return self.code.index(whichop) + separt
+
+    def before_code_for(self, stack_idx):
+        return self.after_code_for(stack_idx, separt=0)
 
     def assert_stack_size(self, size, ctxt):
         if self.use_stack and len(self.stack) != size:
@@ -287,7 +290,7 @@ class Printing:
 
     def PRINT_ITEM(self, w):
         # Load the printing function before the code for the operand.
-        w.insert_code(self.print_prep, w.after_code_for(-2))
+        w.insert_code(self.print_prep, w.before_code_for(-1))
         w.assert_stack_size(1, "at a 'print' statement")
         # Instead of printing, call our function and discard the result.
         w.set_code(1, self.call_print2)
@@ -357,16 +360,17 @@ class AllowMapBuild:
     def __init__(self, cb, w, fc):
         pass
     def STORE_SUBSCR(self, w):
-        if isinstance(w.stack[-2], ops.BUILD_MAP):
+        if (isinstance(w.stack[-2][0], ops.DUP_TOP) and
+            isinstance(w.stack[-4][0], ops.BUILD_MAP)):
             w.do_op()
             return 1
 
 def _get_call(w):
     load_guard = ((ops.LOAD_FAST, ops.LOAD_ATTR), (('$guard',), (guard,)))
     # Load the binary guard function before its parameters are computed.
-    iops = w.insert_code(load_guard, w.after_code_for(-3))
+    iops = w.insert_code(load_guard, w.before_code_for(-2))
     # Fix the execution stack to refer to the loaded function.
-    if w.use_stack: w.stack[-2:-2] = iops[1:]
+    if w.use_stack: w.stack[-2:-2] = [(iops[0], iops[1])]
     # Call guard function instead of performing binary op
     w.set_code(1, cf2)
     return 1
@@ -413,13 +417,13 @@ def GuardedBinaryOps(guards):
 def _wrap(w):
     load_guard = ((ops.LOAD_FAST,), ((guard,),))
     # Load the guard function before the guarded object, call after.
-    w.insert_code(load_guard, w.after_code_for(spos - 1))
+    w.insert_code(load_guard, w.before_code_for(spos))
     if spos == 0:
         w.set_code(0, cf1)
     else:
         iops = w.insert_code(cf1, w.after_code_for(spos))
         # Fix the execution stack.
-        if w.use_stack: w.stack[spos] = iops[0]
+        if w.use_stack: w.stack[spos] = (w.stack[spos][0], iops[0])
 
 def _WriteGuardWrapper():
     def model_handler(self, *args):

@@ -2,7 +2,8 @@ import struct,dis,new
 from label import Label
 
 class ByteCode:
-    pass
+    def consume(self, stack, n):
+        stack[-n:]=[(stack[-n][0], self)]
 
 class GenericOneByteCode(ByteCode):
     def __init__(self,cs,code):
