@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.26 2004/01/16 18:49:22 Brian Exp $
+  $Id: cAccessControl.c,v 1.27 2004/01/27 17:09:53 Brian Exp $
 
   If you have questions regarding this software,
   contact:
@@ -675,6 +675,7 @@ static PyObject *aq_validate = NULL;
 static PyObject *aq_parent_str = NULL;
 static PyObject *_check_context_str = NULL;
 static PyObject *getRoles = NULL;
+static PyObject *getWrappedOwner_str = NULL;
 
 static int ownerous = 1;
 static int authenticated = 1;
@@ -710,6 +711,8 @@ ZopeSecurityPolicy_setup(void) {
           return -1;
 	UNLESS (allowed_str = PyString_FromString("allowed")) return -1;
 	UNLESS (getOwner_str = PyString_FromString("getOwner")) return -1;
+	UNLESS (getWrappedOwner_str = PyString_FromString("getWrappedOwner")) 
+	  return -1;
 	UNLESS (getPhysicalRoot_str = PyString_FromString("getPhysicalRoot")) 
 	  return -1;
 	UNLESS (aq_parent_str = PyString_FromString("aq_parent")) return -1;
@@ -760,17 +763,15 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
         /* Import from SimpleObject Policy._noroles */
         /* Note that _noroles means missing roles, spelled with a NULL in C.
            Jim. */
+	PyObject *containerbase = NULL;
+	PyObject *accessedbase = NULL;
 	PyObject *p = NULL;
 	PyObject *rval = NULL;
 	PyObject *stack = NULL;
 	PyObject *user = NULL;
 
-
 	PyObject *method = NULL;
 	PyObject *tmp = NULL;
-	PyObject *udb = NULL;
-	PyObject *root = NULL;
-	PyObject *item = NULL;
 
 	char *sname;
 
@@ -808,7 +809,23 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 	Py_XINCREF(roles);	/* Convert the borrowed ref to a real one */
 
-	/* new */
+	/*| containerbase = aq_base(container)
+	**| accessedbase = aq_base(accessed)
+	**| if accessedbase is accessed:
+        **|     # accessed is not a wrapper, so assume that the
+        **|     # value could not have been acquired.
+	**|     accessedbase = container
+	*/
+
+	containerbase = aq_base(container);
+	if (containerbase == NULL) goto err;
+	
+	if (aq_isWrapper(accessed))
+		accessedbase = aq_base(accessed);
+	else {
+		Py_INCREF(container);
+		accessedbase = container;
+	}
 
 	/*| # If roles weren't passed in, we'll try to get them from
 	**| # the object
@@ -818,8 +835,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	*/
 
         if (roles == NULL) {
-	  /* Note that the '_noroles' arg is just a marker - our C version
-             of _noroles is null */
 	  roles = callfunction4(getRoles, container, name, value, getRoles);
 	  if (roles == getRoles) {
 	    Py_DECREF(roles);
@@ -828,26 +843,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           if (roles == NULL)
             PyErr_Clear();
 	}
-
-
-	/* old */
-
-	/*| # If roles weren't passed in, we'll try to get them from
-	**| # the object
-	**|
-	**| if roles is _noroles:
-	**|    roles = getattr(value, "__roles__", _noroles)
-	*/
-
-        if (roles == NULL) {
-          roles = PyObject_GetAttr(value, __roles__);
-          if (roles == NULL)
-            PyErr_Clear();
-	}
-
-
-
-
 
 	/*| # We still might not have any roles
 	**| 
@@ -870,29 +865,46 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		}
 
 		/*| roles = getattr(container, "__roles__", _noroles)
-                **| if roles is _noroles:
-                **|     if aq_base(container) is not container:
-                **|         try:
-                **|             roles = container.aq_acquire('__roles__')
-                **|         except AttributeError:
-                **|             pass
+		**| if roles is _noroles:
+		**|    if containerbase is container:
+                **|       # Container is not wrapped.
+		**|       if containerbase is not accessedbase:
+                **|           raise Unauthorized(name, value)
+		**|    else:
+		**|       # Try to acquire roles
+		**|      try: roles = container.aq_aquire('__roles__')
+		**|      except AttributeError:
+		**|         if containerbase is not accessedbase:
+                **|             raise Unauthorized(name, value)
 		*/
+
                 roles = PyObject_GetAttr(container, __roles__);
 		if (roles == NULL) {
 			PyErr_Clear();
 
-			if (aq_isWrapper(container)) {
+			if (!aq_isWrapper(container)) {
+				if (containerbase != accessedbase)  {
+				  unauthErr(name, value);
+				  goto err;
+				}
+			} 
+                        else {
 				roles = aq_acquire(container, __roles__);
 				if (roles == NULL) {
                                   if (PyErr_ExceptionMatches(
                                       PyExc_AttributeError))
                                     {
                                         PyErr_Clear();
+				        if (containerbase != accessedbase) {
+					  unauthErr(name, value);
+					  goto err;
+					}
                                     }
                                   else
                                     goto err;
 				}
 			}
+
 		}
 
 		/*| # We need to make sure that we are allowed to get
@@ -1093,25 +1105,20 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	**|        # in the context of the accessed item; users in subfolders
 	**|        # should not be able to use proxy roles to access items 
 	**|        # above their subfolder!
-	**|        owner = eo.getOwner()
-	**|        # Sigh; the default userfolder doesn't return users wrapped
-	**|        if owner and not hasattr(owner, 'aq_parent'):
-	**|            udb=eo.getOwner(1)[0]
-	**|            root=container.getPhysicalRoot()
-	**|            udb=root.unrestrictedTraverse(udb)
-	**|            owner=owner.__of__(udb)
+	**|        owner = eo.getWrappedOwner()
 	**|                        
 	**|        if owner is not None:
-	**|            if not owner._check_context(container):
-	**|                # container is higher up than the owner, deny
-	**|                # access
-	**|                raise Unauthorized(name, value)
+        **|            if container is not containerbase:
+	**|                if not owner._check_context(container):
+	**|                    # container is higher up than the owner, 
+	**|                    # deny access
+	**|                    raise Unauthorized(name, value)
 	**|
 	**|        for r in proxy_roles:
-	**|          if r in roles: return 1
+	**|            if r in roles:
+        **|                return 1
 	**|
-	**|        raise Unauthorized, ('You are not authorized to access'
-	**|	     '<em>%s</em>.' % cleanupName(name, value))
+	**|        raise Unauthorized(name, value)
 	*/
 		proxy_roles = PyObject_GetAttr(eo, _proxy_roles_str);
 
@@ -1123,9 +1130,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                 else if (PyObject_IsTrue(proxy_roles)) 
                   {
 
-		    /* patch!! --------------------------------  */
-
-		    method = PyObject_GetAttr(eo, getOwner_str);
+		    method = PyObject_GetAttr(eo, getWrappedOwner_str);
 		    if (method == NULL) {
 		      Py_DECREF(eo);
 		      Py_DECREF(proxy_roles);
@@ -1140,100 +1145,33 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		      goto err;
 		    }
 
-		    if (PyObject_IsTrue(owner)) {
-		      if (!PyObject_HasAttr(owner, aq_parent_str)) {
-			item = PyInt_FromLong(1);
-			if (item == NULL) {
-			  Py_DECREF(eo);
-			  Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  goto err;
-			}
-
-		        tmp = callmethod1(eo, getOwner_str, item);
-			Py_DECREF(item);
-			if (tmp == NULL) {
-			  Py_DECREF(eo);
-			  Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  goto err;
-			}
-
-			udb = PySequence_GetItem(tmp, 0);
-			Py_DECREF(tmp);
-			if (udb == NULL) {
-			  Py_DECREF(eo);
-		          Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  goto err;
-			}
-
-			method = PyObject_GetAttr(container, 
-						  getPhysicalRoot_str);
-			if (method == NULL) {
-			  Py_DECREF(eo);
-		          Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  Py_DECREF(udb);
-			  goto err;
-			}
-
-			root = PyObject_CallObject(method, NULL);
-			Py_DECREF(method);
-			if (root == NULL) {
-			  Py_DECREF(eo);
-		          Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  Py_DECREF(udb);
-			  goto err;
-			}
-
-			ASSIGN(udb, callmethod1(root, unrestrictedTraverse_str,
-						udb)); 
-			Py_DECREF(root);
-			if (udb == NULL) {
-			  Py_DECREF(eo);
-		          Py_DECREF(proxy_roles);
-			  Py_DECREF(owner);
-			  goto err;
-			}
-
-			ASSIGN(owner, callmethod1(owner, __of__, udb));
-			Py_DECREF(udb);
-			if (owner == NULL) {
-			  Py_DECREF(eo);
-		          Py_DECREF(proxy_roles);
-			  goto err;
-			}
-
-		      }
-		    }
-
 		    Py_DECREF(eo);
 
 		    if (owner != Py_None) {
-		      tmp = callmethod1(owner,_check_context_str,
-					container
-					);
-		      if (tmp == NULL) {
-		        Py_DECREF(proxy_roles);
-			Py_DECREF(owner);
-			goto err;
-		      }
 
-		      if (!PyObject_IsTrue(tmp)) {
-	                Py_DECREF(proxy_roles);
-			Py_DECREF(owner);
+		      if (containerbase != container) {
+
+			tmp = callmethod1(owner,_check_context_str,
+					  container
+					  );
+			if (tmp == NULL) {
+			  Py_DECREF(proxy_roles);
+			  Py_DECREF(owner);
+			  goto err;
+			}
+
+			if (!PyObject_IsTrue(tmp)) {
+			  Py_DECREF(proxy_roles);
+			  Py_DECREF(owner);
+			  Py_DECREF(tmp);
+			  unauthErr(name, value);
+			  goto err;
+			}
 			Py_DECREF(tmp);
-			unauthErr(name, value);
-			goto err;
 		      }
-		      Py_DECREF(owner);
-		      Py_DECREF(tmp);
-		    }
-		    		    
-		    /* ------------------------------------------- */
 
+		      Py_DECREF(owner);
+		    }
 
 
                     contains = 0;
@@ -1305,13 +1243,13 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           }
         } /* End of authentiction skip for public only access */
 
-	/*| raise Unauthorizied, ("You are not authorized to access"
-	**|	 "<em>%s</em>." % cleanupName(name, value))
+	/*| raise Unauthorized(name, value)
 	*/
 
         unauthErr(name, value);
   err:
-
+	Py_XDECREF(containerbase);
+	Py_XDECREF(accessedbase);
 	Py_XDECREF(stack);
 	Py_XDECREF(roles);
 
@@ -2352,7 +2290,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.26 2004/01/16 18:49:22 Brian Exp $\n");
+		"$Id: cAccessControl.c,v 1.27 2004/01/27 17:09:53 Brian Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */

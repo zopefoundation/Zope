@@ -212,6 +212,13 @@ class ZopeSecurityPolicy:
             if name.startswith('aq_') and name not in valid_aq_:
                 raise Unauthorized(name, value)
 
+        containerbase = aq_base(container)
+        accessedbase = aq_base(accessed)
+        if accessedbase is accessed:
+            # accessed is not a wrapper, so assume that the
+            # value could not have been acquired.
+            accessedbase = container
+
         ############################################################
         # If roles weren't passed in, we'll try to get them from the object
 
@@ -236,14 +243,16 @@ class ZopeSecurityPolicy:
 
             roles = getattr(container, '__roles__', roles)
             if roles is _noroles:
-                # Try to acquire __roles__.  If __roles__ can't be
-                # acquired, the value is unprotected and roles is
-                # left set to _noroles.
-                if aq_base(container) is not container:
-                    try:
-                        roles = container.aq_acquire('__roles__')
+                if containerbase is container:
+                    # Container is not wrapped.
+                    if containerbase is not accessedbase:
+                        raise Unauthorized(name, value)
+                else:
+                    # Try to acquire roles
+                    try: roles = container.aq_acquire('__roles__')
                     except AttributeError:
-                        pass
+                        if containerbase is not accessedbase:
+                            raise Unauthorized(name, value)
 
             # We need to make sure that we are allowed to
             # get unprotected attributes from the container. We are
@@ -308,18 +317,15 @@ class ZopeSecurityPolicy:
                 # in the context of the accessed item; users in subfolders
                 # should not be able to use proxy roles to access items
                 # above their subfolder!
-                owner = eo.getOwner()
-                # Sigh; the default userfolder doesn't return users wrapped
-                if owner and not hasattr(owner, 'aq_parent'):
-                    udb = eo.getOwner(1)[0]
-                    root = container.getPhysicalRoot()
-                    udb = root.unrestrictedTraverse(udb)
-                    owner = owner.__of__(udb)
+                owner = eo.getWrappedOwner()
 
                 if owner is not None:
-                    if not owner._check_context(container):
-                        # container is higher up than the owner, deny access
-                        raise Unauthorized(name, value)
+                    if container is not containerbase:
+                        # Unwrapped objects don't need checking
+                        if not owner._check_context(container):
+                            # container is higher up than the owner,
+                            # deny access
+                            raise Unauthorized(name, value)
 
                 for r in proxy_roles:
                     if r in roles:
