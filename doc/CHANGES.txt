@@ -29,6 +29,13 @@ Zope Changes
 
       - Collector #272: Optimisations for RESPONSE.write
 
+      - Collector #271: New environment variables are now used
+        to send the access log into syslog. ZSYSLOG_ACCESS,
+        ZSYSLOG_ACCESS_FACILITY, and SYSLOG_ACCESS_SERVER now
+        do the same job as the old environment variables without
+        _ACCESS in their name. Those old environment variables
+        still do the same job of sending the event log to syslog.
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff

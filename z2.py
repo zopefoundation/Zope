@@ -537,14 +537,13 @@ try:
 
     if READ_ONLY:
         lg = logger.file_logger('-') # log to stdout
-    elif os.environ.has_key('ZSYSLOG'):
-        lg = logger.syslog_logger(os.environ['ZSYSLOG'])
-        if os.environ.has_key("ZSYSLOG_FACILITY"):
-            lg = logger.syslog_logger(os.environ['ZSYSLOG'],facility=os.environ['ZSYSLOG_FACILITY'])
+    elif os.environ.has_key('ZSYSLOG_ACCESS'):
+        if os.environ.has_key("ZSYSLOG_ACCESS_FACILITY"):
+            lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'],facility=os.environ['ZSYSLOG_ACCESS_FACILITY'])
         else:
-            lg = logger.syslog_logger(os.environ['ZSYSLOG'])
-    elif os.environ.has_key('ZSYSLOG_SERVER'):
-        (addr, port) = os.environ['ZSYSLOG_SERVER'].split( ':')
+            lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'])
+    elif os.environ.has_key('ZSYSLOG_ACCESS_SERVER'):
+        (addr, port) = os.environ['ZSYSLOG_ACCESS_SERVER'].split( ':')
         lg = logger.syslog_logger((addr, int(port)))
     else:
         lg = logger.file_logger(LOG_PATH)
