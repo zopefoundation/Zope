@@ -12,11 +12,7 @@
 ##############################################################################
 
 """Property management"""
-<<<<<<< PropertyManager.py
-__version__='$Revision: 1.49 $'[11:-2]
-=======
-__version__='$Revision: 1.49 $'[11:-2]
->>>>>>> 1.46.6.1
+__version__='$Revision: 1.50 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
