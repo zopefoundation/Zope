@@ -363,11 +363,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.indexes = indexes
 
 
-    def reindexIndex(self,name):
-
-        for p in self.paths.items():
-            print p
-
     # the cataloging API
 
     def catalogObject(self, object, uid, threshold=None,idxs=[]):
