@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -67,7 +67,12 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 	    self.content_type=content_type
 	    self.data=Pdata(file)
 	else:
-	    self.content_type=headers['content-type']
+	    if headers.has_key('content-type'):
+		self.content_type=headers['content-type']
+	    else:
+		if not content_type:
+		    raise 'BadValue', 'No content type specified'
+		self.content_type=content_type
 	    self.data=Pdata(file.read())
 	self.__name__=id
 	self.title=title
