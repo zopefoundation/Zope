@@ -8,6 +8,9 @@ Zope Changes
 
     new Features:
 
+      - Removed the venerable but senile QuickStart folder from the
+        default FileStorage.  "Alas, poor Yorick!  I knew him, Horatio."
+
       - Signal handling and log rotation
 
         All Zope process will respond to signals in the specified manner:
