@@ -1,5 +1,6 @@
 import thread
 from ZOutPipe import OutputPipe
+from ZServerPublisher import ZServerPublisher
 
 class ZRendevous:
 
