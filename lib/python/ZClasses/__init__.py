@@ -14,48 +14,33 @@ needed by a product and to define product meta data.
 
 This sample product publishes a folder-ish and a simple object.
 
-$Id: __init__.py,v 1.1 1998/11/24 01:23:26 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: __init__.py,v 1.2 1999/02/22 20:50:02 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 from ImageFile import ImageFile
-import Ozome
+import Class
 
 # Names of objects added by this product:
 meta_types=(
-    {'name': Ozome.Ozome.meta_type,
-     'action': 'manage_addOzomeForm', # The method to add one.     
-     },
+    {'name': Class.ZClass.meta_type,
+     'action':'manage_addZClassForm'},
     )
 
 # Attributes (usually "methods") to be added to folders to support
 # creating objects:
 methods={
-    'manage_addOzomeForm': Ozome.manage_addOzomeForm,
-    'manage_addOzome':     Ozome.manage_addOzome,
+    'manage_addZClassForm': Class.manage_addZClassForm,
+    'manage_addZClass': Class.manage_addZClass,
+    'manage_subclassableClassNames': Class.manage_subclassableClassNames,
+    
     }
 
 # Permission to be added to folders:
 __ac_permissions__=(
     # To add items:
-    ('Add Principia Class',
-     ('manage_addOzomeForm', 'manage_addOzome')),
+    ('Add Zope Class',
+     ('manage_addZClassForm', 'manage_addZClass',
+      'manage_subclassableClassNames')),
     )
 
-
-
-############################################################################## 
-#
-# $Log: __init__.py,v $
-# Revision 1.1  1998/11/24 01:23:26  jim
-# initial
-#
-# Revision 1.3  1998/06/25 11:39:15  jim
-# Added permissions.
-#
-# Revision 1.2  1998/01/02 18:39:01  jim
-# initial
-#
-# Revision 1.1  1997/12/31 21:57:01  jim
-# initial
-#
-#
+misc_={}

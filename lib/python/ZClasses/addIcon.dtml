@@ -1,0 +1,56 @@
+<HTML>
+<HEAD>
+<TITLE>Add Icon</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>Add Instance Icon</H2>
+<p>
+Instance Icons are displayed with images in management interfaces.
+Select an image file from your local computer by clicking the
+<em>Browse</em> button. The image you select will be uploaded
+to the class for use by instances.
+</p>
+<p>
+The instance icon property will be set to give a path to the image.
+The path will be based on the current location of this class and
+will need to be adjusted if the class is moved.
+</p>
+
+<FORM ACTION="manage_addInstanceIcon" METHOD="POST"
+      ENCTYPE="multipart/form-data">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="id" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Title</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Icon image</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" Add ">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+

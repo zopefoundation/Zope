@@ -1,0 +1,39 @@
+<html><head><title><!--#var title_or_id--></title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<!--#var manage_tabs-->
+
+<form action="manage_edit">
+<table>
+<!--#in data-->
+   <tr>
+     <th align=left valign=top>
+       <!--#var sequence-key-->
+       <input type=hidden name="names:list" value="<!--#var sequence-key-->">
+       </th>
+     <td align=left valign=top>
+       <!--#with "_.namespace(methods=_['sequence-item'])"-->
+	  <select name="<!--#var "'methods%s:list' % _['sequence-index']"-->" 
+	      <!--#var selectops-->>
+	    <!--#in all_methods-->
+	      <option
+		 <!--#if "_['sequence-item'] in methods"-->SELECTED
+		 <!--#/if-->><!--#var sequence-item--></option>
+	    <!--#/in-->
+	  </select></td>
+       <!--#/with-->
+   </tr>
+<!--#/in-->
+<tr>
+  <th align=left valign=top>New: <input type=text name="newname" size=20></th>
+  <td align=left valign=top>
+    <select name=newmethods:list <!--#var selectops-->>
+      <!--#in all_methods-->
+	   <option><!--#var sequence-item--></option>
+      <!--#/in-->
+    </select></td>
+</tr>
+<tr><td colspan=2 align=center>
+    <input type=submit value=" Change "></td></tr>
+
+</table></form>
+</body></html>
