@@ -6,4 +6,3 @@ cPickle.c
 cStringIO.c
 cStringIO.h
 copy_reg.py
-pickle.py
