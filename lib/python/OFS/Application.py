@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.119 2000/03/14 19:54:09 brian Exp $'''
-__version__='$Revision: 1.119 $'[11:-2]
+$Id: Application.py,v 1.120 2000/04/04 22:35:23 jim Exp $'''
+__version__='$Revision: 1.120 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -273,8 +273,6 @@ class Application(Globals.ApplicationDefaultPermissions,
     test_url___allow_groups__=None
     test_url=ZopeAttributionButton
 
-
-
     def absolute_url(self, relative=0):
         """Return an absolute url to the object. Note that the url
         will reflect the acquisition path of the object if the object
@@ -282,6 +280,7 @@ class Application(Globals.ApplicationDefaultPermissions,
         if relative: return ''
         return self.aq_acquire('REQUEST').script
 
+    def getPhysicalRoot(self): return self
 
 class Expired(Globals.Persistent):
     icon='p_/broken'
