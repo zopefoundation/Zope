@@ -3,14 +3,15 @@
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from socket import *; from select import select
 from AccessControl.Role import RoleManager
-import Acquisition, sys, regex, string, types
+from operator import truth
+import Acquisition, sys, ts_regex, string, types
 import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.28 1998/04/22 20:43:03 jeffrey Exp $ 
-__version__ = "$Revision: 1.28 $"[11:-2]
+#$Id: MailHost.py,v 1.29 1998/04/30 19:04:49 jeffrey Exp $ 
+__version__ = "$Revision: 1.29 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -37,11 +38,9 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     timeout=1.0
 
     manage_options=({'icon':'', 'label':'Edit',
-		     'action':'manage_main', 'target':'manage_main',
-	            },
+		     'action':'manage_main', 'target':'manage_main'},
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_access', 'target':'manage_main',
-		    },
+		     'action':'manage_access', 'target':'manage_main'},
 		   )
 
     __ac_permissions__=(
@@ -86,7 +85,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 	headers, message = newDecapitate(messageText)
 	if mto: headers['to'] = mto
 	if mfrom: headers['from'] = mfrom
-	for requiredHeader in ('to', 'from', 'subject'):
+	for requiredHeader in ('to', 'from'):
 	    if not headers.has_key(requiredHeader):
 		raise MailHostError,"Message missing SMTP Header '%s'"\
 		      % requiredHeader
@@ -96,7 +95,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 	    (trueself.smtpHost, trueself.smtpPort, 
 	     trueself.localHost, trueself.timeout, 
 	     headers['from'], headers['to'],
-	     headers['subject'], messageText
+	     headers['subject'] or 'No Subject', messageText
 	     ),
 	    threadsafe=1
 	    ))
@@ -110,38 +109,51 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 	    return "SEND OK"
 
     def send(self, messageText, mto=None, mfrom=None, subject=None):
-	if subject: messageText="subject: %s\n%s" % (subject, messageText)
         headers, message = newDecapitate(messageText)
+	
+	if not headers['subject']:
+	    messageText="subject: %s\n%s" % (subject or '[No Subject]',
+					     messageText)
         if mto:
 	    if type(mto) is type('s'):
 		mto=map(string.strip, string.split(mto,','))
-	    headers['to'] = mto
-        if mfrom: headers['from'] = mfrom
-        for requiredHeader in ('to', 'from', 'subject'):
+	    headers['to'] = filter(truth, mto)
+        if mfrom:
+	    headers['from'] = mfrom
+	    
+        for requiredHeader in ('to', 'from'):
             if not headers.has_key(requiredHeader):
                 raise MailHostError,"Message missing SMTP Header '%s'"\
                 % requiredHeader
     
-        SendMail(self.smtpHost, self.smtpPort, self.localHost,
-		 self.timeout).send( 
-		     mfrom=headers['from'], mto=headers['to'],
-		     subj=headers['subject'], body=messageText)
+        sm=SendMail(self.smtpHost, self.smtpPort, self.localHost, self.timeout)
+	sm.send(mfrom=headers['from'], mto=headers['to'],
+		subj=headers['subject'] or 'No Subject',
+		body=messageText)
 
     def scheduledSend(self, messageText, mto=None, mfrom=None, subject=None):
-	if subject: messageText="subject: %s\n%s" % (subject, messageText)
 	headers, message = newDecapitate(messageText)
-	if mto: headers['to'] = mto
-	if mfrom: headers['from'] = mfrom
-	for requiredHeader in ('to', 'from', 'subject'):
-	    if not headers.has_key(requiredHeader):
-		raise MailHostError,"Message missing SMTP Header '%s'"\
-		      % requiredHeader
-    
+
+	if not headers['subject']:
+	    messageText="subject: %s\n%s" % (subject or '[No Subject]',
+					     messageText)
+        if mto:
+	    if type(mto) is type('s'):
+		mto=map(string.strip, string.split(mto,','))
+	    headers['to'] = filter(truth, mto)
+        if mfrom:
+	    headers['from'] = mfrom
+
+        for requiredHeader in ('to', 'from'):
+            if not headers.has_key(requiredHeader):
+                raise MailHostError,"Message missing SMTP Header '%s'"\
+                % requiredHeader
+ 
 	Globals.Scheduler.schedule(OneTimeEvent(
 	    Send,
 	    (self.smtpHost, self.smtpPort, self.localHost, self.timeout,
 	     headers['from'], headers['to'],
-	     headers['subject'], messageText
+	     headers['subject'] or 'No Subject', messageText
 	     ),
 	    threadsafe=1
 	    ))
@@ -197,7 +209,7 @@ class SendMail:
 		  % (code, line)
 	return 1
 
-    def send(self, mfrom, mto, subj, body):
+    def send(self, mfrom, mto, subj='No Subject', body='Blank Message'):
         self.conn.send("mail from:<%s>\n" % mfrom)
         self._check()
         if type(mto) in [types.ListType, types.TupleType]:
@@ -217,33 +229,43 @@ class SendMail:
         self.conn.send("quit\n")
         self.conn.close()
 
-def newDecapitate(message):
-    blank_re =regex.compile('^[%s]+$' % string.whitespace)
-    header_re=regex.symcomp('^\(<headerName>[^\0- <>:]+\):\(<headerText>.*\)$')
-    space_re =regex.compile('^[%s]+' % string.whitespace)
+def newDecapitate(message, req_headers=['to','from','subject']):
+    blank_re =ts_regex.compile('^[%s]+$' % string.whitespace)
+    header_re=ts_regex.symcomp(
+	'^\(<headerName>[^\0- <>:]+\):\(<headerText>.*\)$',
+	ts_regex.casefold)
+    space_re =ts_regex.compile('^[%s]+' % string.whitespace)
     
-    linecount=0; headerDict={};curHeader={}
-    maxwell=map(lambda x: string.rstrip(x),string.split(message,'\n'))
+    # initialize namespace, blank out required headers
+    linecount=0; hd={};curHeader={}
+    for rh in req_headers: hd[rh]=''
+    maxwell=map(string.rstrip, string.split(message,'\n'))
 
     for line in maxwell:
-        if not line: break
-        if blank_re.match(line) >= 0: break
-        if header_re.match(line) >=0:
+        if not line:
+	    break
+        if blank_re.match(line) >= 0:
+	    break
+        if header_re.match(line) >= 0:
             curHeader=string.lower(header_re.group('headerName'))
-            headerDict[curHeader] =\
+            hd[curHeader] =\
                         string.strip(header_re.group('headerText'))
-        elif space_re.match(line)>=0:
-            headerDict[curHeader] = "%s %s" % (headerDict[curHeader], line)
+        elif space_re.match(line) >= 0:
+            hd[curHeader] = "%s %s" % (hd[curHeader], line)
         linecount=linecount+1
 
-    if headerDict.has_key('to'):
-        headerDict['to']=map(
-            lambda x: string.strip(x),
-            string.split(headerDict['to'], ',')
-            )
+    hd['to']=map(string.strip, string.split(hd['to'], ','))
     
+    if hd.has_key('cc'):
+	hd['cc']=map(string.strip,
+		     string.split(hd['cc'], ','))
+	hd['to']=hd['to'] + hd['cc']
+    
+    # clean out empty strings
+    hd['to']=filter(truth, hd['to'])
+
     body=string.join(maxwell[linecount:],'\n')
-    return headerDict, body
+    return hd, body
 
 def decapitate(message, **kw):
     #left behind for bw-compatibility
@@ -257,6 +279,9 @@ __init__.need_license=1
 ####################################################################
 #
 #$Log: MailHost.py,v $
+#Revision 1.29  1998/04/30 19:04:49  jeffrey
+#first step in some new cleanups.
+#
 #Revision 1.28  1998/04/22 20:43:03  jeffrey
 #comma-delimeted strings can now be sent to the .send() method for the
 #'mto' parameter.  MailHost appropriately breaks them into multiple
