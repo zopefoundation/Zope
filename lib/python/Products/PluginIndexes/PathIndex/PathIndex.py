@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.9 2001/10/12 20:02:15 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.10 2001/10/12 20:05:06 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -211,6 +211,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
 
         return 1
 
+
     def unindex_object(self,documentId):
         """ hook for (Z)Catalog """
 
@@ -232,9 +233,6 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
                 del self._index[comp]
 
         del self._unindex[documentId]
-
-
-
 
 
     def printIndex(self):
@@ -405,6 +403,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
         """ needed to be consistent with the interface """
 
         return self._index.keys()
+
 
     def getEntryForObject(self,documentId,default=_marker):
         """ Takes a document ID and returns all the information we have
