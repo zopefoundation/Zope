@@ -88,6 +88,7 @@
 import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
 import Acquisition
 from string import join, upper
+from AccessControl.Permission import pname
 
 class ClassCaretaker:
     def __init__(self, klass): self.__dict__['_k']=klass
@@ -112,6 +113,11 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
     manage_options=(
         {'label':'Properties', 'action':'manage'},
+        {'label':'Security', 'action':'manage_security'},
+        )
+
+    __ac_permissions__=(
+        ('Manage Z Classes', ('', 'manage')),
         )
     
     def __init__(self, id, title):
@@ -245,13 +251,79 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
         if REQUEST is not None:
             REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
 
+    manage_security=Globals.HTMLFile('AccessControl/methodAccess')
+    def manage_getPermissionMapping(self):
+        ips=self.getClassAttr('propertysheets')
+        ips=getattr(ips, self.id)
+        
+        # ugh
+        perms={}
+        for p in self.classDefinedAndInheritedPermissions():
+            perms[pname(p)]=p
+
+        r=[]
+        for p in property_sheet_permissions:
+            v=getattr(ips, pname(p))
+            r.append(
+                {'permission_name': p,
+                 'class_permission': perms.get(v,'')
+                 })
+
+        return r
+    
+    def manage_setPermissionMapping(self, permission_names=[],
+                                    class_permissions=[],
+                                    REQUEST=None):
+        "Change property sheet permissions"
+        ips=self.getClassAttr('propertysheets')
+        ips=getattr(ips, self.id)
+
+        perms=self.classDefinedAndInheritedPermissions()
+        for i in range(len(permission_names)):
+            name=permission_names[i]
+            p=class_permissions[i]
+            if p and (p not in perms):
+                __traceback_info__=perms, p, i
+                raise 'Invalid class permission'
+
+            if name not in property_sheet_permissions: continue
+
+            setattr(ips, pname(name), pname(p))
+
+        if REQUEST is not None:
+            return self.manage_security(
+                self, REQUEST, 
+                manage_tabs_message='The permission mapping has been updated')
+
+property_sheet_permissions=(
+    'Access contents information',
+    'Manage properties',
+    )
+
 class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                      OFS.PropertySheets.View,
                     ):
     "Waaa this is too hard"
 
+    _Manage_properties_Permission=''
+    _Access_contents_information_Permission='View'
+
+    __ac_permissions__=(
+        ('Manage properties', ('manage_addProperty',
+                               'manage_editProperties',
+                               'manage_delProperties',
+                               'manage_changeProperties',
+                               'manage',
+                               )),
+        ('Access contents information', ('hasProperty', 'propertyIds',
+                                         'propertyValues','propertyItems',''),
+         ),
+        )
+    
     def v_self(self):
         return self.aq_inner.aq_parent.aq_parent
+
+Globals.default__class_init__(ZInstanceSheet)
     
 def rclass(klass):
     if klass._p_changed==0:
