@@ -29,7 +29,24 @@ sequence: DTML Sequence Functions
 
   Examples
  
-    XXX
+    Sort child object (using the 'objectValues' method) by id (using
+    the 'getId' method), ignoring case::
+
+      <dtml-in expr="_.sequence.sort(objectValues(),
+                                     (('getId', 'nocase'),))">
+        <dtml-var getId> <br>
+      </dtml-in>
+
+    Sort child objects by title (ignoring case) and date (from newest
+    to oldest)::
+
+      <dtml-in expr="_.sequence.sort(objectValues(),
+                                     (('title', 'nocase'),
+                                      ('bobobase_modification_time',
+                                      'cmp', desc')
+                                     ))">
+        <dtml-var title> <dtml-var bobobase_modification_time> <br>
+      </dtml-in>
 
   See Also
 
