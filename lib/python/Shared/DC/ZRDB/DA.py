@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.44 1998/04/27 18:59:56 jim Exp $'''
-__version__='$Revision: 1.44 $'[11:-2]
+$Id: DA.py,v 1.45 1998/04/29 21:17:51 jim Exp $'''
+__version__='$Revision: 1.45 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -261,10 +261,7 @@ class DA(
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
 	
-	if hasattr(REQUEST,'PARENTS'):
-	    parents=REQUEST['PARENTS']
-	    p=parents[(parents[0] is self)]
-	elif hasattr(self, 'aq_parent'):
+	if hasattr(self, 'aq_parent'):
 	    p=self.aq_parent
 	else: p=None
 
@@ -438,6 +435,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.45  1998/04/29 21:17:51  jim
+# Changed to use acquired parent.
+#
 # Revision 1.44  1998/04/27 18:59:56  jim
 # Now use exported sql_quote__ function to quote strings.
 #
