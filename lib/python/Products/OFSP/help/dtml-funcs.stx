@@ -213,7 +213,7 @@ functions: DTML Functions
 
     "'math' module":dtml-math.stx
 
-   "'sequence' module":dtml-sequence.stx
+    "'sequence' module":dtml-sequence.stx
 
     "Built-in Python Functions":http://www.python.org/doc/current/lib/built-in-funcs.html
 
