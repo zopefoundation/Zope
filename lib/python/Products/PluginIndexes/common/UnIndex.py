@@ -65,12 +65,21 @@ class UnIndex(SimpleItem):
           You will also need to pass in an object in the index and
           uninded methods for this to work.
 
-          'extra' -- a record-style object that keeps additional 
-          index-related parameters
+          'extra' -- a record-style object or a dictionary that keeps 
+          additional index-related parameters
 
           'caller' -- reference to the calling object (usually 
           a (Z)Catalog instance
         """
+
+        def _get(o, k, default):
+            """ return a value for a given key of a dict/record 'o' """
+            if isinstance(o, dict):
+                return o.get(k, default)
+            else:
+                return getattr(o, k, default)
+
+
         self.id = id
         self.ignore_ex=ignore_ex        # currently unimplimented
         self.call_methods=call_methods
@@ -80,10 +89,11 @@ class UnIndex(SimpleItem):
 
         # allow index to index multiple attributes
         try: 
-            self.indexed_attrs = extra.indexed_attrs.split(',')
+            self.indexed_attrs = _get(extra, 'indexed_attrs', '').split(',')
             self.indexed_attrs = [ 
                 attr.strip() for attr in  self.indexed_attrs if attr ]
-            if len(self.indexed_attrs) == 0: self.indexed_attrs = [ self.id ]
+            if not self.indexed_attrs: 
+                self.indexed_attrs = [ self.id ]
         except:
             self.indexed_attrs = [ self.id ] 
         
