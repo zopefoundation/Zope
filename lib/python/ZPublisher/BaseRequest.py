@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -227,6 +227,10 @@ class BaseRequest:
         if response is None: response=self.response
         debug_mode=response.debug_mode
 
+        # Make sure that REQUEST cannot be traversed.
+        if find(path, 'REQUEST') >= 0:
+            return response.notFoundError(path)
+        
         if path[:1] != '/': path='/'+path
         if path[-1:] != '/': path=path+'/'
         if find(path,'/.') >= 0:
@@ -458,6 +462,8 @@ class BaseRequest:
         """Hold a reference to an object to delay it's destruction until mine
         """
         self._held=self._held+(object,)
+
+
 
     
 def old_validation(groups, request, auth,
