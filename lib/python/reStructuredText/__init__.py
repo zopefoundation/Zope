@@ -19,8 +19,10 @@ import docutils.core
 from docutils.io import StringOutput, StringInput 
 import sys, os
 
-default_input_encoding = os.environ.get("REST_INPUT_ENCODING", sys.getdefaultencoding())
-default_output_encoding = os.environ.get("REST_OUTPUT_ENCODING", sys.getdefaultencoding())
+default_input_encoding = os.environ.get("REST_INPUT_ENCODING", 
+                                        sys.getdefaultencoding())
+default_output_encoding = os.environ.get("REST_OUTPUT_ENCODING", 
+                                         sys.getdefaultencoding())
 
 
 class Warnings:
