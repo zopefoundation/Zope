@@ -96,13 +96,13 @@ class ClassCaretaker:
     def __setattr__(self, name, v):
         klass=self._k
         setattr(klass, name, v)
-        if not klass._p_changed:
+        if not getattr(klass,'_p_changed',None):
             get_transaction().register(klass)
             klass._p_changed=1        
     def __delattr__(self, name):
         klass=self._k
         delattr(klass, name)
-        if not klass._p_changed:
+        if not getattr(klass,'_p_changed',None):
             get_transaction().register(klass)
             klass._p_changed=1 
        
@@ -297,7 +297,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
                 manage_tabs_message='The permission mapping has been updated')
 
 property_sheet_permissions=(
-    'Access contents information',
+    # 'Access contents information',
     'Manage properties',
     )
 
@@ -306,8 +306,8 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                     ):
     "Waaa this is too hard"
 
-    _Manage_properties_Permission='Manage properties'
-    _Access_contents_information_Permission='View'
+    _Manage_properties_Permission='_Manage_properties_Permission'
+    _Access_contents_information_Permission='_View_Permission'
 
     __ac_permissions__=(
         ('Manage properties', ('manage_addProperty',
@@ -327,7 +327,7 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
 Globals.default__class_init__(ZInstanceSheet)
     
 def rclass(klass):
-    if klass._p_changed==0:
+    if not getattr(klass, '_p_changed', 0):
         get_transaction().register(klass)
         klass._p_changed=1
 
@@ -354,7 +354,8 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
     def _delOb(self, id):
         delattr(self, id)
         pc=self.aq_inner.aq_parent.aq_parent._zclass_propertysheets_class
-        delattr(pc,id)
+        try: delattr(pc,id)
+        except: pass
         pc.__propset_attrs__=tuple(map(lambda o: o['id'], self._objects))
         rclass(pc)
 
