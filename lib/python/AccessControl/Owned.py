@@ -13,8 +13,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.16 2002/03/01 20:37:12 matt Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: Owned.py,v 1.17 2002/06/12 18:14:39 shane Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
@@ -226,6 +226,10 @@ class EditUnowned(Exception):
     "Can't edit unowned executables"
         
 
+def absattr(attr):
+    if callable(attr): return attr()
+    return attr
+
 def ownerInfo(user,
               getattr=getattr, type=type, st=type(''), None=None):
     if user is None:
@@ -233,7 +237,7 @@ def ownerInfo(user,
     uid=user.getId()
     if uid is None: return uid
     db=user.aq_inner.aq_parent
-    path=[db.id]
+    path=[absattr(db.id)]
     root=db.getPhysicalRoot()
     while 1:
         db=getattr(db,'aq_inner', None)
