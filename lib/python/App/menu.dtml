@@ -25,6 +25,14 @@
 <!--#var title_or_id-->
 </A>
 <!--#/tree-->
+<TABLE CELLSPACING="0">
+<TR>
+  <TD WIDTH="16"></TD>
+  <TD VALIGN="TOP" NOWRAP>
+  <STRONG><A HREF="manage_menu">Refresh</A></STRONG>
+  </TD>
+</TR>
+</TABLE>
 </BODY>
 </HTML>
 

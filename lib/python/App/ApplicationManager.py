@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -100,3 +100,8 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	if product not in products:
 	    Globals.Bobobase['products']=tuple(products)+(product,)
 
+
+    def copyToClipboard(self, REQUEST):
+	return Globals.MessageDialog(title='Not Supported',
+	                             message='This item cannot be copied',
+	                             action ='./manage_main',)
