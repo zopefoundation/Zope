@@ -24,6 +24,8 @@ Zope Changes
         - The start.bat file used to start ZopeHTTPServer on win32 was
           misnamed and didn't correctly pass command-line arguments.
 
+        - Win32 machines without an existing Python installation had problems
+          due to PYTHONPATH bootstrapping.
 
     Zope 1.9 beta 2
 
