@@ -438,8 +438,9 @@ class Element(Node):
             if (child.getNodeType()==ELEMENT_NODE and \
                     child.getTagName()==tagname or tagname== '*'):
                 nodeList.append(child)
-            n1 = child.getElementsByTagName(tagname)
-            nodeList = nodeList + n1._data
+            if hasattr(child, 'getElementsByTagName'):
+                n1 = child.getElementsByTagName(tagname)
+                nodeList = nodeList + n1._data
         return NodeList(nodeList)
    
 
