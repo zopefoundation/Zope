@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -133,13 +133,13 @@ class Version(Persistent,Implicit,RoleManager,Item):
 
     def title_and_id(self):
         r=Version.inheritedAttribute('title_and_id')(self)
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2        
             if Globals.VersionBase[self.cookie].nonempty(): return '%s *' % r
         else:
             # ZODB 3
-            if not db.versionEmpty(self._version): return '%s *' % r
+            if not db.versionEmpty(self.cookie): return '%s *' % r
         
         return r
 
@@ -219,7 +219,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
         if REQUEST: return self.manage_main(self, REQUEST)
         
     def nonempty(self):
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             return Globals.VersionBase[self.cookie].nonempty()
