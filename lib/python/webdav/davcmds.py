@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects.
 
-$Id: davcmds.py,v 1.22 2003/11/18 13:17:20 tseaver Exp $
+$Id: davcmds.py,v 1.23 2003/12/27 00:05:48 jeremy Exp $
 """
 
 import sys, os
@@ -246,7 +246,6 @@ class PropPatch:
                 if propset is None:
                     propsets.manage_addPropertySheet('', ns)
                     propset=propsets.get(ns)
-                propdict=propset._propdict()
                 if propset.hasProperty(name):
                     try:
                         propset._updateProperty(name, val, meta=md)
@@ -272,8 +271,6 @@ class PropPatch:
                     except:
                         errors.append('%s cannot be deleted.' % name)
                         status='409 Conflict'
-            if result != '200 OK':
-                abort = 1
             result.write('<d:propstat xmlns:n="%s">\n' \
                          '  <d:prop>\n' \
                          '  <n:%s/>\n' \
@@ -360,7 +357,7 @@ class Lock:
             if token is None:
                 token = lock.getLockToken()
 
-        except ValueError, valerrors:
+        except ValueError:
             errmsg = "412 Precondition Failed"
         except:
             errmsg = "403 Forbidden"

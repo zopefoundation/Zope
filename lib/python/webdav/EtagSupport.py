@@ -11,10 +11,10 @@
 #
 ##############################################################################
 
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 
-import time, Interface, re
+import time, Interface
 from webdav.common import PreconditionFailed
 
 class EtagBaseInterface(Interface.Base):

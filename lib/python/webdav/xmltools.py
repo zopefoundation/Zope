@@ -17,9 +17,8 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
-import sys, os
 import Shared.DC.xml.xmllib
 from Acquisition import Implicit
 

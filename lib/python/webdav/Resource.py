@@ -13,10 +13,9 @@
 
 """WebDAV support - resource objects.
 
-$Id: Resource.py,v 1.58 2003/11/18 13:17:20 tseaver Exp $
+$Id: Resource.py,v 1.59 2003/12/27 00:05:48 jeremy Exp $
 """
 
-import os
 import sys
 import mimetypes
 import time
@@ -317,7 +316,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
             raise BadRequest, 'Invalid Destination header'
 
         name = path.pop()
-        parent_path = '/'.join(path)
 
         oflag=REQUEST.get_header('Overwrite', 'F').upper()
         if not oflag in ('T', 'F'):
@@ -558,7 +556,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
         security = getSecurityManager()
-        user = security.getUser()
         token = REQUEST.get_header('Lock-Token', '')
         url = REQUEST['URL']
         token = tokenFinder(token)
