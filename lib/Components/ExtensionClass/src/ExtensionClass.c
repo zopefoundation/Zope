@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.1 1996/10/22 22:26:08 jim Exp $
+  $Id: ExtensionClass.c,v 1.2 1996/10/23 18:36:56 jim Exp $
 
   Extension Class
 
@@ -56,6 +56,15 @@
       (540) 371-6909
 
   $Log: ExtensionClass.c,v $
+  Revision 1.2  1996/10/23 18:36:56  jim
+  Changed a bunch of single quotes to double and got rid of
+  some superfluous semicolns that caused warning on SGI.
+
+  Fixed bug in CCL_getattr when getting the __base__ attribute of a base
+  class.
+
+  Fixed a doc string.
+
   Revision 1.1  1996/10/22 22:26:08  jim
   *** empty log message ***
 
@@ -71,7 +80,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.1 1996/10/22 22:26:08 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.2 1996/10/23 18:36:56 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -246,29 +255,29 @@ CMethod_getattr(self,name)
 {
   PyObject *r;
 
-  if(strcmp(name,'__name__')==0 || strcmp(name,'func_name')==0 )
+  if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
     return PyString_FromString(self->name);
-  if(strcmp(name,'func_code')==0 ||
-     strcmp(name,'im_func')==0)
+  if(strcmp(name,"func_code")==0 ||
+     strcmp(name,"im_func")==0)
     {
       Py_INCREF(self);
       return (PyObject *)self;
     }
-  if(strcmp(name,'__doc__')==0 ||
-     strcmp(name,'func_doc')==0 ||
-     strcmp(name,'func_doc')==0)
+  if(strcmp(name,"__doc__")==0 ||
+     strcmp(name,"func_doc")==0 ||
+     strcmp(name,"func_doc")==0)
     {
       if(self->doc)
 	return PyString_FromString(self->doc);
       else
 	return PyString_FromString("");
     }
-  if(strcmp(name,'im_class')==0)
+  if(strcmp(name,"im_class")==0)
     {
       Py_INCREF(self->type);
       return (PyObject *)self->type;
     }
-  if(strcmp(name,'im_self')==0)
+  if(strcmp(name,"im_self")==0)
     {
       if(self->self) r=self->self;
       else           r=Py_None;
@@ -417,23 +426,23 @@ Pmethod_getattr(self,name)
 {
   PyObject *r;
 
-  if(strcmp(name,'__name__')==0 || strcmp(name,'func_name')==0 )
+  if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
     return PyObject_GetAttrString(self->meth,"__name__");
-  if(strcmp(name,'im_func')==0)
+  if(strcmp(name,"im_func")==0)
     {
       Py_INCREF(self->meth);
       return self->meth;
     }
-  if(strcmp(name,'__doc__')==0 ||
-     strcmp(name,'func_doc')==0 ||
-     strcmp(name,'func_doc')==0)
+  if(strcmp(name,"__doc__")==0 ||
+     strcmp(name,"func_doc")==0 ||
+     strcmp(name,"func_doc")==0)
     return PyObject_GetAttrString(self->meth,"__doc__");
-  if(strcmp(name,'im_class')==0)
+  if(strcmp(name,"im_class")==0)
     {
       Py_INCREF(self->type);
       return (PyObject *)self->type;
     }
-  if(strcmp(name,'im_self')==0)
+  if(strcmp(name,"im_self")==0)
     {
       if(self->self) r=self->self;
       else           r=Py_None;
@@ -624,12 +633,12 @@ OP ## _by_name(PyObject *self, PyObject *args) { \
   return PyNumber_ ## AOP(self,v); \
 }
 
-BINOP(add,Add);
-BINOP(subtract,Subtract);
-BINOP(multiply,Multiply);
-BINOP(divide,Divide);
-BINOP(remainder,Remainder);
-BINOP(divmod,Divmod);
+BINOP(add,Add)
+BINOP(subtract,Subtract)
+BINOP(multiply,Multiply)
+BINOP(divide,Divide)
+BINOP(remainder,Remainder)
+BINOP(divmod,Divmod)
 
 static PyObject *
 power_by_name(PyObject *self, PyObject *args)
@@ -646,9 +655,9 @@ OP ## _by_name(PyObject *self, PyObject *args) { \
   return self->ob_type->tp_as_number->nb_ ## OP(self); \
 }
 
-UNOP(negative);
-UNOP(positive);
-UNOP(absolute);
+UNOP(negative)
+UNOP(positive)
+UNOP(absolute)
 
 static PyObject * 
 nonzero_by_name(PyObject *self, PyObject *args) { 
@@ -658,13 +667,13 @@ nonzero_by_name(PyObject *self, PyObject *args) {
   return PyInt_FromLong(r); 
 } 
 
-UNOP(invert);
+UNOP(invert)
 
-BINOP(lshift,Lshift);
-BINOP(rshift,Rshift);
-BINOP(and,And);
-BINOP(or,Or);
-BINOP(xor,Xor);
+BINOP(lshift,Lshift)
+BINOP(rshift,Rshift)
+BINOP(and,And)
+BINOP(or,Or)
+BINOP(xor,Xor)
 
 static PyObject *
 coerce_by_name(PyObject *self, PyObject *args)
@@ -683,11 +692,11 @@ coerce_by_name(PyObject *self, PyObject *args)
   return args;
 } 
 
-UNOP(long);
-UNOP(int);
-UNOP(float);
-UNOP(oct);
-UNOP(hex);
+UNOP(long)
+UNOP(int)
+UNOP(float)
+UNOP(oct)
+UNOP(hex)
 
 #define FILLENTRY(T,MN,N,F,D) if(T ## _ ## MN) { \
   UNLESS(-1 != PyMapping_SetItemString(dict,"__" # N "__", \
@@ -711,7 +720,7 @@ getBaseDictionary(PyExtensionClass *type)
   FILLENTRY(type->tp, call, call, 2, "call as a function");
   FILLENTRY(type->tp, compare, comp, 0, "compare with another object");
   FILLENTRY(type->tp, getattr, getattr, 0, "Get an attribute");
-  FILLENTRY(type->tp, setattr, setattr, 0, "Get an attribute");
+  FILLENTRY(type->tp, setattr, setattr, 0, "Set an attribute");
   if(sm=type->tp_as_sequence)
     {
       FILLENTRY(sm->sq, length, len, 0, "Get the object length");
@@ -933,8 +942,13 @@ CCL_getattr(self, name)
 	}
       if(strcmp(n,"bases__")==0)
 	{
-	  Py_INCREF(self->bases);
-	  return self->bases;
+	  if(self->based)
+	    {
+	      Py_INCREF(self->bases);
+	      return self->bases;
+	    }
+	  else
+	    return PyTuple_New(0)
 	}
     }
   
@@ -1310,11 +1324,11 @@ subclass_ ## M(PyObject *self, PyObject *v) \
   return m; \
 }  
   
-BINSUB(add,add,Add);
-BINSUB(subtract,sub,Subtract);
-BINSUB(multiply,mul,Multiply);
-BINSUB(divide,div,Divide);
-BINSUB(remainder,mod,Remainder);
+BINSUB(add,add,Add)
+BINSUB(subtract,sub,Subtract)
+BINSUB(multiply,mul,Multiply)
+BINSUB(divide,div,Divide)
+BINSUB(remainder,mod,Remainder)
 
 static PyObject * 
 subclass_power(PyObject *self, PyObject *v, PyObject *w) 
@@ -1334,12 +1348,12 @@ subclass_power(PyObject *self, PyObject *v, PyObject *w)
 }  
 
 
-BINSUB(divmod,divmod,Divmod);
-BINSUB(lshift,lshift,Lshift);
-BINSUB(rshift,rshift,Rshift);
-BINSUB(and,and,And);
-BINSUB(or,or,Or);
-BINSUB(xor,xor,Xor);
+BINSUB(divmod,divmod,Divmod)
+BINSUB(lshift,lshift,Lshift)
+BINSUB(rshift,rshift,Rshift)
+BINSUB(and,and,And)
+BINSUB(or,or,Or)
+BINSUB(xor,xor,Xor)
 
 
 static int
@@ -1917,7 +1931,7 @@ subclass__init__(self,args)
   self->tp_setattr=subclass_setattr;
 
 #define subclass_set(OP,N) \
-  self->tp_ ##OP = subclass_ ##OP; 
+  self->tp_ ##OP = subclass_ ##OP
   
   subclass_set(compare,cmp);
   subclass_set(repr,repr);
