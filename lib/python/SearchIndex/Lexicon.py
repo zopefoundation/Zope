@@ -113,6 +113,8 @@ class Lexicon(Persistent, Implicit):
 
     """
 
+    counter = 0
+
     def __init__(self):
         self._lexicon = OIBTree()
 
@@ -125,7 +127,7 @@ class Lexicon(Persistent, Implicit):
         else:
             self._lexicon[intern(word)] = self.counter
             self.counter = self.counter + 1
-            return self.counter
+            return self.counter - 1 
 
     def get(self, key):
         """  """
