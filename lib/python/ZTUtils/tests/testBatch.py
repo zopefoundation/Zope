@@ -42,6 +42,12 @@ class BatchTests(TestCase):
         assert b.sequence_length == 8
         assert len(b.next) == 3
 
+    def testLengthEqualsSizePlusOrphans(self):
+        '''Test limit case where batch length is equal to size + orphans'''
+        for bsize in (12, 14):
+            b = Batch(range(bsize), size=10, start=1, end=0, orphan=3, overlap=0)
+            assert b.length = b.sequence_length
+    
 def test_suite():
     return makeSuite(BatchTests)
 

@@ -122,6 +122,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1265: Fixed handling of orphans in ZTUtil.Batch
+
      - Collector #1293: missing 'address' parameters within one of the server
        sections raise an exception. 
 

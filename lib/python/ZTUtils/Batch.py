@@ -105,7 +105,7 @@ def opt(start,end,size,orphan,sequence):
             if end < start: end=start
         else:
             end=start+size-1
-            try: sequence[end+orphan-1]
+            try: sequence[end+orphan]
             except IndexError: end=len(sequence)
     elif end > 0:
         try: sequence[end-1]
