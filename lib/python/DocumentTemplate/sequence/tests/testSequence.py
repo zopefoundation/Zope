@@ -92,6 +92,7 @@ except ImportError:
     import Testing
 
 import unittest
+sys.path.insert(0, '..')
 from SortEx import *
 from ztestlib import *
 from results import *
