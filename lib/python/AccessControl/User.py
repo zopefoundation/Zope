@@ -84,9 +84,9 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
-import Globals, App.Undo, socket, regex, binascii, sha
+import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
 from string import join,strip,split,lower
 from App.Management import Navigation, Tabs
@@ -97,18 +97,9 @@ from App.ImageFile import ImageFile
 from Role import RoleManager
 from string import split, join, upper
 from PermissionRole import _what_not_even_god_should_do, rolesForPermissionOn
+from AuthEncoding import pw_validate
 
-# Bogosity on various platforms due to ITAR restrictions
-try:
-    import crypt
-except ImportError:
-    crypt = None
-    
 ListType=type([])
-
-
-
-
 NotImplemented='NotImplemented'
 
 
@@ -168,16 +159,8 @@ class BasicUser(Implicit):
     
     def authenticate(self, password, request):
         passwrd=self._getPassword()
-        result = 0
-        if upper(passwrd[:5]) == '{SHA}':
-            password = binascii.b2a_base64(sha.new(password).digest())[:-1]
-            result = passwrd[5:] == password
-        elif upper(passwrd[:7]) == '{CRYPT}' and crypt is not None:
-            #if crypt is None, it's not compiled in and everything will fail
-            password = crypt(password, passwrd[7:9])
-            result = passwrd[7:] == password
-        else:
-            result = passwrd == password
+
+        result = pw_validate(passwrd, password)
         
         domains=self.getDomains()
         if domains:
