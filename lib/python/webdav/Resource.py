@@ -65,14 +65,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         # Init expected HTTP 1.1 / WebDAV headers which are not
         # currently set by the base response object automagically.
         #
-        # Note we set an borg-specific header for ie5 :( Also, we
-        # sniff for a ZServer response object, because we don't
+        # We sniff for a ZServer response object, because we don't
         # want to write duplicate headers (since ZS writes Date
         # and Connection itself).
         if not hasattr(response, '_server_version'):
             response.setHeader('Connection', 'close')
             response.setHeader('Date', rfc1123_date(), 1)
-        response.setHeader('MS-Author-Via', 'DAV')
 
         # HTTP Range support
         if HTTPRangeInterface.isImplementedBy(self):
@@ -199,7 +197,6 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', ', '.join(self.__http_methods__))
         RESPONSE.setHeader('Content-Length', 0)
-        RESPONSE.setHeader('DAV', '1,2', 1)
         RESPONSE.setStatus(200)
         return RESPONSE
 

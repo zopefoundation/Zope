@@ -139,6 +139,13 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1441: Removed headers introduced to make Microsoft
+       webfolders and office apps happy, since they make a lot of
+       standards-compliant things unhappy AND they trick MS Office
+       into trying to edit office files stored in Zope via WebDAV even
+       when the user isn't allowed to edit them and is only trying to
+       download them.
+
      - Collector #1445: Fixed bad interaction between -p and -v(v)
        options to test.py that resulted in exceptions being printed
        when they shouldn't have been.

@@ -92,9 +92,6 @@ class ZServerHTTPResponse(HTTPResponse):
         if headers.has_key('status'):
             del headers['status']
 
-        if not headers.has_key("Etag"):
-            self.setHeader('Etag','')
-
         # add zserver headers
         append('Server: %s' % self._server_version)
         append('Date: %s' % build_http_date(time.time()))

@@ -43,7 +43,6 @@ class Collection(Resource):
             response.setHeader('Content-Location', location)
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
-        response.setHeader('MS-Author-Via', 'DAV')
 
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
