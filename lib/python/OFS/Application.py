@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.65 1998/05/12 19:06:18 jim Exp $'''
-__version__='$Revision: 1.65 $'[11:-2]
+$Id: Application.py,v 1.66 1998/07/13 12:11:34 jim Exp $'''
+__version__='$Revision: 1.66 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -23,6 +23,7 @@ from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
 from Persistence import Persistent
 from ImageFile import ImageFile
+from urllib import quote
 
 _standard_error_msg='''\
 <!--#var standard_html_header-->
@@ -166,6 +167,37 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder):
     def PrincipiaTime(self):
 	"""Utility function to return current date/time"""
 	return DateTime()
+
+    def PrincipiaFind(self, start, _initial=None, prefix='',
+                      type=None, substring=None, name=None,
+                      ):
+        if _initial is None: _initial=[]
+        
+        if hasattr(start,'aq_base'): start=start.aq_base
+        if not hasattr(start, 'objectItems'): return _initial
+        try: items=start.objectItems()
+        except: return _initial
+        for oname, o in items:
+            if prefix: p="%s/%s" % (prefix, oname)
+            else: p=oname
+            if hasattr(o,'aq_base'): o=o.aq_base
+            if (
+                (type is None or not hasattr(o,'meta_type') or
+                 type==o.meta_type)
+                and
+                (name is None or oname==name)
+                and
+                (substring is None or
+                 (hasattr(o,'PrincipiaSearchSource') and
+                  find(o.PrincipiaSearchSource(),substring) >= 0
+                  ))
+                ):
+                _initial.append(p)
+            if hasattr(o, 'objectItems'):
+                self.PrincipiaFind(o,_initial,p,type,substring,name)
+
+        return _initial
+
 
 
 class Expired(Persistent):
@@ -396,6 +428,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.66  1998/07/13 12:11:34  jim
+# Added PrincipiaFind.
+#
 # Revision 1.65  1998/05/12 19:06:18  jim
 # Changed to allow defaults in permission definitions.
 #
