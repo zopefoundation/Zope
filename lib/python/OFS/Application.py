@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.178 2002/01/09 19:06:34 andreasjung Exp $'''
-__version__='$Revision: 1.178 $'[11:-2]
+$Id: Application.py,v 1.179 2002/01/09 19:14:03 andreasjung Exp $'''
+__version__='$Revision: 1.179 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -372,13 +372,10 @@ def initialize(app):
 
     if not hasattr(app, 'Examples') and not \
        hasattr(app, '_Zope25_examples_have_been_added'):
-<<<<<<< Application.py
-        examples_path = os.path.join(Globals.INSTANCE_HOME, 'import', 'Examples.zexp')
-=======
 
         examples_path = os.path.join(Globals.SOFTWARE_HOME, \
              '..','..','import', 'Examples.zexp')
->>>>>>> 1.176.2.2
+
         if os.path.isfile(examples_path):
             app._importObjectFromFile(examples_path, verify=0)
             app._Zope25_examples_have_been_added=1
