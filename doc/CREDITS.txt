@@ -16,6 +16,8 @@ Credits
 
     o Martijn Pieters chipped in with a safe range function.
 
+    o Michael Hauser came up with the name "Zope".
+
     o All the other Zopistas far and wide that stuck with us during
     the Bobo/Principia days and politely push us to make the best damn
     app server on this or any other planet.
@@ -25,3 +27,4 @@ Credits
   long-time friend of Digital Creations.  Zope Power is Python Power.
 
   Paul Everitt, paul@digicool.com.
+
