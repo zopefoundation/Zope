@@ -13,8 +13,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.15 2001/12/13 14:24:02 andreasjung Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Owned.py,v 1.16 2002/03/01 20:37:12 matt Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
@@ -78,10 +78,6 @@ class Owned(ExtensionClass.Base):
         if owner is UnownableOwner: return None
 
         udb, oid = owner
-        upath = ('',) + tuple(udb) + (oid,)
-        objectCache = getSecurityManager()._context.objectCache
-        if objectCache.has_key(upath):
-            return objectCache[upath]
 
         root=self.getPhysicalRoot()
         udb=root.unrestrictedTraverse(udb, None)
@@ -90,7 +86,6 @@ class Owned(ExtensionClass.Base):
         else:
             user = udb.getUserById(oid, None)
             if user is None: user = SpecialUsers.nobody
-        objectCache[upath] = user
         return user
 
     changeOwnership__roles__=()
