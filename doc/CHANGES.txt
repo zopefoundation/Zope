@@ -115,7 +115,7 @@ Zope Changes
           syntax. The DTML sources for Zope's built-in management 
           interfaces have also been converted to the new syntax.
 
-	- DTML entity references can now include dot-separated
+        - DTML entity references can now include dot-separated
           var tag *options*, as in: '&dtml.url_quote-foo;'
 
         - There is a new 'url' option on the DTML var tag that causes
@@ -128,12 +128,12 @@ Zope Changes
 
         - There is a new 'missing' option in the DTML var tag that
           allows you to provide a value to be used if the variable is
-	  missing, rather than raising a KeyError.  This will work in
-	  the entity reference syntax as well.  If it is used without
-	  an argument, it will provide an empty string.
+          missing, rather than raising a KeyError.  This will work in
+          the entity reference syntax as well.  If it is used without
+          an argument, it will provide an empty string.
 
         - The DTML built-in function, getattr, now accepts an additional 
-	  argument providing a default value.	 
+          argument providing a default value.    
 
         - The tag() method of Image objects now support optional 'scale',
           'xscale' and 'yscale' arguments that will automatically scale 
@@ -176,7 +176,7 @@ Zope Changes
           from Pythonware.
 
         - Add button returned to the management interface, although
-	  the Javascript auto-select is still in place.  This resolves 
+          the Javascript auto-select is still in place.  This resolves 
           some problems with browsers on certain platforms.
 
         - Added small explanation on Image/File add form that if the
