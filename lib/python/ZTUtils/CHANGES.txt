@@ -4,9 +4,12 @@ ZTUtils changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.1.0
+    Version 1.1.1
 
       Features Added
+
+        - Used an algorithm submitted by Tino Wildenhain to add
+          Roman numeral support to Iterators.
 
         - TreeMakers have a setChildAccess() method that you can use
           to control tree construction.  Child nodes can be accessed
@@ -38,3 +41,4 @@ ZTUtils changes
 
       Bugs Fixed
 
+        - Version 1.1.0 broke on Python 1.5.2 and Zope <2.4

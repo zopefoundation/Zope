@@ -84,19 +84,30 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.2 2001/08/13 18:15:34 evan Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Zope.py,v 1.3 2001/08/16 17:42:53 evan Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
 from SimpleTree import SimpleTreeMaker
 from Batch import Batch
 from Products.ZCatalog.Lazy import Lazy
-from AccessControl.ZopeGuards import guarded_getitem
-from AccessControl import getSecurityManager, Unauthorized
+from AccessControl import getSecurityManager
 from string import split, join
 from types import StringType, ListType, IntType, FloatType
 from DateTime import DateTime
+
+try:
+    from AccessControl.ZopeGuards import guarded_getitem
+except ImportError:
+    Unauthorized = 'Unauthorized'
+    def guarded_getitem(object, index):
+        v = object[index]
+        if getSecurityManager().validate(object, object, index, v):
+            return v
+        raise Unauthorized, 'unauthorized access to element %s' % `i`
+else:
+    from AccessControl import Unauthorized
 
 class LazyFilter(Lazy):
     # A LazyFilter that checks with the security policy
@@ -128,24 +139,27 @@ class LazyFilter(Lazy):
         e=self._eindex
         skip = self._skip
         while i > ind:
+            e = e + 1
             try:
-                e=e+1
                 try: v = guarded_getitem(s, e)
-                except Unauthorized, vv:
+                except 'Unauthorized', vv:
                     if skip is None:
                         msg = '(item %s): %s' % (index, vv)
                         raise Unauthorized, msg, sys.exc_info()[2]
-                    continue
-                if skip and not getSecurityManager().checkPermission(skip, v):
-                    continue
-                if test is None or test(v):
-                    data.append(v)
-                    ind=ind+1
+                    skip_this = 1
+                else:
+                    skip_this = 0
             except IndexError:
                 del self._test
                 del self._seq
                 del self._eindex
                 raise IndexError, index
+            if skip_this: continue
+            if skip and not getSecurityManager().checkPermission(skip, v):
+                continue
+            if test is None or test(v):
+                data.append(v)
+                ind=ind+1
         self._eindex=e
         return data[i]
 
