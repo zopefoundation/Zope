@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -129,7 +129,8 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
     )
     _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1,
-                 '_proxy_roles':1, 'title':1}.has_key
+                 '_proxy_roles':1, 'title':1,
+                 '__ac_local_roles__':1}.has_key
 
     def __getstate__(self):
         r={}
