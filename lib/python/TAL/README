@@ -62,7 +62,6 @@ setpath.py		hack to set sys.path and import ZODB
 __init__.py		empty file that makes this directory a package
 runtest.py		Python script to run regression tests
 ndiff.py		helper for runtest.py to produce diffs
-runtest.sh		shell script to run regression tests (old)
 test/			drectory with test files and output
 
 Author and License
