@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-$Id: StructuredText.py,v 1.4 1997/02/17 23:36:35 jim Exp $'''
+$Id: StructuredText.py,v 1.5 1997/03/08 16:01:03 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,10 @@ $Id: StructuredText.py,v 1.4 1997/02/17 23:36:35 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.5  1997/03/08 16:01:03  jim
+# Moved code to recognize: "foo bar", url.
+# into object initializer, so it gets applied in all cases.
+#
 # Revision 1.4  1997/02/17 23:36:35  jim
 # Added support for "foo title", http:/foohost/foo
 #
@@ -211,6 +215,15 @@ class StructuredText:
 	  aStructuredString -- The string to be parsed.
 	  level -- The level of top level headings to be created.
 	'''
+
+	aStructuredString = gsub(
+	    '\(\"[^\"\0]+\"\),[\0- ]+'            # title part
+	    '\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=]+\)'  # URL
+	    '\(,\|\([.:?;]\)\)'                   # trailing puctuation
+	    '\([\0- ]\)',                         # trailing space
+	    '<a href="\\2">\\1</a>\\4\\5',
+	    aStructuredString)
+
 	self.level=level
 	paragraphs=regsub.split(untabify(aStructuredString),paragraph_divider)
 	paragraphs=map(indent_level,paragraphs)
@@ -352,14 +365,6 @@ def html_with_references(text):
     text = gsub(
 	'\([\0- ,]\)\[\([^]]+\)\.html\]\([\0- ,.:]\)',
 	'\\1<a href="\\2.html">[\\2]</a>\\3',
-	text)
-
-    text = gsub(
-	'\(\"[^\"\0]+\"\),[\0- ]+'               # title part
-	'\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=]+\)'  # URL
-	'\(,\|\([.:?;]\)\)'                   # trailing puctuation
-	'\([\0- ]\)',                         # trailing space
-	'<a href="\\2">\\1</a>\\4\\5',
 	text)
 
     return HTML(text,level=1)
