@@ -297,7 +297,7 @@ Zpid=''
 
 # If you want run as a daemon, then uncomment the line below:
 if sys.platform=='win32': Zpid=''
-else: Zpid='var/zProcessManager.pid'
+else: Zpid='zProcessManager.pid'
 
 # This is the IP address of the network interface you want your servers to
 # be visible from.  This can be changed to '' to listen on all interfaces.
@@ -520,14 +520,21 @@ if LOCALE_ID is not None:
 
 # Import ZServer before we open the database or get at interesting
 # application code so that ZServer's asyncore gets to be the
-# official one.
+# official one. Also gets SOFTWARE_HOME and INSTANCE_HOME
 import ZServer
+
+# CLIENT_HOME allows ZEO clients to easily keep distinct pid and
+# log files. This is currently an *experimental* feature, as I expect
+# that increasing ZEO deployment will cause bigger changes to the
+# way that z2.py works fairly soon.
+try:    CLIENT_HOME = os.environ['CLIENT_HOME']
+except: CLIENT_HOME = os.path.join(INSTANCE_HOME, 'var')
 
 if Zpid and not READ_ONLY:
     import zdaemon, App.FindHomes, posix
     sys.ZMANAGED=1
     
-    zdaemon.run(sys.argv, os.path.join(INSTANCE_HOME, Zpid))
+    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
 
 # Import logging support
 import zLOG
@@ -540,24 +547,23 @@ else:
 
 if DETAILED_LOG_FILE:
     from ZServer import DebugLogger
-    logfile=os.path.join(INSTANCE_HOME, 'var', DETAILED_LOG_FILE)
+    logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
     DebugLogger.log=DebugLogger.DebugLogger(logfile).log
     
-# Import Zope (or Main), and thus get SOFTWARE_HOME and INSTANCE_HOME
+# Import Zope (or Main)
 exec "import "+MODULE in {}
-
 
 # Location of the ZServer log file. This file logs all ZServer activity.
 # You may wish to create different logs for different servers. See
 # medusa/logger.py for more information.
 if not os.path.isabs(LOG_FILE):
-    LOG_PATH=os.path.join(INSTANCE_HOME, 'var', LOG_FILE)
+    LOG_PATH=os.path.join(CLIENT_HOME, LOG_FILE)
 else:
     LOG_PATH=LOG_FILE
 
 # Location of the ZServer pid file. When ZServer starts up it will write
 # its PID to this file.
-PID_FILE=os.path.join(INSTANCE_HOME, 'var', 'Z2.pid')
+PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
 
 
 # import ZServer stuff
@@ -604,7 +610,7 @@ if HTTP_PORT:
 
         # Handler for a published module. zhttp_handler takes 3 arguments:
         # The name of the module to publish, and optionally the URI base
-        # which is basically the SCIRPT_NAME, and optionally a dictionary
+        # which is basically the SCRIPT_NAME, and optionally a dictionary
         # with CGI environment variables which override default
         # settings. The URI base setting is useful when you want to
         # publish more than one module with the same HTTP server. The CGI
