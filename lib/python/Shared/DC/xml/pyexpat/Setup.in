@@ -1,2 +1,3 @@
 *shared*
-pyexpat pyexpat.o expat/libexpat.a -Iexpat/xmlparse
+pyexpat pyexpat.c -DXML_NS -Iexpat/xmlparse -Iexpat/xmltok expat/xmlparse/xmlparse.c expat/xmlparse/hashtable.c expat/xmltok/xmlrole.c expat/xmltok/xmltok.c
+
