@@ -280,6 +280,7 @@ class RaceConditionBase(BerkeleyTestBase):
     def tearDown(self):
         # clean up any outstanding transactions
         get_transaction().abort()
+        BerkeleyTestBase.tearDown(self)
 
     def _getPackThread(self, storage):
         raise NotImplementedError
