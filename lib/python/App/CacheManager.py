@@ -11,8 +11,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.7 1998/08/03 13:43:00 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: CacheManager.py,v 1.8 1998/11/10 14:55:53 brian Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals, time, sys
 
@@ -47,7 +47,7 @@ class CacheManager:
 		'''You may not change the database cache size
 		while working in a <em>session</em>''')
 	self._cache_size=Globals.Bobobase._jar.cache.cache_size=value
-	return self.manage_CacheParameters(self,REQUEST)
+	return self.manage_cacheParameters(self,REQUEST)
 
     def cache_mean_age(self):
 	return Globals.Bobobase._jar.cache.cache_mean_age
@@ -111,6 +111,9 @@ class CacheManager:
 ############################################################################## 
 #
 # $Log: CacheManager.py,v $
+# Revision 1.8  1998/11/10 14:55:53  brian
+# Fixed typo in cache manager
+#
 # Revision 1.7  1998/08/03 13:43:00  jim
 #       - New folderish control panel that separates database and
 #         product management into separate interfaces.
