@@ -10,10 +10,11 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 """BeforeTraverse interface and helper classes"""
 
+from Acquisition import aq_base
 from zLOG import LOG, ERROR
 import sys
 
@@ -129,7 +130,16 @@ class NameCaller:
         except AttributeError:
             return
 
-        args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
+        # The code below can acquire "func_code" from an unrelated object
+        # on the acquisition chain.
+        # This happens especially, if "meth" is a "CookieCrumber" instance,
+        # i.e. in a CMF Portal, if a DTMLMethod (or a similar object
+        # with a fake "func_code" is in the acquisition context
+        #args = getattr(getattr(meth, 'func_code', None), 'co_argcount', 2)
+        args = getattr(getattr(aq_base(meth), 'func_code', None),
+                       'co_argcount',
+                       2)
+
         try:
             apply(meth, (container, request, None)[:args])
         except (ArithmeticError, AttributeError, FloatingPointError,
