@@ -1,6 +1,6 @@
 cPickle, A C Pickle Implementation
 
-  "cPickle", http://www.digicool.com/releases/cPickle/cPickle-1.0b1.tar.gz,
+  "cPickle", http://www.digicool.com/releases/cPickle/cPickle-1.0b2.tar.gz,
   is a C implementation of the Python module, pickle.py, and is
   fully compatible with pickle: all types picklable by pickle can be
   pickled using cPickle [1], and pickles generated using pickle may be
@@ -112,8 +112,8 @@ cPickle, A C Pickle Implementation
   
   Status
 
-    The current release of cPickle is "1.0b1",
-    http://www.digicool.com/releases/cPickle/cPickle-1.0b1.tar.gz.
+    The current release of cPickle is "1.0b2",
+    http://www.digicool.com/releases/cPickle/cPickle-1.0b2.tar.gz.
     This release requires Python version 1.4 or higher.
 
     This version introduces a special binary mode format for floats.
@@ -308,6 +308,36 @@ cPickle, A C Pickle Implementation
 
         - A number of cleanups done by Guido were incorporated.
 
+     1.0b2 -- I forgot a few things in 1.0b1
+
+        New features
+
+	- Loading non-binary string pickles checks for insecure
+	  strings. This is needed because cPickle (still) uses
+	  a restricted eval to parse non-binary string pickles.
+	  This change is needed to prevent pickles like::
+
+	    "S'hello world'*2000000\012p0\012."
+
+	  from hosing an application.
+
+	- User-defined types can now support unpickling without
+	  executing a constructor.
+
+	  The second value returned from '__reduce__' can now be None,
+          rather than an argument tuple.  On unpickling, if the
+	  second value returned from '__reduce__' during pickling was
+	  None, then rather than calling the first value returned from
+          '__reduce__', directly, the '__basicnew__' method of the
+          first value returned from '__reduce__' is called without
+	  arguments.
+
+	Cleanup
+
+	- Incorporated Guido's changes to cStringIO.h and copy_reg.py
+
+	- Removed pickle.py from cPickle distribution.
+	  
   To do
 
 
