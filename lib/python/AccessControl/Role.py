@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -20,66 +20,7 @@ class RoleManager:
 			('Shared permission',['']),
 		       )
    
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		 )
-
     __ac_roles__=('Manager', 'Anonymous', 'Shared')
-
-    def access_info(self):
-	# Return access summary info
-	data={}
-	for t in self.access_types():
-	    name=t.name
-	    for role in t.getRoles():
-		data[role]=name
-	keys=data.keys()
-	for i in range(len(keys)):
-	    key=keys[i]
-	    keys[i]={'name': key, 'value': data[key]}
-	return keys
-
-    def access_defaults(self):
-	data=[]
-	for p in self.access_permissions():
-	    if not p.getRoles():
-		data.append(p)
-	return data
-
-    def access_types(self):
-	# Return list of access type objects
-	list=[]
-	for name,value in self.__ac_types__:
-	    list.append(AccessType(name,value,self))
-	return list
-
-    def access_types_dict(self):
-	# Return dict of access type objects
-	dict={}
-	for name,value in self.__ac_types__:
-	    dict[name]=AccessType(name,value,self)
-	return dict
-
-    def access_types_gc(self, dict):
-	# Remove unused types of access
-	static=map(lambda x: x[0], self.__class__.__ac_types__)
-
-	data=list(self.__ac_types__)
-	flag=0
-	for name, type in dict.items():
-	    roles=type.getRoles()
-	    if not roles and name not in static:
-		try:
-		    data.remove((name, type.data))
-		    flag=1
-		except:
-		    pass
-	if flag: self.__ac_types__=tuple(data)
-
-    def access_type_for(self, role):
-	for type in self.access_types():
-	    if role in type.getRoles():
-		return type
-	return None
 
     def access_permissions(self):
 	# Return list of permission objects
@@ -151,136 +92,89 @@ class RoleManager:
 	return roles
 
     _mainAccess=HTMLFile('mainAccess', globals())
-    _listAccess=HTMLFile('listAccess', globals())
     _editAccess=HTMLFile('editAccess', globals())
-    _specAccess=HTMLFile('specAccess', globals())
     _add_Access=HTMLFile('addAccess', globals())
+    _del_Access=HTMLFile('delAccess', globals())
 
-    def manage_access(self,SUBMIT=None,REQUEST=None):
+    def manage_access(self,submit=None,REQUEST=None):
 	""" """
-	if SUBMIT=='Add...':
+	if submit=='Add...':
 	    return self._add_Access(self, REQUEST)
 
-	if SUBMIT=='Edit':
+	if submit=='Edit':
 	    return self._editAccess(self, REQUEST)
 
-	if SUBMIT=='Add':
+	if submit=='Add':
 	    roles =reqattr(REQUEST, 'roles')
-	    access=reqattr(REQUEST, 'access')
-	    return self._addAccess(roles, access, REQUEST)
+	    permissions=reqattr(REQUEST, 'permissions')
+	    return self._addAccess(roles, permissions, REQUEST)
 
-	if SUBMIT=='List':
-	    return self._listAccess(self, REQUEST)
-
-	if SUBMIT=='Change':
+	if submit=='Change':
 	    role  =reqattr(REQUEST, 'role')
-	    access=reqattr(REQUEST, 'access')
-	    return self._changeAccess(role, access, REQUEST)
+	    permissions=reqattr(REQUEST, 'permissions')
+	    return self._changeAccess(role, permissions, REQUEST)
 
-	if SUBMIT=='Remove':
+	if submit=='Remove...':
+	    return self._del_Access(self, REQUEST)
+
+	if submit=='Remove':
 	    roles=reqattr(REQUEST, 'roles')
 	    return self._delAccess(roles, REQUEST)
 
-	if SUBMIT=='OK':
-	    permissions=reqattr(REQUEST, 'permissions')
-	    access=reqattr(REQUEST, 'access')
-	    roles =reqattr(REQUEST, 'roles')
-	    return self._specialAccess(roles,access,permissions,REQUEST)
-
-	if SUBMIT=='Add Role':
+	if submit=='Add Role':
 	    role=reqattr(REQUEST, 'role')
 	    return self._addRole(role, REQUEST)
 
-	if SUBMIT=='Delete Role':
+	if submit=='Delete Role':
 	    roles=reqattr(REQUEST, 'roles')
 	    return self._delRoles(roles, REQUEST)
 
 	return self._mainAccess(self,REQUEST)
 
-    def _addAccess(self, roles, access, REQUEST):
-	if not roles or not access:
+    def _addAccess(self, roles, permissions, REQUEST):
+	if not roles or not permissions:
 	    return MessageDialog(
 		   title  ='Incomplete',
-		   message='You must specify roles and a type of access',
+		   message='You must specify roles and permissions',
 		   action ='manage_access')
 	if not self.validate_roles(roles):
 	    return MessageDialog(
 		   title  ='Undefined Role',
 		   message='An undefined role was specified',
 		   action ='manage_access')
-	if access=='Special Access...':
-	    return self._specAccess(self, REQUEST)
-	types=self.access_types_dict()
-	for type in types.values():
-	    type.delRoles(roles)
-	types[access].setRoles(roles)
-	return self._mainAccess(self, REQUEST)
-
-    def _changeAccess(self, role, access, REQUEST=None):
-	if not access or not role:
-	    return MessageDialog(
-		   title  ='Incomplete',
-		   message='You must specify a type of access',
-		   action ='manage_access')
-	if not self.validate_roles([role,]):
-	    return MessageDialog(
-		   title  ='Undefined Role',
-		   message='An undefined role was specified',
-		   action ='manage_access')
-	if access=='Special Access...':
-	    REQUEST['roles']=[role,]
-	    return self._specAccess(self, REQUEST)
-	types=self.access_types_dict()
-	for type in types.values():
-	    type.delRoles([role,])
-	types[access].setRoles([role,])
-	self.access_types_gc(types)
-	return self._mainAccess(self, REQUEST)
-
-    def _specialAccess(self, roles, access, permissions, REQUEST=None):
-	if not roles or not access:
-	    return MessageDialog(
-		   title  ='Incomplete',
-		   message='You must specify roles and a type of access',
-		   action ='manage_access')
-	if not self.validate_roles(roles):
-	    return MessageDialog(
-		   title  ='Undefined Role',
-		   message='An undefined role was specified',
-		   action ='manage_access')
-
-	if not permissions: permissions=[]
-
 	dict=self.access_permissions_dict()
 	if 0 in map(dict.has_key, permissions):
 	    return MessageDialog(
 		   title  ='Unknown permission',
 		   message='An unknown permission was specified',
 		   action ='manage_changeAccess')
-	dict=self.access_types_dict()
-	if dict.has_key(access):
+	for p in dict.values():
+	    p.delRoles(roles)
+	for p in permissions:
+	    dict[p].setRoles(roles)
+	return self._mainAccess(self, REQUEST)
+
+    def _changeAccess(self, role, permissions, REQUEST=None):
+	if not role or not permissions:
 	    return MessageDialog(
-		   title  ='Name in use',
-		   message='The name specified is already in use',
+		   title  ='Incomplete',
+		   message='You must specify roles and permissions',
 		   action ='manage_access')
-
-	# Check for duplicate access types
-	permissions.sort()
-	for key, value in dict.items():
-	    names=value.data[:]
-	    names.sort()
-	    if permissions==names:
-		return MessageDialog(
-		       title  ='Already defined',
-		       message='Another access type (%s) is already defined '\
-		               'with the selected permissions' % key,
-		       action ='manage_access')
-
-	self.__ac_types__=self.__ac_types__+((access,permissions),)
-	types=self.access_types_dict()
-	for type in types.values():
-	    type.delRoles(roles)
-	types[access].setRoles(roles)
+	if not self.validate_roles([role]):
+	    return MessageDialog(
+		   title  ='Undefined Role',
+		   message='An undefined role was specified',
+		   action ='manage_access')
+	dict=self.access_permissions_dict()
+	if 0 in map(dict.has_key, permissions):
+	    return MessageDialog(
+		   title  ='Unknown permission',
+		   message='An unknown permission was specified',
+		   action ='manage_changeAccess')
+	for p in dict.values():
+	    p.delRoles([role])
+	for p in permissions:
+	    dict[p].setRoles([role])
 	return self._mainAccess(self, REQUEST)
 
     def _delAccess(self, roles, REQUEST=None):
@@ -289,10 +183,9 @@ class RoleManager:
 		   title  ='Incomplete',
 		   message='You must specify roles to remove',
 		   action ='manage_access')
-	types=self.access_types_dict()
-	for type in types.values():
-	    type.delRoles(roles)
-	self.access_types_gc(types)
+	dict=self.access_permissions_dict()
+	for p in dict.values():
+	    p.delRoles(roles)
 	return self._mainAccess(self, REQUEST)
 
     def _addRole(self, role, REQUEST=None):
@@ -338,6 +231,10 @@ class RoleManager:
 	pass
 
 Globals.default__class_init__(RoleManager)
+
+
+
+
 
 class Permission:
     # A Permission maps a named logical permission to a set
@@ -401,102 +298,26 @@ class Permission:
 	    if hasattr(attr,'aq_self'):
 		attr=attr.aq_self
 	    if not hasattr(attr, '__roles__'):
-		return
-	    data=attr.__roles__
+	    #	return
+	        data=['Shared']
+	    #data=attr.__roles__
+            else: data=attr.__roles__
 	    if data is None: data=[]
 	    data=list(data)
 	    for role in roles:
 		if role in data:
 		    data.remove(role)
-	    if data: attr.__roles__=data
-	    else:
+	    attr.__roles__=data
+	    #if data: attr.__roles__=data
+	    #else:
 		# The hasattr above will find __roles__ defined
 		# in the class, but we wont be able to delete it.
-		try:    del attr.__roles__
-		except: pass
-
+		#try:    del attr.__roles__
+		#except: pass
+		
     def __len__(self): return 1
     def __str__(self): return self.name
 
-
-
-class AccessType:
-    # An AccessType is a named subset of 0 or more of the
-    # permissions defined by an object. AccessTypes may
-    # have overlapping permissions, but two AccessTypes
-    # cannot map to the exact same subset of permissions.
-
-    def __init__(self,name,data,obj):
-	self.name=name
-	self.data=data
-	if hasattr(obj, 'aq_self'):
-	    obj=obj.aq_self
-	self.obj=obj
-
-    def getRoles(self):
-	# Return the list of role names which have been given
-	# this type of access for the object in question. To
-	# determine this, we iterate through the permissions
-	# that this access type represents, asking each for 
-	# the list of roles which have that permission.
-	# Role names which appear in all of the lists returned
-	# by our set of permissions *and* in no other lists
-	# are returned.
-        dict ={}
-	names=[]
-	lists=[]
-	roles=[]
-	value=[]
-	for p in self.obj.access_permissions():
-	    dict[p.name]=p.getRoles()
-	for p in self.data:
-	    for role in dict[p]:
-		if role not in names:
-		    names.append(role)
-	    lists.append(dict[p])
-	for name in names:
-	    for list in lists:
-		if name not in list:
-		    name=None
-		    break
-	    if name: roles.append(name)
-	lists=[]
-	for p in dict.keys():
-	    if p not in self.data:
-		lists.append(dict[p])
-	for role in roles:
-	    for list in lists:
-		if role in list:
-		    role=None
-		    break
-	    if role: value.append(role)
-	return value
-
-    def setRoles(self, roles):
-	# Add the given list of role names to the appropriate 
-	# subobjects for this type of access. To do this, we
-	# just call the setRoles method for each permission
-	# in the list of permissions represented by this type
-	# of access.
-	permissions={}
-	for p in self.obj.access_permissions():
-	    permissions[p.name]=p
-	for p in self.data:
-	    permissions[p].setRoles(roles)
-
-    def delRoles(self, roles):
-	# Remove the given list of role names from the appropriate
-	# subobjects for this type of access. To do this, we call
-	# the delRoles method for each permission in the list of
-	# permissions represented by this type of access.
-	permissions={}
-	for p in self.obj.access_permissions():
-	    permissions[p.name]=p
-	for p in self.data:
-	    permissions[p].delRoles(roles)
-
-    def __len__(self): return 1
-    def __str__(self): return self.name
 
 
 
@@ -518,8 +339,6 @@ def classattr(cls, attr):
 	if classattr(base, attr):
 	    return attr
     return None
-
-
 
 def instance_dict(inst):
     try:    return inst.__dict__
@@ -546,40 +365,3 @@ def class_attrs(inst, _class=None, data=None):
     for base in _class.__bases__:
 	data=class_attrs(inst, base, data)
     return data
-
-
-
-#     Folder
-#     __ac_permissions__=(
-#     ('View Management Screens',
-#      ['manage','manage_menu','manage_main','manage_copyright',
-#       'manage_tabs','manage_propertiesForm','manage_UndoForm']),
-#     ('Undo Changes',       ['manage_undo_transactions']),
-#     ('Change Permissions', ['manage_access']),
-#     ('Add Objects',        ['manage_addObject']),
-#     ('Delete Objects',     ['manage_delObjects']),
-#     ('Add Properties',     ['manage_addProperty']),
-#     ('Change Properties',  ['manage_editProperties']),
-#     ('Delete Properties',  ['manage_delProperties']),
-#     )
-   
-#     __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-# 		 )
-#     __ac_roles__=('Manager', 'Anonymous'
-# 		 )
-
-
-
-#     Document
-#     __ac_permissions__=(
-#     ('View Management Screens', ['manage','manage_tabs','manage_uploadForm']),
-#     ('Change Permissions', ['manage_access']),
-#     ('Change/Upload Data', ['manage_edit','manage_upload','PUT']),
-#     ('View', ['',]),
-#     )
-   
-#     __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-# 		  ('View Access', ['View',]),
-# 		 )
-
-#     __ac_roles__=('Manager', 'Anonymous')

@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -46,7 +46,6 @@ class User(Implicit, Persistent):
 		    obj_roles=['Shared',]
 		continue
 	    return 0
-
 
 # 	if (roles is None) or ('Anonymous' in roles):
 # 	    return 1
@@ -160,6 +159,11 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
+	if 'Shared' in roles:
+            return MessageDialog(
+		   title  ='Illegal value', 
+                   message='Shared is not a legal role name',
+                   action ='manage_main')
         self.data[name]=User(name,password,roles)
 	return self._mainUser(self, REQUEST)
 
@@ -178,6 +182,11 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
             return MessageDialog(
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
+                   action ='manage_main')
+	if 'Shared' in roles:
+            return MessageDialog(
+		   title  ='Illegal value', 
+                   message='Shared is not a legal role name',
                    action ='manage_main')
 	user=self.data[name]
 	user.__=password

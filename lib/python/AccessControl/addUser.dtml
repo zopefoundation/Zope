@@ -41,7 +41,9 @@ roles for the new user and click &quot;Add&quot;.
   <TD VALIGN="TOP">
   <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
   <!--#in valid_roles-->
+  <!--#if expr="_vars['sequence-item'] != 'Shared'"-->
   <OPTION VALUE="<!--#var sequence-item-->"><!--#var sequence-item-->
+  <!--#/if-->
   <!--#/in valid_roles-->
   </SELECT>
   <BR>

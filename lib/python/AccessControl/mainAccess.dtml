@@ -6,70 +6,49 @@
 <!--#if manage_tabs-->
 <!--#var manage_tabs-->
 <!--#/if manage_tabs-->
+
 <P>
-<!--#if access_info-->
 The listing below shows the current security settings for this item. 
-Each role listed has been given a type of access which represents 
-a specific set of permissions. Click on the name of a role for details 
-on the specific permissions granted to that role.
+Each permission is listed along with the roles which have been given 
+that permission. To change the permissions for a role, click on the 
+name of the role.
+
+
 <FORM ACTION="manage_access" METHOD="POST">
-<TABLE CELLPADDING="2">
+<TABLE>
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>
-  Role
-  </STRONG>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Type of access</STRONG>
-  </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<STRONG>Permission</STRONG>
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<STRONG>Roles</STRONG>
+</TD>
 </TR>
-<!--#in access_info mapping-->
+<!--#in access_permissions-->
 <TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="CHECKBOX" NAME="roles:list"
-   VALUE="<!--#var sequence-var-name-->">
-  <A HREF="manage_access?role=<!--#var sequence-var-name fmt=url-quote-->&SUBMIT=List"><!--#var sequence-var-name--></A>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var sequence-var-value-->
-  </TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<!--#var sequence-var-name-->
+</TD>
+<TD ALIGN="LEFT" VALIGN="TOP">
+<!--#in sequence-var-getRoles-->
+<A HREF="manage_access?role=<!--#var sequence-item fmt=url-quote-->&submit=Edit"><!--#var sequence-item--></A><!--#else sequence-end-->, <!--#/else-->
+<!--#/in-->
+<!--#else sequence-var-getRoles-->
+<I>None Defined</I>
+<!--#/else-->
+</TD>
 </TR>
-<!--#/in access_info-->
+<!--#/in-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add...">
-  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Remove">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add...">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Remove...">
   </TD>
 </TR>
 </TABLE>
 </FORM>
-<P>
-<!--#if access_defaults-->
-Users having roles defined at this level and above that have been 
-given the &quot;Default permission&quot; have the following 
-permissions to this object: <EM>
-<!--#in access_defaults-->
-<!--#var sequence-var-name-->
-<!--#if sequence-end--><!--#else-->, <!--#/if-->
-<!--#/in access_defaults-->
-</EM>
-<!--#/if access_defaults-->
-<!--#/if access_info-->
-
-<!--#else access_info-->
-This object is using default security. Users having roles defined at 
-this level and above that have been given the &quot;Default permission&quot; 
-have access to this object.
-<P>
-To set explicit security on this item, click the &quot;Add...&quot; button.
-<BR>
-<FORM ACTION="manage_access" METHOD="POST">
-<INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add...">
-</FORM>
-<!--#/else access_info-->
 
 <P> 
 <FORM ACTION="manage_access" METHOD="POST">
@@ -88,7 +67,7 @@ To set explicit security on this item, click the &quot;Add...&quot; button.
   <INPUT TYPE="TEXT" NAME="role" SIZE="16">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Add Role">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Add Role">
   </TD>
 </TR>
 <!--#if userdefined_roles-->
@@ -101,7 +80,7 @@ To set explicit security on this item, click the &quot;Add...&quot; button.
   </SELECT>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="SUBMIT" NAME="SUBMIT" VALUE="Delete Role">
+  <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete Role">
   </TD>
 </TR>
 <!--#/if userdefined_roles-->
@@ -112,35 +91,6 @@ To set explicit security on this item, click the &quot;Add...&quot; button.
 <BR><BR>
 <BR><BR>
 <BR><BR>
-Access Types:
-<TABLE BORDER="0" CELLPADDING="2">
-<!--#in access_types-->
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var sequence-var-name-->
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var sequence-var-getRoles-->
-  </TD>
-</TR>
-<!--#/in access_types-->
-</TABLE>
-<P>
-Permissions:
-<TABLE BORDER="0" CELLPADDING="2">
-<!--#in access_permissions-->
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var sequence-var-name-->
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <!--#var sequence-var-getRoles-->
-  </TD>
-</TR>
-<!--#/in access_permissions-->
-</TABLE>
-<P>
-Attributes:
 <TABLE BORDER="0" CELLPADDING="2">
 <!--#in access_debug_info mapping-->
 <TR>
