@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.11 1999/04/28 00:00:12 amos Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: HTTPResponse.py,v 1.12 1999/04/29 21:51:55 amos Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -460,7 +460,7 @@ class HTTPResponse(BaseResponse):
 <TR VALIGN="TOP">
 
 <TD WIDTH="10%" ALIGN="CENTER">
-<STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
+&nbsp;
 </TD>
 
 <TD WIDTH="90%">
