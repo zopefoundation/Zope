@@ -85,9 +85,9 @@
 
 """Commonly used utility functions."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
-import os, sys, Products
+import os, sys, Products, string
 from Common import package_home
 
 try: home=os.environ['SOFTWARE_HOME']
@@ -118,6 +118,8 @@ sys.modules['__builtin__'].INSTANCE_HOME=INSTANCE_HOME=chome
 ip=os.path.join(INSTANCE_HOME, 'Products')
 
 if os.path.isdir(ip) and ip not in Products.__path__:
-    Products.__path__.insert(0, ip)
+    disallow=string.lower(os.environ.get('DISALLOW_LOCAL_PRODUCTS',''))
+    if disallow in ('no', 'off', '0', ''):
+        Products.__path__.insert(0, ip)
     
     
