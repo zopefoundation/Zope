@@ -103,10 +103,10 @@ constructSessionDataManagerForm = Globals.DTMLFile('dtml/addDataManager',
 
 ADD_SESSION_DATAMANAGER_PERM="Add Session Data Manager"
 
-def constructSessionDataManager(self, id, title='', path=None, automatic=None,
+def constructSessionDataManager(self, id, title='', path=None, requestName=None,
                                 REQUEST=None):
     """ """
-    ob = SessionDataManager(id, path, title, automatic)
+    ob = SessionDataManager(id, path, title, requestName)
     self._setObject(id, ob)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
@@ -177,23 +177,23 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     # END INTERFACE METHODS
     
-    def __init__(self, id, path=None, title='', automatic=None):
+    def __init__(self, id, path=None, title='', requestName=None):
         self.id = id
         self.setContainerPath(path)
         self.setTitle(title)
 
-        if automatic:
-            self._requestSessionName='SESSION'
+        if requestName:
+            self._requestSessionName=requestName
         else:
             self._requestSessionName=None
 
     security.declareProtected(CHANGE_DATAMGR_PERM, 'manage_changeSDM')
-    def manage_changeSDM(self, title, path=None, automatic=None, REQUEST=None):
+    def manage_changeSDM(self, title, path=None, requestName=None, REQUEST=None):
         """ """
         self.setContainerPath(path)
         self.setTitle(title)
-        if automatic:
-            self.updateTraversalData('SESSION')
+        if requestName:
+            self.updateTraversalData(requestName)
         else:
             self.updateTraversalData(None)
         if REQUEST is not None:
@@ -273,11 +273,10 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                 string.join(self.obpath,'/')
                 )
 
-    security.declareProtected(MGMT_SCREEN_PERM, 'getAutomatic')
-    def getAutomatic(self):
+    security.declareProtected(MGMT_SCREEN_PERM, 'getrequestName')
+    def getrequestName(self):
         """ """
-        if hasattr(self,'_hasTraversalHook'): return 1
-        return 0
+        return self._requestSessionName or ''
 
     def manage_afterAdd(self, item, container):
         """ Add our traversal hook """

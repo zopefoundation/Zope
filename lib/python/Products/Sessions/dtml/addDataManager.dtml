@@ -46,18 +46,19 @@ user obtained from a Transient Object Container.
     <div class="form-help">e.g. '/temp_folder/transient_container'.</div>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-    <INPUT TYPE="TEXT" NAME="path" SIZE="60" value="/temp_folder/transient_container">
+    <INPUT TYPE="TEXT" NAME="path" SIZE="60" value="">
   </TD>
 </TR>
 
 <tr>
   <td align="LEFT" valign="TOP">
     <div class="form-label">
-    Automatic SESSION placement in REQUEST object
+    Place SESSION in REQUEST object as
     </div>
   </td>
   <td align="LEFT" valign="TOP">
-  	<input class="form-element" type='CHECKBOX' name='automatic' CHECKED>
+  	<input class="form-element" type="TEXT" name="requestName"
+		value="SESSION">
   </td>
 </tr>
 

@@ -35,15 +35,12 @@
 <tr>
   <td align="LEFT" valign="TOP">
     <div class="form-label">
-    Automatic SESSION placement in REQUEST object
+    Place SESSION in REQUEST object as
     </div>
   </td>
   <td align="LEFT" valign="TOP">
-    <dtml-if getAutomatic>
-  	<input class="form-element" type='CHECKBOX' name='automatic' CHECKED>
-    <dtml-else>
-  	<input class="form-element" type='CHECKBOX' name='automatic'>
-    </dtml-if>
+  	<input class="form-element" type="TEXT" name="requestName"
+		value="&dtml-getrequestName;">
   </td>
 </tr>
 <tr>

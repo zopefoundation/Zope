@@ -26,10 +26,9 @@ Session Data Manager - Add
     store the actual session data.  This path is 
     /temp_folder/transient_container in a default Zope installation.
 
-    automatic SESSION placement in REQUEST object --
-    check this option to have a SESSION object automatically
-    inserted into the REQUEST object, corresponding to the
-    current browser's session.
+    place SESSION in REQUEST as --
+    If set, the REQUEST variable will be updated with the session
+    object, stored as the given name (default is 'SESSION')
 
   After reviewing and changing these options, click the "Add"
   button to instantiate a session data manager.

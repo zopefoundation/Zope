@@ -2,9 +2,6 @@ Browser Id Manager - Change
 
   Form options available are:
 
-    browser id mgr on -- check to activate this Browser Id Manager,
-    uncheck to disable it.
-
     title -- the browser id manager title.
 
     session token key -- the cookie name and/or form variable name

@@ -77,12 +77,7 @@ Browser Id Manager - Add
   button to instantiate a browser id manager.
 
   You can manage a browser id manager by visiting it in the
-  management interface.  In addition to adjusting the settings you
-  chose at add-time, you can additionally turn a browser id
-  manager "off" via this management interface, which will cause
-  session data managers to ignore it when attempting to acquire a
-  browser id manager.  Session data managers will instead acquire
-  a browser id manager nearer the root of the ZODB.
+  management interface.
 
 Instantiating Multiple Browser Id Managers (Optional)
 

@@ -13,10 +13,13 @@
       Browser Id Mgr On
     </div>
   </TD>
+  <dtml-comment> 
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="checkbox" NAME="on"
      <dtml-if isOn>CHECKED</dtml-if>>
   </TD>
+  </dtml-comment>
+  <input type="hidden" name="on" value="1">
 </TR>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
