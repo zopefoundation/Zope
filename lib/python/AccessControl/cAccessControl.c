@@ -2159,18 +2159,6 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
         }
 
       /*
-        # Filter out the objects we can't access.
-        if hasattr(inst, 'aq_acquire'):
-            return inst.aq_acquire(name, aq_validate, validate)
-       */
-      if (aq_isWrapper(inst))
-        {
-          Py_DECREF(v);
-          return aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
-        }
-
-      /*
-        # Or just try to get the attribute directly.
         if validate(inst, inst, name, v):
             return v
        */

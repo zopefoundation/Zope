@@ -554,10 +554,6 @@ def guarded_getattr(inst, name, default=_marker):
             return v
 
         validate = SecurityManagement.getSecurityManager().validate
-        # Filter out the objects we can't access.
-        if hasattr(inst, 'aq_acquire'):
-            return inst.aq_acquire(name, aq_validate, validate)
-        # Or just try to get the attribute directly.
         if validate(inst, inst, name, v):
             return v
     raise Unauthorized, name

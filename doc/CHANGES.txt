@@ -144,6 +144,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Removed DWIM'y attempt to filter acquired-but-not-aceessible
+       results from 'guarded_getattr'.
+
      - Collector #1267: applied patch to fix segmentation faults on 
        x86_64 systems
 
