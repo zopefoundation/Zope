@@ -257,8 +257,16 @@ class DateTimeTests(unittest.TestCase):
         isoDt = DateTime('2002-05-02T08:00:00Z')
         self.assertEqual( ref0, isoDt)
 
-        isoDt = DateTime('2002-05-02T08:00:00Z-04:00')
+        isoDt = DateTime('2002-05-02T08:00:00-04:00')
         self.assertEqual( ref1, isoDt)
+
+        dgood = '2002-05-02'
+        tgood = 'T08:00:00-04:00'
+        for dbad in '2002-5-2', '2002-10-2', '2002-2-10', '02-2-10':
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad)
+            self.assertRaises(DateTime.SyntaxError, DateTime, dbad + tgood)
+        for tbad in '08:00', 'T8:00': #, 'T08:00Z-04:00':
+            self.assertRaises(DateTime.SyntaxError, DateTime, dgood + tbad)
 
     def testJulianWeek(self):
         """ check JulianDayWeek function """
@@ -279,13 +287,13 @@ class DateTimeTests(unittest.TestCase):
 
     def testRFC822(self):
         '''rfc822 conversion'''
-        dt = DateTime('2002-05-02T08:00:00Z+00:00')
+        dt = DateTime('2002-05-02T08:00:00+00:00')
         self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 +0000')
 
-        dt = DateTime('2002-05-02T08:00:00Z+02:00')
+        dt = DateTime('2002-05-02T08:00:00+02:00')
         self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 +0200')
 
-        dt = DateTime('2002-05-02T08:00:00Z-02:00')
+        dt = DateTime('2002-05-02T08:00:00-02:00')
         self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 -0200')
 
         # Checking that conversion from local time is working.

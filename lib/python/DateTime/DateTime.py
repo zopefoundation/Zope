@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.91 $'[11:-2]
+__version__='$Revision: 1.92 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -496,6 +496,12 @@ class DateTime:
           - If the function is called with no arguments or with None, 
             then the current date/time is returned, represented in the
             timezone of the local machine. 
+
+    # Make class-specific exceptions available as attributes.
+    DateError = DateError
+    TimeError = TimeError
+    DateTimeError = DateTimeError
+    SyntaxError = SyntaxError
 
           - If the function is invoked with a single string argument
             which is a recognized timezone name, an object representing
@@ -1657,7 +1663,8 @@ class DateTime:
         hour=minute=seconds=hour_off=min_off=0
 
         datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
-        timereg = re.compile('([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
+        timereg = re.compile('T([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
+        zonereg = re.compile('([+-][0-9][0-9])(:([0-9][0-9]))')
 
         # Date part
 
@@ -1666,21 +1673,33 @@ class DateTime:
         if fields[1]:   year  = int(fields[1])
         if fields[3]:   month = int(fields[3])
         if fields[5]:   day   = int(fields[5])
+        t = fields[6]
+        if t:
+            if not fields[5]:
+                # Specifying time requires specifying a day.
+                raise IndexError
 
-        if s.find('T')>-1:
-            fields = timereg.split(s[s.find('T')+1:])
+            fields = timereg.split(t)
 
             if fields[1]:   hour     = int(fields[1])
             if fields[3]:   minute   = int(fields[3])
             if fields[5]:   seconds  = int(fields[5])
             if fields[6]:   seconds  = seconds+float(fields[6])
+            z = fields[7]
+            
+	    if z and z.startswith('Z'):
+                # Waaaa! This is wrong, since 'Z' and '+HH:MM'
+                # are supposed to be mutually exclusive.
+                # It's only here to prevent breaking 2.7 beta.
+                z = z[1:]
 
-        if s.find('Z')>-1:
-            pass
-
-        if s[-3]==':' and s[-6] in ['+','-']:
-            hour_off = int(s[-6:-3])
-            min_off  = int(s[-2:])
+            if z:
+                fields = zonereg.split(z)
+                hour_off = int(fields[1])
+                min_off  = int(fields[3])
+                if fields[4]:
+                    # Garbage after time zone
+                    raise IndexError
 
         return year,month,day,hour,minute,seconds,'GMT%+03d%02d' % (hour_off,min_off)
 
