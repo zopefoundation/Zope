@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.20 1998/12/04 20:15:28 jim Exp $"
+"$Id: DT_String.py,v 1.21 1999/02/08 17:46:37 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -478,7 +478,10 @@ class String:
                 if hasattr(mapping,'AUTHENTICATED_USER'):
                     md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
             md.validate=self.validate
-            if client is not None: md.this=client
+            if client is not None:
+                if type(client)==type(()):
+                    md.this=client[-1]
+                else: md.this=client
             pushed=0
 
         level=md.level
@@ -487,9 +490,17 @@ class String:
         md.level=level+1
 
         if client is not None:
-            push(InstanceDict(client,md)) # Circ. Ref. 8-|
-            pushed=pushed+1
-
+            if type(client)==type(()):
+                # if client is a tuple, it represents a "path" of clients
+                # which should be pushed onto the md in order.
+                for ob in client:
+                    push(InstanceDict(ob, md)) # Circ. Ref. 8-|
+                    pushed=pushed+1
+            else:
+                # otherwise its just a normal client object.
+                push(InstanceDict(client, md)) # Circ. Ref. 8-|
+                pushed=pushed+1
+                
         if self._vars: 
             push(self._vars)
             pushed=pushed+1
