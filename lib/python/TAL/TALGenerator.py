@@ -334,9 +334,12 @@ class TALGenerator:
 
     def emitDefineMacro(self, macroName, position=(None, None)):
         program = self.popProgram()
+        macroName = string.strip(macroName)
         if self.macros.has_key(macroName):
-            raise METALError("duplicate macro definition: %s" % macroName,
+            raise METALError("duplicate macro definition: %s" % `macroName`,
                              position)
+        if not re.match('%s$' % NAME_RE, macroName):
+            raise METALError("invalid macro name: %s" % `macroName`, position)
         self.macros[macroName] = program
         self.emit("defineMacro", macroName, program)
 
@@ -345,15 +348,21 @@ class TALGenerator:
         program = self.popProgram()
         self.emit("useMacro", expr, cexpr, self.popSlots(), program)
 
-    def emitDefineSlot(self, slotName):
+    def emitDefineSlot(self, slotName, position=(None, None)):
         program = self.popProgram()
+        slotName = string.strip(slotName)
+        if not re.match('%s$' % NAME_RE, slotName):
+            raise METALError("invalid slot name: %s" % `slotName`, position)
         self.emit("defineSlot", slotName, program)
 
     def emitFillSlot(self, slotName, position=(None, None)):
         program = self.popProgram()
+        slotName = string.strip(slotName)
         if self.slots.has_key(slotName):
-            raise METALError("duplicate fill-slot name: %s" % slotName,
+            raise METALError("duplicate fill-slot name: %s" % `slotName`,
                              position)
+        if not re.match('%s$' % NAME_RE, slotName):
+            raise METALError("invalid slot name: %s" % `slotName`, position)
         self.slots[slotName] = program
         self.emit("fillSlot", slotName, program)
 
@@ -580,7 +589,7 @@ class TALGenerator:
         if scope:
             self.emit("endScope")
         if defineSlot:
-            self.emitDefineSlot(defineSlot)
+            self.emitDefineSlot(defineSlot, position)
         if fillSlot:
             self.emitFillSlot(fillSlot, position)
         if useMacro:
