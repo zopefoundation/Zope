@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -453,24 +453,27 @@ class Image(File):
         downloading of images. Defaults are applied intelligently for
         'height', 'width', and 'alt'.
         """
-        if not alt:
+
+        string='<img src="%s"' % (self.absolute_url())
+
+        if alt==None:
             alt=self.title_or_id()
+        if alt:
+            string = '%s alt="%s"' % (string, alt)
 
-        string='<img src="%s" alt="%s"' % (self.absolute_url(), alt)
-
-        if not height:
+        if height==None:
             height = self.height
         if height:
-            string = "%s height=%s" % (string, height)
+            string = '%s height="%s"' % (string, height)
 
-        if not width:
+        if width==None:
             width = self.width
         if width:
-            string = "%s width=%s" % (string, width)
+            string = '%s width="%s"' % (string, width)
 
         for key in args.keys():
             value = args.get(key)
-            string = "%s %s=%s" % (string, key, value)
+            string = '%s %s="%s"' % (string, key, value)
 
         return string + '>'
 
