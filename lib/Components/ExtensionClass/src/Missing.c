@@ -14,7 +14,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.17 2003/01/03 21:22:12 jeremy Exp $"
+"\n$Id: Missing.c,v 1.18 2003/05/09 19:59:31 jeremy Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -78,12 +78,15 @@ Missing_nonzero(PyObject *v)
   return 0;
 }
 
+/* XXX Why does this type offer to corece at all? */
 static int
 Missing_coerce(PyObject **pv, PyObject **pw)
 {
-  Py_INCREF(*pv);
-  Py_INCREF(*pw);
-  return 0;
+    if (!(*pw)->ob_type->tp_as_number)
+	return 1;
+    Py_INCREF(*pv);
+    Py_INCREF(*pw);
+    return 0;
 }
 
 static PyObject *
@@ -250,7 +253,7 @@ static PyExtensionClass MissingType = {
   0L,0L,
   "Represent totally unknown quantities\n"
   "\n"
-  "Missing values are used to represent numberic quantities that are\n"
+  "Missing values are used to represent numeric quantities that are\n"
   "unknown.  They support all mathematical operations except\n"
   "conversions by returning themselves.\n",
   METHOD_CHAIN(NULL)
