@@ -15,6 +15,11 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #572: WebDAV GET protected by 'FTP Access' permission.
+       Two new methods have been added to WebDAV resources, "manage_DAVget"
+       and "listDAVObjects". These are now used by WebDAV instead of the
+       earlier "manage_FTPget" and "objectValues". This separates the
+       permissions, and allows WebDAV specific overriding of these methods.
 
      - Collector #904: Platform specific signals in zdaemon/Daemon.py
        (fixed by removing the "fossil" module from 2.7 branch and head).

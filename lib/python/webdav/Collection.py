@@ -13,7 +13,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, os,  Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date
@@ -126,6 +126,14 @@ class Collection(Resource):
                 RESPONSE.setStatus(403)
 
         return RESPONSE
+
+    def listDAVObjects(self):
+        objectValues = getattr(self, 'objectValues', None)
+        if objectValues is not None:
+            return objectValues()
+        return []
+        
+
 
 
 Globals.default__class_init__(Collection)

@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -141,7 +141,7 @@ class PropFind:
         else: raise 'Bad Request', 'Invalid request'
         result.write('</d:response>\n')
         if depth in ('1', 'infinity') and iscol:
-            for ob in obj.objectValues():
+            for ob in obj.listDAVObjects():
                 if hasattr(ob,"meta_type"):
                     if ob.meta_type=="Broken Because Product is Gone": continue
                 dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)

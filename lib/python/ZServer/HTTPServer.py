@@ -244,7 +244,7 @@ class zhttp_handler:
         if self._wdav_client_reg(agent):
             env['WEBDAV_SOURCE_PORT'] = 1
             path_info = env['PATH_INFO']
-            path_info = posixpath.join(path_info, 'manage_FTPget')
+            path_info = posixpath.join(path_info, 'manage_DAVget')
             path_info = posixpath.normpath(path_info)
             env['PATH_INFO'] = path_info
 
