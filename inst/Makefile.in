@@ -81,7 +81,8 @@ inplace: install
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
 instance: inplace
-	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance.py" ${MKZ_FLAGS} "${BASE_DIR}" 
+	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance.py" ${MKZ_FLAGS} \
+           --dir="${BASE_DIR}" 
 
 # uninstance:  Remove the instance files made by make instance (w/ prejudice)
 uninstance:
@@ -114,6 +115,8 @@ sdist: clobber sdist_tgz
 # sdist_tgz:   Create a tgz archive file as a source distribution.
 #
 sdist_tgz:
+	echo Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG} \
+          > "${BASE_DIR}/lib/python/version.txt"
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tar.gz ${PACKAGE_NAME} \
@@ -123,6 +126,7 @@ sdist_tgz:
            --exclude=makefile \
            --exclude=*~ \
            --exclude=.#*
+	${RM} "${BASE_DIR}/lib/python/version.txt"
 	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
 
 # clobber:     Make the source tree 'pristine' again.
