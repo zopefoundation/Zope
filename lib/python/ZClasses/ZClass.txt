@@ -4,6 +4,12 @@ Basic ZClass Tests
 We can create ZClasses from Python, It's a bit complicated, as
 ZClasses were designed mainly to be used from the web.
 
+First, we need to install the ZClass-aware class factory in our
+database:
+
+    >>> import Zope2.App.ClassFactory
+    >>> some_database.classFactory = Zope2.App.ClassFactory.ClassFactory
+
 To do anything, we need a working Zope object space:
 
     >>> conn = some_database.open()
@@ -22,7 +28,7 @@ Then we can create the ZClass in the product:
 
     >>> test.manage_addZClass('C', zope_object=True,  CreateAFactory=True)
 
-Having create a ZClass, we can create an instance:
+Having created a ZClass, we can create an instance:
 
     >>> c = test.C()
     >>> c._setId('c')
@@ -65,31 +71,28 @@ Let's commit our changes:
     >>> import transaction
     >>> transaction.commit()
 
-We can access the class in another connection:
+We can access the class in another connection. We'll ise an explicit
+transaction manager so that we can use the second connection without
+creating a separate thread:
 
-    >>> import threading
-    >>> def run(func):
-    ...     thread = threading.Thread(target=func)
-    ...     thread.start()
-    ...     thread.join()
+    >>> tm2 = transaction.TransactionManager()
+    >>> conn2 = some_database.open(txn_mgr=tm2)
+    >>> app2 = conn2.root()['Application']
+    >>> test2 = app2.Control_Panel.Products['test']
+    >>> c2 = test2.C()
+    >>> c2._setId('c2')
+    >>> app2._setObject('c2', c2)
+    'c2'
 
-    >>> def read_class():
-    ...     connection = some_database.open()
-    ...     app = connection.root()['Application']
-    ...     test = app.Control_Panel.Products['test']
-    ...     c2 = test.C()
-    ...     c2._setId('c')
-    ...     app._setObject('c2', c2)
-    ...     app.c2.x = '*'
-    ...     print app.c2.x, app.c2.y, app.c2.eek(), '!'
-    ...     print app.c.x, app.c.y, app.c.eek(), '!'
-    ...     transaction.commit()
-    ...     connection.close()
-
-
-    >>> run(read_class)
+    >>> app2.c2.x = '*'
+    >>> print app2.c2.x, app2.c2.y, app2.c2.eek(), '!'
     * 42 ****************************************** !
+
+    >>> print app.c.x, app.c.y, app.c.eek(), '!'
     hi  3 hi hi hi  !
+
+    >>> tm2.commit()
+
 
 Of course, we should be able to see the new object created in the
 other connection:
@@ -97,3 +100,15 @@ other connection:
     >>> conn.sync()
     >>> app.c2.eek()
     '******************************************'
+
+We can copy instances:
+
+    >>> c3 = app.c2._getCopy(app)
+    >>> c3 is app.c2.aq_base
+    False
+
+    >>> c3.eek()
+    '******************************************'
+
+    >>> c3.__class__ is app.c2.__class__
+    True
