@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.13 2001/11/26 18:03:55 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.14 2001/11/26 19:01:37 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -281,8 +281,8 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
                 
                 comp = comps[i]
 
-                if not self._index.has_key(comp): return []
-                if not self._index[comp].has_key(level+i): return []
+                if not self._index.has_key(comp): return IISet()
+                if not self._index[comp].has_key(level+i): return IISet()
 
                 results.append( self._index[comp][level+i] )
 
@@ -295,7 +295,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
 
         else:
 
-            results = None
+            results = IISet()
 
             for level in range(0,self._depth):
            
