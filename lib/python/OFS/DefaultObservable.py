@@ -87,14 +87,45 @@ http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
 This class is intended to be used as a mixin (note that it doesn't derive
 from any Zope persistence classes, for instance).
 
-$Id: DefaultObservable.py,v 1.2 2000/06/11 19:08:35 tseaver Exp $"""
+$Id: DefaultObservable.py,v 1.3 2000/11/10 16:53:05 tseaver Exp $"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string
 from types import StringType
 
 class DefaultObservable:
+    """
+    See the Interfaces wiki for design notes:
+
+http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification
+
+    DefaultObservable is intended to be used as a mix-in, like so::
+
+        from OFS.SimpleItem import SimpleItem
+        from OFS.DefaultObservable import DefaultObservable
+
+        class Foo( SimpleItem, DefaultObservable ):
+            '''
+                Some foo or other
+            '''
+            ...
+            def bar( self, ... ):
+                '''
+                '''
+                ...
+                self.notify( "bar" )
+
+    Clients register with a Foo instance using the methods of the
+    Observable interface, e.g.::
+
+        foo.registerObserver( self.getPhysicalPath() + ( 'watchFoo',) )
+
+    When the Foo instance has its 'bar()' method called, it will
+    notify all registered observers, passing 'bar' as the event;  in
+    this case, the client's 'watchFoo()' method will be called, with
+    the foo object and 'bar' passed as parameters.
+    """
 
     def __init__( self, debug=0 ):
         self._observers = []
