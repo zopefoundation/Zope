@@ -85,9 +85,9 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
-import sys, os, string, mimetypes
+import sys, os, string, mimetypes, Globals
 import Acquisition, OFS.content_types
 from common import absattr, aq_base, urlfix
 from AccessControl.Permission import Permission
@@ -100,6 +100,15 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     objects which do not yet exist in the url namespace."""
 
     __null_resource__=1
+
+    __ac_permissions__=(
+        ('View',                             ('HEAD',)),
+        ('Access contents information',      ('PROPFIND',)),
+        ('Manage properties',                ('PROPPATCH',)),
+        ('Add Documents, Images, and Files', ('PUT',)),
+        ('Add Folders',                      ('MKCOL',)),
+        ('Delete objects',                   ('DELETE',)),
+    )
 
     def __init__(self, parent, name, request=None):
         self.__name__=name
@@ -175,3 +184,6 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         """Remove a lock-null resource."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
+
+
+Globals.default__class_init__(NullResource)

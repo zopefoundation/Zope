@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -257,7 +257,9 @@ class PropertySheet(Persistent, Implicit):
 
     def propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
+        __traceback_info__=(`self`, `self.p_self()`, `self.id`, `self.xml_namespace()`, `hasattr(self.p_self(), '__propsets__')`)
         return self.p_self()._properties
+
 
     def _propdict(self):
         dict={}

@@ -85,11 +85,11 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
-
+import Globals
 
 class Resource(ExtensionClass.Base):
     """The Resource mixin class provides basic WebDAV support for
@@ -108,8 +108,10 @@ class Resource(ExtensionClass.Base):
     __ac_permissions__=(
         ('View',                             ('HEAD',)),
         ('Access contents information',      ('PROPFIND',)),
-        ('Delete objects',                   ('DELETE',)),
         ('Manage properties',                ('PROPPATCH',)),
+        ('Add Documents, Images, and Files', ('PUT',)),
+        ('Delete objects',                   ('DELETE',)),
+        ('Add Folders',                      ('MKCOL',)),
     )
 
     def dav__init(self, request, response):
@@ -215,7 +217,7 @@ class Resource(ExtensionClass.Base):
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
         self.dav__init(REQUEST, RESPONSE)
-        if not hasattr(self, '__propsets__'):
+        if not hasattr(aq_base(self), 'propertysheets'):
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
         # TODO: add lock checking here
@@ -280,7 +282,7 @@ class Resource(ExtensionClass.Base):
                 ob._delObject(id)
         if existing:
             object=getattr(parent, name)
-            obj.dav__validate(object, 'DELETE', request)
+            self.dav__validate(object, 'DELETE', REQUEST)
             parent._delObject(name)
         parent._setObject(name, ob)
         ob=ob.__of__(parent)
@@ -359,3 +361,6 @@ class Resource(ExtensionClass.Base):
         """Remove an existing lock on a resource."""
         self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
+
+
+Globals.default__class_init__(Resource)

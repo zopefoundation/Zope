@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix
@@ -103,21 +103,13 @@ class DAVProps(DAVProperties):
         self.__obj__=obj
     def v_self(self):
         return self.__obj__
+    p_self=v_self
 
-## file=open('/projects/users/davtest/var/debug.out', 'w')
 
-## def debug(r):
-##     file.write(str(r))
-##     file.write('\n')
-##     file.write(r.get('BODY', 'No body'))
-##     file.write('\n\n')
-##     file.flush()
-    
 
 class PropFind:
     """Model a PROPFIND request."""
     def __init__(self, request):
-#        debug(request)
         self.request=request
         self.depth='infinity'
         self.allprop=0
@@ -164,7 +156,7 @@ class PropFind:
         iscol=hasattr(obj, '__dav_collection__')
         if iscol and url[-1] != '/': url=url+'/'
         result.write('<d:response>\n<d:href>%s</d:href>\n' % url)
-        if hasattr(obj, '__propsets__'):
+        if hasattr(aq_base(obj), 'propertysheets'):
             propsets=obj.propertysheets.values()
             obsheets=obj.propertysheets
         else:

@@ -85,11 +85,12 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
-import sys, os, string
-from Resource import Resource
+import sys, os, string, Globals
 from common import urlfix, rfc1123_date
+from Resource import Resource
+
 
 
 class Collection(Resource):
@@ -103,7 +104,8 @@ class Collection(Resource):
 
     __ac_permissions__=(
         ('Add Documents, Images, and Files', ('PUT',)),
-        ('Add Folders',                      ('MKCOL',)),
+#        ('Add Folders',                      ('MKCOL',)),
+        ('Delete objects',                   ('DELETE',)),
     )
 
     def dav__init(self, request, response):
@@ -117,6 +119,7 @@ class Collection(Resource):
             response.setHeader('Content-Location', location)
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
+        response.setHeader('MS-Author-Via', 'DAV')
 
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
@@ -139,3 +142,5 @@ class Collection(Resource):
         RESPONSE.setStatus(204)
         return RESPONSE
 
+
+Globals.default__class_init__(Collection)

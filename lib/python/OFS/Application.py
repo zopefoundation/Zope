@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.95 1999/03/25 17:06:06 jim Exp $'''
-__version__='$Revision: 1.95 $'[11:-2]
+$Id: Application.py,v 1.96 1999/03/26 19:50:37 brian Exp $'''
+__version__='$Revision: 1.96 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -96,6 +96,7 @@ from DateTime import DateTime
 from AccessControl.User import UserFolder
 from HelpSys.HelpSys import HelpSys
 from App.ApplicationManager import ApplicationManager
+from webdav.NullResource import NullResource
 from Globals import Persistent
 from FindSupport import FindSupport
 from urllib import quote
@@ -222,14 +223,16 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 
         try:    self._p_jar.cache.incrgc() # Perform incremental GC
         except: pass
-
         try: return getattr(self, name)
-        except AttributeError:
-            try: return self[name]
-            except KeyError:
-                raise 'NotFound',(
-                    "Sorry, the requested document does not exist.<p>"
-                    "\n<!--\n%s\n%s\n-->" % (name,REQUEST['REQUEST_METHOD']))
+        except AttributeError: pass
+        try: return self[name]
+        except KeyError: pass
+        method=REQUEST.get('REQUEST_METHOD', 'GET')
+        if not method in ('GET', 'POST'):
+            return NullResource(self, name, REQUEST).__of__(self)
+        raise 'NotFound',(
+            "Sorry, the requested document does not exist.<p>"
+            "\n<!--\n%s\n%s\n-->" % (name, method))
 
     def PrincipiaTime(self, *args):
         """Utility function to return current date/time"""

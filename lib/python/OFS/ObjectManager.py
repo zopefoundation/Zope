@@ -84,14 +84,15 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.57 1999/03/25 15:45:46 jim Exp $"""
+$Id: ObjectManager.py,v 1.58 1999/03/26 19:50:37 brian Exp $"""
 
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import App.FactoryDispatcher, ts_regex
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
+from webdav.NullResource import NullResource
 from urllib import quote
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').match
@@ -463,10 +464,10 @@ class ObjectManager(
         mtime=self.bobobase_modification_time().timeTime()
         return marshal.dumps((mode,0,0,1,0,0,0,mtime,mtime,mtime))
 
+
     def __getitem__(self, key):
         v=self._getOb(key, None)
         if v is not None: return v
-        
         if hasattr(self, 'REQUEST'):
             request=self.REQUEST
             method=request.get('REQUEST_METHOD', 'GET')
