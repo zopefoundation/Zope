@@ -80,18 +80,17 @@ Zope Installation Frequently Asked Questions
        can reduce startup time.
 
 
-    5. I have Zope with Aqueduct Oracle installed, and cant get
-       running. Why?
+    5. I have Zope with the Oracle Database adapter installed, and cant
+       get it running. Why?
 
-       If you have Aqueduct Oracle installed, you need to ensure that
-       the environment variable "ORACLE_HOME" is in the environment of
+       If you have Oracle installed, you need to ensure that the
+       environment variable "ORACLE_HOME" is in the environment of
        the running application. You can do this by adding a line to 
        your PCGI resource file such as: ORACLE_HOME=/usr/bin/oracle
 
        Any NAME=VALUE pairs appended to the PCGI resource file will
        be added to the environment of the process when it is started
        by PCGI.
-
 
 
   Managing the Zope process
@@ -167,5 +166,3 @@ Zope Installation Frequently Asked Questions
        source will contain the last good HTML returned by the request
        before the error occurred. This is due to caching by the
        browser. Clear your cache and view the HTML source again.
-
-
