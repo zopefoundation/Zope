@@ -126,7 +126,7 @@ class QueryParser:
         return self._ignored
 
     def parseQueryEx(self, query):
-        tree = self.parseQueryEx(query)
+        tree = self.parseQuery(query)
         ignored = self.getIgnored()
         return tree, ignored
 
