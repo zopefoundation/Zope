@@ -142,7 +142,7 @@ class DummyEngine:
             elif self.globals.has_key(expr):
                 return self.globals[expr]
             else:
-                raise TALESError("unknown variable: %s", expr)
+                raise TALESError("unknown variable: %s" % `expr`)
         if type == "not":
             v = self.evaluate(expr)
             return not v
