@@ -83,17 +83,17 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.8 1998/12/04 20:15:30 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: __init__.py,v 1.9 1998/12/10 02:51:20 amos Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import MailHost, SendMailTag
 from ImageFile import ImageFile
 
 classes=('MailHost.MailHost',)
 
-meta_types={'name':'Mail Host',
+meta_types=({'name':'Mail Host',
             'action':'manage_addMailHost_form'
-            },
+            },)
 
 methods={
     'manage_addMailHost_form': MailHost.addForm,
