@@ -83,7 +83,7 @@ __doc__='''Variable insertion parameters
        The parameter 'spacify' may be provided to cause underscores in
        the inserted value to be converted to spaces.
 '''
-__rcs_id__='$Id: DT_Var.py,v 1.2 1997/09/22 14:42:51 jim Exp $'
+__rcs_id__='$Id: DT_Var.py,v 1.3 1997/10/23 13:30:16 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -137,7 +137,7 @@ __rcs_id__='$Id: DT_Var.py,v 1.2 1997/09/22 14:42:51 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DT_Util import *
 
@@ -253,6 +253,7 @@ special_formats={
     'html-quote': html_quote,
     'url-quote': url_quote,
     'multi-line': multi_line,
+    'comma-numeric': commatify,
     'whole-dollars': whole_dollars,
     'dollars-and-cents': dollars_and_cents,
     'dollars-with-commas': whole_dollars_with_commas,
@@ -263,6 +264,9 @@ special_formats={
 
 ############################################################################
 # $Log: DT_Var.py,v $
+# Revision 1.3  1997/10/23 13:30:16  jim
+# Added comma-numeric format.
+#
 # Revision 1.2  1997/09/22 14:42:51  jim
 # added expr
 #
