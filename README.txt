@@ -4,7 +4,8 @@ Welcome to the Zope source release
   This document provides some general information about the Zope
   source release and provides links to other documents.
 
-  Installation information can be found in doc/INSTALL.txt.
+  Installation information can be found in doc/INSTALL.txt. Other
+  documentation is also in the doc directory.
 
   Zope information is available at http://www.zope.org/
 
@@ -29,18 +30,11 @@ License
 
 Important
 
-  This is an alpha release.
-
   This release requires Python 1.5.2.
-
-  See notes on Zope 2 and ZODB 3 in CHANGES.txt.
 
 Installing Zope
 
-  Follow the instructions in doc/INSTALL.txt to install Zope. You
-  may wish to run the installer even if you only plan on using
-  selected Zope components since the install script compiles
-  Python extensions for you that you may want, like cDocumentTemplate.
+  Follow the instructions in doc/INSTALL.txt to install Zope. 
 
 Using Zope Components Separately
 
