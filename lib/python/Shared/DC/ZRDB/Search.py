@@ -173,7 +173,7 @@ def default_input_form(arguments,action='query',
                         lambda a:
                         ('<tr><th>%s</th>\n'
                          '    <td><input name="%s"\n'
-                         '               width=30 value="%s">'
+                         '               size="30" value="%s">'
                          '</td></tr>'
                          % (nicify(a[0]),
                             (
@@ -223,7 +223,7 @@ def default_input_zpt_form(arguments,action='query',
                         lambda a:
                         ('<tr><th>%s</th>\n'
                          '    <td><input name="%s"\n'
-                         '               width=30 value="%s">'
+                         '               size="30" value="%s">'
                          '</td></tr>'
                          % (nicify(a[0]),
                             (
