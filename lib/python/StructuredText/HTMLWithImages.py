@@ -25,6 +25,6 @@ class HTMLWithImages(HTMLClass):
     def image(self, doc, level, output):
         if hasattr(doc, 'key'):
             output('<a name="%s"></a>\n' % doc.key)
-        output('<img src="%s" alt="%s">\n' % (doc.href, doc.getNodeValue()))
+        output('<img src="%s" alt="%s" />\n' % (doc.href, doc.getNodeValue()))
         if doc.getNodeValue() and hasattr(doc, 'key'):
             output('<p><b>Figure %s</b> %s</p>\n' % (doc.key, doc.getNodeValue()))
