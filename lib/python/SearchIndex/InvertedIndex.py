@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.32 1997/04/22 15:18:01 jim Exp $'''
+$Id: InvertedIndex.py,v 1.33 1997/04/22 15:19:04 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,11 +82,8 @@ $Id: InvertedIndex.py,v 1.32 1997/04/22 15:18:01 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
-# Revision 1.32  1997/04/22 15:18:01  jim
-# Cris' changes.
-#
-# Revision 1.31  1997/04/18 18:32:46  chris
-# *** empty log message ***
+# Revision 1.33  1997/04/22 15:19:04  jim
+# 1.30 resurected.
 #
 # Revision 1.30  1997/04/14 12:03:17  jim
 # Fixed bug in proximity searches.
@@ -193,12 +190,12 @@ $Id: InvertedIndex.py,v 1.32 1997/04/22 15:18:01 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
-import regex, string, copy
+import regex, regsub, string, copy
 from string import lower
-from WordSequence import WordSequence
+
 from types import *
 
 class ResultList:
@@ -221,12 +218,7 @@ class ResultList:
     '''
   
     def __init__(self, d = None):
-	if (d is None):
-            self._dict = {}
-        elif (type(d) is TupleType):
-	    self._dict = { d[0] : d[1:] }
-        else:
-            self._dict = d
+        self._dict = d or {}
   
   
     def addentry(self, document_key, *info):
@@ -495,13 +487,11 @@ class Index:
     list_class=ResultList
   
   
-    def __init__(self, index_dictionary = None, synstop = None):
+    def __init__(self, index_dictionary = None):
         'Create an inverted index'
-        if (synstop is None):
-            synstop = copy.copy(default_stop_words)
-        
-        self.synstop = synstop
-	
+        if (index_dictionary is None):
+            index_dictionary = copy.copy(default_stop_words)
+  
         self.set_index(index_dictionary)
   
    
@@ -512,6 +502,11 @@ class Index:
             index_dictionary = {}
       
         self._index_object = index_dictionary
+  
+  
+    def split_words(self, s):
+        'split a string into separate words'
+        return regsub.split(s, '[^a-zA-Z]+')
   
   
     def index(self, src, srckey):
@@ -525,44 +520,59 @@ class Index:
         key, srckey.  For simple objects, the srckey may be the object itself,
         or it may be a key into some other data structure, such as a table.
         '''
-        src = WordSequence(src, self.synstop)  
-
+  
+        import math
+  
+        index = self._index_object
+  
+        src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
+        src = map(lower,filter(None, self.split_words(src)))
+  
+        if (len(src) < 2):
+            return
+  
+        nwords = math.log(len(src))
+  
         d = {}
         i = -1
         for s in src:
             i = i + 1
-
+            stopword_flag = 0
+  
+            while (not stopword_flag):
+                try:
+                    index_val = index[s]
+                except KeyError:
+                    break
+  
+                if (index_val is None):
+                    stopword_flag = 1
+                elif (type(index_val) != StringType):
+                    break
+                else:
+                    s = index_val
+            else:  # s is a stopword
+                continue
+  
             try:
                 d[s].append(i)
             except KeyError:
                 d[s] = [ i ]
-
-        if (i < 1):
-            return
-
-        import math
-        nwords = math.log(i + 1)
-
+  
         addentry = self.addentry
         for word, positions in d.items():
-            freq = int(100 * (len(positions) / nwords))
+            freq = int(10000 * (len(positions) / nwords))
             addentry(word,srckey,(freq, positions))
   
-
     def addentry(self,word,key,data):
         index = self._index_object
         try:
             rl = index[word]
         except:
-            rl = ( key, ) + data
+            rl = {}
             index[word] = rl
-            return
-
-        if (type(rl) is TupleType):
-            rl = { rl[0] : rl[1:] }
   
         rl[key] = data
-
   
     def __getitem__(self, key):
         '''\
@@ -576,7 +586,6 @@ class Index:
         '''
     
         index = self._index_object 
-        synstop = self.synstop
         List = self.list_class
     
         if (type(key) == RegexType):
@@ -603,19 +612,16 @@ class Index:
     
         key = lower(key)
     
-        while (1):
+        while (type(key) == StringType):
             try:
-                key = synstop[key]
+                key = index[key]
             except KeyError:
-	        break
+                return List()
     
         if (key is None):
             return List()
     
-	try:
-            return index[key]
-	except KeyError:
-            return List()
+        return List(key)
   
   
     def keys(self):
@@ -642,35 +648,37 @@ class Index:
     	    	   del self[key][doc_key]
     	        except KeyError:
     	 	    continue
-#    	else:
-#           s = WordSequence(s)
-#    	    for key in s:
-#    	        try:
-#    		    del self[key][doc_key]
-#    	        except KeyError:
-#    		    continue
+    	else:
+    	    s = regsub.gsub('-[ \t]*\n[ \t]*', '', str(s)) # de-hyphenate
+    	    s = filter(None, self.split_words(s))
+      
+    	    for key in s:
+    	        try:
+    		    del self[key][doc_key]
+    	        except KeyError:
+    		    continue
   
   
     def get_stopwords(self):
-        synstop = self.synstop
+        index = self._index_object
     
         stopwords = []
-	for key, val in synstop.items():
-	    if (value is None):
-                stopwords.append(key)
+        for word in index.keys():
+            if (index[word] is None):
+                stopwords.append(word)
     
         return stopwords
   
           
     def get_synonyms(self):
-        synstop = self.synstop
-    
-        syns = []
-	for key, val in synstop.items():
-	    if (type(value) is StringType):
-                syns.append(key)
-    
-        return syns
+      index = self._index_object
+  
+      synonyms = {}    
+      for word in index.keys():
+          if (type(index[word]) == StringType):
+              synonyms[word] = index[word]
+  
+      return synonyms
   
   
     def get_document_keys(self):
@@ -685,17 +693,6 @@ class Index:
                 d[doc_key] = 1
     
         return d.keys()
-
-
-    def highlight(self, text, positions, before, after):
-        ws = WordSequence(text, self.synstop)
-        positions.sort()
-        positions.reverse()
-	for position in positions:
-	    start, end = ws.pos(position)
-            text = text[:start] + before + text[start:end] + after + text[end:]
-    
-	return text
 
 
 
