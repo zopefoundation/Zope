@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.31 1997/12/19 15:37:34 jim Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: Application.py,v 1.32 1997/12/19 17:04:21 jim Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -31,6 +31,10 @@ class Application(Folder.Folder):
 
     class misc_:
 	"Miscellaneous product information"
+	__roles__=None
+
+    class p_:
+	"Shared Principia information"
 	__roles__=None
 
     manage_options=(
@@ -139,8 +143,7 @@ def open_bobobase():
     # Open the application database
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
 
-    product_dir=os.path.join(SOFTWARE_HOME,'Products')
-    sys.path.append(product_dir)
+    product_dir=os.path.join(SOFTWARE_HOME,'lib/python/Products')
     
     install_products()
 
@@ -171,7 +174,7 @@ def install_products():
     # that all folders know about top-level objects, aka products
 
     path_join=os.path.join
-    product_dir=path_join(SOFTWARE_HOME,'Products')
+    product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
     isdir=os.path.isdir
     exists=os.path.exists
     DictType=type({})
@@ -185,10 +188,10 @@ def install_products():
 	package_dir=path_join(product_dir, product_name)
 	if not isdir(package_dir): continue
 	if not exists(path_join(package_dir, '__init__.py')): continue
-	product=__import__(product_name)
+	product=getattr(__import__("Products.%s" % product_name), product_name)
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
-	    if product_name=='OFS': meta_types.insert(0,meta_type)
+	    if product_name=='OFSP': meta_types.insert(0,meta_type)
 	    else: meta_types.append(meta_type)
 	    name=meta_type['name']
 
@@ -256,11 +259,13 @@ class Misc_:
 
     def __str__(self): return self.__name__
     def __getitem__(self, name): return self._d[name]
-	
 
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.32  1997/12/19 17:04:21  jim
+# Make Products a Package.
+#
 # Revision 1.31  1997/12/19 15:37:34  jim
 # Now product __init__s can omit __ foolishness.
 # Now products can define misc objects.
