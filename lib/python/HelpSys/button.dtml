@@ -1,0 +1,10 @@
+<div align="right">
+<font face="Verdana, Arial, Helvetica" size="1">
+<form action="<dtml-var absolute_url>" target="zope_help" method="post">
+<dtml-if "_.getitem('product') and _.getitem('topic')">
+<input type="hidden" name="help_url" value="/Control_Panel/Products/&dtml-product;/Help/&dtml-topic;">
+</dtml-if>
+<input type="submit" value=" Help ">
+</form>
+</font>
+</div>

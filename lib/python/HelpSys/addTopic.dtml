@@ -1,0 +1,26 @@
+<html>
+<head><title>Add Help Topic</title></head>
+<body>
+<h2>Add Help Topic</h2>
+
+<form action="addTopic" method="post">
+<table>
+<tr valign="top">
+  <th>Id</th>
+  <td><input type="text" name="id"></td>
+</tr>
+
+<tr valign="top">
+  <th>Title</th>
+  <td><input type="text" name="title"></td>
+</tr>
+
+<tr valign="top">
+  <td colspan="2"><input type="submit" value="Add"></td>
+</tr>
+</table>
+</form>
+
+
+</body>
+</html>

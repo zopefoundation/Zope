@@ -1,0 +1,43 @@
+<html>
+<head>
+<title><dtml-var title></title>
+
+<style type="text/css">
+<!--
+
+h1, h2, h3, h4, h5, h6{
+font-family: Verdana, Arial, Helvetica, san-serif;
+}
+
+.instructions{
+background: #FFFFAA;
+border-width: thin;
+border-style: solid;
+padding: 10pt;
+}
+
+.explanation{
+border-width: thin;
+border-style: solid;
+padding: 10pt;
+}
+-->
+</style>
+
+</head>
+<body>
+<table width="100%">
+<tr valign="top">
+<td>Help Categories:
+<dtml-in categories>
+<dtml-var sequence-item><dtml-unless sequence-end>,</dtml-unless>
+</dtml-in>
+</td>
+<td>Help Permissions:
+<dtml-in permissions>
+<dtml-var sequence-item><dtml-unless sequence-end>,</dtml-unless>
+</dtml-in>
+</td>
+</tr>
+</table>
+<dtml-if title><h2><dtml-var title></h2></dtml-if>
