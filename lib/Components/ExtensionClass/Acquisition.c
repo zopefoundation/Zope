@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.16 1998/03/23 20:23:35 jim Exp $
+  $Id: Acquisition.c,v 1.17 1998/03/24 16:17:01 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -258,6 +258,35 @@ Wrapper_special(Wrapper *self, char *name, PyObject *oname)
     }
 }
 
+static int
+apply_filter(PyObject *filter, PyObject *inst, PyObject *oname, PyObject *r,
+	     PyObject *extra, PyObject *orig)
+{
+  PyObject *fr;
+  int ir;
+
+  UNLESS(fr=PyTuple_New(5)) goto err;
+  PyTuple_SET_ITEM(fr,0,orig);
+  Py_INCREF(orig);
+  PyTuple_SET_ITEM(fr,1,inst);
+  Py_INCREF(inst);
+  PyTuple_SET_ITEM(fr,2,oname);
+  Py_INCREF(oname);
+  PyTuple_SET_ITEM(fr,3,r);
+  Py_INCREF(r);
+  PyTuple_SET_ITEM(fr,4,extra);
+  Py_INCREF(extra);
+  UNLESS_ASSIGN(fr,PyObject_CallObject(filter, fr)) goto err;
+  ir=PyObject_IsTrue(fr);
+  Py_DECREF(fr);
+  if(ir) return 1;
+  Py_DECREF(r);
+  return 0;
+err:
+  Py_DECREF(r);
+  return -1;
+}
+
 static PyObject *
 Wrapper_acquire(Wrapper *self, PyObject *oname,
 		PyObject *filter, PyObject *extra, PyObject *orig,
@@ -484,35 +513,6 @@ Xaq_getattro(Wrapper *self, PyObject *oname)
 
   PyErr_SetObject(PyExc_AttributeError,oname);
   return NULL;
-}
-
-static int
-apply_filter(PyObject *filter, PyObject *inst, PyObject *oname, PyObject *r,
-	     PyObject *extra, PyObject *orig)
-{
-  PyObject *fr;
-  int ir;
-
-  UNLESS(fr=PyTuple_New(5)) goto err;
-  PyTuple_SET_ITEM(fr,0,orig);
-  Py_INCREF(orig);
-  PyTuple_SET_ITEM(fr,1,inst);
-  Py_INCREF(inst);
-  PyTuple_SET_ITEM(fr,2,oname);
-  Py_INCREF(oname);
-  PyTuple_SET_ITEM(fr,3,r);
-  Py_INCREF(r);
-  PyTuple_SET_ITEM(fr,4,extra);
-  Py_INCREF(extra);
-  UNLESS_ASSIGN(fr,PyObject_CallObject(filter, fr)) goto err;
-  ir=PyObject_IsTrue(fr);
-  Py_DECREF(fr);
-  if(ir) return 1;
-  Py_DECREF(r);
-  return 0;
-err:
-  Py_DECREF(r);
-  return -1;
 }
 
 static int
@@ -857,7 +857,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -876,7 +876,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.16 1998/03/23 20:23:35 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.17 1998/03/24 16:17:01 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -899,6 +899,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.17  1998/03/24 16:17:01  jim
+  Rearranged.
+
   Revision 1.16  1998/03/23 20:23:35  jim
   Added lots of new machinery to handle wrapping of acquired objects.
 
