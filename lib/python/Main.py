@@ -19,6 +19,8 @@ SimpleDB.Default=SyncDB
 import Globals, OFS.Folder, OFS.Application, App.ApplicationManager
 import OFS.Document
 
+import TreeDisplay.TreeTag
+
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
     
@@ -33,27 +35,26 @@ except KeyError:
 bobo_application=app
 
 if not hasattr(app,'standard_html_footer'):
-    app.manage_addDocument('standard_html_footer','','',None,"</body></html>")
+    app.manage_addDocument('standard_html_footer','Standard Document Ending',
+			   '</body></html>')
     get_transaction().commit()
 
 if not hasattr(app, 'standard_html_header'):
-    app.manage_addDocument('standard_html_header','','',None,
-       """<html><head><title><!--#if title-->
+    app.manage_addDocument('standard_html_header',
+			   'Standard Document Beginning',
+			   """<html><head><title><!--#if title-->
 <!--#var title--><!--#else title-->
 <!--#var id--><!--#/if title--></title></head><body>""")
     get_transaction().commit()
-
-acls=app.AccessControlLists._data
-pw='123'
-if acls.has_key('manage'):
-    acls['manage']['superuser']=pw
-else:
-    acls['manage']={'superuser':pw}
 
 ##############################################################################
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.3  1997/09/02 21:22:06  jim
+# Added import of TreeDisplay.TreeTag to enable tree tag.
+# Changed document creation call.
+#
 # Revision 1.2  1997/08/28 19:32:36  jim
 # Jim told Paul to do it
 #
