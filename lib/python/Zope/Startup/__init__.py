@@ -82,6 +82,7 @@ class ZopeStarter:
     def __init__(self, cfg):
         self.cfg = cfg
         self.event_logger = logging.getLogger()
+        self.debug_handler = None
 
     # XXX does anyone actually use these three?
 
@@ -159,6 +160,16 @@ class ZopeStarter:
     def dropPrivileges(self):
         return dropPrivileges(self.cfg)
 
+    def getLoggingLevel(self):
+        if self.cfg.eventlog is None:
+            level = logging.INFO
+        else:
+            # get the lowest handler level.  This is the effective level
+            # level at which which we will spew messages to the console
+            # during startup.
+            level = self.cfg.eventlog.getLowestHandlerLevel()
+        return level
+
     def setupConfiguredLoggers(self):
         if self.cfg.zserver_read_only_mode:
             # no log files written in read only mode
@@ -170,6 +181,20 @@ class ZopeStarter:
             self.cfg.access()
         if self.cfg.trace is not None:
             self.cfg.trace()
+
+    def setupDebugLogging(self):
+        from ZConfig.components.logger import loghandler
+        if self.cfg.debug_mode:
+            formatter = logging.Formatter(
+                "%(asctime)s %(levelname)s %(name)s %(message)s",
+                "%Y-%m-%d %H:%M:%S")
+            self.debug_handler = loghandler.StreamHandler()
+            self.debug_handler.setFormatter(formatter)
+            self.debug_handler.setLevel(self.getLoggingLevel())
+            root = self.event_logger
+            root.addHandler(self.debug_handler)
+            root.error("the lowest handler level is: %r",
+                       self.debug_handler.level)
 
     def startZope(self):
         # Import Zope
@@ -235,6 +260,7 @@ class WindowsZopeStarter(ZopeStarter):
         pass
 
     def setupInitialLogging(self):
+        self.setupDebugLogging()
         self.setupConfiguredLoggers()
 
     def setupFinalLogging(self):
@@ -250,43 +276,36 @@ class UnixZopeStarter(ZopeStarter):
                                      self.cfg.trace])
 
     def setupInitialLogging(self):
+        self.setupDebugLogging()
         # set up our initial logging environment (log everything to stderr
         # if we're not in debug mode).
         from ZConfig.components.logger.loghandler import StartupHandler
 
-        if self.cfg.eventlog is not None:
-            # get the lowest handler level.  This is the effective level
-            # level at which which we will spew messages to the console
-            # during startup.
-            level = self.cfg.eventlog.getLowestHandlerLevel()
-        else:
-            level = logging.INFO
+        level = self.getLoggingLevel()
 
-        self.startup_handler = StartupHandler(sys.stderr)
-        self.startup_handler.setLevel(level)
         formatter = logging.Formatter(
             fmt='------\n%(asctime)s %(levelname)s %(name)s %(message)s',
             datefmt='%Y-%m-%dT%H:%M:%S')
-        if not self.cfg.debug_mode:
-            # prevent startup messages from going to stderr if we're not
-            # in debug mode
-            self.startup_handler = StartupHandler(open('/dev/null', 'w'))
+        self.startup_handler = StartupHandler()
+        self.startup_handler.setLevel(level)
         self.startup_handler.setFormatter(formatter)
 
         # set up our event logger temporarily with a startup handler only
-        self.event_logger.handlers = []
         self.event_logger.addHandler(self.startup_handler)
         # set the initial logging level (this will be changed by the
         # zconfig settings later)
-        self.event_logger.level = level
+        self.event_logger.setLevel(level)
 
     def setupFinalLogging(self):
         if self.startup_handler in self.event_logger.handlers:
             self.event_logger.removeHandler(self.startup_handler)
         self.setupConfiguredLoggers()
         # flush buffered startup messages to event logger
-        logger = logging.getLogger('event')
-        self.startup_handler.flushBufferTo(logger)
+        if self.debug_handler is not None:
+            self.event_logger.removeHandler(self.debug_handler)
+        self.startup_handler.flushBufferTo(self.event_logger)
+        if self.debug_handler is not None:
+            self.event_logger.addHandler(self.debug_handler)
 
 
 def check_python_version():
