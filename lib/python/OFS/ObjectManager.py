@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.110 2000/09/11 17:55:16 evan Exp $"""
+$Id: ObjectManager.py,v 1.111 2000/09/14 03:06:43 chrism Exp $"""
 
-__version__='$Revision: 1.110 $'[11:-2]
+__version__='$Revision: 1.111 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -483,7 +483,9 @@ class ObjectManager(
                             RESPONSE=None):
         """Exports an object to a file and returns that file."""        
         if not id:
-            id=self.getId()
+            # cant use getId() here, breaks on "old" objects
+            id=self.id
+            if hasattr(id, 'im_func'): id=id()
             ob=self
         else: ob=self._getOb(id)
 
@@ -529,7 +531,10 @@ class ObjectManager(
         ob=connection.importFile(
             file, customImporters=customImporters)
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
-        id=ob.getId()
+        #id=ob.getId()
+        # can't use above, breaks on "old" imported objects.
+        id=ob.id
+        if hasattr(id, 'im_func'): id=id()
         self._setObject(id, ob, set_owner=set_owner)
 
         # try to make ownership implicit if possible in the context
