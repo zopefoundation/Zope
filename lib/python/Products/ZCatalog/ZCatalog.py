@@ -441,8 +441,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
 
     def reindexIndex(self,name,REQUEST):
-
-        paths = tuple(self._catalog.paths.values())
+        paths = self._catalog.uids.keys()
 
         for p in paths:
             obj = self.resolve_path(p)
