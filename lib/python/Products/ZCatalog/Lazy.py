@@ -10,8 +10,8 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.8 2002/12/05 21:17:05 caseman Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.9 2002/12/11 18:56:58 caseman Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 class Lazy:
@@ -22,7 +22,7 @@ class Lazy:
     def __repr__(self): return `list(self)`
 
     def __len__(self):
-
+        # This is a worst-case len, subclasses should try to do better
         try: return self._len
         except AttributeError: pass
 
@@ -34,34 +34,13 @@ class Lazy:
             except:
                 self._len=l
                 return l
+                
 
     def __add__(self, other):
-        try:
-            for base in other.__class__.__bases__:
-                if base.__name__ == 'Lazy':
-                    break
-            else:
-                raise TypeError
-        except:
-            raise TypeError, "Can not concatenate objects. Both must be lazy sequences."
-
-        if self.__class__.__name__ == 'LazyCat':
-            if hasattr(self, '_seq'):
-                seq = self._seq
-            else:
-                seq = [self._data]
-        else:
-            seq = [self]
-
-        if other.__class__.__name__ == 'LazyCat':
-            if hasattr(other, '_seq'):
-                seq = seq + other._seq
-            else:
-                seq.append(other._data)
-        else:
-            seq.append(other)
-
-        return LazyCat(seq)
+        if not isinstance(other, Lazy):
+            raise TypeError(
+                "Can not concatenate objects. Both must be lazy sequences.")
+        return LazyCat([self, other])
 
     def __getslice__(self,i1,i2):
         r=[]
@@ -77,6 +56,19 @@ class LazyCat(Lazy):
     # for accessing small parts of big searches.
 
     def __init__(self, sequences, length=None):
+        if len(sequences) < 100:
+            # Optimize structure of LazyCats to avoid nesting
+            # We don't do this for large numbers of input sequences
+            # to make instantiation faster instead
+            flattened_seq = []
+            for s in sequences:
+                if isinstance(s, LazyCat):
+                    # If one of the sequences passed is itself a LazyCat, add
+                    # its base sequences rather than nest LazyCats
+                    flattened_seq.extend(s._seq)
+                else:
+                    flattened_seq.append(s)
+            sequences = flattened_seq
         self._seq=sequences
         self._data=[]
         self._sindex=0
@@ -118,6 +110,18 @@ class LazyCat(Lazy):
                 self._eindex=eindex=-1
         self._eindex=eindex
         return data[i]
+        
+    def __len__(self):
+        # Make len of LazyCat only as expensive as the lens 
+        # of its underlying sequences
+        try:
+            return self._len
+        except:
+            l = 0
+            for s in self._seq:
+               l += len(s)
+            self._len = l
+            return l
 
 class LazyMap(Lazy):
     # Act like a sequence, but get data from a filtering process.

@@ -519,7 +519,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 return self.sortResults(rs, sort_index, reverse, limit, merge)
         else:
             # Empty result set
-            return LazyCat(rs)
+            return LazyCat([])
 
     def sortResults(self, rs, sort_index, reverse=0, limit=None, merge=1):
         # Sort a result set using a sort index. Return a lazy
