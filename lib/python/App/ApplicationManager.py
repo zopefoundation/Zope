@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -114,10 +114,14 @@ class DatabaseManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     icon='p_/DatabaseManagement_icon'
 
     manage_options=(
-        {'label':'Database', 'action':'manage_main'},
-        {'label':'Cache Parameters', 'action':'manage_cacheParameters'},
-        {'label':'Flush Cache', 'action':'manage_cacheGC'},
-        {'label':'Undo', 'action':'manage_UndoForm'},
+        {'label':'Database', 'action':'manage_main',
+        'help':('OFSP','Database-Management_Database.dtml')},
+        {'label':'Cache Parameters', 'action':'manage_cacheParameters',
+        'help':('OFSP','Database-Management_Cache-Parameters.dtml')},
+        {'label':'Flush Cache', 'action':'manage_cacheGC',
+        'help':('OFSP','Database-Management_Flush-Cache.dtml')},
+        {'label':'Undo', 'action':'manage_UndoForm',
+        'help':('OFSP','Database-Management_Undo.dtml')},
         )
 
 class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
@@ -129,7 +133,8 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     icon='p_/VersionManagement_icon'
 
     manage_options=(
-        {'label':'Version', 'action':'manage_main'},
+        {'label':'Version', 'action':'manage_main',
+         'help':('OFSP','Version-Management_Version.dtml')},
         )
         
 
@@ -170,8 +175,10 @@ class ApplicationManager(Folder,CacheManager):
         )
 
     manage_options=(
-        {'label':'Contents', 'action':'manage_main'},
-        {'label':'Undo', 'action':'manage_UndoForm'},
+        {'label':'Contents', 'action':'manage_main',
+         'help':('OFSP','Control-Panel_Contents.dtml')},
+        {'label':'Undo', 'action':'manage_UndoForm',
+         'help':('OFSP','Control-Panel_Undo.dtml')},
         )
 
     id        ='Control_Panel'

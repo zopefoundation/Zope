@@ -125,12 +125,18 @@ class ProductFolder(Folder):
     icon='p_/ProductFolder_icon'
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main'},
-    {'label':'Properties', 'action':'manage_propertiesForm'},
-    {'label':'Import/Export', 'action':'manage_importExportForm'},
-    {'label':'Security', 'action':'manage_access'},
-    {'label':'Undo', 'action':'manage_UndoForm'},
-    {'label':'Find', 'action':'manage_findFrame'},
+    {'label':'Contents', 'action':'manage_main',
+     'help':('OFSP','Product-Management_Contents.dtml')},
+    {'label':'Properties', 'action':'manage_propertiesForm',
+     'help':('OFSP','Product-Management_Properties.dtml')},
+    {'label':'Import/Export', 'action':'manage_importExportForm',
+     'help':('OFSP','Product-Management_Import-Export.dtml')},
+    {'label':'Security', 'action':'manage_access',
+     'help':('OFSP','Product-Management_Security.dtml')},
+    {'label':'Undo', 'action':'manage_UndoForm',
+     'help':('OFSP','Product-Management_Undo.dtml')},
+    {'label':'Find', 'action':'manage_findFrame',
+     'help':('OFSP','Product-Management_Find.dtml')},
     )
 
     all_meta_types={'name': 'Product', 'action': 'manage_addProductForm'},
@@ -186,12 +192,18 @@ class Product(Folder, PermissionManager):
         'manage_subclassableClassNames']
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main'},
-    {'label':'Properties', 'action':'manage_propertiesForm'},
-    {'label':'Security', 'action':'manage_access'},
-    {'label':'Undo', 'action':'manage_UndoForm'},
-    {'label':'Find', 'action':'manage_findFrame'},
-    {'label':'Distribution', 'action':'manage_distributionView'},
+    {'label':'Contents', 'action':'manage_main',
+     'help':('OFSP','Product_Contents.dtml')},    
+    {'label':'Properties', 'action':'manage_propertiesForm',
+     'help':('OFSP','Product_Properties.dtml')},
+    {'label':'Security', 'action':'manage_access',
+     'help':('OFSP','Product_Define-Permissions.dtml')},
+    {'label':'Undo', 'action':'manage_UndoForm',
+     'help':('OFSP','Product_Undo.dtml')},
+    {'label':'Find', 'action':'manage_findFrame',
+     'help':('OFSP','Product_Find.dtml')},
+    {'label':'Distribution', 'action':'manage_distributionView',
+     'help':('OFSP','Product_Distribution.dtml')},
     )
 
     manage_distributionView=Globals.HTMLFile('distributionView',globals())

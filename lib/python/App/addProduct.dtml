@@ -4,6 +4,8 @@
 
 <h2>Add a Product</h2>
 
+<dtml-var "HelpSys.HelpButton('Product_Add.dtml')">
+
 <P>
 Products allows you to define new types of Zope objects. A Product contains
 other objects including a Factory which allows you to make your Product objects
