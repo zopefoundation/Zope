@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.71 1999/05/05 14:58:34 brian Exp $"""
+$Id: ObjectManager.py,v 1.72 1999/05/19 16:19:16 klm Exp $"""
 
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -296,7 +296,7 @@ class ObjectManager(
         r=[]
         a=r.append
         g=self._getOb
-        for id in self.objectIds_d(spec): a((id, g(id)))
+        for id in self.objectIds_d(t): a((id, g(id)))
         return r
 
     def objectMap_d(self,t=None):
