@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.38 2001/06/21 17:45:12 shane Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.39 2001/06/21 19:08:59 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -94,6 +94,7 @@ static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
+static PyObject *py___class__;
 
 /* ----------------------------------------------------- */
 
@@ -322,7 +323,35 @@ MM__init__(MM *self, PyObject *args)
   return Py_None;
 }
 
+static int
+safe_PyCallable_Check(PyObject *x)
+{
+  PyObject *klass;
 
+  if (x == NULL)
+    return 0;
+  klass = PyObject_GetAttr(x, py___class__);
+  if (klass) {
+    PyObject *call = PyObject_GetAttr(x, py___call__);
+    if (call) {
+      Py_DECREF(klass);
+      Py_DECREF(call);
+      return 1;
+    }
+    else {
+      PyErr_Clear();
+      Py_DECREF(klass);
+      if (PyClass_Check(x) || PyExtensionClass_Check(x))
+        return 1;
+      else
+        return 0;
+    }
+  }
+  else {
+    PyErr_Clear();
+    return PyCallable_Check(x);
+  }
+}
 
 static int 
 dtObjectIsCallable(PyObject *ob) {
@@ -332,9 +361,9 @@ dtObjectIsCallable(PyObject *ob) {
   /* Ensure that an object is really callable by unwrapping it */
   UNLESS(base=PyObject_GetAttr(ob, py_aq_base)) {
     PyErr_Clear();
-    return PyCallable_Check(ob);
+    return safe_PyCallable_Check(ob);
   }
-  result=PyCallable_Check(base);
+  result=safe_PyCallable_Check(base);
   Py_DECREF(base);
   return result;
 }
@@ -369,7 +398,7 @@ static PyObject *
 MM_cget(MM *self, PyObject *key, int call)
 {
   long i;
-  PyObject *e, *t, *rr, *tb;
+  PyObject *e, *rr, *tb;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return NULL;
   while (--i >= 0)
@@ -401,27 +430,10 @@ MM_cget(MM *self, PyObject *key, int call)
 
               rr=PyObject_CallObject(e,NULL);
               if (rr) ASSIGN(e,rr);
-              else
-                {
-                  PyErr_Fetch(&t, &rr, &tb);
-                  if (t!=PyExc_AttributeError ||
-                      PyObject_Compare(rr,py___call__) != 0)
-                    {
-                      PyErr_Restore(t,rr,tb);
-                      Py_DECREF(e);
-                      return NULL;
-                    }
-                  /* 
-                     Added by Brian on 08/30/99. We need to be sure
-                     to DECREF the exception in the event of an 
-                     AttributeError to avoid leaking.
-                  */
-                  else {
-                    Py_XDECREF(t);
-                    Py_XDECREF(rr);
-                    Py_XDECREF(tb);
-                  }          
-                }
+              else {
+                Py_DECREF(e);
+                return NULL;
+              }
             }
 	  return e;
 	}
@@ -865,9 +877,26 @@ err:
   return NULL;
 }  
   
+static PyObject *
+safe_callable(PyObject *self, PyObject *args)
+{
+  PyObject *ob;
+  int res;
+
+  UNLESS(PyArg_ParseTuple(args,"O", &ob)) return NULL;
+  res = safe_PyCallable_Check(ob);
+  if (res)
+    return PyInt_FromLong(1);
+  else
+    return PyInt_FromLong(0);
+}  
+
 static struct PyMethodDef Module_Level__methods[] = {
   {"render_blocks", (PyCFunction)render_blocks,	METH_VARARGS,
    ""},
+  {"safe_callable", (PyCFunction)safe_callable,	METH_VARARGS,
+   "callable() with a workaround for a problem with ExtensionClasses\n"
+   "and __call__()."},
   {NULL, (PyCFunction)NULL, 0, NULL}		/* sentinel */
 };
 
@@ -875,7 +904,7 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.38 $";
+  char *rev="$Revision: 1.39 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
@@ -894,6 +923,7 @@ initcDocumentTemplate(void)
   UNLESS(py_Unauthorized=PyString_FromString("Unauthorized")) return;
   UNLESS(py_Unauthorized_fmt=PyString_FromString(
 	 "You are not authorized to access <em>%s</em>.")) return;
+  UNLESS(py___class__=PyString_FromString("__class__")) return;
 
   UNLESS(py_AUTHENTICATED_USER=PyString_FromString("AUTHENTICATED_USER"))
     return;

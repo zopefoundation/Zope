@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.80 2001/06/21 17:45:12 shane Exp $''' 
-__version__='$Revision: 1.80 $'[11:-2]
+'''$Id: DT_Util.py,v 1.81 2001/06/21 19:08:59 shane Exp $''' 
+__version__='$Revision: 1.81 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -112,8 +112,10 @@ def int_param(params,md,name,default=0, st=type('')):
 
 try:
     import ExtensionClass
-    from cDocumentTemplate import InstanceDict, TemplateDict, render_blocks
-except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
+    from cDocumentTemplate import InstanceDict, TemplateDict, \
+         render_blocks, safe_callable
+except: from pDocumentTemplate import InstanceDict, TemplateDict, \
+        render_blocks, safe_callable
 
 
 functype = type(int_param)
@@ -185,15 +187,11 @@ def render(self, v):
         v = v.__render_with_namespace__(self)
     else:
         vbase = getattr(v, 'aq_base', v)
-        if callable(vbase):
-            try:
-                if getattr(vbase, 'isDocTemp', 0):
-                    v = v(None, self)
-                else:
-                    v = v()
-            except AttributeError, n:
-                if n != '__call__':
-                    raise
+        if safe_callable(vbase):
+            if getattr(vbase, 'isDocTemp', 0):
+                v = v(None, self)
+            else:
+                v = v()
     return v
 
 d['render']=render

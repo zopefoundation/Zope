@@ -85,35 +85,37 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.29 2001/06/21 17:45:12 shane Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.30 2001/06/21 19:08:59 shane Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 import string, sys, types
 from string import join
 
+ClassTypes = [types.ClassType]
+
+try:
+    from ExtensionClass import Base
+except ImportError:
+    pass
+else:
+    class c(Base): pass
+    ClassTypes.append(c.__class__)
+
+
+def safe_callable(ob):
+    # Works with ExtensionClasses and Acquisition.
+    if hasattr(ob, '__class__'):
+        if hasattr(ob, '__call__'):
+            return 1
+        else:
+            return type(ob) in ClassTypes
+    else:
+        return callable(ob)
+
+
 StringType=type('')
 TupleType=type(())
-isFunctionType={}
-for name in ['BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
-             'FunctionType', 'LambdaType', 'MethodType', 'UnboundMethodType']:
-    try: isFunctionType[getattr(types,name)]=1
-    except: pass
 
-try: # Add function and method types from Extension Classes
-    import ExtensionClass
-    isFunctionType[ExtensionClass.PythonMethodType]=1
-    isFunctionType[ExtensionClass.ExtensionMethodType]=1
-except: pass
-
-isFunctionType=isFunctionType.has_key
-
-isSimpleType={}
-for n in dir(types):
-    if (n[-4:]=='Type' and n != 'InstanceType' and
-        not isFunctionType(getattr(types, n))):
-        isSimpleType[getattr(types, n)]=1
-
-isSimpleType=isSimpleType.has_key
 
 class InstanceDict:
 
@@ -204,25 +206,18 @@ class TemplateDict:
         try: self.keys=m.keys
         except: pass
 
-    def __getitem__(self,key,call=1,
-                    simple=isSimpleType,
-                    isFunctionType=isFunctionType,
-                    ):
+    def __getitem__(self,key,call=1):
 
         v = self.dicts[key]
         if call:
             if hasattr(v, '__render_with_namespace__'):
                 return v.__render_with_namespace__(self)
             vbase = getattr(v, 'aq_base', v)
-            if callable(vbase):
-                try:
-                    if getattr(vbase, 'isDocTemp', 0):
-                        v = v(None, self)
-                    else:
-                        v = v()
-                except AttributeError, n:
-                    if n != '__call__':
-                        raise
+            if safe_callable(vbase):
+                if getattr(vbase, 'isDocTemp', 0):
+                    v = v(None, self)
+                else:
+                    v = v()
         return v
 
     def has_key(self,key):
