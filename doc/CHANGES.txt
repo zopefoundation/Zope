@@ -139,7 +139,19 @@ Zope Changes
 
       - Collector #304: several catalog optimisations
         
-      - New implementation of ZODB object cache.
+      - New implementation of ZODB object cache.  The new
+        implemenation is more likely to keep the size of the object
+	cache close to the target size.  This change means that memory
+	consumption may be reduced.  Some users will need to increase
+	the default cache size, because a too small setting is more
+	likely to hurt performance than it did in the past.
+
+        Third-party C extensions that use the persistence API must be
+        recompiled, and may need to be updated to work correctly with
+        the new cache; see PER_GHOSTIFY().
+
+      - The ZODB Connection is now resposible for registering changed
+        objects with the current transaction.
 
       - Implementation of RestrictedCreation fishbowl proposal;
         Product registration can now include a function used to
@@ -628,6 +640,10 @@ Zope Changes
 
       - Fixed conflict resolution problem in BTrees (BTreeTemplace/
         _p_resolveConflict)
+
+      - Fixed many subtle bugs in the BTrees, including some that
+        could silently corrupt the BTree and render some data
+        inaccessible. 
 
       - Collector #2524: Medusa sent "HTTP/None..." as response header when
         then HTTP version could not be determined from the HTTP request.
