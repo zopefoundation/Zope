@@ -6,8 +6,13 @@ DocumentTemplate releases
 
     Features
 
-      - There is a new user's guide in HTML and PDF formats with
-        table of contents and index.
+      - There is a new user's guide in "HTML",
+        http://www.digicool.com/releases/DocumentTemplate/BoboDTML.html,
+        and "PDF", 
+        http://www.digicool.com/releases/DocumentTemplate/BoboDTML.pdf,
+        formats with table of contents and index.
+
+	Note that these are not included in the release.
 
       - AFAIK DocumentTemplate is now thread-safe.
 
