@@ -15,7 +15,7 @@
 
 """
 
-__version__ = '$Revision: 1.25 $'[11:-2]
+__version__ = '$Revision: 1.26 $'[11:-2]
 
 
 import  re
@@ -282,9 +282,11 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         try:
             source = getattr(obj, self.id)
             if callable(source):
-                source = str(source())
-            else:
+                source = source()
+
+            if not isinstance(source, UnicodeType):
                 source = str(source)
+
         except (AttributeError, TypeError):
             return 0
 

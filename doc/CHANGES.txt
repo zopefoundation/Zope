@@ -28,6 +28,8 @@ Zope Changes
       - FTP: Spaces in usernames inside a FTP file listing are now
         replaced by underscores to avoid confusion with some FTP clients.
 
+      - Collector #227: improved handling of unicode string in TextIndex.py
+        with unmodified default encoding in site.py.
 
   Zope 2.5.1 beta 1
     
