@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.15 1997/02/07 17:11:55 jim Exp $
+  $Id: cStringIO.c,v 1.16 1997/02/17 22:17:43 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -58,9 +58,8 @@
 
 
   $Log: cStringIO.c,v $
-  Revision 1.15  1997/02/07 17:11:55  jim
-  Added code to ease compilation on Windoze and removed some extraneous
-  variable declarations.
+  Revision 1.16  1997/02/17 22:17:43  jim
+  *** empty log message ***
 
   Revision 1.14  1997/01/24 19:56:24  chris
   undid last change
@@ -155,7 +154,7 @@ typedef struct {
   int pos, string_size, buf_size, closed;
 } Oobject;
 
-static PyTypeObject Otype;
+staticforward PyTypeObject Otype;
 
 /* ---------------------------------------------------------------- */
 
@@ -168,7 +167,7 @@ typedef struct {
   PyObject *pbuf;
 } Iobject;
 
-static PyTypeObject Itype;
+staticforward PyTypeObject Itype;
 
 /* ---------------------------------------------------------------- */
 
@@ -479,33 +478,30 @@ static char Otype__doc__[] =
 "Simple type for output to strings."
 ;
 
-static PyTypeObject Otype_value() {
-  PyTypeObject Otype = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,	       		/*ob_size*/
-	"StringO",     		/*tp_name*/
-	sizeof(Oobject),       	/*tp_basicsize*/
-	0,	       		/*tp_itemsize*/
-	/* methods */
-	(destructor)O_dealloc,	/*tp_dealloc*/
-	(printfunc)0,		/*tp_print*/
-	(getattrfunc)O_getattr,	/*tp_getattr*/
-	(setattrfunc)0,		/*tp_setattr*/
-	(cmpfunc)0,		/*tp_compare*/
-	(reprfunc)0,		/*tp_repr*/
-	0,			/*tp_as_number*/
-	0,			/*tp_as_sequence*/
-	0,			/*tp_as_mapping*/
-	(hashfunc)0,		/*tp_hash*/
-	(ternaryfunc)0,		/*tp_call*/
-	(reprfunc)0,		/*tp_str*/
-
-	/* Space for future expansion */
-	0L,0L,0L,0L,
-	Otype__doc__ 		/* Documentation string */
-  };
-  return Otype;
-}
+static PyTypeObject Otype = {
+  PyObject_HEAD_INIT(NULL)
+  0,	       		/*ob_size*/
+  "StringO",     		/*tp_name*/
+  sizeof(Oobject),       	/*tp_basicsize*/
+  0,	       		/*tp_itemsize*/
+  /* methods */
+  (destructor)O_dealloc,	/*tp_dealloc*/
+  (printfunc)0,		/*tp_print*/
+  (getattrfunc)O_getattr,	/*tp_getattr*/
+  (setattrfunc)0,		/*tp_setattr*/
+  (cmpfunc)0,		/*tp_compare*/
+  (reprfunc)0,		/*tp_repr*/
+  0,			/*tp_as_number*/
+  0,			/*tp_as_sequence*/
+  0,			/*tp_as_mapping*/
+  (hashfunc)0,		/*tp_hash*/
+  (ternaryfunc)0,		/*tp_call*/
+  (reprfunc)0,		/*tp_str*/
+  
+  /* Space for future expansion */
+  0L,0L,0L,0L,
+  Otype__doc__ 		/* Documentation string */
+};
 
 /* End of code for StringO objects */
 /* -------------------------------------------------------- */
@@ -572,33 +568,30 @@ static char Itype__doc__[] =
 "Simple type for treating strings as input file streams"
 ;
 
-static PyTypeObject Itype_value() {
- PyTypeObject Itype = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,		       	/*ob_size*/
-	"StringI",	       	/*tp_name*/
-	sizeof(Iobject),       	/*tp_basicsize*/
-	0,		       	/*tp_itemsize*/
-	/* methods */
-	(destructor)I_dealloc,	/*tp_dealloc*/
-	(printfunc)0,		/*tp_print*/
-	(getattrfunc)I_getattr,	/*tp_getattr*/
-	(setattrfunc)0,		/*tp_setattr*/
-	(cmpfunc)0,		/*tp_compare*/
-	(reprfunc)0,		/*tp_repr*/
-	0,			/*tp_as_number*/
-	0,			/*tp_as_sequence*/
-	0,			/*tp_as_mapping*/
-	(hashfunc)0,		/*tp_hash*/
-	(ternaryfunc)0,		/*tp_call*/
-	(reprfunc)0,		/*tp_str*/
-
-	/* Space for future expansion */
-	0L,0L,0L,0L,
-	Itype__doc__ 		/* Documentation string */
- };
- return Itype;
-}
+static PyTypeObject Itype = {
+  PyObject_HEAD_INIT(NULL)
+  0,		       	/*ob_size*/
+  "StringI",	       	/*tp_name*/
+  sizeof(Iobject),       	/*tp_basicsize*/
+  0,		       	/*tp_itemsize*/
+  /* methods */
+  (destructor)I_dealloc,	/*tp_dealloc*/
+  (printfunc)0,		/*tp_print*/
+  (getattrfunc)I_getattr,	/*tp_getattr*/
+  (setattrfunc)0,		/*tp_setattr*/
+  (cmpfunc)0,		/*tp_compare*/
+  (reprfunc)0,		/*tp_repr*/
+  0,			/*tp_as_number*/
+  0,			/*tp_as_sequence*/
+  0,			/*tp_as_mapping*/
+  (hashfunc)0,		/*tp_hash*/
+  (ternaryfunc)0,		/*tp_call*/
+  (reprfunc)0,		/*tp_str*/
+  
+  /* Space for future expansion */
+  0L,0L,0L,0L,
+  Itype__doc__ 		/* Documentation string */
+};
 
 /* End of code for StringI objects */
 /* -------------------------------------------------------- */
@@ -652,8 +645,8 @@ initcStringIO() {
   d = PyModule_GetDict(m);
   
   /* Export C API */
-  Itype=Itype_value();
-  Otype=Otype_value();
+  Itype.ob_type=&PyType_Type;
+  Otype.ob_type=&PyType_Type;
   PyDict_SetItemString(d,"cStringIO_CAPI", PyCObject_FromVoidPtr(&CAPI,NULL));
 
   /* Export Types */
