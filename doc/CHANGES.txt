@@ -19,6 +19,8 @@ Zope changes
         - Fixed path for management interface files used for
           CatalogPathAwareness and Aqueduct.
 
+        - Fixed a NameError in HTTPRequest.
+
     Zope 2.3.0 alpha 2
 
       Features Added
