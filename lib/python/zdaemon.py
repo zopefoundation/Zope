@@ -225,8 +225,12 @@ def run(argv, pidfile=''):
 
             else:
                 # Child
-                os.execv(pyth, (pyth,)+tuple(argv))
-                
+                if __debug__:
+                    # non optimized
+                    os.execv(pyth, (pyth,) + tuple(argv))
+                else:
+                    # optimized
+                    os.execv(pyth, (pyth, '-O') + tuple(argv))
 
         except ExecError:
             sys.exit()
@@ -249,13 +253,5 @@ def main():
         print 'Error: no script given'
             
     run(argv, pidf)
-    
 
 if __name__ == '__main__': main()
-
-
-
-
-
-
-
