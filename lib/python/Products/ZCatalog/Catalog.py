@@ -339,6 +339,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if index is None:  # we are inserting new data
             index = self.updateMetadata(object, uid)
 
+            if not hasattr(self, '_length'):
+                self.migrate__len__()
             self._length.change(1)
             self.uids[uid] = index
             self.paths[index] = uid
@@ -389,6 +391,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             del data[rid]
             del paths[rid]
             del uids[uid]
+            if not hasattr(self, '_length'):
+                self.migrate__len__()
             self._length.change(-1)
             
         else:
