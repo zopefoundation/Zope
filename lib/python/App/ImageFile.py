@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -119,23 +119,21 @@ class ImageFile(Acquisition.Explicit):
         self.lmh=rfc1123_date(self.lmt)
 
     def _init_headers(self, request, response):
-#        Waaa... trying to cache aggressively seems to cause problems :(
-#
-#        ms=request.get_header('If-Modified-Since', None)
-#        if ms is not None:
-#            ms=split(ms, ';')[0]
-#            mst=DateTime(ms).timeTime()
-#            if mst >= self.lmt:
-#                response.setStatus(304)
-#                return response
-#        response.setHeader('Expires', rfc1123_date(time()+86400.0))
+        # Attempt to handle If-Modified-Since headers.
+        ms=request.get_header('If-Modified-Since', None)
+        if ms is not None:
+            ms=string.split(ms, ';')[0]
+            ms=DateTime(ms).timeTime()
+            if self.lmt > ms:
+                RESPONSE.setStatus(304)
+                return RESPONSE
         response.setHeader('Content-Type', self.content_type)
-#        response.setHeader('Last-Modified', self.lmh)
+        response.setHeader('Last-Modified', self.lmh)
 
-        
     def index_html(self, REQUEST, RESPONSE):
         """Default document"""
-        self._init_headers(REQUEST, RESPONSE)
+        if self._init_headers(REQUEST, RESPONSE):
+            return ''
         f=open(self.path,'rb')
         data=f.read()
         f.close()
