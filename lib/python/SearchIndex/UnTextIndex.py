@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -166,6 +166,12 @@ class UnTextIndex(Persistent):
 
     def __len__(self):
         return len(self._unindex)
+
+    def __setstate__(self, state):
+        Persistent.__setstate__(self, state)
+        if not hasattr(self, '_lexicon'):
+            self._lexicon = Lexicon()
+        
 
     def clear(self):
         self._index = IOBTree()
