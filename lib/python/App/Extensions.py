@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.6 1999/03/03 19:22:20 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Extensions.py,v 1.7 1999/03/09 14:57:15 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -182,7 +182,7 @@ def getObject(module, name, reload=0, modules={}):
 
     if p[-4:]=='.pyp':
         data=zlib.decompress(
-            rotor.newrotor(d+' shshsh').decrypt(open(p).read())
+            rotor.newrotor(d+' shshsh').decrypt(open(p,'rb').read())
             )
         execsrc=compile(data,module,'exec')
     else:

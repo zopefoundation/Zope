@@ -111,6 +111,7 @@ from OFS.Folder import Folder
 import regex, zlib, Globals, cPickle, marshal, Main, rotor
 from string import rfind, atoi, find, strip, join
 from Factory import Factory
+import ZClasses
 
 class ProductFolder(Folder):
     "Manage a collection of Products"
@@ -169,11 +170,19 @@ class Product(Folder):
                     
     
     meta_types=(
-        {
-            'name': 'Principia Factory',
-            'action': 'manage_addPrincipiaFactoryForm'
-            },
+        ZClasses.meta_types+
+        (
+            {
+                'name': 'Principia Factory',
+                'action': 'manage_addPrincipiaFactoryForm'
+                },
+            )
         )
+    
+    manage_addZClassForm=ZClasses.methods['manage_addZClassForm']
+    manage_addZClass    =ZClasses.methods['manage_addZClass']
+    manage_subclassableClassNames=ZClasses.methods[
+        'manage_subclassableClassNames']
 
     manage_options=(
     {'label':'Contents', 'action':'manage_main'},
@@ -327,7 +336,6 @@ class Product(Folder):
                 )).read()
         except: return ''
 
-
 class CompressedOutputFile:
     def __init__(self, rot):
         self._c=zlib.compressobj()
@@ -417,7 +425,7 @@ def initializeProduct(productp, name, home, app):
     except: pass
     
     try:
-        f=CompressedInputFile(open(home+'/product.dat'),name+' shshsh')
+        f=CompressedInputFile(open(home+'/product.dat','rb'),name+' shshsh')
         meta=cPickle.Unpickler(f).load()
         product=Globals.Bobobase._jar.import_file(f)
         product._objects=meta['_objects']
