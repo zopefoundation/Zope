@@ -85,8 +85,8 @@
 __doc__='''Cache management support
 
 
-$Id: CacheManager.py,v 1.14 1999/07/14 11:41:25 jim Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: CacheManager.py,v 1.15 1999/08/05 14:53:06 jim Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, time, sys
 
@@ -113,7 +113,7 @@ class CacheManager:
         except:
             # BoboPOS2
             return len(Globals.Bobobase._jar.db.index)*4
-        else: return db.getSize()
+        else: return db.objectCount()
 
     def cache_age(self):
         try:
