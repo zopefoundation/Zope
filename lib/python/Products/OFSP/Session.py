@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -101,11 +101,16 @@ class Session(Persistent,Implicit,RoleManager,Item):
 
 
 
+import __init__
+__init__.need_license=1
 
 
 ############################################################################## 
 #
 # $Log: Session.py,v $
+# Revision 1.16  1998/04/13 19:23:06  jim
+# Added license flag
+#
 # Revision 1.15  1998/03/11 18:21:56  jim
 # Fixed bug in permissions settings.
 #
