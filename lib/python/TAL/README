@@ -37,14 +37,7 @@ How To Play
 
 The script driver.py takes an XML file with TAL markup as argument and
 writes the expanded version to standard output.  The filename argument
-defaults to test/test1.xml.  The script can use three different TAL
-implementations, from slowest to fastest:
-
-  -p: parsed (directly from XML to intermediate code which generates XML)
-  -c: compiled (from XML to DOM to intermediate code which generates XML)
-  -v: visiting (from XML to DOM, then from DOM to DOM, which is printed)
-
-Parsed mode is currently the default.
+defaults to test/test1.xml.
 
 Regression test
 ---------------
@@ -52,18 +45,12 @@ Regression test
 There are a number of test cases in the test subdirectory, named
 test/test<number>.xml.  The Python script ./runtest.py runs
 ./driver.py for each test case, and should print "<file> OK" for each
-testcase.  You can pass it command line options like -c or -m which
-will be passed on to driver.py; note that in this case some tests will
-fail, and a diff will be printed.
+testcase.
 
 What's Here
 -----------
 
-DOMVisitor.py		base class to create DOM visitor classes
-CopyingDOMVisitor.py	class to copy DOM trees
-TALVisitor.py		class to copy DOM trees with TAL expansion
 DummyEngine.py		simple-minded TALES execution engine
-TALCompiler.py		class to compile DOM trees to intermediate code
 TALInterpreter.py	class to interpret intermediate code
 TALGenerator.py		class to generate intermediate code
 XMLParser.py		base class to parse XML, avoiding DOM
@@ -85,16 +72,4 @@ Creations and can be redistributed under the Zope Public License.
 TO DO
 -----
 
-Here are some things that should be done.
-
-- Provide a dummy implementation of evaluateStructure()?
-
-It's unclear on what to do about these items:
-
-- A comment (or other non-element node) before the documentElement.
-
-- The DOMVisitor class assumes that only Document and Element nodes
-  have children.
-
-- Empty TAL/METAL attributes (e.g. z:replace="") are currently
-  ignored; is this a good idea?
+- Implement insertStructure() properly.
