@@ -276,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.19 1998/01/16 19:08:55 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.20 1998/01/22 20:31:47 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.19 1998/01/16 19:08:55 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -786,7 +786,7 @@ class sequence_variables:
 			    v=re.group(0)
 			    query_string=(query_string[:l]+
 					  query_string[l+len(v)-1:])
-			    query_string='?'+query_string[1:]
+			query_string='?'+query_string[1:]
 		    else: query_string='?'
 		    data[key]=query_string
 		    return query_string
@@ -848,6 +848,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.20  1998/01/22 20:31:47  jim
+# Fixed a bug in generation of sequence-query.
+#
 # Revision 1.19  1998/01/16 19:08:55  jim
 # Fixed some documentation.
 #
