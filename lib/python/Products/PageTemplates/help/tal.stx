@@ -26,6 +26,10 @@ TAL Overview
     This is not a URL, but merely a unique identifier.  Do not expect
     a browser to resolve it successfully.
 
+    Zope does not require an XML namespace declaration when creating
+    templates with a content-type of 'text/html'. However, it does
+    require an XML namespace declaration for all other content-types.
+
   TAL Statements   
 
     These are the tal statements:

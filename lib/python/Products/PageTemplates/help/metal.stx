@@ -22,6 +22,10 @@ METAL Overview
     Just like the TAL namespace URI, this URI is not attached to a web
     page; it's just a unique identifier.
 
+    Zope does not require an XML namespace declaration when creating
+    templates with a content-type of 'text/html'. However, it does
+    require an XML namespace declaration for all other content-types.
+
   METAL Statements 
 
     METAL defines a number of statements:

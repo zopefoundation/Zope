@@ -21,7 +21,11 @@ Edit View: Edit A Page Template
         content type is 'text/html' (the default) then the template is
         assumed to contain HTML, not XML.  This affects both parsing
         and rendering of the template, and can be overridden by giving
-        the template an 'is_html' property.
+        the template an 'is_html' property. In HTML mode you don't
+        need to explicitly declare 'tal' and 'metal' XML namespaces. In
+        XML mode you must explicitly declare 'tal' and 'metal' XML
+        namespaces, and Zope assumes that your template contains
+        well-formed XML.
 
         'Expand macros when editing' -- Allows you to turn the expansion
         of METAL macros on or off.  This only affects viewing of the
