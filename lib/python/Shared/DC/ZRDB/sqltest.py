@@ -55,7 +55,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.15 2002/01/31 13:29:47 chrism Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.16 2002/01/31 14:28:08 chrism Exp $'
 
 ############################################################################
 #     Copyright 
@@ -65,7 +65,7 @@ __rcs_id__='$Id: sqltest.py,v 1.15 2002/01/31 13:29:47 chrism Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
