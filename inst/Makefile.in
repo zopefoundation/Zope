@@ -131,5 +131,5 @@ clobber: clean uninstance
 
 # distclean:     Make the source tree *really* 'pristine' again.
 distclean: clobber
-       ${RM} makefile Makefile
-       ${RMRF} build-base
+	${RM} makefile Makefile
+	${RMRF} build-base
