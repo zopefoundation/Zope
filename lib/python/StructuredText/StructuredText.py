@@ -46,7 +46,7 @@ Special symbology is used to indicate special constructs:
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
 
-$Id: StructuredText.py,v 1.5 1997/03/08 16:01:03 jim Exp $'''
+$Id: StructuredText.py,v 1.6 1997/12/12 15:27:25 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,9 @@ $Id: StructuredText.py,v 1.5 1997/03/08 16:01:03 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.6  1997/12/12 15:27:25  jim
+# Added additional pattern matching for HTML references.
+#
 # Revision 1.5  1997/03/08 16:01:03  jim
 # Moved code to recognize: "foo bar", url.
 # into object initializer, so it gets applied in all cases.
@@ -217,8 +220,16 @@ class StructuredText:
 	'''
 
 	aStructuredString = gsub(
-	    '\(\"[^\"\0]+\"\),[\0- ]+'            # title part
-	    '\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=]+\)'  # URL
+	    '\"\([^\"\0]+\)\":'            # title part
+	    '\([-:a-zA-Z0-9_,./?=@]+\)'  # URL
+	    '\(,\|\([.:?;]\)\)'                   # trailing puctuation
+	    '\([\0- ]\)',                         # trailing space
+	    '<a href="\\2">\\1</a>\\4\\5',
+	    aStructuredString)
+
+	aStructuredString = gsub(
+	    '\"\([^\"\0]+\)\",[\0- ]+'            # title part
+	    '\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=@]+\)'  # URL
 	    '\(,\|\([.:?;]\)\)'                   # trailing puctuation
 	    '\([\0- ]\)',                         # trailing space
 	    '<a href="\\2">\\1</a>\\4\\5',
@@ -405,6 +416,3 @@ def main():
 	print html_with_references(s)
 
 if __name__=="__main__": main()
-
-
-
