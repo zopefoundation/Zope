@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.97 2000/05/30 20:27:17 brian Exp $"""
+$Id: ObjectManager.py,v 1.98 2000/06/01 19:58:05 brian Exp $"""
 
-__version__='$Revision: 1.97 $'[11:-2]
+__version__='$Revision: 1.98 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -234,7 +234,7 @@ class ObjectManager(
             return default
         return getattr(self, id)
 
-    def _setObject(self,id,object,roles=None,user=None):
+    def _setObject(self,id,object,roles=None,user=None, set_owner=1):
         v=self._checkId(id)
         if v is not None: id=v
         try:    t=object.meta_type
@@ -244,17 +244,20 @@ class ObjectManager(
         object._p_jar = self._p_jar
         self._setOb(id,object)
         object=self._getOb(id)
-        object.manage_fixupOwnershipAfterAdd()
+
+        if set_owner:
+            object.manage_fixupOwnershipAfterAdd()
+
+            # Try to give user the local role "Owner", but only if
+            # no local roles have been set on the object yet.
+            if hasattr(object, '__ac_local_roles__'):
+                if object.__ac_local_roles__ is None:
+                    user=getSecurityManager().getUser()
+                    name=user.getUserName()
+                    if name != 'Anonymous User':
+                        object.manage_setLocalRoles(name, ['Owner'])
+
         object.manage_afterAdd(object, self)
-        
-        # Try to give user the local role "Owner", but only if
-        # no local roles have been set on the object yet.
-        if hasattr(object, '__ac_local_roles__'):
-            if object.__ac_local_roles__ is None:
-                user=getSecurityManager().getUser()
-                name=user.getUserName()
-                if name != 'Anonymous User':
-                    object.manage_setLocalRoles(name, ['Owner'])
         return id
 
     def manage_afterAdd(self, item, container):
@@ -437,27 +440,6 @@ class ObjectManager(
 
         return r
 
-    # The Following methods are short-term measures to get Paul off my back;)
-    def manage_exportHack(self, id=None):
-        """Exports a folder and its contents to /var/export.bbe
-        This file can later be imported by using manage_importHack"""
-        if id is None: o=self
-        else: o=self._getOb(id)
-        f=Globals.data_dir+'/export.bbe'
-        o._p_jar.exportFile(o._p_oid,f)
-        return f
-
-    def manage_importHack(self, REQUEST=None):
-        "Imports a previously exported object from /var/export.bbe"
-        f=Globals.data_dir+'/export.bbe'
-        o=self._p_jar.importFile(f)
-        id=o.id
-        if hasattr(id,'im_func'): id=id()
-        self._setObject(id,o)
-        return 'OK, I imported %s' % id
-
-    # These methods replace manage_importHack and manage_exportHack
-
     def manage_exportObject(self, id='', download=None, toxml=None,
                             RESPONSE=None):
         """Exports an object to a file and returns that file."""        
@@ -491,7 +473,7 @@ class ObjectManager(
 
     manage_importExportForm=HTMLFile('importExport',globals())
 
-    def manage_importObject(self, file, REQUEST=None):
+    def manage_importObject(self, file, REQUEST=None, set_owner=1):
         """Import an object from a file"""
         dirname, file=os.path.split(file)
         if dirname:
@@ -509,7 +491,13 @@ class ObjectManager(
         if REQUEST: self._verifyObjectPaste(ob, validate_src=0)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
-        self._setObject(id, ob)
+        self._setObject(id, ob, set_owner=set_owner)
+
+        # try to make ownership implicit if possible in the context
+        # that the object was imported into.
+        ob=self._getOb(id)
+        ob.manage_changeOwnershipType(explicit=0)
+        
         if REQUEST is not None:
             return MessageDialog(
                 title='Object imported',

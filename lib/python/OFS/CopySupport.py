@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -236,12 +236,22 @@ class CopyContainer(ExtensionClass.Base):
                     action ='manage_main')
                 if not sanity_check(self, ob):
                     raise CopyError, 'This object cannot be pasted into itself'
+
+                # try to make ownership explicit so that it gets carried
+                # along to the new location if needed.
+                ob.manage_changeOwnershipType(explicit=1)
+                
                 ob.aq_parent._delObject(id)
                 if hasattr(ob, 'aq_base'):
                     ob=ob.aq_base
                 id=self._get_id(id)
                 ob._setId(id)
-                self._setObject(id, ob)
+
+                self._setObject(id, ob, set_owner=0)
+
+                # try to make ownership implicit if possible
+                ob=self._getOb(id)
+                ob.manage_changeOwnershipType(explicit=0)
 
             if REQUEST is not None:
                 REQUEST['RESPONSE'].setCookie('cp_', 'deleted',
@@ -285,9 +295,11 @@ class CopyContainer(ExtensionClass.Base):
         if hasattr(ob, 'aq_base'):
             ob=ob.aq_base
         ob._setId(new_id)
-        self._setObject(new_id, ob)
-        #ob=ob.__of__(self)            
-        #ob._postCopy(self, op=1)
+        
+        # Note - because a rename always keeps the same context, we
+        # can just leave the ownership info unchanged.
+        self._setObject(new_id, ob, set_owner=0)
+
         if REQUEST is not None:
             return self.manage_main(self, REQUEST, update_menu=1)
         return None
