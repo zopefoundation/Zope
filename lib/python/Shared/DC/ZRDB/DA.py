@@ -11,14 +11,13 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.10 1997/09/25 18:47:53 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: DA.py,v 1.11 1997/09/25 21:11:52 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
 from Aqueduct.Aqueduct import quotedHTML, decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
-from Aqueduct.Aqueduct import default_report_src
 from Globals import Persistent, HTMLFile, MessageDialog
 from cStringIO import StringIO
 log_file=None
@@ -88,12 +87,14 @@ class Folder(OFS.Folder.Folder):
 	try: self.database_connect()
 	except: pass
 
-    def manage_addDA(self,id,key,arguments,template,REQUEST):
+    def manage_addDA(self,id,title,key,arguments,template,REQUEST=None):
 	'Add a query'
 
-	q=Query(id,key,arguments,template)
+	q=Query()
+	q.id=id
+	q.manage_edit(key,title,arguments,template)
 	self._setObject(id,q)
-	return self.manage_main(self,REQUEST)
+	if REQUEST: return self.manage_main(self,REQUEST)
 
     test_url___roles__=None
     def test_url_(self):
@@ -110,11 +111,6 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
     _col=None
     
     manage=HTMLFile('AqueductDA/edit')
-
-    def __init__(self,id='',key='',arguments='',template='',title=''):
-	if not id: return
-	self.id=id
-	self.manage_edit(key,title,arguments,template)
 
     def quoted_src(self): return quotedHTML(self.src)
 
@@ -214,6 +210,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.11  1997/09/25 21:11:52  jim
+# got rid of constructor
+#
 # Revision 1.10  1997/09/25 18:47:53  jim
 # made index_html public
 #
