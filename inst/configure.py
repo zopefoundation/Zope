@@ -169,6 +169,7 @@ warning with the understanding that some Zope features may not work properly
 until you've installed the pyexpat module.
 """
             )
+        sys.exit(1)
         
 
 def test_zlib():
