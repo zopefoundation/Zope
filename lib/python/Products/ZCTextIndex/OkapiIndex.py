@@ -70,6 +70,8 @@ class OkapiIndex(BaseIndex):
     # As currently written, the weights are always 1, and the IIBucket maps
     # D to TF(D,t)*IDF(t) directly, where the product is computed as a float
     # but stored as a scaled_int.
+    # NOTE:  This is overridden below, by a function that computes the
+    # same thing but with the inner scoring loop in C.
     def _search_wids(self, wids):
         if not wids:
             return []
@@ -87,7 +89,6 @@ class OkapiIndex(BaseIndex):
         L = []
         docid2len = self._docweight
         for t in wids:
-            assert self._wordinfo.has_key(t)  # caller responsible for OOV
             d2f = self._wordinfo[t] # map {docid -> f(docid, t)}
             idf = inverse_doc_frequency(len(d2f), N)  # an unscaled float
             result = IIBucket()
@@ -110,6 +111,35 @@ class OkapiIndex(BaseIndex):
         # skating near the edge, it's not a speed cure, since the computation
         # of tf would still be done at Python speed, and it's a lot more
         # work than just multiplying by idf.
+
+    # The same function as _search_wids above, but with the inner scoring
+    # loop written in C (module okascore, function score()).
+    # Cautions:  okascore hardcodes the values of K, B1, and the scaled_int
+    # function.
+    def _search_wids(self, wids):
+        from Products.ZCTextIndex.okascore import score
+        if not wids:
+            return []
+        N = float(len(self._docweight))  # total # of docs
+        meandoclen = self._totaldoclen / N
+        #K1 = self.K1
+        #B = self.B
+        #K1_plus1 = K1 + 1.0
+        #B_from1 = 1.0 - B
+
+        #                           f(D, t) * (k1 + 1)
+        #   TF(D, t) =  -------------------------------------------
+        #               f(D, t) + k1 * ((1-b) + b*len(D)/E(len(D)))
+
+        L = []
+        docid2len = self._docweight
+        for t in wids:
+            d2f = self._wordinfo[t] # map {docid -> f(docid, t)}
+            idf = inverse_doc_frequency(len(d2f), N)  # an unscaled float
+            result = IIBucket()
+            score(result, d2f.items(), docid2len, idf, meandoclen)
+            L.append((result, 1))
+        return L
 
     def query_weight(self, terms):
         # This method was inherited from the cosine measure, and doesn't
