@@ -187,7 +187,10 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
         {'label':'View', 'action':'index_html'},
         )
 
-    __ac_permissions__=()
+    __ac_permissions__=(
+        ('View', ('index_html', 'SearchableText', 'url')),
+         'Access contents information', ('helpValues',)),
+        )
 
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
