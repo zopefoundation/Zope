@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -252,6 +252,7 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
             return self._er(data,title,SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
 
         self.title=title
+        if type(data) is not type(''): data=data.read()
         self.munge(data)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
@@ -261,7 +262,8 @@ class DTMLMethod(cDocument, HTML, Explicit, RoleManager, Item_w__name__):
     def manage_upload(self,file='', REQUEST=None):
         """Replace the contents of the document with the text in file."""
         self._validateProxy(REQUEST)
-        self.munge(file.read())
+        if type(file) is not type(''): file=file.read()
+        self.munge(file)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -370,6 +372,7 @@ def add(self, id, title='', file='', REQUEST=None, submit=None):
     """Add a DTML Method object with the contents of file. If
     'file' is empty, default document text is used.
     """
+    if type(file) is not type(''): file=file.read()
     if not file: file=default_dm_html
     ob=DTMLMethod(file, __name__=id)
     ob.title=title
