@@ -8,6 +8,9 @@ Zope changes
     
       Bugs Fixed
 
+        - Fixed Tutorial bug that caused win98 to crash with adding a
+          tutorial.
+
         - Fixed ZService.py to avoid overwriting existing service start 
           parameters at install time on win32.
 
