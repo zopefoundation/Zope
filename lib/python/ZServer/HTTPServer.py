@@ -333,7 +333,8 @@ class zhttp_channel(http_channel):
         while self.queue:
             self.queue.pop()
         if self.current_request is not None:
-            self.current_request.channel=None # break circ refs
+            self.current_request.collector = None # break circ refs
+            self.current_request.channel = None # break circ refs
             self.current_request=None
         while self.producer_fifo:
             p=self.producer_fifo.first()

@@ -565,11 +565,48 @@ class ProcessInputsTests(unittest.TestCase):
         self._onlyTaintedformHoldsTaintedStrings(req)
 
 
+TEST_ENVIRON = {
+    'CONTENT_TYPE': 'multipart/form-data; boundary=12345',
+    'REQUEST_METHOD': 'POST',
+    'SERVER_NAME': 'localhost',
+    'SERVER_PORT': '80',
+    }
+
+TEST_FILE_DATA = '''
+--12345
+Content-Disposition: form-data; name="file"; filename="file"
+Content-Type: application/octet-stream
+
+test
+
+--12345--
+'''
+
+
+class RequestTests( unittest.TestCase ):
+
+    def testRemoveStdinReferences(self):
+        # Verifies that all references to the input stream go away on
+        # request.close().  Otherwise a tempfile may stick around.
+        import sys
+        from StringIO import StringIO
+        s = StringIO(TEST_FILE_DATA)
+        env = TEST_ENVIRON.copy()
+        start_count = sys.getrefcount(s)
+        from ZPublisher.HTTPRequest import HTTPRequest
+        req = HTTPRequest(s, env, None)
+        req.processInputs()
+        self.assertNotEqual(start_count, sys.getrefcount(s))  # Precondition
+        req.close()
+        self.assertEqual(start_count, sys.getrefcount(s))  # The test
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(RecordTests, 'test'))
     suite.addTest(unittest.makeSuite(ProcessInputsTests, 'test'))
+    suite.addTest(unittest.makeSuite(RequestTests, 'test'))
     return suite
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(defaultTest='test_suite')

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.89 $'[11:-2]
+__version__='$Revision: 1.90 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -130,6 +130,11 @@ class HTTPRequest(BaseRequest):
         return r
 
     def close(self):
+        # Clear all references to the input stream, possibly
+        # removing tempfiles.
+        self.stdin = None
+        self._file = None
+        self.form.clear()
         # we want to clear the lazy dict here because BaseRequests don't have
         # one.  Without this, there's the possibility of memory leaking
         # after every request.
