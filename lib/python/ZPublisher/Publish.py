@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.47 1997/09/02 21:18:53 jim Exp $"""
+$Id: Publish.py,v 1.48 1997/09/08 14:47:11 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.47 1997/09/02 21:18:53 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 def main():
@@ -1206,9 +1206,6 @@ class Request:
 
         Data that may be set by an application object.
 
-    The request object has three attributes: "environ", "form",
-    "cookies", and "other" that are dictionaries containing this data.
-
     The form attribute of a request is actually a Field Storage
     object.  When file uploads are used, this provides a richer and
     more complex interface than is provided by accessing form data as
@@ -1217,9 +1214,7 @@ class Request:
 
     The request object may be used as a mapping object, in which case
     values will be looked up in the order: environment variables,
-    other variables, form data, and then cookies.  Dot notation may be
-    used in addition to indexing notation for variables with names
-    other than "environ", "form", "cookies", and "other".
+    other variables, form data, and then cookies.
     """
 
     def __init__(self,environ,form,stdin):
@@ -1272,8 +1267,7 @@ class Request:
 		)
 	    
 	return "%s\n%s\n%s" % (
-	    str(self,'other'),str(self,'environ'),
-	    str(self,'cookies'))
+	    str(self,'other'),str(self,'environ'))
 
     __repr__=__str__
 
@@ -1463,6 +1457,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.48  1997/09/08 14:47:11  jim
+# Got cookies out of request str.
+#
 # Revision 1.47  1997/09/02 21:18:53  jim
 # Implemented new authorization model.
 # No longer use Realm module.
