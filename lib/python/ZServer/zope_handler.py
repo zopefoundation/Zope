@@ -31,7 +31,7 @@ unquote    = default_handler.unquote
 get_header = default_handler.get_header
 
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
-
+CONNECTION = regex.compile ('Connection: \(.*\)', regex.casefold)
 
 # maps request headers to environment variables
 #
@@ -76,8 +76,11 @@ class zope_handler:
     def handle_request(self,request):
         self.hits.increment()
         if request.command in ["post","put"]:
-            request.collector=input_collector(self,request)
-            request.channel.set_terminator(None)
+            cl=get_header(CONTENT_LENGTH, request.header)
+            self.data = StringIO() # XXX maybe use tempfile, if cl is large
+            self.request = request
+            request.channel.set_terminator(string.atoi(cl))
+            request.collector=self
         else:
             sin=StringIO()
             self.continue_request(sin,request)
@@ -124,45 +127,58 @@ class zope_handler:
 
     def continue_request(self,sin,request):
         "continue handling request now that we have the stdin"
-        request.data=[]
-        outpipe=handle(self.module_name,
-            self.get_environment(request),sin,(self.more,(request,)))
-        
-    def more(self,request,pipe):
-        """packages up the current output from the output pipe.
-        called repeatedly when there is something in the output pipe"""
-        
-        # XXX does not stream, probably inefficient.
-        
-        done=None
-        while not done:
-            data=pipe.read()
-            if data is None:
-                done=1
-            elif data=="":
-                done=1
-                self.finish(request)
-            else:
-                request.data.append(data)
-    
-    def finish(self,request):
-        "finishes up the response"
+        outpipe=handle(self.module_name,self.get_environment(request),sin)
 
-        # XXX does not stream, probably inefficient to boot
-        
-        data=string.join(request.data,'')
-        if string.find(data,"\n\n"):
-            [headers,html]=string.split(data,"\n\n",1)
-            headers=string.split(headers,"\n")
-            for line in headers:
-                [header, header_value]=string.split(line,": ",1)
-                if header=="Status":
-                    [code,message]=string.split(header_value," ",1)
-                    request.reply_code=string.atoi(code)
+        # now comes the hairy stuff. adapted from http_server
+        #
+        connection = string.lower(get_header(CONNECTION,request.header))
+
+        close_it = 0
+        wrap_in_chunking = 0
+
+        if request.version == '1.0':
+            if connection == 'keep-alive':
+                if not request.has_key ('Content-Length'):
+                    close_it = 1
                 else:
-                    request[header]=header_value
-        request.push(html)
-        request.done()
+                    request['Connection'] = 'Keep-Alive'
+            else:
+                close_it = 1
+        elif request.version == '1.1':
+            if connection == 'close':
+                close_it = 1
+            elif not request.has_key ('Content-Length'):
+                if request.has_key ('Transfer-Encoding'):
+                    if not request['Transfer-Encoding'] == 'chunked':
+                        close_it = 1
+                elif request.use_chunked:
+                    request['Transfer-Encoding'] = 'chunked'
+                    wrap_in_chunking = 1
+                else:
+                    close_it = 1
+        
+        if close_it:
+            request['Connection'] = 'close'
+
+        outgoing_producer = crazy_producer(request,outpipe)
+
+        # apply a few final transformations to the output
+        request.channel.push_with_producer (
+            # globbing gives us large packets
+            producers.globbing_producer (
+                # hooking lets us log the number of bytes sent
+                producers.hooked_producer (
+                    outgoing_producer,
+                    request.log
+                    )
+                )
+            )
+
+        request.channel.current_request = None
+
+        if close_it:
+            request.channel.close_when_done()
+
 
     def status (self):
         return producers.simple_producer("""
@@ -173,32 +189,75 @@ class zope_handler:
             </ul>""" %(self.module_name,int(self.hits))
             )
 
-
-class input_collector:
-    "gathers input for put and post requests"
-    
-    # XXX update to use tempfiles for large content 
-
-    def __init__ (self, handler, request):
-        self.handler    = handler
-        self.request    = request
-        self.data = StringIO()
-        # make sure there's a content-length header
-        self.cl = get_header (CONTENT_LENGTH, request.header)
-        if not self.cl:
-            request.error(411)
-            return
-        else:
-            self.cl = string.atoi(self.cl)
-
+    # put and post collection methods
+    #
     def collect_incoming_data (self, data):
         self.data.write(data)
-        if self.data.tell() >= self.cl:
-            self.data.seek(0)
-            h=self.handler
-            r=self.request
-            # set the terminator back to the default
-            self.request.channel.set_terminator ('\r\n\r\n')
-            del self.handler
-            del self.request
-            h.continue_request(self.data,r)
+
+    def found_terminator(self):
+        # reset collector
+        self.request.channel.set_terminator('\r\n\r\n')
+        self.request.collector=None
+        # finish request
+        self.data.seek(0)
+        r=self.request
+        d=self.data
+        del self.request
+        del self.data
+        self.continue_request(d,r)
+        
+
+class pipe_producer:
+    def __init__(self,pipe):
+        self.pipe=pipe
+        
+    def more(self):
+        #if not self.ready():
+        #    import traceback
+        #    traceback.print_stack()
+        data=self.pipe.read()
+        if data is None: return ''
+        return data
+
+    def ready(self):
+       return self.pipe.ready()
+
+
+class crazy_producer:
+    """This weird producer patches together
+    medusa's idea of http headers with ZPublisher's
+    """
+    def __init__(self,request,pipe):
+        self.request=request
+        self.pipe=pipe
+        self.done=None
+        self.buffer=''
+        
+    def more(self):
+        if self.buffer:
+            b=self.buffer
+            self.buffer=''
+            return b
+        data=self.pipe.read()
+        if data is None: return ''
+        return data
+           
+    def ready(self):
+        if self.done:
+            return self.pipe.ready()
+        elif self.pipe.ready():
+            self.buffer=self.buffer+self.pipe.read()
+            if string.find(self.buffer,"\n\n"):
+                [headers,html]=string.split(self.buffer,"\n\n",1)
+                headers=string.split(headers,"\n")
+                for line in headers:
+                    [header, header_value]=string.split(line,": ",1)
+                    if header=="Status":
+                        [code,message]=string.split(header_value," ",1)
+                        self.request.reply_code=string.atoi(code)
+                else:
+                    self.request[header]=header_value
+                self.buffer=self.request.build_reply_header()+html
+                del self.request
+                self.done=1
+
