@@ -2,7 +2,7 @@
 
 Note: Tests require Zope >= 2.7
 
-$Id: testVirtualHostMonster.py 24763 2004-05-17 05:59:28Z philikon $
+$Id: testSiteErrorLog.py 27325 2004-08-29 09:59:28Z jens $
 """
 
 from Testing.makerequest import makerequest
