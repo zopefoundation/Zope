@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<FORM ACTION="manage_main" METHOD="POST">
+<FORM ACTION="manage_users" METHOD="POST">
 <!--#if user_names-->
 The following users have been defined. Click on a user to edit 
 that user.
@@ -17,11 +17,11 @@ that user.
   <INPUT TYPE="CHECKBOX" NAME="names:list" VALUE="<!--#var sequence-item-->">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="manage_main?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
+  <A HREF="manage_users?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
   <IMG SRC="<!--#var SCRIPT_NAME-->/p_/User_icon" ALT="Click to edit user"
    BORDER="0">
    </A>
-  <A HREF="manage_main?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
+  <A HREF="manage_users?name=<!--#var sequence-item fmt=url-quote-->&submit=Edit">
   <!--#var sequence-item-->
   </A>
   </TD>

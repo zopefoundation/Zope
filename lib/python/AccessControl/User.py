@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -12,7 +12,8 @@ from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from base64 import decodestring
 from ImageFile import ImageFile
-import App.Undo
+from Role import RoleManager
+import Globals, App.Undo
 
 
 
@@ -72,9 +73,11 @@ nobody=User('Anonymous User','',('Anonymous',))
 
 
 
-class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
-		 App.Undo.UndoSupport):
+class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
+		 Item, App.Undo.UndoSupport):
     """ """
+    __roles__=['Manager','Shared']
+
     meta_type='User Folder'
     id       ='acl_users'
     title    ='User Folder'
@@ -85,11 +88,21 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 
 
     manage_options=(
-    {'icon': icon, 'label':'Contents',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'App/undo_icon.gif', 'label':'Undo',
-     'action':'manage_UndoForm', 'target':'manage_main'},
+    {'label':'Contents', 'action':'manage_main'},
+    {'label':'Security', 'action':'manage_access'},
+    {'label':'Undo',     'action':'manage_UndoForm'},
     )
+
+    __ac_permissions__=(
+    ('View management screens',
+     ['manage_menu','manage_main','manage_copyright', 'manage_tabs',
+      'manage_UndoForm']),
+    ('Undo changes',       ['manage_undo_transactions']),
+    ('Change permissions', ['manage_access']),
+    ('Manage users',       ['manage_users']),
+    ('Shared permission', ['']),
+    )
+
 
     def __init__(self):
 	self.data=PersistentMapping()
@@ -143,6 +156,8 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
     _add_User=HTMLFile('addUser', globals())
     _editUser=HTMLFile('editUser', globals())
 
+    manage=manage_main=_mainUser
+
     def _addUser(self,name,password,confirm,roles,REQUEST=None):
 	if not name or not password or not confirm:
             return MessageDialog(
@@ -165,7 +180,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
                    message='Shared is not a legal role name',
                    action ='manage_main')
         self.data[name]=User(name,password,roles)
-	return self._mainUser(self, REQUEST)
+	if REQUEST: return self._mainUser(self, REQUEST)
 
     def _changeUser(self,name,password,confirm,roles,REQUEST=None):
 	if not name or not password or not confirm:
@@ -191,9 +206,9 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 	user=self.data[name]
 	user.__=password
 	user.roles=roles
-	return self._mainUser(self, REQUEST)
+	if REQUEST: return self._mainUser(self, REQUEST)
 
-    def _delUser(self,names,REQUEST=None):
+    def _delUsers(self,names,REQUEST=None):
 	if not names:
             return MessageDialog(
 		   title  ='Illegal value', 
@@ -207,9 +222,9 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
                    action ='manage_main')
 	for name in names:
             del self.data[name]
-        return self._mainUser(self, REQUEST)
+        if REQUEST: return self._mainUser(self, REQUEST)
 
-    def manage_main(self,submit=None,REQUEST=None):
+    def manage_users(self,submit=None,REQUEST=None,RESPONSE=None):
 	""" """
 	if submit=='Add...':
 	    return self._add_User(self, REQUEST)
@@ -223,26 +238,24 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 	    return self._editUser(self,REQUEST,user=user,password=user.__)
 
 	if submit=='Add':
-	    name    =reqattr(REQUEST, 'name')
-	    password=reqattr(REQUEST, 'password')
-	    confirm =reqattr(REQUEST, 'confirm')
-	    roles   =reqattr(REQUEST, 'roles')
+ 	    name    =reqattr(REQUEST, 'name')
+ 	    password=reqattr(REQUEST, 'password')
+ 	    confirm =reqattr(REQUEST, 'confirm')
+ 	    roles   =reqattr(REQUEST, 'roles')
 	    return self._addUser(name,password,confirm,roles,REQUEST)
 
 	if submit=='Change':
-	    name    =reqattr(REQUEST, 'name')
-	    password=reqattr(REQUEST, 'password')
-	    confirm =reqattr(REQUEST, 'confirm')
-	    roles   =reqattr(REQUEST, 'roles')
-	    return self._changeUser(name,password,confirm,roles,REQUEST)
+ 	    name    =reqattr(REQUEST, 'name')
+ 	    password=reqattr(REQUEST, 'password')
+ 	    confirm =reqattr(REQUEST, 'confirm')
+ 	    roles   =reqattr(REQUEST, 'roles')
+ 	    return self._changeUser(name,password,confirm,roles,REQUEST)
 
 	if submit=='Delete':
 	    names=reqattr(REQUEST, 'names')
-	    return self._delUser(names,REQUEST)
+	    return self._delUsers(names,REQUEST)
 
 	return self._mainUser(self, REQUEST)
-
-    manage=manage_main
 
 
     # Copy/Paste support
@@ -264,6 +277,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, Item,
 		    '<EM>Cannot change the id of a UserFolder</EM>')
 
 
+Globals.default__class_init__(UserFolder)
 
 
 class UserFolderHandler:

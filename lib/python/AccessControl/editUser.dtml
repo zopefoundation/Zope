@@ -5,7 +5,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
-<FORM ACTION="manage_main" METHOD="POST">
+<FORM ACTION="manage_users" METHOD="POST">
 <TABLE>
 <TR>
 <TD VALIGN="TOP">
