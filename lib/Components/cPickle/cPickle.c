@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.24 1997/02/28 22:08:49 chris Exp $
+     $Id: cPickle.c,v 1.25 1997/02/28 22:46:38 jim Exp $
 
      Copyright 
 
@@ -1202,7 +1202,7 @@ finally:
 
 static int 
 save_reduce(Picklerobject *self, PyObject *callable,
-            PyObject *tup, PyObject *state, PyObject *ob = NULL) {
+            PyObject *tup, PyObject *state, PyObject *ob) {
     static char reduce = REDUCE, build = BUILD;
 
     if (save(self, callable, 0) < 0)
@@ -1480,7 +1480,7 @@ dump_special(Picklerobject *self, PyObject *args) {
         return NULL;
     }
 
-    if (save_reduce(self, callable, arg_tup, state) < 0)
+    if (save_reduce(self, callable, arg_tup, state, NULL) < 0)
         return NULL;
 
     if ((*self->write_func)(self, &stop, 1) < 0)
@@ -3525,7 +3525,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.24 $";
+    char *rev="$Revision: 1.25 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("cPickle", cPickle_methods,
