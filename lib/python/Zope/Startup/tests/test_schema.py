@@ -34,10 +34,14 @@ def getSchema():
     startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
-    
+
 class StartupTestCase(unittest.TestCase):
+
+    schema = None
+
     def setUp(self):
-        self.schema = getSchema()
+        if self.schema is None:
+            StartupTestCase.schema = getSchema()
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
@@ -92,14 +96,24 @@ class StartupTestCase(unittest.TestCase):
         self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
 
     def test_path(self):
-        conf, handler = self.load_config_text("""\
-            # instancehome is here since it's required
-            instancehome <<INSTANCE_HOME>>
-            path /foo/bar
-            path /baz/bee
-            """)
-        items = conf.path
-        self.assertEqual(items, ['/foo/bar', '/baz/bee'])
+        p1 = tempfile.mktemp()
+        p2 = tempfile.mktemp()
+        try:
+            os.mkdir(p1)
+            os.mkdir(p2)
+            conf, handler = self.load_config_text("""\
+                # instancehome is here since it's required
+                instancehome <<INSTANCE_HOME>>
+                path %s
+                path %s
+                """ % (p1, p2))
+            items = conf.path
+            self.assertEqual(items, [p1, p2])
+        finally:
+            if os.path.exists(p1):
+                os.rmdir(p1)
+            if os.path.exists(p2):
+                os.rmdir(p2)
 
     def test_access_and_trace_logs(self):
         fn = tempfile.mktemp()
