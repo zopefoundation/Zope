@@ -88,14 +88,15 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
 from string import split, join, find, lower
-import AccessControl.Role, sys, regex, traceback
+import AccessControl.Role, sys, os, regex, traceback
 from OFS.SimpleItem import pretty_tb
-from App.Extensions import getObject, FuncCode
+from App.Extensions import getObject, getPath, FuncCode
+from Globals import DevelopmentMode
 
 manage_addExternalMethodForm=HTMLFile('methodAdd', globals())
 
@@ -208,6 +209,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
         return f
 
+
+
     def __call__(self, *args, **kw):
         """Call an ExternalMethod
 
@@ -226,9 +229,17 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
         In this case, the URL parent of the object is supplied as the
         first argument.
         """
-        
-        try: f=self._v_f
-        except: f=self.getFunction()
+
+        if DevelopmentMode:
+            ts=os.stat(self.filepath())
+            if not hasattr(self, '_v_last_read') or \
+               (ts != self._v_last_read):
+                self._v_f=self.getFunction(1,1)
+                self._v_last_read=ts
+
+        if hasattr(self, '_v_f'):
+            f=self._v_f
+        else: f=self.getFunction()
 
         __traceback_info__=args, kw, self.func_defaults
 
@@ -251,3 +262,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
     def function(self): return self._function
     def module(self): return self._module
 
+    def filepath(self):
+        if not hasattr(self, '_v_filepath'):
+            self._v_filepath=getPath('Extensions', self._module,
+                                     suffixes=('','py','pyc','pyp'))
+        return self._v_filepath
