@@ -179,6 +179,10 @@ class CatalogAware:
         if hasattr(self, self.default_catalog):
             getattr(self, self.default_catalog).uncatalog_object(self.url())
 
+    def reindex_object(self):
+        """ Suprisingly useful """
+        self.unindex_object()
+        self.index_object()
 
     def reindex_all(self, obj=None):
         """ """
