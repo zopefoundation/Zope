@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.151 2001/10/25 14:33:02 andreasjung Exp $"""
-__version__='$Revision: 1.151 $'[11:-2]
+$Id: Publish.py,v 1.152 2001/10/25 14:54:13 andreasjung Exp $"""
+__version__='$Revision: 1.152 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -282,9 +282,10 @@ def get_module_info(module_name, modules={},
             else: realm=module_name
 
             # Check for debug mode
+            debug_mode=None
             if hasattr(module,'__bobo_debug_mode__'):
                 debug_mode=not not module.__bobo_debug_mode__
-            elif:
+            else:
 
                 z1 = os.environ.get('Z_DEBUG_MODE',None)
                 z2 = os.environ.get('BOBO_DEBUG_MODE',None)
@@ -293,10 +294,7 @@ def get_module_info(module_name, modules={},
                     debug_mode = 1
                 elif z2.lower() in ('yes','y') or z2.isdigit():
                     debug_mode = 1
-                else:
-                    debug_mode = None
 
-            else: debug_mode=None
 
             if hasattr(module,'__bobo_before__'):
                 bobo_before=module.__bobo_before__
