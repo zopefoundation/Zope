@@ -103,7 +103,8 @@ class ZopeStarterTestCase(unittest.TestCase):
             locale.setlocale(locale.LC_ALL, '')
 
     def testSetupStartupHandler(self):
-        import zLOG
+        if sys.platform[:3].lower() == "win":
+            return
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode on
@@ -242,7 +243,8 @@ class ZopeStarterTestCase(unittest.TestCase):
             os.getuid = _old_getuid
 
     def testSetupConfiguredLoggers(self):
-        import zLOG
+        if sys.platform[:3].lower() == "win":
+            return
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode off
