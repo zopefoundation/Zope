@@ -85,8 +85,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.7 1999/07/21 13:13:28 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: PermissionRole.py,v 1.8 2000/11/20 10:51:21 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys
 
@@ -122,12 +122,16 @@ class PermissionRole(Base):
         self._p='_'+string.translate(name,name_trans)+"_Permission"
         self._d=default
 
-    def __of__(self, parent):
+    def __of__(self, parent, None=None, getattr=getattr):
         r=imPermissionRole()
         r._p=self._p
         r._pa=parent
         r._d=self._d
-        return r
+        p=getattr(parent, 'aq_inner', None)
+        if p is not None:
+            return r.__of__(p)
+        else:
+            return r
 
 
 _what_not_even_god_should_do=[]
@@ -136,7 +140,7 @@ class imPermissionRole(Base):
     """Implement permission-based roles
     """
     
-    def __of__(self, parent, tt=type(()), st=type('')):
+    def __of__(self, parent,tt=type(()),st=type(''),getattr=getattr,None=None):
         obj=parent
         n=self._p
         r=None
@@ -169,11 +173,10 @@ class imPermissionRole(Base):
                 elif roles:
                     if r is None: r=list(roles)
                     else: r=r+list(roles)
-                
-            if hasattr(obj,'aq_parent'):
-                obj=obj.aq_parent
-            else:
-                break
+
+            obj=getattr(obj, 'aq_inner', None)
+            if obj is None: break
+            obj=obj.aq_parent
 
         if r is None: r=self._d
             
