@@ -8,6 +8,12 @@ Page Template changes
 
       Features Added
 
+        - ZPTs are now cache-enabled
+
+        - Added property sheet to ZPT
+
       Bugs Fixed
 
         - Expressions with embedded newlines were broken
+
+        - History comparison tried to expand macros
