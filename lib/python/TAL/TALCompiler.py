@@ -140,6 +140,12 @@ class METALCompiler(DOMVisitor):
             return 0
 
     def getFullAttrList(self, node):
+        # First, call newNS() for explicit xmlns attributes
+        for attr in node.attributes.values():
+            if attr.name == "xmlns":
+                self.newNS(None, attr.value)
+            elif attr.prefix == "xmlns":
+                self.newNS(attr.localName, attr.value)
         list = []
         if node.namespaceURI:
             if self.newNS(node.prefix, node.namespaceURI):
@@ -150,7 +156,13 @@ class METALCompiler(DOMVisitor):
         for attr in node.attributes.values():
             if attr.namespaceURI:
                 if self.newNS(attr.prefix, attr.namespaceURI):
-                    list.append(("xmlns:" + attr.prefix, attr.namespaceURI))
+                    if attr.prefix == "xmlns":
+                        continue
+                    if attr.prefix:
+                        list.append(
+                            ("xmlns:" + attr.prefix, attr.namespaceURI))
+                    else:
+                        list.append(("xmlns", node.namespaceURI))
         list.extend(self.getAttributeList(node))
         return list
 
