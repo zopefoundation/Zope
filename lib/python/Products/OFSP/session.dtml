@@ -45,7 +45,7 @@
 
   <hr>
   
-  <p><form action=save>
+  <p><form action=manage_draftSave__>
   You can make work done in <!--#var title_and_id--> permanent by
   entering a remark in the space below and then
   clicking on the "Save" button.<br>
@@ -55,7 +55,7 @@
   
   <hr>
   
-  <p><form action=discard>
+  <p><form action=manage_draftDiscard__>
   You can throw away work done in <!--#var title_and_id--> by
   clicking on the "Discard" button.
   <input type=submit value="Discard">

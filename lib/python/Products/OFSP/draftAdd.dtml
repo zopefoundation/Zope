@@ -1,0 +1,37 @@
+<HTML>
+<HEAD>
+<TITLE>Add Draft</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<H2>Add Draft Object</H2>
+
+<FORM ACTION="manage_addPrincipiaDraft" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="id" SIZE="40"></TD>
+</TR>
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">Base Object</TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME=baseid size=7>
+  <!--#in objectValues sort=title_or_id-->
+    <!--#unless "meta_type in ('Session', 'Principia Draft', 'User Folder')"-->
+      <OPTION VALUE="<!--#var id-->">
+      <!--#if title-->
+	<!--#var title size=25--> (<!--#var id-->)
+      <!--#else-->
+	<!--#var id-->
+      <!--#endif-->
+      </OPTION>
+    <!--#/unless-->
+  <!--#/in-->
+  </SELECT>
+  </TD>
+</TR>
+<TR><TD></TD><TD><INPUT TYPE="SUBMIT" VALUE=" Add "></TD></TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+

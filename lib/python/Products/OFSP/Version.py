@@ -1,6 +1,6 @@
 """Session object"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -9,7 +9,8 @@ from Persistence import Persistent
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
 from string import rfind
-
+from Globals import HTML
+from App.Dialogs import MessageDialog
 
 manage_addSessionForm=Globals.HTMLFile('sessionAdd', globals())
 
@@ -68,6 +69,15 @@ class Session(Persistent,Implicit,RoleManager,Item):
 	    #expires="Mon, 27-Dec-99 23:59:59 GMT",
 	    path=REQUEST['SCRIPT_NAME'],
 	    )
+        if (REQUEST.has_key('SERVER_SOFTWARE') and
+            REQUEST['SERVER_SOFTWARE'][:9]=='Microsoft'):
+            # IIS doesn't handle redirect headers correctly
+            return MessageDialog(
+                action=REQUEST['URL1']+'/manage_main',
+                message=('If cookies are enabled by your browser, then '
+                         'you should have joined session %s.'
+                         % self.id)
+                )
 	return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 	
     def leave(self, REQUEST, RESPONSE):
@@ -77,6 +87,15 @@ class Session(Persistent,Implicit,RoleManager,Item):
 	    expires="Mon, 27-Aug-84 23:59:59 GMT",
 	    path=REQUEST['SCRIPT_NAME'],
 	    )
+        if (REQUEST.has_key('SERVER_SOFTWARE') and
+            REQUEST['SERVER_SOFTWARE'][:9]=='Microsoft'):
+            # IIS doesn't handle redirect headers correctly
+            return MessageDialog(
+                action=REQUEST['URL1']+'/manage_main',
+                message=('If cookies are enabled by your browser, then '
+                         'you should have left session %s.'
+                         % self.id)
+                )
 	return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 	
     def leave_another(self, REQUEST, RESPONSE):
@@ -97,7 +116,6 @@ class Session(Persistent,Implicit,RoleManager,Item):
 
 
 
-
 import __init__
 __init__.need_license=1
 
@@ -105,6 +123,9 @@ __init__.need_license=1
 ############################################################################## 
 #
 # $Log: Version.py,v $
+# Revision 1.20  1998/09/24 19:21:52  jim
+# added Draft objects
+#
 # Revision 1.19  1998/05/20 22:07:32  jim
 # Updated permissions.
 #

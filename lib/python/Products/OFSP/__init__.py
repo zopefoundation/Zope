@@ -8,10 +8,10 @@
 #
 ############################################################################## 
 __doc__='''Base Principia
-$Id: __init__.py,v 1.15 1998/05/21 13:52:23 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: __init__.py,v 1.16 1998/09/24 19:21:53 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
-import Session, DraftFolder
+import Session, Draft
 from ImageFile import ImageFile
 import OFS.Image, OFS.Document, OFS.Folder, AccessControl.User
 
@@ -22,13 +22,13 @@ classes=('Session.Session', 'OFS.Image.File',
 klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
 meta_types=(
-#    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
-    {'name':'User Folder', 'action':'manage_addUserFolder'},
-    {'name':'Session', 'action':'manage_addSessionForm'},
-    {'name':'File', 'action':'manage_addFileForm'},
-    {'name':'Image', 'action':'manage_addImageForm'},
-    {'name':'Folder', 'action':'manage_addFolderForm'},
-    {'name':'Document', 'action':'manage_addDocumentForm'},
+    {'name': Draft.Draft.meta_type, 'action':'manage_addPrincipiaDraftForm'},
+    {'name': 'User Folder', 'action':'manage_addUserFolder'},
+    {'name': 'Session', 'action':'manage_addSessionForm'},
+    {'name': 'File', 'action':'manage_addFileForm'},
+    {'name': 'Image', 'action':'manage_addImageForm'},
+    {'name': 'Folder', 'action':'manage_addFolderForm'},
+    {'name': 'Document', 'action':'manage_addDocumentForm'},
     )
 
 
@@ -50,15 +50,11 @@ methods={
     'PUT': PUT,
     'PUT__roles__': ('Manager',),
     'manage_addUserFolder': AccessControl.User.manage_addUserFolder,
-
-
-#    'manage_addDraftFolderForm': DraftFolder.addForm,
-#    'manage_addDraftFolder': DraftFolder.add,
+    'manage_addPrincipiaDraftForm': Draft.manage_addPrincipiaDraftForm,
+    'manage_addPrincipiaDraft': Draft.manage_addPrincipiaDraft,
     }
 
 misc_={
-    'draft': ImageFile('images/DraftFolder.gif', globals()),
-    'sup': ImageFile('images/DraftFolderControl.gif', globals()),
     'session': ImageFile('images/session.gif', globals()),
     }
 
@@ -86,6 +82,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.16  1998/09/24 19:21:53  jim
+# added Draft objects
+#
 # Revision 1.15  1998/05/21 13:52:23  jim
 # Updated permissions.
 #

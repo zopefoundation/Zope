@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE><!--#var title_or_id--></TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<!--#if nonempty-->
+ 
+  <h2>Approve</h2>
+
+  <p><form action=manage_Save__draft__>
+  You can make work done in <!--#var id--> (<!--#var title-->) permanent by
+  entering a remark in the space below and then
+  clicking on the "Approve" button.<br>
+  <textarea name=remark rows=10 cols=50></textarea><br>
+  <input type=submit value="Approve">
+  </form>
+  
+  <h2>Discard</h2>
+  
+  <p><form action=manage_Discard__draft__>
+  You can throw away work done in <!--#var id--> (<!--#var title-->) by
+  clicking on the "Discard" button.<br>
+  <input type=submit value="Discard">
+  </form>
+
+<!--#else-->
+  
+  There is nothing to approve.  Nothing has been changed yet.
+
+<!--#endif-->
+
+</body> </html>
