@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import regex, sys, os
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -426,6 +426,7 @@ class HTTPRequest(BaseRequest):
         if key[:1]=='B' and BASEmatch(key) >= 0:
             n=ord(key[4])-ord('0')
             if n:
+                if self.environ.get('SCRIPT_NAME',''): n=n-1
                 if len(self.steps) < n:
                     raise KeyError, key
                 v=self.script
