@@ -89,7 +89,7 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, string
 import Shared.DC.xml.xmllib
@@ -354,7 +354,7 @@ class Comment(Node):
     def __init__(self, val):
         self.__value__=val
     def toxml(self):
-        return '<!--%s-->' % self.__value__
+        return '<!--%s>' % self.__value__
 
 
 
