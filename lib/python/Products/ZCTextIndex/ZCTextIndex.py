@@ -20,17 +20,16 @@ import Acquisition
 from OFS.SimpleItem import SimpleItem
 
 from Globals import DTMLFile, InitializeClass
-from Interface import verify_class_implementation
 from AccessControl.SecurityInfo import ClassSecurityInfo
 
-from Products.PluginIndexes.common.PluggableIndex \
-     import PluggableIndexInterface
+from Products.PluginIndexes.common.PluggableIndex import \
+     PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ILexicon import ILexicon
-from Products.ZCTextIndex.Lexicon \
-     import Lexicon, Splitter, CaseNormalizer, StopWordRemover
+from Products.ZCTextIndex.Lexicon import \
+     Lexicon, Splitter, CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
 
@@ -128,6 +127,9 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
             return default
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
+
+    def uniqueValues(self):
+        raise NotImplementedError
 
     ## The ZCatalog Index management screen uses these methods ##
 
