@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.33 1999/02/03 17:35:54 brian Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: SimpleItem.py,v 1.34 1999/02/05 21:11:21 brian Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from ExtensionClass import Base
@@ -289,7 +289,8 @@ class Item(Base, CopySource, App.Management.Tabs):
         url.reverse()
         return join(url, '/')
 
-
+    def __len__(self):
+        return 1
             
 
 
