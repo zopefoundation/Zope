@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+<TITLE>Find</TITLE>
+<SCRIPT LANGUAGE="javascript">
+<!--
+function show_smp()
+{  document.location.href="<!--#var URL1-->/manage_findForm";
+}
+
+function show_adv()
+{   document.location.href="<!--#var URL1-->/manage_findAdv";
+}
+
+function show_opt()
+{ wnd=window.open("<!--#var URL1-->/manage_findOpt","wnd_find_options","width=400,height=200");
+  if (document.layers || document.all) {
+    wnd.focus()
+  }
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<P>
+
+<FORM ACTION="manage_findResult" METHOD="GET" TARGET="findResult">
+<TABLE>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Find objects of type:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
+  <OPTION VALUE="all" SELECTED> All types
+<!--#in all_meta_types mapping-->
+  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+<!--#/in-->
+  </SELECT>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>with ids:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>containing:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>modified:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_mspec">
+  <OPTION VALUE="<"> before
+  <OPTION VALUE=">"> after
+  </SELECT> 
+  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find"> 
+  <INPUT TYPE="BUTTON" NAME="btn_opt" VALUE="Options..."
+   onClick="show_opt()">
+  <INPUT TYPE="BUTTON" NAME="btn_adv" VALUE="Advanced..."
+   onClick="show_adv()">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+
+</BODY>
+</HTML>

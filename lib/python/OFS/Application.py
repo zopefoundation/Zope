@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.68 1998/08/03 13:58:32 jim Exp $'''
-__version__='$Revision: 1.68 $'[11:-2]
+$Id: Application.py,v 1.69 1998/08/05 21:04:04 brian Exp $'''
+__version__='$Revision: 1.69 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -22,6 +22,7 @@ from DateTime import DateTime
 from AccessControl.User import UserFolder
 from App.ApplicationManager import ApplicationManager
 from Persistence import Persistent
+from FindSupport import FindSupport
 from ImageFile import ImageFile
 from urllib import quote
 
@@ -55,8 +56,9 @@ page.  Thank you for your patience.</P>
 <!--#endif-->
 <!--#var standard_html_footer-->'''
 
+
 class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
-                  App.ProductRegistry.ProductRegistry):
+                  App.ProductRegistry.ProductRegistry, FindSupport):
     title    ='Principia'
     __roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous')
@@ -108,6 +110,8 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
      'action':'manage_access',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
+    {'label':'Find', 'action':'manage_findFrame',
+     'target':'manage_main'},
     )
 
     _reserved_names=('standard_html_header',
@@ -184,36 +188,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 	"""Utility function to return current date/time"""
 	return DateTime()
 
-    def PrincipiaFind(self, start, _initial=None, prefix='',
-                      type=None, substring=None, name=None,
-                      ):
-        if _initial is None: _initial=[]
-        
-        if hasattr(start,'aq_base'): start=start.aq_base
-        if not hasattr(start, 'objectItems'): return _initial
-        try: items=start.objectItems()
-        except: return _initial
-        for oname, o in items:
-            if prefix: p="%s/%s" % (prefix, oname)
-            else: p=oname
-            if hasattr(o,'aq_base'): o=o.aq_base
-            if (
-                (type is None or not hasattr(o,'meta_type') or
-                 type==o.meta_type)
-                and
-                (name is None or oname==name)
-                and
-                (substring is None or
-                 (hasattr(o,'PrincipiaSearchSource') and
-                  find(o.PrincipiaSearchSource(),substring) >= 0
-                  ))
-                ):
-                _initial.append(p)
-            if hasattr(o, 'objectItems'):
-                self.PrincipiaFind(o,_initial,p,type,substring,name)
 
-        return _initial
-    
 class Expired(Persistent):
     icon='p_/broken'
 
@@ -230,6 +205,8 @@ class Expired(Persistent):
 	pass
 
     __inform_commit__=__save__
+
+
 
 def open_bobobase():
     # Open the application database
@@ -442,6 +419,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.69  1998/08/05 21:04:04  brian
+# Added Find
+#
 # Revision 1.68  1998/08/03 13:58:32  jim
 # Took out debugging code.
 #

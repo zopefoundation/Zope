@@ -1,5 +1,6 @@
 # install Application.py
 # install CopySupport.py
+# install FindSupport.py
 # install Document.py
 # install Folder.py
 # install Image.py
@@ -25,3 +26,8 @@
 # install www
 # install Uninstalled.py
 # install brokenEdit.dtml
+# install findAdv.dtml
+# install findForm.dtml
+# install findFrame.dtml
+# install findOpt.dtml
+# install findResult.dtml

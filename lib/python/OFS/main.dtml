@@ -4,7 +4,7 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
+<P>
 <!--#if Principia-Session-->
 <EM>You are currently working in session <!--#var Principia-Session--></EM>
 <P>

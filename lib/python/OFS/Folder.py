@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.49 1998/08/03 13:30:57 jim Exp $"""
+$Id: Folder.py,v 1.50 1998/08/05 21:04:04 brian Exp $"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -62,17 +62,18 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
      'target':'manage_main'},
     {'label':'Undo', 'action':'manage_UndoForm',
      'target':'manage_main'},
-#    {'label':'Help', 'action':'manage_help',
-#     'target':'_new'},
+    {'label':'Find', 'action':'manage_findFrame',
+     'target':'manage_main'},
     )
 
     __ac_permissions__=(
 	('View', ()),
 	('View management screens',
 	 ('manage','manage_menu','manage_main','manage_copyright',
-          'manage_tabs','manage_propertiesForm','manage_UndoForm',
-          'manage_copyObject', 'manage_pasteObject'
-          )),
+	  'manage_tabs','manage_propertiesForm','manage_UndoForm',
+          'manage_copyObject', 'manage_pasteObject',
+          'manage_findFrame', 'manage_findForm', 'manage_findAdv',
+          'manage_findResult', 'manage_findOpt')),
 	('Access contents information',
 	 ('objectIds', 'objectValues', 'objectItems','hasProperty',
 	  'propertyIds', 'propertyValues','propertyItems',''),

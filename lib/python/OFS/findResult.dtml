@@ -1,0 +1,61 @@
+<HTML>
+<HEAD>
+<TITLE>Find Results</TITLE>
+<SCRIPT LANGUAGE="javascript">
+<!--
+function new_wnd()
+{  wnd=window.open("<!--#var URL-->?<!--#var QUERY_STRING-->","find_result");
+}
+//-->
+</SCRIPT>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<P>
+
+<!--#in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles')"-->
+<!--#else expr="_.hasattr(REQUEST, _['sequence-item'])"-->
+<!--#call expr="REQUEST.set(_['sequence-item'], _.None)"-->
+<!--#/else-->
+<!--#/in-->
+
+<!--#if btn_submit-->
+<!--#call expr="REQUEST.set('results', PrincipiaFind(this(), obj_ids=obj_ids, obj_metatypes=obj_metatypes, obj_searchterm=obj_searchterm, obj_expr=obj_expr, obj_mtime=obj_mtime, obj_mspec=obj_mspec, obj_permission=obj_permission, obj_roles=obj_roles, REQUEST=REQUEST))"-->
+<!--#call expr="REQUEST.set('result_len', _.len(results))"-->
+
+<!--#if results-->
+<HR>
+<STRONG>
+Found <!--#var result_len--> item<!--#if expr="result_len != 1"-->s<!--#/if-->. 
+</STRONG>
+<HR>
+
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+<!--#in results-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var sequence-key-->/manage_main" TARGET="manage_main">
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
+   ALT="Click to open this item" BORDER="0"></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var sequence-key-->/manage_main" TARGET="manage_main">
+  <!--#var sequence-key-->
+  <!--#if title-->
+  (<!--#var title-->)
+  <!--#/if-->
+  </A>
+  </TD>
+</TR>
+<!--#/in-->
+</TABLE>
+<!--#else-->
+<HR>
+<STRONG>
+No items were found matching this query.
+</STRONG>
+<HR>
+<!--#/if-->
+<!--#/if-->
+
+</BODY>
+</HTML>

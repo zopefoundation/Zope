@@ -10,9 +10,9 @@
   <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab">
   <STRONG>
     <!--#if action-->
-    <A HREF="<!--#var action-->"><!--#var label--></A>
+    <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#else action-->
-    <A HREF="<!--#var URL1-->"><!--#var label--></A>
+    <A HREF="<!--#var URL1-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#/if action-->
   </STRONG>
 
@@ -24,15 +24,17 @@
   <IMG ALIGN="LEFT"  HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/ltab">
   <IMG ALIGN="RIGHT" HSPACE="0" SRC="<!--#var SCRIPT_NAME-->/p_/rtab">
   <!--#if action-->
-    <A HREF="<!--#var action-->"><!--#var label--></A>
+    <A HREF="<!--#var action-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#else action-->
-    <A HREF="<!--#var URL1-->"><!--#var label--></A>
+    <A HREF="<!--#var URL1-->"<!--#if target--> TARGET="<!--#var target-->"<!--#/if-->><!--#var label--></A>
     <!--#/if action-->
   </FONT>
   </TD>
   <!--#/if-->
 <!--#/if sequence-item-->
 <!--#/in manage_options-->
+
+
 </TR>
 </TABLE>
 <!--#/if manage_options-->
