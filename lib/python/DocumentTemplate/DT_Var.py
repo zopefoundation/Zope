@@ -25,9 +25,9 @@ __doc__='''Variable insertion parameters
        objects.  The value of a custom format is a method name to
        be invoked on the object being inserted.  The method should
        return an object that, when converted to a string, yields
-       the desired text.  For example, the HTML source::
+       the desired text.  For example, the DTML code::
 
-          <!--#var date fmt=DayOfWeek-->
+          <dtml-var date fmt=DayOfWeek>
 
        Inserts the result of calling the method 'DayOfWeek' of the
        object bound to the variable 'date', with no arguments.
@@ -141,7 +141,7 @@ __doc__='''Variable insertion parameters
        the string.  If the 'etc' attribute is not provided, then '...'
        is used.  For example, if the value of spam is
        '"blah blah blah blah"', then the tag       
-       '<!--#var spam size=10-->' inserts '"blah blah ..."'.
+       '<dtml-var spam size=10>' inserts '"blah blah ..."'.
 
 
 Evaluating expressions without rendering results
@@ -151,8 +151,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.55 2002/08/14 15:46:57 chrism Exp $'
-__version__='$Revision: 1.55 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.56 2002/08/14 16:34:20 rdmurray Exp $'
+__version__='$Revision: 1.56 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str, ustr
 import os, string, re,  sys
@@ -446,7 +446,8 @@ def spacify(val):
     if val.find('_') >= 0: val=val.replace('_', ' ')
     return val
 
-modifiers=(html_quote, url_quote, url_quote_plus, newline_to_br,
+modifiers=(html_quote, url_quote, url_quote_plus, url_unquote,
+           url_unquote_plus, newline_to_br,
            string.lower, string.upper, string.capitalize, spacify,
            thousands_commas, sql_quote, url_unquote, url_unquote_plus)
 modifiers=map(lambda f: (f.__name__, f), modifiers)
