@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.24 1999/03/22 17:06:36 jim Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: __init__.py,v 1.25 1999/03/25 00:02:35 jim Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import Version, Draft
 import OFS.Image, OFS.Folder, AccessControl.User
@@ -161,7 +161,5 @@ __ac_permissions__=(
         ('Join/leave Versions', ()),
         ('Save/discard Version changes', ()),
         ('Manage users', ()),
-        #('Add DraftFolders',
-        # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),
         )
     )
