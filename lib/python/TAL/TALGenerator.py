@@ -110,6 +110,8 @@ class TALGenerator:
         self.emit("mode", xml and "xml" or "html")
 
     def getCode(self):
+        assert not self.stack
+        assert not self.todoStack
         return self.optimize(self.program), self.macros
 
     def optimize(self, program):
