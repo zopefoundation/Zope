@@ -12,10 +12,10 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 
-import re,sys, os, math,  DateTimeZone
+import re, math,  DateTimeZone
 from time import time, gmtime, localtime, asctime
 from time import daylight, timezone, altzone, strftime
 from types import InstanceType,IntType,FloatType,StringType,UnicodeType
