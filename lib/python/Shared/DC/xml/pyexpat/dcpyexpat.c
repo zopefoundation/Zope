@@ -503,7 +503,6 @@ xmlparse_dealloc(xmlparseobject *self) {
 
 static PyObject *
 xmlparse_getattr(xmlparseobject *self, char *name) {
-	long rv;
 
 #define GET_HANDLER(N) \
 	if (strcmp(name, #N) == 0) { \
@@ -714,9 +713,9 @@ static char pyexpat_module_documentation[] =
 ;
 
 void
-initdcpyexpat() {
+initdcpyexpat(void) {
 	PyObject *m, *d;
-	char *rev="$Revision: 1.2 $";
+	char *rev="$Revision: 1.3 $";
 
 	Xmlparsetype.ob_type = &PyType_Type;
 
