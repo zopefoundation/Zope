@@ -106,19 +106,23 @@ from DummyEngine import DummyEngine
 FILE = "test/test1.xml"
 
 def main():
+    global use_minidom
     noVersionTest = use_minidom
     macros = 0
     compile = 0
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "cmn")
+        opts, args = getopt.getopt(sys.argv[1:], "Mcmn")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
-        sys.stderr.write("usage: driver.py [-c] [-m] [-n] [file]\n")
+        sys.stderr.write("usage: driver.py [-M] [-c] [-m] [-n] [file]\n")
+        sys.stderr.write("-M -- force using minidom\n")
         sys.stderr.write("-c -- compiled mode (faster)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
         sys.exit(2)
     for o, a in opts:
+        if o == '-M':
+            use_minidom = 1
         if o == '-c':
             compile = 1
         if o == '-m':
