@@ -16,8 +16,6 @@ Transient Object Container Class ('timeslice'-based design, no index).
 $Id$
 """
 
-__version__='$Revision: 1.32.12.5 $'[11:-2]
-
 import math
 import time
 import random
@@ -54,7 +52,6 @@ CREATE_TRANSIENTS_PERM = 'Create Transient Objects'
 ACCESS_TRANSIENTS_PERM = 'Access Transient Objects'
 MANAGE_CONTAINER_PERM = 'Manage Transient Object Container'
 
-PERIOD = 20 # signifies "resolution" of transience machinery in seconds
 SPARE_BUCKETS = 15 # minimum number of buckets to keep "spare"
 BUCKET_CLASS = OOBTree # constructor for buckets
 STRICT = os.environ.get('Z_TOC_STRICT', '')
@@ -80,10 +77,11 @@ constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
 
 def constructTransientObjectContainer(self, id, title='', timeout_mins=20,
-    addNotification=None, delNotification=None, limit=0, REQUEST=None):
+    addNotification=None, delNotification=None, limit=0, period_secs=20,
+    REQUEST=None):
     """ """
     ob = TransientObjectContainer(id, title, timeout_mins,
-        addNotification, delNotification, limit=limit)
+        addNotification, delNotification, limit=limit, period_secs=period_secs)
     self._setObject(id, ob)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
@@ -133,10 +131,10 @@ class TransientObjectContainer(SimpleItem):
     security.setDefaultAccess('deny')
 
     def __init__(self, id, title='', timeout_mins=20, addNotification=None,
-                 delNotification=None, limit=0):
+                 delNotification=None, limit=0, period_secs=20):
         self.id = id
         self.title=title
-        self._setTimeout(timeout_mins)
+        self._setTimeout(timeout_mins, period_secs)
         self._setLimit(limit)
         self.setDelNotificationTarget(delNotification)
         self.setAddNotificationTarget(addNotification)
@@ -144,12 +142,42 @@ class TransientObjectContainer(SimpleItem):
 
     # helpers
 
-    def _setTimeout(self, timeout_mins):
+    def _setTimeout(self, timeout_mins, period_secs):
         if type(timeout_mins) is not type(1):
             raise TypeError, (escape(`timeout_mins`), "Must be integer")
-        self._timeout_secs = t_secs = timeout_mins * 60
-        # timeout_slices == fewest number of timeslices that's >= t_secs
-        self._timeout_slices=int(math.ceil(float(t_secs)/PERIOD))
+
+        if type(period_secs) is not type(1):
+            raise TypeError, (escape(`period_secs`), "Must be integer")
+
+        timeout_secs = timeout_mins * 60
+
+        # special-case 0-minute timeout value by ignoring period
+        if timeout_secs != 0:
+
+            if period_secs == 0:
+                raise ValueError('resolution cannot be 0')
+
+            if period_secs > timeout_secs:
+                raise ValueError(
+                    'resolution cannot be greater than timeout '
+                    'minutes * 60 ( %s > %s )' % (period_secs, timeout_secs))
+
+            # we need the timeout to be evenly divisible by the period
+            if timeout_secs % period_secs != 0:
+                raise ValueError(
+                    'timeout seconds (%s) must be evenly divisible '
+                    'by resolution (%s)' % (timeout_secs, period_secs)
+                    )
+
+        # our timeout secs is the number of seconds that an item should
+        # remain unexpired
+        self._timeout_secs = timeout_secs
+
+        # our _period is the number of seconds that constitutes a timeslice
+        self._period = period_secs
+
+        # timeout_slices == fewest number of timeslices that's >= timeout_secs
+        self._timeout_slices=int(math.ceil(float(timeout_secs)/period_secs))
 
     def _setLimit(self, limit):
         if type(limit) is not type(1):
@@ -173,7 +201,10 @@ class TransientObjectContainer(SimpleItem):
         # populate _data with some number of buckets, each of which
         # is "current" for its timeslice key
         if self._timeout_slices:
-            new_slices = getTimeslices(getCurrentTimeslice(), SPARE_BUCKETS*2)
+            new_slices = getTimeslices(
+                getCurrentTimeslice(self._period),
+                SPARE_BUCKETS*2,
+                self._period)
             for i in new_slices:
                 self._data[i] = BUCKET_CLASS()
             # create an Increaser for max timeslice
@@ -190,32 +221,26 @@ class TransientObjectContainer(SimpleItem):
 
     def _getCurrentSlices(self, now):
         if self._timeout_slices:
-            begin = now - (PERIOD * self._timeout_slices)
+            begin = now - (self._period * self._timeout_slices)
             # add add one to _timeout_slices below to account for the fact that
             # a call to this method may happen any time within the current
             # timeslice; calling it in the beginning of the timeslice can lead
-            # to sessions becoming invalid a maximum of <PERIOD> seconds
+            # to sessions becoming invalid a maximum of self._period seconds
             # earlier than the requested timeout value. Adding one here can
             # lead to sessions becoming invalid *later* than the timeout value
-            # (also by a max of <PERIOD>), but in the common sessioning case,
-            # that seems preferable.
+            # (also by a max of self._period), but in the common sessioning
+            # case, that seems preferable.
             num_slices = self._timeout_slices + 1
         else:
             return [0] # sentinel for timeout value 0 (don't expire)
         DEBUG and TLOG('_getCurrentSlices, now = %s ' % now)
         DEBUG and TLOG('_getCurrentSlices, begin = %s' % begin)
         DEBUG and TLOG('_getCurrentSlices, num_slices = %s' % num_slices)
-        result = getTimeslices(begin, num_slices)
+        result = getTimeslices(begin, num_slices, self._period)
         DEBUG and TLOG('_getCurrentSlices, result = %s' % result)
         return result
 
     def _move_item(self, k, current_ts, default=None):
-        if not getattr(self, '_max_timeslice', None):
-            # in-place upgrade for old instances; this would usually be
-            # "evil" but sessions are all about write-on-read anyway,
-            # so it really doesn't matter.
-            self._upgrade()
-
         if self._timeout_slices:
 
             if self._roll(current_ts, 'replentish'):
@@ -289,12 +314,8 @@ class TransientObjectContainer(SimpleItem):
         return item
 
     def _all(self):
-        if not getattr(self, '_max_timeslice', None):
-            # in-place upgrade for old instances
-            self._upgrade()
-
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
 
@@ -352,7 +373,7 @@ class TransientObjectContainer(SimpleItem):
 
     def __getitem__(self, k):
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
         item = self._move_item(k, current_ts, _marker)
@@ -366,7 +387,7 @@ class TransientObjectContainer(SimpleItem):
     def __setitem__(self, k, v):
         DEBUG and TLOG('__setitem__: called with key %s, value %s' % (k,v))
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
         item = self._move_item(k, current_ts, _marker)
@@ -398,7 +419,7 @@ class TransientObjectContainer(SimpleItem):
     def __delitem__(self, k):
         DEBUG and TLOG('__delitem__ called with key %s' % k)
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
         item = self._move_item(k, current_ts)
@@ -418,7 +439,7 @@ class TransientObjectContainer(SimpleItem):
     def get(self, k, default=None):
         DEBUG and TLOG('get: called with key %s, default %s' % (k, default))
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
         item = self._move_item(k, current_ts, default)
@@ -431,7 +452,7 @@ class TransientObjectContainer(SimpleItem):
     security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
     def has_key(self, k):
         if self._timeout_slices:
-            current_ts = getCurrentTimeslice()
+            current_ts = getCurrentTimeslice(self._period)
         else:
             current_ts = 0
         DEBUG and TLOG('has_key: calling _move_item with %s' % str(k))
@@ -455,8 +476,8 @@ class TransientObjectContainer(SimpleItem):
         is to minimize the chance that two threads will attempt to
         do housekeeping at the same time (causing conflicts).
         """
-        low = now/PERIOD
-        high = self._max_timeslice()/PERIOD
+        low = now/self._period
+        high = self._max_timeslice()/self._period
         if high <= low:
             # we really need to win this roll because we have no
             # spare buckets (and no valid values to provide to randrange), so
@@ -481,7 +502,7 @@ class TransientObjectContainer(SimpleItem):
             return # do nothing if no timeout
         
         max_ts = self._max_timeslice()
-        available_spares = (max_ts-now) / PERIOD
+        available_spares = (max_ts-now) / self._period
         DEBUG and TLOG('_replentish: now = %s' % now)
         DEBUG and TLOG('_replentish: max_ts = %s' % max_ts)
         DEBUG and TLOG('_replentish: available_spares = %s'
@@ -490,19 +511,19 @@ class TransientObjectContainer(SimpleItem):
         if available_spares < SPARE_BUCKETS:
             if max_ts < now:
                 replentish_start = now
-                replentish_end = now + (PERIOD * SPARE_BUCKETS)
+                replentish_end = now + (self._period * SPARE_BUCKETS)
 
             else:
-                replentish_start = max_ts + PERIOD
-                replentish_end = max_ts + (PERIOD * SPARE_BUCKETS)
+                replentish_start = max_ts + self._period
+                replentish_end = max_ts + (self._period * SPARE_BUCKETS)
 
             DEBUG and TLOG('_replentish: replentish_start = %s' %
                            replentish_start)
             DEBUG and TLOG('_replentish: replentish_end = %s'
                            % replentish_end)
             # n is the number of buckets to create
-            n = (replentish_end - replentish_start) / PERIOD
-            new_buckets = getTimeslices(replentish_start, n)
+            n = (replentish_end - replentish_start) / self._period
+            new_buckets = getTimeslices(replentish_start, n, self._period)
             new_buckets.reverse()
             STRICT and _assert(new_buckets)
             DEBUG and TLOG('_replentish: adding %s new buckets' % n)
@@ -523,8 +544,8 @@ class TransientObjectContainer(SimpleItem):
             return # dont do gc if there is no timeout
 
         if now is None:
-            now = getCurrentTimeslice() # for unit tests
-        max_ts = now  - (PERIOD * (self._timeout_slices + 1))
+            now = getCurrentTimeslice(self._period) # for unit tests
+        max_ts = now  - (self._period * (self._timeout_slices + 1))
 
         to_notify = []
 
@@ -633,15 +654,25 @@ class TransientObjectContainer(SimpleItem):
     # TransientItemContainer methods
 
     security.declareProtected(MANAGE_CONTAINER_PERM, 'setTimeoutMinutes')
-    def setTimeoutMinutes(self, timeout_mins):
-        """ """
-        if timeout_mins != self.getTimeoutMinutes():
-            self._setTimeout(timeout_mins)
+    def setTimeoutMinutes(self, timeout_mins, period_secs=20):
+        """ The period_secs parameter is defaulted to preserve backwards API
+        compatibility.  In older versions of this code, period was
+        hardcoded to 20. """
+        timeout_secs = timeout_mins * 60
+        
+        if (timeout_mins != self.getTimeoutMinutes()
+            or period_secs != self.getPeriodSeconds()):
+            # do nothing unless something has changed
+            self._setTimeout(timeout_mins, period_secs)
             self._reset()
 
     def getTimeoutMinutes(self):
         """ """
         return self._timeout_secs / 60
+
+    def getPeriodSeconds(self):
+        """ """
+        return self._period
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getSubobjectLimit')
     def getSubobjectLimit(self):
@@ -681,11 +712,11 @@ class TransientObjectContainer(SimpleItem):
         'manage_changeTransientObjectContainer')
     def manage_changeTransientObjectContainer(
         self, title='', timeout_mins=20, addNotification=None,
-        delNotification=None, limit=0, REQUEST=None
+        delNotification=None, limit=0, period_secs=20, REQUEST=None
         ):
         """ Change an existing transient object container. """
         self.title = title
-        self.setTimeoutMinutes(timeout_mins)
+        self.setTimeoutMinutes(timeout_mins, period_secs)
         self.setSubobjectLimit(limit)
         if not addNotification:
             addNotification = None
@@ -699,49 +730,61 @@ class TransientObjectContainer(SimpleItem):
                 self, REQUEST, manage_tabs_message='Changes saved.'
                 )
         
-    def _upgrade(self):
-        # inplace upgrade for versions of Transience in Zope versions less
+    def __setstate__(self, state):
+        # upgrade versions of Transience in Zope versions less
         # than 2.7.1, which used a different transience mechanism.  Note:
         # this will not work for upgrading versions older than 2.6.0,
         # all of which used a very different transience implementation
-        if not getattr(self, '_max_timeslice', None):
-            new_slices = getTimeslices(getCurrentTimeslice(), SPARE_BUCKETS*2)
+        # can't make __len__ an instance variable in new-style classes
+
+        # f/w compat: 2.8 cannot use __len__ as an instance variable
+        if not state.has_key('_length'):
+            length = state.get('__len__', Length())
+            self._length = self.getLen = length
+
+        # TOCs prior to 2.7.1 took their period from a global
+        if not state.has_key('_period'):
+            self._period = 20 # this was the default for all prior releases
+
+        # TOCs prior to 2.7.1 used a different set of data structures
+        # for efficiently keeping tabs on the maximum slice
+        if not state.has_key('_max_timeslice'):
+            new_slices = getTimeslices(
+                getCurrentTimeslice(self._period),
+                SPARE_BUCKETS*2,
+                self._period)
             for i in new_slices:
                 if not self._data.has_key(i):
                     self._data[i] = BUCKET_CLASS()
             # create an Increaser for max timeslice
             self._max_timeslice = Increaser(max(new_slices))
 
-        # can't make __len__ an instance variable in new-style classes
-        if not getattr(self, '_length', None):
-            length = self.__dict__.get('__len__', Length())
-            self._length = self.getLen = length
-
-        # we should probably delete older attributes such as
+        # we should probably delete older attributes from state such as
         # '_last_timeslice', '_deindex_next',and '__len__' here but we leave
         # them in order to allow people to switch between 2.6.0->2.7.0 and
         # 2.7.1+ as necessary (although that has not been tested)
+        self.__dict__.update(state)
     
-def getCurrentTimeslice():
+def getCurrentTimeslice(period):
     """
     Return an integer representing the 'current' timeslice.
     The current timeslice is guaranteed to be the same integer
-    within a 'slice' of time based on a divisor of 'period'.
-    'period' is the number of seconds in a slice.
+    within a 'slice' of time based on a divisor of 'self._period'.
+    'self._period' is the number of seconds in a slice.
     """
     now = time.time()
-    low = int(math.floor(now)) - PERIOD + 1
+    low = int(math.floor(now)) - period + 1
     high = int(math.ceil(now)) + 1
     for x in range(low, high):
-        if x % PERIOD == 0:
+        if x % period == 0:
             return x
 
-def getTimeslices(begin, n):
+def getTimeslices(begin, n, period):
     """ Get a list of future timeslice integers of 'n' size in descending
     order """
     l = []
     for x in range(n):
-        l.insert(0, begin + (x * PERIOD))
+        l.insert(0, begin + (x * period))
     return l
 
 def _assert(case):

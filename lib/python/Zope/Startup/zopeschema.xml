@@ -627,6 +627,16 @@
      <metadefault>20</metadefault>
   </key>
 
+  <key name="session-resolution-seconds" datatype="integer"
+       default="20">
+     <description>
+     An integer value representing the number of seconds to be used as the
+     "timeout resolution" of the '/temp_folder/session_data' transient
+     object container in Zope's object database.
+     </description>
+     <metadefault>20</metadefault>
+  </key>
+
   <key name="suppress-all-access-rules" datatype="boolean"
        default="off" handler="suppress_all_access_rules">
      <description>

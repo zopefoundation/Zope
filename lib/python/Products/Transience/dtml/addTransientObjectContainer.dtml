@@ -62,7 +62,7 @@ the Zope physical path to the method to be invoked to receive the notification
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
-      Data object timeout in minutes
+      Data object timeout (in minutes)
    </div>
     <div class="form-help">
       ("0" means no expiration)
@@ -70,6 +70,20 @@ the Zope physical path to the method to be invoked to receive the notification
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="timeout_mins:int" SIZE="10" value="20">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Timeout resolution (in seconds)
+   </div>
+    <div class="form-help">
+      (accept the default if you're not sure)
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="period_secs:int" SIZE="10" value="20">
   </TD>
 </TR>
 

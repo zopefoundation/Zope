@@ -1,4 +1,4 @@
-############################################################################
+##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
@@ -375,9 +375,15 @@ class AppInitializer:
             delnotify = getattr(config, 'session_delete_notify_script_path',
                                 None)
             default_limit = 1000
+            default_period_secs = 20
+            default_timeout_mins = 20
+            
             limit = (getattr(config, 'maximum_number_of_session_objects', None)
                      or default_limit)
-            timeout_spec = getattr(config, 'session_timeout_minutes', None)
+            timeout_spec = getattr(config, 'session_timeout_minutes',
+                                   default_timeout_mins)
+            period_spec = getattr(config, 'session_resolution_seconds',
+                                  default_period_secs)
 
             if addnotify and app.unrestrictedTraverse(addnotify, None) is None:
                 LOG('Zope Default Object Creation', WARNING,
@@ -395,7 +401,8 @@ class AppInitializer:
                 'session_data', 'Session Data Container',
                 addNotification = addnotify,
                 delNotification = delnotify,
-                limit=limit)
+                limit=limit,
+                period_secs=period_spec)
 
             if timeout_spec is not None:
                 toc = TransientObjectContainer('session_data',
@@ -403,7 +410,8 @@ class AppInitializer:
                                                timeout_mins = timeout_spec,
                                                addNotification = addnotify,
                                                delNotification = delnotify,
-                                               limit=limit)
+                                               limit=limit,
+                                               period_secs = period_spec)
 
             tf._setObject('session_data', toc)
             tf_reserved = getattr(tf, '_reserved_names', ())

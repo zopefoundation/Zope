@@ -23,7 +23,7 @@ TransientObjectContainer - Manage
 
        The title of the object.
 
-     - **Data object timeout in minutes**
+     - **Data object timeout (in minutes)**
 
        The minimum number of minutes that objects in the container will
        persist for.  Objects in the container are passively deleted, so
@@ -33,6 +33,16 @@ TransientObjectContainer - Manage
        container will be flushed.
 
        If the timeout value is "0", objects will not time out.
+
+     - **Timeout resolution (in seconds)**
+
+       Defines what the "resolution" of item timeout is. Setting this
+       higher allows the transience machinery to do fewer "writes" at
+       the expense of causing items to time out later than the "Data
+       object timeout value" by a factor of (at most) this many
+       seconds. This number must divide evenly into the number of
+       timeout seconds ("Data object timeout value" * 60) and cannot
+       be set higher than the timeout value in seconds.
 
      - **Maximum number of subobjects **
 
@@ -91,11 +101,6 @@ TransientObjectContainer - Manage
              def deleteScript(item, container):
                  from zLOG import LOG
                  LOG(100, 'test', 'id: %s' % item.getId())
-
-  Environment Variables
-
-    You can control some transient object settings with environment
-    variables. See 'doc/ENVIORNMENT.txt' for more informatin.
 
   See Also
 

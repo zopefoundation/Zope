@@ -34,7 +34,9 @@ class TestBase(TestCase):
                                           
         self.errmargin = .20
         self.timeout = 120
-        self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
+        self.period = 20
+        self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60,
+                                          period_secs=self.period)
 
     def tearDown(self):
         self.t = None
@@ -267,7 +269,7 @@ class TestTransientObjectContainer(TestBase):
         self.assertEqual(len(self.t.keys()), 0)
 
         # 2 minutes
-        self.t._setTimeout(self.timeout/60*2)
+        self.t._setTimeout(self.timeout/60*2, self.period)
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
@@ -279,7 +281,7 @@ class TestTransientObjectContainer(TestBase):
         self.assertEqual(len(self.t.keys()), 0)
 
         # 3 minutes
-        self.t._setTimeout(self.timeout/60*3)
+        self.t._setTimeout(self.timeout/60*3, self.period)
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
@@ -318,7 +320,8 @@ class TestTransientObjectContainer(TestBase):
 
     def testLen(self):
         # This test must not time out else it will fail.
-        self.t._setTimeout(self.timeout)  # make timeout extremely unlikely
+        # make timeout extremely unlikely by setting it very high
+        self.t._setTimeout(self.timeout, self.period)
         added = {}
         r = range(10, 1010)
         for x in r:
@@ -340,8 +343,9 @@ class TestTransientObjectContainer(TestBase):
 
     def testGetTimeoutMinutesWorks(self):
         self.assertEqual(self.t.getTimeoutMinutes(), self.timeout / 60)
-        self.t._setTimeout(10)
+        self.t._setTimeout(10, 30)
         self.assertEqual(self.t.getTimeoutMinutes(), 10)
+        self.assertEqual(self.t.getPeriodSeconds(), 30)
 
     def test_new(self):
         t = self.t.new('foobieblech')
@@ -369,7 +373,7 @@ class TestTransientObjectContainer(TestBase):
         self.assertRaises(MaxTransientObjectsExceeded, self._maxOut)
 
     def testZeroTimeoutMeansPersistForever(self):
-        self.t._setTimeout(0)
+        self.t._setTimeout(0, self.period)
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x

@@ -80,10 +80,12 @@ class TransientObjectContainer:
         Permission -- 'Create Transient Objects'
         """
 
-    def setTimeoutMinutes(self, timeout_mins):
+    def setTimeoutMinutes(self, timeout_mins, period=20):
         """
         Set the number of minutes of inactivity allowable for subobjects
-        before they expire.
+        before they expire (timeout_mins) as well as the 'timeout resolution'
+        in seconds (period).  'timeout_mins' * 60 must be evenly divisible
+        by the period.  Period must be less than 'timeout_mins' * 60.
 
         Permission -- 'Manage Transient Object Container'
         """
@@ -92,6 +94,13 @@ class TransientObjectContainer:
         """
         Return the number of minutes allowed for subobject inactivity
         before expiration.
+
+        Permission -- 'View management screens'
+        """
+
+    def getPeriodSeconds(self):
+        """
+        Return the 'timeout resolution' in seconds.
 
         Permission -- 'View management screens'
         """

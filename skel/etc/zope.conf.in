@@ -548,6 +548,20 @@ instancehome $INSTANCE
 #    session-timeout-minutes 30
 
 
+# Directive: session-resolution-seconds
+#
+# Description:
+#    An integer value representing the number of seconds to be used as the
+#    "timeout resolution" of the '/temp_folder/session_data' transient
+#    object container.
+#
+# Default: 20
+#
+# Example:
+#
+#    session-resolution-seconds 60
+
+
 # Directive: suppress-all-access-rules
 #
 # Description:

@@ -5,7 +5,6 @@
            help_topic='Transience-change.stx'
 	   )">
 
-
 <form action="manage_changeTransientObjectContainer" method="post">
 
 <p class="form-help">
@@ -13,7 +12,9 @@ Transient Object Containers are used to store transient data.
 Transient data will persist, but only for a user-specified period of time
 (the "data object timeout") after which it will be flushed.
 </p>
+
 <dtml-call nudge><!-- turn the buckets if necessary -->
+
 <p class="form-label">
 <font color="green">
 <dtml-let l=getLen>
@@ -43,7 +44,7 @@ Transient data will persist, but only for a user-specified period of time
 <tr>
   <td align="left" valign="top">
     <div class="form-label">
-     Data object timeout value in minutes
+     Data object timeout value (in minutes)
     </div>
     <div class="form-help">
       ("0" means no expiration)
@@ -52,6 +53,26 @@ Transient data will persist, but only for a user-specified period of time
   <td align="left" valign="top">
     <input type="text" name="timeout_mins:int" size=10
      value=&dtml-getTimeoutMinutes;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Timeout resolution (in seconds)
+    </div>
+    <div class="form-help">
+      Defines what the "resolution" of item timeout is. Setting this higher
+      allows the transience machinery to do fewer "writes" at the expense of
+      causing items to time out later than the "Data object timeout value" by
+      a factor of (at most) this many seconds.  This number must divide evenly
+      into the number of timeout seconds ("Data object timeout value" * 60)
+      and cannot be set higher than the timeout value in seconds.
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="period_secs:int" size=10
+     value=&dtml-getPeriodSeconds;>
   </td>
 </tr>
 
@@ -100,6 +121,22 @@ Transient data will persist, but only for a user-specified period of time
   </td>
 </tr>
 
+<dtml-let l=getLen>
+<dtml-if l>
+<tr>
+<td colspan=2>
+<br/>
+<p class="form-label">
+<font color="red">WARNING!</font>
+All data objects existing in this transient object container
+will be deleted when the data object timeout or expiration resolution
+is changed.
+</p>
+</tr>
+</td>
+</dtml-if>
+</dtml-let>
+
 <tr>
   <td></td>
   <td>
@@ -108,13 +145,6 @@ Transient data will persist, but only for a user-specified period of time
 </tr>
 </table>
 </form>
-
-<p class="form-label">
-<font color="red">WARNING!</font>
-The data objects existing in this transient object container
-will be deleted when the data object timeout is changed.
-</p>
-
 
 
 <dtml-var manage_page_footer>
