@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.68 $
+$Revision: 1.69 $
 """
 
 import time
@@ -347,11 +347,8 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 else:
                     cr.delete()
                 # Now we have to clean up the currentVersions table
-                try:
+                if vid <> ZERO:
                     cv.set_both(vid, revid)
-                except db.DBNotFoundError:
-                    pass
-                else:
                     cv.delete()
         finally:
             # There's a small window of opportunity for leaking cursors here,
@@ -362,17 +359,17 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
             if cv: cv.close()
             if cr: cr.close()
         # Now clean up the vids and versions tables
-        cv = self._pvids.cursor(txn=txn)
+        cpv = self._pvids.cursor(txn=txn)
         try:
-            rec = cv.first()
+            rec = cpv.first()
             while rec:
                 vid = rec[0]
-                rec = cv.next()
+                rec = cpv.next()
                 version = self._versions[vid]
                 self._versions.delete(vid, txn=txn)
                 self._vids.delete(version, txn=txn)
         finally:
-            cv.close()
+            cpv.close()
         # Now clean up the tid indexed table, and the temporary log tables
         self._txnMetadata.delete(tid, txn=txn)
         self._oids.truncate(txn)
@@ -1192,7 +1189,7 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                 self._prevrevids.put(oid, prevrevid, txn=txn)
                 self._txnoids.put(newserial, oid, txn=txn)
                 if vid <> ZERO:
-                    self._currentVersions.put(oid, vid, txn=txn)
+                    self._currentVersions.put(vid, revid, txn=txn)
             self._oids.put(oid, PRESENT, txn=txn)
             rtnoids[oid] = 1
             # Add this object revision to the autopack table
@@ -1579,8 +1576,12 @@ class BDBFullStorage(BerkeleyBase, ConflictResolvingStorage):
                     if vid <> ZERO:
                         cv = self._currentVersions.cursor(txn=txn)
                         try:
-                            cv.set_both(vid, revid)
-                            cv.delete()
+                            try:
+                                cv.set_both(vid, revid)
+                            except db.DBNotFoundError:
+                                pass
+                            else:
+                                cv.delete()
                         finally:
                             cv.close()
                     # BAW: maybe we want to refcount vids and versions table
