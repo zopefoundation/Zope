@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -578,10 +578,10 @@ class DAVProperties(Virtual, PropertySheet):
         return ''
 
     def dav__supportedlock(self):
-        return '<d:supportedlock>\n' \
-               '<d:lockentry>\n' \
                #'<d:lockscope><d:exclusive/></d:lockscope>\n' \
                #'<d:locktype><d:write/></d:locktype>\n' \
+        return '<d:supportedlock>\n' \
+               '<d:lockentry>\n' \
                '</d:lockentry>\n' \
                '</d:supportedlock>\n'
 
