@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -332,7 +332,7 @@ class CopyContainer(ExtensionClass.Base):
 
             meth=None
             if hasattr(self, method_name):
-                meth=self._getOb(method_name)
+                meth=getattr(self, method_name)
             else:
                 # Handle strange names that come from the Product
                 # machinery ;(

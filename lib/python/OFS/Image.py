@@ -84,9 +84,10 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
-import Globals, string, struct, mimetypes, content_types
+import Globals, string, struct, content_types
+from OFS.content_types import guess_content_type
 from Globals import HTMLFile, MessageDialog
 from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
@@ -146,6 +147,7 @@ class File(Persistent,Implicit,PropertyManager,
         self.__name__=id
         self.title=title
         self.precondition=precondition
+        filename=hasattr(file, 'filename') and file.filename or None
         headers=hasattr(file, 'headers') and file.headers or None
         if hasattr(file, 'read'):
             data=file.read()
@@ -153,12 +155,8 @@ class File(Persistent,Implicit,PropertyManager,
         if headers and headers.has_key('content-type') and (not content_type):
             content_type=headers['content-type']
         if not content_type:
-            content_type, enc=mimetypes.guess_type(id)
-            if not content_type:
-                if content_types.find_binary(data) >= 0:
-                    content_type='application/octet-stream'
-                else: content_type=content_types.text_type(data)
-        content_type=string.lower(content_type)
+            filename=filename or id
+            content_type, enc=guess_content_type(id, data)
         self.update_data(data, content_type)
 
     def id(self):
@@ -199,7 +197,7 @@ class File(Persistent,Implicit,PropertyManager,
         self.data=Pdata(data)
         self.size=len(data)
 
-    def manage_edit(self,title,content_type,precondition='',REQUEST=None):
+    def manage_edit(self, title, content_type, precondition='', REQUEST=None):
         """
         Changes the title and content type attributes of the File or Image.
         """
@@ -218,25 +216,20 @@ class File(Persistent,Implicit,PropertyManager,
 
         The file or images contents are replaced with the contents of 'file'.
         """
-
+        filename=hasattr(file, 'filename') and file.filename or None
         headers=hasattr(file, 'headers') and file.headers or None
-        data=(headers is None) and file or file.read()
+        body=(headers is None) and file or file.read()        
         if headers and headers.has_key('content-type'):
             content_type=headers['content-type']
         else:
-            content_type=''
-        if not content_type:
-            content_type, enc=mimetypes.guess_type(self.id())
-            if not content_type:
-                if content_types.find_binary(data) >= 0:
-                    content_type='application/octet-stream'
-                else: content_type=content_types.text_type(data)
-        content_type=string.lower(content_type)
-        self.update_data(data, content_type)
+            filename=filename or self.id()
+            content_type, enc=guess_content_type(self.id(), body)
+        self.update_data(body, content_type)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
                     action ='manage_main')
+
 
     def PUT(self, REQUEST, RESPONSE):
         """Handle HTTP PUT requests"""
@@ -244,12 +237,7 @@ class File(Persistent,Implicit,PropertyManager,
         type=REQUEST.get_header('content-type', None)
         body=REQUEST.get('BODY', '')
         if type is None:
-            type, enc=mimetypes.guess_type(self.id())
-        if type is None:
-            if content_types.find_binary(body) >= 0:
-                type='application/octet-stream'
-            else: type=content_types.text_type(body)
-        type=string.lower(type)
+            type, enc=guess_content_type(self.id(), body)
         self.update_data(body, type)
         RESPONSE.setStatus(204)
         return RESPONSE

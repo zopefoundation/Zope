@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -172,7 +172,7 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
         return len(self.raw)
     getSize=get_size
     
-    def oldvalidate(self, inst, parent, name, value, md):
+    def validate(self, inst, parent, name, value, md):
         #################################################################
         # Note that this method is not used normally.  It is simply a
         # Python rendition of the validate method implemented in
