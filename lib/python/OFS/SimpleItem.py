@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.35 1999/02/18 19:37:16 amos Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: SimpleItem.py,v 1.36 1999/02/22 20:43:43 jim Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from ExtensionClass import Base
@@ -136,16 +136,17 @@ class Item(Base, CopySource, App.Management.Tabs):
     title=''
 
     manage_info   =Globals.HTMLFile('App/manage_info')
-    manage_options=({'icon':'', 'label':'Manage',
-                     'action':'manage_main', 'target':'manage_main',
-                    },
-                    {'icon':'', 'label':'Access Control',
-                     'action':'manage_access', 'target':'manage_main',
-                     },
-                    {'icon':'', 'label':'Undo',
-                     'action':'manage_UndoForm','target':'manage_main',
-                     },
-                    )
+    manage_options=()
+
+    def manage_workspace(self, REQUEST):
+        """Dispatch to first interface in manage_options
+        """
+	try:
+            m=self.manage_options[0]['action']
+            if m=='manage_workspace': raise TypeError
+	except: return 'This object has no management interface'
+        
+	return getattr(self, m)(self, REQUEST)
 
     def title_or_id(self):
         """
