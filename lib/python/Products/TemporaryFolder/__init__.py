@@ -85,9 +85,10 @@
 """
 Temporary Folder initialization routines
 
-$Id: __init__.py,v 1.2 2001/11/02 19:22:42 matt Exp $
+$Id: __init__.py,v 1.3 2001/11/21 22:48:34 chrism Exp $
 """
 
+import ZODB # for testrunner to be happy
 import TemporaryFolder
 
 def initialize(context):
