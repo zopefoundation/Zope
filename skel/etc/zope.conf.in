@@ -699,7 +699,7 @@ instancehome $INSTANCE
 #     will not be written anywhere.
 
 <eventlog>
-  level all
+  level info
   <logfile>
     path $INSTANCE/log/event.log
     level info
