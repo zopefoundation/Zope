@@ -88,8 +88,11 @@ Objects for packages that have been uninstalled.
 import string, SimpleItem, Globals, Acquisition
 from Acquisition import Acquired
 import Persistence
+from thread import allocate_lock
+from zLOG import LOG, WARNING
 
 broken_klasses={}
+broken_klasses_lock = allocate_lock()
 
 class BrokenClass(Acquisition.Explicit, SimpleItem.Item, 
                   Persistence.Overridable):
@@ -117,30 +120,33 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
     manage_workspace=manage
     
 
-def Broken(self, oid, klass):
-    if broken_klasses.has_key(klass):
-        klass=broken_klasses[klass]
-    else:
-        module, klass = klass
-        d={'BrokenClass': BrokenClass}
-        exec ("class %s(BrokenClass): ' '; __module__=%s"
-              % (klass, `module`)) in d
-        broken_klasses[klass]=d[klass]
-        klass=d[klass]
-        module=string.split(module,'.')
-        if len(module) > 2 and module[0]=='Products':
-            klass.product_name= module[1]
-        klass.title=(
-            'This object from the %s product '
-            'is broken!' %
-            klass.product_name)
-        klass.info=(
-            'This object\'s class was %s in module %s.' %
-            (klass.__name__, klass.__module__))
-
+def Broken(self, oid, pair):
+    broken_klasses_lock.acquire()
+    try:
+        if broken_klasses.has_key(pair):
+            klass = broken_klasses[pair]
+        else:
+            module, klassname = pair
+            d={'BrokenClass': BrokenClass}
+            exec ("class %s(BrokenClass): ' '; __module__=%s"
+                  % (klassname, `module`)) in d
+            klass = broken_klasses[pair] = d[klassname]
+            module=string.split(module,'.')
+            if len(module) > 2 and module[0]=='Products':
+                klass.product_name= module[1]
+            klass.title=(
+                'This object from the %s product '
+                'is broken!' %
+                klass.product_name)
+            klass.info=(
+                'This object\'s class was %s in module %s.' %
+                (klass.__name__, klass.__module__))
+            LOG('ZODB', WARNING, 'Could not import class %s '
+                'from module %s' % (`klass.__name__`, `klass.__module__`))
+    finally:
+        broken_klasses_lock.release()
     if oid is None: return klass
     i=klass()
     i._p_oid=oid
     i._p_jar=self
     return i
-
