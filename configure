@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.6 2003/06/10 17:40:39 fdrake Exp $
-# $Revision: 1.6 $
+# $Id: configure,v 1.7 2003/06/13 15:42:25 chrism Exp $
+# $Revision: 1.7 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -16,10 +16,10 @@ ZOPE_VERS=2.7
 TARGET="2.2.3"
 
 # Order a list of "acceptable" python version numbers (as returned by
-# sys.version) below in "best" to "worst" order.  Up to six
-# acceptable python versions are allowed.  Do not include the target
-# version number in this list.
-ACCEPTABLE="2.3 2.3b1 2.3a1 2.3a0 2.2.2"
+# sys.version) below in "best" to "worst" order, not including the
+# target version.  Up to six acceptable python versions are allowed.
+# Do not include the target version number in this list!
+ACCEPTABLE="2.2.2 2.3 2.3b1 2.3a1 2.3a0"
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
@@ -60,6 +60,7 @@ get_python() {
     IFS=":"
     FOUND=""
     VERSION=""
+    FOUNDLIST=""
     echo "Testing for an acceptable Python interpreter..."
     echo
     for DIR in $PATH; do
@@ -80,7 +81,19 @@ get_python() {
                     i=1;
                     for ACC in $ACCEPTABLE; do
                         let "i = i + 1"
+			for SLOT in $FOUNDLIST; do
+                            if [ $SLOT == $i ]; then
+                                # slot "i" already populated.  This means we've
+                                # already found this particular version of
+                                # python.  Continue the for ACC in 
+                                # $ACCEPTABLE loop and don't overwrite the
+                                # one we already found (interpreters first
+                                # on the path win).
+                                continue 2
+                            fi
+                        done
                         if [ "$VERSION" = "$ACC" ]; then
+                            FOUNDLIST="$FOUNDLIST $i"
                             eval "FOUND$i=$FULL"
                             eval "FOUNDVERSION$i=$VERSION"
                         fi
