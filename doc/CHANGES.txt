@@ -89,6 +89,10 @@ Zope Changes
       - STXNG: re-enabled inner now work also through DTML
         and not only when using STXNG standalone
 
+      - STXNG: generated HTML is now more HTML4/XHTML compliant
+        (quoted attributes, inner links)
+
+
   Zope 2.5 Alpha 1
 
     Features Added
