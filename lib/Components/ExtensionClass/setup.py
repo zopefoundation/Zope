@@ -73,7 +73,6 @@ setup(name = "ExtensionClass",
       ext_modules = [ExtensionClass, Acquisition, MethodObject,
                      Missing, MultiMapping, Sync, ThreadLock, Record],
       headers = ["src/ExtensionClass.h"],
-      py_modules = ["src/Xaq"],
 
       long_description=__doc__
       )
