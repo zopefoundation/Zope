@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -82,8 +82,9 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         bound_names['options'] = kw
 
         try:
-            self.REQUEST.RESPONSE.setHeader('content-type',
-                                            self.content_type)
+            response = self.REQUEST.RESPONSE
+            if not response.headers.has_key('content-type'):
+                response.setHeader('content-type', self.content_type)
         except AttributeError: pass
 
         # Execute the template in a new security context.
