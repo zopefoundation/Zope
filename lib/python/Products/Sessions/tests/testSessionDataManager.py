@@ -195,6 +195,11 @@ class TestSessionManager(TestBase):
 
     def _foreignAdd(self):
         ob = self.app.session_data_manager
+
+        # we don't want to fail due to an acquisition wrapper
+        ob = ob.aq_base
+
+        # we want to fail for some other reason:
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', ob)
         get_transaction().commit()
@@ -205,7 +210,7 @@ class TestSessionManager(TestBase):
         aq_wrapped = a.__of__(b)
         sd = self.app.session_data_manager.getSessionData()
         sd.set('foo', aq_wrapped)
-        self.assertRaises(UnpickleableError, get_transaction().commit)
+        self.assertRaises(TypeError, get_transaction().commit)
 
     def testAutoReqPopulate(self):
         self.app.REQUEST['PARENTS'] = [self.app]
