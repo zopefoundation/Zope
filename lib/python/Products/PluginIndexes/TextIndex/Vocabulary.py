@@ -105,7 +105,7 @@ def manage_addVocabulary(self, id, title, globbing=None, splitter='', REQUEST=No
     c=Vocabulary(id, title, globbing,splitter)
     self._setObject(id, c)
     if REQUEST is not None:
-        return self.manage_main(self,REQUEST)
+        return self.manage_main(self,REQUEST,update_menu=1)
 
 
 class Vocabulary(Item, Persistent, Implicit,
@@ -193,5 +193,7 @@ class Vocabulary(Item, Persistent, Implicit,
         self.lexicon.set(word)
 
     def words(self):
+        """xxx"""
+        print len(self.lexicon._lexicon.items())
         return self.lexicon._lexicon.items()
 
