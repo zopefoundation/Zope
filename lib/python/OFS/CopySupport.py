@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -398,6 +398,21 @@ class CopySource(ExtensionClass.Base):
         pass
 
     def _getCopy(self, container):
+        # Commit a subtransaction to:
+        # 1) Make sure the data about to be exported is current
+        # 2) Ensure self._p_jar and container._p_jar are set even if
+        #    either one is a new object
+        get_transaction().commit(1)
+
+        if self._p_jar is None:
+            raise CopyError, (
+                'Object "%s" needs to be in the database to be copied' %
+                `self`)
+        if container._p_jar is None:
+            raise CopyError, (
+                'Container "%s" needs to be in the database' %
+                `container`)
+
         # Ask an object for a new copy of itself.
         f=tempfile.TemporaryFile()
         self._p_jar.exportFile(self._p_oid,f)
@@ -418,8 +433,6 @@ class CopySource(ExtensionClass.Base):
     def cb_isCopyable(self):
         # Is object copyable? Returns 0 or 1
         if not (hasattr(self, '_canCopy') and self._canCopy(0)):
-            return 0
-        if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
         if not self.cb_userHasCopyOrMovePermission():
             return 0
