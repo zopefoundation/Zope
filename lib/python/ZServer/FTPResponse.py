@@ -82,3 +82,58 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""
+Response class for the FTP Server.
+"""
+
+from ZPublisher.HTTPResponse import HTTPResponse
+from PubCore.ZEvent import Wakeup
+from cStringIO import StringIO
+import marshal
+
+
+class FTPResponse(HTTPResponse):
+    """
+    Response to an FTP command
+    """
+
+    def _finish(self):
+        self.stdout.finish(self)
+
+    def _marshalledBody(self):
+        return marshal.loads(self.body)
+
+ 
+class CallbackPipe:
+    """
+    Sends response object to a callback. Doesn't write anything.
+    The callback takes place in Medusa's thread, not the request thread.
+    """
+    def __init__(self, callback, args):
+        self._callback=callback
+        self._args=args
+        
+    def write(self, text):
+        pass
+        
+    def close(self):
+        pass
+        
+    def finish(self, response):
+        self._response=response
+        Wakeup(self.apply) # move callback to medusas thread
+        
+    def apply(self):
+        result=apply(self._callback, self._args+(self._response,))
+       
+        # is this necessary to break cycles?
+        self._callback=None
+        self._response=None
+        self._args=None
+        
+        return result    
+
+def make_response(callback,*args):
+    # XXX should this be the FTPResponse constructor instead?
+	return FTPResponse(stdout=CallbackPipe(callback, args), stderr=StringIO())
+    

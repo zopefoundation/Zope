@@ -6,6 +6,52 @@ ZServer Changes
 
   Releases
 
+    ZServer 1.0b1
+    
+      New Features
+      
+        Major code reorganization. Major architecture changes. Future
+        producers are gone. Use of special request and response objects
+        to do most of the heavy lifting. 
+
+        ZServer can now handle multiple HTTP requests per connection.
+
+        Now using (almost) unmodified Medusa sources.
+        
+        Added environment variable overriding to HTTPServer.py
+      
+      Bugs Fixed
+      
+        Using PCGI under IIS, now PATH_INFO begins with a /
+        
+        Fixed FTP passive mode response message IP address.
+
+      Known Bugs
+      
+        PCGI under IIS 4.0 is broken with respect to file uploads, and binary
+        data in general. IIS seems to convert \n to \r\n in binary data :-(
+
+        The latest medusa select_trigger.py doesn't seem to work under NT.
+
+      TODO
+      
+        stress test multi-threaded channel push. (done)
+        
+        test http 1.1 pipelined requests. (done)
+
+        iron out additional http 1.1 issues... (hmm)
+        
+        test ftp with emacs. (done)
+
+        remove cruft.
+        
+        fix medusa select_trigger under win32.
+
+        re-write Zope installers to install a ZServer start script.
+
+        get pcgi working with IIS and apache under win32, or at least get
+        it working under apache 1.3.6 on NT
+
     ZServer 1.0a2
 
       New Features
@@ -23,7 +69,7 @@ ZServer Changes
         and defer authentication until you cd to a directory where you
         are defined.
 
-      Bug Fixed
+      Bugs Fixed
 
         Data was being dropped from POST requests because of a bug in
         the sized input collection of asynchat.

@@ -1,9 +1,11 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.6
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
+# 
+# This license has been certified as Open Source(tm).
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -17,12 +19,13 @@
 #    the documentation and/or other materials provided with the
 #    distribution.
 # 
-# 3. Any use, including use of the Zope software to operate a website,
-#    must either comply with the terms described below under
-#    "Attribution" or alternatively secure a separate license from
-#    Digital Creations.  Digital Creations will not unreasonably
-#    deny such a separate license in the event that the request
-#    explains in detail a valid reason for withholding attribution.
+# 3. Digital Creations requests that attribution be given to Zope
+#    in any manner possible. Zope includes a "Powered by Zope"
+#    button that is installed by default. While it is not a license
+#    violation to remove this button, it is requested that the
+#    attribution remain. A significant investment has been put
+#    into Zope, and this effort will continue if the Zope community
+#    continues to grow. This is one way to assure that growth.
 # 
 # 4. All advertising materials and documentation mentioning
 #    features derived from or use of this software must display
@@ -73,27 +76,6 @@
 #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 # 
-# Attribution
-# 
-#   Individuals or organizations using this software as a web
-#   site ("the web site") must provide attribution by placing
-#   the accompanying "button" on the website's main entry
-#   point.  By default, the button links to a "credits page"
-#   on the Digital Creations' web site. The "credits page" may
-#   be copied to "the web site" in order to add other credits,
-#   or keep users "on site". In that case, the "button" link
-#   may be updated to point to the "on site" "credits page".
-#   In cases where this placement of attribution is not
-#   feasible, a separate arrangment must be concluded with
-#   Digital Creations.  Those using the software for purposes
-#   other than web sites must provide a corresponding
-#   attribution in locations that include a copyright using a
-#   manner best suited to the application environment.  Where
-#   attribution is not possible, or is considered to be
-#   onerous for some other reason, a request should be made to
-#   Digital Creations to waive this requirement in writing.
-#   As stated above, for valid requests, Digital Creations
-#   will not unreasonably deny such requests.
 # 
 # This software consists of contributions made by Digital Creations and
 # many individuals on behalf of Digital Creations.  Specific
@@ -101,7 +83,8 @@
 # 
 ##############################################################################
 
-"""First cut at a Medusa PCGI server.
+"""
+Medusa PCGI server.
 
 This server functions as the PCGI publisher--it accepts the request
 from the PCGI wrapper CGI program, services the request, and sends
@@ -119,15 +102,22 @@ Note that ZServer can operate multiple PCGI servers.
 
 from medusa import asynchat, asyncore, logger
 from medusa.counter import counter
-from medusa.producers import NotReady, hooked_producer
+from medusa.http_server import compute_timezone_for_log
 
 from PubCore import handle
+from PubCore.ZEvent import Wakeup
+from ZPublisher.HTTPResponse import HTTPResponse
+from ZPublisher.HTTPRequest import HTTPRequest
+from Producers import ShutdownProducer, LoggingProducer
 
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket
 import string
 import os
+import time
+
+tz_for_log=compute_timezone_for_log()
 
 class PCGIChannel(asynchat.async_chat):    
     """Processes a PCGI request by collecting the env and stdin and
@@ -138,10 +128,10 @@ class PCGIChannel(asynchat.async_chat):
         self.server = server
         self.addr = addr
         asynchat.async_chat.__init__ (self, sock)
+        self.env={}
         self.data=StringIO()
         self.set_terminator(10)
         self.size=None
-        self.env={}
         self.done=None
         
     def found_terminator(self):
@@ -150,6 +140,7 @@ class PCGIChannel(asynchat.async_chat):
             # and prepare to read env or stdin
             self.data.seek(0)
             self.size=string.atoi(self.data.read())
+            print "got size", self.size
             self.set_terminator(self.size)
             if self.size==0:
                 self.set_terminator('\r\n') 
@@ -179,13 +170,14 @@ class PCGIChannel(asynchat.async_chat):
                         string.strip(self.env['SCRIPT_NAME']),'/'))
                 path = filter(None,string.split(
                         string.strip(self.env['PATH_INFO']),'/'))
-                self.env['PATH_INFO'] = string.join(path[len(script):],'/')
-            
+                self.env['PATH_INFO'] = '/' + string.join(path[len(script):],'/')
+            print "REQUEST", self.env['REQUEST_METHOD']
             self.data=StringIO()
             # now read the next size header
             self.set_terminator(10)
         else:
             # we're done, we've got both env and stdin
+            print "got stdin", len(self.data.getvalue())
             self.set_terminator('\r\n')
             self.data.seek(0)
             self.send_response()
@@ -195,11 +187,9 @@ class PCGIChannel(asynchat.async_chat):
         # and requesting a callback of self.log with the module
         # name and PATH_INFO as an argument.
         self.done=1        
-        outpipe=handle(self.server.module, self.env, self.data)
-        self.push_with_producer(
-            hooked_producer(PCGIProducer(outpipe), self.log_request)
-            )
-        self.close_when_done()        
+        response=PCGIResponse(stdout=PCGIPipe(self), stderr=StringIO())
+        request=HTTPRequest(self.data, self.env, response)
+        handle(self.server.module, request, response)
         
     def collect_incoming_data(self, data):
         self.data.write(data)
@@ -209,21 +199,34 @@ class PCGIChannel(asynchat.async_chat):
             return 1
      
     def log_request(self, bytes):
+        # XXX need to add reply code logging
         if self.env.has_key('PATH_INFO'):
-            path='%s/%s' % (self.server.module, self.env['PATH_INFO'])
+            path='%s%s' % (self.server.module, self.env['PATH_INFO'])
         else:
             path='%s/' % self.server.module
+        if self.env.has_key('REQUEST_METHOD'):
+            method=self.env['REQUEST_METHOD']
+        else:
+            method="GET"
         self.server.logger.log (
             self.addr[0],
-            '%d - - [time goes here] "%s" %d' % (
-                self.addr[1], path, bytes
+            '%d - - [%s] "%s %s" %d' % (
+                self.addr[1],
+                time.strftime (
+                '%d/%b/%Y:%H:%M:%S ',
+                time.gmtime(time.time())
+                ) + tz_for_log,
+                method, path, bytes
                 )
             )
 
-    def writable(self):
-        return len(self.ac_out_buffer) or self.producer_fifo.ready() \
-            or (not self.connected)
-
+    def push(self, producer, send=1):
+        # this is thread-safe when send is false
+        # note, that strings are not wrapped in 
+        # producers by default
+        self.producer_fifo.push(producer)
+        if send: self.initiate_send()
+        
 
 class PCGIServer(asyncore.dispatcher):
     """Accepts PCGI requests and hands them off to the PCGIChannel for
@@ -271,7 +274,7 @@ class PCGIServer(asyncore.dispatcher):
         
         # write pid file
         try:
-           f = open(self.pid_file, 'wb')
+           f = open(self.pid_file, 'w')
            f.write(str(os.getpid()))
            f.close()
         except IOError:
@@ -328,43 +331,46 @@ class PCGIServer(asyncore.dispatcher):
     def writable (self):
         return 0
     
-        
-class PCGIProducer:
-    """Producer wrapper over output pipe
-    
-    output format is in PCGI format: 10 digits indicating len of
-    STDOUT followed by STDOUT.
-    
-    Note: no STDERR is returned.
-    Note: streaming is not supported, since PCGI requires the length
-    of the STDOUT be known before it is sent.
-    """
-    
-    def __init__(self,pipe):
-        self.pipe=pipe
-        self.buffer=StringIO()
-        self.buffer.write('0'*10) #this will hold length header
-        self.chunk_size=512
-        self.done=None
-    
-    def ready(self):
-        if self.done:
-            return 1
-        data=self.pipe.read()
-        if data is not None:
-            self.buffer.write(data)
-        if data=='':
-            self.buffer.write('0'*10) #write stderr header
-            self.buffer.seek(0)
-            size=len(self.buffer.getvalue())-20
-            self.buffer.write('%010d' % size)
-            self.buffer.seek(0)
-            self.done=1
-            return 1    
-        
-    def more(self):
-        if not self.done:
-            raise NotReady
-        else:
-            return self.buffer.read(self.chunk_size)
 
+class PCGIResponse(HTTPResponse):
+    
+    def _finish(self):
+        self.stdout.finish(self)
+        self.stdout.close()
+
+        
+class PCGIPipe:
+    """
+    Formats a HTTP response in PCGI format
+    
+        10 digits indicating len of STDOUT
+        STDOUT
+        10 digits indicating len of STDERR
+        STDERR
+    
+    Note that this implementation never sends STDERR
+    """
+    def __init__(self, channel):
+        self._channel=channel
+        self._data=StringIO()
+        self._shutdown=0
+    
+    def write(self,text):
+        self._data.write(text)
+        
+    def close(self):
+        data=self._data.getvalue()
+        l=len(data)
+        self._channel.push('%010d%s%010d' % (l, data, 0), 0)
+        self._channel.push(LoggingProducer(self._channel, l, 'log_request'), 0)
+        if self._shutdown:
+            self._channel.push(ShutdownProducer(), 0)
+        else:
+             self._channel.push(None, 0)
+        Wakeup()
+        self._channel=None
+        
+    def finish(self,request):
+        if request.headers.get('bobo-exception-type','') == \
+                'exceptions.SystemExit':
+            self._shutdown=1

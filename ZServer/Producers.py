@@ -82,3 +82,40 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""
+ZServer pipe utils. These producers basically function as callbacks.
+"""
+
+from medusa import asyncore
+import sys
+
+class ShutdownProducer:
+    "shuts down medusa"
+    
+    def more(self):
+        asyncore.close_all()
+
+
+class LoggingProducer:
+    "logs request"
+    
+    def __init__(self, logger, bytes, method='log'):
+        self.logger=logger
+        self.bytes=bytes
+        self.method=method
+
+    def more(self):
+        getattr(self.logger, self.method)(self.bytes)
+        return ''
+    
+
+class CallbackProducer:
+    "Performs a callback in the channel's thread"
+    
+    def __init__(self, callback):
+        self.callback=callback
+    
+    def more(self):
+        self.callback()
+        return ''
+        

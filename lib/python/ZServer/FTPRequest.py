@@ -82,3 +82,72 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""
+FTP Request class for FTP server.
+
+The FTP Request does the dirty work of turning an FTP request into something
+that ZPublisher can understand.
+"""
+
+from ZPublisher.HTTPRequest import HTTPRequest
+
+from cStringIO import StringIO
+import os
+from regsub import gsub
+from base64 import encodestring
+import string
+
+class FTPRequest(HTTPRequest):
+
+    def __init__(self, path, command, channel, response, stdin=None):
+        if stdin is None:
+            stdin=StringIO()
+        env=self._get_env(path, command, channel, stdin)
+        HTTPRequest.__init__(self, stdin, env, response, clean=1)
+
+    def _get_env(self, path, command, channel, stdin):
+        "Returns a CGI style environment"
+        env={}
+        env['SCRIPT_NAME']='/%s' % channel.module
+        env['REQUEST_METHOD']='GET' # XXX what should this be?
+        env['SERVER_SOFTWARE']=channel.server.SERVER_IDENT
+        if channel.userid != 'anonymous':
+            env['HTTP_AUTHORIZATION']='Basic %s' % gsub('\012','',
+                    encodestring('%s:%s' % (channel.userid, channel.password)))
+        env['SERVER_NAME']=channel.server.hostname
+        env['SERVER_PORT']=str(channel.server.port)
+        env['REMOTE_ADDR']=channel.client_addr[0]
+        env['GATEWAY_INTERFACE']='CGI/1.1' # that's stretching it ;-)
+        
+        # FTP commands
+        #
+        if type(command)==type(()):
+            args=command[1:]
+            command=command[0]
+        if command in ('LST','CWD','PASS'):
+            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPlist')
+        elif command in ('MDTM','SIZE'):
+            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPstat')
+        elif command=='RETR':
+            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_FTPget')
+        elif command in ('RMD','DELE'):
+            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_delObjects')
+            env['QUERY_STRING']='ids=%s' % args[0]
+        elif command=='MKD':
+            env['PATH_INFO']=self._join_paths(channel.path, path, 'manage_addFolder')
+            env['QUERY_STRING']='id=%s' % args[0]
+        elif command=='STOR':
+            env['PATH_INFO']=self._join_paths(channel.path, path)
+            env['REQUEST_METHOD']='PUT'
+            env['CONTENT_LENGTH']=len(stdin.getvalue())
+        else:
+            env['PATH_INFO']=self._join_paths(channel.path, path, command)
+        return env
+    
+    def _join_paths(self,*args):
+        path=apply(os.path.join,args)
+        path=os.path.normpath(path)
+        if os.sep != '/':
+            path=string.replace(path,os.sep,'/')
+        return path
+        
