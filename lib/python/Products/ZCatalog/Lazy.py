@@ -117,9 +117,12 @@ class LazyCat(Lazy):
         try:
             return self._len
         except:
-            l = 0
-            for s in self._seq:
-               l += len(s)
+            try:
+                l = 0
+                for s in self._seq:
+                    l += len(s)
+            except AttributeError:
+                l = len(self._data)
             self._len = l
             return l
 
@@ -203,11 +206,9 @@ class LazyFilter(Lazy):
 
 class LazyMop(Lazy):
     # Act like a sequence, but get data from a filtering process.
-    # Don't access data until necessary. Only data for which test(data) 
-    # returns true will be considered part of the set. Exceptions raised
-    # in the test method are ignored and treated like test(data) return a
-    # false value.
-
+    # Don't access data until necessary.  If the filter raises an exception
+    # for a given item, then that item isn't included in the sequence.
+    
     def __init__(self, test, seq):
         self._seq=seq
         self._data=[]
