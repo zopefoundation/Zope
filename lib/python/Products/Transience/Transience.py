@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.5 2001/10/23 19:17:27 matt Exp $
+$Id: Transience.py,v 1.6 2001/10/23 19:47:07 matt Exp $
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -284,6 +284,12 @@ class TransientObjectContainer(SimpleItem):
         # We should assert that the callback function 'f' implements
         # the TransientNotification interface
         self._delCallback = f
+
+
+    #
+    # Supporting methods (not part of the interface)
+    #
+
 
     def notifyAdd(self, item):
 
