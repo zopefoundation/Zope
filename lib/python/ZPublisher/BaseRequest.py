@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -327,7 +327,10 @@ class BaseRequest:
     
                 # Check for method:
                 if not path:
-                    if method and hasattr(object,method) and entry_name != method:
+                    if (method and hasattr(object,method)
+                        and entry_name != method
+                        and getattr(object, method) is not None
+                        ):
                         request._hacked_path=1
                         path=[method]
                     else:
