@@ -73,18 +73,28 @@ Zope Changes
         - The message returned when an empty result set is returned
           from a ZSQL Method has been clarified.
 
+	- In the load_site utility:
+
+	   o Added logic to try and figure out a path to ZPublisher if
+	     one was not provided.
+	     
+	   o Added an option, -I, to automatically add an index_html
+	     method that redirects to index.html or index.htm.
+
       Bugs Fixed
 
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
 
+	- In the load_site utility, binary files were misshandled on
+          windows.
+
         - Fixed a remaining '.' form target that we missed in the Zope
           rename form. This caused rename to fail for Zope installations 
           running behind Netscape servers.
 
         - Fixed a potential buffer bug in PCGI reported by Larry Luther.
-
 
     Zope 2.1.1
 
@@ -132,19 +142,19 @@ Zope Changes
         - There were a number of problems with the load-site utility
 	  (utilities/load_site.py):
 
-	- A recent change caused HTML files to have their headers and
-	  footers replaced with var tags for standard headers and
-	  footers.  While this is sometimes very useful, it is
-	  sometimes disastrous.  This feature is now enabled with the
-	  -D option.
-	  
-	- Handling of files with a '.dtml' extension was broken. These
-	  are now handled correctly. Files with '.dtml' suffixes now
-	  get uploaded as methods.
-	  
-	- A workaround for old sites that had a bug in Document (aka
-	  DTMLMethod) upload has been disabled. This workaround is now
-	  enabled when the -9 option is used.
+	   o A recent change caused HTML files to have their headers and
+	     footers replaced with var tags for standard headers and
+	     footers.  While this is sometimes very useful, it is
+	     sometimes disastrous.  This feature is now enabled with the
+	     -D option.
+	     
+	   o Handling of files with a '.dtml' extension was broken. These
+	     are now handled correctly. Files with '.dtml' suffixes now
+	     get uploaded as methods.
+	     
+	   o A workaround for old sites that had a bug in Document (aka
+	     DTMLMethod) upload has been disabled. This workaround is now
+	     enabled when the -9 option is used.
 
       The following bug fixes were accidentially excluded from 2.1.0:
 
