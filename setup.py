@@ -502,9 +502,12 @@ setup(
     name='Testing',
     author=AUTHOR,
 
-    packages=['Testing', 'Testing.ZopeTestCase'],
+    packages=['Testing', 'Testing.ZopeTestCase',
+              'Testing.ZopeTestCase.ztc', 'Testing.ZopeTestCase.ztc_doctest'],
     data_files=[['Testing', ['Testing/README.txt']],
-                ['Testing/var', ['Testing/var/README.txt']]],
+                ['Testing/var', ['Testing/var/README.txt']],
+                ['Testing/ZopeTestCase/doc', ['Testing/ZopeTestCase/doc/*']],
+                ['Testing/ZopeTestCase/ztc_doctest', ['Testing/ZopeTestCase/ztc_doctest/*.txt']]],
     )
 
 # ThreadedAsync
