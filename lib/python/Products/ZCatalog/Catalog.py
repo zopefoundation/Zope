@@ -188,6 +188,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.data=IOBTree()
             convert(data, self.data, threshold)
 
+            self.__len__=BTrees.Length.Length(len(data))
+
             uids=self.uids
             self.uids=OIBTree()
             convert(uids, self.uids, threshold)
@@ -196,7 +198,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.paths=IOBTree()
             convert(paths, self.paths, threshold)
 
-            self.__len__=BTrees.Length.Length()
 
         for index in self.indexes.values():
             index._convertBTrees(threshold)
