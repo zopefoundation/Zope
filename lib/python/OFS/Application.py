@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.183 2002/04/12 16:06:01 Brian Exp $'''
-__version__='$Revision: 1.183 $'[11:-2]
+$Id: Application.py,v 1.184 2002/07/03 18:18:57 chrism Exp $'''
+__version__='$Revision: 1.184 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -30,6 +30,7 @@ from misc_ import Misc_
 import ZDOM
 from zLOG import LOG, ERROR, WARNING, INFO
 from HelpSys.HelpSys import HelpSys
+from Acquisition import aq_base
 
 class Application(Globals.ApplicationDefaultPermissions,
                   ZDOM.Root, Folder.Folder,
@@ -174,7 +175,7 @@ class Application(Globals.ApplicationDefaultPermissions,
             finished = finished_dict.has_key
             while items:
                 name, ob = items.pop()
-                base=getattr(ob, 'aq_base', ob)
+                base=aq_base(ob)
                 if finished(id(base)):
                     continue
                 finished_dict[id(base)] = None
@@ -261,7 +262,7 @@ def initialize(app):
     app.Control_Panel.initialize_cache()
 
     # b/c: Ensure that a ProductFolder exists.
-    if not hasattr(app.Control_Panel.aq_base, 'Products'):
+    if not hasattr(aq_base(app.Control_Panel), 'Products'):
         app.Control_Panel.Products=App.Product.ProductFolder()
         get_transaction().note('Added Control_Panel.Products')
         get_transaction().commit()
@@ -278,7 +279,7 @@ def initialize(app):
         
     # Ensure that there is a transient container in the temp folder
     tf = app.temp_folder
-    if not hasattr(tf, 'session_data'):
+    if not hasattr(aq_base(tf), 'session_data'):
         env_has = os.environ.get
         from Products.Transience.Transience import TransientObjectContainer
         addnotify = env_has('ZSESSION_ADD_NOTIFY', None)
