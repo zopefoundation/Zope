@@ -1,12 +1,13 @@
 """ExtensionClass unit tests."""
 
 from operator import truth
-import unittest, string
+import sys, unittest, string
 import ExtensionClass
 
 
 class MagicMethodTests(unittest.TestCase):
-    """Test delegation to magic methods."""
+    """Test delegation to magic methods - organized roughly along the
+       lines of the documentation in the Python language reference."""
 
     BaseClass = ExtensionClass.Base
 
@@ -14,82 +15,31 @@ class MagicMethodTests(unittest.TestCase):
         """A hook to allow acquisition tests based on this fixture."""
         return object
 
-    #########################################################################
-    # Test delegation of magic methods for attribute management.
-    #########################################################################
-
-    def test__getattr__(self):
-        """Test __getattr__ delegation."""
-
-        class PythonClass:
-            def __getattr__(self, name):
-                return 'bruce'
-
-        class DerivedClass(self.BaseClass, PythonClass):
-            pass
-
-        object = PythonClass()
-        assert object.foo == 'bruce'
-
-        object = self.fixup_inst(DerivedClass())
-        assert object.foo == 'bruce'
-
-
-    def test__setattr__(self):
-        """Test __setattr__ delegation."""
-
-        class PythonClass:
-            def __setattr__(self, name, value):
-                self.__dict__['bruce_%s' % name] = value
-
-        class DerivedClass(self.BaseClass, PythonClass):
-            pass
-
-        object = PythonClass()
-        object.attr = 'value'
-        assert object.bruce_attr == 'value'
-
-        object = self.fixup_inst(DerivedClass())
-        object.attr = 'value'
-        assert object.bruce_attr == 'value'
-
-
-    def test__delattr__(self):
-        """Test __delattr__ delegation."""
-
-        class PythonClass:
-            def __delattr__(self, name):
-                return
-
-        class DerivedClass(self.BaseClass, PythonClass):
-            pass
-
-        object = PythonClass()
-        del object.foo
-
-        object = self.fixup_inst(DerivedClass())
-        del object.foo
 
 
     #########################################################################
     # Test delegation of magic methods for basic customization.
     #########################################################################
 
-    def test__str__(self):
-        """Test __str__ delegation."""
+    def test__del__(self):
+        """Test __del__ delegation."""
 
         class PythonClass:
-            def __str__(self):
-                return 'bruce'
+            def __del__(self):
+                setattr(sys, 'result', 1)
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
 
         object = PythonClass()
-        assert str(object) == 'bruce'
+        del object
+        assert sys.result == 1
+        del sys.result
 
         object = self.fixup_inst(DerivedClass())
-        assert str(object) == 'bruce'
+        del object
+        assert sys.result == 1
+        del sys.result
 
 
     def test__repr__(self):
@@ -109,11 +59,30 @@ class MagicMethodTests(unittest.TestCase):
         assert repr(object) == 'bruce'
 
 
+    def test__str__(self):
+        """Test __str__ delegation."""
+
+        class PythonClass:
+            def __str__(self):
+                return 'bruce'
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert str(object) == 'bruce'
+
+        object = self.fixup_inst(DerivedClass())
+        assert str(object) == 'bruce'
+
+
     def test__cmp__(self):
         """Test __cmp__ delegation."""
 
         class PythonClass:
+            called = 0
             def __cmp__(self, other):
+                self.called = 1
                 return 1
 
         class DerivedClass(self.BaseClass, PythonClass):
@@ -121,9 +90,11 @@ class MagicMethodTests(unittest.TestCase):
 
         object = PythonClass()
         assert object > 1
+        assert object.called == 1
 
         object = self.fixup_inst(DerivedClass())
         assert object > 1
+        assert object.called == 1
 
 
     def test__hash__(self):
@@ -155,7 +126,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -175,7 +146,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -195,7 +166,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -215,7 +186,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -235,7 +206,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -255,7 +226,7 @@ class MagicMethodTests(unittest.TestCase):
                 return 1
 
             def __cmp__(self, other):
-                raise AssertionError, 'Rich comparison not used!'
+                raise AssertionError('Rich comparison not used!')
 
         class DerivedClass(self.BaseClass, PythonClass):
             pass
@@ -375,7 +346,178 @@ class MagicMethodTests(unittest.TestCase):
 
 
     #########################################################################
-    # Test delegation of overridable binary arithmetic operations.
+    # Test delegation of attribute access methods
+    #########################################################################
+
+    def test__getattr__(self):
+        """Test __getattr__ delegation."""
+
+        class PythonClass:
+            def __getattr__(self, name):
+                return 'bruce'
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert object.foo == 'bruce'
+
+        object = self.fixup_inst(DerivedClass())
+        assert object.foo == 'bruce'
+
+
+    def test__setattr__(self):
+        """Test __setattr__ delegation."""
+
+        class PythonClass:
+            def __setattr__(self, name, value):
+                self.__dict__['bruce_%s' % name] = value
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        object.attr = 'value'
+        assert object.bruce_attr == 'value'
+
+        object = self.fixup_inst(DerivedClass())
+        object.attr = 'value'
+        assert object.bruce_attr == 'value'
+
+
+    def test__delattr__(self):
+        """Test __delattr__ delegation."""
+
+        class PythonClass:
+            called = 0
+            def __delattr__(self, name):
+                self.called = 1
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        del object.foo
+        assert object.called == 1
+
+        object = self.fixup_inst(DerivedClass())
+        del object.foo
+        assert object.called == 1
+
+
+    def test__call__(self):
+        """Test __call__ delegation."""
+
+        class PythonClass:
+            def __call__(self, arg):
+                return arg
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert object('bruce') == 'bruce'
+
+        object = self.fixup_inst(DerivedClass())
+        assert object('bruce') == 'bruce'
+
+
+    #########################################################################
+    # Test delegation of sequence and mapping operations. 
+    #########################################################################
+
+    def test__len__(self):
+        """Test __len__ delegation."""
+
+        class PythonClass:
+            def __len__(self):
+                return 42
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert len(object) == 42
+
+        object = self.fixup_inst(DerivedClass(1))
+        assert len(object) == 42
+
+
+    def test__getitem__(self):
+        """Test __getitem__ delegation."""
+
+        class PythonClass:
+            def __getitem__(self, key):
+                return key
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert object['bruce'] == 'bruce'
+
+        object = self.fixup_inst(DerivedClass(1))
+        assert object['bruce'] == 'bruce'
+
+
+    def test__setitem__(self):
+        """Test __setitem__ delegation."""
+
+        class PythonClass:
+            def __setitem__(self, key, value):
+                setattr(self, key, value)
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        object['bruce'] = 'bruce'
+        assert object.bruce == 'bruce'
+
+        object = self.fixup_inst(DerivedClass(1))
+        object['bruce'] = 'bruce'
+        assert object.bruce == 'bruce'
+
+
+    def test__delitem__(self):
+        """Test __delitem__ delegation."""
+
+        class PythonClass:
+            called = 0
+            def __delitem__(self, key):
+                self.called = 1
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        del object['bruce']
+        assert object.called == 1
+
+        object = self.fixup_inst(DerivedClass(1))
+        del object['bruce']
+        assert object.called == 1
+
+
+    def test__contains__(self):
+        """Test __contains__ delegation."""
+
+        class PythonClass:
+            def __contains__(self, item):
+                return 1
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass()
+        assert 's' in object
+
+        object = self.fixup_inst(DerivedClass())
+        assert 's' in object
+
+
+    #########################################################################
+    # Test delegation of numeric operations.
     #########################################################################
 
     def test__add__(self):
@@ -384,7 +526,7 @@ class MagicMethodTests(unittest.TestCase):
         class PythonClass:
             def __init__(self, value):
                 self.value = value
-                
+
             def __add__(self, other):
                 return self.value + other
 
@@ -398,13 +540,35 @@ class MagicMethodTests(unittest.TestCase):
         assert object + 1 == 2
 
 
+    def test__add__seq(self):
+        """Test __add__ (sequence) delegation."""
+
+        class PythonClass:
+            def __init__(self, value):
+                self.value = value
+
+            def __add__(self, other):
+                return self.__class__(self.value + other)
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass([1, 2])
+        object = object + [3, 4]
+        assert object.value == [1, 2, 3, 4]
+
+        object = self.fixup_inst(DerivedClass([1, 2]))
+        object = object + [3, 4]
+        assert object.value == [1, 2, 3, 4]
+
+
     def test__sub__(self):
         """Test __sub__ delegation."""
 
         class PythonClass:
             def __init__(self, value):
                 self.value = value
-                
+
             def __sub__(self, other):
                 return self.value - other
 
@@ -424,7 +588,7 @@ class MagicMethodTests(unittest.TestCase):
         class PythonClass:
             def __init__(self, value):
                 self.value = value
-                
+
             def __mul__(self, other):
                 return self.value * other
 
@@ -438,13 +602,35 @@ class MagicMethodTests(unittest.TestCase):
         assert object * 2 == 4
 
 
+    def test__mul__seq(self):
+        """Test __mul__ (sequence) delegation."""
+
+        class PythonClass:
+            def __init__(self, value):
+                self.value = value
+
+            def __mul__(self, other):
+                return self.__class__(self.value * other)
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass([1, 2])
+        object = object * 2
+        assert object.value == [1, 2, 1, 2]
+
+        object = self.fixup_inst(DerivedClass([1, 2]))
+        object = object * 2
+        assert object.value == [1, 2, 1, 2]
+
+
     def test__div__(self):
         """Test __div__ delegation."""
 
         class PythonClass:
             def __init__(self, value):
                 self.value = value
-                
+
             def __div__(self, other):
                 return self.value / other
 
@@ -464,7 +650,7 @@ class MagicMethodTests(unittest.TestCase):
         class PythonClass:
             def __init__(self, value):
                 self.value = value
-                
+
             def __mod__(self, other):
                 return self.value % other
 
@@ -618,10 +804,6 @@ class MagicMethodTests(unittest.TestCase):
         assert object | 1 == 1
 
 
-    #########################################################################
-    # Test delegation of reflected binary arithmetic operations.
-    #########################################################################
-
     def test__radd__(self):
         """Test __radd__ delegation."""
 
@@ -680,6 +862,28 @@ class MagicMethodTests(unittest.TestCase):
 
         object = self.fixup_inst(DerivedClass(2))
         assert 2 * object == 4
+
+
+    def test__rmul__seq(self):
+        """Test __rmul__ (sequence) delegation."""
+
+        class PythonClass:
+            def __init__(self, value):
+                self.value = value
+                
+            def __rmul__(self, other):
+                return self.__class__(other * self.value)
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass([1, 2])
+        object = 2 * object
+        assert object.value == [1, 2, 1, 2]
+
+        object = self.fixup_inst(DerivedClass([1, 2]))
+        object = 2 * object
+        assert object.value == [1, 2, 1, 2]
 
 
     def test__rdiv__(self):
@@ -749,7 +953,7 @@ class MagicMethodTests(unittest.TestCase):
             def __init__(self, value):
                 self.value = value
                 
-            def __rpow__(self, other):
+            def __rpow__(self, other, modulo=None):
                 return other ** self.value
 
         class DerivedClass(self.BaseClass, PythonClass):
@@ -862,10 +1066,6 @@ class MagicMethodTests(unittest.TestCase):
         assert 1 | object == 1
 
 
-    #########################################################################
-    # Test delegation of augmented assignment operations.
-    #########################################################################
-
     def test__iadd__(self):
         """Test __iadd__ delegation."""
 
@@ -886,6 +1086,29 @@ class MagicMethodTests(unittest.TestCase):
         object = self.fixup_inst(DerivedClass(1))
         object += 1
         assert object.value == 2
+
+
+    def test__iadd__seq(self):
+        """Test __iadd__ (sequence) delegation."""
+
+        class PythonClass:
+            def __init__(self, value):
+                self.value = value
+                
+            def __iadd__(self, other):
+                self.value += other
+                return self
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass([1, 2])
+        object += [3, 4]
+        assert object.value == [1, 2, 3, 4]
+
+        object = self.fixup_inst(DerivedClass([1, 2]))
+        object += [3, 4]
+        assert object.value == [1, 2, 3, 4]
 
 
     def test__isub__(self):
@@ -930,6 +1153,29 @@ class MagicMethodTests(unittest.TestCase):
         object = self.fixup_inst(DerivedClass(2))
         object *= 2
         assert object.value == 4
+
+
+    def test__imul__seq(self):
+        """Test __imul__ (sequence) delegation."""
+
+        class PythonClass:
+            def __init__(self, value):
+                self.value = value
+                
+            def __imul__(self, other):
+                self.value *= other
+                return self
+
+        class DerivedClass(self.BaseClass, PythonClass):
+            pass
+
+        object = PythonClass([1, 2])
+        object *= 2
+        assert object.value == [1, 2, 1, 2]
+
+        object = self.fixup_inst(DerivedClass([1, 2]))
+        object *= 2
+        assert object.value == [1, 2, 1, 2]
 
 
     def test__idiv__(self):
@@ -983,7 +1229,7 @@ class MagicMethodTests(unittest.TestCase):
             def __init__(self, value):
                 self.value = value
                 
-            def __ipow__(self, other):
+            def __ipow__(self, other, modulo=None):
                 return self.__class__(self.value ** other)
 
         class DerivedClass(self.BaseClass, PythonClass):
@@ -1108,10 +1354,6 @@ class MagicMethodTests(unittest.TestCase):
         assert object.value == 1
 
 
-    #########################################################################
-    # Test delegation of unary arithmetic operations.
-    #########################################################################
-
     def test__pos__(self):
         """Test __pos__ delegation."""
 
@@ -1202,10 +1444,6 @@ class MagicMethodTests(unittest.TestCase):
         assert object.value == -10
 
 
-    #########################################################################
-    # Test delegation of numeric type coercion.
-    #########################################################################
-
     def test__int__(self):
         """Test __int__ delegation."""
 
@@ -1286,10 +1524,6 @@ class MagicMethodTests(unittest.TestCase):
         assert complex(object) == complex(1)
 
 
-    #########################################################################
-    # Test delegation of overridable __oct__ and __hex__
-    #########################################################################
-
     def test__oct__(self):
         """Test __oct__ delegation."""
 
@@ -1330,10 +1564,6 @@ class MagicMethodTests(unittest.TestCase):
         assert hex(object) == '0xa'
 
 
-    #########################################################################
-    # Test delegation of mixed-mode coercion
-    #########################################################################
-
     def test__coerce__(self):
         """Test __coerce__ delegation."""
 
@@ -1352,28 +1582,6 @@ class MagicMethodTests(unittest.TestCase):
 
         object = self.fixup_inst(DerivedClass(10))
         assert coerce(object, 10.0) == (10, 10)
-
-
-
-    #########################################################################
-    # Test delegation of overridable sequence protocol methods.
-    #########################################################################
-
-    def test__contains__(self):
-        """Test __contains__ delegation."""
-
-        class PythonClass:
-            def __contains__(self, item):
-                return 1
-
-        class DerivedClass(self.BaseClass, PythonClass):
-            pass
-
-        object = PythonClass()
-        assert 's' in object
-
-        object = self.fixup_inst(DerivedClass())
-        assert 's' in object
 
 
 
