@@ -331,11 +331,11 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.58 2002/04/24 14:38:40 htrd Exp $'
-__version__='$Revision: 1.58 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.59 2002/05/07 17:55:37 htrd Exp $'
+__version__='$Revision: 1.59 $'[11:-2]
 
 import sys
-from DT_Util import ParseError, parse_params, name_param, str
+from DT_Util import ParseError, parse_params, name_param, str, join_unicode
 from DT_Util import render_blocks, InstanceDict, ValidationError, Eval
 from DT_Util import simple_name, add_with_prefix
 import re
@@ -609,7 +609,7 @@ class InClass:
                     if index==first: pkw['sequence-start']=0
 
 
-                result = ''.join(result)
+                result = join_unicode(result)
 
         finally:
             if cache: pop()
@@ -708,7 +708,7 @@ class InClass:
                             pop()
                     if index==0: pkw['sequence-start']=0
 
-                result = ''.join(result)
+                result = join_unicode(result)
 
         finally:
             if cache: pop()
