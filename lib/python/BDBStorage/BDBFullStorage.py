@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.26 $'[-2:][0]
+__version__ = '$Revision: 1.27 $'[-2:][0]
 
 import struct
 import time
@@ -17,6 +17,7 @@ from ZODB import POSException
 from ZODB import utils
 from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
+from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
 # the Full and Minimal implementations.  It in turn inherits from
@@ -40,7 +41,7 @@ DNE = '\377'*8
 
 
 
-class Full(BerkeleyBase):
+class Full(BerkeleyBase, ConflictResolvingStorage):
     #
     # Overrides of base class methods
     #
@@ -545,6 +546,7 @@ class Full(BerkeleyBase):
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
 
+        conflictresolved = 0
         self._lock_acquire()
         try:
             # Check for conflict errors.  JF says: under some circumstances,
@@ -561,10 +563,15 @@ class Full(BerkeleyBase):
             elif serial <> oserial:
                 # The object exists in the database, but the serial number
                 # given in the call is not the same as the last stored serial
-                # number.  Raise a ConflictError.
-                raise POSException.ConflictError(
-                    'serial number mismatch (was: %s, has: %s)' %
-                    (utils.U64(oserial), utils.U64(serial)))
+                # number.  First, attempt application level conflict
+                # resolution, and if that fails, raise a ConflictError.
+                data = self.tryToResolveConflict(oid, oserial, serial, data)
+                if data:
+                    conflictresolved = 1
+                else:
+                    raise POSException.ConflictError(
+                        'serial number mismatch (was: %s, has: %s)' %
+                        (utils.U64(oserial), utils.U64(serial)))
             # Do we already know about this version?  If not, we need to
             # record the fact that a new version is being created.  `version'
             # will be the empty string when the transaction is storing on the
@@ -604,7 +611,10 @@ class Full(BerkeleyBase):
             self._commitlog.write_object(oid, vid, nvrevid, data, oserial)
         finally:
             self._lock_release()
-        # Return our cached serial number for the object.
+        # Return our cached serial number for the object.  If conflict
+        # resolution occurred, we return the special marker value.
+        if conflictresolved:
+            return ResolvedSerial
         return self._serial
 
     def transactionalUndo(self, tid, transaction):
@@ -612,6 +622,7 @@ class Full(BerkeleyBase):
             raise POSException.StorageTransactionError(self, transaction)
 
         newrevs = []
+        newstates = []
         c = None
         self._lock_acquire()
         try:
@@ -630,15 +641,8 @@ class Full(BerkeleyBase):
                 # undoing either the current revision of the object, or we
                 # must be restoring the exact same pickle (identity compared)
                 # that would be restored if we were undoing the current
-                # revision.
-                #
-                # Note that we could do pickle equivalence comparisions
-                # instead.  That would be "temporaly clean" in that we'd still
-                # be restoring the same state.  We decided not to do this for
-                # now.  Eventually, when we have application level conflict
-                # resolution, we can ask the object if it can resolve the
-                # state change, and then we'd reject the undo only if any of
-                # the state changes couldn't be resolved.
+                # revision.  Otherwise, we attempt application level conflict
+                # resolution.  If that fails, we raise an exception.
                 revid = self._serials[oid]
                 if revid == tid:
                     vid, nvrevid, lrevid, prevrevid = struct.unpack(
@@ -704,7 +708,22 @@ class Full(BerkeleyBase):
                     elif target_lrevid == self._commitlog.get_prevrevid(oid):
                         newrevs.append((oid, target_metadata))
                     else:
-                        raise POSException.UndoError, 'Cannot undo transaction'
+                        # Attempt application level conflict resolution
+                        data = self.tryToResolveConflict(
+                            oid, revid, tid, self._pickles[oid+target_lrevid])
+                        if data:
+                            # The problem is that the `data' pickle probably
+                            # isn't in the _pickles table, and even if it
+                            # were, we don't know what the lrevid pointer to
+                            # it would be.  This means we need to do a
+                            # write_object() not a write_object_undo().
+                            vid, nvrevid, lrevid, prevrevid = struct.unpack(
+                                '>8s8s8s8s', target_metadata)
+                            newstates.append((oid, vid, nvrevid, data,
+                                              prevrevid))
+                        else:
+                            raise POSException.UndoError(
+                                'Cannot undo transaction')
             # Okay, we've checked all the objects affected by the transaction
             # we're about to undo, and everything looks good.  So now we'll
             # write to the log the new object records we intend to commit.
@@ -719,6 +738,10 @@ class Full(BerkeleyBase):
                 # records to the commit log.  This works because the last one
                 # will always overwrite previous ones, but it also means we'll
                 # see duplicate oids in this iteration.
+                oids[oid] = 1
+            for oid, vid, nvrevid, data, prevrevid in newstates:
+                self._commitlog.write_object(oid, vid, nvrevid, data,
+                                             prevrevid)
                 oids[oid] = 1
             return oids.keys()
         finally:
