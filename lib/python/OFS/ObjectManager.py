@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.23 1997/12/12 16:14:03 jim Exp $"""
+$Id: ObjectManager.py,v 1.24 1997/12/16 20:04:43 jim Exp $"""
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -275,7 +275,7 @@ class ObjectManager(Acquirer,Management,Persistent):
 		       action ='./manage_main',)
 	    obj=getattr(self, ids[0])
 	    err=obj.copyToClipboard(REQUEST)
-	    return err or self.manage_main(self, REQUEST)
+	    return err or self.manage_main(self, REQUEST, validClipData=1)
 
 	if submit=='Paste':
 	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
@@ -455,6 +455,10 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.24  1997/12/16 20:04:43  jim
+# Modified copying code to set validClipData in manage_main so that
+# the paste button shows up after copy.
+#
 # Revision 1.23  1997/12/12 16:14:03  jim
 # Added :text for text properties.
 #
