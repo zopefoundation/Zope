@@ -1,4 +1,5 @@
 import os
+import sys
 
 # top-level key handlers
 
@@ -126,15 +127,33 @@ def root_handler(config):
     fixups of values that require knowledge about configuration
     values outside of their context. """
 
+    # Set environment variables
+    for k,v in config.environment.items():
+        os.environ[k] = v
+
+    # Add directories to the pythonpath; always insert instancehome/lib/python
+    instancelib = os.path.join(config.instancehome, 'lib', 'python')
+    if instancelib not in config.path:
+        config.path.append(instancelib)
+    path = config.path[:]
+    path.reverse()
+    for dir in path:
+        sys.path.insert(0, dir)
+
     # Add any product directories not already in Products.__path__.
-    # Directories are added in the order
-    if config.products:
-        import Products
-        L = []
-        for d in config.products + Products.__path__:
-            if d not in L:
-                L.append(d)
-        Products.__path__[:] = L
+    # Directories are added in the order they are mentioned
+    # Always insert instancehome.Products
+
+    instanceprod = os.path.join(config.instancehome, 'Products')
+    if instanceprod not in config.products:
+        config.products.append(instanceprod)
+    
+    import Products
+    L = []
+    for d in config.products + Products.__path__:
+        if d not in L:
+            L.append(d)
+    Products.__path__[:] = L
 
     # if no servers are defined, create default http server and ftp server
     if not config.servers:

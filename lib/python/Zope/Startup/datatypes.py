@@ -126,6 +126,8 @@ def root_config(section):
     swhome = os.path.dirname(os.path.dirname(here))
     section.softwarehome = swhome
     section.zopehome = os.path.dirname(os.path.dirname(swhome))
+    if section.environment is None:
+        section.environment = {}
     if section.cgi_environment is None:
         section.cgi_environment = {}
     if section.clienthome is None:
@@ -223,7 +225,7 @@ def getDefaultDatabaseFactories(context):
     # and a temporary storage for session data
     from ZODB.Connection import Connection
     from ZODB.config import FileStorage
-    from Products.TemporaryFolder.config import TemporaryStorage
+    from tempstorage.config import TemporaryStorage
 
     l = []
     class dummy:
@@ -248,7 +250,8 @@ def getDefaultDatabaseFactories(context):
     l.append(main)
 
     ts = dummy('temporary storage for sessioning')
-    temporary = ZopeDatabase(dummy('temporary', storage=TemporaryStorage(ts),
+    temporary = ZopeDatabase(dummy('temporary',
+                                   storage=TemporaryStorage(ts),
                                    cache_size=5000, pool_size=7,
                                    version_pool_size=3, version_cache_size=100,
                                    mount_points=['/temp_folder'],

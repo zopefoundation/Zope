@@ -54,7 +54,7 @@ class StartupTestCase(unittest.TestCase):
             os.rmdir(TEMPPRODUCTS)
             os.rmdir(TEMPNAME)
         self.assertEqual(conf.instancehome, TEMPNAME)
-        return conf
+        return conf, handler
 
     def test_load_config_template(self):
         schema = self.schema
@@ -66,7 +66,7 @@ class StartupTestCase(unittest.TestCase):
         self.load_config_text(text)
 
     def test_cgi_environment(self):
-        conf = self.load_config_text("""\
+        conf, handler = self.load_config_text("""\
             # instancehome is here since it's required
             instancehome <<INSTANCE_HOME>>
             <cgi-environment>
@@ -78,9 +78,32 @@ class StartupTestCase(unittest.TestCase):
         items.sort()
         self.assertEqual(items, [("ANOTHER", "value2"), ("HEADER", "value")])
 
+    def test_environment(self):
+        conf, handler = self.load_config_text("""\
+            # instancehome is here since it's required
+            instancehome <<INSTANCE_HOME>>
+            <environment>
+              FEARFACTORY rocks
+              NSYNC doesnt
+            </environment>
+            """)
+        items = conf.environment.items()
+        items.sort()
+        self.assertEqual(items, [("FEARFACTORY", "rocks"), ("NSYNC","doesnt")])
+
+    def test_path(self):
+        conf, handler = self.load_config_text("""\
+            # instancehome is here since it's required
+            instancehome <<INSTANCE_HOME>>
+            path /foo/bar
+            path /baz/bee
+            """)
+        items = conf.path
+        self.assertEqual(items, ['/foo/bar', '/baz/bee'])
+
     def test_access_and_trace_logs(self):
         fn = tempfile.mktemp()
-        conf = self.load_config_text("""
+        conf, handler = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             <logger access>
               <logfile>
@@ -95,14 +118,14 @@ class StartupTestCase(unittest.TestCase):
 
     def test_dns_resolver(self):
         from ZServer.medusa import resolver
-        conf = self.load_config_text("""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             dns-server localhost
             """)
         self.assert_(isinstance(conf.dns_resolver, resolver.caching_resolver))
 
     def test_zodb_db(self):
-        conf = self.load_config_text("""\
+        conf, handler = self.load_config_text("""\
             instancehome <<INSTANCE_HOME>>
             <zodb_db main>
               <filestorage>

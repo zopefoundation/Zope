@@ -7,7 +7,7 @@
   <import package="zLOG"/>
   <import package="ZODB"/>
   <import package="ZServer"/>
-  <import package="Products.TemporaryFolder"/>
+  <import package="tempstorage"/>
 
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>
@@ -30,6 +30,20 @@
     <key name="+" attribute="environ">
       <description>
         Use any key/value pair, e.g. 'HTTPS_PORT 443'
+      </description>
+    </key>
+  </sectiontype>
+
+  <sectiontype name="environment"
+               datatype=".cgi_environment"
+               keytype="identifier">
+    <description>
+     A section which allows you to define simple key-value pairs which
+     will be used as environment variable settings during startup.  
+    </description>
+    <key name="+" attribute="environ">
+      <description>
+        Use any key/value pair, e.g. 'MY_PRODUCT_ENVVAR foo_bar'
       </description>
     </key>
   </sectiontype>
@@ -184,6 +198,15 @@
 
   <!-- schema begins  -->
 
+  <section type="environment" attribute="environment" name="*">
+    <description>
+     A section which allows a user to define arbitrary key-value pairs for
+     use as environment variables during Zope's run cycle.  It
+     is not recommended to set system-related environment variables such as
+     PYTHONPATH within this section.
+    </description>
+  </section>
+
   <key name="instancehome" datatype="existing-directory"
        required="yes">
     <description>
@@ -206,6 +229,28 @@
     </description>
     <metadefault>$instancehome/var</metadefault>
   </key>
+
+  <multikey name="products" datatype="existing-directory">
+    <description>
+      This specifies additional product directories which are added to
+      Products.__path__.  Directories are added in the order in which
+      they are specified.
+    </description>
+    <metadefault>$instancehome/Products</metadefault>
+  </multikey>
+
+  <multikey name="path" datatype="existing-directory">
+    <description>
+      This specifies additional paths directories which are inserted into
+      the beginning of Python's module search path.  The set of directories
+      specified is inserted into the beginning of the module search path in
+      the order which they are specified here.  Note that the processing of
+      this directive may happen too late under some circumstances; it is
+      recommended that you use the PYTHONPATH environment variable if
+      using this directive doesn't work for you.
+    </description>
+    <metadefault>$instancehome/lib/python</metadefault>
+  </multikey>
 
   <key name="pid-filename" datatype="existing-dirpath">
     <description>
@@ -324,15 +369,6 @@
       the database has been opened are not visible.
     </description>
   </key>
-
-  <multikey name="products" datatype="existing-directory">
-    <description>
-      This specifies additional product directories which are added to
-      Products.__path__.  Directories are added in the order in which
-      they are specified.
-    </description>
-    <metadefault>$instancehome/Products</metadefault>
-  </multikey>
 
   <key name="structured-text-header-level" datatype="integer" default="3"
        handler="structured_text_header_level">
