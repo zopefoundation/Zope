@@ -87,15 +87,18 @@
 
 import Globals, OFS.PropertySheets, OFS.Image, ExtensionClass
 from string import split, join, strip
+import Acquisition
 
 class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
                        OFS.PropertySheets.View):
     """Provide management view for item classes
     """
 
+    _getZClass=Acquisition.Acquired
+
     manage=Globals.HTMLFile('itemProp', globals())
     def manage_edit(self, meta_type='', icon='', file='',
-                    class_id=None, REQUEST=None):
+                    class_id=None, title=None, REQUEST=None):
         """Set basic item properties.
         """
         if meta_type: self.setClassAttr('meta_type', meta_type)
@@ -115,6 +118,9 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
             
         self.setClassAttr('icon', icon)
 
+        if title is not None:
+            self._getZClass().title=title
+
         if class_id is not None and class_id != self.class_id():
             self.changeClassId(class_id)
 
@@ -133,6 +139,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
     def class_id(self):
         return (self.getClassAttr('__module__','') or '')[1:]
 
+    def zClassTitle(self): return self._getZClass().title
 
 class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
                        OFS.PropertySheets.View):

@@ -514,6 +514,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             elif hasattr(c, '__name__'): r.append(c.__name__)
 
         return r
+
+    def _getZClass(self): return self
             
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"

@@ -18,6 +18,13 @@ will need to be adjusted if the class is moved.</p>
   </TD>
 </TR>
 <TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">title</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40"
+     value="<!--#var zClassTitle-->">
+  </TD>
+</TR>
+<TR>
   <TH ALIGN="LEFT" VALIGN="TOP">meta type</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40"
