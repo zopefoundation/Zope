@@ -108,6 +108,10 @@ Zope Changes
           absolute_url to be called on the displayed value.  This
           allows entity references like: '&dtml.url-foo;'
 
+        - There is a new 'url_quote_plus' option on the DTML var tag that
+          acts like the standard url_quote option but uses '+' to encode
+          blank spaces.
+
         - The DTML built-in function, getattr, now accepts an additional 
 	  argument providing a default value.	 
 
