@@ -200,7 +200,7 @@ class TALInterpreter:
         self.interpret(macro)
         self.slots, self.inMacro = save
 
-    def do_useSlot(self, slotName, program):
+    def do_fillSlot(self, slotName, program):
         self.interpret(program)
 
     def do_defineSlot(self, slotName, program):

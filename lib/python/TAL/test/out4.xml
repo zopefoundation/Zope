@@ -33,7 +33,7 @@
 
     <p m:define-slot="whoops">define-slot</p>
 
-    <p m:use-slot="whoops">use-slot</p>
+    <p m:fill-slot="whoops">fill-slot</p>
 
   </body>
 

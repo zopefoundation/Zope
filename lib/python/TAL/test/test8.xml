@@ -3,7 +3,7 @@
 <!-- macro use with slots -->
   <tr>
     <td>
-      <span m:use-slot="bottomRight">
+      <span m:fill-slot="bottomRight">
       <h1>Some headline</h1>
       <p>This is the real contents of the bottom right slot.</p>
       <p>It is supposed to contain a lot of text.  Blah, blah, blab.

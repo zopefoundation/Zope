@@ -205,12 +205,12 @@ class METALCompiler(DOMVisitor):
             block = self.popProgram()
             self.emit("defineSlot", slotName, block)
             return
-        slotName = node.getAttributeNS(ZOPE_METAL_NS, "use-slot")
+        slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
         if slotName:
             self.pushProgram()
             self.compileElement(node)
             block = self.popProgram()
-            self.emit("useSlot", slotName, block)
+            self.emit("fillSlot", slotName, block)
             return
         self.compileElement(node)
 

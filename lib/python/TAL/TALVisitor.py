@@ -344,7 +344,7 @@ def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
 
 def slotIndexer(rootNode):
     """
-    Return a dictionary containing all use-slot nodes in a subtree.
+    Return a dictionary containing all fill-slot nodes in a subtree.
 
     The dictionary will have the form {slotName: node, ...}.
     """
@@ -354,7 +354,7 @@ def slotIndexer(rootNode):
 
 def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
     # Internal routine to efficiently recurse down the tree of elements
-    slotName = node.getAttributeNS(ZOPE_METAL_NS, "use-slot")
+    slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
     if slotName:
         if slotIndex.has_key(slotName):
             print ("Duplicate slot definition: %s in <%s>" %
