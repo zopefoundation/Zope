@@ -104,9 +104,9 @@ from ZCatalogIndexes import ZCatalogIndexes
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
 from Products.PluginIndexes.TextIndex.Vocabulary import Vocabulary
 from Products.PluginIndexes.TextIndex import Splitter
-import string,  urllib, os, sys, time
+import string,  urllib, os, sys, time, types
 
-StringType=type('')
+
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
 
@@ -492,7 +492,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     "method if no unique id is provided when cataloging"
                     )
             else: uid=string.join(uid(), '/')
-        elif type(uid) is not StringType:
+        elif not isinstance(uid,types.StringType):
             raise CatalogError('The object unique id must be a string.')
 
         self._catalog.catalogObject(obj, uid, None,idxs)
