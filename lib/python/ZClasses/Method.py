@@ -184,7 +184,7 @@ class ZClassMethodsSheet(
         return id+' '
 
     def _setOb(self, id, object):
-        self.setClassAttr(strip(id), MW(object))
+        self.setClassAttr(strip(id), MWp(object))
 
     def _delOb(self, id):
         self.delClassAttr(strip(id))
@@ -219,7 +219,7 @@ class ZClassMethodsSheet(
 
                 m._permissionMapper=wrapper
 
-                mw=MW(m)
+                mw=MWp(m)
                 self.setClassAttr(strip(id), mw)
 
             r=m
@@ -262,13 +262,24 @@ class MW(ExtensionClass.Base):
         if hasattr(m,'__of__'): return aqwrap(m, wrapper, parent)
         return m
 
+class MWp(Globals.Persistent):
 
-def findMethodIds(klass):
-    r=[]
-    for k, v in klass.__dict__.items():
-        if type(v) is W or type(v) is MW: r.append(k)
+    def __init__(self, meth): self.__dict__[methodattr]=meth
+    __setstate__=__init__
 
-    return r
+    def __getstate__(self):
+        getattr(self, methodattr)
+        return self.__dict__[methodattr]
+                
+    def __of__(self, parent):
+        m=getattr(self, methodattr)
+        m=self.__dict__[methodattr]
+        wrapper=getattr(m, '_permissionMapper', None)
+        if wrapper is None: wrapper=PermissionMapper()
+        if hasattr(m,'__of__'): return aqwrap(m, wrapper, parent)
+        return m
+
+    
 
 # Backward compat. Waaaaa
 class W(Globals.Persistent, MW):
@@ -292,3 +303,10 @@ class W(Globals.Persistent, MW):
         if hasattr(m,'__of__'): return aqwrap(m, self, parent)
         return m
     
+
+def findMethodIds(klass, methodTypes=(MWp, MW, W)):
+    r=[]
+    for k, v in klass.__dict__.items():
+        if type(v) in methodTypes: r.append(k)
+
+    return r
