@@ -87,7 +87,7 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, sys, time, getopt, tempfile
 
@@ -105,7 +105,7 @@ class Request:
         self.httpcode = None
         self.t_end = None
         self.elapsed = "I"
-        self.active = "NA"
+        self.active = 0
         
     def put(self, code, t, desc):
         if code not in ('A', 'B', 'I', 'E'):
@@ -202,6 +202,12 @@ class Request:
                 'Code', 'Act', 'URL')
         return self.fmt % body
 
+class StartupRequest(Request):
+    def endstage(self):
+        return "U"
+        
+    def total(self):
+        return 0
 
 class Cumulative:
     def __init__(self, url):
@@ -291,20 +297,16 @@ def parsebigmlogline(line):
     else:
         return None
 
-def analyze(f, top, sortf, start=None, end=None, mode='cumulative', resolution='10'):
-    beginrequests = {}
-    cumulative = {}
-    finished = []
-    unfinished = {}
-
-    if verbose:
-        print "reading logfile"
- 
-    while 1:
-        line = f.readline()
-
+def get_earliest_file_data(files):
+    temp = {}
+    earliest_fromepoch = 0
+    earliest = None
+    retn = None
+    for file in files:
+        line = file.readline()
         if not line:
-            break
+            continue
+        linelen = len(line)
         line = string.strip(line)
         tup = parsebigmlogline(line)
         if tup is None:
@@ -313,22 +315,52 @@ def analyze(f, top, sortf, start=None, end=None, mode='cumulative', resolution='
         code, id, timestr, desc = tup
         timestr = string.strip(timestr)
         fromepoch = getdate(timestr)
+        temp[file] = linelen
+        if earliest_fromepoch == 0 or fromepoch < earliest_fromepoch:
+            earliest_fromepoch = fromepoch
+            earliest = file
+            retn = [code, id, fromepoch, desc]
+
+    for file, linelen in temp.items():
+        if file is not earliest:
+            file.seek(file.tell() - linelen)
+
+    return retn
+        
+def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
+            resolution='10'):
+    beginrequests = {}
+    cumulative = {}
+    finished = []
+    unfinished = {}
+    decidelines = {} # filename to filepos
+    while 1:
+        tup = get_earliest_file_data(files)
+        if tup is None:
+            break
+        code, id, fromepoch, desc = tup
         if start is not None and fromepoch < start: continue
         if end is not None and fromepoch > end: break
+        if code == 'U':
+            finished.extend(unfinished.values())
+            unfinished.clear()
+            request = StartupRequest()
+            request.url = desc
+            request.start = int(fromepoch)
+            finished.append(request)
+            continue
         request = unfinished.get(id)
         if request is None:
             if code != "B": continue # garbage at beginning of file
             request = Request()
+            for pending_req in unfinished.values():
+                pending_req.active = pending_req.active + 1
             unfinished[id] = request
         request.put(code, int(fromepoch), desc)
         if request.isfinished():
             del unfinished[id]
             finished.append(request)
-            request.active = len(unfinished)
 
-    if verbose:
-        print "reading logfile finished"
-            
     finished.extend(unfinished.values())
     requests = finished
 
@@ -476,11 +508,12 @@ def detailedusage():
     details = usage(0)
     pname = sys.argv[0]
     details = details + """
-Reports are of three types: cumulative,detailed or timed.  The default is cumulative.
-Data is taken from the Zope detailed request log (the -M log).
+Reports are of three types: cumulative,detailed or timed.  The default is
+cumulative. Data is taken from the one or more Zope detailed request logs
+(-M logs).
 
 For cumulative reports, each line in the profile indicates information
-about a Zope method (URL) collected via the detailed request log (the -M log).
+about a Zope method (URL) collected via a detailed request log.
 
 For detailed reports, each line in the profile indicates information about
 a single request.
@@ -488,7 +521,11 @@ a single request.
 For timed reports, each line in the profile indicates informations about
 the number of requests and the number of requests/second for a period of time.
 
-'filename' is the path to the '-M' log that contains detailed request data.
+Each 'filename' is a path to a '-M' log that contains detailed request data.
+Multiple input files can be analyzed at the same time by providing the path
+to each file.  (Analyzing  multiple big M log files at once is useful if you
+have more than one Zope client on a single machine and you'd like to
+get an overview of all Zope activity on that machine).
 
 If a 'sort' value is specified, sort the profile info by the spec.  The sort
 order is descending unless indicated.    The default cumulative sort spec is
@@ -517,9 +554,6 @@ For detailed (non-cumulative) reports, the following sort specs are accepted:
   'httpcode'    -- the HTTP response code provided by ZPublisher (ascending)
   'active'      -- total num of requests pending at the end of this request
   'url'         -- the URL/method name (ascending)
-
-  NOTE:  'active' count may be fooled by Zope restarts, which aren't
-  reflected in the -M log.
 
 For timed reports there are no sort specs allowed.
 
@@ -551,6 +585,11 @@ Examples:
 
     Show detailed report statistics sorted by 'start' (by default).
 
+  %(pname)s debug.log debug2.log --detailed
+
+    Show detailed report statistics for both logs sorted by 'start'
+    (by default).
+
   %(pname)s debug.log --cumulative --sort=mean --today --verbose
 
     Show cumulative report statistics sorted by mean for entries in the log
@@ -559,15 +598,15 @@ Examples:
   %(pname)s debug.log --detailed --start='2001/05/10 06:00:00'
     --end='2001/05/11 23:00:00'
 
-    Show timed report statistics for entries in the log for one day
-    with a resolution of 5 minutes
-
-  %(pname)s debug.log --times --resolution=300 --start='2001/05/10 06:00:00'
-    --end='2001/05/11 23:00:00'
-
     Show detailed report statistics for entries in 'debug.log' which
     begin after 6am UTC on May 10, 2001 and which end before
     11pm UTC on May 11, 2001.
+
+  %(pname)s debug.log --timed --resolution=300 --start='2001/05/10 06:00:00'
+    --end='2001/05/11 23:00:00'
+
+    Show timed report statistics for entries in the log for one day
+    with a resolution of 5 minutes
 
   %(pname)s debug.log --top=100 --sort=max
 
@@ -578,16 +617,15 @@ Examples:
 def usage(basic=1):
     usage = (
         """
-Usage: %s filename [--cumulative|--detailed|--timed]
-                   
-                   [--sort=spec]
-                   [--top==n]
-                   [--verbose]
-                   [--today | [--start=date] [--end=date] ]
-                   [--resolution=seconds]
-                   [--help]
+Usage: %s filename1 [filename2 ...] [--cumulative|--detailed|--timed]
+          [--sort=spec]
+          [--top==n]
+          [--verbose]
+          [--today | [--start=date] [--end=date] ]
+          [--resolution=seconds]
+          [--help]
         
-Provides a profile of the detailed (-M) Zope request log.
+Provides a profile of one or more Zope "-M" request log files.
 """ % sys.argv[0]
         )
     if basic == 1:
@@ -609,9 +647,15 @@ if __name__ == '__main__':
     start = None
     end = None
     resolution=10
+    files = []
+    i = 1
+    for arg in sys.argv[1:]:
+        if arg[:2] != '--':
+            files.append(open(arg))
+            i = i + 1
     try:
         opts, extra = getopt.getopt(
-            sys.argv[2:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
+            sys.argv[i:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
                                'cumulative', 'detailed', 'timed','start=',
                                'end=','resolution=']
             )
@@ -674,7 +718,7 @@ if __name__ == '__main__':
         else:
             raise 'Invalid mode'
         
-        analyze(open(sys.argv[1]), top, sortf, start, end, mode, resolution)
+        analyze(files, top, sortf, start, end, mode, resolution)
 
     except AssertionError, val:
         a = "%s is not a valid %s sort spec, use one of %s"
