@@ -285,7 +285,6 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
                 inside_word = 0;
 
                 word = PySequence_GetSlice((PyObject *)doc1,start,
-                                           // Stem word
                                            min(i, start + MAX_WORD));
                 if (word==NULL)
                   goto err;
@@ -307,7 +306,6 @@ static int splitUnicodeString(Splitter *self,PyUnicodeObject *doc)
 
     if (inside_word) {
         word = PySequence_GetSlice((PyObject *)doc1,start,
-                                   // Stem word
                                    min(len, start + MAX_WORD));
         if (word==NULL)
           goto err;
@@ -436,7 +434,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.10 2001/10/29 18:45:31 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.11 2001/11/07 13:28:07 andreasjung Exp $\n"
     ;
 
 
@@ -444,7 +442,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.10 $";
+    char *rev="$Revision: 1.11 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,

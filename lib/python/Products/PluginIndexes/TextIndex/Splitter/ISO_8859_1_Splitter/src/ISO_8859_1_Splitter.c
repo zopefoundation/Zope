@@ -108,7 +108,6 @@ typedef struct
 
 static PyObject *next_word(Splitter *,char **,char **);
 
-//-------------------------------------------------------
 
 
 static int myisalnum(int c)
@@ -150,7 +149,6 @@ static void initSplitterTrtabs(void)
 		letdig[(int)DIGITSETC[i]]=1;
 	}
 }
-//-------------------------------------------------------
 
 static void
 Splitter_reset(Splitter *self)
@@ -533,7 +531,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: ISO_8859_1_Splitter.c,v 1.2 2001/08/07 19:40:06 andreasjung Exp $\n"
+"$Id: ISO_8859_1_Splitter.c,v 1.3 2001/11/07 13:28:07 andreasjung Exp $\n"
 ;
 
 
@@ -541,7 +539,7 @@ void
 initISO_8859_1_Splitter(void) 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
   
   /* Create the module and add the functions */
   initSplitterTrtabs();
@@ -555,6 +553,5 @@ initISO_8859_1_Splitter(void)
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter");
-//  printf("%s",Splitter_module_documentation);
 }
 
