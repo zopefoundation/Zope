@@ -29,7 +29,7 @@ class DebugLogger:
         
         'request id' is a unique request id.
         
-        'time' is the time in GMT ISO format.
+        'time' is the time in localtime ISO format.
         
         'data' is the HTTP method and the PATH INFO for B, the size of the input
             for I, the HTTP status code and the size of the output for A, or
