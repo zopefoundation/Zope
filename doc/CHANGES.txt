@@ -94,6 +94,9 @@ Zope Changes
           addresses to be specified for each HTTP, FTP, or monitor
           server. 
 
+        - Added 'urlparam' attribute to tree tag to allow propagation
+          of extra parameters through tree URL's (Collector #1045).
+
 
       Bugs Fixed
 
@@ -119,6 +122,21 @@ Zope Changes
           an acquisition context.  This could cause methods provided
           via ZClass brains to be inaccessable due to the dependence of
           ZClass method security on a correct acquisition environment.
+
+        - Fixed tree tag so that expand_all and branches_expr play nice
+          (Collector #919).
+
+        - Suppressed "private" names from catalog indexes/meta-data
+          (Collector #1076).
+
+        - Allowed strings with linebreaks as data in Gadfly queries
+          (Collector #972).
+
+        - Added note to WEBSERVER.txt pointing out security issues with
+          REMOTE_USER mode (Collector #733).
+
+        - Fixed colspan counting in tree tag (Collector #913).
+
 
     Zope 2.1.1
 
