@@ -151,7 +151,8 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
          ('Search ZCatalog',
           ['searchResults', '__call__', 'uniqueValuesFor',
            'getpath', 'schema', 'indexes', 'index_objects',
-           'all_meta_types', 'valid_roles', 'resolve_url',],
+           'all_meta_types', 'valid_roles', 'resolve_url',
+           'getobject'],
           ['Anonymous', 'Manager']), 
         )
 
@@ -349,12 +350,22 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 
     def getpath(self, rid):
+        """
+        Return the path to a cataloged object given a 'data_record_id_'
+        """
         return self._catalog.paths[rid]
 
+    def getobject(self, rid, REQUEST=None):
+        """
+        Return a cataloged object given a 'data_record_id_'
+        """
+        if REQUEST is None:
+            REQUEST=self.REQUEST
+        url='%s/%s' %(REQUEST.script, self.getpath(rid))
+        return REQUEST.clone().resolve_url(url)
 
     def schema(self):
         return self._catalog.schema.keys()
-
 
     def indexes(self):
         return self._catalog.indexes.keys()
