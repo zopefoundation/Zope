@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -164,20 +164,26 @@ class PythonScript(Script, Historical, Cacheable):
                                                manage_tabs_message=message)
 
     def ZPythonScriptHTML_changePrefs(self, REQUEST, height=None, width=None,
-                                      dtpref_cols='50', dtpref_rows='20'):
+                                      dtpref_cols="100%", dtpref_rows="20"):
         """Change editing preferences."""
-        szchh = {'Taller': 1, 'Shorter': -1, None: 0}
-        szchw = {'Wider': 5, 'Narrower': -5, None: 0}
-        try: rows = int(height)
-        except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
-        try: cols = int(width)
-        except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
-        e = (DateTime('GMT') + 365).rfc822()
-        setc = REQUEST['RESPONSE'].setCookie
-        setc('dtpref_rows', str(rows), path='/', expires=e)
-        setc('dtpref_cols', str(cols), path='/', expires=e)
-        REQUEST.form.update({'dtpref_cols': cols, 'dtpref_rows': rows})
-        return apply(self.manage_main, (self, REQUEST), REQUEST.form)
+        dr = {"Taller":5, "Shorter":-5}.get(height, 0)
+        dc = {"Wider":5, "Narrower":-5}.get(width, 0)
+        if isinstance(height, int): dtpref_rows = height
+        if isinstance(width, int) or \
+           isinstance(width, str) and width.endswith('%'):
+            dtpref_cols = width
+        rows = str(max(1, int(dtpref_rows) + dr))
+        cols = str(dtpref_cols)
+        if cols.endswith('%'):
+           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+        else:
+           cols = str(max(35, int(cols) + dc))
+        e = (DateTime("GMT") + 365).rfc822()
+        setCookie = REQUEST["RESPONSE"].setCookie
+        setCookie("dtpref_rows", rows, path='/', expires=e)
+        setCookie("dtpref_cols", cols, path='/', expires=e)
+        REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
+        return self.manage_main(self, REQUEST)
 
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""

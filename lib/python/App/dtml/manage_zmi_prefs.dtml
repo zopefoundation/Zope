@@ -91,7 +91,7 @@ button in order for some changes to take effect.
   </div>
   </td>
   <td align="left" valign="top">
-  <input type="text" name="dtpref_rows" value="&dtml-rows;" size="6" />
+  <input type="text" name="dtpref_rows:int" value="&dtml-rows;" size="6" />
   </td>
 </tr>
 </table>
@@ -102,14 +102,12 @@ button in order for some changes to take effect.
 
 <div class="form-help">
   <dtml-if expr="cols[-1]=='%'">
-    <textarea name="data:text" wrap="off" style="width:&dtml-cols;"
-              rows="&dtml-rows;"
-    >This is a sample edit textarea.</textarea>
+    <textarea name="data:text" rows="&dtml-rows;" style="width: &dtml-cols;;">
   <dtml-else>
-    <textarea name="data:text" wrap="off" cols="&dtml-cols;"
-              rows="&dtml-rows;"
-    >This is a sample edit textarea.</textarea>      
+    <textarea name="data:text" cols="&dtml-cols;" rows="&dtml-rows;">
   </dtml-if>
+    This is a sample edit textarea.
+    </textarea>      
 </div>
 
 </dtml-let>

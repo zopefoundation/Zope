@@ -57,11 +57,15 @@
   </tr>
   <tr>
     <td align="left" valign="top" colspan="2">
-  <div style="width: 100%;">
-  <textarea name="template:text" wrap="off" style="width: 100%;"
-   cols=<dtml-var sql_pref__cols html_quote missing="60">
-   rows=<dtml-var sql_pref__rows html_quote missing="20">>&dtml-src;</textarea>
-  </div>
+    <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+              rows="REQUEST.get('dtpref_rows', '20')">
+    <dtml-if expr="cols[-1]=='%'">
+    <textarea name="template:text" wrap="off" style="width: &dtml-cols;;"
+    <dtml-else>
+    <textarea name="template:text" wrap="off" cols="&dtml-cols;"
+    </dtml-if>
+              rows="&dtml-rows;">&dtml-src;</textarea>
+    </dtml-let>
     </td>
   </tr>
 

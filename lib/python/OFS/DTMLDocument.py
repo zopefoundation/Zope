@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -55,7 +55,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
          ),
         )
 
-    def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
+    def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='100%',
                     dtpref_rows='20',REQUEST=None):
         """
         Replaces a Documents contents with Data, Title with Title.

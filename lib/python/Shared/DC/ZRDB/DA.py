@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.110 $'[11:-2]
+__version__='$Revision: 1.111 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -124,25 +124,25 @@ class DA(
         }
 
     def _er(self,title,connection_id,arguments,template,
-            SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST):
+            SUBMIT,dtpref_cols,dtpref_rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
-
-        rows=max(1,atoi(sql_pref__rows)+dr)
-        cols=max(40,atoi(sql_pref__cols)+dc)
-        e=(DateTime('GMT') + 365).rfc822()
-        resp=REQUEST['RESPONSE']
-        resp.setCookie('sql_pref__rows',str(rows),path='/',expires=e)
-        resp.setCookie('sql_pref__cols',str(cols),path='/',expires=e)
-        return self.manage_main(
-            self,REQUEST,
-            title=title,
-            arguments_src=arguments,
-            connection_id=connection_id,
-            src=template,
-            sql_pref__cols=cols,sql_pref__rows=rows)
+        rows = str(max(1, int(dtpref_rows) + dr))
+        cols = str(dtpref_cols)
+        if cols.endswith('%'):
+           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+        else:
+           cols = str(max(35, int(cols) + dc))
+        e = (DateTime("GMT") + 365).rfc822()
+        setCookie = REQUEST["RESPONSE"].setCookie
+        setCookie("dtpref_rows", rows, path='/', expires=e)
+        setCookie("dtpref_cols", cols, path='/', expires=e)
+        REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
+        return self.manage_main(self, REQUEST, title=title,
+                                arguments_src=arguments,
+                                connection_id=connection_id, src=template)
 
     def manage_edit(self,title,connection_id,arguments,template,
-                    SUBMIT='Change',sql_pref__cols='50', sql_pref__rows='20',
+                    SUBMIT='Change', dtpref_cols='100%', dtpref_rows='20',
                     REQUEST=None):
         """Change database method  properties
 
@@ -159,7 +159,7 @@ class DA(
 
         if self._size_changes.has_key(SUBMIT):
             return self._er(title,connection_id,arguments,template,
-                            SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST)
+                            SUBMIT,dtpref_cols,dtpref_rows,REQUEST)
 
         if self.wl_isLocked():
             raise ResourceLockedError, 'SQL Method is locked via WebDAV'

@@ -71,6 +71,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #628: Applied patch to fix several textarea resize
+       problems.
+
      - Collector #954: clear() method of TopicIndex removed all filter sets
        instead of clearing them.
 

@@ -29,11 +29,15 @@ the <em>browse</em> button to select a local file to upload.
 <tr>
   <td align="left" valign="top" colspan="2">
   <div style="width: 100%;">
-  <textarea name="data:text" wrap="off" style="width: 100%;"<dtml-if 
-   dtpref_cols> cols="<dtml-var dtpref_cols>"<dtml-else
-   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="<dtml-var 
-   dtpref_rows>"<dtml-else> rows="20"</dtml-if>><dtml-var 
-   __str__></textarea>
+  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+            rows="REQUEST.get('dtpref_rows', '20')">
+  <dtml-if "cols[-1]=='%'">
+  <textarea name="data:text" wrap="off" style="width: &dtml-cols;;"
+  <dtml-else>
+  <textarea name="data:text" wrap="off" cols="&dtml-cols;"
+  </dtml-if>
+            rows="&dtml-rows;"><dtml-var __str__></textarea>
+  </dtml-let>
   </div>
   </td>
 </tr>

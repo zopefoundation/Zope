@@ -82,9 +82,15 @@
   <tr>
     <td align="left" valign="top" colspan="2">
   <div style="width: 100%;">
-  <textarea name="body:text" wrap="off" style="width: 100%;"
-   cols=<dtml-var dtpref_cols html_quote missing="50">
-   rows=<dtml-var dtpref_rows html_quote missing="20">>&dtml-body;</textarea>
+  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+            rows="REQUEST.get('dtpref_rows', '20')">
+  <dtml-if "cols[-1]=='%'">
+  <textarea name="body:text" wrap="off" style="width: &dtml-cols;;"
+  <dtml-else>
+  <textarea name="body:text" wrap="off" cols="&dtml-cols;"
+  </dtml-if>
+            rows="&dtml-rows;">&dtml-body;</textarea>
+  </dtml-let>
   </div>
     </td>
   </tr>

@@ -28,10 +28,14 @@ probably need to manage Zope using its raw IP address to fix things.
   (<strong>host/path</strong>),
   or a set of hosts (<strong>*.host/path</strong>).
   <div style="width: 100%;">
-  <textarea name="map_text:text" wrap="off" style="width: 100%;"<dtml-if 
-   dtpref_cols> cols="&dtml-dtpref_cols;"<dtml-else
-   > cols="50"</dtml-if><dtml-if dtpref_rows> rows="&dtml-dtpref_rows;"<dtml-else> rows="20"</dtml-if>><dtml-in 
-   lines>&dtml-sequence-item;
+  <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+            rows="REQUEST.get('dtpref_rows', '20')">
+  <dtml-if "cols[-1]=='%'">
+  <textarea name="map_text:text" wrap="off" style="width: &dtml-cols;;"
+  <dtml-else>
+  <textarea name="map_text:text" wrap="off" cols="&dtml-cols;"
+  </dtml-if>
+            rows="&dtml-rows;"><dtml-in lines>&dtml-sequence-item;
 </dtml-in></textarea>
   </div>
   </td>

@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -138,33 +138,25 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return self.pt_editForm(manage_tabs_message=message)
 
     def pt_changePrefs(self, REQUEST, height=None, width=None,
-                       dtpref_cols='100%', dtpref_rows='20'):
+                       dtpref_cols="100%", dtpref_rows="20"):
         """Change editing preferences."""
-        szchh = {'Taller': 1, 'Shorter': -1, None: 0}
-        szchw = {'Wider': 5, 'Narrower': -5, None: 0}
-
-        # The <textarea> can have dimensions expressed in percentages
-        if type(width) is StringType and width.endswith('%'):
-            cols = int(width[:-1])
-            cols = max(cols, 25) # Min width 25%
-            cols = max(cols, 100) # Max width 100%
-            cols = "%d%%" % cols # Add percent sign back on
-        elif type(width) is StringType and dtpref_cols.endswith('%'):
-            cols = int(dtpref_cols[:-1])
-            cols = max(cols + szchw.get(width, 0), 25) # Min width 25%
-            cols = min(cols, 100) # Max width 100%
-            cols = "%d%%" % cols # Add percent sign back on
-        else: # Absolute width
-            try: cols = int(width)
-            except: cols = max(40, int(dtpref_cols) + szchw.get(width, 0))
-
-        try: rows = int(height)
-        except: rows = max(1, int(dtpref_rows) + szchh.get(height, 0))
-        e = (DateTime('GMT') + 365).rfc822()
-        setc = REQUEST['RESPONSE'].setCookie
-        setc('dtpref_rows', str(rows), path='/', expires=e)
-        setc('dtpref_cols', str(cols), path='/', expires=e)
-        REQUEST.form.update({'dtpref_cols': cols, 'dtpref_rows': rows})
+        dr = {"Taller":5, "Shorter":-5}.get(height, 0)
+        dc = {"Wider":5, "Narrower":-5}.get(width, 0)
+        if isinstance(height, int): dtpref_rows = height
+        if isinstance(width, int) or \
+           isinstance(width, str) and width.endswith('%'):
+            dtpref_cols = width
+        rows = str(max(1, int(dtpref_rows) + dr))
+        cols = str(dtpref_cols)
+        if cols.endswith('%'):
+           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+        else:
+           cols = str(max(35, int(cols) + dc))
+        e = (DateTime("GMT") + 365).rfc822()
+        setCookie = REQUEST["RESPONSE"].setCookie
+        setCookie("dtpref_rows", rows, path='/', expires=e)
+        setCookie("dtpref_cols", cols, path='/', expires=e)
+        REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
         return self.manage_main()
 
     def ZScriptHTML_tryParams(self):

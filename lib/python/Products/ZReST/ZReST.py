@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.6 2003/02/22 07:08:12 andreasjung Exp $
+# $Id: ZReST.py,v 1.7 2003/07/06 10:44:11 andreasjung Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -121,14 +121,18 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     }
     def _er(self, data, SUBMIT, dtpref_cols, dtpref_rows, REQUEST):
         dr,dc = self._size_changes[SUBMIT]
-        rows=max(1,int(dtpref_rows)+dr)
-        cols=max(40,int(dtpref_cols)+dc)
-        e=(DateTime('GMT') + 365).rfc822()
-        resp=REQUEST['RESPONSE']
-        resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
-        resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-        return self.manage_main(self, REQUEST, __str__=self.quotedHTML(data),
-            dtpref_cols=cols, dtpref_rows=rows)
+        rows = str(max(1, int(dtpref_rows) + dr))
+        cols = str(dtpref_cols)
+        if cols.endswith('%'):
+           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+        else:
+           cols = str(max(35, int(cols) + dc))
+        e = (DateTime("GMT") + 365).rfc822()
+        setCookie = REQUEST["RESPONSE"].setCookie
+        setCookie("dtpref_rows", rows, path='/', expires=e)
+        setCookie("dtpref_cols", cols, path='/', expires=e)
+        REQUEST.other.update({"dtpref_cols":cols, "dtpref_rows":rows})
+        return self.manage_main(self, REQUEST, __str__=self.quotedHTML(data))
     security.declarePrivate('quotedHTML')
     def quotedHTML(self,
                    text=None,

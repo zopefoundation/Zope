@@ -68,17 +68,16 @@
 
   <tr>
     <td align="left" valign="top" colspan="4"
-      tal:define="width request/form/dtpref_cols | request/dtpref_cols | string:100%;
+      tal:define="width request/dtpref_cols | string:100%;
                   relative_width python:str(width).endswith('%')">
-      <textarea name="text:text" wrap="off" style="width:100%;" rows="20"
+      <textarea name="text:text" wrap="off" style="width: 100%;" rows="20"
         tal:condition="relative_width"
-        tal:attributes="style string:width:$width; 
-                        rows request/form/dtpref_rows | request/dtpref_rows | default"
+        tal:attributes="style string:width: $width;;;
+                        rows request/dtpref_rows | default"
         tal:content="body">Template Body</textarea>
       <textarea name="text:text" wrap="off" rows="20" cols="50"
         tal:condition="not:relative_width"
-        tal:attributes="cols width; 
-                        rows request/form/dtpref_rows | request/dtpref_rows | default"
+        tal:attributes="cols width; rows request/dtpref_rows | default"
         tal:content="body">Template Body</textarea>
     </td>
   </tr>

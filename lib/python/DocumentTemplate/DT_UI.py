@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Machinery to support through-the-web editing
 
-$Id: DT_UI.py,v 1.13 2002/08/26 13:30:18 Brian Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: DT_UI.py,v 1.14 2003/07/06 10:43:46 andreasjung Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 from DT_HTML import HTML
 
@@ -25,9 +25,6 @@ HTML.document_template_edit_footer=(
     """<FONT SIZE="-1">
     <I><A HREF="http://www.zope.com">
     &copy; 2002 Zope Corporation</A></I></FONT>""")
-
-HTML.document_template_edit_width=58
-
 HTML._manage_editForm = HTML(
     """<HTML>
     <HEAD>
@@ -41,9 +38,15 @@ HTML._manage_editForm = HTML(
     Document template source:
     <center>
     <br>
-    <TEXTAREA NAME="data:text" cols="<!--#var document_template_edit_width-->"
-                    rows="20"><!--#var __str__--></TEXTAREA>
-
+    <dtml-let cols="REQUEST.get('dtpref_cols', '100%')"
+              rows="REQUEST.get('dtpref_rows', '20')">
+    <dtml-if expr="cols[-1]=='%'">
+    <textarea name="data:text" style="width: &dtml-cols;;"
+    <dtml-else>
+    <textarea name="data:text" cols="&dtml-cols;"
+    </dtml-if>
+              rows="&dtml-rows;"><dtml-var __str__></textarea>
+    </dtml-let>
     <br>
       <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
       <INPUT NAME=SUBMIT TYPE="RESET"  VALUE="Reset">
