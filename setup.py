@@ -625,13 +625,32 @@ setup(
                   sources=['../Components/initgroups/initgroups.c'])]
 )
 
+# ZopeUndo
+setup(
+    name='ZopeUndo',
+    author=AUTHOR,
+
+    packages=['ZopeUndo', 'ZopeUndo.tests'],
+
+)
+
+# ZEO
+setup(
+    name='ZEO',
+    author=AUTHOR,
+
+    packages=['ZEO', 'ZEO.tests', 'ZEO.zrpc'],
+    data_files=[['ZEO', ['ZEO/*.txt']]],
+
+)
+
 # Other top-level packages (XXX should these be broken out at all?)
 setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'LOG', 'Main', 'dcdb', 'tempfile',
-                'ts_regex', 'xmlrpclib', 'SignalHandler']
+    py_modules=['Globals', 'ImageFile', 'LOG', 'Main', 'dcdb', 'ts_regex',
+                'xmlrpclib',]
 )
 
 # Products base directory
