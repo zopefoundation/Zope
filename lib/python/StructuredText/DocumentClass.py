@@ -367,7 +367,9 @@ class DocumentClass:
     #'doc_named_link',
     #'doc_underline'
     text_types = [
-        'doc_sgml',
+        'doc_sgml', 
+        'doc_inner_link',
+        'doc_named_link',
         'doc_href1',
         'doc_href2',
         'doc_strong',

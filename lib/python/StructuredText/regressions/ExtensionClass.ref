@@ -597,18 +597,18 @@
     Workshop <a href="#4">[4]</a>.  It is hoped that this will spur research in improved
     and specialized models for class implementation in Python.</p>
 <p>  References</p>
-<p>.. <a href="#1">[1]</a> Fulton, J., <a href="http://www.digicool.com/papers/Persistence.html">Providing Persistence for World-Wide-Web Applications</a>,
+<p><a name="1">[1]</a> Fulton, J., <a href="http://www.digicool.com/papers/Persistence.html">Providing Persistence for World-Wide-Web Applications</a>,
  Proceedings of the 5th Python Workshop.</p>
-<p>.. <a href="#2">[2]</a> Page, R. and Cropper, S., <a href="http://www.digicool.com/papers/DocumentTemplate.html">Document Template</a>,
+<p><a name="2">[2]</a> Page, R. and Cropper, S., <a href="http://www.digicool.com/papers/DocumentTemplate.html">Document Template</a>,
  Proceedings of the 5th Python Workshop.</p>
-<p>.. <a href="#3">[3]</a> Beaudry, D., <a href="http://www.python.org/workshops/1994-11/BuiltInClasses/BuiltInClasses_1.html">Deriving Built-In Classes in Python</a>,
+<p><a name="3">[3]</a> Beaudry, D., <a href="http://www.python.org/workshops/1994-11/BuiltInClasses/BuiltInClasses_1.html">Deriving Built-In Classes in Python</a>,
  Proceedings of the First International Python Workshop.</p>
-<p>.. <a href="#4">[4]</a> Van Rossum, G., <a href="http://www.python.org/workshops/1996-06/notes/thursday.html">Don Beaudry Hack - MESS</a>,
+<p><a name="4">[4]</a> Van Rossum, G., <a href="http://www.python.org/workshops/1996-06/notes/thursday.html">Don Beaudry Hack - MESS</a>,
  presented in the Developer's Future Enhancements session of the 
  4th Python Workshop. </p>
-<p>.. <a href="#5">[5]</a> Fulton, J., <a href="http://www.digicool.com/jim/MetaType.c">Meta-Type Object</a>,
+<p><a name="5">[5]</a> Fulton, J., <a href="http://www.digicool.com/jim/MetaType.c">Meta-Type Object</a>,
  This is a small proposal, the text of which is contained in a 
  sample implementation source file,  </p>
-<p>.. <a href="#6">[6]</a> Beaudry, D., and Ascher, D., <a href="http://starship.skyport.net/~da/mess/">The Meta-Extension Set</a>.</p>
+<p><a name="6">[6]</a> Beaudry, D., and Ascher, D., <a href="http://starship.skyport.net/~da/mess/">The Meta-Extension Set</a>.</p>
 </body>
 </html>

@@ -6,6 +6,8 @@ Zope Changes
 
     Features Added
 
+     - re-enabled inner links for STXNG documents.
+
      - Zope installations upgraded from pre-2.4 installations
        did not show the WebDAV LockManager entry in the control panel.
 

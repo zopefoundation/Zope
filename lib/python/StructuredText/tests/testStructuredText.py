@@ -105,7 +105,7 @@ regressions=os.path.join(package_dir, 'regressions')
 
 files = ['index.stx','Acquisition.stx','ExtensionClass.stx',
         'MultiMapping.stx','examples.stx','Links.stx','examples1.stx',
-        'table.stx']
+        'table.stx','InnerLinks.stx']
 
 def readFile(dirname,fname):
 

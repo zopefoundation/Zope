@@ -84,12 +84,15 @@
 ##############################################################################
 
 
-import os
+import os,sys
 from StructuredText.StructuredText import HTML
 
 
-files = os.listdir('.')
-files = filter(lambda x: x.endswith('.stx'), files)
+if len(sys.argv)>1:
+    files = sys.argv[1:]
+else:
+    files = os.listdir('.')
+    files = filter(lambda x: x.endswith('.stx'), files)
 
 
 for f in files:
