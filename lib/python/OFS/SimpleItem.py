@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.48 1999/05/05 14:58:34 brian Exp $'''
-__version__='$Revision: 1.48 $'[11:-2]
+$Id: SimpleItem.py,v 1.49 1999/05/06 19:30:31 amos Exp $'''
+__version__='$Revision: 1.49 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -279,14 +279,15 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         from AccessControl.User import nobody
         mode=0100000
         # check read permissions
-        if hasattr(self.aq_base,'manage_FTPget'):
+        if hasattr(self.aq_base,'manage_FTPget') and \
+                hasattr(self.manage_FTPget, '__roles__'):
             if REQUEST['AUTHENTICATED_USER'].allowed(self.manage_FTPget,
                                     self.manage_FTPget.__roles__):
                 mode=mode | 0440
             if nobody.allowed(self.manage_FTPget, self.manage_FTPget.__roles__):
                 mode=mode | 0004
         # check write permissions
-        if hasattr(self.aq_base,'PUT'):
+        if hasattr(self.aq_base,'PUT') and hasattr(self.PUT, '__roles__'):
             if REQUEST['AUTHENTICATED_USER'].allowed(self.PUT,
                                     self.PUT.__roles__):
                 mode=mode | 0220
