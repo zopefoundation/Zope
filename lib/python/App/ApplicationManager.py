@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -44,6 +44,11 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     manage_editProperties=None
     manage_delProperties=None
     isPrincipiaFolderish=0
+
+    def copyToClipboard(self, REQUEST):
+	return Globals.MessageDialog(title='Not Supported',
+				     message='This item cannot be copied',
+				     action ='./manage_main',)
 
     def _init(self):
 	pass
@@ -99,9 +104,3 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	products=Globals.Bobobase['products']
 	if product not in products:
 	    Globals.Bobobase['products']=tuple(products)+(product,)
-
-
-    def copyToClipboard(self, REQUEST):
-	return Globals.MessageDialog(title='Not Supported',
-	                             message='This item cannot be copied',
-	                             action ='./manage_main',)
