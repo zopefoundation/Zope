@@ -328,12 +328,16 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         # Waaa, we need our jar to register, but we may not have one yet when
         # we need to register, so we'll walk our acquisition tree looking
         # for one.
+        jar=None
         while 1:
-            try: jar=self._p_jar
-            except: return
-            if jar is not None: return jar
-            try: self=self.aq_parent
-            except: return
+            if hasattr(self, '_p_jar'):
+                jar=self._p_jar
+            if jar is not None:
+                return jar
+            if not hasattr(self, 'aq_parent'):
+                return jar
+            self=self.aq_parent
+
 
     def _register(self):
         if not dbVersionEquals('3'):
