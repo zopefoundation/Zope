@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.4 1997/09/25 18:56:39 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.5 1997/10/27 17:38:41 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -82,6 +82,29 @@ class func_code:
 def _tm(m, tag):
     return m + tag and (' in %s' % tag)
 
+def validate(md, name, v):
+    if name[:1]=='_' or name[:6]=='manage': raise AttributeError, name
+    if hasattr(v,'func_code'):
+	roles=-1
+	if hasattr(v,'__roles__'): roles=v.__roles__
+	elif hasattr(v,'im_self'):
+	    inst=v.im_self
+	    if hasattr(inst,'__roles__'):
+		roles=inst.__roles__
+	    else:
+		while hasattr(inst, 'aq_parent'):
+		    inst=inst.aq_parent
+		    if hasattr(inst,'__roles__'):
+			roles=inst.__roles__
+			break
+	if roles is not None and roles != -1:
+	    raise AttributeError, name
+    return v
+
+def careful_getattr(md, inst, name):
+    return validate(md, name, getattr(inst,name))
+    
+
 def name_param(params,tag='',expr=0):
     used=params.has_key
     if used(''):
@@ -98,7 +121,10 @@ def name_param(params,tag='',expr=0):
 	return params['name']
     elif expr and used('expr'):
 	name=params['expr']
-	expr=VSEval.Eval(name, __mul__=VSEval.careful_mul, __getattr__=None)
+	expr=VSEval.Eval(name,
+			 __mul__=VSEval.careful_mul,
+			 __getattr__=careful_getattr,
+			 validate=validate)
 	return name, expr
 	
     raise ParseError, ('No name given', tag)
@@ -151,8 +177,7 @@ def parse_params(text,
 	if result.has_key(''):
 	    if parms.has_key(name): result[name]=parms[name]
 	    else: raise ParseError, (
-		('Invalid parameter name, %s <!--%s--> <!--u-->'
-		 % (name, text)), tag)
+		'Invalid parameter name, "%s"' % name, tag)
 	else:
 	    result['']=name
 	return apply(parse_params,(text[l:],result),parms)
@@ -162,7 +187,7 @@ def parse_params(text,
     
     if not parms.has_key(name):
 	raise ParseError, (
-	    ('Invalid parameter name, %s <!--%s-->' % (name, text)), tag)
+	    'Invalid parameter name, "%s"' % name, tag)
 
     result[name]=value
 
@@ -175,6 +200,12 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.5  1997/10/27 17:38:41  jim
+# Added some new experimental validation machinery.
+# This is, still a work in progress.
+#
+# Fixed some error generation bugs.
+#
 # Revision 1.4  1997/09/25 18:56:39  jim
 # fixed problem in reporting errors
 #
