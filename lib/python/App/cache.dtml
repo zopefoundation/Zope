@@ -29,10 +29,10 @@
 <input type="submit" value="Change">
 </form></td></tr>
 
-<tr><th align=right>Deactivation rate:</th>
+<tr><th align=right>Deactivation rate (objects/second):</th>
     <td><!--#var cache_mean_deac--></td></tr>
 
-<tr><th align=right>Deallocation rate:</th>
+<tr><th align=right>Deallocation rate (objects/second):</th>
     <td><!--#var cache_mean_deal--></td></tr>
 
 <tr><th align=right>Time of last cache garbage collection:</th>
@@ -40,7 +40,7 @@
 
 </table>
 
-<!--#if show_detail-->
+<!--#if show_cache_detail-->
   <h4>Cache Details</h4><P>
 
   <table><tr><th>Object Class</th><th>Count</th></tr>
@@ -48,7 +48,7 @@
       <tr><td><!--#var sequence-key--></td><td><!--#var __str__--></td></tr>
     <!--#/in cache_detail-->
   </table>
-<!--#/if show_detail-->
+<!--#/if-->
 
 <hr>
 
