@@ -79,7 +79,6 @@ To add a property, click the &quot;Add...&quot; button.
 <!--#endif-->
 </form>
 
-<hr>
 <a name="addpropform">
 <form action="<!--#var URL1-->/manage_addProperty" method="POST">
 <p>
@@ -89,37 +88,23 @@ button.
 </p>
 <table>
 <tr>
+  <th align="left" valign="top">Id</th>
+  <td align="left" valign="top"><input type="text" name="id" size="20"></td>
+  <th align="left" valign="top">Type</th>
   <td align="left" valign="top">
-  <strong>Id</strong>
-  </td>
-  <td align="left" valign="top">
-  <input type="text" name="id" size="20">
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  <strong>Type</strong>
-  </td>
-  <td align="left" valign="top">
-  <select name="type">
-  <!--#in propertyTypes mapping-->
-    <option <!--#var selected-->><!--#var id-->
-  <!--#/in propertyTypes-->
-  </select>
+    <select name="type">
+    <!--#in propertyTypes mapping-->
+      <option <!--#var selected-->><!--#var id-->
+    <!--#/in propertyTypes-->
+    </select>
   </td>
 </tr>
 <tr>
-  <td align="left" valign="top">
-  <strong>Value</strong>
+  <td align="left" valign="top">Value</th>
+  <td colspan=2 align="left" valign="top">
+    <input type="text" name="value" size="30">
   </td>
-  <td align="left" valign="top">
-  <input type="text" name="value" size="20">
-  </td>
-</tr>
-<tr>
-  <td align="left" valign="top">
-  </td>
-  <td align="left" valign="top">
+  <td align="right" valign="top">
   <input type="submit" value=" Add ">
   </td>
 </tr>
