@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.3 1997/08/06 18:26:14 jim Exp $"""
+$Id: ObjectManager.py,v 1.4 1997/08/08 16:54:12 jim Exp $"""
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -64,6 +64,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 	if id[:1]=='_': raise 'Bad Request', (
 	    """The id <em>%s<em>  is invalid - it 
                begins with an underscore character, _.""" % id)
+
+	try: self=self.aq_self
+	except: return
 
 	if hasattr(self,id): raise 'Bad Request', (
 	    """The id <em>%s<em>  is invalid - it
@@ -220,6 +223,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.4  1997/08/08 16:54:12  jim
+# Changed to allow overriding of acquired attributes.
+#
 # Revision 1.3  1997/08/06 18:26:14  jim
 # Renamed description->title and name->id and other changes
 #
