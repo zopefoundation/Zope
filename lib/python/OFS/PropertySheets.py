@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -421,6 +421,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
+        if REQUEST:
+            # Bugfix for properties named "ids" (casey)
+            if ids == self.getProperty('ids', None): ids = None
+            ids = REQUEST.get('_ids', ids)
         if ids is None:
             return MessageDialog(
                    title='No property specified',

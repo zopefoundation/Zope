@@ -55,6 +55,9 @@ Zope Changes
         the default level for <Hx> elements (see doc/ENVIRONMENT.txt)
         
     Bugs:
+    
+      - Fixed PropertyManager/PropertySheets so that you can safely add a
+        property named 'ids' without breaking your properties page.
 
       - Removed spurious 'self' from scarecrow interfaces;  updated
         method-generation in Interface package to ignore self when

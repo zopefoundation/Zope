@@ -12,7 +12,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -310,6 +310,10 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
+        if REQUEST:
+            # Bugfix for property named "ids" (Casey)
+            if ids == self.getProperty('ids', None): ids = None
+            ids = REQUEST.get('_ids', ids)
         if ids is None:
             return MessageDialog(
                    title='No property specified',
