@@ -15,9 +15,10 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
-import string, sys, time, getopt, tempfile, math, cPickle
+import sys, time, getopt, math, cPickle
+from types import StringType
 try: import gzip
 except: pass
 
@@ -42,13 +43,13 @@ class Request:
             raise "unknown request code %s" % code
         if code == 'B':
             self.start = t
-            self.method, self.url = string.split(string.strip(desc))
+            self.method, self.url = desc.strip().split()
         elif code == "I":
             self.t_recdinput = t
-            self.isize = string.strip(desc)
+            self.isize = desc.strip()
         elif code == "A":
             self.t_recdoutput = t
-            self.httpcode, self.osize = string.split(string.strip(desc))
+            self.httpcode, self.osize = desc.strip().split()
         elif code == 'E':
             self.t_end = t
             self.elapsed = int(self.t_end - self.start)
@@ -213,7 +214,8 @@ class Cumulative:
                 i2 = i + 1
                 v1 = all[i]
                 v2 = all[i2]
-                if type(v1) is type('') or type(v2) is type(''): return "I"
+                if isinstance(v1, StringType) or isinstance(v2, StringType):
+                    return "I"
                 else: return (v1 + v2) / 2
 
     def total(self):
@@ -225,7 +227,7 @@ class Cumulative:
         return t
 
 def parsebigmlogline(line):
-    tup = string.split(line, None, 3)
+    tup = line.split(None, 3)
     if len(tup) == 3:
         code, id, timestr = tup
         return code, id, timestr, ''
@@ -244,13 +246,13 @@ def get_earliest_file_data(files):
         if not line:
             continue
         linelen = len(line)
-        line = string.strip(line)
+        line = line.strip()
         tup = parsebigmlogline(line)
         if tup is None:
             print "Could not interpret line: %s" % line
             continue
         code, id, timestr, desc = tup
-        timestr = string.strip(timestr)
+        timestr = timestr.strip()
         fromepoch = getdate(timestr)
         temp[file] = linelen
         if earliest_fromepoch == 0 or fromepoch < earliest_fromepoch:
@@ -429,7 +431,7 @@ def write(requests, top=0):
 
 def getdate(val):
     try:
-        val = string.strip(val)
+        val = val.strip()
         year, month, day = int(val[:4]), int(val[5:7]), int(val[8:10])
         hour,minute,second=int(val[11:13]),int(val[14:16]),int(val[17:19])
         t = time.mktime((year, month, day, hour, minute, second, 0, 0, -1))
