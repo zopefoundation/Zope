@@ -273,7 +273,7 @@ Options:
 
 Environment settings are of the form: NAME=VALUE.
 
-Note: you *must* use Python 1.5.2 or later!
+Note: you *must* use Python 2.1 or later!
 """
 
 
@@ -405,7 +405,7 @@ def server_info(old, v, offset=0):
     
 
 try:
-    if string.split(sys.version)[0] < '1.5.2':
+    if string.split(sys.version)[0] < '2.1':
         raise 'Invalid python version', string.split(sys.version)[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
