@@ -89,14 +89,13 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.89 2001/04/27 18:07:13 andreas Exp $'''
-__version__='$Revision: 1.89 $'[11:-2]
+$Id: SimpleItem.py,v 1.90 2001/06/11 16:30:23 andreas Exp $'''
+__version__='$Revision: 1.90 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource
 from ExtensionClass import Base
-from DateTime import DateTime
 from CopySupport import CopySource
 from string import join, lower, find, split
 from types import InstanceType, StringType
