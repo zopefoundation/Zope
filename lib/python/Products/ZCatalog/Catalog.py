@@ -425,7 +425,7 @@ class Catalog(Persistent, Acquisition.Implicit):
             if sort_index is None:
                 append(LazyMap(self.__getitem__, rs))
             else:
-                for k, intset in sort_index.items():
+                for k, intset in sort_index._index.items():
                     __traceback_info__=intset, intset.__class__
                     intset=intset.intersection(rs)
                     if intset: 
@@ -473,6 +473,8 @@ class Catalog(Persistent, Acquisition.Implicit):
             sort_index=kw['sort-on']
         elif hasattr(self, 'sort-on'):
             sort_index=getattr(self, 'sort-on')
+        elif kw.has_key('sort_on'):
+            sort_index=kw['sort_on']
         else: sort_index=None
         sort_order=''
         if sort_index is not None and sort_index in self.indexes.keys():
@@ -497,6 +499,8 @@ class Catalog(Persistent, Acquisition.Implicit):
                     so=kw['sort-order']
                 elif hasattr(self, 'sort-order'):
                     so=getattr(self, 'sort-order')
+                elif kw.kas_key('sort_order'):
+                    so=kw['sort_order']
                 else: so=None
                 if (type(so) is type('') and
                     lower(so) in ('reverse', 'descending')):
