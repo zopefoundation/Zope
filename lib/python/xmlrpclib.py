@@ -1,11 +1,22 @@
 #
 # XML-RPC CLIENT LIBRARY
-# $Id: xmlrpclib.py,v 1.1.1.1 1999/06/11 15:04:49 emk Exp $
+# $Id$
 #
-# an XML-RPC client interface for Python
+# an XML-RPC client interface for Python.
 #
 # the marshalling and response parser code can also be used to
-# implement XML-RPC servers
+# implement XML-RPC servers.
+#
+# Notes:
+# this version uses the sgmlop XML parser, if installed.  this is
+# typically 10-15x faster than using Python's standard XML parser.
+#
+# you can get the sgmlop distribution from:
+#
+#    http://www.pythonware.com/madscientist
+#
+# also note that this version is designed to work with Python 1.5.1
+# or newer.  it doesn't use any 1.5.2-specific features.
 #
 # History:
 # 1999-01-14 fl  Created
@@ -14,8 +25,8 @@
 # 1999-01-19 fl  Fixed array data element (from Skip Montanaro)
 # 1999-01-21 fl  Fixed dateTime constructor, etc.
 # 1999-02-02 fl  Added fault handling, handle empty sequences, etc.
-#
-# written by Fredrik Lundh, January 1999.
+# 1999-02-10 fl  Fixed problem with empty responses (from Skip Montanaro)
+# 1999-06-20 fl  Speed improvements, pluggable XML parsers and HTTP transports
 #
 # Copyright (c) 1999 by Secret Labs AB.
 # Copyright (c) 1999 by Fredrik Lundh.
@@ -32,34 +43,37 @@
 # By obtaining, using, and/or copying this software and/or its
 # associated documentation, you agree that you have read, understood,
 # and will comply with the following terms and conditions:
-# 
-# Permission to use, copy, modify, and distribute this software and its
-# associated documentation for any purpose and without fee is hereby
-# granted, provided that the above copyright notice appears in all
-# copies, and that both that copyright notice and this permission notice
-# appear in supporting documentation, and that the name of Secret Labs
-# AB or the author not be used in advertising or publicity pertaining to
-# distribution of the software without specific, written prior
-# permission.
-# 
-# SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO
-# THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-# FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR BE LIABLE FOR
-# ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT
-# OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its associated documentation for any purpose and without fee is
+# hereby granted, provided that the above copyright notice appears in
+# all copies, and that both that copyright notice and this permission
+# notice appear in supporting documentation, and that the name of
+# Secret Labs AB or the author not be used in advertising or publicity
+# pertaining to distribution of the software without specific, written
+# prior permission.
+#
+# SECRET LABS AB AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD
+# TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANT-
+# ABILITY AND FITNESS.  IN NO EVENT SHALL SECRET LABS AB OR THE AUTHOR
+# BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+# WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS
+# ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+# OF THIS SOFTWARE.
 # --------------------------------------------------------------------
 
-import operator, string, time
-import httplib, urllib
-import xmllib
+import string, time
+import urllib, xmllib
 from types import *
 from cgi import escape
 
-__version__ = "0.9.5"
+try:
+    import sgmlop
+except ImportError:
+    sgmlop = None # accelerator not available
 
-USER_AGENT = "xmlrpclib.py/%s (by www.pythonware.com)" % __version__
+__version__ = "0.9.8"
 
 
 # --------------------------------------------------------------------
@@ -83,7 +97,7 @@ class ProtocolError(Error):
 	    )
 
 class ResponseError(Error):
-    # indicates a broken response chunk
+    # indicates a broken response package
     pass
 
 class Fault(Error):
@@ -96,6 +110,7 @@ class Fault(Error):
 	    "<Fault %s: %s>" %
 	    (self.faultCode, repr(self.faultString))
 	    )
+
 
 # --------------------------------------------------------------------
 # Special values
@@ -127,12 +142,12 @@ True, False = Boolean(1), Boolean(0)
 
 #
 # dateTime wrapper
-# (wrap your iso8601 string or localtime tuple or time value in this
-# class to generate a "dateTime.iso8601" XML-RPC value)
+# (wrap your iso8601 string or time tuple or localtime time value in
+# this class to generate a "dateTime.iso8601" XML-RPC value)
 
 class DateTime:
 
-    def __init__(self, value):
+    def __init__(self, value = 0):
 	t = type(value)
 	if t is not StringType:
 	    if t is not TupleType:
@@ -172,136 +187,62 @@ class Binary:
 
 WRAPPERS = DateTime, Binary, Boolean
 
+
 # --------------------------------------------------------------------
-# XML-RPC response parser
+# XML parsers
 
-class ResponseParser(xmllib.XMLParser):
-    """Parse an XML-RPC response into a Python data structure"""
+if sgmlop:
 
-    # USAGE: create a parser instance, and call "feed" to add data to
-    # it (in chunks or as a single string).  call "close" to flush the
-    # internal buffers and return the resulting data structure.
+    class FastParser:
+	# sgmlop based XML parser.  this is typically 15x faster
+	# than SlowParser...
 
-    # note that this reader is fairly tolerant, and gladly accepts
-    # bogus XML-RPC data without complaining (but not bogus XML).
+	def __init__(self, target):
 
-    # this could of course be simplified by using an XML tree builder
-    # (DOM, coreXML, or whatever), but this version works with any
-    # standard installation of 1.5 or later (except 1.5.2b1, but
-    # we're working on that)
+	    # setup callbacks
+	    self.finish_starttag = target.start
+	    self.finish_endtag = target.end
+	    self.handle_data = target.data
 
-    # by the way, if you don't understand what's going on in here,
-    # that's perfectly ok.
+	    # activate parser
+	    self.parser = sgmlop.XMLParser()
+	    self.parser.register(self)
+	    self.feed = self.parser.feed
+	    self.entity = {
+		"amp": "&", "gt": ">", "lt": "<",
+		"apos": "'", "quot": '"'
+		}
 
-    def __init__(self):
-	self.__type = None
-	self.__stack = []
-        self.__marks = []
-	self.__data = []
-	self.__methodname = None
+	def close(self):
+	    try:
+		self.parser.close()
+	    finally:
+		self.parser = None # nuke circular reference
+
+	def handle_entityref(self, entity):
+	    # <string> entity
+	    try:
+		self.handle_data(self.entity[entity])
+	    except KeyError:
+		self.handle_data("&%s;" % entity)
+
+else:
+
+    FastParser = None
+
+class SlowParser(xmllib.XMLParser):
+    # slow but safe standard parser, based on the XML parser in
+    # Python's standard library
+
+    def __init__(self, target):
+	self.unknown_starttag = target.start
+	self.handle_data = target.data
+	self.unknown_endtag = target.end
 	xmllib.XMLParser.__init__(self)
 
-    def close(self):
-	xmllib.XMLParser.close(self)
-	# return response code and the actual response
-	if self.__type is None or self.__marks:
-	    raise ResponseError()
-	if self.__type == "fault":
-	    raise apply(Fault, (), self.__stack[0])
-	return tuple(self.__stack)
-
-    def getmethodname(self):
-	return self.__methodname
-
-    #
-    # container types (containers can be nested, so we use a separate
-    # mark stack to keep track of the beginning of each container).
-
-    def start_array(self, attrs):
-	self.__marks.append(len(self.__stack))
-
-    start_struct = start_array
-
-    def unknown_starttag(self, tag, attrs):
-	self.__data = []
-	self.__value = (tag == "value")
-
-    def handle_data(self, text):
-	self.__data.append(text)
-
-    def unknown_endtag(self, tag, join=string.join):
-	# the standard dispatcher cannot handle tags with uncommon
-	# characters in them, so we have to do this ourselves.
-	if tag == "dateTime.iso8601":
-	    value = DateTime()
-	    value.decode(join(self.__data, ""))
-	    self.__stack.append(value)
-
-    #
-    # add values to the stack on end tags
-
-    def end_boolean(self, join=string.join):
-	value = join(self.__data, "")
-	if value == "0":
-	    self.__stack.append(False)
-	elif value == "1":
-	    self.__stack.append(True)
-	else:
-	    raise TypeError, "bad boolean value"
-
-    def end_int(self, join=string.join):
-	self.__stack.append(int(join(self.__data, "")))
-
-    def end_double(self, join=string.join):
-	self.__stack.append(float(join(self.__data, "")))
-
-    def end_string(self, join=string.join):
-	self.__stack.append(join(self.__data, ""))
-
-    # aliases
-    end_i4 = end_int
-    end_name = end_string # struct keys are always strings
-
-    def end_array(self):
-        mark = self.__marks[-1]
-	del self.__marks[-1]
-	# map arrays to Python lists
-        self.__stack[mark:] = [self.__stack[mark:]]
-
-    def end_struct(self):
-        mark = self.__marks[-1]
-	del self.__marks[-1]
-	# map structs to Python dictionaries
-        dict = {}
-        items = self.__stack[mark:]
-        for i in range(0, len(items), 2):
-            dict[items[i]] = items[i+1]
-        self.__stack[mark:] = [dict]
-
-    def end_base64(self, join=string.join):
-	value = Binary()
-	value.decode(join(self.__data, ""))
-	self.__stack.append(value)
-
-    def end_value(self):
-	# if we stumble upon an value element with no
-	# no internal elements, treat it as a string
-	# element
-	if self.__value:
-	    self.end_string()
-
-    def end_params(self):
-	self.__type = "params"
-
-    def end_fault(self):
-	self.__type = "fault"
-
-    def end_methodName(self, join=string.join):
-	self.__methodname = join(self.__data, "")
-
 
 # --------------------------------------------------------------------
-# XML-RPC marshaller
+# XML-RPC marshalling and unmarshalling code
 
 class Marshaller:
     """Generate an XML-RPC params chunk from a Python data structure"""
@@ -309,14 +250,10 @@ class Marshaller:
     # USAGE: create a marshaller instance for each set of parameters,
     # and use "dumps" to convert your data (represented as a tuple) to
     # a XML-RPC params chunk.  to write a fault response, pass a Fault
-    # instance instead.
+    # instance instead.  you may prefer to use the "dumps" convenience
+    # function for this purpose (see below).
 
-    # again, this could of course be simplified by using an XML writer
-    # (coreXML or whatever), but this version works with any standard
-    # installation of 1.5 or later (except 1.5.2b1, but we're working
-    # on that)
-
-    # and again, if you don't understand what's going on in here,
+    # by the way, if you don't understand what's going on in here,
     # that's perfectly ok.
 
     def __init__(self):
@@ -326,23 +263,24 @@ class Marshaller:
     dispatch = {}
 
     def dumps(self, values):
+	self.__out = []
+	self.write = write = self.__out.append
 	if isinstance(values, Fault):
 	    # fault instance
-	    self.__out = ["<fault>\n"]
+	    write("<fault>\n")
 	    self.__dump(vars(values))
-	    self.write("</fault>\n")
+	    write("</fault>\n")
 	else:
 	    # parameter block
-	    self.__out = ["<params>\n"]
+	    write("<params>\n")
 	    for v in values:
-		self.write("<param>\n")
+		write("<param>\n")
 		self.__dump(v)
-		self.write("</param>\n")
-	    self.write("</params>\n")
-	return string.join(self.__out, "")
-
-    def write(self, string):
-	self.__out.append(string)
+		write("</param>\n")
+	    write("</params>\n")
+	result = string.join(self.__out, "")
+	del self.__out, self.write # don't need this any more
+	return result
 
     def __dump(self, value):
 	try:
@@ -373,10 +311,11 @@ class Marshaller:
 
     def dump_array(self, value):
 	self.container(value)
-	self.write("<value><array><data>\n")
+	write = self.write
+	write("<value><array><data>\n")
 	for v in value:
 	    self.__dump(v)
-	self.write("</data></array></value>\n")
+	write("</data></array></value>\n")
     dispatch[TupleType] = dump_array
     dispatch[ListType] = dump_array
 
@@ -396,19 +335,166 @@ class Marshaller:
 
     def dump_instance(self, value):
 	# check for special wrappers
-	write = self.write
 	if value.__class__ in WRAPPERS:
 	    value.encode(self)
 	else:
-	    # store instance attributes as a struct (?)
+	    # store instance attributes as a struct (really?)
 	    self.dump_struct(value.__dict__)
     dispatch[InstanceType] = dump_instance
+
+
+class Unmarshaller:
+
+    # unmarshal an XML-RPC response, based on incoming XML event
+    # messages (start, data, end).  call close to get the resulting
+    # data structure
+
+    # note that this reader is fairly tolerant, and gladly accepts
+    # bogus XML-RPC data without complaining (but not bogus XML).
+
+    # and again, if you don't understand what's going on in here,
+    # that's perfectly ok.
+
+    def __init__(self):
+	self._type = None
+	self._stack = []
+        self._marks = []
+	self._data = []
+	self._methodname = None
+	self.append = self._stack.append
+
+    def close(self):
+	# return response code and the actual response
+	if self._type is None or self._marks:
+	    raise ResponseError()
+	if self._type == "fault":
+	    raise apply(Fault, (), self._stack[0])
+	return tuple(self._stack)
+
+    def getmethodname(self):
+	return self._methodname
+
+    #
+    # event handlers
+
+    def start(self, tag, attrs):
+	# prepare to handle this element
+	if tag in ("array", "struct"):
+	    self._marks.append(len(self._stack))
+	self._data = []
+	self._value = (tag == "value")
+
+    def data(self, text):
+	self._data.append(text)
+
+    dispatch = {}
+
+    def end(self, tag):
+	# call the appropriate end tag handler
+	try:
+	    f = self.dispatch[tag]
+	except KeyError:
+	    pass # unknown tag ?
+	else:
+	    return f(self)
+
+    #
+    # element decoders
+
+    def end_boolean(self, join=string.join):
+	value = join(self._data, "")
+	if value == "0":
+	    self.append(False)
+	elif value == "1":
+	    self.append(True)
+	else:
+	    raise TypeError, "bad boolean value"
+	self._value = 0
+    dispatch["boolean"] = end_boolean
+
+    def end_int(self, join=string.join):
+	self.append(int(join(self._data, "")))
+	self._value = 0
+    dispatch["i4"] = end_int
+    dispatch["int"] = end_int
+
+    def end_double(self, join=string.join):
+	self.append(float(join(self._data, "")))
+	self._value = 0
+    dispatch["double"] = end_double
+
+    def end_string(self, join=string.join):
+	self.append(join(self._data, ""))
+	self._value = 0
+    dispatch["string"] = end_string
+    dispatch["name"] = end_string # struct keys are always strings
+
+    def end_array(self):
+        mark = self._marks[-1]
+	del self._marks[-1]
+	# map arrays to Python lists
+        self._stack[mark:] = [self._stack[mark:]]
+	self._value = 0
+    dispatch["array"] = end_array
+
+    def end_struct(self):
+        mark = self._marks[-1]
+	del self._marks[-1]
+	# map structs to Python dictionaries
+        dict = {}
+        items = self._stack[mark:]
+        for i in range(0, len(items), 2):
+            dict[items[i]] = items[i+1]
+        self._stack[mark:] = [dict]
+	self._value = 0
+    dispatch["struct"] = end_struct
+
+    def end_base64(self, join=string.join):
+	value = Binary()
+	value.decode(join(self._data, ""))
+	self.append(value)
+	self._value = 0
+    dispatch["base64"] = end_base64
+
+    def end_dateTime(self, join=string.join):
+	value = DateTime()
+	value.decode(join(self._data, ""))
+	self.append(value)
+    dispatch["dateTime.iso8601"] = end_dateTime
+
+    def end_value(self):
+	# if we stumble upon an value element with no internal
+	# elements, treat it as a string element
+	if self._value:
+	    self.end_string()
+    dispatch["value"] = end_value
+
+    def end_params(self):
+	self._type = "params"
+    dispatch["params"] = end_params
+
+    def end_fault(self):
+	self._type = "fault"
+    dispatch["fault"] = end_fault
+
+    def end_methodName(self, join=string.join):
+	self._methodname = join(self._data, "")
+    dispatch["methodName"] = end_methodName
 
 
 # --------------------------------------------------------------------
 # convenience functions
 
+def getparser():
+    # get the fastest available parser, and attach it to an
+    # unmarshalling object.  return both objects.
+    target = Unmarshaller()
+    if FastParser:
+	return FastParser(target), target
+    return SlowParser(target), target
+
 def dumps(params, methodname=None, methodresponse=None):
+    # convert a tuple or a fault object to an XML-RPC packet
 
     assert type(params) == TupleType or isinstance(params, Fault),\
 	   "argument must be tuple or Fault instance"
@@ -437,32 +523,91 @@ def dumps(params, methodname=None, methodresponse=None):
     return data
 
 def loads(data):
-    # returns data plus methodname (None if not present)
-    p = ResponseParser()
+    # convert an XML-RPC packet to data plus a method name (None
+    # if not present).  if the XML-RPC packet represents a fault
+    # condition, this function raises a Fault exception.
+    p, u = getparser()
     p.feed(data)
-    return p.close(), p.getmethodname()
+    p.close()
+    return u.close(), u.getmethodname()
+
 
 # --------------------------------------------------------------------
 # request dispatcher
 
-class Method:
+class _Method:
     # some magic to bind an XML-RPC method to an RPC server.
     # supports "nested" methods (e.g. examples.getStateName)
     def __init__(self, send, name):
 	self.__send = send
 	self.__name = name
     def __getattr__(self, name):
-	return Method(self.__send, self.__name + "." + name)
+	return _Method(self.__send, "%s.%s" % (self.__name, name))
     def __call__(self, *args):
 	return self.__send(self.__name, args)
 
 
-class Server:
-    """Represents a connection XML-RPC server"""
+class Transport:
+    """Handles an HTTP transaction to an XML-RPC server"""
 
-    def __init__(self, uri):
+    # client identifier (may be overridden)
+    user_agent = "xmlrpclib.py/%s (by www.pythonware.com)" % __version__
+
+    def request(self, host, handler, request_body):
+	# issue XML-RPC request
+
+	import httplib
+	h = httplib.HTTP(host)
+	h.putrequest("POST", handler)
+
+	# required by HTTP/1.1
+	h.putheader("Host", host)
+
+	# required by XML-RPC
+	h.putheader("User-Agent", self.user_agent)
+	h.putheader("Content-Type", "text/xml")
+	h.putheader("Content-Length", str(len(request_body)))
+
+	h.endheaders()
+
+	if request_body:
+	    h.send(request_body)
+
+	errcode, errmsg, headers = h.getreply()
+
+	if errcode != 200:
+	    raise ProtocolError(
+		host + handler,
+		errcode, errmsg,
+		headers
+		)
+
+	return self.parse_response(h.getfile())
+
+    def parse_response(self, f):
+	# read response from input file, and parse it
+
+	p, u = getparser()
+
+	while 1:
+	    response = f.read(1024)
+	    if not response:
+		break
+	    p.feed(response)
+
+	f.close()
+	p.close()
+
+	return u.close()
+
+
+class Server:
+    """Represents a connection to an XML-RPC server"""
+
+    def __init__(self, uri, transport=None):
 	# establish a "logical" server connection
 
+	# get the url
 	type, uri = urllib.splittype(uri)
 	if type != "http":
 	    raise IOError, "unsupported XML-RPC protocol"
@@ -470,44 +615,20 @@ class Server:
 	if not self.__handler:
 	    self.__handler = "/RPC2"
 
+	if transport is None:
+	    transport = Transport()
+	self.__transport = transport
+
     def __request(self, methodname, params):
 	# call a method on the remote server
 
 	request = dumps(params, methodname)
 
-	# send the request
-	h = httplib.HTTP(self.__host)
-	h.putrequest("POST", self.__handler)
-	h.putheader("User-Agent", USER_AGENT)
-	h.putheader("Host", self.__host)
-	h.putheader("Content-Type", "text/xml")
-	h.putheader("Content-Length", str(len(request)))
-	h.endheaders()
-
-	if request:
-	    h.send(request)
-
-	errcode, errmsg, headers = h.getreply()
-
-	if errcode != 200:
-	    raise ProtocolError(
-		self.__host + self.__handler,
-		errcode, errmsg,
-		headers
-		)
-
-	# parse the response
-	fp = h.getfile()
-
-	p = ResponseParser()
-
-	while 1:
-	    response = fp.read(1024)
-	    if not response:
-		break
-	    p.feed(response)
-
-	response = p.close()
+	response = self.__transport.request(
+	    self.__host,
+	    self.__handler,
+	    request
+	    )
 
 	if len(response) == 1:
 	    return response[0]
@@ -523,16 +644,16 @@ class Server:
     __str__ = __repr__
 
     def __getattr__(self, name):
-	# method dispatcher
-	return Method(self.__request, name)
+	# magic method dispatcher
+	return _Method(self.__request, name)
 
 
 if __name__ == "__main__":
 
-    # simple test program (from the specification)
+    # simple test program (from the XML-RPC specification)
     # server = Server("http://localhost:8000") # local server
 
-    server = Server("http://nirvana.userland.com")
+    server = Server("http://betty.userland.com")
 
     print server
 
