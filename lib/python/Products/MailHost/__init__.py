@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.12 1999/04/02 15:27:30 michel Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: __init__.py,v 1.13 1999/04/02 15:40:33 michel Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
-import MailHost, SendMailTag, MIMETag
+import MailHost, SendMailTag
 from ImageFile import ImageFile
 
 classes=('MailHost.MailHost',)
