@@ -224,6 +224,8 @@ class ZCatalog(Folder, Persistent, Implicit):
     _v_transaction = None
     
     def __init__(self, id, title='', vocab_id=None, container=None):
+        self=self.__of__(container)
+        
         self.id=id
         self.title=title
         
