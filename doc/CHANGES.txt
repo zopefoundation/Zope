@@ -105,6 +105,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1289: Allow ZSQL methods to be edited via WebDAV.
+
      - WebDAV property values were not being properly escaped on
        'propstat'.
 
