@@ -1,6 +1,13 @@
 <dtml-var manage_page_header>
 <dtml-var manage_tabs>
 
+<p class="form-help">
+  The <em>RAM Cache Manager</em> allows you to cache the result of
+  calling expensive objects, such as Python Scripts and External
+  Methods, in memory. Because it does <em>not</em> cache HTTP headers,
+  caching full web pages is generally not advised.
+</p>
+
 <form action="manage_editProps" method="POST">
 <dtml-with getSettings mapping>
 <table cellspacing="0" cellpadding="2" border="0">
