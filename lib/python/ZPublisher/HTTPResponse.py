@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.15 1999/06/30 12:47:31 jim Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: HTTPResponse.py,v 1.16 1999/06/30 14:02:15 jim Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -272,7 +272,7 @@ class HTTPResponse(BaseResponse):
         '''
         if not body: return self
         
-        if type(body) is types.TupleType:
+        if type(body) is types.TupleType and len(body) == 2:
             title,body=body
 
         if type(body) is not types.StringType:
