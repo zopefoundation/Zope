@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.27 1998/12/04 20:15:31 jim Exp $'
-__version__='$Revision: 1.27 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.28 1999/01/18 16:22:17 brian Exp $'
+__version__='$Revision: 1.28 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -393,7 +393,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
     
         # add item text
         dataspan=colspan-level
-        output('<TD%s%s VALIGN="TOP" ALLIGN="LEFT">' %
+        output('<TD%s%s VALIGN="TOP" ALIGN="LEFT">' %
                ((dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''),
                (have_arg('nowrap') and args['nowrap'] and ' NOWRAP' or ''))
                )
