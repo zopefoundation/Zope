@@ -12,7 +12,6 @@ def log_write(subsystem, severity, summary, detail, error):
     The actual logic to determine what log messages go where will go
     here.  For now, everything goes to all loggers.
     """
-    if severity < 0: return
 
     for logger in loggers:
         logger(subsystem, severity, summary, detail, error)
