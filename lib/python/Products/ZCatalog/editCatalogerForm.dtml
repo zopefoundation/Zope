@@ -1,0 +1,22 @@
+<HTML>
+<HEAD>
+<TITLE>View Catalog Records</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<form action="manage_editCataloger">
+<p>This element controls which Catalog this object will try index and
+unindex itself to.</p>
+Edit default Catalog: 
+<input name="default" value="<!--#var default_catalog-->"> <br>
+<input type=submit value=" Change ">
+</form>
+
+</BODY></HTML>
+
+
+
+
+
+
