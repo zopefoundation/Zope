@@ -1,10 +1,8 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Zope-Permission.dtml">Zope Permission</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Zope-Permission.dtml">Zope Permission</a>&gt;Add</h1>
 <p>This view allows you to create a new Permission.</p>
 <p> The <tt>Id</tt> field specifies the permission's id. The
 		  <tt>Title</tt> field allows you to specify the permissions's title.
 		  The <tt>Name</tt> field specifies the name of the permission. A
 		  permission's name must be unique. Click the <tt>Add</tt> button to
-		  create a new Zope Permission. </p>
-<dtml-var standard_html_footer>
+		  create a new Zope Permission. </p><dtml-var standard_html_footer>

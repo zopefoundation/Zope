@@ -1,9 +1,7 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Z-SQL-Method.dtml">Z SQL Method</a>&gt;Test</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ZSQLMethods/Help/Z-SQL-Method.dtml">Z SQL Method</a>&gt;Test</h1>
 <p> This view allows you to test a sql method. </p>
 <p> If arguments have been defined for this method there will be
 		  fields available to provide values for the arguments. To execute the sql method
 		  click the <tt>Submit Query</tt> button and the results if any will be
-		  returned. </p>
-<dtml-var standard_html_footer>
+		  returned. </p><dtml-var standard_html_footer>

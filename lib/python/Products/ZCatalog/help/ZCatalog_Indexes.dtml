@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Indexes</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ZCatalog/Help/ZCatalog.dtml">ZCatalog</a>&gt;Indexes</h1>
 <p> This view allows you to manage the catalog indexes. </p>
 <p> The catalog provides searching by indexing information about
 		  cataloged objects. Indexes record information about object attributes. </p>
@@ -12,5 +11,4 @@
 		  appropriate for full text attributes, <tt>KeywordIndexes</tt> are
 		  appropriate for attributes which return lists, and
 		  <tt>FieldIndexes</tt> are appropriate for attributes which return
-		  simple values. </p>
-<dtml-var standard_html_footer>
+		  simple values. </p><dtml-var standard_html_footer>

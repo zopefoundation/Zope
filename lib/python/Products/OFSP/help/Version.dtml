@@ -1,7 +1,5 @@
-<dtml-var standard_html_header>
-<h1>Version</h1>
+<dtml-var standard_html_header><h1>Version</h1>
 <p> A Version allows you to make changes to Zope in a private
 		session.</p>
 <p>After you review the changes you can discard them or make them live.
-		</p>
-<dtml-var standard_html_footer>
+		</p><dtml-var standard_html_footer>

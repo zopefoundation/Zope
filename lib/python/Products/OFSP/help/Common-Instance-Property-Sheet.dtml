@@ -1,9 +1,7 @@
-<dtml-var standard_html_header>
-<h1>Common Instance Property Sheet</h1>
+<dtml-var standard_html_header><h1>Common Instance Property Sheet</h1>
 <p>Common Instance Property Sheets allow ZClasses to define sets of
 		properties. A property sheets provides an editing view for the properties, and
 		default values for the properties. </p>
 <p>Individual instances of ZClasses maintain their properties normally.
 		A property sheet merely provides a way to describe and edit a set of
-		properties. </p>
-<dtml-var standard_html_footer>
+		properties. </p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZClass.dtml">ZClass</a>&gt;Basic</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass.dtml">ZClass</a>&gt;Basic</h1>
 <p> This view allows you to manage the basic attributes of a ZClass.
 		  </p>
 <p> The <tt>Base classes</tt> field indicates the base
@@ -13,5 +12,4 @@
 		  file to sever as the ZClass's icon. The uploaded image file should be a 16x16
 		  pixel GIF file. To locate an image file to upload click the
 		  <tt>Browse</tt> button. To commit your changes to the ZClass click
-		  the <tt>Change</tt> button. </p>
-<dtml-var standard_html_footer>
+		  the <tt>Change</tt> button. </p><dtml-var standard_html_footer>

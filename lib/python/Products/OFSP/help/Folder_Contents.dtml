@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Contents</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Contents</h1>
 <p> This view displays the objects contained by the folder and allows
 		  you to add, delete and change them. </p>
 <p> Each contained object is displayed on a line. Each contained
@@ -13,7 +12,7 @@
 		  rename, cut, copy, delete, and export. Some operations may not be visible if
 		  they are not allowed. </p>
 <p> To change the id of an object select the object and click the
-		  <tt>Rename</tt> button. See <a href="../Folder_Rename.dtml">Folder&gt;Rename</a>. </p>
+		  <tt>Rename</tt> button. See <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Rename.dtml">Folder&gt;Rename</a>. </p>
 <p> To move one or more objects select them and then click the
 		  <tt>Cut</tt> button. The object(s) can now be moved to another
 		  location by navigating to another location and clicking the
@@ -29,11 +28,10 @@
 		  <tt>Delete</tt> button. </p>
 <p> To export an object from the Zope database select it and then
 		  click the <tt>Export</tt> button. See
-		  <a href="../Folder_Import-Export.dtml">Folder&gt;Import/Export</a>. </p>
+		  <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Import-Export.dtml">Folder&gt;Import/Export</a>. </p>
 <p> If you are currently working in a version, there will be a notice
 		  at the top of the list of objects indicating this. If there is a red diamond
 		  following the name of an object this indicates that the object has been
 		  modified in the version you are currently working in. If there is a red diamond
 		  with a lock after an object, this indicates the the object has been modified in
-		  another version. </p>
-<dtml-var standard_html_footer>
+		  another version. </p><dtml-var standard_html_footer>

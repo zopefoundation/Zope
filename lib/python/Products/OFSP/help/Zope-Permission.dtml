@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-<h1>Zope Permission</h1>
+<dtml-var standard_html_header><h1>Zope Permission</h1>
 <p> Zope Permissions allow you to define new permissions for
-		ZClasses.</p>
-<dtml-var standard_html_footer>
+		ZClasses.</p><dtml-var standard_html_footer>

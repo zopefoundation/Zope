@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Import/Export</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Import/Export</h1>
 <p> This view allows you to import and export objects from the Zope
 		  database. </p>
 <p> To export an object specify its id in the <tt>Export object
@@ -15,5 +14,4 @@
 		  file in the <tt>Import file name</tt> field and click the
 		  <tt>Import</tt> button. The import file should be located in the Zope
 		  import directory of the server on which Zope is running.
-		  </p>
-<dtml-var standard_html_footer>
+		  </p><dtml-var standard_html_footer>

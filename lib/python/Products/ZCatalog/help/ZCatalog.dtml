@@ -1,4 +1,2 @@
-<dtml-var standard_html_header>
-<h1>ZCatalog</h1>
-<p>ZCatalogs allow you to index and search for Zope objects.</p>
-<dtml-var standard_html_footer>
+<dtml-var standard_html_header><h1>ZCatalog</h1>
+<p>ZCatalogs allow you to index and search for Zope objects.</p><dtml-var standard_html_footer>

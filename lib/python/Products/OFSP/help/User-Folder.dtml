@@ -1,6 +1,4 @@
-<dtml-var standard_html_header>
-<h1>User Folder</h1>
+<dtml-var standard_html_header><h1>User Folder</h1>
 <p> User Folders allow you to define new Zope users.</p>
 <p>You can only have one User Folder per Folder. User Folders always
-		have <tt>acl_users</tt> as an id.</p>
-<dtml-var standard_html_footer>
+		have <tt>acl_users</tt> as an id.</p><dtml-var standard_html_footer>

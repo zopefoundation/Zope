@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Z-SQL-Method.dtml">Z SQL Method</a>&gt;Advanced</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ZSQLMethods/Help/Z-SQL-Method.dtml">Z SQL Method</a>&gt;Advanced</h1>
 <p> This view allows you to manage the advanced settings of a sql
 		  method. </p>
 <p> The <tt>ID</tt> and <tt>Title</tt> fields
@@ -18,5 +17,4 @@
 		  specify the name of the Python class. The <tt>Class file</tt> field
 		  allows you to specify the name of the Python module that the class is defined
 		  in. The class file should reside in the Zope Extensions
-		  directory. </p>
-<dtml-var standard_html_footer>
+		  directory. </p><dtml-var standard_html_footer>

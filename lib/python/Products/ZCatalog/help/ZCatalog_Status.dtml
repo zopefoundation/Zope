@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Status</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ZCatalog/Help/ZCatalog.dtml">ZCatalog</a>&gt;Status</h1>
 <p> This view allows you to control advanced catalog features. </p>
 <p> Subtransactions reduce the memory requirements of ZCatalog, but at
 		  the expense of speed. If you choose to enable subtransactions, you can adjust
@@ -11,5 +10,4 @@
 		  disable them by clicking the <tt>Disable</tt> button. If
 		  subtransactions are enabled you can set the subtransaction threshold by
 		  specifying the threshold in the text field and clicking the
-		  <tt>Change</tt> button. </p>
-<dtml-var standard_html_footer>
+		  <tt>Change</tt> button. </p><dtml-var standard_html_footer>

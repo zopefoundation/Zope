@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Database-Management.dtml">Database Management</a>&gt;Flush Cache</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Database-Management.dtml">Database Management</a>&gt;Flush Cache</h1>
 <p> This view allows you to manually clear objects out of the Zope
 		  cache. </p>
 <p> The <tt>Full Sweep</tt> button allows you to remove
@@ -11,5 +10,4 @@
 		  object must have been accessed in order not to be deactivated by the flush
 		  operation. The minimize operation differs from the full sweep in that it
 		  removes all objects which are no longer referenced from the root, while the
-		  full sweep merely removes most objects. </p>
-<dtml-var standard_html_footer>
+		  full sweep merely removes most objects. </p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Z-SQL-Method.dtml">Z SQL Method</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ZSQLMethods/Help/Z-SQL-Method.dtml">Z SQL Method</a>&gt;Add</h1>
 <p> This view allows you to create a new Z SQL Method.</p>
 <p> The <tt>ID</tt> field specifies the id of the sql
 		  method. The <tt>Title</tt> field allows you to specify the title of
@@ -12,5 +11,4 @@
 		  that the sql method will execute. The query template can contain DTML markup to
 		  tailor the SQL statement to the arguments. Note: the SQL statement need not be
 		  a SELECT query, it may be any valid SQL statement including an INSERT or
-		  UPDATE. </p>
-<dtml-var standard_html_footer>
+		  UPDATE. </p><dtml-var standard_html_footer>

@@ -1,9 +1,7 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Common-Instance-Property-Sheet.dtml">Common Instance Property Sheet</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Common-Instance-Property-Sheet.dtml">Common Instance Property Sheet</a>&gt;Add</h1>
 <p> This view allows you to create a new Common Instance Property
 		  Sheet.</p>
 <p>The <tt>Id</tt> field specifies the Id of the Common
 		  Instance Property Sheet. The <tt>Title</tt> field allows you to
-		  specify the title of the Common Instance Propery Sheet.</p>
-<dtml-var standard_html_footer>
+		  specify the title of the Common Instance Propery Sheet.</p><dtml-var standard_html_footer>

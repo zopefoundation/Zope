@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Undo</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Undo</h1>
 <p> This view allows you to undo changes to Zope's database. </p>
 <p> Zope allows you to undo changes to its database. Changes are
 		  defined in terms of transactions which group together related changes. Each
@@ -10,5 +9,4 @@
 		  checking the checkbox next to it and then click either of the
 		  <tt>Undo</tt> buttons. To see earlier or later transactions click the
 		  <tt>Earlier Transactions</tt> or <tt>Later
-		  Transactions</tt> links a the bottom and top of the view. </p>
-<dtml-var standard_html_footer>
+		  Transactions</tt> links a the bottom and top of the view. </p><dtml-var standard_html_footer>

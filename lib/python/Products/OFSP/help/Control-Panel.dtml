@@ -1,7 +1,5 @@
-<dtml-var standard_html_header>
-<h1>Control Panel</h1>
+<dtml-var standard_html_header><h1>Control Panel</h1>
 <p>The Control Panel provides access to centralized Zope management
 		facilties.</p>
 <p>From the Control Panel you can manage the Zope database, versions,
-		and Zope Products.</p>
-<dtml-var standard_html_footer>
+		and Zope Products.</p><dtml-var standard_html_footer>

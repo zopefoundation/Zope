@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZClass.dtml">ZClass</a>&gt;Views</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass.dtml">ZClass</a>&gt;Views</h1>
 <p> This view allows you to manage a ZClass's views. </p>
 <p> Views are managements screens that are available as tabs while
 		  managing a Zope object. To provides through the web management for your
@@ -18,5 +17,4 @@
 		  from the select list and click the <tt>Change</tt> button. To reorder
 		  views select a view by checking the checkbox in front of the view and click the
 		  <tt>First</tt> button. Continue to move views to the first position
-		  until you achieve the desired view order. </p>
-<dtml-var standard_html_footer>
+		  until you achieve the desired view order. </p><dtml-var standard_html_footer>

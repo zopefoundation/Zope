@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-<h1>Database Management</h1>
+<dtml-var standard_html_header><h1>Database Management</h1>
 <p> Database Management provides access to management facilities for the
-		Zope database.</p>
-<dtml-var standard_html_footer>
+		Zope database.</p><dtml-var standard_html_footer>

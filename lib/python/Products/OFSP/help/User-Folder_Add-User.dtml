@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../User-Folder.dtml">User Folder</a>&gt;Add User</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/User-Folder.dtml">User Folder</a>&gt;Add User</h1>
 <p> This view allows you to define a new user. </p>
 <p> The <tt>Name</tt> field allows you to specify the userid
 		  of the user. The <tt>Password</tt> field allows you to assign a
@@ -9,5 +8,4 @@
 		  correct password. The <tt>Domains</tt> field allows you to restrict
 		  Internet domains from which the user can log in. Domains should be separated by
 		  spaces. The <tt>Roles</tt> multiple selection list allows you to
-		  specify the user's roles. </p>
-<dtml-var standard_html_footer>
+		  specify the user's roles. </p><dtml-var standard_html_footer>

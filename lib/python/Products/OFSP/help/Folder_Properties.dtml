@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Properties</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Properties</h1>
 <p> This view allows you to define properties on your folder. </p>
 <p> Current properties are listed one per line. You can change the
 		  value of existing properties by entering new values in the text entry field(s)
@@ -75,5 +74,4 @@
 				<td>A list of strings selected by a selection list.</td> 
 			 </tr> 
 		   
-		</table>
-<dtml-var standard_html_footer>
+		</table><dtml-var standard_html_footer>

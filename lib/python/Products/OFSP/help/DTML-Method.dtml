@@ -1,9 +1,7 @@
-<dtml-var standard_html_header>
-<h1>DTML Method</h1>
+<dtml-var standard_html_header><h1>DTML Method</h1>
 <p> DTML Methods provide general templating management facilities to
 		Zope.</p>
 <p>A DTML Method can be used to display almost any Zope object. DTML
 		Methods can be viewed and edited through the web. DTML Documents can contain
 		scripting commands in Document Templates Markup Language. DTML Methods can be
-		called from DTML Documents and other DTML Methods.</p>
-<dtml-var standard_html_footer>
+		called from DTML Documents and other DTML Methods.</p><dtml-var standard_html_footer>

@@ -1,8 +1,6 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Rename</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Rename</h1>
 <p> This view allows you to change the id of an object. </p>
 <p> Enter the new id in the text entry field. Click the
 		  <tt>OK</tt> button to rename the object. Click the
-		  <tt>Cancel</tt> button to abort the rename operation. </p>
-<dtml-var standard_html_footer>
+		  <tt>Cancel</tt> button to abort the rename operation. </p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Mail-Host.dtml">Mail Host</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/MailHost/Help/Mail-Host.dtml">Mail Host</a>&gt;Add</h1>
 <p> This view allows you to create a new Mail Host.</p>
 <p> The <tt>Id</tt> field specifies the id of the mail host.
 		  The <tt>Title</tt> field allows you to specify the title of the mail
@@ -11,5 +10,4 @@
 		  accepts SMTP requests. The <tt>Max. timeout</tt> field allows you to
 		  specify how long Zope should wait (in seconds) for a response from the mail
 		  server before aborting a mail request. Click the <tt>Add</tt> button
-		  to create a new Mail Host.</p>
-<dtml-var standard_html_footer>
+		  to create a new Mail Host.</p><dtml-var standard_html_footer>

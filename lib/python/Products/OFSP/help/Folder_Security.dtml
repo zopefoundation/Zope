@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Security</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Security</h1>
 <p> This view allows you to define security settings for this item.
 		  Security settings are defined in terms of roles and permissions. When a role is
 		  assigned to a permission, users with the given role will be able to perform
@@ -23,5 +22,4 @@
 		  clicking the <tt>Add Role</tt> button. You can delete any existing
 		  user defined roles by selecting them from the selection list under the
 		  <tt>User defined roles</tt> heading and clicking the <tt>Delete
-		  Role</tt> button. </p>
-<dtml-var standard_html_footer>
+		  Role</tt> button. </p><dtml-var standard_html_footer>

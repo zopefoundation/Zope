@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Control-Panel.dtml">Control Panel</a>&gt;Contents</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Control-Panel.dtml">Control Panel</a>&gt;Contents</h1>
 <p> This view displays information about the Zope process and provides
 		  access to system management functions. </p>
 <p> <tt>Zope version</tt> indicates the version of the Zope
@@ -18,5 +17,4 @@
 		  <tt>Version Management</tt> links provides access to version
 		  management functions include version commit and abort. The <tt>Product
 		  Management</tt> link provides access to management functions for installed
-		  Zope Products. </p>
-<dtml-var standard_html_footer>
+		  Zope Products. </p><dtml-var standard_html_footer>

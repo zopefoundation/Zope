@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../External-Method.dtml">External Method</a>&gt;Properties</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/ExternalMethod/Help/External-Method.dtml">External Method</a>&gt;Properties</h1>
 <p> This view allows you to manage the properties of an external
 		  method. </p>
 <p> The <tt>Id</tt> field indicates the id of the external
@@ -14,5 +13,4 @@
 		  directories are located in lib/python/Products. If the
 		  Python module is in a product directory this should be indicated in the name of
 		  the module which should be the name of the product followed by a dot followed
-		  by the name of the Python module file. </p>
-<dtml-var standard_html_footer>
+		  by the name of the Python module file. </p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Zope-Factory.dtml">Zope Factory</a>&gt;Edit</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Zope-Factory.dtml">Zope Factory</a>&gt;Edit</h1>
 <p> This view allows you to edit factory settings. </p>
 <p> A factory creates entries in the Zope product add list. </p>
 <p> The <tt>Id</tt> field indicates the factory id, the
@@ -12,5 +11,4 @@
 		  <tt>Permission</tt> selection list specifies what permission is
 		  needed to execute the factory. If the user does not have the factory
 		  permission, the factory's entry will not show up in the product add list.
-		  </p>
-<dtml-var standard_html_footer>
+		  </p><dtml-var standard_html_footer>

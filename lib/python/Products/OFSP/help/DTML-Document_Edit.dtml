@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../DTML-Document.dtml">DTML Document</a>&gt;Edit</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/DTML-Document.dtml">DTML Document</a>&gt;Edit</h1>
 <p> This view allows you to edit the contents of a document. </p>
 <p> The <tt>id</tt> field indicates the id of the document.
 		  The <tt>Title</tt> field allows you to edit the title of the
@@ -12,5 +11,4 @@
 		  click the <tt>Taller</tt>, <tt>Shorter</tt>,
 		  <tt>Wider</tt>, or <tt>Narrower</tt> buttons repeatedly
 		  until the size is correctly adjusted. To change the contents of the document
-		  click the <tt>Change</tt> button. </p>
-<dtml-var standard_html_footer>
+		  click the <tt>Change</tt> button. </p><dtml-var standard_html_footer>

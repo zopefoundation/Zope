@@ -1,11 +1,9 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZClass.dtml">ZClass</a>&gt;Property Sheets</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass.dtml">ZClass</a>&gt;Property Sheets</h1>
 <p> This view allows you to manage a ZClass's property sheets. </p>
 <p> Property sheets provide a way to organize ZClass properties. A
 		  property sheet defines default values for ZClass instance attributes and
 		  provides an editing method for the attributes. </p>
 <p> The creation and management of property sheets proceeds exactly
 		  like the management of a folder's contents. See
-		  <a href="../Folder_Contents.dtml">Folder&gt;Contents</a>. </p>
-<dtml-var standard_html_footer>
+		  <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Contents.dtml">Folder&gt;Contents</a>. </p><dtml-var standard_html_footer>

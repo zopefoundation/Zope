@@ -1,19 +1,17 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../ZClass.dtml">ZClass</a>&gt;Methods</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass.dtml">ZClass</a>&gt;Methods</h1>
 <p> This view allows you to manage a class's methods. </p>
 <p> A ZClass inherits methods from its base classes. It can also
 		  contain methods which are managed through the web. This view allows you to
 		  manage methods though the web. Methods that you create through the web will be
 		  accessible as methods on instances of the ZClass. </p>
 <p> The creation and management of methods proceeds exactly like the
-		  management of a folder's contents. See <a href="../Folder_Contents.dtml">Folder&gt;Contents</a>. The
+		  management of a folder's contents. See <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Contents.dtml">Folder&gt;Contents</a>. The
 		  main difference between editing method objects and normal objects is that
 		  methods have a <tt>Define Permissions</tt> view in place of a
 		  <tt>Security</tt> view. See
-		  <a href="../ZClass_Define-Permissions.dtml">ZClass&gt;Define Permissions</a>. </p>
+		  <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/ZClass_Define-Permissions.dtml">ZClass&gt;Define Permissions</a>. </p>
 <p> If you create ZClasses inside the Methods view of a ZClass
 		  instances of the inner class will be addable to instances of the outer class.
 		  Typically the outer class will subclass <tt>ObjectManager</tt> and
-		  the inner class will be only relevant inside the outer class. </p>
-<dtml-var standard_html_footer>
+		  the inner class will be only relevant inside the outer class. </p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../File.dtml">File</a>&gt;Edit</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/File.dtml">File</a>&gt;Edit</h1>
 <p> This view allows you to manage the attributes of the file. </p>
 <p> The <tt>Id</tt> field indicates the id of the file. The
 		  <tt>Title</tt> field allows you to specify the title of the file. The
@@ -11,5 +10,4 @@
 		  executed before the file is viewed or downloaded. If the precondition raises an
 		  exception then the file cannot be viewed. The <tt>Size</tt> field
 		  indicates the size of the uploaded file. The <tt>Last modified</tt>
-		  field indicates the last time the file was changed. </p>
-<dtml-var standard_html_footer>
+		  field indicates the last time the file was changed. </p><dtml-var standard_html_footer>

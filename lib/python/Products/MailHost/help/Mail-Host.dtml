@@ -1,4 +1,2 @@
-<dtml-var standard_html_header>
-<h1>Mail Host</h1>
-<p> Mail Hosts allow you to send mail via SMTP.</p>
-<dtml-var standard_html_footer>
+<dtml-var standard_html_header><h1>Mail Host</h1>
+<p> Mail Hosts allow you to send mail via SMTP.</p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Find</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Find</h1>
 <p> This view allows you to search for Zope objects. </p>
 <p> To find objects you specify search criteria in the top frame and
 		  then click the <tt>Find</tt> button. The find results will appear in
@@ -15,5 +14,4 @@
 		  and enter a DateTime string in the field to restrict found items by
 		  modification date. Finally you may choose to either the <tt>Search only in
 		  this folder</tt> or the <tt>Search all subfolders</tt> radio box
-		  to control where Zope should look for found items. </p>
-<dtml-var standard_html_footer>
+		  to control where Zope should look for found items. </p><dtml-var standard_html_footer>

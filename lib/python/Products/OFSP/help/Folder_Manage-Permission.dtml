@@ -1,10 +1,8 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Manage Permission</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Manage Permission</h1>
 <p> This view allows you to assign roles to a permission. </p>
 <p> Select the roles you wish to assign to the named permission from
 		  the multiple selection list and click the <tt>Change</tt> button. The
 		  <tt>Also use roles acquired from folders containing this object</tt>
 		  check box indicates whether or not to acquire permissions settings for the
-		  named permission. </p>
-<dtml-var standard_html_footer>
+		  named permission. </p><dtml-var standard_html_footer>

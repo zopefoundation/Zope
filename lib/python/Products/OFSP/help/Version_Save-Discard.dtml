@@ -1,11 +1,9 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Version.dtml">Version</a>&gt;Save/Discard</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Version.dtml">Version</a>&gt;Save/Discard</h1>
 <p> This view allows you to either commit or discard changes made in
 		  this version. </p>
 <p> The <tt>save</tt> button commits the changes made in the
 		  version and makes them publicly visible. The <tt>discard</tt> button
 		  removes the changes made in the version. The text entry field is available to
 		  enter a comment regarding the version when saving or discarding the version.
-		  </p>
-<dtml-var standard_html_footer>
+		  </p><dtml-var standard_html_footer>

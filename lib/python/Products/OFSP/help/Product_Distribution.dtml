@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Product.dtml">Product</a>&gt;Distribution</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Product.dtml">Product</a>&gt;Distribution</h1>
 <p> This view allows you to create a distribution from a control panel
 		  product. </p>
 <p> A product distribution is a packaged version of a control panel
@@ -12,5 +11,4 @@
 		  panel when the distribution is installed. Click <tt>Create a distribution
 		  archive</tt> to download the distribution file. The distribution file can
 		  be installed in other Zopes by unzipping and untarring it inside the Zope
-		  directory. </p>
-<dtml-var standard_html_footer>
+		  directory. </p><dtml-var standard_html_footer>

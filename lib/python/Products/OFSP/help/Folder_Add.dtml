@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Folder.dtml">Folder</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder.dtml">Folder</a>&gt;Add</h1>
 <p> This view allows you to add a new Folder.</p>
 <p>The <tt>Id</tt> field specifies the id of the Folder. The
 		  <tt>Title</tt> field allows you to specify the title of the Folder.
@@ -9,5 +8,4 @@
 		  a default HTML representation. The <tt>Create user folder</tt>
 		  checkbox creates a User Folder inside the Folder to hold authorization
 		  information for the Folder. Click the <tt>Add</tt> button to create a
-		  new Folder. </p>
-<dtml-var standard_html_footer>
+		  new Folder. </p><dtml-var standard_html_footer>

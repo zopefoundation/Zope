@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Z-Search-Interface.dtml">Z Search Interface</a>&gt;Add</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Z-Search-Interface.dtml">Z Search Interface</a>&gt;Add</h1>
 <p> This view allows you to create new a search results document and
 		  optionally a search input form.</p>
 <p>The <tt>Select one or more seachable objects</tt>
@@ -13,5 +12,4 @@
 <p>If you wish to create a search input form, specify an id in the
 		  <tt>Seach Input Id</tt> field. The <tt>Search Input
 		  Title</tt> field allows you to indicated the tile of the search input
-		  form.</p>
-<dtml-var standard_html_footer>
+		  form.</p><dtml-var standard_html_footer>

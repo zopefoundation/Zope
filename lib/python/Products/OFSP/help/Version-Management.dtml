@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-<h1>Version Management</h1>
+<dtml-var standard_html_header><h1>Version Management</h1>
 <p> Version Management allows you to control Zope Versions for a central
-		location.</p>
-<dtml-var standard_html_footer>
+		location.</p><dtml-var standard_html_footer>

@@ -1,6 +1,5 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Database-Management.dtml">Database Management</a>&gt;Cache Parameters</h1>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Database-Management.dtml">Database Management</a>&gt;Cache Parameters</h1>
 <p> This view allows you to view cache statistics and set cache
 		  parameters. The Zope cache operates by keeping frequently used objects in
 		  memory to improve performance. A larger cache improves object access speed, but
@@ -12,5 +11,4 @@
 		  objects which are currently loaded in memory. <tt>Target size</tt>
 		  indicates ideal number of objects to have in memory. <tt>Target maximum
 		  time between accesses</tt> indicates the amount of time after which Zope
-		  should remove an object from memory if it hasn't been accessed. </p>
-<dtml-var standard_html_footer>
+		  should remove an object from memory if it hasn't been accessed. </p><dtml-var standard_html_footer>

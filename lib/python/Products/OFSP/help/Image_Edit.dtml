@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Image.dtml">Image</a>&gt;Edit</h1>
-<p> See <a href="../File_Edit.dtml">File&gt;Edit</a>. </p>
-<dtml-var standard_html_footer>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Image.dtml">Image</a>&gt;Edit</h1>
+<p> See <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/File_Edit.dtml">File&gt;Edit</a>. </p><dtml-var standard_html_footer>

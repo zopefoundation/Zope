@@ -1,5 +1,3 @@
-<dtml-var standard_html_header>
-<h1>
-<a href="../Mail-Host.dtml">Mail Host</a>&gt;Security</h1>
-<p> See <a href="../Folder_Security.dtml">Folder&gt;Security</a>. </p>
-<dtml-var standard_html_footer>
+<dtml-var standard_html_header><h1>
+<a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/MailHost/Help/Mail-Host.dtml">Mail Host</a>&gt;Security</h1>
+<p> See <a href="<dtml-var SCRIPT_NAME>/Control_Panel/Products/OFSP/Help/Folder_Security.dtml">Folder&gt;Security</a>. </p><dtml-var standard_html_footer>
