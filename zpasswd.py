@@ -2,18 +2,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.16 $ '[11:-2]
+__version__='$Revision: 1.17 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 
@@ -52,7 +52,7 @@ def write_generated_password(home, ac_path, username):
     acfile.close()
     os.system('chmod 644 %s' % ac_path)
     return pw
-    
+
 def write_access(home, user='', group=''):
     ac_path=os.path.join(home, 'access')
     if not os.path.exists(ac_path):
@@ -111,17 +111,17 @@ for all necessary information.  The available options are:
     -d / --domains=
     Set the domain names that the user user can log in from.  Defaults to
     any. OPTIONAL.
-    
+
     Filename is required and should be the name of the file to store the
     information in (usually "inituser" or "access").
-    
+
 Copyright (C) 1999, 2000 Digital Creations, Inc.
 """ % argv[0]
 
     try:
         if len(argv) < 2:
             raise "CommandLineError"
-        
+
         optlist, args = getopt.getopt(sys.argv[1:], short_options, long_options)
 
         if len(args) != 1:
@@ -134,7 +134,7 @@ Copyright (C) 1999, 2000 Digital Creations, Inc.
             username = ''
             encoding = 'SHA'
             domains = ''
-        
+
             for opt in optlist:
                 if (opt[0] == '-u') or (opt[0] == '--username'):
                     username = opt[1]
@@ -159,7 +159,7 @@ Copyright (C) 1999, 2000 Digital Creations, Inc.
                 username = raw_input("Username: ")
                 if username != '':
                     break
-               
+
             while 1:
                 password = getpass.getpass("Password: ")
                 verify = getpass.getpass("Verify password: ")
@@ -190,12 +190,11 @@ CLEARTEXT - no protection
             access_file.write(username + ":" +
                               generate_passwd(password, encoding) +
                               domains)
-            
+
     except "CommandLineError":
         sys.stderr.write(usage)
         sys.exit(1)
 
-    
+
 # If called from the command line
 if __name__=='__main__': main(sys.argv)
-

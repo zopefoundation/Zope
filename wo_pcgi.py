@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Try to do all of the installation steps.
 
@@ -33,7 +33,7 @@ def main(me):
     import build_extensions
     user=group=''
     import default_content; default_content.main(home, user, group)
-    
+
     pcgi=os.path.join(home, 'Zope.cgi')
     import make_start; make_start.sh(home, user, group)
     import zpasswd; zpasswd.write_inituser(home, user, group)

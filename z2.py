@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Zope 2 ZServer start-up file
 
@@ -69,9 +69,9 @@ Options:
     (e.g. -d ''), then IP addresses will not be logged. If you have
     DNS service on your local machine then you can set this to
     127.0.0.1.  The default is: %(DNS_IP)s.
-    
+
   -u username or uid number
-  
+
     The username to run ZServer as.  You may want to run ZServer as
     a dedicated user.  This only works under Unix, and if ZServer
     is started as root, and is required in that case.
@@ -88,9 +88,9 @@ Options:
     to listen on different addresses.
 
     Multiple -P options can be provided to run multiple sets of servers.
-    
+
   -w port
-  
+
     The Web server (HTTP) port.  This defaults to %(HTTP_PORT)s. The
     standard port for HTTP services is 80.  If this is a dash
     (e.g. -w -), then HTTP is disabled.
@@ -102,7 +102,7 @@ Options:
     Multiple -w options can be provided to run multiple servers.
 
   -W port
-  
+
     The "WebDAV source" port.  If this is a dash (e.g. -w -), then
     "WebDAV source" is disabled.  The default is disabled.  Note that
     this feature is a workaround for the lack of "source-link" support
@@ -122,7 +122,7 @@ Options:
     the client.
 
   -f port
-  
+
     The FTP port.  If this is a dash (e.g. -f -), then FTP
     is disabled.  The standard port for FTP services is 21.  The
     default is %(FTP_PORT)s.
@@ -146,7 +146,7 @@ Options:
     not specified then the FastCGI Server is disabled.
 
   -m port
-  
+
     The secure monitor server port. If this is a dash
     (-m -), then the monitor server is disabled. The monitor server
     allows interactive Python style access to a running ZServer. To
@@ -177,17 +177,17 @@ Options:
 
     Path to the ZServer log file. If this is a relative path then the
     log file will be written to the 'var' directory. The default is
-    %(LOG_FILE)s. 
+    %(LOG_FILE)s.
 
   -r
-    
+
     Run ZServer is read-only mode. ZServer won't write anything to disk.
     No log files, no pid files, nothing. This means that you can't do a
     lot of stuff like use PCGI, and zdaemon. ZServer will log hits to
     STDOUT and zLOG will log to STDERR.
 
   -L
-  
+
     Enable locale (internationalization) support. The value passed for
     this option should be the name of the locale to be used (see your
     operating system documentation for locale information specific to
@@ -207,7 +207,7 @@ Options:
     web server:
 
       %(program)s -X -w80
-      
+
   -M file
 
     Save detailed logging information to the given file.
@@ -348,8 +348,8 @@ def server_info(old, v, offset=0):
         a=IP_ADDRESS
 
     if not v: return v
-        
-    try: 
+
+    try:
         v=int(v)
         if v < 0: raise 'Invalid port', v
         v=v+offset
@@ -358,8 +358,8 @@ def server_info(old, v, offset=0):
     if isinstance(old, IntType): old=[(a,v)]
     else: old.append((a,v))
 
-    return old    
-    
+    return old
+
 
 try:
     python_version = sys.version.split()[0]
@@ -376,12 +376,12 @@ try:
                    python_version)
             warnings.warn(err)
     if python_version[:3] == '2.2':
-            import warnings
-            err = ('You are running Python version %s.  This Python version '
-                   'has not yet been tested with Zope and you may experience '
-                   'operational problems as a result.  Consider using '
-                   'Python 2.1.3 instead.' % python_version)
-            warnings.warn(err)
+        import warnings
+        err = ('You are running Python version %s.  This Python version '
+               'has not yet been tested with Zope and you may experience '
+               'operational problems as a result.  Consider using '
+               'Python 2.1.3 instead.' % python_version)
+        warnings.warn(err)
 
 
     opts, args = getopt.getopt(sys.argv[1:],
@@ -391,16 +391,16 @@ try:
 
     DEBUG=0
     READ_ONLY=0
-    
+
     # Get environment variables
     for a in args:
         if a.find('='):
             a=a.split('=')
             o=a[0]
             v='='.join(a[1:])
-            if o: 
-              os.environ[o]=v
-              HTTP_ENV[o]=v
+            if o:
+                os.environ[o]=v
+                HTTP_ENV[o]=v
         else:
             raise 'Invalid argument', a
 
@@ -657,7 +657,7 @@ try:
             # environment setting is useful when you want to proxy requests
             # from another web server to ZServer, and would like the CGI
             # environment to reflect the CGI environment of the other web
-            # server.    
+            # server.
             zh = zhttp_handler(MODULE, '', HTTP_ENV)
             if FORCE_HTTP_CONNECTION_CLOSE:
                 zh._force_connection_close = 1
@@ -691,11 +691,11 @@ try:
             # environment setting is useful when you want to proxy requests
             # from another web server to ZServer, and would like the CGI
             # environment to reflect the CGI environment of the other web
-            # server.    
+            # server.
             zh = WebDAVSrcHandler(MODULE, '', HTTP_ENV)
             hs.install_handler(zh)
 
-            # enable document retrieval of the document source on the 
+            # enable document retrieval of the document source on the
             # standard HTTP port
 
             clients = os.environ.get('WEBDAV_SOURCE_PORT_CLIENTS')
@@ -769,7 +769,7 @@ try:
             zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
                      ' because no emergency user exists.')
         if pw:
-            if isinstance(MONITOR_PORT, IntType): 
+            if isinstance(MONITOR_PORT, IntType):
                 MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
             for address, port in MONITOR_PORT:
                 try:
@@ -852,7 +852,7 @@ try:
                     gid = pwd.getpwuid(UID)[3]
                     UID = pwd.getpwuid(UID)[0]
                 else:
-                    raise KeyError 
+                    raise KeyError
                 if UID == 'nobody':
                     _warn_nobody()
                 try:
@@ -877,7 +877,7 @@ try:
         # umask is silly, blame POSIX.  We have to set it to get its value.
         current_umask = os.umask(0)
         os.umask(current_umask)
-        if current_umask != 077: 
+        if current_umask != 077:
             current_umask = '%03o' % current_umask
             zLOG.LOG("z2", zLOG.INFO, (
                 'Your umask of %s may be too permissive; for the security of '
