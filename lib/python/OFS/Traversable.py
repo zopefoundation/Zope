@@ -84,11 +84,11 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.8 2001/05/21 19:47:28 evan Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Traversable.py,v 1.9 2001/08/29 21:02:57 evan Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 
-import Acquisition
+from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from string import split, join
 from urllib import quote
@@ -118,8 +118,8 @@ class Traversable:
             return join(path, '/')
         return join([req['SERVER_URL']] + req._script + path, '/')
 
-    getPhysicalRoot=Acquisition.Acquired
     getPhysicalRoot__roles__=() # Private
+    getPhysicalRoot=Acquired
 
     getPhysicalPath__roles__=None # Public
     def getPhysicalPath(self):
@@ -130,9 +130,9 @@ class Traversable:
         '''
         path = (self.getId(),)
         
-        p = getattr(self,'aq_inner', None)
+        p = aq_parent(aq_inner(self)
         if p is not None: 
-            path = p.aq_parent.getPhysicalPath() + path
+            path = p.getPhysicalPath() + path
 
         return path
 
@@ -157,7 +157,7 @@ class Traversable:
             path.pop(0)
 
         if restricted: securityManager=getSecurityManager()
-        else: securityManager=None
+        else: securityManager=N
 
         if not path[-1]:
             # If the path starts with an empty string, go to the root first.
@@ -187,32 +187,37 @@ class Traversable:
                 t=get(object, '__bobo_traverse__', N)
                 if t is not N:
                     o=t(REQUEST, name)
-                    
-                    # Note we pass no container, because we have no
-                    # way of knowing what it is
-                    if (restricted and not securityManager.validate(
-                        object, None, name, o)):
-                        raise 'Unauthorized', name
+
+                    if restricted:
+                        container = N
+                        if has(o, 'im_self'):
+                            container = o.im_self
+                        elif (has(get(object, 'aq_base', object), name)
+                              and get(object, name) == o):
+                            container = object
+                        if (not securityManager.validate(object,
+                                                         container, name, o)):
+                            raise 'Unauthorized', name
                       
                 else:
                     o=get(object, name, M)
                     if o is not M:
                         if restricted:
                             # waaaa
-                            if hasattr(get(object,'aq_base',object), name):
+                            if hasattr(aq_base(object), name):
                                 # value wasn't acquired
                                 if not securityManager.validate(
                                     object, object, name, o):
                                     raise 'Unauthorized', name
                             else:
                                 if not securityManager.validate(
-                                    object, None, name, o):
+                                    object, N, name, o):
                                     raise 'Unauthorized', name
                         
                     else:
                         o=object[name]
                         if (restricted and not securityManager.validate(
-                            object, object, None, o)):
+                            object, object, N, o)):
                             raise 'Unauthorized', name
 
                 object=o
