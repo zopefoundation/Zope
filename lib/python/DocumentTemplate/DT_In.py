@@ -379,11 +379,11 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.33 1999/03/10 00:15:07 klm Exp $'
-__version__='$Revision: 1.33 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.34 1999/04/30 18:28:57 jim Exp $'
+__version__='$Revision: 1.34 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
-from DT_Util import render_blocks, InstanceDict
+from DT_Util import render_blocks, InstanceDict, ValidationError
 from string import find, atoi, join
 import ts_regex
 from DT_InSV import sequence_variables, opt
