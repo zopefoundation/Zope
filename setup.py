@@ -218,6 +218,18 @@ setup(
                 ['App/www', ['App/www/*']]],
     )
 
+# BDBStorage
+setup(
+    name='BDBStorage',
+    author=AUTHOR,
+
+    packages=['BDBStorage', 'BDBStorage.tests'],
+    ext_modules = [
+        Extension(name='BDBStorage._helper',
+        sources=['BDBStorage/_helper.c']),
+        ]
+    )
+
 # BTrees
 setup(
     name='BTrees',
