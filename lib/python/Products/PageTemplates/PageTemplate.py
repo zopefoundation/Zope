@@ -15,17 +15,16 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import sys
 
 from TAL.TALParser import TALParser
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALGenerator import TALGenerator
-from TAL.TALInterpreter import TALInterpreter
-from Expressions import getEngine
 # Do not use cStringIO here!  It's not unicode aware. :(
-from StringIO import StringIO
+from TAL.TALInterpreter import TALInterpreter, FasterStringIO
+from Expressions import getEngine
 from ExtensionClass import Base
 from ComputedAttribute import ComputedAttribute
 
@@ -47,7 +46,7 @@ class PageTemplate(Base):
     def StringIO(self):
         # Third-party products wishing to provide a full Unicode-aware
         # StringIO can do so by monkey-patching this method.
-        return StringIO()
+        return FasterStringIO()
 
     def macros(self):
         return self.pt_macros()

@@ -14,7 +14,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -43,18 +43,19 @@ class PythonExpr:
             if vname[0] not in '$_':
                 vnames.append(vname)
 
-    def _bind_used_names(self, econtext):
+    def _bind_used_names(self, econtext, _marker=[]):
         # Bind template variables
         names = {}
         vars = econtext.vars
         getType = econtext._engine.getTypes().get
         for vname in self._f_varnames:
-            has, val = vars.has_get(vname)
-            if not has:
+            val = vars.get(vname, _marker)
+            if val is _marker:
                 has = val = getType(vname)
                 if has:
                     val = ExprTypeProxy(vname, val, econtext)
-            if has:
+                    names[vname] = val
+            else:
                 names[vname] = val
         return names
 

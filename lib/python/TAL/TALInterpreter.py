@@ -24,7 +24,7 @@ from cgi import escape
 from StringIO import StringIO
 from DocumentTemplate.DT_Util import ustr
 
-from TALDefs import quote, TAL_VERSION, TALError, METALError
+from TALDefs import TAL_VERSION, TALError, METALError
 from TALDefs import isCurrentVersion, getProgramVersion, getProgramMode
 from TALGenerator import TALGenerator
 from TranslationContext import TranslationContext
@@ -120,7 +120,7 @@ class TALInterpreter:
     def StringIO(self):
         # Third-party products wishing to provide a full Unicode-aware
         # StringIO can do so by monkey-patching this method.
-        return StringIO()
+        return FasterStringIO()
 
     def saveState(self):
         return (self.position, self.col, self.stream,
@@ -185,15 +185,20 @@ class TALInterpreter:
 
     bytecode_handlers = {}
 
-    def interpret(self, program, tmpstream=None):
+    def interpretWithStream(self, program, stream):
+        oldstream = self.stream
+        self.stream = stream
+        self._stream_write = stream.write
+        try:
+            self.interpret(program)
+        finally:
+            self.stream = oldstream
+            self._stream_write = oldstream.write
+
+    def interpret(self, program):
         oldlevel = self.level
         self.level = oldlevel + 1
         handlers = self.dispatch
-        if tmpstream:
-            ostream = self.stream
-            owrite = self._stream_write
-            self.stream = tmpstream
-            self._stream_write = tmpstream.write
         try:
             if self.debug:
                 for (opcode, args) in program:
@@ -208,9 +213,6 @@ class TALInterpreter:
                     handlers[opcode](self, args)
         finally:
             self.level = oldlevel
-            if tmpstream:
-                self.stream = ostream
-                self._stream_write = owrite
 
     def do_version(self, version):
         assert version == TAL_VERSION
@@ -246,8 +248,8 @@ class TALInterpreter:
         # for start tags with no attributes; those are optimized down
         # to rawtext events.  Hence, there is no special "fast path"
         # for that case.
-        _stream_write = self._stream_write
-        _stream_write("<" + name)
+        L = ["<", name]
+        append = L.append
         col = self.col + _len(name) + 1
         wrap = self.wrap
         align = col + 1
@@ -266,13 +268,14 @@ class TALInterpreter:
                 if (wrap and
                     col >= align and
                     col + 1 + slen > wrap):
-                    _stream_write("\n" + " "*align)
+                    append("\n" + " "*align)
                     col = align + slen
                 else:
-                    s = " " + s
+                    append(" ")
                     col = col + 1 + slen
-                _stream_write(s)
-            _stream_write(end)
+                append(s)
+            append(end)
+            self._stream_write("".join(L))
             col = col + endlen
         finally:
             self.col = col
@@ -307,13 +310,13 @@ class TALInterpreter:
         if value is None:
             value = name
         else:
-            value = "%s=%s" % (name, quote(value))
+            value = '%s="%s"' % (name, escape(value, 1))
         return 1, name, value
 
     def attrAction_tal(self, item):
-        name, value, action = item[:3]
-        if action in ('metal', 'tal', 'xmlns', 'i18n'):
+        if item[2] in ('metal', 'tal', 'xmlns', 'i18n'):
             return self.attrAction(item)
+        name, value, action = item[:3]
         ok = 1
         expr, msgid = item[3:]
         if self.html and name.lower() in BOOLEAN_HTML_ATTRS:
@@ -325,31 +328,27 @@ class TALInterpreter:
                 value = None
             else:
                 ok = 0
-        else:
-            if expr is not None:
-                evalue = self.engine.evaluateText(item[3])
-                if evalue is self.Default:
-                    if action == 'insert': # Cancelled insert
-                        ok = 0
-                else:
-                    if evalue is None:
-                        ok = 0
-                    value = evalue
-        if ok:
-            if msgid:
-                value = self.i18n_attribute(value)
-            if value is None:
-                value = name
-            value = "%s=%s" % (name, quote(value))
+        elif expr is not None:
+            evalue = self.engine.evaluateText(item[3])
+            if evalue is self.Default:
+                if action == 'insert': # Cancelled insert
+                    ok = 0
+            else:
+                if evalue is None:
+                    ok = 0
+                value = evalue
+        if msgid:
+            value = self.i18n_attribute(value)
+        if value is None:
+            value = name
+        value = '%s="%s"' % (name, escape(value, 1))
         return ok, name, value
+    bytecode_handlers["<attrAction>"] = attrAction
 
     def i18n_attribute(self, s):
         # s is the value of an attribute before translation
         # it may have been computed
         return self.translate(s, {})
-
-
-    bytecode_handlers["<attrAction>"] = attrAction
 
     def no_tag(self, start, program):
         state = self.saveState()
@@ -363,7 +362,7 @@ class TALInterpreter:
                   omit=0):
         if tag_ns and not self.showtal:
             return self.no_tag(start, program)
-            
+
         self.interpret(start)
         if not isend:
             self.interpret(program)
@@ -391,7 +390,8 @@ class TALInterpreter:
     def do_rawtextBeginScope(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
         self.col = col
-        self.do_setPosition(position)
+        self.position = position
+        self.engine.setPosition(position)
         if closeprev:
             engine = self.engine
             engine.endScope()
@@ -403,7 +403,8 @@ class TALInterpreter:
     def do_rawtextBeginScope_tal(self, (s, col, position, closeprev, dict)):
         self._stream_write(s)
         self.col = col
-        self.do_setPosition(position)
+        self.position = position
+        self.engine.setPosition(position)
         engine = self.engine
         if closeprev:
             engine.endScope()
@@ -481,7 +482,7 @@ class TALInterpreter:
             state = self.saveState()
             try:
                 tmpstream = self.StringIO()
-                self.interpret(program, tmpstream)
+                self.interpretWithStream(program, tmpstream)
                 value = normalize(tmpstream.getvalue())
             finally:
                 self.restoreState(state)
@@ -516,7 +517,7 @@ class TALInterpreter:
         # Use a temporary stream to capture the interpretation of the
         # subnodes, which should /not/ go to the output stream.
         tmpstream = self.StringIO()
-        self.interpret(stuff[1], tmpstream)
+        self.interpretWithStream(stuff[1], tmpstream)
         # We only care about the evaluated contents if we need an implicit
         # message id.  All other useful information will be in the i18ndict on
         # the top of the i18nStack.
@@ -724,6 +725,29 @@ class TALInterpreter:
     bytecode_handlers_tal["onError"] = do_onError_tal
     bytecode_handlers_tal["<attrAction>"] = attrAction_tal
     bytecode_handlers_tal["optTag"] = do_optTag_tal
+
+
+class FasterStringIO(StringIO):
+    """Append-only version of StringIO.
+
+    This let's us have a much faster write() method.
+    """
+    def close(self):
+        if not self.closed:
+            self.write = _write_ValueError
+            StringIO.close(self)
+
+    def seek(self, pos, mode=0):
+        raise RuntimeError("FasterStringIO.seek() not allowed")
+
+    def write(self, s):
+        #assert self.pos == self.len
+        self.buflist.append(s)
+        self.len = self.pos = self.pos + len(s)
+
+
+def _write_ValueError(s):
+    raise ValueError, "I/O operation on closed file"
 
 
 def test():

@@ -163,8 +163,3 @@ def getProgramVersion(program):
         if opcode == "version":
             return version
     return None
-
-import cgi
-def quote(s, escape=cgi.escape):
-    return '"%s"' % escape(s, 1)
-del cgi

@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -44,8 +44,6 @@ class Default:
     '''Retain Default'''
 Default = Default()
 
-_marker = []
-
 class SafeMapping(MultiMapping):
     '''Mapping with security declarations and limited method exposure.
 
@@ -60,9 +58,6 @@ class SafeMapping(MultiMapping):
     _push = MultiMapping.push
     _pop = MultiMapping.pop
 
-    def has_get(self, key, _marker=[]):
-        v = self.get(key, _marker)
-        return v is not _marker, v
 
 class Iterator(ZTUtils.Iterator):
     def __init__(self, name, seq, context):
@@ -216,8 +211,7 @@ class Context:
             expression = self._engine.compile(expression)
         __traceback_supplement__ = (
             TALESTracebackSupplement, self, expression)
-        v = expression(self)
-        return v
+        return expression(self)
 
     evaluateValue = evaluate
 
@@ -257,7 +251,6 @@ class Context:
             domain, msgid, mapping=mapping,
             context=context, target_language=target_language)
 
-
 class TALESTracebackSupplement:
     """Implementation of ITracebackSupplement"""
     def __init__(self, context, expression):
@@ -276,8 +269,6 @@ class TALESTracebackSupplement:
         else:
             from cgi import escape
             return '<b>Names:</b><pre>%s</pre>' % (escape(s))
-        return None
-
 
 
 class SimpleExpr:
@@ -289,4 +280,3 @@ class SimpleExpr:
         return self._name, self._expr
     def __repr__(self):
         return '<SimpleExpr %s %s>' % (self._name, `self._expr`)
-

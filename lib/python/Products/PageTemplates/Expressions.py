@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -46,6 +46,8 @@ def installHandlers(engine):
 
 if sys.modules.has_key('Zope'):
     import AccessControl
+    import AccessControl.cAccessControl
+    acquisition_security_filter = AccessControl.cAccessControl.aq_validate
     from AccessControl import getSecurityManager
     from AccessControl.ZopeGuards import guarded_getattr
     try:
@@ -65,6 +67,12 @@ else:
         from zExceptions import Unauthorized
     except ImportError:
         Unauthorized = "Unauthorized"
+
+    def acquisition_security_filter(orig, inst, name, v, real_validate):
+        if real_validate(orig, inst, name, v):
+            return 1
+        raise Unauthorized, name
+
     def call_with_ns(f, ns, arg=1):
         if arg==2:
             return f(None, ns)
@@ -279,28 +287,27 @@ class DeferExpr:
         return 'defer:%s' % `self._s`
 
 
-def restrictedTraverse(self, path, securityManager,
+def restrictedTraverse(object, path, securityManager,
                        get=getattr, has=hasattr, N=None, M=[],
                        TupleType=type(()) ):
 
-    REQUEST = {'path': path}
-    REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
     if not path[0]:
         # If the path starts with an empty string, go to the root first.
-        self = self.getPhysicalRoot()
-        if not securityManager.validateValue(self):
+        object = object.getPhysicalRoot()
+        if not securityManager.validateValue(object):
             raise Unauthorized, name
         path.pop(0)
 
+    REQUEST = {'path': path}
+    REQUEST['TraversalRequestNameStack'] = path = path[:] # Copy!
     path.reverse()
     validate = securityManager.validate
-    object = self
+    __traceback_info__ = REQUEST
     while path:
-        __traceback_info__ = REQUEST
         name = path.pop()
 
         if isinstance(name, TupleType):
-            object = apply(object, name)
+            object = object(*name)
             continue
 
         if name[0] == '_':
@@ -363,9 +370,3 @@ def restrictedTraverse(self, path, securityManager,
         object = o
 
     return object
-
-
-def validate2(orig, inst, name, v, real_validate):
-    if not real_validate(orig, inst, name, v):
-        raise Unauthorized, name
-    return 1
