@@ -87,7 +87,7 @@
 
 import OFS.PropertySheets, Globals, OFS.SimpleItem, OFS.PropertyManager
 import Acquisition
-
+from string import join, upper
 
 class ClassCaretaker:
     def __init__(self, klass): self.__dict__['_k']=klass
@@ -125,6 +125,122 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
 
     def p_self(self): return self
 
+    def _view_widget_for_type(self, t, id):
+        if t not in ('lines', 'tokens'):
+            return '<!--#var %s-->' % id
+        return """
+        <!--#in %s-->
+           <!--#var sequence-item-->
+        <!--#in %s-->
+        """
+
+    def manage_createView(self, id, title='', ps_view_type=None, REQUEST=None):
+        """Create a view of a property sheet
+        """
+        if ps_view_type == 'Edit':
+            return self.manage_createEditor(id, title, REQUEST)
+            
+        r=['<!--#var standard_html_header-->',
+           '<table>']
+        a=r.append
+        for p in self.propertyMap():
+            pid=p['id']
+            pid=upper(pid[:1])+pid[1:]
+            a('  <tr><th align=left valign=top>%s</th>' % pid)
+            a('      <td align=left valign=top>%s</td>' %
+              self._view_widget_for_type(p['type'], p['id'])
+              )
+            a('  </tr>')
+        a('</table>')
+        a('<!--#var standard_html_footer-->')
+        r=join(r,'\n')
+        self.aq_parent.aq_parent.methods.manage_addDTMLMethod(id, title, r)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
+
+    def _edit_widget_for_type(self, t, id, p):
+        if t in ('int', 'long', 'float', 'date', 'string'):
+            if t=='string': q=' html_quote'
+            else: q=''
+            return ('''
+            <input name="%s:%s" size="35"
+                   value="<!--#var %s%s-->">'''
+                    % (id, t, id, q)
+                    )
+        if t=='boolean':
+            return ('''
+            <input type="checkbox" name="%s:boolean" size="35"
+                <!--#if %s-->CHECKED<!--#/if-->>'''
+                    % (id, id)
+                    )
+                    
+        if t=='tokens':
+            return ('''
+            <input type="text" name="%s:tokens" size="35"
+               value="<!--#in %s--><!--#var sequence-item--> <!--#endin-->">'''
+                    % (id, id)
+                    )
+                    
+        if t=='text':
+            return ('''
+            <textarea name="%s:text" rows="6" cols="35"><!--#var %s
+            --></textarea>'''
+                    % (id, id)
+                    )
+                    
+        if t=='lines':
+            return ('''
+            <textarea name="%s:lines" rows="6" cols="35"><!--#in %s
+            --><!--#var sequence-item-->\n<!--#/in--></textarea>'''
+                    % (id, id) 
+                    )
+                    
+        if t=='selection':
+            return ('''
+            <!--#if "_.has_key('%(select_variable)s')"-->
+            <select name="<!--#var %(id)s-->">
+              <!--#in %(select_variable)s-->
+                <option
+                  <!--#if "_['sequence-item']==%(id)s"-->
+                  SELECTED<!--#/if-->
+                  ><!--#var sequence-item--></option>
+              <!--#/in-->
+            </select>
+            <!--#else-->
+              No value for %(select_variable)s
+            <!--#/if-->'''            
+                    % p
+                    )
+
+        return ''
+
+
+    def manage_createEditor(self, id, title='', REQUEST=None):
+        """Create an edit interface for a property sheet
+        """
+        r=['<html><head><title><!--#var title_or_id--></title></head>',
+           '<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">',
+           '<!--#var manage_tabs-->',
+           '<form action="propertysheets/%s/manage_editProperties"><table>'
+           % self.id]
+        a=r.append
+        for p in self.propertyMap():
+            a('  <tr><th align=left valign=top>%s</th>' % p['id'])
+            a('      <td align=left valign=top>%s</td>' %
+              self._edit_widget_for_type(p['type'], p['id'], p)
+              )
+            a('  </tr>')
+        a('  <tr><td colspan=2>')
+        a('    <input type=submit value=" Change ">')
+        a('    <input type=reset value=" Reset ">')
+        a('  </td></tr>')
+        a('</table></form>')
+        a('</body></html>')
+        r=join(r,'\n')
+        self.aq_parent.aq_parent.methods.manage_addDTMLMethod(id, title, r)
+        if REQUEST is not None:
+            REQUEST['RESPONSE'].redirect(REQUEST['URL3']+'/methods/manage')
+
 class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
                      OFS.PropertySheets.View,
                     ):
@@ -144,6 +260,9 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
 
     # Note that we need to make sure we add and remove
     # instance sheets.
+    id='common'
+    isPrincipiaFolderish=1
+    icon="p_/Propertysheets_icon"
 
     def _setOb(self, id, value):
         setattr(self, id, value)
