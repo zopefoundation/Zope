@@ -404,6 +404,44 @@ class TestActualPython(GuardTestCase):
             untouched.sort()
             self.fail("Unexercised wrappers: %r" % untouched)
 
+    def test_dict_access(self):
+        from RestrictedPython.tests import verify
+
+        SIMPLE_DICT_ACCESS_SCRIPT = """
+def foo(text):
+    return text
+
+kw = {'text':'baz'}
+print foo(**kw)
+
+kw = {'text':True}
+print foo(**kw)
+"""
+        code, its_globals = self._compile_str(SIMPLE_DICT_ACCESS_SCRIPT, 'x')
+        verify.verify(code)
+
+        sm = SecurityManager()
+        old = self.setSecurityManager(sm)
+        try:
+            exec code in its_globals
+        finally:
+            self.setSecurityManager(old)
+
+        self.assertEqual(its_globals['_print'](),
+                        'baz\nTrue\n')
+        
+    def _compile_str(self, text, name):
+        from RestrictedPython import compile_restricted
+        from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
+
+        code = compile_restricted(text, name, 'exec')
+
+        g = get_safe_globals()
+        g['_getattr_'] = guarded_getattr
+        g['__debug__'] = 1  # so assert statements are active
+        g['__name__'] = __name__ # so classes can be defined in the script
+        return code, g
+
     # Compile code in fname, as restricted Python.  Return the
     # compiled code, and a safe globals dict for running it in.
     # fname is the string name of a Python file; it must be found
@@ -413,13 +451,8 @@ class TestActualPython(GuardTestCase):
         from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
 
         fn = os.path.join( _HERE, fname)
-        code = compile_restricted(open(fn).read(), fn, 'exec')
-
-        g = get_safe_globals()
-        g['_getattr_'] = guarded_getattr
-        g['__debug__'] = 1  # so assert statements are active
-        g['__name__'] = __name__ # so classes can be defined in the script
-        return code, g
+        text = open(fn).read()
+        return self._compile_str(text, fn)
 
     # d is a dict, the globals for execution or our safe builtins.
     # The callable values which aren't the same as the corresponding
