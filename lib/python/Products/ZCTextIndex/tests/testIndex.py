@@ -12,8 +12,10 @@
 #
 ##############################################################################
 
+import os
 from unittest import TestCase, TestSuite, main, makeSuite
 
+from BTrees.Length import Length
 from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 from Products.ZCTextIndex.CosineIndex import CosineIndex
 from Products.ZCTextIndex.OkapiIndex import OkapiIndex
@@ -34,6 +36,8 @@ class IndexTest(TestCase):
         self.assert_(self.index.has_doc(DOCID))
         self.assert_(self.index._docweight[DOCID])
         self.assertEqual(len(self.index._docweight), 1)
+        self.assertEqual(
+            len(self.index._docweight), self.index.document_count())
         self.assertEqual(len(self.index._wordinfo), 5)
         self.assertEqual(len(self.index._docwords), 1)
         self.assertEqual(len(self.index.get_words(DOCID)), 5)
@@ -48,6 +52,8 @@ class IndexTest(TestCase):
         self.test_index_document(DOCID)
         self.index.unindex_doc(DOCID)
         self.assertEqual(len(self.index._docweight), 0)
+        self.assertEqual(
+            len(self.index._docweight), self.index.document_count())
         self.assertEqual(len(self.index._wordinfo), 0)
         self.assertEqual(len(self.index._docwords), 0)
         self.assertEqual(len(self.index._wordinfo),
@@ -60,6 +66,8 @@ class IndexTest(TestCase):
         self.index.index_doc(DOCID, doc)
         self.assert_(self.index._docweight[DOCID])
         self.assertEqual(len(self.index._docweight), 2)
+        self.assertEqual(
+            len(self.index._docweight), self.index.document_count())
         self.assertEqual(len(self.index._wordinfo), 8)
         self.assertEqual(len(self.index._docwords), 2)
         self.assertEqual(len(self.index.get_words(DOCID)), 4)
@@ -82,6 +90,8 @@ class IndexTest(TestCase):
         self.index.unindex_doc(1)
         DOCID = 2
         self.assertEqual(len(self.index._docweight), 1)
+        self.assertEqual(
+            len(self.index._docweight), self.index.document_count())
         self.assert_(self.index._docweight[DOCID])
         self.assertEqual(len(self.index._wordinfo), 4)
         self.assertEqual(len(self.index._docwords), 1)
@@ -101,6 +111,8 @@ class IndexTest(TestCase):
         self.assertEqual(len(self.index.get_words(DOCID)), 7)
         self.assertEqual(len(self.index._wordinfo),
                          self.index.length())
+        self.assertEqual(
+            len(self.index._docweight), self.index.document_count())
         wids = self.lexicon.termToWordIds("repeat")
         self.assertEqual(len(wids), 1)
         repititive_wid = wids[0]
@@ -145,9 +157,130 @@ class CosineIndexTest(IndexTest):
 class OkapiIndexTest(IndexTest):
     IndexFactory = OkapiIndex
 
+class TestIndexConflict(TestCase):
+    
+    storage = None
+
+    def tearDown(self):
+        if self.storage is not None:
+            self.storage.close()
+
+    def openDB(self):
+        from ZODB.FileStorage import FileStorage
+        from ZODB.DB import DB
+        n = 'fs_tmp__%s' % os.getpid()
+        self.storage = FileStorage(n)
+        self.db = DB(self.storage)
+        
+    def test_index_doc_conflict(self):
+        self.index = OkapiIndex(Lexicon())
+        self.openDB()
+        r1 = self.db.open().root()
+        r1['i'] = self.index
+        get_transaction().commit()
+        
+        r2 = self.db.open().root()
+        copy = r2['i']
+        # Make sure the data is loaded
+        list(copy._docweight.items())
+        list(copy._docwords.items())
+        list(copy._wordinfo.items())
+        list(copy._lexicon._wids.items())
+        list(copy._lexicon._words.items())
+        
+        self.assertEqual(self.index._p_serial, copy._p_serial)
+        
+        self.index.index_doc(0, 'The time has come')
+        get_transaction().commit()
+        
+        copy.index_doc(1, 'That time has gone')
+        get_transaction().commit()
+
+    def test_reindex_doc_conflict(self):
+        self.index = OkapiIndex(Lexicon())
+        self.index.index_doc(0, 'Sometimes change is good')
+        self.index.index_doc(1, 'Then again, who asked')
+        self.openDB()
+        r1 = self.db.open().root()
+        r1['i'] = self.index
+        get_transaction().commit()
+        
+        r2 = self.db.open().root()
+        copy = r2['i']
+        # Make sure the data is loaded
+        list(copy._docweight.items())
+        list(copy._docwords.items())
+        list(copy._wordinfo.items())
+        list(copy._lexicon._wids.items())
+        list(copy._lexicon._words.items())
+        
+        self.assertEqual(self.index._p_serial, copy._p_serial)
+        
+        self.index.index_doc(0, 'Sometimes change isn\'t bad')
+        get_transaction().commit()
+        
+        copy.index_doc(1, 'Then again, who asked you?')
+        get_transaction().commit()
+        
+class TestUpgrade(TestCase):
+
+    def test_query_before_totaldoclen_upgrade(self):
+        self.index1 = OkapiIndex(Lexicon(Splitter()))
+        self.index1.index_doc(0, 'The quiet of night')
+        # Revert index1 back to a long to simulate an older index instance
+        self.index1._totaldoclen = long(self.index1._totaldoclen())
+        self.assertEqual(len(self.index1.search('night')), 1)
+    
+    def test_upgrade_totaldoclen(self):
+        self.index1 = OkapiIndex(Lexicon())
+        self.index2 = OkapiIndex(Lexicon())
+        self.index1.index_doc(0, 'The quiet of night')
+        self.index2.index_doc(0, 'The quiet of night')
+        # Revert index1 back to a long to simulate an older index instance
+        self.index1._totaldoclen = long(self.index1._totaldoclen())
+        self.index1.index_doc(1, 'gazes upon my shadow')
+        self.index2.index_doc(1, 'gazes upon my shadow')
+        self.assertEqual(
+            self.index1._totaldoclen(), self.index2._totaldoclen())
+        self.index1._totaldoclen = long(self.index1._totaldoclen())
+        self.index1.unindex_doc(0)
+        self.index2.unindex_doc(0)
+        self.assertEqual(
+            self.index1._totaldoclen(), self.index2._totaldoclen())
+
+    def test_query_before_document_count_upgrade(self):
+        self.index1 = OkapiIndex(Lexicon(Splitter()))
+        self.index1.index_doc(0, 'The quiet of night')
+        # Revert index1 back to a long to simulate an older index instance
+        del self.index1.document_count
+        self.assertEqual(len(self.index1.search('night')), 1)
+    
+    def test_upgrade_document_count(self):
+        self.index1 = OkapiIndex(Lexicon())
+        self.index2 = OkapiIndex(Lexicon())
+        self.index1.index_doc(0, 'The quiet of night')
+        self.index2.index_doc(0, 'The quiet of night')
+        # Revert index1 back to simulate an older index instance
+        del self.index1.document_count
+        self.index1.index_doc(1, 'gazes upon my shadow')
+        self.index2.index_doc(1, 'gazes upon my shadow')
+        self.assert_(self.index1.document_count.__class__ is Length)
+        self.assertEqual(
+            self.index1.document_count(), self.index2.document_count())
+        del self.index1.document_count
+        self.index1.unindex_doc(0)
+        self.index2.unindex_doc(0)
+        self.assert_(self.index1.document_count.__class__ is Length)
+        self.assertEqual(
+            self.index1.document_count(), self.index2.document_count())
+        
+        
+        
 def test_suite():
     return TestSuite((makeSuite(CosineIndexTest),
                       makeSuite(OkapiIndexTest),
+                      makeSuite(TestIndexConflict),
+                      makeSuite(TestUpgrade),
                     ))
 
 if __name__=='__main__':

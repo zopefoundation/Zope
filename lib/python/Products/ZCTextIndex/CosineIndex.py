@@ -69,7 +69,7 @@ class CosineIndex(BaseIndex):
     def _search_wids(self, wids):
         if not wids:
             return []
-        N = float(len(self._docweight))
+        N = float(self.document_count())
         L = []
         DictType = type({})
         for wid in wids:
@@ -86,7 +86,7 @@ class CosineIndex(BaseIndex):
         wids = []
         for term in terms:
             wids += self._lexicon.termToWordIds(term)
-        N = float(len(self._docweight))
+        N = float(self.document_count())
         sum = 0.0
         for wid in self._remove_oov_wids(wids):
             wt = inverse_doc_frequency(len(self._wordinfo[wid]), N)

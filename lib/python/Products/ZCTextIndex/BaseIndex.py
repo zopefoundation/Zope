@@ -20,7 +20,7 @@ import math
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IIBTree, IIBucket, IITreeSet
 from BTrees.IIBTree import intersection, difference
-import BTrees.Length
+from BTrees.Length import Length
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
@@ -83,12 +83,18 @@ class BaseIndex(Persistent):
         self._docwords = IOBTree()
 
         # Use a BTree length for efficient length computation w/o conflicts
-        self.length = BTrees.Length.Length()
+        self.length = Length()
+        self.document_count = Length()
 
     def length(self):
         """Return the number of words in the index."""
         # This is overridden per instance
         return len(self._wordinfo)
+        
+    def document_count(self):
+        """Return the number of documents in the index"""
+        # This is overridden per instance
+        return len(self._docweight)        
 
     def get_words(self, docid):
         """Return a list of the wordids for a given docid."""
@@ -104,6 +110,11 @@ class BaseIndex(Persistent):
         self._mass_add_wordinfo(wid2weight, docid)
         self._docweight[docid] = docweight
         self._docwords[docid] = WidCode.encode(wids)
+        try:
+            self.document_count.change(1)
+        except AttributeError:
+            # Upgrade document_count to Length object
+            self.document_count = Length(self.document_count())
         return len(wids)
 
     # A subclass may wish to extend or override this.  This is for adjusting
@@ -165,6 +176,11 @@ class BaseIndex(Persistent):
             self._del_wordinfo(wid, docid)
         del self._docwords[docid]
         del self._docweight[docid]
+        try:
+            self.document_count.change(-1)
+        except AttributeError:
+            # Upgrade document_count to Length object
+            self.document_count = Length(self.document_count())
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)

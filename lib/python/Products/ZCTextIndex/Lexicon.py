@@ -16,6 +16,7 @@ import re
 
 from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
+from BTrees.Length import Length
 
 import ZODB
 from Persistence import Persistent
@@ -37,16 +38,13 @@ class Lexicon(Persistent):
         # we never saw before, and that isn't a known stopword (or otherwise
         # filtered out).  Returning a special wid value for OOV words is a
         # way to let clients know when an OOV word appears.
-        self._nextwid = 1
+        self.length = Length()
         self._pipeline = pipeline
-
-        # Keep some statistics about indexing
-        self._nbytes = 0 # Number of bytes indexed (at start of pipeline)
-        self._nwords = 0 # Number of words indexed (after pipeline)
 
     def length(self):
         """Return the number of unique terms in the lexicon."""
-        return self._nextwid - 1
+        # Overridden in instances
+        return len(self._wids)
 
     def words(self):
         return self._wids.keys()
@@ -59,11 +57,15 @@ class Lexicon(Persistent):
 
     def sourceToWordIds(self, text):
         last = _text2list(text)
-        for t in last:
-            self._nbytes += len(t)
         for element in self._pipeline:
             last = element.process(last)
-        self._nwords += len(last)
+        if not hasattr(self.length, 'change'):
+            # Make sure length is overridden with a BTrees.Length.Length
+            self.length = Length(self.length())        
+        # Strategically unload the length value so that we get the most
+        # recent value written to the database to minimize conflicting wids
+        # XXX this will not work when MVCC is implemented in the ZODB...
+        self.length._p_deactivate()
         return map(self._getWordIdCreate, last)
 
     def termToWordIds(self, text):
@@ -138,9 +140,10 @@ class Lexicon(Persistent):
         return wid
 
     def _new_wid(self):
-        wid = self._nextwid
-        self._nextwid += 1
-        return wid
+        self.length.change(1)
+        while self._words.has_key(self.length()): # just to be safe
+            self.length.change(1)
+        return self.length()
 
 def _text2list(text):
     # Helper: splitter input may be a string or a list of strings

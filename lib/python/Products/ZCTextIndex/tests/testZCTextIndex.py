@@ -331,7 +331,7 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
         self._checkAbsoluteScores()
 
     def _checkAbsoluteScores(self):
-        self.assertEqual(self.index._totaldoclen, 6)
+        self.assertEqual(self.index._totaldoclen(), 6)
         # So the mean doc length is 2.  We use that later.
 
         r, num = self.zc_index.query("one")

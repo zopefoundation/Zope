@@ -20,6 +20,9 @@ class IIndex(Interface.Base):
     """Interface for an Index."""
 
     def length():
+        """Return the number of words in the index."""
+        
+    def document_count():
         """Return the number of documents in the index."""
 
     def get_words(docid):
@@ -62,10 +65,13 @@ class IIndex(Interface.Base):
         """
 
     def index_doc(docid, text):
-        "XXX"
+        """Add a document with the specified id and text to the index. If a
+        document by that id already exists, replace its text with the new
+        text provided
+        """
 
     def unindex_doc(docid):
-        "XXX"
+        """Remove the document with the specified id from the index"""
 
     def has_doc(docid):
         """Returns true if docid is an id of a document in the index"""

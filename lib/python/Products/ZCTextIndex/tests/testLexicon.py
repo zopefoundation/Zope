@@ -12,8 +12,10 @@
 #
 ##############################################################################
 
-import sys
+import os, sys
 from unittest import TestCase, TestSuite, main, makeSuite
+
+import ZODB
 
 from Products.ZCTextIndex.Lexicon import Lexicon
 from Products.ZCTextIndex.Lexicon import Splitter, CaseNormalizer
@@ -134,9 +136,59 @@ class Test(TestCase):
         words = HTMLWordSplitter().process(words)
         self.assertEqual(words, expected)
         locale.setlocale(locale.LC_ALL, loc) # restore saved locale
+        
+    def testUpgradeLength(self):
+        from BTrees.Length import Length
+        lexicon = Lexicon(Splitter())
+        del lexicon.length # Older instances don't override length
+        lexicon.sourceToWordIds('how now brown cow')
+        self.assert_(lexicon.length.__class__ is Length)        
+        
+class TestLexiconConflict(TestCase):
+    
+    storage = None
+
+    def tearDown(self):
+        if self.storage is not None:
+            self.storage.close()
+
+    def openDB(self):
+        from ZODB.FileStorage import FileStorage
+        from ZODB.DB import DB
+        n = 'fs_tmp__%s' % os.getpid()
+        self.storage = FileStorage(n)
+        self.db = DB(self.storage)
+        
+    def testAddWordConflict(self):
+        self.l = Lexicon(Splitter())
+        self.openDB()
+        r1 = self.db.open().root()
+        r1['l'] = self.l
+        get_transaction().commit()
+        
+        r2 = self.db.open().root()
+        copy = r2['l']
+        # Make sure the data is loaded
+        list(copy._wids.items())
+        list(copy._words.items())
+        copy.length()
+        
+        self.assertEqual(self.l._p_serial, copy._p_serial)
+        
+        self.l.sourceToWordIds('mary had a little lamb')
+        get_transaction().commit()
+        
+        copy.sourceToWordIds('whose fleece was')
+        copy.sourceToWordIds('white as snow')
+        get_transaction().commit()
+        self.assertEqual(copy.length(), 11)
+        self.assertEqual(copy.length(), len(copy._words))
 
 def test_suite():
-    return makeSuite(Test)
+    suite = TestSuite()
+    suite.addTest(makeSuite(Test))
+    suite.addTest(makeSuite(TestLexiconConflict))
+    return suite
 
 if __name__=='__main__':
     main(defaultTest='test_suite')

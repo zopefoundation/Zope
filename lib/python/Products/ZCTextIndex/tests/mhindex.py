@@ -441,8 +441,6 @@ class Indexer:
             self.updatefolder(f, f.listmessages())
             print "Total", len(self.docpaths)
         self.commit()
-        print "Indexed", self.index.lexicon._nbytes, "bytes and",
-        print self.index.lexicon._nwords, "words;",
         print len(self.index.lexicon._words), "unique words."
 
     def updatefolder(self, f, msgs):

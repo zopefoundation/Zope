@@ -18,6 +18,7 @@
 # understand what's going on.
 
 from BTrees.IIBTree import IIBucket
+from BTrees.Length import Length
 
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex.BaseIndex import BaseIndex, \
@@ -50,20 +51,29 @@ class OkapiIndex(BaseIndex):
         # sum(self._docweight.values()), the total # of words in all docs
         # This is a long for "better safe than sorry" reasons.  It isn't
         # used often enough that speed should matter.
-        self._totaldoclen = 0L
+        # Use a BTree.Length.Length object to avoid concurrent write conflicts
+        self._totaldoclen = Length(0L)
 
     def index_doc(self, docid, text):
         count = BaseIndex.index_doc(self, docid, text)
-        self._totaldoclen += count
+        self._change_doc_len(count)
         return count
 
     def _reindex_doc(self, docid, text):
-        self._totaldoclen -= self._docweight[docid]
+        self._change_doc_len(-self._docweight[docid])
         return BaseIndex._reindex_doc(self, docid, text)
 
     def unindex_doc(self, docid):
-        self._totaldoclen -= self._docweight[docid]
+        self._change_doc_len(-self._docweight[docid])
         BaseIndex.unindex_doc(self, docid)
+    
+    def _change_doc_len(self, delta):
+        # Change total doc length used for scoring
+        try:
+            self._totaldoclen.change(delta)
+        except AttributeError:
+            # Opportunistically upgrade _totaldoclen attribute to Length object
+            self._totaldoclen = Length(long(self._totaldoclen + delta))
 
     # The workhorse.  Return a list of (IIBucket, weight) pairs, one pair
     # for each wid t in wids.  The IIBucket, times the weight, maps D to
@@ -76,8 +86,13 @@ class OkapiIndex(BaseIndex):
     def _search_wids(self, wids):
         if not wids:
             return []
-        N = float(len(self._docweight))  # total # of docs
-        meandoclen = self._totaldoclen / N
+        N = float(self.document_count())  # total # of docs
+        try:
+            doclen = self._totaldoclen()
+        except TypeError:
+            # _totaldoclen has not yet been upgraded
+            doclen = self._totaldoclen
+        meandoclen = doclen / N
         K1 = self.K1
         B = self.B
         K1_plus1 = K1 + 1.0
@@ -120,8 +135,13 @@ class OkapiIndex(BaseIndex):
     def _search_wids(self, wids):
         if not wids:
             return []
-        N = float(len(self._docweight))  # total # of docs
-        meandoclen = self._totaldoclen / N
+        N = float(self.document_count())  # total # of docs
+        try:
+            doclen = self._totaldoclen()
+        except TypeError:
+            # _totaldoclen has not yet been upgraded
+            doclen = self._totaldoclen
+        meandoclen = doclen / N
         #K1 = self.K1
         #B = self.B
         #K1_plus1 = K1 + 1.0
