@@ -13,9 +13,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.12 2002/08/19 19:50:18 chrism Exp $
+$Id: testBrowserIdManager.py,v 1.13 2002/08/20 19:27:37 jim Exp $
 """
-__version__ = "$Revision: 1.12 $"[11:-2]
+__version__ = "$Revision: 1.13 $"[11:-2]
 
 import sys
 import ZODB
@@ -230,7 +230,6 @@ class TestBrowserIdManager(TestCase):
         traverser = BrowserIdManagerTraverser()
         traverser(self.app, self.req)
         self.failUnless(isAWellFormedBrowserId(self.req.browser_id_))
-        print self.req.browser_id_
         self.failUnless(self.req.browser_id_ns_ == None)
         self.failUnless(self.req._script[-1] == self.req.browser_id_)
         self.failUnless(self.req._script[-2] == '_ZopeId')
