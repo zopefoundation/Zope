@@ -296,6 +296,9 @@ class ChannelPipe:
             self._close=1
         self._request.reply_code=response.status
         
+
+is_proxying_match = re.compile(r'[^ ]* [^ \\]*:').match
+proxying_connection_re = re.compile ('Proxy-Connection: (.*)', re.IGNORECASE)
         
 def make_response(request, headers):
     "Simple http response factory"
@@ -303,9 +306,16 @@ def make_response(request, headers):
     
     response=ZServerHTTPResponse(stdout=ChannelPipe(request), stderr=StringIO())
     response._http_version=request.version
-    response._http_connection=(
-            http_server.get_header(http_server.CONNECTION, request.header)).lower()
+    if request.version=='1.0' and is_proxying_match(request.request):
+        # a request that was made as if this zope was an http 1.0 proxy.
+        # that means we have to use some slightly different http
+        # headers to manage persistent connections.
+        connection_re = proxying_connection_re
+    else:
+        # a normal http request
+        connection_re = http_server.CONNECTION
+    response._http_connection = http_server.get_header(connection_re,
+                                                       request.header).lower()
     response._server_version=request.channel.server.SERVER_IDENT
     return response
-    
 
