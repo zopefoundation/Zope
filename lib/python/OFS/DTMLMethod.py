@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -141,11 +141,15 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
 
-        try: r=apply(HTML.__call__, (self, client, REQUEST), kw)
+        try:
+            r=apply(HTML.__call__, (self, client, REQUEST), kw)
+            if type(r) is not type(''): return r
         except:
             if self.id()=='standard_error_message':
                 raise sys.exc_type, sys.exc_value, sys.exc_traceback
             return self.raise_standardErrorMessage(client, REQUEST)
+
+        
                 
         if RESPONSE is None: return r
 
