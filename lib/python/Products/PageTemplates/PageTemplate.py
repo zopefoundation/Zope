@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys
 
@@ -42,6 +42,11 @@ class PageTemplate(Base):
     id = '(unknown)'
     _text = ''
     _error_start = '<!-- Page Template Diagnostics'
+
+    def StringIO(self):
+        # Third-party products wishing to provide a full Unicode-aware
+        # StringIO can do so by monkey-patching this method.
+        return StringIO()
 
     def macros(self):
         return self.pt_macros()
@@ -80,7 +85,7 @@ class PageTemplate(Base):
 
         if self._v_errors:
             raise PTRuntimeError, 'Page Template %s has errors.' % self.id
-        output = StringIO()
+        output = self.StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
 

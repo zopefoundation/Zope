@@ -114,6 +114,11 @@ class TALInterpreter:
         self.scopeLevel = 0
         self.sourceFile = None
 
+    def StringIO(self):
+        # Third-party products wishing to provide a full Unicode-aware
+        # StringIO can do so by monkey-patching this method.
+        return StringIO()
+
     def saveState(self):
         return (self.position, self.col, self.stream,
                 self.scopeLevel, self.level)
@@ -319,7 +324,7 @@ class TALInterpreter:
 
     def no_tag(self, start, program):
         state = self.saveState()
-        self.stream = stream = StringIO()
+        self.stream = stream = self.StringIO()
         self._stream_write = stream.write
         self.interpret(start)
         self.restoreOutputState(state)
@@ -565,7 +570,7 @@ class TALInterpreter:
 
     def do_onError_tal(self, (block, handler)):
         state = self.saveState()
-        self.stream = stream = StringIO()
+        self.stream = stream = self.StringIO()
         self._stream_write = stream.write
         try:
             self.interpret(block)
