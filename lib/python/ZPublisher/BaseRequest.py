@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -196,6 +196,9 @@ class BaseRequest:
         raise KeyError, key
 
     __getattr__=get=__getitem__
+
+    def set_lazy(self, key, callable):
+        pass            # MAYBE, we could do more, but let HTTPRequest do it
 
     def has_key(self,key):
         return self.get(key, _marker) is not _marker

@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import re, sys, os, string, urllib, time, whrandom, cgi
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -139,7 +139,7 @@ class HTTPRequest(BaseRequest):
 
     The request object is a mapping object that represents a
     collection of variable to value mappings.  In addition, variables
-    are divided into four categories:
+    are divided into five categories:
 
       - Environment variables
 
@@ -158,6 +158,12 @@ class HTTPRequest(BaseRequest):
       - Cookies
 
         These are the cookie data, if present.
+
+      - Lazy Data
+
+        These are callables which are deferred until explicitly
+        referenced, at which point they are resolved and stored as
+        application data.
 
       - Other
 
@@ -304,6 +310,7 @@ class HTTPRequest(BaseRequest):
         self.form={}
         self.steps=[]
         self._steps=[]
+        self._lazies={}
 
         ################################################################
         # Get base info first. This isn't likely to cause
@@ -891,12 +898,25 @@ class HTTPRequest(BaseRequest):
                 self.other[key]=v
                 return v
 
-        v=self.common.get(key, default)
+        v=self.common.get(key, _marker)
         if v is not _marker: return v
+
+        if self._lazies:
+            v = self._lazies.get(key, _marker)
+            if v is not _marker:
+                if callable(v): v = v()
+                self[key] = v                   # Promote lazy value
+                del self._lazies[key]
+                return v
+
+        if default is not _marker: return default
 
         raise KeyError, key
 
     __getattr__=__getitem__
+
+    def set_lazy(self, key, callable):
+        self._lazies[key] = callable
 
     def get(self, key, default=None):
         return self.__getitem__(key, default)
@@ -909,6 +929,7 @@ class HTTPRequest(BaseRequest):
     def keys(self):
         keys = {}
         keys.update(self.common)
+        keys.update(self._lazies)
 
         for key in self.environ.keys():
             if (isCGI_NAME(key) or key[:5] == 'HTTP_') and \
@@ -942,6 +963,9 @@ class HTTPRequest(BaseRequest):
         result=result+"</table><h3>cookies</h3><table>"
         for k,v in self.cookies.items():
             result=result + row % (escape(k), escape(repr(v)))
+        result=result+"</table><h3>lazy items</h3><table>"
+        for k,v in self._lazies.items():
+            result=result + row % (escape(k), escape(repr(v)))
         result=result+"</table><h3>other</h3><table>"
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
@@ -971,6 +995,9 @@ class HTTPRequest(BaseRequest):
             result=result + row % (k, repr(v))
         result=result+"\nCOOKIES\n\n"
         for k,v in self.cookies.items():
+            result=result + row % (k, repr(v))
+        result=result+"\nLAZY ITEMS\n\n"
+        for k,v in self._lazies.items():
             result=result + row % (k, repr(v))
         result=result+"\nOTHER\n\n"
         for k,v in self.other.items():
