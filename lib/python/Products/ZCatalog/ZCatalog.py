@@ -454,20 +454,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         """
         Return a cataloged object given a 'data_record_id_'
         """
-        try:
-            obj = self.aq_parent.restrictedTraverse(self.getpath(rid))
-            if not obj:
-                if REQUEST is None:
-                    REQUEST=self.REQUEST
-                obj = self.aq_parent.resolve_url(self.getpath(rid), REQUEST)
-            return obj
-        except 'Unauthorized':
-            user = getSecurityManager().getUser().getUserName()
-            LOG('ZCatalog', ERROR, ('User %s attempted to retrieve object '
-                                    'with record id %s using getobject.'
-                                    % (user, rid)))
-            raise ('Access to object with record id %s in Catalog denied: '
-                   'unauthorized as %s.' % (rid, user))
+        obj = self.aq_parent.unrestrictedTraverse(self.getpath(rid))
+        if not obj:
+            if REQUEST is None:
+                REQUEST=self.REQUEST
+            obj = self.resolve_url(self.getpath(rid), REQUEST)
+        return obj
 
     def getMetadataForRID(self, rid):
         """return the correct metadata for the cataloged record id"""
