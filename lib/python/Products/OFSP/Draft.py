@@ -79,12 +79,11 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         try: db=self._p_jar.db()
         except:
             # BoboPOS 2
-            jar=Globals.VersionBase[self._version].jar
+            jar = Globals.VersionBase[self._version].jar
         else:
             # ZODB 3
-            jar=db.open(self._version)
-            cleanup=Cleanup()
-            cleanup.__del__=jar.close
+            jar = db.open(self._version)
+            cleanup = Cleanup(jar)
             REQUEST[Cleanup]=cleanup
 
 
@@ -159,4 +158,9 @@ def getdraft(ob, jar):
     return ob
 
 
-class Cleanup: pass
+class Cleanup:
+    def __init__(self, jar):
+        self._jar = jar
+
+    def __del__(self):
+        self._jar.close()

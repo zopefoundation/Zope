@@ -17,7 +17,7 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os
 import Shared.DC.xml.xmllib
@@ -101,10 +101,6 @@ class Document(Node):
         for node in self.__nodes__:
             result.append(node.toxml())
         return ''.join(result)
-
-    #def __del__(self):
-    #    self.document=None
-    #    print 'bye!'
 
 class Element(Node):
     __type__=type_element
