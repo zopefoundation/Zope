@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.71 2000/05/24 20:53:34 shane Exp $'''
-__version__='$Revision: 1.71 $'[11:-2]
+$Id: SimpleItem.py,v 1.72 2000/05/26 15:43:07 brian Exp $'''
+__version__='$Revision: 1.72 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -475,7 +475,6 @@ def format_exception(etype,value,tb,limit=None):
         tb = tb.tb_next
         n = n+1
     result.append(join(traceback.format_exception_only(etype, value),' '))
-#    sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
     return result
 
 def pretty_tb(t,v,tb):

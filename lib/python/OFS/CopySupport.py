@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.51 $'[11:-2]
+__version__='$Revision: 1.52 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -211,7 +211,7 @@ class CopyContainer(ExtensionClass.Base):
                 try:    ob._notifyOfCopyTo(self, op=0)
                 except: raise CopyError, MessageDialog(
                     title='Copy Error',
-                    message=sys.exc_value,
+                    message=sys.exc_info()[1],
                     action ='manage_main')
                 ob=ob._getCopy(self)
                 ob.manage_afterClone(ob)
@@ -232,7 +232,7 @@ class CopyContainer(ExtensionClass.Base):
                 try:    ob._notifyOfCopyTo(self, op=1)
                 except: raise CopyError, MessageDialog(
                     title='Move Error',
-                    message=sys.exc_value,
+                    message=sys.exc_info()[1],
                     action ='manage_main')
                 if not sanity_check(self, ob):
                     raise CopyError, 'This object cannot be pasted into itself'
@@ -270,7 +270,7 @@ class CopyContainer(ExtensionClass.Base):
         try: self._checkId(new_id)
         except: raise CopyError, MessageDialog(
                       title='Invalid Id',
-                      message=sys.exc_value,
+                      message=sys.exc_info()[1],
                       action ='manage_main')
         ob=self._getOb(id)
         if not ob.cb_isMoveable():
@@ -279,7 +279,7 @@ class CopyContainer(ExtensionClass.Base):
         try:    ob._notifyOfCopyTo(self, op=1)
         except: raise CopyError, MessageDialog(
                       title='Rename Error',
-                      message=sys.exc_value,
+                      message=sys.exc_info()[1],
                       action ='manage_main')
         self._delObject(id)
         if hasattr(ob, 'aq_base'):
@@ -304,13 +304,13 @@ class CopyContainer(ExtensionClass.Base):
         try: self._checkId(id)
         except: raise CopyError, MessageDialog(
                       title='Invalid Id',
-                      message=sys.exc_value,
+                      message=sys.exc_info()[1],
                       action ='manage_main')
         self._verifyObjectPaste(ob, REQUEST)
         try:    ob._notifyOfCopyTo(self, op=0)
         except: raise CopyError, MessageDialog(
                       title='Clone Error',
-                      message=sys.exc_value,
+                      message=sys.exc_info()[1],
                       action ='manage_main')
         ob=ob._getCopy(self)
         ob._setId(id)
