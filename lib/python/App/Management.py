@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.22 1999/05/11 19:46:39 brian Exp $"""
+$Id: Management.py,v 1.23 1999/05/24 19:14:27 jim Exp $"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -106,7 +106,7 @@ class Tabs(ExtensionClass.Base):
 
     def manage_help(self, RESPONSE, SCRIPT_NAME):
         "Help!"
-        RESPONSE.redirect(SCRIPT_NAME+'HelpSys/hs_index')
+        RESPONSE.redirect(SCRIPT_NAME+'/HelpSys/hs_index')
         return ''
 
     manage_options  =()
@@ -115,7 +115,8 @@ class Tabs(ExtensionClass.Base):
 
     def filtered_manage_options(
         self, REQUEST=None,
-        help_option_=({'label': 'Help', 'action': 'manage_help'},),
+        help_option_=({'label': 'Help', 'action': 'manage_help',
+                       },),
         ):
         if REQUEST is None:
             if hasattr(self, 'REQUEST'):
