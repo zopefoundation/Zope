@@ -104,6 +104,10 @@ class TestRunner:
 
     def runFile(self, filename):
         """Run the test suite defined by filename."""
+        working_dir = os.getcwd()
+        dirname, name = os.path.split(filename)
+        if dirname:
+            os.chdir(dirname)
         self.report('Running: %s' % filename)
         try:    suite=self.getSuiteFromFile(filename)
         except: suite=None
@@ -111,6 +115,7 @@ class TestRunner:
             self.report('No test suite found in file:\n%s' % filename)
             return
         self.runSuite(suite)
+        os.chdir(working_dir)
 
 
 
