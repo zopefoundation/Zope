@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.129 2001/03/26 19:52:31 brian Exp $"""
+$Id: ObjectManager.py,v 1.130 2001/03/27 03:32:14 brian Exp $"""
 
-__version__='$Revision: 1.129 $'[11:-2]
+__version__='$Revision: 1.130 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -116,6 +116,8 @@ NOT_REPLACEABLE = 0
 REPLACEABLE = 1
 UNIQUE = 2
 
+BadRequestException = 'Bad Request'
+
 def checkValidId(self, id, allow_dup=0):
     # If allow_dup is false, an error will be raised if an object
     # with the given id already exists. If allow_dup is true,
@@ -123,15 +125,15 @@ def checkValidId(self, id, allow_dup=0):
     # check_valid_id() will be called again later with allow_dup
     # set to false before the object is added.
     if not id or (type(id) != type('')):
-        raise 'Bad Request', 'Empty or invalid id specified.'
+        raise BadRequestException, 'Empty or invalid id specified.'
     if bad_id(id) != -1:
-        raise 'Bad Request', (
+        raise BadRequestException, (
             'The id "%s" contains characters illegal in URLs.' % id)
-    if id[0]=='_': raise 'Bad Request', (
+    if id[0]=='_': raise BadRequestException, (
         'The id "%s" is invalid - it begins with an underscore.'  % id)
-    if id[:3]=='aq_': raise 'Bad Request', (
+    if id[:3]=='aq_': raise BadRequestException, (
         'The id "%s" is invalid - it begins with "aq_".'  % id)
-    if id[-2:]=='__': raise 'Bad Request', (
+    if id[-2:]=='__': raise BadRequestException, (
         'The id "%s" is invalid - it ends with two underscores.'  % id)
     if not allow_dup:
         obj = getattr(self, id, None)
@@ -142,16 +144,16 @@ def checkValidId(self, id, allow_dup=0):
             if hasattr(aq_base(self), id):
                 # The object is located in this ObjectManager.
                 if not flags & REPLACEABLE:
-                    raise 'Bad Request', ('The id "%s" is invalid--'
+                    raise BadRequestException, ('The id "%s" is invalid--'
                                           'it is already in use.' % id)
                 # else the object is replaceable even if the UNIQUE
                 # flag is set.
             elif flags & UNIQUE:
-                raise 'Bad Request', ('The id "%s" is reserved.' % id)
+                raise BadRequestException, ('The id "%s" is reserved.' % id)
     if id == 'REQUEST':
-        raise 'Bad Request', 'REQUEST is a reserved name.'
+        raise BadRequestException, 'REQUEST is a reserved name.'
     if '/' in id:
-        raise 'Bad Request', (
+        raise BadRequestException, (
             'The id "%s" contains characters illegal in URLs.' % id
             )
 
