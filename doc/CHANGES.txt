@@ -14,5 +14,7 @@ Zope changes
         - The deprecated alias getSize() was added back to Image and DTML
           objects (existing products still depend on it).
 
+        - Cleaned up a DocumentTemplate namespace issue.  Fixed QuickStart.
 
+        - Removed old validation code in cDocumentTemplate.
 
