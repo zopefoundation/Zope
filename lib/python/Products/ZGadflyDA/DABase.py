@@ -96,8 +96,8 @@
 ##############################################################################
 __doc__='''Database Connection
 
-$Id: DABase.py,v 1.5 1998/12/16 15:28:47 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: DABase.py,v 1.6 1998/12/21 17:06:15 jim Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 from db import manage_DataSources
 import Shared.DC.ZRDB.Connection, sys
@@ -120,28 +120,30 @@ class Connection(Shared.DC.ZRDB.Connection.Connection):
     info=None
         
     def tpValues(self):
-        if hasattr(self, '_v_tpValues'): return self._v_tpValues
+        #if hasattr(self, '_v_tpValues'): return self._v_tpValues
         r=[]
-        self._v_tables=tables=TableBrowserCollection()
-        tables=tables.__dict__
+        # self._v_tables=tables=TableBrowserCollection()
+        #tables=tables.__dict__
         c=self._v_database_connection
         try:
             for d in c.tables(rdb=0):
                 try:
                     name=d['TABLE_NAME']
                     b=TableBrowser()
+                    b.__name__=name
                     b._d=d
-                    b._columns=c.columns(name)
+                    b._c=c
+                    # b._columns=c.columns(name)
                     try: b.icon=table_icons[d['TABLE_TYPE']]
                     except: pass
                     r.append(b)
-                    tables[name]=b
+                    # tables[name]=b
                 except:
                     # print d['TABLE_NAME'], sys.exc_type, sys.exc_value
                     pass
 
         finally: pass #print sys.exc_type, sys.exc_value
-        self._v_tpValues=r
+        #self._v_tpValues=r
         return r
 
     def __getitem__(self, name):
@@ -178,12 +180,13 @@ class TableBrowser(Browser, Acquisition.Implicit):
 
     def tpValues(self):
         r=[]
-        for d in self._columns:
+        tname=self.__name__
+        for d in self._c.columns(tname):
             b=ColumnBrowser()
             b._d=d
             try: b.icon=field_icons[d['Type']]
             except: pass
-            b.TABLE_NAME=self._d['TABLE_NAME']
+            b.TABLE_NAME=tname
             r.append(b)
         return r
             
