@@ -91,10 +91,7 @@ except ImportError:
     sys.path[0] = '../../'
     import Testing
 
-import unittest
-from Products.PluginIndexes.PathIndex.PathIndex import PathIndex
-
-
+import unittest,locale
 import Splitter
 
 
@@ -104,8 +101,13 @@ class TestCase( unittest.TestCase ):
     """
 
     def setUp( self ):
-        """
-        """
+        self.testdata = (
+        ('The quick brown fox jumps over the lazy dog',
+          ['the','quick','brown','fox','jumps','over','the','lazy','dog']),
+        (  'öfters   Österreichische   herüber   Überfall   daß   Ärger   verärgert',
+          ['öfters','österreichische','herüber','überfall','daß','ärger','verärgert'])
+        )
+        
 
         pass
 
@@ -122,7 +124,29 @@ class TestCase( unittest.TestCase ):
         assert len(Splitter.availableSplitters)==len(Splitter.splitterNames)
 
 
+
+    def _test(self,sp_name,text,splitted):
     
+        splitter = Splitter.getSplitter(sp_name)
+        result = list(splitter(text))
+
+        assert result==splitted, "%s: %s vs %s" % (sp_name,result,splitted) 
+
+
+    def testZopeSplitter(self):
+        """test ZopeSplitter"""
+
+        for text,splitted in self.testdata:
+            self._test("ZopeSplitter",text,splitted)
+    
+    def testISOSplitter(self):
+        """test ISOSplitter"""
+
+        for text,splitted in self.testdata:
+            self._test("ISO_8859_1_Splitter",text,splitted)
+
+#        for loc in ["","ru_RU.KOI8-R"]:
+#           locale.setlocale(locale.LC_ALL , loc)
 
 
 
