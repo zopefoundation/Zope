@@ -83,12 +83,7 @@
 # 
 ##############################################################################
 import os, sys
-        
-sys.path.insert(0, os.getcwd())
-try: import unittest
-except:
-    sys.path[0]=os.path.join(sys.path[0],'..','..')
-    import unittest
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import ZODB
 from SearchIndex.UnKeywordIndex import UnKeywordIndex
@@ -249,22 +244,4 @@ class TestCase( unittest.TestCase ):
         assert len(result) == 1
         assert result[0] == 8
 
-def test_suite():
-    return unittest.makeSuite( TestCase )
-
-def main():
-    unittest.TextTestRunner().run( test_suite() )
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
-    
+framework()

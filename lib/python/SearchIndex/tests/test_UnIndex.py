@@ -83,16 +83,10 @@
 # 
 ##############################################################################
 
-import sys
-sys.path.insert(0, '.')
-try:
-    import Testing
-except ImportError:
-    sys.path[0] = '../../'
-    import Testing
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import ZODB
-import unittest
 from SearchIndex.UnIndex import UnIndex
 
 class Dummy:
@@ -249,21 +243,4 @@ class TestCase( unittest.TestCase ):
         assert r==expect, r 
             
         
-def test_suite():
-    return unittest.makeSuite( TestCase )
-
-def debug():
-    return test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-def main():
-    unittest.TextTestRunner().run( test_suite() )
-
-if __name__ == '__main__':
-   if len(sys.argv) > 1:
-      globals()[sys.argv[1]]()
-   else:
-      main()
+framework()

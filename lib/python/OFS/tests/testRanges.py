@@ -84,23 +84,10 @@
 ##############################################################################
 
 import os, sys
-sys.path.insert(0, '.')
-try:
-    import Testing
-    os.environ['SOFTWARE_HOME']=os.environ.get('SOFTWARE_HOME', '.')
-except ImportError:
-    sys.path[0]='../..'
-    import Testing
-    os.environ['SOFTWARE_HOME']='../..'
-
-os.environ['INSTANCE_HOME']=os.environ.get(
-    'INSTANCE_HOME',
-    os.path.join(os.environ['SOFTWARE_HOME'],'..','..')
-    )
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import string, whrandom, cStringIO, time, re
 import Zope
-import unittest
 from Testing.makerequest import makerequest
 from webdav.common import rfc1123_date
 
@@ -140,7 +127,7 @@ class TestRequestRange(unittest.TestCase):
         self.data = data
 
         # Hack, we need a _p_mtime for the file, so we make sure that it has
-        # one. We use a subtransaction, which means we can rol-back later and
+        # one. We use a subtransaction, which means we can rollback later and
         # pretend we didn't touch the ZODB.
         get_transaction().commit()
 
@@ -407,23 +394,4 @@ class TestRequestRange(unittest.TestCase):
         self.expectOK('21-25,10-20',
             if_range=self.file.http__etag() + 'bar')
 
-
-def test_suite():
-    return unittest.makeSuite(TestRequestRange, 'test')
-
-def main():
-    unittest.TextTestRunner().run(test_suite())
-
-def debug():
-    test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-   
-if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
-
+framework()

@@ -145,14 +145,12 @@ class GlobbingLexicon(Lexicon):
 
     def createDigrams(self, word):
         """Returns a list with the set of digrams in the word."""
-        digrams = []
+        digrams = list(word)
+        digrams.append(self.eow)
+        last = self.eow
 
-        digrams.append(self.eow + word[0])    # Mark the beginning
-
-        for i in range(1,len(word)):
-            digrams.append(word[i-1:i+1])
-
-        digrams[-1] = digrams[-1] + self.eow  # Mark the end
+        for i in range(len(digrams)):
+            last, digrams[i] = digrams[i], last + digrams[i]
 
         return digrams
 

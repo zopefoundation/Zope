@@ -85,18 +85,11 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.3 2001/06/21 17:21:09 shane Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.4 2001/08/06 17:28:08 evan Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
-import sys, os
-import unittest
-
-if __name__=='__main__':
-    sys.path.append(os.path.join(os.pardir, os.pardir))
-    here = os.curdir
-else:
-    from App.Common import package_home
-    here = package_home(globals())
+import os, sys
+execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import ZODB
 from DocumentTemplate import HTML
@@ -113,7 +106,7 @@ class SecurityTests (DTMLTests):
     doc_class = UnownedDTML
     unrestricted_doc_class = HTML
 
-    def checkNoImplicitAccess(self):
+    def testNoImplicitAccess(self):
         class person:
             name='Jim'
 
@@ -128,7 +121,7 @@ class SecurityTests (DTMLTests):
         else:
             assert 0, 'Did not protect class instance'
 
-    def checkExprExplicitDeny(self):
+    def testExprExplicitDeny(self):
         class myclass (Base):
             __roles__ = None  # Public
             somemethod__roles__ = ()  # Private
@@ -144,7 +137,7 @@ class SecurityTests (DTMLTests):
         else:
             assert 0, 'Did not deny attribute access'
 
-    def checkSecurityInSyntax(self):
+    def testSecurityInSyntax(self):
         '''
         Ensures syntax errors are thrown for an expr with restricted
         syntax.
@@ -167,25 +160,4 @@ class SecurityTests (DTMLTests):
         assert res == '10', res
 
     # Note: we need more tests!
-
-
-def test_suite():
-    return unittest.makeSuite(SecurityTests, 'check')
-
-def main():
-    alltests = test_suite()
-    runner = unittest.TextTestRunner()
-    runner.run(alltests)
-
-def debug():
-   test_suite().debug()
-
-def pdebug():
-    import pdb
-    pdb.run('debug()')
-
-if __name__=='__main__':
-    if len(sys.argv) > 1:
-        globals()[sys.argv[1]]()
-    else:
-        main()
+framework()

@@ -83,65 +83,36 @@
 # 
 ##############################################################################
 
-import os, sys
-execfile(os.path.join(sys.path[0], 'framework.py'))
-
-from SortEx import *
-from ztestlib import *
-from results import *
-
-
-class TestCase( unittest.TestCase ):
-    """
-        Test SortEx .
-    """
-
-    def setUp( self ):
-        """
-        """
-
-    def tearDown( self ):
-        """
-        """
-           
-    def test1( self ):
-        "test1"
-        assert res1==SortEx(wordlist)
-
-    def test2( self ):
-        "test2"
-        assert res2==SortEx(wordlist, (("key",),), mapping=1)
-
-    def test3( self ):
-        "test3"
-        assert res3==SortEx(wordlist, (("key", "cmp"),), mapping=1)
-        
-    def test4( self ):
-        "test4"
-        assert res4==SortEx(wordlist, (("key", "cmp", "desc"),), mapping=1)
-
-    def test5( self ):
-        "test5"
-        assert res5==SortEx(wordlist, (("weight",), ("key",)), mapping=1)
-
-    def test6( self ):
-        "test6"
-        assert res6==SortEx(wordlist, (("weight",), ("key", "nocase", "desc")), mapping=1)
+######################################################################
+# Set up unit testing framework
+#
+# The following code should be at the top of every test module:
+#
+# import os, sys
+# execfile(os.path.join(sys.path[0], 'framework.py'))
+#
+# ...and the following at the bottom:
+#
+# framework()
 
 
-    def test7(self):
-        "test7"
+# Find the Testing package
+if not sys.modules.has_key('Testing'):
+    p0 = sys.path[0]
+    if p0 and __name__ == '__main__':
+        os.chdir(p0)
+        p0 = ''
+    p = d = os.path.abspath(os.curdir)
+    while d:
+        if os.path.isdir(os.path.join(p, 'Testing')):
+            sys.path[:1] = [p0, os.pardir, p]
+            break
+        p, d = os.path.split(p)
+    else:
+        print 'Unable to locate Testing package.'
+        sys.exit(1)
 
-        def myCmp(s1, s2):
-           return -cmp(s1, s2)
+import Testing, unittest
+execfile(os.path.join(os.path.split(Testing.__file__)[0], 'common.py'))
 
-        # Create namespace...
-        from DocumentTemplate.DT_Util import TemplateDict
-        md = TemplateDict()
 
-        #... and push out function onto the namespace
-        md._push({"myCmp" : myCmp})
-
-        assert res7==SortEx(wordlist, (("weight",), ("key", "myCmp", "desc")), md, mapping=1)
-
-framework()
