@@ -30,6 +30,11 @@ Zope changes
           return the right thing regardless of how the id of the 
           object is stored internally.
 
+        - Improved Ownership controls. Now you simply choose whether
+          or not to take ownership of sub-objects when taking
+          ownership. There is no need to control implicit/explicit
+          ownership. 
+
       Bugs Fixed
 
         - (Collector #1650)Where the underlying object does not define
@@ -37,3 +42,8 @@ Zope changes
           objects fall back to comparing the identities *of the
           wrappers* .  Fixed to unrwap the object (both, if needed)
           before comparing identities.
+
+
+
+
+
