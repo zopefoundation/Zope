@@ -5,16 +5,34 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
+<p>
 The Control Panel provides access to system management functions,
 such as database and product management.  
 
 <FORM ACTION="manage_shutdown" METHOD="POST">
-You are running <em>Zope</em> version: <!--#var version_txt-->,
-on Python <!--#var sys_version--> on <!--#var sys_platform-->.
-<em>Zope</em> has been running (with a process ID of <!--#var process_id-->) 
-for <!--#var process_time-->.  Click &quot;Shutdown&quot; to shutdown 
-the <em>Zope</em> process. <em>Zope</em> be restarted on the next web request.
-<BR><INPUT TYPE="SUBMIT" VALUE="Shutdown">
+
+<ul>
+<li><em>Zope</em> version: <!--#var version_txt-->
+<li>Python version: <!--#var sys_version-->
+<li>System Platform: <!--#var sys_platform-->
+<li>Process ID: <!--#var process_id-->
+<li>Running for: <!--#var process_time-->
+</ul>
+<P>
+
+<table CELLPADDING="5">
+  <tr>
+    <td ALIGN="center">
+	    <FONT COLOR="#FF5060">
+	 <INPUT TYPE="SUBMIT" VALUE="Shutdown">
+	    </FONT>
+    </td>
+    <td> Click &quot;Shutdown&quot; to shutdown the <em>Zope</em>
+	    process.<br> 
+	 It will be restarted on the next web request.
+    </td>
+  </tr>
+</table>
 </FORM>
 
 <!--#if Principia-Version-->
