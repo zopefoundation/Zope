@@ -11,8 +11,8 @@
 #
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.84 $'[11:-2]
 
+__version__='$Revision: 1.85 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile

@@ -909,5 +909,11 @@ sys.ZServerExitCode=0
 import Lifetime
 Lifetime.loop()
 code = sys.ZServerExitCode
+
+zLOG.LOG('z2', zLOG.INFO, "Closing all open ZODB databases")
+import Globals
+for db in Globals.opened:
+    db.close()
+
 zLOG.LOG("z2", zLOG.INFO, 'Exiting with code %d' % code )
 sys.exit(code)
