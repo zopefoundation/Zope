@@ -19,11 +19,17 @@ class Base(BaseStorage):
         self._init_oid()
 
     def _setupDB(self, name, flags=0):
+        """Open an individual database and assign to an "_" attribute.
+        """
         d=db.Db(self._env)
-        if flags: db.set_flags(flags)
+        if flags: d.set_flags(flags)
         d.open(self._prefix+name, db.DB_BTREE, db.DB_CREATE)
         setattr(self, '_'+name, d)
         return d
+
+    def _setupDbs(self):
+        """Set up the storages databases, typically using '_setupDB'.
+        """
 
     def _init_oid(self):
         c=self._index.cursor()
@@ -31,9 +37,20 @@ class Base(BaseStorage):
         if v: self._oid=v[0]
         else: self._oid='\0\0\0\0\0\0\0\0'
 
+    _len=-1
     def __len__(self):
-        # TBD
-        return 0
+        l=self._len
+        if l < 0:
+            l=self._len=len(self._index)
+
+        return l
+
+    def new_oid(self, last=None):
+        # increment the cached length:
+        l=self._len
+        if l >= 0: self._len=l+1
+        return BaseStorage.new_oid(self, last)
+        
 
     def getSize(self):
         # TBD
@@ -49,13 +66,20 @@ class Base(BaseStorage):
         self._tmp.seek(0)
 
     def close(self):
-        for name in self._dbnames:
+        """Close the storage
+
+        by closing the databases it uses and closing it's environment.
+        """
+        for name in self._dbnames():
             getattr(self, '_'+name).close()
             delattr(self, '_'+name)
         self._env.close()
         del self._env
 
-    
+    def _dbnames(self):
+        """Return a list of the names of the databases used by the storage.
+        """
+        return ("index",)
 
 def envFromString(name):
     if not os.path.exists(name): os.mkdir(name)

@@ -5,13 +5,16 @@ from struct import pack, unpack
 class Minimal(Base):
 
     def _setupDbs(self):
-        self._index=self._setupDB('mini')
+        # Supports Base framework
+        self._index=self._setupDB('current')
+        self._setupDB('pickle')
 
     def load(self, oid, version):
         self._lock_acquire()
         try:
-            p=self._index[oid]
-            return p[8:], p[:8] # pickle, serial
+            s=self._index[oid]
+            p=self._pickle[oid]
+            return p, s # pickle, serial
         finally: self._lock_release()
 
     def store(self, oid, serial, data, version, transaction):
@@ -24,8 +27,7 @@ class Minimal(Base):
         self._lock_acquire()
         try:
             if self._index.has_key(oid):
-                old=self._index[oid]
-                oserial=old[:8]
+                oserial=self._index[oid]
                 if serial != oserial: raise POSException.ConflictError
                 
             serial=self._serial
@@ -35,14 +37,11 @@ class Minimal(Base):
 
         return serial
 
-    def tpc_vote(self, transaction):
-        if transaction is not self._transaction:
-            raise POSException.StorageTransactionError(self, transaction)
-
-        self._lock_acquire()
+    def _finish(self, tid, u, d, e):
+        txn = self._env.txn_begin()
         try:
-            txn = self._txn = self._env.txn_begin()
-            put=self._index.put
+            serial_put=self._index.put
+            pickle_put=self._pickle.put
             serial=self._serial
             tmp=self._tmp
             s=tmp.tell()
@@ -55,20 +54,25 @@ class Minimal(Base):
                 l=l+ldata+12
                 if ldata > s:
                     raise 'Temporary file corrupted'
-                put(oid, serial+data, txn)
+                serial_put(oid, serial, txn)
+                pickle_put(oid, data,   txn)
 
             tmp.seek(0)
             if s > 999999: tmp.truncate()
             
-        finally: self._lock_release()
+        except:
+            txn.abort()
+            raise
+        else:
+            txn.commit()
 
     def pack(self, t, referencesf):
         
         self._lock_acquire()
-        try:    
+        try:
             # Build an index of *only* those objects reachable
             # from the root.
-            index=self._index
+            index=self._pickle
             rootl=['\0\0\0\0\0\0\0\0']
             pop=rootl.pop
             pindex={}
@@ -78,9 +82,8 @@ class Minimal(Base):
                 if referenced(oid): continue
     
                 # Scan non-version pickle for references
-                r=index[oid]
-                pindex[oid]=r
-                p=r[8:]
+                p=index[oid]
+                pindex[oid]=1
                 referencesf(p, rootl)
 
             # Now delete any unreferenced entries:
@@ -88,3 +91,12 @@ class Minimal(Base):
                 if not referenced(oid): del index[oid]
     
         finally: self._lock_release()
+
+
+
+
+
+
+
+
+
