@@ -163,6 +163,19 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     helpURL=HTMLFile('helpURL',globals())
 
+    def helpLink(self, product='OFSP', topic='ObjectManager_Contents.stx'):
+        # Generate an <a href...> tag linking to a help topic. This
+        # is a little lighter weight than the help button approach.
+        basepath=self.REQUEST['BASEPATH1']
+        help_url='%s/Control_Panel/Products/%s/Help/%s' % (
+            basepath,
+            product,
+            topic
+            )
+        help_url='%s?help_url=%s' % (self.absolute_url(), help_url)
+        html='<a href="" onClick="return window.parent.openHelpWindow(' \
+             '\'%s\');">Help!</a>' % (help_url)
+        return html
 
     def tpValues(self):
         """
