@@ -38,7 +38,7 @@ from Products.PluginIndexes.TextIndex import Splitter
 import urllib, time, sys
 import string, logging
 from IZCatalog import IZCatalog
-from zLOG import LOG, INFO, BLATHER
+from zLOG import LOG, INFO, BLATHER, ERROR
 
 
 manage_addZCatalogForm=DTMLFile('dtml/addZCatalog',globals())
