@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -151,19 +151,6 @@ class ApplicationManager(Folder,CacheManager):
 	if REQUEST: return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
-
-    createProductEncyclopedia__roles__=()
-    def createProductEncyclopedia(self, product, format=None, RESPONSE=None):
-	"""Create product encyclopedia files
-
-	In StructuredText, HTML, and MML formats.
-	"""
-	if type(product) is not type([]): product=(product,)
-	import PrincipiaHelp.product_encyclopedia
-	for p in product:
-	    r=PrincipiaHelp.product_encyclopedia.doc(p, format, RESPONSE)
-	if r is not None: return r
-	return MessageDialog(message='Documented: %s' % product)
 
     def version_list(self):
 	# Return a list of currently installed products/versions
