@@ -48,6 +48,13 @@ class TestPythonScriptNoAq(unittest.TestCase):
         ps._makeFunction()
         return ps
 
+    def _filePS(self, fname, bind=None):
+        ps = PythonScript(fname)
+        ps.ZBindings_edit(bind or {})
+        ps.write(readf(fname))
+        ps._makeFunction()
+        return ps
+
     def fail(self):
         'Fail if called'
         assert 0, 'Fail called'
@@ -97,20 +104,20 @@ class TestPythonScriptNoAq(unittest.TestCase):
         assert c == 'c'
 
     def testWhileLoop(self):
-        one = self._newPS(readf('while_loop'))()
+        one = self._filePS('while_loop')()
         assert one == 1
 
     def testForLoop(self):
-        ten = self._newPS(readf('for_loop'))()
+        ten = self._filePS('for_loop')()
         assert ten == 10
 
     def testMutateLiterals(self):
-        l, d = self._newPS(readf('mutate_literals'))()
+        l, d = self._filePS('mutate_literals')()
         assert l == [2], l
         assert d == {'b': 2}
 
     def testTupleUnpackAssignment(self):
-        d, x = self._newPS(readf('tuple_unpack_assignment'))()
+        d, x = self._filePS('tuple_unpack_assignment')()
         assert d == {'a': 0, 'b': 1, 'c': 2}, d
         assert x == 3, x
 
@@ -119,16 +126,16 @@ class TestPythonScriptNoAq(unittest.TestCase):
         assert one == 1
 
     def testTryExcept(self):
-        a,b = self._newPS(readf('try_except'))()
+        a,b = self._filePS('try_except')()
         assert a==1
         assert b==1
 
     def testBigBoolean(self):
-        true = self._newPS(readf('big_boolean'))()
+        true = self._filePS('big_boolean')()
         assert true, true
 
     def testFibonacci(self):
-        r = self._newPS(readf('fibonacci'))()
+        r = self._filePS('fibonacci')()
         assert r == [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377,
                      610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657,
                      46368, 75025, 121393, 196418, 317811, 514229, 832040,
@@ -136,25 +143,30 @@ class TestPythonScriptNoAq(unittest.TestCase):
                      24157817, 39088169, 63245986], r
 
     def testSimplePrint(self):
-        txt = self._newPS(readf('simple_print'))()
+        txt = self._filePS('simple_print')()
         assert txt == 'a 1 []\n', txt
 
     def testComplexPrint(self):
-        txt = self._newPS(readf('complex_print'))()
+        txt = self._filePS('complex_print')()
         assert txt == 'double\ndouble\nx: 1\ny: 0 1 2\n\n', txt
 
     def testNSBind(self):
-        f = self._newPS(readf('ns_bind'), bind={'name_ns': '_'})
+        f = self._filePS('ns_bind', bind={'name_ns': '_'})
         bound = f.__render_with_namespace__({'yes': 1, 'no': self.fail})
         assert bound == 1, bound
 
     def testBooleanMap(self):
-        true = self._newPS(readf('boolean_map'))()
+        true = self._filePS('boolean_map')()
         assert true
 
     def testGetSize(self):
-        f = self._newPS(readf('complex_print'))
+        f = self._filePS('complex_print')
         self.assertEqual(f.get_size(),len(f.read()))
+
+    def test__name__(self):
+        fname = 'class.__name__'
+        f = self._filePS(fname)
+        self.assertEqual(f(), ('?.foo', "'string'"))
 
 def test_suite():
     suite = unittest.TestSuite()
