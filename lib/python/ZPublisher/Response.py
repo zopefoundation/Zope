@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.1 1996/06/17 18:57:18 jfulton Exp $'''
+$Id: Response.py,v 1.2 1996/07/01 11:51:54 jfulton Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,14 +55,23 @@ $Id: Response.py,v 1.1 1996/06/17 18:57:18 jfulton Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.2  1996/07/01 11:51:54  jfulton
+# Updated code to:
+#
+#   - Provide a first cut authentication.authorization scheme
+#   - Fix several bugs
+#   - Provide better error messages
+#   - Provide automagic insertion of base
+#   - Support Fast CGI module publisher.
+#
 # Revision 1.1  1996/06/17 18:57:18  jfulton
 # Almost initial version.
 #
 #
 # 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
-import string, types, sys
+import string, types, sys, regex
 
 status_codes={
     'ok': 200,
@@ -116,9 +125,13 @@ status_codes={
     'zerodivisionerror':500,
     }
 
+end_of_header_re=regex.compile('</head>',regex.casefold)
+base_re=regex.compile('<base',regex.casefold)
 
 class Response:
-    def __init__(self,body='',status=200,headers=None):
+
+    def __init__(self,body='',status=200,headers=None,
+		 stdout=sys.stdout, stderr=sys.stderr,):
 	'''\
 	Creates a new response. In effect, the constructor calls
 	"self.setBody(body); self.setStatus(status); for name in
@@ -127,7 +140,11 @@ class Response:
 	    headers={}
 	self.headers=headers
 	self.setStatus(status)
+	self.base=''
 	self.setBody(body)
+	self.cookies={}
+	self.stdout=stdout
+	self.stderr=stderr
     
     def setStatus(self,status):
 	'''\
@@ -149,7 +166,13 @@ class Response:
 	'''\
 	Sets an HTTP return header "name" with value "value", clearing
 	the previous value set for the header, if one exists. '''
-	self.headers[name]=value
+	self.headers[string.lower(name)]=value
+
+    def __getitem__(self, name):
+	'Get the value of an output header'
+	return self.headers[name]
+
+    __setitem__=setHeader
 
     def setBody(self, body, title=''):
 	'''\
@@ -163,10 +186,25 @@ class Response:
 		       % (str(title),str(body)))
 	else:
 	    self.body=str(body)
+	self.insertBase()
+	return self
 
     def getStatus(self):
 	'Returns the current HTTP status code as an integer. '
 	return self.status
+
+    def setBase(self,base):
+	'Set the base URL for the returned document.'
+	self.base=base
+	self.insertBase()
+
+    def insertBase(self):
+	if self.base:
+	    body=self.body
+	    e=end_of_header_re.search(body)
+	    if e >= 0 and base_re.search(body) < 0:
+		self.body=('%s\t<base href="%s">\n%s' %
+			   (body[:e],self.base,body[e:]))
 
     def appendCookie(self, name, value):
 	'''\
@@ -174,6 +212,11 @@ class Response:
 	browsers with a key "name" and value "value". If a value for the
 	cookie has previously been set in the response object, the new
 	value is appended to the old one separated by a colon. '''
+	try:
+	    v,expires,domain,path,secure=self.cookies[name]
+	except:
+	    v,expires,domain,path,secure='','','','',''
+	self.cookies[name]=v+value,expires,domain,path,secure
 
     def expireCookie(self, name):
 	'''\
@@ -181,12 +224,26 @@ class Response:
 	corresponding to "name" on the client, if one exists. This is
 	accomplished by sending a new cookie with an expiration date
 	that has already passed. '''
+	self.cookies[name]='deleted','01-Jan-96 11:11:11 GMT','','',''
 
-    def setCookie(self, name, value):
+    def setCookie(self,name, value=None,
+		  expires=None, domain=None, path=None, secure=None):
 	'''\
 	Returns an HTTP header that sets a cookie on cookie-enabled
 	browsers with a key "name" and value "value". This overwrites
 	any previously set value for the cookie in the Response object. '''
+	try: cookie=self.cookies[name]
+	except: cookie=('')*5
+
+	def f(a,b):
+	    if b is not None: return b
+	    return a
+
+	self.cookies[name]=tuple(map(f,cookie,
+				     (value,expires,domain,path,secure)
+				     )
+				 )
+
 
     def appendBody(self, body):
 	''
@@ -213,33 +270,82 @@ class Response:
 	except: h=value
 	self.setHeader(name,h)
 
+    def isHTML(self,str):
+	return string.lower(string.strip(str)[:6]) == '<html>'
+
+    def _traceback(self,t,v,tb):
+	import traceback
+	return ("\n<!--\n%s\n-->" %
+		string.joinfields(traceback.format_exception(t,v,tb,200),'\n')
+		)
+
+    def exception(self):
+	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
+
+	self.setStatus(t)
+	b=v
+	if type(b) is not type(''):
+	    return self.setBody(
+		(str(t),
+		 'Sorry, an error occurred.<p>'
+		 + self._traceback(t,v,tb)))
+
+	if self.isHTML(b): return self.setBody(b+self._traceback(t,v,tb))
+
+	return self.setBody((str(t),b+self._traceback(t,v,tb)))
+
+    _wrote=None
+
+    def _cookie_list(self):
+	cookie_list=[]
+	for name in self.cookies.keys():
+	    value,expires,domain,path,secure=self.cookies[name]
+	    cookie='set-cookie: %s=%s' % (name,value)
+	    if expires: cookie = "%s; expires=%s" % (cookie,expires)
+	    if domain: cookie = "%s; domain=%s" % (cookie,domain)
+	    if path: cookie = "%s; path=%s" % (cookie,path)
+	    if secure: cookie = cookie+'; secure'
+	    cookie_list.append(cookie)
+	return cookie_list
+
     def __str__(self):
+	if self._wrote: return ''	# Streaming output was used.
+
 	headers=self.headers
 	body=self.body
 	if body:
 	    if not headers.has_key('content-type'):
-		if len(body) > 6 and string.lower(body[:6]) == '<html>':
+		if self.isHTML(body):
 		    c='text/html'
 		else:
 		    c='text/plain'
 		self.setHeader('content-type',c)
 	    if not headers.has_key('content-length'):
 		self.setHeader('content-length',len(body))
-	
-	headers=map(lambda k,d=headers: "%s: %s" % (k,d[k]), headers.keys())
-	if body: headers[len(headers):]=['',body]
 
-	return string.joinfields(headers,'\n')
+	headersl=map(lambda k,d=headers: "%s: %s" % (k,d[k]), headers.keys())
+	if self.cookies:
+	    headersl=headersl+self._cookie_list()
+	if body: headersl[len(headersl):]=['',body]
 
-def ExceptionResponse(body="Sorry, an error occurred"):
-    import traceback
-    t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
-    body=("%s<p>\n<!--\n%s\n-->" %
-	  (body,
-	   string.joinfields(traceback.format_exception(t,v,tb,200),'\n')
-	   ))
-    return Response(('Error',body),t)
-    # return Response('',t)
+	return string.joinfields(headersl,'\n')
+
+    def write(self,data):
+	self.body=self.body+data
+	if end_of_header_re.search(self.body) >= 0:
+	    try: del self.headers['content-length']
+	    except: pass
+	    self.insertBase()
+	    body=self.body
+	    self.body=''
+	    self.write=write=self.stdout.write
+	    write(str(self))
+	    self._wrote=1
+	    write('\n\n')
+	    write(body)
+
+def ExceptionResponse():
+    return Response().exception()
 
 def main():
     print Response('hello world')
