@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -312,8 +312,10 @@ def restrictedTraverse(self, path, securityManager,
             o=t(REQUEST, name)
                     
             container = None
-            if (has(get(object, 'aq_base', object), name)
-                and get(object, name) is o):
+            if has(o, 'im_self'):
+                container = o.im_self
+            elif (has(get(object, 'aq_base', object), name)
+                and get(object, name) == o):
                 container = object
             if not validate(object, container, name, o):
                 raise 'Unauthorized', name
