@@ -154,8 +154,8 @@ class Let:
 def parse_let_params(text,
             result=None,
             tag='let',
-            parmre=re.compile(r'([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
-            qparmre=re.compile(r'([\000- ]*([^\000- ="]+)="([^"]*)")'),
+            parmre=re.compile('([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
+            qparmre=re.compile('([\000- ]*([^\000- ="]+)="([^"]*)")'),
             **parms):
     
     result=result or []

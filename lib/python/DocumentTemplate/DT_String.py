@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.43 2001/04/28 07:20:28 chrism Exp $"
+"$Id: DT_String.py,v 1.44 2001/04/30 14:46:00 shane Exp $"
 
 from string import split, strip
 import thread,re
@@ -155,18 +155,18 @@ class String:
     tagre__roles__=()
     def tagre(self):
         return re.compile(
-            r'%('                                     # beginning
-            r'(?P<name>[a-zA-Z0-9_/.-]+)'                       # tag name
-            r'('
-            r'[\000- ]+'                                # space after tag name
-            r'(?P<args>([^)"]+("[^"]*")?)*)'      # arguments
-            r')?'
-            r')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]|[]![])' # end
-            , re.I) 
+            '%\\('                                  # beginning
+            '(?P<name>[a-zA-Z0-9_/.-]+)'              # tag name
+            '('
+            '[\000- ]+'                             # space after tag name
+            '(?P<args>([^\\)"]+("[^"]*")?)*)'         # arguments
+            ')?'
+            '\\)(?P<fmt>[0-9]*[.]?[0-9]*[a-z]|[]![])' # end
+            , re.I)
 
     _parseTag__roles__=()
-    def _parseTag(self, tagre, command=None, sargs='', tt=type(())):
-        tag, args, command, coname = self.parseTag(tagre,command,sargs)
+    def _parseTag(self, match_ob, command=None, sargs='', tt=type(())):
+        tag, args, command, coname = self.parseTag(match_ob,command,sargs)
         if type(command) is tt:
             cname, module, name = command
             d={}
@@ -179,7 +179,7 @@ class String:
         return tag, args, command, coname
 
     parseTag__roles__=()
-    def parseTag(self, tagre, command=None, sargs=''):
+    def parseTag(self, match_ob, command=None, sargs=''):
         """Parse a tag using an already matched re
 
         Return: tag, args, command, coname
@@ -191,7 +191,7 @@ class String:
                coname is the name of a continue tag (e.g. else)
                  or None otherwise
         """
-        tag, name, args, fmt =tagre.group(0, 'name', 'args', 'fmt')
+        tag, name, args, fmt = match_ob.group(0, 'name', 'args', 'fmt')
         args=args and strip(args) or ''
 
         if fmt==']':
@@ -220,18 +220,18 @@ class String:
             return tag, args, Var, None
 
     varExtra__roles__=()
-    def varExtra(self,tagre):
-        return tagre.group('fmt')
+    def varExtra(self, match_ob):
+        return match_ob.group('fmt')
 
     parse__roles__=()
     def parse(self,text,start=0,result=None,tagre=None):
         if result is None: result=[]
         if tagre is None: tagre=self.tagre()
-        mo =tagre.search(text,start)
+        mo = tagre.search(text,start)
         while mo :
             l = mo.start(0)
 
-            try: tag, args, command, coname = self._parseTag(tagre)
+            try: tag, args, command, coname = self._parseTag(mo)
             except ParseError, m: self.parse_error(m[0],m[1],text,l)
 
             s=text[start:l]
@@ -243,7 +243,7 @@ class String:
                                        tag, l, args, command)
             else:
                 try:
-                    if command is Var: r=command(args, self.varExtra(tagre))
+                    if command is Var: r=command(args, self.varExtra(mo))
                     else: r=command(args)
                     if hasattr(r,'simple_form'): r=r.simple_form
                     result.append(r)
@@ -256,7 +256,7 @@ class String:
         return result
 
     skip_eol__roles__=()
-    def skip_eol(self, text, start, eol=re.compile(r'[ \t]*\n')):
+    def skip_eol(self, text, start, eol=re.compile('[ \t]*\n')):
         # if block open is followed by newline, then skip past newline
         mo =eol.match(text,start)
         if mo is not None: 
@@ -281,7 +281,7 @@ class String:
             if mo is None: self.parse_error('No closing tag', stag, text, sloc)
             l = mo.start(0)
 
-            try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
+            try: tag, args, command, coname= self._parseTag(mo,scommand,sa)
             except ParseError, m: self.parse_error(m[0],m[1], text, l)
             
             if command:
@@ -320,7 +320,7 @@ class String:
             if mo is None: self.parse_error('No closing tag', stag, text, sloc)
             l = mo.start(0)
 
-            try: tag, args, command, coname= self._parseTag(tagre,scommand,sa)
+            try: tag, args, command, coname= self._parseTag(mo,scommand,sa)
             except ParseError, m: self.parse_error(m[0],m[1], text, l)
 
             start=l+len(tag)

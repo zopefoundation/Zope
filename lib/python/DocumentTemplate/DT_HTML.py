@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.26 2001/04/28 04:59:13 chrism Exp $"""
+$Id: DT_HTML.py,v 1.27 2001/04/30 14:46:00 shane Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, re
@@ -94,10 +94,10 @@ from string import strip, find, split, join, rfind, replace
 class dtml_re_class:
     """ This needs to be replaced before 2.4.  It's a hackaround. """
     def search(self, text, start=0,
-               name_match=re.compile(r'[\000- ]*[a-zA-Z]+[\000- ]*').match,
-               end_match=re.compile(r'[\000- ]*(/|end)', re.I).match,
-               start_search=re.compile(r'[<&]').search,
-               ent_name=re.compile(r'[-a-zA-Z0-9_.]+').match,
+               name_match=re.compile('[\000- ]*[a-zA-Z]+[\000- ]*').match,
+               end_match=re.compile('[\000- ]*(/|end)', re.I).match,
+               start_search=re.compile('[<&]').search,
+               ent_name=re.compile('[-a-zA-Z0-9_.]+').match,
                find=find,
                strip=strip,
                replace=replace,
@@ -224,7 +224,7 @@ class HTML(DT_String.String):
         return dtml_re_class()
 
     parseTag__roles__=()
-    def parseTag(self, tagre, command=None, sargs=''):
+    def parseTag(self, match_ob, command=None, sargs=''):
         """Parse a tag using an already matched re
 
         Return: tag, args, command, coname
@@ -236,7 +236,7 @@ class HTML(DT_String.String):
                coname is the name of a continue tag (e.g. else)
                  or None otherwise
         """
-        tag, end, name, args, =tagre.group(0, 'end', 'name', 'args')
+        tag, end, name, args = match_ob.group(0, 'end', 'name', 'args')
         args=strip(args)
         if end:
             if not command or name != command.name:
@@ -263,7 +263,7 @@ class HTML(DT_String.String):
     def SubTemplate(self, name): return HTML('', __name__=name)
 
     varExtra__roles__=()
-    def varExtra(self,tagre): return 's'
+    def varExtra(self, match_ob): return 's'
 
     manage_edit__roles__=()
     def manage_edit(self,data,REQUEST=None):

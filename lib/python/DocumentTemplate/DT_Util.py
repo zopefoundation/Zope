@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.75 2001/04/28 04:58:53 chrism Exp $''' 
-__version__='$Revision: 1.75 $'[11:-2]
+'''$Id: DT_Util.py,v 1.76 2001/04/30 14:46:00 shane Exp $''' 
+__version__='$Revision: 1.76 $'[11:-2]
 
 import re, os
 from string import lower
@@ -339,14 +339,10 @@ ListType=type([])
 def parse_params(text,
                  result=None,
                  tag='',
-                 unparmre=re.compile(
-                     r'([\000- ]*([^\000- ="]+))'),
-                 qunparmre=re.compile(
-                     r'([\000- ]*("[^"]*"))'),
-                 parmre=re.compile(
-                     r'([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
-                 qparmre=re.compile(
-                     r'([\000- ]*([^\000- ="]+)="([^"]*)")'),
+                 unparmre=re.compile('([\000- ]*([^\000- ="]+))'),
+                 qunparmre=re.compile('([\000- ]*("[^"]*"))'),
+                 parmre=re.compile('([\000- ]*([^\000- ="]+)=([^\000- ="]+))'),
+                 qparmre=re.compile('([\000- ]*([^\000- ="]+)="([^"]*)")'),
                  **parms):
 
     """Parse tag parameters
