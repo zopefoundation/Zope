@@ -8,6 +8,24 @@ Principia Changes
         The names in the object's URL are now hypertext links
         to the corresponding folders.
 
+      - Added support for '.' and '..' in URLs.
+
+      - Added new 'method' form variable type.
+
+        If you have a form variable with the name ':method' and the
+        value 'x/y', then 'x/y' is added to the URL path.
+
+	If you have a form variable named 'x/y:method', then
+	'x/y' is added to the URL path.
+
+    Bugs Fixed
+
+      - Folders were unreachable until the next restart if they were
+        cut then pasted.
+
+      - URL variables and base HREFs were computed incorrectly when
+        https URLs were used.
+
   Principia 1.5.0
 
     Features Added
