@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.25 1999/07/30 21:00:13 jim Exp $"
+"\n$Id: BTree.c,v 1.26 1999/08/05 13:32:34 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -1483,8 +1483,8 @@ static PyObject *
 _bucket_intset_operation(Bucket *self, intSet *other, 
 			 int cpysrc, int cpyboth, int cpyoth)
 {
-  Bucket *r=0, *o;
-  int i, l, io, lo, ir;
+  Bucket *r=0;
+  int i, l, io, lo;
   Item *d;
   INTSET_DATA_TYPE *od;
 
@@ -1562,11 +1562,13 @@ _bucket_intset_operation(Bucket *self, intSet *other,
     }
  
 
+  PER_ALLOW_DEACTIVATION(self);
+  PER_ALLOW_DEACTIVATION(other);
   return OBJECT(r);
 
 err:
   PER_ALLOW_DEACTIVATION(self);
-  PER_ALLOW_DEACTIVATION(o);
+  PER_ALLOW_DEACTIVATION(other);
   Py_DECREF(r);
   return NULL;
 }
@@ -1576,7 +1578,7 @@ bucket_set_operation(Bucket *self, PyObject *other,
 		     int cpysrc, int cpyboth, int cpyoth)
 {
   Bucket *r=0, *o;
-  int i, l, io, lo, ir;
+  int i, l, io, lo;
   Item *d, *od;
   Item v, vo;
 
@@ -1663,6 +1665,8 @@ bucket_set_operation(Bucket *self, PyObject *other,
 	}
     }
 
+  PER_ALLOW_DEACTIVATION(self);
+  PER_ALLOW_DEACTIVATION(o);
   return OBJECT(r);
 
 err:
@@ -2098,7 +2102,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.25 $";
+  char *rev="$Revision: 1.26 $";
 
 
 
