@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.35 $'.split()[-2:][0]
+__version__ = '$Revision: 1.36 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -48,6 +48,11 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     # Overrides of base class methods
     #
     def __init__(self, name, env=None, prefix='zodb_'):
+        """Initialize the Full database.
+
+        name, env, and prefix are passed straight through to the BerkeleyBase
+        base class constructor.
+        """
         self._packlock = ThreadLock.allocate_lock()
         BerkeleyBase.__init__(self, name, env, prefix)
 
