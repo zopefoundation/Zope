@@ -129,8 +129,7 @@ class GlobbingLexicon(Lexicon):
 
     def __init__(self,useSplitter=None):
         self.clear()
-        if useSplitter:
-            self.useSplitter = userSplitter
+        self.useSplitter = useSplitter
         self.SplitterFunc = Splitter.getSplitter(self.useSplitter)
 
     def clear(self):
