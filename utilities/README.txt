@@ -4,7 +4,7 @@ To get detailed usage information, run any of these scripts without arguments:
 
   load_site.py -- Load a Zope site from files and directories
 
-    This script illustrates used of the Zope RPC mechanism, 
+    This script illustrates used of the Zope RPC mechanism,
     ZPublisher.Client.  It provides some examples of pitfalls
     and their work-arounds.
 
@@ -19,12 +19,11 @@ The following scripts are for use with the old BoboPOS 2 fileformat.
   fixbbbts.py -- Fix database time stamps
 
     Sometimes, problems with system clocks can cause invalid time stamps
-    to be written to databases.  The fixbbbts script can be used to 
+    to be written to databases.  The fixbbbts script can be used to
     shift invalid times in the database to make them valid.
 
   bbb.py -- Read and summarize a Zope database.
- 
-    This script illustrates how to read a database file outside of
-    Zope and provides a number of options for finding bad data and 
-    generating reports of data.
 
+    This script illustrates how to read a database file outside of
+    Zope and provides a number of options for finding bad data and
+    generating reports of data.
