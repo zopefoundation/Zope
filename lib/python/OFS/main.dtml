@@ -6,7 +6,7 @@
 <!--#var manage_tabs-->
 <P>
 
-<FORM ACTION="." METHOD="POST">
+<FORM ACTION="<!--#var URL1-->" METHOD="POST">
 <!--#if objectItems-->
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <!--#in objectItems sort-->
@@ -74,7 +74,7 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
   To add a new item, select an item type and click &quot;Add&quot;.
 </TD>
 <TD VALIGN="TOP">
-  <FORM ACTION="." METHOD="GET">
+  <FORM ACTION="<!--#var URL1-->" METHOD="GET">
   <SELECT NAME=":method">
   <!--#in all_meta_types mapping sort=name-->
     <OPTION value="<!--#var action-->"><!--#var name-->
