@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ComputedAttribute.c,v 1.3 1999/10/16 14:30:31 jim Exp $
+  $Id: ComputedAttribute.c,v 1.4 2001/01/23 14:37:20 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -108,6 +108,15 @@ CA_of(CA *self, PyObject *args)
       return self->callable;
     }
 
+  if (PyString_Check(self->callable))
+    {
+      /* Special case string as simple alias. */
+      PyObject *o;
+
+      UNLESS (PyArg_ParseTuple(args,"O", &o)) return NULL;
+      return PyObject_GetAttr(o, self->callable);
+    }
+
   return PyObject_CallObject(self->callable, args);
 }
 
@@ -136,7 +145,7 @@ void
 initComputedAttribute()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -146,7 +155,7 @@ initComputedAttribute()
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.3 1999/10/16 14:30:31 jim Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.4 2001/01/23 14:37:20 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
