@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -125,6 +125,11 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 
 	for r in self._proxy_roles:
 	    if r in roles: return 1
+
+
+	if inst is parent:
+	    raise 'Unauthorized', (
+		'You are not authorized to access <em>%s</em>.' % name)
 
 	return 0
 
