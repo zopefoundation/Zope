@@ -125,6 +125,7 @@ class ProductFolder(Folder):
     manage_options=(
     {'label':'Contents', 'action':'manage_main'},
     {'label':'Properties', 'action':'manage_propertiesForm'},
+    {'label':'Import/Export', 'action':'manage_importExportForm'},
     {'label':'Security', 'action':'manage_access'},
     {'label':'Undo', 'action':'manage_UndoForm'},
     {'label':'Find', 'action':'manage_findFrame'},
