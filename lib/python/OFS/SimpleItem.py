@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.74 2000/05/31 18:46:38 shane Exp $'''
-__version__='$Revision: 1.74 $'[11:-2]
+$Id: SimpleItem.py,v 1.75 2000/06/01 17:29:37 jim Exp $'''
+__version__='$Revision: 1.75 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -362,55 +362,84 @@ class Item(Base, Resource, CopySource, App.Management.Tabs,
         return path
 
     unrestrictedTraverse__roles__=()
-    def unrestrictedTraverse(self, path, default=_marker):
+    def unrestrictedTraverse(self, path, default=_marker, restricted=0):
 
         if not path: return self
 
-        object = self
         get=getattr
         N=None
         M=_marker
 
-        if type(path) is StringType:
-            path = map(unquote, split(path,'/'))
+        if type(path) is StringType: path = split(path,'/')
         else: path=list(path)
 
-        REQUEST={'path': path}
+        REQUEST={'TraversalRequestNameStack': path}
         path.reverse()
         pop=path.pop
 
-        # If the path starts with an empty string, go to the root first.
-        if len(path) > 0 and not path[-1]:
-            object = self.getPhysicalRoot()
+        if not path[-1]:
+            # If the path starts with an empty string, go to the root first.
             pop()
-        
+            self=self.getPhysicalRoot()
+                    
         try:
+            object = self
             while path:
                 name=pop()
 
-                if name=='..':
-                    o=getattr(object, 'aq_parent', M)
-                    if o is not M:
-                        object=o
-                        continue
                 if name[0] == '_':
                     # Never allowed in a URL.
                     raise 'NotFound', name
 
+                if name=='..':
+                    o=getattr(object, 'aq_parent', M)
+                    if o is not M:
+                        if (restricted and
+                            not getSecurityManager().validate(object, object, name, o)):
+                            raise 'Unauthorized', name
+                        object=o
+                        continue
+
                 t=get(object, '__bobo_traverse__', N)
                 if t is not N:
-                    object=t(N, name)
+                    o=t(REQUEST, name)
+                    
+                    # Note we pass no container, because we have no
+                    # way of knowing what it is
+                    if (restricted and not getSecurityManager().validate(object, None, name, o)):
+                        raise 'Unauthorized', name
+                      
                 else:
-                    v=get(object, name, M)
-                    if v is not M:
-                        object=v
+                    o=get(object, name, M)
+                    if o is not M:
+                        if restricted:
+                            # waaaa
+                            if hasattr(get(object,'aq_base',object), name):
+                                # value wasn't acquired
+                                if not getSecurityManager().validate(object, object, name, o):
+                                    raise 'Unauthorized', name
+                            else:
+                                if not getSecurityManager().validate(object, None, name, o):
+                                    raise 'Unauthorized', name
+                        
                     else:
-                        object=object[name]
+                        o=object[name]
+                        if (restricted and not getSecurityManager().validate(object, object, None, o)):
+                            raise 'Unauthorized', name
+
+                object=o
 
             return object
+
         except:
             if default==_marker: raise
             return default
+
+    restrictedTraverse__roles__=()
+    def restrictedTraverse(self, path, default=_marker, restricted=0):
+        return self.unrestrictedTraverse(path, default, restricted=1)
+
+
 
 Globals.default__class_init__(Item)
 
