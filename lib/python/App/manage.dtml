@@ -1,6 +1,6 @@
 <HTML>
 <HEAD>
-<TITLE><!--#var title_or_id--></TITLE>
+<TITLE><!--#var title_or_id--> on <!--#var URL1--></TITLE>
 <SCRIPT LANGUAGE="javascript">
 <!--
 function update_menu()
@@ -9,7 +9,7 @@ function update_menu()
 //-->
 </SCRIPT>
 </HEAD>
-<FRAMESET COLS="150,*">
+<FRAMESET COLS="175,*">
   <FRAME SRC="<!--#var URL1-->/manage_menu" NAME="manage_menu"
    MARGINWIDTH="2" MARGINHEIGHT="2" SCROLLING="auto">
   <FRAME SRC="<!--#var URL1-->/manage_workspace" NAME="manage_main"
