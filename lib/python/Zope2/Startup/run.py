@@ -14,8 +14,8 @@
 
 def run():
     """ Start a Zope instance """
-    import Zope.Startup
-    starter = Zope.Startup.get_starter()
+    import Zope2.Startup
+    starter = Zope2.Startup.get_starter()
     opts = _setconfig()
     starter.setConfiguration(opts.configroot)
     starter.prepare()
@@ -23,11 +23,11 @@ def run():
 
 def configure(configfile):
     """ Provide an API which allows scripts like zopectl to configure
-    Zope before attempting to do 'app = Zope.app(). Should be used as
-    follows:  from Zope.Startup.run import configure;
-    configure('/path/to/configfile'); import Zope; app = Zope.app() """
-    import Zope.Startup
-    starter = Zope.Startup.get_starter()
+    Zope before attempting to do 'app = Zope2.app(). Should be used as
+    follows:  from Zope2.Startup.run import configure;
+    configure('/path/to/configfile'); import Zope2; app = Zope2.app() """
+    import Zope2.Startup
+    starter = Zope2.Startup.get_starter()
     opts = _setconfig(configfile)
     starter.setConfiguration(opts.configroot)
     starter.setupSecurityOptions()
@@ -38,7 +38,7 @@ def _setconfig(configfile=None):
     """ Configure a Zope instance based on ZopeOptions.  Optionally
     accept a configfile argument (string path) in order to specify
     where the configuration file exists. """
-    from Zope.Startup import options, handlers
+    from Zope2.Startup import options, handlers
     from App import config
     opts = options.ZopeOptions()
     if configfile:

@@ -26,9 +26,9 @@
 # This version is transitional.  If you have a script that no longer
 # works because it needs the database to be opened on calling "import
 # Zope", you can set the environment variable ZOPE_COMPATIBLE_STARTUP
-# to a non-empty value.  Then "import Zope" will automatically open
+# to a non-empty value.  Then "import Zope2" will automatically open
 # the database as it used to.  Or better, update the script to call
-# Zope.startup() right after importing the Zope package.  A future
+# Zope2.startup() right after importing the Zope package.  A future
 # version of Zope will remove this backward compatibility, since the
 # old behavior is likely to cause problems as ZODB backends, like ZEO,
 # gain new features.
@@ -43,7 +43,7 @@ def startup():
         return
     _began_startup = 1
     _configure()
-    from Zope.App.startup import startup as _startup
+    from Zope2.App.startup import startup as _startup
     _startup()
 
 def app(*args, **kw):
@@ -57,7 +57,7 @@ def debug(*args, **kw):
     import ZPublisher
     return ZPublisher.test('Zope', *args, **kw)
 
-from Zope.Startup.run import configure
+from Zope2.Startup.run import configure
 
 def _configure():
     # Load configuration file from (optional) environment variable
@@ -67,7 +67,7 @@ def _configure():
     if configfile is not None:
         configure(configfile)
 
-# Zope.App.startup.startup() sets the following variables in this module.
+# Zope2.App.startup.startup() sets the following variables in this module.
 DB = None
 bobo_application = None
 zpublisher_transactions_manager = None

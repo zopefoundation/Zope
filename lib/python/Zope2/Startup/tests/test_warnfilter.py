@@ -22,9 +22,9 @@ import unittest
 import warnings
 
 import ZConfig
-import Zope.Startup
+import Zope2.Startup
 
-from Zope.Startup import datatypes
+from Zope2.Startup import datatypes
 
 from App.config import getConfiguration
 
@@ -32,7 +32,7 @@ TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
 def getSchema():
-    startup = os.path.dirname(os.path.realpath(Zope.Startup.__file__))
+    startup = os.path.dirname(os.path.realpath(Zope2.Startup.__file__))
     schemafile = os.path.join(startup, 'zopeschema.xml')
     return ZConfig.loadSchema(schemafile)
 
@@ -75,7 +75,7 @@ class TestWarnFilter(unittest.TestCase):
             <warnfilter>
                action error
                message .*test.*
-               category Zope.Startup.tests.test_warnfilter.TestSchemaWarning
+               category Zope2.Startup.tests.test_warnfilter.TestSchemaWarning
                module .*test_warnfilter.*
                lineno 0
             </warnfilter>
@@ -102,7 +102,7 @@ class TestWarnFilter(unittest.TestCase):
             instancehome <<INSTANCE_HOME>>
             <warnfilter>
                action wontwork
-               category Zope.Startup.tests.test_schema.TestSchemaWarning
+               category Zope2.Startup.tests.test_schema.TestSchemaWarning
             </warnfilter>
             """)
 
