@@ -2,10 +2,10 @@ README notes for Persistent CGI - version 2.0 alpha 4
 
 What it is?
 
-  Persistent CGI is an architecture designed by Digital Creations
-  http://www.digicool.com to publish web objects as long-running
-  processes.  The pcgi component is an integral part of DC's
-  Principia product, but is also provided to Bobo developers
+  Persistent CGI is an architecture designed by Zope Corporation
+  http://www.zope.com to publish web objects as long-running
+  processes.  The pcgi component is an integral part of ZC's
+  Zope product, but is also provided to web developers
   under open software terms.  Please review the copyright appearing
   in the source code for full details.
 
@@ -31,7 +31,7 @@ How to use?
 
 How to get help?
 
-  Subscribe to the Bobo mailing list:  bobo@digicool.com
+  Subscribe to the Zope mailing list:  zope@zope.org
   Contact me:  jeffbauer@bigfoot.com
 
 
