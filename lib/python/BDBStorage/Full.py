@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.36 $'.split()[-2:][0]
+__version__ = '$Revision: 1.37 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -591,7 +591,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 else:
                     raise POSException.ConflictError(
                         'serial number mismatch (was: %s, has: %s)' %
-                        (U64(oserial), U64(serial)))
+                        (U64(oserial), serial and U64(serial)))
             # Do we already know about this version?  If not, we need to
             # record the fact that a new version is being created.  `version'
             # will be the empty string when the transaction is storing on the
