@@ -526,7 +526,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         if not hasattr(base, 'objectItems'):
             return result
-        try:    items=base.objectItems()
+        try:    items=obj.objectItems()
         except: return result
 
         try: add_result=result.append
