@@ -111,6 +111,8 @@ from ZPublisher.HTTPResponse import HTTPResponse
 from ZPublisher.HTTPRequest import HTTPRequest
 from Producers import ShutdownProducer, LoggingProducer, file_part_producer, file_close_producer
 
+import DebugLogger
+
 from cStringIO import StringIO
 from tempfile import TemporaryFile
 import socket, string, os, sys, time
@@ -423,12 +425,22 @@ class FCGIChannel(asynchat.async_chat):
             self.requestId = rec.reqId
             if rec.role == FCGI_AUTHORIZER:   self.remainingRecs = 1
             elif rec.role == FCGI_RESPONDER:  self.remainingRecs = 2
-            elif rec.role == FCGI_FILTER:     self.remainingRecs = 3
-
+            elif rec.role == FCGI_FILTER:     self.remainingRecs = 3       
 
         # Read some name-value pairs (the CGI environment)
         elif rec.recType == FCGI_PARAMS:
             if rec.contentLength == 0:  # end of the stream
+            
+                if self.env.has_key('REQUEST_METHOD'):
+                    method=self.env['REQUEST_METHOD']
+                else:
+                    method='GET'
+                if self.env.has_key('PATH_INFO'):
+                    path=self.env['PATH_INFO']
+                else:
+                    path=''
+                DebugLogger.log('B', id(self), '%s %s' % (method, path))       
+     
                 self.remainingRecs = self.remainingRecs - 1
                 self.content_length=string.atoi(self.env.get(
                     'CONTENT_LENGTH','0'))
@@ -472,6 +484,8 @@ class FCGIChannel(asynchat.async_chat):
         else:
             # We've got them all.  Let ZPublisher do its thang.
 
+            DebugLogger.log('I', id(self), self.stdin.tell())
+
             # But first, fixup the auth header if using newest mod_fastcgi.
             if self.env.has_key('Authorization'):
                 self.env['HTTP_AUTHORIZATION'] = self.env['Authorization']
@@ -494,11 +508,13 @@ class FCGIChannel(asynchat.async_chat):
 
 
     def log_request(self, bytes):
-        # XXX need to add reply code logging
+        
+        DebugLogger.log('E', id(self))
+        
         if self.env.has_key('PATH_INFO'):
-            path='%s%s' % (self.server.module, self.env['PATH_INFO'])
+            path=self.env['PATH_INFO']
         else:
-            path='%s/' % self.server.module
+            path=''
         if self.env.has_key('REQUEST_METHOD'):
             method=self.env['REQUEST_METHOD']
         else:
@@ -506,24 +522,24 @@ class FCGIChannel(asynchat.async_chat):
         if self.addr:
             self.server.logger.log (
                 self.addr[0],
-                '%d - - [%s] "%s %s" %d' % (
+                '%d - - [%s] "%s %s" %d %d' % (
                     self.addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
                     ) + tz_for_log,
-                    method, path, bytes
+                    method, path, self.reply_code, bytes
                     )
                 )
         else:
             self.server.logger.log (
                 '127.0.0.1',
-                '- - [%s] "%s %s" %d' % (
+                '- - [%s] "%s %s" %d %d' % (
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
                     ) + tz_for_log,
-                    method, path, bytes
+                    method, path, self.reply_code, bytes
                     )
                 )
 
@@ -636,6 +652,7 @@ class FCGIServer(asyncore.dispatcher):
                  logger_object=None):
 
         self.ip = ip
+        self.count=counter()
         asyncore.dispatcher.__init__(self)
         if not logger_object:
             logger_object = logger.file_logger(sys.stdout)
@@ -677,6 +694,7 @@ class FCGIServer(asyncore.dispatcher):
 
 
     def handle_accept(self):
+        self.count.increment()
         try:
             conn, addr = self.accept()
         except socket.error:
@@ -743,6 +761,11 @@ class FCGIResponse(HTTPResponse):
                 stdout.write((file_part_producer(t,b,e), l))
 
     def _finish(self):
+        self.channel.reply_code=self.status
+    
+        DebugLogger.log('A', id(self.channel), '%d %d' % (
+                self.status, self.stdout.length))
+    
         t=self._tempfile
         if t is not None:
             self.stdout.write((file_close_producer(t), 0))
@@ -790,7 +813,6 @@ class FCGIPipe:
         self.channel = channel
         self.recType = recType
         self.length  = 0
-
 
     def write(self, data):
         if type(data)==type(''):
