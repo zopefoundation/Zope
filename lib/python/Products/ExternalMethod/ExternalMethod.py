@@ -88,7 +88,7 @@
 This product provides support for external methods, which allow
 domain-specific customization of web environments.
 """
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 from Acquisition import Explicit
 from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem
@@ -156,11 +156,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
         )
 
     __ac_permissions__=(
-    ('View management screens', ['manage_main','manage_tabs']),
-    ('Change permissions', ['manage_access']),
-    ('Change External Methods', ['manage_edit',]),
-    ('View', ['__call__','']),
-    )
+        ('View management screens', ('manage_main',)),
+        ('Change External Methods', ('manage_edit',)),
+        ('View', ('__call__','')),
+        )
 
     def __init__(self, id, title, module, function):
         self.id=id

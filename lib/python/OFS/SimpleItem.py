@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.42 1999/03/24 17:59:34 jim Exp $'''
-__version__='$Revision: 1.42 $'[11:-2]
+$Id: SimpleItem.py,v 1.43 1999/03/25 15:48:50 jim Exp $'''
+__version__='$Revision: 1.43 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -129,6 +129,12 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
 
     # Default propertysheet info:
     __propsets__=()
+
+ 
+    __ac_permissions__=(
+	('View management screens', ('manage_workspace',)),
+	)
+
 
     manage_info   =Globals.HTMLFile('App/manage_info')
     manage_options=()
@@ -316,6 +322,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         return r
 
 
+Globals.default__class_init__(Item)
+
 class Item_w__name__(Item):
     """Mixin class to support common name/id functions"""
 
@@ -381,8 +389,4 @@ class SimpleItem(Item, Globals.Persistent,
 	{'label':'Security',   'action':'manage_access'},
 	)
  
-    __ac_permissions__=(
-	('View management screens', ('manage_tabs', 'manage_workspace')),
-	('Change permissions',      ('manage_access',)                 ),
-	('View',                    ()                                 ),
-	)
+    __ac_permissions__=(('View', ()),)

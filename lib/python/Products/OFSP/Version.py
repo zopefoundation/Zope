@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -115,12 +115,11 @@ class Version(Persistent,Implicit,RoleManager,Item):
                    )
 
     __ac_permissions__=(
-    ('View management screens', ['manage','manage_tabs','manage_editForm', '']),
-    ('Change permissions', ['manage_access']),
-    ('Change Versions', ['manage_edit']),
-    ('Join/leave Versions', ['enter','leave','leave_another']),
-    ('Save/discard Version changes', ['save','discard']),
-    )
+        ('View management screens', ('manage','manage_editForm', '')),
+        ('Change Versions', ('manage_edit',)),
+        ('Join/leave Versions', ('enter','leave','leave_another')),
+        ('Save/discard Version changes', ('save','discard')),
+        )
 
     def __init__(self, id, title, REQUEST):
         self.id=id

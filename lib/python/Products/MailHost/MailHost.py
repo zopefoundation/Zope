@@ -95,8 +95,8 @@ from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.40 1999/03/22 20:39:53 brian Exp $ 
-__version__ = "$Revision: 1.40 $"[11:-2]
+#$Id: MailHost.py,v 1.41 1999/03/25 15:50:30 jim Exp $ 
+__version__ = "$Revision: 1.41 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -129,14 +129,11 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
                    )
 
     __ac_permissions__=(
-    ('View management screens', ['manage','manage_tabs']),
-    ('Change permissions', ['manage_access']),
-    ('Change configuration', ['manage_makeChanges']),
-    ('Use mailhost services',['']),
-    )
+        ('View management screens', ('manage',)),
+        ('Change configuration', ('manage_makeChanges',)),
+        ('Use mailhost services',('',)),
+        )
    
-
-
     def __init__(self):
         'nothing yet'
         pass
