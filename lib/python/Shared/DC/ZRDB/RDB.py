@@ -85,11 +85,11 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.30 2001/04/27 18:07:16 andreas Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: RDB.py,v 1.31 2001/07/17 15:05:44 andreas Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 from string import split, strip, lower, upper, atof, atoi, atol, find, join,find
-import DateTime
+import DateTime,re
 from Missing import MV
 from array import array
 from Record import Record
@@ -180,12 +180,14 @@ class DatabaseResults:
             _def=strip(_def)
             if not _def:
                 raise ValueError, ('Empty column definition for %s' % names[i])
-            if defre.match(_def) is None:
+
+            mo = defre.match(_def)
+            if mo is None:
                 raise ValueError, (
                     'Invalid column definition for, %s, for %s'
                     % _def, names[i])
-            type=lower(defre.group(2))
-            width=defre.group(1)
+            type  = mo.group(2).lower()
+            width = mo.group(1)
             if width: width=atoi(width)
             else: width=8
 

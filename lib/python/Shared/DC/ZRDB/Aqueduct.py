@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.49 2001/05/16 15:13:00 shane Exp $'''
-__version__='$Revision: 1.49 $'[11:-2]
+$Id: Aqueduct.py,v 1.50 2001/07/17 15:05:44 andreas Exp $'''
+__version__='$Revision: 1.50 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -340,6 +340,7 @@ class Args:
     def __delitem__(self, key): del self._data[key]
     def __len__(self): return len(self._data)
 
+
 def parse(text,
           result=None,
           keys=None,
@@ -351,35 +352,40 @@ def parse(text,
               r'([\000- ]*([^\000- ="]+)="([^"]*)")'),
           ):
 
+
     if result is None:
-        result = {}
-        keys=[]
+        result  = {}
+        keys    = []
 
     __traceback_info__=text
 
     mo  = parmre.match(text)
+
     if mo:
-        name=mo.group(2)
-        value={'default':mo.group(3)}
-        l=len(mo.group(1))
+        name    = mo.group(2)
+        value   = {'default':mo.group(3)}
+        l       = len(mo.group(1))
+
     else:
         mo = qparmre.match(text)
+
         if mo:
-                name=mo.group(1)
-                value={'default':mo.group(3)}
-                l=len(mo.group(2))
+            name    = mo.group(2)
+            value   = {'default':mo.group(3)}
+            l       = len(mo.group(1))
+
         else:
             mo = unparmre.match(text)
+
             if mo:
-                name=mo.group(2)
-                l=len(mo.group(1))
-                value={}
+                name    = mo.group(2)
+                value   = {}
+                l       = len(mo.group(1))
             else:
-                if not text or not strip(text): return Args(result,keys)
+                if not text or not text.strip(): return Args(result,keys)
                 raise InvalidParameter, text
 
-
-    lt=string.find(name,':')
+    lt=name.find(':')
     if lt > 0:
         value['type']=name[lt+1:]
         name=name[:lt]
@@ -388,6 +394,7 @@ def parse(text,
     keys.append(name)
 
     return parse(text[l:],result,keys)
+
 
 def quotedHTML(text,
                character_entities=(
