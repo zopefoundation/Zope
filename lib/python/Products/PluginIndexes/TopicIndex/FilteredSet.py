@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.4 2002/08/14 22:19:34 mj Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.5 2003/06/12 14:36:47 andreasjung Exp $'
 
 from BTrees.IIBTree import IISet
 from Persistence import Persistent
@@ -37,8 +37,8 @@ class FilteredSetBase(Persistent):
 
 
     def unindex_object(self,documentId):
-        try: self.ids.remove(Id)
-        except: pass
+        try: self.ids.remove(documentId)
+        except KeyError: pass
 
 
     def getId(self):            return self.id
