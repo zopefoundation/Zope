@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -55,7 +55,12 @@ except ImportError:
             validate = getSecurityManager().validate
             # Filter out the objects we can't access.
             if hasattr(inst, 'aq_acquire'):
-                return inst.aq_acquire(name, aq_validate, validate)
+                try:
+                    return inst.aq_acquire(name, aq_validate, validate)
+                except AttributeError:
+                    # A denial of access was converted into an
+                    # AttributeError.  Convert it back.
+                    raise Unauthorized, name
             # Or just try to get the attribute directly.
             if validate(inst, inst, name, v):
                 return v

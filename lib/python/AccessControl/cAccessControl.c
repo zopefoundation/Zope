@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.18 2002/12/16 19:13:00 chrism Exp $
+  $Id: cAccessControl.c,v 1.19 2003/01/14 15:03:05 shane Exp $
 
   If you have questions regarding this software,
   contact:
@@ -2011,12 +2011,24 @@ guarded_getattr(PyObject *inst, PyObject *name, PyObject *default_,
       /*
         # Filter out the objects we can't access.
         if hasattr(inst, 'aq_acquire'):
-            return inst.aq_acquire(name, aq_validate, validate)
+            try:
+                return inst.aq_acquire(name, aq_validate, validate)
+            except AttributeError:
+                # A denial of access was converted into an
+                # AttributeError.  Convert it back.
+                raise Unauthorized, name
        */
       if (aq_isWrapper(inst))
         {
-          ASSIGN(v, aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0));
-          return v;
+          t = aq_Acquire(inst, name, aq_validate, validate, 1, NULL, 0);
+          if (t == NULL && PyErr_Occurred() == PyExc_AttributeError)
+            {
+              PyErr_Clear();
+              unauthErr(name, v);
+              goto err;
+            }
+          Py_DECREF(v);
+          return t;
         }
 
       /*
@@ -2138,7 +2150,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.18 2002/12/16 19:13:00 chrism Exp $\n");
+		"$Id: cAccessControl.c,v 1.19 2003/01/14 15:03:05 shane Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */

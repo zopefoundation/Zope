@@ -16,17 +16,19 @@ import os, sys, unittest
 import string, cStringIO, re
 
 import ZODB, Acquisition
+from Acquisition import aq_base
 from OFS.Application import Application
 from OFS.Folder import manage_addFolder
 from OFS.Image import manage_addFile
 from OFS.SimpleItem import SimpleItem
 from Testing.makerequest import makerequest
-from AccessControl import SecurityManager
+from AccessControl import SecurityManager, Unauthorized
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 
 from mimetools import Message
 from multifile import MultiFile
+
 
 class UnitTestSecurityPolicy:
     """
@@ -48,6 +50,22 @@ class UnitTestSecurityPolicy:
 
     def checkPermission( self, permission, object, context) :
         return 1
+
+
+class CruelSecurityPolicy:
+    """Denies everything
+    """
+    #
+    #   Standard SecurityPolicy interface
+    #
+    def validate(self, accessed, container, name, value, *args):
+        if aq_base(accessed) is aq_base(container):
+            raise Unauthorized, name
+        return 0
+
+    def checkPermission( self, permission, object, context) :
+        return 0
+
 
 class UnitTestUser( Acquisition.Implicit ):
     """
@@ -78,6 +96,7 @@ def makeConnection():
 
     s = DemoStorage(quota=(1<<20))
     return ZODB.DB( s ).open()
+
 
 class TestTraverse( unittest.TestCase ):
 
@@ -162,6 +181,18 @@ class TestTraverse( unittest.TestCase ):
         self.failUnlessRaises(KeyError, bb.restrictedTraverse, 'notfound')
         bb.restrictedTraverse('bb_subitem')
 
+    def testAcquiredAttributeDenial(self):
+        # Verify that restrictedTraverse raises the right kind of exception
+        # on denial of access to an acquired attribute.  If it raises
+        # AttributeError instead of Unauthorized, the user may never
+        # be prompted for HTTP credentials.
+        noSecurityManager()
+        SecurityManager.setSecurityPolicy(CruelSecurityPolicy())
+        newSecurityManager( None, UnitTestUser().__of__( self.root ) )
+        self.root.stuff = 'stuff here'
+        self.failUnlessRaises(Unauthorized,
+                              self.root.folder1.restrictedTraverse, 'stuff')
+
 
 def test_suite():
     suite = unittest.TestSuite()
@@ -169,7 +200,7 @@ def test_suite():
     return suite
 
 def main():
-    unittest.TextTestRunner().run(test_suite())
+    unittest.main(defaultTest='test_suite')
 
 if __name__ == '__main__':
     main()
