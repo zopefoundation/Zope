@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.140 1999/08/27 23:36:33 jim Exp $"""
-__version__='$Revision: 1.140 $'[11:-2]
+$Id: Publish.py,v 1.141 1999/09/01 14:51:33 jim Exp $"""
+__version__='$Revision: 1.141 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -162,7 +162,7 @@ def publish(request, module_name, after_list, debug=0,
                       call_object,1,
                       missing_name, 
                       dont_publish_class,
-                      request)
+                      request, bind=1)
     
         if result is not response: response.setBody(result)
     
