@@ -13,10 +13,10 @@
 """
 Transient Object Container Class ('timeslice'-based design).
 
-$Id: Transience.py,v 1.26 2002/08/01 16:00:41 mj Exp $
+$Id: Transience.py,v 1.27 2002/08/07 14:48:48 chrism Exp $
 """
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile
@@ -552,7 +552,14 @@ class TransientObjectContainer(SimpleItem):
                 bucket = data[k]
                 keys = bucket.keys()
                 for key in keys:
-                    self.notify_queue.put((key, bucket[key]))
+                    ob = bucket.get(key, _marker)
+                    if ob is _marker:
+                        DEBUG and TLOG(
+                            'OOBTree lied about %s keys: %s doesnt exist' %
+                            (bucket, key)
+                            )
+                        continue
+                    self.notify_queue.put((key, ob))
                 DEBUG and TLOG(
                     '_getCurrentBucket: deindexing keys %s' % list(keys))
                 keys and self._deindex(keys)
