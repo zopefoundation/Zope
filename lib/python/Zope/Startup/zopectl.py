@@ -35,6 +35,7 @@ action "help" to find out about available actions.
 
 import os
 import sys
+import signal
 
 import zdaemon
 import Zope.Startup
@@ -66,7 +67,7 @@ class ZopeCtlOptions(ZDOptions):
         ZDOptions.__init__(self)
         self.add("backofflimit", "runner.backoff_limit",
                  "b:", "backoff-limit=", int, default=10)
-        self.add("daemon", "runner.daemon", "d", "daemon", flag=1, default=0)
+        self.add("daemon", "runner.daemon", "d", "daemon", flag=1, default=1)
         self.add("forever", "runner.forever", "f", "forever",
                  flag=1, default=0)
         self.add("hang_around", "runner.hang_around", default=0)
@@ -179,6 +180,9 @@ def main(args=None):
         c.do_status()
         c.cmdloop()
 
-
 if __name__ == "__main__":
+    # we don't care to be notified of our childrens' exit statuses.
+    # this prevents zombie processes from cluttering up the process
+    # table when zopectl start/stop is used interactively.
+    signal.signal(signal.SIGCHLD, signal.SIG_IGN)
     main()
