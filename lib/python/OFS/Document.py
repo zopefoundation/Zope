@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -9,7 +9,7 @@ import SimpleItem, regex
 import Acquisition
 
 class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
-	       Acquisition.Implicit):
+	       Acquisition.Explicit):
     """Document object"""
     meta_type      ='Document'
     icon           ='OFS/Document_icon.gif'
@@ -76,6 +76,9 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	self._setRoles(acl_type,acl_roles)
 	self.munge(data)
 	if REQUEST: return self.manage_editedDialog(REQUEST)
+
+    def validRoles(self):
+	return self.aq_parent.validRoles()
 
 default_html="""<!--#var standard_html_header-->
 <H2><!--#var title_or_id--> <!--#var document_title--></H2>
