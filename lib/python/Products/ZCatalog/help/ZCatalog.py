@@ -229,6 +229,15 @@ class ZCatalog:
         This will return all objects that have the specified title OR
         the specified author.
 
+        There are some special index names you can pass to change the
+        behavior of the search query:
+
+          sort_on -- This parameters specifies which index to sort the
+          results on.
+
+          sort_order -- You can specify 'reverse' or 'descending'.
+          Default behavior is to sort ascending.
+
         """
     
     def __call__(REQUEST=None, **kw):
