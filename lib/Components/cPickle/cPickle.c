@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.27 1997/02/28 23:09:47 chris Exp $
+     $Id: cPickle.c,v 1.28 1997/03/04 18:31:16 chris Exp $
 
      Copyright 
 
@@ -144,7 +144,6 @@ typedef struct {
      PyObject *arg;
      PyObject *pers_func;
      PyObject *inst_pers_func;
-     char *mark;
      int bin;
      int (*write_func)();
      char *write_buf;
@@ -1547,7 +1546,7 @@ static PyObject *
 Pickler_dump(Picklerobject *self, PyObject *args) {
     static char stop = STOP;
 
-    UNLESS(PyArg_Parse(args, "O", &args))
+    UNLESS(PyArg_ParseTuple(args, "O", &args))
         return NULL;
 
     if (save(self, args, 0) < 0)
@@ -1594,70 +1593,65 @@ dump_special(Picklerobject *self, PyObject *args) {
 
 
 static struct PyMethodDef Pickler_methods[] = {
-  {"dump",          (PyCFunction)Pickler_dump,  0, ""},
+  {"dump",          (PyCFunction)Pickler_dump,  1, ""},
   {"dump_special",  (PyCFunction)dump_special,  1, ""},
   {NULL,                NULL}           /* sentinel */
 };
 
 
 static Picklerobject *
-newPicklerobject(PyObject *file, int  bin) {
+newPicklerobject(PyObject *file, int bin) {
     Picklerobject *self;
-    PyObject *memo = 0;
 
-    UNLESS(memo = PyDict_New())  goto err;
+    UNLESS(self = PyObject_NEW(Picklerobject, &Picklertype))
+        return NULL;
 
-    UNLESS(self = PyObject_NEW(Picklerobject, &Picklertype))  
-        goto err;
+    self->fp = NULL;
+    self->write = NULL;
+    self->memo = NULL;
+    self->arg = NULL;
+    self->pers_func = NULL;
+    self->inst_pers_func = NULL;
+    self->write_buf = NULL;
+    self->bin = bin;
+    self->buf_size = 0;
+
+    Py_INCREF(file);
+    self->file = file;
+
+    UNLESS(self->memo = PyDict_New()) {
+       Py_XDECREF((PyObject *)self);
+       return NULL;
+    }
 
     if (PyFile_Check(file)) {
         self->fp = PyFile_AsFile(file);
         self->write_func = write_file;
-        self->write = NULL;
-        self->write_buf = NULL;
     }
     else if (PycStringIO_OutputCheck(file)) {
-        self->fp = NULL;
         self->write_func = write_cStringIO;
-        self->write = NULL;
-        self->write_buf = NULL;
     }
     else {
-        PyObject *write; 
-
-        self->fp = NULL;
         self->write_func = write_other;
 
-        UNLESS(write = PyObject_GetAttr(file, write_str))
-            goto err;
-
-        self->write = write;
+        UNLESS(self->write = PyObject_GetAttr(file, write_str))
+        {
+            PyErr_Clear();
+            PyErr_SetString(PyExc_TypeError, "argument must have 'write' "
+                "attribute");
+            Py_XDECREF((PyObject *)self);
+            return NULL;
+        }
 
         UNLESS(self->write_buf = 
             (char *)malloc(WRITE_BUF_SIZE * sizeof(char))) { 
             PyErr_NoMemory();
-            goto err;
+            Py_XDECREF((PyObject *)self);
+            return NULL;
         }
-
-
-        self->buf_size = 0;
     }
 
-    Py_INCREF(file);
-
-    self->file  = file;
-    self->bin   = bin;
-    self->memo  = memo;
-    self->arg   = NULL;
-    self->pers_func = NULL;
-    self->inst_pers_func = NULL;
-
     return self;
-
-err:
-    Py_XDECREF((PyObject *)self);
-    Py_XDECREF(memo);
-    return NULL;
 }
 
 
@@ -3333,7 +3327,7 @@ err:
 
 
 static struct PyMethodDef Unpickler_methods[] = {
-  {"load",         (PyCFunction)Unpickler_load,   0, ""},
+  {"load",         (PyCFunction)Unpickler_load,   1, ""},
   {NULL,              NULL}           /* sentinel */
 };
 
@@ -3341,68 +3335,59 @@ static struct PyMethodDef Unpickler_methods[] = {
 static Unpicklerobject *
 newUnpicklerobject(PyObject *f) {
     Unpicklerobject *self;
-    PyObject *memo = 0;
-        
-    UNLESS(memo = PyDict_New())
-        goto err;
 
     UNLESS(self = PyObject_NEW(Unpicklerobject, &Unpicklertype))
-        goto err;
+        return NULL;
 
-    if (PyFile_Check(f)) {
-        self->fp = PyFile_AsFile(f);
-        self->read_func = read_file;
-        self->readline_func = readline_file;
-        self->read = NULL;
-        self->readline = NULL;
-    }
-    else if (PycStringIO_InputCheck(f)) {
-        self->fp = NULL;
-        self->read_func = read_cStringIO;
-        self->readline_func = readline_cStringIO;
-        self->read = NULL;
-        self->readline = NULL;
-    }
-    else {
-        PyObject *readline, *read;
-
-        self->fp = NULL;
-        self->read_func = read_other;
-        self->readline_func = readline_other;
-
-        UNLESS(readline = PyObject_GetAttr(f, readline_str))
-            goto err;
-
-        UNLESS(read = PyObject_GetAttr(f, read_str)) {
-            Py_DECREF(readline);
-            goto err;
-        }
-  
-        self->read = read; 
-        self->readline = readline;
-
-    }
-
-    Py_INCREF(f);
-  
-    self->file = f;
-    self->memo   = memo;
-    self->arg    = NULL;
-    self->stack  = NULL;
+    self->file = NULL;
+    self->arg = NULL;
+    self->stack = NULL;
     self->pers_func = NULL;
     self->last_string = NULL;
     self->marks = NULL;
     self->num_marks = 0;
     self->marks_size = 0;
     self->buf_size = 0;
+    self->read = NULL;
+    self->readline = NULL;    
+
+    UNLESS(self->memo = PyDict_New()) {
+       Py_XDECREF((PyObject *)self);
+       return NULL;
+    }
+
+    Py_INCREF(f);
+    self->file = f;
+
+    /* Set read, readline based on type of f */
+    if (PyFile_Check(f)) {
+        self->fp = PyFile_AsFile(f);
+        self->read_func = read_file;
+        self->readline_func = readline_file;
+    }
+    else if (PycStringIO_InputCheck(f)) {
+        self->fp = NULL;
+        self->read_func = read_cStringIO;
+        self->readline_func = readline_cStringIO;
+    }
+    else {
+
+        self->fp = NULL;
+        self->read_func = read_other;
+        self->readline_func = readline_other;
+
+        UNLESS((self->readline = PyObject_GetAttr(f, readline_str)) &&
+            (self->read = PyObject_GetAttr(f, read_str))) 
+        {
+            PyErr_Clear();
+            PyErr_SetString( PyExc_TypeError, "argument must have 'read' and "
+                "'readline' attributes" );
+            Py_XDECREF((PyObject *)self);
+            return NULL;
+        }
+    }
 
     return self;
-
-err:
-    Py_XDECREF(memo);
-    Py_XDECREF((PyObject *)self);
-
-    return NULL;
 }
 
 
@@ -3410,7 +3395,7 @@ static PyObject *
 get_Unpickler(PyObject *self, PyObject *args) {
     PyObject *file;
   
-    UNLESS(PyArg_Parse(args, "O", &file))
+    UNLESS(PyArg_ParseTuple(args, "O", &file))
         return NULL;
     return (PyObject *)newUnpicklerobject(file);
 }
@@ -3538,7 +3523,7 @@ cpm_load(PyObject *self, PyObject *args) {
     Unpicklerobject *unpickler = 0;
     PyObject *res = NULL;
 
-    UNLESS(PyArg_Parse(args, "O", &args))
+    UNLESS(PyArg_ParseTuple(args, "O", &args))
         goto finally;
 
     UNLESS(unpickler = newUnpicklerobject(args))
@@ -3558,7 +3543,7 @@ loads(PyObject *self, PyObject *args) {
     PyObject *file = 0, *res = NULL;
     Unpicklerobject *unpickler = 0;
 
-    UNLESS(PyArg_Parse(args, "O", &args))
+    UNLESS(PyArg_ParseTuple(args, "O", &args))
         goto finally;
 
     UNLESS(file = PycStringIO->NewInput(args))
@@ -3610,10 +3595,10 @@ static PyTypeObject Unpicklertype_value() {
 static struct PyMethodDef cPickle_methods[] = {
   {"dump",         (PyCFunction)dump,             1, ""},
   {"dumps",        (PyCFunction)dumps,            1, ""},
-  {"load",         (PyCFunction)cpm_load,         0, ""},
-  {"loads",        (PyCFunction)loads,            0, ""},
+  {"load",         (PyCFunction)cpm_load,         1, ""},
+  {"loads",        (PyCFunction)loads,            1, ""},
   {"Pickler",      (PyCFunction)get_Pickler,      1, ""},
-  {"Unpickler",    (PyCFunction)get_Unpickler,    0, ""},
+  {"Unpickler",    (PyCFunction)get_Unpickler,    1, ""},
   { NULL, NULL }
 };
 
@@ -3705,7 +3690,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.27 $";
+    char *rev="$Revision: 1.28 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
