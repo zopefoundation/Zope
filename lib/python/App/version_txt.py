@@ -18,13 +18,11 @@ from App.config import getConfiguration
 _version_string = None
 _zope_version = None
 
-
-def intval(dict, key):
-    return int(dict.get(key, 0))
-
-def strval(dict, key):
-    return str(dict.get(key, ''))
-
+def _test_reset():
+    # Needed for testing.
+    global _version_string, _zope_version
+    _version_string = None
+    _zope_version = None
 
 def _prep_version_data():
     global _version_string, _zope_version
@@ -39,18 +37,19 @@ def _prep_version_data():
             '(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
         try:
             s = open(fn).read()
-            ss = re.sub("\(.*?\)\?","",s)
-
-            dict = expr.match(s).groupdict()
-            _zope_version = (
-                intval(dict, 'major'),
-                intval(dict, 'minor'),
-                intval(dict, 'micro'),
-                strval(dict, 'status'),
-                intval(dict, 'release'))
-        except:
+        except IOError:
             ss = 'unreleased version'
             _zope_version = (-1, -1, -1, '', -1)
+        else:
+            ss = re.sub("\(.*?\)\?","",s)
+            dict = expr.match(s).groupdict()
+            _zope_version = (
+                int(dict.get('major') or -1),
+                int(dict.get('minor') or -1),
+                int(dict.get('micro') or -1),
+                dict.get('status') or '',
+                int(dict.get('release') or -1),
+                )
         _version_string = "%s, %s" % (ss, pyver)
 
 
