@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.59 $'[11:-2]
+__version__='$Revision: 1.60 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -128,7 +128,8 @@ class File(Persistent,Implicit,PropertyManager,
                    )
 
     __ac_permissions__=(
-    ('View management screens', ('manage','manage_tabs','manage_uploadForm')),
+    ('View management screens', ('manage','manage_tabs','manage_uploadForm',
+                                 'manage_workspace')),
     ('Access contents information', ('PROPFIND',)),
     ('Change permissions', ('manage_access',)),
     ('Change Images and Files', ('manage_edit','manage_upload','PUT')),
