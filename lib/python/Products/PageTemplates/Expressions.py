@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -142,11 +142,11 @@ class PathExpr:
                 exists = 1
                 break
             except Undefined:
-                if not more_paths:
+                if self._name != 'exists' and not more_paths:
                     raise
             except (AttributeError, KeyError, TypeError, IndexError,
                     Unauthorized), e:
-                if not more_paths:
+                if self._name != 'exists' and not more_paths:
                     raise Undefined(self._s, sys.exc_info())
 
         if self._name == 'exists':

@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -109,7 +109,7 @@ class Iterator(ZTUtils.Iterator):
     def next(self):
         try:
             if ZTUtils.Iterator.next(self):
-                self._context.setLocal(self.name, self.item)
+                self._context.setLocal(self.name, self.item())
                 return 1
         except TALESError:
             raise
