@@ -16,7 +16,7 @@ Choose an existing html file from your local computer by clicking the
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">File</TH>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
+  <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
   </TD>
 </TR>
 <TR>
