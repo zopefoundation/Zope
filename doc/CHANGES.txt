@@ -126,6 +126,12 @@ Zope Changes
        handling that would always break if the first argument was not
        an extension class because the second argument was a type.
 
+     - Any write request could be tricked into writing into a version
+       be setting a version cookie or by including a version name in
+       the request.  Now we require the user to globally have
+       permission to join or leave versions to run a request in a
+       version.
+
 
   Zope 2.6.1 beta 2
     

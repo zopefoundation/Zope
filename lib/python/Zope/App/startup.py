@@ -13,24 +13,27 @@
 """Initialize the Zope Package and provide a published module
 """
 
-import sys
-import os
-import imp
-from types import StringType, ListType
-
-import Zope
+from AccessControl.SecurityManagement import getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 from Acquisition import aq_acquire
 from App.config import getConfiguration
+from types import StringType, ListType
+from zExceptions import Unauthorized
+from zLOG import LOG, WARNING, INFO, BLATHER, log_time
+from ZODB.POSException import ConflictError
+import AccessControl.User
+import App.FindHomes
+import ExtensionClass
+import Globals
+import imp
+import OFS.Application
+import os
+import sys
 import ZODB
 import ZODB.ZApplication
-from ZODB.POSException import ConflictError
-import Globals
-import OFS.Application
-import AccessControl.SecurityManagement
-import AccessControl.User
+import Zope
 import ZPublisher
-import ExtensionClass
-from zLOG import LOG, WARNING, INFO, BLATHER, log_time
 
 
 def startup():
@@ -79,8 +82,7 @@ def startup():
     DB.setClassFactory(ClassFactory.ClassFactory)
 
     # "Log on" as system user
-    AccessControl.SecurityManagement.newSecurityManager(
-        None, AccessControl.User.system)
+    newSecurityManager(None, AccessControl.User.system)
 
     # Set up the "app" object that automagically opens
     # connections
@@ -99,7 +101,7 @@ def startup():
     application._p_jar.close()
 
     # "Log off" as system user
-    AccessControl.SecurityManagement.noSecurityManager()
+    noSecurityManager()
 
     # This is really ugly.  Please remember to remove Main.py before
     # Zope 2.7 and fix whatever breaks, if anything.
@@ -110,9 +112,23 @@ def startup():
 
     Zope.zpublisher_transactions_manager = TransactionsManager()
     Zope.zpublisher_exception_hook = zpublisher_exception_hook
-    Zope.zpublisher_validated_hook = (
-        AccessControl.SecurityManagement.newSecurityManager)
-    Zope.__bobo_before__ = AccessControl.SecurityManagement.noSecurityManager
+    Zope.zpublisher_validated_hook = validated_hook
+    Zope.__bobo_before__ = noSecurityManager
+
+
+def validated_hook(request, user):
+    newSecurityManager(request, user)
+    if request.get(Globals.VersionNameName, ''):
+        object = user.aq_parent
+        if not getSecurityManager().checkPermission(
+            'Join/leave Versions', object):
+            request['RESPONSE'].setCookie(
+                Globals.VersionNameName,'No longer active',
+                expires="Mon, 25-Jan-1999 23:59:59 GMT",
+                path=(request['BASEPATH1'] or '/'),
+                )
+            raise Unauthorized, "You don't have permission to enter versions."
+    
 
 
 class RequestContainer(ExtensionClass.Base):
