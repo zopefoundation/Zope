@@ -174,11 +174,11 @@ class HTMLClass:
         p=doc.getPreviousSibling()
         if p is None or p.getNodeName() is not doc.getNodeName():
             output('\n<ul>\n')
-        output('<li>')
+        output('<li><p>')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
-        output('</li>\n')
+        output('</p></li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():            
             output('\n</ul>\n')
 
@@ -186,11 +186,11 @@ class HTMLClass:
         p=doc.getPreviousSibling()
         if p is None or p.getNodeName() is not doc.getNodeName():            
             output('\n<ol>\n')
-        output('<li>')
+        output('<li><p>')
         for c in doc.getChildNodes():
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
         n=doc.getNextSibling()
-        output('</li>\n')
+        output('</p></li>\n')
         if n is None or n.getNodeName() is not doc.getNodeName():
             output('\n</ol>\n')
 
