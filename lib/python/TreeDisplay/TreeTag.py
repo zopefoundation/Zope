@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.47 2001/05/16 19:07:06 evan Exp $'
-__version__='$Revision: 1.47 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.48 2001/06/21 17:45:14 shane Exp $'
+__version__='$Revision: 1.48 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -215,11 +215,10 @@ def tpRender(self, md, section, args,
             have_arg=args.has_key
             if have_arg('branches'):
                 def get_items(node, branches=args['branches'], md=md):
-                    read_guard = md.read_guard
-                    if read_guard is None:
-                        items = getattr(node, branches)
-                    else:
-                        items = getattr(read_guard(node), branches)
+                    get = md.guarded_getattr
+                    if get is None:
+                        get = getattr
+                    items = get(node, branches)
                     return items()
             elif have_arg('branches_expr'):
                 def get_items(node, branches_expr=args['branches_expr'], md=md):
@@ -314,15 +313,14 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 break
         if not exp: items=1
 
-    read_guard = md.read_guard
+    get=md.guarded_getattr
+    if get is None:
+        get = getattr
 
     if items is None:
         if have_arg('branches') and hasattr(self, args['branches']):
-            if read_guard is None:
-                items = getattr(self, args['branches'])
-            else:
-                items = getattr(read_guard(self), args['branches'])
-            items=items()
+            items = get(self, args['branches'])
+            items = items()
         elif have_arg('branches_expr'):
             items=args['branches_expr'](md)
 
@@ -330,12 +328,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
     if items and items != 1:
 
-        if read_guard is not None:
+        getitem = getattr(md, 'guarded_getitem', None)
+        if getitem is not None:
             unauth=[]
-            guarded_items = read_guard(items)
             for index in range(len(items)):
                 try:
-                    guarded_items[index]
+                    getitem(items, index)
                 except ValidationError:
                     unauth.append(index)
             if unauth:

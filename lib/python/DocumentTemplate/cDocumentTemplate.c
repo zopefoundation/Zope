@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.37 2001/05/23 18:20:03 shane Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.38 2001/06/21 17:45:12 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -92,7 +92,7 @@ static char cDocumentTemplate_module_documentation[] =
 static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
-static PyObject *py_Unauthorized_fmt, *py_read_guard;
+static PyObject *py_Unauthorized_fmt, *py_guarded_getattr;
 static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
 
 /* ----------------------------------------------------- */
@@ -108,7 +108,7 @@ typedef struct {
   PyObject *inst;
   PyObject *cache;
   PyObject *namespace;
-  PyObject *read_guard;
+  PyObject *guarded_getattr;
 } InstanceDictobject;
 
 staticforward PyExtensionClass InstanceDictType;
@@ -116,18 +116,19 @@ staticforward PyExtensionClass InstanceDictType;
 static PyObject *
 InstanceDict___init__(InstanceDictobject *self, PyObject *args)
 {
-  self->read_guard=NULL;
+  self->guarded_getattr=NULL;
   UNLESS(PyArg_ParseTuple(args, "OO|O",
 			  &(self->inst),
 			  &(self->namespace),
-			  &(self->read_guard)))
+			  &(self->guarded_getattr)))
     return NULL;
   Py_INCREF(self->inst);
   Py_INCREF(self->namespace);
-  if (self->read_guard)
-    Py_INCREF(self->read_guard);
+  if (self->guarded_getattr)
+    Py_INCREF(self->guarded_getattr);
   else
-    UNLESS(self->read_guard=PyObject_GetAttr(self->namespace, py_read_guard))
+    UNLESS(self->guarded_getattr=PyObject_GetAttr(self->namespace,
+                                                  py_guarded_getattr))
        return NULL;
     
   UNLESS(self->cache=PyDict_New()) return NULL;
@@ -150,7 +151,7 @@ InstanceDict_dealloc(InstanceDictobject *self)
   Py_XDECREF(self->inst);
   Py_XDECREF(self->cache);
   Py_XDECREF(self->namespace);
-  Py_XDECREF(self->read_guard);
+  Py_XDECREF(self->guarded_getattr);
   Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
@@ -193,16 +194,13 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
       return PyObject_Str(self->inst);
     }
   
-  if (self->read_guard != Py_None) {
-    r = PyObject_CallFunction(self->read_guard, "O", self->inst);
-    if (!r) return NULL;
+  if (self->guarded_getattr != Py_None) {
+    r = PyObject_CallFunction(self->guarded_getattr, "OO", self->inst, key);
   }
   else {
-    r = self->inst;
-    Py_INCREF(r);
+    r = PyObject_GetAttr(self->inst, key);
   }
 
-  ASSIGN(r, PyObject_GetAttr(r, key));
   if (!r) {
     PyObject *tb;
 
@@ -877,7 +875,7 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.37 $";
+  char *rev="$Revision: 1.38 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
@@ -889,7 +887,7 @@ initcDocumentTemplate(void)
   UNLESS(py___roles__=PyString_FromString("__roles__")) return;
   UNLESS(py__proxy_roles=PyString_FromString("_proxy_roles")) return;
   UNLESS(py_hasRole=PyString_FromString("hasRole")) return;
-  UNLESS(py_read_guard=PyString_FromString("read_guard")) return;
+  UNLESS(py_guarded_getattr=PyString_FromString("guarded_getattr")) return;
   UNLESS(py__push=PyString_FromString("_push")) return;
   UNLESS(py__pop=PyString_FromString("_pop")) return;
   UNLESS(py_aq_base=PyString_FromString("aq_base")) return;

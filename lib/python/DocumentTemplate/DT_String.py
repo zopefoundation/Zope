@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.45 2001/05/30 15:57:30 andreas Exp $"
+"$Id: DT_String.py,v 1.46 2001/06/21 17:45:12 shane Exp $"
 
 from string import split, strip
 import thread,re,exceptions,os
@@ -505,7 +505,8 @@ class String:
             if globals: push(globals)
             if mapping:
                 push(mapping)
-            md.read_guard=self.read_guard
+            md.guarded_getattr=self.guarded_getattr
+            md.guarded_getitem=self.guarded_getitem
             if client is not None:
                 if type(client)==type(()):
                     md.this=client[-1]
@@ -550,8 +551,8 @@ class String:
             if pushed: md._pop(pushed) # Get rid of circular reference!
             md.level=level # Restore previous level
 
-    read_guard__roles__=()
-    read_guard=None
+    guarded_getattr=None
+    guarded_getitem=None
 
     def __str__(self):
         return self.read()

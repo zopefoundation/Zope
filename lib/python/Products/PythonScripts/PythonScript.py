@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -103,7 +103,8 @@ from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
-from AccessControl import full_read_guard, full_write_guard, safe_builtins
+from AccessControl import full_write_guard, safe_builtins
+from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
 from zLOG import LOG, ERROR, INFO, PROBLEM
 
 # Track the Python bytecode version
@@ -112,7 +113,7 @@ Python_magic = imp.get_magic()
 del imp
 
 # This should only be incremented to force recompilation.
-Script_magic = 1
+Script_magic = 2
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 _default_file = os.path.join(package_home(globals()),
@@ -303,7 +304,8 @@ class PythonScript(Script, Historical, Cacheable):
     def _newfun(self, code):
         g = {'__debug__': __debug__,
              '__builtins__': safe_builtins,
-             '_read_': full_read_guard,
+             '_getattr_': guarded_getattr,
+             '_getitem_': guarded_getitem,
              '_write_': full_write_guard,
              '_print_': RestrictedPython.PrintCollector
              }

@@ -146,14 +146,13 @@ Access Control
     Document templates provide a basic level of access control by
     preventing access to names beginning with an underscore.
     Additional control may be provided by providing document templates
-    with a 'read_guard' method.  This would typically be done by
-    subclassing one or more of the DocumentTemplate classes.
+    with a 'guarded_getattr' and 'guarded_getitem' method.  This would
+    typically be done by subclassing one or more of the DocumentTemplate
+    classes.
 
-    If provided, the the 'read_guard' method will be called when objects
-    are accessed as accessed as instance attributes or when they are
-    accessed through keyed access in an expression..  The 'read_guard'
-    method will be called with the containing object.  It can
-    return a wrapper object from which the attribute will be accessed.
+    If provided, the the 'guarded_getattr' method will be called when
+    objects are accessed as instance attributes or when they are
+    accessed through keyed access in an expression.
 
 Document Templates may be created 4 ways:
 
@@ -178,7 +177,7 @@ Document Templates may be created 4 ways:
 '''
 
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 ParseError='Document Template Parse Error'
 

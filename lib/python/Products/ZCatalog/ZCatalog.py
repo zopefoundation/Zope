@@ -97,7 +97,8 @@ from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans
 from Catalog import Catalog, CatalogError
-from AccessControl import getSecurityManager, full_read_guard
+from AccessControl import getSecurityManager
+from AccessControl.DTML import RestrictedDTML
 from zLOG import LOG, ERROR
 from ZCatalogIndexes import ZCatalogIndexes
 from Products.PluginIndexes.common.PluggableIndex import PluggableIndexInterface
@@ -846,10 +847,8 @@ def absattr(attr):
     return attr
 
 
-class td(TemplateDict):
-
-    def read_guard(self, ob):
-        return full_read_guard(ob)
+class td(RestrictedDTML, TemplateDict):
+    pass
 
 def expr_match(ob, ed, c=InstanceDict, r=0):
     e, md, push, pop=ed

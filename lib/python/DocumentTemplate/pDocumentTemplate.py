@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.28 2001/04/27 20:27:39 shane Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.29 2001/06/21 17:45:12 shane Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -117,14 +117,15 @@ isSimpleType=isSimpleType.has_key
 
 class InstanceDict:
 
-    read_guard=None
+    guarded_getattr=None
 
-    def __init__(self,o,namespace,read_guard=None):
+    def __init__(self,o,namespace,guarded_getattr=None):
         self.self=o
         self.cache={}
         self.namespace=namespace
-        if read_guard is None: self.read_guard=namespace.read_guard
-        else: self.read_guard=read_guard
+        if guarded_getattr is None:
+            self.guarded_getattr = namespace.guarded_getattr
+        else: self.guarded_getattr = guarded_getattr
 
     def has_key(self,key):
         return hasattr(self.self,key)
@@ -147,11 +148,11 @@ class InstanceDict:
             else:
                 return str(inst)
 
-        read_guard = self.read_guard
-        if read_guard is not None:
-            inst = read_guard(inst)
+        get = self.guarded_getattr
+        if get is None:
+            get = getattr
 
-        try: r = getattr(inst, key)
+        try: r = get(inst, key)
         except AttributeError: raise KeyError, key
 
         self.cache[key]=r

@@ -184,7 +184,8 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
         cns = bound_data['caller_namespace']
         ns = self._Bindings_ns_class()
         push = ns._push
-        ns.read_guard = None
+        ns.guarded_getattr = None
+        ns.guarded_getitem = None
         
         req = None
         kw_bind = kw

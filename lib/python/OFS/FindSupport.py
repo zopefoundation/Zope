@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -93,7 +93,7 @@ from Globals import DTMLFile
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
 from string import find
-from AccessControl import getSecurityManager, full_read_guard
+from AccessControl.DTML import RestrictedDTML
 
 class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
@@ -305,10 +305,8 @@ class FindSupport(ExtensionClass.Base):
 
 
 
-class td(TemplateDict):
-
-    def read_guard(self, ob):
-        return full_read_guard(ob)
+class td(RestrictedDTML, TemplateDict):
+    pass
 
 
 def expr_match(ob, ed, c=InstanceDict, r=0):

@@ -402,8 +402,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.51 2001/05/16 19:07:02 evan Exp $'
-__version__='$Revision: 1.51 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.52 2001/06/21 17:45:12 shane Exp $'
+__version__='$Revision: 1.52 $'[11:-2]
 
 import sys
 from DT_Util import ParseError, parse_params, name_param, str
@@ -608,7 +608,7 @@ class InClass:
             else:
                 result = []
                 append=result.append
-                read_guard = md.read_guard
+                guarded_getitem = getattr(md, 'guarded_getitem', None)
                 for index in range(first,end):
                     # preset
                     pkw['previous-sequence']= 0
@@ -638,8 +638,8 @@ class InClass:
         
                     if index==last: pkw['sequence-end']=1
 
-                    if read_guard is not None:
-                        try: client = read_guard(sequence)[index]
+                    if guarded_getitem is not None:
+                        try: client = guarded_getitem(sequence, index)
                         except ValidationError, vv:
                             if (params.has_key('skip_unauthorized') and
                                 params['skip_unauthorized']):
@@ -727,11 +727,11 @@ class InClass:
         try:
                 result = []
                 append=result.append
-                read_guard = md.read_guard
+                guarded_getitem = getattr(md, 'guarded_getitem', None)
                 for index in range(l):
                     if index==last: pkw['sequence-end']=1
-                    if read_guard is not None:
-                        try: client = read_guard(sequence)[index]
+                    if guarded_getitem is not None:
+                        try: client = guarded_getitem(sequence, index)
                         except ValidationError, vv:
                             if (self.args.has_key('skip_unauthorized') and
                                 self.args['skip_unauthorized']):

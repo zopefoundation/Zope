@@ -85,7 +85,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.102 $'[11:-2]
+__version__='$Revision: 1.103 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -105,7 +105,8 @@ import DocumentTemplate.DT_Util
 from cPickle import dumps, loads
 from Results import Results
 from App.Extensions import getBrain
-from AccessControl import getSecurityManager, full_read_guard
+from AccessControl import getSecurityManager
+from AccessControl.DTML import RestrictedDTML
 from webdav.Resource import Resource
 from webdav.Lockable import ResourceLockedError
 try: from IOBTree import Bucket
@@ -123,11 +124,10 @@ class nvSQL(DocumentTemplate.HTML):
     _proxy_roles=()
 
 
-class SQL(ExtensionClass.Base, nvSQL):
+class SQL(RestrictedDTML, ExtensionClass.Base, nvSQL):
     # Validating SQL template for Zope SQL Methods.
+    pass
 
-    def read_guard(self, ob):
-        return full_read_guard(ob)
 
 class DA(
     Aqueduct.BaseQuery,Acquisition.Implicit,

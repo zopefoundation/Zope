@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.79 2001/06/18 18:44:45 chrism Exp $''' 
-__version__='$Revision: 1.79 $'[11:-2]
+'''$Id: DT_Util.py,v 1.80 2001/06/21 17:45:12 shane Exp $''' 
+__version__='$Revision: 1.80 $'[11:-2]
 
 import re, os
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -143,19 +143,26 @@ if LIMITED_BUILTINS:
 _marker = []  # Create a new marker object.
 
 def careful_getattr(md, inst, name, default=_marker):
-    read_guard = md.read_guard
-    if read_guard is not None:
-        inst = read_guard(inst)
-    if default is _marker:
-        return getattr(inst, name)
-    else:
-        return getattr(inst, name, default)
+    get = md.guarded_getattr
+    if get is None:
+        get = getattr
+    try:
+        return get(inst, name)
+    except AttributeError:
+        if default is _marker:
+            raise
+        return default
 
 def careful_hasattr(md, inst, name):
-    read_guard = md.read_guard
-    if read_guard is not None:
-        inst = read_guard(inst)
-    return hasattr(inst, name)
+    get = md.guarded_getattr
+    if get is None:
+        get = getattr
+    try:
+        get(inst, name)
+    except (AttributeError, ValidationError):
+        return 0
+    else:
+        return 1
 
 d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
@@ -195,12 +202,15 @@ d['render']=render
 class Eval(RestrictionCapableEval):
 
     def eval(self, md):
-        guard = getattr(md, 'read_guard', None)
-        if guard is not None:
+        gattr = getattr(md, 'guarded_getattr', None)
+        if gattr is not None:
+            gitem = getattr(md, 'guarded_getitem', None)
             self.prepRestrictedCode()
             code = self.rcode
             d = {'_': md, '_vars': md,
-                 '_read_': guard, '__builtins__': None}
+                 '_getattr_': gattr,
+                 '_getitem_': gitem,
+                 '__builtins__': None}
         else:
             self.prepUnrestrictedCode()
             code = self.ucode

@@ -105,8 +105,8 @@
 
 ''' 
 
-__rcs_id__='$Id: DT_With.py,v 1.12 2001/04/27 20:27:39 shane Exp $'
-__version__='$Revision: 1.12 $'[11:-2]
+__rcs_id__='$Id: DT_With.py,v 1.13 2001/06/21 17:45:12 shane Exp $'
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DT_Util import parse_params, name_param, InstanceDict, render_blocks, str
 from DT_Util import TemplateDict
@@ -139,8 +139,10 @@ class With:
         if self.only:
             _md=md
             md=TemplateDict()
-            if hasattr(_md, 'read_guard'):
-                md.read_guard = _md.read_guard
+            if hasattr(_md, 'guarded_getattr'):
+                md.guarded_getattr = _md.guarded_getattr
+            if hasattr(_md, 'guarded_getitem'):
+                md.guarded_getitem = _md.guarded_getitem
 
         md._push(v)
         try: return render_blocks(self.section, md)

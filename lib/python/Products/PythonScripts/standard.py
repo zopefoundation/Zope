@@ -90,7 +90,7 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
@@ -105,10 +105,10 @@ from DocumentTemplate.DT_Var import special_formats, \
  html_quote, url_quote, url_quote_plus, newline_to_br, thousands_commas
 
 from Globals import HTML
-from AccessControl import full_read_guard
+from AccessControl.DTML import RestrictedDTML
 
 security.declarePublic('DTML')
-class DTML(HTML):
+class DTML(RestrictedDTML, HTML):
     """DTML objects are DocumentTemplate.HTML objects that allow
        dynamic, temporary creation of restricted DTML."""
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
@@ -121,9 +121,6 @@ class DTML(HTML):
             return apply(HTML.__call__, (self, client, REQUEST), kw)
 
         finally: security.removeContext(self)
-
-    def read_guard(self, ob):
-        return full_read_guard(ob)
 
 security.apply(globals())
 
