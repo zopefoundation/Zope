@@ -74,6 +74,8 @@ Zope changes
           extended sorting functionality for sequence (implements
           ExtendedDTMLSorting proposal)
 
+        - Fixed a long-standing bug in FileStorage that made it so
+          versions were only partially committed.
 
     Zope 2.3.0 beta 3
 
