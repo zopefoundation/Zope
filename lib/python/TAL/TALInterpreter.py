@@ -150,7 +150,8 @@ class AltTALGenerator(TALGenerator):
 class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
-                 debug=0, wrap=60, metal=1, tal=1, showtal=-1):
+                 debug=0, wrap=60, metal=1, tal=1, showtal=-1,
+                 strictinsert=1):
         self.program = program
         self.macros = macros
         self.engine = engine
@@ -164,6 +165,7 @@ class TALInterpreter:
         if showtal == -1:
             showtal = (not tal)
         self.showtal = showtal
+        self.strictinsert = strictinsert
         self.html = 0
         self.slots = {}
         self.currentMacro = None
@@ -321,6 +323,10 @@ class TALInterpreter:
         if structure is None:
             return
         text = str(structure)
+        if not repldict and not self.strictinsert:
+            # Take a shortcut, no error checking
+            self.stream_write(text)
+            return
         if self.html:
             self.insertHTMLStructure(text, repldict)
         else:
