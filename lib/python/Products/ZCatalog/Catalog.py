@@ -209,7 +209,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # new column? update the brain
         self.updateBrains()
 
-        self.__changed__(1)    #why?
+        self._p_changed = 1 # why?
 
     def delColumn(self, name):
         """
