@@ -88,8 +88,10 @@ from StructuredText import DocumentClass
 from StructuredText import ClassicDocumentClass
 from StructuredText import StructuredText
 from StructuredText import HTMLClass
-import sys, os, unittest
+from StructuredText.StructuredText import HTML
+import sys, os, unittest, cStringIO
 execfile(os.path.join(sys.path[0],'framework.py'))
+from OFS import ndiff
 
 """
 This tester first ensures that all regression files
@@ -103,7 +105,8 @@ package_dir = os.path.split(ST.__file__)[0]
 regressions=os.path.join(package_dir, 'regressions')
 
 files = ['index.stx','Acquisition.stx','ExtensionClass.stx',
-        'MultiMapping.stx','examples.stx','Links.stx']
+        'MultiMapping.stx','examples.stx','Links.stx','examples1.stx',
+        'table.stx']
 
 def readFile(dirname,fname):
 
@@ -177,8 +180,44 @@ class StructuredTextTests(unittest.TestCase):
             reg_fname = f.replace('.stx','.ref')
             reg_html  = readFile(regressions , reg_fname)
 
-            assert reg_html.strip()== html.strip(), \
-                'HTML regression test failed on %s' % f
+            if reg_html.strip()!= html.strip():
 
+                IO = cStringIO.StringIO()
+
+                oldStdout = sys.stdout
+                sys.stdout = IO                
+
+                try:
+                    open('_tmpout','w').write(html)
+                    ndiff.fcompare(os.path.join(regressions,reg_fname),'_tmpout')
+                    os.unlink('_tmpout')
+                finally:
+                    sys.stdout = oldStdout 
+
+                raise AssertionError, \
+                    'HTML regression test failed on %s\nDiff:\n%s\n' % (f,IO.getvalue())
+
+
+class BasicTests(unittest.TestCase):
+
+    def _test(self,stxtxt , expected):
+
+        res = HTML(stxtxt,level=1,header=0)
+        if res.find(expected)==-1:
+            print res
+            raise AssertionError,"basic test failed for '%s'" % stxtxt
+            
+    def testUnderline(self):
+        """underline"""
+        self._test("xx _this is html_ xx","xx <u>this is html</u> xx")
+        
+    def testEmphasis(self):
+        """underline"""
+        self._test("xx *this is html* xx","xx <em>this is html</em> xx")
+
+    def testStrong(self):
+        """underline"""
+        self._test("xx **this is html** xx","xx <strong>this is html</strong> xx")
+        
 
 framework()
