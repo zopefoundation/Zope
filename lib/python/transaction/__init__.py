@@ -20,18 +20,10 @@ from transaction._transaction import Transaction
 from transaction._manager import TransactionManager, ThreadTransactionManager
 
 manager = ThreadTransactionManager()
-
-def get():
-    return manager.get()
-
-def begin():
-    return manager.begin()
-
-def commit(sub=False):
-    manager.get().commit(sub)
-
-def abort(sub=False):
-    manager.get().abort(sub)
+get = manager.get
+begin = manager.begin
+commit = manager.commit
+abort = manager.abort
 
 # TODO: Issue deprecation warning if this variant is used?
 get_transaction = get
