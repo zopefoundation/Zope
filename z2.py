@@ -551,7 +551,10 @@ try:
     import ZLogger
 
     if READ_ONLY:
-        zLOG._stupid_dest=sys.stderr
+        if hasattr(zLOG, '_set_stupid_dest'):
+            zLOG._set_stupid_dest(sys.stderr)
+        else:
+            zLOG._stupid_dest = sys.stderr
     else:
         zLOG.log_write = ZLogger.ZLogger.log_write
 
