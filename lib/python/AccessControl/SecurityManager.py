@@ -85,10 +85,12 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.2 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: SecurityManager.py,v 1.3 2001/01/10 20:20:46 chrism Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
+
+_noroles = ZopeSecurityPolicy._noroles
 
 try: max_stack_size=string.atoi(os.environ.get('Z_MAX_STACK_SIZE','100'))
 except: max_stack_size=100
@@ -115,7 +117,8 @@ class SecurityManager:
         self._context=context
         self._policy=None
 
-    def validate(self, accessed=None, container=None, name=None, value=None):
+    def validate(self, accessed=None, container=None, name=None, value=None,
+                 roles=_noroles):
         """Validate access.
 
         Arguments:
@@ -127,6 +130,8 @@ class SecurityManager:
         name -- The name used to access the value
         
         value -- The value retrieved though the access.
+
+        roles -- The roles of the object if already known.
         
         The arguments may be provided as keyword arguments. Some of these
         arguments may be ommitted, however, the policy may reject access
@@ -136,15 +141,15 @@ class SecurityManager:
         policy=self._policy
         if policy is None: policy=_defaultPolicy
         return policy.validate(accessed, container, name, value,
-                               self._context)
+                               self._context, roles)
 
-    def validateValue(self, value):
+    def validateValue(self, value, roles=_noroles):
         """Convenience for common case of simple value validation.
         """
         policy=self._policy
         if policy is None: policy=_defaultPolicy
         return policy.validate(None, None, None, value,
-                               self._context)
+                               self._context, roles)
 
     def checkPermission(self, permission, object):
         """Check whether the security context allows the given permission on
