@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import HTML, HTMLFile,MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -80,21 +80,18 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	self.title=title
 	self._setRoles(acl_type,acl_roles)
 	self.munge(data)
-	if REQUEST:
-	    return MessageDialog(title='Change Successful',
-	                         message='Your changes have been saved',
-	                         action='%s/manage_main' % REQUEST['URL2'])
+	if REQUEST: return self.manage_editedDialog(REQUEST)
 
 default_html="""<!--#var standard_html_header-->
-<H2><!--#var document_title--></H2>
+<H2><!--#var title_or_id--> <!--#var document_title--></H2>
 <P>This is the <!--#var document_id--> Document in 
-the <!--#var title_or_id--> Folder.</P>
+the <!--#var title_and_id--> Folder.</P>
 <!--#var standard_html_footer-->"""
 
 
 class DocumentHandler:
     """Document object handler mixin"""
-    meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
+    meta_types=() #({'name':'Document', 'action':'manage_addDocumentForm'},)
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
