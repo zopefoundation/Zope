@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -227,9 +227,9 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
         rows = str(max(1, int(dtpref_rows) + dr))
         cols = str(dtpref_cols)
         if cols.endswith('%'):
-           cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
+            cols = str(min(100, max(25, int(cols[:-1]) + dc))) + '%'
         else:
-           cols = str(max(35, int(cols) + dc))
+            cols = str(max(35, int(cols) + dc))
         e = (DateTime("GMT") + 365).rfc822()
         setCookie = REQUEST["RESPONSE"].setCookie
         setCookie("dtpref_rows", rows, path='/', expires=e)
