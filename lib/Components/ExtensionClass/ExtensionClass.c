@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.28 1998/03/24 16:18:54 jim Exp $
+  $Id: ExtensionClass.c,v 1.29 1998/06/03 21:08:13 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.28 1998/03/24 16:18:54 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.29 1998/06/03 21:08:13 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2074,6 +2074,8 @@ subclass_getattro(PyObject *self, PyObject *name)
       PyErr_Clear();
       r=EC_findiattro(self,py__getattr__);
       if(r) ASSIGN(r,PyObject_CallFunction(r,"O",name));
+      if(r && NeedsToBeBound(r))
+	ASSIGN(r, CallMethodO(r, py__of__, Build("(O)", self), NULL));
     }
   return r;
 }
@@ -3349,7 +3351,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.28 $";
+  char *rev="$Revision: 1.29 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3390,6 +3392,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.29  1998/06/03 21:08:13  jim
+  Fixed bug in subclass getattr when the subclass defines a __getattr__ method.
+
   Revision 1.28  1998/03/24 16:18:54  jim
   Added parens to make gcc SHUT UP!
 
