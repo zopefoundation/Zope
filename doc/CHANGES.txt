@@ -17,3 +17,5 @@ Zope changes
 
         - Added the __replaceable__ property support to ObjectManager.
             This is currently documented only in the Wiki.
+
+        - Added unit tests for the DateTime module.
