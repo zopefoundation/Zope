@@ -86,8 +86,9 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
+from TALES import CompilerError
 from string import strip, split, join, replace, lstrip
 
 class getSecurityManager:

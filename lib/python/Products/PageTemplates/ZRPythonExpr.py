@@ -88,11 +88,12 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
 from RestrictedPython import compile_restricted_eval
+from TALES import CompilerError
 from string import strip, split, join, replace, lstrip
 
 from PythonExpr import PythonExpr

@@ -89,11 +89,12 @@ Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
 """
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
      GuardedBlock, theGuard, safebin, WriteGuard, ReadGuard, UntupleFunction
+from TALES import CompilerError
 from string import strip, split, join, replace, lstrip
 
 from PythonExpr import PythonExpr

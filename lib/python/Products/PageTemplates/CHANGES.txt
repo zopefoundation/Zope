@@ -12,3 +12,4 @@ Page Template changes
 
       Bugs Fixed
 
+        - The various *Python modules failed to import CompilerError.
