@@ -1,0 +1,25 @@
+<html>
+<head>
+<title>Edit <dtml-var title_or_id></title>
+</head>
+<body bgcolor="#ffffff" link="#000099" vlink="#555555" alink="#77003b">
+
+<dtml-var manage_tabs>
+
+<!--
+<form action="manage_insert" method="POST">
+<input name="word"><br>
+<input type="submit" value="Add">
+</form>
+<br>
+-->
+
+<ul>
+<dtml-in words>
+  <li><dtml-var sequence-key> (<dtml-var sequence-item>)</li>
+</dtml-in>
+</ul>
+
+
+</body>
+</html>
