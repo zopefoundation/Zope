@@ -1,7 +1,7 @@
 <div align="right">
 <SCRIPT LANGUAGE="JavaScript">
   function openHelpWindow(url) { 
-    helpWindow = window.open(url,"zope_help","width=600,height=500,menubar=yes,scrollbars=yes,resizable=yes"); 
+    helpWindow = window.open(url,"zope_help","width=600,height=500,menubar=yes,toolbar=yes,scrollbars=yes,resizable=yes"); 
     helpWindow.focus();
 	return false;
   } 
