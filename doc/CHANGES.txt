@@ -66,21 +66,6 @@ Zope changes
           converted to a DTMLFile.  Most management interface methods
           should be converted by the final release of 2.3.
 
-      Bugs Fixed
-
-        - A misspelled function name which prevented the addition of
-          properties was corrected.
-
-        - Caused PropertySheets to restrict IDs the same way
-          ObjectManager does.
-
-	- (Collector #1586) Fixed situation where the Catalog would
-	  attempt to loop over a bucket as if it were a list, which
-	  won't work.  This was reported by Steve Alexander with a
-          patch. 
-
-        - Corrected local role computation (Hotfix 2000-12-15)
-
         - Added a variable called PUBLISHED to REQUEST.  From now on,
           this variable should be used instead of PARENTS for user
           validation.
@@ -88,11 +73,6 @@ Zope changes
         - The inituser file is now read even when one user has been
           created.  This provides a way to reset the password after
           a new user installs Zope but ignores the generated password.
-
-        - The basic user folder implementation in User.py was changed
-          to use the Zope security policy machinery.  see
-          http://dev.zope.org/Wikis/DevSite/Proposals/
-          ChangeUserFoldersToUseSecurityPolicyAPI for details.
 
         - ZCatalogs have a reduced number of management interface tabs.
 
@@ -109,6 +89,29 @@ Zope changes
           Zope management interface has been tweaked in various ways 
           to improve productivity and consistency and is now at least 
           slightly less ugly :)
+
+      Bugs Fixed
+
+        - A misspelled function name which prevented the addition of
+          properties was corrected.
+
+        - Caused PropertySheets to restrict IDs the same way
+          ObjectManager does.
+
+	- (Collector #1586) Fixed situation where the Catalog would
+	  attempt to loop over a bucket as if it were a list, which
+	  won't work.  This was reported by Steve Alexander with a
+          patch. 
+
+        - Corrected local role computation (Hotfix 2000-12-15)
+
+        - The basic user folder implementation in User.py was changed
+          to use the Zope security policy machinery.  see
+          http://dev.zope.org/Wikis/DevSite/Proposals/
+          ChangeUserFoldersToUseSecurityPolicyAPI for details.
+
+        - Trying to cut or copy with no items selected now returns a 
+          nicer error message.
 
     Zope 2.3.0 alpha 1
     
