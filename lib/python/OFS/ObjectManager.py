@@ -644,6 +644,13 @@ class ObjectManager(
                 out=out+((k,stat),)
         return marshal.dumps(out)
 
+    def manage_hasId(self, REQUEST):
+        """ check if the folder has an object with REQUEST['id'] """
+
+        if not REQUEST['id'] in self.objectIds():
+            raise KeyError(REQUEST['id'])
+
+
     def manage_FTPstat(self,REQUEST):
         "Psuedo stat used for FTP listings"
         mode=0040000

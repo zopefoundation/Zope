@@ -98,6 +98,11 @@ class FTPRequest(HTTPRequest):
                                               path, 'manage_addFolder')
             env['QUERY_STRING']='id=%s' % args[0]
 
+        elif command=='RNFR':
+            env['PATH_INFO']=self._join_paths(channel.path,
+                                              path, 'manage_hasId')
+            env['QUERY_STRING']='id=%s' % (args[0])
+
         elif command=='RNTO':
             env['PATH_INFO']=self._join_paths(channel.path,
                                               path, 'manage_renameObject')

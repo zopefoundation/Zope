@@ -26,6 +26,9 @@ Zope Changes
 
     Features added
 
+      - FTPServer: a RNFR (rename from) request is now being responded
+        with a 550 error code if the source file does not exist
+
       - Fixed ObjectManager to not swallow exceptions during object
         deletion (in debug mode and if the user is not Manager). This
         allows for better debugging, while still keeping the possibility

@@ -384,7 +384,17 @@ class zope_ftp_channel(ftp_channel):
             self.command_not_understood (' '.join(line))
         else:
             self.fromfile = line[1]
-            self.respond ('350 RNFR command successful.')
+            pathf,idf=os.path.split(self.fromfile)
+            response=make_response(self, self.rnfr_completion)
+            request=FTPRequest(pathf,('RNFR',idf),self,response)
+            handle(self.module,request,response)
+
+    def rnfr_completion(self,response):
+        status=response.getStatus()
+        if status==200:
+            self.respond ('250 RNTO command successful.')
+        else:
+            self.respond ('550 %s: no such file or directory.' % self.fromfile)
 
     def cmd_rnto (self, line):
         if len (line) != 2:
