@@ -110,10 +110,11 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.4 1997/09/25 18:56:38 jim Exp $'
-__version__='$Revision: 1.4 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.5 1997/11/07 17:08:11 jim Exp $'
+__version__='$Revision: 1.5 $'[11:-2]
 
 from DT_Util import *
+import sys
 
 class If:
     blockContinuations='else','elif'
@@ -151,7 +152,9 @@ class If:
 	for name, expr, section in self.sections:
 	    if expr is None:
 		try: v=md[name]
-		except: v=None
+		except KeyError, ev:
+		    if ev is not name: raise KeyError, name, sys.exc_traceback
+		    v=None
 	    else:
 		v=expr.eval(md)
 
@@ -175,8 +178,11 @@ class Else:
 	self.section=section
 
     def render(self,md):
-	try: v=md[self.__name__]
-	except: v=None
+	name=self.__name__
+	try: v=md[name]
+	except KeyError, ev:
+	    if ev is not name: raise KeyError, name, sys.exc_traceback
+	    v=None
 	if not v: return self.section(None,md)
 	return ''
 
@@ -185,6 +191,10 @@ class Else:
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.5  1997/11/07 17:08:11  jim
+# Changed so exception is raised if a sequence cannot be gotten during
+# rendering.
+#
 # Revision 1.4  1997/09/25 18:56:38  jim
 # fixed problem in reporting errors
 #

@@ -228,9 +228,9 @@
 
       Missing values are either 'None' or the attribute 'Value'
       of the module 'Missing', if present.
-'''
+''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.8 1997/10/28 16:33:49 paul Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.9 1997/11/07 17:08:33 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -284,7 +284,7 @@ __rcs_id__='$Id: DT_In.py,v 1.8 1997/10/28 16:33:49 paul Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -332,9 +332,7 @@ class In:
 
     def render(self, md):
 	expr=self.expr
-	if expr is None:
-	    try: sequence=md[self.__name__] or None
-	    except: sequence=None
+	if expr is None: sequence=md[self.__name__]
 	else: sequence=expr.eval(md)
 
 	if not sequence:
@@ -790,6 +788,10 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.9  1997/11/07 17:08:33  jim
+# Changed so exception is raised if a sequence cannot be gotten during
+# rendering.
+#
 # Revision 1.8  1997/10/28 16:33:49  paul
 # Small change to docstring.
 #
