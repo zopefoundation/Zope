@@ -30,6 +30,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #331: Referenses to URL in manage_tabs was changed
+       to REQUEST.URL to prevent accidental overriding.
+
      - Made the control panel properly reflect the cache-size setting
        of ZODB's object cache once again.
 

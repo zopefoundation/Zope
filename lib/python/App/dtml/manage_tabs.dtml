@@ -3,8 +3,8 @@
 <dtml-call "REQUEST.set('n_', _.len(manage_options)-1)">
 <dtml-call "REQUEST.set('a_', 0)">
 <dtml-in manage_options mapping>
-<dtml-if expr="URL[-(_.len(action)):]==action or
-                URL[-17:]=='/manage_workspace' and _['sequence-start']">
+<dtml-if expr="REQUEST.URL[-(_.len(action)):]==action or
+                REQUEST.URL[-17:]=='/manage_workspace' and _['sequence-start']">
 <dtml-call "REQUEST.set('a_', _['sequence-index'])">
 </dtml-if>
 <dtml-if "_.has_key('management_view') and management_view==label">
