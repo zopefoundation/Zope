@@ -11,9 +11,9 @@
 # 
 #############################################################################
 
-import whrandom
+import random
 
-def randid(randint=whrandom.randint, choice=whrandom.choice, signs=(-1,1)):
+def randid(randint=random.randint, choice=random.choice, signs=(-1,1)):
     return choice(signs)*randint(1,2000000000)
 
-del whrandom
+del random
