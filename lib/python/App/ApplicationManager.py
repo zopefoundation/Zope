@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -98,6 +98,8 @@ from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
 from cStringIO import StringIO
+from AccessControl import getSecurityManager
+import zLOG
 
 try: import thread
 except: get_ident=lambda: 0
@@ -374,6 +376,12 @@ class ApplicationManager(Folder,CacheManager):
         manage_restartable=1
         def manage_restart(self, URL1):
             """Shut down the application"""
+            try:
+                user = '"%s"' % getSecurityManager().getUser().getUserName()
+            except:
+                user = 'unknown user'
+            zLOG.LOG("ApplicationManager", zLOG.INFO,
+                     "Restart requested by %s" % user)
             for db in Globals.opened: db.close()
             raise SystemExit, """<html>
             <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
@@ -384,6 +392,12 @@ class ApplicationManager(Folder,CacheManager):
 
     def manage_shutdown(self):
         """Shut down the application"""
+        try:
+            user = '"%s"' % getSecurityManager().getUser().getUserName()
+        except:
+            user = 'unknown user'
+        zLOG.LOG("ApplicationManager", zLOG.INFO,
+                 "Shutdown requested by %s" % user)
         for db in Globals.opened: db.close()
         sys.exit(0)
 
