@@ -3,7 +3,7 @@ PropertySheet
 """
 
 
-class PropertySheet
+class PropertySheet:
     """"
 
     A PropertySheet is an abstraction for organizing and working
