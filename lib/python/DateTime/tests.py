@@ -1,6 +1,6 @@
 
 # To run these tests, use:
-#   python unittest.py DateTime.tests.suite
+#   python unittest.py DateTime.tests.test_suite
 
 import unittest
 from DateTime import DateTime
@@ -137,5 +137,5 @@ class DateTimeTests (unittest.TestCase):
         assert dt - dt1 == 3000000.0, (dt, dt1)
 
 
-def suite():
+def test_suite():
     return unittest.makeSuite(DateTimeTests)

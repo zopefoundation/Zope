@@ -59,7 +59,6 @@ class TestRunner:
                 'test_explicit_acquisition.py': None,
                 'test_func_attr.py': None,
                 'test_method_hook.py': None,
-                'tests.py': None,
                 'test.py': None,
                 }
 
