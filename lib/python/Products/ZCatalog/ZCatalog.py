@@ -88,6 +88,7 @@ from Globals import HTMLFile, MessageDialog
 import Globals
 from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
+from DateTime import DateTime
 from SearchIndex import Query
 import string, regex, urlparse, urllib, os, sys
 import Products
@@ -96,6 +97,7 @@ from Persistence import Persistent
 from Catalog import Catalog, orify
 import pdb, traceback
 from SearchIndex import UnIndex, UnTextIndex
+import IOBTree
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
@@ -169,6 +171,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 	self._catalog.addColumn('bobobase_modification_time')
 	self._catalog.addIndex('bobobase_modification_time', 'FieldIndex')
+
+	self._catalog.addColumn('summary')
+	self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
 
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
@@ -302,11 +307,13 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def catalog_object(self, obj, uid):
 	""" wrapper around catalog """
+	
 	self._catalog.catalogObject(obj, uid)
 
 
     def uncatalog_object(self, uid):
 	""" wrapper around catalog """
+	    
 	self._catalog.uncatalogObject(uid)
 
 

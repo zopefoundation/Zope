@@ -90,7 +90,6 @@ from SearchIndex import UnIndex, UnTextIndex, Query
 import regex, pdb
 import Record
 from Missing import MV
-from DateTime import DateTime
 
 from Lazy import LazyMap, LazyFilter, LazyCat
 
@@ -146,7 +145,6 @@ class Catalog(Persistent, Acquisition.Implicit):
         self.data = BTree.BTree()       # mapping of rid to meta_data
         self.uids = OIBTree.BTree()     # mapping of uid to rid
         self.paths = IOBTree.BTree()    # mapping of rid to uid
-        self.dates = IOBTree.BTree()    # mapping of rid to date indexed
 
         if brains is not None:
             self._v_brains = brains
@@ -191,7 +189,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
 
     def addColumn(self, name, default_value=None):
-        """ adds a row to the meta_data schema """
+        """ adds a row to the meta data schema """
         
         schema = self.schema
         names = list(self.names)
@@ -205,8 +203,6 @@ class Catalog(Persistent, Acquisition.Implicit):
             else:
                 schema[name] = 0
             names.append(name)
-
-
 
         if default_value is None or default_value == '':
             default_value = MV
@@ -225,7 +221,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
             
     def delColumn(self, name):
-        """ deletes a row from the meta_data schema """
+        """ deletes a row from the meta data schema """
         names = list(self.names)
         _index = names.index(name)
 
@@ -279,9 +275,15 @@ class Catalog(Persistent, Acquisition.Implicit):
     # the cataloging API
 
     def catalogObject(self, object, uid):
-        """ adds an object to the Catalog
+        """ 
+
+	Adds an object to the Catalog by iteratively applying it
+	all indexes.
+
         'object' is the object to be cataloged
+
         'uid' is the unique Catalog identifier for this object
+
         """
 
         data = self.data
@@ -307,11 +309,15 @@ class Catalog(Persistent, Acquisition.Implicit):
                                           
 
     def uncatalogObject(self, uid):
-        """ Uncatalog and object from the Catalog.
-        and 'uid' is a unique Catalog identifier
+        """ 
+
+	Uncatalog and object from the Catalog.  and 'uid' is a unique
+	Catalog identifier
 
         Note, the uid must be the same as when the object was
-        cataloged, otherwise it will not get removed from the catalog """
+        cataloged, otherwise it will not get removed from the catalog
+
+        """
         
         if uid not in self.uids.keys():
             'no object with uid %s' % uid
@@ -343,6 +349,13 @@ class Catalog(Persistent, Acquisition.Implicit):
     def uniqueValuesFor(self, name):
         """ return unique values for FieldIndex name """
         return self.indexes[name].uniqueValues()
+
+    def hasuid(self, uid):
+        """ return the rid if catalog contains an object with uid """
+        if uid in self.uids.keys():
+            return self.uids[uid]
+        else:
+            return None
 
 
     def recordify(self, object):
@@ -407,7 +420,8 @@ class Catalog(Persistent, Acquisition.Implicit):
                 for k, intset in sort_index.items():
                     __traceback_info__=intset, intset.__class__
                     intset=intset.intersection(rs)
-                    if intset: append((k,LazyMap(self.__getitem__, intset)))
+                    if intset: 
+                        append((k,LazyMap(self.__getitem__, intset)))
 
         return used
 
