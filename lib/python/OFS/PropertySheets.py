@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -462,7 +462,10 @@ class PropertySheet(Persistent, Implicit):
 
     # Web interface
     
-    manage_propertiesForm=HTMLFile('properties', globals())
+    manage=HTMLFile('properties', globals())
+    def manage_propertiesForm(self, URL1):
+        " "
+        raise 'Redirect', URL1+'/manage'
     
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
@@ -471,7 +474,7 @@ class PropertySheet(Persistent, Implicit):
             value=type_converters[type](value)
         self._setProperty(id, value, type)
         if REQUEST is not None:
-            return self.manage_propertiesForm(self, REQUEST)
+            return self.manage(self, REQUEST)
 
     def manage_changeProperties(self, REQUEST=None, **kw):
         """Change existing object properties by passing either a mapping
@@ -490,7 +493,7 @@ class PropertySheet(Persistent, Implicit):
             return MessageDialog(
                 title  ='Success!',
                 message='Your changes have been saved.',
-                action ='manage_propertiesForm')
+                action ='manage')
 
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
@@ -501,7 +504,7 @@ class PropertySheet(Persistent, Implicit):
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
-               action ='manage_propertiesForm')
+               action ='manage')
 
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
@@ -509,11 +512,11 @@ class PropertySheet(Persistent, Implicit):
             return MessageDialog(
                    title='No property specified',
                    message='No properties were specified!',
-                   action ='./manage_propertiesForm',)
+                   action ='./manage',)
         for id in ids:
             self._delProperty(id)
         if REQUEST is not None:
-            return self.manage_propertiesForm(self, REQUEST)
+            return self.manage(self, REQUEST)
 
 class Virtual:
 
@@ -684,7 +687,7 @@ class PropertySheets(Implicit, App.Management.Tabs):
 
     # Management interface:
 
-    manage_propertiesForm=Globals.HTMLFile('propertysheets', globals())
+    manage=Globals.HTMLFile('propertysheets', globals())
 
     def manage_options(self):
         """Return a manage option data structure for me instance
