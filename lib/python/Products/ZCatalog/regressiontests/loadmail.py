@@ -96,10 +96,11 @@ Commands:
 sample suite of tests::
     
     cd lib/python
-    python Products/ZCatalog/tests/loadmail.py base ~/zope.mbox 1000
-    python Products/ZCatalog/tests/loadmail.py index 100
-    python Products/ZCatalog/tests/loadmail.py inc ~/python-dev.mbox 0 10 2
-    python Products/ZCatalog/tests/loadmail.py edit 10 10 10 2
+    python Products/ZCatalog/regressiontests/loadmail.py base ~/zope.mbox 1000
+    python Products/ZCatalog/regressiontests/loadmail.py index 100
+    python Products/ZCatalog/regressiontests/loadmail.py \
+                                                  inc ~/python-dev.mbox 0 10 2
+    python Products/ZCatalog/regressiontests/loadmail.py edit 10 10 10 2
 
 """
 
@@ -171,7 +172,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
             break
         if i%100 == 0 and printstat:
             fmt = "\t%s\t%s\t\r"
-            if os.environ.get('TERM') == 'emacs':
+            if os.environ.get('TERM') in ('dumb', 'emacs'):
                 fmt = "\t%s\t%s\t\n"
             sys.stdout.write(fmt % (i, f.tell()))
             sys.stdout.flush()
@@ -184,6 +185,7 @@ def loadmail(dest, name, mbox, printstat=0, max=-1):
         message=mb.next()
 
     dest.number_of_messages=i
+    print 
     get_transaction().commit()
 
 def loadinc(name, mb, printstat=0, max=99999999, wait=1):
@@ -236,15 +238,6 @@ def loadinc(name, mb, printstat=0, max=99999999, wait=1):
     sys.stdout.flush()
     return rconflicts, wconflicts
 
-def buildbase():
-    try: os.unlink('../../var/Data.fs')
-    except: pass
-    import Zope, Products.ZCatalog.ZCatalog
-    app=Zope.app()
-    Products.ZCatalog.ZCatalog.manage_addZCatalog(app, 'cat', '')
-    get_transaction().commit()
-    return app
-
 def base():
     try: os.unlink('../../var/Data.fs')
     except: pass
@@ -274,14 +267,31 @@ def index():
     app=Zope.app()
     Products.ZCatalog.ZCatalog.manage_addZCatalog(app, 'cat', '')
     app.cat.threshold=atoi(sys.argv[2])
-    app.cat._catalog.delIndex('bobobase_modification_time')
+
+    from Products.ZCTextIndex.ZCTextIndex \
+         import PLexicon
+    from Products.ZCTextIndex.Lexicon \
+         import Splitter, CaseNormalizer
+    
+    
+    app.cat._setObject('lex',
+                       PLexicon('lex', '', Splitter(), CaseNormalizer())
+                       )
+                      
+    class extra:
+        doc_attr = 'PrincipiaSearchSource'
+        lexicon_id = 'lex'
+        index_type = 'Okapi BM25 Rank'
+    
+    app.cat.addIndex('PrincipiaSearchSource', 'ZCTextIndex', extra)
+
     get_transaction().commit()
     system = AccessControl.SpecialUsers.system
     AccessControl.SecurityManagement.newSecurityManager(None, system)
     r=RE()
     r.PARENTS=[app.cat, app]
     print do(Zope.DB, indexf, (app,))
-    hist(sys.argv[2])
+    #hist(sys.argv[2])
     Zope.DB.close()
 
 def initmaili(n):
@@ -363,7 +373,7 @@ def inc():
 
     print t, c, size, mem
 
-    hist("%s-%s-%s" % (omin, count, threads))
+    #hist("%s-%s-%s" % (omin, count, threads))
     
     Zope.DB.close()
 
