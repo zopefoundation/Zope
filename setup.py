@@ -1117,7 +1117,7 @@ def skel_visit(skel, dirname, names):
 installed_data_files = [
     ["../../doc", ['doc/*.txt']],
     ["../../import", ['import/*.zexp']],
-    ["../../bin", ['utilities/README.txt', 'test.py']],
+    ["../../bin", ['utilities/README.txt']],
     ]
 
 os.path.walk("skel", skel_visit, installed_data_files)
@@ -1131,6 +1131,7 @@ distutils.core.setup(
              "utilities/check_catalog.py", "utilities/load_site.py",
              "utilities/requestprofiler.py", "utilities/zpasswd.py",
              "utilities/copyzopeskel.py",
-             "utilities/compilezpy.py", "utilities/decompilezpy.py"],
+             "utilities/compilezpy.py", "utilities/decompilezpy.py",
+             "test.py"],
     distclass=ZopeDistribution,
     )
