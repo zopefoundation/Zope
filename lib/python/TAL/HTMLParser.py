@@ -158,6 +158,8 @@ class HTMLParser(markupbase.ParserBase):
                         self.clear_cdata_mode()
                 elif _contains_at(rawdata, "<!--", i): # <!--
                     k = self.parse_comment(i)
+                elif _contains_at(rawdata, "<!", i): # <!
+                    k = self.parse_declaration(i)
                 elif _contains_at(rawdata, "<?", i): # <?
                     k = self.parse_pi(i)
                 elif _contains_at(rawdata, "<?", i): # <!
