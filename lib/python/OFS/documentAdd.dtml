@@ -9,7 +9,7 @@
  Also, you may choose to upload an existing html file from your
  local computer by clicking the <I>Browse</I> button.
 
-<FORM ACTION="<!--#var PARENT_URL-->/manage_addDocument" METHOD="POST"
+<FORM ACTION="manage_addDocument" METHOD="POST"
       ENCTYPE="multipart/form-data" TARGET="manage_main">
 <TABLE CELLSPACING="2">
 <TR>
