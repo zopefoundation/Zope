@@ -13,7 +13,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import sys, os
 from common import absattr, aq_base, urlfix, urlbase
@@ -255,7 +255,7 @@ class PropPatch:
                          '  </d:prop>\n' \
                          '  <d:status>HTTP/1.1 %s</d:status>\n' \
                          '</d:propstat>\n' % (ns, name, status))
-        errmsg=string.join(errors, '\n') or 'The operation succeded.'
+        errmsg='\n'.join(errors) or 'The operation succeded.'
         result.write('<d:responsedescription>\n' \
                      '%s\n' \
                      '</d:responsedescription>\n' \
