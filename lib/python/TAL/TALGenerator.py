@@ -147,6 +147,14 @@ class TALGenerator:
         if not attrlist:
             collect.append("<%s%s" % (name, end))
             return 1
+        new = ["<" + name]
+        for item in attrlist:
+            if len(item) > 2:
+                return 0
+            new.append(" %s=%s" % (item[0], quote(item[1])))
+        new.append(end)
+        collect.extend(new)
+        return 1
 
     def todoPush(self, todo):
         self.todoStack.append(todo)
