@@ -56,6 +56,8 @@ Zope Changes
       - Collector #254: return owner object from getOwner wrapped in its
         context
 
+      - Collector #259: walkandscrub.py did not delete all .pyc and .pyo
+        files during installation. Fixed.
 
   Zope 2.5.1 beta 1
     

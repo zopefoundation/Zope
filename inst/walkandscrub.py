@@ -40,7 +40,6 @@ def scrub(list, dirname, filelist):
         if ext == '.pyo' or ext == '.pyc':
             full = os.path.join(dirname, name)
             os.unlink(full)
-            filelist.remove(name)
             if DEBUG: print full
             
 if __name__ == '__main__':
