@@ -71,6 +71,30 @@ Zope Changes
 
   Releases
 
+    Zope 2.0 beta 3
+    
+      Features added
+
+        - Added a 'getobject' method to ZCatalog. This allows you to more
+          easily get at a cataloged object from 'searchResults'. For
+          example::
+          
+            <!--#in searchResults-->
+            <!--#var "getobject(data_record_id_).title_or_id()"--><br>
+            <!--#/in-->
+      
+      Bugs fixed
+        
+        - Copy and Paste validation machinary now takes local roles into
+          account.
+          
+        - ZDOM now adheres more closely to the DOM spec with respect to
+          Document and DOMImplementation nodes.
+
+        - The main management screen will no longer show the 'Delete' or
+          'Export' buttons if the user doesn't have adequate permissions
+          to delete or export objects respectively.
+      
     Zope 2.0 beta 2
 
       Features added
@@ -92,14 +116,6 @@ Zope Changes
             python
             import Zope
             Zope.debug('spam', d=1)
-
-        - Added a 'getobject' method to ZCatalog. This allows you to more
-          easily get at a cataloged object from 'searchResults'. For
-          example::
-          
-            <!--#in searchResults-->
-            <!--#var "getobject(data_record_id_).title_or_id()"--><br>
-            <!--#/in-->
 
       Bugs fixed
 
@@ -168,10 +184,6 @@ Zope Changes
           
         - Made Z Class icons visible to everyone. This way you can view a
           Z Class icon without having and permissions on the Z Class.
-
-        - The main management screen will no longer show the 'Delete' or
-          'Export' buttons if the user doesn't have adequate permissions
-          to delete or export objects respectively.
 
         - Objects were sometimes incorrectly acquired do a bug in
           detecting attribute errors during acquisition. This led to
