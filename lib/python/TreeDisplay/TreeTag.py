@@ -12,15 +12,16 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.56 2003/12/11 22:49:17 evan Exp $'
-__version__='$Revision: 1.56 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.57 2004/01/15 22:58:25 tseaver Exp $'
+__version__='$Revision: 1.57 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
 
+from cPickle import dumps
 from string import translate
 from urllib import quote, unquote
-from zlib import compress, decompress
+from zlib import compress, decompressobj
 from binascii import b2a_base64, a2b_base64
 import re
 
@@ -115,15 +116,15 @@ def tpRender(self, md, section, args,
       ['eagle'], # eagle is open
       ['eagle'], ['jeep', [1983, 1985]]  # eagle, jeep, 1983 jeep and 1985 jeep
 
-    where the items are object ids. The state will be converted to a
+    where the items are object ids. The state will be pickled to a
     compressed and base64ed string that gets unencoded, uncompressed,
-    and evaluated on the other side.
+    and unpickled on the other side.
 
     Note that ids used in state need not be connected to urls, since
     state manipulation is internal to rendering logic.
 
-    Note that to make eval safe, we do not allow the character '*' in
-    the state.
+    Note that to make unpickling safe, we use the MiniPickle module,
+    that only creates safe objects
     """
 
     data=[]
@@ -333,7 +334,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
             ####################################
             # Mostly inline encode_seq for speed
-            s=compress(str(diff))
+            s=compress(dumps(diff,1))
             if len(s) > 57: s=encode_str(s)
             else:
                 s=b2a_base64(s)[:-1]
@@ -523,7 +524,7 @@ def apply_diff(state, diff, expand):
 
 def encode_seq(state):
     "Convert a sequence to an encoded string"
-    state=compress(str(state))
+    state=compress(dumps(state))
     l=len(state)
 
     if l > 57:
@@ -583,10 +584,20 @@ def decode_seq(state):
         state=a2b_base64(state)
 
     state=decompress(state)
-    if state.find('*') >= 0: raise ValueError, 'Illegal State: %s' % state
-    try: return list(eval(state,{'__builtins__':{}}))
+    try: return list(MiniUnpickler(StringIO(state)).load())
     except: return []
 
+def decompress(input,max_size=10240):
+    # This sillyness can go away in python 2.2
+    d = decompressobj()
+    output = ''
+    while input:
+        fragment_size = max(1,(max_size-len(output))/1000)
+        fragment,input = input[:fragment_size],input[fragment_size:]
+        output += d.decompress(fragment)
+        if len(output)>max_size:
+            raise ValueError('Compressed input too large')
+    return output+d.flush()
 
 def tpStateLevel(state, level=0):
     for sub in state:
@@ -632,3 +643,79 @@ def oid(self):
 #icoSpace='<IMG SRC="Blank_icon" BORDER="0">'
 #icoPlus ='<IMG SRC="Plus_icon" BORDER="0">'
 #icoMinus='<IMG SRC="Minus_icon" BORDER="0">'
+
+
+
+
+
+###############################################################################
+## Everthing below here should go in a MiniPickle.py module, but keeping it
+## internal makes an easier patch
+
+
+import pickle
+from cStringIO import StringIO
+
+
+if pickle.format_version!="2.0":
+    # Maybe the format changed, and opened a security hole
+    raise 'Invalid pickle version'
+
+
+class MiniUnpickler(pickle.Unpickler):
+    """An unpickler that can only handle simple types.
+    """
+    def refuse_to_unpickle(self):
+        raise pickle.UnpicklingError, 'Refused'
+
+    dispatch = pickle.Unpickler.dispatch.copy()
+
+    for k,v in dispatch.items():
+        if k=='' or k in '().012FGIJKLMNTUVX]adeghjlpqrstu}':
+            # This key is necessary and safe, so leave it in the map
+            pass
+        else:
+            dispatch[k] = refuse_to_unpickle
+            # Anything unnecessary is banned, but here is some logic to explain why
+            if k in [pickle.GLOBAL, pickle.OBJ, pickle.INST, pickle.REDUCE, pickle.BUILD]:
+                # These are definite security holes
+                pass
+            elif k in [pickle.PERSID, pickle.BINPERSID]:
+                # These are just unnecessary
+                pass
+            elif k in [pickle.STRING]:
+                # This one is controversial: A string is harmlessm, but the
+                # implementation of pickle leaks memory (strings may be interned)
+                # The problem can be avoided by using binary pickles.
+                pass
+    del k
+    del v
+
+def _should_succeed(x,binary=1):
+    if x != MiniUnpickler(StringIO(pickle.dumps(x,binary))).load():
+        raise ValueError(x)
+
+def _should_fail(x,binary=1):
+    try:
+        MiniUnpickler(StringIO(pickle.dumps(x,binary))).load()
+        raise ValueError(x)
+    except pickle.UnpicklingError, e:
+        if e[0]!='Refused': raise ValueError(x)
+
+class _junk_class: pass
+
+def _test():
+    _should_fail('hello',0)
+    _should_succeed('hello')
+    _should_succeed(1)
+    _should_succeed(1L)
+    _should_succeed(1.0)
+    _should_succeed((1,2,3))
+    _should_succeed([1,2,3])
+    _should_succeed({1:2,3:4})
+    _should_fail(open)
+    _should_fail(_junk_class)
+    _should_fail(_junk_class())
+
+# Test MiniPickle on every import
+_test()
