@@ -241,6 +241,8 @@ if swhome != 'INSERT_SOFTWARE_HOME':
 
 
 import os, sys, getopt, codecs, string
+import socket
+
 from types import StringType, IntType
 # workaround to allow unicode encoding conversions in DTML
 dummy = codecs.lookup('iso-8859-1')
@@ -624,16 +626,28 @@ try:
         zLOG.LOG('z2', zLOG.BLATHER, 'Using access log file %s' % LOG_PATH)
     sys.__lg = lg
 
+    port_err=('\n\nZope wants to use %(socktype)s port %(port)s for its '
+              '%(protocol)s service, but it is already in use by another '
+              'application on this machine.  Either shut the application down '
+              'which is using this port, or start Zope with a different '
+              '%(protocol)s port via the "%(switch)s" command-line switch.\n')
+
     # HTTP Server
     if HTTP_PORT:
         if isinstance(HTTP_PORT, IntType): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
         for address, port in HTTP_PORT:
-            hs = zhttp_server(
-                ip=address,
-                port=port,
-                resolver=rs,
-                logger_object=lg)
-
+            try:
+                hs = zhttp_server(
+                    ip=address,
+                    port=port,
+                    resolver=rs,
+                    logger_object=lg)
+            except socket.error, why:
+                if why[0] == 98: # address in use
+                    raise port_err % {'port':port,
+                                      'socktype':'TCP',
+                                      'protocol':'HTTP',
+                                      'switch':'-w'}
             # Handler for a published module. zhttp_handler takes 3 arguments:
             # The name of the module to publish, and optionally the URI base
             # which is basically the SCRIPT_NAME, and optionally a dictionary
@@ -655,11 +669,18 @@ try:
         if isinstance(WEBDAV_SOURCE_PORT, IntType):
             WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
         for address, port in WEBDAV_SOURCE_PORT:
-            hs = zhttp_server(
-                ip=address,
-                port=port,
-                resolver=rs,
-                logger_object=lg)
+            try:
+                hs = zhttp_server(
+                    ip=address,
+                    port=port,
+                    resolver=rs,
+                    logger_object=lg)
+            except socket.error, why:
+                if why[0] == 98: # address in use
+                    raise port_err % {'port':port,
+                                      'socktype':'TCP',
+                                      'protocol':'WebDAV source',
+                                      'switch':'-W'}
 
             # Handler for a published module. zhttp_handler takes 3 arguments:
             # The name of the module to publish, and optionally the URI base
@@ -689,12 +710,19 @@ try:
     if FTP_PORT:
         if isinstance(FTP_PORT, IntType): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
         for address, port in FTP_PORT:
-            FTPServer(
-               module=MODULE,
-               ip=address,
-               port=port,
-               resolver=rs,
-               logger_object=lg)
+            try:
+                FTPServer(
+                   module=MODULE,
+                   ip=address,
+                   port=port,
+                   resolver=rs,
+                   logger_object=lg)
+            except socket.error, why:
+                if why[0] == 98: # address in use
+                    raise port_err % {'port':port,
+                                      'socktype':'TCP',
+                                      'protocol':'FTP',
+                                      'switch':'-f'}
 
     # PCGI Server
     if PCGI_FILE and not READ_ONLY:
@@ -716,12 +744,19 @@ try:
             fcgiPort = int(FCGI_PORT)
         except ValueError:
             fcgiPath = FCGI_PORT
-        zfcgi = FCGIServer(module=MODULE,
-                           ip=IP_ADDRESS,
-                           port=fcgiPort,
-                           socket_file=fcgiPath,
-                           resolver=rs,
-                           logger_object=lg)
+        try:
+            zfcgi = FCGIServer(module=MODULE,
+                               ip=IP_ADDRESS,
+                               port=fcgiPort,
+                               socket_file=fcgiPath,
+                               resolver=rs,
+                               logger_object=lg)
+        except socket.error, why:
+            if why[0] == 98: # address in use
+                raise port_err % {'port':fcgiPort,
+                                  'socktype':'TCP',
+                                  'protocol':'FastCGI',
+                                  'switch':'-F'}
 
 
     # Monitor Server
@@ -737,16 +772,30 @@ try:
             if isinstance(MONITOR_PORT, IntType): 
                 MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
             for address, port in MONITOR_PORT:
-                monitor=secure_monitor_server(
-                    password=pw,
-                    hostname=address,
-                    port=port)
+                try:
+                    monitor=secure_monitor_server(
+                        password=pw,
+                        hostname=address,
+                        port=port)
+                except socket.error, why:
+                    if why[0] == 98: # address in use
+                        raise port_err % {'port':port,
+                                          'socktype':'TCP',
+                                          'protocol':'monitor server',
+                                          'switch':'-m'}
 
     if ICP_PORT:
         if isinstance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
         from ZServer.ICPServer import ICPServer
         for address, port in ICP_PORT:
-            ICPServer(address,port)
+            try:
+                ICPServer(address,port)
+            except socket.error, why:
+                if why[0] == 98: # address in use
+                    raise port_err % {'port':port,
+                                      'socktype':'UDP',
+                                      'protocol':'ICP',
+                                      'switch':'--icp'}
 
     if not READ_ONLY:
         if os.path.exists(PID_FILE): os.unlink(PID_FILE)
