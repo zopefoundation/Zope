@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.28 2004/02/18 11:24:51 jim Exp $
+  $Id: cAccessControl.c,v 1.29 2004/02/18 17:55:43 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1899,6 +1899,8 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
                     goto end;
                   result = PySequence_Concat(r, list_roles);
                   Py_DECREF(list_roles);
+		  if (result == NULL)
+		      goto end;
                 }
               goto end;
             }
@@ -1935,26 +1937,32 @@ c_rolesForPermissionOn(PyObject *perm, PyObject *object,
                     r = list(roles)
                 else: r = r + list(roles)
           */
-          else if (PyObject_IsTrue(roles))
-            {
-              PyObject *list_roles = PySequence_List(roles);
-              Py_DECREF(roles);
-              if (list_roles == NULL)
-                goto end;
-              if (r == Py_None)
-                {
-                  Py_DECREF(r);
-                  r = list_roles;
-                }
-              else
-                {
-                  PyObject *tmp = PySequence_Concat(r, list_roles);
-                  Py_DECREF(list_roles);
-                  if (tmp == NULL)
-                    goto end;
-                  Py_DECREF(r);
-                  r = tmp;
-                }
+          else 
+  	    {
+	      int bool = PyObject_IsTrue(roles);
+	      if (bool < 0)
+		  goto end;
+	      if (bool)
+	        {
+		    PyObject *list_roles = PySequence_List(roles);
+		    Py_DECREF(roles);
+		    if (list_roles == NULL)
+			goto end;
+		    if (r == Py_None)
+		      {
+			  Py_DECREF(r);
+			  r = list_roles;
+		      }
+		    else
+		      {
+			  PyObject *tmp = PySequence_Concat(r, list_roles);
+			  Py_DECREF(list_roles);
+			  if (tmp == NULL)
+			      goto end;
+			  Py_DECREF(r);
+			  r = tmp;
+		      }
+		}
             }
         }
 
@@ -2305,7 +2313,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.28 2004/02/18 11:24:51 jim Exp $\n");
+		"$Id: cAccessControl.c,v 1.29 2004/02/18 17:55:43 jeremy Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
