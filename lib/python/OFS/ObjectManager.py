@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.106 2000/08/08 17:15:10 chrism Exp $"""
+$Id: ObjectManager.py,v 1.107 2000/08/15 21:19:56 shane Exp $"""
 
-__version__='$Revision: 1.106 $'[11:-2]
+__version__='$Revision: 1.107 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -111,10 +111,10 @@ customImporters={
 
 bad_id=ts_regex.compile('[^a-zA-Z0-9-_~\,\. ]').search #TS
 
-# Global constants: __replaceable__ states (see ObjectManager._checkId):
+# Global constants: __replaceable__ flags (see ObjectManager._checkId):
 NOT_REPLACEABLE = 0
 REPLACEABLE = 1
-UNIQUE = -1
+UNIQUE = 2
 
 class BeforeDeleteException( Exception ): pass # raise to veto deletion
 
@@ -229,15 +229,17 @@ class ObjectManager(
             if obj is not None:
                 # An object by the given id exists either in this
                 # ObjectManager or in the acquisition path.
-                flag = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
-                if flag == UNIQUE:
-                    raise 'Bad Request', \
-                          ('The id "%s" is reserved by another object.' % id)
+                flags = getattr(obj, '__replaceable__', NOT_REPLACEABLE)
                 if hasattr(aq_base(self), id):
                     # The object is located in this ObjectManager.
-                    if flag != REPLACEABLE:
+                    if not flags & REPLACEABLE:
                         raise 'Bad Request', ('The id "%s" is invalid - ' \
                               'it is already in use.' % id)
+                    # else the object is replaceable even if the UNIQUE
+                    # flag is set.
+                elif flags & UNIQUE:
+                    raise 'Bad Request', \
+                          ('The id "%s" is reserved.' % id)
         if id == 'REQUEST':
             raise 'Bad Request', 'REQUEST is a reserved name.'
         if '/' in id:
