@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.12 2002/10/16 21:14:42 chrism Exp $
+$Id: SiteErrorLog.py,v 1.13 2002/10/16 21:26:32 chrism Exp $
 """
 
 import os
@@ -155,7 +155,7 @@ class SiteErrorLog (SimpleItem):
                     url = request.get('URL', '?')
                     usr = getSecurityManager().getUser()
                     username = usr.getUserName()
-                    userid = usr.getUserId()
+                    userid = usr.getId()
                     try:
                         req_html = str(request)
                     except:

@@ -17,8 +17,8 @@ The specified log entry was not found.  It may have expired.
   <td tal:content="python: DateTime(entry['time'])"></td>
  </tr>
  <tr>
-  <th align="left" valign="top">User</th>
-  <td tal:content="entry/username">joe</td>
+  <th align="left" valign="top">User Name (User Id)</th>
+  <td tal:content="string: ${entry/username} (${entry/userid})">joe (joe)</td>
  </tr>
  <tr>
   <th align="left" valign="top">Request URL</th>
