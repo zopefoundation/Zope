@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.19 1997/11/25 15:26:34 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.20 1997/11/27 00:10:50 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -118,8 +118,11 @@ def careful_getslice(md, seq, *indexes):
 
     return v
 
-import new, string, math
-expr_globals=new.module('_')
+import string, math
+
+class expr_globals: pass
+expr_globals=expr_globals()
+
 d=expr_globals.__dict__
 for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
 	     'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
@@ -299,6 +302,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.20  1997/11/27 00:10:50  jim
+# Hacked my way out of using new module.
+#
 # Revision 1.19  1997/11/25 15:26:34  jim
 # Added test to expr documentation.
 #
