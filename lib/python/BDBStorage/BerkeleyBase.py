@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.7 $
+# $Revision: 1.8 $
 __version__ = '0.1'
 
 
@@ -181,16 +181,8 @@ class BerkeleyBase(BaseStorage):
     def _abort(self):
         """Called from BaseStorage.tpc_abort(), this aborts the underlying
         BSDDB transaction.
-        
-        tid is the transaction id
-        user is the transaction user
-        desc is the transaction description
-        ext is the transaction extension
-
-        These are all ignored.
         """
-        # BAW: this appears to be broken.  Look in BaseStorage.tpc_abort();
-        # _abort() is never called with any arguments. :/
+        self._closelog()
         self._transaction.abort()
 
     def _clear_temp(self):
