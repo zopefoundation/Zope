@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.12 1997/09/23 10:30:44 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Application.py,v 1.13 1997/09/24 22:16:43 brian Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -50,7 +50,7 @@ class Application(Folder.Folder):
         self.manage_addDocument('standard_html_header',
 	                        'Standard Html Header',
 				'<HTML><HEAD><TITLE><!--#var title_or_id-->' \
-				'</TITLE></HEAD><BODY>')
+				'</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">')
         self.manage_addDocument('standard_html_footer',
 				'Standard Html Footer',
 				'</BODY></HTML>')
@@ -165,6 +165,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.13  1997/09/24 22:16:43  brian
+# Style update
+#
 # Revision 1.12  1997/09/23 10:30:44  jim
 # added undo to menu
 #
