@@ -389,6 +389,8 @@ class ProductContext:
                 ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.py',):
+                if file[0] == '_': # ignore __init__.py
+                    continue
                 ht=APIHelpTopic.APIHelpTopic(file, '', os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
             
