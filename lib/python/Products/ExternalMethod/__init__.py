@@ -8,11 +8,13 @@
 #
 ############################################################################## 
 __doc__='''External Method Product Initialization
-$Id: __init__.py,v 1.4 1997/12/23 22:15:34 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 1998/01/29 15:54:58 brian Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import ExternalMethod
 from ImageFile import ImageFile
+
+classes=('ExternalMethod.ExternalMethod',)
 
 meta_types=	{'name':'External Method',
 		 'action':'manage_addExternalMethodForm'
@@ -31,6 +33,9 @@ misc_={'function_icon':
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.5  1998/01/29 15:54:58  brian
+# Added eval support
+#
 # Revision 1.4  1997/12/23 22:15:34  jim
 # up to date with product and security layout
 #
