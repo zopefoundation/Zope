@@ -397,6 +397,10 @@ class Catalog(Persistent, Acquisition.Implicit):
     def _indexedSearch(self, args, sort_index, append, used,
                        IIBType=type(IIBucket()), intSType=type(intSet())):
 
+##        import pdb
+##        pdb.set_trace()
+
+        ## I use this so much I'm just leaving it commented out
 
         rs=None
         data=self.data
