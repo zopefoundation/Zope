@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.29 1998/03/18 20:21:18 jim Exp $'''
+$Id: Response.py,v 1.30 1998/04/07 17:38:19 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,10 +53,12 @@ $Id: Response.py,v 1.29 1998/03/18 20:21:18 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
-import string, types, sys, regex, regsub
-from string import find, rfind, lower, upper, strip, split, join
+import string, types, sys, regex
+from string import find, rfind, lower, upper, strip, split, join, translate
+
+nl2sp=string.maketrans('\n',' ')
 
 status_reasons={
     200: 'OK',
@@ -142,11 +144,8 @@ status_codes={
     'zerodivisionerror':500,
     }
 
-end_of_header_re=regex.compile('</head>',regex.casefold)
+end_of_header_search=regex.compile('</head>',regex.casefold).search
 
-absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
-
-bogus_str=regex.compile(" [a-fA-F0-9]+>$")
 accumulate_header={'set-cookie': 1}.has_key
 
 _tbopen, _tbclose = '<!--', '-->'
@@ -227,7 +226,9 @@ class Response:
 
     __setitem__=setHeader
 
-    def setBody(self, body, title=''):
+    def setBody(self, body, title='',
+		bogus_str_search=regex.compile(" [a-fA-F0-9]+>$").search,
+		):
 	'''\
 	Set the body of the response
 	
@@ -250,7 +251,7 @@ class Response:
 	body=str(body)
 	l=len(body)
 	if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
-	    bogus_str.search(body) > 0):
+	    bogus_str_search(body) > 0):
 	    raise 'NotFound', (
 		"Sorry, the requested document does not exist.<p>"
 		"\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
@@ -275,8 +276,8 @@ class Response:
 	self.insertBase()
 
     def insertBase(self,
-		   base_re=regex.compile('\(<base[\0- ]+[^>]+>\)',
-					 regex.casefold)
+		   base_re_search=regex.compile('\(<base[\0- ]+[^>]+>\)',
+						regex.casefold).search
 		   ):
         if (self.headers.has_key('content-type') and
 	    self.headers['content-type']!='text/html'): return
@@ -284,9 +285,9 @@ class Response:
 	if self.base:
 	    body=self.body
 	    if body:
-		e=end_of_header_re.search(body)
+		e=end_of_header_search(body)
 		if e >= 0:
-		    b=base_re.search(body) 
+		    b=base_re_search(body) 
 		    if b < 0:
 			self.body=('%s\t<base href="%s">\n%s' %
 				   (body[:e],self.base,body[e:]))
@@ -365,13 +366,12 @@ class Response:
 	return lower(strip(str)[:6]) == '<html>' or find(str,'</') > 0
 
     def quoteHTML(self,text,
-		  character_entities=(
-		      (regex.compile('&'), '&amp;'),
-		      (regex.compile("<"), '&lt;' ),
-		      (regex.compile(">"), '&gt;' ),
-		      (regex.compile('"'), '&quot;'))): #"
-	for re,name in character_entities:
-	    text=regsub.gsub(re,name,text)
+		  subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
+		  ):
+	for ent in '&<>\"':
+	    if find(text, ent) >= 0:
+		text=join(split(text,ent),subs[ent])
+
 	return text
          
 
@@ -418,7 +418,12 @@ class Response:
 	headers['location']=location
 	return location
 
-    def exception(self, fatal=0):
+    def exception(self, fatal=0,
+		  absuri_match=regex.compile(
+		      "[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?"
+		      ).match,
+		  tag_search=regex.compile('[a-zA-Z]>').search,
+		  ):
 	t,v,tb=sys.exc_type, sys.exc_value,sys.exc_traceback
 	stb=tb
 
@@ -428,8 +433,8 @@ class Response:
 
 	try:
 	    # Try to capture exception info for bci calls
-	    et=regsub.gsub('\n',' ',str(t))
-            ev=regsub.gsub('\n',' ',str(v))
+	    et=translate(str(t),nl2sp)
+	    ev=translate(str(v),nl2sp)
 	    # Get the tb tail, which is the interesting part:
 	    while tb.tb_next is not None: tb=tb.tb_next
 	    el=str(tb.tb_lineno)
@@ -448,7 +453,7 @@ class Response:
 	stb=None
 	self.setStatus(t)
 	if self.status >= 300 and self.status < 400:
-	    if type(v) == types.StringType and absuri_re.match(v) >= 0:
+	    if type(v) == types.StringType and absuri_match(v) >= 0:
 		if self.status==300: self.setStatus(302)
 		self.setHeader('location', v)
 		tb=None
@@ -456,7 +461,7 @@ class Response:
 	    else:
 		try:
 		    l,b=v
-		    if type(l) == types.StringType and absuri_re.match(l) >= 0:
+		    if type(l) == types.StringType and absuri_match(l) >= 0:
 			if self.status==300: self.setStatus(302)
 			self.setHeader('location', l)
 			self.setBody(b)
@@ -477,16 +482,16 @@ class Response:
 		    'Sorry, a SERIOUS APPLICATION ERROR occurred.<p>'
 		     + self._traceback(t,v,tb)))
 
-	elif type(b) is not types.StringType or regex.search('[a-zA-Z]>',b) < 0:
+	elif type(b) is not types.StringType or tag_search(b) < 0:
 	    tb=self.setBody(
 		(str(t),
 		 'Sorry, an error occurred.<p>'
 		 + self._traceback(t,v,tb)))
 
 	elif self.isHTML(b):
-	    tb=self.setBody(b+self._traceback(t,v,tb))
+	    tb=self.setBody(b+self._traceback(t,'(see above)',tb))
 	else:
-	    tb=self.setBody((str(t),b+self._traceback(t,v,tb)))
+	    tb=self.setBody((str(t),b+self._traceback(t,'(see above)',tb)))
 
 	return tb
 
@@ -510,7 +515,9 @@ class Response:
 	    cookie_list.append(cookie)
 	return cookie_list
 
-    def __str__(self):
+    def __str__(self,
+		html_search=regex.compile('<html>',regex.casefold).search,
+		):
 	if self._wrote: return ''	# Streaming output was used.
 
 	headers=self.headers
@@ -525,9 +532,8 @@ class Response:
 		self.setHeader('content-type',c)
 	    else:
 		isHTML = headers['content-type']=='text/html'
-	    if isHTML and end_of_header_re.search(self.body) < 0:
-		htmlre=regex.compile('<html>',regex.casefold)
-		lhtml=htmlre.search(body)
+	    if isHTML and end_of_header_search(self.body) < 0:
+		lhtml=html_search(body)
 		if lhtml >= 0:
 		    lhtml=lhtml+6
 		    body='%s<head></head>\n%s' % (body[:lhtml],body[lhtml:])
@@ -585,7 +591,7 @@ class Response:
 
 	"""
 	self.body=self.body+data
-	if end_of_header_re.search(self.body) >= 0:
+	if end_of_header_search(self.body) >= 0:
 	    headers=self.headers
 	    if headers.has_key('content-length'):
 		del headers['content-length']
