@@ -112,7 +112,7 @@
    as desired.
 ''' 
 
-from DocumentTemplate.DT_Util import render_blocks, str, Eval, expr_globals, Eval, ParseError, regex, strip
+from DT_Util import render_blocks, str, Eval, expr_globals, Eval, ParseError, regex, strip
 
 class Let:
 	blockContinuations=()
