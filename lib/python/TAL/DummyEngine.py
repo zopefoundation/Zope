@@ -23,12 +23,11 @@ from ITALES import ITALESCompiler, ITALESEngine
 from DocumentTemplate.DT_Util import ustr
 
 IDomain = None
-if sys.modules.has_key('Zope'):
-    try:
-        from Zope.I18n.ITranslationService import ITranslationService
-        from Zope.I18n.IDomain import IDomain
-    except ImportError:
-        pass
+try:
+    from Zope.I18n.ITranslationService import ITranslationService
+    from Zope.I18n.IDomain import IDomain
+except ImportError:
+    pass
 if IDomain is None:
     # Before 2.7, or not in Zope
     class ITranslationService: pass

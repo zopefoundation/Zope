@@ -15,16 +15,12 @@
 $Id$
 """
 
-from Batch import Batch
 from Iterator import Iterator
-from Tree import TreeMaker, encodeExpansion, decodeExpansion, a2b, b2a
+from Tree import encodeExpansion, decodeExpansion, a2b, b2a
 from SimpleTree import SimpleTreeMaker
 
-import sys
-if sys.modules.has_key('Zope'):
-    del sys
-    __allow_access_to_unprotected_subobjects__ = 1
-    __roles__ = None
+__allow_access_to_unprotected_subobjects__ = 1
+__roles__ = None
 
-    from Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
-    from Zope import url_query, make_query, make_hidden_input
+from ZTUtils.Zope import Batch, TreeMaker, SimpleTreeMaker, LazyFilter
+from ZTUtils.Zope import url_query, make_query, make_hidden_input

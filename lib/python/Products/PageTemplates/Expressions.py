@@ -44,42 +44,13 @@ def installHandlers(engine):
     reg('not', NotExpr)
     reg('defer', DeferExpr)
 
-if sys.modules.has_key('Zope'):
-    import AccessControl
-    import AccessControl.cAccessControl
-    acquisition_security_filter = AccessControl.cAccessControl.aq_validate
-    from AccessControl import getSecurityManager
-    from AccessControl.ZopeGuards import guarded_getattr
-    try:
-        from AccessControl import Unauthorized
-    except ImportError:
-        Unauthorized = "Unauthorized"
-    from ZRPythonExpr import PythonExpr, _SecureModuleImporter, call_with_ns
-else:
-    from PythonExpr import getSecurityManager, PythonExpr
-    guarded_getattr = getattr
-    try:
-        from zExceptions import Unauthorized
-    except ImportError:
-        Unauthorized = "Unauthorized"
-
-    def acquisition_security_filter(orig, inst, name, v, real_validate):
-        if real_validate(orig, inst, name, v):
-            return 1
-        raise Unauthorized, name
-
-    def call_with_ns(f, ns, arg=1):
-        if arg==2:
-            return f(None, ns)
-        else:
-            return f(ns)
-
-    class _SecureModuleImporter:
-        """Simple version of the importer for use with trusted code."""
-        __allow_access_to_unprotected_subobjects__ = 1
-        def __getitem__(self, module):
-            __import__(module)
-            return sys.modules[module]
+import AccessControl
+import AccessControl.cAccessControl
+acquisition_security_filter = AccessControl.cAccessControl.aq_validate
+from AccessControl import getSecurityManager
+from AccessControl.ZopeGuards import guarded_getattr
+from AccessControl import Unauthorized
+from ZRPythonExpr import PythonExpr, _SecureModuleImporter, call_with_ns
 
 SecureModuleImporter = _SecureModuleImporter()
 
