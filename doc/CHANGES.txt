@@ -13,6 +13,14 @@ Zope Changes
 
    Bugs fixed
 
+     - log-to-stderr on startup will now emit messages to the console at 
+       the lowest logging level defined by any of the handlers in the 
+       eventlog section.
+
+     - entirely removed warning when the starting user's umask is "too
+       permissive".  it wasn't clear that it added any value under normal
+       operations.
+
      - debug-mode config file option did not work.
 
      - ZClasses that subclassed ObjectManager that were created in 
