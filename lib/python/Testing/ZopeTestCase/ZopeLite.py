@@ -42,32 +42,27 @@ def _exec(cmd):
 _write('Loading Zope, please stand by ')
 _start = time.time()
 
-# Zope 2.7 specifics
-try: 
-    import App.config
-except ImportError:
-    pass # Zope < 2.7
-else:
-    # Configure logging
-    if not sys.modules.has_key('logging'):
-        import logging
-        logging.basicConfig()
-    # Need to import Zope early on as the 
-    # ZTUtils package relies on it
-    config = App.config.getConfiguration()
-    config.debug_mode = 0
-    App.config.setConfiguration(config)
-    _exec('import Zope')
-    import Zope
+# Configure logging
+if not sys.modules.has_key('logging'):
+    import logging
+    logging.basicConfig()
 
+# Debug mode is dog slow ...
+import App.config
+config = App.config.getConfiguration()
+config.debug_mode = 0
+App.config.setConfiguration(config)
+
+# Need to import Zope early on as the 
+# ZTUtils package relies on it
+_exec('import Zope')
+import Zope
 _exec('import ZODB')
 import ZODB
 _write('.')
 
 _exec('import Globals')
 import Globals
-# Work around a bug in Zope 2.7.0
-Globals.DevelopmentMode = 0
 _exec('import OFS.SimpleItem')
 import OFS.SimpleItem
 _exec('import OFS.ObjectManager')
@@ -96,11 +91,6 @@ App.ProductContext.ProductContext.registerHelp = _null_register_help
 
 # Make sure to use a temporary client cache
 if os.environ.get('ZEO_CLIENT'): del os.environ['ZEO_CLIENT']
-
-# Load Zope (< 2.7)
-_exec('import Zope')
-import Zope
-_write('.')
 
 from OFS.Application import get_folder_permissions, get_products, install_product
 from OFS.Folder import Folder
@@ -157,11 +147,8 @@ installProduct('OFSP', 1)
 app = Zope.app
 debug = Zope.debug
 DB = Zope.DB
-# startup appeared in Zope 2.6.1
+configure = Zope.configure
 def startup(): pass
-# configure appeared in Zope 2.7
-try: configure = Zope.configure
-except AttributeError: pass 
 
 from ZODB.DemoStorage import DemoStorage
 def sandbox(base=None):
