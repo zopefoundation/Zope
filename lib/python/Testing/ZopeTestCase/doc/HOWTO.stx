@@ -91,11 +91,11 @@ What You Get
           Hooks for controlling transactions:
 
           - **'beforeSetUp'** is called before the ZODB connection is opened, at the start of setUp. 
-             The default behaviour of this hook is to call 'get_transaction().begin()'. 
+             The default behaviour of this hook is to call 'transaction.begin()'. 
              You will rarely want to override this.
 
           - **'beforeClose'** is called before the ZODB connection is closed, at the end of
-             tearDown. By default this method calls 'get_transaction().abort()' to discard
+             tearDown. By default this method calls 'transaction.abort()' to discard
              any changes made by the test. In some situations you may need to override 
              this hook and commit the transaction instead. Make sure you really know what 
              you are doing though.

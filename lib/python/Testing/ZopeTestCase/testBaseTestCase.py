@@ -26,6 +26,8 @@ import os, sys
 if __name__ == '__main__':
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
+import transaction
+
 from Testing.ZopeTestCase import base
 from Testing.ZopeTestCase import utils
 
@@ -146,7 +148,7 @@ class TestTestCase(HookTest):
 
     def getObjectsInTransaction(self):
         # Lets us spy into the transaction
-        t = get_transaction()
+        t = transaction.get()
         if hasattr(t, '_objects'):      # Zope < 2.8
             return t._objects
         elif hasattr(t, '_resources'):  # Zope >= 2.8

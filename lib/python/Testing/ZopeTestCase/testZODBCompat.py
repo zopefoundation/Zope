@@ -25,6 +25,8 @@ if __name__ == '__main__':
 
 from Testing import ZopeTestCase
 
+import transaction
+
 from AccessControl.Permissions import add_documents_images_and_files
 from AccessControl.Permissions import delete_objects
 import tempfile
@@ -40,7 +42,7 @@ class TestCopyPaste(ZopeTestCase.ZopeTestCase):
         self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
-        get_transaction().commit(1)
+        transaction.commit(1)
         self.failIfEqual(self.folder._p_oid, None)
 
     def testCutPaste(self):
@@ -91,7 +93,7 @@ class TestImportExport(ZopeTestCase.ZopeTestCase):
         self.folder.addDTMLMethod('doc', file='foo')
         # _p_oids are None until we commit a subtransaction
         self.assertEqual(self.folder._p_oid, None)
-        get_transaction().commit(1)
+        transaction.commit(1)
         self.failIfEqual(self.folder._p_oid, None)
 
     def testExport(self):
@@ -169,7 +171,7 @@ class DummyObject(SimpleItem):
 app = ZopeTestCase.app()
 app._setObject('dummy1', DummyObject())
 app._setObject('dummy2', DummyObject())
-get_transaction().commit()
+transaction.commit()
 ZopeTestCase.close(app)
 
 
@@ -306,45 +308,45 @@ class TestTransactionAbort(ZopeTestCase.ZopeTestCase):
     def testTransactionAbort(self):
         self.folder.foo = 1
         self.failUnless(hasattr(self.folder, 'foo'))
-        get_transaction().abort()
+        transaction.abort()
         # The foo attribute is still present
         self.failUnless(hasattr(self.folder, 'foo'))
 
     def testSubTransactionAbort(self):
         self.folder.foo = 1
         self.failUnless(hasattr(self.folder, 'foo'))
-        get_transaction().commit(1)
-        get_transaction().abort()
+        transaction.commit(1)
+        transaction.abort()
         # This time the abort nukes the foo attribute...
         self.failIf(hasattr(self.folder, 'foo'))
 
     def testTransactionAbortPersistent(self):
         self.folder._p_foo = 1
         self.failUnless(hasattr(self.folder, '_p_foo'))
-        get_transaction().abort()
+        transaction.abort()
         # The _p_foo attribute is still present
         self.failUnless(hasattr(self.folder, '_p_foo'))
 
     def testSubTransactionAbortPersistent(self):
         self.folder._p_foo = 1
         self.failUnless(hasattr(self.folder, '_p_foo'))
-        get_transaction().commit(1)
-        get_transaction().abort()
+        transaction.commit(1)
+        transaction.abort()
         # This time the abort nukes the _p_foo attribute...
         self.failIf(hasattr(self.folder, '_p_foo'))
 
     def testTransactionAbortVolatile(self):
         self.folder._v_foo = 1
         self.failUnless(hasattr(self.folder, '_v_foo'))
-        get_transaction().abort()
+        transaction.abort()
         # The _v_foo attribute is still present
         self.failUnless(hasattr(self.folder, '_v_foo'))
 
     def testSubTransactionAbortVolatile(self):
         self.folder._v_foo = 1
         self.failUnless(hasattr(self.folder, '_v_foo'))
-        get_transaction().commit(1)
-        get_transaction().abort()
+        transaction.commit(1)
+        transaction.abort()
         # This time the abort nukes the _v_foo attribute...
         self.failIf(hasattr(self.folder, '_v_foo'))
 

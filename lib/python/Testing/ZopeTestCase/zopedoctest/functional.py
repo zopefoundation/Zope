@@ -17,6 +17,7 @@ $Id: functional.py,v 1.2 2005/03/26 18:07:08 shh42 Exp $
 
 import sys, re, base64
 import warnings
+import transaction
 
 from zope.testing import doctest
 
@@ -126,7 +127,7 @@ def http(request_string, handle_errors=True):
     old_sm = getSecurityManager()
 
     # Commit work done by previous python code.
-    get_transaction().commit()
+    transaction.commit()
 
     # Discard leading white space to make call layout simpler
     request_string = request_string.lstrip()
