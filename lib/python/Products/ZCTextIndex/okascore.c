@@ -58,6 +58,7 @@ score(PyObject *self, PyObject *args)
 						   &idf, &meandoclen))
 		return NULL;
 
+	idf *= 1024.0;	/* float out part of the scaled_int computation */
 	n = PyObject_Length(d2fitems);
 	for (i = 0; i < n; ++i) {
 		PyObject *d_and_f;	/* d2f[i], a (d, f) pair */
@@ -66,7 +67,6 @@ score(PyObject *self, PyObject *args)
 		PyObject *doclen;	/* ._docweight[d] */
 		double lenweight;
 		double tf;
-		double score;
 		PyObject *scaled_int;
 		int status;
 
@@ -91,8 +91,7 @@ score(PyObject *self, PyObject *args)
 		lenweight = B_FROM1 + B * PyInt_AsLong(doclen) / meandoclen;
 
 		tf = f * K1_PLUS1 / (f + K1 * lenweight);
-		score = tf * idf;
-		scaled_int = PyInt_FromLong((long)(score * 1024.0 + 0.5));
+		scaled_int = PyInt_FromLong((long)(tf * idf + 0.5));
 		if (scaled_int == NULL)
 			status = -1;
 		else
