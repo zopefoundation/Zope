@@ -72,19 +72,23 @@ There are currently no items in <EM><!--#var title_or_id--></EM>
 <!--#if all_meta_types-->
 
 <!--#if "_.len(all_meta_types) > 1"-->
-<TABLE>
+<TABLE ALIGN="LEFT">
 <TR>
-<TD VALIGN="TOP">
-  To add a new item, select an item type and click &quot;Add&quot;.
+<TD VALIGN="MIDDLE">
+  To add a new item, select an item type 
+  <NOSCRIPT>and click &quot;Add&quot;</NOSCRIPT>. 
 </TD>
-<TD VALIGN="TOP">
+</TR>
+<TR>
+<TD VALIGN="MIDDLE">
   <FORM ACTION="<!--#var URL1-->/" METHOD="GET">
-  <SELECT NAME=":method">
+  <SELECT NAME=":method" ONCHANGE="location.href=this.options[this.selectedIndex].value">
+    <OPTION value="manage_workspace" DISABLED>Available Objects
   <!--#in all_meta_types mapping sort=name-->
     <OPTION value="<!--#var action-->"><!--#var name-->
   <!--#/in all_meta_types-->
-  </SELECT><BR>
-  <INPUT TYPE="SUBMIT" VALUE=" Add ">
+  </SELECT>
+  <NOSCRIPT><INPUT TYPE="SUBMIT" VALUE=" Add "></NOSCRIPT>
   </FORM>
 </TD>
 </TR>
