@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.18 2001/11/14 00:19:58 chrism Exp $
+$Id: Transience.py,v 1.19 2001/11/17 22:48:43 chrism Exp $
 """
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -103,13 +103,22 @@ from AccessControl.SecurityManagement import newSecurityManager
 import AccessControl.SpecialUsers 
 from AccessControl.User import nobody
 from BTrees import OOBTree
-from zLOG import LOG, WARNING
+from zLOG import LOG, WARNING, BLATHER
+import os
 import os.path
 import math
 import time
 import sys
 import random
 from types import InstanceType
+
+DEBUG = os.environ.get('Z_TOC_DEBUG', '')
+
+def TLOG(*args):
+    tmp = []
+    for arg in args:
+        tmp.append(str(arg))
+    LOG('Transience DEBUG', BLATHER, ' '.join(tmp))
 
 _notfound = []
 _marker = []
@@ -324,6 +333,8 @@ class TransientObjectContainer(SimpleItem):
             method = callback
 
         if callable(method):
+            if DEBUG:
+                TLOG('calling %s at object %s' % (callback, kind))
             try:
                 user = getSecurityManager().getUser()
                 try:
@@ -405,6 +416,8 @@ class TransientObjectContainer(SimpleItem):
         # no timeout always returns last bucket
         if not self._timeout_secs:
             b, dump_after = self._ring._data[0]
+            if DEBUG:
+                TLOG('no timeout, returning first bucket')
             return b
         index = self._ring._index
         now = int(time())
@@ -415,6 +428,9 @@ class TransientObjectContainer(SimpleItem):
         while 1:
             l = b, dump_after = self._ring._data[-1]
             if now > dump_after:
+                if DEBUG:
+                    TLOG('now is %s' % now)
+                    TLOG('dump_after for %s was %s, dumping'%(b, dump_after))
                 self._ring.turn()
                 # mutate elements in-place in the ring
                 new_dump_after = now + i
@@ -430,10 +446,20 @@ class TransientObjectContainer(SimpleItem):
             return b
 
     def _clean(self, b, index):
-        for k, v in list(index.items()):
+        if DEBUG:
+            TLOG('building list of index items')
+        l = list(index.items())
+        if DEBUG:
+            TLOG('done building list of index items, now iterating over them')
+        tmp = []
+        for k, v in l:
             if v is b:
+                tmp.append(k)
                 self.notifyDestruct(index[k][k])
                 del index[k]
+        if DEBUG:
+            TLOG('deleted %s' % tmp)
+            TLOG('clearing %s' % b)
         b.clear()
 
     def _show(self):
