@@ -86,9 +86,8 @@ class Lexicon:
         return self._wids.get(word, 0)
 
     def globToWordIds(self, pattern):
-        if not re.match("^\w+\*$", pattern):
-            return []
-        pattern = pattern.lower()
+        # This currently only knows about trailing *;
+        # whatever splitter you use should match this
         assert pattern.endswith("*")
         prefix = pattern[:-1]
         assert prefix and not prefix.endswith("*")
@@ -128,7 +127,7 @@ class Splitter:
 
     import re
     rx = re.compile(r"\w+")
-    rxGlob = re.compile(r"\w+\*?")
+    rxGlob = re.compile(r"\w+\*?") # See globToWordIds() above
 
     def process(self, lst):
         result = []
