@@ -11,22 +11,26 @@
 <tr>
 <div class="form-help">
 <p>
-Transient Object Containers are used to store transient data in Zope; this
-transient data persists, but only for a limited period of time.
+Transient Object Containers are used to store transient data.
+Transient data will persist, but only for a user-specified period of time,
+(the "data object timeout") after which it will be flushed.
 </p>
 
 <p>
 It is recommended that Transient Object Containers be added to storages which
-do not support undo operations; transient objects are write-intensive, and
-can generate considerable load on the storage.
+do not support undo operations; transient objects are write-intensive;
+their use may cause many undoable transactions, potentially bloating
+undoing ZODB databases.
 </p>
 
 <p>
 Transient Object Containers support <b>Notification Targets</b> which
 are methods which are invoked when transient objects are added or deleted
 from the container.  A notification target is invoked with the item being
-operated upon, and the transient object container as arguments.  Specify
-the path to the method to be invoked to receive the notification.
+operated upon, and the transient object container as arguments.  For the add
+and delete notification targets, specify the Zope physical path to the
+method to be invoked to receive the notification
+(e.g. '/folder/add_notifier').
 </p>
 </div>
 </tr>
