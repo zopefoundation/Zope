@@ -89,10 +89,11 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import re, sys
-from TALES import Engine, CompilerError, _valid_name, NAME_RE
+from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
+     TALESError, Undefined
 from string import strip, split, join, replace, lstrip
 from DocumentTemplate.DT_Util import TemplateDict
 from Acquisition import aq_base
@@ -132,23 +133,72 @@ def render(ob):
                 raise
     return ob
 
+path_modifiers = {'if': 0, 'exists': 0, 'nocall':0}
 
 class PathExpr:
     def __init__(self, name, expr):
         self._s = expr
         self._name = name
         self._path = path = split(expr, '/')
-        self._base = base = path.pop(0)
+        front = path.pop(0)
+        fronts = split(replace(replace(front, '(', '( '), ')', ' ) '))
+        self._base = base = fronts.pop()
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
+        # Parse path modifiers
+        self.modifiers = modifiers = path_modifiers.copy()
+        if fronts:
+            if len(fronts) < 2 or (fronts.pop(0) != '(' or
+                                   fronts.pop()  != ')'):
+                raise CompilerError, 'Invalid path base "%s"' % front
+            for modifier in fronts:
+                if not modifiers.has_key(modifier):
+                    raise CompilerError, ('Unknown path modifier "%s"'
+                                          % modifier)
+                modifiers[modifier] = 1
+        # Parse path
         self._dynparts = dp = []
         for i in range(len(path)):
             e = path[i]
             if e[:1] == '?' and _valid_name(e[1:]):
                 dp.append((i, e[1:]))
         dp.reverse()
+        # Choose call method
+        on = modifiers.get
+        callname = on('if') + on('exists') * 2
+        callname = ('Render', 'If', 'Exists', 'IfExists')[callname]
+        if on('nocall') and callname == 'Render':
+            callname = ''
+        self._call_name = '_eval' + callname
 
-    def __call__(self, econtext):
+    def _evalRender(self, econtext):
+        return render(self._eval(econtext))
+
+    def _evalIf(self, econtext):
+        val = self._eval(econtext)
+        if not val:
+            return Undefined
+        if self.modifiers.has_key('nocall'):
+            return val
+        return render(val)
+
+    def _evalExists(self, econtext):
+        try:
+            self._eval(econtext)
+        except (Undefined, 'Unauthorized'):
+            return 0
+        return 1
+
+    def _evalIfExists(self, econtext):
+        try:
+            val = self._eval(econtext)
+        except (Undefined, 'Unauthorized'):
+            return Undefined
+        if self.modifiers.has_key('nocall'):
+            return val
+        return render(val)
+
+    def _eval(self, econtext):
         base = self._base
         path = list(self._path) # Copy!
         contexts = econtext.contexts
@@ -163,24 +213,22 @@ class PathExpr:
                 # of path names.
                 path[i:i+1] = list(val)
         try:
+            __traceback_info__ = base
             if var.has_key(base):
                 ob = var[base]
             else:
                 ob = contexts[base]
                 # Work around lack of security declaration
                 if path and (ob is contexts['repeat']):
-                    ob = ob[path.pop(0)]
-            ob = restrictedTraverse(ob, path)
-        except (AttributeError, KeyError):
-            if self._name == 'exists':
-                return 0
-            raise
-        else:
-            if self._name == 'exists':
-                return 1
-        if self._name == 'nocall':
-            return ob
-        return render(ob)
+                    step = path.pop(0)
+                    __traceback_info__ = (base, step)
+                    ob = ob[step]
+            return restrictedTraverse(ob, path)
+        except (AttributeError, KeyError, TypeError, IndexError), e:
+            raise Undefined, (e.args, sys.exc_info()), sys.exc_info()[2]
+
+    def __call__(self, econtext):
+        return getattr(self, self._call_name)(econtext)
 
     def __str__(self):
         return '%s expression "%s"' % (self._name, self._s)
@@ -275,12 +323,16 @@ if sys.modules.has_key('Zope'):
             security = getSecurityManager()
             security.addContext(template)
             try:
+                __traceback_info__ = self.expr
                 return f()
             finally:
                 security.removeContext(template)
 
         def __str__(self):
             return 'Python expression "%s"' % self.expr
+        def __repr__(self):
+            return '<PythonExpr %s>' % self.expr
+
 else:
     class getSecurityManager:
         '''Null security manager'''
@@ -329,31 +381,31 @@ def restrictedTraverse(self, path):
 
     if not path: return self
 
-    __traceback_info__ = path
-
     get=getattr
     N=None
     M=[] #marker
 
     REQUEST={'TraversalRequestNameStack': path}
-    path.reverse()
-    pop=path.pop
-    securityManager=getSecurityManager()
-
-    if not path[-1]:
+    securityManager = getSecurityManager()
+    
+    plen = len(path)
+    i = 0
+    if not path[0]:
         # If the path starts with an empty string, go to the root first.
-        pop()
-        self=self.getPhysicalRoot()
+        i = 1
+        self = self.getPhysicalRoot()
         if not securityManager.validateValue(self):
             raise 'Unauthorized', name
                     
     object = self
-    while path:
-        name=pop()
+    while i < plen:
+        __traceback_info__ = (path, i)
+        name = path[i]
+        i = i + 1
 
         if name[0] == '_':
             # Never allowed in a URL.
-            raise 'NotFound', name
+            raise AttributeError, name
 
         if name=='..':
             o = getattr(object, 'aq_parent', M)
@@ -367,11 +419,12 @@ def restrictedTraverse(self, path):
         if t is not N:
             o=t(REQUEST, name)
                     
-            # Note we pass no container, because we have no
-            # way of knowing what it is
-            if not securityManager.validate(object, None, name, o):
+            container = None
+            if (hasattr(get(object, 'aq_base', object), name)
+                and get(object, name) is o):
+                container = object
+            if not securityManager.validate(object, container, name, o):
                 raise 'Unauthorized', name
-                      
         else:
             o=get(object, name, M)
             if o is not M:
