@@ -170,7 +170,10 @@ class ProductContext:
         m=pack._m
 
         if interfaces is _marker:
-            interfaces = instancesOfObjectImplements(instance_class)
+            if instance_class is None:
+                interfaces = ()
+            else:
+                interfaces = instancesOfObjectImplements(instance_class)
 
         Products.meta_types=Products.meta_types+(
             { 'name': meta_type or instance_class.meta_type,
@@ -283,7 +286,7 @@ class ProductContext:
 
         if not doInstall():
             return
-        
+
         help=self.getProductHelp()
         path=os.path.join(Globals.package_home(self.__pack.__dict__),
                           directory)
