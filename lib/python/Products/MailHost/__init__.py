@@ -7,22 +7,26 @@
 #       rights reserved.
 #
 ############################################################################## 
-__doc__='''MailForm Product Initialization
-$Id: __init__.py,v 1.2 1997/09/09 16:09:13 jeffrey Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+__doc__='''MailHost Product Initialization
+$Id: __init__.py,v 1.3 1997/09/09 20:49:16 jeffrey Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
-import MailForm
+import MailHost
 
-__.meta_types=  {'name':'MailForm',
-                 'action':'manage_addMailFormForm'
+__.meta_types=  {'name':'MailHost',
+                 'action':'manage_addMailHost_form'
                  },
 
 __.methods={
-    'manage_addMailFormForm': MailForm.addForm,
-    'manage_addMailForm':     MailForm.add,
+    'manage_addMailHost_form': MailHost.addForm,
+    'manage_addMailHost':     MailHost.add,
     }
 
 #$Log: __init__.py,v $
+#Revision 1.3  1997/09/09 20:49:16  jeffrey
+#Changed Name from MailForm to MailHost
+#Simplified interface -- removed built-in templates (for now)
+#
 #Revision 1.2  1997/09/09 16:09:13  jeffrey
 #minor fixings
 #
