@@ -208,7 +208,10 @@ class ProductRegistryMixin:
     def _manage_remove_product_data(self, type, product, id):
         values=filter(
             lambda d, product=product, id=id:
-            not (d['product'] in (product, 'methods') and d['id']==id),
+            not (d['product'] in
+                 (product,
+                  'methods' # hack to get around inner ZClass reg. bug
+                  ) and d['id']==id),
             self.aq_maybe('_getProductRegistryData')(type)
             )
 
