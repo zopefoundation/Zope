@@ -94,7 +94,7 @@ from OFS.Cache import Cache, CacheManager
 from OFS.SimpleItem import SimpleItem
 import time
 import Globals
-from Globals import HTMLFile
+from Globals import DTMLFile
 import urlparse, httplib
 from urllib import quote
 from string import lower, join, split
@@ -230,7 +230,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         ' '
         return self._settings.copy()  # Don't let DTML modify it.
 
-    manage_main = HTMLFile('dtml/propsAccel', globals())
+    manage_main = DTMLFile('dtml/propsAccel', globals())
 
     def manage_editProps(self, title, settings=None, REQUEST=None):
         ' '
@@ -247,7 +247,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
             return self.manage_main(
                 self, REQUEST, manage_tabs_message='Properties changed.')
 
-    manage_stats = HTMLFile('dtml/statsAccel', globals())
+    manage_stats = DTMLFile('dtml/statsAccel', globals())
 
     def _getSortInfo(self):
         """
@@ -295,7 +295,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
 Globals.default__class_init__(AcceleratedHTTPCacheManager)
 
 
-manage_addAcceleratedHTTPCacheManagerForm = HTMLFile('dtml/addAccel',
+manage_addAcceleratedHTTPCacheManagerForm = DTMLFile('dtml/addAccel',
                                                      globals())
 
 def manage_addAcceleratedHTTPCacheManager(self, id, REQUEST=None):

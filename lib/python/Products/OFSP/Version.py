@@ -84,7 +84,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -99,7 +99,7 @@ from OFS.ObjectManager import BeforeDeleteException
 
 class VersionException(BeforeDeleteException): pass
 
-manage_addVersionForm=Globals.HTMLFile('dtml/versionAdd', globals())
+manage_addVersionForm=Globals.DTMLFile('dtml/versionAdd', globals())
 
 def manage_addVersion(self, id, title, REQUEST=None):
     """ """
@@ -144,9 +144,9 @@ class Version(Persistent,Implicit,RoleManager,Item):
         self.id=id
         self.title=title
 
-    manage_main=Globals.HTMLFile('dtml/version', globals())
-    manage_end=Globals.HTMLFile('dtml/versionEnd', globals())
-    manage_editForm   =Globals.HTMLFile('dtml/versionEdit', globals())
+    manage_main=Globals.DTMLFile('dtml/version', globals())
+    manage_end=Globals.DTMLFile('dtml/versionEnd', globals())
+    manage_editForm   =Globals.DTMLFile('dtml/versionEdit', globals())
 
     def title_and_id(self):
         r=Version.inheritedAttribute('title_and_id')(self)
