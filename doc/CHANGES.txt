@@ -46,6 +46,10 @@ Zope Changes
 
     Bugs fixed
 
+      - bin/zopectl test now uses os.execv, instead os os.system,
+        so that options with characters that needs shell quoting
+        doesn't break the command.
+      
       - Collector #1599: made sqltest work with unicode strings (thanks
         to Peter Sabaini for the patch).
 
