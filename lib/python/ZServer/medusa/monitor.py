@@ -5,13 +5,14 @@
 # python REPL channel.
 #
 
-RCS_ID = '$Id: monitor.py,v 1.8 2000/06/02 14:22:48 brian Exp $'
+RCS_ID = '$Id: monitor.py,v 1.9 2000/07/21 18:59:08 shane Exp $'
 
 import md5
 import socket
 import string
 import sys
 import time
+import traceback
 
 VERSION = string.split(RCS_ID)[2]
 
@@ -121,6 +122,8 @@ class monitor_channel (asynchat.async_chat):
 				self.multi_line = []
 				(file, fun, line), t, v, tbinfo = asyncore.compact_traceback()
 				self.log_info('%s %s %s' %(t, v, tbinfo), 'warning')
+				traceback.print_exc()
+				tbinfo = None
 		finally:
 			sys.stdout = oldout
 			sys.stderr = olderr
