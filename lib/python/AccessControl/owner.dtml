@@ -6,34 +6,37 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <dtml-var manage_tabs>
 
-<dtml-var title_and_id> is 
+<p>Almost all Zope objects can be owned. When you create an object you
+become its owner. Ownership matters for method objects since
+it determines what roles they have when they are executed. See the
+<i>Proxy Roles</i> view of method objects for more information.</p>
+
+<p><b><dtml-var title_and_id> is 
 <dtml-if owner_info>
   <dtml-with owner_info mapping>
-
-      owned <dtml-if explicit> directly
-      <dtml-else> indirectly (through acquisition)
-      </dtml-if> by &dtml-id; (&dtml-path;).
-
-      <dtml-if userCanChangeOwnershipType>
-         <form action="manage_changeOwnershipType">
-	    <dtml-if explicit>
-               <input type="hidden" name="explicit" value="">
-               <input name="submit" type="submit" value="Make ownership implicit (acquired)">
-	    <dtml-else>
-               <input type="hidden" name="explicit" value="y">
-               <input name="submit" type="submit" value="Make ownership explicit">
-	    </dtml-if>
-         </form>
-      </dtml-if>
-
+      owned 
+      by &dtml-id; (&dtml-path;).
   </dtml-with>
 <dtml-else>
   unowned.
 </dtml-if>
+</b>
+</p>
+
 
 <dtml-if userCanTakeOwnership>
+<p>If you have the <i>Take Ownership</i> roles you can take ownership
+of an object. You should do this when the owner of an object is
+deleted from Zope. Normally when taking ownership you should also take
+ownership of sub-objects as well.
+</p>
+
   <form action="manage_takeOwnership">
-     <input name="submit" type="submit" value="Take ownership">
+     <p><input name="submit" type="submit" value="Take ownership of object">
+     </p>
+     <p><input name="recursive" type="checkbox" checked>
+       Also take ownership of all sub-objects.
+     </p>
   </form>
 </dtml-if>
 

@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.5 2000/07/10 13:23:15 brian Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: Owned.py,v 1.6 2000/10/12 16:55:21 amos Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -158,27 +158,28 @@ class Owned(ExtensionClass.Base):
         return owner
 
     changeOwnership__roles__=()
-    def changeOwnership(self, user,
+    def changeOwnership(self, user, recursive=0,
                         aq_get=aq_get, None=None,
                         ):
-        """Change the ownership to the given user, make the
-        ownership acquired if possible."""
+        """Change the ownership to the given user.  If 'recursive' is
+        true then also take ownership of all sub-objects, otherwise
+        sub-objects retain their ownership information."""
+
         new=ownerInfo(user)
         if new is None: return # Special user!
-
         old=aq_get(self, '_owner', None, 1)
-
         if old==new: return
+        if old is UnownableOwner: return
 
-        # See if there is an _owner in the instance. If it is a
-        # class attribute we leave it alone.
-        if self.__dict__.get('_owner', _mark) is not _mark:
-            # Hm, maybe we can acquire ownership
-            del self._owner
-            self.changeOwnership(user)
-        else:
-            if old is not UnownableOwner:
-                self._owner=new
+        for child in self.objectValues():
+            if recursive:
+                child.changeOwnership(user, 1)
+            else:
+                # make ownership explicit
+                child._owner=child._owner
+            
+        if old is not UnownableOwner:
+            self._owner=new
 
     def userCanTakeOwnership(self):
         security=getSecurityManager()
@@ -189,8 +190,10 @@ class Owned(ExtensionClass.Base):
         if owner == info: return 0
         return security.checkPermission('Take ownership', self)
 
-    def manage_takeOwnership(self, REQUEST, RESPONSE):
-        """Take ownership (responsibility) for an object.
+    def manage_takeOwnership(self, REQUEST, RESPONSE, recursive=0):
+        """
+        Take ownership (responsibility) for an object. If 'recursive'
+        is true, then also take ownership of all sub-objects.
         """
         security=getSecurityManager()
         want_referer=REQUEST['URL1']+'/manage_owner'
@@ -200,8 +203,10 @@ class Owned(ExtensionClass.Base):
         if (want_referer != got_referer or security.calledByExecutable()):
             raise 'Unauthorized', (
                 'manage_takeOwnership was called from an invalid context'
-                )
-        self.changeOwnership(security.getUser())
+                )    
+
+        self.changeOwnership(security.getUser(), recursive)
+
         RESPONSE.redirect(REQUEST['HTTP_REFERER'])
 
     def manage_changeOwnershipType(self, explicit=1,
