@@ -4,27 +4,31 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
+<P>
 You can update data in the <!--#var kind--> using the form below. 
 Select a data file from your local computer by clicking the <EM>Browse</EM> 
 button. The file you select will be uploaded to the application.
 
 <FORM ACTION="manage_upload" METHOD="POST"
-      ENCTYPE="multipart/form-data" TARGET="manage_main">
-  <TABLE CELLSPACING="2">
-    <TR>
-       <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
-       <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
-    </TR>
-    <TR>
-       <TH ALIGN="LEFT" VALIGN="TOP">Data</TH>
-       <TD ALIGN="LEFT" VALIGN="TOP">
-          <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
-       </TD>
-    </TR>
-      <TR><TD></TD><TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
-    </TR>
-  </TABLE>
+ ENCTYPE="multipart/form-data" TARGET="manage_main">
+<TABLE CELLSPACING="2">
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP"><!--#var id--></TD>
+</TR>
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">Data</TH>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="file" NAME="file" SIZE="25" VALUE="">
+  </TD>
+</TR>
+<TR>
+  <TD></TD>
+  <TD><BR>
+  <INPUT TYPE="SUBMIT" VALUE="Change">
+  </TD>
+</TR>
+</TABLE>
 </FORM>
 </BODY>
 </HTML>

@@ -9,8 +9,8 @@
 <FORM ACTION="manage_deleteUser" METHOD="POST">
 The following users have been defined. Click on a user to edit 
 that user.
-<BR>
-<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<P>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <!--#in userNames-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
@@ -37,6 +37,7 @@ that user.
 </TABLE>
 </FORM>
 <!--#else userNames-->
+<P>
 <EM>There are no users defined.</EM>
 <!--#/if userNames-->
 <P>
