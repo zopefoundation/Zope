@@ -46,6 +46,14 @@ database packing, and &quot;undoing&quot; previous changes to your site.
   <!--#var db_size-->
   </TD>
 </TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Database Location</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <font size="-1"><!--#var db_name--></font>
+  </TD>
+</TR>
 </TABLE>
 
 

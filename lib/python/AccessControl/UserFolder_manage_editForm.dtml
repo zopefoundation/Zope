@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Edit User</TITLE>
+<TITLE>Change User</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
-<H2>Edit User</H2>
+<H2>Change User</H2>
 <P>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_editUser" METHOD="POST">
 <TABLE>

@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Edit MailHost</TITLE>
+<TITLE>Change MailHost</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<H2>Edit MailHost</H2>
+<H2>Change MailHost</H2>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_makeChanges" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">

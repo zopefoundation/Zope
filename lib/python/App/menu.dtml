@@ -10,12 +10,28 @@
   <IMG SRC="<!--#var SOFTWARE_URL-->/App/logo.jpg" WIDTH="102" HEIGHT="54">
   <BR>
   <A HREF="<!--#var PARENT_URL-->/manage_copyright" TARGET="manage_main">
-  <FONT SIZE="-2">
-  &copy; 1997 Digital Creations</FONT>
-  </A>
+  <FONT SIZE="-2"><CENTER>
+  &copy; 1997 Digital Creations</FONT></CENTER></A>
   </TD>
 </TR>
 <TR><TD></TD><TD></TD></TR>
+
+<!--#if parentObject-->
+  <!--#in parentObject-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var URL2-->/manage" target="_top">
+  <IMG BORDER="0" HEIGHT="16" ALT="Up One Folder" WIDTH="16"
+       SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif"></A></TD>
+  <TD ALIGN="LEFT">
+  <FONT SIZE="-1">
+  <A HREF="<!--#var URL2-->/manage" target="_top">Up One Folder</A></TD>
+  </FONT>
+  </TD>
+</TR>
+  <!--#/in parentObject-->
+<!--#/if parentObject-->
+
 <!--#if manage_options-->
 <!--#in manage_options mapping-->
 <!--#if sequence-item-->

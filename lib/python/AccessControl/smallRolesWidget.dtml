@@ -1,6 +1,6 @@
 <!--#if AUTHENTICATED_USER-->
 <TR>
-  <TD></TD>
+  <TD><STRONG>Access<BR>Control</STRONG></TD>
   <TD>
   <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0">
   <TR>

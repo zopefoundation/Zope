@@ -11,6 +11,14 @@ The following properties are defined.  To change a property's value,
 edit the value and click "Change".
 <P>
 <TABLE CELLPADDING="4">
+<TR>
+<TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var id-->
+  </TD>
+</TR>
 <!--#if propertyInputs-->
 <!--#in propertyInputs mapping-->
 <TR>

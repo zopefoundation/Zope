@@ -1,9 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>New Folder</TITLE>
+<TITLE>Add Folder</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>New Folder</H2>
+<H2>Add Folder</H2>
 
 <FORM ACTION="<!--#var PARENT_URL-->/manage_addFolder" METHOD="POST">
 <TABLE CELLSPACING="2">

@@ -29,7 +29,7 @@ select a user and click &quot;Edit&quot;.
 <!--#/in userNames-->
 </SELECT>
 <BR>
-<INPUT TYPE="SUBMIT" VALUE=" Edit ">
+<INPUT TYPE="SUBMIT" VALUE=" Change ">
 </FORM>
 <!--#else userNames-->
 <EM>There are no users defined.</EM>

@@ -18,7 +18,7 @@ Access Control
   <TD VALIGN="TOP">
   The following members are defined for the group <B><!--#var groupName--></B>.
   To edit a member, select a member from the list and click the
-  <I>Edit Member</I> button.
+  <I>Change Member</I> button.
   </TD>
   <TD VALIGN="TOP">
   <FORM ACTION="<!--#var PARENT_URL-->/manage_memberForm" METHOD="POST">
@@ -29,7 +29,7 @@ Access Control
   </SELECT>
   <BR>
   <INPUT TYPE="HIDDEN" NAME="group" VALUE="<!--#var groupName-->">
-  <INPUT TYPE="SUBMIT" VALUE="Edit Member">
+  <INPUT TYPE="SUBMIT" VALUE="Change Member">
   </FORM>
   </TD>
 </TR>

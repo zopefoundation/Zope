@@ -1,10 +1,10 @@
 <HTML>
 <HEAD>
-<TITLE>New MailHost</TITLE>
+<TITLE>Add MailHost</TITLE>
 </HEAD>
 
 <BODY BGCOLOR="#FFFFFF">
-<H2>New MailHost</H2>
+<H2>Add MailHost</H2>
 <FORM ACTION="<!--#var PARENT_URL-->/manage_addMailHost" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">
