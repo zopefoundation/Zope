@@ -75,8 +75,8 @@ class Service(win32serviceutil.ServiceFramework):
 
     def logmsg(self, event):
         # log a service event using servicemanager.LogMsg
-        from servicemanager import LogMsg
-        LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE, event,
+        from servicemanager import LogMsg, EVENTLOG_INFORMATION_TYPE
+        LogMsg(EVENTLOG_INFORMATION_TYPE, event,
                (self._svc_name_, " (%s)" % self._svc_display_name_))
 
     def info(self, s):
