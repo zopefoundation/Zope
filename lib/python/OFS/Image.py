@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.148 $'[11:-2]
+__version__='$Revision: 1.149 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -558,7 +558,9 @@ class File(Persistent, Implicit, PropertyManager,
     def __str__(self): return str(self.data)
     def __len__(self): return 1
 
-    manage_FTPget=index_html
+    def manage_FTPget(self):
+        """Return body for ftp."""
+        return str(self.data)
 
 
 manage_addImageForm=DTMLFile('dtml/imageAdd',globals(),
