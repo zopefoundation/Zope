@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.23 2002/05/21 17:14:34 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.24 2002/06/20 20:07:20 jeremy Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -20,12 +20,11 @@ from Globals import Persistent, DTMLFile
 from Acquisition import Implicit
 
 from BTrees.IOBTree import IOBTree
-from BTrees.OOBTree import OOBTree,OOSet
-from BTrees.OIBTree import OIBTree
-from BTrees.IIBTree import IISet,difference,intersection,union
+from BTrees.OOBTree import OOBTree
+from BTrees.IIBTree import IISet, intersection, union
 from OFS.SimpleItem import SimpleItem
 from types import StringType, ListType, TupleType
-import re,warnings
+import re, warnings
 
 _marker = []
 
