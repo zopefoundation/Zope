@@ -63,7 +63,7 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
     # A fairly involved test of the ranking calculations based on
     # an example set of documents in queries in Managing
     # Gigabytes, pp. 180-188.  This test peeks into many internals of the
-    # cosine index.
+    # cosine indexer.
 
     def testRanking(self):
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
@@ -136,7 +136,119 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
                 eq(d[doc], score)
 
 class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
-    pass
+
+    # A white-box test.
+    def testAbsoluteScores(self):
+        from Products.ZCTextIndex.OkapiIndex import inverse_doc_frequency
+
+        docs = ["one",
+                "one two",
+                "one two three"]
+        for i in range(len(docs)):
+            self.zc_index.index_object(i + 1, Indexable(docs[i]))
+        self.assertEqual(self.index._totaldoclen, 6)
+        # So the mean doc length is 2.  We use that later.
+
+        r, num = self.zc_index.query("one")
+        self.assertEqual(num, 3)
+        self.assertEqual(len(r), 3)
+
+        # Because our Okapi's B parameter is > 0, and "one" only appears
+        # once in each doc, the verbosity hypothesis favors shorter docs.
+        self.assertEqual([doc for doc, score in r], [1, 2, 3])
+
+        # The way the Okapi math works, a word that appears exactly once in
+        # an average (length) doc gets tf score 1.  Our second doc has
+        # an average length, so its score should by 1 (tf) times the
+        # inverse doc frequency of "one".  But "one" appears in every
+        # doc, so its IDF is log(1 + 3/3) = log(2).
+        self.assertEqual(r[1][1], scaled_int(inverse_doc_frequency(3, 3)))
+
+        # Similarly for "two".
+        r, num = self.zc_index.query("two")
+        self.assertEqual(num, 2)
+        self.assertEqual(len(r), 2)
+        self.assertEqual([doc for doc, score in r], [2, 3])
+        self.assertEqual(r[0][1], scaled_int(inverse_doc_frequency(2, 3)))
+
+        # And "three", except that doesn't appear in an average-size doc, so
+        # the math is much more involved.
+        r, num = self.zc_index.query("three")
+        self.assertEqual(num, 1)
+        self.assertEqual(len(r), 1)
+        self.assertEqual([doc for doc, score in r], [3])
+        idf = inverse_doc_frequency(1, 3)
+        meandoclen = 2.0
+        lengthweight = 1.0 - OkapiIndex.B + OkapiIndex.B * 3 / meandoclen
+        tf = (1.0 + OkapiIndex.K1) / (1.0 + OkapiIndex.K1 * lengthweight)
+        self.assertEqual(r[0][1], scaled_int(tf * idf))
+
+    # More of a black-box test, but based on insight into how Okapi is trying
+    # to think.
+    def testRelativeScores(self):
+        # Create 9 10-word docs.
+        # All contain one instance of "one".
+        # Doc #i contains i instances of "two" and 9-i of "xyz".
+        for i in range(1, 10):
+            doc = "one " + "two " * i + "xyz " * (9 - i)
+            self.zc_index.index_object(i, Indexable(doc))
+
+        r, num = self.zc_index.query("one two")
+        self.assertEqual(num, 9)
+        self.assertEqual(len(r), 9)
+        # The more twos in a doc, the better the score should be.
+        self.assertEqual([doc for doc, score in r], range(9, 0, -1))
+
+        # Search for "two" alone shouldn't make any difference to relative
+        # results.
+        r, num = self.zc_index.query("two")
+        self.assertEqual(num, 9)
+        self.assertEqual(len(r), 9)
+        self.assertEqual([doc for doc, score in r], range(9, 0, -1))
+
+        # Searching for xyz should skip doc 9, and favor the lower-numbered
+        # docs (they have more instances of xyz).
+        r, num = self.zc_index.query("xyz")
+        self.assertEqual(num, 8)
+        self.assertEqual(len(r), 8)
+        self.assertEqual([doc for doc, score in r], range(1, 9))
+
+        # And relative results shouldn't change if we add "one".
+        r, num = self.zc_index.query("xyz one")
+        self.assertEqual(num, 8)
+        self.assertEqual(len(r), 8)
+        self.assertEqual([doc for doc, score in r], range(1, 9))
+
+        # But if we search for all the words, it's much muddier.  The boost
+        # in going from i instances to i+1 of a given word is smaller than
+        # the boost in going from i-1 to i, so the winner will be the one
+        # that balances the # of twos and xyzs best.  But the test is nasty
+        # that way:  doc 4 has 4 two and 5 xyz, while doc 5 has the reverse.
+        # However, xyz is missing from doc 9, so xyz has a larger idf than
+        # two has.  Since all the doc lengths are the same, doc lengths don't
+        # matter.  So doc 4 should win, and doc 5 should come in second.
+        # The loser will be the most unbalanced, but is that doc 1 (1 two 8
+        # xyz) or doc 8 (8 two 1 xyz)?  Again xyz has a higher idf, so doc 1
+        # is more valuable, and doc 8 is the loser.
+        r, num = self.zc_index.query("xyz one two")
+        self.assertEqual(num, 8)
+        self.assertEqual(len(r), 8)
+        self.assertEqual(r[0][0], 4)    # winner
+        self.assertEqual(r[1][0], 5)    # runner up
+        self.assertEqual(r[-1][0], 8)   # loser
+        self.assertEqual(r[-2][0], 1)   # penultimate loser
+
+        # And nothing about the relative results in the last test should
+        # change if we leave "one" out of the search (it appears in all
+        # docs, so it's a wash).
+        r, num = self.zc_index.query("two xyz")
+        self.assertEqual(num, 8)
+        self.assertEqual(len(r), 8)
+        self.assertEqual(r[0][0], 4)    # winner
+        self.assertEqual(r[1][0], 5)    # runner up
+        self.assertEqual(r[-1][0], 8)   # loser
+        self.assertEqual(r[-2][0], 1)   # penultimate loser
+
 
 ############################################################################
 # Subclasses of QueryTestsBase must set a class variable IndexFactory to
