@@ -11,8 +11,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.10 1997/12/12 23:38:59 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: RDB.py,v 1.11 1998/01/16 20:24:49 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, atof, atoi, atol, find
@@ -116,16 +116,26 @@ class File:
 
 	# Create a record class to hold the records.
 	names=tuple(names)
-	if record_classes.has_key(names):
+	if record_classes.has_key((names,brains)):
 	    r=record_classes[names,brains]
 	else:
 	    class r(Record, Implicit, brains):
-		'Result record class'
+		'Result record class'		    
 
 	    r.__record_schema__=schema
 	    for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
 		setattr(r,k,getattr(Record,k))
 		record_classes[names,brains]=r
+
+	    if hasattr(brains, '__init__'):
+		binit=brains.__init__
+		if hasattr(binit,'im_func'): binit=binit.im_func
+		def __init__(self, data, binit=binit):
+		    Record.__init__(self,data)
+		    binit(self)
+
+		r.__dict__['__init__']=__init__
+		    
 
 	self._class=r
 
@@ -183,6 +193,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.11  1998/01/16 20:24:49  jim
+# Added the abilility to define constructors in brains.
+#
 # Revision 1.10  1997/12/12 23:38:59  jim
 # Added support for text (t) column type.
 #
