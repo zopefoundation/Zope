@@ -214,11 +214,6 @@ License Version 1.1</A>.
     <LI>Eric Kidd added support for <a href="http://www.xmlrpc.com/">
         XML-RPC</a></LI>
 
-    <LI>Phillip Eby contributed the DTML <code>let</code> tag and many
-        other useful ideas, including the inspiration for the DTML
-        <code>call</code>, <code>with</code> and <code>return</code>
-        tags.</LI>
-
     <LI>Andrew M. Kuchling wrote the initial version of mod_pcgi, making 
     him extremely cool in our book.</LI>
 
