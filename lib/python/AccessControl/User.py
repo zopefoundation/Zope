@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.134 $'[11:-2]
+__version__='$Revision: 1.135 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -524,7 +524,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # return him as the authorized user.
         if not auth:
             if self._domain_auth_mode:
-                self._lookupRemoteHostAddr(request)
                 for user in self.getUsers():
                     if user.getDomains():
                         if self.authenticate(user.getUserName(), '', request):
@@ -574,7 +573,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
             name = request.environ.get('REMOTE_USER', None)
             if name is None:
                 if self._domain_auth_mode:
-                    self._lookupRemoteHostAddr(request)
                     for user in self.getUsers():
                         if user.getDomains():
                             if self.authenticate(
@@ -826,29 +824,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
            turn this behavior on or off."""
         v = self._domain_auth_mode = domain_auth_mode and 1 or 0
         return 'Domain authentication mode set to %d' % v
-        
-    def _lookupRemoteHostAddr(self, request):
-        # If no authorization, only a user with a domain spec and no
-        # passwd or nobody can match. We cache reverse DNS before
-        # checking the users, otherwise it can get real slow looking
-        # it up for every user.
-        host=request.get('REMOTE_HOST', '')
-        addr=request.get('REMOTE_ADDR', '')
-        if host or addr:
-            if not host:
-                try:
-                    host=socket.gethostbyaddr(addr)[0]
-                    request.set('REMOTE_HOST', host)
-                except: pass
-            if not addr:
-                try:
-                    addr=socket.gethostbyname(host)
-                    request.set('REMOTE_ADDR', addr)
-                except: pass
-
-
-
-
 
 
 
