@@ -76,6 +76,9 @@ Zope Changes
         - Redefining the "views" on a ZClass could incorrectly affect
           the views available on instances of base classes of the ZClass.
 
+        - The new 'url' option to DTML 'var' tags did not work properly
+          for DTML and other callable objects.
+
     Zope 2.1.0 beta 2
 
       Features Added
