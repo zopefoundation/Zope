@@ -270,27 +270,27 @@ instancehome $INSTANCE
 #
 # Description:
 #    Specifies the input encoding of re-StructuredText documents
-#    (e.g. 'utf-8', 'iso-8859-1' or any other valid encoding recognized
+#    (e.g. 'utf-8', 'iso-8859-15' or any other valid encoding recognized
 #    by Python).  The default is your Python's default encoding.
 #
 # Default: unset (uses system default)
 #
 # Example:
 #
-#    rest-input-encoding iso-8859-1
+#    rest-input-encoding iso-8859-15
 
 # Directive: rest-output-encoding
 #
 # Description:
 #    Specifies the output encoding of re-StructuredText documents
-#    (e.g. 'utf-8', 'iso-8859-1' or any other valid encoding recognized
+#    (e.g. 'utf-8', 'iso-8859-15' or any other valid encoding recognized
 #    by Python).  The default is your Python's default encoding.
 #
 # Default: unset (uses system default)
 #
 # Example:
 #
-#    rest-output-encoding iso-8859-1
+#    rest-output-encoding iso-8859-15
 
 # Directive: cgi-environment
 #
