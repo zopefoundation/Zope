@@ -885,5 +885,6 @@ instancehome $INSTANCE
 #     storage 1
 #     name zeostorage
 #     var $INSTANCE/var
+#     cache-size 20MB
 #   </zeoclient>
 # </zodb_db>
