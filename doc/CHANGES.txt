@@ -74,3 +74,6 @@ Zope changes
 
         - A change to pcgi_publisher was made to support FreeBSD, where
           send() will send only 8192 bytes at a time.
+
+        - A bug that broke import in the alpha was fixed.
+
