@@ -84,9 +84,9 @@ statement which the SQL Method will execute.
     <input class="form-element" type="submit" name="submit" 
      value=" Add " /> 
     <input class="form-element" type="submit" name="submit" 
-     value=" Add and Edit" /> 
+     value=" Add and Edit " /> 
     <input class="form-element" type="submit" name="submit" 
-     value=" Add and Test" /> 
+     value=" Add and Test " /> 
     </div>
     </td>
   </tr>
