@@ -16,6 +16,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #951: DateTime(None) now raises a proper SyntaxError
+
      - Collector #1056: aq_acquire() ignored the default argument
 
      - Collector #1087: ZPT: "repeat/item/length" did not work as documented
