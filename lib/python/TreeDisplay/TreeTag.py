@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.16 1997/12/05 17:14:58 brian Exp $'
-__version__='$Revision: 1.16 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.17 1997/12/05 18:06:37 brian Exp $'
+__version__='$Revision: 1.17 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -235,7 +235,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	else:
 	    if level > 2: output('<TD COLSPAN="%s"></TD>' % level)
 	    elif level > 0: output('<TD></TD>' * level)
-	    output('<TD WIDTH="16"></TD>\n')
+	    output('<TD WIDTH="16">%s</TD>\n' % icoSpace)
 	    
     
 	# add item text
