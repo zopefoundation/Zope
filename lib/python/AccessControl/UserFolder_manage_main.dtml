@@ -48,6 +48,7 @@
 <!--#/if userNames-->
 <TR>
   <TD COLSPAN="2" VALIGN="TOP">
+  <BR>
   To add a new user, enter the name, password, confirmation and 
   roles for the new user and click the <I>Add User</I> button.
   </TD>
@@ -89,6 +90,7 @@
 <!--#if userNames-->
 <TR>
   <TD VALIGN="TOP">
+  <BR>
   To delete one or more users, select the users
   you wish to delete and click the <I>Delete Users</I> button.
   </TD>
