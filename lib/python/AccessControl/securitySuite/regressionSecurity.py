@@ -85,7 +85,7 @@
 # 
 ##############################################################################
 
-# $Id: testSecurity.py,v 1.9 2001/10/09 14:40:53 andreasjung Exp $
+# $Id: regressionSecurity.py,v 1.1 2001/10/11 13:33:48 andreasjung Exp $
 
 import os, sys
 execfile(os.path.join(sys.path[0],'framework.py'))
