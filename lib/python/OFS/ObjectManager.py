@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.16 1997/11/06 15:41:48 jim Exp $"""
+$Id: ObjectManager.py,v 1.17 1997/11/10 14:54:42 jim Exp $"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -15,6 +15,7 @@ from string import find,join,lower
 from urllib import quote
 from DocumentTemplate import html_quote
 from cgi_module_publisher import type_converters
+from DateTime import DateTime
 
 class ObjectManager(Acquirer,Management,Persistent):
     """Generic object manager
@@ -396,9 +397,31 @@ class ObjectManager(Acquirer,Management,Persistent):
 	    r.append({'id': n, 'input': imap[t](None,n,t,v)})
 	return r
 
+    def bobobase_modification_time(self):
+	try:
+	    t=self._p_mtime
+	    if t is None: return DateTime()
+	except: t=0
+	return DateTime(t)
+
+    def modified_in_session(self):
+	jar=self._p_jar
+	if jar is None: return 1
+	if not jar.name: return 0
+	try: jar.db[self._p_oid]
+	except: return 0
+	return 1
+
+
+
+
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.17  1997/11/10 14:54:42  jim
+# Added two new methods, bobobase_modification_time, and
+# modified_in_session, to support flagging new and session objects.
+#
 # Revision 1.16  1997/11/06 15:41:48  jim
 # Got rid of PARENT_URL in deleteProperties error dialog.
 #

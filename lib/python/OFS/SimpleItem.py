@@ -16,10 +16,11 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.3 1997/11/06 18:41:56 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: SimpleItem.py,v 1.4 1997/11/10 14:55:14 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
+from DateTime import DateTime
 
 class Item:
 
@@ -65,7 +66,21 @@ class Item:
     _manage_editedDialog=Globals.HTMLFile('OFS/editedDialog')
     def manage_editedDialog(self, REQUEST, **args):
 	return apply(self._manage_editedDialog,(self, REQUEST), args)
-    
+
+    def bobobase_modification_time(self):
+	try:
+	    t=self._p_mtime
+	    if t is None: return DateTime()
+	except: t=0
+	return DateTime(t)
+
+    def modified_in_session(self):
+	jar=self._p_jar
+	if jar is None: return 1
+	if not jar.name: return 0
+	try: jar.db[self._p_oid]
+	except: return 0
+	return 1
 
 
 class Item_w__name__(Item):
@@ -85,6 +100,10 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.4  1997/11/10 14:55:14  jim
+# Added two new methods, bobobase_modification_time, and
+# modified_in_session, to support flagging new and session objects.
+#
 # Revision 1.3  1997/11/06 18:41:56  jim
 # Added manage_editedDialog.
 #
