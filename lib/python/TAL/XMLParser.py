@@ -109,6 +109,8 @@ class XMLParser:
         "NotStandaloneHandler",
         "ExternalEntityRefHandler",
         "XmlDeclHandler",
+        "StartDoctypeDeclHandler",
+        "EndDoctypeDeclHandler",
         "ElementDeclHandler",
         "AttlistDeclHandler"
         ]
