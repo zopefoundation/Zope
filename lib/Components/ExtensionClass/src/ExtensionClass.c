@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.58 2002/11/12 20:04:20 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.59 2003/07/28 02:12:23 kiko Exp $\n"
 ;
 
 #include "ExtensionClass.h"
@@ -1344,7 +1344,7 @@ getBaseDictionary(PyExtensionClass *type)
       FILLENTRY(nm->nb, or, or, METH_VARARGS, "bitwize logical or");
       FILLENTRY(nm->nb, xor, xor, METH_VARARGS, "bitwize logical excusive or");
       FILLENTRY(nm->nb, coerce, coerce, METH_VARARGS,
-		"Coerce woth another to a common type");
+		"Coerce with another to a common type");
       FILLENTRY(nm->nb, int, int, METH_VARARGS, "Convert to an integer");
       FILLENTRY(nm->nb, long, long, METH_VARARGS,
 		"Convert to an infinite-precision integer");
