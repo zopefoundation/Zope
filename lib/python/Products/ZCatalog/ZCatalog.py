@@ -435,7 +435,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if not obj:
                 if REQUEST is None:
                     REQUEST=self.REQUEST
-                obj = self.sq_parent.resolve_url(self.getpath(rid), REQUEST)
+                obj = self.aq_parent.resolve_url(self.getpath(rid), REQUEST)
             return obj
         except:
             pass
