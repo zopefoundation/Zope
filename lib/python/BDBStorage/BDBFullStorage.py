@@ -18,7 +18,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.44 $'.split()[-2:][0]
+__version__ = '$Revision: 1.45 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -641,8 +641,11 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         return data[:8], data[8:]
 
     def _loadSerialEx(self, oid, serial):
-        # Just like loadSerial, except that it returns both the pickle and the
-        # version this object revision is living in.
+        # Just like loadSerial, except that it returns the pickle data, the
+        # version this object revision is living in, and a backpointer.  The
+        # backpointer is None if the lrevid for this metadata record is the
+        # same as the tid.  If not, we have a pointer to previously existing
+        # data, so we return that.
         self._lock_acquire()
         try:
             # Get the pointer to the pickle (i.e. live revid, or lrevid)
@@ -657,8 +660,14 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Check for an zombification event, possible with
             # transactionalUndo.  Use data==None to specify that.
             if lrevid == DNE:
-                return None, version
-            return self._pickles[oid+lrevid], version
+                return None, version, None
+            backpointer = None
+            if lrevid <> serial:
+                # This transaction shares its pickle data with a previous
+                # transaction.  We need to let the caller know, esp. when it's
+                # the iterator code, so that it can pass this information on.
+                backpointer = lrevid
+            return self._pickles[oid+lrevid], version, backpointer
         finally:
             self._lock_release()
 
@@ -1580,8 +1589,8 @@ class _RecordsIterator:
         """
         # Let IndexError percolate up
         oid = self._oids.pop()
-        pickle, version = self._storage._loadSerialEx(oid, self.tid)
-        return _Record(oid, self.tid, version, pickle)
+        data, version, lrevid = self._storage._loadSerialEx(oid, self.tid)
+        return _Record(oid, self.tid, version, data, lrevid)
 
 
 
@@ -1594,9 +1603,12 @@ class _Record:
     version = None
     # Data pickle
     data = None
+    # The pointer to the transaction containing the pickle data, if not None
+    data_txn = None
 
-    def __init__(self, oid, serial, version, data):
+    def __init__(self, oid, serial, version, data, data_txn):
         self.oid = oid
         self.serial = serial
         self.version = version
         self.data = data
+        self.data_txn = data_txn
