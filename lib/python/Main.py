@@ -16,10 +16,20 @@ class SyncDB(SimpleDB.Default, Sync.Synchronized):
 
 SimpleDB.Default=SyncDB
 
+import Globals
+
+try:
+    import thread
+    Globals.application_lock=thread.allocate_lock()
+    __bobo_before__=Globals.application_lock.acquire
+    __bobo_after__ =Globals.application_lock.release
+except: pass
+
 import Globals, OFS.Folder, OFS.Application, App.ApplicationManager
 import OFS.Document
 
 import TreeDisplay.TreeTag
+import Scheduler.Scheduler
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
@@ -50,6 +60,9 @@ if not hasattr(app, 'standard_html_header'):
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.5  1997/09/17 16:17:00  jim
+# Added scheduler hook.
+#
 # Revision 1.4  1997/09/10 15:55:50  jim
 # Changed to use title_or_id.
 #
