@@ -42,6 +42,18 @@ def log_write(subsystem, severity, summary, detail, error):
         msg = "%s\n%s" % (msg, detail)
 
     logger = logging.getLogger(subsystem)
+
+
+    # Since the logging module of Python does not allow to pass a
+    # traceback triple, we need to fake the exception. (See also
+    # Collector #1234).
+
+    if isinstance(error, tuple):
+        try:
+            raise error[0], error[1], error[2]
+        except:
+            pass
+
     logger.log(level, msg, exc_info=(error is not None))
 
 

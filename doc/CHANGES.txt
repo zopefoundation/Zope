@@ -139,6 +139,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1234: an exception triple passed to LOG() was not 
+       propagated properly to the logging module of Python
+
      - Collector #1441: Removed headers introduced to make Microsoft
        webfolders and office apps happy, since they make a lot of
        standards-compliant things unhappy AND they trick MS Office
