@@ -1,14 +1,14 @@
-TALES No-call expressions
+TALES Nocall expressions
 
   Syntax
 
-    No-call expression syntax::
+    Nocall expression syntax::
 
-      nocall_expression ::= 'no-call:' expression
+      nocall_expression ::= 'nocall:' expression
 
   Description
 
-    No-call expressions avoid rendering the results of another
+    Nocall expressions avoid rendering the results of another
     expression.
     
     An ordinary path expression tries to render the object that it
@@ -22,13 +22,13 @@ TALES No-call expressions
 
   Examples
 
-    Using no-call to get the properties of a document::
+    Using nocall to get the properties of a document::
 
       <span tal:define="doc nocall:here/aDoc"
             tal:content="string:${doc/getId}: ${doc/title}">
       Id: Title</span>
 
-    Using no-call expressions on a functions::
+    Using nocall expressions on a functions::
 
       <p tal:define="join nocall:modules/string/join">
 

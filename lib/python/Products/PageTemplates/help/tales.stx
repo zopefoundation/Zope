@@ -38,7 +38,7 @@ TALES Overview
 
     * "exists":tales-exists.stx expressions - test existence of a value
 
-    * "no-call":tales-no-call.stx expressions - don't call a value
+    * "nocall":tales-nocall.stx expressions - don't call a value
 
     * "not:tales-not.stx expressions - negate a value
   
@@ -104,9 +104,9 @@ TALES Overview
 
     "exists":tales-exists.stx expressions
 
-    "no-call":tales-no-call.stx expressions
+    "nocall":tales-nocall.stx expressions
 
-    "not:tales-not.stx expressions
+    "not":tales-not.stx expressions
   
     "string":tales-string.stx expressions
 
