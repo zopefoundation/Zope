@@ -18,7 +18,7 @@ TARGET="2.3.4"
 # sys.version) below in "best" to "worst" order, not including the
 # target version.  Up to six acceptable python versions are allowed.
 # Do not include the target version number in this list!
-ACCEPTABLE="2.3.3"
+ACCEPTABLE=""
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
@@ -115,8 +115,10 @@ get_python() {
          [ -z "$FOUND4" ] && [ -z "$FOUND5" ] && [ -z "$FOUND6" ] ; then
         out ""
         out "  No suitable Python version found.  You should install"
-        out "  Python version $TARGET before continuing.  Versions"
-        out "  $ACCEPTABLE also work, but not as optimally."
+        out "  Python version $TARGET before continuing."
+        if [ "$ACCEPTABLE" ]; then
+            out "  Versions $ACCEPTABLE also work, but not as optimally."
+        fi
         exit 1
     else
         if   [ -n "$FOUND1" ]; then

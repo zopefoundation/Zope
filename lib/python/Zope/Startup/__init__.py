@@ -342,8 +342,8 @@ class UnixZopeStarter(ZopeStarter):
 def check_python_version():
     # check for Python version
     python_version = sys.version.split()[0]
-    optimum_version = '2.3.3'
-    if python_version < '2.3.3':
+    optimum_version = '2.3.4'
+    if python_version < '2.3.4':
         raise ZConfig.ConfigurationError(
             'Invalid python version: %s, the optimal version is %s or higher' %
             (python_version, optimum_version))

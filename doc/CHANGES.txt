@@ -157,6 +157,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Removed Python 2.3.3 as valid option. ZODB 3.3 requires Python
+       2.3.4 or later.
+
      - Collector #1332: Added in-place migration of the Catalog.__len__
        attribute to avoid new-style class caching problems. Instances of
        ZCatalog or instances of classes with ZCatalog as base class will be
