@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.62 $'[11:-2]
+__version__='$Revision: 1.63 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -647,7 +647,7 @@ class DateTime:
             year, the second is taken to be an integer month, and
             the third is taken to be an integer day. If the
             combination of values is not valid, then a
-            DateTimeError is raised. Two-digit years are assumed
+            DateError is raised. Two-digit years are assumed
             to be in the twentieth century. The fourth, fifth, and
             sixth arguments specify a time in hours, minutes, and
             seconds; hours and minutes should be positive integers
@@ -658,8 +658,9 @@ class DateTime:
             at that time on a machine in the specified timezone).
 
         If a string argument passed to the DateTime constructor cannot be
-        parsed, it will raise DateTime.SyntaxError. Invalid date, time, or
-        timezone components will raise a DateTime.DateTimeError. 
+        parsed, it will raise DateTime.SyntaxError. Invalid date components
+        will raise a DateError, while invalid time or timezone components
+        will raise a DateTimeError. 
 
         The module function Timezones() will return a list of the 
         timezones recognized by the DateTime module. Recognition of 
@@ -1042,25 +1043,28 @@ class DateTime:
         if year < 1000: raise self.SyntaxError, string
         
         leap = year%4==0 and (year%100!=0 or year%400==0)
-        if not day or day > self._month_len[leap][month]:
-            raise self.SyntaxError, string
+        try:
+            if not day or day > self._month_len[leap][month]:
+                raise self.DateError, string
+        except IndexError:
+            raise self.DateError, string
         tod=0
         if ints:
             i=ints[0]
             # Modify hour to reflect am/pm
             if tm and (tm=='pm') and i<12:  i=i+12
             if tm and (tm=='am') and i==12: i=0
-            if i > 24: raise self.SyntaxError, string
+            if i > 24: raise self.DateTimeError, string
             tod = tod + int(i) * 3600
             del ints[0]
             if ints:
                 i=ints[0]
-                if i > 60: raise self.SyntaxError, string
+                if i > 60: raise self.DateTimeError, string
                 tod = tod + int(i) * 60
                 del ints[0]
                 if ints:
                     i=ints[0]
-                    if i > 60: raise self.SyntaxError, string
+                    if i > 60: raise self.DateTimeError, string
                     tod = tod + i
                     del ints[0]
                     if ints: raise self.SyntaxError,string
