@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
-import  re, sys, os, string, urllib, time, whrandom
+import regex, re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -383,7 +383,7 @@ class HTTPRequest(BaseRequest):
         hasattr=hasattr,
         getattr=getattr,
         setattr=setattr,
-        search_type=re.compile('(:[a-zA-Z]\w+|\.[xy])$').search,
+        search_type=regex.compile('\(:[a-zA-Z][a-zA-Z0-9_]+\|\.[xy]\)$').search,
         rfind=string.rfind,
         ):
         """Process request inputs
@@ -448,14 +448,11 @@ class HTTPRequest(BaseRequest):
                 # We'll search from the back to the front.
                 # We'll do the search in two steps.  First, we'll
                 # do a string search, and then we'll check it with
-                # a re search.
+                # a regex search.
                 
                 l=rfind(key,':')
                 if l >= 0:
-                    mo=search_type(key,l)
-                    if mo:   l = mo.start(0)
-                    else:    l = -1
-
+                    l=search_type(key,l)
                     while l >= 0:
                         type_name=key[l+1:]
                         key=key[:l]
@@ -489,9 +486,7 @@ class HTTPRequest(BaseRequest):
     
                         l=rfind(key,':')
                         if l < 0: break
-                        mo = search_type(key,l)
-                        if mo: l = mo.start(0)
-                        else:  l = -1
+                        l=search_type(key,l)
              
                 # Filter out special names from form:
                 if CGI_name(key) or key[:5]=='HTTP_': continue
@@ -1055,10 +1050,16 @@ class FileUpload:
 parse_cookie_lock=allocate_lock()
 def parse_cookie(text,
                  result=None,
-                 qparmre=re.compile(
-                    '([\x00- ]*([^\x00- ;,="]+)="([^"]*)"([\x00- ]*[;,])?[\x00- ]*)'),
-                 parmre=re.compile(
-                    '([\x00- ]*([^\x00- ;,="]+)=([^\x00- ;,"]*)([\x00- ]*[;,])?[\x00- ]*)'),
+                 qparmre=regex.compile(
+                     '\([\0- ]*'
+                     '\([^\0- ;,=\"]+\)="\([^"]*\)\"'
+                     '\([\0- ]*[;,]\)?[\0- ]*\)'
+                     ),
+                 parmre=regex.compile(
+                     '\([\0- ]*'
+                     '\([^\0- ;,=\"]+\)=\([^\0- ;,\"]*\)'
+                     '\([\0- ]*[;,]\)?[\0- ]*\)'
+                     ),
                  acquire=parse_cookie_lock.acquire,
                  release=parse_cookie_lock.release,
                  ):
@@ -1068,20 +1069,16 @@ def parse_cookie(text,
 
     acquire()
     try:
-
-        mo_q = qparmre.match(text)
-        mo_p = parmre.match(text)
-
-        if mo_q:
+        if qparmre.match(text) >= 0:
             # Match quoted correct cookies
-            name  = mo_q.group(2)
-            value = mo_q.group(3)
-            l     = len(mo_q.group(1))
-        elif mo_p:
+            name=qparmre.group(2)
+            value=qparmre.group(3)
+            l=len(qparmre.group(1))
+        elif parmre.match(text) >= 0:
             # Match evil MSIE cookies ;)
-            name  = mo_p.group(2)
-            value = mo_p.group(3)
-            l     = len(mo_p.group(1))
+            name=parmre.group(2)
+            value=parmre.group(3)
+            l=len(parmre.group(1))
         else:
             # this may be an invalid cookie.
             # We'll simply bail without raising an error
