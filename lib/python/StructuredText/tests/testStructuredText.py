@@ -90,7 +90,6 @@ from StructuredText import StructuredText
 from StructuredText import HTMLClass
 from StructuredText.StructuredText import HTML
 import sys, os, unittest, cStringIO
-execfile(os.path.join(sys.path[0],'framework.py'))
 from OFS import ndiff
 
 """
@@ -233,9 +232,6 @@ class BasicTests(unittest.TestCase):
 
 
 def test_suite():
-    return unittest.TestSuite( (
-        unittest.makeSuite(StructuredTextTests),
-        unittest.makeSuite(BasicTests)
-        ))
+    return unittest.TestSuite((unittest.makeSuite(StructuredTextTests),
+                    unittest.makeSuite(BasicTests)))
 
-framework()
