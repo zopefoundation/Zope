@@ -33,7 +33,6 @@ def parse_input(data):
     # the function should return:
     # 
     #     ('examples.getStateName', (41,))
-    print '>>>>', data
     params, method = xmlrpclib.loads(data)
     # Translate '.' to '/' in meth to represent object traversal.
     method = replace(method, '.', '/')
