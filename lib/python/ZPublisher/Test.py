@@ -130,9 +130,9 @@ Examples
             s
 
 
-$Id: Test.py,v 1.26 1998/11/23 22:56:24 jim Exp $
+$Id: Test.py,v 1.27 1998/12/02 19:54:20 jim Exp $
 '''
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
@@ -210,7 +210,7 @@ def publish_module_pm(module_name,
                       stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                       environ=os.environ, debug=0):
 
-    from CGIResponse import Response
+    from Response import Response
     from Publish import ModulePublisher
 
     after_list=[None]
