@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.34 1998/01/26 21:01:31 brian Exp $"""
+$Id: ObjectManager.py,v 1.35 1998/02/10 18:38:01 jim Exp $"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
@@ -99,7 +99,8 @@ class ObjectManager(
 	except: pass
         return ()
 
-    def _setObject(self,id,object):
+    def _setObject(self,id,object,roles=None,user=None):
+
 	self._checkId(id)
 	setattr(self,id,object)
 	try:    t=object.meta_type
@@ -472,6 +473,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.35  1998/02/10 18:38:01  jim
+# Removed validation check.
+#
 # Revision 1.34  1998/01/26 21:01:31  brian
 # Added menu update support
 #
