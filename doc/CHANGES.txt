@@ -233,6 +233,10 @@ Zope Changes
           not compatible with ZODB 3.  This caused strange behavior
           like weird cntent-types and invalid state messages.
 
+        - The DTML In tag no longer handled batch processing correctly, 
+          and sometimes got into infinite loops.  This was due to a very
+          old bug that was made effective by Python 1.5.2.
+
     Zope 2.0 alpha 2
 
       Features added
