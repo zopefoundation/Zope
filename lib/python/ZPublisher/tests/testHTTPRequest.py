@@ -34,6 +34,7 @@ class ProcessInputsTests(unittest.TestCase):
         env['QUERY_STRING'] = query_string
         req = self._getHTTPRequest(env)
         req.processInputs()
+        self._noFormValuesInOther(req)
         return req
 
     def _noTaintedValues(self, req):
@@ -110,7 +111,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('spacey key', 'val'), ('key', 'spacey val'),
             ('multi', '1'), ('multi', '2'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -135,7 +135,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('multiline:lines', 'one\ntwo'),
             ('morewords:text', 'one\ntwo\n'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -163,7 +162,6 @@ class ProcessInputsTests(unittest.TestCase):
                   
                   ('nouconverter:string:utf8', 'test\xc2\xae'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -191,7 +189,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('setrec.foo:records', 'foo'), ('setrec.bar:records', 'bar'),
             ('setrec.foo:records', 'spam'), ('setrec.bar:records', 'eggs'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -221,7 +218,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('ftuple:tuple:float', '1.2'),
             ('tlist:tokens:list', 'one two'), ('tlist:list:tokens', '3 4'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -252,7 +248,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('setrec.ituple:tuple:int:records', '1'),
             ('setrec.ituple:tuple:int:records', '2'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -300,7 +295,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('setrec.foo:records', 'ham'),
             )
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
@@ -332,7 +326,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('spacey key', 'val'), ('key', 'spacey val'),
             ('multi', '1'), ('multi', '2'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -349,7 +342,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('spacey key', 'val'), ('key', 'spacey val'),
             ('multi', '1'), ('multi', '2'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -370,7 +362,6 @@ class ProcessInputsTests(unittest.TestCase):
                   
                   ('tnouconverter:string:utf8', '<test\xc2\xae>'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -420,7 +411,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('tdeferdefersetrec.foo:records', 'spam'),
             ('tdeferdefersetrec.bar:records', '<eggs>'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -471,7 +461,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('tdefersecondsetrec.ituple:tuple:int:records', '2'),
             )
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -524,7 +513,6 @@ class ProcessInputsTests(unittest.TestCase):
             ('srdoesnotapply.foo:records', 'baz'),
             ('srdoesnotapply.foo:records', 'ham'))
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
@@ -559,7 +547,6 @@ class ProcessInputsTests(unittest.TestCase):
         inputs = (
             ('name.:tuple', 'name with dot as tuple'),)
         req = self._processInputs(inputs)
-        self._noFormValuesInOther(req)
 
         formkeys = list(req.form.keys())
         formkeys.sort()
