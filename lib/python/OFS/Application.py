@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.123 2000/05/11 18:54:14 jim Exp $'''
-__version__='$Revision: 1.123 $'[11:-2]
+$Id: Application.py,v 1.124 2000/05/17 00:18:54 jim Exp $'''
+__version__='$Revision: 1.124 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -197,8 +197,9 @@ class Application(Globals.ApplicationDefaultPermissions,
 
     def __init__(self):
         # Initialize users
-        self.__allow_groups__=UserFolder()
-        self._setObject('acl_users', self.__allow_groups__)
+        uf=UserFolder()
+        self.__allow_groups__=uf
+        self._setObject('acl_users', uf)
 
         # Initialize control panel
         cpl=ApplicationManager()
