@@ -12,8 +12,8 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.10 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+$Id: DTML.py,v 1.11 2003/11/28 16:43:51 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
@@ -86,14 +86,6 @@ class DTMLSecurityAPI:
                 .validate(inst, parent, name, value)
                 )
 
-    def SecurityValidateValue(md, value):
-        """Convenience for common case of simple value validation.
-        """
-        return (SecurityManagement
-                .getSecurityManager()
-                .validateValue(value)
-                )
-
     def SecurityCheckPermission(md, permission, object):
         """Check whether the security context allows the given permission on
         the given object.
@@ -126,4 +118,6 @@ class DTMLSecurityAPI:
         if r > 0: return r-1
         return r
 
-DT_Util.TemplateDict.__dict__.update(DTMLSecurityAPI.__dict__)
+for name, v in DTMLSecurityAPI.__dict__.items():
+    if name[0] != '_':
+        setattr(DT_Util.TemplateDict, name, v)
