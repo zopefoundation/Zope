@@ -94,7 +94,7 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from cStringIO import StringIO
 import os
 from base64 import encodestring
-import string,re
+import re
 
 class FTPRequest(HTTPRequest):
 
@@ -192,7 +192,7 @@ class FTPRequest(HTTPRequest):
         path=apply(os.path.join,args)
         path=os.path.normpath(path)
         if os.sep != '/':
-            path=string.replace(path,os.sep,'/')
+            path=path.replace(os.sep,'/')
         return path
         
 

@@ -183,7 +183,7 @@ TODO:
 This script does for NT the same sort of thing zdaemon.py does for UNIX.
 Requires Python win32api extensions.
 """
-import sys, os, string, time, imp
+import sys, os,  time, imp
 
 # Some fancy path footwork is required here because we
 # may be run from python.exe or lib/win32/PythonService.exe
@@ -236,7 +236,7 @@ class ZServerService(win32serviceutil.ServiceFramework):
 
     path=os.path.join(home, 'ZServer', 'svcname.txt')
     file=open(path, 'r')
-    _svc_name_=string.strip(file.readline())
+    _svc_name_=file.readline().strip()
     file.close()
 
     _svc_display_name_ = "Zope (%s)" % _svc_name_

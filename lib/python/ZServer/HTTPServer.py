@@ -105,7 +105,6 @@ changes from Medusa's http_server
 """ 
 import sys
 import re
-import string
 import os
 import types
 import thread

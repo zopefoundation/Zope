@@ -147,7 +147,6 @@ from FTPRequest import FTPRequest
 from ZServer import CONNECTION_LIMIT, requestCloseOnExec
 
 from cStringIO import StringIO
-import string
 import os
 from mimetypes import guess_type
 import marshal
@@ -174,7 +173,7 @@ class zope_ftp_channel(ftp_channel):
         path=apply(os.path.join,args)
         path=os.path.normpath(path)
         if os.sep != '/':
-            path=string.replace(path,os.sep,'/')
+            path=path.replace(os.sep,'/')
         return path
     
     # Overriden async_chat methods
@@ -210,7 +209,7 @@ class zope_ftp_channel(ftp_channel):
         # XXX clean this up, maybe with getopts
 
         if len(line) > 1:
-            args = string.split(line[1])
+            args = line[1].split()
         else:
             args =[]
         path_args = []
@@ -220,7 +219,7 @@ class zope_ftp_channel(ftp_channel):
        
         for i in range(len(args)):
             x = args[i]
-            if string.find(x,'*')!=-1 or string.find(x,'?')!=-1:
+            if x.find('*')!=-1 or x.find('?')!=-1:
                 self.globbing = x
                 args[i] = '.'     
 
@@ -318,7 +317,7 @@ class zope_ftp_channel(ftp_channel):
     def cmd_mdtm(self, line):
         'show last modification time of file'
         if len (line) != 2:
-            self.command.not_understood (string.join (line))
+            self.command.not_understood (' '.join(line))
             return
         response=make_response(self, self.mdtm_completion)
         request=FTPRequest(line[1],'MDTM',self,response)
@@ -345,7 +344,7 @@ class zope_ftp_channel(ftp_channel):
     def cmd_size(self, line):
         'return size of file'
         if len (line) != 2:
-            self.command.not_understood (string.join (line))
+            self.command.not_understood (' '.join(line))
             return
         response=make_response(self, self.size_completion)
         request=FTPRequest(line[1],'SIZE',self,response)
@@ -364,7 +363,7 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_retr(self,line):
         if len(line) < 2:
-            self.command_not_understood (string.join (line))
+            self.command_not_understood (' '.join(line))
             return
         response=make_response(self, self.retr_completion, line[1])
         self._response_producers = response.stdout._producers
@@ -398,7 +397,7 @@ class zope_ftp_channel(ftp_channel):
     def cmd_stor (self, line, mode='wb'):
         'store a file'
         if len (line) < 2:
-            self.command_not_understood (string.join (line))
+            self.command_not_understood (' '.join(line))
             return
         elif self.restart_position:
             restart_position = 0
@@ -442,14 +441,14 @@ class zope_ftp_channel(ftp_channel):
     def cmd_rnfr (self, line):
         'rename from'
         if len (line) != 2:
-            self.command_not_understood (string.join (line))
+            self.command_not_understood (' '.join(line))
         else:
             self.fromfile = line[1]
             self.respond ('350 RNFR command successful.')
 
     def cmd_rnto (self, line):
         if len (line) != 2:
-            self.command_not_understood (string.join (line))
+            self.command_not_understood (' '.join(line))
             return
         pathf,idf=os.path.split(self.fromfile)
         patht,idt=os.path.split(line[1])
@@ -466,7 +465,7 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_dele(self, line):
         if len (line) != 2:
-            self.command.not_understood (string.join (line))
+            self.command.not_understood (' '.join (line))
             return
         path,id=os.path.split(line[1])
         response=make_response(self, self.dele_completion)
@@ -475,7 +474,7 @@ class zope_ftp_channel(ftp_channel):
         
     def dele_completion(self,response):   
         status=response.getStatus()
-        if status==200 and string.find(response.body,'Not Deletable')==-1:
+        if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 DELE command successful.')
         elif status==401:
             self.respond('530 Unauthorized.') 
@@ -484,7 +483,7 @@ class zope_ftp_channel(ftp_channel):
 
     def cmd_mkd(self, line):
         if len (line) != 2:
-            self.command.not_understood (string.join (line))
+            self.command.not_understood (' '.join (line))
             return
         path,id=os.path.split(line[1])
         response=make_response(self, self.mkd_completion)
@@ -506,7 +505,7 @@ class zope_ftp_channel(ftp_channel):
         # XXX should object be checked to see if it's folderish
         #     before we allow it to be RMD'd?
         if len (line) != 2:
-            self.command.not_understood (string.join (line))
+            self.command.not_understood (' '.join (line))
             return
         path,id=os.path.split(line[1])
         response=make_response(self, self.rmd_completion)
@@ -517,7 +516,7 @@ class zope_ftp_channel(ftp_channel):
 
     def rmd_completion(self,response):
         status=response.getStatus()
-        if status==200 and string.find(response.body,'Not Deletable')==-1:
+        if status==200 and response.body.find('Not Deletable')==-1:
             self.respond('250 RMD command successful.')
         elif status==401:
             self.respond('530 Unauthorized.') 
@@ -530,7 +529,7 @@ class zope_ftp_channel(ftp_channel):
             self.userid = line[1]
             self.respond('331 Password required.')
         else:
-            self.command_not_understood (string.join (line))
+            self.command_not_understood (' '.join (line))
 
     def cmd_pass(self, line):
         'specify password'
@@ -539,7 +538,7 @@ class zope_ftp_channel(ftp_channel):
         else:
             pw = line[1]
         self.password=pw
-        i=string.find(self.userid,'@')
+        i=self.userid.find('@')
         if i ==-1:
             if self.server.limiter.check_limit(self):
                 self.respond ('230 Login successful.')

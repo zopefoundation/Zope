@@ -89,7 +89,7 @@ The HTTPResponse class takes care of server headers, response munging
 and logging duties.
 
 """
-import time, re, string, sys, tempfile
+import time, re,  sys, tempfile
 from cStringIO import StringIO
 import thread
 from ZPublisher.HTTPResponse import HTTPResponse
@@ -186,20 +186,20 @@ class ZServerHTTPResponse(HTTPResponse):
                     self.setHeader('Connection','close')                
         
         for key, val in headers.items():
-            if string.lower(key)==key:
+            if key.lower()==key:
                 # only change non-literal header names
-                key="%s%s" % (string.upper(key[:1]), key[1:])
+                key="%s%s" % (key[:1].upper(), key[1:])
                 start=0
-                l=string.find(key,'-',start)
+                l=key.find('-',start)
                 while l >= start:
-                    key="%s-%s%s" % (key[:l],string.upper(key[l+1:l+2]),key[l+2:])
+                    key="%s-%s%s" % (key[:l],key[l+1:l+2].upper(),key[l+2:])
                     start=l+1
-                    l=string.find(key,'-',start)
+                    l=key.find('-',start)
             append("%s: %s" % (key, val))
         if self.cookies:
             headersl=headersl+self._cookie_list()
         headersl[len(headersl):]=[self.accumulated_headers, body]
-        return string.join(headersl,'\r\n')
+        return "\r\n".join(headersl)
 
     _tempfile=None
     _templock=None
@@ -226,7 +226,7 @@ class ZServerHTTPResponse(HTTPResponse):
             l=self.headers.get('content-length', None)
             if l is not None:
                 try:
-                    if type(l) is type(''): l=string.atoi(l)
+                    if type(l) is type(''): l=int(l)
                     if l > 128000:
                         self._tempfile=tempfile.TemporaryFile()
                         self._templock=thread.allocate_lock()
@@ -356,7 +356,7 @@ class ChannelPipe:
                 'exceptions.SystemExit':
 
             r=response.headers.get('bobo-exception-value','0')
-            try: r=string.atoi(r)
+            try: r=int(r)
             except: r = r and 1 or 0
             self._shutdown=r,
         if response.headers.get('connection','') == 'close' or \
@@ -371,8 +371,8 @@ def make_response(request, headers):
     
     response=ZServerHTTPResponse(stdout=ChannelPipe(request), stderr=StringIO())
     response._http_version=request.version
-    response._http_connection=string.lower(
-            http_server.get_header(http_server.CONNECTION, request.header))
+    response._http_connection=(
+            http_server.get_header(http_server.CONNECTION, request.header)).lower()
     response._server_version=request.channel.server.SERVER_IDENT
     return response
     
