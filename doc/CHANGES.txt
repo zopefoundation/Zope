@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector 238: Version Save and Discard buttons were too
+        close to each other in Version management screens.
+
       - Cookie values are now quoted before being sent to the
         browser and unquoted on receipt.
 
