@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.15 1997/11/07 16:12:29 jim Exp $"""
+$Id: Folder.py,v 1.16 1997/11/10 14:53:13 jim Exp $"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -13,6 +13,9 @@ from Document import DocumentHandler
 from AccessControl.User import UserFolderHandler
 from AccessControl.Role import RoleManager
 import SimpleItem
+from string import rfind, lower
+from content_types import content_type, find_binary, text_type
+import Image
 
 class FolderHandler:
     """Folder object handler"""
@@ -104,7 +107,51 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 		except: pass
 
 	return r
-		    
+
+    def __getitem__(self, key):
+	# Hm, getattr didn't work, maybe this is a put:
+	r=PUTer(self,key)
+	return r
+
+class PUTer:
+    'Temporary objects to handle PUT to non-existent images or documents'
+
+    def __init__(self, parent, key):
+	self._parent=parent
+	self._key=key
+
+    def __str__(self): return self._key
+
+    PUT__roles__='manage',
+    def PUT(self, REQUEST, BODY):
+	' '
+	name=self._key
+	try: type=REQUEST['CONTENT_TYPE']
+	except KeyError: type=''
+	if not type:
+	    dot=rfind(name, '.')
+	    suf=dot > 0 and lower(name[dot+1:]) or ''
+	    if suf:
+		try: type=content_type[suf]
+		except KeyError:
+		    if find_binary(BODY) >= 0: type='application/x-%s' % suf
+		    else: type=text_type(BODY)
+	    else:
+		if find_binary(BODY) >= 0:
+		    raise 'Bad Request', 'Could not determine file type'
+		else: type=text_type(BODY)
+	    __traceback_info__=suf, dot, name, type
+
+	if lower(type)=='text/html':
+	    return self._parent.manage_addDocument(name,'',BODY,
+						   REQUEST=REQUEST)
+
+	i=Image.Image()
+	i._init(name, BODY, type)
+	i.title=''
+	i._setRoles('A',[])
+	self._parent._setObject(name,i)
+	return 'OK'
 
 
 def subclass(c,super):

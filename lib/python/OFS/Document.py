@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
@@ -79,6 +79,13 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 
     def validRoles(self):
 	return self.aq_parent.validRoles()
+
+    PUT__roles__='manage',
+    def PUT(self, BODY, REQUEST):
+	'handle PUT requests'
+	self.munge(BODY)
+	return 'OK'
+
 
 default_html="""<!--#var standard_html_header-->
 <H2><!--#var title_or_id--> <!--#var document_title--></H2>
