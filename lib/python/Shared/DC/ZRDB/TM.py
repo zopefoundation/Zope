@@ -17,12 +17,15 @@
 class TM:
     """Mix-in class that provides transaction management support
 
-    A sub class should call self._register() whenever it performs
-    any transaction-dependent operations (e.g. sql statements).
+    A sub class should call self._register() whenever it performs any
+    transaction-dependent operations (e.g. sql statements).
 
-    The sub class will need to override _finish, to finallize work,
-    _abort, to roll-back work, and perhaps _begin, if any work is needed
-    at the start of a transaction.
+    The sub class will need to override _finish, to finalize work,
+    _abort, to roll-back work, and perhaps _begin, if any work is
+    needed at the start of a transaction.
+
+    A subclass that uses locking during transaction commit must
+    defined a sortKey() method.
     """
 
     _registered=None
