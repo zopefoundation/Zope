@@ -1,12 +1,12 @@
 
-'''$Id: db.py,v 1.1 1998/04/15 15:10:41 jim Exp $'''
+'''$Id: db.py,v 1.2 1998/05/21 15:33:56 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 # 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import string, sys, os
 from string import strip, split, find, join
@@ -16,6 +16,26 @@ import Globals
 data_dir=os.path.join(Globals.data_dir,'gadfly')
 
 def manage_DataSources():
+    
+    if not os.path.exists(data_dir):
+        try:
+            os.mkdir(data_dir)
+            os.mkdir(os.path.join(data_dir,'demo'))
+        except:
+            raise 'Gadfly Error', (
+                """
+                The Aqueduct Gadfly Database Adapter requires the
+                existence of the directory, <code>%s</code>.  An error
+                occurred  while trying to create this directory.
+                """ % data_dir)
+    if not os.path.isdir(data_dir):
+        raise 'Gadfly Error', (
+            """
+            The Aqueduct Gadfly Database Adapter requires the
+            existence of the directory, <code>%s</code>.  This
+            exists, but is not a directory.
+            """ % data_dir)
+    
     return map(
 	lambda d: (d,''),
 	filter(lambda f, i=os.path.isdir, d=data_dir, j=os.path.join:
@@ -150,6 +170,9 @@ Defs={maybe_int: 'i', maybe_float:'n', maybe_string:'s', must_be_text:'t'}
 ##########################################################################
 #
 # $Log: db.py,v $
+# Revision 1.2  1998/05/21 15:33:56  jim
+# Added logic to set up gadfly area on first use.
+#
 # Revision 1.1  1998/04/15 15:10:41  jim
 # initial
 #
