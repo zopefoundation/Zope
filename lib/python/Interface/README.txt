@@ -1,5 +1,8 @@
 Python Interfaces - The Scarecrow Implementation
 
+*Note: This is Jim's original proposal.  Up to date user docs can be found
+at http://www.zope.org/Wikis/Interfaces*
+
 This document describes my implementation of the Python interfaces
 scarecrow proposal.  
 

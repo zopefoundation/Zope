@@ -51,6 +51,7 @@ class Interface(InterfaceBase):
                     "Concrete attribute, %s" % k)
 
         self.__attrs = attrs
+        self.__tagged_values = {}  #why?
 
     def getBases(self):
         return self.__bases__

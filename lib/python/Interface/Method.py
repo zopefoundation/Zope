@@ -74,7 +74,7 @@ class Method(Attribute):
 
         return info
 
-    def getSignatureRepr(self):
+    def getSignatureString(self):
         sig = "("
         for v in self.positional:
             sig = sig + v

@@ -1,5 +1,10 @@
 Interface package change history
 
+  Release 0.5 (Zope 2.3b1)
+
+    Many changes to API.  Added unit tests, pretty printing, verification
+    code, tagged data, and other stuff.
+
   Release 0.1.1
  
     This release includes some changes to the documentation to reflect
