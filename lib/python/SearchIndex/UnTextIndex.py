@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -459,7 +459,10 @@ class UnTextIndex(Persistent, Implicit):
         """
 
         # First replace any occurences of " and not " with " andnot "
-        s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
+        s = ts_regex.gsub(
+            '[%s]+[aA][nN][dD][%s]*[nN][oO][tT][%s]+' % (ws * 3),
+            ' andnot ', s)
+
 
         # do some parsing
         q = parse(s)
