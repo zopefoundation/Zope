@@ -83,13 +83,13 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.8 1999/05/25 13:28:55 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+'''$Id: db.py,v 1.9 1999/07/22 16:10:23 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os
 from string import strip, split
 from gadfly import gadfly
-import Globals, Shared.DC.ZRDB.TM
+import Globals, Shared.DC.ZRDB.THUNK
 from DateTime import DateTime
 
 data_dir=os.path.join(Globals.data_dir,'gadfly')
@@ -122,7 +122,7 @@ def manage_DataSources():
                os.listdir(data_dir))
         )
 
-class DB(Shared.DC.ZRDB.TM.TM):
+class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
 
     database_error=gadfly.error
     opened=''
