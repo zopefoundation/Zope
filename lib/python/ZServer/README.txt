@@ -219,7 +219,7 @@ Support
   You can report bugs and check on the status of bugs using the Zope
   bug collector::
     
-    http://www.zope.org/Collector/
+    http://www.zope.org/Resources/Collector/
 
 License
 
