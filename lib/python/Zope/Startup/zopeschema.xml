@@ -153,8 +153,7 @@
       </description>
     </multikey>
 
-    <key name="connection-class" datatype=".importable_name"
-              default="ZODB.Connection.Connection">
+    <key name="connection-class" datatype=".importable_name">
       <description>
        Change the connection class a database uses on a per-database basis to
        support different connection policies.  Use a Python dotted-path
@@ -162,7 +161,8 @@
       </description>
     </key>
 
-   <key name="class-factory" datatype=".importable_name">
+   <key name="class-factory" datatype=".importable_name"
+        default="DBTab.ClassFactories.autoClassFactory">
       <description>
        Change the class factory function a database uses on a
        per-database basis to support different class factory policy.
@@ -611,7 +611,7 @@
     </description>
   </key>
 
-  <multisection type="zodb_db" name="+" attribute="databases">
+  <multisection type="ZODB.Database" name="+" attribute="databases">
     <description>
        Zope ZODB databases must have a name, and they are required to be
        referenced via the "zodb_db" database type because it is
