@@ -1,4 +1,4 @@
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -23,7 +23,9 @@ twodotsin = re.compile('(\w*\.){2,}').search
 
 _marker = []
 
-constructBrowserIdManagerForm = Globals.DTMLFile('addIdManager',globals())
+constructBrowserIdManagerForm = Globals.DTMLFile('dtml/addIdManager',globals())
+
+ADD_BROWSER_ID_MANAGER_PERM="Add Browser ID Manager"
 
 def constructBrowserIdManager(
     self, id, title='', tokenkey='_ZopeId', cookiepri=1, formpri=2,
@@ -217,7 +219,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     # non-delegating methods follow
 
     security.declareProtected(MGMT_SCREEN_PERM, 'manage_browseridmgr')
-    manage_browseridmgr = Globals.DTMLFile('manageIdManager', globals())
+    manage_browseridmgr = Globals.DTMLFile('dtml/manageIdManager', globals())
 
     security.declareProtected(CHANGE_IDMGR_PERM,
                               'manage_changeBrowserIdManager')

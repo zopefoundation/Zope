@@ -84,13 +84,30 @@
 ##############################################################################
 """Mounted database support
 
-$Id: RAM_DB.py,v 1.1 2001/10/31 15:36:04 chrism Exp $"""
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: RAM_DB.py,v 1.2 2001/11/01 19:20:34 matt Exp $"""
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
+from Globals import HTMLFile
 from ZODB.Mount import MountPoint
 import string
 import OFS
+import os, os.path
+
+ADD_RAMDB_PERM="Add RAM Databases"
+
+    
+
+def constructRAMDB(self, id, title=None, REQUEST=None):
+    """ """
+    ms = MountedRAM_DB(id, title)
+    self._setObject(id, ms)
+    if REQUEST is not None:
+        return self.manage_main(self, REQUEST, update_menu=1)
+
+
+constructRAMDBForm=HTMLFile('dtml/addRAMDB', globals())
+
 
 class MountedRAM_DB(MountPoint, OFS.SimpleItem.Item):
     """
@@ -101,13 +118,14 @@ class MountedRAM_DB(MountPoint, OFS.SimpleItem.Item):
     manage_options = ({'label':'Traceback', 'action':'manage_traceback'},)
     meta_type = 'Broken Mounted RAM Database'
     
-    def __init__(self, id, params=None):
+    def __init__(self, id, title='', params=None):
         self.id = str(id)
-        MountPoint.__init__(self, path='/', params)
-        
-    manage_traceback = Globals.DTMLFile('mountfail', globals())
+        self.title = title
+        MountPoint.__init__(self, path='/') # Eep
 
-    def _createDB(self, db = db):
+    manage_traceback = Globals.DTMLFile('dtml/mountfail', globals())
+
+    def _createDB(self, db=None): # huh?  db=db was original
         """ Create a mounted RAM database """
         from SessionStorage import SessionStorage
         from ZODB.DB import DB
@@ -120,9 +138,31 @@ class MountedRAM_DB(MountPoint, OFS.SimpleItem.Item):
         sdc = root.get('folder', None)
         if sdc is None:
             sdc = root['folder'] = OFS.Folder.Folder()
+            self._populate(sdc, root)
+
         return sdc
     
     def mount_error_(self):
         return self._v_connect_error
 
+    def _populate(self, folder, root):
+        # Set up our folder object
+        folder.id = self.id                     # be a chameleon
+        folder.title = self.title
+
+        folder.icon = "misc_/Sessions/ramdb.gif"
+
+        importdir = os.path.join(Globals.data_dir,self.id+"Imports")
+
+        #conn = folder._p_jar                    # Can we do that yet?
+        conn = root._p_jar
+
+        try:
+            for file in os.listdir(importdir):
+                if file[-5:] == ".zexp":
+                    id = file[:-5]
+                    # Import this!
+                    ob = conn.importFile(os.path.join(importdir, file))
+                    folder._setObject(id, ob)
+        except OSError: pass # (no such dir)
 

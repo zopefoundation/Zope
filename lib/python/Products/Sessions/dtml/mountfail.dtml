@@ -1,0 +1,21 @@
+<HTML><HEAD><TITLE>Mount Failure Traceback</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<dtml-var manage_tabs>
+
+<h3>Mount Failure Traceback</h3>
+
+<dtml-let exc=mount_error_>
+<dtml-if exc>
+<strong>Error type:</strong> <dtml-var "exc[0]" html_quote><br>
+<strong>Error value:</strong> <dtml-var "exc[1]" html_quote><br>
+<pre>
+<dtml-var "exc[2]" html_quote>
+</pre>
+<dtml-else>
+Database not mounted.
+</dtml-if>
+</dtml-let>
+
+</BODY>
+</HTML>

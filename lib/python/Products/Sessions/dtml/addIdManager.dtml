@@ -1,0 +1,154 @@
+<dtml-var manage_page_header>
+<dtml-var "manage_form_title(this(), _,
+           form_title='Add Browser Id Manager',
+           help_product='Browsers',
+           help_topic='Browsers.stx'
+	   )">
+
+<FORM ACTION="constructBrowserIdManager" METHOD="POST">
+<input type=hidden name="id" value="browser_id_mgr">
+<TABLE CELLSPACING="2">
+<tr>
+<div class="form-help">
+Zope Browser Id Manager objects perform the task of setting and retrieving
+Zope browser ids for remote users.  They are used primarily by Session
+Data Manager objects.  A Browser Id Manager's 'id' must always be
+'browser_id_mgr' in order for it to be found by Session Data Managers.
+</div>
+</tr>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Id
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">This object's Zope id will be<br>
+    "browser_id_mgr"
+    </div>
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Title
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="title" SIZE="40">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Browser Token Key
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="tokenkey" SIZE="20" value="_ZopeId">
+  </TD>
+</TR>
+<tr>
+<td>&nbsp;</td>
+</tr>
+<th align="left"><strong><em>Token Key Search Namespaces</strong></em></th>
+<th align="left"><strong><em>Priority (1 is highest)</strong></em></th>
+<tr>
+  <th align=left class="form-label">Cookies</th>
+   <td>
+   <table border=1>
+   <tr>
+   <td align=left>
+    <input type="radio" name="cookiepri:int" value="1" CHECKED> 1
+   </td>
+   <td align=left>
+    <input type="radio" name="cookiepri:int" value="2"> 2
+   </td>
+   <td align=left>
+    <input type="radio" name="cookiepri:int" value="0"> Off
+   </td>
+   </tr>
+   </table>
+  </td>
+</tr>
+<tr>
+  <th align=left class="form-label">Form vars</th>
+   <td align=left>
+   <table border=1>
+   <tr>
+   <td align=left>
+    <input type="radio" name="formpri:int" value="1"> 1
+   </td>
+   <td align=left>
+    <input type="radio" name="formpri:int" value="2" CHECKED> 2
+   </td>
+   <td align=left>
+    <input type="radio" name="formpri:int" value="0"> Off
+   </td>   </tr>
+   </table>
+  </td>
+</tr>
+<td>&nbsp;</td>
+<tr>
+</tr>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Path
+    </div>
+    <div class="form-help">
+     leave blank to provide no path info in the browser cookie
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiepath" SIZE="20" value="/">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Domain
+    </div>
+    <div class="form-help">
+    leave blank to send cookies without domain<br>
+    info -- however, if cookie domain is not blank,<br>
+    it must contain at least two dots
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookiedomain" SIZE="20">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Cookie Lifetime In Days
+    </div>
+    <div class="form-help">
+      0 means send cookies which last only for the<br>
+      lifetime of the browser
+    </div>
+</EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="TEXT" NAME="cookielifedays:int" SIZE="20" value="0">
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <div class="form-label">
+      Only Send Cookie Over HTTPS
+    </div>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <INPUT TYPE="checkbox" NAME="cookiesecure">
+  </TD>
+</TR>
+
+
+</TR> <TR> <TD></TD> <TD>
+<INPUT class="form-element" TYPE="SUBMIT" VALUE=" Add ">
+</TD> </TR> </TABLE> </FORM>
+<dtml-var manage_page_footer>
+
+

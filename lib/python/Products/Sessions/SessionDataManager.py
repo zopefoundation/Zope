@@ -11,18 +11,25 @@ from AccessControl import ClassSecurityInfo
 import SessionInterfaces
 from SessionPermissions import *
 from common import DEBUG
+from ZPublisher.BeforeTraverse import registerBeforeTraverse, \
+    unregisterBeforeTraverse, NameCaller
+import traceback
 
-BID_MGR_NAME = 'browser_id_manager'
+BID_MGR_NAME = 'browser_id_mgr'
 
 bad_path_chars_in=re.compile('[^a-zA-Z0-9-_~\,\. \/]').search
 
 class SessionDataManagerErr(Exception): pass
 
-constructSessionDataManagerForm = Globals.DTMLFile('addDataManager', globals())
+constructSessionDataManagerForm = Globals.DTMLFile('dtml/addDataManager',
+    globals())
 
-def constructSessionDataManager(self, id, title='', path=None)
+ADD_SESSION_DATAMANAGER_PERM="Add Session Data Manager"
+
+def constructSessionDataManager(self, id, title='', path=None, automatic=None,
+                                REQUEST=None):
     """ """
-    ob = SessionDataManager(id, path, title)
+    ob = SessionDataManager(id, path, title, automatic)
     self._setObject(id, ob)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
@@ -58,7 +65,8 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     __implements__ = (SessionInterfaces.SessionDataManagerInterface, )
 
-    manage_sessiondatamgr = Globals.DTMLFile('manageDataManager', globals())
+    manage_sessiondatamgr = Globals.DTMLFile('dtml/manageDataManager',
+        globals())
 
     # INTERFACE METHODS FOLLOW
 
@@ -92,16 +100,25 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
 
     # END INTERFACE METHODS
     
-    def __init__(self, id, path=None, title=''):
+    def __init__(self, id, path=None, title='', automatic=None):
         self.id = id
         self.setContainerPath(path)
         self.setTitle(title)
 
+        if automatic:
+            self._requestSessionName='SESSION'
+        else:
+            self._requestSessionName=None
+
     security.declareProtected(CHANGE_DATAMGR_PERM, 'manage_changeSDM')
-    def manage_changeSDM(self, title, path=None, REQUEST=None):
+    def manage_changeSDM(self, title, path=None, automatic=None, REQUEST=None):
         """ """
         self.setContainerPath(path)
         self.setTitle(title)
+        if automatic:
+            self.updateTraversalData('SESSION')
+        else:
+            self.updateTraversalData(None)
         if REQUEST is not None:
             return self.manage_sessiondatamgr(self, REQUEST)
 
@@ -179,4 +196,54 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
                 string.join(self.obpath,'/')
                 )
 
-            
+    security.declareProtected(MGMT_SCREEN_PERM, 'getAutomatic')
+    def getAutomatic(self):
+        """ """
+        if hasattr(self,'_hasTraversalHook'): return 1
+        return 0
+
+    def manage_afterAdd(self, item, container):
+        """ Add our traversal hook """
+        self.updateTraversalData(self._requestSessionName)
+
+    def manage_beforeDelete(self, item, container):
+        """ Clean up on delete """
+        self.updateTraversalData(None)
+
+    def updateTraversalData(self, requestSessionName=None):
+        # Note this cant be called directly at add -- manage_afterAdd will work
+        # though.
+
+        parent = self.aq_inner.aq_parent
+
+        if getattr(self,'_hasTraversalHook', None):
+            unregisterBeforeTraverse(parent, 'SessionDataManager')
+            del self._hasTraversalHook
+            self._requestSessionName = None
+
+        if requestSessionName:
+            hook = SessionDataManagerTraverser(requestSessionName, self)
+            registerBeforeTraverse(parent, hook, 'SessionDataManager', 50)
+            self._hasTraversalHook = 1
+            self._requestSessionName = requestSessionName
+
+class SessionDataManagerTraverser(NameCaller):
+    meta_type = "Session ID Insertion Traversal Rule"
+
+    def __init__(self, requestSessionName, sdm):
+        self._requestSessionName = requestSessionName
+        self._sessionDataManager = sdm
+
+    def __call__(self, container, request):
+        sdm = self._sessionDataManager.__of__(container)
+        # Yank our session & stuff into request
+        try:
+            session = sdm.getSessionData()
+        except:
+            LOG('Session Tracking', WARNING, 'Session automatic traversal '
+                'failed to get session data', error=sys.exc_info())
+            return    # Throw our hands up but dont fail 
+        if self._requestSessionName is not None:
+            request[self._requestSessionName] = session
+
+        NameCaller.__call__(self, container, request)
