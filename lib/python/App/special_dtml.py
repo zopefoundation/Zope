@@ -137,6 +137,7 @@ from Acquisition import Explicit
 from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
 from AccessControl import getSecurityManager
+from ComputedAttribute import ComputedAttribute
 
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
@@ -145,6 +146,9 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     func_defaults = None
 
     _Bindings_ns_class = TemplateDict
+    def _get__roles__(self):
+        return getattr(self.aq_parent, '%s__roles__' % self.__name__)
+    __roles__ = ComputedAttribute(_get__roles__, 1)
 
     # By default, we want to look up names in our container.
     _Bindings_client = 'container'
