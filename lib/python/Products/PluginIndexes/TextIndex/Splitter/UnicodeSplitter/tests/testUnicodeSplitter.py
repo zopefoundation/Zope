@@ -1,5 +1,20 @@
+# -*- coding: ISO-8859-1 -*-
+##############################################################################
+#
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+##############################################################################
+
 import os,sys,unittest
-from Products.PluginIndexes.TextIndex.Splitter.UnicodeSplitter.UnicodeSplitter import UnicodeSplitter
+from Products.PluginIndexes.TextIndex.Splitter.UnicodeSplitter.UnicodeSplitter \
+     import UnicodeSplitter
 
 class UnicodeSplitterTests(unittest.TestCase):
 
