@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.57 1997/10/10 21:03:40 jim Exp $"""
+$Id: Publish.py,v 1.58 1997/10/22 14:49:06 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.57 1997/10/10 21:03:40 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.57 $'[11:-2]
+__version__='$Revision: 1.58 $'[11:-2]
 
 
 def main():
@@ -1151,7 +1151,7 @@ class Request:
 	    return "%s:\n\t%s\n\n" % (
 		name,
 		join(
-		    map(lambda k, d=dict: "%s: %s" % (k, d[k]), dict.keys()),
+		    map(lambda k, d=dict: "%s: %s" % (k, `d[k]`), dict.keys()),
 		    "\n\t"
 		    )
 		)
@@ -1347,6 +1347,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.58  1997/10/22 14:49:06  jim
+# Changed str method to use repr on dictionary keys.
+#
 # Revision 1.57  1997/10/10 21:03:40  jim
 # Updated documentation.
 #
