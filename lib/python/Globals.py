@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -97,7 +97,10 @@ def package_home(globals_dict):
     __name__=globals_dict['__name__']
     m=sys.modules[__name__]
     if hasattr(m,'__path__'): return m.__path__[0]
-    return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+    if "." in __name__:
+        return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+    else:
+        return __name__
 
 try: home=os.environ['SOFTWARE_HOME']
 except:
