@@ -1,16 +1,9 @@
 <HTML>
 <HEAD>
-<TITLE>Contents of <!--#var title--></TITLE>
+<TITLE>Contents</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
-
-<H2>Contents of <EM><!--#var title--></EM></H2>
-<!--#if Principia-Session-->
-<EM>You are currently working in session <!--#var Principia-Session--></EM>
-<P>
-<!--#/if Principia-Session-->
-
 
 <!--#if userNames-->
 <FORM ACTION="manage_deleteUser" METHOD="POST">
