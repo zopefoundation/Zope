@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 src="""
 htm, html: text/html
@@ -155,21 +155,22 @@ for name, val in _addtypes:
     mimetypes.types_map[name]=val
     
 
-def guess_content_type(name='', body=''):
+def guess_content_type(name='', body='', default=None):
     # Attempt to determine the content type (and possibly
     # content-encoding) based on an an object's name and
     # entity body.
-    type, enc=None, None
     type, enc=mimetypes.guess_type(name)
-    if (type is None) and body and find_binary(body) >= 0:
-        type='application/octet-stream'
-    elif (type is None) and body:
-        type=text_type(body)
-    elif type is None:
-        type='text/x-unknown-content-type'
+    if type is None:
+        if body:
+            if find_binary(body) >= 0:
+                type='application/octet-stream'
+            else:
+                type=(text_type(body) or default
+                      or 'text/x-unknown-content-type')
+        else:
+                type=default or 'text/x-unknown-content-type'
+        
     return lower(type), enc and lower(enc) or None
-
-
 
 if __name__=='__main__':
     items=content_type.items()
