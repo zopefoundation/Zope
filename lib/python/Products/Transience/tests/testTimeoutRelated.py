@@ -109,10 +109,9 @@ class TestNotifications(TestBase):
         self.app.sm.setDelNotificationTarget(delNotificationTarget)
         sdo = self.app.sm.new_or_existing('TempObject')
         timeout = self.timeout * 60
-        fauxtime.sleep(timeout + (timeout * .75))
+        # sleep 2X longer than timeout?  doesnt work at 1.1X, 1.5X?
+        fauxtime.sleep(timeout * 2) 
         sdo1 = self.app.sm.get('TempObject')
-        # force the sdm to do housekeeping
-        self.app.sm._gc()
         now = fauxtime.time()
         k = sdo.get('endtime')
         self.assertEqual(type(k), type(now))

@@ -32,7 +32,7 @@ Timeslices
 
 Data Structures Maintained by a Transient Object Container
 
-  The TOC maintains five important kinds of data structures:
+  The TOC maintains three important kinds of data structures:
 
   - a "_data" structure, which is an IOBTree mapping a "timeslice"
     integer to a "bucket" (see next bullet for definition of bucket).
@@ -43,8 +43,11 @@ Data Structures Maintained by a Transient Object Container
     "current" bucket, which is the bucket that is contained within the
     _data structured with a key equal to the "current" timeslice.
 
-  - A "max_timeslice" integer, which is equal to the "largest" timeslice
-    for which there exists a bucket in the _data structure.
+  - A "max_timeslice" integer, which is equal to the "largest"
+    timeslice for which there exists a bucket in the _data structure.
+    This is an optimization given that key operations against BTrees
+    can be slow and could cause conflicts (the same could be achieved
+    via _data.maxKey() otherwise).
 
   When a Transient Object is created via new_or_existing, it is added
   to the "current" bucket.  As time goes by, the bucket to which the
@@ -67,24 +70,24 @@ How the TransientObjectContainer Determines if a TransientObject is "Current"
   All "current" timeslice buckets (as specified by the timeout) are
   searched for the transient object, most recent bucket first.
 
-Housekeeping: Notification, Garbage Collection, and Bucket
+Housekeeping: Finalization, Garbage Collection, and Bucket
 Replentishing
 
-  The TOC performs "notification", "garbage collection", and "bucket
+  The TOC performs "finalization", "garbage collection", and "bucket
   replentishing".  It performs these tasks "in-band".  This means that
   the TOC does not maintain a separate thread that wakes up every so
   often to do these housekeeping tasks.  Instead, during the course of
   normal operations, the TOC opportunistically performs them.
 
+  Finalization is defined as optionally calling a function at bucket
+  expiration time against all transient objects contained within that
+  bucket.  The optional function call is user-defined, but it is
+  managed by the "notifyDel" method of the TOC.
+
   Garbage collection is defined as deleting "expired" buckets in the
   _data structure (the _data structure maps a timeslice to a bucket).
   Typically this is done by throwing away one or more buckets in the
   _data structure after they expire.
-
-  Notification is defined as optionally calling a function at TOC
-  finalization time against individual transient object contained
-  within a bucket.  The optional function call is user-defined, but it
-  is managed by the "notifyDel" method of the TOC.
 
   Bucket replentishing is defined as the action of (opportunistically)
   creating more buckets to insert into the the _data structure,
@@ -93,7 +96,9 @@ Replentishing
   will be immediately created thereafter.  We create new buckets in
   batches to reduce the possibility of conflicts.
 
-  Housekeeping is performed on a somewhat random basis to avoid
+  Finalization is attempted on every call to the transience machinery
+  to make TOs appear to expire "on time".  Garbage collection and
+  replentishment is performed on a somewhat random basis to avoid
   unnecessary conflicts.
 
 Goals
