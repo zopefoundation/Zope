@@ -174,6 +174,11 @@ Zope Changes
         avoid breaking some FTP clients and the output format
         with overlong usernames.
       
+      - Fixed a potential bug with cAccessControl's permission
+        role deallocator which would try to decref things which
+	may not have been set, due to a change in the initializer
+	(which will bail out if it doesnt get called with a tuple
+	argument)
 
   Zope 2.5.1 beta 1
     
