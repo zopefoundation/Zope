@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.41 2000/04/12 13:44:28 tseaver Exp $'
-__version__='$Revision: 1.41 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.42 2000/06/01 13:48:08 jim Exp $'
+__version__='$Revision: 1.42 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -323,7 +323,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             unauth=[]
             index=0
             for i in items:
-                try: v=validate(items,items,index,i,md)
+                try: v=validate(items,items,None,i,md)
                 except: v=0
                 if not v: unauth.append(index)
                 index=index+1
