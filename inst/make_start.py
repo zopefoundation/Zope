@@ -14,19 +14,13 @@
 import sys, os
 from do import *
 
-# Using PYTHONHOME is bad under Python 2.0
-if sys.version[:1]=='2':
-    varname='INST_HOME'
-else:
-    varname='PYTHONHOME'
-
 def sh(home, user, group):
     start=os.path.join(home, 'start')
     if not os.path.exists(start):
         print '-'*78
         print 'Creating start script, start'
         f = open(start,'w')
-        f.write(START_SCRIPT % (varname, varname, sys.executable, varname))
+        f.write(START_SCRIPT % sys.executable)
         ch(start,user,group,0711)
         f.close()
 
@@ -42,6 +36,7 @@ def sh(home, user, group):
 START_SCRIPT="""#!/bin/sh
 umask 077
 reldir=`dirname $0`
+cwd=`cd $reldir; pwd`
 # Zope's event logger is controlled by the "EVENT_LOG_FILE" environment
 # variable.  If you don't have a "EVENT_LOG_FILE" environment variable
 # (or its older alias "STUPID_LOG_FILE") set, Zope will log to the standard
@@ -54,9 +49,7 @@ if [ -z "$ZLOGFILE" ]; then
         EVENT_LOG_FILE=""
         export EVENT_LOG_FILE
 fi
-%s=`cd $reldir; pwd`
-export %s
-exec %s $%s/z2.py -D "$@"
+exec %s $cwd/z2.py -D "$@"
 """
 
 STOP_SCRIPT="#! /bin/sh\nkill `cat %s`\n"
