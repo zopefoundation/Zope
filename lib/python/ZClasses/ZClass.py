@@ -584,18 +584,18 @@ class ZObject:
 
     manage_options=(
         {'label': 'Methods', 'action' :'propertysheets/methods/manage',
-         'help':('OFSP','ZClass_Methods.dtml')},        
+         'help':('OFSP','ZClass_Methods.stx')},        
         {'label': 'Basic', 'action' :'propertysheets/basic/manage',
-         'help':('OFSP','ZClass_Basic.dtml')},          
+         'help':('OFSP','ZClass_Basic.stx')},          
         {'label': 'Views', 'action' :'propertysheets/views/manage',
-         'help':('OFSP','ZClass_Views.dtml')},          
+         'help':('OFSP','ZClass_Views.stx')},          
         {'label': 'Property Sheets', 'action' :'propertysheets/common/manage',
-         'help':('OFSP','ZClass_Property-Sheets.dtml')},        
+         'help':('OFSP','ZClass_Property-Sheets.stx')},        
         {'label': 'Permissions',
          'action' :'propertysheets/permissions/manage',
-         'help':('OFSP','ZClass_Permissions.dtml')},     
+         'help':('OFSP','ZClass_Permissions.stx')},     
         {'label': 'Security', 'action' :'manage_access',  
-         'help':('OFSP','ZClass_Define-Permissions.dtml')},        
+         'help':('OFSP','Security-DefinePermissions.stx')},        
         )
     
 ZStandardSheets=ZObject
