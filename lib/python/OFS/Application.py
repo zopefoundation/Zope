@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.117 1999/12/09 23:37:52 amos Exp $'''
-__version__='$Revision: 1.117 $'[11:-2]
+$Id: Application.py,v 1.118 1999/12/14 19:49:58 jim Exp $'''
+__version__='$Revision: 1.118 $'[11:-2]
 
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
@@ -392,6 +392,8 @@ def import_products(_st=type('')):
                             if type(v) is _st and have_module(v): v=modules[v]
                             modules[k]=v
             except:
+                LOG('Zope',ERROR,'Couldn\'t import %s' % pname,
+                    error=sys.exc_info())
                 f=StringIO()
                 traceback.print_exc(100,f)
                 f=f.getvalue()
