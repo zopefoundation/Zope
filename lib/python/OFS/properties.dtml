@@ -76,7 +76,7 @@ values and click "Save Changes".
        No value for <!--#var select_variable-->
     <!--#/if-->
   <!--#elif "type=='multiple selection'"-->
-    <!--#if selectvariable-->
+    <!--#if select_variable-->
     <select name="<!--#var id-->:list" multiple
       size="<!--#var "_.max(7, len(_[select_variable]))"-->">
       <!--#in "_[select_variable]"-->
