@@ -279,12 +279,12 @@ class Catalog(Persistent, Acquisition.Implicit):
         """
         adds an index
 
-        Currently supported are 'FieldIndexes', 'TextIndexs' and
+        Currently supported are 'FieldIndexes', 'TextIndexes' and
         'KeywordIndexes'.
         """
 
         if self.indexes.has_key(name):
-            raise 'Index Exists', 'The index specified allready exists'
+            raise 'Index Exists', 'The index specified already exists'
 
         # this is currently a succesion of hacks.  Indexes should be
         # pluggable and managable
