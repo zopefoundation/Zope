@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.33 1998/05/13 21:50:14 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.34 1998/05/13 22:06:31 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -248,38 +248,35 @@ Python expression support
   Subobjects of these objects may be used as well, although subobject
   access is restricted by the optional validation method.
 
-  In addition, certain special additional names are available:
-
-  '_' -- Provides access to the document template namespace as a
-     mapping object.  This variable can be useful for accessing
-     objects in a document template namespace that have names that are
-     not legal Python variable names::
-
-        <!--#var expr="_['sequence-number']*5"-->
-
-     This variable also has attributes that provide access to standard
-     utility objects.  These attributes include:
-
-     - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
-          'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
-	  'round', and 'str' from the standard Python builtin module.
-
-     - The Python 'string' module, and
-
-     - The Python 'math' module. 
-
-     - A special function, 'test', that supports if-then expressions.
-       The 'test' function accepts any number of arguments.  If the
-       first argument is true, then the second argument is returned,
-       otherwise if the third argument is true, then the fourth
-       argument is returned, and so on.  If there is an odd number of
-       arguments, then the last argument is returned in the case that
-       none of the tested arguments is true, otherwise None is
-       returned. 
-
-     For example, to convert a value to lower case::
-
-       <!--#var expr="_.string.lower(title)"-->
+  In addition, a special additional name, '_', is available.  The '_'
+  variable provides access to the document template namespace as a
+  mapping object.  This variable can be useful for accessing objects
+  in a document template namespace that have names that are not legal
+  Python variable names::
+  
+     <!--#var expr="_['sequence-number']*5"-->
+  
+  This variable also has attributes that provide access to standard
+  utility objects.  These attributes include:
+  
+  - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
+       'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
+       'round', and 'str' from the standard Python builtin module.
+  
+  - The Python 'string', 'math', and 'whrandom' modules, and
+  
+  - A special function, 'test', that supports if-then expressions.
+    The 'test' function accepts any number of arguments.  If the
+    first argument is true, then the second argument is returned,
+    otherwise if the third argument is true, then the fourth
+    argument is returned, and so on.  If there is an odd number of
+    arguments, then the last argument is returned in the case that
+    none of the tested arguments is true, otherwise None is
+    returned. 
+  
+  For example, to convert a value to lower case::
+  
+    <!--#var expr="_.string.lower(title)"-->
 
 """
 
@@ -355,6 +352,9 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.34  1998/05/13 22:06:31  jim
+# Updated doc string.
+#
 # Revision 1.33  1998/05/13 21:50:14  jim
 # Moved special trick to handle _=_vars here so as to not break other uses
 # of VSEval.
