@@ -347,6 +347,7 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
     id='common'
     isPrincipiaFolderish=1
     icon="p_/Propertysheets_icon"
+    dontAllowCopyAndPaste=1
 
     def tpURL(self): return 'propertysheets/common'
 
