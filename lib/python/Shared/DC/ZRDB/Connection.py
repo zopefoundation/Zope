@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.8 1998/04/24 15:04:33 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Connection.py,v 1.9 1998/04/27 16:10:32 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition, sys
 from DateTime import DateTime
@@ -136,10 +136,18 @@ class Connection(
 	self._v_connected=DateTime()
 
 	return self
+
+    def sql_quote__(self, v):
+	if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
+	return "'%s'" % v
+
 	
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.9  1998/04/27 16:10:32  jim
+# *** empty log message ***
+#
 # Revision 1.8  1998/04/24 15:04:33  jim
 # *** empty log message ***
 #
