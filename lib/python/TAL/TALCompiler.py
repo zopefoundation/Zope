@@ -87,73 +87,25 @@ Compile a DOM tree for efficient METAL and TAL expansion.
 """
 
 import string
-import re
 from xml.dom import Node
 
 from DOMVisitor import DOMVisitor
+from TALGenerator import TALGenerator
+from TALDefs import *
 
-from TALDefs import ZOPE_TAL_NS, ZOPE_METAL_NS, NAME_RE, XMLNS_NS
-from TALDefs import macroIndexer, slotIndexer
-from TALDefs import splitParts, parseAttributeReplacements
-from TALDefs import parseSubstitution
-
-class TALError(Exception):
-    pass
-
-class METALError(TALError):
-    pass
-
-KNOWN_METAL_ATTRIBUTES = [
-    "define-macro",
-    "use-macro",
-    "define-slot",
-    "fill-slot",
-    ]
-
-KNOWN_TAL_ATTRIBUTES = [
-    "define",
-    "condition",
-    "insert",
-    "replace",
-    "repeat",
-    "attributes",
-    ]
-
-class DummyCompiler:
-
-    def compile(self, expr):
-        return expr
-
-class METALCompiler(DOMVisitor):
+class METALCompiler(DOMVisitor, TALGenerator):
 
     def __init__(self, document, expressionCompiler=None):
         self.document = document
         DOMVisitor.__init__(self, document)
-        if not expressionCompiler:
-            expressionCompiler = DummyCompiler()
-        self.expressionCompiler = expressionCompiler
+        TALGenerator.__init__(self, expressionCompiler)
 
     def __call__(self):
-        self.macros = {}
-        self.program = []
-        self.stack = []
         self.namespaceDict = {}
         self.namespaceStack = [self.namespaceDict]
         DOMVisitor.__call__(self)
         assert not self.stack
         return self.program, self.macros
-
-    def compileExpression(self, expr):
-        return self.expressionCompiler.compile(expr)
-
-    def pushProgram(self):
-        self.stack.append(self.program)
-        self.program = []
-
-    def popProgram(self):
-        program = self.program
-        self.program = self.stack.pop()
-        return program
 
     def pushNS(self):
         self.namespaceStack.append(self.namespaceDict)
@@ -171,9 +123,11 @@ class METALCompiler(DOMVisitor):
             return 0
 
     def getFullAttrList(self, node):
+        attr_nodes = node.attributes.values() # Cache this!
+        self.checkSpuriousAttributes(attr_nodes)
         list = []
         # First, call newNS() for explicit xmlns and xmlns:prefix attributes
-        for attr in node.attributes.values():
+        for attr in attr_nodes:
             if attr.namespaceURI == XMLNS_NS:
                 # This is a namespace declaration
                 # XXX Should be able to use prefix and localName, but can't
@@ -192,7 +146,7 @@ class METALCompiler(DOMVisitor):
                 else:
                     list.append(("xmlns", node.namespaceURI))
         # Add namespace declarations for each attribute, if needed
-        for attr in node.attributes.values():
+        for attr in attr_nodes:
             if attr.namespaceURI:
                 if attr.namespaceURI == XMLNS_NS:
                     continue
@@ -203,11 +157,8 @@ class METALCompiler(DOMVisitor):
                     else:
                         list.append(("xmlns", node.namespaceURI))
         # Add the node's attributes
-        list.extend(self.getAttributeList(node))
+        list.extend(self.getAttributeList(node, attr_nodes))
         return list
-
-    def emit(self, *instruction):
-        self.program.append(instruction)
 
     def emitStartTag(self, node):
         self.emit("startTag", node.nodeName, self.getFullAttrList(node))
@@ -223,16 +174,15 @@ class METALCompiler(DOMVisitor):
         if not node.hasAttributes():
             self.emitElement(node)
         else:
-            self.checkSpuriousAttributes(node)
             self.expandElement(node)
         self.popNS()
 
-    def checkSpuriousAttributes(self, node,
+    def checkSpuriousAttributes(self, attr_nodes,
                                 ns=ZOPE_METAL_NS,
                                 known=KNOWN_METAL_ATTRIBUTES,
                                 error=METALError,
                                 what="METAL"):
-        for attr in node.attributes.values():
+        for attr in attr_nodes:
             if attr.namespaceURI == ns:
                 if attr.localName not in known:
                     raise error(
@@ -295,16 +245,16 @@ class METALCompiler(DOMVisitor):
                 self.emitEndTag(node)
 
     def visitText(self, node):
-        self.emit("text", node.nodeValue)
+        self.emitText(node.nodeValue)
 
     def visitComment(self, node):
         self.emit("comment", node.nodeValue)
 
-    def getAttributeList(self, node):
-        if not node.hasAttributes():
+    def getAttributeList(self, node, attr_nodes):
+        if not attr_nodes:
             return []
         attrList = []
-        for attrNode in node.attributes.values():
+        for attrNode in attr_nodes:
             item = attrNode.nodeName, attrNode.nodeValue
             if (attrNode.namespaceURI == ZOPE_METAL_NS and
                 attrNode.localName == "define-macro"):
@@ -315,8 +265,8 @@ class METALCompiler(DOMVisitor):
 class TALCompiler(METALCompiler):
 
     # Extending METAL method to add attribute replacements
-    def getAttributeList(self, node):
-        attrList = METALCompiler.getAttributeList(self, node)
+    def getAttributeList(self, node, attr_nodes):
+        attrList = METALCompiler.getAttributeList(self, node, attr_nodes)
         attrDict = self.getAttributeReplacements(node)
         if not attrDict:
             return attrList
@@ -325,7 +275,7 @@ class TALCompiler(METALCompiler):
             key, value = item[:2]
             if attrDict.has_key(key):
                 item = (key, value, "replace", attrDict[key])
-                del attrDict[key]
+                del attrDict[key] # XXX Why?
             list.append(item)
         return list
 
@@ -343,32 +293,18 @@ class TALCompiler(METALCompiler):
             self.conditionalElement(node)
 
     # Extending METAL method to check for TAL statements
-    def checkSpuriousAttributes(self, node):
-        METALCompiler.checkSpuriousAttributes(self, node)
+    def checkSpuriousAttributes(self, attr_nodes):
+        METALCompiler.checkSpuriousAttributes(self, attr_nodes)
         METALCompiler.checkSpuriousAttributes(
-            self, node, ZOPE_TAL_NS, KNOWN_TAL_ATTRIBUTES, TALError, "TAL")
-
-    def emitDefines(self, defines):
-        for part in splitParts(defines):
-            m = re.match(
-                r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
-            if not m:
-                raise TALError("invalid z:define syntax: " + `part`)
-            scope, name, expr = m.group(1, 2, 3)
-            scope = scope or "local"
-            cexpr = self.compileExpression(expr)
-            if scope == "local":
-                self.emit("setLocal", name, cexpr)
-            else:
-                self.emit("setGlobal", name, cexpr)
+            self, attr_nodes,
+            ZOPE_TAL_NS, KNOWN_TAL_ATTRIBUTES, TALError, "TAL")
 
     def conditionalElement(self, node):
         condition = node.getAttributeNS(ZOPE_TAL_NS, "condition")
         if condition:
             self.pushProgram()
             self.modifyingElement(node)
-            block = self.popProgram()
-            self.emit("condition", condition, block)
+            self.emitCondition(condition)
         else:
             self.modifyingElement(node)
 
@@ -397,48 +333,24 @@ class TALCompiler(METALCompiler):
             self.emitElement(node)
 
     def doInsert(self, node, arg):
-        key, expr = parseSubstitution(arg)
-        if not key:
-            return 0
         self.emitStartTag(node)
         self.pushProgram()
         self.visitAllChildren(node)
-        block = self.popProgram()
-        self.doSubstitution(key, expr, {}, block)
+        self.emitSubstitution(arg)
         self.emitEndTag(node)
         return 1
 
     def doReplace(self, node, arg):
-        key, expr = parseSubstitution(arg)
-        if not key:
-            return 0
         attrDict = self.getAttributeReplacements(node)
         self.pushProgram()
         self.emitElement(node)
-        block = self.popProgram()
-        self.doSubstitution(key, expr, attrDict, block)
+        self.emitSubstitution(arg, attrDict)
         return 1
 
-    def doSubstitution(self, key, expr, attrDict, block):
-        cexpr = self.compileExpression(expr)
-        if key == "text":
-            if attrDict:
-                print "Warning: z:attributes unused for text replacement"
-            self.emit("insertText", cexpr, block)
-        else:
-            assert key == "structure"
-            self.emit("insertStructure", cexpr, attrDict, block)
-
     def doRepeat(self, node, arg):
-        m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
-        if not m:
-            raise TALError("invalid z:repeat syntax: " + `arg`)
-        name, expr = m.group(1, 2)
-        cexpr = self.compileExpression(expr)
         self.pushProgram()
         self.emitElement(node)
-        block = self.popProgram()
-        self.emit("loop", name, cexpr, block)
+        self.emitRepeat(arg)
         return 1
 
     def getAttributeReplacements(self, node):
