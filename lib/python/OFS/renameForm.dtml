@@ -12,7 +12,7 @@
 <dtml-var "HelpSys.HelpButton('Folder_Rename.dtml')">
 
 <P>
-<FORM ACTION="." METHOD="POST">
+<FORM ACTION="<dtml-var URL1>" METHOD="POST">
 <TABLE CELLSPACING="0">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
