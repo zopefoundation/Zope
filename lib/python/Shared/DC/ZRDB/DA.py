@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.30 1998/01/27 20:08:19 jim Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: DA.py,v 1.31 1998/01/28 16:04:40 jim Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -115,7 +115,7 @@ class DA(
 	input_src=default_input_form(self.title_or_id(),
 				     self._arg, 'manage_test',
 				     '<!--#var manage_tabs-->')
-	return HTML(input_src)(self, REQUEST)
+	return HTML(input_src)(self, REQUEST, HTTP_REFERER='')
 
     def manage_test(self, REQUEST):
 	'Perform an actual query'
@@ -337,6 +337,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.31  1998/01/28 16:04:40  jim
+# Removed Cancel button from test input form.
+#
 # Revision 1.30  1998/01/27 20:08:19  jim
 # Fixed bugs in caching logic.
 #
