@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -17,7 +17,7 @@ def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
     Creates a new file object 'id' with the contents of 'file'"""
 
     self._setObject(id, File(id,title,file,precondition))
-    return self.manage_main(self,REQUEST)
+    if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 
 class File(Persistent,Implicit,RoleManager,Item_w__name__):
@@ -172,7 +172,7 @@ def manage_addImage(self,id,file,title='',REQUEST=None):
     Creates a new Image object 'id' with the contents of 'file'.
     """
     self._setObject(id, Image(id,title,file))
-    return self.manage_main(self,REQUEST)
+    if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 class Image(File):
     """Principia object for *Images*, can be GIF or JPEG.  Has the same
