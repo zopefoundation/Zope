@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.36 1997/03/11 22:05:02 chris Exp $
+     $Id: cPickle.c,v 1.37 1997/05/06 20:21:01 jim Exp $
 
      Copyright 
 
@@ -854,7 +854,7 @@ save_float(Picklerobject *self, PyObject *args) {
 
 
 static int
-save_string(Picklerobject *self, PyObject *args) {
+save_string(Picklerobject *self, PyObject *args, int doput) {
     int size, len;
 
     size = PyString_Size(args);
@@ -908,9 +908,9 @@ save_string(Picklerobject *self, PyObject *args) {
             return -1;
     }
 
-    if (size > 1)
-        if (put(self, args) < 0)
-            return -1;
+    if (doput)
+      if (put(self, args) < 0)
+	return -1;
 
     return 0;
 }
@@ -1398,7 +1398,6 @@ save_reduce(Picklerobject *self, PyObject *callable,
     return 0;
 }
 
-
 static int
 save(Picklerobject *self, PyObject *args, int  pers_save) {
     PyTypeObject *type;
@@ -1451,7 +1450,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
 
         case 's':
             if ((type == &PyString_Type) && (PyString_Size(args) < 2)) {
-                res = save_string(self, args);
+                res = save_string(self, args, 0);
                 goto finally;
             }
     }
@@ -1480,7 +1479,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
     switch (type->tp_name[0]) {
         case 's':
             if (type == &PyString_Type) {
-                res = save_string(self, args);
+                res = save_string(self, args, 1);
                 goto finally;
             }
 
@@ -1581,6 +1580,7 @@ save(Picklerobject *self, PyObject *args, int  pers_save) {
         }
         
         callable = PyTuple_GET_ITEM(t, 0);
+
         arg_tup = PyTuple_GET_ITEM(t, 1);
 
         if (size > 2) {
@@ -3833,7 +3833,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.36 $";
+    char *rev="$Revision: 1.37 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3868,6 +3868,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.37  1997/05/06 20:21:01  jim
+ Changed to only add strings to memo that have length greater than one.
+
  Revision 1.36  1997/03/11 22:05:02  chris
  write POP rather than POPMARK in non-binary mode
  use put2() in save_reduce() and save_inst() only if state is not a dictionary
