@@ -120,7 +120,7 @@ sdist_tgz:
 	${MKDIR} ${TMPDIR}
 	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
           ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tgz ${PACKAGE_NAME} \
-           --exclude=${PACKAGE_NAME}.tar.gz\
+           --exclude=${PACKAGE_NAME}.tgz\
            --exclude=CVS \
            --exclude=.cvsignore \
            --exclude=makefile \
