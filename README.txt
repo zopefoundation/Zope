@@ -24,7 +24,7 @@ Introduction:
 
 License
 
-  The Zope License is included in LICENSE.txt Send your feeback
+  The Zope License is included in LICENSE.txt Send your feedback
   about the license to zope-license@zope.org. 
 
 Important
