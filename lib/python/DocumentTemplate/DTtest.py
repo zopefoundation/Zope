@@ -2,7 +2,7 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: DTtest.py,v 1.2 1997/10/27 17:40:02 jim Exp $'
+__rcs_id__='$Id: DTtest.py,v 1.3 1997/11/11 18:39:00 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -56,7 +56,7 @@ __rcs_id__='$Id: DTtest.py,v 1.2 1997/10/27 17:40:02 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -525,6 +525,14 @@ def main():
 	try: test11()
 	except: traceback.print_exc()
 
+def test13():
+    print HTML('''
+    <!--#in items-->
+      <!--#var sequence-key-->: <!--#var sequence-item-->
+    <!--#/in items-->
+    ''')({'spam':'eggs', 'cool':'DC'})
+    
+
 if __name__ == "__main__":
     try: command=sys.argv[1]
     except: command='main'
@@ -532,6 +540,10 @@ if __name__ == "__main__":
 
 ############################################################################
 # $Log: DTtest.py,v $
+# Revision 1.3  1997/11/11 18:39:00  jim
+# Added test for:
+# Made sequence-items work when iterating over mapping items.
+#
 # Revision 1.2  1997/10/27 17:40:02  jim
 # Removed old validation machinery.
 #
