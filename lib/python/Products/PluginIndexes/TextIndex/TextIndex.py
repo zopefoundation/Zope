@@ -91,7 +91,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.2 $'[11:-2]
+__version__ = '$Revision: 1.3 $'[11:-2]
 
 
 import string, re
@@ -110,7 +110,6 @@ from BTrees.IIBTree import IIBTree, IIBucket, IISet, IITreeSet
 from BTrees.IIBTree import difference, weightedIntersection
 
 from Lexicon import Lexicon
-import Splitter
 
 from types import *
 
@@ -173,10 +172,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         self.ignore_ex = ignore_ex
         self.call_methods = call_methods
 
-
-        # Default Splitter
-        self.availableSplitters = Splitter.availableSplitters
-        self.useSplitter        = self.availableSplitters[0][0]
 
         # Default text index operator (should be visible to ZMI)
         self.operators = { 'andnot':AndNot, 'and':And,
@@ -352,7 +347,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
             return 0
         
         lexicon = self.getLexicon()
-        splitter = Splitter.getSplitter(self.useSplitter)
+        splitter = lexicon.Splitter
 
         wordScores = OIBTree()
         last = None
@@ -686,8 +681,6 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
                                REQUEST=None,RESPONSE=None,URL2=None):
         """ preferences of TextIndex """
 
-#        self.useSplitter = splitter
-#       self.useOperator = text_operator
 
         if self.vocabulary_id != vocabulary:
             self.clear()
