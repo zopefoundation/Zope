@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -88,8 +88,10 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         try: 
             self.indexed_attrs = extra.indexed_attrs.split(',')
             self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ]
-        except: pass 
-        if len(self.indexed_attrs) == 0: self.indexed_attrs = [ self.id ]
+            if len(self.indexed_attrs) == 0: self.indexed_attrs = [ self.id ]
+        except:
+            self.indexed_attrs = [ self.id ] 
+        
         
         self.__len__=BTrees.Length.Length() # see __len__ method docstring
         self.clear()
