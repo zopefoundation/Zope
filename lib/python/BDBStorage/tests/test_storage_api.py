@@ -9,6 +9,7 @@ from BasicStorage import BasicStorage
 from VersionStorage import VersionStorage
 from TransactionalUndoStorage import TransactionalUndoStorage
 from TransactionalUndoVersionStorage import TransactionalUndoVersionStorage
+from PackableStorage import PackableStorage
 
 
 
@@ -28,7 +29,8 @@ class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
 
 
 class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage, VersionStorage,
-               TransactionalUndoStorage, TransactionalUndoVersionStorage):
+               TransactionalUndoStorage, TransactionalUndoVersionStorage,
+               PackableStorage):
     pass
 
 
