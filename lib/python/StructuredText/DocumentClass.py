@@ -854,8 +854,7 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      #expr=re.compile(r"\_([a-zA-Z0-9\s\.,\?]+)\_").search, # old expr, inconsistent punc, failed to cross newlines
-                      expr=re.compile(r'_([%s%s%s\s]+)_[\s%s]' % (letters, digits, under_punc,phrase_delimiters)).search):
+                      expr=re.compile(r'_([%s%s%s\s]+)_([\s%s]|$)' % (letters, digits, under_punc,phrase_delimiters)).search):
 
         result = expr(s)
         if result:
@@ -863,7 +862,7 @@ class DocumentClass:
                return None # no double unders
             start,end = result.span(1)
             st,e = result.span()
-            return (StructuredTextUnderline(s[start:end]),st,e-1)
+            return (StructuredTextUnderline(s[start:end]),st,e-len(result.group(2)))
         else:
             return None
     

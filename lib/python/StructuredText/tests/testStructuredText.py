@@ -143,6 +143,11 @@ class BasicTests(unittest.TestCase):
         """underline"""
         self._test("xx _this is html_ xx",
                    "xx <u>this is html</u> xx")
+
+    def testUnderline1(self):
+        """underline 1"""
+        self._test("xx _this is html_",
+                   "<u>this is html</u>")
         
     def testEmphasis(self):
         """ emphasis """
