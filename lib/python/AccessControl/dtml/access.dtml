@@ -135,8 +135,7 @@ You can define new roles by entering a role name and clicking the
   <div class="form-element">
   <select name="roles:list">
   <dtml-in userdefined_roles>
-  <option value="<dtml-var sequence-item html_quote>" /><dtml-var 
-  sequence-item>
+  <option value="&dtml-sequence-item;"><dtml-var sequence-item></option>
   </dtml-in userdefined_roles>
   </select>
   </div>
