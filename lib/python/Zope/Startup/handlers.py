@@ -160,11 +160,7 @@ def root_handler(config):
 
     # if no servers are defined, create default http server and ftp server
     if not config.servers:
-        import ZServer.datatypes
-        config.servers = [
-            ZServer.datatypes.HTTPServerFactory(_DummyServerConfig(8080)),
-            ZServer.datatypes.FTPServerFactory(_DummyServerConfig(8021)),
-            ]
+        config.servers = []
 
     # prepare servers:
     for factory in config.servers:
@@ -178,18 +174,6 @@ def root_handler(config):
     if config.trusted_proxies:
         import ZPublisher.HTTPRequest
         ZPublisher.HTTPRequest.trusted_proxies = tuple(config.trusted_proxies)
-
-class _DummyServerConfig:
-    class _Thing:
-        pass
-
-    def __init__(self, port):
-        import socket
-        self.address = self._Thing()
-        self.address.family = socket.AF_INET
-        self.address.address = '', port
-        self.force_connection_close = 0
-
 
 def handleConfig(config, multihandler):
     handlers = {}
