@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.43 1997/07/16 16:11:01 jim Exp $
+     $Id: cPickle.c,v 1.44 1997/07/25 18:16:12 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.43 1997/07/16 16:11:01 jim Exp $\n"
+"$Id: cPickle.c,v 1.44 1997/07/25 18:16:12 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -133,9 +133,6 @@ static PyObject *__class___str, *__getinitargs___str, *__dict___str,
   *__getstate___str, *__setstate___str, *__name___str, *__reduce___str,
   *write_str, *__safe_for_unpickling___str, *append_str,
   *read_str, *readline_str, *__main___str;
-
-/* __builtins__ module */
-static PyObject *builtins;
 
 static int save();
 static int put2();
@@ -1896,93 +1893,95 @@ static PyTypeObject Picklertype_value() {
   return Picklertype;
 }
 
-
-PyObject *
-PyImport_ImportModuleNi(char *module_name)
-{
-    char *import_str;
-    int size, i;
-    PyObject *import;
-
-    static PyObject *eval_dict = 0;
-
-    size = strlen(module_name);
-    for (i = 0; i < size; i++) {
-        if (((module_name[i] < 'A') || (module_name[i] > 'z')) &&
-            (module_name[i] != '_')) {
-            PyErr_SetString(PyExc_ImportError, "module name contains "
-                "invalid characters.");
-            return NULL;
-        }
-    }
-
-    UNLESS(import_str = 
-        (char *)malloc((strlen(module_name) + 15) * sizeof(char))) {
-        PyErr_NoMemory();
-        return NULL;
-    }
-
-    sprintf(import_str, "__import__('%s')", module_name);
-
-    UNLESS(eval_dict)
-        UNLESS(eval_dict = Py_BuildValue("{sO}", "__builtins__", builtins))
-            return NULL;
-
-    if (!(import = 
-        PyRun_String(import_str, Py_eval_input, eval_dict, eval_dict))) {
-        free(import_str);
-        return NULL;
-    }
-
-    free(import_str);
-
-    return import;
-}
-
+#define PyImport_Import cPickle_Import
 
 static PyObject *
-find_class(PyObject *py_module_name, PyObject *py_class_name) {
-    PyObject *import = 0, *class = 0, *t = 0;
-    char *module_name, *class_name;
-    PyObject *res = NULL;
+PyImport_Import(PyObject *module_name) {
+  static PyObject *silly_list=0, *__builtins___str=0, *__import___str;
+  static PyObject *standard_builtins=0;
+  PyObject *globals=0, *__import__=0, *__builtins__=0, *r=0;
 
-    module_name = PyString_AS_STRING((PyStringObject *)py_module_name);
-    class_name  = PyString_AS_STRING((PyStringObject *)py_class_name);
+  UNLESS(silly_list) {
+      UNLESS(__import___str=PyString_FromString("__import__")) return NULL;
+      UNLESS(__builtins___str=PyString_FromString("__builtins__")) return NULL;
+      UNLESS(silly_list=Py_BuildValue("[s]","__doc__")) return NULL;
+    }
 
-    UNLESS(t = PyTuple_New(2))
-        goto finally;
+  if((globals=PyEval_GetGlobals())) {
+      UNLESS(__builtins__=PyObject_GetItem(globals,__builtins___str)) goto err;
+    }
+  else {
+      PyErr_Clear();
+
+      UNLESS(standard_builtins ||
+	     (standard_builtins=PyImport_ImportModule("__builtin__")))
+	return NULL;
+      
+      __builtins__=standard_builtins;
+      Py_INCREF(__builtins__);
+      UNLESS(globals = Py_BuildValue("{sO}", "__builtins__", __builtins__))
+	goto err;
+    }
+
+  /*
+  printf("module name: "); PyObject_Print(module_name,stdout,0); printf("\n");
+  printf("__builtins__(%s): ",__builtins__->ob_type->tp_name); PyObject_Print(__builtins__,stdout,0);
+  printf("\n\n\n");
+  */
+
+  if(PyDict_Check(__builtins__)) {
+    UNLESS(__import__=PyObject_GetItem(__builtins__,__import___str)) goto err;
+  }
+  else {
+    UNLESS(__import__=PyObject_GetAttr(__builtins__,__import___str)) goto err;
+  }
+
+  UNLESS(r=PyObject_CallFunction(__import__,"OOOO",
+				 module_name, globals, globals, silly_list))
+    goto err;
+
+  Py_DECREF(globals);
+  Py_DECREF(__builtins__);
+  Py_DECREF(__import__);
+  
+  return r;
+err:
+  Py_XDECREF(globals);
+  Py_XDECREF(__builtins__);
+  Py_XDECREF(__import__);
+  return NULL;
+}
+
+static PyObject *
+find_class(PyObject *py_module_name, PyObject *py_global_name) {
+    PyObject *global = 0, *t = 0, *module;
+
+    UNLESS(t = PyTuple_New(2)) return NULL;
 
     PyTuple_SET_ITEM((PyTupleObject *)t, 0, py_module_name);
     Py_INCREF(py_module_name);
-  
-    PyTuple_SET_ITEM((PyTupleObject *)t, 1, py_class_name);
-    Py_INCREF(py_class_name);
+    PyTuple_SET_ITEM((PyTupleObject *)t, 1, py_global_name);
+    Py_INCREF(py_global_name);
 
-    if ((class = PyDict_GetItem(class_map, t))) {
-        res = class;
-	Py_INCREF(class);
-        goto finally;
+    global=PyDict_GetItem(class_map, t);
+
+    if (global) {
+      Py_DECREF(t);
+      Py_INCREF(global);
+      return global;
     }
 
     PyErr_Clear();
 
-    if (!(import = PyImport_ImportModuleNi(module_name)) ||    
-        !(class = PyObject_GetAttr(import, py_class_name))) {
-        PyErr_Format(PyExc_SystemError, "Failed to import global %s "
-            "from module %s", "ss", class_name, module_name);
-        goto finally;
-    }  
+    UNLESS(module=PyImport_Import(py_module_name)) return NULL;
+    global=PyObject_GetAttr(module, py_global_name);
+    Py_DECREF(module);
+    UNLESS(global) return NULL;
 
-    if (PyDict_SetItem(class_map, t, class) < 0)
-        goto finally;
+    if (PyDict_SetItem(class_map, t, global) < 0) global=NULL;
+    Py_DECREF(t);
 
-    res = class;
-
-finally:
-    Py_XDECREF(import);
-    Py_XDECREF(t);
- 
-    return res;
+    return global;
 }
 
 
@@ -4183,9 +4182,6 @@ init_stuff(PyObject *module, PyObject *module_dict) {
     INIT_STR(read);
     INIT_STR(readline);
 
-    UNLESS(builtins = PyImport_ImportModule("__builtin__"))
-        return -1;
-
     UNLESS(copy_reg = PyImport_ImportModule("copy_reg"))
         return -1;
 
@@ -4237,7 +4233,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.43 $";
+    char *rev="$Revision: 1.44 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -4272,6 +4268,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.44  1997/07/25 18:16:12  jim
+ Added new mechanism for importing.
+
  Revision 1.43  1997/07/16 16:11:01  jim
  Added some doc strings.
  Added "noload" method, which supports DB GC.
