@@ -99,6 +99,8 @@ Zope Changes
           HTTP 1.1 clients. Fixed possible problems with large responses.
           Thanks to Toby Dickenson.
 
+        - ZServer's FTP server no longer binds to all interfaces.
+
         - Fixed a bug which caused File objects of type 'text/html' be
           have the wrong Content-Length set.
 
