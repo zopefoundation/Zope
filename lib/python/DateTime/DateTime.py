@@ -1678,11 +1678,11 @@ class DateTime:
 
         datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
         timereg = re.compile('T([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
-        zonereg = re.compile('([+-][0-9][0-9])(:([0-9][0-9]))')
+        zonereg = re.compile('([+-][0-9][0-9])(:?([0-9][0-9]))')
 
         # Date part
 
-        fields = datereg.split(s.strip())
+        fields = datereg.split(s.strip(), 1)
 
         if fields[1]:   year  = int(fields[1])
         if fields[3]:   month = int(fields[3])

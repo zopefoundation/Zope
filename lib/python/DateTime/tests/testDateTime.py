@@ -259,6 +259,10 @@ class DateTimeTests(unittest.TestCase):
         isoDt = DateTime('2002-05-02T08:00:00-04:00')
         self.assertEqual( ref1, isoDt)
 
+        # Bug 1386: the colon in the timezone offset is optional
+        isoDt = DateTime('2002-05-02T08:00:00-0400')
+        self.assertEqual( ref1, isoDt)
+        
         dgood = '2002-05-02'
         tgood = 'T08:00:00-04:00'
         for dbad in '2002-5-2', '2002-10-2', '2002-2-10', '02-2-10':
