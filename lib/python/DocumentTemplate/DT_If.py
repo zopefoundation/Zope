@@ -55,7 +55,14 @@ __doc__='''Conditional insertion
                false text 
           <!--#/if name-->
 
-       Note that if a variable is nor defined, it is considered to be false.
+       Notes:
+
+       - if a variable is nor defined, it is considered to be false.
+
+       - A variable if only evaluated once in an 'if' tag.  If the value
+         is used inside the tag, including in enclosed tags, the
+         variable is not reevaluated.
+
 ''' 
 
 ############################################################################
@@ -110,8 +117,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.5 1997/11/07 17:08:11 jim Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.6 1997/12/31 20:32:11 jim Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -149,18 +156,25 @@ class If:
 	    self.sections.append((name, expr, section))
 
     def render(self,md):
-	for name, expr, section in self.sections:
-	    if expr is None:
-		try: v=md[name]
-		except KeyError, ev:
-		    if ev is not name: raise KeyError, name, sys.exc_traceback
-		    v=None
-	    else:
-		v=expr.eval(md)
+	cache={}
+	md._push(cache)
+	try:
+	    for name, expr, section in self.sections:
+		if expr is None:
+		    try: v=md[name]
+		    except KeyError, ev:
+			if ev is not name:
+			    raise KeyError, name, sys.exc_traceback
+			v=None
+		else:
+		    v=expr.eval(md)
+    
+		cache[name]=v
+		if v: return section(None,md)
+    
+	    if self.elses: return self.elses(None, md)
 
-	    if v: return section(None,md)
-
-	if self.elses: return self.elses(None, md)
+	finally: md._pop(1)
 
 	return ''
 
@@ -183,7 +197,10 @@ class Else:
 	except KeyError, ev:
 	    if ev is not name: raise KeyError, name, sys.exc_traceback
 	    v=None
-	if not v: return self.section(None,md)
+	if not v:
+	    md._push({name:v})
+	    try: return self.section(None,md)
+	    finally: md._pop(1)
 	return ''
 
     __call__=render
@@ -191,6 +208,9 @@ class Else:
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.6  1997/12/31 20:32:11  jim
+# If and else blocks now cache variables.
+#
 # Revision 1.5  1997/11/07 17:08:11  jim
 # Changed so exception is raised if a sequence cannot be gotten during
 # rendering.
