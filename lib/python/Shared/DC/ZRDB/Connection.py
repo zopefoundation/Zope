@@ -10,8 +10,8 @@
 __doc__='''Generic Database Connection Support
 
 
-$Id: Connection.py,v 1.6 1998/01/21 22:59:00 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Connection.py,v 1.7 1998/04/15 13:19:02 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence, Acquisition
 from DateTime import DateTime
@@ -123,11 +123,16 @@ class Connection(
 	except: pass
 	self._v_connected=''
 	DB=self.factory()
-	try: self._v_database_connection=DB(s)
-	except:
-	    raise 'BadRequest', (
-		'<strong>Invalid connection string:</strong><br>'
-		+ s)
+	try:
+	    try:
+		self._v_database_connection=DB(s)
+	    except:
+		t, v, tb = sys.exc_type, sys.exc_value, sys.exc_traceback
+		raise 'BadRequest', (
+		    '<strong>Invalid connection string:</strong><br>\n'
+		    '<!--\n%s\n%s\n-->\n'
+		    + (s,t,v)), tb
+	finally: tb=None
 	self._v_connected=DateTime()
 
 	return self
@@ -135,6 +140,9 @@ class Connection(
 ############################################################################## 
 #
 # $Log: Connection.py,v $
+# Revision 1.7  1998/04/15 13:19:02  jim
+# Do better job of raising errors.
+#
 # Revision 1.6  1998/01/21 22:59:00  jim
 # Updated for latest security model.
 #
