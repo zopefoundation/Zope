@@ -44,9 +44,10 @@ TALES Python expressions
       keep them from generating very large numbers and sequences. This
       limitation helps protect against denial of service attacks.
 
-      In addition, these utility functions are available: 
-      "DateTime":/Control_Panel/Products/OFSP/Help/DateTime.py,
-      'test', and 'same_type'.
+      In addition, these utility functions are available: 'DateTime',
+      'test', and 'same_type'. See "DTML
+      functions":../../../OFSP/Help/dtml-funcs.stx for more
+      information on these functions.
 
       Finally, these functions are available in Python expressions,
       but not in Python-based scripts:
