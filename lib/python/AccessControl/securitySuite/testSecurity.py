@@ -85,13 +85,12 @@
 # 
 ##############################################################################
 
-# $Id: testSecurity.py,v 1.7 2001/10/08 14:49:45 andreasjung Exp $
+# $Id: testSecurity.py,v 1.8 2001/10/08 14:57:43 andreasjung Exp $
 
 import os, sys
 execfile(os.path.join(sys.path[0],'framework.py'))
 
-import unittest,re
-import Zope,ZPublisher,cStringIO
+import Zope
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
 from AccessControl import ClassSecurityInfo,getSecurityManager
