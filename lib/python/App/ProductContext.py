@@ -317,7 +317,8 @@ class ProductContext:
                 ht=HelpTopic.TextTopic(file, '', os.path.join(path,file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.stx', '.txt'):
-                ht=HelpTopic.STXTopic(file, '', os.path.join(path, file))
+                title=string.split(open(os.path.join(path,file),'rb').readline(), ':')[0]
+                ht=HelpTopic.STXTopic(file, title, os.path.join(path, file))
                 self.registerHelpTopic(file, ht)
             elif ext in ('.jpg', '.gif', '.png'):
                 ht=HelpTopic.ImageTopic(file, '', os.path.join(path, file))
