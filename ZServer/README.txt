@@ -149,7 +149,7 @@ ZServer monitor server
   To connect to the monitor server use the 'ZServer/medusa/monitor_client.py'
   or 'ZServer/medusa/monitor_client_win32.py' script. For example::
   
-    $ python2.2.11 ZServer/medusa/monitor_client.py localhost 9999
+    $ python2.1 ZServer/medusa/monitor_client.py localhost 9999
 	
   You will then be asked to enter a password. This is the Zope super manager
   password which is stored in the 'access' file.
