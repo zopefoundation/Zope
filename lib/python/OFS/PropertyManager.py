@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -219,7 +219,10 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 raise 'Bad Request', 'No select variable %s' % value
             self._properties=self._properties + (
                 {'id':id, 'type':type, 'select_variable':value},)
-            self._setPropValue(id, '')
+            if type=='selection':
+                self._setPropValue(id, '')
+            else:
+                self._setPropValue(id, [])
         else:
             self._properties=self._properties+({'id':id,'type':type},)
             self._setPropValue(id, value)
