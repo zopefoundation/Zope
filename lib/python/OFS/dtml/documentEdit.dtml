@@ -9,6 +9,8 @@ the <em>browse</em> button to select a local file to upload.
 
 <form action="manage_edit" method="post">
 <table cellpadding="2" cellspacing="0" width="100%" border="0">
+
+<dtml-with keyword_args mapping>
 <tr>
   <td align="left" valign="top">
   <div class="form-optional">
@@ -32,6 +34,7 @@ the <em>browse</em> button to select a local file to upload.
   </div>
   </td>
 </tr>
+</dtml-with>
 
 <tr>
   <td align="left" valign="top" colspan="2">
