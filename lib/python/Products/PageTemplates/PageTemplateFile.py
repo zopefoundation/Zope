@@ -15,19 +15,18 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
-import os, AccessControl, Acquisition, sys
+import os, AccessControl
 from Globals import package_home, DevelopmentMode
-from zLOG import LOG, ERROR, INFO
-from Shared.DC.Scripts.Script import Script, BindingsUI
+from zLOG import LOG, ERROR
+from Shared.DC.Scripts.Script import Script
 from Shared.DC.Scripts.Signature import FuncCode
 from AccessControl import getSecurityManager
 from OFS.Traversable import Traversable
 from PageTemplate import PageTemplate
 from Expressions import SecureModuleImporter
 from ComputedAttribute import ComputedAttribute
-from ExtensionClass import Base
 from Acquisition import aq_parent, aq_inner
 from App.config import getConfiguration
 
@@ -51,7 +50,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         self.ZBindings_edit(self._default_bindings)
         if _prefix is None:
             _prefix = getConfiguration().softwarehome
-        elif type(_prefix) is not type(''):
+        elif not isinstance(_prefix, str):
             _prefix = package_home(_prefix)
         name = kw.get('__name__')
         if name:
@@ -91,7 +90,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
             pass
 
         # Execute the template in a new security context.
-        security=getSecurityManager()
+        security = getSecurityManager()
         bound_names['user'] = security.getUser()
         security.addContext(self)
         try:
@@ -119,15 +118,18 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
             return
         f = open(self.filename, "rb")
         try:
-            text = f.read()
-        finally:
+            text = f.read(XML_PREFIX_MAX_LENGTH)
+        except:
             f.close()
+            raise
         t = sniff_type(text)
-        if t != "text/xml" and "\r" in text:
+        if t != "text/xml":
             # For HTML, we really want the file read in text mode:
-            f = open(self.filename)
-            text = f.read()
             f.close()
+            f = open(self.filename)
+            text = ''
+        text += f.read()
+        f.close()
         self.pt_edit(text, t)
         self._cook()
         if self._v_errors:
@@ -179,6 +181,8 @@ XML_PREFIXES = [
     "\xfe\xff\0<\0?\0x\0m\0l",    # utf-16 big endian w/ byte order mark
     "\xff\xfe<\0?\0x\0m\0l\0",    # utf-16 little endian w/ byte order mark
     ]
+
+XML_PREFIX_MAX_LENGTH = max(map(len, XML_PREFIXES))
 
 def sniff_type(text):
     for prefix in XML_PREFIXES:
