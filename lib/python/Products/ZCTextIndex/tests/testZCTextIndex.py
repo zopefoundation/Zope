@@ -30,7 +30,10 @@ def eq(scaled1, scaled2, epsilon=scaled_int(0.01)):
     if abs(scaled1 - scaled2) > epsilon:
         raise AssertionError, "%s != %s" % (scaled1, scaled2)
 
-class IndexTests(testIndex.CosineIndexTest):
+# Subclasses should derive from one of testIndex.{CosineIndexTest,
+# OkapiIndexTest} too.
+
+class ZCIndexTestsBase:
 
     def setUp(self):
         extra = Extra()
@@ -38,7 +41,7 @@ class IndexTests(testIndex.CosineIndexTest):
         extra.lexicon_id = 'lexicon'
         caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
                                StopWordRemover()))
-        self.zc_index = ZCTextIndex('name', extra, caller, CosineIndex)
+        self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
         self.index = self.zc_index.index
         self.lexicon = self.zc_index.lexicon
 
@@ -54,10 +57,15 @@ class IndexTests(testIndex.CosineIndexTest):
                 self.assertEqual(wids, [])
         self.assertEqual(len(self.index._get_undoinfo(1)), 1)
 
+
+class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
+
+    # A fairly involved test of the ranking calculations based on
+    # an example set of documents in queries in Managing
+    # Gigabytes, pp. 180-188.  This test peeks into many internals of the
+    # cosine index.
+
     def testRanking(self):
-        # A fairly involved test of the ranking calculations based on
-        # an example set of documents in queries in Managing
-        # Gigabytes, pp. 180-188.
         self.words = ["cold", "days", "eat", "hot", "lot", "nine", "old",
                       "pease", "porridge", "pot"]
         self._ranking_index()
@@ -127,6 +135,10 @@ class IndexTests(testIndex.CosineIndexTest):
                 self.assert_(0 <= score <= SCALE_FACTOR)
                 eq(d[doc], score)
 
+class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
+    pass
+
+############################################################################
 # Subclasses of QueryTestsBase must set a class variable IndexFactory to
 # the kind of index to be constructed.
 
@@ -173,9 +185,12 @@ class CosineQueryTests(QueryTestsBase):
 class OkapiQueryTests(QueryTestsBase):
     IndexFactory = OkapiIndex
 
+############################################################################
+
 def test_suite():
     s = unittest.TestSuite()
-    for klass in IndexTests, CosineQueryTests, OkapiQueryTests:
+    for klass in (CosineIndexTests, OkapiIndexTests,
+                  CosineQueryTests, OkapiQueryTests):
         s.addTest(unittest.makeSuite(klass))
     return s
 
