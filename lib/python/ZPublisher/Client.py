@@ -56,8 +56,8 @@
 __doc__='''bobo call interface
 
 
-$Id: Client.py,v 1.1 1997/03/27 17:13:54 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Client.py,v 1.2 1997/03/27 18:10:47 jim Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import regex
 from httplib import HTTP
@@ -101,11 +101,11 @@ type2marshal={
 urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)', regex.casefold)
 
 NotFound='bci.NotFound'
-ServerError'bci.ServerError
+ServerError='bci.ServerError
 
 def ErrorTypes(code):
-    if code >= 400 && code < 500: return NotFound
-    if code >= 500 && code < 600: return ServerError
+    if code >= 400 and code < 500: return NotFound
+    if code >= 500 and code < 600: return ServerError
     return 'HTTP_Error_%s' % code
 
 class BoboFunction:
@@ -186,6 +186,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.2  1997/03/27 18:10:47  jim
+# Fixed bugs.
+#
 # Revision 1.1  1997/03/27 17:13:54  jim
 # *** empty log message ***
 #
