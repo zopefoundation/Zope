@@ -148,7 +148,8 @@ def PersistentClassDict(doc=None, meta_type=None):
         if doc is not None:
             dict['__doc__']=doc
         return dict
-    
+
+_marker=[]
 class ZClass(OFS.SimpleItem.SimpleItem):
     """Zope Class
     """
@@ -250,6 +251,11 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             if durl is None: durl=REQUEST['URL2']
             REQUEST['RESPONSE'].redirect(durl+'/manage_workspace')
 
+
+    def zclass_builtins(self):
+        r=find_builtins(self._zclass_).keys()
+        r.sort()
+
     def zclass_candidate_view_actions(self):
         r={}
 
@@ -271,9 +277,11 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         r.sort()
         return r
 
-    def getClassAttr(self, name):
-        r=self._zclass_.__dict__[name]
-        return r
+    def getClassAttr(self, name, default=_marker):
+        if default is _marker: return self._zclass_.__dict__[name]
+        try: return self._zclass_.__dict__[name]
+        except KeyError: return default
+        
 
     def setClassAttr(self, name, value):
         c=self._zclass_
@@ -296,6 +304,10 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         for name, who_cares in c.__ac_permissions__: a(name)
         r.sort()
         return r
+
+    def ziconImage(self, REQUEST, RESPONSE):
+        "Display a class icon"
+        return self._zclass_.ziconImage.index_html(REQUEST, RESPONSE)
             
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
@@ -327,3 +339,15 @@ def findActions(klass, found):
                 found[d['action']]=1
             findActions(b, found)
         except: pass
+
+def find_builtins(klass, found=None):
+    if found is None: found={}
+    for b in klass.__bases__:
+        try:
+            for pname, actions in b.__ac_permissions__:
+                for action in actions:
+                    found['action']=1
+            find_builtins(b, found)
+        except: pass
+
+    return found
