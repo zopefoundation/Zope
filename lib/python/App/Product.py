@@ -226,7 +226,7 @@ class Product(Folder, PermissionManager):
     def __init__(self, id, title):
         self.id=id
         self.title=title
-        self._setObject('Help', ProductHelp('Help', '%s Help' % id))
+        self._setObject('Help', ProductHelp('Help', id))
         
     def Destination(self):
         "Return the destination for factory output"
@@ -341,7 +341,7 @@ class Product(Folder, PermissionManager):
         with the Product.
         """
         if not hasattr(self, 'Help'):
-            self._setObject('Help', ProductHelp('Help', '%s Help' % self.id))
+            self._setObject('Help', ProductHelp('Help', self.id))
         return self.Help
 
 class CompressedOutputFile:
@@ -445,7 +445,7 @@ def initializeProduct(productp, name, home, app):
     if old is not None:
         app._manage_remove_product_meta_type(product)
         products._delObject(name)
-        for id, v in old.objectValues():
+        for id, v in old.objectItems():
             try: product._setObject(id, v)
             except: pass
 
