@@ -6,8 +6,27 @@ Zope Changes
 
     Features added
 
+     - New zopectl feature: adduser.  Instead of using the inituser
+       mechanism, "zopectl adduser <name> <password>" will add a user
+       with the 'Manager' role to your site.  This is useful both
+       interactively and for packagers.
+
+   Bugs fixed
+
      - deny attributes being both part of tal:attributes
        and having a messageid in i18n:attributes
+
+     - Bugfix: if zopectl is run as the root user, the debug, run, and
+       adduser commands will cause the Python process which performs
+       those actions to switch users to the effective user.  This
+       prevents ZODB index files, log files, etc. from being written
+       as root, potentially preventing later startup by the effective
+       user.
+
+     - Bugfix: allow the zopectl process to ascertain the program that
+       zdrun should run from the Zope config file.  This is necessary
+       if the file is moved out of a "single-directory-as-instance"
+       instance home.
 
   2.7.0b1
 
