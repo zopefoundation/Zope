@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -8,8 +8,9 @@ from Acquisition import Acquirer
 from Management import Management
 from Globals import HTMLFile
 from CacheManager import CacheManager
+from Persistence import Persistent
 
-class ApplicationManager(Acquirer,Management,CacheManager):
+class ApplicationManager(Persistent, Acquirer,Management,CacheManager):
     """Application management component."""
 
     __roles__=['manage',]
@@ -64,7 +65,7 @@ class ApplicationManager(Acquirer,Management,CacheManager):
 
     def manage_pack(self, days=0, REQUEST):
 	"""Pack the database"""
-	if self._p_jar.db is not Globals.Bobobase:
+	if self._p_jar.db is not Globals.Bobobase._jar.db:
 	    raise 'Session Error', (
 		'''You may not pack the application database while
 		working in a <em>session</em>''')
