@@ -62,6 +62,13 @@ Zope Changes
 
         - Added a '-r' switch to z2.py for ZServer read-only mode.
 
+        - The 'null' attribute in the DTML 'var' tag is now used when
+          the value being output if the Python value 'None'. Some
+          people considered this to be a bug.
+
+	- Permission objects are automatically created for new ZClass
+          objects. 
+
       Bugs fixed
 
         - Conflict errors, which occur when simultanious writes occur
@@ -88,7 +95,7 @@ Zope Changes
 
         - Database browsing didn't work for ZGadflyDA database adapters.
 
-        - Transaction mete data were not captured correctly by
+        - Transaction meta data were not captured correctly by
           ZPublisher, which made the undo log look odd wrt the user
           who performed the transaction.
 
@@ -105,6 +112,50 @@ Zope Changes
       
         - Fixed a product permissions registration bug that allowed
           product permission data to get lost.
+
+        - Objects were sometimes incorrectly acquired do a bug in
+	  detecting attribte errors during acquisition. This led to
+	  errors getting covered up or obscured.
+
+        - There was a memory leak in acquisition.
+
+        - Some thread-safety problems were fixed.
+
+        - DTML entity references (e.g. '&dtml-spam;') with missing
+          semicolons  (e.g. '&dtml-spam') caused infinite loops.
+
+        - Extra spaces around expressions in DTML caused syntax errors.
+
+        - Broken objects, which are used as surrogates for objects
+          that can no longer be instantiated due to missing product
+          installations, no longer use HTML markup in their text
+          representation, as this caused odd effects in HTML titles.
+
+        - A number of fixes were made to the new DOM support.
+  
+        - Versions could be deleted by users working in the deleted
+          versions. This led to strange paradoxical effects.  Attempts
+          to delete a version or an object containing a version by
+          someone working in a version now lead to errors.
+
+        - ZGadflyDA has been updated to use the current (as of this
+          release) version of Gadfly. (Note that this had been
+          incorrectly reported as a 2.0 beta 1 feature.)
+
+        - Using an sql method in a version sometimes caused the method
+          to be locked, making it unusable by non-version users. This
+          was due to the way that column meta-data was managed.  Now
+          column meta-data, used by report creation wizards, is only
+          safed when sql methods are tested.
+
+        - In StructuredText, list items could not directly introduce
+          example code.
+
+        - Undoing transactions that discarded versions did not cause
+          versions to appear non-empty.
+
+        - Temporary files were created for file storages that were
+          opened in read-only mode.
 
       Note:
 
@@ -228,9 +279,6 @@ Zope Changes
         - The pyexpat extension module for using James Clark's 
           expat library for parsing XML is included in the
           distribution as Shared.DC.pyexpat.
-
-        - ZGadflyDA has been updated to use the current (as of this
-          release) version of Gadfly.
 
       Bugs Fixed
       
