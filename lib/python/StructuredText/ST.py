@@ -90,10 +90,12 @@ def findlevel(levels,indent):
             highest = key
     return highest-1
 
+para_delim = r'(\n\s*\n|\r\n\s*\r\n)' # UNIX or DOS line endings, respectively
+
 #####################################################################
 
 # Golly, the capitalization of this function always makes me think it's a class
-def StructuredText(paragraphs, paragraph_delimiter=re.compile('\n\s*\n')):
+def StructuredText(paragraphs, delimiter=re.compile(para_delim)):
     """
     StructuredText accepts paragraphs, which is a list of 
     lines to be parsed. StructuredText creates a structure
@@ -107,12 +109,12 @@ def StructuredText(paragraphs, paragraph_delimiter=re.compile('\n\s*\n')):
     level             = 0        # which header are we under
     struct            = []      # the structure to be returned
     run                = struct
-    
-    paragraphs = filter(
-        strip,
-        paragraph_delimiter.split(expandtabs('\n\n'+paragraphs+'\n\n'))
-        )
-    
+
+    paragraphs = expandtabs(paragraphs)
+    paragraphs = '%s%s%s' % ('\n\n', paragraphs, '\n\n')
+    paragraphs = delimiter.split(paragraphs)
+    paragraphs = filter(strip, paragraphs)
+
     if not paragraphs: return StructuredTextDocument()
     
     ind = []     # structure based on indention levels
