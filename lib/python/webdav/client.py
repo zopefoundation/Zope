@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -202,7 +202,7 @@ class Resource:
 
     def proppatch(self, body, **kw):
         headers=self.__get_headers(kw)
-        headers['Content-Type']='text/xml; charset="utf-8"'
+        if body: headers['Content-Type']='text/xml; charset="utf-8"'
         headers['Content-Length']=str(len(body))
         return self.__snd_request('PROPPATCH', self.uri, headers, body)
 
