@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -122,7 +122,7 @@ class ImageFile(Acquisition.Explicit):
         # Attempt to handle If-Modified-Since headers.
         ms=request.get_header('If-Modified-Since', None)
         if ms is not None:
-            ms=string.split(ms, ';')[0]
+            ms=split(ms, ';')[0]
             ms=DateTime(ms).timeTime()
             if self.lmt > ms:
                 RESPONSE.setStatus(304)
