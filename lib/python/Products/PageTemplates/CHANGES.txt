@@ -1,3 +1,8 @@
+2001-05-07  Evan Simpson <evan@digicool.com>
+
+        * Version 1.2.1
+        * Bugfixes for 'repeat' variable access
+
 2001-04-27  Evan Simpson <evan@digicool.com>
 
         * Version 1.2.0
