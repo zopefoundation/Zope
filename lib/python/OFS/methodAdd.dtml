@@ -6,7 +6,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add DTML Method</H2>
 
-<dtml-var "HelpSys.HelpButton('DTML-Method_Add.dtml','OFSP')">
+<dtml-var "HelpSys.HelpButton('DTML-DocumentOrMethod_Add.stx','OFSP')">
 
 <P>
 A DTML Method is used to hold scripting tags and text content.

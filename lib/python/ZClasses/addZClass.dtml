@@ -6,7 +6,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add ZClass</H2>
 
-<dtml-var "HelpSys.HelpButton('ZClass_Add.dtml','OFSP')">
+<dtml-var "HelpSys.HelpButton('ZClass_Add.stx','OFSP')">
 
 <dtml-with "_(selected=[], unselected=[], baseclasses=[], id='', title='',
              meta_type='',

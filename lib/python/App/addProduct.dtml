@@ -4,7 +4,7 @@
 
 <h2>Add a Product</h2>
 
-<dtml-var "HelpSys.HelpButton('Product_Add.dtml','OFSP')">
+<dtml-var "HelpSys.HelpButton('Product_Add.stx','OFSP')">
 
 <P>
 Products allows you to define new types of Zope objects. A Product contains

@@ -7,7 +7,7 @@
 <BODY BGCOLOR="#FFFFFF">
 <H2>Add MailHost</H2>
 
-<dtml-var "HelpSys.HelpButton('Mail-Host_Add.dtml', 'MailHost')">
+<dtml-var "HelpSys.HelpButton('Mail-Host_Add.stx', 'MailHost')">
 
 <P>
 A Mail Host allows Zope to send email.

@@ -4,7 +4,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add a SQL Method</H2>
 
-<dtml-var "HelpSys.HelpButton('Z-SQL-Method_Add.dtml','ZSQLMethods')">
+<dtml-var "HelpSys.HelpButton('Z-SQL-Method_Add.stx','ZSQLMethods')">
 
 <dtml-if SQLConnectionIDs>
 <P>

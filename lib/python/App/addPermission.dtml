@@ -4,7 +4,7 @@
 
 <h2>Define a permission</h2>
 
-<dtml-var "HelpSys.HelpButton('Zope-Permission_Add.dtml','OFSP')">
+<dtml-var "HelpSys.HelpButton('Zope-Permission_Add.stx','OFSP')">
 
 <form action="manage_addPermission" method="POST">
 <table cellspacing="2">

@@ -6,7 +6,7 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Catalog</H2>
 
-<dtml-var "HelpSys.HelpButton('ZCatalog_Add.dtml', 'ZCatalog')">
+<dtml-var "HelpSys.HelpButton('ZCatalog_Add.stx', 'ZCatalog')">
 
 <FORM ACTION="manage_addZCatalog" METHOD="POST">
 <TABLE CELLSPACING="2">
