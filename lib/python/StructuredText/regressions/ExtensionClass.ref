@@ -410,13 +410,13 @@
         be used to compute an attribute, and calls the function when
         it's <code>__of__</code> method is called:<p>          import ExtensionClass</p>
 <h5>          class ComputedAttribute(ExtensionClass.Base):</h5>
-<p>            def _<u>init</u>_(self, func): self.func=func</p>
-<p>            def _<u>of</u>_(self, parent): return self.func(parent)</p>
+<p>            def __init__(self, func): self.func=func</p>
+<p>            def __of__(self, parent): return self.func(parent)</p>
 </p>
 <p>        Then we can use this class to create computed attributes.  In the
         example below, we create a computed attribute, 'radius':<p>          from math import sqrt</p>
 <h5>          class Point(ExtensionClass.Base):</h5>
-<p>            def _<u>init</u>_(self, x, y): self.x, self.y = x, y</p>
+<p>            def __init__(self, x, y): self.x, self.y = x, y</p>
 <p>            radius=ComputedAttribute(lambda self: sqrt(self.x<strong>2+self.y</strong>2))</p>
 </p>
 <h5>        which we can use just like an ordinary attribute:</h5>
@@ -612,4 +612,3 @@
 <p>.. <a href="#6">[6]</a> Beaudry, D., and Ascher, D., <a href="http://starship.skyport.net/~da/mess/">The Meta-Extension Set</a>.</p>
 </body>
 </html>
-

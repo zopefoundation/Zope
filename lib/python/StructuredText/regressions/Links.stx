@@ -4,13 +4,13 @@ This is LinkTest
 
   - please click "here":/Members/Zope?a=b&c=d%20blabla
 
-  - please click "here":http://www.zope.org" 
+  - please click "here":http://www.zope.org
 
-  - please click "here":http://www.zope.org/members/" 
+  - please click "here":http://www.zope.org/members/
 
-  - please click "here":http://www.zope.org:2001" 
+  - please click "here":http://www.zope.org:2001 
  
-  - please click "here":http://www.zope.org:2001/members/" 
+  - please click "here":http://www.zope.org:2001/members/
 
   - please click "here":http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test 
 

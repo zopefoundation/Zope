@@ -205,16 +205,21 @@ class BasicTests(unittest.TestCase):
 
         res = HTML(stxtxt,level=1,header=0)
         if res.find(expected)==-1:
-            print res
+            print "Text:     ",stxtxt
+            print "Converted:",res
+            print "Expected: ",expected
             raise AssertionError,"basic test failed for '%s'" % stxtxt
             
+
     def testUnderline(self):
         """underline"""
-        self._test("xx _this is html_ xx","xx <u>this is html</u> xx")
+        self._test("xx _this is html_ xx",
+                   "xx <u>this is html</u> xx")
         
     def testEmphasis(self):
         """ emphasis """
-        self._test("xx *this is html* xx","xx <em>this is html</em> xx")
+        self._test("xx *this is html* xx",
+                   "xx <em>this is html</em> xx")
 
     def testStrong(self):
         """ strong """
@@ -227,11 +232,24 @@ class BasicTests(unittest.TestCase):
                    '<a href="index_html">index_html</a>')
 
     
-    def testUnderscoresInLiteral(self):
+    def testUnderscoresInLiteral1(self):
+        """ underscores in literals shouldn't do unterlining """
+
+        self._test("def __init__(self)",
+                   "def __init__(self)")
+
+    def testUnderscoresInLiteral2(self):
         """ underscores in literals shouldn't do unterlining """
 
         self._test("this is '__a_literal__' eh",
                    "<code>__a_literal__</code>")
+
+
+    def testUnderlinesWithoutWithspaces(self):
+        """ underscores in literals shouldn't do unterlining """
+
+        self._test("Zopes structured_text is sometimes a night_mare",
+                   "Zopes structured_text is sometimes a night_mare")
 
 def test_suite():
     suite = unittest.TestSuite()
