@@ -13,7 +13,7 @@
 ##############################################################################
 """Zope user bootstrap system"""
 
-__version__='$Revision: 1.15 $ '[11:-2]
+__version__='$Revision: 1.16 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 
@@ -173,12 +173,15 @@ Copyright (C) 1999, 2000 Digital Creations, Inc.
                 print """
 Please choose a format from:
 
-SHA - SHA-1 hashed password
+SHA - SHA-1 hashed password (default)
 CRYPT - UNIX-style crypt password
-CLEARTEXT - no protection.
+CLEARTEXT - no protection
 """
                 encoding = raw_input("Encoding: ")
-                if encoding != '':
+                if encoding == '':
+                    encoding = 'SHA'
+                    break
+                if encoding.upper() in ['SHA', 'CRYPT', 'CLEARTEXT']:
                     break
 
             domains = raw_input("Domain restrictions: ")
