@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.12 1997/09/26 22:17:45 jim Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: DA.py,v 1.13 1997/10/29 14:49:29 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -101,21 +101,33 @@ class Folder(OFS.Folder.Folder):
 	'Method for testing server connection information'
 	return 'PING'
 
-class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
+class Query(Aqueduct.Aqueduct.Searchable):
 
     'Database query object'
 
     icon       ='AqueductDA/DBAdapter_icon.gif'
     meta_type='Aqueduct Database Adapter'
-    hasAqueductClientInterface=1
     _col=None
     
     manage=HTMLFile('AqueductDA/edit')
 
     def quoted_src(self): return quotedHTML(self.src)
+  
+    def _convert(self):
+	try:
+	    del self.manage_testForm
+	    del self.arguments
+	    del self.result_names
+	    del self.report_src
+	except: pass
+	try: self._arg=parse(self.arguments_src)
+	except: pass
 
     def manage_edit(self,key,title,arguments,template,REQUEST=None):
 	'change query properties'
+
+	if self.__dict__.has_key('manage_testForm'): self._convert
+
 	self.title=title
 	self.key=key
 	self.rotor=Rotor(key)
@@ -130,33 +142,13 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 		action=REQUEST['URL2']+'/manage_main',
 		)
 
-    
-    def manage_testForm(self, REQUEST):
-	"""Provide testing interface"""
-	input_src=default_input_form(self.title_or_id(),
-				     self._arg, 'manage_test')
-	return HTML(input_src)(self, REQUEST)
 
-    def manage_test(self, REQUEST):
-	'Perform an actual query'
-	
-	result=self(REQUEST)
-	report=HTML(custom_default_report(self.id, result))
-	return apply(report,(self,REQUEST),{self.id:result})
-
-    def index_html(self, PARENT_URL):
-	" "
-	raise 'Redirect', ("%s/manage_testForm" % PARENT_URL)
-
-    def _searchable_arguments(self): return self._arg
-
-    def _searchable_result_columns(self): return self._col
-
-    def __call__(self,REQUEST):
+    def __call__(self,REQUEST=None):
 	try: DB__=self.database_connection()
 	except: raise 'Database Error', (
 	    '%s is not connected to a database' % self.id)
-	
+
+	if REQUEST is None: REQUEST=self.REQUEST
 	argdata=self._argdata(REQUEST)
 	query=self.template(self,argdata)
 	result=DB__.query(query)
@@ -209,6 +201,10 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.13  1997/10/29 14:49:29  jim
+# Updated to inherit testing methods from Aqueduct.Aqueduct.Searchable.
+# Updated __call__ so queries can be used in documents.
+#
 # Revision 1.12  1997/09/26 22:17:45  jim
 # more
 #
