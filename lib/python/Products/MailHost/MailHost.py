@@ -89,14 +89,14 @@ from socket import *; from select import select
 from AccessControl.Role import RoleManager
 from operator import truth
 import Acquisition, sys, ts_regex, string, types, rfc822
-import OFS.SimpleItem
+import OFS.SimpleItem, re, quopri
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.36 1999/02/16 17:40:26 brian Exp $ 
-__version__ = "$Revision: 1.36 $"[11:-2]
+#$Id: MailHost.py,v 1.37 1999/02/16 19:13:15 brian Exp $ 
+__version__ = "$Revision: 1.37 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -256,7 +256,9 @@ class MailHost(Persistent, MailBase):
 def Send(host, port, localhost, timeout, from_, to, subject, body):
     SendMail(host, port, localhost, timeout).send(from_, to, subject, body)
         
-class SendMail:     
+class SendMail:
+    singledots=re.compile('^\.$')
+    
     def __init__(self, smtpHost, smtpPort, localHost="localhost", timeout=1):
         self.conn = socket(AF_INET, SOCK_STREAM)
         self.conn.connect(smtpHost, smtpPort)
@@ -309,8 +311,18 @@ class SendMail:
         self.conn.send("data\015\012")
         self._check()
         replace=string.replace
+        body=self.singledots.sub('..', body)
         body=replace(body, '\r\n', '\n')
         body=replace(body, '\r', '\n')
+
+        # This snippet encodes the body as quoted-printable; there
+        # seem to be some issues with this, so I'm leaving it out
+        # for now.
+        # inbody=StringIO(body)
+        # outbody=StringIO()
+        # quopri.encode(inbody, outbody, 0)
+        # body=outbody.getvalue()
+
         body=replace(body, '\n', '\015\012')
         self.conn.send(body)
         self.conn.send("\015\012.\015\012")
@@ -320,8 +332,6 @@ class SendMail:
         self.conn.send("quit\015\012")
         self.conn.close()
 
-
-bin_search=ts_regex.compile('[\0-\6\177-\277]').search
 
 def decapitate(message):
     # split message into headers / body
