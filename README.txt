@@ -32,7 +32,7 @@ License
 
 Important
 
-  This release requires Python 1.5.2.
+  This release requires Python 2.1.
 
 Installing Zope
 
