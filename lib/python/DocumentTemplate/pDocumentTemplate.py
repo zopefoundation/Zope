@@ -85,11 +85,10 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.31 2001/06/21 19:43:44 shane Exp $'''
-__version__='$Revision: 1.31 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.32 2001/09/25 13:37:02 andreasjung Exp $'''
+__version__='$Revision: 1.32 $'[11:-2]
 
 import string, sys, types
-from string import join
 
 ClassTypes = [types.ClassType]
 
@@ -301,5 +300,5 @@ def render_blocks(blocks, md):
     l=len(rendered)
     if l==0: return ''
     elif l==1: return rendered[0]
-    return join(rendered, '')
+    return ''.join(rendered)
     return rendered

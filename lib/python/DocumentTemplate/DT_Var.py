@@ -217,12 +217,11 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.42 2001/07/12 20:04:01 andreas Exp $'
-__version__='$Revision: 1.42 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.43 2001/09/25 13:37:02 andreasjung Exp $'
+__version__='$Revision: 1.43 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
-from string import find, split, join, atoi, rfind
 from urllib import quote, quote_plus
 from cgi import escape
 from html_quote import html_quote # for import by other modules, dont remove!
@@ -330,7 +329,7 @@ class Var:
                 tag with a non-integer value.''')
             if len(val) > size:
                 val=val[:size]
-                l=rfind(val,' ')
+                l=val.rfind(' ')
                 if l > size/2:
                     val=val[:l+1]
                 if have_arg('etc'): l=args['etc']
@@ -362,8 +361,8 @@ def url_quote_plus(v, name='(Unknown name)', md={}):
 
 def newline_to_br(v, name='(Unknown name)', md={}):
     v=str(v)
-    if find(v,'\r') >= 0: v=join(split(v,'\r'),'')
-    if find(v,'\n') >= 0: v=join(split(v,'\n'),'<br>\n')
+    if v.find('\r') >= 0: v=''.join(v.split('\r'))
+    if v.find('\n') >= 0: v='<br>\n'.join(v.split('\n'))
     return v
 
 def whole_dollars(v, name='(Unknown name)', md={}):
@@ -378,11 +377,11 @@ def thousands_commas(v, name='(Unknown name)', md={},
                      thou=re.compile(
                          r"([0-9])([0-9][0-9][0-9]([,.]|$))").search):
     v=str(v)
-    vl=split(v,'.')
+    vl=v.split('.')
     if not vl: return v
     v=vl[0]
     del vl[0]
-    if vl: s='.'+join(vl,'.')
+    if vl: s='.'+'.'.join(vl)
     else: s=''
     mo=thou(v)
     while mo is not None:
@@ -419,7 +418,7 @@ def sql_quote(v, name='(Unknown name)', md={}):
     This is needed to securely insert values into sql
     string literals in templates that generate sql.
     """
-    if find(v,"'") >= 0: return join(split(v,"'"),"''")
+    if v.find("'") >= 0: return "''".join(v.split("'"))
     return v
 
 special_formats={
@@ -440,7 +439,7 @@ special_formats={
     }
 
 def spacify(val):
-    if find(val,'_') >= 0: val=join(split(val,'_'))
+    if val.find('_') >= 0: val=" ".join(val.split('_'))
     return val
 
 modifiers=(html_quote, url_quote, url_quote_plus, newline_to_br,

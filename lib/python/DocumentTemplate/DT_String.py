@@ -82,9 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.47 2001/09/04 13:46:43 evan Exp $"
+"$Id: DT_String.py,v 1.48 2001/09/25 13:37:02 andreasjung Exp $"
 
-from string import split, strip
 import thread,re,exceptions,os
 
 from DT_Util import ParseError, InstanceDict, TemplateDict, render_blocks, str
@@ -129,7 +128,7 @@ class String:
     parse_error__roles__=()
     def parse_error(self, mess, tag, text, start):
         raise ParseError, "%s, for tag %s, on line %s of %s<p>" % (
-            mess, self.errQuote(tag), len(split(text[:start],'\n')),
+            mess, self.errQuote(tag), len(text[:start].split('\n')),
             self.errQuote(self.__name__))
 
     commands__roles__=()
@@ -192,7 +191,7 @@ class String:
                  or None otherwise
         """
         tag, name, args, fmt = match_ob.group(0, 'name', 'args', 'fmt')
-        args=args and strip(args) or ''
+        args=args and args.strip() or ''
 
         if fmt==']':
             if not command or name != command.name:

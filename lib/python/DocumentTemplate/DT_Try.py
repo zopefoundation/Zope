@@ -196,9 +196,9 @@ class Try:
                             'The else block should be the last block '
                             'in a try tag', self.name)
 
-                    for errname in string.split(nargs):
+                    for errname in nargs.split():
                         self.handlers.append((errname,nsection.blocks))
-                    if string.strip(nargs)=='':
+                    if nargs.split()=='':
                         if defaultHandlerFound:
                             raise ParseError, (
                                 'Only one default exception handler '

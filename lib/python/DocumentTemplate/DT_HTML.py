@@ -84,12 +84,11 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.29 2001/05/25 11:34:56 andreas Exp $"""
+$Id: DT_HTML.py,v 1.30 2001/09/25 13:37:02 andreasjung Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, re
 from DT_Util import ParseError, str
-from string import strip, find, split, join, rfind, replace
 
 class dtml_re_class:
     """ This needs to be replaced before 2.4.  It's a hackaround. """
@@ -98,9 +97,6 @@ class dtml_re_class:
                end_match=re.compile('[\000- ]*(/|end)', re.I).match,
                start_search=re.compile('[<&]').search,
                ent_name=re.compile('[-a-zA-Z0-9_.]+').match,
-               find=find,
-               strip=strip,
-               replace=replace,
                ):
 
         while 1:
@@ -109,23 +105,23 @@ class dtml_re_class:
             s = mo.start(0)
             if text[s:s+5] == '<!--#':
                 n=s+5
-                e=find(text,'-->',n)
+                e=text.find('-->',n)
                 if e < 0: return None
                 en=3
 
                 mo =end_match(text,n)
                 if mo is not None:
                     l = mo.end(0) - mo.start(0)
-                    end=strip(text[n:n+l])
+                    end=text[n:n+l].strip()
                     n=n+l
                 else: end=''
 
             elif text[s:s+6] == '<dtml-':
                 e=n=s+6
                 while 1:
-                    e=find(text,'>',e+1)
+                    e=text.find('>',e+1)
                     if e < 0: return None
-                    if len(split(text[n:e],'"'))%2:
+                    if len(text[n:e].split('"'))%2:
                         # check for even number of "s inside
                         break
 
@@ -135,9 +131,9 @@ class dtml_re_class:
             elif text[s:s+7] == '</dtml-':
                 e=n=s+7
                 while 1:
-                    e=find(text,'>',e+1)
+                    e=text.find('>',e+1)
                     if e < 0: return None
-                    if len(split(text[n:e],'"'))%2:
+                    if len(text[n:e].split('"'))%2:
                         # check for even number of "s inside
                         break
 
@@ -147,7 +143,7 @@ class dtml_re_class:
             else:
                 if text[s:s+5] == '&dtml' and text[s+5] in '.-':
                     n=s+6
-                    e=find(text,';',n)                        
+                    e=text.find(';',n)                        
                     if e >= 0:
                         args=text[n:e]
                         l=len(args)
@@ -163,13 +159,13 @@ class dtml_re_class:
                                     self._start = s
                                     return self
                                 else:
-                                    nn=find(args,'-')
+                                    nn=args.find('-')
                                     if nn >= 0 and nn < l-1:
                                         d[1]=d['end']=''
                                         d[2]=d['name']='var'
                                         d[0]=text[s:e+1]
-                                        args=(args[nn+1:]+' '+
-                                              replace(args[:nn],'.',' '))
+                                        args=args[nn+1:]+' '+ \
+                                              args[:nn].replace('.',' ')
                                         d[3]=d['args']=args
                                         self._start = s
                                         return self
@@ -184,9 +180,9 @@ class dtml_re_class:
         l = mo.end(0) - mo.start(0)
  
         a=n+l
-        name=strip(text[n:a])
+        name=text[n:a].strip()
 
-        args=strip(text[a:e])
+        args=text[a:e].strip()
 
         d=self.__dict__
         d[0]=text[s:e+en]
@@ -238,7 +234,7 @@ class HTML(DT_String.String):
                  or None otherwise
         """
         tag, end, name, args = match_ob.group(0, 'end', 'name', 'args')
-        args=strip(args)
+        args=args.strip()
         if end:
             if not command or name != command.name:
                 raise ParseError, ('unexpected end tag', tag)
@@ -282,7 +278,7 @@ class HTML(DT_String.String):
                        (('"'), '&quot;'))): #"
         if text is None: text=self.read_raw()
         for re,name in character_entities:
-            if find(text, re) >= 0: text=join(split(text,re),name)
+            if text.find(re) >= 0: text=name.join(text.split(re))
         return text
 
     errQuote__roles__=()
@@ -327,7 +323,7 @@ class HTMLDefault(HTML):
     def manage_edit(self,data,PARENTS,URL1,REQUEST):
         'edit a template'
         newHTML=self.copy_class(data,self.globals,self.__name__)
-        setattr(PARENTS[1],URL1[rfind(URL1,'/')+1:],newHTML)
+        setattr(PARENTS[1],URL1[URL1.rfind('/')+1:],newHTML)
         return self.editConfirmation(self,REQUEST)
 
 
@@ -375,9 +371,9 @@ class HTMLFile(FileMixin, HTML):
                     PARENTS=[],URL1='',URL2='',REQUEST='', SUBMIT=''):
         'edit a template'
         if SUBMIT==FactoryDefaultString: return self.manage_default(REQUEST)
-        if find(data,'\r'):
-            data=join(split(data,'\r\n'),'\n\r')
-            data=join(split(data,'\n\r'),'\n')
+        if data.find('\r'):
+            data='\n\r'.join(data.split('\r\n'))
+            data='\n'.join(data.split('\n\r'))
             
         if self.edited_source:
             self.edited_source=data
@@ -387,5 +383,5 @@ class HTMLFile(FileMixin, HTML):
             newHTML=self.__class__()
             newHTML.__setstate__(self.__getstate__())
             newHTML.edited_source=data
-            setattr(PARENTS[1],URL1[rfind(URL1,'/')+1:],newHTML)
+            setattr(PARENTS[1],URL1[URL1.rfind('/')+1:],newHTML)
         if REQUEST: return self.editConfirmation(self,REQUEST)
