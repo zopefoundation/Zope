@@ -173,6 +173,19 @@ Options:
 
     Multiple -w options can be provided to run multiple servers.
 
+  -W port
+  
+    The "WebDAV source" port.  If this is a dash (e.g. -w -), then
+    "WebDAV source" is disabled.  The default is disabled.  Note that
+    this feature is a workaround for the lack of "source-link" support
+    in standard WebDAV clients.
+
+    The port can be preeceeded by an ip address follwed by a colon
+    to specify an address to listen on. This allows different servers
+    to listen on different addresses.
+
+    Multiple -W options can be provided to run multiple servers.
+
   -f port
   
     The FTP port.  If this is a dash (e.g. -f -), then FTP
@@ -325,6 +338,10 @@ HTTP_PORT=8080
 # HTTP enivornment settings.
 HTTP_ENV={}
 
+# Port for the special "WebDAV source view" HTTP handler.  There is no
+# standard port for this handler, which is disabled by default.
+WEBDAV_SOURCE_PORT=[]
+
 ## FTP configuration
 
 # Port for the FTP Server. The standard port for FTP services is 21.
@@ -392,7 +409,7 @@ try:
         raise 'Invalid python version', string.split(sys.version)[0]
 
     opts, args = getopt.getopt(sys.argv[1:],
-                               'hz:Z:t:i:a:d:u:w:f:p:m:Sl:2DP:rF:L:XM:')
+                               'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:')
 
     DEBUG=0
     READ_ONLY=0
@@ -441,6 +458,8 @@ try:
             MONITOR_PORT=server_info(MONITOR_PORT, v)
         elif o=='-w':
             HTTP_PORT=server_info(HTTP_PORT, v)
+        elif o=='-W':
+            WEBDAV_SOURCE_PORT=server_info(WEBDAV_SOURCE_PORT, v)
         elif o=='-f':
             FTP_PORT=server_info(FTP_PORT, v)
         elif o=='-P':
@@ -575,6 +594,7 @@ if MODULE=='Zope':
 from ZServer import resolver, logger, asyncore
 
 from ZServer import zhttp_server, zhttp_handler
+from ZServer.WebDAVSrcHandler import WebDAVSrcHandler
 from ZServer import PCGIServer,FTPServer,FCGIServer
 
 from ZServer import secure_monitor_server
@@ -620,6 +640,30 @@ if HTTP_PORT:
         zh = zhttp_handler(MODULE, '', HTTP_ENV)
         hs.install_handler(zh)
 
+# WebDAV source Server (runs HTTP, but munges request to return
+#  'manage_FTPget').
+if WEBDAV_SOURCE_PORT:
+    if type(WEBDAV_SOURCE_PORT) is type(0):
+        WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
+    for address, port in WEBDAV_SOURCE_PORT:
+        hs = zhttp_server(
+            ip=address,
+            port=port,
+            resolver=rs,
+            logger_object=lg)
+
+        # Handler for a published module. zhttp_handler takes 3 arguments:
+        # The name of the module to publish, and optionally the URI base
+        # which is basically the SCRIPT_NAME, and optionally a dictionary
+        # with CGI environment variables which override default
+        # settings. The URI base setting is useful when you want to
+        # publish more than one module with the same HTTP server. The CGI
+        # environment setting is useful when you want to proxy requests
+        # from another web server to ZServer, and would like the CGI
+        # environment to reflect the CGI environment of the other web
+        # server.    
+        zh = WebDAVSrcHandler(MODULE, '', HTTP_ENV)
+        hs.install_handler(zh)
 
 # FTP Server
 if FTP_PORT:
