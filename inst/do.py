@@ -89,10 +89,6 @@ import os, sys, string
 
 cd=os.chdir
 
-for a in sys.argv[1:]:
-    n,v = string.split(a,'=')
-    os.environ[n]=v
-
 def do(command, picky=1):
     print command
     i=os.system(command)
@@ -113,7 +109,7 @@ def ch(path, user, group, mode=0600):
         do("chgrp %s %s" % (group, path), 0)
 
     if user:
-        do("chown %s %s" % (group, path), 0)
+        do("chown %s %s" % (user, path), 0)
 
     do("chmod %s %s" % (oct(mode), path), 0)
     
