@@ -99,6 +99,9 @@ preceding paragraph that has a lower level.
 
 Special symbology is used to indicate special constructs:
 
+- A single-line paragraph whose succeeding paragraphs are lower level is
+  treated as a header.
+
 - A paragraph that begins with a '-', '*', or 'o' is treated as an
   unordered list (bullet) element.
 
@@ -128,6 +131,9 @@ Special symbology is used to indicate special constructs:
 - Text surrounded by '**' characters (with white-space to the left of the
   first '**' and whitespace or puctuation to the right of the second '**')
   is made strong.
+
+- Text surrounded by '_' underscore characters (with whitespace to the left 
+  and whitespace or punctuation to the right) is made underlined.
 
 - Text encloded by double quotes followed by a colon, a URL, and concluded
   by punctuation plus white space, *or* just white space, is treated as a
@@ -164,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.15 1999/03/11 22:40:18 klm Exp $'''
+$Id: StructuredText.py,v 1.16 1999/03/12 17:12:12 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -216,6 +222,15 @@ $Id: StructuredText.py,v 1.15 1999/03/11 22:40:18 klm Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.16  1999/03/12 17:12:12  klm
+# Added support for underlined elements, in the obvious way (and
+# included an entry in the module docstring for it).
+#
+# Added an entry in the module docstring describing what i *guess* is
+# the criterion for identifying header elements.  (I'm going to have to
+# delve into and understand the framework a bit better before *knowing*
+# this is the case.)
+#
 # Revision 1.15  1999/03/11 22:40:18  klm
 # Handle links that include '#' named links.
 #
@@ -452,11 +467,13 @@ ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
 ctag_middl2="[%s][%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s][%s]"
 em    =regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
 strong=regex.compile(ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix)
+under =regex.compile(ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix)
 code  =regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
         
 def ctag(s):
     if s is None: s=''
     s=gsub(strong,'\\1<strong>\\2</strong>\\3',s)
+    s=gsub(under, '\\1<u>\\2</u>\\3',s)
     s=gsub(code,  '\\1<code>\\2</code>\\3',s)
     s=gsub(em,    '\\1<em>\\2</em>\\3',s)
     return s    
