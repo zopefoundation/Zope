@@ -20,7 +20,7 @@ alt="" />
 
 <td align="right" valign="top" width="50%">
 <div class="form-element">
-<form action="<dtml-var BASEPATH1>" method="POST" target="manage_main">
+<form action="<dtml-var BASEPATH1>/" method="POST" target="manage_main">
 <span class="std-text">Logged in as <strong><dtml-var 
  AUTHENTICATED_USER></strong></span> &nbsp;&nbsp;
 
