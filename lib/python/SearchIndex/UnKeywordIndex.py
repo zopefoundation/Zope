@@ -85,6 +85,7 @@
 
 from UnIndex import UnIndex, MV, intSet
 from zLOG import LOG, ERROR
+from Missing import MV
 from types import *
 
 class UnKeywordIndex(UnIndex):
@@ -98,7 +99,7 @@ class UnKeywordIndex(UnIndex):
     This should have an _apply_index that returns a relevance score
     """
 
-    def index_object(self, i, obj, threshold=None):
+    def index_object(self, documentId, obj, threshold=None):
         """ index an object 'obj' with integer id 'i'
 
         Ideally, we've been passed a sequence of some sort that we
@@ -106,64 +107,73 @@ class UnKeywordIndex(UnIndex):
         useful with the results. In the case of a string, this means
         indexing the entire string as a keyword."""
 
-        # Before we do anything, unindex the object we've been handed, as
-        # we can't depend on the user to do the right thing.
-        self.unindex_object(i)
-
-        index = self._index
-        unindex = self._unindex
-
-        id = self.id
-
+        # First we need to see if there's anything interesting to look at
+        # self.id is the name of the index, which is also the name of the
+        # attribute we're interested in.  If the attribute is callable,
+        # we'll do so.
         try:
-            kws=getattr(obj, id)
-            if callable(kws):
-                kws = kws()
+            newKeywords = getattr(obj, self.id)
+            if callable(newKeywords):
+                newKeywords = newKeywords()
         except:
-            return 0
+            newKeywords = MV
 
-        # Check to see if we've been handed a string and if so, tuplize it
-        if type(kws) is StringType:
-            kws = tuple(kws)
+        if type(newKeywords) is StringType:
+            newKeywords = (keywords, )
 
-        # index each item in the sequence. This also catches things that are
-        # not sequences.
-        try:
-            for kw in kws:
-                set = index.get(kw)
-                if set is None:
-                    index[kw] = set = intSet()
-                    set.insert(i)
-        except TypeError:
+        # Now comes the fun part, we need to figure out what's changed
+        # if anything from the previous record.
+        oldKeywords = self._unindex.get(documentId, MV)
+
+        if newKeywords is MV:
+            self.unindex_object(documentId)
             return 0
+        elif oldKeywords is MV:
+            try:
+                for kw in newKeywords:
+                    self.insertForwardIndexEntry(kw, documentId)
+            except TypeError:
+                return 0
+        else:
+            # We need the old keywords to be a mapping so we can manipulate
+            # them more easily.
+            tmp = {}
+            try:
+                for kw in oldKeywords:
+                    tmp[kw] = None
+                    oldKeywords = tmp
+
+                    # Now we're going to go through the new keywords,
+                    # and add those that aren't already indexed.  If
+                    # they are already indexed, just delete them from
+                    # the list.
+                    for kw in newKeywords:
+                        if oldKeywords.has_key(kw):
+                            del oldKeywords[kw]
+                        else:
+                            self.insertForwardIndexEntry(kw, documentId)
+
+                    # Now whatever is left in oldKeywords are keywords
+                    # that we no longer have, and need to be removed
+                    # from the indexes.
+                    for kw in oldKeywords.keys():
+                        self.removeForwardIndexEntry(kw, documentId)
+
+            except TypeError:
+                return 0
         
-        unindex[i] = kws
-
-        self._index = index
-        self._unindex = unindex
+        self._unindex[documentId] = newKeywords
 
         return 1
     
 
-    def unindex_object(self, i):
-        """ carefully unindex the object with integer id 'i' and do not
-        fail if it does not exist """
-        index = self._index
-        unindex = self._unindex
+    def unindex_object(self, documentId):
+        """ carefully unindex the object with integer id 'documentId'"""
 
-        kws = unindex.get(i, None)
-        if kws is None:
+        keywords = self._unindex.get(documentId, MV)
+        if keywords is MV:
             return None
-        for kw in kws:
-            set = index.get(kw, None)
-            if set is not None:
-                set.remove(i)
-            else:
-                LOG('UnKeywordIndex', ERROR, ('unindex_object could not '
-                                              'remove %s from set'
-                                              % str(i)))
-        del unindex[i]
-        
-        self._index = index
-        self._unindex = unindex
+        for kw in keywords:
+            self.removeForwardIndexEntry(kw, documentId)
 
+        del self._unindex[documentId]

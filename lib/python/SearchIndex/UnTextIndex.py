@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 from Globals import Persistent
@@ -172,17 +172,11 @@ class UnTextIndex(Persistent, Implicit):
             pass
 
         if lexicon is None:
-
-            ## if no lexicon is provided, create a dumb one
+            ## if no lexicon is provided, create a default one
             self._lexicon=Lexicon()
         else:
             self._lexicon = lexicon
 
-
-    def __setstate(self, state):
-        Persistent.__setstate__(self, state)
-        if hasattr(self, '_syn'):
-            del self._syn
 
     def getLexicon(self, vocab_id):
         
@@ -201,123 +195,102 @@ class UnTextIndex(Persistent, Implicit):
     def __len__(self):
         return len(self._unindex)
 
-##    def __setstate__(self, state):
-##        Persistent.__setstate__(self, state)
-##        if not hasattr(self, '_lexicon'):
-##            self._lexicon = Lexicon()
-        
-
     def clear(self):
         self._index = IOBTree()
         self._unindex = IOBTree()
 
 
-    def index_object(self, i, obj, threshold=None):
+    def index_object(self, documentId, obj, threshold=None):
         
         """ Index an object:
 
-          'i' is the integer id of the document
-
-          'obj' is the objects to be indexed
-
-          'threshold' is the number of words to process between
-          commiting subtransactions.  If 'None' subtransactions are
-          not used.
-
-          the next four arguments are default optimizations.
-          """
-        # Before we do anything, unindex the object we've been handed, as
-        # we can't depend on the user to do the right thing.
-        self.unindex_object(i)
+        'documentId' is the integer id of the document
         
-        id = self.id
+        'obj' is the objects to be indexed
+
+        'threshold' is the number of words to process between
+        commiting subtransactions.  If 'None' subtransactions are
+        disabled. """
+
+        # sniff the object for our 'id', the 'document source' of the
+        # index is this attribute.  If it smells callable, call it.
         try:
-            ## sniff the object for our 'id', the 'document source' of 
-            ## the index is this attribute.  If it smells callable,
-            ## call it.
-            k = getattr(obj, id)
-            if callable(k):
-                k = str(k())
+            source = getattr(obj, self.id)
+            if callable(source):
+                source = str(source())
             else:
-                k = str(k)
+                source = str(source)
         except:
             return 0
         
-        d = OIBTree()
-        old = d.has_key
+
+        sourceWords = self.getLexicon(self._lexicon).Splitter(source)
+
+        wordList = OIBTree()
         last = None
-
-        ## The Splitter should now be european compliant at least.
-        ## Someone should test this.
-
-##        import pdb
-##        pdb.set_trace()
         
-        src = self.getLexicon(self._lexicon).Splitter(k)
-        ## This returns a tuple of stemmed words.  Stopwords have been 
-        ## stripped.
-        
-        for s in src:
-            if s[0] == '\"': last=self.subindex(s[1:-1], d, old, last)
+        # Run through the words and score them
+        for word in sourceWords:
+            if word[0] == '\"':
+                last = self.subindex(word[1:-1], wordList,
+                                     wordList.has_key, last) # XXX
             else:
-                if old(s):
-                    if s != last: d[s] = d[s]+1
-                else: d[s] = 1
+                if wordList.has_key(word):
+                    if word != last:
+                        wordList[word] = wordList[word]+1
+                else:
+                    wordList[word] = 1
 
         index = self._index
         unindex = self._unindex
         lexicon = self.getLexicon(self._lexicon)
-        get = index.get
-        unindex[i] = []
-        times = 0
+        unindex[documentId] = []        # XXX this should be more intellegent
+        wordCount = 0
 
-        for word, score in d.items():
+        for word, score in wordList.items():
             if threshold is not None:
-                if times > threshold:
+                if ((wordCount % threshold) == 0) and not (wordCount == 0):
                     # commit a subtransaction hack
                     get_transaction().commit(1)
                     # kick the cache
                     self._p_jar.cacheFullSweep(1)
-                    times = 0
                     
-            word_id = lexicon.set(word)
+            wordId = lexicon.set(word)
             
-            r = get(word_id)
-            if r is not None:
-                r = index[word_id]
-                if type(r) is TupleType:
-                    r = {r[0]:r[1]}
-                    r[i] = score
+            indexRow = index.get(wordId)
+            if indexRow is not None:
+                indexRow = index[wordId] # Duplicate?
+                if type(indexRow) is TupleType:
+                    indexRow = {indexRow[0]:indexRow[1]}
+                    indexRow[documentId] = score
 
-                    index[word_id] = r
-                    unindex[i].append(word_id)
+                    index[wordId] = indexRow
+                    unindex[documentId].append(wordId)
                     
-                elif type(r) is DictType:
-                    if len(r) > 4:
+                elif type(indexRow) is DictType:
+                    if len(indexRow) > 4:
                         b = IIBucket()
-                        for k, v in r.items(): b[k] = v
-                        r = b
-                    r[i] = score
+                        for k, v in indexRow.items():
+                            b[k] = v
+                        indexRow = b
 
-                    index[word_id] = r
-                    unindex[i].append(word_id)
+                    indexRow[documentId] = score
+
+                    index[wordId] = indexRow
+                    unindex[documentId].append(wordId)
                     
                 else:
-                    r[i] = score
-                    unindex[i].append(word_id)
+                    indexRow[documentId] = score
+                    unindex[documentId].append(wordId)
             else:
-                index[word_id] = i, score
-                unindex[i].append(word_id)
-            times = times + 1
+                index[wordId] = documentId, score
+                unindex[documentId].append(wordId)
+            wordCount = wordCount + 1
 
-        unindex[i] = tuple(unindex[i])
-        l = len(unindex[i])
+        unindex[documentId] = tuple(unindex[documentId])
         
-        self._index = index
-        self._unindex = unindex
-
         ## return the number of words you indexed
-        return times
+        return wordCount
 
     def unindex_object(self, i): 
         """ carefully unindex document with integer id 'i' from the text
@@ -338,8 +311,6 @@ class UnTextIndex(Persistent, Implicit):
                             'unindex_object tried to unindex nonexistent'
                             ' document %s' % str(i))
             del unindex[i]
-            self._index = index
-            self._unindex = unindex
 
     def __getitem__(self, word):
         """Return an InvertedIndex-style result "list"
@@ -378,10 +349,8 @@ class UnTextIndex(Persistent, Implicit):
         all data fields used.  
         """
 
-        id = self.id
-
-        if request.has_key(id):
-            keys = request[id]
+        if request.has_key(self.id):
+            keys = request[self.id]
         else:
             return None
 
@@ -410,26 +379,25 @@ class UnTextIndex(Persistent, Implicit):
                 r = r.intersection(rr) 
 
         if r is not None:
-            return r, (id,)
-        return IIBucket(), (id,)
+            return r, (self.id,)
+        return (IIBucket(), (self.id,))
 
 
     def positions(self, docid, words, obj):
         """Return the positions in the document for the given document
         id of the word, word."""
-        id = self.id
 
         if self._schema is None:
             f = getattr
         else:
             f = operator.__getitem__
-            id = self._schema[id]
+            id = self._schema[self.id]
 
 
         if self.call_methods:
-            doc = str(f(obj, id)())
+            doc = str(f(obj, self.id)())
         else:
-            doc = str(f(obj, id))
+            doc = str(f(obj, self.id))
 
         r = []
         for word in words:

@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 from Globals import Persistent
@@ -154,70 +154,81 @@ class UnIndex(Persistent, Implicit):
     def __len__(self):
         return len(self._unindex)
 
-    def index_object(self, i, obj, threshold=None):
-        """ index and object 'obj' with integer id 'i'"""
+    def removeForwardIndexEntry(self, entry, documentId):
+        """Take the entry provided and remove any reference to documentId
+        in its entry in the index."""
 
-        # Before we do anything, unindex the object we've been handed, as
-        # we can't depend on the user to do the right thing.
-        self.unindex_object(i)
+        indexRow = self._index.get(entry, MV)
+        if indexRow is not MV:
+            try:
+                indexRow.remove(documentId)
+            except:
+                LOG(self.__class__.__name__, ERROR,
+                    ('unindex_object could not remove '
+                     'integer id %s from index %s.  This '
+                     'should not happen.'
+                     % (str(i), str(k)))) 
+        else:
+            LOG(self.__class__.__name__, ERROR,
+                ('unindex_object tried to retrieve set %s '
+                 'from index %s but couldn\'t.  This '
+                 'should not happen.' % (repr(set),str(k))))
         
-        index = self._index
-        unindex = self._unindex
+    def insertForwardIndexEntry(self, entry, documentId):
+        """Take the entry provided and put it in the correct place
+        in the forward index.
 
-        id = self.id
+        This will also deal with creating the entire row if necessary."""
 
+        indexRow = self._index.get(entry, MV)
+
+        # Make sure there's actually a row there already.  If not, create
+        # an IntSet and stuff it in first.
+        if indexRow is MV:
+            self._index[entry] = intSet()
+            indexRow = self._index[entry]
+        indexRow.insert(documentId)
+
+    def index_object(self, documentId, obj, threshold=None):
+        """ index and object 'obj' with integer id 'documentId'"""
+
+        returnStatus = 0
+
+        # First we need to see if there's anything interesting to look at
+        # self.id is the name of the index, which is also the name of the
+        # attribute we're interested in.  If the attribute is callable,
+        # we'll do so.
         try:
-            k=getattr(obj, id)
-            if callable(k):
-                k = k()
+            datum = getattr(obj, self.id)
+            if callable(datum):
+                datum = datum()
         except:
-            k = MV
+            datum = MV
  
-##        if k is None or k == MV:
-##            return 0
+        # We don't want to do anything that we don't have to here, so we'll
+        # check to see if the new and existing information is the same.
+        if not (datum == self._unindex.get(documentId, MV)):
+            self.insertForwardIndexEntry(datum, documentId)
+            self._unindex[documentId] = datum
 
-        set = index.get(k)
-        if set is None:
-            index[k] = set = intSet()
-            
-        set.insert(i)
-        unindex[i] = k
+            returnStatus = 1
+            self._p_changed = 1         # Tickle the transaction
 
-
-        self._index = index
-        self._unindex = unindex
-
-        return 1
+        return returnStatus
     
 
-    def unindex_object(self, i):
-        """ Unindex the object with integer id 'i' and don't
+    def unindex_object(self, documentId):
+        """ Unindex the object with integer id 'documentId' and don't
         raise an exception if we fail """
-        index = self._index
-        unindex = self._unindex
 
-        k = unindex.get(i, None)
-        if k is None:
+        unindexRecord = self._unindex.get(documentId, None)
+        if unindexRecord is None:
             return None
-        set = index.get(k, None)
-        if set is not None:
-            try:
-                set.remove(i)
-            except:
-                LOG('UnIndex', ERROR, ('unindex_object could not remove '
-                                       'integer id %s from index %s.  This '
-                                       'should not happen.'
-                                       % (str(i), str(k)))) 
-        else:
-            LOG('UnIndex', ERROR, ('unindex_object tried to retrieve set %s '
-                                   'from index %s but couldn\'t.  This '
-                                   'should not happen.' % (repr(set),str(k))))
 
-        del unindex[i]
+        self.removeForwardIndexEntry(unindexRecord, documentId)
         
-        self._index = index
-        self._unindex = unindex
-
+        del self._unindex[i]
+        
 
     def _apply_index(self, request, cid=''): 
         """Apply the index to query parameters given in the argument,
@@ -252,9 +263,6 @@ class UnIndex(Persistent, Implicit):
         if type(keys) not in (ListType, TupleType):
             keys = [keys]
 
-        print "XXX,"
-        print keys
-            
         index = self._index
         r = None
         anyTrue = 0
