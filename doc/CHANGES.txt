@@ -78,8 +78,8 @@ Zope Changes
       - Collector #694: dtml-sendmail mailto specification replaces "To:" header. 
       - Collector #702: DateTime.rfc822() fails without daylight saving
 
-      - Collector #703: KeyErrors raised when unindexing a PathIndex should
-        be swallowed and logged.
+      - Collector #703: KeyErrors raised when unindexing a PathIndex (and 
+        TopicIndexes) should be swallowed and logged.
 
   Zope 2.6.0
 
