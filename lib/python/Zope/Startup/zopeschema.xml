@@ -150,33 +150,101 @@
   <key name="instancehome" datatype="existing-directory"
        required="yes">
     <description>
-      The top-level directory which contains the "instance" of the
-      application server.
+      The top-level directory which contains the "instance" data for the
+      application server.  Typically this is a directory which
+      may contain a "Products" subdirectory (which holds instance-local
+      Zope Products), an "Extensions" subdirectory (which holds instance-local
+      external methods), and an "import" directory (which holds instance-local
+      importable ZODB exports).  It may also contain "etc", "bin", "log",
+      and "var" directories depending on how you'ce configured your Zope
+      instance.
     </description>
   </key>
 
   <key name="clienthome" datatype="existing-directory">
     <description>
-      The directory used to store the file-storage used to back the
-      ZODB database by default, as well as other files used by the
-      Zope application server to control the run-time behavior.
+      The directory used to store the default filestorage file used to
+      back the ZODB database, as well as other files used by the
+      Zope applications server during runtime.
     </description>
-    <metadefault>$INSTANCE_HOME/var</metadefault>
+    <metadefault>$instancehome/var</metadefault>
   </key>
 
-  <key name="pid-filename" datatype="existing-dirpath"/>
+  <key name="pid-filename" datatype="existing-dirpath">
+    <description>
+      The full path to which the Zope process will write its
+      OS process id at startup.
+    </description>
+    <metadefault>$clienthome/Z2.pid</metadefault>
+  </key>
 
-  <key name="lock-filename" datatype="existing-dirpath"/>
+  <key name="lock-filename" datatype="existing-dirpath">
+    <description>
+      The full path to a file which the Zope process will attempt to lock
+      at startup (used to signal to other processes that this Zope instance is
+      currently running).
+    </description>
+    <metadefault>$clienthome/Z2.lock</metadefault>
+  </key>
 
   <key name="debug-mode" datatype="boolean" default="on"
-       handler="debug_mode"/>
+       handler="debug_mode">
+    <description>
+    A switch which controls several aspects of Zope operation useful for
+    developing under Zope.  When debug mode is on:
 
-  <key name="effective-user"/>
+     - The process will not detach from the controlling terminal
+
+     - Errors in product initialization will cause startup to fail
+       (instead of writing error messages to the event log file).
+
+     - Filesystem-based scripts such as skins, PageTemplateFiles, and
+       DTMLFiles can be edited while the server is running and the server
+       will detect these changes in real time.  When this switch is
+       off, you must restart the server to see the changes.
+
+     Setting this to 'off' when Zope is in a
+     production environment is encouraged, as it speeds execution (sometimes
+     dramatically).
+    </description>
+    <metadefault>on</metadefault>
+  </key>
+
+  <key name="effective-user">
+    <description>
+     If you intend to run Zope as the "root" user, you must supply this
+     directive with an effective username or userid number to which Zope
+     will 'suid' after the server ports are bound. This directive only
+     works under UNIX and if Zope is started as the root user.
+    </description>
+    <metadefault>unset</metadefault>
+  </key>
 
   <key name="enable-product-installation" datatype="boolean" default="on"
-       handler="enable_product_installation"/>
+       handler="enable_product_installation">
+    <description>
+     If this directive is turned on, Zope performs 'product installation'
+     (the registration of Python modules in various Products directories)
+     at startup. Turning this off can speed Zope startup time, but it can
+     also cause your Control_Panel Product list to become desynchronized
+     with the contents of your Products directories. If the
+     'zeo_client_name' directive is set, and this directive is unset, this
+     directive will be implicitly turned off.
+    </description>
+    <metadefault>on</metadefault>
+  </key>
 
-  <key name="locale" datatype="locale" handler="locale"/>
+  <key name="locale" datatype="locale" handler="locale">
+    <description>
+     Enable locale (internationalization) support by supplying a locale
+     name to be used. See your operating system documentation for locale
+     information specific to your system. If your Python module does not
+     support the locale module, or if the requested locale is not
+     supported by your system, an error will be raised and Zope will not
+     start.
+    </description>
+    <metadefault>unset</metadefault>
+  </key>
 
   <key name="zserver-threads" datatype="integer" default="4"/>
 
@@ -207,30 +275,98 @@
       Products.__path__.  Directories are added in the order in which
       they are specified.
     </description>
+    <metadefault>$instancehome/Products</metadefault>
   </multikey>
 
   <key name="structured-text-header-level" datatype="integer" default="3"
-       handler="structured_text_header_level"/>
+       handler="structured_text_header_level">
+    <description>
+     Set the default starting HTML header level for structured text
+     documents. The default is 3, which implies that top-level headers
+     will be created with an H3 HTML tag.
+    </description>
+    <metadefault>3</metadefault>
+  </key>
 
   <key name="maximum-security-manager-stack-size" datatype="integer"
-       default="100" handler="maximum_security_manager_stack_size"/>
+       default="100" handler="maximum_security_manager_stack_size">
+     <description>
+     This variable allows you to customize the size of the Zope
+     SecurityManager stack. You shouldn't change this unless you know what
+     it means.
+     </description>
+     <metadefault>100</metadefault>
+  </key>
 
-  <key name="publisher-profile-file" handler="publisher_profile_file"/>
+  <key name="publisher-profile-file" handler="publisher_profile_file">
+    <description>
+     Causing this directive to point to a file on the filesystem will
+     cause Zope's profiling capabilities to be enabled. For more
+     information, see the Debug/Profiling tab of Zope's Control_Panel.
+    </description>
+    <metadefault>unset</metadefault>
+  </key>
 
-  <section type="cgi-environment" attribute="cgi_environment" name="*"/>
+  <section type="cgi-environment" attribute="cgi_environment" name="*">
+    <description>
+     A section which allows a user to define arbitrary key-value pairs for
+     use as the initial CGI environment variables. This setting is useful
+     when you want to proxy requests from another web server to Zserver,
+     and would like Zserver's CGI environment to reflect the CGI
+     environment of the other web server.
+    </description>
+  </section>
 
-  <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver"/>
+  <key name="dns-server" datatype=".dns_resolver" attribute="dns_resolver">
+    <description>
+     Specify the ip address of your DNS server in order to cause resolved
+     hostnames to be written to Zope's access log. By default, Zope will
+     not resolve hostnames unless this is set.
+    </description>
+  </key>
 
-  <key name="ip-address" datatype="ipaddr-or-hostname"/>
+  <key name="ip-address" datatype="ipaddr-or-hostname">
+    <description>
+     The default IP address on which Zope's various server protocol
+     implementations will listen for requests. If this is unset, Zope
+     will listen on all IP addresses supported by the machine.
+    </description>
+  </key>
 
-  <key name="http-realm" default="Zope" handler="http_realm"/>
+  <key name="http-realm" default="Zope" handler="http_realm">
+    <description>
+     The HTTP "Realm" header value sent by this Zope instance. This value
+     often shows up in basic authentication dialogs.
+    </description>
+    <metadefault>Zope</metadefault>
+  </key>
 
   <key name="automatically-quote-dtml-request-data" datatype="boolean"
-       default="on" handler="automatically_quote_dtml_request_data"/>
+       default="on" handler="automatically_quote_dtml_request_data">
+     <description>
+     Set this directive to 'off' in order to disable the autoquoting of
+     implicitly retrieved REQUEST data by DTML code which contains a '&gt;'
+     when used in &gt;dtml-var&lt; construction. When this directive is 'on',
+     all data implicitly retrieved from the REQUEST in DTML (as opposed to
+     addressing REQUEST.somevarname directly) that contains a '&gt;' will be
+     HTML-quoted when interpolated via a &gt;dtml-var&lt; or &amp;dtml-
+     construct. This mitigates the possibility that DTML programmers will
+     leave their sites open to a "client-side trojan" attack.
+     </description>
+     <metadefault>on</metadefault>
+  </key>
 
   <key name="security-policy-implementation"
        datatype=".security_policy_implementation"
-       default="C" handler="security_policy_implementation"/>
+       default="C" handler="security_policy_implementation">
+     <description>
+     The default Zope "security policy" implementation is written in C.
+     Set this key to "PYTHON" to use the Python implementation
+     (useful for debugging purposes); set it to "C" to use the C
+     implementation.
+     </description>
+     <metadefault>C</metadefault>
+  </key>
 
   <key name="skip-authentication-checking" datatype="boolean"
        default="off" handler="skip_authentication_checking"/>
