@@ -83,16 +83,6 @@ def rest_output_encoding(value):
     value and _setenv('REST_OUTPUT_ENCODING' , value)
     return value
 
-def publisher_profile_file(value):
-    value is not None and _setenv('PROFILE_PUBLISHER', value)
-    from ZPublisher.Publish import install_profiling
-    install_profiling(value)
-    return value
-
-def max_listen_sockets(value):
-    import ZServer
-    ZServer.CONNECTION_LIMIT = value
-
 # server handlers
 
 def root_handler(config):
@@ -144,11 +134,6 @@ def root_handler(config):
                         "Zope",
                         config.cgi_environment,
                         config.port_base)
-
-    # set up trusted proxies
-    if config.trusted_proxies:
-        import ZPublisher.HTTPRequest
-        ZPublisher.HTTPRequest.trusted_proxies = tuple(config.trusted_proxies)
 
 def handleConfig(config, multihandler):
     handlers = {}

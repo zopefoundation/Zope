@@ -450,7 +450,7 @@
     <metadefault>unset</metadefault>
   </key>
 
-  <key name="publisher-profile-file" handler="publisher_profile_file">
+  <key name="publisher-profile-file">
     <description>
      Causing this directive to point to a file on the filesystem will
      cause Zope's profiling capabilities to be enabled. For more
@@ -675,7 +675,7 @@
        I can't quite figure out how to put it there -->
 
   <key name="max-listen-sockets" datatype="integer"
-       handler="max_listen_sockets" default="1000">
+       default="1000">
      <description>
        The maximum number of sockets that ZServer will attempt to open
        in order to service incoming connections.

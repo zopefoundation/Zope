@@ -167,7 +167,7 @@ class ZopeStarterTestCase(test_logger.LoggingTestBase):
             instancehome <<INSTANCE_HOME>>
            zserver-threads 10""")
         starter = self.get_starter(conf)
-        starter.setupZServerThreads()
+        starter.setupZServer()
         from ZServer.PubCore import _n
         self.assertEqual(_n, 10)
 

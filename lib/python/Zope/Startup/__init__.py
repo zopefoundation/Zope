@@ -87,7 +87,7 @@ class ZopeStarter:
         self.setupPublisher()
         # Start ZServer servers before we drop privileges so we can bind to
         # "low" ports:
-        self.setupZServerThreads()
+        self.setupZServer()
         self.setupServers()
         # drop privileges after setting up servers
         self.dropPrivileges()
@@ -128,11 +128,18 @@ class ZopeStarter:
 
     def setupPublisher(self):
         import Globals
+        import ZPublisher.HTTPRequest
         import ZPublisher.Publish
         Globals.DevelopmentMode = self.cfg.debug_mode
         ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
         ZPublisher.Publish.set_default_authentication_realm(
             self.cfg.http_realm)
+        if self.cfg.publisher_profile_file:
+            filename = self.cfg.publisher_profile_file
+            ZPublisher.Publish.install_profiling(filename)
+        if self.cfg.trusted_proxies:
+            proxies = tuple(self.cfg.trusted_proxies)
+            ZPublisher.HTTPRequest.trusted_proxies = proxies
 
     def setupSecurityOptions(self):
         import AccessControl
@@ -172,10 +179,11 @@ class ZopeStarter:
                     'more\ninformation on locale support.' % locale_id
                     )
 
-    def setupZServerThreads(self):
+    def setupZServer(self):
         # Increase the number of threads
         import ZServer
         ZServer.setNumberOfThreads(self.cfg.zserver_threads)
+        ZServer.CONNECTION_LIMIT = self.cfg.max_listen_sockets
 
     def setupServers(self):
         socket_err = (
