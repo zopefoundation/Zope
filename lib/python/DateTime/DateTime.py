@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.71 $'[11:-2]
+__version__='$Revision: 1.72 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -1133,6 +1133,7 @@ class DateTime:
            the current object\'s day, in the object\'s timezone context"""
         return self.__class__(self._year,self._month,self._day,
                               23,59,59,self._tz)
+
     def greaterThan(self,t):
         """Compare this DateTime object to another DateTime object
            OR a floating point number such as that which is returned 
@@ -1142,8 +1143,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """
-        try:    return (self.millis() > t.millis())
-        except: return (self._t > t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis > t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t > t)
+
+    __gt__ = greaterThan
 
     def greaterThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -1154,8 +1162,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """           
-        try:    return (self.millis() >= t.millis())
-        except: return (self._t >= t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis >= t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t >= t)
+
+    __ge__ = greaterThanEqualTo
 
     def equalTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -1166,8 +1181,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """
-        try:    return (self.millis() == t.millis())
-        except: return (self._t == t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis == t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t == t)
+
+    __eq__ = equalTo
 
     def notEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -1178,8 +1200,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """
-        try:    return (self.millis() != t.millis())
-        except: return (self._t != t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis != t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t != t)
+
+    __ne__ = notEqualTo
 
     def lessThan(self,t):
         """Compare this DateTime object to another DateTime object
@@ -1190,8 +1219,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """
-        try:    return (self.millis() < t.millis())
-        except: return (self._t < t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis < t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t < t)
+
+    __lt__ = lessThan
 
     def lessThanEqualTo(self,t):
         """Compare this DateTime object to another DateTime object
@@ -1202,8 +1238,15 @@ class DateTime:
            Revised to give more correct results through comparison of
            long integer milliseconds.
            """
-        try:    return (self.millis() <= t.millis())
-        except: return (self._t <= t)
+        # Optimized for sorting speed
+        try:
+            return (self._millis <= t._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return (self._t <= t)
+
+    __le__ = lessThanEqualTo
 
     def isLeapYear(self):
         """Return true if the current year (in the context of the object\'s
@@ -1314,11 +1357,15 @@ class DateTime:
 
     def millis(self):
         """Return the millisecond since the epoch in GMT."""
-        try: millis = self._millis
-        except:
-            # Upgrade a previously pickled DateTime object.
-            millis = long(math.floor(self._t * 1000.0))
-            self._millis = millis
+        try:
+            return self._millis
+        except AttributeError:
+            return self._upgrade_old()
+
+    def _upgrade_old(self):
+        """Upgrades a previously pickled DateTime object."""
+        millis = long(math.floor(self._t * 1000.0))
+        self._millis = millis
         return millis
 
     def strftime(self, format):
@@ -1514,8 +1561,13 @@ class DateTime:
            You should use the methods lessThan, greaterThan,
            lessThanEqualTo, greaterThanEqualTo, equalTo and
            notEqualTo to avoid potential problems later!!"""
-        try:                   return cmp(self.millis(), obj.millis())
-        except AttributeError: return cmp(self._t,obj)
+        # Optimized for sorting speed.
+        try:
+            return cmp(self._millis, obj._millis)
+        except AttributeError:
+            try: self._millis
+            except AttributeError: self._upgrade_old()
+        return cmp(self._t,obj)
 
     def __hash__(self):
         """Compute a hash value for a DateTime"""

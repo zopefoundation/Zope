@@ -133,6 +133,38 @@ class DateTimeTests (unittest.TestCase):
         dt1 = DateTime('1997/3/9 1:45pm GMT+8')
         assert dt1 - dt == 1.0, (dt, dt1)
 
+    def testCompareMethods(self):
+        '''Compare two dates using several methods'''
+        dt = DateTime('1997/1/1')
+        dt1 = DateTime('1997/2/2')
+        self.failUnless(dt1.greaterThan(dt))
+        self.failUnless(dt1.greaterThanEqualTo(dt))
+        self.failUnless(dt.lessThan(dt1))
+        self.failUnless(dt.lessThanEqualTo(dt1))
+        self.failUnless(dt.notEqualTo(dt1))
+        self.failUnless(not dt.equalTo(dt1))
+
+    def testCompareOperations(self, dt=None, dt1=None):
+        """Compare two dates using several operations"""
+        if dt is None:
+            dt = DateTime('1997/1/1')
+        if dt1 is None:
+            dt1 = DateTime('1997/2/2')
+        self.failUnless(dt1 > dt)
+        self.failUnless(dt1 >= dt)
+        self.failUnless(dt < dt1)
+        self.failUnless(dt <= dt1)
+        self.failUnless(dt != dt1)
+        self.failUnless(not (dt == dt1))
+
+    def testUpgradeOldInstances(self):
+        """Compare dates that don't have the _millis attribute yet."""
+        dt = DateTime('1997/1/1')
+        dt1 = DateTime('1997/2/2')
+        del dt._millis
+        del dt1._millis
+        self.testCompareOperations(dt, dt1)
+
     def testTZ2(self):
         '''Time zone manipulation test 2'''
         dt = DateTime()
