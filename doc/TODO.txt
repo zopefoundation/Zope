@@ -244,6 +244,9 @@ Lots of discussion!
 
    lockfile-name /var/lock/$HOSTNAME-lockfile
 
+ - Give installaler an option to put libs in a user-specifiable
+   directory at software installation time.
+
  - Give installer an option to put docs in a user-specifiable directory
    at software home installation time.
 
