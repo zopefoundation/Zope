@@ -125,7 +125,7 @@ def main():
         opts.append(args[0])
         del args[0]
     if not args:
-        prefix = os.path.join("test", "test*.")
+        prefix = os.path.join("test", "input", "test*.")
         xmlargs = glob.glob(prefix + "xml")
         xmlargs.sort()
         htmlargs = glob.glob(prefix + "html")
@@ -157,8 +157,8 @@ def main():
             continue
         head, tail = os.path.split(arg)
         outfile = os.path.join(
-            head,
-            string.replace(tail, "test", "out"))
+            string.replace(head, "input", "output"),
+            tail)
         try:
             f = open(outfile)
         except IOError:

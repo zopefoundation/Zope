@@ -102,7 +102,7 @@ except ImportError:
 # Import local classes
 from DummyEngine import DummyEngine
 
-FILE = "test/test1.xml"
+FILE = "test/input/test1.xml"
 
 def main():
     versionTest = 1
@@ -116,7 +116,7 @@ def main():
             "usage: driver.py [-h|-x] [-m] [-n] [file]\n")
         sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")
         sys.stderr.write("-m -- macro expansion only\n")
-        sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
+        sys.stderr.write("-n -- turn off the Python 1.5.2 test\n")
         sys.exit(2)
     for o, a in opts:
         if o == '-h':
