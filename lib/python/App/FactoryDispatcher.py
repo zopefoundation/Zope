@@ -139,7 +139,7 @@ class FactoryDispatcher(Acquisition.Implicit):
 
         # Waaa
         m='Products.%s' % p.id
-        if sys.modules.has_key(m):
+        if sys.modules.has_key(m) and sys.modules[m]._m.has_key(name):
             return sys.modules[m]._m[name]
     
         raise AttributeError, name
