@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -819,28 +819,28 @@ class HTTPRequest(BaseRequest):
         result="<h3>form</h3><table>"
         row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
         for k,v in self.form.items():
-            result=result + row % (k,v)
+            result=result + row % (html_quote(k), html_quote(v))
         result=result+"</table><h3>cookies</h3><table>"
         for k,v in self.cookies.items():
-            result=result + row % (k,v)
+            result=result + row % (html_quote(k), html_quote(v))
         result=result+"</table><h3>other</h3><table>"
         for k,v in self.other.items():
             if k in ('PARENTS','RESPONSE'): continue
-            result=result + row % (k,v)
+            result=result + row % (html_quote(k), html_quote(v))
     
         for n in "0123456789":
             key = "URL%s"%n
-            try: result=result + row % (key,self[key]) 
+            try: result=result + row % (key, html_quote(self[key])) 
             except KeyError: pass
         for n in "0123456789":
             key = "BASE%s"%n
-            try: result=result + row % (key,self[key]) 
+            try: result=result + row % (key, html_quote(self[key])) 
             except KeyError: pass
 
         result=result+"</table><h3>environ</h3><table>"
         for k,v in self.environ.items():
             if not hide_key(k):
-                result=result + row % (k,v)
+                result=result + row % (html_quote(k), html_quote(v))
         return result+"</table>"
 
     __repr__=__str__
@@ -875,6 +875,20 @@ def sane_environment(env):
         except: pass
     return dict
 
+
+# This is duplicated from DocumentTemplate.DT_Util to
+# prevent a dependency on the DocumentTemplate package.
+# Some folks still use the ZPublisher package as a
+# standalone publisher without DocumentTemplate.
+def html_quote(value, character_entities=(
+                      (('&'), '&amp;'),
+                      (("<"), '&lt;' ),
+                      ((">"), '&gt;' ),
+                      (('"'), '&quot;'))): #"
+        text=str(value)
+        for re, name in character_entities:
+            if find(text, re) >= 0: text=join(split(text, re), name)
+        return text
 
 
 def str_field(v):
