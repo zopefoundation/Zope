@@ -19,9 +19,8 @@ import PathIndex.PathIndex
 import TextIndex.TextIndex 
 import FieldIndex.FieldIndex
 import KeywordIndex.KeywordIndex
-import TextIndexNG.TextIndexNG
 
-_indexes =  ['TextIndex','TextIndexNG','KeywordIndex','FieldIndex','PathIndex']
+_indexes =  ['TextIndex','KeywordIndex','FieldIndex','PathIndex']
 
 def initialize(context):
 
