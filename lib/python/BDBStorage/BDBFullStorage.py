@@ -14,7 +14,7 @@
 
 """Berkeley storage with full undo and versioning support.
 
-$Revision: 1.67 $
+$Revision: 1.68 $
 """
 
 import time
@@ -1790,6 +1790,13 @@ class _TransactionsIterator(_GetItemBase):
         # This is a lie.  It's here only for Python 2.1 support for
         # list()-ifying these objects.
         return 0
+
+    # This allows us to pass an iterator as the `other' argument to
+    # copyTransactionsFrom() in BaseStorage.  The advantage here is that we
+    # can create the iterator manually, e.g. setting start and stop, and then
+    # just let copyTransactionsFrom() do its thing.
+    def iterator(self):
+        return self
 
     def next(self):
         """Return the ith item in the sequence of transaction data.
