@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.23 1998/04/15 14:55:26 jim Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: Aqueduct.py,v 1.24 1998/04/20 14:42:34 jim Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -257,7 +257,7 @@ class Args:
     def __getitem__(self, key): return self._data[key]
     def __setitem__(self, key, v): self._data[key]=v
     def __delitem__(self, key): del self._data[key]
-			
+    def __len__(self): return len(self._data)
 
 def parse(text,
 	  result=None,
@@ -389,6 +389,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.24  1998/04/20 14:42:34  jim
+# Forgot __len__ in Args.
+#
 # Revision 1.23  1998/04/15 14:55:26  jim
 # Fixed InvalidParameter NameError
 #
