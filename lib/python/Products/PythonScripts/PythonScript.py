@@ -89,10 +89,10 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os, traceback, re
-from Globals import DTMLFile
+from Globals import DTMLFile, MessageDialog
 import AccessControl, OFS, Guarded
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
