@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -247,6 +247,8 @@ class Context:
 
     def translate(self, domain, msgid, mapping=None,
                   context=None, target_language=None):
+        if context is None:
+            context = self.contexts.get('here')
         return getGlobalTranslationService().translate(
             domain, msgid, mapping=mapping,
             context=context, target_language=target_language)
