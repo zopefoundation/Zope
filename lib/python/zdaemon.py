@@ -176,18 +176,19 @@ def forkit(attempts = FORK_ATTEMPTS):
 def run(argv, pidfile=''):
     if os.environ.has_key('ZDAEMON_MANAGED'):
         # We're the child at this point.  Don't ask. :/
-
         return
     
     os.environ['ZDAEMON_MANAGED']='TRUE'
-    while 1:
-        if not os.environ.has_key('Z_DEBUG_MODE'):
-            pid = os.fork()
-            if pid:
-                sys.exit(0)
-            posix.setsid()
+    
+    if not os.environ.has_key('Z_DEBUG_MODE'):
+        # Detach from terminal
+        pid = os.fork()
+        if pid:
+            sys.exit(0)
+        posix.setsid()
 
-        lastt=time.time()
+    while 1:
+
         try:
             pid = forkit()
 
@@ -215,12 +216,10 @@ def run(argv, pidfile=''):
                     if s:
                         pstamp(('Aiieee! %s exited with error code: %s' 
                                 % (p, s)), zLOG.ERROR)
-                        if time.time()-lastt < 20:
-                            raise ForkError # We're probably hosed
                     else:
-                        raise ForkError
                         pstamp(('The kid, %s, died on me.' % pid),
                                zLOG.WARNING)
+                        raise ForkError
 
                     raise KidDiedOnMeError
 
