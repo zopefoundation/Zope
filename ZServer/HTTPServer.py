@@ -283,6 +283,7 @@ class zhttp_channel(http_channel):
 
     closed=0
     zombie_timeout=100*60 # 100 minutes
+    max_header_len = 8196
 
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
@@ -336,6 +337,17 @@ class zhttp_channel(http_channel):
                 if (now - channel.creation_time) > channel.zombie_timeout:
                     channel.close()
 
+    def collect_incoming_data (self, data):
+        # Override medusa http_channel implementation to prevent DOS attacks
+        # that send never-ending HTTP headers.
+        if self.current_request:
+                # we are receiving data (probably POST data) for a request
+            self.current_request.collect_incoming_data (data)
+        else:
+                # we are receiving header (request) data
+            self.in_buffer = self.in_buffer + data
+            if len(self.in_buffer) > self.max_header_len:
+                raise ValueError('HTTP headers invalid (too long)')
 
 class zhttp_server(http_server):
     "http server"
