@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.31 1998/11/23 11:47:19 jim Exp $
+  $Id: ExtensionClass.c,v 1.32 1999/02/19 20:52:23 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.31 1998/11/23 11:47:19 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.32 1999/02/19 20:52:23 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1789,6 +1789,8 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 static int
 CCL_setattro(PyExtensionClass *self, PyObject *name, PyObject *v)
 {
+  if (! v) return PyObject_DelItem(self->class_dictionary, name);
+
   if (v && UnboundCMethod_Check(v) &&
      ! (self->class_flags & EXTENSIONCLASS_METHODHOOK_FLAG)
      )
@@ -2004,10 +2006,26 @@ static PyObject *
 CCL_repr(PyExtensionClass *self)
 {
   char p[128];
+  PyObject *m;
+
+  if ((m=PyObject_GetAttr(OBJECT(self), py__module__)))
+    {
+      if (! PyObject_IsTrue(m)) 
+	{
+	  Py_DECREF(m);
+	  m=0;
+	}
+    }
+  else PyErr_Clear();
 
   sprintf(p,"%p",self);
-  return JimString_Build("<extension class %s at %s>","ss",
-			self->tp_name, p);
+
+  if (m) ASSIGN(m, JimString_Build("<extension class %s.%s at %s>","Oss",
+				   m, self->tp_name, p));
+  else          m= JimString_Build("<extension class %s at %s>","ss",
+				   self->tp_name, p);
+
+  return m;
 }
 
 static PyTypeObject ECTypeType = {
@@ -3373,7 +3391,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.31 $";
+  char *rev="$Revision: 1.32 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
