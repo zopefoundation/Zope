@@ -21,7 +21,7 @@ function update_menu() {
   <frameset rows="34, *">
   </dtml-if>
   <frame src="<dtml-var URL1>/manage_top_frame" name="manage_top_frame"
-   marginwidth="0" marginheight="0" scrolling="no"/>
+   marginheight="0" scrolling="no"/>
 </dtml-if>
 
   <frameset cols="175,*">
