@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.1 1997/09/23 00:08:43 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Undo.py,v 1.2 1997/09/25 21:03:50 brian Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -42,8 +42,11 @@ class UndoSupport:
 	r=[]
 	add=r.append
 	h=['','']
-	for info in db.transaction_info(first_transaction, last_transaction,
-					path):
+	try:    trans_info=db.transaction_info(first_transaction,
+					       last_transaction,path)
+        except: trans_info=[]
+
+	for info in trans_info:
   	    [path, user] = (split(info[2],' ')+h)[:2]
 	    add(
 		{'pos': info[0],
@@ -54,8 +57,7 @@ class UndoSupport:
 		 'path': path,
 		 'desc': info[3],
 		 })
-
-	return r
+	return r or []
     
     def manage_undo_transactions(self, transaction_info, REQUEST):
 	"""
@@ -76,6 +78,9 @@ class UndoSupport:
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.2  1997/09/25 21:03:50  brian
+# Fixed bug
+#
 # Revision 1.1  1997/09/23 00:08:43  jim
 # *** empty log message ***
 #
