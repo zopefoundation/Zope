@@ -14,7 +14,7 @@
 """
 
 Revision information:
-$Id: _Element.py,v 1.3 2002/08/14 21:35:32 mj Exp $
+$Id: _Element.py,v 1.4 2003/07/25 13:48:34 anthony Exp $
 """
 
 from _object import object
@@ -28,10 +28,10 @@ class Element(object):
 
     __tagged_values = {}
 
-    def __init__(self, __name__, __doc__=''):
+    def __init__(self, __name__=None, __doc__=''):
         """Create an 'attribute' description
         """
-        if not __doc__ and __name__.find(' ') >= 0:
+        if not __doc__ and __name__ and __name__.find(' ') >= 0:
             __doc__ = __name__
             __name__ = None
 
