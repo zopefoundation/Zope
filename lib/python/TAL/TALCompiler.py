@@ -192,44 +192,28 @@ class METALCompiler(DOMVisitor, TALGenerator):
     def expandElement(self, node):
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "use-macro")
         if macroName:
-            slotDict = slotIndexer(node)
-            compiledSlots = {}
-            if slotDict:
-                # Compile the slots
-                for slotName, slotNode in slotDict.items():
-                    self.pushProgram()
-                    self.visitElement(slotNode)
-                    compiledSlots[slotName] = self.popProgram()
-            cexpr = self.compileExpression(macroName)
             self.pushProgram()
+            self.pushSlots()
             self.compileElement(node)
-            block = self.popProgram()
-            self.emit("useMacro", cexpr, compiledSlots, block)
+            self.emitUseMacro(macroName)
             return
         macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
         if macroName:
-            # Save macro definitions
-            if self.macros.has_key(macroName):
-                raise METALError("duplicate macro definition: %s" % macroName)
             self.pushProgram()
             self.compileElement(node)
-            macro = self.popProgram()
-            self.macros[macroName] = macro
-            self.emit("defineMacro", macroName, macro)
+            self.emitDefineMacro(macroName)
             return
         slotName = node.getAttributeNS(ZOPE_METAL_NS, "define-slot")
         if slotName:
             self.pushProgram()
             self.compileElement(node)
-            block = self.popProgram()
-            self.emit("defineSlot", slotName, block)
+            self.emitDefineSlot(slotName)
             return
         slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
         if slotName:
             self.pushProgram()
             self.compileElement(node)
-            block = self.popProgram()
-            self.emit("fillSlot", slotName, block)
+            self.emitFillSlot(slotName)
             return
         self.compileElement(node)
 
