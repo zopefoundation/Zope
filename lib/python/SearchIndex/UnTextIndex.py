@@ -87,7 +87,7 @@
 
 
 """
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -162,7 +162,7 @@ class UnTextIndex(Persistent):
 
 
     def index_object(self, i, obj, threshold=None, tupleType=type(()),
-                     dictType=type({}), callable=callable):
+                     dictType=type({}), strType=type(""), callable=callable):
         
         """ Please document """
 
@@ -199,9 +199,14 @@ class UnTextIndex(Persistent):
 
         times = 0
         for word,score in d.items():
-            if times > threshold:
-                get_transaction().commit(1)
-                times = 0
+            if threshold is not None:
+                if times > threshold:
+                    # commit a subtransaction
+                    get_transaction().commit(1)
+                    # kick the cache
+                    self._p_jar.cacheFullSweep(1)
+                    times = 0
+                    
             r = get(word)
             if r is not None:
                 r = index[word]
