@@ -133,10 +133,16 @@ class ZServerHTTPResponse(HTTPResponse):
                 self.setBody(body)
                 body=self.body
 
-        if not headers.has_key('content-type') and self.status == 200:
+        # set 204 (no content) status if 200 and response is empty
+        if not headers.has_key('content-type') and \
+                not headers.has_key('content-length') and \
+                not headers.has_key('transfer-encoding') and \
+                self.status == 200:
             self.setStatus('nocontent')
 
-        if not headers.has_key('content-length'):
+        # add content length if not transfer encoded
+        if not headers.has_key('content-length') and \
+                not headers.has_key('transfer-encoding'):
             self.setHeader('content-length',len(body))
 
         headersl=[]
@@ -145,7 +151,7 @@ class ZServerHTTPResponse(HTTPResponse):
         status=headers.get('status', '200 OK')
      
         # status header must come first.
-        append("HTTP/%s: %s" % (self._http_version, status))
+        append("HTTP/%s %s" % (self._http_version, status))
         if headers.has_key('status'):
             del headers['status']
         
@@ -242,13 +248,13 @@ class ChannelPipe:
         self._channel=None #need to break cycles?
         self._request=None
     
-    def finish(self, request):
-        if request.headers.get('bobo-exception-type', '') == \
+    def finish(self, response):
+        if response.headers.get('bobo-exception-type', '') == \
                 'exceptions.SystemExit':
             self._shutdown=1
-        if request.headers.get('connection','')=='close':
+        if response.headers.get('connection','')=='close':
             self._close=1
-        self._request.reply_code=request.status
+        self._request.reply_code=response.status
         
         
 def make_response(request, headers):
