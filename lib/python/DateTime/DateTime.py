@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -459,9 +459,10 @@ class DateTime:
             combination of values is not valid, then a
             DateTimeError is raised. Two-digit years are assumed
             to be in the twentieth century. The fourth, fifth, and
-            sixth arguments are floating point, positive or
-            negative offsets in units of hours, minutes, and days,
-            and default to zero if not given. An optional string may
+            sixth arguments specify a time in hours, minutes, and
+            seconds; hours and minutes should be positive integers
+            and seconds is a positive floating point value, all of
+            these default to zero if not given. An optional string may
             be given as the final argument to indicate timezone (the
             effect of this is as if you had taken the value of time.time()
             at that time on a machine in the specified timezone).
