@@ -13,7 +13,7 @@
 
 """Signal handling dispatcher."""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from ZServer import asyncore
 import sys, os, zdaemon, ZLogger
@@ -65,7 +65,9 @@ class SignalHandler:
                 # if we trap SystemExit, we can't restart
                 raise
             except:
-                pass
+                zLOG.LOG('Z2', zLOG.WARNING,
+                         'A handler for %s failed!' % signame,
+                         error=sys.exc_info())
 
     # Builtin signal handlers for clean shutdown, restart and log rotation.
 
@@ -87,13 +89,14 @@ class SignalHandler:
         """Reopen log files on SIGUSR2. This is registered first, so it
            should be called after all other SIGUSR2 handlers."""
         zLOG.LOG('Z2', zLOG.INFO , "Reopening log files")
-        if hasattr(sys, '__lg') and hasattr(sys.__lg, 'reopen'):
-            sys.__lg.reopen()
+        reopen = getattr(getattr(sys, '__lg', None), 'reopen', None)
+        if reopen is not None:
+            reopen()
             zLOG.LOG('Z2', zLOG.BLATHER, "Reopened access log")
-        if (hasattr(sys, '__detailedlog') and
-            hasattr(sys.__detailedlog, 'reopen')):
+        reopen = getattr(getattr(sys, '__detailedlog', None), 'reopen', None)
+        if reopen is not None:
+            reopen()
             zLOG.LOG('Z2', zLOG.BLATHER,"Reopened detailed request log")
-            sys.__detailedlog.reopen()
         if hasattr(zLOG, '_set_stupid_dest'):
             zLOG._set_stupid_dest(None)
         else:
@@ -101,7 +104,7 @@ class SignalHandler:
         ZLogger.stupidFileLogger._stupid_dest = None
         zLOG.LOG('Z2', zLOG.BLATHER, "Reopened event log")
         zLOG.LOG('Z2', zLOG.INFO, "Log files reopened successfully")
-
+    
     def closeall(self):
         """Helper method to close network and database connections."""
         import Globals
