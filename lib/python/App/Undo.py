@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.8 1998/01/12 17:58:39 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Undo.py,v 1.9 1998/05/14 23:21:38 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -67,8 +67,13 @@ class UndoSupport:
 	r=[]
 	add=r.append
 	h=['','']
-	try:    trans_info=db.transaction_info(first_transaction,
-					       last_transaction,path)
+	try:
+            if Globals.Bobobase.has_key('_pack_time'):
+                since=Globals.Bobobase['_pack_time']
+            else: since=0
+            trans_info=db.transaction_info(
+                first_transaction,last_transaction,path,since=since)
+            
         except: trans_info=[]
 
 	for info in trans_info:
@@ -112,6 +117,9 @@ Globals.default__class_init__(UndoSupport)
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.9  1998/05/14 23:21:38  jim
+# Added machinery to avoid undoing transaction that started before the last pack.
+#
 # Revision 1.8  1998/01/12 17:58:39  jim
 # Additional changes to support supplying batch size as a parameter.
 #

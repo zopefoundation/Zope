@@ -1,12 +1,12 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 import sys,os,time,string,Globals
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
-from OFS import SimpleItem
+from OFS import SimpleItem, Folder
 from App.Dialogs import MessageDialog
 
 
@@ -41,6 +41,11 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
     manage_editProperties=None
     manage_delProperties=None
     isPrincipiaFolderish=0
+
+    def __init__(self):
+	self.Factories=f=Folder.Folder()
+	f.id='Factories'
+	f.title='User-defined addable objects'
 
     def copyToClipboard(self, REQUEST):
 	return Globals.MessageDialog(title='Not Supported',
@@ -100,7 +105,17 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	    raise 'Session Error', (
 		'''You may not pack the application database while
 		working in a <em>session</em>''')
-	Globals.Bobobase._jar.db.pack(time.time()-days*86400,0)
+        t=time.time()-days*86400
+        if Globals.Bobobase.has_key('_pack_time'):
+            since=Globals.Bobobase['_pack_time']
+            if t <= since:
+                if REQUEST: return self.manage_main(self, REQUEST)
+                return
+
+        Globals.Bobobase['_pack_time']=t
+        get_transaction().note('')
+        get_transaction().commit()
+	Globals.Bobobase._jar.db.pack(t,0)
 	if REQUEST: return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
