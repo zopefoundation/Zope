@@ -1,0 +1,30 @@
+<head><title>Test of documentation templates</title></head>
+<body>
+        <div tal:condition="here/args">
+          The arguments were:
+          
+          <dl>
+            <span tal:repeat="arg options/batch">
+              <dt>one.</dt>
+              <dd>Argument  1 was one</dd>
+            </span><span tal:repeat="arg options/batch">
+              <dt>two.</dt>
+              <dd>Argument  2 was two</dd>
+            </span><span tal:repeat="arg options/batch">
+              <dt>three.</dt>
+              <dd>Argument  3 was three</dd>
+            </span><span tal:repeat="arg options/batch">
+              <dt>four.</dt>
+              <dd>Argument  4 was four</dd>
+            </span><span tal:repeat="arg options/batch">
+              <dt>five.</dt>
+              <dd>Argument  5 was five</dd>
+            </span>
+          </dl>
+          <span tal:condition="options/batch/next_sequence">
+            (six-ten)
+          </span>
+        </div>
+        
+        And I am 100% sure!
+</body>
