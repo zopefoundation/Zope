@@ -369,23 +369,21 @@ class ImmediateTestRunner(unittest.TextTestRunner):
 class PathInit:
     def __init__(self, build, libdir=None):
         # Calculate which directories we're going to add to sys.path.
-        self.libdir = "lib/python"
+        self.libdir = os.path.join('lib', 'python')
         # Hack sys.path
         self.home = os.path.dirname(os.path.realpath(sys.argv[0]))
         # test.py lives in $ZOPE_HOME/bin when installed ...
         dir, file = os.path.split(self.home)
         if file == 'bin': self.home = dir
         sys.path.insert(0, os.path.join(self.home, self.libdir))
-        sys.path.insert(0, os.path.join(self.home, self.libdir, 'third_party', 'docutils'))
         self.cwd = os.path.realpath(os.getcwd())
         # Hack again for external products.
         if libdir:
-            self.libdir = os.path.join(self.cwd, libdir)
+            self.libdir = os.path.realpath(os.path.join(self.cwd, libdir))
         else:
-            self.libdir = os.path.join(self.cwd, self.libdir)
-        real_libdir = os.path.realpath(self.libdir)
-        if real_libdir not in sys.path:
-            sys.path.insert(0, real_libdir)
+            self.libdir = os.path.realpath(os.path.join(self.cwd, self.libdir))
+        if self.libdir not in sys.path:
+            sys.path.insert(0, self.libdir)
         # Determine where to look for tests
         if test_dir:
             self.testdir = os.path.abspath(os.path.join(self.cwd, test_dir))
