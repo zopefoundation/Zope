@@ -22,9 +22,9 @@ lives in another ZODB.
 To understand this fully, you'll need to read the source of
 ZODB.Mount.MountPoint.
 
-$Id: TemporaryFolder.py,v 1.11 2003/08/02 19:22:07 chrism Exp $
+$Id: TemporaryFolder.py,v 1.12 2003/08/17 20:57:45 chrism Exp $
 """
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import os, os.path
 
@@ -35,7 +35,7 @@ from OFS.Folder import Folder
 from OFS.SimpleItem import Item
 
 from ZODB.DB import DB
-from TemporaryStorage import TemporaryStorage
+from tempstorage.TemporaryStorage import TemporaryStorage
 from LowConflictConnection import LowConflictConnection
 
 ADD_TEMPORARY_FOLDER_PERM="Add Temporary Folder"
