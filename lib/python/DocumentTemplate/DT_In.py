@@ -276,7 +276,7 @@
       of the module 'Missing', if present.
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.17 1998/01/15 20:36:05 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.18 1998/01/15 21:06:21 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -330,7 +330,7 @@ __rcs_id__='$Id: DT_In.py,v 1.17 1998/01/15 20:36:05 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from DT_Util import *
 from string import find, atoi, join
@@ -774,18 +774,20 @@ class sequence_variables:
 		    return l
 		elif key=='sequence-query' and self.start_name_re is not None:
 		    query_string=self.query_string
-		    while query_string[:1] in '?&':
+		    while query_string and query_string[:1] in '?&':
 			query_string=query_string[1:]
 		    while query_string[-1:] == '&':
 			query_string=query_string[:-1]
-		    query_string='&%s&' % query_string
-		    re=self.start_name_re
-		    l=re.search(query_string)
-		    if l >= 0:
-			v=re.group(0)
-			query_string=(query_string[:l]+
-				      query_string[l+len(v)-1:])
-		    query_string='?'+query_string[1:]
+		    if query_string:
+			query_string='&%s&' % query_string		    
+			re=self.start_name_re
+			l=re.search(query_string)
+			if l >= 0:
+			    v=re.group(0)
+			    query_string=(query_string[:l]+
+					  query_string[l+len(v)-1:])
+			    query_string='?'+query_string[1:]
+		    else: query_string='?'
 		    data[key]=query_string
 		    return query_string
 		    
@@ -846,6 +848,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.18  1998/01/15 21:06:21  jim
+# More of the same. :-)
+#
 # Revision 1.17  1998/01/15 20:36:05  jim
 # More of the same. :-)
 #
