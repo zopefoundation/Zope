@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.18 $'[-2:][0]
+__version__ = '$Revision: 1.19 $'[-2:][0]
 
 import time
 import threading
@@ -465,7 +465,6 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
             if self._stop:
                 raise PackStop, 'stopped in _collect_objs()'
             oid = orec[1]
-            serial = self._getCurrentSerial(oid)
             # Delete the object from the serials table
             c = self._serials.cursor(txn)
             try:
