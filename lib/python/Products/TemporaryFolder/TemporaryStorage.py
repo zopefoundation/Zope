@@ -86,19 +86,27 @@
 """
 A storage implementation which uses RAM to persist objects, much like
 MappingStorage.  Unlike MappingStorage, it needs not be packed to get rid of
-non-cyclic garbage.  This is a ripoff of Jim's Packless bsddb3 storage.
+non-cyclic garbage and it does rudimentary conflict resolution.  This is a
+ripoff of Jim's Packless bsddb3 storage.
 
-$Id: TemporaryStorage.py,v 1.3 2001/11/17 22:50:31 chrism Exp $
+$Id: TemporaryStorage.py,v 1.4 2001/11/21 03:13:37 chrism Exp $
 """
 
-__version__ ='$Revision: 1.3 $'[11:-2]
+__version__ ='$Revision: 1.4 $'[11:-2]
 
 from zLOG import LOG
 from struct import pack, unpack
 from ZODB.referencesf import referencesf
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
-from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
+from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial,\
+     bad_classes, bad_class, _classFactory, PersistentReference, \
+     PersistentReferenceFactory, persistent_id, state
+from cStringIO import StringIO
+from cPickle import Unpickler, Pickler
+
+# number of transactions for which to keep prior object revisions
+CONFLICT_CACHE_SIZE = 100
 
 class ReferenceCountError(POSException.POSError):
     """ An error occured while decrementing a reference to an object in
@@ -110,7 +118,7 @@ class TemporaryStorageError(POSException.POSError):
     available tempfile space and RAM consumption and restart the server
     process."""
 
-class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
+class TemporaryStorage(BaseStorage, ConflictResolvingStorage):
 
     def __init__(self, name='TemporaryStorage'):
         """
@@ -118,6 +126,9 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
         referenceCount -- mapping of oid to count
         oreferences -- mapping of oid to a sequence of its referenced oids
         opickle -- mapping of oid to pickle
+        _tmp -- used by 'store' to collect changes before finalization
+        _conflict_cache -- cache of recently-written object revisions
+        _transaction_counter -- rotating counter used in conflict resolution
         """
         BaseStorage.__init__(self, name)
 
@@ -126,6 +137,8 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
         self._oreferences={}
         self._opickle={}
         self._tmp = []
+        self._conflict_cache = {}
+        self._transaction_counter = 0
         self._oid = '\0\0\0\0\0\0\0\0'
 
     def __len__(self):
@@ -136,6 +149,10 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
 
     def _clear_temp(self):
         self._tmp = []
+        if self._transaction_counter % CONFLICT_CACHE_SIZE == 0:
+            # clear the revision cache before we run out of RAM.
+            self._transaction_counter = 0
+            self._conflict_cache = {}
         
     def close(self):
         """
@@ -151,17 +168,18 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
         finally:
             self._lock_release()
 
-## This loadSerial doesn't work for resolution of conficts.  :-(  I
-## haven't figured out why that's the case.  As a result, I'm disabling
-## conflict resolution in the storage until I have time to figure out why.
-
-##     def loadSerial(self, oid, serial):
-##         """ only a stub to make conflict resolution work! """
-##         self._lock_acquire()
-##         try:
-##             return self._opickle[oid]
-##         finally:
-##             self._lock_release()
+    def loadSerial(self, oid, serial, marker=[]):
+        """ this is only useful to make conflict resolution work.  It
+        does not actually implement all the semantics that a revisioning
+        storage needs! """
+        self._lock_acquire()
+        try:
+            data = self._conflict_cache.get((oid, serial), marker)
+            if data is marker:
+                raise POSException.ConflictError, (oid, serial)
+            return data
+        finally:
+            self._lock_release()
             
     def store(self, oid, serial, data, version, transaction):
         if transaction is not self._transaction:
@@ -175,19 +193,17 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
             if self._index.has_key(oid):
                 oserial=self._index[oid]
                 if serial != oserial:
-                    raise POSException.ConflictError, (serial, oserial)
-##                     data=self.tryToResolveConflict(oid, oserial, serial, data)
-##                     if not data:
-##                         raise POSException.ConflictError, (serial,oserial)
+                    data=self.tryToResolveConflict(oid, oserial, serial, data)
+                    if not data:
+                        raise POSException.ConflictError, (serial,oserial)
             else:
                 oserial = serial
             newserial=self._serial
             self._tmp.append((oid, data))
-##             return serial == oserial and newserial or ResolvedSerial
-            return newserial
+            self._conflict_cache[(oid, newserial)] = data
+            return serial == oserial and newserial or ResolvedSerial
         finally:
             self._lock_release()
-
 
     def _finish(self, tid, u, d, e):
         zeros={}
@@ -263,7 +279,8 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
                 if oid == '\0\0\0\0\0\0\0\0': continue
                 self._takeOutGarbage(oid)
 
-        self._tmp = []
+        self._transaction_counter = self._transaction_counter + 1
+        self._clear_temp()
 
     def _takeOutGarbage(self, oid):
         # take out the garbage.
@@ -317,6 +334,7 @@ class TemporaryStorage(BaseStorage):# , ConflictResolvingStorage):
             self._lock_release()
 
 
+    
 
     
 

@@ -13,10 +13,10 @@ from ZODB.tests import StorageTestBase, BasicStorage, \
 
 class TemporaryStorageTests(
     StorageTestBase.StorageTestBase,
+    RevisionStorage.RevisionStorage, # not actually a revision storage, but..
     BasicStorage.BasicStorage,
     Synchronization.SynchronizedStorage,
-    #ConflictResolution.ConflictResolvingStorage,
-    #RevisionStorage.RevisionStorage
+    ConflictResolution.ConflictResolvingStorage,
     ):
 
     def open(self, **kwargs):
@@ -37,7 +37,7 @@ def test_suite():
 
 def main():
     alltests=test_suite()
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=9)
     runner.run(alltests)
 
 def debug():
