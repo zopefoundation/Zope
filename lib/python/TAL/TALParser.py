@@ -177,6 +177,10 @@ class TALParser(XMLParser):
         if repeat: n = n+1
         if n > 1:
             raise TALError("can't use insert, replace, repeat together")
+        repeatWhitespace = None
+        if repeat:
+            # Hack to include preceding whitespace in the loop program
+            repeatWhitespace = self.gen.unEmitNewlineWhitespace()
         if defineMacro:
             self.gen.pushProgram()
             todo["defineMacro"] = defineMacro
@@ -206,6 +210,8 @@ class TALParser(XMLParser):
             todo["repeat"] = repeat
             self.gen.emit("beginScope")
             self.gen.pushProgram()
+            if repeatWhitespace:
+                self.gen.emitText(repeatWhitespace)
         if attrsubst:
             repldict = parseAttributeReplacements(attrsubst)
         else:
