@@ -258,17 +258,22 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
             if hasattr(topic,'isAPIHelpTopic') and topic.isAPIHelpTopic:
                 apitopics.append(topic)
             else:
-                if callable(topic.id):
-                    id=topic.id()
-                else:
-                    id=topic.id
-                if id[:5]=='dtml-':
-                    dtmltopics.append(topic)
-                if (id[:5] in ('metal', 'tales') and id[5] in ('.', '-')) or \
-                   (id[:3]=='tal' and id[3] in ('.', '-')):
-                    zpttopics.append(topic)
-                else:
-                    topics.append(topic)
+                try:
+                    if callable(topic.id):
+                        id=topic.id()
+                    else:
+                        id=topic.id
+                    if id[:5]=='dtml-':
+                        dtmltopics.append(topic)
+                    if (id[:5] in ('metal', 'tales') and id[5] in ('.', '-')) or \
+                    (id[:3]=='tal' and id[3] in ('.', '-')):
+                        zpttopics.append(topic)
+                    else:
+                        topics.append(topic)
+                except ImportError:
+                    # Don't blow up if we have references to non-existant
+                    # products laying around
+                    pass
         if dtmltopics:
             topics = topics + [TreeCollection(' DTML Reference', dtmltopics)]
         if apitopics:
