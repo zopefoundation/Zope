@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -214,13 +214,24 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
                 return md.get('type', 'string')
         return None
 
-    def _setPropValue(self, id, value): setattr(self,id,value)
-    def _delPropValue(self, id): delattr(self,id)
+    def _wrapperCheck(self, object):
+        # Raise an error if an object is wrapped.
+        if hasattr(object, 'aq_base'):
+            raise ValueError, 'Invalid property value: wrapped object'
+        return
+
+    def _setPropValue(self, id, value):
+        self._wrapperCheck(value)
+        setattr(self,id,value)
+
+    def _delPropValue(self, id):
+        delattr(self,id)
 
     def _setProperty(self, id, value, type='string'):
         # for selection and multiple selection properties
         # the value argument indicates the select variable
         # of the property
+        self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
         if type in ('selection', 'multiple selection'):
@@ -240,6 +251,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
         # Update the value of an existing property. If value
         # is a string, an attempt will be made to convert
         # the value to the type of the existing property.
+        self._wrapperCheck(value)
         if not self.hasProperty(id):
             raise 'Bad Request', 'The property %s does not exist' % id
         if type(value)==type(''):

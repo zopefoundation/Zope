@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -197,10 +197,17 @@ class PropertySheet(Persistent, Implicit):
             return getattr(self.v_self(), id)
         return default
 
+    def _wrapperCheck(self, object):
+        # Raise an error if an object is wrapped.
+        if hasattr(object, 'aq_base'):
+            raise ValueError, 'Invalid property value: wrapped object'
+        return
+
     def _setProperty(self, id, value, type='string', meta=None):
         # Set a new property with the given id, value and optional type.
         # Note that different property sets may support different typing
         # systems.
+        self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid property id, %s.' % id
         if not self.property_extensible_schema__():
@@ -230,6 +237,7 @@ class PropertySheet(Persistent, Implicit):
         # an attempt will be made to convert the value to the type of the
         # existing property. If a mapping containing meta-data is passed,
         # it will used to _replace_ the properties meta data.
+        self._wrapperCheck(value)
         if not self.hasProperty(id):
             raise 'Bad Request', 'The property %s does not exist.' % id
         propinfo=self.propertyInfo(id)
