@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -128,18 +128,6 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     ('View', ('__call__', '')),
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
     )
-    _state_name={'raw':1, 'globals':1, '__name__':1, '_vars':1,
-                 '_proxy_roles':1, 'title':1,
-                 '__ac_local_roles__':1}.has_key
-
-    def __getstate__(self):
-        r={}
-        state_name=self._state_name
-        for k, v in self.__dict__.items():
-            if state_name(k) or k[-11:]=='_Permission' or k[-9:]=="__roles__":
-                r[k]=v
-        return r
-   
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,

@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -117,19 +117,6 @@ class DTMLDocument(DTMLMethod, PropertyManager):
     __ac_permissions__=(
         ('Change DTML Documents',   ('manage_edit', 'manage_upload', 'PUT')),
     )
-
-    def __getstate__(self):
-        state={}
-        props={}
-        for id in self.propertyIds():
-            props[id]=1
-        prop_id=props.has_key
-        state_name=self._state_name
-        for k, v in self.__dict__.items():
-            if state_name(k) or prop_id(k) or k[-11:]=='_Permission' \
-               or k[-9:]=="__roles__" or k=='_properties':
-                state[k]=v
-        return state
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
                     dtpref_rows='20',REQUEST=None):
