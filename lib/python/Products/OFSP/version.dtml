@@ -15,31 +15,34 @@
     Leave <strong><dtml-var Zope-Version></strong> first and then
     you may work in this version.
 
-    <form action=leave_another>
-    <input type=submit value="Quit Working in <dtml-var Zope-Version html_quote>">
+    <form action="leave_another" method="post">
+    <input type="submit" name="submit" value="Quit Working in <dtml-var Zope-Version html_quote>">
     </form>
 
   <dtml-else>
 
     <h2>Active <dtml-var title_or_id> Version Operations</h2>
   
-      <form action=leave>
+      <form action="leave" method="post">
         You <strong>are</strong> currently working in the
         <dtml-var Zope-Version> version.  To
         <strong>quit</strong> working in this version click on this button: 
-        <input type=submit value="Quit Working in <dtml-var Zope-Version html_quote>">
+        <input type="submit" name="submit" value="Quit Working in <dtml-var Zope-Version html_quote>">
       </form>
   </dtml-if>
 <dtml-else>
   <h2>Inactive <dtml-var title_or_id> Version Operations</h2>
-  
-    <form action=enter>
+  <p>
+    <form action="enter" method="POST">
       You <strong>are not</strong> currently working in the
       <dtml-var title_and_id>
       version.  To <strong>start</strong> working in this version click
       on this button: 
-      <input type=submit value="Start Working in <dtml-var title_or_id html_quote>">
+      
+      <input type="submit" name="submit" value="Start Working in <dtml-var title_or_id html_quote>">
     </form>
+  </p>
+
 </dtml-if>
 </body> </html>
 
