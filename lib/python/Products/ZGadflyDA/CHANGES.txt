@@ -2,6 +2,12 @@
 Aqueduct Gadfly Changes
 -----------------------
 
+  AqueductGadfly 1.1.2
+
+    Bugs fixed
+
+      - Connection objects became unpublishable.
+
   AqueductGadfly 1.1.1
 
     Bugs fixed
