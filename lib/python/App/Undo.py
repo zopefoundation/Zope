@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''short description
 
-$Id: Undo.py,v 1.25 2001/04/12 18:49:02 jim Exp $'''
-__version__='$Revision: 1.25 $'[11:-2]
+$Id: Undo.py,v 1.26 2001/07/05 14:08:55 brian Exp $'''
+__version__='$Revision: 1.26 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -183,7 +183,7 @@ class UndoSupport(ExtensionClass.Base):
 
         return r
     
-    def manage_undo_transactions(self, transaction_info, REQUEST=None):
+    def manage_undo_transactions(self, transaction_info=(), REQUEST=None):
         """
         """
         undo=Globals.UndoManager.undo
