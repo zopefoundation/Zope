@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -337,7 +337,7 @@ class HTTPRequest(BaseRequest):
                            if not hasattr(x,attr):
                                #If the attribute does not
                                #exist, set it
-                               if seqf: item=[item]
+                               if flags&SEQUENCE: item=[item]
                                reclist.remove(x)
                                setattr(x,attr,item)
                                reclist.append(x)
@@ -390,18 +390,18 @@ class HTTPRequest(BaseRequest):
                            # Create a new record, set its attribute
                            # and put it in the dictionary as a list
                            a = record()
-                           if seqf: item=[item]
+                           if flags&SEQUENCE: item=[item]
                            setattr(a,attr,item)
                            mapping_object[key]=[a]
                        elif flags&RECORD:
                            # Create a new record, set its attribute
                            # and put it in the dictionary
-                           if seqf: item=[item]
+                           if flags&SEQUENCE: item=[item]
                            r = mapping_object[key]=record()
                            setattr(r,attr,item)
                        else:
                            # it is not a record or list of records
-                           if seqf: item=[item]
+                           if flags&SEQUENCE: item=[item]
                            mapping_object[key]=item
 
                 else:
