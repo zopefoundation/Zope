@@ -1,8 +1,8 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
-import sys,os,time,Globals
+import sys,os,time,string,Globals
 from Globals import HTMLFile
 from OFS.ObjectManager import ObjectManager
 from CacheManager import CacheManager
@@ -113,5 +113,34 @@ class ApplicationManager(ObjectManager,SimpleItem.Item,CacheManager):
 	if r is not None: return r
 	return MessageDialog(message='Documented: %s' % product)
 
-	
-		
+    def version_list(self):
+	# Return a list of currently installed products/versions
+	path_join=os.path.join
+	isdir=os.path.isdir
+	exists=os.path.exists
+	split=string.split
+	strip=string.strip
+	join =string.join
+
+	product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
+	product_names=os.listdir(product_dir)
+	product_names.sort()
+	info=[]
+	for product_name in product_names:
+	    package_dir=path_join(product_dir, product_name)
+	    if not isdir(package_dir):
+		continue
+	    version_txt=path_join(package_dir, 'version.txt')
+	    if not exists(version_txt):
+		continue
+	    file=open(version_txt, 'r')
+	    data=file.readline()
+	    file.close()
+	    v=split(strip(data), '-')
+	    if len(v) != 4:
+		continue
+	    if v[0]=='OFSP':
+		v[0]='Principia'
+	    info.append('%s %s.%s.%s' % (v[0], v[1], v[2], v[3]))
+	return info
+

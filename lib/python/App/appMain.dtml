@@ -43,6 +43,21 @@ database packing, and &quot;undoing&quot; previous changes to your site.
   <font size="-1"><!--#var db_name--></font>
   </TD>
 </TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Version Info</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <font size="-1">
+  <!--#if version_list-->
+  <!--#in version_list-->
+    <!--#var sequence-item-->
+    <BR>
+  <!--#/in-->
+  <!--#/if-->
+  </font>
+  </TD>
+</TR>
 </TABLE>
 
 
