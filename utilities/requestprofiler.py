@@ -15,9 +15,9 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
-import string, sys, time, getopt, tempfile
+import string, sys, time, getopt, tempfile, math
 
 class ProfileException(Exception): pass
 
@@ -322,17 +322,14 @@ def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
         raise "Invalid mode."
 
     if mode=='timed':
-        timeDict = {}
-        timesort(timeDict,requests)
         if start and end:
-            timewrite(timeDict,start,end,resolution)
+            timewrite(requests,start,end,resolution)
         if start and not end:
-            timewrite(timeDict,start,computed_end,resolution)
+            timewrite(requests,start,computed_end,resolution)
         if end and not start:
-            timewrite(timeDict,computed_start,end,resolution)
+            timewrite(requests,computed_start,end,resolution)
         if not end and not start:
-            timewrite(timeDict,computed_start,computed_end,resolution)
-
+            timewrite(requests,computed_start,computed_end,resolution)
     else:
         dict.sort(sortf)
         write(dict, top)
@@ -363,54 +360,59 @@ def getdate(val):
     except:
         raise ProfileException, "bad date %s" % val
 
+def getTimeslice(period, utime):
+    low = int(math.floor(utime)) - period + 1
+    high = int(math.ceil(utime)) + 1
+    for x in range(low, high):
+        if x % period == 0:
+            return x
 
-def timesort(dict,requests):
-
-    for r in requests:
-
-        if not r.t_end: r.t_end=r.start
-
-        for t in range(r.start,r.t_end+1):
-        
-            if not dict.has_key(t):
-                dict[t] = 0
-
-            dict[t]=dict[t]+1
-
-
-def timewrite(dict,start,end,resolution):
-
+def timewrite(requests, start, end, resolution):
     max_requests = 0
 
     print "Start: %s    End: %s   Resolution: %d secs" % \
-        (tick2str(start),tick2str(end),resolution)
+        (tick2str(start), tick2str(end), resolution)
     print "-" * 78
     print
     print "Date/Time                #requests requests/second"
 
-    for t in range(start,end,resolution):
-        s = tick2str(t)
+    d = {}
+    for r in requests:
+        t = r.start
+        slice = getTimeslice(resolution,t)
+        if d.has_key(slice):
+            d[slice] = d[slice] + 1
+        else:
+            d[slice] = 1
 
-        num = 0
-        for tick in range(t,t+resolution):
-            if dict.has_key(tick):
-                num = num + dict[tick]
+    num = 0
+    hits = 0
+    avg_requests = None
+    slices = d.keys()
+    slices.sort()
+    for slice in slices:
+        num = d[slice]
+        if num>max_requests: max_requests = num
+        hits = hits + num
+        
+        if avg_requests is None:
+            avg_requests = num
+        else:
+            avg_requests = (avg_requests + num) / 2
 
-        if num>max_requests: max_requests = num                
-
+        s = tick2str(slice)
         s = s + "     %6d         %4.2lf" % (num,num*1.0/resolution)
         print s 
 
     print '='*78 
-    print "Peak:                   %6d         %4.2lf" % \
+    print " Peak:                  %6d         %4.2lf" % \
         (max_requests,max_requests*1.0/resolution)
-
-        
-            
+    print "  Avg:                  %6d         %4.2lf" % \
+        (avg_requests,avg_requests*1.0/resolution)
+    print "Total:                  %6d          n/a " % (hits)
+    
 def tick2str(t):
     return time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(t))
-
-
     
 def codesort(v1, v2):
     v1 = v1.endstage()
@@ -658,9 +660,8 @@ if __name__ == '__main__':
                 sortf = codesort
             else:
                 sortf = Sort(sortby)
-
         elif mode=='timed':
-            sortf = timesort
+            sortf = None
         else:
             raise 'Invalid mode'
         
