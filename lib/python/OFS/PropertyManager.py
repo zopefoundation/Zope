@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -123,7 +123,13 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     and a 'type' key. The 'id' key contains the name of the property,
     and the 'type' key contains a string representing the object's type.
     The 'type' string must be one of the values: 'float', 'int', 'long',
-    'string', 'lines', 'text', 'date' or 'tokens'.
+    'string', 'lines', 'text', 'date', 'tokens', 'selection', or
+    'multiple section'.
+
+    For 'selection' and 'multiple selection' properties, there is an
+    addition item in the property dictionay, 'select_variable' which
+    provides the name of a property or method which returns a list of
+    strings from which the selection(s) can be chosen.
 
     Each entry in the _properties structure may *optionally* provide a
     'mode' key, which specifies the mutability of the property. The 'mode'
@@ -203,10 +209,20 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
     def _delPropValue(self, id): delattr(self,id)
 
     def _setProperty(self, id, value, type='string'):
+        # for selection and multiple selection properties
+        # the value argument indicates the select variable
+        # of the property
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid or duplicate property id'
-        self._properties=self._properties+({'id':id,'type':type},)
-        self._setPropValue(id, value)
+        if type in ('selection', 'multiple selection'):
+            if not hasattr(self, value):
+                raise 'Bad Request', 'No select variable %s' % value
+            self._properties=self._properties + (
+                {'id':id, 'type':type, 'select_variable':value},)
+            self._setPropValue(id, '')
+        else:
+            self._properties=self._properties+({'id':id,'type':type},)
+            self._setPropValue(id, value)
 
     def _updateProperty(self, id, value):
         # Update the value of an existing property. If value

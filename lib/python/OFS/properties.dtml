@@ -79,10 +79,10 @@ values and click "Save Changes".
       </dtml-in>
     </select>
     <dtml-else>
-       No value for <dtml-var select_variable>
+       No value for <dtml-var select_variable>.
     </dtml-if>
   <dtml-elif "type=='multiple selection'">
-    <dtml-if select_variable>
+    <dtml-if "_.has_key(select_variable)">
     <select name="<dtml-var id>:list" multiple
       size="<dtml-var "_.min(7, _.len(_[select_variable]))">">
       <dtml-in "_[select_variable]">
@@ -91,6 +91,8 @@ values and click "Save Changes".
          >><dtml-var sequence-item html_quote></option>
       </dtml-in>
     </select>
+    <dtml-else>
+    No value for <dtml-var select_variable>.
     </dtml-if>
   <dtml-else>
   <em>Unknown property type</em>
@@ -133,7 +135,10 @@ To add a property, click the &quot;Add...&quot; button.
 <p>
 To add a new property, enter a name, type and value for the new 
 property and click the &quot;Add&quot; 
-button.
+button. For &quot;selection&quot; and &quot;multiple selection&quot;
+properties enter the name of a selection variable in the &quot;Value&quot;
+field. The selection variable is a property or method that returns a list
+of strings from which the selection(s) can be chosen.
 </p>
 <table>
 <tr>
