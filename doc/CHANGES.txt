@@ -6,6 +6,16 @@ Zope Changes
 
   Releases
 
+    Zope  1.10.1
+
+      This is a Python 1.5.2 beta 2 compatability release.
+
+      A Python C API change in Python 1.5.2 beta 2 broke
+      Zope.  This release contains a fix.
+
+      Zope should work correctly with Python 1.5, 1.5.1 and
+      beta versions of 1.5.2.
+
     Zope  1.10.0
 
       New Features
