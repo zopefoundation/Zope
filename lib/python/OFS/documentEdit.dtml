@@ -21,7 +21,6 @@
 	<!--#/if title-->
 	</TD>
       </TR>
-      <!--#var smallRolesWidget-->
       <TR>
 	<TD COLSPAN="2" ALIGN="CENTER">
 	<TEXTAREA NAME="data:text"

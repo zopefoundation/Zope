@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
@@ -35,6 +35,17 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 		     'action':'manage_UndoForm', 'target':'manage_main',
 		    },
 		   )
+
+    __ac_permissions__=(
+    ('View Management Screens', ['manage','manage_tabs','manage_uploadForm']),
+    ('Change Permissions', ['manage_access']),
+    ('Change/Upload Data', ['manage_edit','manage_upload','PUT']),
+    ('View', ['index_html',]),
+    )
+   
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		  ('View Access', ['View',]),
+		 )
 
     def manage_edit(self,title,content_type,
 		    acl_type='A',acl_roles=[], REQUEST=None):
@@ -80,7 +91,6 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	# This is bogus and needed because of the way Python tests truth.
 	return 1 
 
-    PUT__roles__='manage',
     def PUT(self, BODY, REQUEST):
 	'handle PUT requests'
 	self.data=BODY
@@ -88,6 +98,7 @@ class File(Persistent,RoleManager,SimpleItem.Item_w__name__,
 	    type=REQUEST['CONTENT_TYPE']
 	    if type: self.content_type=type
 	except KeyError: pass
+
 
 class Image(File):
 

@@ -24,7 +24,6 @@
            VALUE="<!--#var content_type-->">
       </TD>
     </TR>
-    <!--#var smallRolesWidget-->
     <TR>
       <TD></TD><TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
     </TR>

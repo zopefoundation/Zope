@@ -36,7 +36,6 @@
   <INPUT TYPE="file" NAME="file:string" SIZE="25" VALUE="">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
 <TR>
 <TD></TD>
 <TD>
