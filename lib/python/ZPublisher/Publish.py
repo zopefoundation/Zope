@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.95 1998/09/03 18:08:49 jim Exp $"""
+$Id: Publish.py,v 1.96 1998/09/08 20:57:18 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.95 $'[11:-2]
+__version__='$Revision: 1.96 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -956,7 +956,7 @@ def get_module_info(module_name, modules={},
     tb=None
     try:
       try:
-        module=__import__(module_name)
+        module=__import__(module_name, globals(), globals(), ('__doc__',))
     
         realm=module_name
                 
