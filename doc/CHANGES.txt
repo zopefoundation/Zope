@@ -13,7 +13,12 @@ Zope changes
           however, that Python 2.0 is still not officially supported. 
           You may see quite a few warnings from the extension builder 
           when compiling for Python 2.
- 
+
+        - A new module, AccessControl.Permissions has been added to 
+          make it easier to use the new security assertion spelling. 
+          The new module provides consistent symbolic constants for 
+          the standard Zope permissions.
+
 
     Zope 2.3.0 alpha 1
     
