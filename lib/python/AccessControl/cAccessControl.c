@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.25 2004/01/14 19:42:30 Brian Exp $
+  $Id: cAccessControl.c,v 1.26 2004/01/16 18:49:22 Brian Exp $
 
   If you have questions regarding this software,
   contact:
@@ -674,6 +674,7 @@ static PyObject *unrestrictedTraverse_str = NULL;
 static PyObject *aq_validate = NULL;
 static PyObject *aq_parent_str = NULL;
 static PyObject *_check_context_str = NULL;
+static PyObject *getRoles = NULL;
 
 static int ownerous = 1;
 static int authenticated = 1;
@@ -785,8 +786,8 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           return NULL;
 
 	/*| # Provide special rules for acquisition attributes
-	**| if type(name) in (StringType, UnicodeType):
-	**|     if name[:3] == 'aq_' and name not in valid_aq_:
+	**| if isinstance(name, str):
+	**|     if name.startswith('aq_') and name not in valid_aq_:
 	**|	   raise Unauthorized(name, value)
 	*/ 
 
@@ -807,6 +808,30 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 	Py_XINCREF(roles);	/* Convert the borrowed ref to a real one */
 
+	/* new */
+
+	/*| # If roles weren't passed in, we'll try to get them from
+	**| # the object
+	**|
+	**| if roles is _noroles:
+	**|    roles = getRoles(container, name, value, _noroles)
+	*/
+
+        if (roles == NULL) {
+	  /* Note that the '_noroles' arg is just a marker - our C version
+             of _noroles is null */
+	  roles = callfunction4(getRoles, container, name, value, getRoles);
+	  if (roles == getRoles) {
+	    Py_DECREF(roles);
+            roles = NULL;
+	  }
+          if (roles == NULL)
+            PyErr_Clear();
+	}
+
+
+	/* old */
+
 	/*| # If roles weren't passed in, we'll try to get them from
 	**| # the object
 	**|
@@ -819,6 +844,10 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           if (roles == NULL)
             PyErr_Clear();
 	}
+
+
+
+
 
 	/*| # We still might not have any roles
 	**| 
@@ -2323,7 +2352,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.25 2004/01/14 19:42:30 Brian Exp $\n");
+		"$Id: cAccessControl.c,v 1.26 2004/01/16 18:49:22 Brian Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
@@ -2361,6 +2390,16 @@ void initcAccessControl(void) {
 	GETATTR(module, ContainerAssertions);
 	Py_DECREF(module);
 	module = NULL;
+
+
+	/*| from ZopeSecurityPolicy import getRoles
+	*/
+
+	IMPORT(module, "AccessControl.ZopeSecurityPolicy");
+	GETATTR(module, getRoles);
+	Py_DECREF(module);
+	module = NULL;
+
 
 	/*| from unauthorized import Unauthorized
 	*/

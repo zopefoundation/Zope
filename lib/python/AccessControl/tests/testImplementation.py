@@ -38,11 +38,6 @@ class AccessControlImplementationTest(unittest.TestCase):
         setImplementation(self.original)
 
     def test_setImplemenationC(self):
-
-        # XXX:  'C' ZSP is not yet working
-        self.assertRaises( NotImplementedError, setImplementation, "C")
-        return
-
         setImplementation("C")
         name = getImplementationName()
         if self.have_cAccessControl:

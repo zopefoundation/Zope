@@ -34,28 +34,20 @@ def setImplementation(name):
     """Select the policy implementation to use.
 
     'name' must be either 'PYTHON' or 'C'.
-
-    XXX:  'C' version is currently broken
     """
     import sys
     global _implementation_name
-    #
+
     name = name.upper()
     if name == _implementation_name:
         return
     if name == "C":
-        raise NotImplementedError( # XXX
-                "'C' version of ZSP not yet working.")
-        try:
-            from AccessControl import ImplC as impl
-        except ImportError:
-            name = "PYTHON"
-            from AccessControl import ImplPython as impl
+        from AccessControl import ImplC as impl
     elif name == "PYTHON":
         from AccessControl import ImplPython as impl
     else:
         raise ValueError("unknown policy implementation: %r" % name)
-    #
+
     _implementation_name = name
     for modname, names in _policy_names.items():
         __import__(modname)
@@ -91,5 +83,4 @@ _policy_names = {
 
 
 # start with the default, mostly because we need something for the tests
-#setImplementation("C")   XXX: C version of ZSP isn't yet working
-setImplementation("PYTHON")
+setImplementation("C")
