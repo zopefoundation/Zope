@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.24 1997/12/12 21:49:41 brian Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: Application.py,v 1.25 1997/12/12 21:53:05 brian Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 
 import Globals,Folder,os,regex
@@ -35,7 +35,7 @@ class Application(Folder.Folder):
     {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
      'action':'manage_propertiesForm',   'target':'manage_main'},
     {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
-     'action':'manage_changeAccess',   'target':'manage_main'},
+     'action':'manage_rolesForm',   'target':'manage_main'},
     {'icon':'App/undo_icon.gif', 'label':'Undo',
      'action':'manage_UndoForm',   'target':'manage_main'},
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
@@ -252,6 +252,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.25  1997/12/12 21:53:05  brian
+# ui support
+#
 # Revision 1.24  1997/12/12 21:49:41  brian
 # ui update
 #
