@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.109 $'[11:-2]
+__version__='$Revision: 1.110 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -198,15 +198,23 @@ class File(Persistent,Implicit,PropertyManager,
         header=REQUEST.get_header('If-Modified-Since', None)
         if header is not None:
             header=string.split(header, ';')[0]
-            mod_since=long(DateTime(header).timeTime())
-            if self._p_mtime:
-                last_mod = long(self._p_mtime)
-            else:
-                last_mod = long(0)
-            if last_mod > 0 and last_mod <= mod_since:
-                RESPONSE.setStatus(304)
-                return RESPONSE
-        
+            # Some proxies seem to send invalid date strings for this
+            # header. If the date string is not valid, we ignore it
+            # rather than raise an error to be generally consistent
+            # with common servers such as Apache (which can usually
+            # understand the screwy date string as a lucky side effect
+            # of the way they parse it).
+            try:    mod_since=long(DateTime(header).timeTime())
+            except: mod_since=None
+            if mod_since is not None:
+                if self._p_mtime:
+                    last_mod = long(self._p_mtime)
+                else:
+                    last_mod = long(0)
+                if last_mod > 0 and last_mod <= mod_since:
+                    RESPONSE.setStatus(304)
+                    return RESPONSE
+
         if self.precondition and hasattr(self,self.precondition):
             # Grab whatever precondition was defined and then 
             # execute it.  The precondition will raise an exception 
