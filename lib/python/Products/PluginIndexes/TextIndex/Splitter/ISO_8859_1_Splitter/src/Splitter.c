@@ -533,7 +533,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.3 2001/06/01 16:01:32 andreas Exp $\n"
+"$Id: Splitter.c,v 1.4 2001/06/01 16:09:39 andreas Exp $\n"
 ;
 
 
@@ -541,7 +541,7 @@ void
 initSplitter(void) 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
   
   /* Create the module and add the functions */
   initSplitterTrtabs();
@@ -555,6 +555,6 @@ initSplitter(void)
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Splitter");
-  printf("%s",Splitter_module_documentation);
+//  printf("%s",Splitter_module_documentation);
 }
 
