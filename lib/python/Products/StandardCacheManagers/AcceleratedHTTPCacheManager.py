@@ -100,9 +100,6 @@ from urllib import quote
 from string import lower, join, split
 from App.Common import rfc1123_date
 
-def http_date(value, format='%a, %d %b %Y %H:%M:%S GMT'):
-    return time.strftime(format, time.gmtime(value))
-
 
 class AcceleratedHTTPCache (Cache):
     # Note the need to take thread safety into account.
