@@ -6,10 +6,10 @@ domain-specific customization of web environments.
 """
 
 from Acquisition import Explicit
-from Globals import Persistent, HTMLFile, MessageDialog
+from Globals import Persistent, HTMLFile, MessageDialog, HTML
 import OFS.SimpleItem, os
-from string import split, join, find
-import AccessControl.Role
+from string import split, join, find, lower
+import AccessControl.Role, sys, regex, traceback
 	    
 modules={}
 
@@ -180,14 +180,42 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 
 	__traceback_info__=args, kw, self.func_defaults
 
-	try: return apply(f,args,kw)
-	except TypeError, v:
-	    
-	    if (self.func_code.co_argcount-len(self.func_defaults or ()) - 1
-		== len(args)) and self.func_code.co_varnames[0]=='self':	
-		return apply(f,(self.aq_parent,)+args,kw)
+	try:
+	    try:
+		try: return apply(f,args,kw)
+		except TypeError, v:
+		    tb=sys.exc_traceback
+		    try:
+			if ((self.func_code.co_argcount-
+			     len(self.func_defaults or ()) - 1 == len(args))
+			    and self.func_code.co_varnames[0]=='self'):
+		            return apply(f,(self.aq_parent,)+args,kw)
 
-	    raise TypeError, v
+			raise TypeError, v, tb
+		    finally: tb=None
+	    except:
+		error_type=sys.exc_type
+		error_value=sys.exc_value
+		tb=sys.exc_traceback
+		if lower(error_type) in ('redirect',):
+		    raise error_type, error_value, tb
+		if (type(error_value) is type('') and
+		    regex.search('[a-zA-Z]>', error_value) > 0):
+		    error_message=error_value
+		else:
+		    error_message=''
+		error_tb=pretty_tb(error_type, error_value, tb)
+		c=self.aq_parent
+		try:
+		    s=getattr(c, 'standard_error_message')
+		    v=HTML.__call__(s, c, self.aq_acquire('REQUEST'),
+				    error_type=error_type,
+				    error_value=error_value,
+				    error_tb=error_tb, error_traceback=error_tb,
+				    error_message=error_message)
+		except: v='Sorry, an error occured'
+		raise error_type, v, tb
+	finally: tb=None
 		
 
     def function(self): return self._function
@@ -203,5 +231,41 @@ class FuncCode:
 	return cmp((self.co_argcount, self.co_varnames),
 		   (other.co_argcount, other.co_varnames))
 
+
+def format_exception(etype,value,tb,limit=None):
+    import traceback
+    result=['Traceback (innermost last):']
+    if limit is None:
+	    if hasattr(sys, 'tracebacklimit'):
+		    limit = sys.tracebacklimit
+    n = 0
+    while tb is not None and (limit is None or n < limit):
+	    f = tb.tb_frame
+	    lineno = tb.tb_lineno
+	    co = f.f_code
+	    filename = co.co_filename
+	    name = co.co_name
+	    locals=f.f_locals
+	    result.append('  File %s, line %d, in %s'
+			  % (filename,lineno,name))
+	    try: result.append('    (Object: %s)' %
+			       locals[co.co_varnames[0]].__name__)
+	    except: pass
+	    try: result.append('    (Info: %s)' %
+			       str(locals['__traceback_info__']))
+	    except: pass
+	    tb = tb.tb_next
+	    n = n+1
+    result.append(join(traceback.format_exception_only(etype, value),
+		       ' '))
+    return result
+
+def pretty_tb(t,v,tb):
+    tb=format_exception(t,v,tb,200)
+    tb=join(tb,'\n')
+    return tb
+
+
 import __init__
 __init__.need_license=1
+
