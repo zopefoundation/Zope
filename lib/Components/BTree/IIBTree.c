@@ -10,11 +10,9 @@
   FOR A PARTICULAR PURPOSE
   
  ****************************************************************************/
-/* $Id: IIBTree.c,v 1.7 2001/11/28 15:50:50 matt Exp $ */
+/* $Id: IIBTree.c,v 1.8 2002/08/01 20:02:01 bwarsaw Exp $ */
 
 #define INTKEY int
 #define INTVAL int
-
-static char *needed_to_make_release_happy="$Id: IIBTree.c,v 1.7 2001/11/28 15:50:50 matt Exp $";
 
 #include "BTree.c"

@@ -10,10 +10,7 @@
   FOR A PARTICULAR PURPOSE
   
  ****************************************************************************/
-/* $Id: OIBTree.c,v 1.7 2001/11/28 15:50:50 matt Exp $ */
-
-static char *needed_to_make_release_happy=
-"$Id: OIBTree.c,v 1.7 2001/11/28 15:50:50 matt Exp $";
+/* $Id: OIBTree.c,v 1.8 2002/08/01 20:02:01 bwarsaw Exp $ */
 
 #define INTVAL int
 #include "BTree.c"
