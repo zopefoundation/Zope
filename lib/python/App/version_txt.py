@@ -36,7 +36,7 @@ def _prep_version_data():
             '\.(?P<minor>[0-9]+)\.(?P<micro>[0-9]+)'
             '(?P<status>[A-Za-z]+)?(?P<release>[0-9]+)?')
         try:
-            s = open(fn).read()
+            s = open(fn).read().strip()
         except IOError:
             ss = 'unreleased version'
             _zope_version = (-1, -1, -1, '', -1)
