@@ -1,6 +1,6 @@
 /*
 
-  $Id: MultiMapping.c,v 1.5 1997/07/02 20:20:12 jim Exp $
+  $Id: MultiMapping.c,v 1.6 1997/07/16 19:41:35 jim Exp $
 
   Sample extension class program that implements multi-mapping objects. 
 
@@ -186,7 +186,7 @@ static char MMtype__doc__[] =
 ;
 
 static PyExtensionClass MMtype = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,				/*ob_size*/
 	"MultiMapping",			/*tp_name*/
 	sizeof(MMobject),		/*tp_basicsize*/
@@ -219,11 +219,11 @@ void
 initMultiMapping()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
+  char *rev="$Revision: 1.6 $";
 
   m = Py_InitModule4("MultiMapping", MultiMapping_methods,
 		     "MultiMapping -- Wrap multiple mapping objects for lookup"
-		     "\n\n$Id: MultiMapping.c,v 1.5 1997/07/02 20:20:12 jim Exp $\n",
+		     "\n\n$Id: MultiMapping.c,v 1.6 1997/07/16 19:41:35 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
@@ -237,6 +237,9 @@ initMultiMapping()
 /*****************************************************************************
 
   $Log: MultiMapping.c,v $
+  Revision 1.6  1997/07/16 19:41:35  jim
+  Change for win32
+
   Revision 1.5  1997/07/02 20:20:12  jim
   Added stupid parens and other changes to make 'gcc -Wall -pedantic'
   happy.
