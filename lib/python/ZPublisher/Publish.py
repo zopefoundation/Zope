@@ -362,7 +362,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.75 1998/01/14 16:32:42 jim Exp $"""
+$Id: Publish.py,v 1.76 1998/01/21 16:30:15 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -417,7 +417,7 @@ $Id: Publish.py,v 1.75 1998/01/14 16:32:42 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 
 def main():
@@ -480,7 +480,8 @@ class ModulePublisher:
 	form_has=form.has_key
 	other={}
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
-	if not hasattr(fs,'list'): form['BODY']=other['BODY']=fs.value
+	if not hasattr(fs,'list') or fs.list is None:
+	    form['BODY']=other['BODY']=fs.value
 	else:
 	    fslist=fs.list
 	    tuple_items={}
