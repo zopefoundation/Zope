@@ -83,6 +83,9 @@ Zope Changes
           rename form. This caused rename to fail for Zope installations 
           running behind Netscape servers.
 
+        - Fixed a potential buffer bug in PCGI reported by Larry Luther.
+
+
     Zope 2.1.1
 
       Bugs Fixed 
