@@ -122,8 +122,8 @@ Zope Changes
 
     Bugs fixed
 
-     - Collector #1293: Added default ports for http-server, ftp-server
-       and webdav-server.
+     - Collector #1293: missing 'address' parameters within one of the server
+       sections raise an exception. 
 
      - Collector #1345: AcceleratedHTTPCacheManager now sends the
        Last-Modified header.

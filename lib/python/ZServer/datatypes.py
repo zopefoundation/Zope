@@ -17,7 +17,7 @@ Each server type is represented by a ServerFactory instance.
 """
 
 import socket
-
+import ZConfig
 
 _default_host_info = None
 
@@ -81,6 +81,10 @@ class ServerFactory:
 
 class HTTPServerFactory(ServerFactory):
     def __init__(self, section):
+        if not section.address:
+            raise ZConfig.ConfigurationError(
+                "No 'address' settings found "
+                "within the 'http-server' or 'webdav-source-server' section")
         ServerFactory.__init__(self, section.address)
         self.force_connection_close = section.force_connection_close
         # webdav-source-server sections won't have webdav_source_clients:
@@ -113,6 +117,9 @@ class WebDAVSourceServerFactory(HTTPServerFactory):
 
 class FTPServerFactory(ServerFactory):
     def __init__(self, section):
+        if not section.address:
+            raise ZConfig.ConfigurationError(
+                "No 'address' settings found within the 'ftp-server' section")
         ServerFactory.__init__(self, section.address)
 
     def create(self):
