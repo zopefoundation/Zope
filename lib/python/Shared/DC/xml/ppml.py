@@ -776,7 +776,7 @@ def save_reference(self, tag, data):
 def save_object(self, tag, data):
     binary=self.binary
     a=data[1]
-    v='(c'
+    v='('
     j=0
     id=a['id']
     prefix=string.rfind(id,'.')
@@ -831,7 +831,7 @@ def save_global(self, tag, data):
             else:
                 id=s
                 put='r'
-            v=a['module']+'\012'+a['name']+'\012'+put+id
+            v='c'+a['module']+'\012'+a['name']+'\012'+put+id
         else:
             v=a['module']+'\012'+a['name']+'\012'+put+id+'\012'
         self._pickleids[a['id']]=v
