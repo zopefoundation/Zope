@@ -33,7 +33,7 @@ License
 
 Important
 
-  This release requires Python 2.2.2.
+  This release requires Python 2.2.3.
 
 Installing Zope
 
@@ -41,7 +41,7 @@ Installing Zope
 
 Notes
 
-  * Zope requires Python 2.2.2.
+  * This release requires Python 2.2.3.
 
   * Don't forget to check the Zope web site and mailing list.
 
