@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<TITLE>Edit Document</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<FORM ACTION="<!--#var PARENT_URL-->/manage_edit" METHOD="POST">
+<H2>Edit Document</H2>
+
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var id-->
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Title</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#if title-->
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+  <!--#else title-->
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="">
+  <!--#/if title-->
+  </TD>
+</TR>
+<!--#var smallRolesWidget-->
+<TR>
+  <TD COLSPAN="2" ALIGN="CENTER">
+  <TEXTAREA NAME="data:text"
+  <!--#if dtpref_cols-->
+  COLS="<!--#var dtpref_cols-->"
+  <!--#else dtpref_cols-->
+  COLS="50"
+  <!--#/if dtpref_cols-->
+  <!--#if dtpref_rows-->
+  ROWS="<!--#var dtpref_rows-->"
+  <!--#else dtpref_rows-->
+  ROWS="20"
+  <!--#/if dtpref_rows-->><!--#var __str__--></TEXTAREA>
+  </TD>
+</TR>
+<TR>
+  <TD></TD>
+  <TD>
+  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
+  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Cancel">
+
+  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Smaller">
+  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Bigger">
+  </TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+

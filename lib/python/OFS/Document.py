@@ -1,73 +1,20 @@
 """Document object"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
-from Globals import HTML
-from Globals import HTMLFile
-from string import join, split, strip, rfind
+from Globals import HTML, HTMLFile,MessageDialog
+from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
-import regex
-import SimpleItem
+import SimpleItem, regex
+
+
+
 
 class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
-    """A Document object"""
-    meta_type  ='Document'
-    icon       ='OFS/Document_icon.gif'
-
+    """Document object"""
+    meta_type      ='Document'
+    icon           ='OFS/Document_icon.gif'
     __state_names__=HTML.__state_names__+('title','__roles__')
-
-    _formhead="""
-<TABLE CELLSPACING="2">
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <STRONG>Id</STRONG>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">%s</TD>
-  </TD>
-</TR>
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <EM><STRONG>Title</STRONG></EM>
-  </TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="%s">
-  </TD>
-</TR>
-<TR>
-<TD><STRONG>Access<BR>Control</STRONG></TD>
-<TD>
-  <TABLE>
-  <TR>
-  <TD VALIGN="TOP">
-  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="E"%s>
-  Allow users with selected roles
-  <BR>
-  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="A"%s>
-  Allow based on default roles
-  <BR>
-  <INPUT TYPE="RADIO" NAME="acl_type" VALUE="P"%s> 
-  Allow all users
-  </TD>
-  <TD VALIGN="TOP">
-  <SELECT NAME="acl_roles:list" SIZE="3" MULTIPLE>
-  %s
-  </SELECT>
-  </TD>
-  </TR>
-  </TABLE>
-</TD>
-</TR>
-</TABLE>"""
-
-    def document_template_form_header(self):
-	try:
-            return self._formhead % (self.id(),self.title, self.aclEChecked(), 
-				 self.aclAChecked(),self.aclPChecked(),
-				 join(self.selectedRoles(),'\n')
-				)
-        except:
-	    import sys
-	    return '%s %s' % (sys.exc_type, sys.exc_value)
 
     def initvars(self, mapping, vars):
 	"""Hook to override signature so we can detect whether we are
@@ -83,13 +30,6 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	if RESPONSE is None: return r
 	return decapitate(r, RESPONSE)
 
-    def manage_edit(self,data,title,acl_type='A',acl_roles=[],REQUEST=None):
-	"""Edit method"""
-	self.title=title
-	self._setRoles(acl_type,acl_roles)
-	REQUEST['CANCEL_ACTION']="%s/manage_main" % REQUEST['URL2']
-	return HTML.manage_edit(self,data,REQUEST)
-
     def validate(self, inst, parent, name, value, md):
 	if hasattr(value, '__roles__'):
 	    roles=value.__roles__
@@ -102,18 +42,53 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 		try: roles=parent.aq_acquire('__roles__')
 		except AttributeError: return 0
 	    else: return 0
-
 	if roles is None: return 1
-
 	try: return md.AUTHENTICATED_USER.hasRole(roles)
 	except AttributeError: return 0
 
+    manage_editForm=HTMLFile('OFS/documentEdit')
+    manage=manage_editDocument=manage_editForm
 
+    def manage_edit(self,data,title,acl_type='A',acl_roles=[],SUBMIT='Change',
+		    dtpref_cols='50',dtpref_rows='20',REQUEST=None):
+	"""Edit method"""
+        if SUBMIT=='Smaller':
+            rows=atoi(dtpref_rows)-5
+            cols=atoi(dtpref_cols)-5
+	    e='Friday, 31-Dec-99 23:59:59 GMT'
+	    resp=REQUEST['RESPONSE']
+	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
+	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
+	    return self.manage_editForm(self,REQUEST,title=title,__str__=data,
+				        acl_type=acl_type,acl_roles=acl_roles,
+					dtpref_cols=cols,dtpref_rows=rows)
+        if SUBMIT=='Bigger':
+            rows=atoi(dtpref_rows)+5
+            cols=atoi(dtpref_cols)+5
+	    e='Friday, 31-Dec-99 23:59:59 GMT'
+	    resp=REQUEST['RESPONSE']
+	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
+	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
+	    return self.manage_editForm(self,REQUEST,title=title,__str__=data,
+				        acl_type=acl_type,acl_roles=acl_roles,
+					dtpref_cols=cols,dtpref_rows=rows)
+	if SUBMIT=='Cancel':
+	    return MessageDialog(title='Changes Cancelled',
+	                         message='Your changes have been discarded',
+	                         action='%s/manage_main' % REQUEST['URL2'])
 
-
+	self.title=title
+	self._setRoles(acl_type,acl_roles)
+	self.munge(data)
+	if REQUEST:
+	    return MessageDialog(title='Change Successful',
+	                         message='Your changes have been saved',
+	                         action='%s/manage_main' % REQUEST['URL2'])
 
 default_html="""<!--#var standard_html_header-->
-New Document
+<H2><!--#var document_title--></H2>
+<P>This is the <!--#var document_id--> Document in 
+the <!--#var title_or_id--> Folder.</P>
 <!--#var standard_html_footer-->"""
 
 
