@@ -17,7 +17,7 @@ font-size: 10pt;
 
 </style>
 <dtml-if debug_auto_reload>
-<meta HTTP-EQUIV=REFRESH 
+<meta HTTP-EQUIV="Refresh"
   CONTENT="&dtml-debug_auto_reload;; URL=&dtml-URL;?debug_auto_reload=&dtml-debug_auto_reload;">
 </dtml-if>
 </head>
@@ -30,7 +30,7 @@ font-size: 10pt;
 </dtml-if>
 
 <h3>Debug Information</h3>
-<form>
+<form action="&dtml-URL;" method="GET">
 <p>
 <ul>
 <li>Zope version: <dtml-var version_txt>
@@ -38,7 +38,7 @@ font-size: 10pt;
 <li>System Platform: <dtml-var sys_platform>
 <li>Process ID: <dtml-var process_id> (<dtml-var thread_get_ident>)
 <li>Running for: <dtml-var process_time>
-<li>Top Refcounts: <select name="foo"><dtml-in 
+<li>Top Refcounts:<br><select name="foo" size="5"><dtml-in
     "refcount(100)"><option><dtml-var 
     sequence-item>: <dtml-var sequence-key></option></dtml-in
     ></select><br><br>
@@ -78,8 +78,16 @@ Delta
 </dtml-in>
 </table>
 
-<a href="<dtml-var URL>?update_snapshot=1">Update Snapshot</a> | 
-<a href="<dtml-var URL>">Refresh</a>
+<p><a href="<dtml-var URL>?update_snapshot=1">Update Snapshot</a> | 
+<dtml-if debug_auto_reload>
+  <a href="<dtml-var URL>">Stop auto refresh</a>
+<dtml-else>
+  <a href="<dtml-var URL>">Refresh</a> |
+  Auto refresh interval (seconds):
+  <input type="text" name="debug_auto_reload" size="3" value="10">
+  <input type="submit" value="Start auto refresh">
+</dtml-if>
+</p>
 
 <li>Connections:
 <table border="1">
