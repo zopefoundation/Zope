@@ -137,8 +137,35 @@ class ZSQLMethod:
 
         The returned value is a sequence of record objects.
 
-        XXX describe record objects XXX
-
         """
     
+
+    def manage_edit(self,title,connection_id,arguments,template):
+        """
+
+        Change database method properties.
+
+        The 'connection_id' argument is the id of a database
+        connection that resides in the current folder or in a folder
+        above the current folder.  The database should understand SQL.
+
+        The 'arguments' argument is a string containing an arguments
+        specification, as would be given in the SQL method cration
+        form.
+
+        The 'template' argument is a string containing the source for
+        the SQL Template.
+
+        """
+
+
+
+
+
+
+
+
+
+
+
 
