@@ -88,7 +88,6 @@ Code generator for TALInterpreter intermediate code.
 
 import re
 import cgi
-import string
 
 from TALDefs import *
 
@@ -151,8 +150,7 @@ class TALGenerator:
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
-                if not string.strip(part): break # extra space after semi
-                raise TALError("invalid z:define syntax: " + `part`)
+                raise TALError("invalid define syntax: " + `part`)
             scope, name, expr = m.group(1, 2, 3)
             scope = scope or "local"
             cexpr = self.compileExpression(expr)
@@ -169,7 +167,7 @@ class TALGenerator:
     def emitRepeat(self, arg):
         m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
         if not m:
-            raise TALError("invalid z:repeat syntax: " + `repeat`)
+            raise TALError("invalid repeat syntax: " + `repeat`)
         name, expr = m.group(1, 2)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
@@ -178,7 +176,7 @@ class TALGenerator:
     def emitSubstitution(self, arg, attrDict={}):
         key, expr = parseSubstitution(arg)
         if not key:
-            raise TALError("Bad syntax in z:insert/z:replace: " + `arg`)
+            raise TALError("Bad syntax in insert/replace: " + `arg`)
         cexpr = self.compileExpression(expr)
         program = self.popProgram()
         if key == "text":
