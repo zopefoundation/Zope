@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.21 1998/12/04 20:15:29 jim Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.22 1999/02/08 15:52:50 brian Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -144,7 +144,7 @@ class InstanceDict:
         if key[:1]=='_':
             if key != '__str__':
                 raise KeyError, key # Don't divuldge private data
-                r=str(inst)
+            r=str(inst)
         else:
             try: r=getattr(inst,key)
             except AttributeError: raise KeyError, key
