@@ -59,9 +59,7 @@ class CruelSecurityPolicy:
     #   Standard SecurityPolicy interface
     #
     def validate(self, accessed, container, name, value, *args):
-        if aq_base(accessed) is aq_base(container):
-            raise Unauthorized, name
-        return 0
+        raise Unauthorized, name
 
     def checkPermission( self, permission, object, context) :
         return 0
