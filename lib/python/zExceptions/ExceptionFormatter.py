@@ -14,7 +14,7 @@
 """An exception formatter that shows traceback supplements and traceback info,
 optionally in HTML.
 
-$Id: ExceptionFormatter.py,v 1.2 2002/04/03 20:43:59 shane Exp $
+$Id: ExceptionFormatter.py,v 1.3 2002/04/08 12:41:52 htrd Exp $
 """
 
 import sys
@@ -116,7 +116,7 @@ class TextExceptionFormatter:
         return None        
 
     def formatTracebackInfo(self, tbi):
-        return self.formatSupplementLine('__traceback_info__: %s' % tbi)
+        return self.formatSupplementLine('__traceback_info__: %s' % (tbi,))
 
     def formatLine(self, tb):
         f = tb.tb_frame
