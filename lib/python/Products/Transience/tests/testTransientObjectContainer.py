@@ -285,6 +285,7 @@ class TestTransientObjectContainer(TestBase):
                 if self.t.has_key(x): assert 1==2,"failed to delete %s" % x
 
     def testChangingTimeoutWorks(self):
+        # XXX This test takes nearly 40 seconds on my machine!
         # 1 minute
         for x in range(10, 110):
             self.t[x] = x
