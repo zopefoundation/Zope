@@ -2,16 +2,66 @@
 <HTML lang="en">
 <HEAD>
 <TITLE>Contents</TITLE>
+
+<SCRIPT LANGUAGE="JavaScript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() 
+{
+       
+       if (isSelected == false)
+           {
+           for (i = 0; i < document.objectItems.length; i++)
+           document.objectItems.elements[i].checked = true ;
+           isSelected = true;
+           return isSelected;
+           }
+       
+       else
+           for (i = 0; i < document.objectItems.length; i++)
+           document.objectItems.elements[i].checked = false ;
+           isSelected = false;
+           return isSelected;           
+       
+}
+
+//-->
+</SCRIPT>
+
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <dtml-var manage_tabs>
-<P>
-
-<FORM ACTION="&dtml-URL1;" METHOD="POST">
+<FORM ACTION="&dtml-URL1;" METHOD="POST" name="objectItems">
 <dtml-if objectItems>
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
-<dtml-in objectItems sort>
+
+<dtml-unless skey>
+<dtml-call expr="REQUEST.set('skey', 'id')">
+</dtml-unless>
+
+<dtml-unless rkey>
+<dtml-call expr="REQUEST.set('rkey', '')">
+</dtml-unless>
+
+
 <TR>
+  <TD WIDTH = "2%" ALIGN="left">&nbsp;</TD>
+  <TD WIDTH = "4%" ALIGN="left"><a href="<dtml-var absolute_url>/manage_main?skey=meta_type<dtml-if "rkey == ''">&rkey=meta_type</dtml-if>">Type</TD>
+  <TD WIDTH = "50%" ALIGN="left"><a href="./manage_main?skey=id<dtml-if "rkey == ''">&rkey=id</dtml-if>">Id</a></TD>
+  <TD WIDTH = "15%" ALIGN="left"><a href="./manage_main?skey=get_size<dtml-if "rkey == ''">&rkey=get_size</dtml-if>">Size</a></TD>
+  <TD WIDTH = "29%" ALIGN="left"><a href="./manage_main?skey=bobobase_modification_time<dtml-if "rkey == ''">&rkey=bobobase_modification_time</dtml-if>">Last Modified</a></TD>
+</TR>
+
+
+<dtml-in objectItems sort_expr="skey" reverse_expr="rkey">
+<dtml-if sequence-odd>
+<TR>
+</dtml-if>
+<dtml-if sequence-even>
+<TR BGCOLOR="#DDDDDD">
+</dtml-if>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
   <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="&dtml-sequence-key;">
   </TD>
@@ -37,6 +87,19 @@
     </dtml-if>
   </dtml-if>
   </TD>
+<dtml-with sequence-key>
+<TD>
+        <dtml-if get_size>
+        <dtml-var get_size thousands_commas> bytes
+        <dtml-else>
+        &nbsp;
+        </dtml-if>
+  </TD>
+<TD>
+<dtml-var bobobase_modification_time fmt=mm>/<dtml-var bobobase_modification_time fmt=dd>/<dtml-var bobobase_modification_time fmt=yy>&nbsp;
+<dtml-var bobobase_modification_time fmt=AMPMMinutes>
+</TD>
+</dtml-with>
 </TR>
 </dtml-in>
 </TABLE>
@@ -57,9 +120,19 @@
   <INPUT TYPE="SUBMIT" NAME="manage_delObjects:method" VALUE="Delete">
   </dtml-if>
   <dtml-if "_.SecurityCheckPermission('Import/Export objects', this())">
-  <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Export...">
+  <INPUT TYPE="SUBMIT" NAME="manage_importExportForm:method" VALUE="Import/Export...">
   </dtml-if>
   </TD>
+</TR>
+</TABLE>
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16"></TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+<FORM OnSubmit="return false;">
+<Input type="submit" value="Unselect All" OnClick="toggleSelect(); return false">
+</FORM>
+</TD>
 </TR>
 </TABLE>
 <dtml-else>
@@ -124,3 +197,6 @@ window.parent.update_menu();
 
 </BODY>
 </HTML>
+
+
+

@@ -5,27 +5,22 @@
 </head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <dtml-var manage_tabs>
-
 <dtml-if Principia-Version>
 <p>
 <em>You are currently working in version <dtml-var Principia-Version></em>
 </p>
 </dtml-if Principia-Version>
 
+<TABLE CELLPADDING="4" BORDER=1>
+  <TR>
+  <TD COLSPAN="2" BGCOLOR="#000099"><font color="#FFFFFF">Defined Properties</font></TD>
+  </TR>
+  <TR>
+  <TD WIDTH="70%" VALIGN="TOP">
 <form action="<dtml-var URL1>" method="POST">
 <dtml-if propertyMap>
-<p>
-Properties allow you to assign simple values to Zope objects. 
-The following properties are defined for this item. 
-<dtml-if property_extensible_schema__>
-To <a href="#addpropform">
-add a new property</a>, enter a name, type and value for the new property 
-and click the &quot;Add&quot; button.
-</dtml-if>
-To change property values, edit the 
-values and click "Save Changes". 
-</p>
-<table border="0" cellspacing="0" cellpadding="2">
+
+<table border="1" cellspacing="0" cellpadding="2">
 <tr>
   <th colspan="3">Property</th>
   <th>Type</th>
@@ -153,7 +148,15 @@ values and click "Save Changes".
 </dtml-if>
   </td>
 </tr>
-</table>
+</table></TD>
+<TD VALIGN=TOP WIDTH="30%">
+Properties allow you to assign simple values to Zope objects. 
+The properties at left are defined for this item. 
+To change property values, edit the 
+values and click "Save Changes".
+</TD>
+</TR>
+</TABLE>
 
 <dtml-else>
 <p>
@@ -168,17 +171,14 @@ To add a property, click the &quot;Add...&quot; button.
 </form>
 
 <dtml-if property_extensible_schema__>
-<a name="addpropform">
+<TABLE CELLPADDING="4" BORDER=1>
+  <TR>
+  <TD COLSPAN="2" BGCOLOR="#000099"><font color="#FFFFFF">Add Properties</font></TD>
+  </TR>
+  <TR>
+  <TD WIDTH="70%" VALIGN="TOP">
 <form action="<dtml-var URL1>/manage_addProperty" method="POST">
-<p>
-To add a new property, enter a name, type and value for the new 
-property and click the &quot;Add&quot; 
-button. For &quot;selection&quot; and &quot;multiple selection&quot;
-properties enter the name of a selection variable in the &quot;Value&quot;
-field. The selection variable is a property or method that returns a list
-of strings from which the selection(s) can be chosen.
-</p>
-<table>
+<table BORDER=1 CELLPADDING=2>
 <tr>
   <th align="left" valign="top">Name</th>
   <td align="left" valign="top"><input type="text" name="id" size="20"></td>
@@ -210,6 +210,17 @@ of strings from which the selection(s) can be chosen.
 </tr>
 </table>
 </form>
+</TD>
+<TD VALIGN = "top" WIDTH="30%">
+To add a new property, enter a name, type and value for the new 
+property and click the &quot;Add&quot; 
+button. For &quot;selection&quot; and &quot;multiple selection&quot;
+properties enter the name of a selection variable in the &quot;Value&quot;
+field. The selection variable is a property or method that returns a list
+of strings from which the selection(s) can be chosen.
+</TD>
+</TR>
+</TABLE>
 </dtml-if>
 
 </body>

@@ -382,11 +382,11 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.40 2000/05/25 16:33:44 shane Exp $'
-__version__='$Revision: 1.40 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.41 2000/12/18 20:45:01 adam Exp $'
+__version__='$Revision: 1.41 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
-from DT_Util import render_blocks, InstanceDict, ValidationError
+from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
 from string import find, atoi, join, split
 import ts_regex
 from DT_InSV import sequence_variables, opt
@@ -408,6 +408,7 @@ class InClass:
     expr=sort=batch=mapping=None
     start_name_re=None
     reverse=None
+    sort_expr=reverse_expr=None
     
     def __init__(self, blocks):
         tname, args, section = blocks[0]
@@ -415,13 +416,19 @@ class InClass:
                           orphan='3',overlap='1',mapping=1,
                           skip_unauthorized=1,
                           previous=1, next=1, expr='', sort='',
-                          reverse=1)
+                          reverse=1, sort_expr='', reverse_expr='')
         self.args=args
         has_key=args.has_key
 
         if has_key('sort'):
             self.sort=sort=args['sort']
             if sort=='sequence-item': self.sort=''
+
+        if has_key('sort_expr'):
+            self.sort_expr=VSEval.Eval(args['sort_expr'], expr_globals)
+
+        if has_key('reverse_expr'):
+            self.reverse_expr=VSEval.Eval(args['reverse_expr'], expr_globals)
 
         if has_key('reverse'):
             self.reverse=args['reverse']
@@ -484,15 +491,21 @@ class InClass:
             raise 'InError', (
                 'Strings are not allowed as input to the in tag.')
 
+
         section=self.section
         params=self.args
         
         mapping=self.mapping
 
-        if self.sort is not None:
+        if self.sort_expr is not None:
+            self.sort=self.sort_expr.eval(md)
+            sequence=self.sort_sequence(sequence)
+        elif self.sort is not None:
             sequence=self.sort_sequence(sequence)
 
-        if self.reverse is not None:
+        if self.reverse_expr is not None and self.reverse_expr.eval(md):
+            sequence=self.reverse_sequence(sequence)
+        elif self.reverse is not None:
             sequence=self.reverse_sequence(sequence)
             
         next=previous=0
@@ -644,12 +657,18 @@ class InClass:
         section=self.section        
         mapping=self.mapping
 
-        if self.sort is not None:
+
+        if self.sort_expr is not None:
+            self.sort=self.sort_expr.eval(md)
+            sequence=self.sort_sequence(sequence)
+        elif self.sort is not None:
             sequence=self.sort_sequence(sequence)
 
-        if self.reverse is not None:
+        if self.reverse_expr is not None and self.reverse_expr.eval(md):
             sequence=self.reverse_sequence(sequence)
-            
+        elif self.reverse is not None:
+            sequence=self.reverse_sequence(sequence)
+
         vars=sequence_variables(sequence)
         kw=vars.data
         kw['mapping']=mapping

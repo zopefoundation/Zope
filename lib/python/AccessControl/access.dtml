@@ -2,28 +2,39 @@
 <HTML lang="en">
 <HEAD>
 <TITLE>Security</TITLE>
+<SCRIPT LANGUAGE="JavaScript">
+<!-- 
+function selectAll(boxes) 
+{
+for (i = 0; i < boxes.length; i++)
+       boxes[i].checked = true ;
+}
+
+function unselectAll()
+{
+for (i = 0; i < document.actions.length; i++)
+       document.actions.elements[i].checked = false ;
+}
+
+function returnAxis(arg)
+{
+
+for (i = 0; i < document.permissions.length; i++)
+    {
+    if (document.permissions.elements[i].name.charAt(1) == arg)
+      document.permissions.elements[i].checked = true ;
+    }
+}
+
+//-->
+</SCRIPT>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 <dtml-if manage_tabs>
 <dtml-var manage_tabs>
 </dtml-if manage_tabs>
 
-<P>
-The listing below shows the current security settings for this item. 
-Permissions are rows and roles are columns.  Checkboxes are used to
-indicate where roles are assigned permissions. You can also assign 
-<strong><a href="manage_listLocalRoles">local roles</a></strong> to 
-users, which give users extra roles in the context of this object and 
-its subobjects.
-</P>
-<P>  
-When a role is assigned to a permission, users with the given role
-will be able to perform tasks associated with the permission on this
-item. When the <EM>Acquire permission settings</EM> checkbox is selected
-then the containing objects's permission settings are used. Note: the
-acquired permission settings may be augmented by selecting Roles for
-a permission in addition to selecting to acquire permissions.
-</P>
+
 
 <dtml-if "_['id'] != 'acl_users'">
 <P>
@@ -42,7 +53,10 @@ td {
 </style>
 
 <dtml-with expr="_.namespace(valid_roles=valid_roles())">
-<FORM ACTION="manage_changePermissions" METHOD="POST">
+<FORM name="permissions" ACTION="manage_changePermissions" METHOD="POST">
+<TABLE CELLPADDING="4">
+   <TR>
+  <TD WIDTH="70%" VALIGN="TOP">
 <TABLE>
 <TR>
   <dtml-unless isTopLevelPrincipiaApplicationObject>
@@ -77,7 +91,13 @@ td {
 </TR>
 
 <dtml-in permission_settings mapping>
+
+<dtml-if sequence-odd>
 <TR>
+</dtml-if>
+<dtml-if sequence-even>
+<TR BGCOLOR = "#DDDDDD">
+</dtml-if>
   <dtml-unless isTopLevelPrincipiaApplicationObject>
   <TD ALIGN="CENTER">
   <INPUT TYPE="checkbox" NAME="a<dtml-var sequence-index>" 
@@ -87,12 +107,13 @@ td {
   <TD ALIGN="LEFT">
       <A HREF="manage_permissionForm?permission_to_manage=<dtml-
                var name url_quote>">
-      <dtml-var name></A>
+      <dtml-var name></A><!-- - <sm><a href="#" OnClick="returnAxis(<dtml-var sequence-index>); return false;">Select Roles for this Permission</a></sm> -->
   </TD>
   <dtml-in roles mapping>
   <TD ALIGN="CENTER">
      <INPUT TYPE="CHECKBOX" NAME="<dtml-var name>" <dtml-var checked>>
   </TD>
+
   </dtml-in>
 </TR>
 
@@ -104,6 +125,27 @@ td {
 <TD COLSPAN="<dtml-var expr="_.len(valid_roles)+2">" ALIGN="CENTER">
 </dtml-if>
 <INPUT TYPE="SUBMIT" VALUE="Change">
+</TD>
+</TR>
+</TABLE>
+</TD>
+<TD VALIGN=TOP WIDTH="30%">
+<P>
+The listing below shows the current security settings for this item. 
+Permissions are rows and roles are columns.  Checkboxes are used to
+indicate where roles are assigned permissions. You can also assign 
+<strong><a href="manage_listLocalRoles">local roles</a></strong> to 
+users, which give users extra roles in the context of this object and 
+its subobjects.
+</P>
+<P>  
+When a role is assigned to a permission, users with the given role
+will be able to perform tasks associated with the permission on this
+item. When the <EM>Acquire permission settings</EM> checkbox is selected
+then the containing objects's permission settings are used. Note: the
+acquired permission settings may be augmented by selecting Roles for
+a permission in addition to selecting to acquire permissions.
+</P>
 </TD>
 </TR>
 </TABLE>
@@ -152,3 +194,7 @@ td {
 
 </BODY>
 </HTML>
+
+
+
+
