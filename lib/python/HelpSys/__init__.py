@@ -82,3 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+
+# backward compatibility
+import HelpSys
+import sys
+sys.modules['HelpSys.HelpSystem']=HelpSys
