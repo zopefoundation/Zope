@@ -6,7 +6,7 @@ To index messages from a single folder (messages defaults to 'all'):
   mhindex.py [options] -u +folder [messages ...]
 
 To bulk index all messages from several folders:
-  mhindex.py [options] -b folder ...
+  mhindex.py [options] -b folder ...; the folder name ALL means all folders.
 
 To execute a single query:
   mhindex.py [options] query
@@ -419,6 +419,12 @@ class Indexer:
                 uniqwords[word] = uniqwords.get(word, 0) + 1
 
     def bulkupdate(self, args):
+        if not args:
+            print "No folders specified; use ALL to bulk-index all folders"
+            return
+        if "ALL" in args:
+            i = args.index("ALL")
+            args[i:i+1] = self.mh.listfolders()
         for folder in args:
             if folder.startswith("+"):
                 folder = folder[1:]
