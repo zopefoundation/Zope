@@ -242,5 +242,16 @@ long pcgiReadSocket(pcgi_socket, char *, long);
 long pcgiWriteSocket(pcgi_socket, const char *, long);
 #endif
 
+#ifdef HAVE_UNION_SEMUN
+#define UNION_SEMUN union semun
+#else
+#define UNION_SEMUN \
+    union semun { \
+        int val; \
+        struct semid_ds *buf; \
+        ushort *array; \
+    };
+#endif
+
 #define PCGI_H  1
 #endif

@@ -55,7 +55,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.2 1998/10/29 15:37:20 brian Exp $";
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.3 1998/12/03 22:38:19 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -711,9 +711,11 @@ void pcgiSIG(int s)
 void cleanup()
 {   
 #ifdef UNIX
+    UNION_SEMUN arg;
+    arg.val=0;
     if (g_lock > 0) 
     {
-        semctl(g_lock, 1, IPC_RMID, sem_idx);
+        semctl(g_lock, 1, IPC_RMID, arg);
     }
 #endif
 }
@@ -727,6 +729,8 @@ int pcgiStartProc(pcgiResource *r)
     pid_t pid;
     char  *p = NULL;
     int   i = 0;
+    UNION_SEMUN arg;
+    arg.val=0;
 
     if ((p=strrchr(r->sw_exe, PATHSEP))==NULL)
     {   
@@ -790,7 +794,7 @@ int pcgiStartProc(pcgiResource *r)
        init will inherit the grandchild (so it won't die) */
     if ((pid = fork()) < 0)
     {   
-        semctl(r->lock, 1, IPC_RMID, sem_idx);
+        semctl(r->lock, 1, IPC_RMID, arg);
         return(-1);
     }
     else if (pid == 0)
@@ -831,14 +835,14 @@ int pcgiStartProc(pcgiResource *r)
 
     /* Wait for the first child to finish */
     if (waitpid(pid, NULL, 0) < 0)
-    {   semctl(r->lock, 1, IPC_RMID, sem_idx);
+    {   semctl(r->lock, 1, IPC_RMID, arg);
         return(-1);
     }
 
     /*
     // Release restart lock!
     */
-    semctl(r->lock, 1, IPC_RMID, sem_idx);
+    semctl(r->lock, 1, IPC_RMID, arg);
 
     /*
     // Reset signal handlers
