@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.28 1998/01/26 21:40:41 jim Exp $'''
-__version__='$Revision: 1.28 $'[11:-2]
+$Id: DA.py,v 1.29 1998/01/27 18:37:39 jim Exp $'''
+__version__='$Revision: 1.29 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -20,7 +20,6 @@ from Aqueduct.Aqueduct import decodestring, parse, Rotor
 from Aqueduct.Aqueduct import custom_default_report, default_input_form
 from Globals import HTMLFile, MessageDialog
 from cStringIO import StringIO
-log_file=None
 import sys, traceback
 from DocumentTemplate import HTML
 import Globals, OFS.SimpleItem, AccessControl.Role, Persistence
@@ -231,29 +230,17 @@ class DA(
 	    else:
 		result=DB__.query(query, self.max_rows_)
 		result=compress(result,1)
-	    result=md5new(result).digest()+result
-	    result=self.rotor.encrypt(result)
-	    result=base64.encodestring(result)
-	    RESPONSE['content-type']='text/X-PyDB'
-	    RESPONSE['Content-Length']=len(result)
-	    RESPONSE.write(result)
 	except:
-	    t,v,tb=sys.exc_type, sys.exc_value, sys.exc_traceback
-	    result=str(RESPONSE.exception())
-	    serial=str(DateTime.now())
-	    if log_file:
-		l=find(result,"Traceback (innermost last):")
-		if l >= 0: l=result[l:]
-		else: l=v
-		log_file.write("%s\n%s %s, %s:\n%s\n" % (
-		    '-'*30, serial, self.id, t, l))
-		log_file.flush()
-	    serial="Error number: %s\n" % serial
-	    serial=compress(serial,1)
-	    serial=md5new(serial).digest()+serial
-	    serial=self.rotor.encrypt(serial)
-	    serial=base64.encodestring(serial)
-	    RESPONSE.setBody(serial)
+	    RESPONSE.setStatus(500)
+	    result="%s:\n%s\n" % (sys.exc_type, sys.exc_value)
+	    result=compress(result,1)
+
+	result=md5new(result).digest()+result
+	result=self.rotor.encrypt(result)
+	result=base64.encodestring(result)
+	RESPONSE['content-type']='text/X-PyDB'
+	RESPONSE['Content-Length']=len(result)
+	RESPONSE.setBody(result)
 
     def __getitem__(self, key):
 	self._arg[key] # raise KeyError if not an arg
@@ -349,6 +336,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.29  1998/01/27 18:37:39  jim
+# Changed the way that errors are reported.
+#
 # Revision 1.28  1998/01/26 21:40:41  jim
 # Fixed bug in caching code.
 #
