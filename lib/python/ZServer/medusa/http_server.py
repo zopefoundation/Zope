@@ -6,7 +6,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: http_server.py,v 1.31 2002/03/21 15:48:53 htrd Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.32 2002/06/11 22:02:47 chrism Exp $'
 
 # python modules
 import os
@@ -627,22 +627,28 @@ class http_server (asyncore.dispatcher):
     def handle_accept (self):
         self.total_clients.increment()
         try:
-            conn, addr = self.accept()
+            tup = self.accept()
         except socket.error:
                 # linux: on rare occasions we get a bogus socket back from
                 # accept.  socketmodule.c:makesockaddr complains that the
                 # address family is unknown.  We don't want the whole server
                 # to shut down because of this.
-            self.log_info ('warning: server accept() threw an exception', 'warning')
+            self.log_info ('warning: server accept() threw an exception',
+                           'warning')
+            self.total_clients.decrement()
             return
+        try:
+            conn, addr = tup
         except TypeError:
-                # unpack non-sequence.  this can happen when a read event
-                # fires on a listening socket, but when we call accept()
-                # we get EWOULDBLOCK, so dispatcher.accept() returns None.
-                # Seen on FreeBSD3.
-            self.log_info ('warning: server accept() threw EWOULDBLOCK', 'warning')
+            # unpack non-sequence.  this can happen when a read event
+            # fires on a listening socket, but when we call accept()
+            # we get EWOULDBLOCK, so dispatcher.accept() returns None.
+            # Seen on FreeBSD3 and Linux.
+            #self.log_info ('warning: server accept() returned %s '
+            #               '(EWOULDBLOCK?)' % tup, 'warning')
+            self.total_clients.decrement()
             return
-            
+
         self.channel_class (self, conn, addr)
         
     def install_handler (self, handler, back=0):

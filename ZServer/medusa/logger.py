@@ -35,16 +35,25 @@ class file_logger:
 
         # pass this either a path or a file object.
     def __init__ (self, file, flush=1, mode='a'):
+
+        self.filename = None
+
         if type(file) == type(''):
             if (file == '-'):
                 import sys
                 self.file = sys.stdout
             else:
+                self.filename = file
                 self.file = open (file, mode)
         else:
             self.file = file
         self.do_flush = flush
         
+    def reopen(self):
+        if self.filename:
+            self.file.close()
+            self.file = open(self.filename,'a')            
+
     def __repr__ (self):
         return '<file logger: %s>' % self.file
         

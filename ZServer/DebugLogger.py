@@ -39,12 +39,18 @@ class DebugLogger:
     """
     
     def __init__(self, filename):
+        self.filename = filename
         self.file=open(filename, 'a+b')
         l=thread.allocate_lock()
         self._acquire=l.acquire
         self._release=l.release
         self.log('U', '000000000', 'System startup')
         
+    def reopen(self):
+        self.file.close()
+        self.file=open(self.filename, 'a+b')
+        self.log('U', '000000000', 'Logfile reopened')
+
     def log(self, code, request_id, data=''):
         self._acquire()
         try:

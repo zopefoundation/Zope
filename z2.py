@@ -253,6 +253,75 @@ program=sys.argv[0]
 here=os.path.join(os.getcwd(), os.path.split(program)[0])
 Zpid=''
 
+
+#   Install signal handlers.
+#   SIGTERM - cleanly shuts down.
+#   SIGHUP - cleanly restarts.
+#   SIGUSR2 - open and close all log files (for log rotation)
+
+if os.name == 'posix':  # signal.signal() not reliable on Windows
+    import signal
+    def closeall():
+        zLOG.LOG('Z2', zLOG.INFO, "Closing all open network connections")
+        for socket in asyncore.socket_map.values():
+            try:
+                socket.close()
+            except:
+                pass
+
+        zLOG.LOG('Z2', zLOG.INFO, "Closing all open ZODB databases")
+        import Globals
+        for db in Globals.opened:
+            try:
+                db.close()
+            finally:
+                pass
+
+    def sighandler(signum, frame):
+        signame = zdaemon.Daemon.get_signal_name(signum)
+        zLOG.LOG('Z2', zLOG.INFO , "Caught signal %s" % signame)
+
+        if signum in [signal.SIGTERM, signal.SIGINT]:
+            closeall()
+            zLOG.LOG('Z2', zLOG.INFO , "Shutting down")
+            sys.exit(0)
+
+        if signum == signal.SIGHUP:
+            closeall()
+            zLOG.LOG('Z2', zLOG.INFO , "Restarting")
+            sys.exit(1)
+
+        if signum == signal.SIGUSR2:
+            zLOG.LOG('Z2', zLOG.INFO , "Reopening log files")
+            if hasattr(sys, '__lg') and hasattr(sys.__lg, 'reopen'):
+                sys.__lg.reopen()
+                zLOG.LOG('Z2', zLOG.BLATHER, "Reopened Z2.log")
+            if (hasattr(sys, '__detailedlog') and
+                hasattr(sys.__detailedlog, 'reopen')):
+                zLOG.LOG('Z2', zLOG.BLATHER,"Reopened detailed request log")
+                sys.__detailedlog.reopen()
+            if hasattr(zLOG, '_set_stupid_dest'):
+                zLOG._set_stupid_dest(None)
+            else:
+                zLOG._stupid_dest = None
+            ZLogger.stupidFileLogger._stupid_dest = None
+            zLOG.LOG('Z2', zLOG.BLATHER, "Reopened event log")
+            zLOG.LOG('Z2', zLOG.INFO, "Log files reopened successfully")
+        
+    INTERESTING_SIGNALS = {
+        signal.SIGTERM: sighandler,
+        signal.SIGHUP: sighandler,
+        signal.SIGUSR2: sighandler,
+        signal.SIGINT: sighandler,
+        }
+
+    def installsighandlers():
+        # normal kill, restart, and open&close logs respectively
+        for signum, sighandler in INTERESTING_SIGNALS.items():
+            signal.signal(signum, sighandler)
+            signame = zdaemon.Daemon.get_signal_name(signum)
+            zLOG.LOG('Z2',zLOG.BLATHER,"Installed sighandler for %s" % signame)
+
 ########################################################################
 # Configuration section
 
@@ -510,7 +579,8 @@ if Zpid and not READ_ONLY:
     import zdaemon, App.FindHomes, posix
     sys.ZMANAGED=1
     
-    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
+    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid),
+                INTERESTING_SIGNALS.keys())
 
 os.chdir(CLIENT_HOME)
 
@@ -535,7 +605,12 @@ try:
     if DETAILED_LOG_FILE:
         from ZServer import DebugLogger
         logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
-        DebugLogger.log=DebugLogger.DebugLogger(logfile).log
+        zLOG.LOG('z2', zLOG.BLATHER,
+                 'Using detailed request log file %s' % logfile)
+        DL=DebugLogger.DebugLogger(logfile)
+        DebugLogger.log=DL.log
+        DebugLogger.reopen=DL.reopen
+        sys.__detailedlog=DL
 
     # Import Zope (or Main)
     exec "import "+MODULE in {}
@@ -579,16 +654,21 @@ try:
 
     if READ_ONLY:
         lg = logger.file_logger('-') # log to stdout
+        zLOG.LOG('z2', zLOG.BLATHER, 'Logging access log to stdout')
     elif os.environ.has_key('ZSYSLOG_ACCESS'):
         if os.environ.has_key("ZSYSLOG_ACCESS_FACILITY"):
             lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'],facility=os.environ['ZSYSLOG_ACCESS_FACILITY'])
         else:
             lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'])
+        zLOG.LOG('z2', zLOG.BLATHER, 'Using local syslog access log')
     elif os.environ.has_key('ZSYSLOG_ACCESS_SERVER'):
         (addr, port) = os.environ['ZSYSLOG_ACCESS_SERVER'].split( ':')
         lg = logger.syslog_logger((addr, int(port)))
+        zLOG.LOG('z2', zLOG.BLATHER, 'Using remote syslog access log')
     else:
         lg = logger.file_logger(LOG_PATH)
+        zLOG.LOG('z2', zLOG.BLATHER, 'Using access log file %s' % LOG_PATH)
+    sys.__lg = lg
 
     # HTTP Server
     if HTTP_PORT:
@@ -786,7 +866,7 @@ try:
     except:
         raise
 
-    # Check umask sanity.
+    # Check umask sanity and install signal handlers if we're on posix.
     if os.name == 'posix':
         # umask is silly, blame POSIX.  We have to set it to get its value.
         current_umask = os.umask(0)
@@ -796,6 +876,8 @@ try:
             zLOG.LOG("z2", zLOG.INFO, 'Your umask of ' + current_umask + \
                      ' may be too permissive; for the security of your ' + \
                      'Zope data, it is recommended you use 077')
+        # we've deferred til now to actuall install signal handlers
+        installsighandlers()
 
 except:
     # Log startup exception and tell zdaemon not to restart us.

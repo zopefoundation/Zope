@@ -353,6 +353,10 @@ class dispatcher:
             if why[0] in [ECONNRESET, ENOTCONN, ESHUTDOWN]:
                 self.handle_close()
                 return ''
+            if why[0] == EAGAIN:
+                # Happens as a result of a nonfatal signal when select is
+                # interrupted
+                return ''
             else:
                 raise socket.error, why
 
@@ -524,12 +528,15 @@ if os.name == 'posix':
             # NOTE: this is a difference from the Python 2.2 library
             # version of asyncore.py. This prevents a hanging condition
             # on Linux 2.2 based systems.
-            while 1:
+            i = 0
+            while i < 5: # this is a guess
                 try:
                     return apply (os.read, (self.fd,)+args)
                 except exceptions.OSError, why:
                     if why[0] != EAGAIN:
                         raise
+                    else:
+                        i = i + 1
 
         def send (self, *args):
             return apply (os.write, (self.fd,)+args)

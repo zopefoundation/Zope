@@ -15,5 +15,24 @@
 """
 
 from ZServer.medusa.thread.select_trigger import trigger
+from ZServer.medusa.asyncore import socket_map
 
-Wakeup=trigger().pull_trigger
+class simple_trigger(trigger):
+    def handle_close(self):
+        pass
+
+the_trigger=simple_trigger()
+
+def Wakeup(thunk=None):
+    try:
+        the_trigger.pull_trigger(thunk)
+    except OSError, why:
+        # this broken pipe as a result of perhaps a signal
+        # we want to handle this gracefully so we get rid of the old
+        # trigger and install a new one.
+        if why[0] == 32: 
+            del socket_map[the_trigger._fileno]
+            global the_trigger
+            the_trigger = simple_trigger() # adds itself back into socket_map
+            the_trigger.pull_trigger(thunk)
+
