@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.73 $'[11:-2]
+__version__='$Revision: 1.74 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -375,10 +375,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
             else:
                 # Quote non-xml items here?
                 attrs='' 
-            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
+            prop='  <n:%s%s><![CDATA[%s]]></n:%s>' % (name, attrs, value, name)
             result.append(prop)
         if not result: return ''
         result=join(result, '\n')
+        
         return propstat % (self.xml_namespace(), result, '200 OK', '')
 
     def dav__propnames(self, propstat=propstat, join=string.join):
