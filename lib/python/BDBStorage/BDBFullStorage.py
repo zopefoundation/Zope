@@ -13,25 +13,18 @@
 ##############################################################################
 
 """Berkeley storage with full undo and versioning support.
-
-See Minimal.py for an implementation of Berkeley storage that does not support
-undo or versioning.
 """
 
-__version__ = '$Revision: 1.45 $'.split()[-2:][0]
+__version__ = '$Revision: 1.46 $'.split()[-2:][0]
 
 import sys
-import struct
 import time
-
-from cPickle import loads, Pickler
-Pickler = Pickler()
-Pickler.fast = 1 # Don't use a memo
-fast_pickle_dumps = Pickler.dump
-del Pickler
+import cPickle as pickle
+from struct import pack, unpack
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
-# http://pybsddb.sourceforge.net
+# http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
+# PyBSDDB3.
 from bsddb3 import db
 
 from ZODB import POSException
@@ -39,6 +32,7 @@ from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
+import zLOG
 import ThreadLock
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
@@ -46,7 +40,6 @@ import ThreadLock
 # ZODB.BaseStorage.BaseStorage which itself provides some common storage
 # functionality.
 from BerkeleyBase import BerkeleyBase
-from CommitLog import FullLog
 
 # Flags for transaction status in the transaction metadata table.  You can
 # only undo back to the last pack, and any transactions before the pack time
@@ -56,6 +49,9 @@ from CommitLog import FullLog
 UNDOABLE_TRANSACTION = 'Y'
 PROTECTED_TRANSACTION = 'N'
 
+ABORT = 'A'
+COMMIT = 'C'
+PRESENT = 'X'
 ZERO = '\0'*8
 DNE = '\377'*8
 # DEBUGGING
@@ -69,6 +65,12 @@ except ImportError:
     def incr(refcount, delta):
         return p64(U64(refcount) + delta)
 
+try:
+    True, False
+except NameError:
+    True = 1
+    False = 0
+
 
 
 class Full(BerkeleyBase, ConflictResolvingStorage):
@@ -78,8 +80,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def __init__(self, name, env=None, prefix='zodb_', config=None):
         """Initialize the Full database.
 
-        name, env, and prefix are passed straight through to the BerkeleyBase
-        base class constructor.
+        name, env, prefix, and config are passed straight through to the
+        BerkeleyBase base class constructor.
         """
         self._packlock = ThreadLock.allocate_lock()
         BerkeleyBase.__init__(self, name, env, prefix, config)
@@ -87,76 +89,54 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
     def _setupDBs(self):
         # Data Type Assumptions:
         #
-        # - object ids (oid) are 8-bytes
-        # - object revision ids (revid) are 8-bytes
-        # - transaction ids (tid) are 8-bytes
-        # - version ids (vid) are 8-bytes
-        # - data pickles are of arbitrary length
+        # - Object ids (oid) are 8-bytes
+        # - Objects have revisions, with each revision being identified by a
+        #   unique serial number.
+        # - Transaction ids (tid) are 8-bytes
+        # - Version ids (vid) are 8-bytes
+        # - Data pickles are of arbitrary length
         #
-        # Note that revids are usually the same as tids /except/ in the face
-        # of abortVersion().
+        # The Full storage uses the following tables:
         #
-        # Create the tables used to maintain the relevant information.  The
-        # full storage needs a bunch of tables.  These two are defined by the
-        # base class infrastructure and are shared by the Minimal
-        # implementation.
+        # serials -- {oid -> [serial | serial+tid]}
+        #     Maps oids to serial numbers, to make it easy to look up the
+        #     serial number for the current revision of the object.  The value
+        #     combined with the oid provides a revision id (revid) which is
+        #     used to point into the other tables.  Usually the serial is the
+        #     tid of the transaction that modified the object, except in the
+        #     case of abortVersion().  Here, the serial number of the object
+        #     won't change (by definition), but of course the abortVersion()
+        #     happens in a new transaction so the tid pointer must change.  To
+        #     handle this rare case, the value in the serials table can be a
+        #     16-byte value, in which case it will contain both the serial
+        #     number and the tid pointer.
         #
-        # serials -- {oid -> serial} | {oid -> serial + tid}
-        #     Maps oids to revids.  Usually the revision id of the object is
-        #     the transaction id of the last transaction that object is
-        #     modified in.  This doesn't work for transactions which contained
-        #     an abortVersion() because in that case, the serial number of the
-        #     object is the revid of the last non-version revision before the
-        #     version was created (IOW, by definition, a serial number doesn't
-        #     change when an abortVersion occurs).  However, the tid /does/
-        #     change so in those cases, the value of the oid key is a 16 byte
-        #     value instead of an 8 byte value.  This is considered rare.
+        # metadata -- {oid+tid -> vid+nvrevid+lrevid+previd}
+        #     Maps object revisions to object metadata.  This mapping is used
+        #     to find other information about a particular concrete object
+        #     revision.  Essentially it stitches all the other pieces
+        #     together.  The object revision is identified by the tid of the
+        #     transaction in which the object was modified.  Normally this
+        #     will be the serial number (IOW, the serial number and tid will
+        #     be the same value), except in the case of abortVersion().  See
+        #     above for details.
         #
-        # pickles -- {oid+revid -> pickle}
-        #     Maps the concrete object referenced by oid+revid to that
-        #     object's data pickle.
+        #     vid is the id of the version this object revision was modified
+        #     in.  It will be zero if the object was modified in the
+        #     non-version.
         #
-        # picklelog -- {oid+revid -> ''}
-        #     Keeps a log of pickles that haven't been committed yet.
-        #     This allows us to write pickles as we get them in the
-        #     in separate BDB transactions.  The value of the mapping is
-        #     ignored.
+        #     nvrevid is the tid pointing to the most current non-version
+        #     object revision.  So, if the object is living in a version and
+        #     that version is aborted, the nvrevid points to the object
+        #     revision that will soon be restored.  nvrevid will be zero if
+        #     the object was never modified in a version.
         #
-        # These are used only by the Full implementation.
+        #     lrevid is the tid pointing to object revision's pickle state (I
+        #     think of it as the "live revision id" since it's the state that
+        #     gives life to the object described by this metadata record).
         #
-        # vids -- {version_string -> vid}
-        #     Maps version strings (which are arbitrary) to vids.
-        #
-        # versions -- {vid -> version_string}
-        #     Maps vids to version strings.
-        #
-        # currentVersions -- {vid -> [oid]}
-        #     Maps vids to the oids of the objects modified in that version
-        #     for all current versions (except the 0th version, which is the
-        #     non-version).
-        #
-        # metadata -- {oid+revid -> vid+nvrevid+lrevid+previd}
-        #     Maps oid+revid to object metadata.  This mapping is used to find
-        #     other information about a particular concrete object revision.
-        #     Essentially it stitches all the other pieces together.
-        #
-        #     vid is the version id for the concrete object revision, and will
-        #     be zero if the object isn't living in a version.
-        #
-        #     nvrevid is the revision id pointing to the most current
-        #     non-version concrete object revision.  So, if the object is
-        #     living in a version and that version is aborted, the nvrevid
-        #     points to the object revision that will soon be restored.
-        #     nvrevid will be zero if the object was never modified in a
-        #     version.
-        #
-        #     lrevid is the revision id pointing to object revision's pickle
-        #     state (I think of it as the "live revision id" since it's the
-        #     state that gives life to the concrete object described by this
-        #     metadata record).
-        #
-        #     prevrevid is the revision id pointing to the previous state of
-        #     the object.  This is used for undo.
+        #     prevrevid is the tid pointing to the previous state of the
+        #     object.  This is used for undo.
         #
         # txnMetadata -- {tid -> status+userlen+desclen+user+desc+ext}
         #     Maps tids to metadata about a transaction.
@@ -177,324 +157,651 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         #     ext is the extra info passed to tpc_finish().  It is a
         #         dictionary that we get already pickled by BaseStorage.
         #
+        # pickles -- {oid+serial -> pickle}
+        #     Maps the object revisions to the revision's pickle data.
+        #
+        # refcounts -- {oid -> count}
+        #     Maps the oid to the reference count for the object.  This
+        #     reference count is updated during the _finish() call.  In the
+        #     Full storage the refcounts include all the revisions of the
+        #     object, so it is never decremented except at pack time.  When it
+        #     goes to zero, the object is automatically deleted.
+        #
         # txnoids -- {tid -> [oid]}
         #     Maps transaction ids to the oids of the objects modified by the
         #     transaction.
         #
-        # refcounts -- {oid -> count}
-        #     Maps objects to their reference counts.
-        #
         # pickleRefcounts -- {oid+tid -> count}
-        #     Maps the concrete object referenced by oid+tid to the reference
-        #     count of its pickle.
+        #     Maps an object revision to the reference count of that
+        #     revision's pickle.  In the face of transactional undo, multiple
+        #     revisions can point to a single pickle so that pickle can't be
+        #     garbage collected until there are no revisions pointing to it.
         #
-        # Tables common to the base framework
-        self._serials = self._setupDB('serials')
+        # vids -- {version_string -> vid}
+        #     Maps version strings (which are arbitrary) to vids.
+        #
+        # versions -- {vid -> version_string}
+        #     Maps vids to version strings.
+        #
+        # currentVersions -- {vid -> [oid + tid]}
+        #     Maps vids to the revids of the objects modified in that version
+        #     for all current versions (except the 0th version, which is the
+        #     non-version).
+        #
+        # oids -- [oid]
+        #     This is a list of oids of objects that are modified in the
+        #     current uncommitted transaction.
+        #
+        # pvids -- [vid]
+        #     This is a list of all the version ids that have been created in
+        #     the current uncommitted transaction.
+        #
+        # prevrevids -- {oid -> tid}
+        #     This is a list of previous revision ids for objects which are
+        #     modified by transactionalUndo in the current uncommitted
+        #     transaction.  It's necessary to properly handle multiple
+        #     transactionalUndo()'s in a single ZODB transaction.
+        #
+        # pending -- tid -> 'A' | 'C'
+        #     This is an optional flag which says what to do when the database
+        #     is recovering from a crash.  The flag is normally 'A' which
+        #     means any pending data should be aborted.  At the start of the
+        #     tpc_finish() this flag will be changed to 'C' which means, upon
+        #     recovery/restart, all pending data should be committed.  Outside
+        #     of any transaction (e.g. before the tpc_begin()), there will be
+        #     no pending entry.  It is a database invariant that if the
+        #     pending table is empty, the oids and pvids tables must also be
+        #     empty.
+        #
+        # packmark -- [oid]
+        #     Every object reachable from the root during a classic pack
+        #     operation will have its oid present in this table.
+        #
+        # oidqueue -- [oid]
+        #     This table is a Queue, not a BTree.  It is used during the mark
+        #     phase of pack() and contains a list of oids for work to be done.
+        #
+        # zaptids -- [tid]
+        #     This is another queue written during the sweep phase to collect
+        #     transaction ids that can be packed away.
+        #
+        self._serials = self._setupDB('serials', db.DB_DUP)
         self._pickles = self._setupDB('pickles')
-        self._picklelog = self._setupDB('picklelog')
-        # These are specific to the full implementation
+        self._refcounts = self._setupDB('refcounts')
+        # Temporary tables which keep information during ZODB transactions
+        self._oids = self._setupDB('oids')
+        self._pvids = self._setupDB('pvids')
+        self._prevrevids = self._setupDB('prevrevids')
+        self._pending = self._setupDB('pending')
+        # Other tables
         self._vids            = self._setupDB('vids')
         self._versions        = self._setupDB('versions')
         self._currentVersions = self._setupDB('currentVersions', db.DB_DUP)
         self._metadata        = self._setupDB('metadata')
         self._txnMetadata     = self._setupDB('txnMetadata')
         self._txnoids         = self._setupDB('txnoids', db.DB_DUP)
-        self._refcounts       = self._setupDB('refcounts')
         self._pickleRefcounts = self._setupDB('pickleRefcounts')
+        # Table to support packing.
+        self._packmark = self._setupDB('packmark')
+        self._oidqueue = db.DB(self._env)
+        self._oidqueue.set_re_len(8)
+        # BAW: do we need to set the queue extent size?
+        self._oidqueue.open(self._prefix + 'oidqueue',
+                            db.DB_QUEUE, db.DB_CREATE)
+        self._zaptids = db.DB(self._env)
+        self._zaptids.set_re_len(8)
+        self._zaptids.open(self._prefix + 'zaptids',
+                           db.DB_QUEUE, db.DB_CREATE)
+        # DEBUGGING
+        #self._nextserial = 0L
+        # END DEBUGGING
+        # Do recovery and consistency checks
+        self._withlock(self._dorecovery)
 
+    def _dorecovery(self):
+        # If these tables are non-empty, it means we crashed during a pack
+        # operation.  I think we can safely throw out this data since the next
+        # pack operation will reproduce it faithfully.
+        self._oidqueue.truncate()
+        self._packmark.truncate()
+        self._zaptids.truncate()
+        # The pendings table may have entries if we crashed before we could
+        # abort or commit the outstanding ZODB transaction.
+        pendings = self._pending.keys()
+        assert len(pendings) <= 1
+        if len(pendings) == 0:
+            assert len(self._oids) == 0
+            assert len(self._pvids) == 0
+        else:
+            # Do recovery
+            tid = pendings[0]
+            flag = self._pending.get(tid)
+            assert flag in (ABORT, COMMIT)
+            if flag == ABORT:
+                self._withtxn(self._doabort, tid)
+            else:
+                self._withtxn(self._docommit, tid)
         # Initialize our cache of the next available version id.
         record = self._versions.cursor().last()
         if record:
             # Convert to a Python long integer.  Note that cursor.last()
-            # returns key/value, and we want the key (which for the _version
-            # table is is the vid).
+            # returns key/value, and we want the key (which for the
+            # versions table is the vid).
             self.__nextvid = U64(record[0])
         else:
             self.__nextvid = 0L
-        # DEBUGGING
-        # NOTE: some tests will fail if you enable debugging serial numbers
-        # because it breaks the default assumption that serial numbers are
-        # timestamps.  Things like packing and undoing will break.
-        #self._nextserial = 0L
-        #self.profiler = hotshot.Profile('profile.dat', lineevents=1)
 
     def close(self):
-        #self.profiler.close()
         self._serials.close()
         self._pickles.close()
-        self._picklelog.close()
+        self._refcounts.close()
+        self._oids.close()
+        self._pvids.close()
+        self._prevrevids.close()
+        self._pending.close()
         self._vids.close()
         self._versions.close()
         self._currentVersions.close()
         self._metadata.close()
         self._txnMetadata.close()
         self._txnoids.close()
-        self._refcounts.close()
         self._pickleRefcounts.close()
+        self._packmark.close()
+        self._oidqueue.close()
+        self._zaptids.close()
         BerkeleyBase.close(self)
+
+    def _withtxn(self, meth, *args, **kws):
+        txn = self._env.txn_begin()
+        try:
+            ret = meth(txn, *args, **kws)
+        except:
+            #import traceback ; traceback.print_exc()
+            txn.abort()
+            self._docheckpoint()
+            raise
+        else:
+            txn.commit()
+            self._docheckpoint()
+            return ret
+
+    def _doabort(self, txn, tid):
+        # First clean up the oid indexed (or oid+tid indexed) tables.
+        co = cs = ct = cv = None
+        try:
+            co = self._oids.cursor(txn=txn)
+            cs = self._serials.cursor(txn=txn)
+            ct = self._txnoids.cursor(txn=txn)
+            cv = self._currentVersions.cursor(txn=txn)
+            rec = co.first()
+            while rec:
+                oid = rec[0]
+                rec = co.next()
+                try:
+                    cs.set_both(oid, tid)
+                except db.DBNotFoundError:
+                    pass
+                else:
+                    cs.delete()
+                try:
+                    ct.set_both(tid, oid)
+                except db.DBNotFoundError:
+                    pass
+                else:
+                    ct.delete()
+                # Now clean up the revision-indexed tables
+                revid = oid+tid
+                vid = self._metadata[revid][:8]
+                self._metadata.delete(revid, txn=txn)
+                self._pickles.delete(revid, txn=txn)
+                # Now we have to clean up the currentVersions table
+                try:
+                    cv.set_both(vid, revid)
+                except db.DBNotFoundError:
+                    pass
+                else:
+                    cv.delete()
+        finally:
+            # There's a small window of opportunity for leaking cursors here,
+            # if one of the earler closes were to fail.  In practice this
+            # shouldn't happen.
+            if co: co.close()
+            if cs: cs.close()
+            if cv: cv.close()
+        # Now clean up the vids and versions tables
+        cv = self._pvids.cursor(txn=txn)
+        try:
+            rec = cv.first()
+            while rec:
+                vid = rec[0]
+                rec = cv.next()
+                version = self._versions[vid]
+                self._versions.delete(vid, txn=txn)
+                self._vids.delete(version, txn=txn)
+        finally:
+            cv.close()
+        # Now clean up the tid indexed table, and the temporary log tables
+        self._txnMetadata.delete(tid, txn=txn)
+        self._oids.truncate(txn)
+        self._pvids.truncate(txn)
+        self._prevrevids.truncate(txn)
+        self._pending.truncate(txn)
+
+    def _abort(self):
+        pendings = self._pending.keys()
+        if len(pendings) == 0:
+            # Nothing to abort
+            assert len(self._oids) == 0
+            assert len(self._pvids) == 0
+            return
+        assert len(pendings) == 1
+        tid = pendings[0]
+        flag = self._pending.get(tid)
+        assert flag == ABORT
+        self._withtxn(self._doabort, tid)
+
+    def _docommit(self, txn, tid):
+        # Almost all the data's already written by now so we don't need to do
+        # much more than update reference counts.  Even there, our work is
+        # easy because we're not going to decref anything here.
+        deltas = {}
+        co = cs = None
+        try:
+            co = self._oids.cursor(txn=txn)
+            cs = self._serials.cursor(txn=txn)
+            rec = co.first()
+            while rec:
+                oid = rec[0]
+                rec = co.next()
+                # Get the pointer to the live pickle data for this revision
+                metadata = self._metadata[oid + self._serial]
+                lrevid = unpack('>8s', metadata[16:24])[0]
+                # Incref all objects referenced by this pickle, but watch out
+                # for the George Bailey Event, which has no pickle.
+                if lrevid <> DNE:
+                    revid = oid + lrevid
+                    data = self._pickles[revid]
+                    self._update(deltas, data, 1)
+                    # Incref this pickle; there's a new revision pointing to it
+                    refcount = self._pickleRefcounts.get(revid, ZERO, txn=txn)
+                    self._pickleRefcounts.put(revid, incr(refcount, 1),
+                                              txn=txn)
+                # Now delete all entries from the serials table where the
+                # stored tid is not equal to the committing tid.
+                srec = cs.set(oid)
+                while srec:
+                    soid, data = srec
+                    if soid <> oid:
+                        break
+                    if len(data) == 8:
+                        stid = data
+                    else:
+                        # In the face of abortVersion, the first half is the
+                        # serial number and the second half is the tid.
+                        stid = data[8:]
+                    if stid <> tid:
+                        cs.delete()
+                    srec = cs.next_dup()
+        finally:
+            # There's a small window of opportunity for leaking a cursor here,
+            # if co.close() were to fail.  In practice this shouldn't happen.
+            if co: co.close()
+            if cs: cs.close()
+        # Now incref all the object refcounts
+        for oid, delta in deltas.items():
+            refcount = self._refcounts.get(oid, ZERO, txn=txn)
+            self._refcounts.put(oid, incr(refcount, delta), txn=txn)
+        # Now clean up the temporary log tables
+        self._oids.truncate(txn)
+        self._pvids.truncate(txn)
+        self._prevrevids.truncate(txn)
+        self._pending.truncate(txn)
+
+    def _dobegin(self, txn, tid, u, d, e):
+        # When a transaction begins, we set the pending flag to ABORT,
+        # meaning, if we crash between now and the time we vote, all changes
+        # will be aborted.
+        #
+        # It's more convenient to store the transaction metadata now, rather
+        # than in the _finish() call.  Doesn't matter because if the ZODB
+        # transaction were to abort, we'd clean this up anyway.
+        userlen = len(u)
+        desclen = len(d)
+        lengths = pack('>II', userlen, desclen)
+        data = UNDOABLE_TRANSACTION + lengths + u + d + e
+        self._pending.put(tid, ABORT, txn=txn)
+        self._txnMetadata.put(tid, data, txn=txn)
 
     def _begin(self, tid, u, d, e):
         # DEBUGGING
         #self._nextserial += 1
         #self._serial = p64(self._nextserial)
-        # Begin the current transaction.  Currently, this just makes sure that
-        # the commit log is in the proper state.
-        if self._commitlog is None:
-            # JF: Chris was getting some weird errors / bizarre behavior from
-            # Berkeley when using an existing directory or having non-BSDDB
-            # files in that directory.
-            self._commitlog = FullLog(dir=self._env.db_home)
-        self._commitlog.start()
-
-# To turn on hotshot profiling, uncomment the following function, and rename
-# _finish() to _real_finish().  Also, uncomment out the creation of the
-# profiler in _setupDBs() above, and the closing of the profiler in close()
-# below.  Then check out the profout.py file for dumping out the profiling
-# information.
-#
-##    def _finish(self, tid, u, d, e):
-##        self.profiler.runcall(self._real_finish, tid, u, d, e)
+        # END DEBUGGING
+        self._withtxn(self._dobegin, self._serial, u, d, e)
 
     def _finish(self, tid, u, d, e):
-##        pack = struct.pack
-##        unpack = struct.unpack
-        # This is called from the storage interface's tpc_finish() method.
-        # Its responsibilities are to finish the transaction with the
-        # underlying database.
-        #
-        # We have a problem here because tpc_finish() is not supposed to raise
-        # any exceptions.  However because finishing with the backend database
-        # /can/ cause exceptions, they may be thrown from here as well.  If
-        # that happens, we abort the transaction.
-        #
-        # Because of the locking semantics issue described above, finishing
-        # the transaction in this case involves:
-        #     - starting a transaction with Berkeley DB
-        #     - replaying our commit log for object updates
-        #     - storing those updates in BSDDB
-        #     - committing those changes to BSDDB
-        #
-        # Once the changes are committed successfully to BSDDB, we're done
-        # with our log file.
-        #
-        # tid is the transaction id
-        # u is the user associated with the transaction
-        # d is the description of the transaction
-        # e is the transaction extension
-        txn = self._env.txn_begin()
+        self._pending[self._serial] = COMMIT
+        self._withtxn(self._docommit, self._serial)
+
+    #
+    # Storing an object revision in a transaction
+    #
+
+    def _dostore(self, txn, oid, serial, data, version):
+        conflictresolved = False
+        vid = nvrevid = ZERO
+        # Check for conflict errors.  JF says: under some circumstances,
+        # it is possible that we'll get two stores for the same object in
+        # a single transaction.  It's not clear though under what
+        # situations that can occur or what the semantics ought to be.
+        # For now, we'll assume this doesn't happen.
+        oserial, orevid = self._getSerialAndTidMissingOk(oid)
+        if oserial is None:
+            # There's never been a previous revision of this object.
+            oserial = ZERO
+        elif serial <> oserial:
+            # The object exists in the database, but the serial number
+            # given in the call is not the same as the last stored serial
+            # number.  First, attempt application level conflict
+            # resolution, and if that fails, raise a ConflictError.
+            data = self.tryToResolveConflict(oid, oserial, serial, data)
+            if data:
+                conflictresolved = True
+            else:
+                raise POSException.ConflictError(serials=(oserial, serial))
+        # Do we already know about this version?  If not, we need to record
+        # the fact that a new version is being created.  version will be the
+        # empty string when the transaction is storing on the non-version
+        # revision of the object.
+        if version:
+            vid = self._findcreatevid(version, txn)
+        # Now get some information and do some checks on the old revision of
+        # the object.  We need to get the tid of the previous transaction to
+        # modify this object.  If that transaction is in a version, it must
+        # be the same version as we're making this change in now.
+        if orevid:
+            rec = self._metadata[oid+orevid]
+            ovid, onvrevid = unpack('>8s8s', rec[:16])
+            if ovid == ZERO:
+                # The last revision of this object was made on the
+                # non-version, we don't care where the current change is
+                # made.  But if we're storing this change on a version then
+                # the non-version revid will be the previous revid
+                if version:
+                    nvrevid = orevid
+            elif ovid <> vid:
+                # We're trying to make a change on a version that's different
+                # than the version the current revision is on.  Nuh uh.
+                raise POSException.VersionLockError(
+                    'version mismatch for object %s (was: %s, got: %s)' %
+                    tuple(map(U64, (oid, ovid, vid))))
+            else:
+                # We're making another change to this object on this version.
+                # The non-version revid is the same as for the previous
+                # revision of the object.
+                nvrevid = onvrevid
+        # Now store optimistically data to all the tables
+        newserial = self._serial
+        revid = oid + newserial
+        self._serials.put(oid, newserial, txn=txn)
+        self._pickles.put(revid, data, txn=txn)
+        self._metadata.put(revid, vid+nvrevid+newserial+oserial, txn=txn)
+        self._txnoids.put(newserial, oid, txn=txn)
+        # Update the log tables
+        self._oids.put(oid, PRESENT, txn=txn)
+        if vid <> ZERO:
+            self._currentVersions.put(vid, revid, txn=txn)
+            self._pvids.put(vid, PRESENT, txn=txn)
+        # And return the new serial number
+        return newserial
+
+    def store(self, oid, serial, data, version, transaction):
+        # Lock and transaction wrapper
+        if transaction is not self._transaction:
+            raise POSException.StorageTransactionError(self, transaction)
+        self._lock_acquire()
         try:
-            # Update the transaction metadata
-            userlen = len(u)
-            desclen = len(d)
-            lengths = struct.pack('>II', userlen, desclen)
-            # BAW: it's slightly faster to use '%s%s%s%s%s' % ()
-            # concatentation than string adds, but that will be dependent on
-            # string length.  Those are both faster than using %c as first in
-            # format string (even though we know the first one is a
-            # character), and those are faster still than string.join().
-            self._txnMetadata.put(tid,
-                                  UNDOABLE_TRANSACTION + lengths + u + d + e,
-                                  txn=txn)
-            picklekeys = []
-            metadata = []
-            picklerefcounts = {}
-            serials = []
-            refcounts = {}
-            while 1:
-                rec = self._commitlog.next()
-                if rec is None:
-                    break
-                op, data = rec
-                if op in 'aox':
-                    # This is a `versioned' object record.  Information about
-                    # this object must be stored in the pickle table, the
-                    # object metadata table, the currentVersions tables , and
-                    # the transactions->oid table.
-                    oid, vid, nvrevid, lrevid, refdoids, prevrevid = data
-                    key = oid + tid
-                    if refdoids is not None:
-                        # This was the result of a store() call which gave us
-                        # new pickle data.  Since the pickle is already
-                        # stored, we just need to twiddle with reference
-                        # counts.  We also need to clear the picklelog for
-                        # this object revision.
-                        #
-                        # Otherwise, this was the result of a commitVersion()
-                        # or abortVersion() call, essentially moving the
-                        # object to a new version.  We don't need to update
-                        # any of the tables because we aren't creating a new
-                        # pickle.
-                        lrevid = tid
-                        # Boost the refcount of all the objects referred to by
-                        # this pickle.
-                        #
-                        # FIXME: need to watch for two object revisions in the
-                        # same transaction and only bump the refcount once,
-                        # since we only keep the last of any such revisions.
-                        for roid in refdoids:
-                            refcounts[roid] = refcounts.get(roid, 0) + 1
-                    # Update the metadata table
-                    if op <> 'x':
-                        # `x' opcode does an immediate write to metadata
-                        metadata.append(
-                            (key, ''.join((vid,nvrevid,lrevid,prevrevid))))
-                    # If we're in a real version, update this table too.  This
-                    # ends up putting multiple copies of the vid/oid records
-                    # in the table, but it's easier to weed those out later
-                    # than to weed them out now.
-                    if vid <> ZERO:
-                        self._currentVersions.put(vid, oid, txn=txn)
-                    # If this was an abortVersion, we need to store the
-                    # revid+tid as the value of the key, since in this one
-                    # instance, the two are not equivalent
-                    if op == 'a':
-                        serials.append((oid, lrevid, tid))
-                    else:
-                        serials.append((oid, None, tid))
-                    # Update the pickle's reference count.  Remember, the
-                    # refcount is stored as a string, so we have to do the
-                    # string->long->string dance.
-                    picklerefcounts[key] = picklerefcounts.get(key, 0) + 1
-                elif op == 'v':
-                    # This is a "create-a-version" record
-                    version, vid = data
-                    self._versions.put(vid, version, txn=txn)
-                    self._vids.put(version, vid, txn=txn)
-                elif op == 'd':
-                    # This is a "delete-a-version" record
-                    vid = data[0]
-                    c = self._currentVersions.cursor(txn=txn)
-                    try:
-                        rec = c.set(vid)
-                        while rec:
-                            c.delete()
-                            rec = c.next_dup()
-                    finally:
-                        c.close()
-            # It's actually faster to boogie through this list twice
-            #print >> sys.stderr, 'start:', self._lockstats()
-            for oid, serial, tid in serials:
-                self._txnoids.put(tid, oid, txn=txn)
-            #print >> sys.stderr, 'post-txnoids:', self._lockstats()
-            for oid, serial, tid in serials:
-                if serial is None:
-                    self._serials.put(oid, tid, txn=txn)
-                else:
-                    self._serials.put(oid, serial+tid, txn=txn)
-            #print >> sys.stderr, 'post-serials:', self._lockstats()
-            for key, data in metadata:
-                self._metadata.put(key, data, txn=txn)
-            #print >> sys.stderr, 'post-metadata:', self._lockstats()
-            for roid, delta in refcounts.items():
-                refcount = self._refcounts.get(roid, ZERO, txn=txn)
-                self._refcounts.put(roid, incr(refcount, delta), txn=txn)
-            #print >> sys.stderr, 'post-refcounts:', self._lockstats()
-            for key, delta in picklerefcounts.items():
-                refcount = self._pickleRefcounts.get(key, ZERO, txn=txn)
-                self._pickleRefcounts.put(key, incr(refcount, delta), txn=txn)
-            # We're done with the picklelog
-            self._picklelog.truncate(txn)
-            #print >> sys.stderr, 'loop-finish:', self._lockstats()
-        # Handle lock exhaustion differently
-        except db.DBNoMemoryError, e:
-            txn.abort()
-            self._docheckpoint()
-            raise POSException.TransactionTooLargeError, e
-        except:
-            # If any errors whatsoever occurred, abort the transaction with
-            # Berkeley, leave the commit log file in the PROMISED state (since
-            # its changes were never committed), and re-raise the exception.
-            txn.abort()
-            self._docheckpoint()
-            raise
+            return self._withtxn(self._dostore, oid, serial, data, version)
+        finally:
+            self._lock_release()
+
+    def _dorestore(self, txn, oid, serial, data, version, prev_txn):
+        tid = self._serial
+        vid = nvrevid = ZERO
+        prevrevid = prev_txn
+        # self._serial contains the transaction id as set by
+        # BaseStorage.tpc_begin().
+        revid = oid + tid
+        # Calculate and write the entries for version ids
+        if version:
+            vid = self._findcreatevid(version, txn)
+        # Calculate the previous revision id for this object, but only if we
+        # weren't told what to believe, via prev_txn
+        if prevrevid is None:
+            # Get the metadata for the current revision of the object
+            cserial, crevid = self._getSerialAndTidMissingOk(oid)
+            if crevid is None:
+                # There's never been a previous revision of this object
+                prevrevid = ZERO
+            else:
+                prevrevid = crevid
+        # Get the metadata for the previous revision, so that we can dig out
+        # the non-version revid, but only if there /is/ a previous revision
+        if prevrevid <> ZERO:
+            ovid, onvrevid = unpack(
+                '>8s8s', self._metadata[oid+prevrevid][:16])
+            if ovid == ZERO:
+                # The last revision of this object was made on the
+                # non-version, we don't care where the current change is
+                # made.  But if we're storing this change on a version then
+                # the non-version revid will be the previous revid
+                if version:
+                    nvrevid = prevrevid
+            else:
+                # We're making another change to this object on this version.
+                # The non-version revid is the same as for the previous
+                # revision of the object.
+                nvrevid = onvrevid
+        # Check for George Bailey Events
+        if data is None:
+            lrevid = DNE
         else:
-            # Everything is hunky-dory.  Commit the Berkeley transaction, and
-            # reset the commit log for the next transaction.
-            txn.commit()
-            self._docheckpoint()
-            self._closelog()
+            # Store the pickle record.  Remember that the reference counts are
+            # updated in _docommit().
+            self._pickles.put(revid, data, txn=txn)
+            lrevid = tid
+        # Update the serials table, but if the transaction id is different
+        # than the serial number, we need to write our special long record
+        if serial <> tid:
+            self._serials.put(oid, serial+tid, txn=txn)
+        else:
+            self._serials.put(oid, serial, txn=txn)
+        # Update the rest of the tables
+        self._metadata.put(revid, vid+nvrevid+lrevid+prevrevid, txn=txn)
+        self._txnoids.put(tid, oid, txn=txn)
+        self._oids.put(oid, PRESENT, txn=txn)
+        if vid <> ZERO:
+            self._currentVersions.put(vid, revid, txn=txn)
 
-    def _abort(self):
-        # We need to clear the picklelog and all the stored pickles in the
-        # pickle log, since we're abort this transaction.
-        for key in self._picklelog.keys():
-            del self._pickles[key]
-            del self._metadata[key]
-        # Done with the picklelog
-        self._picklelog.truncate()
-        BerkeleyBase._abort(self)
+    def restore(self, oid, serial, data, version, prev_txn, transaction):
+        # A lot like store() but without all the consistency checks.  This
+        # should only be used when we /know/ the data is good, hence the
+        # method name.  While the signature looks like store() there are some
+        # differences:
+        #
+        # - serial is the serial number of /this/ revision, not of the
+        #   previous revision.  It is used instead of self._serial, which is
+        #   ignored.
+        #
+        # - Nothing is returned
+        #
+        # - data can be None, which indicates a George Bailey object
+        #   (i.e. one who's creation has been transactionally undone).
+        #
+        # If prev_txn is not None, it should contain the same data as
+        # the argument data.  If it does, write a backpointer to it.
+        if transaction is not self._transaction:
+            raise POSException.StorageTransactionError(self, transaction)
+        self._lock_acquire()
+        try:
+            self._withtxn(
+                self._dorestore, oid, serial, data, version, prev_txn)
+        finally:
+            self._lock_release()
 
     #
-    # Do some things in a version
+    # Things we can do in and to a version
     #
+
+    def _findcreatevid(self, version, txn):
+        # Get the vid associated with a version string, or create one if there
+        # is no vid for the version.  If we're creating a new version entry,
+        # we need to update the pvids table in case the transaction current in
+        # progress gets aborted.
+        vid = self._vids.get(version)
+        if vid is None:
+            self.__nextvid += 1
+            # Convert the version id into an 8-byte string
+            vid = p64(self.__nextvid)
+            # Now update the vids/versions tables, along with the log table
+            self._vids.put(version, vid, txn=txn)
+            self._versions.put(vid, version, txn=txn)
+            self._pvids.put(vid, PRESENT, txn=txn)
+        return vid
+
+    def _doAbortVersion(self, txn, version):
+        vid = self._vids.get(version)
+        if vid is None:
+            raise POSException.VersionError, 'not a version: %s' % version
+        # We need to keep track of the oids that are affected by the abort so
+        # that we can return it to the connection, which must invalidate the
+        # objects so they can be reloaded.
+        rtnoids = {}
+        c = self._currentVersions.cursor(txn)
+        try:
+            try:
+                rec = c.set_range(vid)
+            except db.DBNotFoundError:
+                rec = None
+            while rec:
+                cvid, revid = rec
+                if cvid <> vid:
+                    # No more objects modified in this version
+                    break
+                oid = revid[:8]
+                if rtnoids.has_key(oid):
+                    # We've already dealt with this oid
+                    c.delete()
+                    rec = c.next()
+                    continue
+                # This object was modified
+                rtnoids[oid] = 1
+                # Calculate the values for the new transaction metadata
+                serial, tid = self._getSerialAndTid(oid)
+                meta = self._metadata[oid+tid]
+                curvid, nvrevid = unpack('>8s8s', meta[:16])
+                assert curvid == vid
+                if nvrevid <> ZERO:
+                    # Get the non-version data for the object.  We're mostly
+                    # interested in the lrevid, i.e. the pointer to the pickle
+                    # data in the non-version
+                    nvmeta = self._metadata[oid+nvrevid]
+                    xcurvid, xnvrevid, lrevid = unpack('>8s8s8s', nvmeta[:24])
+                    assert xcurvid == ZERO
+                    assert xnvrevid == ZERO
+                else:
+                    # This object was created in the version, so there's no
+                    # non-version data that might have an lrevid.
+                    lrevid = DNE
+                # Write all the new data to the serials and metadata tables.
+                # Note that in an abortVersion the serial number of the object
+                # must be the serial number used in the non-version data,
+                # while the transaction id is the current transaction.  This
+                # is the one case where serial <> tid, and a special record
+                # must be written to the serials table for this.
+                self._serials.put(oid, nvrevid+self._serial, txn=txn)
+                self._metadata.put(oid+self._serial, ZERO+ZERO+lrevid+tid,
+                                   txn=txn)
+                self._txnoids.put(self._serial, oid, txn=txn)
+                self._oids.put(oid, PRESENT, txn=txn)
+                c.delete()
+                rec = c.next()
+            # XXX Should we garbage collect vids and versions?  Doing so might
+            # interact badly with transactional undo because say we delete the
+            # record of the version here, and then we undo the txn with the
+            # abortVersion?  We'll be left with metadata records that contain
+            # vids for which we know nothing about.  So for now, no, we never
+            # remove stuff from the vids or version tables.  I think this is
+            # fine in practice since the number of versions should be quite
+            # small over the lifetime of the database.  Maybe we can figure
+            # out a way to do this in the pack operations.
+            return rtnoids.keys()
+        finally:
+            c.close()
 
     def abortVersion(self, version, transaction):
         # Abort the version, but retain enough information to make the abort
         # undoable.
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
-
-        c = None                                  # the currentVersions cursor
+        # We can't abort the empty version, because it's not a version!
+        if not version:
+            raise POSException.VersionError
         self._lock_acquire()
         try:
-            # We can't abort the empty version, 'cause it ain't a version! :)
-            if not version:
-                raise POSException.VersionError
-            # Let KeyErrors percolate up.  This is how we ensure that the
-            # version we're aborting is not the empty string.
-            vid = self._vids[version]
-            # We need to keep track of the oids that are affected by the abort
-            # so that we can return it to the connection, which must
-            # invalidate the objects so they can be reloaded.  We use a set
-            # here because currentVersions may have duplicate vid/oid records.
-            oids = {}
-            c = self._currentVersions.cursor()
-            rec = c.set(vid)
-            # Now cruise through all the records for this version, looking for
-            # objects modified in this version, but which were not created in
-            # this version.  For each of these objects, we're going to want to
-            # write a log entry that will cause the non-version revision of
-            # the object to become current.  This preserves the version
-            # information for undo.
+            return self._withtxn(self._doAbortVersion, version)
+        finally:
+            self._lock_release()
+
+    def _doCommitVersion(self, txn, src, dest):
+        # Keep track of the oids affected by this commit.  See abortVersion()
+        rtnoids = {}
+        # Get the version ids associated with the src and dest version strings
+        svid = self._vids[src]
+        if not dest:
+            dvid = ZERO
+        else:
+            # Find the vid for the dest version, or create on eif necessary.
+            dvid = self._findcreatevid(dest, txn)
+        c = self._currentVersions.cursor(txn)
+        try:
+            try:
+                rec = c.set_range(svid)
+            except db.DBNotFoundError:
+                rec = None
             while rec:
-                oid = rec[1]                      # ignore the key
-                rec = c.next_dup()
-                if oids.has_key(oid):
-                    # We've already dealt with this oid...
+                cvid, revid = rec
+                if cvid <> svid:
+                    # No more objects modified in this version
+                    break
+                oid = revid[:8]
+                if rtnoids.has_key(oid):
+                    # We've already dealt with this oid
+                    c.delete()
+                    rec = c.next()
                     continue
+                # This object was modified
+                rtnoids[oid] = 1
+                # Calculate the values for the new transaction metadata
                 serial, tid = self._getSerialAndTid(oid)
                 meta = self._metadata[oid+tid]
-                curvid, nvrevid = struct.unpack('>8s8s', meta[:16])
-                # Make sure that the vid in the metadata record is the same as
-                # the vid we sucked out of the vids table.
-                if curvid <> vid:
-                    raise POSException.StorageSystemError
-                if nvrevid == ZERO:
-                    # This object was created in the version, so we don't need
-                    # to do anything about it.
-                    continue
-                # Get the non-version data for the object
-                nvmeta = self._metadata[oid+nvrevid]
-                curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', nvmeta[:24])
-                # We expect curvid to be zero because we just got the
-                # non-version entry.
-                if curvid <> ZERO:
-                    raise POSException.StorageSystemError
-                # Write the object id, live revision id, the current revision
-                # id (which serves as the previous revid to this transaction)
-                # to the commit log.
-                self._commitlog.write_nonversion_object(oid, lrevid, tid)
-                # Remember to return the oid...
-                oids[oid] = 1
-            # We've now processed all the objects on the discarded version, so
-            # write this to the commit log and return the list of oids to
-            # invalidate.
-            self._commitlog.write_discard_version(vid)
-            return oids.keys()
+                curvid, nvrevid, lrevid = unpack('>8s8s8s', meta[:24])
+                assert curvid == svid
+                # If we're committing to the non-version, then the nvrevid
+                # ougt to be ZERO too, regardless of what it was for the
+                # source version.
+                if not dest:
+                    nvrevid = ZERO
+                self._serials.put(oid, self._serial, txn=txn)
+                self._metadata.put(oid+self._serial, dvid+nvrevid+lrevid+tid,
+                                   txn=txn)
+                self._txnoids.put(self._serial, oid, txn=txn)
+                self._oids.put(oid, PRESENT, txn=txn)
+                c.delete()
+                rec = c.next()
+            return rtnoids.keys()
         finally:
-            if c:
-                c.close()
-            self._lock_release()
+            c.close()
 
     def commitVersion(self, src, dest, transaction):
         # Commit a source version `src' to a destination version `dest'.  It's
@@ -503,58 +810,13 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # non-version, dest will be empty.
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
-
         # Sanity checks
         if not src or src == dest:
             raise POSException.VersionCommitError
-
-        c = None                                  # the currentVersions cursor
         self._lock_acquire()
         try:
-            # Get the version ids associated with the source and destination
-            # version strings.
-            svid = self._vids[src]
-            if not dest:
-                dvid = ZERO
-            else:
-                # Find the vid for the destination version, or create one if
-                # necessary.
-                dvid = self.__findcreatevid(dest)
-            # Keep track of the oids affected by this commit.  For why this is
-            # a dictionary (really a set), see abortVersion() above.
-            oids = {}
-            c = self._currentVersions.cursor()
-            rec = c.set(svid)
-            # Now cruise through all the records for this version, writing to
-            # the commit log all the objects changed in this version.
-            while rec:
-                oid = rec[1]                      # ignore the key
-                rec = c.next_dup()
-                if oids.has_key(oid):
-                    continue
-                serial, tid = self._getSerialAndTid(oid)
-                meta = self._metadata[oid+tid]
-                curvid, nvrevid, lrevid = struct.unpack('>8s8s8s', meta[:24])
-                # Our database better be consistent.
-                if curvid <> svid:
-                    raise POSException.StorageSystemError(
-                        'oid: %s, moving from v%s to v%s, but lives in v%s' %
-                        tuple(map(U64, (oid, svid, dvid, curvid))))
-                # If we're committing to a non-version, then the non-version
-                # revision id ought to be zero also, regardless of what it was
-                # for the source version.
-                if not dest:
-                    nvrevid = ZERO
-                self._commitlog.write_moved_object(
-                    oid, dvid, nvrevid, lrevid, tid)
-                # Remember to return the oid...
-                oids[oid] = 1
-            # Now that we're done, we can discard this version
-            self._commitlog.write_discard_version(svid)
-            return oids.keys()
+            return self._withtxn(self._doCommitVersion, src, dest)
         finally:
-            if c:
-                c.close()
             self._lock_release()
 
     def modifiedInVersion(self, oid):
@@ -571,433 +833,6 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 return ''
             return self._versions[vid]
         finally:
-            self._lock_release()
-
-    #
-    # Public storage interface
-    #
-
-    def load(self, oid, version):
-        # BAW: in the face of application level conflict resolution, it's
-        # /possible/ to load an object that is sitting in the commit log.
-        # That's bogus though because there's no way to know what to return;
-        # i.e. returning the not-yet-committed state isn't right (because you
-        # don't know if the txn will be committed or aborted), and returning
-        # the last committed state doesn't help.  So, don't do this!
-        #
-        # The solution is, in the Connection object wait to reload the object
-        # until the transaction has been committed.  Still, we don't check for
-        # this condition, although maybe we should.
-        self._lock_acquire()
-        try:
-            # Get the current revid for the object.  As per the protocol, let
-            # any KeyErrors percolate up.
-            serial, tid = self._getSerialAndTid(oid)
-            # Get the metadata associated with this revision of the object.
-            # All we really need is the vid, the non-version revid and the
-            # pickle pointer revid.
-            rec = self._metadata[oid+tid]
-            vid, nvrevid, lrevid = struct.unpack('>8s8s8s', rec[:24])
-            if lrevid == DNE:
-                raise KeyError, 'Object does not exist'
-            # If the object isn't living in a version, or if the version the
-            # object is living in is the one that was requested, we simply
-            # return the current revision's pickle.
-            if vid == ZERO or self._versions.get(vid) == version:
-                return self._pickles[oid+lrevid], serial
-            # The object was living in a version, but not the one requested.
-            # Semantics here are to return the non-version revision.
-            lrevid = self._metadata[oid+nvrevid][16:24]
-            return self._pickles[oid+lrevid], nvrevid
-        finally:
-            self._lock_release()
-
-    def _getSerialAndTid(self, oid):
-        # For the object, return the curent serial number and transaction id
-        # of the last transaction that modified the object.  Usually these
-        # will be the same, unless the last transaction was an abortVersion
-        self._lock_acquire()
-        try:
-            data = self._serials[oid]
-        finally:
-            self._lock_release()
-        if len(data) == 8:
-            return data, data
-        return data[:8], data[8:]
-
-    def _getSerialAndTidMissingOk(self, oid):
-        # For the object, return the curent serial number and transaction id
-        # of the last transaction that modified the object.  Usually these
-        # will be the same, unless the last transaction was an abortVersion
-        self._lock_acquire()
-        try:
-            data = self._serials.get(oid)
-        finally:
-            self._lock_release()
-        if data is None:
-            return None, None
-        if len(data) == 8:
-            return data, data
-        return data[:8], data[8:]
-
-    def _loadSerialEx(self, oid, serial):
-        # Just like loadSerial, except that it returns the pickle data, the
-        # version this object revision is living in, and a backpointer.  The
-        # backpointer is None if the lrevid for this metadata record is the
-        # same as the tid.  If not, we have a pointer to previously existing
-        # data, so we return that.
-        self._lock_acquire()
-        try:
-            # Get the pointer to the pickle (i.e. live revid, or lrevid)
-            # corresponding to the oid and the supplied serial
-            # a.k.a. revision.
-            vid, ign, lrevid = struct.unpack(
-                '>8s8s8s', self._metadata[oid+serial][:24])
-            if vid == ZERO:
-                version = ''
-            else:
-                version = self._versions[vid]
-            # Check for an zombification event, possible with
-            # transactionalUndo.  Use data==None to specify that.
-            if lrevid == DNE:
-                return None, version, None
-            backpointer = None
-            if lrevid <> serial:
-                # This transaction shares its pickle data with a previous
-                # transaction.  We need to let the caller know, esp. when it's
-                # the iterator code, so that it can pass this information on.
-                backpointer = lrevid
-            return self._pickles[oid+lrevid], version, backpointer
-        finally:
-            self._lock_release()
-
-    def loadSerial(self, oid, serial):
-        return self._loadSerialEx(oid, serial)[0]
-
-    def getSerial(self, oid):
-        # Return the revision id for the current revision of this object,
-        # irrespective of any versions.
-        self._lock_acquire()
-        try:
-            serial, tid = self._getSerialAndTid(oid)
-            return serial
-        finally:
-            self._lock_release()
-
-    def __findcreatevid(self, version):
-        # Get the vid associated with a version string, or create one if there
-        # is no vid for the version.
-        #
-        # First we look for the version in the Berkeley table.  If not
-        # present, then we look in the commit log to see if a new version
-        # creation is pending.  If still missing, then create the new version
-        # and add it to the commit log.
-        vid = self._vids.get(version)
-        if vid is None:
-            vid = self._commitlog.get_vid(version)
-        if vid is None:
-            self.__nextvid = self.__nextvid + 1
-            # Convert the int/long version ID into an 8-byte string
-            vid = p64(self.__nextvid)
-            self._commitlog.write_new_version(version, vid)
-        return vid
-
-    def _log_object(self, oid, vid, nvrevid, data, oserial):
-        # Save data for later commit.  We do this by writing the pickle
-        # directly to the pickle table and saving the pickle key in the pickle
-        # log.  We'll also save the metadata using the same technique.  We
-        # extract the references and save them in the transaction log.
-        #
-        # Get the oids to the objects this pickle references
-        refdoids = []
-        referencesf(data, refdoids)
-        # Record the update to this object in the commit log.
-        self._commitlog.write_object(oid, vid, nvrevid, refdoids, oserial)
-        # Save the pickle in the database:
-        txn = self._env.txn_begin()
-        try:
-            key = oid + self._serial
-            self._pickles.put(key, data, txn=txn)
-            self._metadata.put(
-                key,
-                ''.join((vid, nvrevid, self._serial, oserial)),
-                txn=txn)
-            self._picklelog.put(key, '', txn=txn)
-        except:
-            txn.abort()
-            raise
-        else:
-            txn.commit()
-
-    def store(self, oid, serial, data, version, transaction):
-        # Transaction equivalence guard
-        if transaction is not self._transaction:
-            raise POSException.StorageTransactionError(self, transaction)
-
-        conflictresolved = 0
-        self._lock_acquire()
-        try:
-            # Check for conflict errors.  JF says: under some circumstances,
-            # it is possible that we'll get two stores for the same object in
-            # a single transaction.  It's not clear though under what
-            # situations that can occur or what the semantics ought to be.
-            # For now, we'll assume this doesn't happen.
-            oserial, orevid = self._getSerialAndTidMissingOk(oid)
-            if oserial is None:
-                # There's never been a previous revision of this object, so
-                # set its non-version revid to zero.
-                nvrevid = ZERO
-                oserial = ZERO
-            elif serial <> oserial:
-                # The object exists in the database, but the serial number
-                # given in the call is not the same as the last stored serial
-                # number.  First, attempt application level conflict
-                # resolution, and if that fails, raise a ConflictError.
-                data = self.tryToResolveConflict(oid, oserial, serial, data)
-                if data:
-                    conflictresolved = 1
-                else:
-                    raise POSException.ConflictError(serials=(oserial, serial))
-            # Do we already know about this version?  If not, we need to
-            # record the fact that a new version is being created.  `version'
-            # will be the empty string when the transaction is storing on the
-            # non-version revision of the object.
-            if version:
-                vid = self.__findcreatevid(version)
-            else:
-                # vid 0 means no explicit version
-                vid = ZERO
-                nvrevid = ZERO
-            # A VersionLockError occurs when a particular object is being
-            # stored on a version different than the last version it was
-            # previously stored on (as long as the previous version wasn't
-            # zero, of course).
-            #
-            # Get the old version, which only makes sense if there was a
-            # previously stored revision of the object.
-            if orevid:
-                rec = self._metadata[oid+orevid]
-                ovid, onvrevid = struct.unpack('>8s8s', rec[:16])
-                if ovid == ZERO:
-                    # The old revision's vid was zero any version is okay.
-                    # But if we're storing this on a version, then the
-                    # non-version revid will be the previous revid for the
-                    # object.
-                    if version:
-                        nvrevid = orevid
-                elif ovid <> vid:
-                    # The old revision was on a version different than the
-                    # current version.  That's a no no.
-                    raise POSException.VersionLockError(
-                        'version mismatch for object %s (was: %s, got: %s)' %
-                        tuple(map(U64, (oid, ovid, vid))))
-                else:
-                    nvrevid = onvrevid
-            # Store the object
-            self._log_object(oid, vid, nvrevid, data, oserial)
-        finally:
-            self._lock_release()
-        # Return our cached serial number for the object.  If conflict
-        # resolution occurred, we return the special marker value.
-        if conflictresolved:
-            return ResolvedSerial
-        return self._serial
-
-    def transactionalUndo(self, tid, transaction):
-        if transaction is not self._transaction:
-            raise POSException.StorageTransactionError(self, transaction)
-
-        newrevs = []
-        newstates = []
-        c = None
-        self._lock_acquire()
-        try:
-            # First, make sure the transaction isn't protected by a pack.
-            status = self._txnMetadata[tid][0]
-            if status <> UNDOABLE_TRANSACTION:
-                raise POSException.UndoError, 'Transaction cannot be undone'
-
-            # Calculate all the oids modified in the transaction
-            c = self._txnoids.cursor()
-            rec = c.set(tid)
-            while rec:
-                oid = rec[1]                      # ignore the key
-                rec = c.next_dup()
-                # In order to be able to undo this transaction, we must be
-                # undoing either the current revision of the object, or we
-                # must be restoring the exact same pickle (identity compared)
-                # that would be restored if we were undoing the current
-                # revision.  Otherwise, we attempt application level conflict
-                # resolution.  If that fails, we raise an exception.
-                cserial, ctid = self._getSerialAndTid(oid)
-                revid = ctid
-                if revid == tid:
-                    vid, nvrevid, lrevid, prevrevid = struct.unpack(
-                        '>8s8s8s8s', self._metadata[oid+tid])
-                    # We can always undo the last transaction.  The prevrevid
-                    # pointer doesn't necessarily point to the previous
-                    # transaction, if the revision we're undoing was itself an
-                    # undo.  Use a cursor to find the previous revision of
-                    # this object.
-                    mdc = self._metadata.cursor()
-                    try:
-                        mdc.set(oid+revid)
-                        mrec = mdc.prev()
-                        # If we're undoing the first record, either for the
-                        # whole system or for this object, just write a
-                        # zombification record
-                        if not mrec or mrec[0][:8] <> oid:
-                            newrevs.append((oid, vid+nvrevid+DNE+revid))
-                        # BAW: If the revid of this object record is the same
-                        # as the revid we're being asked to undo, then I think
-                        # we have a problem (since the storage invariant is
-                        # that it doesn't retain metadata records for multiple
-                        # modifications of the object in the same txn).
-                        elif mrec[0][8:] == revid:
-                            raise StorageSystemError
-                        # All is good, so just restore this metadata record
-                        else:
-                            newrevs.append((oid, mrec[1]))
-                    finally:
-                        mdc.close()
-                else:
-                    # We need to compare the lrevid (pickle pointers) of the
-                    # transaction previous to the current one, and the
-                    # transaction previous to the one we want to undo.  If
-                    # their lrevids are the same, it's undoable.
-                    last_prevrevid = self._metadata[oid+revid][24:]
-                    target_prevrevid = self._metadata[oid+tid][24:]
-                    if target_prevrevid == last_prevrevid == ZERO:
-                        # We're undoing the object's creation, so the only
-                        # thing to undo from there is the zombification of the
-                        # object, i.e. the last transaction for this object.
-                        vid, nvrevid = struct.unpack(
-                            '>8s8s', self._metadata[oid+tid][:16])
-                        newrevs.append((oid, vid+nvrevid+DNE+revid))
-                        continue
-                    elif target_prevrevid == ZERO or last_prevrevid == ZERO:
-                        # The object's revision is in it's initial creation
-                        # state but we're asking for an undo of something
-                        # other than the initial creation state.  No, no.
-                        raise POSException.UndoError, 'Undoing mismatch'
-                    last_lrevid     = self._metadata[oid+last_prevrevid][16:24]
-                    target_metadata = self._metadata[oid+target_prevrevid]
-                    target_lrevid   = target_metadata[16:24]
-                    # If the pickle pointers of the object's last revision
-                    # and the undo-target revision are the same, then the
-                    # transaction can be undone.  Note that we take a short
-                    # cut here, since we really want to test pickle equality,
-                    # but this is good enough for now.
-                    if target_lrevid == last_lrevid:
-                        newrevs.append((oid, target_metadata))
-                    # They weren't equal, but let's see if there are undos
-                    # waiting to be committed.
-                    elif target_lrevid == self._commitlog.get_prevrevid(oid):
-                        newrevs.append((oid, target_metadata))
-                    else:
-                        # Attempt application level conflict resolution
-                        data = self.tryToResolveConflict(
-                            oid, revid, tid, self._pickles[oid+target_lrevid])
-                        if data:
-                            # The problem is that the `data' pickle probably
-                            # isn't in the _pickles table, and even if it
-                            # were, we don't know what the lrevid pointer to
-                            # it would be.  This means we need to do a
-                            # write_object() not a write_object_undo().
-                            vid, nvrevid, lrevid, prevrevid = struct.unpack(
-                                '>8s8s8s8s', target_metadata)
-                            newstates.append((oid, vid, nvrevid, data,
-                                              prevrevid))
-                        else:
-                            raise POSException.UndoError(
-                                'Cannot undo transaction')
-            # Okay, we've checked all the objects affected by the transaction
-            # we're about to undo, and everything looks good.  So now we'll
-            # write to the log the new object records we intend to commit.
-            oids = {}
-            for oid, metadata in newrevs:
-                vid, nvrevid, lrevid, prevrevid = struct.unpack(
-                    '>8s8s8s8s', metadata)
-                self._commitlog.write_object_undo(oid, vid, nvrevid, lrevid,
-                                                  prevrevid)
-                # We're slightly inefficent here: if we make two undos to the
-                # same object during the same transaction, we'll write two
-                # records to the commit log.  This works because the last one
-                # will always overwrite previous ones, but it also means we'll
-                # see duplicate oids in this iteration.
-                oids[oid] = 1
-            for oid, vid, nvrevid, data, prevrevid in newstates:
-                self._log_object(oid, vid, nvrevid, data, prevrevid)
-                oids[oid] = 1
-            return oids.keys()
-        finally:
-            if c:
-                c.close()
-            self._lock_release()
-
-    def undoLog(self, first=0, last=-20, filter=None):
-        # Get a list of transaction ids that can be undone, based on the
-        # determination of the filter.  filter is a function which takes a
-        # transaction description and returns true or false.
-        #
-        # Note that this method has been deprecated by undoInfo() which itself
-        # has some flaws, but is the best we have now.  We don't actually need
-        # to implement undoInfo() because BaseStorage (which we eventually
-        # inherit from) mixes in the UndoLogCompatible class which provides an
-        # implementation written in terms of undoLog().
-        #
-        # Interface specifies that if last is < 0, its absolute value is the
-        # maximum number of transactions to return.
-        if last < 0:
-            last = abs(last)
-        c = None                                  # tnxMetadata cursor
-        txnDescriptions = []                      # the return value
-        i = 0                                     # first <= i < last
-        self._lock_acquire()
-        try:
-            c = self._txnMetadata.cursor()
-            # We start at the last transaction and scan backwards because we
-            # can stop early if we find a transaction that is earlier than a
-            # pack.  We still have the potential to scan through all the
-            # transactions.
-            rec = c.last()
-            while rec and i < last:
-                tid, data = rec
-                rec = c.prev()
-                status = data[0]
-                if status == PROTECTED_TRANSACTION:
-                    break
-                userlen, desclen = struct.unpack('>II', data[1:9])
-                user = data[9:9+userlen]
-                desc = data[9+userlen:9+userlen+desclen]
-                ext = data[9+userlen+desclen:]
-                # Create a dictionary for the TransactionDescription
-                txndesc = {'id'         : tid,
-                           'time'       : TimeStamp(tid).timeTime(),
-                           'user_name'  : user,
-                           'description': desc,
-                           }
-                # The extension stuff is a picklable mapping, so if we can
-                # unpickle it, we update the TransactionDescription dictionary
-                # with that data.  BAW: The bare except is moderately
-                # disgusting, but I'm too lazy to figure out what exceptions
-                # could actually be raised here...
-                if ext:
-                    try:
-                        txndesc.update(pickle.loads(ext))
-                    except:
-                        pass
-                # Now call the filter to see if this transaction should be
-                # added to the return list...
-                if filter is None or filter(txndesc):
-                    # ...and see if this is within the requested ordinals
-                    if i >= first:
-                        txnDescriptions.append(txndesc)
-                    i = i + 1
-            return txnDescriptions
-        finally:
-            if c:
-                c.close()
             self._lock_release()
 
     def versionEmpty(self, version):
@@ -1017,39 +852,375 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             missing = []
             vid = self._vids.get(version, missing)
             if vid is missing:
-                return 1
+                return True
             if self._currentVersions.has_key(vid):
-                return 0
+                return False
             else:
-                return 1
+                return True
         finally:
             self._lock_release()
 
     def versions(self, max=None):
-        # Return the list of current versions, as strings, up to the maximum
-        # requested.
+        # Return the list of current versions, as version strings, up to the
+        # maximum requested.
+        retval = []
         self._lock_acquire()
-        c = None
         try:
-            c = self._currentVersions.cursor()
-            rec = c.first()
-            retval = []
-            while rec and (max is None or max > 0):
-                # currentVersions maps vids to [oid]'s so dig the key out of
-                # the returned record and look the vid up in the
-                # vids->versions table.
-                retval.append(self._versions[rec[0]])
-                # Since currentVersions has duplicates (i.e. multiple vid keys
-                # with different oids), get the next record that has a
-                # different key than the current one.
-                rec = c.next_nodup()
-                if max is not None:
-                    max = max - 1
-            return retval
-        finally:
-            if c:
+            try:
+                c = self._currentVersions.cursor()
+                rec = c.first()
+                while rec and (max is None or max > 0):
+                    # currentVersions maps vids to [oid]'s so dig the key out
+                    # of the returned record and look the vid up in the
+                    # vids->versions table.
+                    retval.append(self._versions[rec[0]])
+                    # Since currentVersions has duplicates (i.e. multiple vid
+                    # keys with different oids), get the next record that has
+                    # a different key than the current one.
+                    rec = c.next_nodup()
+                    if max is not None:
+                        max -= 1
+                return retval
+            finally:
                 c.close()
+        finally:
             self._lock_release()
+
+    #
+    # Accessor interface
+    #
+
+    def load(self, oid, version):
+        self._lock_acquire()
+        try:
+            # Get the current revision information for the object.  As per the
+            # protocol, let Key errors percolate up.
+            serial, tid = self._getSerialAndTid(oid)
+            # Get the metadata associated with this revision of the object.
+            # All we really need is the vid, the non-version revid and the
+            # pickle pointer revid.
+            rec = self._metadata[oid+tid]
+            vid, nvrevid, lrevid = unpack('>8s8s8s', rec[:24])
+            if lrevid == DNE:
+                raise KeyError, 'Object does not exist: %r' % oid
+            # If the object isn't living in a version, or if the version the
+            # object is living in is the one that was requested, we simply
+            # return the current revision's pickle.
+            if vid == ZERO or self._versions.get(vid) == version:
+                return self._pickles[oid+lrevid], serial
+            # The object was living in a version, but not the one requested.
+            # Semantics here are to return the non-version revision.
+            lrevid = self._metadata[oid+nvrevid][16:24]
+            return self._pickles[oid+lrevid], nvrevid
+        finally:
+            self._lock_release()
+
+    def _getSerialAndTidMissingOk(self, oid):
+        # For the object, return the curent serial number and transaction id
+        # of the last transaction that modified the object.  Usually these
+        # will be the same, unless the last transaction was an abortVersion.
+        # Also note that the serials table is written optimistically so we may
+        # have multiple entries for this oid.  We need to collect them in
+        # order and return the latest one if the pending flag is COMMIT, or
+        # the second to latest one if the pending flag is ABORT.
+        #
+        # BAW: We must have the application level lock here.
+        c = self._serials.cursor()
+        try:
+            # There can be zero, one, or two entries in the serials table for
+            # this oid.  If there are no entries, raise a KeyError (we know
+            # nothing about this object).
+            #
+            # If there is exactly one entry then this has to be the entry for
+            # the object, regardless of the pending flag.
+            #
+            # If there are two entries, then we need to look at the pending
+            # flag to decide which to return (there /better/ be a pending flag
+            # set!).  If the pending flag is COMMIT then we've already voted
+            # so the second one is the good one.  If the pending flag is ABORT
+            # then we haven't yet committed to this transaction so the first
+            # one is the good one.
+            serials = []
+            try:
+                rec = c.set(oid)
+            except db.DBNotFoundError:
+                rec = None
+            while rec:
+                serials.append(rec[1])
+                rec = c.next_dup()
+            if not serials:
+                return None, None
+            if len(serials) == 1:
+                data = serials[0]
+            else:
+                pending = self._pending.get(self._serial)
+                assert pending in (ABORT, COMMIT), 'pending: %s' % pending
+                if pending == ABORT:
+                    data = serials[0]
+                else:
+                    data = serials[1]
+            if len(data) == 8:
+                return data, data
+            return data[:8], data[8:]
+        finally:
+            c.close()
+
+    def _getSerialAndTid(self, oid):
+        # For the object, return the curent serial number and transaction id
+        # of the last transaction that modified the object.  Usually these
+        # will be the same, unless the last transaction was an abortVersion
+        serial, tid = self._getSerialAndTidMissingOk(oid)
+        if serial is None and tid is None:
+            raise KeyError, 'Object does not exist: %r' % oid
+        return serial, tid
+
+    def _loadSerialEx(self, oid, serial):
+        # Just like loadSerial, except that it returns the pickle data, the
+        # version this object revision is living in, and a backpointer.  The
+        # backpointer is None if the lrevid for this metadata record is the
+        # same as the tid.  If not, we have a pointer to previously existing
+        # data, so we return that.
+        self._lock_acquire()
+        try:
+            # Get the pointer to the pickle for the given serial number.  Let
+            # KeyErrors percolate up.
+            metadata = self._metadata[oid+serial]
+            vid, ign, lrevid = unpack('>8s8s8s', metadata[:24])
+            if vid == ZERO:
+                version = ''
+            else:
+                version = self._versions[vid]
+            # Check for an zombification event, possible with transactional
+            # undo.  Use data==None to specify that.
+            if lrevid == DNE:
+                return None, version, None
+            backpointer = None
+            if lrevid <> serial:
+                # This transaction shares its pickle data with a previous
+                # transaction.  We need to let the caller know, esp. when it's
+                # the iterator code, so that it can pass this information on.
+                backpointer = lrevid
+            return self._pickles[oid+lrevid], version, backpointer
+        finally:
+            self._lock_release()
+
+    def loadSerial(self, oid, serial):
+        return self._loadSerialEx(oid, serial)[0]
+
+    def getSerial(self, oid):
+        # Return the serial number for the current revision of this object,
+        # irrespective of any versions.
+        self._lock_acquire()
+        try:
+            serial, tid = self._getSerialAndTid(oid)
+            return serial
+        finally:
+            self._lock_release()
+
+    #
+    # Transactional undo
+    #
+
+    def _undo_current_tid(self, oid, ctid):
+        vid, nvrevid, lrevid, prevrevid = unpack(
+            '>8s8s8s8s', self._metadata[oid+ctid])
+        # We can always undo the last transaction.  The prevrevid pointer
+        # doesn't necessarily point to the previous transaction, if the
+        # revision we're undoing was itself an undo.  Use a cursor to find the
+        # previous revision of this object.
+        mdc = self._metadata.cursor()
+        try:
+            trec = mdc.set(oid+ctid)
+            mrec = mdc.prev()
+            if not mrec or mrec[0][:8] <> oid:
+                # The previous transaction metadata record doesn't point to
+                # one for this object.  This could be caused by two
+                # conditions: either we're undoing the creation of the object,
+                # or the object creation transaction has been packed away.
+                # Checking the current record's prevrevid will tell us.
+                return oid, vid+nvrevid+DNE+ctid, None
+            # BAW: If the serial number of this object record is the same as
+            # the serial we're being asked to undo, then I think we have a
+            # problem (since the storage invariant is that it doesn't retain
+            # metadata records for multiple modifications of the object in the
+            # same transaction).
+            assert mrec[0][8:] <> ctid, 'storage invariant violated'
+            # All is good, so just restore this metadata record
+            return oid, mrec[1], None
+        finally:
+            mdc.close()
+
+    def _undo_to_same_pickle(self, oid, tid, ctid):
+        # We need to compare the lrevid (pickle pointers) of the transaction
+        # previous to the current one, and the transaction previous to the one
+        # we want to undo.  If their lrevids are the same, it's undoable
+        # because we're undoing to the same pickle state.
+        last_prevrevid = self._metadata[oid+ctid][24:]
+        target_prevrevid = self._metadata[oid+tid][24:]
+        if target_prevrevid == last_prevrevid == ZERO:
+            # We're undoing the object's creation, so the only thing to undo
+            # from there is the zombification of the object, i.e. the last
+            # transaction for this object.
+            vid, nvrevid = unpack('>8s8s', self._metadata[oid+tid][:16])
+            return oid, vid+nvrevid+DNE+ctid, None
+        elif target_prevrevid == ZERO or last_prevrevid == ZERO:
+            # The object's revision is in it's initial creation state but
+            # we're asking for an undo of something other than the initial
+            # creation state.  No, no.
+            raise POSException.UndoError, 'Undoing mismatched zombification'
+        last_lrevid     = self._metadata[oid+last_prevrevid][16:24]
+        target_metadata = self._metadata[oid+target_prevrevid]
+        target_lrevid   = target_metadata[16:24]
+        # If the pickle pointers of the object's last revision and the
+        # undo-target revision are the same, then the transaction can be
+        # undone.  Note that we take a short cut here, since we really want to
+        # test pickle equality, but this is good enough for now.
+        if target_lrevid == last_lrevid:
+            return oid, target_metadata, None
+        # Check previous transactionalUndos done in this transaction
+        elif target_lrevid == self._prevrevids.get(oid):
+            return oid, target_metadata, None
+        else:
+            # Attempt application level conflict resolution
+            data = self.tryToResolveConflict(
+                oid, ctid, tid, self._pickles[oid+target_lrevid])
+            if data:
+                return oid, target_metadata, data
+            else:
+                raise POSException.UndoError, 'Cannot undo transaction'
+
+    def _dotxnundo(self, txn, tid):
+        # First, make sure the transaction isn't protected by a pack.
+        status = self._txnMetadata[tid][0]
+        if status <> UNDOABLE_TRANSACTION:
+            raise POSException.UndoError, 'Transaction cannot be undone'
+        # Calculate all the oids of objects modified in this transaction
+        newrevs = []
+        newstates = []
+        c = self._txnoids.cursor(txn=txn)
+        try:
+            rec = c.set(tid)
+            while rec:
+                oid = rec[1]
+                rec = c.next_dup()
+                # In order to be able to undo this transaction, we must be
+                # undoing either the current revision of the object, or we
+                # must be restoring the exact same pickle (identity compared)
+                # that would be restored if we were undoing the current
+                # revision.  Otherwise, we attempt application level conflict
+                # resolution.  If that fails, we raise an exception.
+                cserial, ctid = self._getSerialAndTid(oid)
+                if ctid == tid:
+                    newrevs.append(self._undo_current_tid(oid, ctid))
+                else:
+                    newrevs.append(self._undo_to_same_pickle(oid, tid, ctid))
+        finally:
+            c.close()
+        # We've checked all the objects affected by the transaction we're
+        # about to undo, and everything looks good.  So now we'll write the
+        # new metadata records (and potentially new pickle records).
+        rtnoids = {}
+        for oid, metadata, data in newrevs:
+            revid = oid + self._serial
+            # If the data pickle is None, then this undo is simply
+            # re-using a pickle stored earlier.  All we need to do then is
+            # bump the pickle refcount to reflect this new reference,
+            # which will happen during _docommit().  Otherwise we need to
+            # store the new pickle data and calculate the new lrevid.
+            vid, nvrevid, ign, prevrevid = unpack('>8s8s8s8s', metadata)
+            if data is not None:
+                self._pickles.put(revid, data, txn=txn)
+                metadata = vid+nvrevid+self._serial+prevrevid
+            # We need to write all the new records for an object changing in
+            # this transaction.  Note that we only write to th serials table
+            # if prevrevids hasn't already seen this object, otherwise we'll
+            # end up with multiple entries in the serials table for the same
+            # tid.
+            if not self._prevrevids.has_key(oid):
+                self._serials.put(oid, self._serial, txn=txn)
+            self._metadata.put(revid, metadata, txn=txn)
+            # Only add this oid to txnoids once
+            if not rtnoids.has_key(oid):
+                self._prevrevids.put(oid, prevrevid, txn=txn)
+                self._txnoids.put(self._serial, oid, txn=txn)
+                if vid <> ZERO:
+                    self._currentVersions.put(oid, vid, txn=txn)
+            self._oids.put(oid, PRESENT, txn=txn)
+            rtnoids[oid] = 1
+        return rtnoids.keys()
+
+    def transactionalUndo(self, tid, transaction):
+        if transaction is not self._transaction:
+            raise POSException.StorageTransactionError(self, transaction)
+        self._lock_acquire()
+        try:
+            return self._withtxn(self._dotxnundo, tid)
+        finally:
+            self._lock_release()
+
+    def _doundolog(self, first, last, filter):
+        i = 0                                     # first <= i < last
+        txnDescriptions = []                      # the return value
+        c = self._txnMetadata.cursor()
+        try:
+            # We start at the last transaction and scan backwards because we
+            # can stop early if we find a transaction that is earlier than a
+            # pack.  We still have the potential to scan through all the
+            # transactions.
+            rec = c.last()
+            while rec and i < last:
+                tid, txnmeta = rec
+                rec = c.prev()
+                status = txnmeta[0]
+                if status == PROTECTED_TRANSACTION:
+                    break
+                userlen, desclen = unpack('>II', txnmeta[1:9])
+                user = txnmeta[9:9+userlen]
+                desc = txnmeta[9+userlen:9+userlen+desclen]
+                ext = txnmeta[9+userlen+desclen:]
+                # Create a dictionary for the TransactionDescription
+                txndesc = {'id'         : tid,
+                           'time'       : TimeStamp(tid).timeTime(),
+                           'user_name'  : user,
+                           'description': desc,
+                           }
+                # The extension stuff is a picklable mapping, so if we can
+                # unpickle it, we update the TransactionDescription dictionary
+                # with that data.  BAW: The bare except is disgusting, but I'm
+                # too lazy to figure out what exceptions could actually be
+                # raised here...
+                if ext:
+                    try:
+                        txndesc.update(pickle.loads(ext))
+                    except:
+                        pass
+                # Now call the filter to see if this transaction should be
+                # added to the return list...
+                if filter is None or filter(txndesc):
+                    # ...and see if this is within the requested ordinals
+                    if i >= first:
+                        txnDescriptions.append(txndesc)
+                    i += 1
+            return txnDescriptions
+        finally:
+            c.close()
+
+    def undoLog(self, first=0, last=-20, filter=None):
+        # Get a list of transaction ids that can be undone, based on the
+        # determination of the filter.  filter is a function which takes a
+        # transaction description and returns true or false.
+        #
+        # Note that this method has been deprecated by undoInfo() which itself
+        # has some flaws, but is the best we have now.  We don't actually need
+        # to implement undoInfo() because BaseStorage (which we eventually
+        # inherit from) mixes in the UndoLogCompatible class which provides an
+        # implementation written in terms of undoLog().
+        #
+        # Interface specifies that if last is < 0, its absolute value is the
+        # maximum number of transactions to return.
+        if last < 0:
+            last = abs(last)
+        return self._withlock(self._doundolog, first, last, filter)
 
     def history(self, oid, version=None, size=1, filter=None):
         self._lock_acquire()
@@ -1068,12 +1239,12 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # BAW: Again, let KeyErrors percolate up
             while len(history) < size:
                 # Some information comes out of the revision metadata...
-                vid, nvrevid, lrevid, previd = struct.unpack(
+                vid, nvrevid, lrevid, previd = unpack(
                     '>8s8s8s8s', self._metadata[oid+tid])
                 # ...while other information comes out of the transaction
                 # metadata.
                 txnmeta = self._txnMetadata[tid]
-                userlen, desclen = struct.unpack('>II', txnmeta[1:9])
+                userlen, desclen = unpack('>II', txnmeta[1:9])
                 user = txnmeta[9:9+userlen]
                 desc = txnmeta[9+userlen:9+userlen+desclen]
                 # Now get the pickle size
@@ -1104,181 +1275,45 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         finally:
             self._lock_release()
 
-    def _rootreachable(self, referencesf):
-        # Quick exit for empty storages
-        if not self._serials:
-            return {}
-        reachables = {}
-        seen = {}
-        lookingat = {ZERO: 1}
-        # Start at the root, find all the objects the current revision of the
-        # root references, and then for each of those, find all the objects it
-        # references, and so on until we've traversed the entire object graph.
-        while lookingat:
-            oid, ignore = lookingat.popitem()
-            # Don't look at objects we've already seen
-            if seen.has_key(oid):
-                continue
-            seen[oid] = 1
-            reachables[oid] = 1
-            # Get the pickle data for the object's current version
-            serial, tid = self._getSerialAndTidMissingOk(oid)
-            if tid is None:
-                # BAW: how can this happen?!  This means that an object is
-                # holding references to an object that we know nothing about.
-                continue
-            lrevid = self._metadata[oid+tid][16:24]
-            pickle = self._pickles[oid+lrevid]
-            refdoids = []
-            referencesf(pickle, refdoids)
-            for oid in refdoids:
-                lookingat[oid] = 1
-        return reachables
+    #
+    # Packing.
+    #
+    # There are two types of pack operations, the classic pack and autopack.
+    # Classic pack is the full blown mark and sweep operation, removing all
+    # revisions of all objects not reachable from the root.  This can take a
+    # long time, although the implementation attempts to mitigate both in-core
+    # memory usage and blocking other, non-packing operations.
+    #
+    # Autopack is a more lightweight operation.  It only removes non-current
+    # revisions in a window of transactions, and doesn't do a root
+    # reachability test.
+    #
 
-    def _zapobject(self, oid, decrefoids, referencesf):
-        # Delete all records referenced by this object
+    def pack(self, t, zreferencesf):
+        # For all intents and purposes, referencesf here is always going to be
+        # the same as ZODB.referencesf.referencesf.  It's too much of a PITA
+        # to pass that around to the helper methods, so just assert they're
+        # the same.
+        assert zreferencesf == referencesf
+        zLOG.LOG('Full storage', zLOG.INFO, 'pack started')
+        # A simple wrapper around the bulk of packing, but which acquires a
+        # lock that prevents multiple packs from running at the same time.
+        self._packlock.acquire()
         try:
-            self._serials.delete(oid)
-        except db.DBNotFoundError:
-            pass
-        # This oid should not be in the decrefoids set because it would have
-        # had to have been popitem()'d off to even get here.  Let's just make
-        # sure of that invariant...
-        assert not decrefoids.has_key(oid)
-        # We don't need to track reference counts to this object anymore
-        try:
-            self._refcounts.delete(oid)
-        except db.DBNotFoundError:
-            pass
-        # Run through all the metadata records associated with this object,
-        # and iterate through all its revisions, zapping them.  Keep track of
-        # the tids and vids referenced by the metadata record, so we can clean
-        # up the txnoids and currentVersions tables too.
-        tids = {}
-        vids = {}
-        c = self._metadata.cursor()
-        try:
-            try:
-                rec = c.set_range(oid)
-            except db.DBNotFoundError:
-                rec = None
-            while rec and rec[0][:8] == oid:
-                key, data = rec
-                rec = c.next()
-                tid = key[8:]
-                tids[tid] = 1
-                vid = data[:8]
-                if vid <> ZERO:
-                    vids[vid] = 1
-                self._zaprevision(key, decrefoids, referencesf)
+            # We don't wrap this in _withtxn() because we're going to do the
+            # operation across several Berkeley transactions.  It makes
+            # bookkeeping harder, but it also allows other work to happen
+            # (stores and reads) while packing is being done.
+            self._dopack(t)
         finally:
-            c.close()
-        # Zap all the txnoid records...
-        c = self._txnoids.cursor()
-        try:
-            for tid in tids.keys():
-                try:
-                    rec = c.set_both(tid, oid)
-                except db.DBNotFoundError:
-                    rec = None
-                while rec:
-                    k, v = rec
-                    if k <> tid or v <> oid:
-                        break
-                    c.delete()
-                    rec = c.next()
-        finally:
-            c.close()
-        # ...and all the currentVersion records...
-        c = self._currentVersions.cursor()
-        try:
-            for vid in vids.keys():
-                try:
-                    rec = c.set_both(vid, oid)
-                except db.DBNotFoundError:
-                    rec = None
-                while rec:
-                    k, v = rec
-                    if k <> vid or v <> oid:
-                        break
-                    c.delete()
-                    rec = c.next()
-        finally:
-            c.close()
-        # ... now for each vid, delete the versions->vid and vid->versions
-        # mapping if we've deleted all references to this vid.
-        for vid in vids.keys():
-            if self._currentVersions.get(vid):
-                continue
-            version = self._versions.get(vid)
-            self._versions.delete(vid)
-            self._vids.delete(version)
+            self._packlock.release()
+        zLOG.LOG('Full storage', zLOG.INFO, 'pack done')
 
-    def _zaprevision(self, key, decrefoids, referencesf):
-        # For each revision we're going to delete, we need to decref the
-        # pickle this revision points at.  If that pickle gets decref'd to
-        # zero, then we know we can reclaim all of those records too.  But
-        # zapping a pickle means we then have to decref all the objects that
-        # that pickle references, and so on...
-        lrevid = self._metadata.get(key)[16:24]
-        # Decref the reference count of the pickle pointed to by oid+lrevid.
-        # If the reference count goes to zero, we can garbage collect the
-        # pickle, and decref all the objects pointed to by the pickle (with of
-        # course, cascading garbage collection).
-        pkey = key[:8] + lrevid
-        refcount = U64(self._pickleRefcounts.get(pkey)) - 1
-        if refcount > 0:
-            # Not decref'd to zero, so just store the refcount back in
-            self._pickleRefcounts.put(pkey, p64(refcount))
-        else:
-            # Decref'd to zero, so decref all the objects that this pickle
-            # refers to, and delete the pickle entries.  If the objects
-            # themselves get decref'd to zero, add them to the decrefoids set
-            # for later collection
-            pickle = self._pickles.get(pkey)
-            # Sniff the pickle to get the objects it refers to
-            refoids = []
-            referencesf(pickle, refoids)
-            for oid in refoids:
-                refcount = U64(self._refcounts.get(oid)) - 1
-                if refcount > 0:
-                    self._refcounts.put(oid, p64(refcount))
-                else:
-                    decrefoids[oid] = 1
-            # We're done with the pickleRefcounts and pickle entries for this
-            # garbage collected pickle data.
-            self._pickles.delete(pkey)
-            self._pickleRefcounts.delete(pkey)
-        # Now we're done with this metadata record
-        self._metadata.delete(key)
-        # We'll erase the knowledge that this tid touched this object
-        tid = key[8:]
-        c = self._txnoids.cursor()
-        try:
-            # Yes, the key here is the tid, which is the second 8 bytes, while
-            # the value is the oid, which is the first 8 bytes.
-            c.set_both(tid, key[:8])
-            c.delete()
-        finally:
-            c.close()
-        # Now, we've either done one of two things: 1) we've removed the last
-        # record of an oid being modified in this transaction, in which case
-        # we can garbage collec the txnMetadata because there aren't any
-        # object revisions that reference this transaction.  OR, 2) there are
-        # still uncollected objects in this transaction, but we must mark this
-        # transaction as packed() so that undo can't possibly introduce a
-        # temporal anomoly.
-        if self._txnoids.has_key(tid):
-            meta = self._txnMetadata.get(tid)[1:]
-            self._txnMetadata.put(tid, PROTECTED_TRANSACTION + meta)
-        else:
-            self._txnMetadata.delete(tid)
-
-    def _dopack(self, t, referencesf):
+    def _dopack(self, t):
         # t is a TimeTime, or time float, convert this to a TimeStamp object,
         # using an algorithm similar to what's used in FileStorage.  We know
         # that our transaction ids, a.k.a. revision ids, are timestamps.  BAW:
-        # This doesn't play nicely if you enable the `debugging revids'
+        # This doesn't play nicely if you enable the `debugging tids'
         #
         # BAW: should a pack time in the future be a ValueError?  We'd have to
         # worry about clock skew, so for now, we just set the pack time to the
@@ -1287,96 +1322,187 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         t0 = TimeStamp(*(time.gmtime(packtime)[:5] + (packtime % 60,)))
         packtid = `t0`
         # Calculate the set of objects reachable from the root.  Anything else
-        # is a candidate for having all their revisions packed away.
-        reachables = self._rootreachable(referencesf)
-        # We now cruise through all the objects we know about, i.e. the keys
-        # of the serials table, looking at all the object revisions earlier
-        # than the pack time.  If the revision is not the current revision,
-        # then it's a packable revision.  We employ a BDB trick of set_range()
-        # to give us the smallest record greater than or equal to the one we
-        # ask for.  We move to the one just before that, and cruise backwards.
-        #
-        # This should also make us immune to evil future-pack time values,
-        # although it would still be better to raise a ValueError in those
-        # situations.  This is a dictionary keyed off the object id, with
-        # values which are a list of revisions (oid+tid) that can be packed.
-        packablerevs = {}
-        c = self._metadata.cursor()
+        # is a candidate for having all their revisions packed away.  The set
+        # of reachable objects lives in the _packmark table.
+        self._lock_acquire()
         try:
-            # BAW: can two threads be packing at the same time?  If so, we
-            # need to handle that.  If not, we should enforce that with a
-            # pack-lock.
-            for oid in self._serials.keys():
+            self._withtxn(self._mark)
+        finally:
+            self._lock_release()
+        # Now cruise through all the transactions from the pack time forward,
+        # getting rid of any objects not reachable from the root, or any
+        # non-current revisions of reachable objects.
+        self._lock_acquire()
+        try:
+            self._withtxn(self._sweep, end=packtid)
+        finally:
+            self._lock_release()
+        # Now we have the zaptids table which contains a list of all the
+        # transactions tha can get packed away.  So zap 'em.
+        self._lock_acquire()
+        try:
+            self._withtxn(self._collect)
+        finally:
+            self._lock_release()
+
+    def _mark(self, txn):
+        # Find the oids for all the objects reachable from the root.  To
+        # reduce the amount of in-core memory we need do do a pack operation,
+        # we'll save the mark data in the packmark table.  The oidqueue is a
+        # BerkeleyDB Queue that holds the list of object ids to look at next,
+        # and by using this we don't need to keep an in-memory dictionary.
+        assert len(self._packmark) == 0
+        assert len(self._oidqueue) == 0
+        assert len(self._zaptids) == 0
+        # Quick exit for empty storages
+        if not self._serials:
+            return
+        # The oid of the object we're looking at, starting at the root
+        oid = ZERO
+        # Start at the root, find all the objects the current revision of the
+        # root references, and then for each of those, find all the objects it
+        # references, and so on until we've traversed the entire object graph.
+        while oid:
+            if self._packmark.has_key(oid):
+                # We've already seen this object
+                continue
+            self._packmark.put(oid, PRESENT, txn=txn)
+            # Get the pickle data for this object's current version
+            serial, tid = self._getSerialAndTidMissingOk(oid)
+            # Say there's no root object (as is the case in some of the unit
+            # tests), and we're looking up oid ZERO.  Then serial will be None.
+            if serial is not None:
+                lrevid = self._metadata[oid+tid][16:24]
+                data = self._pickles[oid+lrevid]
+                # Now get the oids of all the objects referenced by this pickle
+                refdoids = []
+                referencesf(data, refdoids)
+                # And append them to the queue for later
+                for oid in refdoids:
+                    self._oidqueue.append(oid, txn)
+                # Pop the next oid off the queue and do it all again
+            rec = self._oidqueue.consume()
+            oid = rec and rec[1]
+        assert len(self._oidqueue) == 0
+
+    def _sweep(self, txn, start=None, end=None):
+        cm = self._txnMetadata.cursor(txn=txn)
+        try:
+            # Cruise forward through transactions from the first to the pack
+            # time looking for unpacked transactions that have no current
+            # records for their objects.
+            mrec = None
+            if start is not None:
+                mrec = cm.set(start)
+            if mrec is None:
+                mrec = cm.first()
+            while mrec:
+                tid, metadata = mrec
+                if tid > end:
+                    break
+                mrec = cm.next()
+                if metadata[0] == PROTECTED_TRANSACTION:
+                    # This one's already been packed so we can skip it
+                    continue
+                zap = True
+                ct = self._txnoids.cursor(txn=txn)
                 try:
-                    rec = c.set_range(oid+packtid)
-                    # The one just before this should be the largest record
-                    # less than or equal to the key, i.e. the object revision
-                    # just before the given pack time.
-                    rec = c.prev()
-                except db.DBNotFoundError:
-                    # Perhaps the last record in the database is the last one
-                    # containing this oid?
-                    rec = c.last()
-                # Now move backwards in time to look at all the revisions of
-                # this object.  All but the current one are packable, unless
-                # the object isn't reachable from the root, in which case, all
-                # its revisions are packable.
-                while rec:
-                    key, data = rec
-                    rec = c.prev()
-                    # Make sure we're still looking at revisions for this
-                    # object
-                    if oid <> key[:8]:
-                        break
-                    if not reachables.has_key(oid):
-                        packablerevs.setdefault(oid, []).append(key)
-                    # Otherwise, if this isn't the current revision for this
-                    # object, then it's packable.
-                    else:
-                        serial, tid = self._getSerialAndTid(oid)
-                        if tid <> key[8:]:
-                            packablerevs.setdefault(oid, []).append(key)
+                    rec = ct.set(tid)
+                    while rec:
+                        ctid, coid = rec
+                        rec = ct.next_dup()
+                        if ctid <> tid:
+                            break
+                        serial, otid = self._getSerialAndTid(coid)
+                        if serial == tid and self._packmark.has_key(coid):
+                            # This transaction matches the current serial
+                            # number for an object that is reachable from the
+                            # root, so we can't pack this transaction.
+                            zap = False
+                            break
+                    if zap:
+                        self._zaptids.append(tid)
+                finally:
+                    ct.close()
         finally:
-            c.close()
-        # We now have all the packable revisions we're going to handle.  For
-        # each object with revisions that we're going to pack away, acquire
-        # the storage lock so we can do that without fear of trampling by
-        # other threads (i.e. interaction of transactionalUndo() and pack()).
-        #
-        # This set contains the oids of all objects that have been decref'd
-        # to zero by the pack operation.  To avoid recursion, we'll just note
-        # them now and handle them in a loop later.
-        #
-        # BAW: should packs be transaction protected?
-        decrefoids = {}
-        for oid in packablerevs.keys():
-            self._lock_acquire()
+            cm.close()
+        # We're done with the mark table
+        self._packmark.truncate(txn=txn)
+
+    def _collect(self, txn):
+        rec = self._zaptids.consume()
+        while rec:
+            tid = rec[1]
+            rec = self._zaptids.consume()
+            c = self._txnoids.cursor(txn)
             try:
-                for key in packablerevs[oid]:
-                    self._zaprevision(key, decrefoids, referencesf)
+                trec = c.set(tid)
+                while trec and trec[0] == tid:
+                    oid = trec[1]
+                    # We can get rid of this txnoids entry
+                    c.delete()
+                    trec = c.next_dup()
+                    # Delete the metadata record
+                    metadata = self._metadata[oid+tid]
+                    self._metadata.delete(oid+tid, txn=txn)
+                    # Decref the pickle
+                    self._decrefPickle(oid, metadata[16:24], txn)
             finally:
-                self._lock_release()
-        # While there are still objects to collect, continue to do so.
-        # Note that collecting an object may reveal more objects that are
-        # dec refcounted to zero.
-        while decrefoids:
-            oid, ignore = decrefoids.popitem()
-            self._zapobject(oid, decrefoids, referencesf)
+                c.close()
+            # Set the status flag on the transaction metadata for this txn
+            txnmeta = self._txnMetadata[tid]
+            if txnmeta[0] <> PROTECTED_TRANSACTION:
+                txnmeta = PROTECTED_TRANSACTION + txnmeta[1:]
+                self._txnMetadata.put(tid, txnmeta, txn=txn)
 
-    def pack(self, t, referencesf):
-        # A simple wrapper around the bulk of packing, but which acquires a
-        # lock that prevents multiple packs from running at the same time.
-        self._packlock.acquire()
-        try:
-            self._dopack(t, referencesf)
-        finally:
-            self._packlock.release()
+    def _decref(self, deltas, txn):
+        for oid, delta in deltas.items():
+            refcount = U64(self._refcounts.get(oid, ZERO)) + delta
+            if refcount > 0:
+                self._refcounts.put(oid, p64(refcount), txn=txn)
+            # This object is no longer referenced by any other object in the
+            # system.  We can collect all traces of it.
+            c = self._serials.cursor(txn)
+            try:
+                rec = c.set(oid)
+                while rec and rec[0] == oid:
+                    c.delete()
+                    rec = c.next_dup()
+            finally:
+                c.close()
+            # Collect all metadata record that reference this object
+            c = self._metadata.cursor(txn)
+            try:
+                rec = c.set_range(oid)
+                while rec and rec[:8] == oid:
+                    revid, metadata = rec
+                    c.delete()
+                    rec = c.next()
+                    self._decrefPickle(oid, metadata[16:24], txn)
+            finally:
+                c.close()
 
-    # GCable interface, for cyclic garbage collection
+    def _decrefPickle(self, oid, lrevid, txn):
+        if lrevid == DNE:
+            # There is no pickle data
+            return
+        key = oid + lrevid
+        refcount = U64(self._pickleRefcounts.get(key, ZERO)) - 1
+        if refcount <= 0:
+            # We can collect this pickle
+            self._pickleRefcounts.delete(key, txn=txn)
+            data = self._pickles[key]
+            self._pickles.delete(key, txn=txn)
+            deltas = {}
+            self._update(deltas, data, -1)
+            self._decref(deltas, txn)
+        else:
+            self._pickleRefcounts.put(p64(refcount), txn=txn)
+
     #
-    # BAW: Note that the GCable interface methods are largely untested.
-    # Support for these is off the table for the 1.0 release of the Berkeley
-    # storage.
+    # GCable interface, for cyclic garbage collection (untested)
+    #
+
     def gcTrash(oids):
         """Given a list of oids, treat them as trash.
 
@@ -1442,13 +1568,15 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 c.close()
             self._lock_release()
 
-    # Fail-safe `iterator' interface, used to copy and analyze storage
-    # transaction data.
-    def iterator(self):
-        """Get a transactions iterator for the storage."""
-        return _TransactionsIterator(self)
+    #
+    # Iterator protocol
+    #
 
-    def _nexttxn(self, tid):
+    def iterator(self, start=None, stop=None):
+        """Get a transactions iterator for the storage."""
+        return _TransactionsIterator(self, start, stop)
+
+    def _nexttxn(self, tid, first=False):
         self._lock_acquire()
         c = self._txnMetadata.cursor()
         try:
@@ -1461,17 +1589,21 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                     rec = c.first()
                 else:
                     # Get the next transaction after the specified one.
-                    c.set(tid)
-                    rec = c.next()
+                    rec = c.set_range(tid)
             except KeyError:
                 raise IndexError
+            # We're now pointing at the tid >= the requested one.  For all
+            # calls but the first one, tid will be the last transaction id we
+            # returned, so we really want the next one.
+            if not first:
+                rec = c.next()
             if rec is None:
                 raise IndexError
             tid, data = rec
             # Now unpack the necessary information.  Don't impedence match the
             # status flag (that's done by the caller).
             status = data[0]
-            userlen, desclen = struct.unpack('>II', data[1:9])
+            userlen, desclen = unpack('>II', data[1:9])
             user = data[9:9+userlen]
             desc = data[9+userlen:9+userlen+desclen]
             ext = data[9+userlen+desclen:]
@@ -1487,7 +1619,10 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         try:
             oids = []
             oidkeys = {}
-            rec = c.set(tid)
+            try:
+                rec = c.set(tid)
+            except db.DBNotFoundError:
+                rec = None
             while rec:
                 # Ignore the key
                 oid = rec[1]
@@ -1502,27 +1637,38 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
 
     # Other interface assertions
     def supportsTransactionalUndo(self):
-        return 1
+        return True
 
     def supportsUndo(self):
-        return 1
+        return True
 
     def supportsVersions(self):
-        return 1
+        return True
 
 
 
-class _TransactionsIterator:
+class _GetItemBase:
+    def __getitem__(self, i):
+        # Ignore the index, since we expect .next() will raise the appropriate
+        # IndexError when the iterator is exhausted.
+        return self.next()
+
+
+
+
+class _TransactionsIterator(_GetItemBase):
     """Provide forward iteration through the transactions in a storage.
 
     Transactions *must* be accessed sequentially (e.g. with a for loop).
     """
-    def __init__(self, storage):
+    def __init__(self, storage, start, stop):
         self._storage = storage
-        self._tid = None
-        self._closed = 0
+        self._tid = start
+        self._stop = stop
+        self._closed = False
+        self._first = True
 
-    def __getitem__(self, i):
+    def next(self):
         """Return the ith item in the sequence of transaction data.
 
         Items must be accessed sequentially, and are instances of
@@ -1532,16 +1678,21 @@ class _TransactionsIterator:
         if self._closed:
             raise IOError, 'iterator is closed'
         # Let IndexErrors percolate up.
-        tid, status, user, desc, ext = self._storage._nexttxn(self._tid)
+        tid, status, user, desc, ext = self._storage._nexttxn(
+            self._tid, self._first)
+        self._first = False
+        # Did we reach the specified end?
+        if self._stop is not None and tid > self._stop:
+            raise IndexError
         self._tid = tid
         return _RecordsIterator(self._storage, tid, status, user, desc, ext)
 
     def close(self):
-        self._closed = 1
+        self._closed = True
 
 
 
-class _RecordsIterator:
+class _RecordsIterator(_GetItemBase):
     """Provide transaction meta-data and forward iteration through the
     transactions in a storage.
 
@@ -1580,7 +1731,7 @@ class _RecordsIterator:
         # To make .pop() more efficient
         self._oids.reverse()
 
-    def __getitem__(self, i):
+    def next(self):
         """Return the ith item in the sequence of record data.
 
         Items must be accessed sequentially, and are instances of Record.  An

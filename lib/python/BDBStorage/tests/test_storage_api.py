@@ -30,7 +30,8 @@ from ZODB.tests.TransactionalUndoVersionStorage import \
      TransactionalUndoVersionStorage
 from ZODB.tests.PackableStorage import PackableStorage
 from ZODB.tests.HistoryStorage import HistoryStorage
-from ZODB.tests.IteratorStorage import IteratorStorage
+from ZODB.tests.IteratorStorage import IteratorStorage, ExtendedIteratorStorage
+from ZODB.tests.RecoveryStorage import RecoveryStorage
 from ZODB.tests import ConflictResolution
 
 
@@ -47,17 +48,28 @@ class MinimalTest(BerkeleyTestBase.MinimalTestBase, BasicStorage):
 class FullTest(BerkeleyTestBase.FullTestBase, BasicStorage,
                RevisionStorage, VersionStorage,
                TransactionalUndoStorage,
-               TransactionalUndoVersionStorage, PackableStorage,
-               HistoryStorage, IteratorStorage,
+               TransactionalUndoVersionStorage,
+               PackableStorage,
+               HistoryStorage,
+               IteratorStorage, ExtendedIteratorStorage,
                ConflictResolution.ConflictResolvingStorage,
                ConflictResolution.ConflictResolvingTransUndoStorage):
+    pass
 
-    # BAW: This test fails, it should be fixed.
-    # DBNotFoundError: (-30990, 'DB_NOTFOUND: No matching key/data pair found')
-    def checkVersionIterator(self):
-        import sys
-        print >> sys.stderr, \
-              'FullTest.checkVersionIterator() temporarily disabled.'
+
+
+DST_DBHOME = 'test-dst'
+
+class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
+                       RecoveryStorage):
+    def setUp(self):
+        BerkeleyTestBase.FullTestBase.setUp(self)
+        self._zap_dbhome(DST_DBHOME)
+        self._dst = self._mk_dbhome(DST_DBHOME)
+
+    def tearDown(self):
+        BerkeleyTestBase.FullTestBase.tearDown(self)
+        self._zap_dbhome(DST_DBHOME)
 
 
     def checkTransactionalUndoAfterPackWithObjectUnlinkFromRoot(self):
@@ -78,9 +90,10 @@ class AutopackTest(BerkeleyTestBase.AutopackTestBase, BasicStorage):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
     suite.addTest(unittest.makeSuite(FullTest, 'check'))
-    suite.addTest(unittest.makeSuite(AutopackTest, 'check'))
+    suite.addTest(unittest.makeSuite(FullRecoveryTest, 'check'))
+    suite.addTest(unittest.makeSuite(MinimalTest, 'check'))
+    #suite.addTest(unittest.makeSuite(AutopackTest, 'check'))
     return suite
 
 

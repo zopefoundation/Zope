@@ -2,14 +2,14 @@
 #
 # Copyright (c) 2001, 2002 Zope Corporation and Contributors.
 # All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Base class for BerkeleyStorage implementations.
@@ -23,84 +23,69 @@ from types import StringType
 # http://pybsddb.sourceforge.net
 from bsddb3 import db
 
-# BaseStorage provides some common storage functionality.  It is derived from
-# UndoLogCompatible.UndoLogCompatible, which "[provides] backward
-# compatability with storages that have undoLog, but not undoInfo."
-#
-# BAW: I'm not entirely sure what that means, but the UndoLogCompatible
-# subclass provides one method:
-#
-# undoInfo(first, last, specification).  Unfortunately this method appears to
-# be undocumented.  Jeremy tells me it's still required though.
-#
-# BaseStorage provides primitives for lock acquisition and release,
-# abortVersion(), commitVersion() and a host of other methods, some of which
-# are overridden here, some of which are not.
+# BaseStorage provides primitives for lock acquisition and release, and a host
+# of other methods, some of which are overridden here, some of which are not.
 from ZODB import POSException
+from ZODB.lock_file import lock_file
 from ZODB.BaseStorage import BaseStorage
+from ZODB.referencesf import referencesf
 
-__version__ = '$Revision: 1.19 $'.split()[-2:][0]
+GBYTES = 1024 * 1024 * 1000
 
-# Lock usage is inherently unbounded because there may be an unlimited number
-# of objects actually touched in any single transaction, and worst case could
-# be that each object is on a different page in the database.  Berkeley BTrees
-# implement a lock per leaf page, plus a lock per level.  We try to limit the
-# negative effects of this by writing as much data optimistically as we can.
-# But there's no way to completely avoid this.  So this value is used to size
-# the lock subsystem before the environment is opened.
-DEFAULT_MAX_LOCKS = 20000
+__version__ = '$Revision: 1.20 $'.split()[-2:][0]
 
 
+
 class BerkeleyConfig:
     """Bag of bits for describing various underlying configuration options.
 
     Berkeley databases are wildly configurable, and this class exposes some of
-    that.  Two important configuration options are the size of the lock table
-    and the checkpointing policy.  To customize these options, instantiate one
-    of these classes and set the attributes below to the desired value.  Then
-    pass this instance to the Berkeley storage constructor, using the `config'
-    keyword argument.
+    that.  To customize these options, instantiate one of these classes and
+    set the attributes below to the desired value.  Then pass this instance to
+    the Berkeley storage constructor, using the `config' keyword argument.
 
-    Locks in Berkeley are a limited and static resource; they can only be
-    changed before the environment is opened.  It is possible for Berkeley
-    based storages to exhaust the available locks because worst case is to
-    consume one lock per object being modified, and transactions are unbounded
-    in the number of objects they modify.  See
-
-        http://www.sleepycat.com/docs/ref/lock/max.html
-
-    for a discussion on lock sizing.  These attributes control the lock
-    sizing:
-
-    - numlocks is passed directly to set_lk_max_locks() when the environment
-      is opened.
-
-    You will need to find the right balance between the number of locks
-    allocated and the system resources that consumes.  If the locks are
-    exhausted a TransactionTooLargeError can get raised during commit.
-
-    To improve recovery times in case of failures, you should set up a
-    checkpointing policy when you create the database.  Note that the database
-    is automatically, and forcefully, checkpointed twice when it is closed.
-    But an exception during processing (e.g.
+    Berkeley storages need to be checkpointed occasionally, otherwise
+    automatic recover can take a huge amount of time.  You should set up a
+    checkpointing policy which trades off the amount of work done periodically
+    against the recovery time.  Note that the Berkeley environment is
+    automatically, and forcefully, checkpointed twice when it is closed.
 
     The following checkpointing attributes are supported:
 
-    - interval indicates the maximum number of calls to tpc_finish() after
-      which a checkpoint is performed.
+    - interval indicates the approximate number of Berkeley transaction
+      commits and aborts after which a checkpoint is performed.  Berkeley
+      transactions are performed after ZODB aborts, commits, and stores.
 
     - kbytes is passed directly to txn_checkpoint()
 
     - min is passed directly to txn_checkpoint()
 
+    You can acheive one of the biggest performance wins by moving the Berkeley
+    log files to a different disk than the data files.  We saw between 2.5 and
+    7 x better performance this way.  Here are attributes which control the
+    log files.
+
     - logdir if not None, is passed to the environment's set_lg_dir() method
       before it is opened.
+
+    You can also improve performance by tweaking the Berkeley cache size.
+    Berkeley's default cache size is 256KB which is usually too small.  Our
+    default cache size is 128MB which seems like a useful tradeoff between
+    resource consumption and improved performance.  You might be able to get
+    slightly better results by turning up the cache size, although be mindful
+    of your system's limits.  See here for more details:
+
+        http://www.sleepycat.com/docs/ref/am_conf/cachesize.html
+
+    These attributes control cache size settings:
+
+    - cachesize should be the size of the cache in bytes.
     """
-    numlocks = DEFAULT_MAX_LOCKS
     interval = 100
     kbyte = 0
     min = 0
     logdir = None
+    cachesize = 128 * 1024 * 1024
 
 
 
@@ -153,7 +138,7 @@ class BerkeleyBase(BaseStorage):
         if env == '':
             raise TypeError, 'environment name is empty'
         elif isinstance(env, StringType):
-            self._env = env_from_string(env, self._config)
+            self._env, self._lockfile = env_from_string(env, self._config)
         else:
             self._env = env
 
@@ -161,22 +146,12 @@ class BerkeleyBase(BaseStorage):
 
         # Initialize a few other things
         self._prefix = prefix
-        self._commitlog = None
         # Give the subclasses a chance to interpose into the database setup
         # procedure
         self._setupDBs()
         # Initialize the object id counter.
         self._init_oid()
 
-    def _closelog(self):
-        if self._commitlog:
-            self._commitlog.finish()
-            # JF: unlinking might be too inefficient.  JH: might use mmap
-            # files.  BAW: maybe just truncate the file, or write a length
-            # into the headers and just zero out the length.
-            self._commitlog.close(unlink=1)
-            self._commitlog = None
-        
     def _setupDB(self, name, flags=0):
         """Open an individual database with the given flags.
 
@@ -229,7 +204,7 @@ class BerkeleyBase(BaseStorage):
         # BAW: the last parameter is undocumented in the UML model
         if self._len is not None:
             # Increment the cached length
-            self._len = self._len + 1
+            self._len += 1
         return BaseStorage.new_oid(self, last)
 
     def getSize(self):
@@ -238,22 +213,8 @@ class BerkeleyBase(BaseStorage):
         filename = os.path.join(self._env.db_home, 'zodb_pickles')
         return os.path.getsize(filename)
 
-    # BAW: this overrides BaseStorage.tpc_vote() with exactly the same
-    # implementation.  This is so Zope 2.3.1, which doesn't include the change
-    # to BaseStorage, will work with Berkeley.  Once we can ignore older
-    # versions of ZODB, we can get rid of this.
-    def tpc_vote(self, transaction):
-        self._lock_acquire()
-        try:
-            if transaction is not self._transaction: return
-            self._vote()
-        finally:
-            self._lock_release()
-
     def _vote(self):
-        # Make a promise to commit all the registered changes.  Rewind and put
-        # our commit log in the PROMISED state.
-        self._commitlog.promise()
+        pass
 
     def _finish(self, tid, user, desc, ext):
         """Called from BaseStorage.tpc_finish(), this commits the underlying
@@ -272,7 +233,6 @@ class BerkeleyBase(BaseStorage):
         """Called from BaseStorage.tpc_abort(), this aborts the underlying
         BSDDB transaction.
         """
-        self._closelog()
         self._transaction.abort()
 
     def _clear_temp(self):
@@ -295,23 +255,39 @@ class BerkeleyBase(BaseStorage):
         # was shutdown gracefully.  The DB_FORCE flag is required for
         # the second checkpoint, but we include it in both because it
         # can't hurt and is more robust.
-	self._env.txn_checkpoint(0, 0, db.DB_FORCE)
-	self._env.txn_checkpoint(0, 0, db.DB_FORCE)
+        self._env.txn_checkpoint(0, 0, db.DB_FORCE)
+        self._env.txn_checkpoint(0, 0, db.DB_FORCE)
+        lockfile = os.path.join(self._env.db_home, '.lock')
+        self._lockfile.close()
         self._env.close()
-        self._closelog()
-
-    # Useful for debugging
-
-    def _lockstats(self):
-        d = self._env.lock_stat()
-        return 'locks = [%(nlocks)d/%(maxnlocks)d]' % d
+        os.unlink(lockfile)
 
     def _docheckpoint(self):
+        # Periodically checkpoint the database.  This is called approximately
+        # once per Berkeley transaction commit or abort.
         config = self._config
         config._counter += 1
         if config._counter > config.interval:
             self._env.txn_checkpoint(config.kbyte, config.min)
             config._counter = 0
+
+    def _update(self, deltas, data, incdec):
+        refdoids = []
+        referencesf(data, refdoids)
+        for oid in refdoids:
+            rc = deltas.get(oid, 0) + incdec
+            if rc == 0:
+                # Save space in the dict by zapping zeroes
+                del deltas[oid]
+            else:
+                deltas[oid] = rc
+
+    def _withlock(self, meth, *args):
+        self._lock_acquire()
+        try:
+            return meth(*args)
+        finally:
+            self._lock_release()
 
 
 
@@ -323,16 +299,30 @@ def env_from_string(envname, config):
     except OSError, e:
         if e.errno <> errno.EEXIST: raise
         # already exists
+    # Create the lock file so no other process can open the environment.
+    # This is required in order to work around the Berkeley lock
+    # exhaustion problem (i.e. we do our own application level locks
+    # rather than rely on Berkeley's finite page locks).
+    lockpath = os.path.join(envname, '.lock')
+    try:
+        lockfile = open(lockpath, 'r+')
+    except IOError, e:
+        if e.errno <> errno.ENOENT: raise
+        lockfile = open(lockpath, 'w+')
+    lock_file(lockfile)
+    lockfile.write(str(os.getpid()))
+    lockfile.flush()
+    # Create, initialize, and open the environment
     env = db.DBEnv()
-    env.set_lk_max_locks(config.numlocks)
     if config.logdir is not None:
         env.set_lg_dir(config.logdir)
+    gbytes, bytes = divmod(config.cachesize, GBYTES)
+    env.set_cachesize(gbytes, bytes)
     env.open(envname,
              db.DB_CREATE       # create underlying files as necessary
              | db.DB_RECOVER    # run normal recovery before opening
              | db.DB_INIT_MPOOL # initialize shared memory buffer pool
-             | db.DB_INIT_LOCK  # initialize locking subsystem
              | db.DB_INIT_TXN   # initialize transaction subsystem
              | db.DB_THREAD     # we use the environment from other threads
              )
-    return env
+    return env, lockfile

@@ -23,31 +23,35 @@ DBHOME = 'test-db'
 
 
 class BerkeleyTestBase(StorageTestBase):
-    def _zap_dbhome(self):
+    def _zap_dbhome(self, dir):
         # If the tests exited with any uncommitted objects, they'll blow up
         # subsequent tests because the next transaction commit will try to
         # commit those object.  But they're tied to closed databases, so
         # that's broken.  Aborting the transaction now saves us the headache.
         try:
-            for file in os.listdir(DBHOME):
-                os.unlink(os.path.join(DBHOME, file))
-            os.removedirs(DBHOME)
+            for file in os.listdir(dir):
+                os.unlink(os.path.join(dir, file))
+            os.removedirs(dir)
         except OSError, e:
-            if e.errno <> errno.ENOENT: raise
+            if e.errno <> errno.ENOENT:
+                raise
+
+    def _mk_dbhome(self, dir):
+        os.mkdir(dir)
+        try:
+            return self.ConcreteStorage(dir)
+        except:
+            self._zap_dbhome(dir)
+            raise
 
     def setUp(self):
         StorageTestBase.setUp(self)
-        self._zap_dbhome()
-        os.mkdir(DBHOME)
-        try:
-            self._storage = self.ConcreteStorage(DBHOME)
-        except:
-            self._zap_dbhome()
-            raise
+        self._zap_dbhome(DBHOME)
+        self._storage = self._mk_dbhome(DBHOME)
 
     def tearDown(self):
         StorageTestBase.tearDown(self)
-        self._zap_dbhome()
+        self._zap_dbhome(DBHOME)
 
 
 

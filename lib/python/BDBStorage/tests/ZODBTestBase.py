@@ -27,8 +27,8 @@ DBHOME = 'test-db'
 class ZODBTestBase(BerkeleyTestBase):
     def setUp(self):
         BerkeleyTestBase.setUp(self)
+        self._db = None
         try:
-            self._storage = self.ConcreteStorage(DBHOME)
             self._db = DB(self._storage)
             self._conn = self._db.open()
             self._root = self._conn.root()

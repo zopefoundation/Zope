@@ -14,14 +14,14 @@
 
 """An autopacking Berkeley storage without undo and versioning.
 """
-__version__ = '$Revision: 1.4 $'.split()[-2:][0]
+__version__ = '$Revision: 1.5 $'.split()[-2:][0]
 
 import sys
 import os
 import struct
 import time
 
-# This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
+# This uses the Dunn/Kuchling PyBSDDB3 extension module available from
 # http://pybsddb.sourceforge.net
 from bsddb3 import db
 
@@ -61,7 +61,7 @@ class Autopack(BerkeleyBase):
         # base class infrastructure and are shared by the Minimal
         # implementation.
         #
-        # serials -- {oid -> serial}
+        # serials -- {oid+tid -> serial}
         #     Maps oids to object serial numbers.  The serial number is
         #     essentially a timestamp used to determine if conflicts have
         #     arisen, and serial numbers double as transaction ids and object
@@ -104,6 +104,32 @@ class Autopack(BerkeleyBase):
         self._oids.close()
         BerkeleyBase.close(self)
 
+    def _getSerial(self, oid):
+        c = self._serials.cursor()
+        try:
+            lastvalue = None
+            # Search for the largest oid+revid key in the serials table that
+            # doesn't have a revid component equal to the current revid.
+            try:
+                rec = c.set_range(oid)
+            except db.DBNotFoundError:
+                rec = None
+            while rec:
+                key, value = rec
+                koid = key[:8]
+                ktid = key[8:]
+                if koid <> oid:
+                    break
+                lastvalue = value
+                if ktid == self._serial:
+                    break
+                rec = c.next()
+            if lastvalue is None:
+                return None
+            return lastvalue[:8]
+        finally:
+            c.close()
+
     def _begin(self, tid, u, d, e):
         # Nothing needs to be done
         pass
@@ -112,12 +138,41 @@ class Autopack(BerkeleyBase):
         # Nothing needs to be done, but override the base class's method
         pass
 
+    def store(self, oid, serial, data, version, transaction):
+        self._lock_acquire()
+        try:
+            # Transaction guard
+            if transaction is not self._transaction:
+                raise POSException.StorageTransactionError(self, transaction)
+            # We don't support versions
+            if version <> '':
+                raise POSException.Unsupported, 'versions are not supported'
+            oserial = self._getSerial(oid)
+            if oserial is not None and serial <> oserial:
+                # BAW: Here's where we'd try to do conflict resolution
+                raise POSException.ConflictError(serials=(oserial, serial))
+            tid = self._serial
+            txn = self._env.txn_begin()
+            try:
+                self._serials.put(oid+tid, self._serial, txn=txn)
+                self._pickles.put(oid+tid, data, txn=txn)
+                self._actions.put(tid+oid, INC, txn=txn)
+                self._oids.put(oid, ' ', txn=txn)
+            except:
+                txn.abort()
+                raise
+            else:
+                txn.commit()
+            return self._serial
+        finally:
+            self._lock_release()
+
     def _finish(self, tid, u, d, e):
         # TBD: what about u, d, and e?
         #
         # First, append a DEL to the actions for each old object, then update
         # the current serials table so that its revision id points to this
-        # trancation id.
+        # transaction id.
         txn = self._env.txn_begin()
         try:
             c = self._oids.cursor()
@@ -128,8 +183,8 @@ class Autopack(BerkeleyBase):
                     lastrevid = self._serials.get(oid, txn=txn)
                     if lastrevid:
                         self._actions.put(lastrevid+oid, DEC, txn=txn)
-                    self._serials.put(oid, tid, txn=txn)
                     rec = c.next()
+                self._oids.truncate()
             finally:
                 c.close()
         except:
@@ -137,7 +192,6 @@ class Autopack(BerkeleyBase):
             raise
         else:
             txn.commit()
-        self._oids.truncate()
 
     # Override BerkeleyBase._abort()
     def _abort(self):
@@ -164,30 +218,6 @@ class Autopack(BerkeleyBase):
         self._oids.truncate()
         self._transaction.abort()
 
-    def store(self, oid, serial, data, version, transaction):
-        # Transaction guard
-        if transaction is not self._transaction:
-            raise POSException.StorageTransactionError(self, transaction)
-        # We don't support versions
-        if version <> '':
-            raise POSException.Unsupported, 'versions are not supported'
-        oserial = self._serials.get(oid)
-        if oserial is not None and serial <> oserial:
-            # BAW: Here's where we'd try to do conflict resolution
-            raise POSException.ConflictError(serials=(oserial, serial))
-        tid = self._serial
-        txn = self._env.txn_begin()
-        try:
-            self._pickles.put(oid+tid, data, txn=txn)
-            self._actions.put(tid+oid, INC, txn=txn)
-            self._oids.put(oid, ' ', txn=txn)
-        except:
-            txn.abort()
-            raise
-        else:
-            txn.commit()
-        return self._serial
-
     def load(self, oid, version):
         if version <> '':
             raise POSException.Unsupported, 'versions are not supported'
@@ -196,6 +226,7 @@ class Autopack(BerkeleyBase):
 
     def loadSerial(self, oid, serial):
         current = self._serials[oid]
+        # BAW: should we allow older serials to be retrieved?
         if current == serial:
             return self._pickles[oid+current]
         else:
