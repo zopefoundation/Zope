@@ -24,13 +24,13 @@
   <TD VALIGN="TOP" NOWRAP>
   <dtml-if icon>
   <A HREF="manage_workspace" TARGET="manage_main">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" BORDER="0"
    ALT="&dtml-meta_type;" TITLE="Click to open this item"></A> 
   </dtml-if>
   <STRONG>
   <A HREF="manage_workspace" TARGET="manage_main">
-  <dtml-if expr="URL1[-(_.len(SCRIPT_NAME)):]==SCRIPT_NAME">
-  <dtml-var expr="SCRIPT_NAME[1:]">
+  <dtml-if expr="URLPATH1==BASEPATH1">
+  <dtml-var expr="BASEPATH1[1:]">
   <dtml-else>
   <dtml-var id>
   </dtml-if>
@@ -42,11 +42,11 @@
 <dtml-tree sort=id nowrap=1>
 <dtml-if icon>
 <A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
-<IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" BORDER="0"
+<IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" BORDER="0"
  TITLE="Click to open this item" ALT="&dtml-meta_type;"></A> 
 </dtml-if>
 <A HREF="<dtml-var tree-item-url fmt=url-quote>/manage_workspace" TARGET="manage_main">
-<dtml-var id>
+&dtml-id;
 </A>
 </dtml-tree>
 <TABLE CELLSPACING="0">

@@ -20,8 +20,7 @@ focuses on those object services useful in
 <ul>
 <dtml-in hs_objectvalues>
 <dtml-with sequence-item>
-<li> <a href="<dtml-var BASE1>/HelpSys/ObjectRef/<dtml-var 
- meta_type fmt=url-quote>/hs_main"><dtml-var meta_type></a>
+<li> <a href="&dtml-BASEPATH1/HelpSys/ObjectRef/&dtml.url_quote-meta_type;/hs_main">&dtml-meta_type;</a>
 </dtml-with>
 </li>
 </dtml-in>
@@ -29,7 +28,7 @@ focuses on those object services useful in
 
 <p>
 <a href="../hs_main">
-<img src="<dtml-var SCRIPT_NAME>/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
+<img src="&dtml-BASEPATH1;/HelpSys/hs_larrow" height="9" width="9" border="0" valign="bottom" alt=""> Back to Help</a>
 </p>
 
 </body>

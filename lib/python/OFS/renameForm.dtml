@@ -15,27 +15,27 @@
 <dtml-var "HelpSys.HelpButton('ObjectManager_Rename.stx','OFSP')">
 
 <P>
-<FORM ACTION="<dtml-var URL1>" METHOD="POST">
+<FORM ACTION="&dtml-URL1;" METHOD="POST">
 <TABLE CELLSPACING="0">
 <dtml-in expr="manage_CopyContainerAllItems(REQUEST)">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>" ALT="" BORDER="0">
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" ALT="" BORDER="0">
   </TD>
 <dtml-if cb_isMoveable>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <dtml-var id>
+  &dtml-id;
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <STRONG>to:</STRONG>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <INPUT TYPE="HIDDEN" NAME="ids:list" VALUE="<dtml-var id html_quote>">
+  <INPUT TYPE="HIDDEN" NAME="ids:list" VALUE="&dtml-id;">
   <INPUT TYPE="TEXT" NAME="new_ids:list" SIZE="20" value="&dtml-id;">
   </TD>
 <dtml-else>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
-    <dtml-var id> may not be renamed.
+    &dtml-id; may not be renamed.
   </TD>
 </dtml-if>
 </TR>

@@ -1,1 +1,1 @@
-<dtml-var SCRIPT_NAME>/Control_Panel/Products/<dtml-var product>/Help/<dtml-var topic>
+&dtml-BASEPATH1;/Control_Panel/Products/&dtml-product;/Help/&dtml-topic;

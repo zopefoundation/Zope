@@ -44,15 +44,15 @@ Found <dtml-var results fmt=collection-length> item<dtml-if expr="_.len(results)
 <dtml-in results>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
+  <A HREF="&dtml-sequence-key;/manage_workspace">
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
-  <dtml-var sequence-key>
+  <A HREF="&dtml-sequence-key;/manage_workspace">
+  &dtml-sequence-key;
   <dtml-if title>
-  (<dtml-var title>)
+  (&dtml-title;)
   </dtml-if>
   </A>
   </TD>

@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
-import regex, sys, os, string, urllib
+import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -741,8 +741,8 @@ class HTTPRequest(BaseRequest):
 
     def __getitem__(self,key,
                     default=_marker, # Any special internal marker will do
-                    URLmatch=regex.compile('URL[0-9]+$').match,
-                    BASEmatch=regex.compile('BASE[0-9]+$').match,
+                    URLmatch=re.compile('URL(PATH)?([0-9]+)$').match,
+                    BASEmatch=re.compile('BASE(PATH)?([0-9]+)$').match,
                     ):
         """Get a variable value
 
@@ -757,13 +757,19 @@ class HTTPRequest(BaseRequest):
             if key=='REQUEST': return self
             return other[key]
 
-        if key[:1]=='U' and URLmatch(key) >= 0:
-            path = self._script + self._steps
-            n = len(path) - atoi(key[3:])
-            if n < 0:
-                raise KeyError, key
-            URL=join([other['SERVER_URL']] + path[:n], '/')
-            other[key]=URL
+        if key[:1]=='U':
+            match = URLmatch(key)
+            if match is not None:
+                pathonly, n = match.groups()
+                path = self._script + self._steps
+                n = len(path) - int(n)
+                if n < 0:
+                    raise KeyError, key
+                if pathonly:
+                    path = [''] + path[:n]
+                else:
+                    path = [other['SERVER_URL']] + path[:n]
+            other[key] = URL = join(path, '/')
             self._urls = self._urls + (key,)
             return URL
 
@@ -776,9 +782,11 @@ class HTTPRequest(BaseRequest):
         if key=='REQUEST': return self
 
         if key[:1]=='B':
-            if BASEmatch(key) >= 0:
+            match = BASEmatch(key)
+            if match is not None:
+                pathonly, n = match.groups()
                 path = self._steps
-                n = atoi(key[4:])
+                n = int(n)
                 if n:
                     n = n - 1
                     if len(path) < n:
@@ -787,9 +795,13 @@ class HTTPRequest(BaseRequest):
                     v = self._script + path[:n]
                 else:
                     v = self._script[:-1]
-                other[key] = v = join([other['SERVER_URL']] + v, '/')
+                if pathonly:
+                    v.insert(0, '')
+                else:
+                    v.insert(0, other['SERVER_URL'])
+                other[key] = URL = join(v, '/')
                 self._urls = self._urls + (key,)
-                return v
+                return URL
 
             if key=='BODY' and self._file is not None:
                 p=self._file.tell()

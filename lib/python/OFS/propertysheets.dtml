@@ -17,15 +17,15 @@
 
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var id>">
-    <dtml-var id> (<dtml-var xml_namespace>)
+  <A HREF="&dtml-id;">
+    &dtml-id; (<dtml-var xml_namespace>)
   </A>
   <dtml-if locked_in_session>
     <dtml-if modified_in_session>
-      <IMG SRC="<dtml-var "REQUEST['SCRIPT_NAME']">/p_/locked"
+      <IMG SRC="&dtml-BASEPATH1;/p_/locked"
        ALT="This item has been modified in this session">
     <dtml-else>
-      <IMG SRC="<dtml-var "REQUEST['SCRIPT_NAME']">/p_/lockedo"
+      <IMG SRC="&dtml-BASEPATH1;/p_/lockedo"
        ALT="This item has been modified in another session">
     </dtml-if>
   </dtml-if>

@@ -144,6 +144,12 @@ class Request:
           For example if URL='http://localhost/foo/bar', then
           URL1='http://localhost/foo' and URL2='http://localhost'.
 
+        *URLPATHn* -- 'URLPATH0' is the path portion of 'URL',
+        'URLPATH1' is the path portion of 'URL1', and so on.
+
+          For example if URL='http://localhost/foo/bar', then
+          URLPATH1='/foo' and URLPATH2='/'.
+
         *BASEn* -- 'BASE0' is the URL up to but not including the Zope
         application object. 'BASE1' is the URL of the Zope application
         object. 'BASE2' is the URL of the Zope application object with
@@ -154,6 +160,13 @@ class Request:
           BASE0='http://localhost', BASE1='http://localhost/Zope.cgi',
           and BASE2='http://localhost/Zope.cgi/foo'.
         
+        *BASEPATHn* -- 'BASEPATH0' is the path portion of 'BASE0',
+        'BASEPATH1' is the path portion of 'BASE1', and so on.
+        'BASEPATH1' is the externally visible path to the root Zope
+        folder, equivalent to CGI's 'SCRIPT_NAME', but virtual-host aware.
+
+          For example if URL='http://localhost/Zope.cgi/foo/bar', then
+          BASEPATH0='/', BASEPATH1='/Zope.cgi', and BASEPATH2='/Zope.cgi/foo'.
 
     """
 
@@ -223,9 +236,31 @@ class Request:
         
         """
 
+    def setServerURL(self, protocol=None, hostname=None, port=None):
+        """
 
+        Sets the specified elements of 'SERVER_URL', also affecting
+        'URL', 'URLn', 'BASEn', and 'absolute_url()'.
 
+        Provides virtual hosting support.
 
+        Permission - Always available
+
+        """
+
+    def setVirtualRoot(self, path, hard=0):
+        """
+
+        Alters 'URL', 'URLn', 'URLPATHn', 'BASEn', 'BASEPATHn', and
+        'absolute_url()' so that the current object has path 'path'.
+        If 'hard' is true, 'PARENTS' is emptied.
+
+        Provides virtual hosting support.  Intended to be called from
+        publishing traversal hooks.
+
+        Permission - Always available
+
+        """
 
 
 

@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html lang="en">
-  <head><title><dtml-var title_or_id> tables</title></head>
+  <head><title>&dtml-title_or_id; tables</title></head>
   <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
     <dtml-var manage_tabs>
 
     <dtml-tree header=info>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/misc_/ZGadflyDA/<dtml-var icon>"
-       ALT="<dtml-var Type>" BORDER="0">
-      <dtml-var Name><dtml-var Description>
+      <IMG SRC="&dtml-BASEPATH1;/misc_/ZGadflyDA/&dtml-icon;"
+       ALT="&dtml-Type;" BORDER="0">
+      &dtml-Name;&dtml-Description;
     </dtml-tree>
 
   </body>

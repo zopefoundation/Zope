@@ -7,34 +7,33 @@
 <dtml-var manage_tabs>
 <P>
 
-<FORM ACTION="<dtml-var URL1>" METHOD="POST">
+<FORM ACTION="&dtml-URL1;" METHOD="POST">
 <dtml-if objectItems>
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <dtml-in objectItems sort>
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<dtml-var sequence-key html_quote>">
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="&dtml-sequence-key;">
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <dtml-if icon>
-  <A HREF="<dtml-var sequence-key url_quote>/manage_workspace">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
-   ALT="[<dtml-var meta_type>]" BORDER="0"></A>
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
+  <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;" ALT="[&dtml-meta_type;]" BORDER="0">
+  </A>
   </dtml-if icon>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key url_quote>/manage_workspace">
-  <dtml-var sequence-key fmt="html-quote"> <dtml-if title>(<dtml-var 
-   title fmt="html-quote">)</dtml-if>
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
+  &dtml-sequence-key; <dtml-if title>(&dtml-title;)</dtml-if>
   </A>
   <dtml-if locked_in_version>
     <dtml-if modified_in_version>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/locked"
+      <IMG SRC="&dtml-BASEPATH1;/p_/locked"
        ALT="This item has been modified in this version">
     <dtml-else>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/lockedo"
+      <IMG SRC="&dtml-BASEPATH1;/p_/lockedo"
        ALT="This item has been modified in another version">
-       (<em><dtml-var locked_in_version></em>)
+       (<em>&dtml-locked_in_version;</em>)
     </dtml-if>
   </dtml-if>
   </TD>
@@ -67,7 +66,7 @@
 <TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
 <TR>
 <TD>
-There are currently no items in <EM><dtml-var title_or_id></EM>
+There are currently no items in <EM>&dtml-title_or_id;</EM>
 <P>
 <dtml-unless dontAllowCopyAndPaste>
 <dtml-if cb_dataValid>
@@ -91,12 +90,11 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
 </TR>
 <TR>
 <TD VALIGN="MIDDLE">
-  <FORM ACTION="<dtml-var URL1>/" METHOD="GET">
-  <SELECT NAME=":method" ONCHANGE="location.href='<dtml-var URL1
-  >/'+this.options[this.selectedIndex].value">
+  <FORM ACTION="&dtml-URL1;/" METHOD="GET">
+  <SELECT NAME=":method" ONCHANGE="location.href='&dtml-URL1;/'+this.options[this.selectedIndex].value">
     <OPTION value="manage_workspace" DISABLED>Available Objects
   <dtml-in filtered_meta_types mapping sort=name>
-    <OPTION value="<dtml-var action fmt="url-quote">"><dtml-var name>
+    <OPTION value="&dtml.url_quote-action;">&dtml-name;
   </dtml-in>
   </SELECT>
   <INPUT TYPE="SUBMIT" VALUE=" Add ">
@@ -105,10 +103,10 @@ There are currently no items in <EM><dtml-var title_or_id></EM>
 </TR>
 </TABLE>
 <dtml-else>
-  <FORM ACTION="<dtml-var URL1>/" METHOD="GET">
+  <FORM ACTION="&dtml-URL1;/" METHOD="GET">
     To add a new item click &quot;Add&quot;.
     <dtml-in filtered_meta_types mapping sort=name>
-      <input type=hidden name=":method" value="<dtml-var action fmt="url-quote">">
+      <input type=hidden name=":method" value="&dtml.url_quote-action;">
       <INPUT TYPE="SUBMIT" VALUE=" Add ">
     </dtml-in>
   </FORM>

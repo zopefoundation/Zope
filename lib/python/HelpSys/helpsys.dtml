@@ -4,9 +4,9 @@
 <title>Z Object Publishing Environment Help</title>
 </head>
 <frameset cols="180,*">
-  <frame src="<dtml-var SCRIPT_NAME>/HelpSys/hs_menu" name="hs_tframe"
+  <frame src="&dtml-BASEPATH1;/HelpSys/hs_menu" name="hs_tframe"
    marginwidth="2" marginheight="2" scrolling="auto">
-  <frame src="<dtml-var SCRIPT_NAME>/HelpSys/hs_main" NAME="hs_cframe"
+  <frame src="&dtml-BASEPATH1;/HelpSys/hs_main" NAME="hs_cframe"
    marginwidth="2" marginheight="2" scrolling="auto">
 </frameset>
 <noframes>

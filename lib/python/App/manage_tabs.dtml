@@ -17,36 +17,36 @@
   <td bgcolor="#003366" rowspan="5" width="10%" valign="bottom" 
    align="left"><font face="Verdana, Arial, Helvetica" color="#ffffff" 
    size="1">&nbsp;&nbsp;<strong>Zope </strong></font><img 
-   src="<dtml-var SCRIPT_NAME>/p_/sp" width="2" height="1">
+   src="&dtml-BASEPATH1;/p_/sp" width="2" height="1">
   </td>
   <td bgcolor="#003366" colspan="<dtml-var "4 * (n_ + 1)">"><img 
-   src="<dtml-var SCRIPT_NAME>/p_/sp" width="1" height="5"></td>
+   src="&dtml-BASEPATH1;/p_/sp" width="1" height="5"></td>
 </tr>
 
 <tr>
 <dtml-in manage_options>
 <dtml-if "_['sequence-index']==a_">
   <td bgcolor="#ffffff" rowspan="2" valign="top" 
-   align="left"><img src="<dtml-var SCRIPT_NAME>/p_/ltab" width="5" 
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
    height="5"></td>
-  <td bgcolor="#ffffff"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="1" height="2"></td>
+  <td bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="1" height="2"></td>
   <td bgcolor="#ffffff" rowspan="2" valign="top" 
-   align="right"><img src="<dtml-var SCRIPT_NAME>/p_/rtab" width="5" 
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
    height="5"></td>
-  <td bgcolor="#003366" rowspan="4"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td bgcolor="#003366" rowspan="4"><img src="dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 <dtml-else>
   <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="left"><img src="<dtml-var SCRIPT_NAME>/p_/ltab" width="5" 
+   align="left"><img src="&dtml-BASEPATH1;/p_/ltab" width="5" 
    height="5"></td>
-  <td bgcolor="#efefef"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="1" height="2"></td>
+  <td bgcolor="#efefef"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="1" height="2"></td>
   <td bgcolor="#efefef" rowspan="2" valign="top" 
-   align="right"><img src="<dtml-var SCRIPT_NAME>/p_/rtab" width="5" 
+   align="right"><img src="&dtml-BASEPATH1;/p_/rtab" width="5" 
    height="5"></td>
-  <td bgcolor="#003366" rowspan="4"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td bgcolor="#003366" rowspan="4"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 </dtml-if>
 </dtml-in>
 </tr>
@@ -56,22 +56,20 @@
   <td bgcolor="#ffffff" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   <dtml-if action>href="<dtml-var action>"
-   <dtml-else>href="<dtml-var URL1>"
+   <dtml-if action>href="&dtml-action;"
+   <dtml-else>href="&dtml-URL1;"
    </dtml-if>
-   <dtml-if target> target="<dtml-var
-   target>"</dtml-if>><font 
+   <dtml-if target> target="&dtml-target;"</dtml-if>><font 
    color="#000000"><strong><dtml-var 
    label></strong></font></a>&nbsp;</font></td>
 <dtml-else>
   <td bgcolor="#efefef" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   <dtml-if action>href="<dtml-var action>"
-   <dtml-else>href="<dtml-var URL1>"
+   <dtml-if action>href="&dtml-action;"
+   <dtml-else>href="&dtml-URL1;"
    </dtml-if>
-   <dtml-if target> target="<dtml-var
-   target>"</dtml-if>><font 
+   <dtml-if target> target="&dtml-target;"</dtml-if>><font 
    color="#000000"><strong><dtml-var 
    label></strong></font></a>&nbsp;</font></td>
 </dtml-if>
@@ -80,22 +78,22 @@
 <tr>
 <dtml-in manage_options>
 <dtml-if "_['sequence-index']==a_">
-  <td colspan="3" bgcolor="#ffffff"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td colspan="3" bgcolor="#ffffff"><img src="dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 <dtml-else>
-  <td colspan="3" bgcolor="#efefef"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td colspan="3" bgcolor="#efefef"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 </dtml-if>
 </dtml-in>
 </tr>
 <tr>
 <dtml-in manage_options>
 <dtml-if "_['sequence-index']==a_">
-  <td colspan="3" bgcolor="#ffffff"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td colspan="3" bgcolor="#ffffff"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 <dtml-else>
-  <td colspan="3" bgcolor="#c0c0c0"><img src="<dtml-var 
-   SCRIPT_NAME>/p_/sp" width="2" height="1"></td>
+  <td colspan="3" bgcolor="#c0c0c0"><img src="&dtml-BASEPATH1;/p_/sp"
+ width="2" height="1"></td>
 </dtml-if>
 </dtml-in>
 </tr>
@@ -114,24 +112,23 @@
   <tr>
     <td align="left" valign="top">
     <dtml-if icon>
-    <img src="<dtml-var SCRIPT_NAME>/<dtml-var icon>" 
-         alt="<dtml-var meta_type>" border="0">
+    <img src="&dtml-BASEPATH1;/&dtml-icon;" 
+         alt="&dtml-meta_type;" border="0">
     <strong>
     </dtml-if>
     <dtml-if meta_type>
-    <dtml-var meta_type>
+    &dtml-meta_type;
     <dtml-else>
     Object
     </dtml-if> 
-    at /<dtml-var 
-    expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)">
+    at <dtml-var expr="tabs_path_default(REQUEST)">
     </strong>
     <dtml-if locked_in_version>
       <dtml-if modified_in_version>
-        <IMG SRC="<dtml-var SCRIPT_NAME>/p_/locked"
+        <IMG SRC="&dtml-BASEPATH1;/p_/locked"
          ALT="This item has been modified in this version">
       <dtml-else>
-        <IMG SRC="<dtml-var SCRIPT_NAME>/p_/lockedo"
+        <IMG SRC="&dtml-BASEPATH1;/p_/lockedo"
          ALT="This item has been modified in another version">
               (<em><dtml-var locked_in_version></em>)
       </dtml-if>
@@ -160,7 +157,7 @@
   </table>
   <dtml-if Zope-Version>
   <p>
-  <em>You are currently working in version <dtml-var Zope-Version></em>
+  <em>You are currently working in version &dtml-Zope-Version;</em>
   </p>
   </dtml-if>
 </dtml-unless>

@@ -64,20 +64,20 @@ such as database and product management.
 <TR>
   <td> </td>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/<dtml-var icon>"
+  <A HREF="<dtml-var sequence-key url_quote>/manage_workspace">
+  <IMG SRC="&dtml-BASEPATH1;/<dtml-var icon>"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<dtml-var sequence-key>/manage_workspace">
+  <A HREF="<dtml-var sequence-key url_quote>/manage_workspace">
   <dtml-var title> 
   </A>
   <dtml-if locked_in_version>
     <dtml-if modified_in_version>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/locked"
+      <IMG SRC="&dtml-BASEPATH1;/p_/locked"
        ALT="This item has been modified in this version">
     <dtml-else>
-      <IMG SRC="<dtml-var SCRIPT_NAME>/p_/lockedo"
+      <IMG SRC="&dtml-BASEPATH1;/p_/lockedo"
        ALT="This item has been modified in another version">
     </dtml-if>
   </dtml-if>

@@ -19,7 +19,7 @@ that user.
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <A HREF="manage_users?name=<dtml-var sequence-item fmt=url-quote>&submit=Edit">
-  <IMG SRC="<dtml-var SCRIPT_NAME>/p_/User_icon" ALT="Click to edit user"
+  <IMG SRC="&dtml-BASEPATH1;/p_/User_icon" ALT="Click to edit user"
    BORDER="0">
    </A>
   <A HREF="manage_users?name=<dtml-var sequence-item fmt=url-quote>&submit=Edit">

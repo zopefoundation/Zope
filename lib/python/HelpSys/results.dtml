@@ -6,7 +6,7 @@
 <p>Help topics matching <b><dtml-var SearchableText></b>:</p>
 <p>
 <dtml-in "searchResults(REQUEST)">
-<a href="<dtml-var SCRIPT_NAME><dtml-var url>" target="help_main"><dtml-var title_or_id></a><br>
+<a href="&dtml-BASEPATH1;&dtml-url;" target="help_main">&dtml-title_or_id;</a><br>
 <dtml-else>
 <em>No matches.</em>
 </dtml-in>
