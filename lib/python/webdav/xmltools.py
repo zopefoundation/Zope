@@ -34,6 +34,7 @@ TODO:
 
 """
 
+from StringIO import StringIO
 from xml.dom import minidom
 from xml.sax.saxutils import escape as _escape, unescape as _unescape
 
@@ -72,7 +73,7 @@ class Node:
     node = None
 
     def __init__(self, node):
-        self.node=node
+        self.node = node
 
     def elements(self, name=None, ns=None):
         nodes = []
@@ -112,7 +113,10 @@ class Node:
         #       but the :n isnt part of the attribute name .. gash!
 
         attr = name.split(':')[0]
-        return self.node.removeAttribute(attr)
+        if (self.node.hasAttributes() and
+            self.node.attributes.has_key(attr)):
+            # Only remove attributes if they exist
+            return self.node.removeAttribute(attr)
 
     def remap(self, dict, n=0, top=1):
         # XXX:  this method is used to do some strange remapping of elements
@@ -136,16 +140,23 @@ class Element(Node):
 
     def toxml(self):
         # When dealing with Elements, we only want the Element's content.
-        result = u''
+        writer = StringIO(u'')
         for n in self.node.childNodes:
-            value = n.toxml()
-            # Use unescape possibly escaped values.  We do this
-            # because the value is *always* escaped in it's XML
-            # representation, and if we store it escaped it will come
-            # out *double escaped* when doing a PROPFIND.
-            value = unescape(value, entities=unescape_entities)
-            result += value
-        return result
+            if n.nodeType == n.CDATA_SECTION_NODE:
+                # CDATA sections should not be unescaped.
+                writer.write(n.data)
+            elif n.nodeType == n.ELEMENT_NODE:
+                writer.write(n.toxml())
+            else:
+                # TEXT_NODE and what else?
+                value = n.toxml()
+                # Unescape possibly escaped values.  We do this
+                # because the value is *always* escaped in it's XML
+                # representation, and if we store it escaped it will come
+                # out *double escaped* when doing a PROPFIND.
+                value = unescape(value, entities=unescape_entities)
+                writer.write(value)
+        return writer.getvalue()
 
 class XmlParser:
     """ Simple wrapper around minidom to support the required

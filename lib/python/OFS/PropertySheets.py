@@ -324,14 +324,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
             # check for xml property
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
+                # It's a xml property. Don't escape value.
                 attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
                 attrs=''.join(attrs)
             else:
-                # Quote non-xml items here?
+                # It's a non-xml property. Escape value.
                 attrs=''
-
-            if not hasattr(self,"dav__"+name):
-                value = xml_escape(value)
+                if not hasattr(self,"dav__"+name):
+                    value = xml_escape(value)
             prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
 
             result.append(prop)
@@ -375,13 +375,14 @@ class PropertySheet(Traversable, Persistent, Implicit):
             # allow for xml properties
             attrs=item.get('meta', {}).get('__xml_attrs__', None)
             if attrs is not None:
+                # It's a xml property. Don't escape value.
                 attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
                 attrs=''.join(attrs)
             else:
-                # quote non-xml items here?
+                # It's a non-xml property. Escape value.
                 attrs=''
-            if not hasattr(self, 'dav__%s' % name):
-                value = xml_escape(value)
+                if not hasattr(self, 'dav__%s' % name):
+                    value = xml_escape(value)
             prop='<n:%s%s xmlns:n="%s">%s</n:%s>\n' % (
                 name, attrs, xml_id, value, name)
             code='200 OK'

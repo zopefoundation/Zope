@@ -57,6 +57,13 @@ Zope Changes
 
       - Escape/unescape &quot; and &apos;
 
+      - Don't escape properties stored as XML (ie: having a
+        __xml_attrs__ metadata set by PROPPATCH) when building a
+        PROPFIND response.
+
+      - If a PROPPATCH element value contains only a CDATA section,
+        store the CDATA contents only.
+
   Zope 2.8a1
 
 
