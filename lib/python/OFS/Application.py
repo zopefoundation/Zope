@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.39 1998/01/15 15:16:45 brian Exp $'''
-__version__='$Revision: 1.39 $'[11:-2]
+$Id: Application.py,v 1.40 1998/01/16 16:02:32 brian Exp $'''
+__version__='$Revision: 1.40 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -178,7 +178,10 @@ def install_products():
     for product_name in product_names:
 	package_dir=path_join(product_dir, product_name)
 	if not isdir(package_dir): continue
-	if not exists(path_join(package_dir, '__init__.py')): continue
+	if not exists(path_join(package_dir, '__init__.py')):
+	    if not exists(path_join(package_dir, '__init__.pyc')):
+		continue
+
 	product=getattr(__import__("Products.%s" % product_name), product_name)
 
 	for meta_type in pgetattr(product, 'meta_types', ()):
@@ -254,6 +257,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.40  1998/01/16 16:02:32  brian
+# Fixed bug: install_products only recognized __init__.py files, not .pycs
+#
 # Revision 1.39  1998/01/15 15:16:45  brian
 # Fixed Setup, cleaned up SimpleItem
 #
