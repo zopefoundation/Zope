@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.42 1997/04/24 14:20:32 chris Exp $'''
+$Id: InvertedIndex.py,v 1.43 1997/04/25 15:42:07 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,10 @@ $Id: InvertedIndex.py,v 1.42 1997/04/24 14:20:32 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.43  1997/04/25 15:42:07  chris
+# fixed bug in Index.__getitem__() which caused a TypeError
+# when searching for a stopword
+#
 # Revision 1.42  1997/04/24 14:20:32  chris
 # Fixed small bug in Index.__init__()
 #
@@ -223,7 +227,7 @@ $Id: InvertedIndex.py,v 1.42 1997/04/24 14:20:32 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 import regex, string, copy
@@ -610,7 +614,7 @@ class Index:
         addentry = self.addentry
         for word, positions in d.items():
             freq = int(100 * (len(positions) / nwords))
-            addentry(word,srckey,(freq, positions))
+            addentry(word,srckey,(freq, tuple(positions)))
   
 
     def addentry(self,word,key,data):
@@ -674,7 +678,7 @@ class Index:
             except KeyError:
 	        break
 	    else:
-		if (key[0] == '"'):
+		if ((key is not None) and (key[0] == '"')):
                     ws = WordSequence(key, self.synstop)
 		    ws = map(lambda x, self = self: self[x], ws)
 		    return reduce(lambda x, y: x.near(y), ws)
