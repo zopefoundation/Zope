@@ -141,6 +141,15 @@ class PCGIChannel(asynchat.async_chat):
             return 1
      
     def log_request(self, bytes):
+        if self.env.has_key('HTTP_USER_AGENT'):
+            user_agent=self.env['HTTP_USER_AGENT']
+        else:
+            user_agent=''
+        if self.env.has_key('HTTP_REFERER'):
+            referer=self.env['HTTP_REFERER']
+        else:
+            referer=''
+
         if self.env.has_key('PATH_INFO'):
             path=self.env['PATH_INFO']
         else:
@@ -153,24 +162,26 @@ class PCGIChannel(asynchat.async_chat):
         if addr and type(addr) is TupleType:
             self.server.logger.log (
                 addr[0],
-                '%d - - [%s] "%s %s" %d %d' % (
+                '%d - - [%s] "%s %s" %d %d "%s" "%s"' % (
                     addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
-                    time.gmtime(time.time())
+                    time.localtime(time.time())
                     ) + tz_for_log,
-                    method, path, self.reply_code, bytes
+                    method, path, self.reply_code, bytes,
+                    referer, user_agent
                     )
                 )
         else:
             self.server.logger.log (
                 '127.0.0.1',
-                '- - [%s] "%s %s" %d %d' % (
+                ' - - [%s] "%s %s" %d %d "%s" "%s"' % (
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.gmtime(time.time())
                     ) + tz_for_log,
-                    method, path, self.reply_code, bytes
+                    method, path, self.reply_code, bytes,
+                    referer, user_agent
                     )
                 )       
 

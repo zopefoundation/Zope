@@ -193,6 +193,9 @@ Zope Changes
 	(which will bail out if it doesnt get called with a tuple
 	argument)
 
+      - Collector #185, 341: PCGIServer and FCGIServer logs corrected
+        and now output extended information like HTTPServer does.
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

@@ -437,10 +437,14 @@ class FCGIChannel(asynchat.async_chat):
         
         DebugLogger.log('E', id(self))
 
-        user_agent=self.get_header('user-agent')
-        if not user_agent: user_agent=''
-        referer=self.get_header('referer')
-        if not referer: referer=''  
+        if self.env.has_key('HTTP_USER_AGENT'):
+            user_agent=self.env['HTTP_USER_AGENT']
+        else:
+            user_agent=''
+        if self.env.has_key('HTTP_REFERER'):
+            referer=self.env['HTTP_REFERER']
+        else:
+            referer=''
        
         if self.env.has_key('PATH_INFO'):
             path=self.env['PATH_INFO']
@@ -453,7 +457,7 @@ class FCGIChannel(asynchat.async_chat):
         if self.addr:
             self.server.logger.log (
                 self.addr[0],
-                '%s - - [%s] "%s %s" %d %d' % (
+                '%s - - [%s] "%s %s" %d %d "%s" "%s"' % (
                     self.addr[1],
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
@@ -466,7 +470,7 @@ class FCGIChannel(asynchat.async_chat):
         else:
             self.server.logger.log (
                 '127.0.0.1 ',
-                '- - [%s] "%s %s" %d %d' % (
+                '- - [%s] "%s %s" %d %d "%s" "%s"' % (
                     time.strftime (
                     '%d/%b/%Y:%H:%M:%S ',
                     time.localtime(time.time())
