@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -799,9 +799,9 @@ class HTTPRequest(BaseRequest):
                     path = [''] + path[:n]
                 else:
                     path = [other['SERVER_URL']] + path[:n]
-            other[key] = URL = join(path, '/')
-            self._urls = self._urls + (key,)
-            return URL
+                other[key] = URL = join(path, '/')
+                self._urls = self._urls + (key,)
+                return URL
 
         if isCGI_NAME(key) or key[:5] == 'HTTP_':
             environ=self.environ
