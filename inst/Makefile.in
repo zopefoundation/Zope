@@ -10,6 +10,7 @@ RELEASE_TAG=<<VERSION_RELEASE_TAG>>
 PACKAGE_NAME=${NAME}-${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}
 
 PYTHON="<<PYTHON>>"
+TMPDIR=/tmp
 PREFIX=<<PREFIX>>
 BASE_DIR=<<BASE_DIR>>
 BUILD_BASE=<<BUILD_BASE>>
@@ -26,8 +27,10 @@ RMRF=rm -rf
 FIND=find
 XARGS=xargs
 CD=cd
-LN=ln -sf
+LN=ln -sfn
 CP=cp
+TAR=tar
+MKDIR=mkdir -p
 
 .PHONY : clean install uninstall instance untestinst testinst build unbuild
 .PHONY : default
@@ -103,6 +106,21 @@ test: inplace
 clean: unbuild
 	${FIND} "${BASE_DIR}" \
          -name '*.py[co]' -o -name '*.so' -o -name '*.o' | ${XARGS} ${RM}
+
+# sdist:       Create a source distribution file (implies clobber).
+#
+sdist: clobber sdist_tgz
+
+# sdist_tgz:   Create a tgz archive file as a source distribution.
+#
+sdist_tgz:
+	${MKDIR} ${TMPDIR}
+	${CD} ${TMPDIR} && ${LN} ${BASE_DIR} ${PACKAGE_NAME} && \
+          ${TAR} czfh ${BASE_DIR}/${PACKAGE_NAME}.tar.gz ${PACKAGE_NAME} \
+           --exclude=${PACKAGE_NAME}.tar.gz\
+           --exclude=CVS --exclude=.cvsignore \
+           --exclude=makefile
+	${RMRF} ${TMPDIR}/${PACKAGE_NAME}
 
 # clobber:     Make the source tree 'pristine' again.
 clobber: clean uninstance
