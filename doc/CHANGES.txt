@@ -169,6 +169,10 @@ Zope Changes
 
       - Collector #343: The ZCatalogs 'Indexes' view showed the 
         wrong number of indexed objects for FieldIndexes.
+
+      - FTP server: replaced 'System_Process' by 'Sysproc' to 
+        avoid breaking some FTP clients and the output format
+        with overlong usernames.
       
 
   Zope 2.5.1 beta 1
