@@ -85,8 +85,8 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.27 2000/12/19 15:23:48 brian Exp $'''
-__version__='$Revision: 1.27 $'[11:-2]
+$Id: RDB.py,v 1.28 2000/12/19 15:31:17 brian Exp $'''
+__version__='$Revision: 1.28 $'[11:-2]
 
 import regex, regsub
 from string import split, strip, lower, upper, atof, atoi, atol, find, join
@@ -164,7 +164,7 @@ class DatabaseResults:
             # if n != name: aliases.append((n, SQLAlias(name)))
 
             schema[lower(name)]=i
-            schema(upper(name)]=i
+            schema[upper(name)]=i
 
             # / temporary fix
             
