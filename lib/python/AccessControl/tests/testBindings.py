@@ -13,12 +13,14 @@
 ##############################################################################
 """Test Bindings
 
-$Id: testBindings.py,v 1.4 2004/01/27 18:37:24 Brian Exp $
+$Id: testBindings.py,v 1.5 2004/01/27 19:37:29 tseaver Exp $
 """
 
 import unittest
 import ZODB
 from Acquisition import Implicit
+from AccessControl import ClassSecurityInfo
+from Globals import InitializeClass
 from OFS.ObjectManager import ObjectManager
 from OFS.Folder import Folder
 
@@ -73,8 +75,19 @@ class FauxRoot(ObjectManager):
         return '<FauxRoot>'
 
 class FauxFolder(Folder):
+
+    security = ClassSecurityInfo()
+    security.declareObjectPrivate()
+
+    security.declarePrivate('__repr__')
     def __repr__(self):
         return '<FauxFolder: %s>' % self.getId()
+
+    security.declarePublic('methodWithRoles')
+    def methodWithRoles(self):
+        return 'method called'
+
+InitializeClass(FauxFolder)
 
 class TestBindings(unittest.TestCase):
 
@@ -130,11 +143,22 @@ class TestBindings(unittest.TestCase):
         bound_used_context_ps = self._newPS('return context.id')
         guarded._setOb('bound_used_context_ps', bound_used_context_ps)
 
+        bound_used_context_methodWithRoles_ps = self._newPS(
+                                           'return context.methodWithRoles()')
+        guarded._setOb('bound_used_context_methodWithRoles_ps',
+                        bound_used_context_methodWithRoles_ps)
+
         container_ps = self._newPS('return container')
         guarded._setOb('container_ps', container_ps)
 
+        container_str_ps = self._newPS('return str(container)')
+        guarded._setOb('container_str_ps', container_str_ps)
+
         context_ps = self._newPS('return context')
         guarded._setOb('context_ps', context_ps)
+
+        context_str_ps = self._newPS('return str(context)')
+        guarded._setOb('context_str_ps', context_str_ps)
 
         return root
 
@@ -165,8 +189,31 @@ class TestBindings(unittest.TestCase):
         newSecurityManager(None, UnderprivilegedUser())
         root = self._makeTree()
         guarded = root._getOb('guarded')
+
         ps = guarded._getOb('bound_used_container_ps')
         self.assertRaises(Unauthorized, ps)
+
+        ps = guarded._getOb('container_str_ps')
+        self.assertRaises(Unauthorized, ps)
+
+        ps = guarded._getOb('container_ps')
+        container = ps()
+        self.assertRaises(Unauthorized, container)
+        self.assertRaises(Unauthorized, container.index_html)
+        try:
+            str(container)
+        except Unauthorized:
+            pass
+        else:
+            self.fail("str(container) didn't raise Unauthorized!")
+
+        ps = guarded._getOb('bound_used_container_ps')
+        ps._proxy_roles = ( 'Manager', )
+        ps()
+
+        ps = guarded._getOb('container_str_ps')
+        ps._proxy_roles = ( 'Manager', )
+        ps()
 
     def test_bound_used_container_allowed(self):
         from AccessControl.SecurityManagement import newSecurityManager
@@ -191,8 +238,31 @@ class TestBindings(unittest.TestCase):
         newSecurityManager(None, UnderprivilegedUser())
         root = self._makeTree()
         guarded = root._getOb('guarded')
+
         ps = guarded._getOb('bound_used_context_ps')
         self.assertRaises(Unauthorized, ps)
+
+        ps = guarded._getOb('context_str_ps')
+        self.assertRaises(Unauthorized, ps)
+
+        ps = guarded._getOb('context_ps')
+        context = ps()
+        self.assertRaises(Unauthorized, context)
+        self.assertRaises(Unauthorized, context.index_html)
+        try:
+            str(context)
+        except Unauthorized:
+            pass
+        else:
+            self.fail("str(context) didn't raise Unauthorized!")
+
+        ps = guarded._getOb('bound_used_context_ps')
+        ps._proxy_roles = ( 'Manager', )
+        ps()
+
+        ps = guarded._getOb('context_str_ps')
+        ps._proxy_roles = ( 'Manager', )
+        ps()
 
     def test_bound_used_context_allowed(self):
         from AccessControl.SecurityManagement import newSecurityManager
@@ -220,6 +290,20 @@ class TestBindings(unittest.TestCase):
                                       'name_ns': '',
                                       'name_subpath': ''})
         self.assertEqual(boundless_ps(), 42)
+
+    def test_bound_used_context_method_w_roles(self):
+        from AccessControl.SecurityManagement import newSecurityManager
+        from AccessControl import Unauthorized
+        newSecurityManager(None, UnderprivilegedUser())
+        root = self._makeTree()
+        guarded = root._getOb('guarded')
+
+        # Assert that we can call a protected method, even though we have
+        # no access to the context directly.
+        ps = guarded._getOb('bound_used_context_ps')
+        self.assertRaises(Unauthorized, ps)
+        ps = guarded._getOb('bound_used_context_methodWithRoles_ps')
+        self.assertEqual(ps(), 'method called')
 
 
 def test_suite():

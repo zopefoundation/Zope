@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -315,17 +315,11 @@ class PythonScript(Script, Historical, Cacheable):
             PythonScriptTracebackSupplement, self, -1)
         f = new.function(fcode, g, None, fadefs)
 
-        # Execute the function in a new security context.
-        security=getSecurityManager()
-        security.addContext(self)
-        try:
-            result = f(*args, **kw)
-            if keyset is not None:
-                # Store the result in the cache.
-                self.ZCacheable_set(result, keywords=keyset)
-            return result
-        finally:
-            security.removeContext(self)
+        result = f(*args, **kw)
+        if keyset is not None:
+            # Store the result in the cache.
+            self.ZCacheable_set(result, keywords=keyset)
+        return result
 
     def manage_haveProxy(self,r): return r in self._proxy_roles
 
