@@ -245,7 +245,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
                 except DTReturn, v: result = v.v
                 except AttributeError: 
                     if type(sys.exc_value)==InstanceType and sys.exc_value.args[0]=="_v_blocks":
-                        LOG("ZPublisher",WARNING,"DTML file '%s' not found" % self.raw) 
+                        LOG("ZPublisher",WARNING,"DTML file '%s' could not be read" % self.raw) 
                         raise "DTML file error","Check logfile for details"
                     else:
                         raise
