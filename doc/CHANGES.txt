@@ -84,6 +84,9 @@ Zope Changes
             <!--#/in-->
       
       Bugs fixed
+
+        - This release fixes a bug in acquisition that caused creation of
+          ZClass instances to fail under some (common) circumstances.
         
         - Copy and Paste validation machinary now takes local roles into
           account.
