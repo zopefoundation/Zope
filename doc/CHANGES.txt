@@ -115,6 +115,8 @@ Zope changes
         - Adding User Folders and MailHosts from the management screens 
           didn't redirect to the correct URL after adding the object.
 
+        - A form problem that prevented joining or leaving versions 
+          has been fixed.
 
 
 
