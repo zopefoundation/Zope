@@ -129,6 +129,8 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1431: fixed NetBSD support in initgroups.c
+
      - Collector #1406: fixed segmentation fault by acquisition
 
      - Collector #1392: ExternalMethod ignored management_page_charset
