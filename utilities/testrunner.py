@@ -90,7 +90,7 @@ class TestRunner:
         return 0
 
     def runSuite(self, suite):
-        runner=unittest.TextTestRunner(verbosity=self.verbosity)
+        runner=unittest.TextTestRunner(stream=sys.stderr, verbosity=self.verbosity)
         self.results.append(runner.run(suite))
 
     def report(self, message):
@@ -257,6 +257,11 @@ def main(args):
           whether it succeeded.  Running with -q is the same as
           running with -v1.
 
+       -o filename
+
+          Output test results to the specified file rather than
+          to stderr.
+
        -h
 
           Display usage information.
@@ -269,7 +274,7 @@ def main(args):
     mega_suite = 1
     set_python_path = 1
 
-    options, arg=getopt.getopt(args, 'amPhd:f:v:qM')
+    options, arg=getopt.getopt(args, 'amPhd:f:v:qMo:')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
@@ -294,6 +299,9 @@ def main(args):
             verbosity = int(value)
         elif name == 'q':
             verbosity = 1
+        elif name == 'o':
+            f = open(value,'w')
+            sys.stderr = f
         else:
             err_exit(usage_msg)
 
