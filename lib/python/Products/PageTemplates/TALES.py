@@ -87,9 +87,9 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
-import re, sys
+import re, sys, ZTUtils
 from MultiMapping import MultiMapping
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
@@ -107,39 +107,27 @@ class TALESError(Exception):
                                          self.expression)
         return self.expression
 
+class Undefined(TALESError):
+    '''Exception raised on traversal of an undefined path'''
+
 class RegistrationError(Exception):
     '''TALES Type Registration Error'''
 
 class CompilerError(Exception):
     '''TALES Compiler Error'''
 
-class Iterator:
-    '''Simple Iterator class for use in Contexts'''
+class Iterator(ZTUtils.Iterator):
     def __init__(self, name, seq, context):
+        ZTUtils.Iterator.__init__(self, seq)
         self.name = name
-        self.seq = seq
         self._context = context
-        self.nextIndex = 0
 
     def next(self):
-        i = self.nextIndex
-        try:
-            item = self.seq[i]
-        except IndexError:
-            return 0
-        self.index = i
-        self.nextIndex = i+1
-        self._context.setLocal(self.name, item)
-        return 1
-
-    def number(self): return self.nextIndex
-
-    def sequence_start(self): return self.nextIndex == 1
-
-    def sequence_end(self):
-        try: self.seq[self.nextIndex]
-        except IndexError: return 1
+        if ZTUtils.Iterator.next(self):
+            self._context.setLocal(self.name, self.seq[self.index])
+            return 1
         return 0
+
 
 class Engine:
     '''Expression Engine
@@ -239,14 +227,20 @@ class Context:
             ctx.clear()
 
     def setLocal(self, name, value):
-        self._current_ctxts['local'][name] = value
+        if value is not Undefined:
+            self._current_ctxts['local'][name] = value
 
     def setGlobal(self, name, value):
-        self.contexts['global'][name] = value
+        if value is not Undefined:
+            self.contexts['global'][name] = value
 
     def setRepeat(self, name, expr):
         expr = self.evaluate(expr)
-        it = self._engine.Iterator(name, expr, self)
+        if expr is Undefined:
+            # Not sure of this
+            it = self._engine.Iterator(name, [Undefined], self)
+        else:
+            it = self._engine.Iterator(name, expr, self)
         self._current_ctxts['repeat'][name] = it
         return it
 
@@ -255,6 +249,8 @@ class Context:
             expression = self._engine.compile(expression)
         try:
             return expression(self)
+        except TALESError:
+            raise
         except:
             raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
 
@@ -278,6 +274,9 @@ class Context:
 
     def getTALESError(self):
         return TALESError
+
+    def getCancelAction(self):
+        return Undefined
 
 class SimpleExpr:
     '''Simple example of an expression type handler'''
