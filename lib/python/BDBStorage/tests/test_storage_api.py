@@ -72,12 +72,6 @@ class FullRecoveryTest(BerkeleyTestBase.FullTestBase,
         self._zap_dbhome(DST_DBHOME)
 
 
-    def checkTransactionalUndoAfterPackWithObjectUnlinkFromRoot(self):
-        # the current berkeley storage fails this test, but we don't
-        # intend to fix it for this version of the code.
-        pass
-
-
 class AutopackTest(BerkeleyTestBase.AutopackTestBase, BasicStorage):
     def checkVersionedStoreAndLoad(self):
         # This storage doesn't support versions, so we should get an exception
