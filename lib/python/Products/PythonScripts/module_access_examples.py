@@ -15,7 +15,7 @@ modules that are not listed below.  The list is not comprehensive,
 but is provided as a decent cross-section of modules.
 '''
 
-from Products.PythonScripts.Utility import allow_module, allow_class
+from AccessControl import allow_module, allow_class, allow_type
 from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
 from Globals import InitializeClass
 
@@ -42,9 +42,9 @@ from Globals import InitializeClass
 # ModuleSecurityInfo('re').declarePublic('compile', 'findall',
 #   'match', 'search', 'split', 'sub', 'subn', 'error',
 #   'I', 'L', 'M', 'S', 'X')
-# from re import RegexObject, MatchObject
-# allow_class(RegexObject)
-# allow_class(MatchObject)
+# import re
+# allow_type(type(re.compile('')))
+# allow_type(type(re.match('x','x')))
 
 # ModuleSecurityInfo('StringIO').declarePublic('StringIO')
 

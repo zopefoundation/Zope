@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.17 2001/12/13 14:25:19 andreasjung Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.18 2002/01/11 17:14:27 evan Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -79,7 +79,7 @@ if _use_python_impl:
                      DictType=type({}), getattr=getattr, _noroles=_noroles,
                      StringType=type(''),
                      Containers=SimpleObjectPolicies.Containers,
-                     valid_aq_=('aq_parent','aq_explicit')):
+                     valid_aq_=('aq_parent','aq_inner', 'aq_explicit')):
 
 
             ############################################################

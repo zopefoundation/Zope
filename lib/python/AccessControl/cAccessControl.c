@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.12 2001/10/26 16:07:50 matt Exp $
+  $Id: cAccessControl.c,v 1.13 2002/01/11 17:14:27 evan Exp $
 
   If you have questions regarding this software,
   contact:
@@ -763,6 +763,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		sname = PyString_AS_STRING(name);
 		if (*sname == 'a' && sname[1]=='q' && sname[2]=='_') {
 			if (strcmp(sname,"aq_parent")   != 0 &&
+                            strcmp(sname,"aq_inner") != 0 &&
                             strcmp(sname,"aq_explicit") != 0) {
 				/* Access control violation, return 0 */
 				return PyInt_FromLong(0);
@@ -2075,7 +2076,7 @@ static struct PyMethodDef dtml_methods[] = {
 void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.12 $";
+	char *rev = "$Revision: 1.13 $";
         PURE_MIXIN_CLASS(RestrictedDTMLMixin,
                          "A mix-in for derivatives of DT_String.String "
                          "that adds Zope security."
@@ -2096,7 +2097,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.12 2001/10/26 16:07:50 matt Exp $\n");
+		"$Id: cAccessControl.c,v 1.13 2002/01/11 17:14:27 evan Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */

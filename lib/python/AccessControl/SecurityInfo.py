@@ -207,7 +207,23 @@ def secureModule(mname, *imp):
     modsec.apply(module.__dict__)
     return module
 
-class ModuleSecurityInfo(SecurityInfo):
+def ModuleSecurityInfo(module_name=None):
+    if module_name is not None:
+        modsec = _moduleSecurity.get(module_name, None)
+        if modsec is not None:
+            return modsec
+        dot = module_name.rfind('.')
+        if dot > 0:
+            # If the module is in a package, recursively make sure
+            # there are security declarations for the package steps
+            # leading to the module
+            modname = module_name[dot + 1:]
+            pmodsec = ModuleSecurityInfo(module_name[:dot])
+            if not pmodsec.names.has_key(modname):
+                pmodsec.declarePublic(modname)
+    return _ModuleSecurityInfo(module_name)
+
+class _ModuleSecurityInfo(SecurityInfo):
     """Encapsulate security information for modules."""
 
     __roles__ = ACCESS_PRIVATE
@@ -255,3 +271,25 @@ class ModuleSecurityInfo(SecurityInfo):
         """Cannot set default roles for permissions in a module."""
         pass
 
+# Handy little utility functions
+
+def allow_module(module_name):
+    """Allow a module and all its contents to be used from a
+    restricted Script. The argument module_name may be a simple
+    or dotted module or package name. Note that if a package
+    path is given, all modules in the path will be available."""
+    ModuleSecurityInfo(module_name).setDefaultAccess(1)
+    dot = module_name.find('.')
+    while dot > 0:
+        ModuleSecurityInfo(module_name[:dot]).setDefaultAccess(1)
+        dot = module_name.find('.', dot + 1)
+
+def allow_class(Class):
+    """Allow a class and all of its methods to be used from a
+    restricted Script.  The argument Class must be a class."""
+    Class._security = sec = ClassSecurityInfo()
+    sec.declareObjectPublic()
+    sec.setDefaultAccess(1)
+    sec.apply(Class)
+    from Globals import InitializeClass
+    InitializeClass(Class)

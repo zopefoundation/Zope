@@ -21,7 +21,8 @@ from SecurityInfo import ClassSecurityInfo, ModuleSecurityInfo
 from SecurityInfo import ACCESS_PRIVATE
 from SecurityInfo import ACCESS_PUBLIC
 from SecurityInfo import ACCESS_NONE
-from SecurityInfo import secureModule
+from SecurityInfo import secureModule, allow_module, allow_class
+from SimpleObjectPolicies import allow_type
 from ZopeGuards import full_read_guard, full_write_guard, safe_builtins
 
 ModuleSecurityInfo('AccessControl').declarePublic('getSecurityManager')

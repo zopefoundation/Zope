@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.9 2001/11/28 15:50:51 matt Exp $''' 
-__version__='$Revision: 1.9 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.10 2002/01/11 17:14:27 evan Exp $''' 
+__version__='$Revision: 1.10 $'[11:-2] 
 
 _noroles=[] # this is imported from various places
 
@@ -46,3 +46,16 @@ except:
     pass
 
 Containers=ContainerAssertions.get
+
+from types import IntType, DictType, TypeType
+def allow_type(Type, allowed=1):
+    """Allow a type and all of its methods and attributes to be used from
+    restricted code.  The argument Type must be a type."""
+    if type(Type) is not TypeType:
+        raise ValueError, "%s is not a type" % `Type`
+    if hasattr(Type, '__roles__'):
+        raise ValueError, "%s handles its own security" % `Type`
+    if not (isinstance(allowed, IntType) or isinstance(allowed, DictType)):
+        raise ValueError, "The 'allowed' argument must be an int or dict."
+    ContainerAssertions.update(Type, allowed)
+

@@ -13,29 +13,8 @@
 """Utility module for making simple security assertions for
    Python scripts."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
-from AccessControl import ModuleSecurityInfo, ClassSecurityInfo
-from Globals import InitializeClass
-import string
+# These have been relocated, and should be imported from AccessControl
 
-def allow_module(module_name):
-    """Allow a module and all its contents to be used from a
-    restricted Script. The argument module_name may be a simple
-    or dotted module or package name. Note that if a package
-    path is given, all modules in the path will be available."""
-    ModuleSecurityInfo(module_name).setDefaultAccess(1)
-    dot = string.find(module_name, '.')
-    while dot > 0:
-        ModuleSecurityInfo(module_name[:dot]).setDefaultAccess(1)
-        dot = string.find(module_name, '.', dot + 1)
-
-def allow_class(Class):
-    """Allow a class and all of its methods to be used from a
-    restricted Script.  The argument Class must be a class."""
-    Class._security = sec = ClassSecurityInfo()
-    sec.declareObjectPublic()
-    sec.setDefaultAccess(1)
-    sec.apply(Class)
-    InitializeClass(Class)
-
+from AccessControl import allow_module, allow_class

@@ -13,8 +13,8 @@
 """Tests of ZopeSecurityPolicy
 """
 
-__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.3 2001/11/28 15:50:52 matt Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: testZopeSecurityPolicy.py,v 1.4 2002/01/11 17:14:27 evan Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 import os, sys, unittest
 
@@ -223,6 +223,7 @@ class ZopeSecurityPolicyTests (unittest.TestCase):
         assert not policy.validate('', '', 'aq_base', '', None)
         assert policy.validate('', '', 'aq_parent', '', None)
         assert policy.validate('', '', 'aq_explicit', '', None)
+        assert policy.validate('', '', 'aq_inner', '', None)
 
     if 0:
         # This test purposely generates a log entry.

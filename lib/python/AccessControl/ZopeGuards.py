@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 from RestrictedPython.Guards import safe_builtins, _full_read_guard, \
      full_write_guard
@@ -130,7 +130,6 @@ def guarded_import(mname, globals={}, locals={}, fromlist=None):
     validate = getSecurityManager().validate
     module = load_module(None, None, mnameparts, validate, globals, locals)
     if module is not None:
-        mtype = type(module)
         if fromlist is None:
             fromlist = ()
         try:
