@@ -38,6 +38,7 @@ Zope Changes
         The border="0" attribute is no longer part of the HTML output except specified
         otherwise.
            
+      - Collector #1511: made IPCServer show up in the Control Panel under "Network Services"
 
   Zope 2.8a1
 

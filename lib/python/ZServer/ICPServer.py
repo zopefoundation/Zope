@@ -37,6 +37,8 @@ class BaseICPServer(asyncore.dispatcher):
 
     def __init__ (self,ip,port):
         asyncore.dispatcher.__init__(self)
+        self.ip = ip
+        self.port = port
         self.create_socket (socket.AF_INET, socket.SOCK_DGRAM)
         self.set_reuse_addr()
         self.bind((ip,port))
