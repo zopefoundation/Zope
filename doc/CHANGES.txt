@@ -33,6 +33,8 @@ Zope Changes
        (such as storages, databases, or logging handlers) to be used.
 
     Bugs fixed
+     - Collector #616: Make CONTEXTS available to TALES Python expressions.
+
      - Collector #1074: Give Script execution context a __name__
 
      - Collector #1095: Allow TAL paths starting with '/varname' as a

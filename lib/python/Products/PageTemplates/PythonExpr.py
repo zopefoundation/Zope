@@ -14,7 +14,7 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 from TALES import CompilerError
 from sys import exc_info
@@ -45,7 +45,7 @@ class PythonExpr:
 
     def _bind_used_names(self, econtext, _marker=[]):
         # Bind template variables
-        names = {}
+        names = {'CONTEXTS': econtext.contexts}
         vars = econtext.vars
         getType = econtext.getCompiler().getTypes().get
         for vname in self._f_varnames:
