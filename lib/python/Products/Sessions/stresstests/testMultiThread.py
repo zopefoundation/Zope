@@ -160,110 +160,122 @@ def _populate(app):
     app.temp_folder._setObject(toc_name, toc)
     get_transaction().commit()
 
-class TestBase(TestCase):
-    def setUp(self):
+class TestMultiThread(TestCase):
+    def testNonOverlappingBrowserIds(self):
+        readers = []
+        writers = []
+        readiters = 20
+        writeiters = 5
+        readout = []
+        writeout = []
+        numreaders = 20
+        numwriters = 5
+        sdm_name = 'session_data_manager'
         db = _getDB()
-        conn = db.open()
-        root = conn.root()
-        self.app = makerequest.makerequest(root['Application'])
-        timeout = self.timeout = 1
-
-    def tearDown(self):
-        _delDB()
-        del self.app
-
-class TestSessionManager(TestBase):
-    def testHasId(self):
-        assert self.app.session_data_manager.id == 'session_data_manager'
-
-    def testHasTitle(self):
-        assert self.app.session_data_manager.title == 'Session Data Manager'
-
-    def testGetSessionDataNoCreate(self):
-        sd = self.app.session_data_manager.getSessionData(0)
-        assert sd is None, repr(sd)
-
-    def testGetSessionDataCreate(self):
-        sd = self.app.session_data_manager.getSessionData(1)
-        assert sd.__class__ is TransientObject, repr(sd)
-
-    def testHasSessionData(self):
-        sd = self.app.session_data_manager.getSessionData()
-        assert self.app.session_data_manager.hasSessionData()
-
-    def testNewSessionDataObjectIsValid(self):
-        sdType = type(TransientObject(1))
-        sd = self.app.session_data_manager.getSessionData()
-        assert type(getattr(sd, 'aq_base', sd)) is sdType
-        assert not hasattr(sd, '_invalid')
-
-    def testInvalidateSessionDataObject(self):
-        sd = self.app.session_data_manager.getSessionData()
-        sd.invalidate()
-        assert hasattr(sd, '_invalid')
+        for i in range(numreaders):
+            thread = ReaderThread(db, readiters, sdm_name)
+            readers.append(thread)
+        for i in range(numwriters):
+            thread = WriterThread(db, writeiters, sdm_name)
+            writers.append(thread)
+        for thread in readers:
+            thread.start()
+            time.sleep(0.1)
+        for thread in writers:
+            thread.start()
+            time.sleep(0.1)
+        while threading.activeCount() > 1:
+            time.sleep(1)
         
-    def testBrowserIdIsSet(self):
-        sd = self.app.session_data_manager.getSessionData()
-        mgr = getattr(self.app, idmgr_name)
-        assert mgr.hasBrowserId()
+        for thread in readers:
+            assert thread.out == [], thread.out
 
-    def testGetSessionDataByKey(self):
-        sd = self.app.session_data_manager.getSessionData()
-        mgr = getattr(self.app, idmgr_name)
-        token = mgr.getBrowserId()
-        bykeysd = self.app.session_data_manager.getSessionDataByKey(token)
-        assert sd == bykeysd, (sd, bykeysd, token)
+    def testOverlappingBrowserIds(self):
+        readers = []
+        writers = []
+        readiters = 20
+        writeiters = 5
+        readout = []
+        writeout = []
+        numreaders = 20
+        numwriters = 5
+        sdm_name = 'session_data_manager'
+        db = _getDB()
+        for i in range(numreaders):
+            thread = ReaderThread(db, readiters, sdm_name)
+            readers.append(thread)
+        for i in range(numwriters):
+            thread = WriterThread(db, writeiters, sdm_name)
+            writers.append(thread)
+        for thread in readers:
+            thread.start()
+            time.sleep(0.1)
+        for thread in writers:
+            thread.start()
+            time.sleep(0.1)
+        while threading.activeCount() > 1:
+            time.sleep(1)
+        
+        for thread in readers:
+            assert thread.out == [], thread.out
 
-    def testBadExternalSDCPath(self):
-        # fake out webdav
-        self.app.session_data_manager.REQUEST['REQUEST_METHOD'] = 'GET'
-        self.app.session_data_manager.setContainerPath('/fudgeffoloo')
+class BaseReaderWriter(threading.Thread):
+    def __init__(self, db, iters, sdm_name):
+        self.conn = db.open()
+        self.app = self.conn.root()['Application']
+        self.app = makerequest.makerequest(self.app)
+        token = self.app.browser_id_manager._getNewBrowserId()
+        self.app.REQUEST.browser_id_ = token
+        self.iters = iters
+        self.sdm_name = sdm_name
+        self.out = []
+        threading.Thread.__init__(self)
+
+    def run(self):
+        i = 0
         try:
-            self.app.session_data_manager.getSessionData()
-        except SessionDataManagerErr:
-            pass
-        else:
-            assert 1 == 2, self.app.session_data_manager.getSessionDataContainerPath()
-
-    def testInvalidateSessionDataObject(self):
-        sd = self.app.session_data_manager.getSessionData()
-        sd['test'] = 'Its alive!  Alive!'
-        sd.invalidate()
-        assert not self.app.session_data_manager.getSessionData().has_key('test')
-
-    def testGhostUnghostSessionManager(self):
+            while 1:
+                try:
+                    self.run1()
+                    return
+                except ConflictError:
+                    i = i + 1
+                    #print "conflict %d" % i
+                    if i > 3: raise
+        finally:
+            self.conn.close()
+            del self.app
+            
+class ReaderThread(BaseReaderWriter):
+    def run1(self):
+        session_data_manager = getattr(self.app, self.sdm_name)
+        data = session_data_manager.getSessionData(create=1)
+        t = time.time()
+        data[t] = 1
         get_transaction().commit()
-        sd = self.app.session_data_manager.getSessionData()
-        sd.set('foo', 'bar')
-        self.app.session_data_manager._p_changed = None
-        get_transaction().commit()
-        assert self.app.session_data_manager.getSessionData().get('foo') == 'bar'
+        for i in range(self.iters):
+            data = session_data_manager.getSessionData()
+            if not data.has_key(t):
+                self.out.append(1)
+            time.sleep(whrandom.choice(range(3)))
+            get_transaction().commit()
 
-    def testSubcommit(self):
-        sd = self.app.session_data_manager.getSessionData()
-        sd.set('foo', 'bar')
-        assert get_transaction().commit(1) == None
-
-    def testForeignObject(self):
-        self.assertRaises(InvalidObjectReference, self._foreignAdd)
-
-    def _foreignAdd(self):
-        ob = self.app.session_data_manager
-        sd = self.app.session_data_manager.getSessionData()
-        sd.set('foo', ob)
-        get_transaction().commit()
-
-    def testAqWrappedObjectsFail(self):
-        a = Foo()
-        b = Foo()
-        aq_wrapped = a.__of__(b)
-        sd = self.app.session_data_manager.getSessionData()
-        sd.set('foo', aq_wrapped)
-        self.assertRaises(UnpickleableError, get_transaction().commit)
+class WriterThread(BaseReaderWriter):
+    def run1(self):
+        session_data_manager = getattr(self.app, self.sdm_name)
+        for i in range(self.iters):
+            data = session_data_manager.getSessionData()
+            data[time.time()] = 1
+            n = whrandom.choice(range(3))
+            time.sleep(n)
+            if n % 2 == 0:
+                get_transaction().commit()
+            else:
+                get_transaction().abort()
 
 def test_suite():
-    test_datamgr = makeSuite(TestSessionManager, 'test')
-    suite = TestSuite((test_datamgr,))
+    test_multithread = makeSuite(TestMultiThread, 'test')
+    suite = TestSuite((test_multithread,))
     return suite
 
 if __name__ == '__main__':
