@@ -268,7 +268,13 @@ Splitter_pos(Splitter *self, PyObject *args)
     while(self->index < i)
     {
 	UNLESS(res=next_word(self, &start, &end)) return NULL;
-	if(PyString_Check(res)) continue;
+	if(PyString_Check(res))
+	  {
+            self->index++;
+	    Py_DECREF(res);
+	    continue;
+	  }
+	Py_DECREF(res);
 	PyErr_SetString(PyExc_IndexError, "Splitter index out of range");
 	return NULL;
     }
@@ -280,7 +286,7 @@ Splitter_pos(Splitter *self, PyObject *args)
 static PyObject *
 Splitter_indexes(Splitter *self, PyObject *args)
 {
-  PyObject *word, *r, *w, *index=0;
+  PyObject *word, *r, *w=0, *index=0;
   int i=0;
 
   UNLESS(PyArg_ParseTuple(args,"O",&word)) return NULL;
@@ -290,7 +296,7 @@ Splitter_indexes(Splitter *self, PyObject *args)
   Splitter_reset(self);
   while(1)
     {
-      UNLESS(w=next_word(self, NULL, NULL)) goto err;
+      UNLESS_ASSIGN(w=next_word(self, NULL, NULL)) goto err;
       UNLESS(PyString_Check(w)) break;
       if(PyObject_Compare(word,w)==0)
 	{
@@ -299,6 +305,7 @@ Splitter_indexes(Splitter *self, PyObject *args)
 	}
       i++;
     }
+  Py_XDECREF(w);
   Py_XDECREF(index);
   return r;
 
@@ -388,14 +395,14 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.3 1997/11/13 20:38:38 jim Exp $\n"
+"$Id: Splitter.c,v 1.4 1997/12/10 20:47:47 jim Exp $\n"
 ;
 
 void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
+  char *rev="$Revision: 1.4 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
