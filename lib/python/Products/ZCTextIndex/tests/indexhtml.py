@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 """Index a collection of HTML files on the filesystem.
 
 usage: indexhtml.py [options] dir
@@ -9,6 +8,7 @@ Will create an index of all files in dir or its subdirectories.
 options:
 -f data.fs  -- the path to the filestorage datafile
 """
+from __future__ import nested_scopes
 
 import os
 from time import clock
@@ -32,12 +32,28 @@ def make_zc_index():
     caller.lexicon = Lexicon(HTMLWordSplitter(), StopWordRemover())
     return ZCTextIndex("read", extra, caller)
 
+# XXX make a splitter more like the HTMLSplitter for TextIndex
+# signature is
+# Splitter(string, stop_words, encoding,
+#          singlechar, indexnumbers, casefolding)
+
+class MySplitter:
+    def __init__(self):
+        self._v_splitter = HTMLWordSplitter()
+    def __call__(self, text, stopdict, *args, **kwargs):
+        words = self._v_splitter._split(text)
+        def lookup(w):
+            return stopdict.get(w, w)
+        return filter(None, map(lookup, words))
+
 def make_old_index():
     from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
     from Products.PluginIndexes.TextIndex.Lexicon \
          import Lexicon, stop_word_dict
 
-    return TextIndex("read", lexicon=Lexicon(stop_word_dict))
+    l = Lexicon(stop_word_dict)
+    l.SplitterFunc = MySplitter()
+    return TextIndex("read", lexicon=l)
 
 def main(db, root, dir):
     rt["index"] = index = INDEX()
