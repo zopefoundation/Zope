@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.12 1997/02/12 18:35:21 cici Exp $'''
+$Id: InvertedIndex.py,v 1.13 1997/02/13 17:28:32 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.12 1997/02/12 18:35:21 cici Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.13  1997/02/13 17:28:32  chris
+# *** empty log message ***
+#
 # Revision 1.12  1997/02/12 18:35:21  cici
 # added apply() to Transactional and Persistent addentry() methods.
 #
@@ -125,7 +128,7 @@ $Id: InvertedIndex.py,v 1.12 1997/02/12 18:35:21 cici Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -279,6 +282,11 @@ class ResultList:
 
 
   def near(self, x, distance = 1):
+    '''\
+       near(rl, distance = 1)
+  
+       Returns a ResultList containing documents which contain
+              
     result = {}
 
     for key in self.keys():
