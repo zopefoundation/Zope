@@ -11,7 +11,7 @@
 #
 ##############################################################################
 """
-$Id: unauthorized.py,v 1.8 2003/02/24 16:57:36 andreasjung Exp $
+$Id: unauthorized.py,v 1.9 2004/03/23 11:46:30 andreasjung Exp $
 """
 
 from types import StringType
@@ -55,7 +55,7 @@ class Unauthorized(Exception):
             return ("You are not allowed to access '%s' in this context"
                     % self.name)
         elif self.value is not None:
-            return ("You are not allowed to access 's' in this context"
+            return ("You are not allowed to access '%s' in this context"
                     % self.getValueName())
         return repr(self)
 
