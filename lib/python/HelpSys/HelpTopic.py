@@ -194,6 +194,22 @@ class HelpTopic(Acquisition.Implicit, HelpTopicBase, Item, PropertyManager, Pers
         ('Access contents information', ('helpValues',)),
         )
 
+    def _set_last_read(self, filepath):
+        try:    mtime = os.stat(filepath)[8]
+        except: mtime = 0
+        self._v_last_read = mtime
+
+    def _check_for_update(self):
+        if Globals.DevelopmentMode:
+            try:    mtime=os.stat(self.file)[8]
+            except: mtime=0
+            if mtime != self._v_last_read:
+                fileob = open(self.file)
+                self.obj = fileob.read()
+                fileob.close()
+                self._v_last_read=mtime
+                self.reindex_object()
+
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
         raise "Unimplemented"
@@ -250,6 +266,7 @@ class TextTopic(HelpTopic):
         self.title=title
         self.file = file
         self.obj=open(file).read()
+        self._set_last_read(file)
         if permissions is not None:
             self.permissions=permissions
         if categories is not None:
@@ -257,14 +274,7 @@ class TextTopic(HelpTopic):
         
     def index_html(self, REQUEST=None):
         "View the Help Topic"
-        if 0 and Globals.DevelopmentMode:
-            try:    mtime=os.stat(self.file)
-            except: mtime=0
-            if mtime != self._v_last_read:
-                self.obj = open(self.file).read()
-                self._v_last_read=mtime
-                self.reindex_object()
-
+        self._check_for_update()
         return self.obj
 
     def SearchableText(self):
@@ -278,14 +288,7 @@ class STXTopic(TextTopic):
     """
     def index_html(self, REQUEST=None):
         """ View the STX Help Topic """
-        if 0 and Globals.DevelopmentMode:
-            try:    mtime=os.stat(self.file)
-            except: mtime=0
-            if mtime != self._v_last_read:
-                self.obj = open(self.file).read()
-                self._v_last_read=mtime
-                self.reindex_object()
-
+        self._check_for_update()
         return self.htmlfile(self, REQUEST)
 
     htmlfile = HTML("""\
@@ -305,6 +308,8 @@ class ImageTopic(HelpTopic):
         self.id=id
         self.title=title
         self.file = file
+        self.obj=open(file).read()
+        self._set_last_read(file)
         dir, file=os.path.split(file)
         self.image=ImageFile(file, dir)
         if permissions is not None:
@@ -314,14 +319,7 @@ class ImageTopic(HelpTopic):
     
     def index_html(self, REQUEST, RESPONSE):
         "View the Help Topic"
-        if 0 and Globals.DevelopmentMode:
-            try:    mtime=os.stat(self.file)
-            except: mtime=0
-            if mtime != self._v_last_read:
-                self.obj = open(self.file).read()
-                self._v_last_read=mtime
-                self.reindex_object()
-
+        self._check_for_update()
         return self.image.index_html(REQUEST, RESPONSE)
         
     def SearchableText(self):
