@@ -82,36 +82,96 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+"""
+DOM implementation in ZOPE : Read-Only methods
 
+All standard Zope objects support DOM to a limited extent.
+"""
 import string
 import Acquisition
 
 
-"""DOM implementation in ZOPE : Read-Only methods"""
+# Node type codes
+# ---------------
 
+ELEMENT_NODE       = 1
+ATTRIBUTE_NODE     = 2
+TEXT_NODE          = 3
+CDATA_SECTION_NODE = 4
+ENTITY_REFERENCE_NODE = 5
+ENTITY_NODE        = 6
+PROCESSING_INSTRUCTION_NODE = 7
+COMMENT_NODE       = 8
+DOCUMENT_NODE      = 9
+DOCUMENT_TYPE_NODE = 10
+DOCUMENT_FRAGMENT_NODE = 11
+NOTATION_NODE      = 12
 
-# Supported Node type codes
-# -------------------------
-ELEMENT_NODE = 1
-ATTRIBUTE_NODE = 2
+# Exception codes
+# ---------------
 
+INDEX_SIZE_ERR              = 1
+DOMSTRING_SIZE_ERR          = 2
+HIERARCHY_REQUEST_ERR       = 3
+WRONG_DOCUMENT_ERR          = 4
+INVALID_CHARACTER_ERR       = 5
+NO_DATA_ALLOWED_ERR         = 6
+NO_MODIFICATION_ALLOWED_ERR = 7
+NOT_FOUND_ERR               = 8
+NOT_SUPPORTED_ERR           = 9
+INUSE_ATTRIBUTE_ERR         = 10
 
-""" -----------------------------------------------------------------------
-Root - top level object, similar to Document also implements the DOM
-DOMImplementation Interface"""
+# Exceptions
+# ----------
+
+class DOMException(Exception):
+    pass
+class IndexSizeException(DOMException):
+    code = INDEX_SIZE_ERR
+class DOMStringSizeException(DOMException):
+    code = DOMSTRING_SIZE_ERR
+class HierarchyRequestException(DOMException):
+    code = HIERARCHY_REQUEST_ERR
+class WrongDocumentException(DOMException):
+    code = WRONG_DOCUMENT_ERR
+class NoDataAllowedException(DOMException):
+    code = NO_DATA_ALLOWED_ERR
+class NoModificationAllowedException(DOMException):
+    code = NO_MODIFICATION_ALLOWED_ERR
+class NotFoundException(DOMException):
+    code = NOT_FOUND_ERR
+class NotSupportedException(DOMException):
+    code = NOT_SUPPORTED_ERR
+class InUseAttributeException(DOMException):
+    code = INUSE_ATTRIBUTE_ERR
+
+# Node classes
+# ------------
 
 class Root:    
+    """
+    Root - top level object, similar to Document also implements the DOM
+    DOMImplementation Interface
+    """
 
     def getParentNode(self):
+        """The parent of this node.  All nodes except Document
+        DocumentFragment and Attr may have a parent"""
         return None
 
     def getPreviousSibling(self):
+        """The node immediately preceding this node.  If
+        there is no such node, this returns None."""
         return None
 
     def getNextSibling(self):
+        """The node immediately preceding this node.  If
+        there is no such node, this returns None."""
         return None
 
     def getOwnerDocument(self):
+        """The Document object associated with this node.
+        When this is a document this is None"""
         return self
 
     #DOM Method for INTERFACE DOMImplementation
@@ -133,12 +193,15 @@ class Root:
             if version == '1.0': return 1
             return 0
 
-""" ----------------------------------------------------------------------
-INTERFACE Node """
 
 class Node:
+    """
+    Node Interface
+    """
 
     # DOM attributes    
+    # --------------
+    
     def getNodeName(self):
         """The name of this node, depending on its type"""
         return None
@@ -158,8 +221,8 @@ class Node:
         return NodeList()
 
     def getFirstChild(self):
-        """The first child of this node.  If ther is no such node
-        this returns None."""
+        """Returns a NodeList that contains all children of this node.
+        If there are no children, this is a empty NodeList"""
         return None
 
     def getLastChild(self):
@@ -173,8 +236,8 @@ class Node:
         return None
 
     def getNextSibling(self):
-        """The node immediately following this node.
-        If there is no such node, this returns None."""
+        """The node immediately preceding this node.  If
+        there is no such node, this returns None."""
         return None
 
     def getAttributes(self):
@@ -191,48 +254,67 @@ class Node:
             return node.getOwnerDocument()
         return node
         
-    # DOM Method    
+    # DOM Methods    
+    # -----------
+    
     def hasChildNodes(self):
         """Returns true if the node has any children, false
         if it doesn't. """
         return len(self.objectIds())
             
-""" -----------------------------------------------------------------------
-INTERFACE Element """
 
 class Element(Node):
-
-    # Element Attribute
+    """
+    Element interface
+    """
+    
+    # Element Attributes
+    # ------------------
+    
     def getTagName(self):
         """The name of the element"""
         return self.__class__.__name__
 
     # Node Attributes
+    # ---------------
+    
     def getNodeName(self):
+        """The name of this node, depending on its type"""
         return self.getTagName()
       
     def getNodeType(self):
+        """A code representing the type of the node."""
         return ELEMENT_NODE
     
     def getParentNode(self):
+        """The parent of this node.  All nodes except Document
+        DocumentFragment and Attr may have a parent"""
         return getattr(self, 'aq_parent', None)
 
     def getChildNodes(self):
+        """Returns a NodeList that contains all children of this node.
+        If there are no children, this is a empty NodeList"""
         return  NodeList(self.objectValues())
    
     def getFirstChild(self):
+        """Returns a NodeList that contains all children of this node.
+        If there are no children, this is a empty NodeList"""
         children = self.getChildNodes()
         if children:
             return children._data[0]
         return None
 
     def getLastChild(self):
+        """The last child of this node.  If ther is no such node
+        this returns None."""
         children = self.getChildNodes()
         if children:
             return children._data[-1]
         return None
 
     def getPreviousSibling(self):
+        """The node immediately preceding this node.  If
+        there is no such node, this returns None."""
         if hasattr(self, 'aq_parent'):
             parent = self.aq_parent
             ids=list(parent.objectIds())
@@ -245,6 +327,8 @@ class Element(Node):
         return None
 
     def getNextSibling(self):
+        """The node immediately preceding this node.  If
+        there is no such node, this returns None."""
         if hasattr(self, 'aq_parent'):
             parent = self.aq_parent
             ids=list(parent.objectIds())
@@ -257,12 +341,14 @@ class Element(Node):
         return None
       
     # Element Methods
+    # ---------------
+    
     def getAttribute(self, name):
-        """Retrieves an attribute value by name. """
+        """Retrieves an attribute value by name."""
         return None
 
     def getAttributeNode(self, name):
-        """ Retrieves an Attr node by name or null if
+        """ Retrieves an Attr node by name or None if
         there is no such attribute. """
         return None
 
@@ -282,7 +368,7 @@ class Element(Node):
             nodeList = nodeList + n1._data
         return NodeList(nodeList)
    
-"""-------------------------------------------------------------------"""
+
 class ElementWithAttributes(Element):
     """
     Elements that allow DOM access to Zope properties of type 'string'.
@@ -291,6 +377,8 @@ class ElementWithAttributes(Element):
     """
     
     def getAttributes(self):
+        """Returns a NamedNodeMap containing the attributes
+        of this node (if it is an element) or None otherwise."""
         attribs={}
         for p in self._properties:
             if p['type'] == 'string':
@@ -300,10 +388,13 @@ class ElementWithAttributes(Element):
         return NamedNodeMap(attribs)
    
     def getAttribute(self, name):
+        """Retrieves an attribute value by name."""
         if self.getPropertyType(name) == 'string':
             return self.getProperty(name,'')
  
     def getAttributeNode(self, name):
+        """Retrieves an Attr node by name or None if
+        there is no such attribute. """
         if self.getPropertyType(name) == 'string':
             return Attr(name, self.getProperty(name,'')).__of__(self)
         return None
@@ -311,33 +402,41 @@ class ElementWithAttributes(Element):
 
 class ElementWithTitle(Element):
     """
-    Elements that allow DOM access to Zope title property.
+    Elements that allow DOM access to Zope 'title' property.
     
     Note: Don't use this sub-class for PropertyManagers
     """
     
     def getAttributes(self):
+        """Returns a NamedNodeMap containing the attributes
+        of this node (if it is an element) or None otherwise."""
         if self.getAttribute('title'):
             return NamedNodeMap({'title' : self.title})
         return NamedNodeMap()
         
     def getAttribute(self, name):
+        """Retrieves an attribute value by name."""
         if name=='title' and hasattr(self.aq_base, 'title'):
             return self.title
         return ''
     
     def getAttributeNode(self, name):
+        """Retrieves an Attr node by name or None if
+        there is no such attribute. """
         value=self.getAttribute(name)
         if value:
             return Attr(name, value).__of__(self)
         return None
             
-""" -------------------------------------------------------------------
-INTERFACE NodeList - provides the abstraction of an ordered collection
-of nodes. """
-   
-class NodeList:
 
+class NodeList:
+    """NodeList interface - Provides the abstraction of an ordered
+    collection of nodes.
+    
+    Python extensions: can use sequence-style 'len', 'getitem', and
+    'for..in' constructs.
+    """
+    
     def __init__(self,list=None):
         self._data = list or []
     
@@ -355,45 +454,54 @@ class NodeList:
     
     __len__=getLength
  
-""" -----------------------------------------------------------------
-INTERFACE NamedNodeMap - Interface is used to represent collections
-of nodes that can be accessed by name.  NamedNodeMaps are not
-maintained in any particular order.  """
 
 class NamedNodeMap:
-
+    """
+    NamedNodeMap interface - Is used to represent collections
+    of nodes that can be accessed by name.  NamedNodeMaps are not
+    maintained in any particular order.
+    
+    Python extensions: can use sequence-style 'len', 'getitem', and
+    'for..in' constructs, and mapping-style 'getitem'.
+    """
+    
     def __init__(self, data=None):
         if data is None : data = {}
         self._data = data
 
-    def __getitem__(self, index):
+    def item(self, index):
         """Returns the index-th item in the map"""
         try: return self._data.values()[index]
         except IndexError: return None
         
-    item = __getitem__
-
+    def __getitem__(self, key):
+        if type(key)==type(1):
+            return self._data.values()[key]
+        else:
+            return self._data[key]
+            
     def getLength(self):
         """The length of the NodeList"""
         return len(self._data)
-
+    
     __len__ = getLength
     
     def getNamedItem(self, name):
         """Retrieves a node specified by name. Parameters:
-        name Name of a node to retrieve. Return Value  A Node (of any
-        type) with the specified name, or null if the specified name
+        name Name of a node to retrieve. Return Value A Node (of any
+        type) with the specified name, or None if the specified name
         did not identify any node in the map.
         """
         if self._data.has_key(name): 
             return self._data[name]
         return None
 
-""" ------------------------------------------------------------------
-INTERFACE Attr - The Attr interface represents an attriubte in an
-Element object.  Attr objects inherit the Node Interface"""
 
 class Attr(Acquisition.Implicit, Node):
+    """
+    Attr interface - The Attr interface represents an attriubte in an
+    Element object. Attr objects inherit the Node Interface
+    """
 
     def __init__(self, name, value):
         self.name = name
@@ -401,39 +509,24 @@ class Attr(Acquisition.Implicit, Node):
         self.specified = 1
         
     def getNodeName(self):
+        """The name of this node, depending on its type"""
         return self.name
 
     def getName(self):
+        """Returns the name of this attribute."""
         return self.name
     
     def getNodeValue(self):
+        """The value of this node, depending on its type"""
         return self.value
 
     def getNodeType(self):
+        """A code representing the type of the node."""
         return ATTRIBUTE_NODE
 
     def getSpecified(self):
+        """If this attribute was explicitly given a value in the
+        original document, this is true; otherwise, it is false."""
         return self.specified
         
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
