@@ -987,6 +987,17 @@ setup(
                      'Products/ZGadflyDA/gadfly/*.html']]],
     )
 
+# ZReST product
+setup(
+    name='ZReST ',
+    author='Richard Jones',
+
+    packages=['Products.ZReST'],
+    data_files=[['Products/ZReST', ['Products/ZReST/*.txt']],
+                ['Products/ZReST/dtml', ['Products/ZReST/dtml/*']],
+                ],
+    )
+
 # ZSQLMethods product
 setup(
     name='ZSQLMethods',
