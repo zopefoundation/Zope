@@ -85,7 +85,7 @@
 
 """ZCatalog product"""
 
-import ZCatalog, Catalog, CatalogAwareness
+import ZCatalog, Catalog, CatalogAwareness, Vocabulary
 
 
 
@@ -97,7 +97,25 @@ def initialize(context):
                       ZCatalog.manage_addZCatalog),
         icon='www/ZCatalog.gif',
         )
+
+    context.registerClass(
+        Vocabulary.Vocabulary,
+        permission='Add Vocabularies',
+        constructors=(Vocabulary.manage_addVocabularyForm,
+                      Vocabulary.manage_addVocabulary),
+        icon='www/ZCatalog.gif',
+        )
+    
     context.registerBaseClass(ZCatalog.ZCatalog)
     context.registerBaseClass(CatalogAwareness.CatalogAware)
 
     context.registerHelp()
+
+
+methods={
+    ## aparently this is bad, but I can't think of any other way!
+    
+    'VocabularyIDs' : ZCatalog.VocabularyIDs,
+    }
+
+
