@@ -119,6 +119,32 @@ class ObjectManager:
         Permission -- Python only
         """
 
+    def manage_delObjects(ids):
+        """
+        Removes one or more children from the Object Manager. The
+        'ids' argument is either a list of child ids, or a single
+        child id.
 
+        Permission -- 'Delete objects'
+        """
 
+    def __getitem__(id):
+        """
+        Returns a child object given a child id. If there is no child
+        with the given id, returns None. This method makes it easy to
+        refer to children that have id with file extensions. For
+        example::
 
+          page=folder['index.html']
+
+        Note: this function only finds children; it doesn't return
+        properties or other non-child attributes.
+
+        Note: this function doesn't use acquisition to find
+        children. It only returns direct children of the Object
+        Manager. By contrast, using dot notation or 'getattr' will
+        locate children (and other attributes) via acquisition if
+        necessary.
+
+        Permission -- 'Access contents information'
+        """
