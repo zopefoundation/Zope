@@ -82,92 +82,90 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.4 2001/05/23 14:42:04 andreas Exp $''' 
-__version__='$Revision: 1.4 $'[11:-2]
+import sys
+sys.path.insert(0, '.')
+try:
+    import Testing
+except ImportError:
+    sys.path[0] = '../../'
+    import Testing
 
-from DocumentTemplate import DT_Util
-import SecurityManagement, string, math, whrandom, random
-import DocumentTemplate.sequence
+import unittest
+from SortEx import *
+from ztestlib import *
+from results import *
 
-# Allow access to unprotected attributes
-DT_Util.TemplateDict.__allow_access_to_unprotected_subobjects__=1
-string.__allow_access_to_unprotected_subobjects__=1
-math.__allow_access_to_unprotected_subobjects__=1
-whrandom.__allow_access_to_unprotected_subobjects__=1
-random.__allow_access_to_unprotected_subobjects__=1
 
-DocumentTemplate.sequence.__allow_access_to_unprotected_subobjects__=1
-
-# Add security testing capabilities
-
-class DTMLSecurityAPI:
-    """API for performing security checks in DTML using '_' methods.
+class TestCase( unittest.TestCase ):
+    """
+        Test SortEx .
     """
 
-    def SecurityValidate(md, inst, parent, name, value):
-        """Validate access.
-
-        Arguments:
-        
-        accessed -- the object that was being accessed
-        
-        container -- the object the value was found in
-        
-        name -- The name used to access the value
-        
-        value -- The value retrieved though the access.
-        
-        The arguments may be provided as keyword arguments. Some of these
-        arguments may be ommitted, however, the policy may reject access
-        in some cases when arguments are ommitted.  It is best to provide
-        all the values possible.
+    def setUp( self ):
         """
-        return (SecurityManagement
-                .getSecurityManager()
-                .validate(inst, parent, name, value)
-                )
-
-    def SecurityValidateValue(md, value):
-        """Convenience for common case of simple value validation.
         """
-        return (SecurityManagement
-                .getSecurityManager()
-                .validateValue(value)
-                )
 
-    def SecurityCheckPermission(md, permission, object):
-        """Check whether the security context allows the given permission on
-        the given object.
-
-        Arguments:
-        
-        permission -- A permission name
-        
-        object -- The object being accessed according to the permission
+    def tearDown( self ):
         """
-        return (SecurityManagement
-                .getSecurityManager()
-                .checkPermission(permission, object)
-                )
+        """
+           
+    def test1( self ):
+        "test1"
+        assert res1==SortEx(wordlist)
 
-    def SecurityGetUser(md):
-        """Gen the current authenticated user"""
-        return (SecurityManagement
-                .getSecurityManager()
-                .getUser()
-                )
+    def test2( self ):
+        "test2"
+        assert res2==SortEx(wordlist, (("key",),), mapping=1)
 
-    def SecurityCalledByExecutable(md):
-        """Return a boolean value indicating if this context was called
-        by an executable"""
-        r = (SecurityManagement
-             .getSecurityManager()
-             .calledByExecutable()
-             )
-        if r > 0: return r-1
-        return r
+    def test3( self ):
+        "test3"
+        assert res3==SortEx(wordlist, (("key", "cmp"),), mapping=1)
+        
+    def test4( self ):
+        "test4"
+        assert res4==SortEx(wordlist, (("key", "cmp", "desc"),), mapping=1)
 
-DT_Util.TemplateDict.__dict__.update(DTMLSecurityAPI.__dict__)
+    def test5( self ):
+        "test5"
+        assert res5==SortEx(wordlist, (("weight",), ("key",)), mapping=1)
 
+    def test6( self ):
+        "test6"
+        assert res6==SortEx(wordlist, (("weight",), ("key", "nocase", "desc")), mapping=1)
+
+
+    def test7(self):
+        "test7"
+
+        def myCmp(s1, s2):
+           return -cmp(s1, s2)
+
+        # Create namespace...
+        from DocumentTemplate.DT_Util import TemplateDict
+        md = TemplateDict()
+
+        #... and push out function onto the namespace
+        md._push({"myCmp" : myCmp})
+
+        assert res7==SortEx(wordlist, (("weight",), ("key", "myCmp", "desc")), md, mapping=1)
+
+
+def test_suite():
+    return unittest.makeSuite( TestCase )
+
+def debug():
+    return test_suite().debug()
+
+def pdebug():
+    import pdb
+    pdb.run('debug()')
+
+def main():
+    unittest.TextTestRunner().run( test_suite() )
+
+if __name__ == '__main__':
+   if len(sys.argv) > 1:
+      globals()[sys.argv[1]]()
+   else:
+      main()
