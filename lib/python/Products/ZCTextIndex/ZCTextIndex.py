@@ -84,7 +84,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
         if index_factory is None:
             if extra.index_type not in index_types.keys():
-                raise ValueError, 'Invalid index type "%s"' % extra.index_type
+                raise ValueError, 'Invalid index type "%s"' % escape(
+                    extra.index_type)
             self._index_factory = index_types[extra.index_type]
             self._index_type = extra.index_type
         else:
