@@ -100,6 +100,9 @@ Zope Changes
 
     Bugs fixed
 
+     - The DateTime module did not recognize the settings for
+       "datetime-format".
+
      - Stop testrunner.py from recursing into the 'build-base' directory
        created by setup.py.
 
