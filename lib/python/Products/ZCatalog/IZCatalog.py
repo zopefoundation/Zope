@@ -228,9 +228,25 @@ class IZCatalog(Interface):
         queries (even across catalogs) and merge and sort the combined results.
         """
 
-    def refreshCatalog():
+    def refreshCatalog(clear=0, REQUEST=None, pghandler=None):
         """Reindex every object we can find, removing the unreachable
-        ones from the index.
+        ones from the index. 
+        
+        clear -- values: 1|0  clear the catalog before reindexing
+
+        REQUEST -- optional REQUEST object
+    
+        pghandler -- optional Progresshandler as defined in ProgressHandler.py 
+        (see also README.txt)     
+        """
+
+    def reindexIndex(name, pghandler=None):
+        """Reindex a single index.
+
+        name -- id of index
+
+        pghandler -- optional Progresshandler as defined in ProgressHandler.py 
+        (see also README.txt)     
         """
 
 __doc__ = IZCatalog.__doc__ + __doc__
