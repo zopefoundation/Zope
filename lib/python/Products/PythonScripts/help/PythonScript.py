@@ -152,7 +152,7 @@ class PythonScript:
 
     """
 
-    def ZPythonScriptHTML_editAction(self, REQUEST, title, params, body):
+    def ZPythonScriptHTML_editAction(REQUEST, title, params, body):
         """
 
         Change the script's main parameters.  This method accepts the
@@ -174,7 +174,7 @@ class PythonScript:
 
         """
 
-    def ZPythonScript_setTitle(self, title):
+    def ZPythonScript_setTitle(title):
         """
 
         Change the script's title.  This method accepts one argument,
@@ -183,7 +183,7 @@ class PythonScript:
 
         """
 
-    def ZPythonScript_edit(self, params, body):
+    def ZPythonScript_edit(params, body):
         """
 
         Change the parameters and body of the script.  This method accepts
@@ -200,7 +200,7 @@ class PythonScript:
 
         """
 
-    def ZPythonScriptHTML_upload(self, REQUEST, file=''):
+    def ZPythonScriptHTML_upload(REQUEST, file=''):
         """
 
         Replace the body of the script with the text in file.
@@ -231,7 +231,7 @@ class PythonScript:
 
         """
 
-    def document_src(self, REQUEST=None, RESPONSE=None):
+    def document_src(REQUEST=None, RESPONSE=None):
         """
 
         Return unprocessed document source.
