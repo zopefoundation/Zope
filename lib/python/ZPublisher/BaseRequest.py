@@ -189,6 +189,9 @@ class BaseRequest:
         if response is None: response=self.response
         debug_mode=response.debug_mode
 
+        # remember path for later use
+        browser_path = path
+
         # Cleanup the path list
         if path[:1]=='/':  path=path[1:]
         if path[-1:]=='/': path=path[:-1]
@@ -251,6 +254,7 @@ class BaseRequest:
         path.reverse()
 
         request['TraversalRequestNameStack'] = request.path = path
+        request['ACTUAL_URL'] = request['URL'] + quote(browser_path)
 
         # Set the posttraverse for duration of the traversal here
         self._post_traverse = post_traverse = []

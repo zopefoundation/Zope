@@ -8,6 +8,7 @@ from OFS.SimpleItem import Item
 from Acquisition import Implicit, aq_inner, aq_parent
 from ZPublisher import BeforeTraverse
 from zExceptions import BadRequest
+from urllib import quote
 import os
 
 from AccessRule import _swallow
@@ -185,11 +186,16 @@ class VirtualHostMonster(Persistent, Item, Implicit):
                         vh_part = path.pop(0)[1:]
                     if vh_part:
                         request['VIRTUAL_URL_PARTS'] = vup = (
-                            request['SERVER_URL'], vh_part, '/'.join(path))
+                            request['SERVER_URL'], vh_part, quote('/'.join(path)))
                     else:
                         request['VIRTUAL_URL_PARTS'] = vup = (
-                            request['SERVER_URL'], '/'.join(path))
+                            request['SERVER_URL'], quote('/'.join(path)))
                     request['VIRTUAL_URL'] = '/'.join(vup)
+
+                    # new ACTUAL_URL
+                    add = request['ACTUAL_URL'].endswith('/') and '/' or ''
+                    request['ACTUAL_URL'] = request['VIRTUAL_URL']+add
+
                 return
             vh_used = 1 # Only retry once.
             # Try to apply the host map if one exists, and if no

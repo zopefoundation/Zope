@@ -46,6 +46,13 @@ Zope Changes
 
     Bugs fixed
 
+      - The REQUEST now contains a new entry ACTUAL_URL which contains the
+        full URL without query string as it appears within the location bar of
+        the browser. The key has been added to provide a single key that is 
+        available for vhosted and non-vhosted installations.
+
+      - Collector #1605: VHM did not quote URLs
+
       - webdav.Resource: during COPY, manage_afterClone was called way
         too early, thus the object wasn't bound to the database and
         couldn't find a context. Changed to behave the same way as
