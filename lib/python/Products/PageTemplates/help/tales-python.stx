@@ -4,7 +4,7 @@ TALES Python expressions
 
     Python expression syntax::
 
-      XXX
+      any valid Python language expression
 
   Description
   
@@ -16,11 +16,6 @@ TALES Python expressions
 
       Python expressions are subject to the same security restrictions
       as Python-based scripts. These restrictions include:
-
-      loop limits -- Python expressions cannot create infinite loops.
-
-      import limits -- Python expressions can only access some Python
-      modules. See below for details.
 
       access limits -- Python expressions are subject to Zope
       permission and role security restrictions. In addition,
@@ -36,7 +31,7 @@ TALES Python expressions
     Built-in Functions
 
       Python expressions have the same built-ins as Python-based
-      scripts with a few additions.
+      Scripts with a few additions.
 
       These standard Python built-ins are available: 'None', 'abs',
       'apply', 'callable', 'chr', 'cmp', 'complex', 'delattr',
@@ -49,9 +44,9 @@ TALES Python expressions
       keep them from generating very large numbers and sequences. This
       limitation helps protect against denial of service attacks.
 
-      In addition, these utility functions are available: 'DateTime',
-      'test', 'same_type'. See XXX for more information on these
-      functions.
+      In addition, these utility functions are available: 
+      "DateTime":/Control_Panel/Products/OFSP/Help/DateTime.py,
+      'test', and 'same_type'.
 
       Finally, these functions are available in Python expressions,
       but not in Python-based scripts:

@@ -4,7 +4,7 @@ tal:omit-tag - Remove an element, leaving its contents
 
     'tal:omit-tag' syntax::
   
-      argument ::= [expression]
+      argument ::= [ expression ]
 
   Description
 

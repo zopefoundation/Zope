@@ -14,7 +14,8 @@ TALES String expressions
     String expressions interpret the expression string as text. If no
     expression string is supplied the resulting string is *empty*. The
     string can contain variable substitutions of the form '$name' or
-    '${name}', where 'name' is a "path expression":tales-path.stx.
+    '${path}', where 'name' is a variable name, and 'path' is a
+    "path expression":tales-path.stx.
     The escaped string value of the path expression is inserted into
     the string. To prevent a '$' from being interpreted this way, it
     must be escaped as '$$'.
@@ -24,10 +25,10 @@ TALES String expressions
     Basic string formatting::
 
       <span tal:replace="string:$this and $that">
-        this and that
+        Spam and Eggs
       </span>
 
-    Variables with longer paths::
+    Using paths::
 
       <p tal:content="total: ${request/form/total}">
         total: 12

@@ -16,8 +16,8 @@ metal:fill-slot - Customize a macro
 
     Slot names must be unique within a macro.
 
-    If the named slot does not exist within the macro, Zope will raise
-    an error.
+    If the named slot does not exist within the macro, the slot
+    contents will be silently dropped.
 
   Examples
 

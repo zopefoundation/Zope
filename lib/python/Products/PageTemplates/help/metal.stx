@@ -28,12 +28,12 @@ METAL Overview
 
     * "metal:define-macro":metal-define-macro.stx - Define a macro.
 
-    * "metal:use-macro":metal-use-macro.stx" - Use a macro.
+    * "metal:use-macro":metal-use-macro.stx - Use a macro.
 
     * "metal:define-slot":metal-define-slot.stx - Define a macro
-    * customization point.
+    customization point.
 
-    * "metal:use-slot":metal-use-slot.stx - Customize a macro.
+    * "metal:fill-slot":metal-fill-slot.stx - Customize a macro.
 
     Although METAL does not define the syntax of expression
     non-terminals, leaving that up to the implementation, a canonical
@@ -48,11 +48,11 @@ METAL Overview
 
     "metal:define-macro":metal-define-macro.stx
 
-    "metal:use-macro":metal-use-macro.stx"
+    "metal:use-macro":metal-use-macro.stx
 
     "metal:define-slot":metal-define-slot.stx
 
-    "metal:use-slot":metal-use-slot.stx
+    "metal:fill-slot":metal-fill-slot.stx
 
 
   

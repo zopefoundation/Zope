@@ -15,7 +15,7 @@ tal:on-error - Handle errors
     'tal:on-error' found is invoked. It is treated as a 'tal:content'
     statement.
 
-    A local variable, 'error' is set. This variable has these
+    A local variable 'error' is set. This variable has these
     attributes:
 
       'type' -- the exception type

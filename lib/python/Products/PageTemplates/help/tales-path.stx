@@ -35,8 +35,7 @@ TALES Path expressions
 
     Once a path has been successfully traversed, the resulting object
     is the value of the expression.  If it is a callable object, such
-    as a method or template, it is called. The semantics of traversal
-    (and what it means to be callable) are implementation-dependent.
+    as a method or template, it is called.
 
     If a traversal step fails, evaluation immediately proceeds to the next
     path.  If there are no further paths, an error results.

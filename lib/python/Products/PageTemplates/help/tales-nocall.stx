@@ -4,11 +4,11 @@ TALES Nocall expressions
 
     Nocall expression syntax::
 
-      nocall_expression ::= 'nocall:' expression
+      nocall_expression ::= 'nocall:' path_expression
 
   Description
 
-    Nocall expressions avoid rendering the results of another
+    Nocall expressions avoid rendering the results of a path
     expression.
     
     An ordinary path expression tries to render the object that it

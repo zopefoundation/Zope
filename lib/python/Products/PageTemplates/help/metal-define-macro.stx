@@ -27,6 +27,6 @@ metal:define-macro - Define a macro
 
   See Also
 
-    "metal:use-macro":metal-use-macro.stx"
+    "metal:use-macro":metal-use-macro.stx
 
     "metal:define-slot":metal-define-slot.stx

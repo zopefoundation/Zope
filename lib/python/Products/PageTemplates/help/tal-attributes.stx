@@ -15,7 +15,7 @@ tal:attributes - Replace element attributes
   Description
 
     The 'tal:attributes' statement replaces the value of an attribute
-    (or create an attribute) with a dynamic value.  You can qualify an
+    (or creates an attribute) with a dynamic value.  You can qualify an
     attribute name with a namespace prefix, for example 'html:table', if
     you are generating an XML document with multiple namespaces.  The
     value of each expression is converted to a string, if necessary.
@@ -28,23 +28,7 @@ tal:attributes - Replace element attributes
     which some attributes are deleted and others are left alone.
 
     If you use 'tal:attributes' on an element with an active
-    'tal:replace' command, the implementation may ignore the
-    'tal:attributes' statement.  If it does not, the replacement must
-    use the 'structure' type, the structure returned by the expression
-    must yield at least one element, and the attributes will be replaced
-    on the first such element only.  For example::
-
-      <span tal:replace="structure an_image" tal:attributes="border string:1">
-
-    May result in either::
-
-      <img src="foo.png">
-
-    or::
-
-      <img src="foo.png" border="1">
-
-    *Note: Zope will return the second result*
+    'tal:replace' command, the 'tal:attributes' statement is ignored.
 
     If you use 'tal:attributes' on an element with a 'tal:repeat'
     statement, the replacement is made on each repetition of the
