@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.57 1998/08/12 12:13:28 jim Exp $
+     $Id: cPickle.c,v 1.58 1998/10/01 22:06:35 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.57 1998/08/12 12:13:28 jim Exp $\n"
+"$Id: cPickle.c,v 1.58 1998/10/01 22:06:35 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -1990,7 +1990,7 @@ find_class(PyObject *py_module_name, PyObject *py_global_name) {
       global = PyObject_GetAttr(module, py_global_name);
     if (global == NULL) {
       char buf[256 + 37];
-      sprintf(buf, "Failed to import class %.128s from moduile %.128s",
+      sprintf(buf, "Failed to import class %.128s from module %.128s",
               PyString_AS_STRING((PyStringObject*)py_global_name),
               PyString_AS_STRING((PyStringObject*)py_module_name));  
       PyErr_SetString(PyExc_SystemError, buf);
@@ -4335,7 +4335,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d, *v;
-    char *rev="$Revision: 1.57 $";
+    char *rev="$Revision: 1.58 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
