@@ -1,0 +1,7 @@
+MailHost 1.0.1 Release Notes
+
+  Features Added
+
+    - MailHost objects now have an adjustable 'timeout' parameter that 
+      sets how long to wait to connect to the SMTP server before
+      timing out.
