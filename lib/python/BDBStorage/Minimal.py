@@ -4,8 +4,7 @@ See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-# $Revision: 1.8 $
-__version__ = '0.1'
+__version__ = '$Revision: 1.9 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.0 of

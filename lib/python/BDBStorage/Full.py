@@ -4,8 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.21 $
-__version__ = '0.1'
+__version__ = '$Revision: 1.22 $'[-2:][0]
 
 import struct
 import time
