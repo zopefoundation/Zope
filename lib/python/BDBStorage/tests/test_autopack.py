@@ -69,7 +69,7 @@ class TestAutopackBase(BerkeleyTestBase):
 class TestAutopack(TestAutopackBase):
     ConcreteStorage = BDBFullStorage
 
-    def checkAutopack(self):
+    def testAutopack(self):
         unless = self.failUnless
         raises = self.assertRaises
         storage = self._storage
@@ -110,7 +110,7 @@ class TestAutomaticClassicPack(TestAutopackBase):
         config.classicpack = 1
         return config
 
-    def checkAutomaticClassicPack(self):
+    def testAutomaticClassicPack(self):
         unless = self.failUnless
         raises = self.assertRaises
         storage = self._storage
@@ -138,7 +138,7 @@ class TestAutomaticClassicPack(TestAutopackBase):
         raises(KeyError, storage.loadSerial, oid, revid2)
         raises(KeyError, storage.loadSerial, oid, revid3)
 
-    def checkCycleUnreachable(self):
+    def testCycleUnreachable(self):
         unless = self.failUnless
         raises = self.assertRaises
         storage = self._storage
@@ -189,7 +189,7 @@ class TestMinimalPack(TestAutopackBase):
         config.frequency = 3
         return config
 
-    def checkRootUnreachable(self):
+    def testRootUnreachable(self):
         unless = self.failUnless
         raises = self.assertRaises
         storage = self._storage
@@ -218,7 +218,7 @@ class TestMinimalPack(TestAutopackBase):
         unless(storage.load(ZERO, ''))
         raises(KeyError, storage.load, oid, '')
 
-    def checkCycleUnreachable(self):
+    def testCycleUnreachable(self):
         unless = self.failUnless
         raises = self.assertRaises
         storage = self._storage
@@ -261,10 +261,11 @@ class TestMinimalPack(TestAutopackBase):
 
 def test_suite():
     suite = unittest.TestSuite()
+    suite.level = 2
     if BDBStorage.is_available:
-        suite.addTest(unittest.makeSuite(TestAutopack, 'check'))
-        suite.addTest(unittest.makeSuite(TestAutomaticClassicPack, 'check'))
-        suite.addTest(unittest.makeSuite(TestMinimalPack, 'check'))
+        suite.addTest(unittest.makeSuite(TestAutopack))
+        suite.addTest(unittest.makeSuite(TestAutomaticClassicPack))
+        suite.addTest(unittest.makeSuite(TestMinimalPack))
     return suite
 
 
