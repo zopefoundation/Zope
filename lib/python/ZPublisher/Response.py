@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.11 1996/09/16 14:43:25 jim Exp $'''
+$Id: Response.py,v 1.12 1997/01/28 22:59:19 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.11 1996/09/16 14:43:25 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.12  1997/01/28 22:59:19  jim
+# Fixed bug that caused html didling of non-html data
+#
 # Revision 1.11  1996/09/16 14:43:25  jim
 # Changes to make shutdown methods work properly.  Now shutdown methods
 # can simply sys.exit(0).
@@ -109,7 +112,7 @@ $Id: Response.py,v 1.11 1996/09/16 14:43:25 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -313,6 +316,9 @@ class Response:
 		   base_re=regex.compile('\(<base[\0- ]+\([^>]+\)>\)',
 					 regex.casefold)
 		   ):
+        if (self.headers.has_key('content-type') and
+	    self.headers['content-type']!='text/html'): return
+
 	if self.base:
 	    body=self.body
 	    if body:
@@ -542,6 +548,8 @@ class Response:
 		else:
 		    c='text/plain'
 		self.setHeader('content-type',c)
+	    else:
+		isHTML = headers['content-type']=='text/html'
 	    if isHTML and end_of_header_re.search(self.body) < 0:
 		htmlre=regex.compile('<html>',regex.casefold)
 		lhtml=htmlre.search(body)
