@@ -297,7 +297,8 @@ class DocumentClass:
         ]
 
     text_types = [
-        'doc_href',
+        'doc_href1',
+        'doc_href2',
         'doc_strong',
         'doc_emphasize',
         'doc_literal',
@@ -650,16 +651,23 @@ class DocumentClass:
            return (StructuredTextStrong(s[start:end]), start-2, end+2)
         else:
            return None
-    
-    def doc_href(
-        self, s,
-        expr1 = re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)([,]*\s*)" % letters).search,
-        expr2 = re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)(\s*)' % letters).search,
-        punctuation = re.compile("[\,\.\?\!\;]+").match
-        ):
-        
-        r=expr1(s) or expr2(s)
 
+
+      
+    def doc_href1(self, s,
+        expr=re.compile("(\"[ %s0-9\n\-\.\,\;\(\)\/\:\/\*\']+\")(:)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)([,]*\s*)" % letters).search
+        ):
+        return self.doc_href(s, expr)
+
+    def  doc_href2(self, s,
+        expr=re.compile('(\"[ %s0-9\n\-\.\:\;\(\)\/\*\']+\")([,]+\s+)([a-zA-Z0-9\@\.\,\?\!\/\:\;\-\#\~]+)(\s*)' % letters).search
+        ):
+        return self.doc_href(s, expr)
+
+    def doc_href(self, s, expr, punctuation = re.compile("[\,\.\?\!\;]+").match):
+
+        r=expr(s)
+          
         if r:
             # need to grab the href part and the
             # beginning part

@@ -368,7 +368,8 @@ class DocumentClass:
     #'doc_underline'
     text_types = [
         'doc_sgml',
-        'doc_href',
+        'doc_href1',
+        'doc_href2',
         'doc_strong',
         'doc_emphasize',
         'doc_underline',
@@ -955,13 +956,22 @@ class DocumentClass:
     _ABS_AND_RELATIVE_URL=r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~\=\&\%%]+)' % letters
 
     _SPACES = r'(\s*)'
-    
-    def doc_href(self, s,
-                 expr1 = re.compile(_DQUOTEDTEXT + "(:)" + _ABS_AND_RELATIVE_URL + _SPACES).search,
-                 expr2 = re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _ABSOLUTE_URL + _SPACES).search):
-        
-        punctuation = re.compile(r"[\,\.\?\!\;]+").match
-        r=expr1(s) or expr2(s)
+
+
+    def doc_href1(self, s,
+                  expr=re.compile(_DQUOTEDTEXT + "(:)" + _ABS_AND_RELATIVE_URL + _SPACES).search
+                   ):
+        return self.doc_href(s, expr)
+
+    def doc_href2(self, s,
+                  expr=re.compile(_DQUOTEDTEXT + r'(\,\s+)' + _ABSOLUTE_URL + _SPACES).search
+                   ):
+         return self.doc_href(s, expr)
+
+
+    def doc_href(self, s, expr, punctuation=re.compile(r"[\,\.\?\!\;]+").match):
+
+        r=expr(s)
 
         if r:
             # need to grab the href part and the
