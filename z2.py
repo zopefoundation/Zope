@@ -742,7 +742,7 @@ try:
                     port=port)
 
     if ICP_PORT:
-        if instrance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
+        if isinstance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
         from ZServer.ICPServer import ICPServer
         for address, port in ICP_PORT:
             ICPServer(address,port)
