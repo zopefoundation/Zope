@@ -84,12 +84,12 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
-from time import time,gmtime,localtime,asctime,tzname
+from time import time,gmtime,localtime,asctime,tzname,strftime,mktime
 from types import InstanceType,IntType,FloatType,StringType
 
 
@@ -858,6 +858,9 @@ class DateTime:
     def _validTime(self,h,m,s):
         return h>=0 and h<=23 and m>=0 and m<=59 and s>=0 and s<=59
 
+    def __getattr__(self, name):
+        if '%' in name: return strftimeFormatter(self, name)
+        raise AttributeError, name
 
 
     # Conversion and comparison methods
@@ -1121,6 +1124,8 @@ class DateTime:
         """Return the second"""
         return self._second
 
+    def strftime(self, format):
+        return strftime(format, gmtime(self.timeTime()))
 
 
     # General formats from previous DateTime
@@ -1298,6 +1303,14 @@ class DateTime:
         """Convert to floating-point number of days since Jan. 1, 1901 (gmt)"""
         return float(self._d)
 
+
+class strftimeFormatter:
+
+    def __init__(self, dt, format):
+        self._dt=dt
+        self._f=format
+
+    def __call__(self): return self._dt.strftime(self._f)
 
 
 # Module methods
