@@ -11,7 +11,11 @@
    ALT="Click to open this item"></A> 
   <STRONG>
   <A HREF="manage_main" TARGET="manage_main">
+  <!--#if expr="URL1[-(_.len(SCRIPT_NAME)):]==SCRIPT_NAME"-->
   <!--#var expr="SCRIPT_NAME[1:]"-->
+  <!--#else-->
+  <!--#var id-->
+  <!--#/if-->
   </A>
   </STRONG>
   </TD>
