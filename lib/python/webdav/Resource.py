@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -115,8 +115,10 @@ class Resource(ExtensionClass.Base):
     def dav__init(self, request, response):
         # Init expected HTTP 1.1 / WebDAV headers which are not
         # currently set by the response object automagically.
+        # Note we set an borg-specific header for ie5 :(
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
+        response.setHeader('MS-Author-Via', 'DAV')
 
     def dav__validate(self, object, methodname, REQUEST):
         msg='<strong>You are not authorized to access this resource.</strong>'
