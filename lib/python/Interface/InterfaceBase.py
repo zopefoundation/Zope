@@ -1,6 +1,8 @@
 
 class InterfaceBase:
 
+    __tagged_values = {}
+
     def getName(self):
         """ Returns the name of the object. """
         return self.__name__
