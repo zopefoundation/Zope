@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.98 $'[11:-2]
+__version__='$Revision: 1.99 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -98,8 +98,6 @@ from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
 
-from FileInterface import FileInterface
-from ImageInterface import ImageInterface
 
 StringType=type('')
 
@@ -131,7 +129,6 @@ class File(Persistent,Implicit,PropertyManager,
     
     meta_type='File'
 
-    __implements__=(FileInterface,)
     
     precondition=''
     size=None
@@ -414,7 +411,6 @@ class Image(File):
     """
     meta_type='Image'
 
-    __implements__=(ImageInterface,)
     
     height=''
     width=''
