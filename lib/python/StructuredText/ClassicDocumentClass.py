@@ -85,7 +85,7 @@
 
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find
-from STletters import letters,lettpunc,punctuations
+from STletters import letters
 
 StringType=type('')
 ListType=type([])
