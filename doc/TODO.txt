@@ -2,7 +2,7 @@ The following is a TODO list dealing with installation and startup
 changes proposed for the Zope trunk.  It is organized into these
 categories:
 
-  "BEFORE RELEASE OF ZOPE 2.7A" (items to do before the first alpha
+  "BEFORE RELEASE OF ZOPE 2.7B" (items to do before the  beta
   release of Zope 2.7)
 
   "BEFORE 2.7 FINAL" (things that need to be done before we're
@@ -12,7 +12,7 @@ categories:
   path)
 
 --------------------------------
-  BEFORE RELEASE OF ZOPE 2.7A
+  BEFORE RELEASE OF ZOPE 2.7B
 --------------------------------
 
 Provide more intuitive command line option overrides
@@ -49,12 +49,6 @@ Make as many things defaultable as feasible
 Write some more unit tests
 
   Write unit tests for Zope.Startup packages.
-
-Update Zope distribution creation machinery
-
-  The current distribution-creation machinery will almost certainly
-  fail if it's not updated with knowledge of the new Zope installation
-  regime.
 
 What to do about envvars?
 
@@ -111,12 +105,17 @@ Review impact of missing Data.fs.in
       enough".  The code that installs these default objects exists in
       the initialize function within lib/python/OFS/Application.
 
+Integrate DBTab functionality
+
+  Integrate DBTab functionality driven by zconfig.
+
+
 -----------------
 BEFORE 2.7 FINAL
 -----------------
 
 Review the Zope Book 2.6 Edition chapters and come up with revisions
-or at least create a Zope Trunk Install HowTo
+or at least create a Zope 2.7 Install HowTo
 
   The 2.6 edition Zope Book at
   http://www.zope.org/Documentation/Books/ZopeBook/2_6Edition has
@@ -127,11 +126,7 @@ or at least create a Zope Trunk Install HowTo
   to allow a Zope Book 2.7 edition.
 
   At least create a HowTo which summarizes the differences between
-  installing 2.6 and installing the trunk.
-
-Windows Installer
-
-   Allow default instance to run as service on NT/2000
+  installing 2.6 and installing 2.7.
 
 ------------------------------
  MAYBE NEVER BUT NICE TO HAVE
