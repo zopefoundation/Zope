@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.9 1999/05/25 20:18:30 brian Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Factory.py,v 1.10 1999/06/16 14:15:27 brian Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
@@ -136,7 +136,7 @@ class Factory(Globals.Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
         product=self.aq_parent
         product.aq_acquire('_manage_remove_product_meta_type')(
             product, self.id, self.object_type)
-        
+
 
     manage_main=Globals.HTMLFile('editFactory',globals())
 

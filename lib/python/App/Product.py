@@ -211,10 +211,10 @@ class Product(Folder):
         if REQUEST is not None:
             return self.manage_main(self,REQUEST,update_menu=1)
 
-    def _delObject(self,id):
+    def _delObject(self,id, dp=1):
         o=getattr(self, id)
         if o.meta_type==Factory.meta_type: o._unregister()
-        Product.inheritedAttribute('_delObject')(self, id)
+        Product.inheritedAttribute('_delObject')(self, id, dp=1)
         
     def __init__(self, id, title):
         self.id=id
