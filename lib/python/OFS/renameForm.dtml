@@ -5,8 +5,12 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <dtml-if expr="_.hasattr(REQUEST, 'ids')">
-<H2>Rename Items</H2>
-<H2>Rename <dtml-var meta_type></H2>
+
+ <dtml-if "_.len( ids ) > 1">
+  <H2>Rename Items</H2>
+ <dtml-else>
+  <H2>Rename Item</H2>
+ </dtml-if>
 
 <dtml-var "HelpSys.HelpButton('Folder_Rename.dtml','OFSP')">
 
@@ -27,7 +31,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <INPUT TYPE="HIDDEN" NAME="ids:list" VALUE="<dtml-var id html_quote>">
-  <INPUT TYPE="TEXT" NAME="new_ids" SIZE="20" value="&dtml-id;">
+  <INPUT TYPE="TEXT" NAME="new_ids:list" SIZE="20" value="&dtml-id;">
   </TD>
 <dtml-else>
   <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
