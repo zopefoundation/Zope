@@ -164,7 +164,8 @@ def zpublisher_exception_hook(
             # some sane protocol for this, but for now we'll use
             # brute force:
             LOG('Z2 CONFLICT', INFO,
-                'Competing writes at, %s' % REQUEST.get('PATH_INFO', ''))
+                'Competing writes at, %s' % REQUEST.get('PATH_INFO', ''),
+                error=sys.exc_info())
             raise ZPublisher.Retry
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
@@ -172,7 +173,7 @@ def zpublisher_exception_hook(
 
         if (published is None or published is app or
             type(published) is ListType):
-            # At least get the top-lebel object
+            # At least get the top-level object
             published=app.__bobo_traverse__(REQUEST).__of__(
                 RequestContainer(REQUEST))
 
