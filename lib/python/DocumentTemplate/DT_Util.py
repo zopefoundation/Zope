@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.29 1998/03/26 16:09:11 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.30 1998/03/26 22:02:16 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -62,7 +62,7 @@ from __builtin__ import *
 import VSEval
 
 ParseError='Document Template Parse Error'
-ValidationError='ValidationError'
+ValidationError='Unauthorized'
 
 def int_param(params,md,name,default=0):
     try: v=params[name]
@@ -99,7 +99,7 @@ def careful_getitem(md, mapping, key):
 
     validate=md.validate
     if validate is None or validate(mapping,mapping,key,v,md): return v
-    raise Validation, key
+    raise ValidationError, key
 
 def careful_getslice(md, seq, *indexes):
     v=len(indexes)
@@ -329,6 +329,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.30  1998/03/26 22:02:16  jim
+# Changed value of ValidationError to Unauthorized.
+#
 # Revision 1.29  1998/03/26 16:09:11  jim
 # *** empty log message ***
 #
