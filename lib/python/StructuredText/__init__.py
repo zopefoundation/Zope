@@ -85,7 +85,7 @@
 
 import HTMLClass, DocumentClass
 import ClassicDocumentClass
-from StructuredText import html_with_references, HTML
+from StructuredText import html_with_references, HTML, html_quote
 from ST import Basic
 import DocBookClass
 import HTMLWithImages
