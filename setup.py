@@ -13,13 +13,13 @@
 ##############################################################################
 '''Distutils setup file for Zope
 
-Common usage: python setup.py build_ext --build-lib `pwd`/lib/python
+Common usage: python setup.py build_ext -i
 '''
 
 import os
 import sys
 
-from distutils.core import setup, run_setup
+from distutils.core import setup
 from distutils.extension import Extension
 
 
@@ -37,17 +37,63 @@ zope_corp = "Zope Corporation"
 zodb_email = "zodb-dev@zope.org"
 zodb_wiki = "http://www.zope.org/Wikis/ZODB/FrontPage"
 
-top_dir = os.path.abspath(os.getcwd())
+orig_dir = os.getcwd()
+
+if __name__ == '__main__':
+    top_dir = os.path.abspath(os.getcwd())
+else:
+    top_dir = os.path.abspath(os.path.dirname(__file__))
+
 ec_root = os.path.join(top_dir, 'lib', 'Components', 'ExtensionClass')
 ec_src = os.path.join(ec_root, 'src')
 py_root = os.path.join(top_dir, 'lib', 'python')
 zct_src = os.path.join(py_root, 'Products', 'ZCTextIndex')
 ec_include = [ec_src]
+ec_prefix = ec_src + os.sep
+os.chdir(py_root)
+
 
 # ExtensionClass
-os.chdir(ec_root)
-dist = run_setup('setup.py', script_args=sys.argv[1:], stop_after="run")
-os.chdir(py_root)
+ExtensionClass = Extension(name = 'ExtensionClass',
+                           sources = [ec_prefix + 'ExtensionClass.c'])
+
+Acquisition = Extension(name = 'Acquisition',
+                        sources = [ec_prefix + 'Acquisition.c'])
+
+ComputedAttribute = Extension(name = 'ComputedAttribute',
+                              sources = [ec_prefix + 'ComputedAttribute.c'])
+
+MethodObject = Extension(name = 'MethodObject',
+                         sources = [ec_prefix + 'MethodObject.c'])
+
+Missing = Extension(name = 'Missing',
+                    sources = [ec_prefix + 'Missing.c'])
+
+MultiMapping = Extension(name = 'MultiMapping',
+                         sources = [ec_prefix + 'MultiMapping.c'])
+
+Record = Extension(name = 'Record', sources = [ec_prefix + 'Record.c'])
+
+Sync = Extension(name = 'Sync', sources = [ec_prefix + 'Sync.c'])
+
+ThreadLock = Extension(name = 'ThreadLock',
+                       sources = [ec_prefix + 'ThreadLock.c'])
+
+setup(name = "ExtensionClass", 
+      version = "1.3",
+      description = "Support for Python classes implemented in C",
+      maintainer = "Zope Corporation",
+      maintainer_email = "zope@zope.org",
+      url = "http://www.zope.org/",
+
+      ext_modules = [ExtensionClass, Acquisition, ComputedAttribute,
+                     MethodObject, Missing, MultiMapping, Sync,
+                     ThreadLock, Record],
+      headers = [ec_prefix + "ExtensionClass.h"],
+
+      long_description=__doc__
+      )
+
 
 # ZODB
 cPersistence = Extension(name = 'ZODB.cPersistence',
