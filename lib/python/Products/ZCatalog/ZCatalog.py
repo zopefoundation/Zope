@@ -269,11 +269,12 @@ class ZCatalog(Folder, Persistent, Implicit):
                           urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
         
 
-    def manage_catalogClear(self, REQUEST, RESPONSE, URL1):
+    def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
         """ clears the whole enchelada """
         self._catalog.clear()
 
-        RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Cleared')
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_catalogView?manage_tabs_message=Catalog%20Cleared')
 
 
     def manage_catalogFoundItems(self, REQUEST, RESPONSE, URL2, URL1,
@@ -313,31 +314,35 @@ class ZCatalog(Folder, Persistent, Implicit):
                           urllib.quote('Catalog Updated<br>Total time: %s<br>Total CPU time: %s' % (`elapse`, `c_elapse`)))
 
 
-    def manage_addColumn(self, name, REQUEST, RESPONSE, URL1):
+    def manage_addColumn(self, name, REQUEST=None, RESPONSE=None, URL1=None):
         """ add a column """
         self._catalog.addColumn(name)
 
-        RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Added')
 
-    def manage_delColumns(self, names, REQUEST, RESPONSE, URL1):
+    def manage_delColumns(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ del a column """
         for name in names:
             self._catalog.delColumn(name)
 
-        RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_catalogSchema?manage_tabs_message=Column%20Deleted')
 
-    def manage_addIndex(self, name, type, REQUEST, RESPONSE, URL1):
+    def manage_addIndex(self, name, type, REQUEST=None, RESPONSE=None, URL1=None):
         """ add an index """
         self._catalog.addIndex(name, type)
         
-        RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Added')
         
-    def manage_delIndexes(self, names, REQUEST, RESPONSE, URL1):
+    def manage_delIndexes(self, names, REQUEST=None, RESPONSE=None, URL1=None):
         """ del an index """
         for name in names:
             self._catalog.delIndex(name)
         
-        RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
+        if REQUEST and RESPONSE:
+            RESPONSE.redirect(URL1 + '/manage_catalogIndexes?manage_tabs_message=Index%20Deleted')
 
     
     def catalog_object(self, obj, uid):
@@ -406,6 +411,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                       query_map={
                           type(regex.compile('')): Query.Regex,
                           type([]): orify,
+                          type(()): orify,
                           type(''): Query.String,
                           }, **kw):
         """
