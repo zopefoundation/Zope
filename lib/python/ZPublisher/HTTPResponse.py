@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.12 1999/04/29 21:51:55 amos Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: HTTPResponse.py,v 1.13 1999/05/18 15:56:19 jim Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -601,19 +601,14 @@ class HTTPResponse(BaseResponse):
         b=v
         if isinstance(b,Exception): b=str(b)
 
-        if fatal:
-            if t is SystemExit and v.code==0:
+        
+        if fatal and t is SystemExit and v.code==0:
                 tb=self.setBody(
                     (str(t),
                     'Zope has exited normally.<p>'
                      + self._traceback(t,v,tb)),
                      is_error=1)
-            else:
-                tb=self.setBody(
-                    (str(t),
-                     'Sorry, a serious Zope error occurred.<p>'
-                     + self._traceback(t,v,tb)),
-                     is_error=1)
+        #elif 1: self.setBody(v)
 
         elif type(b) is not types.StringType or tag_search(b) < 0:
             tb=self.setBody(
