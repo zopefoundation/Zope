@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.9 1996/12/23 21:54:10 chris Exp $'''
+$Id: InvertedIndex.py,v 1.10 1997/01/29 16:48:40 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -66,7 +66,7 @@ $Id: InvertedIndex.py,v 1.9 1996/12/23 21:54:10 chris Exp $'''
 #
 #     Limitation Of Liability 
 #
-#       In no event will DCLC be liable for direct, indirect, special,
+3#       In no event will DCLC be liable for direct, indirect, special,
 #       incidental, economic, cover, or consequential damages arising
 #       out of the use of or inability to use this software even if
 #       advised of the possibility of such damages. Some states do not
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.9 1996/12/23 21:54:10 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.10  1997/01/29 16:48:40  chris
+# added list_class argument to Index __init__
+#
 # Revision 1.9  1996/12/23 21:54:10  chris
 # Checked out by Chris for testing/editing.
 #
@@ -116,7 +119,7 @@ $Id: InvertedIndex.py,v 1.9 1996/12/23 21:54:10 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -126,44 +129,77 @@ from types import *
 
 class ResultList:
   '''\
-  This object holds the list of frequency/key pairs for a word
-  in an inverted index.
+  This object holds the information for a word in an inverted index.  It
+  provides mapping behavior, mapping document keys to corresponding
+  document information, including the frequency value.
 
   Union of two ResultList objects may be performed with the | operator.
 
   Intersection of two ResultList objects may be performed with the & operator.
 
-  A "not" operation may be performed on a ResultList using its Not() method.
+  Other methods:
 
-  ResultList frequency/key pairs may be sorted highest frequency to lowest
-  using the sort() method.
+    Not()
+    near()
+    keys()
+    items()
+    sorted_items()
   '''
 
-  def __init__(self, freq_key_pairs = None):
-    if (freq_key_pairs is None):
-      self._list = []
-    else:
-      self._list = freq_key_pairs
+  def __init__(self, d = {}):
+      self._dict = d
 
 
-  def addentry(self, freq, key):
-    self._list.append((freq, key))
+  def addentry(self, document_key, *info):
+    '''\
+       addentry(document_key, *info)
+       add a document and related information to this ResultList'''
+    self._dict[document_key] = info
 
 
   def __str__(self):
-    return `self._list`
+    return `self._dict`
 
 
   def __len__(self):
-    return len(self._list)
+    return len(self._dict)
 
 
-  def __getitem__(self, i):
-    return self._list[i]
+  def __getitem__(self, key):
+    return self._dict[key]
 
 
-  def __getslice__(self, i, j):
-    return self._list[i : j]
+  def __delitem__(self, key):
+    del self._dict[key]
+
+  
+  def keys(self):
+    '''\
+       keys()
+       get the documents in this ResultList'''
+    return self._dict.keys()
+
+
+  def has_key(self, key):
+    return self._dict.has_key(key)
+
+
+  def items(self):
+    '''items()
+       get a list of document key/document information pairs'''
+    return self._dict.items()
+
+
+  def sorted_items(self):
+    '''sorted_items()
+
+       get a 
+    Sort the frequency/key pairs in the ResultList by highest to lowest
+    frequency'''
+
+    items = self._dict.items()
+    items.sort(lambda x, y: -cmp(x[1][0], y[1][0]))
+    return items
 
 
   def __and__(self, x):
@@ -172,15 +208,12 @@ class ResultList:
        by calculating the geometric mean of each pair of corresponding 
        frequencies.'''
 
-    result = []
-    d = {}
-    for entry in self._list:
-      d[entry[1]] = entry[0]
+    result = {}
 
-    for entry in x._list:
+    for key in x.keys():
       try:
-        result.append((pow(d[entry[1]] * entry[0], 0.5), entry[1]))
-      except:
+        result[key] = ( pow(self[key][0] * x[key][0], 0.5), None )
+      except KeyError:
         pass
 
     return ResultList(result)
@@ -192,19 +225,16 @@ class ResultList:
        combined by calculating the sum of each pair of corresponding 
        frequencies.'''
 
-    result = []
-    d = {}
-    for entry in self._list:
-      d[entry[1]] = entry[0]
+    result = {}
 
-    for entry in x._list:
+    for key in self.keys():
+      result[key] = ( self[key][0], None )
+
+    for key in x.keys():
       try:
-        d[entry[1]] = d[entry[1]] + entry[0]
-      except:
-        d[entry[1]] = entry[0]
-
-    for key in d.keys():
-      result.append((d[key], key))
+        result[key] = (result[key][0] + x[key][0], None)
+      except KeyError:
+        result[key] = ( x[key][0], None )
 
     return ResultList(result)
 
@@ -220,64 +250,70 @@ class ResultList:
        ResultList instance.'''
 
     index = index._index_object
-
-    exclude = {}
-    for item in self._list:
-      exclude[item[1]] = 1
+    res = None
 
     for key in index.keys():
-      for item in index[key]._list:
-        if (not exclude.has_key(item[1])):
-          try:
-	    res = res | ResultList([item])
-          except:
-            res = ResultList([item])
+      try:
+        keys = index[key].keys()
+      except KeyError:
+        continue
 
-    try:
+      index_val = index[key]
+      for key in keys:
+        if (not self.has_key(key)):
+          if (res):
+            res = res | { key : index_val[key] }
+          else:
+            res = ResultList({ key : index_val[key] })
+
+    if (res):
       return res
-    except:
-      return ResultList()
+
+    return ResultList()
 
 
-  def __sub__(self, x):
-    pass
+  def near(self, x, distance = 1):
+    result = {}
 
+    for key in self.keys():
+      try:
+        value = x[key]
+      except KeyError:
+        continue
 
-  def __add__(self, x):
-    return ResultList(self._list + x[:])
+      positions1 = self[key][1]
+      positions2 = value[1]
 
+      for position1 in positions1:
+        for position2 in positions2:
 
-  def sort(self):
-    '''\
-    sort()
+          if (position1 is None or position2 is None):
+	    break
 
-    Sort the frequency/key pairs in the ResultList by highest to lowest
-    frequency'''
+	  prox = position2 - position1
+	  if ((prox > 0) and (prox <= distance)):
+            rel = pow(self[key][0] * value[0], 0.5)
 
-    self._list.sort()
-    self._list.reverse()    
+	    try:
+              pos = result[key][1] + [ position2 ]
+            except KeyError:
+              pos = [ position2 ]
+
+            result[key] = (rel, pos)
+        else:
+          continue
+
+        break
+
+    return ResultList(result)
 
 
   def __getstate__(self):
-    l = self._list
-    new_l = []
-    for key, freq in l:
-      new_l = new_l + [ key, freq ]
-        
-    return marshal.dumps(new_l)
+    return self._dict
 
 
-  def __setstate__(self, marshaled_state):
-    l = marshal.loads(marshaled_state)
-
-    if (len(l) and l[0] is not TupleType):
-      new_l = []
-      for i in range(0, len(l), 2):
-        new_l.append(tuple(l[i : (i + 2)]))
-
-      l = new_l
-
-    self._list = l
+  def __setstate__(self, state):
+    self._dict = state
 
 
 RegexType = type(regex.compile(''))
@@ -326,12 +362,15 @@ class Index:
 
     # perform a test search
     print i['blah']
-  ''' #'
+  '''
 
   list_class = ResultList
 
-  def __init__(self, index_dictionary = None):
+  def __init__(self, index_dictionary = None, list_class = None):
     'Create an inverted index'
+    if (list_class is not None):
+        self.list_class = list_class
+
     self.set_index(index_dictionary)
 
  
@@ -380,10 +419,12 @@ class Index:
 
     nwords = math.log(len(src))
 
-    i = {}    
-    for s in src:
+    d = {}    
+    for i in range(len(src)):
+      s = src[i]
       s = string.lower(s)
       stopword_flag = 0
+
       while (not stopword_flag):
         try:
           index_val = index[s]
@@ -400,22 +441,21 @@ class Index:
         continue
 
       try:
-        i[s] = i[s] + 1
-      except:
-        i[s] = 1
+        d[s].append(i)
+      except KeyError:
+        d[s] = [ i ]
 
-    for s in i.keys():
-      freq = int(10000 * (i[s] / nwords))
+    for s in d.keys():
+      freq = int(10000 * (len(d[s]) / nwords))
       try:
-        index[s].addentry(freq, srckey)
+        index[s].addentry(srckey, freq, d[s])
       except:
-        index[s] = List([(freq, srckey)])
+        index[s] = List({srckey : (freq, d[s])})
 
 
   def __getitem__(self, key):
     '''
-    Get the ResultList objects for the inverted key, key, sorted by 
-    frequency.
+    Get the ResultList objects for the inverted key, key.
 
     The key may be a regular expression, in which case a regular
     expression match is done.
@@ -451,11 +491,6 @@ class Index:
 
     key = string.lower(key)
 
-    try:
-      key = index[key]
-    except KeyError:
-      return List()
-
     while (type(key) == StringType):
       try:
         key = index[key]
@@ -474,6 +509,15 @@ class Index:
 
   def __len__(self):
     return len(self._index_object)
+
+  
+  def remove_document(self, doc_key, s = None):
+    if (s is None):
+      for key in self.keys():
+        try:
+          del self[key][doc_key]
+        except:
+          continue
 
 
   def get_stopwords(self):
@@ -498,12 +542,26 @@ class Index:
     return synonyms
 
 
+  def get_document_keys(self):
+    d = {}
+    for key in self.keys():
+      try:
+        doc_keys = self[key].keys()
+      except:
+        continue
+
+      for doc_key in doc_keys:
+        d[doc_key] = 1
+
+    return d.keys()
+
+
 class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
-  def addentry(self, freq, key):
+  def addentry(self, key, *info):
     '''Add a frequency/key pair to this object'''
 
-    self._list.append((freq, key))
+    ResultList.addentry(self, key, info)
     self.__changed__(1)
 
 
@@ -512,7 +570,7 @@ class STPResultList(ResultList, SingleThreadedTransaction.Persistent):
   def addentry(self, freq, key):
     '''Add a frequency/key pair to this object'''
 
-    self._list.append((freq, key))
+    ResultList.addentry(self, key, info)
     self.__changed__(1)
 
 
