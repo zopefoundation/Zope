@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.14 1998/02/25 22:38:34 jeffrey Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Index.py,v 1.15 1998/10/13 21:07:17 jeffrey Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -44,6 +44,31 @@ class Index(Persistent):
 	self._index=BTree()
 	
 	self._reindex()
+
+    def dpHasUniqueValuesFor(self, name):
+	' has unique values for column NAME '
+	if name == self.id:
+	    return 1
+	else:
+	    return 0
+
+    def dpUniqueValues(self, name=None, withLengths=0):
+	"""\
+	returns the unique values for name
+
+	if withLengths is true, returns a sequence of
+	tuples of (value, length)
+	"""
+	if name is None:
+	    name = self.id
+	elif name != self.id:
+	    return []
+	if not withLengths: return tuple(self._index.keys())
+	else: 
+	    rl=[]
+	    for i in self._index.keys():
+		rl.append((i, len(self._index[i])))
+	    return tuple(rl)
 
     def clear(self):
 	self._index=BTree()
@@ -181,6 +206,9 @@ class Index(Persistent):
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.15  1998/10/13 21:07:17  jeffrey
+# added dpUniqueValues and dpHasUniqueValuesFor methods
+#
 # Revision 1.14  1998/02/25 22:38:34  jeffrey
 # made the Index persistent, just as it should be
 #
