@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -212,7 +212,7 @@ class BaseRequest:
         path=split(path,'/')
         while path and not path[0]: path = path[1:]
     
-        method=upper(request_get('REQUEST_METHOD',''))
+        method=req_method=upper(request_get('REQUEST_METHOD', 'GET'))
         baseflag=0
         if method=='GET' or method=='POST':
             method='index_html'
@@ -278,6 +278,13 @@ class BaseRequest:
                         object, subobject = subobject
                 else:
                     try:
+                        # Note - this is necessary to support things like DAV.
+                        # We have to make sure that the target object is not
+                        # acquired if the request_method is other than GET or
+                        # POST. Otherwise, you could never use PUT to add a new
+                        # object named 'test' if an object 'test' existed above
+                        # it in the heirarchy -- you'd always get the existing
+                        # object :(
                         if baseflag and hasattr(object, 'aq_base'):
                             if hasattr(object.aq_base, entry_name):
                                 subobject=getattr(object, entry_name)
@@ -339,11 +346,11 @@ class BaseRequest:
     
     
         # THIS LOOKS WRONG!
-        if entry_name != method and method != 'index_html':
-            if debug_mode:
-                response.debugError("Method %s not found at: %s"
-                                    % (method,URL))
-            else: response.notFoundError(method)
+#        if entry_name != method and method != 'index_html':
+#            if debug_mode:
+#                response.debugError("Method %s not found at: %s"
+#                                    % (method,URL))
+#            else: response.notFoundError(method)
     
         request.steps=steps
         parents.reverse()
@@ -413,7 +420,8 @@ class BaseRequest:
         if user is not None:
             request['AUTHENTICATED_USER']=user
             request['AUTHENTICATION_PATH']=steps
-    
+
+        # Remove http request method from the URL.
         request['URL']=URL
     
         return object
