@@ -39,7 +39,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-__version__ = '$Revision: 1.15 $'.split()[-2:][0]
+__version__ = '$Revision: 1.16 $'.split()[-2:][0]
 
 
 
@@ -247,5 +247,6 @@ def env_from_string(envname):
              | db.DB_INIT_MPOOL # initialize shared memory buffer pool
              | db.DB_INIT_LOCK  # initialize locking subsystem
              | db.DB_INIT_TXN   # initialize transaction subsystem
+             | db.DB_THREAD     # we use the environment from other threads
              )
     return env
