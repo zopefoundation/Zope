@@ -319,10 +319,12 @@ class Product(Folder, PermissionManager):
     manage_traceback=Globals.DTMLFile('dtml/traceback',globals())
     manage_readme=Globals.DTMLFile('dtml/readme',globals())
     def manage_get_product_readme__(self):
-        try:
-            return open(os.path.join(self.home, 'README.txt')).read()
-        except: return ''
-
+        for name in ('README.txt', 'README.TXT', 'readme.txt'):
+            path = os.path.join(self.home, name)
+            if os.path.isfile(path):
+                return open(path).read()
+        return ''
+    
     def permissionMappingPossibleValues(self):
         return self.possible_permissions()
 
@@ -465,11 +467,14 @@ def initializeProduct(productp, name, home, app):
             {'label':'Traceback', 'action':'manage_traceback'},
             )
 
-    if os.path.exists(os.path.join(home, 'README.txt')):
-        product.manage_options=product.manage_options+(
-            {'label':'README', 'action':'manage_readme'},
-            )
-
+    for name in ('README.txt', 'README.TXT', 'readme.txt'):
+        path = os.path.join(home, name)
+        if os.path.isfile(path):
+            product.manage_options=product.manage_options+(
+                {'label':'README', 'action':'manage_readme'},
+                )
+            break
+        
     if (os.environ.get('ZEO_CLIENT') and
         not os.environ.get('FORCE_PRODUCT_LOAD')):
         get_transaction().abort()
