@@ -11,10 +11,10 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 import Globals
 from Persistence import Persistent
-from ZODB import TimeStamp
+from persistent import TimeStamp
 from Acquisition import Implicit, aq_base, aq_parent, aq_inner
 from AccessControl.Owned import Owned
 from AccessControl.Role import RoleManager
