@@ -112,7 +112,7 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
         ('Access contents information', ('helpValues',)),
         )
 
-    def __init__(self, id):
+    def __init__(self, id='HelpSys'):
         self.id=id
 
     def helpValues(self, spec=None):
