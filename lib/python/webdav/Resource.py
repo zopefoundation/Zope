@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -122,9 +122,10 @@ class Resource:
 
     def dav__get_locks(self):
         # Return the current locks on the object.
-        if hasattr(self, 'locked_in_session') and self.locked_in_session():
-            lock=Lock('xxxx', 'xxxx')
-            return self.dav__locks + (lock,)
+        #if hasattr(self, 'locked_in_session') and self.locked_in_session():
+        #    lock=Lock('xxxx', 'xxxx')
+        #    return self.dav__locks + (lock,)
+        return self.dav__locks
 
     def dav__validate(self, methodname, REQUEST):
         # Check whether the user is allowed to perform a particular
