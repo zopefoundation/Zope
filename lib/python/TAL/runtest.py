@@ -140,9 +140,11 @@ def main():
             finally:
                 sys.stdout, sys.argv = save
         except:
-            print sys.exc_type
             errors = 1
-            if not quiet:
+            if quiet:
+                print sys.exc_type
+            else:
+                print "Failed:"
                 traceback.print_exc()
             continue
         head, tail = os.path.split(arg)
