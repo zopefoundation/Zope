@@ -35,22 +35,38 @@ class MailHost:
     def send(messageText, mto=None, mfrom=None, subject=None,
              encode=None):
         """
-        Sends an email message.
+        Sends an email message where the messageText is an rfc822 formatted
+        message. This allows you complete control over the message headers,
+        including setting any extra headers such as Cc: and Bcc:.
         The arguments are:
 
-          messageText -- The mail message. It can either be a rfc822
-          formed text with header fields, or just a body without any
-          header fields. The other arguments given will override the
-          header fields in the message, if they exist.
+            messageText -- The mail message. It can either be a rfc822
+            formed text with header fields, or just a body without any
+            header fields. The other arguments given will override the
+            header fields in the message, if they exist.
 
-          mto -- A string or list of recipient(s) of the message.
+            mto -- A commaseparated string or list of recipient(s) of the message.
 
-          mfrom -- The address of the message sender.
+            mfrom -- The address of the message sender.
 
-          subject -- The subject of the message.
+            subject -- The subject of the message.
 
-          encode -- The rfc822 defined encoding of the message.  The
-          default of 'None' means no encoding is done.  Valid values
-          are 'base64', 'quoted-printable' and 'uuencode'.
+            encode -- The rfc822 defined encoding of the message.  The
+            default of 'None' means no encoding is done.  Valid values
+            are 'base64', 'quoted-printable' and 'uuencode'.
 
+        """
+
+    def simple_send(self, mto, mfrom, subject, body):
+        """
+        Sends a message. Only To:, From: and Subject: headers can be set.
+        The arguments are:
+
+            mto -- A commaseparated string or list of recipient(s) of the message.
+
+            mfrom -- The address of the message sender.
+
+            subject -- The subject of the message.
+
+            body -- The body of the message.
         """
