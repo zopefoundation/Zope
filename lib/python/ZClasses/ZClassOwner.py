@@ -84,7 +84,7 @@
 ##############################################################################
 """Zope Classes
 """
-import ExtensionClass, Globals, ZClass
+import ExtensionClass, Globals, ZClass, Products
 
 class ZClassOwner(ExtensionClass.Base):
 
@@ -95,17 +95,18 @@ class ZClassOwner(ExtensionClass.Base):
         """Add a Z Class
         """
         bases=[]
-        builtin_classes=ZClass.builtin_classes
         for b in baseclasses:
-            if builtin_classes.has_key(b): bases.append(builtin_classes[b])
-            else:                          bases.append(getattr(self, b))
+            if Products.meta_classes.has_key(b):
+                bases.append(Products.meta_classes[b])
+            else:
+                bases.append(getattr(self, b))
 
         self._setObject(id, ZClass.ZClass(id,title,bases))
         if REQUEST is not None: return self.manage_main(self,REQUEST)
 
     def manage_subclassableClassNames(self):
         r={}
-        r.update(ZClass.builtin_names)
+        r.update(Products.meta_class_info)
 
         while 1:
             if not hasattr(self, 'objectItems'): break
