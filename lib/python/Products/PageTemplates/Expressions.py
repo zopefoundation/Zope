@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -254,7 +254,10 @@ class StringExpr:
     def __call__(self, econtext):
         vvals = []
         for var in self._vars:
-            vvals.append(var(econtext))
+            v = var(econtext)
+            if isinstance(v, Exception):
+                raise v
+            vvals.append(v)
         return self._expr % tuple(vvals)
 
     def __str__(self):
