@@ -54,8 +54,8 @@
 __doc__='''short description
 
 
-$Id: DTtestExpr.py,v 1.3 1998/09/14 20:48:42 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DTtestExpr.py,v 1.4 1998/09/14 22:19:56 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DocumentTemplate import *
 import sys
@@ -72,21 +72,21 @@ def test3():
 def test4():
 
     h=HTML(
-	"""
-	<!--#if expr="level==1"-->
-	level was 1
-	<!--#elif expr="level==2"-->
-	level was 2
-	<!--#elif expr="level==3"-->
-	level was 3
-	<!--#else-->
-	level was something else
-	<!--#endif-->
-	""")
+        """
+        <!--#if expr="level==1"-->
+        level was 1
+        <!--#elif expr="level==2"-->
+        level was 2
+        <!--#elif expr="level==3"-->
+        level was 3
+        <!--#else-->
+        level was something else
+        <!--#endif-->
+        """)
 
     for i in range(4):
-	print '-' * 77
-	print i, h(level=i)
+        print '-' * 77
+        print i, h(level=i)
     print '-' * 77
     
 

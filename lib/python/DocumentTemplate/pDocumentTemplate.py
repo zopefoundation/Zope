@@ -54,8 +54,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.17 1998/09/14 20:48:44 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.18 1998/09/14 22:19:57 jim Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -64,7 +64,7 @@ StringType=type('')
 TupleType=type(())
 isFunctionType={}
 for name in ['BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
-	     'FunctionType', 'LambdaType', 'MethodType']:
+             'FunctionType', 'LambdaType', 'MethodType']:
     try: isFunctionType[getattr(types,name)]=1
     except: pass
 
@@ -81,40 +81,40 @@ class InstanceDict:
     validate=None
 
     def __init__(self,o,namespace,validate=None):
-	self.self=o
-	self.cache={}
-	self.namespace=namespace
-	if validate is None: self.validate=namespace.validate
-	else: self.validate=validate
+        self.self=o
+        self.cache={}
+        self.namespace=namespace
+        if validate is None: self.validate=namespace.validate
+        else: self.validate=validate
 
     def has_key(self,key):
-	return hasattr(self.self,key)
+        return hasattr(self.self,key)
 
     def keys(self):
-	return self.self.__dict__.keys()
+        return self.self.__dict__.keys()
 
     def __repr__(self): return 'InstanceDict(%s)' % str(self.self)
 
     def __getitem__(self,key):
 
-	cache=self.cache
-	if cache.has_key(key): return cache[key]
-	
-	inst=self.self
+        cache=self.cache
+        if cache.has_key(key): return cache[key]
+        
+        inst=self.self
 
-	if key[:1]=='_':
-	    if key != '__str__':
-		raise KeyError, key # Don't divuldge private data
-		r=str(inst)
-	else:
-	    try: r=getattr(inst,key)
-	    except AttributeError: raise KeyError, key
+        if key[:1]=='_':
+            if key != '__str__':
+                raise KeyError, key # Don't divuldge private data
+                r=str(inst)
+        else:
+            try: r=getattr(inst,key)
+            except AttributeError: raise KeyError, key
 
-	v=self.validate
-	if v is not None: v(inst,inst,key,r,self.namespace)
+        v=self.validate
+        if v is not None: v(inst,inst,key,r,self.namespace)
 
-	self.cache[key]=r
-	return r
+        self.cache[key]=r
+        return r
 
 class MultiMapping:
 
@@ -144,11 +144,11 @@ class TemplateDict:
     def _push(self, d): return self.dicts.push(d)
 
     def __init__(self):
-	m=self.dicts=MultiMapping()
-	self._pop=m.pop
-	self._push=m.push
-	try: self.keys=m.keys
-	except: pass
+        m=self.dicts=MultiMapping()
+        self._pop=m.pop
+        self._push=m.push
+        try: self.keys=m.keys
+        except: pass
 
     def __getitem__(self,key,call=1,
                     simple={
@@ -157,12 +157,12 @@ class TemplateDict:
                         }.has_key):
 
         v=self.dicts[key]
-	if call and not simple(type(v)):
+        if call and not simple(type(v)):
             if hasattr(v,'isDocTemp') and v.isDocTemp:
                 v=v(None, self)
             else:
                 try: v=v()
-		except (AttributeError,TypeError): pass
+                except (AttributeError,TypeError): pass
         return v
 
     def has_key(self,key):
@@ -178,50 +178,50 @@ def render_blocks(blocks, md):
     rendered = []
     append=rendered.append
     for section in blocks:
-	if type(section) is TupleType:
-	    l=len(section)
-	    if l==1:
-		# Simple var
-		section=section[0]
-		if type(section) is StringType: section=md[section]
-		else: section=section(md)
-		section=str(section)
-	    else:
-		# if
-		cache={}
-		md._push(cache)
-		try:
-		    i=0
-		    m=l-1
-		    while i < m:
-			cond=section[i]
-			if type(cond) is StringType:
-			    n=cond
-			    try:
-				cond=md[cond]
-				cache[n]=cond
-			    except KeyError, v:
+        if type(section) is TupleType:
+            l=len(section)
+            if l==1:
+                # Simple var
+                section=section[0]
+                if type(section) is StringType: section=md[section]
+                else: section=section(md)
+                section=str(section)
+            else:
+                # if
+                cache={}
+                md._push(cache)
+                try:
+                    i=0
+                    m=l-1
+                    while i < m:
+                        cond=section[i]
+                        if type(cond) is StringType:
+                            n=cond
+                            try:
+                                cond=md[cond]
+                                cache[n]=cond
+                            except KeyError, v:
                                 v=str(v)
-				if n != v: raise KeyError, v, sys.exc_traceback
-				cond=None
-			else: cond=cond(md)
-			if cond:
-			    section=section[i+1]
-			    if section: section=render_blocks(section,md)
-			    else: section=''
-			    m=0
-			    break
-			i=i+2
-		    if m:
-			if i==m: section=render_blocks(section[i],md)
-			else: section=''
+                                if n != v: raise KeyError, v, sys.exc_traceback
+                                cond=None
+                        else: cond=cond(md)
+                        if cond:
+                            section=section[i+1]
+                            if section: section=render_blocks(section,md)
+                            else: section=''
+                            m=0
+                            break
+                        i=i+2
+                    if m:
+                        if i==m: section=render_blocks(section[i],md)
+                        else: section=''
 
-		finally: md._pop()
+                finally: md._pop()
 
-	elif type(section) is not StringType:
-	    section=section(md)
+        elif type(section) is not StringType:
+            section=section(md)
 
-	if section: rendered.append(section)
+        if section: rendered.append(section)
 
     l=len(rendered)
     if l==0: return ''
