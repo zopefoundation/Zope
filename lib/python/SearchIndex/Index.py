@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree

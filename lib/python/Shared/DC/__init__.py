@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
@@ -82,5 +82,5 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: __init__.py,v 1.6 1999/03/06 23:10:22 klm Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+__doc__='''$Id: __init__.py,v 1.7 1999/03/10 00:15:41 klm Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]

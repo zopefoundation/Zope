@@ -1,9 +1,11 @@
 ##############################################################################
-#
-# Zope Public License (ZPL) Version 0.9.5
-# ---------------------------------------
+# 
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
+# 
+# This license has been certified as Open Source(tm).
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -17,12 +19,13 @@
 #    the documentation and/or other materials provided with the
 #    distribution.
 # 
-# 3. Any use, including use of the Zope software to operate a website,
-#    must either comply with the terms described below under
-#    "Attribution" or alternatively secure a separate license from
-#    Digital Creations.  Digital Creations will not unreasonably
-#    deny such a separate license in the event that the request
-#    explains in detail a valid reason for withholding attribution.
+# 3. Digital Creations requests that attribution be given to Zope
+#    in any manner possible. Zope includes a "Powered by Zope"
+#    button that is installed by default. While it is not a license
+#    violation to remove this button, it is requested that the
+#    attribution remain. A significant investment has been put
+#    into Zope, and this effort will continue if the Zope community
+#    continues to grow. This is one way to assure that growth.
 # 
 # 4. All advertising materials and documentation mentioning
 #    features derived from or use of this software must display
@@ -73,21 +76,6 @@
 #   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 #   SUCH DAMAGE.
 # 
-# Attribution
-# 
-#   Individuals or organizations using this software as a web site must
-#   provide attribution by placing the accompanying "button" and a link
-#   to the accompanying "credits page" on the website's main entry
-#   point.  In cases where this placement of attribution is not
-#   feasible, a separate arrangment must be concluded with Digital
-#   Creations.  Those using the software for purposes other than web
-#   sites must provide a corresponding attribution in locations that
-#   include a copyright using a manner best suited to the application
-#   environment.  Where attribution is not possible, or is considered
-#   to be onerous for some other reason, a request should be made to
-#   Digital Creations to waive this requirement in writing.  As stated
-#   above, for valid requests, Digital Creations will not unreasonably
-#   deny such requests.
 # 
 # This software consists of contributions made by Digital Creations and
 # many individuals on behalf of Digital Creations.  Specific
@@ -153,8 +141,8 @@
 #       rights reserved.
 #
 ############################################################################ 
-__rcs_id__='$Id: sqlgroup.py,v 1.5 1998/12/16 15:25:49 jim Exp $'
-__version__='$Revision: 1.5 $'[11:-2]
+__rcs_id__='$Id: sqlgroup.py,v 1.6 1999/03/10 00:15:44 klm Exp $'
+__version__='$Revision: 1.6 $'[11:-2]
 
 from DocumentTemplate.DT_Util import parse_params
 str=__builtins__['str']

@@ -1,7 +1,7 @@
 /*****************************************************************************
   
-  Zope Public License (ZPL) Version 0.9.7
-  ---------------------------------------
+  Zope Public License (ZPL) Version 1.0
+  -------------------------------------
   
   Copyright (c) Digital Creations.  All rights reserved.
   
@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.18 1999/02/08 19:02:33 jim Exp $"
+"\n$Id: BTree.c,v 1.19 1999/03/10 00:14:35 klm Exp $"
 ;
 
 #define PERSISTENT
@@ -1836,7 +1836,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.18 $";
+  char *rev="$Revision: 1.19 $";
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
@@ -1888,6 +1888,9 @@ initBTree()
 Revision Log:
 
   $Log: BTree.c,v $
+  Revision 1.19  1999/03/10 00:14:35  klm
+  Committing with version 1.0 of the license.
+
   Revision 1.18  1999/02/08 19:02:33  jim
   updated copyright
 

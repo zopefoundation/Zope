@@ -1,7 +1,7 @@
 /*****************************************************************************
   
-  Zope Public License (ZPL) Version 0.9.7
-  ---------------------------------------
+  Zope Public License (ZPL) Version 1.0
+  -------------------------------------
   
   Copyright (c) Digital Creations.  All rights reserved.
   
@@ -85,7 +85,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.11 1999/02/08 19:02:34 jim Exp $"
+"\n$Id: intSet.c,v 1.12 1999/03/10 00:14:35 klm Exp $"
 ;
 
 #include <limits.h>
@@ -612,7 +612,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -648,6 +648,9 @@ initintSet()
   Revision Log:
 
   $Log: intSet.c,v $
+  Revision 1.12  1999/03/10 00:14:35  klm
+  Committing with version 1.0 of the license.
+
   Revision 1.11  1999/02/08 19:02:34  jim
   updated copyright
 

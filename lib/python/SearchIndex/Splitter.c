@@ -1,7 +1,7 @@
 /*****************************************************************************
   
-  Zope Public License (ZPL) Version 0.9.7
-  ---------------------------------------
+  Zope Public License (ZPL) Version 1.0
+  -------------------------------------
   
   Copyright (c) Digital Creations.  All rights reserved.
   
@@ -480,7 +480,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.11 1999/02/08 19:05:02 jim Exp $\n"
+"$Id: Splitter.c,v 1.12 1999/03/10 00:15:36 klm Exp $\n"
 ;
 
 
@@ -488,7 +488,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
+  char *rev="$Revision: 1.12 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,

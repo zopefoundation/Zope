@@ -1,7 +1,7 @@
 /*****************************************************************************
   
-  Zope Public License (ZPL) Version 0.9.7
-  ---------------------------------------
+  Zope Public License (ZPL) Version 1.0
+  -------------------------------------
   
   Copyright (c) Digital Creations.  All rights reserved.
   
@@ -82,10 +82,10 @@
   attributions are listed in the accompanying credits file.
   
  ****************************************************************************/
-/* $Id: OIBTree.c,v 1.5 1999/02/08 19:02:33 jim Exp $ */
+/* $Id: OIBTree.c,v 1.6 1999/03/10 00:14:35 klm Exp $ */
 
 static char *needed_to_make_release_happy=
-"$Id: OIBTree.c,v 1.5 1999/02/08 19:02:33 jim Exp $";
+"$Id: OIBTree.c,v 1.6 1999/03/10 00:14:35 klm Exp $";
 
 #define INTVAL int
 #include "BTree.c"

@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
@@ -85,7 +85,7 @@
 __doc__='''Collected utilities to support database indexing.
 
 
-$Id: __init__.py,v 1.5 1999/02/08 19:05:02 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: __init__.py,v 1.6 1999/03/10 00:15:36 klm Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Query

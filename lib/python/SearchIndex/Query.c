@@ -1,7 +1,7 @@
 /*****************************************************************************
   
-  Zope Public License (ZPL) Version 0.9.7
-  ---------------------------------------
+  Zope Public License (ZPL) Version 1.0
+  -------------------------------------
   
   Copyright (c) Digital Creations.  All rights reserved.
   
@@ -914,14 +914,14 @@ static char Query_module_documentation[] =
 "against objects.  Each object type define objects that can be called\n"
 "with a single argument or with 'getitem' to check whether an object,\n"
 "such as a database record or a collection item satisfies a query.\n"
-"\n$Id: Query.c,v 1.7 1999/02/08 19:05:02 jim Exp $"
+"\n$Id: Query.c,v 1.8 1999/03/10 00:15:36 klm Exp $"
 ;
 
 void
 initQuery()
 {
     PyObject *m, *d, *regex, *string;
-    char *rev="$Revision: 1.7 $";
+    char *rev="$Revision: 1.8 $";
 
     AttrTesttype.ob_type      =&PyType_Type;
     CompAttrTesttype.ob_type  =&PyType_Type;
