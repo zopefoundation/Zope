@@ -34,6 +34,10 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1566: Installation of Zope on some older Solaris versions
+        could fail due to a broken "echo" implementation causing the 
+        creation of a borked version.txt file.                       
+
       - Collector #934: Image and File objects are now always internally
         split into small chunks even when initialized from a string.
 

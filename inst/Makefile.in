@@ -52,7 +52,7 @@ unbuild:
 	${RMRF} ${BUILD_BASE}
 
 ${BASE_DIR}/lib/python/version.txt:
-	echo -n "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
+	printf "Zope ${MAJOR_VERSION}.${MINOR_VERSION}-${RELEASE_TAG}" >\
           "${BASE_DIR}/lib/python/version.txt"
 
 # install:     Install a software home.
