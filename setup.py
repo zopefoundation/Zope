@@ -166,7 +166,7 @@ class ZopeDistribution(distutils.core.Distribution):
         distutils.core.Distribution.__init__(self, attrs)
         self.cmdclass["install"] = ZopeInstall
         self.cmdclass["install_data"] = ZopeInstallData
-        
+
 # presumes this script lives in the base dir
 BASE_DIR=os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -1122,7 +1122,9 @@ EXTS = ['.conf', '.css', '.dtd', '.gif', '.jpg', '.html',
         '.js',   '.mo',  '.png', '.pt', '.stx', '.ref',
         '.txt',  '.xml', '.zcml', '.mar', '.in', '.sample',
         ]
-
+IGNORE_NAMES = (
+    'CVS', '.svn', # Revision Control Directories
+    )
 
 # This class serves multiple purposes.  It walks the file system looking for
 # auxiliary files that distutils doesn't install properly, and it actually
@@ -1139,8 +1141,12 @@ class Finder:
         # the prefix when calculating the package names from the file names.
         prefix, rest = os.path.split(prefix)
         self._plen = len(prefix) + 1
-        
+
     def visit(self, ignore, dir, files):
+        # Remove ignored filenames
+        for ignore in IGNORE_NAMES:
+            if ignore in files:
+                files.remove(ignore)
         for file in files:
             # First see if this is one of the packages we want to add, or if
             # we're really skipping this package.
@@ -1180,7 +1186,7 @@ z3_packages = ['zope']
 packages = []
 
 for name in z3_packages:
-    basedir = os.path.join(PACKAGES_ROOT, name)    
+    basedir = os.path.join(PACKAGES_ROOT, name)
     finder = Finder(EXTS, basedir)
     os.path.walk(basedir, finder.visit, None)
     packages.extend(finder.get_packages())
@@ -1253,7 +1259,7 @@ ext_modules = [
                  "persistent/cPersistence.h",
                  "zope/proxy/_zope_proxy_proxy.c",
                  ]),
-    
+
     ]
 
 # We're using the module docstring as the distutils descriptions.
@@ -1319,8 +1325,9 @@ distutils.core.setup(
 os.chdir(BASE_DIR)
 
 def skel_visit(skel, dirname, names):
-    if "CVS" in names:
-        names.remove("CVS")
+    for ignore in IGNORE_NAMES:
+        if ignore in names:
+            names.remove(ignore)
     L = []
     for name in names:
         if os.path.isfile(os.path.join(dirname, name)):
