@@ -1,9 +1,10 @@
 from Globals import Persistent, HTMLFile, HTML
 from socket import *
 import Acquisition, sys, regex, string, types
+import OFS.SimpleItem
 
-#$Id: MailHost.py,v 1.6 1997/09/10 21:57:56 jeffrey Exp $ 
-__version__ = "$Revision: 1.6 $"[11:-2]
+#$Id: MailHost.py,v 1.7 1997/09/10 22:09:43 jeffrey Exp $ 
+__version__ = "$Revision: 1.7 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -19,7 +20,7 @@ def add(self, id='aMailHost', title='Some mail thing', smtp_host=None,
 	return self.manage_main(self,REQUEST)	#and whatever this does.. :)
 
 
-class MailHost(Persistent, Acquisition.Implicit):
+class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item):
 	'a mailhost...?'
 	manage=HTMLFile('MailHost/manageMailHost')
 	index_html=HTMLFile('MailHost/mailHost')
@@ -197,6 +198,9 @@ def decapitate(message,
 	return (headerDict, body)
 
 #$Log: MailHost.py,v $
+#Revision 1.7  1997/09/10 22:09:43  jeffrey
+#Added support for OFS.SimpleItem
+#
 #Revision 1.6  1997/09/10 21:57:56  jeffrey
 #Fixed nasty little squeeks, especially in:
 # - header handling (now handles multi-line again)
