@@ -13,9 +13,9 @@
 """
 Zope signal handlers for clean shutdown, restart and log rotation.
 
-$Id: Signals.py,v 1.1 2002/11/25 19:25:41 chrism Exp $
+$Id: Signals.py,v 1.2 2003/11/12 20:42:22 chrism Exp $
 """
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from SignalHandler import SignalHandler
 import zLOG
@@ -44,17 +44,11 @@ def restartHandler():
 def logfileReopenHandler():
     """Reopen log files on SIGUSR2. This is registered first, so it
        should be called after all other SIGUSR2 handlers."""
-    zLOG.LOG('Z2', zLOG.INFO , "Reopening log files")
-    reopen = getattr(getattr(sys, '__lg', None), 'reopen', None)
-    if reopen is not None:
-        reopen()
-        zLOG.LOG('Z2', zLOG.BLATHER, "Reopened access log")
-    reopen = getattr(getattr(sys, '__detailedlog', None), 'reopen', None)
-    if reopen is not None:
-        reopen()
-        zLOG.LOG('Z2', zLOG.BLATHER,"Reopened detailed request log")
-    zLOG.initialize()
-    zLOG.LOG('Z2', zLOG.BLATHER, "Reopened event log")
+    from zLOG.EventLogger import event_logger
+    from ZServer.AccessLogger import access_logger
+    from ZServer.DebugLogger import debug_logger
+    for logger in (event_logger, access_logger, debug_logger):
+        logger.reopen()
     zLOG.LOG('Z2', zLOG.INFO, "Log files reopened successfully")
 
 def packHandler():
