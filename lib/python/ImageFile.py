@@ -1,6 +1,6 @@
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from string import rfind
 from Globals import package_home
@@ -11,7 +11,7 @@ class ImageFile(Acquisition.Explicit):
     """Image object stored in an external file"""
 
     def __init__(self,path,_prefix=None):
-	if _prefix is None: _prefix=SOFTWARE_HOME+'/lib/python'
+	if _prefix is None: _prefix=SOFTWARE_HOME
 	elif type(_prefix) is not type(''): _prefix=package_home(_prefix)
 	path='%s/%s' % (_prefix, path)
 

@@ -168,7 +168,7 @@ class Product(Folder):
         # Extensions
         pp=id+'.'
         lpp=len(pp)
-        ed=os.path.join(SOFTWARE_HOME,'Extensions')
+        ed=os.path.join(INSTANCE_HOME,'Extensions')
         if os.path.exists(ed):
             for name in os.listdir(ed):
                 suffix=''

@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -15,20 +15,24 @@ def package_home(globals_dict):
     if hasattr(m,'__path__'): return m.__path__[0]
     return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
 
-try:
-    home=CUSTOMER_HOME,SOFTWARE_HOME
-    CUSTOMER_HOME,SOFTWARE_HOME=home
+try: home=os.environ['SOFTWARE_HOME']
 except:
-    try: home=os.environ['SOFTWARE_HOME']
-    except:
-        import Products
-        home=package_home(Products.__dict__)
-        home=(os.path.split(os.path.split(os.path.split(home)[0])[0])[0]
-              or os.getcwd())
-    try: chome=os.environ['CUSTOMER_HOME']
-    except: chome=home
-    CUSTOMER_HOME=sys.modules['__builtin__'].CUSTOMER_HOME=chome
-    SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
+    import Products
+    home=package_home(Products.__dict__)
+    d,e=os.path.split(chome)
+    if d: home=d
+
+SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
+
+try: chome=os.environ['INSTANCE_HOME']
+except:
+    chome=home
+    d,e=os.path.split(chome)
+    if e=='python':
+        d,e=os.path.split(d)
+        if e=='lib': chome=d
+    
+INSTANCE_HOME=sys.modules['__builtin__'].INSTANCE_HOME=chome
 
 
 from BoboPOS import Persistent, PickleDictionary
@@ -119,7 +123,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
     _v_last_read=0
 
     def __init__(self,name,_prefix=None, **kw):
-	if _prefix is None: _prefix=SOFTWARE_HOME+'/lib/python'
+	if _prefix is None: _prefix=SOFTWARE_HOME
 	elif type(_prefix) is not type(''): _prefix=package_home(_prefix)
 
 	args=(self, '%s/%s.dtml' % (_prefix,name))
@@ -134,7 +138,7 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
 	return apply(HTMLFile.inheritedAttribute('__call__'),
 		     (self,)+args[1:],kw)
 
-data_dir     = CUSTOMER_HOME+'/var'
+data_dir     = INSTANCE_HOME+'/var'
 BobobaseName = '%s/Data.bbb' % data_dir
 
 from App.Dialogs import MessageDialog

@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.75 1998/12/01 17:28:24 brian Exp $'''
-__version__='$Revision: 1.75 $'[11:-2]
+$Id: Application.py,v 1.76 1998/12/03 15:29:20 jim Exp $'''
+__version__='$Revision: 1.76 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -221,7 +221,7 @@ def open_bobobase():
 
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
 
-    product_dir=os.path.join(SOFTWARE_HOME,'lib/python/Products')
+    product_dir=os.path.join(SOFTWARE_HOME,'Products')
 
     __traceback_info__=sys.path
     
@@ -270,7 +270,7 @@ def install_products(app):
     # that all folders know about top-level objects, aka products
 
     path_join=os.path.join
-    product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
+    product_dir=path_join(SOFTWARE_HOME,'Products')
     isdir=os.path.isdir
     exists=os.path.exists
     DictType=type({})
@@ -389,6 +389,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.76  1998/12/03 15:29:20  jim
+# rearranged SOFTWARE_HOME and INSTANCE_HOME
+#
 # Revision 1.75  1998/12/01 17:28:24  brian
 # Added Help support
 #

@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -173,7 +173,7 @@ class User(BasicUser, Persistent):
 
 _remote_user_mode=0
 try:
-    f=open('%s/access' % SOFTWARE_HOME, 'r')
+    f=open('%s/access' % INSTANCE_HOME, 'r')
     data=split(strip(f.readline()),':')
     f.close()
     _remote_user_mode=not data[1]

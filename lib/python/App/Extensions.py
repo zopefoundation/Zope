@@ -12,8 +12,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.2 1998/09/16 16:52:42 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Extensions.py,v 1.3 1998/12/03 15:29:20 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -48,8 +48,7 @@ def getObject(module, name, reload=0, modules={}):
     d=find(n,'.')
     if d > 0:
         d,n=n[:d],n[d+1:]
-        n=("%s/lib/python/Products/%s/Extensions/%s.pyp"
-           % (SOFTWARE_HOME,d,n))
+        n=("%s/Products/%s/Extensions/%s.pyp" % (SOFTWARE_HOME,d,n))
         __traceback_info__=n, module
         if exists(n):
             data=zlib.decompress(
@@ -58,7 +57,7 @@ def getObject(module, name, reload=0, modules={}):
             execsrc=compile(data,module,'exec')
 
     if execsrc is None:
-        try: execsrc=open("%s/Extensions/%s.py" % (SOFTWARE_HOME, module))
+        try: execsrc=open("%s/Extensions/%s.py" % (INSTANCE_HOME, module))
         except: raise "Module Error", (
             "The specified module, <em>%s</em>, couldn't be opened."
             % module)
@@ -99,6 +98,9 @@ def getBrain(module, class_name, reload=0):
 ############################################################################## 
 #
 # $Log: Extensions.py,v $
+# Revision 1.3  1998/12/03 15:29:20  jim
+# rearranged SOFTWARE_HOME and INSTANCE_HOME
+#
 # Revision 1.2  1998/09/16 16:52:42  jim
 # Improved error reporting.
 #

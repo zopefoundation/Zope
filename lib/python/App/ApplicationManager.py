@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -172,7 +172,7 @@ class ApplicationManager(Folder,CacheManager):
 	exists=os.path.exists
 	strip=string.strip
 
-	product_dir=path_join(SOFTWARE_HOME,'lib/python/Products')
+	product_dir=path_join(SOFTWARE_HOME,'Products')
 	product_names=os.listdir(product_dir)
 	product_names.sort()
 	info=[]
