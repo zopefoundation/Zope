@@ -116,6 +116,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1126: ZPublisher.Converters.field2lines now using 
+       splitlines() instead of split('\n').
+
      - Collector #1322: fixed HTML quoting problem with ZSQL methods
        in DA.py
 

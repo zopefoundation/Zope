@@ -98,7 +98,7 @@ def field2lines(v):
         for item in v:
             result.append(str(item))
         return result
-    return field2text(v).split('\n')
+    return field2text(v).splitlines()
 
 def field2date(v):
     v = field2string(v)
