@@ -192,6 +192,23 @@ ZODB related
         time given.  Note that changes made by another process after the
         database has been opened are not visible.
 
+Session related
+
+    ZSESSION_ADD_NOTIFY
+
+    	If this is set, it is the full path name in Zope of a callable
+        object to be set in the addNotificationTarget of the transient_container
+        which is created in temp_folder at startup.  The default is
+        /session_add.  If the name does not exist, no entry will be placed
+        in the addNotificationTarget of transient_container.
+
+    ZSESSION_DEL_NOTIFY
+
+    	If this is set, it is the full path name in Zope of a callable
+        object to be set in the delNotificationTarget of the transient_container
+        which is created in temp_folder at startup.  The default is
+        /session_del.  If the name does not exist, no entry will be placed
+        in the delNotificationTarget of transient_container.
 
 Esoteric 
 
