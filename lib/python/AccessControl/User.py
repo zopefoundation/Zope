@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -290,7 +290,6 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     meta_type='User Folder'
     id       ='acl_users'
     title    ='User Folder'
-    icon     ='p_/UserFolder'
 
     isPrincipiaFolderish=1
     isAUserFolder=1

@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -96,11 +96,13 @@ DevelopmentMode=None
 def package_home(globals_dict):
     __name__=globals_dict['__name__']
     m=sys.modules[__name__]
-    if hasattr(m,'__path__'): return m.__path__[0]
-    if "." in __name__:
-        return sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
+    if hasattr(m,'__path__'):
+        r=m.__path__[0]
+    elif "." in __name__:
+        r=sys.modules[__name__[:rfind(__name__,'.')]].__path__[0]
     else:
-        return __name__
+        r=__name__
+    return os.path.join(os.getcwd(), r)
 
 try: home=os.environ['SOFTWARE_HOME']
 except:
@@ -219,10 +221,12 @@ class HTMLFile(DocumentTemplate.HTMLFile,MethodObject.Method,):
         elif type(_prefix) is not type(''): _prefix=package_home(_prefix)
 
         args=(self, '%s/%s.dtml' % (_prefix,name))
+        if not kw.has_key('__name__'): kw['__name__']=name
         apply(HTMLFile.inheritedAttribute('__init__'),args,kw)
 
     def __call__(self, *args, **kw):
         if DevelopmentMode:
+            __traceback_info__=self.raw
             t=os.stat(self.raw)
             if t != self._v_last_read:
                 self.cook()
@@ -267,3 +271,5 @@ def getitems(o,names):
     return r
         
 def Dictionary(**kw): return kw # Sorry Guido
+
+from ImageFile import ImageFile # So we can import from here
