@@ -38,6 +38,10 @@
 #define K1 1.2
 #define B  0.75
 
+#ifndef PyTuple_CheckExact
+#define PyTuple_CheckExact PyTuple_Check
+#endif
+
 static PyObject *
 score(PyObject *self, PyObject *args)
 {
@@ -74,8 +78,8 @@ score(PyObject *self, PyObject *args)
 		d_and_f = PySequence_GetItem(d2fitems, i);
 		if (d_and_f == NULL)
 			return NULL;
-		if (!(PyTuple_Check(d_and_f) &&
-		      PyTuple_Size(d_and_f) == 2)) {
+		if (!(PyTuple_CheckExact(d_and_f) &&
+		      PyTuple_GET_SIZE(d_and_f) == 2)) {
 			PyErr_SetString(PyExc_TypeError,
 				"d2fitems must produce 2-item tuples");
 			Py_DECREF(d_and_f);
@@ -89,7 +93,7 @@ score(PyObject *self, PyObject *args)
 			Py_DECREF(d_and_f);
 			return NULL;
 		}
-		lenweight = B_FROM1 + B * PyInt_AsLong(doclen) / meandoclen;
+		lenweight = B_FROM1 + B * PyInt_AS_LONG(doclen) / meandoclen;
 
 		tf = f * K1_PLUS1 / (f + K1 * lenweight);
 		scaled_int = PyInt_FromLong((long)(tf * idf + 0.5));
