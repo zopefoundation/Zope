@@ -76,6 +76,24 @@ Zope Changes
           restarted.  Now index files are removed when undoing
           records.
 
+        - Saving or discarding versions failed if a transaction that
+          added a new object in the version was undone.
+
+        - There was circumstantial evidence that a failure of an OS to
+          correctly delay writing to data to disk after Zope had
+          written it led to a corrupted database.  Zope now makes an
+          'fsync' system call (where available on Unix systems) to
+          force data to be written to phusical storage when
+          transactions are committed.
+
+        - Some applicataions were writing empty transactions. The
+          FileStorage now checks for and avoids writing empty
+          transactions in this case.
+
+	- Multiple-selection properties didn't work in regular
+	  property views, even though they did work in ZClass property
+	  sheets.
+
     Zope 2.1.0
     
       Features Changed
