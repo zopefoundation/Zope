@@ -6,6 +6,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #580: TALES evaluateBoolean() was squishing 'default'.
+
       - Collector #581: TALES Path traversal should not special-case a blank
         string in the second element position.  It now skips directly
         to item access when a path element is blank or has a leading '_'.

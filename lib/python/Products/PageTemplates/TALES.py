@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -214,9 +214,7 @@ class Context:
         return expression(self)
 
     evaluateValue = evaluate
-
-    def evaluateBoolean(self, expr):
-        return not not self.evaluate(expr)
+    evaluateBoolean = evaluate
 
     def evaluateText(self, expr):
         text = self.evaluate(expr)
