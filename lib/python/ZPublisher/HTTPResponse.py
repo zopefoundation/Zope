@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.74 2003/04/17 17:41:57 fdrake Exp $'''
-__version__ = '$Revision: 1.74 $'[11:-2]
+$Id: HTTPResponse.py,v 1.75 2003/04/28 21:16:43 Brian Exp $'''
+__version__ = '$Revision: 1.75 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -691,15 +691,24 @@ class HTTPResponse(BaseResponse):
             # Try to capture exception info for bci calls
             et = translate(str(t), nl2sp)
             self.setHeader('bobo-exception-type', et)
-            ev = translate(str(v), nl2sp)
-            if ev.find( '<html>') >= 0:
-                ev = 'bobo exception'
-            self.setHeader('bobo-exception-value', ev[:255])
+
+            # As of Zope 2.6.2 / 2.7, we no longer try to pass along a
+            # meaningful exception value. Now that there are good logging
+            # facilities on the server side (and given that xml-rpc has
+            # largely removed the need for this code at all), we just
+            # refer the caller to the server error log.
+            ev = 'See the server error log for details'
+            self.setHeader('bobo-exception-value', ev)
+
             # Get the tb tail, which is the interesting part:
             while tb.tb_next is not None:
                 tb = tb.tb_next
             el = str(tb.tb_lineno)
             ef = str(tb.tb_frame.f_code.co_filename)
+
+            # Do not give out filesystem information.
+            ef = ef.split(os.sep)[-1]
+
             self.setHeader('bobo-exception-file', ef)
             self.setHeader('bobo-exception-line', el)
 
