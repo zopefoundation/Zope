@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -142,8 +142,9 @@ class Function:
         if password is not None: self.password=password
         if timeout is not None: self.timeout=timeout
 
-        if urlregex.match(url) >= 0:
-            host,port,rurl=urlregex.group(1,2,3)
+        mo = urlregex.match(url)
+        if mo:
+            host,port,rurl=mo.group(1,2,3)
             if port: port=atoi(port[1:])
             else: port=80
             self.host=host
@@ -346,7 +347,7 @@ def call(url,username=None, password=None, **kw):
 ##############################################################################
 # Implementation details below here
 
-urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?', regex.casefold)
+urlregex=re.compile('http://([^:/]+)(:[0-9]+)?(/.+)?', re.I)
 
 dashtrans=maketrans('_','-')
 
