@@ -52,6 +52,8 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #882: delPropertySheet was broken due to a typo
+
      - Collector #683: WeDAV request without XML preamble
        were not recognized by Zope and raised an exception.
 

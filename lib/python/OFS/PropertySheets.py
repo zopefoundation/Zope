@@ -13,7 +13,7 @@
 
 """Property sheets"""
 
-__version__='$Revision: 1.88 $'[11:-2]
+__version__='$Revision: 1.89 $'[11:-2]
 
 import time,  App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -656,7 +656,7 @@ class PropertySheets(Traversable, Implicit, App.Management.Tabs):
         for propset in self.aq_parent.__propsets__:
             if propset.getId() != name and  propset.xml_namespace() != name:
                 result.append(propset)
-        self.parent.__propsets__=tuple(result)
+        self.aq_parent.__propsets__=tuple(result)
 
     def __len__(self):
         return len(self.__propsets__())
