@@ -14,35 +14,30 @@
 
 """SetOps -- Weighted intersections and unions applied to many inputs."""
 
-from BTrees.IIBTree import IIBTree, weightedIntersection, weightedUnion
+from BTrees.IIBTree import IIBucket, weightedIntersection, weightedUnion
 
 from Products.ZCTextIndex.NBest import NBest
 
 def mass_weightedIntersection(L):
-    "A list of (mapping, weight) pairs -> their weightedIntersection IIBTree."
-    L = [(map, weight) for (map, weight) in L if map is not None]
-    if not L:
-        return IIBTree()
-    # Intersect with smallest first.
+    "A list of (mapping, weight) pairs -> their weightedIntersection IIBucket."
+    L = [(x, wx) for (x, wx) in L if x is not None]
+    if len(L) < 2:
+        return _trivial(L)
+    # Intersect with smallest first.  We expect the input maps to be
+    # IIBuckets, so it doesn't hurt to get their lengths repeatedly
+    # (len(Bucket) is fast; len(BTree) is slow).
     L.sort(lambda x, y: cmp(len(x[0]), len(y[0])))
-    x, w = L[0]
-    dummy, result = weightedUnion(IIBTree(), x, 1, w)
-    for x, w in L[1:]:
-        dummy, result = weightedIntersection(result, x, 1, w)
+    (x, wx), (y, wy) = L[:2]
+    dummy, result = weightedIntersection(x, y, wx, wy)
+    for x, wx in L[2:]:
+        dummy, result = weightedIntersection(result, x, 1, wx)
     return result
 
 def mass_weightedUnion(L):
-    "A list of (mapping, weight) pairs -> their weightedUnion IIBTree."
-    if not L:
-        return IIBTree()
-    if len(L) == 1:
-        # Have to do a union in order to get the input's values
-        # multiplied by the weight.
-        x, weight = L[0]
-        dummy, result = weightedUnion(IIBTree(), x, 1, weight)
-        return result
+    "A list of (mapping, weight) pairs -> their weightedUnion IIBucket."
+    if len(L) < 2:
+        return _trivial(L)
     # Balance unions as closely as possible, smallest to largest.
-    assert len(L) > 1
     merge = NBest(len(L))
     for x, weight in L:
         merge.add((x, weight), len(x))
@@ -53,4 +48,15 @@ def mass_weightedUnion(L):
         dummy, z = weightedUnion(x, y, wx, wy)
         merge.add((z, 1), len(z))
     (result, weight), dummy = merge.pop_smallest()
+    return result
+
+def _trivial(L):
+    # L is empty or has only one (mapping, weight) pair.  If there is a
+    # pair, we may still need to multiply the mapping by its weight.
+    assert len(L) <= 1
+    if len(L) == 0:
+        return IIBucket()
+    [(result, weight)] = L
+    if weight != 1:
+        dummy, result = weightedUnion(IIBucket(), result, 0, weight)
     return result
