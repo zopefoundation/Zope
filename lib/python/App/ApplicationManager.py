@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.75 $'[11:-2]
+__version__='$Revision: 1.76 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os, Undo
@@ -491,3 +491,21 @@ class ApplicationManager(Folder,CacheManager):
 
     def getCLIENT_HOME(self):
         return CLIENT_HOME
+
+    def objectIds(self, spec=None):
+        """ this is a patch for pre-2.4 Zope installations. Such
+            installations don't have an entry for the WebDAV LockManager
+            introduced in 2.4.
+        """
+
+        meta_types = map(lambda x: x.get('meta_type',None) , self._objects)
+
+        if not self.DavLocks.meta_type in meta_types:
+
+            lst = list(self._objects)
+            lst.append(  {'id': 'DavLocks', \
+                'meta_type': self.DavLocks.meta_type})
+            self._objects = tuple(lst)
+
+        return Folder.objectIds(self, spec)
+

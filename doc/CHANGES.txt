@@ -6,6 +6,9 @@ Zope Changes
 
     Features Added
 
+     - Zope installations upgraded from pre-2.4 installations
+       did not show the WebDAV LockManager entry in the control panel.
+
      - "requestprofiler.py" script in utilities now does better analysis,
        including:
 
