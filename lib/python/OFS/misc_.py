@@ -116,7 +116,7 @@ class p_:
     ProductFolder_icon=ImageFile('App/www/productFolder.gif')
     PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
 
-    ZopeButton=ImageFile('App/www/zope_button.gif')
+    ZopeButton=ImageFile('App/www/zope_button.jpg')
     ZButton=ImageFile('App/www/z_button.jpg')
 
     Properties_icon=ImageFile('OFS/www/Properties_icon.gif')
