@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -91,6 +91,7 @@ from urllib import quote, unquote
 from zlib import compress, decompress
 from App.Dialogs import MessageDialog
 from AccessControl import getSecurityManager
+from Acquisition import aq_base, aq_inner, aq_parent
 
 
 CopyError='Copy Error'
@@ -111,7 +112,7 @@ class CopyContainer(ExtensionClass.Base):
     def _setOb(self, id, object): setattr(self, id, object)
     def _delOb(self, id): delattr(self, id)
     def _getOb(self, id, default=_marker):
-        if hasattr(self, 'aq_base'): self=self.aq_base
+        self = aq_base(self)
         if default is _marker: return getattr(self, id)
         try: return getattr(self, id)
         except: return default
@@ -253,9 +254,8 @@ class CopyContainer(ExtensionClass.Base):
                 # along to the new location if needed.
                 ob.manage_changeOwnershipType(explicit=1)
                 
-                ob.aq_parent._delObject(id)
-                if hasattr(ob, 'aq_base'):
-                    ob=ob.aq_base
+                aq_parent(aq_inner(ob))._delObject(id)
+                ob = aq_base(ob)
                 id=self._get_id(id)
                 ob._setId(id)
 
@@ -304,8 +304,7 @@ class CopyContainer(ExtensionClass.Base):
                       message=sys.exc_info()[1],
                       action ='manage_main')
         self._delObject(id)
-        if hasattr(ob, 'aq_base'):
-            ob=ob.aq_base
+        ob = aq_base(ob)
         ob._setId(new_id)
         
         # Note - because a rename always keeps the same context, we
@@ -400,14 +399,12 @@ class CopyContainer(ExtensionClass.Base):
                 break
 
         if mt_permission is not None:
-            try:    parent=object.aq_inner.aq_parent
-            except: parent=None
-            if getSecurityManager().checkPermission( mt_permission, parent ):
+            if getSecurityManager().checkPermission( mt_permission, self ):
                 if not validate_src:
                     return
                 # Ensure the user is allowed to access the object on the
                 # clipboard.
-                try:    parent=object.aq_inner.aq_parent
+                try:    parent=aq_parent(aq_inner(object))
                 except: parent=None
                 if getSecurityManager().validate(None, parent, None, object):
                     return
@@ -421,14 +418,17 @@ class CopyContainer(ExtensionClass.Base):
         #
         if method_name is not None:
             meth=self.unrestrictedTraverse(method_name)
-            try:    parent=object.aq_inner.aq_parent
-            except: parent=None
+            if hasattr(meth, 'im_self'):
+                parent = meth.im_self
+            else:
+                try:    parent=aq_parent(aq_inner(meth))
+                except: parent=None
             if getSecurityManager().validate(None, parent, None, meth):
                 # Ensure the user is allowed to access the object on the
                 # clipboard.
                 if not validate_src:
                     return
-                try:    parent=object.aq_inner.aq_parent
+                try:    parent=aq_parent(aq_inner(object))
                 except: parent=None
                 if getSecurityManager().validate(None, parent, None, object):
                     return
@@ -492,7 +492,7 @@ class CopySource:
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
-        try:    n=self.aq_parent._reserved_names
+        try:    n=aq_parent(aq_inner(self))._reserved_names
         except: n=()
         if absattr(self.id) in n:
             return 0
@@ -504,13 +504,14 @@ def sanity_check(c, ob):
     # This is called on cut/paste operations to make sure that
     # an object is not cut and pasted into itself or one of its
     # subobjects, which is an undefined situation.
-    ob=getattr(ob, 'aq_base', ob)
+    ob = aq_base(ob)
     while 1:
-        if getattr(c, 'aq_base', c) is ob:
+        if aq_base(c) is ob:
             return 0
-        if not hasattr(c, 'aq_parent'):
+        inner = aq_inner(c)
+        if aq_parent(inner) is None:
             return 1
-        c=c.aq_parent
+        c = aq_parent(inner)
 
 def absattr(attr):
     if callable(attr): return attr()
