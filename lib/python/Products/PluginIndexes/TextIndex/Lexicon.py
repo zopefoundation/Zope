@@ -24,8 +24,8 @@ from Acquisition import Implicit
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IISet, IITreeSet
+from Products.PluginIndexes.common.randid import randid
 
-from randid import randid
 from types import StringType
 
 class Lexicon(Persistent, Implicit):

@@ -20,10 +20,10 @@ from BTrees.IIBTree import IISet, union, IITreeSet
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 from BTrees.OOBTree import OOBTree
-from randid import randid
 
-from Products.PluginIndexes.TextIndex.TextIndex import Or
-from Products.PluginIndexes.TextIndex.TextIndex import Op
+
+from Products.PluginIndexes.TextIndex.TextIndex import Or,Op
+from Products.PluginIndexes.common.randid import randid
 
 from types import UnicodeType 
 
