@@ -8,6 +8,7 @@
   <import package="ZODB"/>
   <import package="ZServer"/>
   <import package="tempstorage"/>
+  <import package="Zope.Startup" file="warnfilter.xml"/>
 
   <sectiontype name="logger" datatype=".LoggerFactory">
     <description>
