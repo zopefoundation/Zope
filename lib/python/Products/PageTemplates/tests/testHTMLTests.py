@@ -182,6 +182,14 @@ class HTMLTests(unittest.TestCase):
       out = t()
       util.check_html(expect, out)
       
+   def checkPathNothing(self):
+      t = self.folder.t
+      t.write(open('input/CheckPathNothing.html').read())
+      expect = open('output/CheckPathNothing.html').read()
+      out = t()
+      util.check_html(expect, out)
+      
+
 
 def test_suite():
    return unittest.makeSuite(HTMLTests, 'check')
