@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.4 2003/02/02 14:21:51 andreasjung Exp $
+# $Id: ZReST.py,v 1.5 2003/02/06 09:05:57 andreasjung Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -80,14 +80,14 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
     def index_html(self, REQUEST=None):
         ''' Getting the formatted text
         '''
-        REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset: %s' % self.output_encoding)
+        REQUEST.RESPONSE.setHeader('content-type', 'text/html; charset=%s' % self.output_encoding)
         return self.formatted
 
     security.declareProtected('View', 'source_txt')
     def source_txt(self, REQUEST=None):
         ''' Getting the source text
         '''
-        REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset: %s' % self.input_encoding)
+        REQUEST.RESPONSE.setHeader('content-type', 'text/plain; charset=%s' % self.input_encoding)
         return self.source
 
     # edit form, which is also the primary interface
@@ -271,6 +271,9 @@ modulesecurity.apply(globals())
 
 #
 # $Log: ZReST.py,v $
+# Revision 1.5  2003/02/06 09:05:57  andreasjung
+# fixed invalid MIME header
+#
 # Revision 1.4  2003/02/02 14:21:51  andreasjung
 # the content-type header is now set with the corresponding encoding parameter
 #
