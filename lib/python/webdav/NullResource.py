@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -99,11 +99,19 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
     objects which do not yet exist in the url namespace."""
 
     __dav_null__=1
-    
+
+    __ac_permissions__=(
+        ('View',                        ('HEAD',)),
+        ('Access contents information', ('PROPFIND',)),
+        ('Add Folders',                 ('MKCOL',)),
+        ('Delete objects',              ('DELETE',)),
+        ('Manage properties',           ('PROPPATCH',)),
+    )
+
     def __init__(self, parent, id):
         self.id=id
         self.__parent__=parent
-        self.__roles__=parent.__roles__
+#        self.__roles__=parent.__roles__
 
     def __bobo_traverse__(self, REQUEST, name=None):
         # We must handle traversal so that we can recognize situations
