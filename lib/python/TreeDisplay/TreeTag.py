@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.25 1998/07/23 18:17:16 jim Exp $'
-__version__='$Revision: 1.25 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.26 1998/08/03 13:48:45 jim Exp $'
+__version__='$Revision: 1.26 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -561,7 +561,7 @@ def tpValuesIds(self, branches, args,
 		    elif hasattr(item, '_p_oid'): id=item._p_oid
 		    else: id=pyid(item)
 
-		    e=tpValuesIds(item, branches)
+		    e=tpValuesIds(item, branches, args)
 		    if e: id=[id,e]
 		    else: id=[id]
 		    r.append(id)
