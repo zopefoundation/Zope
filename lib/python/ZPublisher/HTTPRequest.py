@@ -82,9 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
 
-import regex, sys, os
+__version__='$Revision: 1.9 $'[11:-2]
+
+import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -188,7 +189,16 @@ class HTTPRequest(BaseRequest):
             del environ['HTTP_AUTHORIZATION']
 
         form={}
-        form_has=form.has_key
+        defaults={}
+
+        # add class
+        class record:
+            def __str__(self):
+              L1 = self.__dict__.items()
+              L1.sort()
+              return join(map(lambda item: "%s: %s" %item, L1), ", ") 
+            __repr__ = __str__
+            
         meth=None
         fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
         if not hasattr(fs,'list') or fs.list is None:
@@ -206,14 +216,12 @@ class HTTPRequest(BaseRequest):
         else:
             fslist=fs.list
             tuple_items={}
-
             type_re=regex.compile(':[a-zA-Z][a-zA-Z0-9_]+')
             type_search=type_re.search
             lt=type([])
             CGI_name=isCGI_NAME
             for item in fslist:
                 key=unquote(item.name)
-
                 if (hasattr(item,'file') and hasattr(item,'filename')
                     and hasattr(item,'headers')):
                     if (item.file and
@@ -224,45 +232,248 @@ class HTTPRequest(BaseRequest):
                     else:
                         item=item.value
 
+                # tuple, list flag
                 seqf=None
+                # default flag
+                setting_a_default=0
+                # record flag
+                record_flag=0
+                # records_flag
+                records_flag=0
+                # empty_flag
+                empty_flag=0
+                # Use converter variable to defer conversion
+                converter=None
+                # add dictionary of types
+                d1 = {'list':1, 'tuple':1, 'method':1, 'default_method':1,
+                      'default':1, 'record':1, 'records':1, 'ignore_empty':1}
 
+                # Loop through the different types and set
+                # the appropriate flags
                 l=type_search(key)
                 while l >= 0:
                     type_name=type_re.group(0)[1:]
                     key=key[:l]+key[l+len(type_name)+1:]
-                    if type_name == 'list':
-                        seqf=list
-                    elif type_name == 'tuple':
-                        seqf=tuple
-                        tuple_items[key]=1
-                    elif type_name == 'method':
-                        if l: meth=key
-                        else: meth=item
-                    elif type_name == 'default_method':
-                        if not meth:
-                            if l: meth=key
-                            else: meth=item
+                    if type_name not in d1.keys():
+                       converter=type_converters[type_name]
                     else:
-                        item=type_converters[type_name](item)
+                       if type_name == 'list':
+                          seqf=list
+                       if type_name == 'tuple':
+                          seqf=tuple
+                          tuple_items[key]=1
+                       if type_name == 'method':
+                          if l: meth=key
+                          else: meth=item
+                       if type_name == 'default_method':
+                          if not meth:
+                             if l: meth=key
+                             else: meth=item
+                       if type_name == 'default':
+                          setting_a_default = 1
+                       if type_name == 'record':
+                          record_flag = 1
+                       if type_name == 'records':
+                          records_flag = 1
+                       if type_name == 'ignore_empty':
+                          if item == "":
+                             empty_flag = 1
                     l=type_search(key)
-                    
+
+                # skip over empty fields    
+                if empty_flag: continue
+             
                 # Filter out special names from form:
                 if CGI_name(key) or key[:5]=='HTTP_': continue
 
-                if form_has(key):
-                    found=form[key]
-                    if type(found) is lt: found.append(item)
-                    else:
-                        found=[found,item]
-                        form[key]=found
+                #Split the key and its attribute
+                if record_flag or records_flag:
+                       key=split(key,".")
+                       key, attr=join(key[:-1],"."), key[-1]
+                       
+                # defer conversion
+                if converter is not None:
+                    try:
+                        item=converter(item)
+                    except:
+                        if not item and not setting_a_default and defaults.has_key(key):
+                            item = defaults[key]
+                            if record_flag:
+                                item=getattr(item,attr)
+                            if records_flag:
+                                item.reverse()
+                                item = item[0]
+                                item=getattr(item,attr)
+                        else:
+                            raise
+                         
+                #Determine which dictionary to use
+                if setting_a_default:
+                   mapping_object = defaults
                 else:
-                    if seqf: item=[item]
-                    form[key]=item
+                   mapping_object = form
 
-            for key in tuple_items.keys():
-                item=tuple(form[key])
-                form[key]=item
-
+                #Insert in dictionary
+                if mapping_object.has_key(key):
+                   if records_flag:
+                       #Get the list and the last record
+                       #in the list
+                       reclist = mapping_object[key]
+                       reclist.reverse()
+                       x=reclist[0]
+                       reclist.reverse()
+                       if not hasattr(x,attr):
+                           #If the attribute does not
+                           #exist, set it
+                           if seqf: item=[item]
+                           reclist.remove(x)
+                           setattr(x,attr,item)
+                           reclist.append(x)
+                           mapping_object[key] = reclist
+                       else:
+                           if seqf:
+                              # If the attribute is a
+                              # sequence, append the item
+                              # to the existing attribute
+                               reclist.remove(x)
+                               y = getattr(x, attr)
+                               y.append(item)
+                               setattr(x, attr, y)
+                               reclist.append(x)
+                               mapping_object[key] = reclist
+                           else:
+                              # Create a new record and add
+                              # it to the list
+                               n=record()
+                               setattr(n,attr,item)
+                               reclist.append(n)
+                               mapping_object[key]=reclist
+                   elif record_flag:
+                       b=mapping_object[key]
+                       if seqf:
+                          item=[item]
+                          if not hasattr(b,attr):
+                              # if it does not have the
+                              # attribute, set it
+                              setattr(b,attr,item)
+                          else:
+                             # it has the attribute so
+                             # append the item to it
+                              setattr(b,attr,getattr(b,attr)+item)
+                       else:
+                          # it is not a sequence so
+                          # set the attribute
+                          setattr(b,attr,item)        
+                   else:
+                      # it is not a record or list of records
+                       found=mapping_object[key]
+                       if type(found) is lt:
+                           found.append(item)
+                       else:
+                           found=[found,item]
+                           mapping_object[key]=found
+                else:
+                   # The dictionary does not have the key
+                   if records_flag:
+                       # Create a new record, set its attribute
+                       # and put it in the dictionary as a list
+                       a = record()
+                       if seqf: item=[item]
+                       setattr(a,attr,item)
+                       mapping_object[key]=[a]
+                   elif record_flag:
+                       # Create a new record, set its attribute
+                       # and put it in the dictionary
+                       if seqf: item=[item]
+                       r = mapping_object[key]=record()
+                       setattr(r,attr,item)
+                   else:
+                       # it is not a record or list of records
+                       if seqf: item=[item]
+                       mapping_object[key]=item
+           
+        #insert defaults into form dictionary
+        for keys, values in defaults.items():
+            if not form.has_key(keys) and not form == {}:
+                # if the form does not have the key and the
+                # form is not empty, set the default
+                form[keys]=values
+            else:
+               # the form has the key
+               if not form == {}:
+                  if hasattr(values, '__class__') and  values.__class__ is record:
+                     # if the key is mapped to a record, get the
+                     # record
+                     r = form[keys]
+                     for k, v in values.__dict__.items():
+                        # loop through the attributes and values
+                        # in the default dictionary
+                        if not hasattr(r, k):
+                           # if the form dictionary doesn't have
+                           # the attribute, set it to the default
+                           setattr(r,k,v)
+                           form[keys] = r    
+                  else:
+                     # the key is mapped to a list
+                     l = form[keys]
+                     for x in values:
+                        # for each x in the list
+                        if hasattr(x, '__class__') and x.__class__ is record:
+                           # if the x is a record
+                           for k, v in x.__dict__.items():
+                              # loop through each attribute and value in the
+                              # record
+                              for y in l:
+                                 # loop through each record in the form list
+                                 # if it doesn't have the attributes in the
+                                 # default dictionary, set them
+                                 if not hasattr(y, k):
+                                    setattr(y, k, v)
+                        else:
+                           # x is not a record
+                           if not a in l:
+                              l.append(a)
+                     form[keys] = l       
+                            
+        # Convert to tuples
+        for key in tuple_items.keys():
+           # Split the key and get the attr
+           k=split(key, ".")
+           k,attr=join(k[:-1], "."), k[-1]
+           a = attr
+           # remove any type_names in the attr
+           while not a=='':
+              a=split(a, ":")
+              a,new=join(a[:-1], ":"), a[-1]
+           attr = new
+           if form.has_key(k):
+              # If the form has the split key get its value
+              item =form[k]
+              if hasattr(item, '__class__') and item.__class__ is record:
+                 # if the value is mapped to a record, check if it
+                 # has the attribute, if it has it, convert it to
+                 # a tuple and set it
+                 if hasattr(item,attr):
+                    value=tuple(getattr(item,attr))
+                    setattr(item,attr,value)
+              else:
+                 # It is mapped to a list of  records
+                 for x in item:
+                    # loop through the records
+                    if hasattr(x, attr):
+                       # If the record has the attribute
+                       # convert it to a tuple and set it
+                       value=tuple(getattr(x,attr))
+                       setattr(x,attr,value)          
+           else:
+              # the form does not have the split key 
+              if form.has_key(key):
+                 # if it has the original key, get the item
+                 # convert it to a tuple
+                 item=form[key]  
+                 item=tuple(form[key])
+                 form[key]=item
+                     
         other=self.other={}
         other.update(form)
         if meth:
@@ -297,6 +508,7 @@ class HTTPRequest(BaseRequest):
         if p >= 0: b=b[:p+1]
         else: b=''
         while b and b[0]=='/': b=b[1:]
+        
         if have_env('SERVER_URL'):
              server_url=strip(environ['SERVER_URL'])
         else:
@@ -318,8 +530,7 @@ class HTTPRequest(BaseRequest):
              
         if server_url[-1:]=='/': server_url=server_url[:-1]
                         
-        if b: self.base="%s/%s" % (server_url,b)
-        else: self.base=server_url
+        self.base="%s/%s" % (server_url,b)
         while script[:1]=='/': script=script[1:]
         if script: script="%s/%s" % (server_url,script)
         else:      script=server_url
@@ -414,7 +625,6 @@ class HTTPRequest(BaseRequest):
                 l=rfind(URL,'/')
                 if l >= 0: URL=URL[:l]
                 else: raise KeyError, key
-                if len(URL) < len(self.base) and n > 1: raise KeyError, key
             other[key]=URL
             return URL
 
@@ -429,12 +639,14 @@ class HTTPRequest(BaseRequest):
         if key[:1]=='B' and BASEmatch(key) >= 0:
             n=ord(key[4])-ord('0')
             if n:
+
                 if self.environ.get('SCRIPT_NAME',''): n=n-1
                 if len(self.steps) < n:
                     raise KeyError, key
+
                 v=self.script
                 while v[-1:]=='/': v=v[:-1]
-                v=join([v]+self.steps[:n],'/')
+                v=join([v]+self.steps[:n-1],'/')
             else:
                 v=self.base
                 while v[-1:]=='/': v=v[:-1]
@@ -480,36 +692,6 @@ class HTTPRequest(BaseRequest):
                 pass
 
         return keys.keys()
-
-    def __str__(self):
-        result="<h3>form</h3><table>"
-        row='<tr valign="top" align="left"><th>%s</th><td>%s</td></tr>'
-        for k,v in self.form.items():
-            result=result + row % (k,v)
-        result=result+"</table><h3>cookies</h3><table>"
-        for k,v in self.cookies.items():
-            result=result + row % (k,v)
-        result=result+"</table><h3>other</h3><table>"
-        for k,v in self.other.items():
-            if k in ('PARENTS','RESPONSE'): continue
-            result=result + row % (k,v)
-    
-        for n in "0123456789":
-            key = "URL%s"%n
-            try: result=result + row % (key,self[key]) 
-            except KeyError: pass
-        for n in "0123456789":
-            key = "BASE%s"%n
-            try: result=result + row % (key,self[key]) 
-            except KeyError: pass
-
-        result=result+"</table><h3>environ</h3><table>"
-        for k,v in self.environ.items():
-            if not hide_key(k):
-                result=result + row % (k,v)
-        return result+"</table>"
-
-    __repr__=__str__
 
     def _authUserPW(self):
         global base64
@@ -627,3 +809,36 @@ def parse_cookie(text,
     if not already_have(name): result[name]=value
 
     return apply(parse_cookie,(text[l:],result))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -181,8 +181,9 @@ class BaseRequest:
         return result
 
     def __str__(self):
-
-        return join(map(lambda item: "%s:\t%s" % item, self.items()), "\n")
+        L1 = self.items()
+        L1.sort()
+        return join(map(lambda item: "%s:\t%s" % item, L1), "\n")
 
     __repr__=__str__
 
