@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.56 1998/03/23 15:01:22 jeffrey Exp $'''
-__version__='$Revision: 1.56 $'[11:-2]
+$Id: Application.py,v 1.57 1998/03/23 20:18:17 jeffrey Exp $'''
+__version__='$Revision: 1.57 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -26,8 +26,28 @@ from ImageFile import ImageFile
 
 _standard_error_msg='''\
 <!--#var standard_html_header-->
-<H2>Error: <!--#var error_type-->, <!--#var error_value--></H2>
-<!-- <!--#var error_tb--> -->
+<!--#if error_message-->
+ <!--#var error_message-->
+<!--#else-->
+<TABLE BORDER="0" WIDTH="100%">
+<TR>
+  <TD WIDTH="10%" ALIGN="CENTER">
+  <STRONG><FONT SIZE="+6" COLOR="#77003B">!</FONT></STRONG>
+  </TD>
+  <TD WIDTH="90%"><BR>
+  <FONT SIZE="+2">Principia Unavailable</FONT>
+  <P>This Principia site is currently experiencing technical difficulties. 
+Please contact the site administrator for more information.  For
+additional technical information, please refer to the HTML source for this
+page.  Thank you for your patience.</P>
+  </TD>
+</TR>
+</TABLE>
+<!--#comment-->
+ Here, events like logging and other actions may also be performed, such as
+ sending mail automatically to the administrator.
+<!--#/comment-->
+<!--#endif-->
 <!--#var standard_html_footer-->'''
 
 class Application(Folder.Folder):
@@ -378,6 +398,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.57  1998/03/23 20:18:17  jeffrey
+# Made friendlier default Standard Error Message
+#
 # Revision 1.56  1998/03/23 15:01:22  jeffrey
 # Added custom error message support
 #
