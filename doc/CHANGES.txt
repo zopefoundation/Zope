@@ -75,6 +75,10 @@ Zope changes
           this variable should be used instead of PARENTS for user
           validation.
 
+        - The inituser file is now read even when one user has been
+          created.  This provides a way to reset the password after
+          a new user installs Zope but ignores the generated password.
+
     Zope 2.3.0 alpha 1
     
       Features Added
