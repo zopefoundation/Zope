@@ -84,7 +84,7 @@
 ##############################################################################
 
 import string
-import ExtensionClass, Acquisition
+import Acquisition
 
 
 """DOM implementation in ZOPE : Read-Only methods"""
@@ -195,7 +195,7 @@ class Node:
     def hasChildNodes(self):
         """Returns true if the node has any children, false
         if it doesn't. """
-        return self.objectIds()
+        return len(self.objectIds())
             
 """ -----------------------------------------------------------------------
 INTERFACE Element """
@@ -275,8 +275,8 @@ class Element(Node):
         """
         nodeList = []
         for child in self.objectValues():
-            if (child.getNodeType==1 and child.getTagName()==tagname or
-                tagname== '*'):
+            if (child.getNodeType()==ELEMENT_NODE and \
+                    child.getTagName()==tagname or tagname== '*'):
                 nodeList.append( child )
             n1 = child.getElementsByTagName(tagname)
             nodeList = nodeList + n1._data
@@ -284,46 +284,76 @@ class Element(Node):
    
 """-------------------------------------------------------------------"""
 class ElementWithAttributes(Element):
-      
-    # Node method
+    """
+    Elements that allow DOM access to Zope properties of type 'string'.
+    
+    Note: This sub-class should only be used by PropertyManagers
+    """
+    
     def getAttributes(self):
-        attributes = self.propdict()
-        list = []
-        for a in attributes.keys():
-            attributeNode = Attr(a, attributes[a], self.getOwnerDocument())
-            list.append(attributeNode)
-        return NamedNodeMap(list)
-     
+        attribs={}
+        for p in self._properties:
+            if p['type'] == 'string':
+                name=p['id']
+                attrib=Attr(name, self.getProperty(name,'')).__of__(self)
+                attribs[name]=attrib
+        return NamedNodeMap(attribs)
+   
     def getAttribute(self, name):
-        return str(self.getProperty(name))
+        if self.getPropertyType(name) == 'string':
+            return self.getProperty(name,'')
  
     def getAttributeNode(self, name):
-        attributes = self.propdict()
-        if attributes.has_key(name):
-            node = Attr(name, self.getProperty(name), self.getOwnerDocument())
-            return node
+        if self.getPropertyType(name) == 'string':
+            return Attr(name, self.getProperty(name,'')).__of__(self)
         return None
+
+
+class ElementWithTitle(Element):
+    """
+    Elements that allow DOM access to Zope title property.
     
+    Note: Don't use this sub-class for PropertyManagers
+    """
+    
+    def getAttributes(self):
+        if self.getAttribute('title'):
+            return NamedNodeMap({'title' : self.title})
+        return NamedNodeMap()
+        
+    def getAttribute(self, name):
+        if name=='title' and hasattr(self.aq_base, 'title'):
+            return self.title
+        return ''
+    
+    def getAttributeNode(self, name):
+        value=self.getAttribute(name)
+        if value:
+            return Attr(name, value).__of__(self)
+        return None
+            
 """ -------------------------------------------------------------------
 INTERFACE NodeList - provides the abstraction of an ordered collection
 of nodes. """
    
 class NodeList:
 
-    def __init__(self,list=[]):
-        self._data = list
-        self.length = len(list)
+    def __init__(self,list=None):
+        self._data = list or []
     
     def __getitem__(self, index):
-        """Returns the index-th item in the collection"""
-        if index >= self.length: return None
         return self._data[index]
         
-    item = __getitem__
+    def item(self, index):
+        """Returns the index-th item in the collection"""
+        try: return self._data[index]    
+        except IndexError: return None
          
     def getLength(self):
         """The length of the NodeList"""
-        return self.length
+        return len(self._data)
+    
+    __len__=getLength
  
 """ -----------------------------------------------------------------
 INTERFACE NamedNodeMap - Interface is used to represent collections
@@ -335,20 +365,20 @@ class NamedNodeMap:
     def __init__(self, data=None):
         if data is None : data = {}
         self._data = data
-        self.length = len(data)
 
     def __getitem__(self, index):
         """Returns the index-th item in the map"""
-        return self._data[index]
+        try: return self._data.values()[index]
+        except IndexError: return None
         
     item = __getitem__
 
     def getLength(self):
         """The length of the NodeList"""
-        return self.length
+        return len(self._data)
 
-   
-         
+    __len__ = getLength
+    
     def getNamedItem(self, name):
         """Retrieves a node specified by name. Parameters:
         name Name of a node to retrieve. Return Value  A Node (of any
@@ -363,17 +393,12 @@ class NamedNodeMap:
 INTERFACE Attr - The Attr interface represents an attriubte in an
 Element object.  Attr objects inherit the Node Interface"""
 
-class Attr(Node):
+class Attr(Acquisition.Implicit, Node):
 
-    def __init__(self, name, value, ownerDocument):
-        self.nodeName = name
-        # attr attributes
+    def __init__(self, name, value):
         self.name = name
         self.value = value
         self.specified = 1
-        # attr nodes are specified because properties
-        # don't exist without having a value
-        self.ownerDocument = ownerDocument
         
     def getNodeName(self):
         return self.name
@@ -386,10 +411,10 @@ class Attr(Node):
 
     def getNodeType(self):
         return ATTRIBUTE_NODE
- 
-    def getOwnerDocument(self):
-        return self.ownerDocument
 
+    def getSpecified(self):
+        return self.specified
+        
    
 
 
