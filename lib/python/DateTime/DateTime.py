@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1501,8 +1501,8 @@ class DateTime:
 
         newdate = self.toZone('UTC')
         return "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2dZ" % (
-            self._year, self._month, self._day,
-            self._hour, self._minute, self._second)
+            newdate._year, newdate._month, newdate._day,
+            newdate._hour, newdate._minute, newdate._second)
 
     def __add__(self,other):
         """A DateTime may be added to a number and a number may be 
