@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -230,9 +230,15 @@ class BaseRequest:
         # Make sure that REQUEST cannot be traversed.
         if find(path, 'REQUEST') >= 0:
             return response.notFoundError(path)
-        
+
+        # XXX rewrite this?
+        # Is it an absolute path? If not prepend a '/'
         if path[:1] != '/': path='/'+path
+
+        # Does it end in a slash? If not, append one.
         if path[-1:] != '/': path=path+'/'
+
+        # Map out relative references ('.' and '..')
         if find(path,'/.') >= 0:
             path=join(split(path,'/./'),'/')
             l=find(path,'/../',1)
@@ -240,21 +246,32 @@ class BaseRequest:
                 p1=path[:l]
                 path=path[:rfind(p1,'/')+1]+path[l+4:]
                 l=find(path,'/../',1)
+
+        # Now rip off the leading and trailing slashes XXX
         path=path[1:-1]
-    
+
+        # Rip the path apart based on '/'
         path=split(path,'/')
+
+        # Remove any empty leading elements
         while path and not path[0]: path = path[1:]
-    
+
+        # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=upper(request_get('REQUEST_METHOD', 'GET'))
+        
         baseflag=0
+
+        # Set the default method
         if method=='GET' or method=='POST':
             method='index_html'
         else: baseflag=1
+        
         URL=request['URL']
     
         parents=request['PARENTS']
         object=parents[-1]
         del parents[:]
+        
         try:
             # We build parents in the wrong order, so we
             # need to make sure we reverse it when we're doe.
@@ -282,10 +299,10 @@ class BaseRequest:
                         except: pass
                 except: pass
         
-            # Traverse the URL to find the object:
-        
+            # Traverse the URL to find the object:        
             if hasattr(object, '__of__'): 
                 # Try to bind the top-level object to the request
+                # This is how you get 'self.REQUEST'
                 object=object.__of__(RequestContainer(REQUEST=request))
         
             steps=self.steps
@@ -294,7 +311,7 @@ class BaseRequest:
                 entry_name=path[-1]
                 del path[-1]
                 URL="%s/%s" % (URL,quote(entry_name))
-                got=0
+                got=0                   # Can't find it? XXX
                 if entry_name:
                     if entry_name[:1]=='_':
                         if debug_mode:
@@ -307,6 +324,7 @@ class BaseRequest:
                         request['URL']=URL
                         subobject=object.__bobo_traverse__(request,entry_name)
                         if type(subobject) is type(()) and len(subobject) > 1:
+                            # Add additional parents into the path
                             while len(subobject) > 2:
                                 parents.append(subobject[0])
                                 subobject=subobject[1:]
@@ -348,7 +366,7 @@ class BaseRequest:
                             return response.debugError(
                                 "Missing doc string at: %s" % URL)
                         else: return response.notFoundError("%s" % (URL))
-    
+
                     if hasattr(subobject,'__roles__'):
                         roles=subobject.__roles__
                     else:
@@ -358,12 +376,11 @@ class BaseRequest:
                                 roles=getattr(object, roleshack)
     
                     # Promote subobject to object
-                
                     parents.append(object)
                     object=subobject
-    
+   
                     steps.append(entry_name)
-        
+
                     # Check for method:
                     if not path:
                         if (method and hasattr(object,method)
