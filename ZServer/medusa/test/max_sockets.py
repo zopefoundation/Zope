@@ -1,4 +1,3 @@
-# -*- Mode: Python; tab-width: 4 -*-
 
 import socket
 import select
@@ -50,18 +49,17 @@ def max_select_sockets():
 	sl = []
 	while 1:
 		try:
-			s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-			s.bind (('',0))
-			s.listen(5)
-			sl.append (s)
+			num = len(sl)
+			for i in range(1 + len(sl) * 0.05):
+				# Increase exponentially.
+				s = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
+				s.bind (('',0))
+				s.listen(5)
+				sl.append (s)
 			select.select(sl,[],[],0)
 		except:
 			break
-	num = len(sl) - 1
 	for s in sl:
 		s.close()
 	del sl
 	return num
-	
-	
-
