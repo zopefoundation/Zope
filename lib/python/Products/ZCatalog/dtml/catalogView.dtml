@@ -3,7 +3,32 @@
 
 <dtml-if searchResults>
 
-<form action="<dtml-var name="URL1">">
+<script type="text/javascript">
+<!-- 
+
+isSelected = false;
+
+function toggleSelect() {
+  if (isSelected == false) {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = true ;
+      isSelected = true;
+      document.objectItems.selectButton.value = "Deselect All";
+      return isSelected;
+  }
+  else {
+    for (i = 0; i < document.objectItems.length; i++)
+      document.objectItems.elements[i].checked = false ;
+      isSelected = false;
+      document.objectItems.selectButton.value = "Select All";
+      return isSelected;       
+  }
+}
+
+//-->
+</script>
+
+<form action="<dtml-var name="URL1">" name="objectItems">
 
 <p class="form-text">
 <dtml-var id> contains <dtml-var 
@@ -64,6 +89,13 @@
  name="manage_uncatalogObject:method">
 <input class="form-element" type="submit" value=" Update " 
  name="manage_catalogObject:method">
+<script type="text/javascript">
+<!-- 
+if (document.forms[0]) {
+  document.write('<input class="form-element" type="submit" name="selectButton" value="Select All" onClick="toggleSelect(); return false">')
+  }
+//-->
+</script>
 </div>
 </form>
 <dtml-else>
