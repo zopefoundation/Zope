@@ -85,8 +85,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.80 2000/03/17 18:59:27 jim Exp $'''
-__version__='$Revision: 1.80 $'[11:-2]
+$Id: DA.py,v 1.81 2000/04/19 17:50:43 jeffrey Exp $'''
+__version__='$Revision: 1.81 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -127,8 +127,6 @@ class nvSQL(DocumentTemplate.HTML):
 class SQL(cDocument, nvSQL):
     # Validating SQL template for Zope SQL Methods.
     pass
-
-
 
 
 class DA(
@@ -419,6 +417,8 @@ class DA(
         
         if hasattr(self, 'aq_parent'):
             p=self.aq_parent
+            if self._isBeingAccessedAsZClassDefinedInstanceMethod():
+                p=p.aq_parent
         else: p=None
 
         argdata=self._argdata(REQUEST)
