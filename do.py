@@ -98,16 +98,19 @@ def do(command, picky=1):
     i=os.system(command)
     if i and picky: raise SystemError, i
 
+def wheres_Makefile_pre_in():
+    "Identify Makefile.pre.in location (in much the same way it does)."
+    return "%s/lib/python%s/config/Makefile.pre.in" % (sys.exec_prefix,
+                                                       sys.version[:3])
+
 def make(*args):
     print
     print '-'*48
     print 'Compiling extensions in %s' % string.join(args,'/')
     
     for a in args: os.chdir(a)
-    # Copy over the prototype makefile:
-    root_path = len(args) * "../"
-    do("cp %sMakefile.pre.in ." % root_path)
-    # ... and now use it.
+    # Copy over and use the prototype extensions makefile from python dist:
+    do("cp %s ." % wheres_Makefile_pre_in())
     do('make -f Makefile.pre.in boot PYTHON=%s' % sys.executable)
     do('make')
     do('make clean')
