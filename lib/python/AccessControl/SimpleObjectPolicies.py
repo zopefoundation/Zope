@@ -84,8 +84,10 @@
 ##############################################################################
 __doc__='''Collect rules for access to objects that don\'t have roles.
 
-$Id: SimpleObjectPolicies.py,v 1.5 2000/06/19 13:54:22 shane Exp $''' 
-__version__='$Revision: 1.5 $'[11:-2] 
+$Id: SimpleObjectPolicies.py,v 1.6 2001/01/10 20:21:03 chrism Exp $''' 
+__version__='$Revision: 1.6 $'[11:-2] 
+
+_noroles=[] # this is imported from various places
 
 import Record
 
