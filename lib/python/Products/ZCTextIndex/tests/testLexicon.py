@@ -76,7 +76,7 @@ class Test(TestCase):
         lexicon = Lexicon(Splitter())
         wids = lexicon.sourceToWordIds('cats and dogs')
         wids = lexicon.termToWordIds('boxes')
-        self.assertEqual(wids, [])
+        self.assertEqual(wids, [0])
 
     def testOnePipelineElement(self):
         lexicon = Lexicon(Splitter(), StupidPipelineElement('dogs', 'fish'))
@@ -94,7 +94,7 @@ class Test(TestCase):
         lexicon = Lexicon(Splitter())
         wids = lexicon.sourceToWordIds('CATS and dogs')
         wids = lexicon.termToWordIds('cats and dogs')
-        self.assertEqual(wids, [2, 3])
+        self.assertEqual(wids, [0, 2, 3])
 
     def testTwoElementPipeline(self):
         lexicon = Lexicon(Splitter(),

@@ -109,6 +109,10 @@ class OkapiIndex(Persistent):
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)
+        if not wids:
+            return None # All docs match
+        if 0 in wids:
+            wids = filter(None, wids)
         return mass_weightedUnion(self._search_wids(wids))
 
     def search_glob(self, pattern):
@@ -117,6 +121,8 @@ class OkapiIndex(Persistent):
 
     def search_phrase(self, phrase):
         wids = self._lexicon.termToWordIds(phrase)
+        if 0 in wids:
+            return IIBTree()
         hits = mass_weightedIntersection(self._search_wids(wids))
         if not hits:
             return hits

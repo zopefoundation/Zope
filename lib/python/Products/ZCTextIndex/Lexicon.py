@@ -62,9 +62,7 @@ class Lexicon:
             last = element.process(last)
         wids = []
         for word in last:
-            wid = self._wids.get(word)
-            if wid is not None:
-                wids.append(wid)
+            wids.append(self._wids.get(word, 0))
         return wids
 
     def get_word(self, wid):

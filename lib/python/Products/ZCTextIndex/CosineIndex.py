@@ -115,6 +115,10 @@ class CosineIndex(Persistent):
 
     def search(self, term):
         wids = self._lexicon.termToWordIds(term)
+        if not wids:
+            return None # All docs match
+        if 0 in wids:
+            wids = filter(None, wids)
         return mass_weightedUnion(self._search_wids(wids))
 
     def search_glob(self, pattern):
@@ -123,6 +127,8 @@ class CosineIndex(Persistent):
 
     def search_phrase(self, phrase):
         wids = self._lexicon.termToWordIds(phrase)
+        if 0 in wids:
+            return IIBTree()
         hits = mass_weightedIntersection(self._search_wids(wids))
         if not hits:
             return hits
@@ -157,6 +163,8 @@ class CosineIndex(Persistent):
         N = float(len(self._docweight))
         sum = 0.0
         for wid in wids:
+            if wid == 0:
+                continue
             wt = math.log(1.0 + N / len(self._wordinfo[wid]))
             sum += wt ** 2.0
         return scaled_int(math.sqrt(sum))

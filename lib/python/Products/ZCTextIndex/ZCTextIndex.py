@@ -72,6 +72,8 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         """
         tree = QueryParser().parseQuery(query)
         results = tree.executeQuery(self.index)
+        if results is None:
+            return [], 0
         chooser = NBest(nbest)
         chooser.addmany(results.items())
         return chooser.getbest(), len(results)

@@ -143,7 +143,7 @@ class Indexer:
                 if not text:
                     continue
             try:
-                n, results = self.timequery(text, top + nbest)
+                results, n = self.timequery(text, top + nbest)
             except:
                 reportexc()
                 text = ""
@@ -163,7 +163,7 @@ class Indexer:
             top += nbest
 
     def query(self, text, nbest=NBEST, maxlines=MAXLINES):
-        n, results = self.timequery(text, nbest)
+        results, n = self.timequery(text, nbest)
         if not n:
             print "No hits for %r." % text
             return
@@ -173,11 +173,11 @@ class Indexer:
     def timequery(self, text, nbest):
         t0 = time.time()
         c0 = time.clock()
-        n, results = self.index.query(text, nbest)
+        results, n = self.index.query(text, nbest)
         t1 = time.time()
         c1 = time.clock()
         print "[Query time: %.3f real, %.3f user]" % (t1-t0, c1-c0)
-        return n, results
+        return results, n
 
     def formatresults(self, text, results, maxlines=MAXLINES,
                       lo=0, hi=sys.maxint):
@@ -397,9 +397,11 @@ class TextIndex(Persistent):
         parser = QueryParser()
         tree = parser.parseQuery(query)
         results = tree.executeQuery(self.index)
+        if results is None:
+            return [], 0
         chooser = NBest(nbest)
         chooser.addmany(results.items())
-        return len(results), chooser.getbest()
+        return chooser.getbest(), len(results)
 
     def query_weight(self, query):
         parser = QueryParser()

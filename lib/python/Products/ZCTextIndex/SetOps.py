@@ -20,10 +20,10 @@ from Products.ZCTextIndex.NBest import NBest
 
 def mass_weightedIntersection(L):
     "A list of (mapping, weight) pairs -> their weightedIntersection IIBTree."
+    L = [(map, weight) for (map, weight) in L if map is not None]
     if not L:
         return IIBTree()
     # Intersect with smallest first.
-    L = L[:]    # don't mutate the caller's L
     L.sort(lambda x, y: cmp(len(x[0]), len(y[0])))
     x, w = L[0]
     dummy, result = weightedUnion(IIBTree(), x, 1, w)
