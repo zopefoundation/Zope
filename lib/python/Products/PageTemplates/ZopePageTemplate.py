@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -159,6 +159,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         self.expand=expand
         self.pt_setTitle(title)
         self.pt_edit(text, content_type)
+        REQUEST.set('text', self.read()) # May not equal 'text'!
         message = "Saved changes."
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>" 
@@ -237,6 +238,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
 
         # Execute the template in a new security context.
         security=getSecurityManager()
+        bound_names['user'] = security.getUser()
         security.addContext(self)
         try:
             return self.pt_render(extra_context=bound_names)
