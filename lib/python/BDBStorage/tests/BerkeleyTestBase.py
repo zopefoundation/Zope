@@ -17,6 +17,7 @@
 
 import os
 import errno
+import shutil
 
 from BDBStorage.BerkeleyBase import BerkeleyConfig
 from ZODB.tests.StorageTestBase import StorageTestBase
@@ -26,40 +27,49 @@ DBHOME = 'test-db'
 
 
 class BerkeleyTestBase(StorageTestBase):
-    def _zap_dbhome(self, dir):
-        # If the tests exited with any uncommitted objects, they'll blow up
-        # subsequent tests because the next transaction commit will try to
-        # commit those object.  But they're tied to closed databases, so
-        # that's broken.  Aborting the transaction now saves us the headache.
-        try:
-            for file in os.listdir(dir):
-                os.unlink(os.path.join(dir, file))
-            os.removedirs(dir)
-        except OSError, e:
-            if e.errno <> errno.ENOENT:
-                raise
-
-    def _mk_dbhome(self, dir):
+    def _config(self):
         # Checkpointing just slows the tests down because we have to wait for
         # the thread to properly shutdown.  This can take up to 10 seconds, so
         # for the purposes of the test suite we shut off this thread.
         config = BerkeleyConfig()
         config.interval = 0
+        return config
+
+    def _envdir(self):
+        return DBHOME
+
+    def open(self):
+        self._storage = self.ConcreteStorage(
+            self._envdir(), config=self._config())
+
+    def _zap_dbhome(self, dir=None):
+        if dir is None:
+            dir = self._envdir()
+        # XXX Pre-Python 2.3 doesn't ignore errors if the first arg doesn't
+        # exist, even if the second is True.
+        try:
+            shutil.rmtree(dir, True)
+        except OSError, e:
+            if e.errno <> errno.ENOENT: raise
+
+    def _mk_dbhome(self, dir=None):
+        if dir is None:
+            dir = self._get_envdir()
         os.mkdir(dir)
         try:
-            return self.ConcreteStorage(dir, config=config)
+            return self.ConcreteStorage(dir, config=self._config())
         except:
-            self._zap_dbhome(dir)
+            self._zap_dbhome()
             raise
 
     def setUp(self):
         StorageTestBase.setUp(self)
-        self._zap_dbhome(DBHOME)
-        self._storage = self._mk_dbhome(DBHOME)
+        self._zap_dbhome()
+        self.open()
 
     def tearDown(self):
         StorageTestBase.tearDown(self)
-        self._zap_dbhome(DBHOME)
+        self._zap_dbhome()
 
 
 
