@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.123 2001/01/17 18:40:27 shane Exp $"""
+$Id: ObjectManager.py,v 1.124 2001/01/17 19:17:05 shane Exp $"""
 
-__version__='$Revision: 1.123 $'[11:-2]
+__version__='$Revision: 1.124 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -129,6 +129,8 @@ def checkValidId(self, id, allow_dup=0):
             'The id "%s" contains characters illegal in URLs.' % id)
     if id[0]=='_': raise 'Bad Request', (
         'The id "%s" is invalid - it begins with an underscore.'  % id)
+    if id[:3]=='aq_': raise 'Bad Request', (
+        'The id "%s" is invalid - it begins with "aq_".'  % id)
     if id[-2:]=='__': raise 'Bad Request', (
         'The id "%s" is invalid - it ends with two underscores.'  % id)
     if not allow_dup:
