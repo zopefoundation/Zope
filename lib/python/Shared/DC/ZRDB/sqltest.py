@@ -65,7 +65,7 @@ __rcs_id__='$Id$'
 #       rights reserved.
 #
 ############################################################################
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -115,7 +115,6 @@ class SQLTest:
         self.op = op
 
     def render(self, md):
-
         name=self.__name__
 
         t=self.type
@@ -159,6 +158,14 @@ class SQLTest:
                 except ValueError:
                     raise ValueError, (
                         'Invalid floating-point value for <em>%s</em>' % name)
+
+            ## ZSQL methods: added  workaround for a problem where a 'string' argument
+            ## variable was included into the generated query if the 'optional' flag inside
+            ## dtml-sqltest was set an if the value of the string was empty.
+
+            elif t=='string' and len(str(v)) == 0  and args.get('optional', 0):
+                continue
+
             else:
                 v=str(v)
                 v=md.getitem('sql_quote__',0)(v)
@@ -172,6 +179,7 @@ class SQLTest:
             else:
                 err = 'Invalid empty string value for <em>%s</em>' % name
                 raise ValueError, err
+
 
         if not vs:
             if self.optional: return ''
