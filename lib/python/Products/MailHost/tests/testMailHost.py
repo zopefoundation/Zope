@@ -47,6 +47,14 @@ This is the message body."""
         self.failUnless(resto == ['recipient2@domain.com'])
         self.failUnless(resfrom == 'sender2@domain.com' )
 
+    def testBCCHeader( self ):
+        msg = "From: me@example.com\nBcc: many@example.com\n\nMessage text"
+        # Specify only the "Bcc" header.  Useful for bulk emails.
+        resmsg, resto, resfrom = _mungeHeaders(msg)
+        self.failUnless(resto == ['many@example.com'])
+        self.failUnless(resfrom == 'me@example.com' )
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest( unittest.makeSuite( TestMailHost ) )

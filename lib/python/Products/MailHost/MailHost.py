@@ -11,8 +11,8 @@
 #
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.78 2003/02/22 15:13:32 andreasjung Exp $"""
-__version__ = "$Revision: 1.78 $"[11:-2]
+$Id: MailHost.py,v 1.79 2003/03/04 16:29:12 shane Exp $"""
+__version__ = "$Revision: 1.79 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -187,13 +187,13 @@ def _mungeHeaders( messageText, mto=None, mfrom=None, subject=None):
         if not mo.getheader('To'):
             mo['To'] = ','.join(mto)
     else:
-        if not mo.getheader('To'):
-            raise MailHostError,"Message missing SMTP Header 'To'"
-        mto = map(lambda x:x.strip(), mo['To'].split(','))
-        if mo.getheader('Cc'):
-            mto = mto + map(lambda x:x.strip(), mo['Cc'].split(','))
-        if mo.getheader('Bcc'):
-            mto = mto + map(lambda x:x.strip(), mo['Bcc'].split(','))
+        mto = []
+        for header in ('To', 'Cc', 'Bcc'):
+            v = mo.getheader(header)
+            if v:
+                mto += [addr.strip() for addr in v.split(',')]
+        if not mto:
+            raise MailHostError, "No message recipients designated"
 
     if mfrom:
         mo['From'] = mfrom
