@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.8 1997/07/02 20:18:20 jim Exp $
+  $Id: ExtensionClass.h,v 1.9 1997/12/11 15:37:54 jim Exp $
 
   Extension Class Definitions
 
@@ -113,6 +113,9 @@
 
 
   $Log: ExtensionClass.h,v $
+  Revision 1.9  1997/12/11 15:37:54  jim
+  Added EXTENSIONCLASS_BASICNEW_FLAG.
+
   Revision 1.8  1997/07/02 20:18:20  jim
   Added stupid parens and other changes to make 'gcc -Wall -pedantic'
   and Barry happy.  Renamed PyCObject_Import to avoid conflict with
@@ -209,6 +212,7 @@ typedef struct {
 #define EXTENSIONCLASS_METHODHOOK_FLAG    1 << 3
 #define EXTENSIONCLASS_INSTDICT_FLAG      1 << 4
 #define EXTENSIONCLASS_NOINSTDICT_FLAG    1 << 5
+#define EXTENSIONCLASS_BASICNEW_FLAG      1 << 6
 
   /* The following flags are for use by extension class developers. */
 #define EXTENSIONCLASS_USER_FLAG1  	  1 << 16
@@ -358,7 +362,8 @@ if(PyErr_Occurred()) { \
 #define PURE_MIXIN_CLASS(NAME,DOC,METHODS) \
 static PyExtensionClass NAME ## Type = { PyObject_HEAD_INIT(NULL) \
 	0, # NAME, sizeof(PyPureMixinObject), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, \
-	0, 0, 0, 0, 0, 0, 0, DOC, {METHODS, NULL}}
+	0, 0, 0, 0, 0, 0, 0, DOC, {METHODS, NULL}, \
+        EXTENSIONCLASS_BASICNEW_FLAG}
 
 /* The following macros provide limited access to extension-class
    method facilities. */
