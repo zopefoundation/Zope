@@ -6,6 +6,18 @@ Zope Changes
 
     Bugs Fixed
 
+      - The "Add Browser ID Manager" permission was renamed to
+        "Add Browser Id Manager".
+
+      - Browser Id Managers now provide a saner way to obtain a
+        hidden form element which encodes the browser id name and
+        browser id.  An interface method named "getHiddenFormField"
+        on browser id managers now exists which returns a snippet of
+        HTML as a hidden form field that encodes these values.
+
+      - A Site Error Log object is now created in the root at Zope
+        startup time.
+
       - Collector #437: dtml-sqltest now renders 'v not in (b,c)'
         when used as <dtml-sqltest v type=... multiple op=ne>.  
         Previously, a sqltest for inequality would render 'v <> b'
