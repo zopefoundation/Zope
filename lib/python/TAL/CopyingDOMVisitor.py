@@ -111,14 +111,16 @@ class CopyingDOMVisitor(DOMVisitor):
         self.curNode = self.curNode.parentNode
 
     def copyElement(self, node):
+        namespaceURI = node.namespaceURI
         if self.newDocument is None:
             # This must be the documentElement node.  Create the
             # document now; this also creates the documentElement node
             self.newDocument = self.documentFactory.createDocument(
-                None, node.nodeName, None)
+                namespaceURI, node.nodeName, None)
             newNode = self.newDocument.documentElement
         else:
-            newNode = self.newDocument.createElement(node.nodeName)
+            newNode = self.newDocument.createElementNS(namespaceURI,
+                                                       node.nodeName)
             self.curNode.appendChild(newNode)
         self.curNode = newNode
 

@@ -1,20 +1,20 @@
 <?xml version="1.0" ?>
-<biztalk_1>
+<biztalk_1 xmlns="urn:schemas-biztalk-org:biztalk:biztalk_1">
 
-<header plain="guido" quote='"' apostrophe="'" both="&quot;'" lt="&lt;" gt="&gt;" amp="&amp;" foo="">
+<foo:header xmlns:foo="whomping-willow" plain="guido" quote='"' apostrophe="'" both="&quot;'" lt="&lt;" gt="&gt;" amp="&amp;" foo="">
 	<manifest>
 		<document>
 			<name>sample1</name>
 			<description>a simple invoice</description>
 		</document>
 	</manifest>
-</header>
+</foo:header>
 
 <body>
 
 <!-- sample1.xml is an example of a simple invoice for a small restaurant supplies order -->
 
-<Invoice>
+<Invoice xmlns="urn:http://schemas.biztalk.org/united_rest_com/yw7sg15x.xml">
 	<Header>
 		<InvoiceNumber>01786</InvoiceNumber>
 		<InvoiceDate>2000-03-17</InvoiceDate>	<!-- March 17th, 2000 -->
