@@ -349,7 +349,7 @@ class FullLog(CommitLog):
     def write_nonversion_object(self, oid, lrevid, prevrevid, zero='\0'*8):
         # Write zeros for the vid and nvrevid since we're storing this object
         # into version zero (the non-version).  Also, write an empty pickle
-        # since we'll since we'll reuse one already in the pickle table.
+        # since we'll reuse one already in the pickle table.
         self._append('o', (oid, zero, zero, lrevid, '', prevrevid))
 
     def write_moved_object(self, oid, vid, nvrevid, lrevid, prevrevid):
