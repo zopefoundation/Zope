@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.76 $'[11:-2]
+__version__='$Revision: 1.77 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -265,7 +265,8 @@ class File(Persistent,Implicit,PropertyManager,
         
         seek(0,2)
         size=end=file.tell()
-        if size <= 2*n or Globals.DatabaseVersion=='2':
+        jar=self._p_jar
+        if size <= 2*n or jar is None or Globals.DatabaseVersion=='2':
             seek(0)
             if size < n: read(size), size
             return Pdata(read(size)), size
@@ -284,7 +285,7 @@ class File(Persistent,Implicit,PropertyManager,
             # Woooop Woooop Woooop! This is a trick.
             # We stuff the data directly into our jar to reduce the
             # number of updates necessary.
-            data._p_jar=self._p_jar
+            data._p_jar=jar
 
             # This is needed and has side benefit of getting
             # the thing registered:
