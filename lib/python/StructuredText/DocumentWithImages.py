@@ -30,12 +30,12 @@ class DocumentWithImages(DocumentClass):
 
     def doc_img(
         self, s,
-        expr1=re.compile('\"((?:\w|[ *.:/;,\-\n\~])+)\":img:([a-zA-Z0-9\_\-.:/;,\n\~]+)', re.U).search,
-        expr2=re.compile('\"((?:\w|[ *.:/;,\-\n\~])+)\":img:([a-zA-Z0-9\_\-.:/;,\n\~]+):([a-zA-Z0-9_\-.:/;,\n\~]+)', re.U).search
+        expr1=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\_\-.:/;,\n\~]+)').search,
+        expr2=re.compile('\"([ _a-zA-Z0-9*.:/;,\-\n\~]+)\":img:([a-zA-Z0-9\_\-.:/;,\n\~]+):([a-zA-Z0-9_\-.:/;,\n\~]+)').search
         ):
+
         r = expr2(s)
         if r:
-
 
             # Warning: the regex are getting confused when the string after :img:
             # is an URL containing ":" (Collector #2276)
