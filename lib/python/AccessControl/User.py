@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.96 $'[11:-2]
+__version__='$Revision: 1.97 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -712,8 +712,16 @@ def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
 
+# This bit performs watermark verification on authenticated users.
+    
+from ZPublisher.BaseRequest import _marker
 
-
+def verify_watermark(auth_user):
+    if not hasattr(auth_user, '__marker__') or \
+       auth_user.__marker__ is not _marker:
+        raise 'Unauthorized', (
+            'You are not authorized to access this resource.'
+            )
 
 
 def rolejoin(roles, other):

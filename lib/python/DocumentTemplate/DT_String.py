@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.32 2000/03/09 19:15:39 brian Exp $"
+"$Id: DT_String.py,v 1.33 2000/03/09 19:22:33 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -560,15 +560,9 @@ class File(FileMixin, String):
 # are running with Zope before installing the watermark function.
 
 if hasattr(__builtins__, 'INSTANCE_HOME'):
-    
-    from ZPublisher.BaseRequest import _marker
 
-    def verify_watermark(auth_user):
-        if not hasattr(auth_user, '__marker__') or \
-           auth_user.__marker__ is not _marker:
-            raise 'Unauthorized', (
-                'You are not authorized to access this resource.'
-                )
+    from AccessControl.User import verify_watermark
+
 else:
 
     def verify_watermark(auth_user):
