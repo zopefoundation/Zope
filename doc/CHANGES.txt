@@ -6,7 +6,21 @@ Zope Changes
 
   Releases
 
-    Zope  1.10 pr1
+    Zope  1.10.0
+
+      New Features
+
+      Bugs Fixed
+
+        - PUT and file uploads would fail if the content-type could
+          not be determined. Now objects created via PUT and file
+          upload will default to either 'application/octet-stream'
+          for binary files or 'text/plain' for non-binary files if
+          no content-type can be determined from headers or filename
+          extensions.
+
+
+    Zope  1.10.0 pr1
 
       New Features
 
