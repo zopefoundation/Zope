@@ -42,6 +42,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #763: There was no error when you had a sendmail-tag
+        without specifying a mailhost or smpthost. Also added a missing import.
+
       - Work around potential BTrees key enumeration bugs in Transience
         package by checking explicitly for error cases.
 

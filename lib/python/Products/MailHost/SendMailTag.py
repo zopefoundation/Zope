@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.17 2002/08/14 22:14:51 mj Exp $'
-__version__='$Revision: 1.17 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.18 2003/01/14 19:10:38 regebro Exp $'
+__version__='$Revision: 1.18 $'[11:-2]
 
-from MailHost import MailBase
+from MailHost import MailBase, MailHostError
 from DocumentTemplate.DT_Util import parse_params,render_blocks
 from DocumentTemplate.DT_String import String
 from socket import gethostname
@@ -64,15 +64,16 @@ class SendMailTag:
                           subject=None, smtphost=None, port='25',
                           encode=None)
 
-        for key in ('mailto', 'mailfrom', 'subject', 'smtphost', 'port'):
-            if not args.has_key(key):args[key]=''
         smtphost=None
-
+        
         has_key=args.has_key
         if has_key('mailhost'): mailhost=args['mailhost']
         elif has_key('smtphost'): mailhost=smtphost=args['smtphost']
         elif has_key(''): mailhost=args['mailhost']=args['']
         else: raise MailHostError, 'No mailhost was specified in tag'
+
+        for key in ('mailto', 'mailfrom', 'subject', 'port'):
+            if not args.has_key(key):args[key]=''
 
         if has_key('encode') and args['encode'] not in \
         ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
