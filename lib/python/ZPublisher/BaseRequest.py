@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -386,9 +386,14 @@ class BaseRequest:
                                 i=rfind(URL,'/')
                                 if i > 0: response.setBase(URL[:i])
         
-        finally:
-            # We need to MAKE SURE this happens due to new error handling
+        except:
+            # Save the last found object before handling the exception.
+            if object is not None:
+                parents.append(object)
             parents.reverse()
+            raise
+
+        parents.reverse()
     
         # Do authorization checks
         user=groups=None
