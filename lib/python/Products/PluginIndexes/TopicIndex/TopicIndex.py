@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.15 2003/11/21 13:48:11 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.16 2003/12/31 21:18:03 poster Exp $'
 
 from Globals import Persistent, DTMLFile
 from OFS.SimpleItem import SimpleItem
@@ -100,7 +100,7 @@ class TopicIndex(Persistent, SimpleItem):
             res = set_func(res,rows)
 
         if res:
-            return res, (self.id,)
+            return res.keys(), (self.id,)
         else:
             return IISet(), (self.id,)
 

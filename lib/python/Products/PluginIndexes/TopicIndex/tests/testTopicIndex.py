@@ -34,7 +34,6 @@ class TestBase(unittest.TestCase):
         return self._search(query,'or',expected)
 
     def _search(self,query,operator,expected):
-
         res = self.TI._apply_index({'topic':{'query':query,'operator':operator}})
         rows = list(res[0])
         rows.sort()
@@ -72,6 +71,11 @@ class TestTopicIndex(TestBase):
         self._searchAnd('doc2',[3,4])
         self._searchAnd(['doc2'],[3,4])
         self._searchAnd(['doc1','doc2'],[])
+    
+    def testRemoval(self):
+        self.TI.index_object(1, Obj('1','doc2'))
+        self._searchOr('doc1',[2])
+        self._searchOr('doc2', [1,3,4])
 
 def test_suite():
 

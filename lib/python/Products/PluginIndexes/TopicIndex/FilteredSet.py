@@ -11,9 +11,10 @@
 #
 ##############################################################################
 
-__version__ = '$Id: FilteredSet.py,v 1.5 2003/06/12 14:36:47 andreasjung Exp $'
+__version__ = '$Id: FilteredSet.py,v 1.6 2003/12/31 21:18:03 poster Exp $'
 
-from BTrees.IIBTree import IISet
+from ZODB.POSException import ConflictError
+from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
 from Globals import DTMLFile
 from zLOG import WARNING,LOG
@@ -29,7 +30,7 @@ class FilteredSetBase(Persistent):
 
 
     def clear(self):
-        self.ids  = IISet()
+        self.ids  = IITreeSet()
 
 
     def index_object(self, documentId, obj):
@@ -41,10 +42,17 @@ class FilteredSetBase(Persistent):
         except KeyError: pass
 
 
-    def getId(self):            return self.id
-    def getExpression(self):    return self.expr
-    def getIds(self):           return self.ids
-    def getType(self):          return self.meta_type
+    def getId(self):
+        return self.id
+        
+    def getExpression(self):
+        return self.expr
+        
+    def getIds(self):
+        return self.ids
+    
+    def getType(self):
+        return self.meta_type
 
     def setExpression(self, expr): self.expr = expr
 
@@ -60,9 +68,16 @@ class PythonFilteredSet(FilteredSetBase):
     meta_type = 'PythonFilteredSet'
 
     def index_object(self, documentId, o):
-
         try:
-            if eval(self.expr): self.ids.insert(documentId)
+            if eval(self.expr): # XXX trusted code!
+                self.ids.insert(documentId)
+            else:
+                try:
+                    self.ids.remove(documentId)
+                except KeyError:
+                    pass
+        except ConflictError:
+            raise
         except:
             LOG('FilteredSet',WARNING,'eval() failed',\
                 'Object: %s, expr: %s' % (o.getId(),self.expr),\
