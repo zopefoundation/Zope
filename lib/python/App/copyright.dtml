@@ -4,47 +4,78 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Copyright</H2>
-<P>
+<h3>Copyright &copy; 1997
+  <a href="http://www.digicool.com">Digital Creations, Incorporated</a>.</h3>
 
-Copyright &copy; 1997 <a href="http://www.digicool.com">Digital
-Creations</a>, L.L.C. ("DCLLC"), 910 Princess Anne Street, Suite 300,
-Fredericksburg, Virginia 22401 U.S.A. All rights reserved.  Copyright
-in the documents, materials and other files ("Contents") in this
-software package is owned by DCLLC, unless otherwise indicated.  Note
-that any product, process or technology described in the Contents may
-be the subject of other Intellectual Property rights reserved by
-Digital Creations, L.L.C. and are not licensed hereunder.
+<p>All rights reserved.</p>
 
-</P>
+<p>The use and copying of this product is subject to a license agreement.  Any
+other use is prohibited.</p>
 
-<H3>Trademarks...</H3>
-<P>
-Digital Creations & DCLLC, are trademarks of Digital Creations, L.L.C..
-All other trademarks are owned by their respective companies.
-</P>
+<p>This document is a legal agreement between you, the licensee, and Digital
+Creations, Incorporated ("Digital Creations").  By using this product you are
+agreeing to become bound by the terms of this agreement.  If you do not agree
+to the terms of this agreement, promptly return the software distribution and
+the other items that are part of this product in their original package with
+your payment receipt (the "receipt"), to your point of purchase for a refund.</p>
 
-<H3>No Warranty...</H3>
-<P>
-The software, documents, information, and materials in this publication are
-provided &quot;as is&quot; without warranty of any kind, either express or
-implied, including, but not limited to, the implied warranties of
-merchantability, fitness for a particular purpose, or non-infringement. 
-The contents of this publication could include technical inaccuracies or
-typographical errors. Changes are periodically added to the information
-herein; these changes will be incorporated in new editions of the publication.
-DCLLC may make improvements and/or changes in the products and/or the programs
-described in this publication at any time without notice.
-</P>
+<p>In consideration for payment of the License fee, which is part of the price
+evidence by the Receipt, Digital Creations grants to the Licensee a
+non-exclusive right, without right to sublicense, to use this copy of this
+Digital Creations software on a single Computer at a time.  Digital Creations
+reserves all rights not expressly granted, and retains title and ownership of
+the Software, including all subsequent copies in any media.</p>
 
-<H3>Limitation Of Liability...</H3>
-<P>
-In no event will DCLLC be liable for direct, indirect, special, incidental,
-economic, cover, or consequential damages arising out of the use of or
-inability to use the Contents even if advised of the possibility of such
-damages. Some states do not allow the exclusion or limitation of implied
-warranties or limitation of liability for incidental or consequential damages,
-so the above limitation or exclusion may not apply to you.
-</P>
+<p>This software/documentation contains proprietary information of Digital
+Creations; it is provided under a license agreement containing restrictions on
+use and disclosure and is also protected by copyright law.  Reverse engineering
+of the software is prohibited.</p>
+
+<p>As the only warranty under this Agreement, and in absence of accident, abuse,
+or misapplication, Digital Creations warrants, to the original Licensee only,
+that the media on which the Software is recorded is free from defects in
+materials and workmanship under normal use and service for a period of ninety
+(90) days from the date of payment as evidenced by a copy of the Receipt. 
+Digital Creations' only obligation under this Agreement is, at Digital
+Creations' option, to either a) return payment as evidenced by a copy of the
+Receipt or b) replace the media that does not meet Digital Creations limited
+warranty and which is returned to Digital Creations with a copy of the Receipt.</p>
+
+<p>The software and accompanying written materials (including User's Guide,
+Administrator's Guide, et al) are provided "as is" without warranty of any kind
+including the implied warranties or merchantability and fitness for a
+particular purpose, even if Digital Creations has been advised of that
+purpose.  As a result, this software and documentation are licensed "AS IS" and
+you, the licensee, are assuming the entire risk as to its quality and
+performance.</p>
+
+<p>In no event will Digital Creations be liable for direct, indirect,
+consequential or incidental damages arising out of the use or inability to use
+the software or documentation, even if advised of the possibility of such
+damages.  In particular, Digital Creations shall have no liability for any data
+stored or processed with this software, including the costs of recovering such
+data.</p>
+
+<p>The warranties and remedies set forth above are exclusive and in lieu of all
+others, oral or written, expressed or implied.  No Digital Creations dealer,
+agent, or employee is authorized to make any modifications to this warranty.</p>
+
+<p>Some states do not allow the exclusion of implied warranties or liability for
+incidental or consequential damages, so the above limitation or exclusion may
+not apply to you.  This warranty gives you specific legal rights, and you may
+have other rights, which vary, from state to state.  IN NO CASE SHALL DIGITAL
+CREATIONS' LIABILITY EXCEED THE PURCHASE PRICE FOR THE SOFTWARE.</p>
+
+<p>If this software/documentation is delivered to a U.S. Government Agency of the
+Department of Defense, then it is delivered with Restricted Rights and the
+following legend is applicable:</p>
+
+<p>Restricted Rights Legend  Use, duplication, or disclosure by the Government is
+subject to restrictions as set forth in subparagraph (c)(1)(ii) of DFARS
+252.227-7013 or subparagraphs (c) (1) and (2) of the Commercial Computer
+Software - Restricted Rights clause at 48 CFR 52.227-19, as applicable, Digital
+Creations, 910 Princess Anne Street, Suite 300, Fredericksburg, VA 22401.
+</p>
 
 <hr>
 
@@ -53,7 +84,7 @@ so the above limitation or exclusion may not apply to you.
 <img src="<!--#var SOFTWARE_URL-->/App/PythonPoweredSmall.gif">
 This software is powered by <a href="http://www.python.org/">Python</a>!
 </H3>
-<p>Copyright 1991-1995 by Stichting Mathematisch Centrum, Amsterdam,
+<p>Copyright &copy; 1991-1995 by Stichting Mathematisch Centrum, Amsterdam,
 The Netherlands.</p>
 
 <p><center>All Rights Reserved</center></p>
