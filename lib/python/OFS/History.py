@@ -84,7 +84,7 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals, ndiff, ExtensionClass
 from DateTime import DateTime
@@ -212,6 +212,9 @@ class Historical(ExtensionClass.Base):
         if serial != self._p_serial:
             self.manage_beforeHistoryCopy()
             state=self._p_jar.oldstate(self, serial)
+            # Scrub the object before restoring the old state
+            self._p_changed=0
+            self._p_deactivate()
             self.__setstate__(state)
             self._p_changed=1
             self.manage_afterHistoryCopy()
