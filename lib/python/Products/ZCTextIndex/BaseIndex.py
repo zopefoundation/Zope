@@ -175,7 +175,7 @@ class BaseIndex(Persistent):
         if len(wids) != len(cleaned_wids):
             # At least one wid was OOV:  can't possibly find it.
             return IIBTree()
-        scores = self._search_wids(cleaned_wids)
+        scores = self._search_wids(wids)
         hits = mass_weightedIntersection(scores)
         if not hits:
             return hits
