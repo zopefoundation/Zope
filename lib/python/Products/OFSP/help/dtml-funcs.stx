@@ -191,6 +191,15 @@ functions: DTML Functions
     default is given, the default is returned. If no condition is true
     and there is no default, None is returned.
 
+    unichr(number) -- Return a unicode string representing the value of
+    number as a unicode character.  This is the inverse of ord() for
+    unicode characters. 
+
+    unicode(string[, encoding[, errors ] ]) -- Decodes string using the
+    codec for encoding. Error handling is done according to errors. The
+    default behavior is to decode UTF-8 in strict mode, meaning that
+    encoding errors raise ValueError.
+
   Attributes
 
     None -- The 'None' object is equivalent to the Python built-in object
