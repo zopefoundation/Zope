@@ -96,6 +96,7 @@ class THUNKED_TM(TM.TM):
             thunk_lock.acquire()
             try:
                 get_transaction().register(Surrogate(self))
+                self._begin()
             except:
                 thunk_lock.release()
             else:

@@ -96,25 +96,34 @@ class TM:
     """
 
     _registered=None
+    
+    def _begin(self): pass
 
     def _register(self):
         if not self._registered:
             try:
                 get_transaction().register(Surrogate(self))
+                self._begin()
                 self._registered=1
             except: pass
 
     def tpc_begin(self, *ignored): pass
     commit=abort=tpc_begin
 
-    def tpc_finish(self, *ignored):
+    def _finish(self):
         self.db.commit()
-        self._registered=0
 
-    def tpc_abort(self, *ignored):
+    def _abort(self):
         self.db.rollback()
         self.db.checkpoint()
-        self._registered=0
+
+    def tpc_finish(self, *ignored):
+        try: self._finish()
+        finally: self._registered=0
+
+    def tpc_abort(self, *ignored):
+        try: self._abort()
+        finally: self._registered=0
 
 class Surrogate:
 
