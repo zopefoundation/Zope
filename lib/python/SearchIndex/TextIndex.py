@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -214,7 +214,7 @@ from Splitter import Splitter
 from string import strip
 import string, ts_regex, regex
 
-from Lexicon import *
+from Lexicon import Lexicon, query, stop_word_dict
 from ResultList import ResultList
 
 class TextIndex(Persistent):
