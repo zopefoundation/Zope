@@ -18,6 +18,7 @@ from BTrees.IIBTree import IIBucket
 
 from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.ParseTree import ParseError, QueryError
+from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 
 class FauxIndex:
 
@@ -34,7 +35,8 @@ class FauxIndex:
 class TestQueryEngine(TestCase):
 
     def setUp(self):
-        self.parser = QueryParser()
+        self.lexicon = Lexicon(Splitter())
+        self.parser = QueryParser(self.lexicon)
         self.index = FauxIndex()
 
     def compareSet(self, set, dict):

@@ -394,7 +394,7 @@ class TextIndex(Persistent):
 
     def query(self, query, nbest=10):
         # returns a total hit count and a mapping from docids to scores
-        parser = QueryParser()
+        parser = QueryParser(self.lexicon)
         tree = parser.parseQuery(query)
         results = tree.executeQuery(self.index)
         if results is None:
@@ -404,7 +404,7 @@ class TextIndex(Persistent):
         return chooser.getbest(), len(results)
 
     def query_weight(self, query):
-        parser = QueryParser()
+        parser = QueryParser(self.lexicon)
         tree = parser.parseQuery(query)
         terms = tree.terms()
         return self.index.query_weight(terms)

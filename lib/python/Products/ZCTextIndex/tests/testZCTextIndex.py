@@ -265,7 +265,7 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
                    [(1, 0.19), (2, 0.18), (3, 0.63), (5, 0.22), (6, 0.39)]]
         for i in range(len(queries)):
             raw = queries[i]
-            q = QueryParser().parseQuery(raw)
+            q = QueryParser(self.lexicon).parseQuery(raw)
             wq = self.index.query_weight(q.terms())
             eq(wq, scaled_int(wqs[i]))
             r, n = self.zc_index.query(raw)
@@ -428,10 +428,11 @@ class QueryTestsBase(testQueryEngine.TestQueryEngine,
         extra = Extra()
         extra.doc_attr = 'text'
         extra.lexicon_id = 'lexicon'
-        caller = LexiconHolder(Lexicon(Splitter(), CaseNormalizer(),
-                               StopWordRemover()))
+        self.lexicon = Lexicon(Splitter(), CaseNormalizer(),
+                               StopWordRemover())
+        caller = LexiconHolder(self.lexicon)
         self.zc_index = ZCTextIndex('name', extra, caller, self.IndexFactory)
-        self.p = self.parser = QueryParser()
+        self.p = self.parser = QueryParser(self.lexicon)
         self.index = self.zc_index.index
         self.add_docs()
 

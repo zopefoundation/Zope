@@ -39,13 +39,17 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     __implements__ = PluggableIndexInterface
 
+    ## Magic class attributes ##
+
     meta_type = 'ZCTextIndex'
 
-    manage_options= (
+    manage_options = (
         {'label': 'Settings', 'action': 'manage_main'},
     )
 
     query_options = ['query']
+
+    ## Constructor ##
 
     def __init__(self, id, extra, caller, index_factory=OkapiIndex):
         self.id = id
@@ -64,13 +68,15 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         self._index_factory = index_factory
         self.clear()
 
+    ## External methods not in the Pluggable Index API ##
+
     def query(self, query, nbest=10):
         """Return pair (mapping from docids to scores, num results).
 
         The num results is the total number of results before trimming
         to the nbest results.
         """
-        tree = QueryParser().parseQuery(query)
+        tree = QueryParser(self.lexicon).parseQuery(query)
         results = tree.executeQuery(self.index)
         if results is None:
             return [], 0
@@ -107,7 +113,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         if record.keys is None:
             return None
         query_str = ' '.join(record.keys)
-        tree = QueryParser().parseQuery(query_str)
+        tree = QueryParser(self.lexicon).parseQuery(query_str)
         results = tree.executeQuery(self.index)
         return  results, (self._fieldname,)
 
@@ -120,9 +126,13 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         get_word = self.lexicon.get_word
         return [get_word(wid) for wid in word_ids]
 
+    ## XXX To which API does this conform? ##
+
     def clear(self):
         """reinitialize the index"""
         self.index = self._index_factory(self.lexicon)
+
+    ## Helper ##
 
     def _get_object_text(self, obj):
         x = getattr(obj, self._fieldname)

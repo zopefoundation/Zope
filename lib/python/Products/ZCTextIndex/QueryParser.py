@@ -92,8 +92,8 @@ _tokenizer_regex = re.compile(r"""
 
 class QueryParser:
 
-    def __init__(self):
-        pass # This parser has no persistent state
+    def __init__(self, lexicon):
+        self._lexicon = lexicon
 
     def parseQuery(self, query):
         # Lexical analysis.

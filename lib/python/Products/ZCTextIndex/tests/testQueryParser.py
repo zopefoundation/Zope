@@ -19,6 +19,7 @@ from Products.ZCTextIndex.QueryParser import QueryParser
 from Products.ZCTextIndex.ParseTree import ParseError, ParseTreeNode
 from Products.ZCTextIndex.ParseTree import OrNode, AndNode, NotNode
 from Products.ZCTextIndex.ParseTree import AtomNode, PhraseNode, GlobNode
+from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 
 class TestQueryParser(TestCase):
 
@@ -54,7 +55,8 @@ class TestQueryParser(TestCase):
         self.assertRaises(ParseError, self.p.parseQuery, input)
 
     def setUp(self):
-        self.p = QueryParser()
+        self.lexicon = Lexicon(Splitter())
+        self.p = QueryParser(self.lexicon)
 
     def testParseQuery(self):
         self.expect("foo", AtomNode("foo"))
