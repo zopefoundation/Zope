@@ -215,6 +215,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     manage_main = DTMLFile('dtml/manageZCTextIndex', globals())
 
+    def getIndexSourceNames(self):
+        """ return name of indexed attributes """
+        return (self.id, )
+
     def getIndexType(self):
         """Return index type string"""
         return getattr(self, '_index_type', self._index_factory.__name__)
