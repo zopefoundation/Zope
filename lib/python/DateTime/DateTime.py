@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -824,7 +824,7 @@ class DateTime:
     flt_pattern  =ts_regex.compile(':\([0-9]+\.[0-9]+\)') #TS
     name_pattern =ts_regex.compile('\([a-z][a-z]+\)', ts_regex.casefold) #TS
     space_chars  =' \t\n'
-    delimiters   ='-/.:,'
+    delimiters   ='-/.:,+'
     _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
                   (0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31))
     _until_month=((0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334),
