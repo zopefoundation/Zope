@@ -1,5 +1,7 @@
 import os
 import sys
+from re import compile
+from socket import gethostbyaddr
 
 # top-level key handlers
 
@@ -15,6 +17,12 @@ def _setenv(name, value):
         os.environ[name] = value
     else:
         os.environ[name] = `value`
+
+def debug_mode(value):
+    value and _setenv('Z_DEBUG_MODE', '1')
+    import Globals
+    Globals.DevelopmentMode = not not value
+    return value
 
 def locale(value):
     import locale
@@ -95,6 +103,20 @@ def large_file_threshold(value):
     import ZServer
     ZServer.LARGE_FILE_THRESHOLD = value
 
+def publisher_profile_file(value):
+    value is not None and _setenv('PROFILE_PUBLISHER', value)
+    from ZPublisher.Publish import install_profiling
+    install_profiling(value)
+    return value
+
+def http_realm(value):
+    value is not None and _setenv('Z_REALM', value)
+    return value
+
+def max_listen_sockets(value):
+    import ZServer
+    ZServer.CONNECTION_LIMIT = value
+
 def cgi_maxlen(value):
     import cgi
     cgi.maxlen = value
@@ -154,10 +176,30 @@ def root_handler(config):
                         config.cgi_environment,
                         config.port_base)
 
+    # set up trusted proxies
+    if config.trusted_proxies:
+        import ZPublisher.HTTPRequest
+        # DM 2004-11-24: added host name mapping (such that examples in
+        # conf file really have a chance to work
+        mapped = []
+        for name in config.trusted_proxies: mapped.extend(_name2Ips(name))
+        ZPublisher.HTTPRequest.trusted_proxies = tuple(mapped)
+
+
 def handleConfig(config, multihandler):
     handlers = {}
     for name, value in globals().items():
         if not name.startswith('_'):
             handlers[name] = value
     return multihandler(handlers)
+
+# DM 2004-11-24: added
+def _name2Ips(host, isIp_=compile(r'(\d+\.){3}').match):
+    '''map a name *host* to the sequence of its ip addresses;
+    use *host* itself (as sequence) if it already is an ip address.
+    Thus, if only a specific interface on a host is trusted,
+    identify it by its ip (and not the host name).
+    '''
+    if isIp_(host): return [host]
+    return gethostbyaddr(host)[2]
 
