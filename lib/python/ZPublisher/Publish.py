@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.149 2001/04/01 17:47:04 jim Exp $"""
-__version__='$Revision: 1.149 $'[11:-2]
+$Id: Publish.py,v 1.150 2001/04/11 17:54:54 brian Exp $"""
+__version__='$Revision: 1.150 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
@@ -402,6 +402,11 @@ if os.environ.get('PROFILE_PUBLISHER', None):
             try:
                 error=sys.exc_info()
                 file=open(_pfile, 'w')
+                file.write(
+                "See the url "
+                "http://www.python.org/doc/current/lib/module-profile.html"
+                "\n for information on interpreting profiler statistics.\n\n"
+                    )
                 sys.stdout=file
                 _pstat.strip_dirs().sort_stats('cumulative').print_stats(250)
                 _pstat.strip_dirs().sort_stats('time').print_stats(250)
