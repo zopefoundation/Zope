@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.82 2001/01/08 22:46:58 brian Exp $'''
-__version__='$Revision: 1.82 $'[11:-2]
+$Id: SimpleItem.py,v 1.83 2001/01/11 21:44:44 chrism Exp $'''
+__version__='$Revision: 1.83 $'[11:-2]
 
 import ts_regex, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -203,7 +203,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
         # My sub-objects as used by the tree tag
         return ()
 
-    _manage_editedDialog=Globals.HTMLFile('dtml/editedDialog', globals())
+    _manage_editedDialog=Globals.DTMLFile('dtml/editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
         return apply(self._manage_editedDialog,(self, REQUEST), args)
 
