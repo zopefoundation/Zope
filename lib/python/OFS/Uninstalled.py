@@ -45,8 +45,9 @@ class BrokenClass(Acquisition.Explicit, SimpleItem.Item,
             return BrokenClass.inheritedAttribute('__getattr__')(self, name)
         raise AttributeError, escape(name)
 
-    manage=manage_main=Globals.DTMLFile('dtml/brokenEdit',globals())
-    manage_workspace=manage
+    manage=Globals.DTMLFile('dtml/brokenEdit',globals())
+    manage_main=Globals.DTMLFile('dtml/brokenEdit',globals())
+    manage_workspace=Globals.DTMLFile('dtml/brokenEdit',globals())
 
 
 def Broken(self, oid, pair):
