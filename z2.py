@@ -36,7 +36,7 @@ Options:
     relative to the Zope location.
 
     To prevent use of a separate management process, provide an
-    empty string: -Z ''
+    empty string: -Z=''
 
   -t n
 
@@ -246,9 +246,6 @@ dummy = codecs.lookup('iso-8859-1')
 
 sys.setcheckinterval(120)
 
-
-
-
 program=sys.argv[0]
 here=os.path.join(os.getcwd(), os.path.split(program)[0])
 Zpid=''
@@ -291,11 +288,9 @@ HTTP_PORT=8080
 # HTTP enivornment settings.
 HTTP_ENV={}
 
-
 # Should we close all HTTP connections, ignoring the (usually absent)
 # 'Connection:' header?
 FORCE_HTTP_CONNECTION_CLOSE=0
-
 
 # Port for the special "WebDAV source view" HTTP handler.  There is no
 # standard port for this handler, which is disabled by default.
@@ -324,11 +319,8 @@ MODULE='Zope'
 # The size of the thread pool, if ZODB3 is used.
 NUMBER_OF_THREADS=4
 
-
 # Localization support
 LOCALE_ID=None
-
-
 
 # Socket path or port for the FastCGI Server
 FCGI_PORT=None
@@ -367,8 +359,27 @@ def server_info(old, v, offset=0):
     
 
 try:
-    if sys.version.split()[0] < '2.1':
-        raise 'Invalid python version', sys.version.split()[0]
+    python_version = sys.version.split()[0]
+    if python_version < '2.1':
+        raise 'Invalid python version', python_version
+    if python_version[:3] == '2.1':
+        if python_version[4:5] < '3':
+            import warnings
+            err = ('You are running Python version %s.  This Python version '
+                   'has known bugs that may cause Zope to run improperly. '
+                   'Consider upgrading to a Python in the 2.1 series '
+                   'with at least version number 2.1.3.  (Note that Zope does '
+                   'not yet run under any Python 2.2 version).' %
+                   python_version)
+            warnings.warn(err)
+    if python_version[:3] == '2.2':
+            import warnings
+            err = ('You are running Python version %s.  This Python version '
+                   'has not yet been tested with Zope and you may experience '
+                   'operational problems as a result.  Consider using '
+                   'Python 2.1.3 instead.' % python_version)
+            warnings.warn(err)
+
 
     opts, args = getopt.getopt(sys.argv[1:],
                                'hz:Z:t:i:a:d:u:w:W:f:p:m:Sl:2DP:rF:L:XM:C',
@@ -499,10 +510,6 @@ def set_locale(val):
 if LOCALE_ID is not None:
     set_locale(LOCALE_ID)
 
-
-# Import SignalHandler to install the default signal handlers.
-from SignalHandler import SignalHandler
-
 # from this point forward we can use the zope logger
 
 # Import ZServer before we open the database or get at interesting
@@ -511,19 +518,23 @@ from SignalHandler import SignalHandler
 import ZServer
 import zdaemon
 
+# install signal handlers
+from SignalHandler import SignalHandler
+
 if Zpid and not READ_ONLY:
-    import App.FindHomes, posix
+    import App.FindHomes
     sys.ZMANAGED=1
-    
-    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid),
-                SignalHandler.getRegisteredSignals())
+    # zdaemon.run creates a process which "manages" the actual Zope
+    # process (restarts it if it dies).  The management process passes along
+    # signals that it receives to its child.
+    zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
 
 os.chdir(CLIENT_HOME)
 
 def _warn_nobody():
-    zLOG.LOG("z2", zLOG.INFO, "Running Zope as 'nobody' can compromise " + \
-                              "your Zope files; consider using a " + \
-                              "dedicated user account for Zope") 
+    zLOG.LOG("z2", zLOG.INFO, ("Running Zope as 'nobody' can compromise "
+                               "your Zope files; consider using a "
+                               "dedicated user account for Zope") )
 
 try:
     # Import logging support
@@ -593,7 +604,9 @@ try:
         zLOG.LOG('z2', zLOG.BLATHER, 'Logging access log to stdout')
     elif os.environ.has_key('ZSYSLOG_ACCESS'):
         if os.environ.has_key("ZSYSLOG_ACCESS_FACILITY"):
-            lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'],facility=os.environ['ZSYSLOG_ACCESS_FACILITY'])
+            lg = logger.syslog_logger(
+                os.environ['ZSYSLOG_ACCESS'],
+                facility=os.environ['ZSYSLOG_ACCESS_FACILITY'])
         else:
             lg = logger.syslog_logger(os.environ['ZSYSLOG_ACCESS'])
         zLOG.LOG('z2', zLOG.BLATHER, 'Using local syslog access log')
@@ -757,8 +770,8 @@ try:
             except:
                 raise SystemExit, 'initgroups is required to safely setuid'
             if UID == None:
-                raise SystemExit, 'A user was not specified to setuid ' + \
-                                  'to; fix this to start as root'
+                raise SystemExit, ('A user was not specified to setuid '
+                                   'to; fix this to start as root')
             import stat
             client_home_stat = os.stat(CLIENT_HOME)
             client_home_faults = []
@@ -766,10 +779,11 @@ try:
                 client_home_faults.append('does not have the sticky bit set')
             if client_home_stat[stat.ST_UID] != 0:
                 client_home_faults.append('is not owned by root')
-            if len(client_home_faults) > 0:
-                raise SystemExit, CLIENT_HOME + ' ' + \
-                                  string.join(client_home_faults, ', ') + \
-                                  '; fix this to start as root'
+            if client_home_faults:
+                client_home_faults.append('fix this to start as root.')
+                err = '%s %s' % (CLIENT_HOME, ', '.join(client_home_faults))
+                raise SystemExit, err
+
             try:
                 try:    UID = string.atoi(UID)
                 except: pass
@@ -809,11 +823,10 @@ try:
         os.umask(current_umask)
         if current_umask != 077: 
             current_umask = '%03o' % current_umask
-            zLOG.LOG("z2", zLOG.INFO, 'Your umask of ' + current_umask + \
-                     ' may be too permissive; for the security of your ' + \
-                     'Zope data, it is recommended you use 077')
-
-
+            zLOG.LOG("z2", zLOG.INFO, (
+                'Your umask of %s may be too permissive; for the security of '
+                'your Zope data, it is recommended you use 077' % current_umask
+                ))
 
 except:
     # Log startup exception and tell zdaemon not to restart us.
