@@ -83,8 +83,8 @@
 # 
 ##############################################################################
 
-'''$Id: db.py,v 1.10 1999/08/03 13:53:08 jim Exp $'''
-__version__='$Revision: 1.10 $'[11:-2]
+'''$Id: db.py,v 1.11 1999/09/16 15:12:45 jim Exp $'''
+__version__='$Revision: 1.11 $'[11:-2]
 
 import os
 from string import strip, split
@@ -207,3 +207,7 @@ class DB(Shared.DC.ZRDB.THUNK.THUNKED_TM):
                 })
         return items, result
     
+    # Gadfly needs the extra checkpoint call.
+    def _abort(self):
+        self.db.rollback()
+        self.db.checkpoint()
