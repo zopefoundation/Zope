@@ -1,0 +1,27 @@
+Credits
+
+  The Zope software receives contributions from far and wide.  Here's
+  the Zope Hall of Fame:
+
+    o Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
+    kept pushing it forward through the years.
+
+    o Sam Rushing worked with us at Digital Creations to make Medusa
+    the publishing platform for ZServer and the concurrency of Zope2.
+
+    o The DateTime module was based on work from Ted Horst.
+
+    o Jordan Baker contributed the 'try' tag, something I've wanted
+    for a long, long time.
+
+    o Martijn Pieters chipped in with a safe range function.
+
+    o All the other Zopistas far and wide that stuck with us during
+    the Bobo/Principia days and politely push us to make the best damn
+    app server on this or any other planet.
+
+  Of course the list of credits would be quite incomplete without
+  mentioning Guido van Rossum, benevolent dictator of Python and
+  long-time friend of Digital Creations.  Zope Power is Python Power.
+
+  Paul Everitt, paul@digicool.com.
