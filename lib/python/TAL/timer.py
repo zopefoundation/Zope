@@ -111,15 +111,22 @@ def main():
     doc = timefunc(count, copytree, doc)
     doc = timefunc(count, talizetree, doc)
     timefunc(count, printtree, doc, open("/dev/null", "w"))
+    timefunc(count, findmacros, doc)
 
 def timefunc(count, func, *args):
+    sys.stderr.write("%-14s: " % func.__name__)
+    sys.stderr.flush()
     t0 = time.clock()
     for i in range(count):
         result = apply(func, args)
     t1 = time.clock()
-    sys.stderr.write("%.3f secs to %s %d times, i.e. %.0f msecs per call\n"
-                     % ((t1-t0), func.__name__, count, 1000*(t1-t0)/count))
+    sys.stderr.write("%6.3f secs for %d calls, i.e. %4.0f msecs per call\n"
+                     % ((t1-t0), count, 1000*(t1-t0)/count))
     return result
+
+def findmacros(doc):
+    from TALVisitor import MacroIndexer
+    return MacroIndexer(doc)()
 
 if __name__ == "__main__":
     main()
