@@ -1,8 +1,8 @@
 """Document object"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
-from Globals import HTML, HTMLFile,MessageDialog
+from Globals import HTML, HTMLFile
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
 import SimpleItem, regex
@@ -72,10 +72,6 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__):
 	    return self.manage_editForm(self,REQUEST,title=title,__str__=data,
 				        acl_type=acl_type,acl_roles=acl_roles,
 					dtpref_cols=cols,dtpref_rows=rows)
-	if SUBMIT=='Cancel':
-	    return MessageDialog(title='Changes Cancelled',
-	                         message='Your changes have been discarded',
-	                         action='%s/manage_main' % REQUEST['URL2'])
 
 	self.title=title
 	self._setRoles(acl_type,acl_roles)
@@ -91,7 +87,7 @@ the <!--#var title_and_id--> Folder.</P>
 
 class DocumentHandler:
     """Document object handler mixin"""
-    meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
+    #meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
