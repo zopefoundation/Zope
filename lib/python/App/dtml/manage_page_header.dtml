@@ -12,6 +12,7 @@
 <!--
 
 <dtml-var manage_page_style.css>
+
 -->
 </style>
 <dtml-else>
