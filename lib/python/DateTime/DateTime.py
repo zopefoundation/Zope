@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.85 $'[11:-2]
+__version__='$Revision: 1.86 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -960,7 +960,7 @@ class DateTime:
             raise self.SyntaxError, st
 
         day=None
-        if ints[-1] > 60 and d not in ['.',':'] and len(ints) > 2:
+        if ints[-1] > 60 and d not in ['.',':','/'] and len(ints) > 2:
             year=ints[-1]
             del ints[-1]
             if month:

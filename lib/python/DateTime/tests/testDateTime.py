@@ -317,6 +317,8 @@ class DateTimeTests(unittest.TestCase):
                     d_int = DateTime("%d.%d.%d" % (day,month,year), datefmt="international")
                     self.assertEqual(d_us, d_int)
 
+                    d_int = DateTime("%d/%d/%d" % (day,month,year), datefmt="international")
+                    self.assertEqual(d_us, d_int)
 
 
 def test_suite():
