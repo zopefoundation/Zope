@@ -1,6 +1,6 @@
 /*
 
-  $Id: MultiMapping.c,v 1.4 1997/06/19 19:36:22 jim Exp $
+  $Id: MultiMapping.c,v 1.5 1997/07/02 20:20:12 jim Exp $
 
   Sample extension class program that implements multi-mapping objects. 
 
@@ -166,7 +166,7 @@ MM_subscript(self, key)
   while(--i >= 0)
     {
       e=PyList_GetItem(self->data,i);
-      if(e=PyObject_GetItem(e,key)) return e;
+      if((e=PyObject_GetItem(e,key))) return e;
       PyErr_Clear();
     }
   PyErr_SetObject(PyExc_KeyError,key);
@@ -219,11 +219,11 @@ void
 initMultiMapping()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.5 $";
 
   m = Py_InitModule4("MultiMapping", MultiMapping_methods,
 		     "MultiMapping -- Wrap multiple mapping objects for lookup"
-		     "\n\n$Id: MultiMapping.c,v 1.4 1997/06/19 19:36:22 jim Exp $\n",
+		     "\n\n$Id: MultiMapping.c,v 1.5 1997/07/02 20:20:12 jim Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
@@ -237,6 +237,10 @@ initMultiMapping()
 /*****************************************************************************
 
   $Log: MultiMapping.c,v $
+  Revision 1.5  1997/07/02 20:20:12  jim
+  Added stupid parens and other changes to make 'gcc -Wall -pedantic'
+  happy.
+
   Revision 1.4  1997/06/19 19:36:22  jim
   Added ident string.
 
