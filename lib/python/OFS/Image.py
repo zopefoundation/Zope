@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -112,7 +112,7 @@ from SimpleItem import Item_w__name__
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
-import string
+import string, struct
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
@@ -162,38 +162,29 @@ class File(Persistent,Implicit,PropertyManager,
                  {'id':'content_type', 'type':'string'},
                  )
 
-    def __init__(self,id,title,file,content_type='application/octet-stream',
-                 precondition=''):
-            
-        try:    headers=file.headers
-        except: headers=None
-        if headers is None:
-            if not content_type:
-                raise 'BadValue', 'No content type specified'
-            self.content_type=content_type
-            self.data=Pdata(file)
-        else:
-            if headers.has_key('content-type'):
-                self.content_type=headers['content-type']
-            else:
-                if not content_type:
-                    raise 'BadValue', 'No content type specified'
-                self.content_type=content_type
-            self.data=Pdata(file.read())
+    def __init__(self, id, title, file, content_type='', precondition=''):
         self.__name__=id
         self.title=title
-        if precondition: self.precondition=precondition
-        self.size=len(self.data)
+        self.precondition=precondition
+        headers=hasattr(file, 'headers') and file.headers or None
+        if (headers is None) and (not content_type):
+            raise 'BadValue', 'No content type specified.'
+        if headers.has_key('content-type'):
+            content_type=headers['content-type']
+        if not content_type:
+            raise 'BadValue', 'No content type specified.'
+        data=(headers is None) and file or file.read()
+        self._update_data(data, content_type)
 
-    def id(self): return self.__name__
+    def id(self):
+        return self.__name__
 
-
-    def index_html(self, REQUEST,RESPONSE):
+    def index_html(self, REQUEST, RESPONSE):
         """
-        The default view of the contents of the File or Image.
+        The default view of the contents of a File or Image.
 
         Returns the contents of the file or image.  Also, sets the
-        'content-type' HTTP header to the objects content type.
+        Content-Type HTTP header to the objects content type.
         """
 
         if self.precondition and hasattr(self,self.precondition):
@@ -208,11 +199,17 @@ class File(Persistent,Implicit,PropertyManager,
         RESPONSE['content-type'] =self.content_type
         return self.data
 
-    def view_image_or_file(self,URL1):
+    def view_image_or_file(self, URL1):
         """
         The default view of the contents of the File or Image.
         """
         raise 'Redirect', URL1
+
+    def _update_data(self, data, content_type=None):
+        if content_type is not None:
+            self.content_type=content_type
+        self.data=Pdata(data)
+        self.size=len(data)
 
     def manage_edit(self,title,content_type,precondition='',REQUEST=None):
         """
@@ -233,11 +230,10 @@ class File(Persistent,Implicit,PropertyManager,
 
         The file or images contents are replaced with the contents of 'file'.
         """
-        try: self.content_type=file.headers['content-type']
-        except KeyError: pass
-        data=file.read()
-        self.data=Pdata(data)
-        self.size=len(data)
+        if file.headers.has_key('content-type'):
+            content_type=file.headers['content-type']
+        else: content_type=None
+        self._update_data(file.read(), content_type)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -247,17 +243,13 @@ class File(Persistent,Implicit,PropertyManager,
     def HEAD(self, REQUEST, RESPONSE):
         """ """
         RESPONSE['content-type'] =self.content_type
+        RESPONSE['content-length']=self.getSize()
         return ''
 
     def PUT(self, BODY, REQUEST):
-        'handle PUT requests'
-        self.data=Pdata(BODY)
-        self.size=len(BODY)
-        try:
-            type=REQUEST['CONTENT_TYPE']
-            if type: self.content_type=type
-        except KeyError: pass
-
+        """Handle HTTP PUT requests"""
+        content_type=REQUEST.get('CONTENT_TYPE', None)
+        self._update_data(BODY, content_type)
 
     def getSize(self):
         """Get the size of a file or image.
@@ -281,6 +273,8 @@ class File(Persistent,Implicit,PropertyManager,
         "Get data for FTP download"
         return self.data
 
+
+
 manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
 def manage_addImage(self,id,file,title='',REQUEST=None):
     """
@@ -293,13 +287,15 @@ def manage_addImage(self,id,file,title='',REQUEST=None):
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 class Image(File):
-    """Principia object for *Images*, can be GIF or JPEG.  Has the same
-    methods as File objects.  Images also have a string representation
+    """Principia object for *Images*, can be GIF, PNG or JPEG.  Has the
+    same methods as File objects.  Images also have a string representation
     that renders an HTML 'IMG' tag.
     """
     meta_type='Image'
-    icon     ='p_/image'
-
+    icon='p_/image'
+    height=0
+    width=0
+    
     manage_options=({'label':'Edit', 'action':'manage_main'},
                     {'label':'Upload', 'action':'manage_uploadForm'},
                     {'label':'Properties', 'action':'manage_propertiesForm'},
@@ -313,8 +309,30 @@ class Image(File):
                                kind='image')
     manage=manage_main=manage_editForm
 
+    def _update_data(self, data, content_type=None):
+        if content_type is not None:
+            self.content_type=content_type
+        self.data=Pdata(data)
+        self.size=len(data)
+        # handle GIFs   
+        if (self.size >= 10) and self.data[:6] in ('GIF87a', 'GIF89a'):
+            w, h = struct.unpack("<HH", self.data[6:10])
+            self.width=str(int(w))
+            self.height=str(int(h))
+        # handle PNGs
+        if (self.size >= 16) and (self.data[:8] == '\x89PNG\r\n\x1a\n'):
+            w, h = struct.unpack(">LL", self.data[8:16])
+            self.width=str(int(w))
+            self.height=str(int(h))
+
     def __str__(self):
-        return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
+        width=self.width and ('width="%s" ' % self.width) or ''
+        height=self.height and ('height="%s" ' % self.height) or ''
+        return '<img src="%s" %s%salt="%s">' % (
+            self.absolute_url(), width, height, self.title_or_id()
+            )
+
+
 
 def cookId(id, title, file):
     if not id and hasattr(file,'filename'):
@@ -330,6 +348,9 @@ class Pdata(Persistent, Implicit):
     # Wrapper for possibly large data
     def __init__(self, data):
         self.data=data
+
+    def __getslice__(self, i, j):
+        return self.data[i:j]
 
     def __str__(self):
         return self.data

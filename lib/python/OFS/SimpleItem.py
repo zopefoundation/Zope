@@ -107,8 +107,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.30 1999/01/22 23:12:31 amos Exp $'''
-__version__='$Revision: 1.30 $'[11:-2]
+$Id: SimpleItem.py,v 1.31 1999/01/27 19:11:33 brian Exp $'''
+__version__='$Revision: 1.31 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -273,6 +273,23 @@ class Item(CopySource, App.Management.Tabs):
         the listing should contain one object, the object itself."""
         stat=marshal.loads(self.manage_FTPstat(REQUEST))
         return marshal.dumps((self.id,stat))
+
+    def absolute_url(self):
+        """Return an absolute url to the object. Note that the url
+        will reflect the acquisition path of the object if the object
+        has been acquired."""
+        obj=self
+        url=[]
+        while hasattr(obj, 'aq_parent') and hasattr(obj.aq_parent, 'id'):
+            id=callable(obj.id) and obj.id() or obj.id
+            url.append(id)
+            obj=obj.aq_parent
+        url.append(self.REQUEST.script)
+        url.reverse()
+        return join(url, '/')
+
+
+            
 
 
 class Item_w__name__(Item):

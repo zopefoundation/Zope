@@ -82,7 +82,7 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import regex
 from string import atoi, atol, join, upper, split, strip, rfind
@@ -106,6 +106,10 @@ isCGI_NAME = {
         'CONTENT_TYPE' : 1, 
         'CONTENT_LENGTH' : 1, 
         }.has_key
+
+hide_key={'HTTP_AUTHORIZATION':1,
+          'HTTP_CGI_AUTHORIZATION': 1,
+          }.has_key
 
 class Request:
     """\
@@ -167,7 +171,6 @@ class Request:
         else: b=''
         while b and b[0]=='/': b=b[1:]
         
-
         if have_env('SERVER_URL'):
              server_url=strip(environ['SERVER_URL'])
         else:
@@ -193,33 +196,31 @@ class Request:
         if script: self.script="%s/%s" % (server_url,script)
         else:  self.script=server_url
 
+    def get_header(self, name, default=None):
+        """Return the named HTTP header, or an optional default
+        argument or None if the header is not found. Note that
+        both original and CGI-ified header names are recognized,
+        e.g. 'Content-Type', 'CONTENT_TYPE' and 'HTTP_CONTENT_TYPE'
+        should all return the Content-Type header, if available.
+        """
+        environ=self.environ
+        name=upper(join(split(name,"-"),"_"))
+        val=environ.get(name, None)
+        if val is not None:
+            return val
+        if name[:5] != 'HTTP_':
+            name='HTTP_%s' % name
+        return environ.get(name, default)
+
     def __setitem__(self,key,value):
         """Set application variables
 
         This method is used to set a variable in the requests "other"
         category.
         """
-        
         self.other[key]=value
 
     set=__setitem__
-
-    def __str__(self):
-
-        def str(self,name):
-            dict=getattr(self,name)
-            return "%s:\n\t%s\n\n" % (
-                name,
-                join(
-                    map(lambda k, d=dict: "%s: %s" % (k, `d[k]`), dict.keys()),
-                    "\n\t"
-                    )
-                )
-            
-        return "%s\n%s\n" % (
-            str(self,'form'),str(self,'environ'))
-
-    __repr__=__str__
 
     def __getitem__(self,key,
                     default=isCGI_NAME, # Any special internal marker will do
@@ -234,7 +235,6 @@ class Request:
         other variables, form data, and then cookies. 
         
         """ #"
-
         other=self.other
         if other.has_key(key):
             if key=='REQUEST': return self
@@ -252,7 +252,8 @@ class Request:
 
         if isCGI_NAME(key) or key[:5] == 'HTTP_':
             environ=self.environ
-            if environ.has_key(key): return environ[key]
+            if environ.has_key(key) and (not hide_key(key)):
+                return environ[key]
             return ''
 
         if key=='REQUEST': return self
@@ -279,19 +280,55 @@ class Request:
     def has_key(self,key):
         return self.get(key, Request) is not Request
 
-    def getHeader(self, name, default=None):
-        """Return the named HTTP header, or an optional default
-        argument or None if the header is not found. Note that
-        both original and CGI-ified header names are recognized,
-        e.g. 'Content-Type', 'CONTENT_TYPE' and 'HTTP_CONTENT_TYPE'
-        should all return the Content-Type header, if available.
-        """
-        environ=self.environ
-        name=upper(join(split(name,"-"),"_"))
-        val=environ.get(name, None)
-        if val is not None:
-            return val
-        if name[:5] != 'HTTP_':
-            name='HTTP_%s' % name
-        return environ.get(name, default)
+    def keys(self):
+        keys = {}
+        for key in self.environ.keys():
+            if (isCGI_NAME(key) or key[:5] == 'HTTP_') and \
+               (not hide_key(key)):
+                    keys[key] = 1
+        keys.update(self.other)
+        lasturl = ""
+        for n in "0123456789":
+            key = "URL%s"%n
+            try:
+                if lasturl != self[key]:
+                    keys[key] = 1
+                    lasturl = self[key]
+                else:
+                    break
+            except KeyError:
+                pass
+        for n in "0123456789":
+            key = "BASE%s"%n
+            try:
+                if lasturl != self[key]:
+                    keys[key] = 1
+                    lasturl = self[key]
+                else:
+                    break
+            except KeyError:
+                pass
+        return keys.keys()
+
+    def items(self):
+        result = []
+        for k in self.keys():
+            result.append((k, self.get(k)))
+        return result
+
+    def __str__(self):
+
+        def str(self,name):
+            dict=getattr(self,name)
+            data=[]
+            for key, val in dict.items():
+                if not hide_key(key):
+                    data.append('%s: %s' % (key, `val`))
+            return "%s:\n\t%s\n\n" % (name, join(data, '\n\t'))
+            
+        return "%s\n%s\n" % (str(self,'form'), str(self,'environ'))
+
+    __repr__=__str__
+
+
 

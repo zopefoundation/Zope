@@ -1,12 +1,16 @@
-<HTML>
-<HEAD>
-<TITLE>View</TITLE>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<html>
+<head>
+<title>View</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
 <!--#var manage_tabs-->
 
-<IMG src="<!--#var id-->" ALT="<!--#var title_or_id-->">
+<p>
+<img src="<!--#var id-->" <!--#if width-->width="<!--#var width-->" <!--#/if
+--><!--#if height-->height="<!--#var height-->" <!--#/if-->ALT="<!--#var 
+title_or_id-->">
+</p>
 
-</BODY>
-</HTML>
+</body>
+</html>
 
