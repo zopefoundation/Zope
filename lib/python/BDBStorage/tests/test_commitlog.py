@@ -1,6 +1,7 @@
 # Test the operation of the CommitLog classes
 
 import os
+import errno
 import unittest
 import CommitLog
 
@@ -40,27 +41,19 @@ class CreateCommitLogTest(unittest.TestCase):
                               CommitLog.CommitLog, fp)
         finally:
             fp.close()
-            os.unlink(filename)
+            assert not os.path.exists(filename)
 
-    def checkCloseNoUnlink(self):
+    def checkCloseDoesUnlink(self):
         log = CommitLog.CommitLog()
         filename = log.get_filename()
         log.close()
-        try:
-            assert os.path.exists(filename)
-        finally:
-            os.unlink(filename)
-            assert not os.path.exists(filename)
+        assert not os.path.exists(filename)
 
     def checkDel(self):
         log = CommitLog.CommitLog()
         filename = log.get_filename()
         del log
-        try:
-            assert os.path.exists(filename)
-        finally:
-            os.unlink(filename)
-            assert not os.path.exists(filename)
+        assert not os.path.exists(filename)
 
 
 
@@ -69,7 +62,10 @@ class BaseSetupTearDown(unittest.TestCase):
         self._log = CommitLog.CommitLog()
 
     def tearDown(self):
-        self._log.close(unlink=1)
+        try:
+            self._log.close(unlink=1)
+        except OSError, e:
+            if e.errno <> errno.ENOENT: raise
 
 
 
@@ -232,27 +228,11 @@ class FullLogTest(BaseSetupTearDown):
 
 def suite():
     suite = unittest.TestSuite()
-    # Creation and closing
-    suite.addTest(CreateCommitLogTest('checkCreateNoFile'))
-    suite.addTest(CreateCommitLogTest('checkCreateWithFilename'))
-    suite.addTest(CreateCommitLogTest('checkCreateWithFileobj'))
-    suite.addTest(CreateCommitLogTest('checkCloseNoUnlink'))
-    suite.addTest(CreateCommitLogTest('checkDel'))
-    # State transitions
-    suite.addTest(CommitLogStateTransitionTest('checkProperStart'))
-    suite.addTest(CommitLogStateTransitionTest('checkAppendSetsOpen'))
-    suite.addTest(CommitLogStateTransitionTest('checkPromiseSetsPromise'))
-    suite.addTest(CommitLogStateTransitionTest('checkBadDoublePromise'))
-    suite.addTest(CommitLogStateTransitionTest('checkFinishSetsStart'))
-    # Base class for storing and loading
-    suite.addTest(LowLevelStoreAndLoadTest('checkOneStoreAndLoad'))
-    suite.addTest(LowLevelStoreAndLoadTest('checkTenStoresAndLoads'))
-    # PacklessLog API
-    suite.addTest(PacklessLogTest('checkOneStoreAndLoad'))
-    suite.addTest(PacklessLogTest('checkTenStoresAndLoads'))
-    # FullLog API
-    suite.addTest(FullLogTest('checkOneStoreAndLoad'))
-    suite.addTest(FullLogTest('checkOtherWriteMethods'))
+    suite.addTest(unittest.makeSuite(CreateCommitLogTest, 'check'))
+    suite.addTest(unittest.makeSuite(CommitLogStateTransitionTest, 'check'))
+    suite.addTest(unittest.makeSuite(LowLevelStoreAndLoadTest, 'check'))
+    suite.addTest(unittest.makeSuite(PacklessLogTest, 'check'))
+    suite.addTest(unittest.makeSuite(FullLogTest, 'check'))
     return suite
 
 
