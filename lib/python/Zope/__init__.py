@@ -115,6 +115,10 @@ else:
 
 DB=ZODB.DB(DB)
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
+
+# Hook for providing multiple transaction object manager undo support:
+Globals.UndoManager=DB
+
 Globals.opened.append(DB)
 import ClassFactory
 DB.setClassFactory(ClassFactory.ClassFactory)
