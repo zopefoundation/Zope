@@ -116,6 +116,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1322: fixed HTML quoting problem with ZSQL methods
+       in DA.py
+
      - Collector #1124: The ZReST product now uses the same reST encoding
        parameters from zope.conf as the low-level reStructuredText
        implementation.
