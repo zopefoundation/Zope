@@ -227,6 +227,9 @@ Zope Changes
      - changed some bare try: except:'s in Shared.DC.ZRDB.Connection
        so that they now log exceptions that occur.
 
+     - ObjectManager will now attempt to set Owner local role keyed
+       to the user's id, rather than username.
+
   2.7.0b2
 
     Features added
