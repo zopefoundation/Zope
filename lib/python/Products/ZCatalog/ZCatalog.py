@@ -99,46 +99,17 @@ from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
 from Catalog import Catalog, orify
 from SearchIndex import UnIndex, UnTextIndex
-from Vocabulary import Vocabulary
 import IOBTree
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
-def manage_addZCatalog(self, id, title, vocab='', vocab_id='', REQUEST=None):
+def manage_addZCatalog(self,id,title,REQUEST=None):
     """Add a ZCatalog object
     """
-    c=ZCatalog(id, title, vocab, vocab_id, self)
-    self._setObject(id, c)
+    c=ZCatalog(id,title)
+    self._setObject(id,c)
     if REQUEST is not None:
-        return self.manage_main(self, REQUEST)
-
-
-def VocabularyIDs(self):
-    """ returns a list of acquireable vocabularies.  Stole this from
-    ZSQLMethods """
-
-    ids={}
-    have_id=ids.has_key
-    StringType=type('')
-
-    while self is not None:
-        if hasattr(self, 'objectValues'):
-            for o in self.objectValues():
-                if (hasattr(o,'_isAVocabulary') and o._isAVocabulary
-                    and hasattr(o,'id')):
-                    id=o.id
-                    if type(id) is not StringType: id=id()
-                    if not have_id(id):
-                        if hasattr(o,'title_and_id'): o=o.title_and_id()
-                        else: o=id
-                        ids[id]=id
-        if hasattr(self, 'aq_parent'): self=self.aq_parent
-        else: self=None
-
-    ids=map(lambda item: (item[1], item[0]), ids.items())
-    ids.sort()
-    return ids
-
+        return self.manage_main(self,REQUEST)
 
 
 class ZCatalog(Folder, Persistent, Implicit):
@@ -219,24 +190,14 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     threshold=10000
     _v_total=0
-    _v_vocabulary = None
 
-    def __init__(self, id, title='', vocab=0, vocab_id='', container=None):
+
+    def __init__(self,id,title=''):
         self.id=id
         self.title=title
-        self.vocab_id = vocab_id
-        
         self.threshold = 10000
         self._v_total = 0
-
-        if not vocab:
-            v = Vocabulary('Vocabulary', 'Vocabulary', globbing=1)
-            self._setObject('Vocabulary', v)
-            v = 'Vocabulary'
-        else:
-            v = vocab_id
-
-        self._catalog = Catalog(vocabulary=v)
+        self._catalog = Catalog()
 
         self._catalog.addColumn('id')
         self._catalog.addIndex('id', 'FieldIndex')
@@ -252,15 +213,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         self._catalog.addColumn('summary')
         self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
-
-        self._catalog.addColumn('absolute_url')
-        self._catalog.addIndex('absolute_url', 'FieldIndex')
-
-
-    def getVocabulary(self):
-        """ more ack! """
-        return getattr(self, self.vocab_id)
-
+        
 
     def manage_edit(self, RESPONSE, URL1, threshold=1000, REQUEST=None):
         """ edit the catalog """
@@ -406,7 +359,7 @@ class ZCatalog(Folder, Persistent, Implicit):
             if self._v_total > self.threshold:
                 # commit a subtransaction
                 get_transaction().commit(1)
-                # kick the chache, this may be overkill but ya never know
+                # kick the chache
                 self._p_jar.cacheFullSweep(1)
                 self._v_total = 0
 
