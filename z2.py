@@ -295,7 +295,7 @@ if os.name == 'posix':  # signal.signal() not reliable on Windows
             zLOG.LOG('Z2', zLOG.INFO , "Reopening log files")
             if hasattr(sys, '__lg') and hasattr(sys.__lg, 'reopen'):
                 sys.__lg.reopen()
-                zLOG.LOG('Z2', zLOG.BLATHER, "Reopened Z2.log")
+                zLOG.LOG('Z2', zLOG.BLATHER, "Reopened access log")
             if (hasattr(sys, '__detailedlog') and
                 hasattr(sys.__detailedlog, 'reopen')):
                 zLOG.LOG('Z2', zLOG.BLATHER,"Reopened detailed request log")
