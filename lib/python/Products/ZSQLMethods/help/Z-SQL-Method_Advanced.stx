@@ -10,7 +10,9 @@ Z SQL Method - Advanced: Manage advanced settings
         'ID' -- Indicates the id of the sql method.
         
         'Title' -- Allows you to specify the title of the sql method.
-        
+
+        'Connection Hook' -- Specifies the id of a method to be called when the database connection is made. This method will return a string containing the id of the database connection to use. If left blank there is no effect, the connection id specified will be used.
+
         'Maximum number of rows retrieved' -- Specify an upper limit
         for the number of rows a sql method can retrieve. Setting this
         option correctly (based on your specific environment) can
