@@ -156,6 +156,12 @@ property values, edit the values and click &quot;Save Changes&quot;.
   &dtml-type;
   </div>
   </td>
+  
+  <dtml-if "id=='title'">
+    <td align="center" valign="top">
+      <div class="list-item"><b>Warning:</b> be aware that removing 'title' without re-adding it might be dangerous.</div>
+   </td>
+  </dtml-if>
 </tr>
 </dtml-let>
 </dtml-in>
