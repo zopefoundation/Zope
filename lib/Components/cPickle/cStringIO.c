@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.18 1997/05/07 16:26:47 jim Exp $
+  $Id: cStringIO.c,v 1.19 1997/06/02 18:15:17 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -99,7 +99,7 @@ static char cStringIO_module_documentation[] =
 typedef struct {
   PyObject_HEAD
   char *buf;
-  int pos, string_size, buf_size, closed;
+  int pos, string_size, buf_size, closed, softspace;
 } Oobject;
 
 staticforward PyTypeObject Otype;
@@ -410,6 +410,7 @@ newOobject(int  size) {
   self->pos=0;
   self->closed = 0;
   self->string_size = 0;
+  self->softspace = 0;
 
   UNLESS(self->buf=malloc(size*sizeof(char)))
     {
@@ -431,7 +432,24 @@ O_dealloc(Oobject *self) {
 
 static PyObject *
 O_getattr(Oobject *self, char *name) {
+  if (strcmp(name, "softspace") == 0) {
+	  return PyInt_FromLong(self->softspace);
+  }
   return Py_FindMethod(O_methods, (PyObject *)self, name);
+}
+
+static int
+O_setattr(Oobject *self, char *name, PyObject *value) {
+	long x;
+	if (strcmp(name, "softspace") != 0) {
+		PyErr_SetString(PyExc_AttributeError, name);
+		return -1;
+	}
+	x = PyInt_AsLong(value);
+	if (x == -1 && PyErr_Occurred())
+		return -1;
+	self->softspace = x;
+	return 0;
 }
 
 static char Otype__doc__[] = 
@@ -448,7 +466,7 @@ static PyTypeObject Otype = {
   (destructor)O_dealloc,	/*tp_dealloc*/
   (printfunc)0,		/*tp_print*/
   (getattrfunc)O_getattr,	/*tp_getattr*/
-  (setattrfunc)0,		/*tp_setattr*/
+  (setattrfunc)O_setattr,	/*tp_setattr*/
   (cmpfunc)0,		/*tp_compare*/
   (reprfunc)0,		/*tp_repr*/
   0,			/*tp_as_number*/
@@ -621,6 +639,9 @@ initcStringIO() {
 /******************************************************************************
 
   $Log: cStringIO.c,v $
+  Revision 1.19  1997/06/02 18:15:17  jim
+  Merged in guido's changes.
+
   Revision 1.18  1997/05/07 16:26:47  jim
   getvalue() can nor be given an argument.  If this argument is true,
   then getvalue returns the text upto the current position.  Otherwise
@@ -628,19 +649,17 @@ initcStringIO() {
   false.
 
   Revision 1.17  1997/04/17 18:02:46  chris
-  getvalue() now returns entire string, not just the string up to current position
+  getvalue() now returns entire string, not just the string up to
+  current position
 
-  Revision 1.16  1997/02/17 22:17:43  jim
-  *** empty log message ***
+  Revision 2.5  1997/04/11 19:56:06  guido
+  My own patch: support writable 'softspace' attribute.
 
-  Revision 1.14  1997/01/24 19:56:24  chris
-  undid last change
-
-  Revision 1.13  1997/01/24 19:45:20  chris
-  extra byte in buffer no longer included in buf_size
-
-  Revision 1.12  1997/01/24 19:38:28  chris
-  *** empty log message ***
+  > Jim asked: What is softspace for?
+  
+  It's an old feature.  The print statement uses this to remember
+  whether it should insert a space before the next item or not.
+  Implementation is in fileobject.c.
 
   Revision 1.11  1997/01/23 20:45:01  jim
   ANSIfied it.
@@ -660,24 +679,4 @@ initcStringIO() {
   Finished implementation, adding full compatibility with StringIO, and
   then some.
 
-  We still need to take out some cStringIO oddities.
-
-  Revision 1.6  1996/10/15 18:42:07  jim
-  Added lots of casts to make warnings go away.
-
-  Revision 1.5  1996/10/11 21:03:42  jim
-  *** empty log message ***
-
-  Revision 1.4  1996/10/11 21:02:15  jim
-  *** empty log message ***
-
-  Revision 1.3  1996/10/07 20:51:38  chris
-  *** empty log message ***
-
-  Revision 1.2  1996/07/18 13:08:34  jfulton
-  *** empty log message ***
-
-  Revision 1.1  1996/07/15 17:06:33  jfulton
-  Initial version.
-
- ******************************************************************************/
+ *****************************************************************************/
