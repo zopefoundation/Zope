@@ -91,12 +91,12 @@ import re
 import cgi
 
 from TALDefs import *
-from DummyEngine import DummyEngine
 
 class TALGenerator:
 
     def __init__(self, expressionCompiler=None, xml=1):
         if not expressionCompiler:
+            from DummyEngine import DummyEngine
             expressionCompiler = DummyEngine()
         self.expressionCompiler = expressionCompiler
         self.program = []
