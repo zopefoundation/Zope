@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -244,7 +244,7 @@ class RoleManager:
 
     smallRolesWidget=selectedRoles=aclAChecked=aclPChecked=aclEChecked=''
     validRoles=valid_roles
-    manage_rolesForm=manage_access
+    #manage_rolesForm=manage_access
 
     def manage_editRoles(self,REQUEST,acl_type='A',acl_roles=[]):
 	pass
