@@ -62,7 +62,7 @@ Zope Changes
 
   Releases
 
-    Zope 2.1.0
+    Zope 2.1.0 beta 1
 
       Features Added
 
