@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.69 1999/04/29 19:21:30 jim Exp $"""
+$Id: ObjectManager.py,v 1.70 1999/04/30 14:12:56 brian Exp $"""
 
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals, CopySupport
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -209,7 +209,7 @@ class ObjectManager(
         if hasattr(self, 'REQUEST') and hasattr(object, '__ac_local_roles__'):
             user=self.REQUEST['AUTHENTICATED_USER']
             name=user.getUserName()
-            if name != 'Anonymous':
+            if name != 'Anonymous User':
                 object.manage_setLocalRoles(name, ['Owner'])
         return id
 
