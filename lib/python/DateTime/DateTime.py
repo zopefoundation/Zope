@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.98 $'[11:-2]
+__version__='$Revision: 1.99 $'[11:-2]
 
 
 import os, re, math,  DateTimeZone
@@ -662,7 +662,6 @@ class DateTime:
         timezone names is case-insensitive.""" #'
 
         datefmt = kw.get('datefmt', getDefaultDateFormat())
-        print datefmt
         d=t=s=None
         ac=len(args)
         millisecs = None
