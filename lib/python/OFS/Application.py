@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.189 2003/02/11 17:17:05 fdrake Exp $'''
-__version__='$Revision: 1.189 $'[11:-2]
+$Id: Application.py,v 1.190 2003/05/17 14:48:49 chrism Exp $'''
+__version__='$Revision: 1.190 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -507,6 +507,7 @@ def import_products():
     done={}
 
     products = get_products()
+    debug_mode = App.config.getConfiguration().debug_mode
 
     for priority, product_name, index, product_dir in products:
         if done.has_key(product_name):
@@ -516,7 +517,7 @@ def import_products():
                 `product_name`, `done[product_name]`, `product_dir`) )
             continue
         done[product_name]=product_dir
-        import_product(product_dir, product_name)
+        import_product(product_dir, product_name, raise_exc=debug_mode)
 
 def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     path_join=os.path.join
@@ -568,6 +569,8 @@ def install_products(app):
     meta_types=[]
     done={}
 
+    debug_mode = App.config.getConfiguration().debug_mode
+
     get_transaction().note('Prior to product installs')
     get_transaction().commit()
 
@@ -582,7 +585,7 @@ def install_products(app):
             continue
         done[product_name]=1
         install_product(app, product_dir, product_name, meta_types,
-                        folder_permissions)
+                        folder_permissions, raise_exc=debug_mode)
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
     Globals.default__class_init__(Folder.Folder)
