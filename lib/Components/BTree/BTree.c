@@ -85,7 +85,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.27 1999/08/19 23:39:01 jim Exp $"
+"\n$Id: BTree.c,v 1.28 2000/05/16 17:36:00 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -2084,7 +2084,7 @@ static PyExtensionClass BTreeType = {
   0L,0L,
   "Mapping type implemented as sorted list of items", 
   METHOD_CHAIN(BTree_methods),
-  EXTENSIONCLASS_BASICNEW_FLAG | PERSISTENT_TYPE_FLAG,
+  PERSISTENCE_FLAGS,
 };
 
 static struct PyMethodDef module_methods[] = {
@@ -2111,7 +2111,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.27 $";
+  char *rev="$Revision: 1.28 $";
 
 
 
