@@ -64,7 +64,7 @@ MAXLINES = 3
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "bd:hm:n:Op:t:uwW")
+        opts, args = getopt.getopt(sys.argv[1:], "bd:fhm:n:Op:t:uwW")
     except getopt.error, msg:
         print msg
         print "use -h for help"
@@ -77,12 +77,14 @@ def main():
     datafs = os.path.expanduser(DATAFS)
     pack = 0
     trans = 20000
-    dumpwords = dumpwids = 0
+    dumpwords = dumpwids = dumpfreqs = 0
     for o, a in opts:
         if o == "-b":
             bulk = 1
         if o == "-d":
             datafs = a
+        if o == "-f":
+            dumpfreqs = 1
         if o == "-h":
             print __doc__
             return
@@ -103,11 +105,13 @@ def main():
         if o == "-W":
             dumpwids = 1
     ix = Indexer(datafs, writable=update or bulk, trans=trans, pack=pack)
+    if dumpfreqs:
+        ix.dumpfreqs()
     if dumpwords:
         ix.dumpwords()
     if dumpwids:
         ix.dumpwids()
-    if dumpwords or dumpwids:
+    if dumpwords or dumpwids or dumpfreqs:
         return
     if bulk:
         if optimize:
@@ -172,15 +176,41 @@ class Indexer:
         print len(self.path2docid), "Pathnames"
         print self.index.lexicon.length(), "Words"
 
+    def dumpfreqs(self):
+        lexicon = self.index.lexicon
+        index = self.index.index
+        assert isinstance(index, OkapiIndex)
+        L = []
+        for wid in lexicon.wids():
+            freq = 0
+            for f in index._wordinfo.get(wid, {}).values():
+                freq += f
+            L.append((freq, wid, lexicon.get_word(wid)))
+        L.sort()
+        L.reverse()
+        for freq, wid, word in L:
+            print "%10d %10d %s" % (wid, freq, word)
+
     def dumpwids(self):
         lexicon = self.index.lexicon
+        index = self.index.index
+        assert isinstance(index, OkapiIndex)
         for wid in lexicon.wids():
-            print "%10d %s" % (wid, lexicon.get_word(wid))
+            freq = 0
+            for f in index._wordinfo.get(wid, {}).values():
+                freq += f
+            print "%10d %10d %s" % (wid, freq, lexicon.get_word(wid))
 
     def dumpwords(self):
         lexicon = self.index.lexicon
+        index = self.index.index
+        assert isinstance(index, OkapiIndex)
         for word in lexicon.words():
-            print "%10d %s" % (lexicon.get_wid(word), word)
+            wid = lexicon.get_wid(word)
+            freq = 0
+            for f in index._wordinfo.get(wid, {}).values():
+                freq += f
+            print "%10d %10d %s" % (wid, freq, word)
 
     def close(self):
         self.root = None
