@@ -1,0 +1,19 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;Import/Export</h1>
+<p> This view allows you to import and export objects from the Zope
+		  database. </p>
+<p> To export an object specify its id in the <tt>Export object
+		  id</tt> field and click the <tt>Export</tt> button. If you
+		  choose <tt>Download to local machine</tt>, the export file will be
+		  downloaded by your browser, if you choose <tt>Save to file on
+		  server</tt>, the export file will be saved in the Zope
+		  var directory of the server on which Zope is running. If
+		  you choose <tt>XML format</tt>, the export file will be encoding as
+		  XML, otherwise it will be encoded as a binary file. </p>
+<p> To import an object into to Zope, specify the name of the import
+		  file in the <tt>Import file name</tt> field and click the
+		  <tt>Import</tt> button. The import file should be located in the Zope
+		  import directory of the server on which Zope is running.
+		  </p>
+<dtml-var standard_html_footer>

@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../DTML-Document.dtml">DTML Document</a>&gt;View</h1>
+<p> This view allows you to preview the document. </p>
+<dtml-var standard_html_footer>

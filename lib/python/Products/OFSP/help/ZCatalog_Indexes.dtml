@@ -1,0 +1,16 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Indexes</h1>
+<p> This view allows you to manage the catalog indexes. </p>
+<p> The catalog provides searching by indexing information about
+		  cataloged objects. Indexes record information about object attributes. </p>
+<p> To delete one or more index select the index(es) by checking the
+		  checkbox in front of the index(es) and then click the <tt>Delete</tt>
+		  button. To add a new index specify the name of the attribute or method that the
+		  index in the text field, select the index type from the selection list, and
+		  then click <tt>Add</tt>. <tt>TextIndexes</tt> are
+		  appropriate for full text attributes, <tt>KeywordIndexes</tt> are
+		  appropriate for attributes which return lists, and
+		  <tt>FieldIndexes</tt> are appropriate for attributes which return
+		  simple values. </p>
+<dtml-var standard_html_footer>

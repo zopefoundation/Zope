@@ -1,0 +1,6 @@
+<dtml-var standard_html_header>
+<h1>Folder</h1>
+<p>Folders allow you to organize Zope objects by grouping them together
+		inside Folders. Folder contain other Zope objects including other
+		Folders.</p>
+<dtml-var standard_html_footer>

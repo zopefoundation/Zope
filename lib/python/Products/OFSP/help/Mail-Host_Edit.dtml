@@ -1,0 +1,17 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Mail-Host.dtml">Mail Host</a>&gt;Edit</h1>
+<p> This view allows you to manage the attributes of the mail host.
+		  </p>
+<p> A mail host allows Zope to send mail with the SMTP protocol.
+		  </p>
+<p> The <tt>Id</tt> field indicates the id of the mail host.
+		  The <tt>Title</tt> field allows you to specify the title of the mail
+		  host. The <tt>Local host</tt> field allows you to specify the name of
+		  the server on which Zope is running. The <tt>SMTP host</tt> field
+		  allows you to specify the name of the mail server. The <tt>SMTP
+		  port</tt> field allows you to specify the port on which the mail server
+		  accepts SMTP requests. The <tt>Max. timeout</tt> field allows you to
+		  specify how long Zope should wait (in seconds) for a response from the mail
+		  server before aborting a mail request. </p>
+<dtml-var standard_html_footer>

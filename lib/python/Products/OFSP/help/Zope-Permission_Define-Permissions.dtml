@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Zope-Permission.dtml">Zope Permission</a>&gt;Define Permissions</h1>
+<p> XXX Remove view? </p>
+<dtml-var standard_html_footer>

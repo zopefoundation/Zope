@@ -1,0 +1,8 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;Manage Role</h1>
+<p> This view allows you to assign permissions to a role. </p>
+<p> Select the permissions you wish to assign to the named role from
+		  the multiple selection list and click the <tt>Change</tt> button.
+		  </p>
+<dtml-var standard_html_footer>

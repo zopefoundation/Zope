@@ -1,0 +1,8 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;Manage User Local Roles</h1>
+<p> This view allows you to manage a user's local roles. </p>
+<p> Select the role(s) you wish to assign to the named user from the
+		  <tt>Roles</tt> multiple selection list and click the
+		  <tt>Change</tt> button to change the user's local roles. </p>
+<dtml-var standard_html_footer>

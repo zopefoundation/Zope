@@ -1,0 +1,12 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Zope-Factory.dtml">Zope Factory</a>&gt;Add</h1>
+<p> This view allows you to create a new Zope Factory. </p>
+<p> The <tt>Id</tt> field specifiess the factory id, the
+		  <tt>Title</tt> field allows you to specify the factory's title. The
+		  <tt>Add list name</tt> field specifies the name that appears in the
+		  product add list. The <tt>Method</tt> selection list specifies what
+		  method is executed when the product is chosen from the product add list.
+		  Typically this method is an add form. Click the <tt>Generate</tt>
+		  button to create a new Zope Factory.</p>
+<dtml-var standard_html_footer>

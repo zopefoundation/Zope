@@ -1,0 +1,4 @@
+<dtml-var standard_html_header>
+<h1>File</h1>
+<p> Files allow you to store files in Zope. </p>
+<dtml-var standard_html_footer>

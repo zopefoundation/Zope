@@ -1,0 +1,9 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;Manage Permissions Acquisition</h1>
+<p> This view allows you to manage security acquisition settings.
+		  </p>
+<p> Select the permissions which should acquire security settings from
+		  the multiple selection list and click the <tt>Change</tt> button to
+		  change the security acquisition settings. </p>
+<dtml-var standard_html_footer>

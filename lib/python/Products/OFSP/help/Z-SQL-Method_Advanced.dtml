@@ -1,0 +1,22 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Z-SQL-Method.dtml">Z SQL Method</a>&gt;Advanced</h1>
+<p> This view allows you to manage the advanced settings of a sql
+		  method. </p>
+<p> The <tt>ID</tt> and <tt>Title</tt> fields
+		  indicate the id and title of the sql method. The <tt>Maximum number of
+		  rows retrieved</tt> field allows you to specify an upper limit for the
+		  number of rows a sql method can retrieve. The <tt>Maximum number of
+		  results in the cache</tt> field allows you to set the size of the sql
+		  method cache. The <tt>Maximum time (seconds) to cache results</tt>
+		  field allows you to specify the how fresh the sql method cache must be. By
+		  setting this time to a number greater than zero you enable sql method caching.
+		  </p>
+<p> You can provide a Python class for adding behavior to returns
+		  rows. The results of the sql method will consist of a sequence of instances of
+		  the specified class. The <tt>Class name</tt> field allows you to
+		  specify the name of the Python class. The <tt>Class file</tt> field
+		  allows you to specify the name of the Python module that the class is defined
+		  in. The class file should reside in the Zope Extensions
+		  directory. </p>
+<dtml-var standard_html_footer>

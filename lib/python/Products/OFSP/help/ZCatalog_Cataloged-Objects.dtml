@@ -1,0 +1,15 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Cataloged Objects</h1>
+<p> This view allows you to manage catalog entries. </p>
+<p> The catalog holds records which refer to Zope objects. If the
+		  catalog currently contains records they will be listed in this view. </p>
+<p> You can update all the records by clicking the <tt>Update
+		  Catalog</tt> button. You can remove all the records by clicking the
+		  <tt>Clear Catalog</tt> button. To update or remove individual
+		  records, check the checkboxes next to the selected record(s) and then click the
+		  either of the <tt>Update</tt> buttons to update the record(s) or
+		  click either of the <tt>Remove</tt> buttons to remove the record(s).
+		  You can examine individual catalog records by clicking on the record name
+		  links. </p>
+<dtml-var standard_html_footer>

@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Mail-Host.dtml">Mail Host</a>&gt;Security</h1>
+<p> See <a href="../Folder_Security.dtml">Folder&gt;Security</a>. </p>
+<dtml-var standard_html_footer>

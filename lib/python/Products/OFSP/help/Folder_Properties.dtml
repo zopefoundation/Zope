@@ -1,0 +1,79 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;Properties</h1>
+<p> This view allows you to define properties on your folder. </p>
+<p> Current properties are listed one per line. You can change the
+		  value of existing properties by entering new values in the text entry field(s)
+		  and clicking the <tt>Save Changes</tt> button. To remove an existing
+		  property, select it and click the <tt>Delete</tt> button. </p>
+<p> To create a new property first specify an id in the
+		  <tt>Id</tt> field, a value in the <tt>Value</tt> field and
+		  a choose a property type from the <tt>Type</tt> selection. Then click
+		  the <tt>Add</tt> button. </p>
+<p> When creating <tt>selection</tt> and <tt>multiple
+		  selection</tt> properties, specify the name of another property (or
+		  method) as the <tt>Value</tt>. This property (or method) should
+		  return a list of strings will be used to provide choices for the selection.
+		  </p>
+<h2>Property Types</h2>
+<table border="1"> 
+		   
+			 <tr> 
+				<th>Property Type</th> 
+				<th>Description</th> 
+			 </tr> 
+		   
+		   
+			 <tr> 
+				<td>boolean</td> 
+				<td>1 or 0.</td> 
+			 </tr> 
+			 <tr> 
+				<td>date</td> 
+				<td>A <tt>DateTime</tt> value, for example
+				  <tt>12/31/1999 15:42:52 PST</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>float</td> 
+				<td>A decimal number, for example
+				  <tt>12.4</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>int</td> 
+				<td>An integer number, for example,
+				  <tt>12</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>lines</td> 
+				<td>A list of strings, one per line.</td> 
+			 </tr> 
+			 <tr> 
+				<td>long</td> 
+				<td>A long integer, for example
+				  <tt>12232322322323232323423</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>string</td> 
+				<td>A string of characters, for example <tt>This is a
+				  string</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>text</td> 
+				<td>A muli-line string, for example a paragraph.</td> 
+			 </tr> 
+			 <tr> 
+				<td>tokens</td> 
+				<td>A list of strings separated by white space, for example
+				  <tt>one two three</tt>.</td> 
+			 </tr> 
+			 <tr> 
+				<td>selection</td> 
+				<td>A string selected by a pop-up menu.</td> 
+			 </tr> 
+			 <tr> 
+				<td>multiple selection</td> 
+				<td>A list of strings selected by a selection list.</td> 
+			 </tr> 
+		   
+		</table>
+<dtml-var standard_html_footer>

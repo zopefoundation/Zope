@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Common-Instance-Property-Sheet.dtml">Common Instance Property Sheet</a>&gt;Define Permissions</h1>
+<p> See <a href="../ZClass_Define-Permissions.dtml">ZClass&gt;Define Permissions</a>. </p>
+<dtml-var standard_html_footer>

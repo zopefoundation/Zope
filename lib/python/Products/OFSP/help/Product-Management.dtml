@@ -1,0 +1,4 @@
+<dtml-var standard_html_header>
+<h1>Product Management</h1>
+<p> The Product Management Folder contains the Zope Products. </p>
+<dtml-var standard_html_footer>

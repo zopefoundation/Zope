@@ -1,0 +1,20 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZClass.dtml">ZClass</a>&gt;Add</h1>
+<p>This view allows you to create a new ZClass. </p>
+<p>The <tt>Id</tt> field specifies the id of the new ZClass.
+		  The <tt>Title</tt> field allows you to specify the title of the
+		  ZClass. The <tt>Meta type</tt> field specifies the name of the ZClass
+		  as it will appear in the product add list. The Create constructor objects
+		  checkbox specifies whether or not to create the necessary objects to construct
+		  new ZClass instances. If checked it will create a new Zope Permission, Zope
+		  Factory, add method and add form.</p>
+<p>The <tt>base classes</tt> selections allows you to
+		  specify base classes for your ZClass. To add a base class select it from the
+		  <tt>Unselected</tt> list and click the right arrow button. The base
+		  class should be added to the selected list. To remove a base class select it
+		  from the <tt>Selected</tt> list and click the left arrow
+		  button.</p>
+<p>Click the <tt>Add</tt> button to create a new
+		  ZClass.</p>
+<dtml-var standard_html_footer>

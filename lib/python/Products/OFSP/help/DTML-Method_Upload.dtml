@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../DTML-Method.dtml">DTML Method</a>&gt;Upload</h1>
+<p> See <a href="../DTML-Document_Upload.dtml">DTML Document&gt;Upload</a>. </p>
+<dtml-var standard_html_footer>

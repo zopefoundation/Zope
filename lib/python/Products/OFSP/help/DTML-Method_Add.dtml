@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../DTML-Method.dtml">DTML Method</a>&gt;Add</h1>
+<p> See <a href="../DTML-Document_Add.dtml">DTML Document&gt;Add</a>. </p>
+<dtml-var standard_html_footer>

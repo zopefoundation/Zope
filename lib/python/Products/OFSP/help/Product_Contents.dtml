@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Product.dtml">Product</a>&gt;Contents</h1>
+<p> See <a href="../Folder_Contents.dtml">Folder&gt;Contents</a>. </p>
+<dtml-var standard_html_footer>

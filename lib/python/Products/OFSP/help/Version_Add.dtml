@@ -1,0 +1,9 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Version.dtml">Version</a>&gt;Add</h1>
+<p>This view allows you to create a new Version.</p>
+<p> The <tt>Id</tt> field specifies the id of the Verson.
+		  The <tt>Title</tt> field allows you to specify the title of the
+		  Version. Click the <tt>Add</tt> button to create a new Version.
+		  </p>
+<dtml-var standard_html_footer>

@@ -1,0 +1,8 @@
+<dtml-var standard_html_header>
+<h1>DTML Document</h1>
+<p>DTML Documents provide general content management facilites to
+		Zope.</p>
+<p>A DTML Document roughly corresponds to a web page. DTML Documents can
+		be viewed and edited through the web. DTML Documents can contain scripting
+		commands in Document Templates Markup Language.</p>
+<dtml-var standard_html_footer>

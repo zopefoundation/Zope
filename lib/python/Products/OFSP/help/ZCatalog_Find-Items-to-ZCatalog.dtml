@@ -1,0 +1,8 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZCatalog.dtml">ZCatalog</a>&gt;Find Items to ZCatalog</h1>
+<p> This view allows you to add records to the catalog. </p>
+<p> This view operates like a normal find view (see
+		  <a href="../Folder_Find.dtml">Folder&gt;Find</a>) to locate objects for cataloging. Objects which
+		  match the find criteria will be added to the catalog. </p>
+<dtml-var standard_html_footer>

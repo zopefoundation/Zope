@@ -1,0 +1,7 @@
+<dtml-var standard_html_header>
+<h1>Product</h1>
+<p>Products allow you to extend Zope by create new type of addable Zope
+		objects.</p>
+<p>A Product contains other objects including a Factory which allows you
+		to make your Product objects available via the Product add list. </p>
+<dtml-var standard_html_footer>

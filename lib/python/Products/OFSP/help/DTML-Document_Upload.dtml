@@ -1,0 +1,10 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../DTML-Document.dtml">DTML Document</a>&gt;Upload</h1>
+<p> This view allows you to upload document files. </p>
+<p> Use this view to completely replace the contents of a document
+		  with the contents of an uploaded text file from your local computer. Click the
+		  <tt>Browse...</tt> button to locate a file to upload. Click the
+		  <tt>Change</tt> button to replace the document's contents with the
+		  uploaded file. </p>
+<dtml-var standard_html_footer>

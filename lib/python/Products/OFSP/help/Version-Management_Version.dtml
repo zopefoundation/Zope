@@ -1,0 +1,11 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Version-Management.dtml">Version Management</a>&gt;Version</h1>
+<p> This view allows you to manage active versions. </p>
+<p> Currently active versions are listed one per line with a checkbox
+		  in front of each version. To commit or discard changes made in one or more
+		  versions check the checkboxes in front of the selected versions and then click
+		  the <tt>Save</tt> button to save the changes in the selected
+		  version(s) or click the <tt>Discard</tt> button to discard changes in
+		  the selected version(s). </p>
+<dtml-var standard_html_footer>

@@ -1,0 +1,6 @@
+<dtml-var standard_html_header>
+<h1>Z Search Interface</h1>
+<p>A Search Interface allows you to search Zope databases.</p>
+<p> The Search Interface will create a search-input form and a report
+		for displaying the search results. </p>
+<dtml-var standard_html_footer>

@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>Zope Factory</h1>
+<p> Zope Factories allow you to insert objects into the product add
+		list.</p>
+<dtml-var standard_html_footer>

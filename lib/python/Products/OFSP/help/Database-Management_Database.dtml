@@ -1,0 +1,17 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Database-Management.dtml">Database Management</a>&gt;Database</h1>
+<p> This view allows you to view database status information. It also
+		  allows you to perform maintenance tasks such as database packing, cache
+		  management, and "undoing" previous changes to your site. </p>
+<p> <tt>Database Size</tt> indicates the size in kilobytes
+		  of the Zope database file. <tt>Database Location</tt> indicates the
+		  path to the Zope database file. </p>
+<p> The <tt>Pack</tt> button removes old versions of Zope
+		  objects, reducing the size of the Zope database. Once you pack the database you
+		  cannot retrieve old copies of objects that have been removed by the packing
+		  operation. The <tt>days</tt> field indicates how old objects versions
+		  must be to be removed. For example if you pack the database and specify 2 days,
+		  then you will not be able to revert to object versions older than 2 days.
+		  </p>
+<dtml-var standard_html_footer>

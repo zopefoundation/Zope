@@ -1,0 +1,7 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Version.dtml">Version</a>&gt;Properties</h1>
+<p> This view allows you to edit the title of the version. </p>
+<p> To change the title of the version enter the new title in the text
+		  entry field and click the <tt>Edit</tt> button. </p>
+<dtml-var standard_html_footer>

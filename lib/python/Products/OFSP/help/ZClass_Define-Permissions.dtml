@@ -1,0 +1,14 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../ZClass.dtml">ZClass</a>&gt;Define Permissions</h1>
+<p> This view allows you to map permissions on an object to define
+		  security settings when it is used as a method. </p>
+<p> In general you should map the <tt>View</tt> permission
+		  to the <tt>View</tt> permission. For some kinds of objects you may
+		  wish to enable additional permission mappings. For example, ZClasses should map
+		  their <tt>Create class instances</tt> permission to the permission
+		  used by the ZClass factory. </p>
+<p> To manage the permissions mapping, select the target permission
+		  from the select list for each permission that you wish to map and then click
+		  the <tt>Change</tt> button. </p>
+<dtml-var standard_html_footer>

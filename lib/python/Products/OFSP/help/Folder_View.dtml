@@ -1,0 +1,8 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Folder.dtml">Folder</a>&gt;View</h1>
+<p> This view allows you to preview the public appearance of the
+		  folder. </p>
+<p> This view will only be available if the folder contains (or
+		  acquires) an index_html object. </p>
+<dtml-var standard_html_footer>

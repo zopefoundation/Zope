@@ -1,0 +1,9 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../File.dtml">File</a>&gt;Upload</h1>
+<p> This view allows you to upload a file. </p>
+<p> Use this view to completely replace the file with an uploaded file
+		  from your local computer. Click the <tt>Browse...</tt> button to
+		  locate a file to upload. Click the <tt>Change</tt> button to replace
+		  the file with the uploaded file. </p>
+<dtml-var standard_html_footer>

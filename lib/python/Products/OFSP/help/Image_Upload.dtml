@@ -1,0 +1,5 @@
+<dtml-var standard_html_header>
+<h1>
+<a href="../Image.dtml">Image</a>&gt;Upload</h1>
+<p> See <a href="../File_Upload.dtml">File&gt;Upload</a>. </p>
+<dtml-var standard_html_footer>

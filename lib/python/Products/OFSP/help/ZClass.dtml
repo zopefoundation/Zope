@@ -1,0 +1,4 @@
+<dtml-var standard_html_header>
+<h1>ZClass</h1>
+<p> ZClasses allow you to define new types of Zope objects.</p>
+<dtml-var standard_html_footer>
