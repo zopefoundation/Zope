@@ -23,6 +23,10 @@ Options
 
    -u username:password        -- Supply HTTP authorization information
 
+   -e name=value               -- Supply environment variables.  Use a
+                                  seperate -e option for each variable 
+                                  specified.
+
    -p profiler_data_file       -- Run under profiler control,
                                   generating the profiler 
 				  data file, profiler_data_file.
@@ -30,6 +34,9 @@ Options
    -t                          -- Compute the time required to
                                   complete a request, in 
 				  milliseconds.
+
+   -r n                        -- Specify a repeat count for timing or
+                                  profiling.
 
    -d                          -- Run in debug mode.  With this
 				  option, bobo will run under Python
@@ -65,7 +72,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.8 1997/04/10 13:48:56 jim Exp $
+$Id: Test.py,v 1.9 1997/04/11 13:35:06 jim Exp $
 '''
 #     Copyright 
 #
@@ -119,7 +126,7 @@ $Id: Test.py,v 1.8 1997/04/10 13:48:56 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 #! /usr/local/bin/python
@@ -132,7 +139,7 @@ def main():
     global repeat_count
 
     try:
-	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:')
+	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:e:')
 	if len(args) > 2 or len(args) < 1: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
@@ -140,6 +147,7 @@ def main():
 	sys.exit(-1)
 
     profile=u=debug=timeit=None
+    env={}
     for opt,val in optlist:
 	if opt=='-d':
 	    debug=1
@@ -151,13 +159,17 @@ def main():
 	    profile=val
 	elif opt=='-r':
 	    repeat_count=string.atoi(val)
+	elif opt=='-e':
+	    opt=string.find(val,'=')
+	    if opt <= 0: raise 'Invalid argument to -e', val
+	    env[val[:opt]]=val[opt+1:]
 
     if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
 	raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
 
     module=args[0]
 
-    publish(module,path_info,u=u,p=profile,d=debug,t=timeit)
+    publish(module,path_info,u=u,p=profile,d=debug,t=timeit,e=env)
 
 
 
@@ -189,7 +201,7 @@ def run(statement, *args):
 	return prof.print_stats()
 
 
-def publish(script,path_info,u=None,p=None,d=None,t=None):
+def publish(script,path_info,u=None,p=None,d=None,t=None,e={}):
 
     import sys, os, getopt, string
 
@@ -199,19 +211,19 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 
     if script[0]=='+': script='../../lib/python/'+script[1:]
 
-    env={'SERVER_NAME':'bobo.server',
-	 'SERVER_PORT':'80',
-	 'REQUEST_METHOD':'GET',
-	 'REMOTE_ADDR': '204.183.226.81 ',
-	 'REMOTE_HOST': 'bobo.remote.host',
-	 'HTTP_USER_AGENT': 'Bobo/%s' % __version__,
-	 'HTTP_HOST': 'ninny.digicool.com:8081 ',
-	 'SERVER_SOFTWARE': 'Bobo/%s' % __version__,
-	 'SERVER_PROTOCOL': 'HTTP/1.0 ',
-	 'HTTP_ACCEPT': 'image/gif, image/x-xbitmap, image/jpeg, */* ',
-	 'SERVER_HOSTNAME': 'bobo.server.host',
-	 'GATEWAY_INTERFACE': 'CGI/1.1 ',
-	 }
+    env=e
+    env['SERVER_NAME']='bobo.server'
+    env['SERVER_PORT']='80'
+    env['REQUEST_METHOD']='GET'
+    env['REMOTE_ADDR']='204.183.226.81 '
+    env['REMOTE_HOST']='bobo.remote.host'
+    env['HTTP_USER_AGENT']='Bobo/%s' % __version__
+    env['HTTP_HOST']='ninny.digicool.com:8081 '
+    env['SERVER_SOFTWARE']='Bobo/%s' % __version__
+    env['SERVER_PROTOCOL']='HTTP/1.0 '
+    env['HTTP_ACCEPT']='image/gif, image/x-xbitmap, image/jpeg, */* '
+    env['SERVER_HOSTNAME']='bobo.server.host'
+    env['GATEWAY_INTERFACE']='CGI/1.1 '
     env['SCRIPT_NAME']=script
     p=string.split(path_info,'?')
     if   len(p)==1: env['PATH_INFO'] = p[0]
@@ -268,21 +280,44 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 	import codehack
        	db=Pdb()
 
-	code=ModulePublisher.publish.im_func.func_code
-	lineno = codehack.getlineno(code)
-	filename = code.co_filename
-	db.set_break(filename,lineno)
+	def fbreak(db,meth,codehack=codehack):
+	    try: meth=meth.im_func
+	    except AttributeError: pass
+	    code=meth.func_code
+	    lineno = codehack.getlineno(code)
+	    filename = code.co_filename
+	    db.set_break(filename,lineno)
 
-	code=ModulePublisher.call_object.im_func.func_code
-	lineno = codehack.getlineno(code)
-	filename = code.co_filename
-	db.set_break(filename,lineno+1)
+	fbreak(db,ModulePublisher.publish)
+	fbreak(db,ModulePublisher.call_object)
+	fbreak(db,cgi_module_publisher.new_find_object)
+	fbreak(db,cgi_module_publisher.old_find_object)
+
+	dbdata={'breakpoints':(), 'env':{}}
+	b=''
+	try: b=open('.bobodb','r').read()
+	except: pass
+	if b: exec b in dbdata
+
+	for b in dbdata['breakpoints']:
+	    if type(b) is type(()):
+		apply(db.set_break,b)
+	    else:
+		fbreak(db,b)
+
+	for k,v in dbdata['env'].items():
+	    env[k]=v
+	
+
 	db.prompt='pdb> '
 	# db.set_continue()
 
-	print '''Type "s<cr>c<cr>" to jump to beginning of real
-		 publishing process. Then type c<ret> to jump to
-		 published object call.'''
+	print (
+	'* Type "s<cr>c<cr>" to jump to beginning of real publishing process.\n'
+	'* Then type c<cr> to jump to the beginning of the URL traversal\n'
+	'  algorithm.\n'
+	'* Then type c<cr> to jump to published object call.'
+	)
 	db.run('publish_module(file,environ=env,debug=1)',
 	       cgi_module_publisher.__dict__,
 	       {'file':file, 'env':env})
@@ -299,6 +334,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.9  1997/04/11 13:35:06  jim
+# Added -e option to specify environment variables.
+#
 # Revision 1.8  1997/04/10 13:48:56  jim
 # Modified profiling to use repeat_count.
 #
