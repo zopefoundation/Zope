@@ -54,6 +54,7 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	    self.getFunction()
         self._p_atime=1
 
+
     manage_main=HTMLFile('methodEdit', globals())
     def manage_edit(self, title, REQUEST=None):
 	"Change the external method"
