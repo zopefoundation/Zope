@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.20 2003/06/10 15:39:04 shane Exp $
+  $Id: cAccessControl.c,v 1.21 2003/09/11 16:00:42 jeremy Exp $
 
   If you have questions regarding this software,
   contact:
@@ -48,11 +48,11 @@
 
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "ExtensionClass.h"
 #include "Acquisition.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 
 static void
@@ -2078,7 +2078,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.20 2003/06/10 15:39:04 shane Exp $\n");
+		"$Id: cAccessControl.c,v 1.21 2003/09/11 16:00:42 jeremy Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */
