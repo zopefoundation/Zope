@@ -16,12 +16,10 @@
   <TD ALIGN="LEFT" VALIGN="TOP"><B>Title</B></TD>
   <TD ALIGN="LEFT" VALIGN="TOP"><INPUT TYPE="TEXT" NAME="title" SIZE="50"></TD>
 </TR>
-<TR>
-  <TD ALIGN="LEFT" VALIGN="TOP"><B>External name</B></TD>
-  <TD ALIGN="LEFT" VALIGN="TOP">
-	<INPUT TYPE="TEXT" NAME="external_name" SIZE="50">
-  </TD>
-</TR>
+<tr>	<th>Function name</th>
+	<td><input name="function" size="30"></td></tr>
+<tr>	<th>Python module file</th>
+	<td><input name="module" size="30"></td></tr>
 <TR>
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Add"></TD>

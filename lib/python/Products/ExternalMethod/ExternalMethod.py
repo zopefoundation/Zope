@@ -16,10 +16,8 @@ modules={}
 
 addForm=HTMLFile('methodAdd', globals())
 
-def add(self, id, title, external_name, REQUEST=None):
+def add(self, id, title, module, function, REQUEST=None):
     """Add an external method to a folder"""
-    names=split(external_name,'.')
-    module, function = join(names[:-1],'.'), names[-1]
     i=ExternalMethod(id,title,module,function)
     self._setObject(id,i)
     return self.manage_main(self,REQUEST)
@@ -40,22 +38,16 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	{'label':'Access Control', 'action':'manage_access'},
 	)
 
-    def __init__(self, id='', title='', module='', function=''):
-	if id:
-	    self.id=id
-	    self.title=title
-	    self._module=module
-	    self._function=function
-	    self.getFunction()
-        self._p_atime=1
-
+    def __init__(self, id, title, module, function):
+	self.id=id
+	self.manage_edit(title, module, function)
 
     manage_main=HTMLFile('methodEdit', globals())
-    def manage_edit(self, title, REQUEST=None):
+    def manage_edit(self, title, module, function, REQUEST=None):
 	"Change the external method"
 	self.title=title
-	names=split(external_name,'.')
-	module, function = join(names[:-1],'.'), names[-1]
+	if module[-3:]=='.py': module=module[:-3]
+	elif module[-4:]=='.py': module=module[:-4]
 	self._module=module
 	self._function=function
 	try: del modules[module]
@@ -64,10 +56,8 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	if REQUEST: return MessageDialog(
 	    title  ='Changed %s' % self.id,
 	    message='%s has been updated' % self.id,
-	    action =REQUEST['URL2']+'/manage_main',
+	    action =REQUEST['URL1']+'/manage_main',
 	    target ='manage_main')
-
-    def external_name(self): return "%s.%s" % (self._module, self._function)
 
     def getFunction(self):
 
@@ -83,10 +73,13 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 	    modules[module]=m
 
 	f=m[self._function]
-	if self.func_defaults != f.func_defaults:
-	   self.func_defaults  = f.func_defaults
+	if hasattr(f,'im_func'): ff=f.im_func
+	else: ff=f
 	    
-	func_code=FuncCode(f)
+	if self.func_defaults != ff.func_defaults:
+	   self.func_defaults  = ff.func_defaults
+	    
+	func_code=FuncCode(ff,f is not ff)
 	if func_code != self.func_code: self.func_code=func_code
     
 	self._v_f=f
@@ -99,13 +92,14 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent,
 
 	return apply(f,args)
 
+    def function(self): return self._function
+    def module(self): return self._module
     
 class FuncCode:
 
-    def __init__(self, f=None):
-	if f is not None:
-	    self.co_varnames=f.func_code.co_varnames
-	    self.co_argcount=f.func_code.co_argcount
+    def __init__(self, f, im=0):
+	self.co_varnames=f.func_code.co_varnames[im:]
+	self.co_argcount=f.func_code.co_argcount-im
 
     def __cmp__(self,other):
 	return cmp((self.co_argcount, self.co_varnames),
