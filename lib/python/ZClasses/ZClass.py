@@ -161,7 +161,7 @@ p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
 class PersistentClass(Base):
     def __class_init__(self): pass
 
-manage_addZClassForm=Globals.HTMLFile(
+manage_addZClassForm=Globals.DTMLFile(
     'dtml/addZClass', globals(),
     default_class_='OFS.SimpleItem Item',
     CreateAFactory=1,
