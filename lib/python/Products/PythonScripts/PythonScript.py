@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -42,6 +42,12 @@ del imp
 
 # This should only be incremented to force recompilation.
 Script_magic = 3
+_log_complaint = (
+    'Some of your Scripts have stale code cached.  Since Zope cannot'
+    ' use this code, startup will be slightly slower until these Scripts'
+    ' are edited. You can automatically recompile all Scripts that have'
+    ' this problem by visiting /manage_addProduct/PythonScripts/recompile'
+    ' of your server in a browser.')
 
 manage_addPythonScriptForm = DTMLFile('www/pyScriptAdd', globals())
 _default_file = os.path.join(package_home(globals()),
@@ -189,9 +195,14 @@ class PythonScript(Script, Historical, Cacheable):
         Script.__setstate__(self, state)
         if (getattr(self, 'Python_magic', None) != Python_magic or
             getattr(self, 'Script_magic', None) != Script_magic):
-            LOG(self.meta_type, PROBLEM,
-                'Object "%s" needs to be recompiled.' % self.id)
+            global _log_complaint
+            if _log_complaint:
+                LOG(self.meta_type, INFO, _log_complaint)    
+                _log_complaint = 0
             # Changes here won't get saved, unless this Script is edited.
+            body = self._body.rstrip()
+            if body:
+                self._body = body + '\n'
             self._compile()
             self._v_change = 1
         elif self._code is None:
