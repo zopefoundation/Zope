@@ -6,6 +6,10 @@ Zope Changes
 
     Bugs Fixed
 
+      - Fixed bug in manage_editProperties which used an incorrect default
+        for several types of property when they were not found in the
+        REQUEST.
+
       - Fixed broken management form for TopicIndexes.
     
       - Fixed bug in z2.py where it would eat certain socket error exceptions

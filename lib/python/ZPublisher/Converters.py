@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 import re
 from types import ListType, TupleType, UnicodeType
@@ -147,20 +147,21 @@ class field2ulines(_unicode_converter):
 field2ulines = field2ulines()
 
 type_converters = {
-    'float':    field2float,
-    'int':      field2int,
-    'long':     field2long,
-    'string':   field2string,
-    'date':     field2date,
-    'required': field2required,
-    'tokens':   field2tokens,
-    'lines':    field2lines,
-    'text':     field2text,
-    'boolean':  field2boolean,
-    'ustring':  field2ustring,
-    'utokens':  field2utokens,
-    'ulines':   field2ulines,
-    'utext':    field2utext,
+    'float':              field2float,
+    'int':                field2int,
+    'long':               field2long,
+    'string':             field2string,
+    'date':               field2date,
+    'required':           field2required,
+    'tokens':             field2tokens,
+    'lines':              field2lines,
+    'text':               field2text,
+    'boolean':            field2boolean,
+    'multiple selection': field2lines,
+    'ustring':            field2ustring,
+    'utokens':            field2utokens,
+    'ulines':             field2ulines,
+    'utext':              field2utext,
     }
 
 get_converter=type_converters.get
