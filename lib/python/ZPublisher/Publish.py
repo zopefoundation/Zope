@@ -261,6 +261,11 @@ Function, method, and class objects
     
 	date -- Date-time values
 
+        list -- Python list of values, even if there is only
+	        one value.
+
+        tuple -- Python tuple of values, even if there is only one.
+
     For example, if the name of a field in an input
     form is age:int, then the field value will be passed in argument,
     age, and an attempt will be made to convert the argument value to
@@ -517,7 +522,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.20 1996/09/16 14:43:27 jim Exp $"""
+$Id: Publish.py,v 1.21 1996/10/15 15:45:35 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -570,6 +575,9 @@ $Id: Publish.py,v 1.20 1996/09/16 14:43:27 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.21  1996/10/15 15:45:35  jim
+# Added tuple argument type and enhances error handling.
+#
 # Revision 1.20  1996/09/16 14:43:27  jim
 # Changes to make shutdown methods work properly.  Now shutdown methods
 # can simply sys.exit(0).
@@ -659,7 +667,7 @@ $Id: Publish.py,v 1.20 1996/09/16 14:43:27 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 def main():
@@ -688,7 +696,7 @@ class ModulePublisher:
 	raise 'NotFound',self.html(
 	    "Resource not found",
 	    "Sorry, the requested document does not exist.<p>"
-	    "\n<!--\n%s\n-->" % entry)
+	    "\n<!--\n%s\n-->" % entry), sys.exc_traceback
 
     forbiddenError=notFoundError  # If a resource is forbidden,
                                   # why reveal that it exists?
@@ -870,8 +878,13 @@ class ModulePublisher:
 			except: pass
 		    try:
 			request_params=getattr(subobject,'__request_data__')
-			try: request_params=request_params()
-			except: pass
+
+			# bleh, test gets around Python bug:
+			if not (type(request_params) is types.MethodType and
+				type(subobject) is types.ClassType):
+			    try: request_params=request_params()
+			    except: pass
+			    
 			for key in request_params.keys():
 			    self.request[key]=request_params[key]
 		    except: pass
@@ -1138,6 +1151,10 @@ def field2list(v):
     if type(v) is not types.ListType: v=[v]
     return v
 
+def field2tuple(v):
+    if type(v) is not types.ListType: v=(v,)
+    return tuple(v)
+
 class Request:
     """\
     Model HTTP request data.
@@ -1239,6 +1256,7 @@ class Request:
 	'string':	field2string,
 	'date':		field2date,
 	'list':		field2list,
+	'tuple':	field2tuple,
 	'regex':	field2regex,
 	'Regex':	field2Regex,
 	}
