@@ -117,6 +117,12 @@ Zope Changes
           acts like the standard url_quote option but uses '+' to encode
           blank spaces.
 
+        - There is a new 'missing' option in the DTML var tag that
+          allows you to provide a value to be used if the variable is
+	  missing, rather than raising a KeyError.  This will work in
+	  the entity reference syntax as well.  If it is used without
+	  an argument, it will provide an empty string.
+
         - The DTML built-in function, getattr, now accepts an additional 
 	  argument providing a default value.	 
 
