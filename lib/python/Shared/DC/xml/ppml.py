@@ -532,6 +532,9 @@ class xmlUnpickler(NoBlanks, xyap):
         'int':
         lambda self,tag,data,atoi=string.atoi,name=name:
             atoi(name(self, tag, data)),
+        'long':
+        lambda self,tag,data,atoi=string.atoi,name=name:
+            atoi(name(self, tag, data)),
         'boolean':
         lambda self,tag,data,atoi=string.atoi,name=name:
             atoi(name(self, tag, data)),
@@ -695,6 +698,7 @@ class xmlPickler(NoBlanks, xyap):
         'pickle': lambda self, tag, data: data[2]+'.',
         'none': lambda self, tag, data: 'N',
         'int': save_int,
+        'long': lambda self, tag, data: 'L'+data[2]+'L\012',
         'float': save_float,
         'string': save_string,
         'reference': save_reference,
@@ -730,9 +734,11 @@ def test():
     t=()
     l=[]
     s=''
+    L = long('999999999999')
     x.append(t)
     x.append(l)
     x.append(s)
+    x.append(L)
     x.append(55555)
     x.append(13)
     r=[x]
@@ -807,9 +813,11 @@ def test2():
     t=()
     l=[]
     s=''
+    L = long('999999999999')
     x.append(t)
     x.append(l)
     x.append(s)
+    x.append(L)
     x.append(5)
     x.append(13)
     print x, '\012'
