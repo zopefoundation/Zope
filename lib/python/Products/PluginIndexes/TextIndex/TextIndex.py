@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.12 $'[11:-2]
+__version__ = '$Revision: 1.13 $'[11:-2]
 
 
 import string, re
@@ -157,7 +157,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
     query_options = ["query","operator"]
  
-    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,extra=None):
+    def __init__(self, id, ignore_ex=None, call_methods=None, lexicon=None,caller=None,extra=None):
         """Create an index
 
         The arguments are:
@@ -172,12 +172,18 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
           of getattr or getitem to get an attribute.
 
           'lexicon' is the lexicon object to specify, if None, the
-          index will use a private lexicon."""
+          index will use a private lexicon.
 
-        
+          'caller' -- instance that created the index (maybe None)
+
+          'extra'  -- Record to keep additional parameters
+
+        """
+
         self.id             = id
         self.ignore_ex      = ignore_ex
         self.call_methods   = call_methods
+        self.catalog        = caller
 
 
         # Default text index operator (should be visible to ZMI)
@@ -191,6 +197,8 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
         else:           
             self.vocabulary_id = "Vocabulary"
             self.catalog       = None
+
+        
 
         
 
