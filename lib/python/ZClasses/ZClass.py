@@ -292,7 +292,7 @@ class ZClass( Base
 
     def cb_isCopyable(self):
         pass # for now, we don't allow ZClasses to be copied.
-    cb_isMovable=cb_isCopyable
+    cb_isMoveable=cb_isCopyable
 
     def _setBasesHoldOnToYourButts(self, bases):
         # Eeeek
