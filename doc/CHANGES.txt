@@ -31,6 +31,20 @@ Zope changes
           permission stored in the metatype registry, if available
           (Collector #1975).
 
+        - GoLIVE is unable to handle some empty properties send from 
+          the Zope's WebDAV server. (getcontenttype is no more send 
+          when they are not available for an object)
+          (Collector #2150)
+
+        - added globbing support for the FTP server
+ 
+        - added support for fetching recursive listings from the FTP server
+          (needed by ncftp)
+
+        - fixed handling of broken objects in the WebDAV server
+         
+
+
     Zope 2.3.0 beta 3
 
       Features Added
