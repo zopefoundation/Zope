@@ -83,29 +83,16 @@ Zope Changes
 
       Bugs Fixed
 
-        - Removed the "feature" that allowed the REQUEST object to be
-          traversed through the web. While useful for debugging, this 
-          could be a security issue.
-
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
 
-        - In the load_site utility, binary files were misshandled on
-          windows.
-
-        - Fixed a remaining '.' form target that we missed in the Zope
-          rename form. This caused rename to fail for Zope installations 
-          running behind Netscape servers.
-
-        - Fixed a potential buffer bug in PCGI reported by Larry Luther.
-
         - FTP directory listings were not sorted.
+
+        - Improved FCGI support in ZServer.
 
         - Fixed a bug which caused File objects of type 'text/html' be
           have the wrong Content-Length set.
-
-        - Improved FCGI support in ZServer.
 
     Zope 2.1.1
 
