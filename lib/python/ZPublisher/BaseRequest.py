@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -246,8 +246,7 @@ class BaseRequest:
         for item in split(path, '/'):
             # Make sure that REQUEST cannot be traversed.
             if item == 'REQUEST':
-                return response.notFoundError(path)
-                
+                return response.notFoundError(path) 
             if not item or item=='.':
                 continue
             elif item == '..':
@@ -392,69 +391,82 @@ class BaseRequest:
                 steps.append(entry_name)
         finally:
             parents.reverse()
-        parents.pop(0) # Get rid of final method object
+
+        popped_last = 0
+#        parents.pop(0) # Get rid of final method object
 
         # Do authorization checks
         user=groups=None
         i=0
-        if roles is not None:
-    
-            last_parent_index=len(parents)
-            if hasattr(object, '__allow_groups__'):
-                groups=object.__allow_groups__
-                inext=0
-            else:
-                inext=None
-                for i in range(last_parent_index):
-                    if hasattr(parents[i],'__allow_groups__'):
-                        groups=parents[i].__allow_groups__
-                        inext=i+1
-                        break
-    
-            if inext is not None:
-                i=inext
-    
-                if hasattr(groups, 'validate'): v=groups.validate
-                else: v=old_validation
-    
-                auth=request._auth
-    
-                if v is old_validation and roles is UNSPECIFIED_ROLES:
-                    # No roles, so if we have a named group, get roles from
-                    # group keys
-                    if hasattr(groups,'keys'): roles=groups.keys()
-                    else:
-                        try: groups=groups()
-                        except: pass
-                        try: roles=groups.keys()
-                        except: pass
-    
-                    if groups is None:
-                        # Public group, hack structures to get it to validate
-                        roles=None
-                        auth=''
-    
-                if v is old_validation:
-                    user=old_validation(groups, request, auth, roles)
-                elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
-                else: user=v(request, auth, roles)
-    
-                while user is None and i < last_parent_index:
-                    parent=parents[i]
-                    i=i+1
-                    if hasattr(parent, '__allow_groups__'): 
-                        groups=parent.__allow_groups__
-                    else: continue
-                    if hasattr(groups,'validate'): v=groups.validate
+        try:
+            if roles is not None:
+
+                last_parent_index=len(parents)
+                if hasattr(object, '__allow_groups__'):
+                    groups=object.__allow_groups__
+                    inext=0
+                else:
+                    inext=None
+                    for i in range(last_parent_index):
+                        if hasattr(parents[i],'__allow_groups__'):
+                            groups=parents[i].__allow_groups__
+                            inext=i+1
+                            break
+
+                if inext is not None:
+                    i=inext
+
+                    if hasattr(groups, 'validate'): v=groups.validate
                     else: v=old_validation
+
+                    auth=request._auth
+
+                    if v is old_validation and roles is UNSPECIFIED_ROLES:
+                        # No roles, so if we have a named group, get roles from
+                        # group keys
+                        if hasattr(groups,'keys'): roles=groups.keys()
+                        else:
+                            try: groups=groups()
+                            except: pass
+                            try: roles=groups.keys()
+                            except: pass
+
+                        if groups is None:
+                            # Public group, hack structures to get it to validate
+                            roles=None
+                            auth=''
+
                     if v is old_validation:
                         user=old_validation(groups, request, auth, roles)
                     elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
                     else: user=v(request, auth, roles)
-                    
-            if user is None and roles != UNSPECIFIED_ROLES:
-                response.unauthorized()
-    
+
+                    while user is None and i < last_parent_index:
+                        parent=parents[i]
+                        i=i+1
+                        if hasattr(parent, '__allow_groups__'): 
+                            groups=parent.__allow_groups__
+                        else: continue
+                        if hasattr(groups,'validate'): v=groups.validate
+                        else: v=old_validation
+                        if v is old_validation:
+                            user=old_validation(groups, request, auth, roles)
+                        elif roles is UNSPECIFIED_ROLES: user=v(request, auth)
+                        else: user=v(request, auth, roles)
+
+                if not popped_last:
+                    # Get rid of final method object
+                    parents.pop(0)
+                    popped_last=1
+
+                if user is None and roles != UNSPECIFIED_ROLES:
+                    response.unauthorized()
+
+        finally:
+            # Get rid of final method object
+            if not popped_last:
+                parents.pop(0)
+
         if user is not None:
             if validated_hook is not None: validated_hook(self, user)
             request['AUTHENTICATED_USER']=user
