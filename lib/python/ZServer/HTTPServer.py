@@ -312,12 +312,12 @@ class zhttp_channel(http_channel):
         if not self.working:
             if self.queue:
                 self.working=1
-                module_name, request, response=self.queue[0]
-                self.queue=self.queue[1:]
+                try: module_name, request, response=self.queue.pop(0)
+                except: return
                 handle(module_name, request, response)
         
     def done(self):
-        "Called when a pushing request is finished"
+        "Called when a publishing request is finished"
         self.working=0
         self.work()
 
