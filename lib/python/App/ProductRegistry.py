@@ -114,6 +114,9 @@ class ProductRegistryMixin:
                 r.append(mt)
             
         self._setProductRegistryMetaTypes(tuple(r))
+
+    def _constructor_prefix_string(self, pid):
+        return 'manage_addProduct/%s/' % pid
         
     def _manage_add_product_meta_type(self, product, id, meta_type,
                                       permission=''):
@@ -127,13 +130,15 @@ class ProductRegistryMixin:
                 if mt['product'] != pid:
                     raise 'Type Exists', (
                         'The type <em>%s</em> is already defined.' % meta_type)
-                mt['action']='manage_addProduct/%s/%s' % (pid, id)
+                mt['action']='%s%s' % (
+                    self._constructor_prefix_string(pid), id)
                 if permission: mt['permission']=permission
                 return
 
         mt={
             'name': meta_type,
-            'action': ('manage_addProduct/%s/%s' % (pid, id)),
+            'action': ('%s%s' % (
+                self._constructor_prefix_string(pid), id)),
             'product': pid
             }
         if permission: mt['permission']=permission
