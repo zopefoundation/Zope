@@ -265,7 +265,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     def permissionMappingPossibleValues(self):
         return self.classDefinedAndInheritedPermissions()
 
-    manage_security=Globals.HTMLFile('AccessControl/dtml/methodAccess')
+    manage_security=Globals.DTMLFile('AccessControl/dtml/methodAccess')
     def manage_getPermissionMapping(self):
         ips=self.getClassAttr('propertysheets')
         ips=getattr(ips, self.id)
@@ -381,8 +381,8 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
 
     def all_meta_types(self): return self.meta_types
 
-    manage=Globals.HTMLFile('OFS/dtml/main')
-    manage_addCommonSheetForm=Globals.HTMLFile('dtml/addCommonSheet',
+    manage=Globals.DTMLFile('OFS/dtml/main')
+    manage_addCommonSheetForm=Globals.DTMLFile('dtml/addCommonSheet',
                                                globals())
 
     def manage_addCommonSheet(self, id, title, REQUEST=None):
