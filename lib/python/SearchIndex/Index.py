@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 from Globals import Persistent
 from BTree import BTree
@@ -210,7 +210,7 @@ class Index(Persistent):
         index = self._index
 
         id = self.id
-        if self._schema is None:
+        if (self._schema is None) or (obj is not None):
             f = getattr
         else:
             f = operator.__getitem__
@@ -219,10 +219,14 @@ class Index(Persistent):
         if obj is None:
             obj = self._data[i]
 
-        if self.call_methods:
-            k = f(obj, id)()
-        else:
-            k = f(obj, id)
+        try:
+            if self.call_methods:
+                k = f(obj, id)()
+            else:
+                k = f(obj, id)
+        except:
+            pass
+
 
         if k is None or k == MV: return
 

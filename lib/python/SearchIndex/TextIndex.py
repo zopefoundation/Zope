@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -291,7 +291,7 @@ class TextIndex(Persistent):
         if 'obj' is passed in, it is indexed instead of _data[i]"""
 
         id = self.id
-        if self._schema is None:
+        if (self._schema is None) or (obj is not None):
             f = getattr
         else:
             f = operator.__getitem__
@@ -300,12 +300,15 @@ class TextIndex(Persistent):
         if obj is None:
             obj = self._data[i]
 
-        if self.call_methods:
-            k = str(f(obj, id)())
-        else:
-            k = str(f(obj, id))
+        try:
+            if self.call_methods:
+                k = str(f(obj, id)())
+            else:
+                k = str(f(obj, id))
 
-        self._index_document(k, i ,un)
+            self._index_document(k, i ,un)
+        except:
+            pass
 
 
     def unindex_item(self, i, obj=None): 
