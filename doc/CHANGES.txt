@@ -91,6 +91,11 @@ Zope Changes
           method <dtml-sqltest> which allows you to choose the
           operator used for comparison. 
 
+        - WebDAV support has been modified to support MS Office 2000
+          applications. The changes _emulate_ aspects of DAV level 2
+          locking but do _not_ provide actual locking support at the
+          present time.
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low
