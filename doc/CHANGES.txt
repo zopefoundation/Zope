@@ -101,6 +101,10 @@ Zope Changes
         clients from maintaing pipelined connections to the Zope server
         (Collector #412)
 
+      - Updated the Interface package to be compatible with Zope 3
+        Interfaces. This included changing some interface APIs that
+        may affect existing products.
+
     Bugs:
     
       - External methods didn't properly setup func_defaults and func_code
