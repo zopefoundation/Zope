@@ -365,6 +365,13 @@ class zhttp_channel(http_channel):
                 # we are receiving header (request) data
             self.in_buffer = self.in_buffer + data
             if len(self.in_buffer) > self.max_header_len:
+                # Don't bother with a proper response header,
+                # we are probably under attack and that would just consume 
+                # precious resources.
+                # Instead, just bail out and leave the nasty client hanging.
+                # Hanging's too good for them!
+                # Unfortunate side effect: the attack gets logged to the
+                # event log, but not the access log.
                 raise ValueError('HTTP headers invalid (too long)')
 
 class zhttp_server(http_server):
