@@ -156,8 +156,11 @@ class Vocabulary(Item, Persistent, Implicit):
     def query(self, pattern):
         """ """
         result = []
-        for x in self.lexicon.query(pattern):
-            result.append(self.lexicon._inverseLex[x])
+        for x in self.lexicon.get(pattern):
+            if self.globbing:
+                result.append(self.lexicon._inverseLex[x])
+            else:
+                result.append(pattern)
         return result
             
 

@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -105,11 +105,21 @@ from intSet import intSet
 import operator
 from Splitter import Splitter
 from string import strip
-import string, regex, regsub, pdb
+import string, regex, regsub, ts_regex
 
 
-from Lexicon import Lexicon, query, stop_word_dict
+
+from Lexicon import Lexicon, stop_word_dict
 from ResultList import ResultList
+
+
+AndNot    = 'andnot'
+And       = 'and'
+Or        = 'or'
+Near = '...'
+QueryError='TextIndex.QueryError'
+
+            
 
 class UnTextIndex(Persistent, Implicit):
 
@@ -160,6 +170,8 @@ class UnTextIndex(Persistent, Implicit):
             pass
 
         if lexicon is None:
+
+            ## if no lexicon is provided, create a dumb one
             self._lexicon=Lexicon()
         else:
             self._lexicon = lexicon
@@ -365,7 +377,7 @@ class UnTextIndex(Persistent, Implicit):
             
             rr = IIBucket()
             try:
-                for i, score in query(key,self).items():
+                 for i, score in self.query(key).items():
                     if score:
                         rr[i] = score
             except KeyError:
@@ -406,7 +418,7 @@ class UnTextIndex(Persistent, Implicit):
 
     def _subindex(self, isrc, d, old, last):
 
-        src = self.getLexicon.Splitter(isrc, self._syn)  
+        src = self.getLexicon(self._lexicon).Splitter(isrc, self._syn)  
 
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
@@ -417,3 +429,197 @@ class UnTextIndex(Persistent, Implicit):
 
         return last
 
+
+    def query(self, s, default_operator = Or, ws = (string.whitespace,)):
+        """
+
+        This is called by TextIndexes.  A 'query term' which is a string
+        's' is passed in, along with an index object.  s is parsed, then
+        the wildcards are parsed, then something is parsed again, then the 
+        whole thing is 'evaluated'
+
+        """
+
+        # First replace any occurences of " and not " with " andnot "
+        s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
+
+        # do some parsing
+        q = parse(s)
+
+        ## here, we give lexicons a chance to transform the query.
+        ## For example, substitute wildcards, or translate words into
+        ## various languages.
+        q = self.getLexicon(self._lexicon).query_hook(q)
+
+        # do some more parsing
+        q = parse2(q, default_operator)
+
+        ## evalute the final 'expression'
+        return self.evaluate(q)
+
+
+    def get_operands(self, q, i, ListType=type([]), StringType=type('')):
+        '''Evaluate and return the left and right operands for an operator'''
+        try:
+            left  = q[i - 1]
+            right = q[i + 1]
+        except IndexError: raise QueryError, "Malformed query"
+
+        t=type(left)
+        if t is ListType: left = evaluate(left, self)
+        elif t is StringType: left=self[left]
+
+        t=type(right)
+        if t is ListType: right = evaluate(right, self)
+        elif t is StringType: right=self[right]
+
+        return (left, right)
+
+
+    def evaluate(self, q, ListType=type([])):
+        '''Evaluate a parsed query'''
+    ##    import pdb
+    ##    pdb.set_trace()
+
+        if (len(q) == 1):
+            if (type(q[0]) is ListType):
+                return evaluate(q[0], self)
+
+            return self[q[0]]
+
+        i = 0
+        while (i < len(q)):
+            if q[i] is AndNot:
+                left, right = self.get_operands(q, i)
+                val = left.and_not(right)
+                q[(i - 1) : (i + 2)] = [ val ]
+            else: i = i + 1
+
+        i = 0
+        while (i < len(q)):
+            if q[i] is And:
+                left, right = self.get_operands(q, i)
+                val = left & right
+                q[(i - 1) : (i + 2)] = [ val ]
+            else: i = i + 1
+
+        i = 0
+        while (i < len(q)):
+            if q[i] is Or:
+                left, right = self.get_operands(q, i)
+                val = left | right
+                q[(i - 1) : (i + 2)] = [ val ]
+            else: i = i + 1
+
+        i = 0
+        while (i < len(q)):
+            if q[i] is Near:
+                left, right = self.get_operands(q, i)
+                val = left.near(right)
+                q[(i - 1) : (i + 2)] = [ val ]
+            else: i = i + 1
+
+        if (len(q) != 1): raise QueryError, "Malformed query"
+
+        return q[0]
+
+
+def parse(s):
+    '''Parse parentheses and quotes'''
+    l = []
+    tmp = string.lower(s)
+
+    while (1):
+        p = parens(tmp)
+
+        if (p is None):
+            # No parentheses found.  Look for quotes then exit.
+            l = l + quotes(tmp)
+            break
+        else:
+            # Look for quotes in the section of the string before
+            # the parentheses, then parse the string inside the parens
+            l = l + quotes(tmp[:(p[0] - 1)])
+            l.append(parse(tmp[p[0] : p[1]]))
+
+            # continue looking through the rest of the string
+            tmp = tmp[(p[1] + 1):]
+
+    return l
+
+def parse2(q, default_operator,
+           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near},
+           ListType=type([]),
+           ):
+    '''Find operators and operands'''
+    i = 0
+    isop=operator_dict.has_key
+    while (i < len(q)):
+        if (type(q[i]) is ListType): q[i] = parse2(q[i], default_operator)
+
+        # every other item, starting with the first, should be an operand
+        if ((i % 2) != 0):
+            # This word should be an operator; if it is not, splice in
+            # the default operator.
+            
+            if type(q[i]) is not ListType and isop(q[i]):
+                q[i] = operator_dict[q[i]]
+            else: q[i : i] = [ default_operator ]
+
+        i = i + 1
+
+    return q
+
+
+def parens(s, parens_re = regex.compile('(\|)').search):
+
+    index=open_index=paren_count = 0
+
+    while 1:
+        index = parens_re(s, index)
+        if index < 0 : break
+    
+        if s[index] == '(':
+            paren_count = paren_count + 1
+            if open_index == 0 : open_index = index + 1
+        else:
+            paren_count = paren_count - 1
+
+        if paren_count == 0:
+            return open_index, index
+        else:
+            index = index + 1
+
+    if paren_count == 0: # No parentheses Found
+        return None
+    else:
+        raise QueryError, "Mismatched parentheses"      
+
+
+
+def quotes(s, ws = (string.whitespace,)):
+     # split up quoted regions
+     splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
+     split=string.split
+
+     if (len(splitted) > 1):
+         if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
+    
+         for i in range(1,len(splitted),2):
+             # split the quoted region into words
+             splitted[i] = filter(None, split(splitted[i]))
+
+             # put the Proxmity operator in between quoted words
+             for j in range(1, len(splitted[i])):
+                 splitted[i][j : j] = [ Near ]
+
+         for i in range(len(splitted)-1,-1,-2):
+             # split the non-quoted region into words
+             splitted[i:i+1] = filter(None, split(splitted[i]))
+
+         splitted = filter(None, splitted)
+     else:
+         # No quotes, so just split the string into words
+         splitted = filter(None, split(s))
+
+     return splitted

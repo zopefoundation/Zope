@@ -533,6 +533,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                           type(''): Query.String,
                           }, **kw):
 
+
+
         # Get search arguments:
         if REQUEST is None and not kw:
             try: REQUEST=self.REQUEST

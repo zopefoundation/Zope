@@ -471,7 +471,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         Search terms can be passed in the REQUEST or as keyword
         arguments. 
         """
-        
+
         return apply(self._catalog.searchResults,
                      (REQUEST,used, query_map), kw)
 

@@ -103,6 +103,7 @@ OOBTree=BTree.BTree
 IOBTree=IOBTree.BTree
 import re
 
+from UnTextIndex import Or
 
 class GlobbingLexicon(Lexicon):
     """
@@ -160,7 +161,7 @@ class GlobbingLexicon(Lexicon):
             return self.counter
 
 
-    def query(self, pattern):
+    def get(self, pattern):
         """ Query the lexicon for words matching a pattern.
 
         """
@@ -218,26 +219,45 @@ class GlobbingLexicon(Lexicon):
                 
     def __getitem__(self, word):
         """ """
-        return self.query(word)
+        return self.get(word)
+
+    def query_hook(self, q):
+        """expand wildcards
+
+        """
+        words = []
+        for w in q:
+            if ( (self.multi_wc in w) or
+                (self.single_wc in w) ):
+                wids = self.get(w)
+                for wid in wids:
+                    if words:
+                        words.append(Or)
+                    words.append(self._inverseLex[wid])
+            else:
+                words.append(w)
+
+        return words
+
 
     def translate(self, pat):
-            """Translate a PATTERN to a regular expression.
+        """Translate a PATTERN to a regular expression.
 
-            There is no way to quote meta-characters.
-            """
+        There is no way to quote meta-characters.
+        """
 
-            i, n = 0, len(pat)
-            res = ''
-            while i < n:
-                    c = pat[i]
-                    i = i+1
-                    if c == self.multi_wc:
-                            res = res + '.*'
-                    elif c == self.single_wc:
-                            res = res + '.'
-                    else:
-                            res = res + re.escape(c)
-            return res + "$"
+        i, n = 0, len(pat)
+        res = ''
+        while i < n:
+            c = pat[i]
+            i = i+1
+            if c == self.multi_wc:
+                res = res + '.*'
+            elif c == self.single_wc:
+                res = res + '.'
+            else:
+                res = res + re.escape(c)
+        return res + "$"
 
 
 

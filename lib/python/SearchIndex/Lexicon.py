@@ -134,7 +134,10 @@ class Lexicon(Persistent, Implicit):
 
     def get(self, key):
         """  """
-        return list(self._lexicon[key])
+        return [self._lexicon[key]]
+
+    def __getitem__(self, key):
+        return self.get(key)
 
     def __len__(self):
         return len(self._lexicon)
@@ -157,203 +160,12 @@ class Lexicon(Persistent, Implicit):
                 hits.append(x)
         return hits
 
+    def query_hook(self, q):
+        """ we don't want to modify the query cuz we're dumb """
+        return q
+        
 
 
-AndNot    = 'andnot'
-And       = 'and'
-Or        = 'or'
-Near = '...'
-QueryError='TextIndex.QueryError'
-
-def query(s, index, default_operator = Or,
-          ws = (string.whitespace,)):
-    # First replace any occurences of " and not " with " andnot "
-    s = ts_regex.gsub('[%s]+and[%s]*not[%s]+' % (ws * 3), ' andnot ', s)
-    q = parse(s)
-    q = parse_wc(q, index)
-    q = parse2(q, default_operator)
-    return evaluate(q, index)
-
-def parse_wc(q, index):
-    '''expand wildcards'''
-    lex = index.getLexicon(index._lexicon)
-    words = []
-    for w in q:
-        if ( (lex.multi_wc in w) or
-            (lex.single_wc in w) ):
-            wids = lex.query(w)
-            for wid in wids:
-                if words:
-                    words.append(Or)
-                words.append(lex._inverseLex[wid])
-        else:
-            words.append(w)
-
-    return words
-            
-def parse(s):
-    '''Parse parentheses and quotes'''
-    l = []
-    tmp = string.lower(s)
-
-    while (1):
-        p = parens(tmp)
-
-        if (p is None):
-            # No parentheses found.  Look for quotes then exit.
-            l = l + quotes(tmp)
-            break
-        else:
-            # Look for quotes in the section of the string before
-            # the parentheses, then parse the string inside the parens
-            l = l + quotes(tmp[:(p[0] - 1)])
-            l.append(parse(tmp[p[0] : p[1]]))
-
-            # continue looking through the rest of the string
-            tmp = tmp[(p[1] + 1):]
-
-    return l
-
-def parse2(q, default_operator,
-           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near},
-           ListType=type([]),
-           ):
-    '''Find operators and operands'''
-    i = 0
-    isop=operator_dict.has_key
-    while (i < len(q)):
-        if (type(q[i]) is ListType): q[i] = parse2(q[i], default_operator)
-
-        # every other item, starting with the first, should be an operand
-        if ((i % 2) != 0):
-            # This word should be an operator; if it is not, splice in
-            # the default operator.
-            
-            if type(q[i]) is not ListType and isop(q[i]):
-                q[i] = operator_dict[q[i]]
-            else: q[i : i] = [ default_operator ]
-
-        i = i + 1
-
-    return q
-
-
-def parens(s, parens_re = regex.compile('(\|)').search):
-
-    index=open_index=paren_count = 0
-
-    while 1:
-        index = parens_re(s, index)
-        if index < 0 : break
-    
-        if s[index] == '(':
-            paren_count = paren_count + 1
-            if open_index == 0 : open_index = index + 1
-        else:
-            paren_count = paren_count - 1
-
-        if paren_count == 0:
-            return open_index, index
-        else:
-            index = index + 1
-
-    if paren_count == 0: # No parentheses Found
-        return None
-    else:
-        raise QueryError, "Mismatched parentheses"      
-
-
-
-def quotes(s, ws = (string.whitespace,)):
-     # split up quoted regions
-     splitted = ts_regex.split(s, '[%s]*\"[%s]*' % (ws * 2))
-     split=string.split
-
-     if (len(splitted) > 1):
-         if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
-    
-         for i in range(1,len(splitted),2):
-             # split the quoted region into words
-             splitted[i] = filter(None, split(splitted[i]))
-
-             # put the Proxmity operator in between quoted words
-             for j in range(1, len(splitted[i])):
-                 splitted[i][j : j] = [ Near ]
-
-         for i in range(len(splitted)-1,-1,-2):
-             # split the non-quoted region into words
-             splitted[i:i+1] = filter(None, split(splitted[i]))
-
-         splitted = filter(None, splitted)
-     else:
-         # No quotes, so just split the string into words
-         splitted = filter(None, split(s))
-
-     return splitted
-
-def get_operands(q, i, index, ListType=type([]), StringType=type('')):
-    '''Evaluate and return the left and right operands for an operator'''
-    try:
-        left  = q[i - 1]
-        right = q[i + 1]
-    except IndexError: raise QueryError, "Malformed query"
-
-    t=type(left)
-    if t is ListType: left = evaluate(left, index)
-    elif t is StringType: left=index[left]
-
-    t=type(right)
-    if t is ListType: right = evaluate(right, index)
-    elif t is StringType: right=index[right]
-
-    return (left, right)
-
-def evaluate(q, index, ListType=type([])):
-    '''Evaluate a parsed query'''
-##    import pdb
-##    pdb.set_trace()
-
-    if (len(q) == 1):
-        if (type(q[0]) is ListType):
-            return evaluate(q[0], index)
-
-        return index[q[0]]
-      
-    i = 0
-    while (i < len(q)):
-        if q[i] is AndNot:
-            left, right = get_operands(q, i, index)
-            val = left.and_not(right)
-            q[(i - 1) : (i + 2)] = [ val ]
-        else: i = i + 1
-
-    i = 0
-    while (i < len(q)):
-        if q[i] is And:
-            left, right = get_operands(q, i, index)
-            val = left & right
-            q[(i - 1) : (i + 2)] = [ val ]
-        else: i = i + 1
-
-    i = 0
-    while (i < len(q)):
-        if q[i] is Or:
-            left, right = get_operands(q, i, index)
-            val = left | right
-            q[(i - 1) : (i + 2)] = [ val ]
-        else: i = i + 1
-
-    i = 0
-    while (i < len(q)):
-        if q[i] is Near:
-            left, right = get_operands(q, i, index)
-            val = left.near(right)
-            q[(i - 1) : (i + 2)] = [ val ]
-        else: i = i + 1
-
-    if (len(q) != 1): raise QueryError, "Malformed query"
-
-    return q[0]
 
 
 stop_words=(
