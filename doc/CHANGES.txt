@@ -196,7 +196,7 @@ Zope Changes
       - Collector #185, 341: PCGIServer and FCGIServer logs corrected
         and now output extended information like HTTPServer does.
 
-      - Propertysheets: Ids like 'values','keys' and 'values' are
+      - Propertysheets: Ids like 'values' and 'items' are 
         now forbidden as they break WebDAV functionality. Existing
         Propertysheets are not affected
 
