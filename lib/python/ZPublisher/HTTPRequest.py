@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -220,6 +220,28 @@ class HTTPRequest(BaseRequest):
             del parents[:-1]
         other['VirtualRootPhysicalPath'] = parents[-1].getPhysicalPath()
         self._resetURLS()
+
+    def physicalPathToVirtualPath(self, path):
+        """ Remove the path to the VirtualRoot from a physical path """
+        if type(path) is type(''):
+            path = split(path, '/')
+        rpp = self.other.get('VirtualRootPhysicalPath', ('',))
+        i = 0
+        for name in rpp[:len(path)]:
+            if path[i] == name:
+                i = i + 1
+            else:
+                break
+        return path[i:]
+
+    def physicalPathToURL(self, path, relative=0):
+        """ Convert a physical path into a URL in the current context """
+        path = self._script + map(quote, self.physicalPathToVirtualPath(path))
+        if relative:
+            path.insert(0, '')
+        else:
+            path.insert(0, self['SERVER_URL'])
+        return join(path, '/')
 
     def _resetURLS(self):
         other = self.other
