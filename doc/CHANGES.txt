@@ -51,6 +51,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1151: HTTP compression was broken on error pages
+
       - The REQUEST now contains a new entry ACTUAL_URL which contains the
         full URL without query string as it appears within the location bar of
         the browser. The key has been added to provide a single key that is 

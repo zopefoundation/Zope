@@ -351,7 +351,7 @@ class HTTPResponse(BaseResponse):
         self.setHeader('content-length', len(self.body))
         self.insertBase()
         if self.use_HTTP_content_compression and \
-            not self.headers.get('content-encoding',None):
+            self.headers.get('content-encoding', 'gzip') == 'gzip':
             # use HTTP content encoding to compress body contents unless
             # this response already has another type of content encoding
             if content_type.split('/')[0] not in uncompressableMimeMajorTypes:
