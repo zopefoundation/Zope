@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.11 2001/11/07 20:20:26 matt Exp $
+$Id: Transience.py,v 1.12 2001/11/07 22:09:53 matt Exp $
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -98,7 +98,10 @@ from TransienceInterfaces import Transient, DictionaryLike, ItemWithId,\
 from OFS.SimpleItem import SimpleItem
 from Persistence import Persistent, PersistentMapping
 from Acquisition import Implicit, aq_base
-from AccessControl import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo, getSecurityManager
+from AccessControl.SecurityManagement import newSecurityManager
+import AccessControl.SpecialUsers 
+from AccessControl.User import nobody
 from BTrees import OOBTree
 from zLOG import LOG, WARNING
 import os.path
@@ -123,6 +126,7 @@ MANAGE_CONTAINER_PERM = 'Manage Transient Object Container'
 
 constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
+
 
 def constructTransientObjectContainer(self, id, title='', timeout_mins=20,
     addNotification=None, delNotification=None,
@@ -169,7 +173,7 @@ class TransientObjectContainer(SimpleItem):
     security.setPermissionDefault(ACCESS_CONTENTS_PERM,
                                 ['Manager','Anonymous'])
     security.setPermissionDefault(ACCESS_TRANSIENTS_PERM,
-                                ['Manager','Anonymous'])
+                                ['Manager','Anonymous','Sessions'])
     security.setPermissionDefault(CREATE_TRANSIENTS_PERM,
                                 ['Manager',])
 
@@ -318,16 +322,21 @@ class TransientObjectContainer(SimpleItem):
 
         if callable(method):
             try:
-                method(item, self)
-            except:
-                # dont raise, just log
-                path = self.getPhysicalPath()
-                LOG('Transience',
-                    WARNING,
-                    '%s failed when calling %s in %s' % (name, callback,
-                                                    '/'.join(path)),
-                    error=sys.exc_info()
-                    )
+                user = getSecurityManager().getUser()
+                try:
+                    newSecurityManager(None, nobody)
+                    method(item, self)
+                except:
+                    # dont raise, just log
+                    path = self.getPhysicalPath()
+                    LOG('Transience',
+                        WARNING,
+                        '%s failed when calling %s in %s' % (name, callback,
+                                                        '/'.join(path)),
+                        error=sys.exc_info()
+                        )
+            finally:
+                newSecurityManager(None, user)
         else:
             err = '%s in %s attempted to call non-callable %s'
             path = self.getPhysicalPath()
