@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -424,10 +424,11 @@ class HTTPRequest(BaseRequest):
             if defaults:
                 for keys, values in defaults.items():
                     if not form.has_key(keys):
-                        # if the form does not have the key and the
-                        # form is not empty, set the default
+                        # if the form does not have the key,
+                        # set the default
                         form[keys]=values
                     else:
+                        #The form has the key
                         if getattr(values, '__class__',0) is record:
                            # if the key is mapped to a record, get the
                            # record
@@ -440,27 +441,31 @@ class HTTPRequest(BaseRequest):
                                  # the attribute, set it to the default
                                  setattr(r,k,v)
                                  form[keys] = r    
+                        elif values == type([]):
+                               # the key is mapped to a list
+                               l = form[keys]
+                               for x in values:
+                                   # for each x in the list
+                                   if getattr(x, '__class__',0) is record:
+                                       # if the x is a record
+                                       for k, v in x.__dict__.items():
+                                           # loop through each attribute and value in
+                                           # the record
+                                           for y in l:
+                                               # loop through each record in the form
+                                               # list if it doesn't have the attributes
+                                               # in the default dictionary, set them
+                                               if not hasattr(y, k):
+                                                   setattr(y, k, v)
+                                   else:
+                                   # x is not a record
+                                       if not a in l:
+                                           l.append(a)
+                               form[keys] = l
                         else:
-                           # the key is mapped to a list
-                           l = form[keys]
-                           for x in values:
-                              # for each x in the list
-                              if getattr(x, '__class__',0) is record:
-                                 # if the x is a record
-                                 for k, v in x.__dict__.items():
-                                    # loop through each attribute and value in
-                                    # the record
-                                    for y in l:
-                                       # loop through each record in the form
-                                       # list if it doesn't have the attributes
-                                       # in the default dictionary, set them
-                                       if not hasattr(y, k):
-                                          setattr(y, k, v)
-                              else:
-                                 # x is not a record
-                                 if not a in l:
-                                    l.append(a)
-                           form[keys] = l       
+                            # The form has the key, the key is not mapped
+                            # to a record or sequence so do nothing
+                            pass 
                                 
             # Convert to tuples
             if tuple_items:
