@@ -21,3 +21,7 @@ Page Template changes
 
         - The starting properties could be deleted.  This is only
         fixed for new templates.
+
+        - Collector 596 fixed; manage_addPageTemplate can now be
+          called with a text argument but no REQUEST.form['file'].
+          E.g. when called via ZPublisher.Client.
