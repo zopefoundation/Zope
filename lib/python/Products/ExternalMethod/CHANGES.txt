@@ -30,7 +30,7 @@ External Method Changes
     function correctly.
   
 
-  External Methods 1.0.3
+  External Method 1.0.3
   
     Bugs Fixed
   
@@ -39,7 +39,7 @@ External Method Changes
        database bloat, this could also cause strange session/locking behavior.
   
   
-  External Methods 1.0.2
+  External Method 1.0.2
   
     Bugs Fixed
   
