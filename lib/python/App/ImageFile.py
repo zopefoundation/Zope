@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -137,8 +137,8 @@ class ImageFile(Acquisition.Explicit):
             try:    mod_since=long(DateTime(header).timeTime())
             except: mod_since=None
             if mod_since is not None:
-                if self._p_mtime:
-                    last_mod = long(self._p_mtime)
+                if getattr(self, 'lmt', None):
+                    last_mod = long(self.lmt)
                 else:
                     last_mod = long(0)
                 if last_mod > 0 and last_mod <= mod_since:
