@@ -13,6 +13,11 @@ Zope Changes
 
    Bugs fixed
 
+     - ZClasses that subclassed ObjectManager that were created in 
+       earlier versions of Zope would not load under 2.6, due to 
+       the new Interfaces package. Added back a simple stub module 
+       and changed a constructor to allow these ZClasses to work.
+
      - deny attributes being both part of tal:attributes
        and having a messageid in i18n:attributes
 
