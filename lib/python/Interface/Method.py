@@ -5,6 +5,9 @@ from Attr import Attribute
 
 sig_traits = ['positional', 'required', 'optional', 'varargs', 'kwargs']
 
+CO_VARARGS = 4
+CO_VARKEYWORDS = 8
+
 class MethodClass:
 
     def fromFunction(self, func, interface=''):
@@ -25,8 +28,18 @@ class MethodClass:
         m.positional=names[1:na]
         m.required=names[1:nr]
         m.optional=d
-        m.varargs = not not (c.co_flags & 4)
-        m.kwargs  = not not (c.co_flags & 8)
+
+        argno = na
+        if c.co_flags & CO_VARARGS:
+            m.varargs = names[argno]
+            argno = argno + 1
+        else:
+            m.varargs = None
+        if c.co_flags & CO_VARKEYWORDS:
+            m.kwargs = names[argno]
+        else:
+            m.kwargs = None
+
         m.interface=interface
         return m
 
@@ -69,9 +82,9 @@ class Method(Attribute):
                 sig = sig + "=%s" % `self.optional[v]`
             sig = sig + ", "
         if self.varargs:
-            sig = sig + "*args, "
+            sig = sig + ("*%s, " % self.varargs)
         if self.kwargs:
-            sig = sig + "**kws, "
+            sig = sig + ("**%s, " % self.kwargs)
 
         # slice off the last comma and space
         if self.positional or self.varargs or self.kwargs:
