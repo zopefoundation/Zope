@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.39 1997/06/13 19:40:44 jim Exp $
+     $Id: cPickle.c,v 1.40 1997/06/19 18:57:36 jim Exp $
 
      Copyright 
 
@@ -53,7 +53,9 @@
 */
 
 static char cPickle_module_documentation[] = 
-""
+"C implementation and optimization of the Python pickle module\n"
+"\n"
+"$Id: cPickle.c,v 1.40 1997/06/19 18:57:36 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -3871,7 +3873,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.39 $";
+    char *rev="$Revision: 1.40 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3906,6 +3908,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.40  1997/06/19 18:57:36  jim
+ Added ident string.
+
  Revision 1.39  1997/06/13 19:40:44  jim
  - Various changes to make gcc -Wall -pedantic happy, including
    extra parens elimination of unused vars.
