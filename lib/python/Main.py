@@ -103,6 +103,17 @@ BoboPOS.PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
 
+if os.environ.has_key('ZOPE_DATABASE_QUOTA'):
+    quota=string.atoi(os.environ['ZOPE_DATABASE_QUOTA'])
+    Bobobase._jar.db.set_quota(
+        lambda x, quota=quota, otherdb=SessionBase.TDB:
+        x + otherdb.pos > quota)
+    SessionBase.TDB.set_quota(
+        lambda x, quota=quota, otherdb=Bobobase._jar.db:
+        x + otherdb.pos > quota)
+
+
+
 SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
 
 bobo_application=app=Bobobase['Application']
@@ -114,3 +125,4 @@ for n in 'Z', 'BOBO':
         try: n=string.atoi(n)
         except: pass
         if n: Globals.DevelopmentMode=1
+
