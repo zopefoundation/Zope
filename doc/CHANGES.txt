@@ -14,6 +14,9 @@ Zope Changes
     
       - STXNG: added '+' as allowed character inside URLs
 
+      - enhanced the checks for 'Domains' field in the UserFolder
+        
+
   Zope 2.5 Alpha 2
 
     Bugs Fixed
