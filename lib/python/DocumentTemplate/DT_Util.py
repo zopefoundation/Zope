@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.36 1998/05/14 16:30:49 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.37 1998/05/20 17:54:34 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -157,7 +157,10 @@ def test(self, *args):
 
 d['test']=test
 
-d['attr']=careful_getattr
+def obsolete_attr(self, inst, name, md):
+    return careful_getattr(md, inst, name)
+
+d['attr']=obsolete_attr
 d['getattr']=careful_getattr
 d['hasattr']=careful_hasattr
 
@@ -372,6 +375,9 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.37  1998/05/20 17:54:34  jim
+# Fixed obsolete stupid attr function. Blech.
+#
 # Revision 1.36  1998/05/14 16:30:49  jim
 # Added render function.
 #
