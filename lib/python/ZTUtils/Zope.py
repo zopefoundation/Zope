@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Zope-specific versions of ZTUTils classes
+"""Zope-specific versions of ZTUTils classes
 
-$Id$'''
-__version__='$Revision: 1.15 $'[11:-2]
-
+$Id$
+"""
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
 from SimpleTree import SimpleTreeMaker

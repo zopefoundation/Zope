@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Simple Tree classes
+"""Simple Tree classes
 
-$Id$'''
-__version__='$Revision: 1.5 $'[11:-2]
-
+$Id$
+"""
 from Tree import TreeMaker, TreeNode, b2a
 from cgi import escape
 

@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Access control support"""
+"""Access control support
 
-__version__='$Revision: 1.61 $'[11:-2]
-
-
+$Id$
+"""
 from Globals import DTMLFile, MessageDialog, Dictionary
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products

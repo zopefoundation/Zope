@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Package of template utility classes and functions.
+"""Package of template utility classes and functions.
 
-$Id$'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id$
+"""
 
 from Batch import Batch
 from Iterator import Iterator

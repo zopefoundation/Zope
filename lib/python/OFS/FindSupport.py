@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Find support"""
-__version__='$Revision: 1.33 $'[11:-2]
+"""Find support
 
-
+$Id$
+"""
 import sys, os, time, Globals, ExtensionClass
 from DocumentTemplate.DT_Util import Eval
 from AccessControl.Permission import name_trans

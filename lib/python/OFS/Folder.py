@@ -10,15 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-
 """Folder object
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id$"""
-
-__version__='$Revision: 1.104 $'[11:-2]
-
+$Id$
+"""
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
 from webdav.WriteLockInterface import WriteLockInterface

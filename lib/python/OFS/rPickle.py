@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Restricted unpickler"""
+"""Restricted unpickler
 
-__version__='$Revision: 1.7 $'[11:-2]
-
-
+$Id$
+"""
 import pickle
 
 reg={}

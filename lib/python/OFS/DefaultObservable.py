@@ -10,15 +10,13 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Implement Observable interface (see
+"""Implement Observable interface (see
 http://www.zope.org/Members/michel/Projects/Interfaces/ObserverAndNotification)
-This class is intended to be used as a mixin (note that it doesn't derive
-from any Zope persistence classes, for instance).
+This class is intended to be used as a mixin (note that it doesn't
+derive from any Zope persistence classes, for instance).
 
-$Id$"""
-
-__version__='$Revision: 1.7 $'[11:-2]
-
+$Id$
+"""
 from types import StringType
 
 class DefaultObservable:

@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""DTML Method objects."""
+"""DTML Method objects.
 
-__version__='$Revision: 1.85 $'[11:-2]
-
+$Id$
+"""
 import History
 from Globals import HTML, DTMLFile, MessageDialog
 from SimpleItem import Item_w__name__, pretty_tb

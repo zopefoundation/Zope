@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''Add security system support to Document Templates
+"""Add security system support to Document Templates
 
-$Id$'''
-__version__='$Revision: 1.13 $'[11:-2]
-
+$Id$
+"""
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
 import DocumentTemplate.sequence

@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Batch class, for iterating over a sequence in batches
+"""Batch class, for iterating over a sequence in batches
 
-$Id$'''
-__version__='$Revision: 1.10 $'[11:-2]
-
+$Id$
+"""
 from ExtensionClass import Base
 
 class LazyPrevBatch(Base):

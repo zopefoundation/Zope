@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Image object"""
+"""Image object
 
-__version__='$Revision: 1.152 $'[11:-2]
-
+$Id$
+"""
 import Globals, struct
 from OFS.content_types import guess_content_type
 from Globals import DTMLFile

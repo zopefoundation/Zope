@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Object Manager
+"""Object Manager
 
-$Id$"""
-
-__version__='$Revision: 1.175 $'[11:-2]
-
+$Id$
+"""
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
 from OFS.Traversable import Traversable

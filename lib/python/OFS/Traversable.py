@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''This module implements a mix-in for traversable objects.
+"""This module implements a mix-in for traversable objects.
 
-$Id$'''
-__version__='$Revision: 1.24 $'[11:-2]
-
-
+$Id$
+"""
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized

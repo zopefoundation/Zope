@@ -10,16 +10,15 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-'''This module implements a simple item mix-in for objects that have a
+"""This module implements a simple item mix-in for objects that have a
 very simple (e.g. one-screen) management interface, like documents,
 Aqueduct database adapters, etc.
 
 This module can also be used as a simple template for implementing new
 item types.
 
-$Id$'''
-__version__='$Revision: 1.110 $'[11:-2]
-
+$Id$
+"""
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
 from webdav.Resource import Resource

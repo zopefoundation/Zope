@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Application support
+"""Application support
 
-$Id$'''
-__version__='$Revision: 1.202 $'[11:-2]
-
+$Id$
+"""
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
 from DateTime import DateTime

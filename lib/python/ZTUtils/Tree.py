@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Tree manipulation classes
+"""Tree manipulation classes
 
-$Id$'''
-__version__='$Revision: 1.19 $'[11:-2]
-
+$Id$
+"""
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
 from types import ListType, TupleType

@@ -1,5 +1,4 @@
 #!/usr/bin/env python2.3
-
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
@@ -12,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Script to check consistency of a ZCatalog
 
-""" script to consistency of a ZCatalog """
-
-__version__='$Revision: 1.6 $'[11:-2]
-
+$Id$
+"""
 import Zope
 import os,sys,re,getopt
 from types import IntType

@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""A utility module for content-type handling."""
-__version__='$Revision: 1.20 $'[11:-2]
+"""A utility module for content-type handling.
 
+$Id$
+"""
 import mimetypes
 import os.path
 import re

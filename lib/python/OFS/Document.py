@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Deprecated - use DTMLMethod"""
+"""Deprecated - use DTMLMethod
 
-__version__='$Revision: 1.76 $'[11:-2]
-
+$Id$
+"""
 import DTMLMethod
 
 Document=DTMLMethod.DTMLMethod

@@ -10,11 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Property sheets
 
-"""Property sheets"""
-
-__version__='$Revision: 1.95 $'[11:-2]
-
+$Id$
+"""
 import time,  App.Management, Globals, sys
 from webdav.WriteLockInterface import WriteLockInterface
 from ZPublisher.Converters import type_converters

@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""DTML Document objects."""
+"""DTML Document objects.
 
-__version__='$Revision: 1.51 $'[11:-2]
-
+$Id$
+"""
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
 from OFS.content_types import guess_content_type

@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''Iterator class
+"""Iterator class
 
 Unlike the builtin iterators of Python 2.2+, these classes are
 designed to maintain information about the state of an iteration.
@@ -18,8 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id$'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id$
+"""
 
 class Iterator:
     '''Simple Iterator class'''

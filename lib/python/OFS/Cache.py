@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Cacheable object and cache management base classes.
+"""Cacheable object and cache management base classes.
 
-$Id$"""
-
-__version__='$Revision: 1.12 $'[11:-2]
-
+$Id$
+"""
 import time, sys
 import Globals
 from Globals import DTMLFile

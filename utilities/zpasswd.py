@@ -39,9 +39,6 @@ for all necessary information.  The available options are:
     Filename is required and should be the name of the file to store the
     information in (usually "inituser" or "access").
 """
-
-__version__='$Revision: 1.5 $ '[11:-2]
-
 import sys,  sha, binascii, random, getopt, getpass, os
 
 try:

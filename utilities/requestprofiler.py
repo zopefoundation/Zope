@@ -1,5 +1,4 @@
 #!/usr/bin/env python2.3
-
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
@@ -12,11 +11,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Request log profiler script
 
-""" Request log profiler script """
-
-__version__='$Revision: 1.19 $'[11:-2]
-
+$Id$
+"""
 import sys, time, getopt, math, cPickle
 from types import StringType
 try: import gzip

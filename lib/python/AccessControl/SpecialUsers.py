@@ -18,8 +18,6 @@ initialization.
 
 $Id$
 """
-__version__='$Revision: 1.5 $'[11:-2]
-
 nobody = None
 system = None
 emergency_user = None

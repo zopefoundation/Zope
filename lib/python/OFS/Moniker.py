@@ -17,10 +17,8 @@
    a real object that retains its correct version context
    and aquisition relationships via a simple interface.
 
+$Id$
 """
-__version__='$Revision: 1.16 $'[11:-2]
-
-
 import Globals
 
 class Moniker:

@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''short description
+"""Security management
 
-
-$Id$'''
-__version__='$Revision: 1.10 $'[11:-2]
-
+$Id$
+"""
 def getSecurityManager():
     """Get a security manager, for the current thread.
     """

@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Object Histories"""
+"""Object Histories
 
-__version__='$Revision: 1.18 $'[11:-2]
-
+$Id$
+"""
 import Globals, ExtensionClass, difflib
 from DateTime import DateTime
 from Acquisition import Implicit, aq_base

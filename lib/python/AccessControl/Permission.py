@@ -10,12 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__='''short description
+"""Permissions
 
-
-$Id$'''
-__version__='$Revision: 1.10 $'[11:-2]
-
+$Id$
+"""
 import string, Products, Globals
 
 ListType=type([])

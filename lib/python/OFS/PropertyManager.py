@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Property management
 
-"""Property management"""
-__version__='$Revision: 1.56 $'[11:-2]
-
+$Id$
+"""
 import ExtensionClass, Globals
 import ZDOM
 from PropertySheets import DefaultPropertySheets, vps

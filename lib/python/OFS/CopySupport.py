@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__doc__="""Copy interface"""
-__version__='$Revision: 1.91 $'[11:-2]
+"""Copy interface
 
+$Id$
+"""
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
