@@ -429,26 +429,59 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         roles.sort()
         return roles
 
-## stolen from ZPublisher and modified slightly
-## Note: do not use, this method is depricated.  Use 'getobject'
+
+    # NOTE - DO NOT CHANGE THIS! The semantics required for url
+    # resolution are _different_ for the catalog (and probably
+    # DAV as well), and this needs to remain until we can think
+    # harder about the resolve_url interface!
     
     def resolve_url(self, path, REQUEST):
-        """ 
-        Attempt to resolve a url into an object in the Zope
-        namespace. The url may be absolute or a catalog path
-        style url. If no object is found, None is returned.
-        No exceptions are raised.
-        """
-        script=REQUEST.script
-        if string.find(path, script) != 0:
-            path='%s/%s' % (script, path) 
-        
-        print "resolving", path
-        try:
-            return REQUEST.resolve_url(path)
+        """ """
+        while path and path[0]=='/':  path=path[1:]
+        while path and path[-1]=='/': path=path[:-1]
+        req=REQUEST.clone()
+        rsp=req.response
+        req['PATH_INFO']=path
+        object=None
+        try: object=req.traverse(path)
         except:
-            print "not found"
-            return None
+	    # Do NOT call rsp.exception here!
+	    pass
+        if object is not None:
+            if hasattr(object, 'id'):
+                if callable(object.id):
+                    name=object.id()
+                else: name=object.id
+            elif hasattr(object, '__name__'):
+                name=object.__name__
+            else: name=''
+            if name != os.path.split(path)[-1]:
+                result = req.PARENTS[0]
+                req.close()
+                return result
+            req.close()
+            return object
+        req.close()
+        raise rsp.errmsg, sys.exc_value
+
+
+##     def resolve_url(self, path, REQUEST):
+##         """ 
+##         Attempt to resolve a url into an object in the Zope
+##         namespace. The url may be absolute or a catalog path
+##         style url. If no object is found, None is returned.
+##         No exceptions are raised.
+##         """
+##         script=REQUEST.script
+##         if string.find(path, script) != 0:
+##             path='%s/%s' % (script, path) 
+        
+##         print "resolving", path
+##         try:
+##             return REQUEST.resolve_url(path)
+##         except:
+##             print "not found"
+##             return None
 
 
 Globals.default__class_init__(ZCatalog)
