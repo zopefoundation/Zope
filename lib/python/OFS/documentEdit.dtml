@@ -21,6 +21,22 @@
 	<!--#/if title-->
 	</TD>
       </TR>
+      <tr>
+	<th align="left" valign="top">
+        <em>Size</em>
+        </th>
+	<td align="left" valign="top">
+        <!--#var get_size thousands_commas--> bytes
+	</td>
+      </tr>
+      <tr>
+	<th align="left" valign="top">
+        <em>Last modified</em>
+        </th>
+	<td align="left" valign="top">
+        <!--#var bobobase_modification_time-->
+	</td>
+      </tr>
       <TR>
 	<TD COLSPAN="2" ALIGN="CENTER">
 	<TEXTAREA NAME="data:text" WRAP="Off"

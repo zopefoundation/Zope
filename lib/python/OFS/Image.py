@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.50 $'[11:-2]
+__version__='$Revision: 1.51 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -174,7 +174,7 @@ class File(Persistent,Implicit,PropertyManager,
         if not content_type:
             raise 'BadValue', 'No content type specified.'
         data=(headers is None) and file or file.read()
-        self._update_data(data, content_type)
+        self.post_process(data, content_type)
 
     def id(self):
         return self.__name__
@@ -205,7 +205,7 @@ class File(Persistent,Implicit,PropertyManager,
         """
         raise 'Redirect', URL1
 
-    def _update_data(self, data, content_type=None):
+    def post_process(self, data, content_type=None):
         if content_type is not None:
             self.content_type=content_type
         self.data=Pdata(data)
@@ -233,7 +233,7 @@ class File(Persistent,Implicit,PropertyManager,
         if file.headers.has_key('content-type'):
             content_type=file.headers['content-type']
         else: content_type=None
-        self._update_data(file.read(), content_type)
+        self.post_process(file.read(), content_type)
         if REQUEST: return MessageDialog(
                     title  ='Success!',
                     message='Your changes have been saved',
@@ -249,7 +249,7 @@ class File(Persistent,Implicit,PropertyManager,
     def PUT(self, BODY, REQUEST):
         """Handle HTTP PUT requests"""
         content_type=REQUEST.get('CONTENT_TYPE', None)
-        self._update_data(BODY, content_type)
+        self.post_process(BODY, content_type)
 
     def getSize(self):
         """Get the size of a file or image.
@@ -309,7 +309,7 @@ class Image(File):
                                kind='image')
     manage=manage_main=manage_editForm
 
-    def _update_data(self, data, content_type=None):
+    def post_process(self, data, content_type=None):
         if content_type is not None:
             self.content_type=content_type
         self.data=Pdata(data)
