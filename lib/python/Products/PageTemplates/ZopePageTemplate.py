@@ -87,7 +87,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, MessageDialog, package_home
@@ -110,7 +110,7 @@ try:
 except ImportError:
     SUPPORTS_WEBDAV_LOCKS = 0
 
-class ZopePageTemplate(PageTemplate, Script, Historical, Cacheable,
+class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
                        Traversable):
     "Zope wrapper for Page Template using TAL, TALES, and METAL"
      
@@ -230,6 +230,8 @@ class ZopePageTemplate(PageTemplate, Script, Historical, Cacheable,
 
     def _exec(self, bound_names, args, kw):
         """Call a Page Template"""
+        if not kw.has_key('args'):
+            kw['args'] = args
         bound_names['options'] = kw
 
         try:
