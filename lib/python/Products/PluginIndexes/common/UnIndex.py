@@ -88,30 +88,16 @@ class UnIndex(SimpleItem):
         except:
             self.indexed_attrs = [ self.id ] 
         
-        # It was a mistake to use a __len__ attribute here, but it's not
-        # worth changing at this point, as there is old data with this
-        # attribute name. :( See __len__ method docstring
-        self.__len__ = BTrees.Length.Length() 
-
+        self._length = BTrees.Length.Length()
         self.clear()
 
     def __len__(self):
-        """Return the number of objects indexed."""
-        # The instance __len__ attr isn't effective because
-        # Python cached this method in a slot,
-        __len__ = self.__dict__.get('__len__')
-        if __len__ is not None:
-            return __len__() 
-        
-        return len(self._unindex)
+        return self._length()
 
     def getId(self):
         return self.id
 
     def clear(self):
-        # inplace opportunistic conversion from old-style to new style BTrees
-        try: self.__len__.set(0)
-        except AttributeError: self.__len__=BTrees.Length.Length()
         self._index = OOBTree()
         self._unindex = IOBTree()
 
@@ -158,12 +144,12 @@ class UnIndex(SimpleItem):
                 indexRow.remove(documentId)
                 if not indexRow:
                     del self._index[entry]
-                    try: self.__len__.change(-1)
+                    try: self._length.change(-1)
                     except AttributeError: pass # pre-BTrees-module instance
             except AttributeError:
                 # index row is an int
                 del self._index[entry]
-                try: self.__len__.change(-1)
+                try: self._length.change(-1)
                 except AttributeError: pass # pre-BTrees-module instance
             except:
                 LOG.error('%s: unindex_object could not remove '
@@ -190,7 +176,7 @@ class UnIndex(SimpleItem):
         # an IntSet and stuff it in first.
         if indexRow is _marker:
             self._index[entry] = documentId
-            try:  self.__len__.change(1)
+            try:  self._length.change(1)
             except AttributeError: pass # pre-BTrees-module instance
         else:
             try: indexRow.insert(documentId)
