@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -99,6 +99,13 @@ class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
     """
 
+    def manage_workspace(self, URL1, RESPONSE):
+        '''Implement a "management" interface
+        '''
+        RESPONSE.redirect(URL1+'/manage')
+
+    def tpURL(self): return self.id
+        
     def manage_options(self):
         """Return a manage option data structure for me instance
         """
@@ -197,6 +204,14 @@ class PropertySheet(Persistent, Implicit):
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
         pself._properties=pself._properties+(prop,)
+        if type in ('selection', 'multiple selection'):
+            if not value:
+                raise 'Bad Request', (
+                    'The value given for a new selection property '
+                    'must be a variable name<p>')
+            prop['select_variable']=value
+            if type=='selection': value=None
+            else: value=[]
         setattr(self, id, value)
 
     def _updateProperty(self, id, value, meta=None):
