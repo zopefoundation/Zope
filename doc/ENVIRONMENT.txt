@@ -82,7 +82,7 @@ ZPublisher
 
     ZOPE_TRUSTED_PROXIES
 
-	A colon seperated list of IP addresses which run trusted
+        A colon seperated list of IP addresses which run trusted
         proxy servers. If a connection comes from an address listed
         here, Zope will trust any X-Forwarded-For header to contain
         the users real IP address for the purposes of address-based
@@ -232,13 +232,13 @@ Session related
 
     ZSESSION_ADD_NOTIFY
 
-    	An optional full Zope path name of a callable object to be set as
+        An optional full Zope path name of a callable object to be set as
         the "script to call on object addition" of the session_data
         transient object container created in temp_folder at startup.
 
     ZSESSION_DEL_NOTIFY
 
-    	An optional full Zope path name of a callable object to be set as
+        An optional full Zope path name of a callable object to be set as
         the "script to call on object deletion" of the session_data
         transient object container created in temp_folder at startup.
 
@@ -274,7 +274,7 @@ Structured Text
 
         Set this variable to change the default level for <Hx> elements.
         The default level is 3.
-        
+
 
     ZOPE_DTML_REQUEST_AUTOQUOTE
 
@@ -302,7 +302,7 @@ reStructuredText
 
 DateTime
 
-    DATETIME_FORMAT 
+    DATETIME_FORMAT
 
         Set this variable either to "us" or "international" to force
         the DateTime module to parse date strings either with
