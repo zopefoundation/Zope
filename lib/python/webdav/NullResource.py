@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 import sys, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -107,8 +107,10 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
             typ, enc=OFS.content_types.guess_content_type(name, body)
 
         factory = getattr(parent, 'PUT_factory', self._default_PUT_factory )
-        ob = (factory(name, typ, body) or
-              self._default_PUT_factory(name, typ, body)
+        ob = factory(name, typ, body)
+        ob = (ob is None and
+              self._default_PUT_factory(name, typ, body) or
+              ob
               )
         # We call _verifyObjectPaste with verify_src=0, to see if the
         # user can create this type of object (and we don't need to

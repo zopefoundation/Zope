@@ -105,6 +105,13 @@ Zope Changes
 
     Bugs fixed
 
+     - Display index name on error message when index can't be used as
+       'sort_on'.
+
+     - PUT would fail if the created object had a __len__ = 0 (eg:
+       BTreeFolder2) and fallback to _default_put_factory. Fix by
+       checking if the returned object is None instead.
+
      - Collector #1160: HTTPResponse.expireCookie() potentially didn't
        when an 'expires' keyword argument was passed.
 
