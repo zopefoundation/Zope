@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -207,7 +207,7 @@ class UserFolderHandler:
         """ """
         i=UserFolder()
         i._init()
-        self._setObject('UserFolder', i)
+        self._setObject('acl_users', i)
         self.__allow_groups__=self.UserFolder
         return self.manage_main(self,REQUEST)
 
@@ -237,6 +237,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.5  1997/08/27 13:31:28  brian
+# Fixed a name boo-boo
+#
 # Revision 1.4  1997/08/27 13:16:27  brian
 # Added cvs log!
 #
