@@ -32,6 +32,24 @@ from Products.PluginIndexes.common.randid import randid
 import time, sys, types
 from bisect import bisect
 
+# Collector #771: provide a safe_callable() method with a
+# fallback (when ZCatalog might be used outside Zope)
+
+try:
+    from DocumentTemplate.cDocumentTemplate import safe_callable
+except:
+
+    def safe_callable(ob):
+        # Works with ExtensionClasses and Acquisition.
+        if hasattr(ob, '__class__'):
+            if hasattr(ob, '__call__'):
+                return 1
+            else:
+                return type(ob) in ClassTypes
+        else:
+            return callable(ob)
+
+
 class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
     """ An Object Catalog 
 
