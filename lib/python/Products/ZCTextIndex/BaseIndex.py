@@ -86,7 +86,7 @@ class BaseIndex(Persistent):
         return len(self._wordinfo)
 
     def get_words(self, docid):
-        """Returns the wordids for a given docid"""
+        """Return a list of the wordids for a given docid."""
         return WidCode.decode(self._docwords[docid])
 
     # A subclass may wish to extend or override this.
