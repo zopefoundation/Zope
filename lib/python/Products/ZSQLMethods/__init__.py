@@ -97,12 +97,18 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.9 1998/12/16 15:29:22 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: __init__.py,v 1.10 1998/12/19 15:41:44 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 from ImageFile import ImageFile
-import Shared.DC.ZRDB.Search, SQL
+import Shared.DC.ZRDB.Search, Shared.DC.ZRDB.Aqueduct, SQL
 
 classes=('SQL.SQL',)
+
+__module_aliases__=(
+    ('Products.AqueductSQLMethods.SQL', SQL),
+    ('Aqueduct.Aqueduct', Shared.DC.ZRDB.Aqueduct),
+    ('AqueductDA.DA',     Shared.DC.ZRDB.DA),
+    )
 
 meta_types=(
     {'name':SQL.SQL.meta_type,
