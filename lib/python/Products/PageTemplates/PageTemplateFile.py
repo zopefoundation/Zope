@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -141,4 +141,5 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         raise StorageError, ("Instance of AntiPersistent class %s "
                              "cannot be stored." % self.__class__.__name__)
 
-StorageError = "StorageError"
+class StorageError(Exception):
+    pass
