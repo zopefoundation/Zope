@@ -73,7 +73,7 @@ class TestWarnFilter(unittest.TestCase):
             <warnfilter>
                action error
                message .*test.*
-               category test_warnfilter.TestSchemaWarning
+               category Zope.Startup.tests.test_warnfilter.TestSchemaWarning
                module .*test_warnfilter.*
                lineno 0
             </warnfilter>
