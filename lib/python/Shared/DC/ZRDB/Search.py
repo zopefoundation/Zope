@@ -84,14 +84,14 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.14 2001/01/08 22:47:06 brian Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Search.py,v 1.15 2001/01/12 17:12:43 chrism Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
-from Globals import HTMLFile
+from Globals import DTMLFile
 from Aqueduct import custom_default_report, nicify, Args
 from string import join
 
-addForm=HTMLFile('dtml/searchAdd', globals())
+addForm=DTMLFile('dtml/searchAdd', globals())
 def manage_addZSearch(self, report_id, report_title, report_style,
         input_id, input_title, queries=[],
         REQUEST=None):
@@ -110,7 +110,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
     arguments={}
     keys=[]
     for q in qs:
-        id=q.id
+        url=q.absolute_url() + '/manage_main'
         if input_id:
             for name, arg in q._searchable_arguments().items():
                 if len(qs) > 1: key="%s/%s" % (id,name)
@@ -125,7 +125,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
                 cannot be generated.  Before creating a report
                 from this query, you must try out the query.  To
                 try out the query, <a href="%s">click here</a>.
-                """ % (q.title_and_id(), id))
+                """ % (q.title_and_id(), url))
 
     if input_id:
         arguments=Args(arguments, keys)
