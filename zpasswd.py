@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001,2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -11,9 +12,34 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Zope user bootstrap system"""
+"""Zope user bootstrap system
 
-__version__='$Revision: 1.17 $ '[11:-2]
+Usage: %(PROGRAM)s [options] filename
+
+If this program is called without command-line options, it will prompt
+for all necessary information.  The available options are:
+
+    -u / --username=
+    Set the username to be used for the initial user or the emergency user
+
+    -p / --password=
+    Set the password
+
+    -e / --encoding=
+    Set the encryption/encoding rules.  Defaults to SHA-1. OPTIONAL
+
+    -d / --domains=
+    Set the domain names that the user user can log in from.  Defaults to
+    any. OPTIONAL.
+
+    -h / --help
+    Print this help text and exit.
+
+    Filename is required and should be the name of the file to store the
+    information in (usually "inituser" or "access").
+"""
+
+__version__='$Revision: 1.18 $ '[11:-2]
 
 import sys,  sha, binascii, random, getopt, getpass, os
 
@@ -21,6 +47,10 @@ try:
     from crypt import crypt
 except ImportError:
     crypt = None
+
+PROGRAM = sys.argv[0]
+COMMASPACE = ', '
+
 
 def generate_salt():
     """Generate a salt value for the crypt function."""
@@ -88,113 +118,96 @@ def write_inituser(home, user='', group=''):
         import do; do.ch(ac_path, user, group)
 
 
-def main(argv):
-    short_options = ':u:p:e:d:'
-    long_options = ['username=',
-                    'password=',
-                    'encoding=',
-                    'domains=']
+def usage(code, msg=''):
+    print >> sys.stderr, __doc__ % globals()
+    if msg:
+        print >> sys.stderr, msg
+    sys.exit(code)
 
-    usage = """Usage: %s [options] filename
-If this program is called without command-line options, it will prompt
-for all necessary information.  The available options are:
 
-    -u / --username=
-    Set the username to be used for the initial user or the emergency user
-
-    -p / --password=
-    Set the password
-
-    -e / --encoding=
-    Set the encryption/encoding rules.  Defaults to SHA-1. OPTIONAL
-
-    -d / --domains=
-    Set the domain names that the user user can log in from.  Defaults to
-    any. OPTIONAL.
-
-    Filename is required and should be the name of the file to store the
-    information in (usually "inituser" or "access").
-
-Copyright (C) 1999, 2000 Digital Creations, Inc.
-""" % argv[0]
+def main():
+    shortopts = 'u:p:e:d:h'
+    longopts = ['username=',
+                'password=',
+                'encoding=',
+                'domains=',
+                'help']
 
     try:
-        if len(argv) < 2:
-            raise "CommandLineError"
+        opts, args = getopt.getopt(sys.argv[1:], shortopts, longopts)
+    except getopt.error, msg:
+        usage(1, msg)
 
-        optlist, args = getopt.getopt(sys.argv[1:], short_options, long_options)
+    # Defaults
+    username = password = None
+    domains = ''
+    encoding = 'SHA'
 
-        if len(args) != 1:
-            raise "CommandLineError"
+    for opt, arg in opts:
+        if opt in ('-h', '--help'):
+            usage(0)
+        elif opt in ('-u', '--username'):
+            username = arg
+        elif opt in ('-p', '--password'):
+            password = arg
+        elif opt in ('-e', '--encoding'):
+            encoding = arg
+        elif opt in ('-d', '--domains'):
+            domains = ':' + arg
 
+    # Extra command line arguments?
+    if len(args) == 0:
+        usage(1, 'filename is required')
+    elif len(args) == 1:
         access_file = open(args[0], 'w')
+    else:
+        usage(1, 'Extra command line arguments: ' + COMMASPACE.join(args))
 
-        if len(optlist) > 0:
-            # Set the sane defaults
-            username = ''
-            encoding = 'SHA'
-            domains = ''
+    if opts:
+        # There were some command line args, so verify
+        if username is None or password is None:
+            usage(1, '-u and -p are required')
+    else:
+        # No command line args, so prompt
+        while 1:
+            username = raw_input("Username: ")
+            if username != '':
+                break
 
-            for opt in optlist:
-                if (opt[0] == '-u') or (opt[0] == '--username'):
-                    username = opt[1]
-                elif (opt[0] == '-p') or (opt[0] == '--password'):
-                    password = opt[1]
-                elif (opt[0] == '-e') or (opt[0] == '--encoding'):
-                    encoding = opt[1]
-                elif (opt[0] == '-d') or (opt[0] == '--domains'):
-                    domains = ":" + opt[1]
+        while 1:
+            password = getpass.getpass("Password: ")
+            verify = getpass.getpass("Verify password: ")
+            if verify == password:
+                break
+            else:
+                password = verify = ''
+                print "Password mismatch, please try again..."
 
-            # Verify that we got what we need
-            if not username or not password:
-                raise "CommandLineError"
-
-            access_file.write(username + ':' +
-                              generate_passwd(password, encoding) +
-                              domains)
-
-        else:
-            # Run through the prompts
-            while 1:
-                username = raw_input("Username: ")
-                if username != '':
-                    break
-
-            while 1:
-                password = getpass.getpass("Password: ")
-                verify = getpass.getpass("Verify password: ")
-                if verify == password:
-                    break
-                else:
-                    password = verify = ''
-                    print "Password mismatch, please try again..."
-
-            while 1:
-                print """
+        while 1:
+            print """
 Please choose a format from:
 
 SHA - SHA-1 hashed password (default)
 CRYPT - UNIX-style crypt password
 CLEARTEXT - no protection
 """
-                encoding = raw_input("Encoding: ")
-                if encoding == '':
-                    encoding = 'SHA'
-                    break
-                if encoding.upper() in ['SHA', 'CRYPT', 'CLEARTEXT']:
-                    break
+            encoding = raw_input("Encoding: ")
+            if encoding == '':
+                encoding = 'SHA'
+                break
+            if encoding.upper() in ['SHA', 'CRYPT', 'CLEARTEXT']:
+                break
 
-            domains = raw_input("Domain restrictions: ")
-            if domains: domains = ":" + domains
+        domains = raw_input("Domain restrictions: ")
+        if domains:
+            domains = ":" + domains
 
-            access_file.write(username + ":" +
-                              generate_passwd(password, encoding) +
-                              domains)
-
-    except "CommandLineError":
-        sys.stderr.write(usage)
-        sys.exit(1)
+    # Done with prompts and args
+    access_file.write(username + ":" +
+                      generate_passwd(password, encoding) +
+                      domains)
 
 
 # If called from the command line
-if __name__=='__main__': main(sys.argv)
+if __name__=='__main__':
+    main()
