@@ -173,7 +173,7 @@ class Product(Folder):
         ZClasses.meta_types+
         (
             {
-                'name': 'Principia Factory',
+                'name': Factory.meta_type,
                 'action': 'manage_addPrincipiaFactoryForm'
                 },
             )
