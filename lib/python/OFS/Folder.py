@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.82 1999/07/05 14:44:49 jim Exp $"""
+$Id: Folder.py,v 1.83 1999/09/14 15:35:44 brian Exp $"""
 
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 import Globals, SimpleItem
 from ObjectManager import ObjectManager
@@ -141,8 +141,9 @@ def manage_addFolder(self, id, title='',
 class Folder(ObjectManager, PropertyManager, RoleManager, Collection,
              SimpleItem.Item, FindSupport):
     """
-    The basic container object in Principia.  Folders can hold almost all
-    other Principia objects.
+    Folders are basic container objects that provide a standard
+    interface for object management. Folder objects also implement
+    a management interface and can have arbitrary properties.
     """
     meta_type='Folder'
 
