@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.33 1998/01/28 18:14:40 jim Exp $'''
-__version__='$Revision: 1.33 $'[11:-2]
+$Id: DA.py,v 1.34 1998/02/18 23:46:53 jim Exp $'''
+__version__='$Revision: 1.34 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -226,6 +226,8 @@ class DA(
 	    if md5new(argdata).digest() != digest:
 		raise 'Bad Request', 'Corrupted Data'
 	    argdata=marshal.loads(argdata)
+	    if hasattr(REQUEST,'PARENTS'):
+		self=self.__of__(REQUEST['PARENTS'][0])
 	    query=apply(self.template,(self,),argdata)
 	    if self.cache_time_:
 		result=self._cached_result(DB__, query, 1)
@@ -338,6 +340,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.34  1998/02/18 23:46:53  jim
+# Added reparenting magic for NE interface.
+#
 # Revision 1.33  1998/01/28 18:14:40  jim
 # Added logic to clear cache on edit.
 #
