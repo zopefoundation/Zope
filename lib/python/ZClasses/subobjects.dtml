@@ -1,0 +1,35 @@
+<html><head><title><!--#var title_or_id--></title></head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<!--#var manage_tabs-->
+
+<form action="manage_edit">
+<table>
+<tr>
+  <td valign=top>
+    Select the kinds of things<br>
+    that can be added to objects<br>
+    of this kind:
+  </td>
+  <td>
+    <select name="meta_types:list" size=10 multiple>
+      <!--#with "_(selected=selected_meta_types())"-->
+       <!--#in possible_meta_types mapping-->
+          <option
+            <!--#if "name in selected"-->selected<!--#/if-->
+          ><!--#var name--></option>
+       <!--#/in-->
+      <!--#/with-->
+    </select>
+  </td>
+</tr>
+<tr><td colspan=2>
+  Objects should appear in folder lists?
+    <input type=checkbox name=isFolderish value="Y"
+      <!--#if isFolderish-->CHECKED<!--#/if-->
+    ></td></tr>
+</tr>
+<tr><td colspan=2 align=center>
+    <input type=submit value=" Change "></td></tr>
+</tr>
+</table></form>
+</body></html>

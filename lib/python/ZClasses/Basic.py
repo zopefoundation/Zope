@@ -93,7 +93,7 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
     """Provide management view for item classes
     """
 
-    index_html=Globals.HTMLFile('itemProp', globals())
+    manage=Globals.HTMLFile('itemProp', globals())
     def manage_edit(self, meta_type='', icon='', file='', REQUEST=None):
         """Set basic item properties.
         """
@@ -114,10 +114,10 @@ class ZClassBasicSheet(OFS.PropertySheets.PropertySheet,
             
 
 
-        if icon: self.setClassAttr('icon', icon)
+        self.setClassAttr('icon', icon)
 
         if REQUEST is not None:
-            return self.index_html(
+            return self.manage(
                 self, REQUEST,
                 manage_tabs_message='Basic properties changed')
 
@@ -134,38 +134,97 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
     """
 
     def data(self):
-        klass=self.aq_inner.aq_parent.aq_parent._zclass_
-        return map(lambda d: (d['label'], (d['action'],)),
-                   klass.manage_options)
+        return self.getClassAttr('manage_options',(),1)
 
-    index_html=Globals.HTMLFile('method_select', globals(),
-                                 selectops='')
-    def manage_edit(self, REQUEST, names=[], newname='', newmethods=[]):
-        " "
-        data=[]
-        for i in range(len(names)):
-            name=names[i]
-            methods=REQUEST.get('methods%s' % i, None)
-            if methods: data.append((name, tuple(methods)))
-        if newname and newmethods:
-            data.append((newname, tuple(newmethods)))
+    manage=Globals.HTMLFile('views', globals())
+    def manage_edit(self, actions=[], REQUEST=None):
+        "Change view actions"
+        options=self.data()
+        changed=0
+        if len(actions)!=len(options):
+            raise 'Bad Request', 'wrong number of actions'
 
-	__traceback_info__=data
-        ddata=map(lambda i:
-                  {'label': i[0], 'action': i[1][0]},
-                  data)
-
-        self.setClassAttr('manage_options', ddata)
+        for i in range(len(actions)):
+            if options[i]['action'] != actions[i]:
+                options[i]['action'] = actions[i]
+                changed=1
+                
+        if changed:
+            self.setClassAttr('manage_options', options)
+            message='The changes were saved.'
+        else:
+            message='No changes were required.'
         
-        return self.index_html(self, REQUEST)
+        if REQUEST is not None:
+            return self.manage(
+                self, REQUEST, manage_tabs_message=message)
+
+    def manage_delete(self, selected=[], REQUEST=None):
+        "Delete one or more views"
+        options=self.data()
+        newoptions=filter(
+            lambda d, selected=selected:
+            d['label'] not in selected,
+            options)
+        if len(options) != len(newoptions):
+            self.setClassAttr('manage_options', tuple(newoptions))
+            message='Views deleted'
+        else:
+            message='No views were selected for deletion'
+        
+        if REQUEST is not None:
+            return self.manage(
+                self, REQUEST, manage_tabs_message=message)
+
+    def manage_add(self, label, action, REQUEST=None):
+        "Add a view"
+        options=self.data()
+        for option in options:
+            if option['label']==label:
+                raise 'Bad Request', (
+                    'Please provide a <strong>new</strong> label.'
+                    )
+        self.setClassAttr('manage_options',
+                          tuple(options)+({'label': label, 'action': action},))
+        
+        if REQUEST is not None:
+            return self.manage(
+                self, REQUEST,
+                manage_tabs_message='View %s has been added' % label)
+
+    def manage_first(self, selected=[], REQUEST=None):
+        "Make some views first"
+        options=self.data()
+        if not selected:
+            message="No views were selected to be made first."
+        elif len(selected)==len(options):
+            message="Making all views first has no effect."
+        else:
+            options=self.data()
+            options=tuple(
+                filter(lambda option, selected=selected:
+                       option['label'] in selected,
+                       options)
+                +
+                filter(lambda option, selected=selected:
+                       option['label'] not in selected,
+                       options)
+                )
+            self.setClassAttr('manage_options', options)
+            message="Views were rearranged as requested."
+
+        if REQUEST is not None:
+            return self.manage(
+                self, REQUEST, manage_tabs_message=message)        
+        
 
 class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
                              OFS.PropertySheets.View):
     "Manage class permissions"
         
-    index_html=Globals.HTMLFile('classPermissions', globals())
+    manage=Globals.HTMLFile('classPermissions', globals())
 
-    def manage_edit(self, REQUEST, selected=[], newPermission=''):
+    def manage_delete(self, selected=[], REQUEST=None):
         "Remove some permissions"
         perms=self.classDefinedPermissions()
         changed=0
@@ -175,6 +234,24 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
                 perms.remove(s)
                 changed=1
             else: message.append('Invalid permission: %s' % s)
+                
+        if changed:
+            self.setClassAttr(
+                '__ac_permissions__',
+                tuple(map(lambda p: (p,()), perms))
+                )
+        else:
+            message.append('Permissions are unchanged.')
+
+        if message: message=join(message, '<br>\n')
+
+        return self.manage(self, REQUEST, manage_tabs_message=message)
+
+    def manage_add(self, REQUEST, newPermission=''):
+        "Remove some permissions"
+        perms=self.classDefinedPermissions()
+        changed=0
+        message=[]
 
         newPermission=strip(newPermission)
         if newPermission:
@@ -192,7 +269,6 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
         else:
             message.append('Permissions are unchanged.')
         if message: message=join(message, '<br>\n')
-        return self.index_html(self, REQUEST, manage_tabs_message=message)
-    
+        return self.manage(self, REQUEST, manage_tabs_message=message)
         
     

@@ -105,7 +105,7 @@ class ZCommonSheet(OFS.PropertySheets.PropertySheet, OFS.SimpleItem.Item):
     _properties=()
 
     manage_options=(
-        {'label':'Properties', 'action':'manage_propertiesForm'},
+        {'label':'Properties', 'action':'manage'},
         )
     
     def __init__(self, id, title):
@@ -159,7 +159,7 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
                            action='manage_addCommonSheetForm'),
         )
 
-    index_html=Globals.HTMLFile('OFS/main')
+    manage=Globals.HTMLFile('OFS/main')
     manage_addCommonSheetForm=Globals.HTMLFile('addCommonSheet', globals())
 
     def manage_addCommonSheet(self, id, title, REQUEST=None):

@@ -85,7 +85,7 @@
 """Zope Classes
 """
 import Globals, string, OFS.SimpleItem, OFS.PropertySheets
-import Method, Basic, Property
+import Method, Basic, Property, ObjectManager, AccessControl.Role
 
 from ZPublisher.mapply import mapply
 from ExtensionClass import Base
@@ -93,7 +93,8 @@ from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
 
 builtins=(
-    #('OFS.SimpleItem Item', 'Minimal Item', ZItem.ZItem),
+    ('ObjectManager ObjectManager', 'Object Manager',
+     ObjectManager.ZObjectManager),
     )
 builtin_classes={}
 builtin_names={}
@@ -107,11 +108,11 @@ class PersistentClass(Base):
 manage_addZClassForm=Globals.HTMLFile(
     'addZClass', globals(), default_class_='OFS.SimpleItem Item')
 
-def manage_addZClass(self, id, title='', base=[], REQUEST=None):
+def manage_addZClass(self, id, title='', baseclasses=[], REQUEST=None):
     """Add a Z Class
     """
     bases=[]
-    for b in base:
+    for b in baseclasses:
         if builtin_classes.has_key(b): bases.append(builtin_classes[b])
         else:                          bases.append(getattr(self, b))
 
@@ -120,7 +121,7 @@ def manage_addZClass(self, id, title='', base=[], REQUEST=None):
 
 def manage_subclassableClassNames(self):
     r={}
-    #r.update(builtin_names)
+    r.update(builtin_names)
 
     while 1:
         if not hasattr(self, 'objectItems'): break
@@ -183,8 +184,10 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         for z in bases:
             args.append(z._zclass_)
             zbases.append(z)
-            zsheets_classes.append(z.propertysheets.__class__)
-            csheets_classes.append(z._zclass_.propertysheets.__class__)
+            try: zsheets_classes.append(z.propertysheets.__class__)
+            except AttributeError: pass
+            try: csheets_classes.append(z._zclass_.propertysheets.__class__)
+            except AttributeError: pass
 
         args.append(OFS.SimpleItem.SimpleItem)
         zsheets_classes.append(ZClassSheets)
@@ -194,8 +197,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         if len(zsheets_classes) > 2:
             zsheets_class=type(PersistentClass)(
                 id+'_ZPropertySheetsClass',
-                tuple(zsheets_classes),
-                PersistentClassDict())
+                tuple(zsheets_classes)+(Globals.Persistent,),
+                PersistentClassDict(id+'_ZPropertySheetsClass'))
         else: zsheets_class=zsheets_classes[1]
         self.propertysheets=sheets=zsheets_class()
 
@@ -239,7 +242,7 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         """Create Z instance
         """
         i=mapply(self._zclass_, (), REQUEST)
-        if not hasattr(i, 'id'): i.id=id
+        if not hasattr(i, 'id') or not i.id: i.id=id
 
         folder=durl=None
         if hasattr(self, 'Destination'):
@@ -259,10 +262,6 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
     __call__=index_html
 
-    def zclass_builtins(self):
-        r=find_builtins(self._zclass_).keys()
-        r.sort()
-
     def zclass_candidate_view_actions(self):
         r={}
 
@@ -278,17 +277,20 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
         # OK, now add our property sheets.
         for id in self.propertysheets.common.objectIds():
-            r['propertysheets/%s/manage_propertiesForm' % id]=1
+            r['propertysheets/%s/manage' % id]=1
 
         r=r.keys()
         r.sort()
         return r
 
-    def getClassAttr(self, name, default=_marker):
-        if default is _marker: return self._zclass_.__dict__[name]
-        try: return self._zclass_.__dict__[name]
-        except KeyError: return default
-        
+    def getClassAttr(self, name, default=_marker, inherit=0):
+        if default is _marker:
+            if inherit: return getattr(self._zclass_, name)
+            else: return self._zclass_.__dict__[name]
+        try:
+            if inherit: return getattr(self._zclass_, name)
+            else: return self._zclass_.__dict__[name]
+        except: return default
 
     def setClassAttr(self, name, value):
         c=self._zclass_
@@ -308,7 +310,17 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         c=self._zclass_
         r=[]
         a=r.append
-        for name, who_cares in c.__ac_permissions__: a(name)
+        for p in c.__ac_permissions__: a(p[0])
+        r.sort()
+        return r
+
+    def classInheritedPermissions(self):
+        c=self._zclass_
+        d={}
+        for p in c.__ac_permissions__: d[p[0]]=None
+        r=[]
+        a=r.append
+        for p in AccessControl.Role.gather_permissions(c, [], d): a(p[0])
         r.sort()
         return r
 
@@ -331,11 +343,12 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
 class ZStandardSheets:
 
     manage_options=(
-        {'label': 'Basic', 'action' :'propertysheets/basic'},
-        {'label': 'Methods', 'action' :'propertysheets/methods'},
-        {'label': 'Views', 'action' :'propertysheets/views'},
-        {'label': 'Property Sheets', 'action' :'propertysheets/common'},
-        {'label': 'Permissions', 'action' :'propertysheets/permissions'},
+        {'label': 'Basic', 'action' :'propertysheets/basic/manage'},
+        {'label': 'Methods', 'action' :'propertysheets/methods/manage'},
+        {'label': 'Views', 'action' :'propertysheets/views/manage'},
+        {'label': 'Property Sheets', 'action' :'propertysheets/common/manage'},
+        {'label': 'Permissions',
+         'action' :'propertysheets/permissions/manage'},
         {'label': 'Security', 'action' :'manage_access'},        
         )
 
@@ -346,15 +359,3 @@ def findActions(klass, found):
                 found[d['action']]=1
             findActions(b, found)
         except: pass
-
-def find_builtins(klass, found=None):
-    if found is None: found={}
-    for b in klass.__bases__:
-        try:
-            for pname, actions in b.__ac_permissions__:
-                for action in actions:
-                    found['action']=1
-            find_builtins(b, found)
-        except: pass
-
-    return found

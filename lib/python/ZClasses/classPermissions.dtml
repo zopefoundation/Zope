@@ -4,27 +4,34 @@
 <!--#var manage_tabs-->
 <!--#/if manage_tabs-->
 
-<form action=manage_edit>
+<form action=.>
   <table>
-    <tr><td></td><th>Permission</th></tr>
-    <!--#in classDefinedPermissions-->
+
+    <tr><td></td><th align=left>Permissions:</th></tr>
+    <!--#in classDefinedPermissions sort-->
       <tr>
         <td><input type=checkbox name=selected:list 
                    value="<!--#var sequence-item-->"></td>
         <td><!--#var sequence-item--></td>
       </tr>
     <!--#/in-->
-    <tr>
-      <td></td>
-      <td>New permission: <input name=newPermission></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td>
-        <input type=submit value=" Change ">
-      </td>
-    </tr>
+    <tr><td></td><td>
+      <input type=submit value=" Delete " name="manage_delete:method">
+    </td></tr>
   </table>
 </form>
+
+<form action=manage_add>
+  Add a new permission:<br>
+  <input name=newPermission>
+  <input type=submit value=" Add ">
+</form>
+
+<table>
+  <tr><th align=left>Inherited Permissions:</th></tr>
+  <!--#in classInheritedPermissions sort-->
+    <tr><td><em><!--#var sequence-item--></em></td></tr>
+  <!--#/in-->
+</table>
 
 </body></html>

@@ -107,7 +107,7 @@ class ZClassMethodsSheet(OFS.PropertySheets.PropertySheet,
     def meta_type(self):
         return self.aq_inner.aq_parent.aq_parent.meta_type
 
-    def index_html(self, REQUEST):
+    def manage(self, REQUEST):
         " "
         return self.manage_main(self, REQUEST)
 

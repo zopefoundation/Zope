@@ -21,7 +21,7 @@
     )"-->
 <!--#with "_(unselected=_.reorder(all, without=selected))"-->
 
-<FORM ACTION="." METHOD="POST"><TABLE CELLSPACING="2">
+<FORM ACTION="." METHOD="GET"><TABLE CELLSPACING="2">
 
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
