@@ -1,8 +1,9 @@
 *shared*
-intSet intSet.c -I../ExtensionClass -I../cPersistence
+intSet intSet.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
 WordSequence WordSequence.c
 
-BTree BTree.c -I../ExtensionClass -I../cPersistence
-IIBTree IIBTree.c -I../ExtensionClass -I../cPersistence
-IOBTree IOBTree.c -I../ExtensionClass -I../cPersistence
-OIBTree OIBTree.c -I../ExtensionClass -I../cPersistence
+BTree BTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+IIBTree IIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+IOBTree IOBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+OIBTree OIBTree.c -I/projects/_/ExtensionClass -I/projects/_/cPersistence
+ 
