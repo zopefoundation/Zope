@@ -39,6 +39,7 @@ from Products.PluginIndexes.common.PluggableIndex \
 from Products.PluginIndexes.TextIndex import Splitter
 from IZCatalog import IZCatalog
 from ProgressHandler import ZLogHandler
+from zLOG import LOG, INFO
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -902,52 +903,39 @@ class ZCatalog(Folder, Persistent, Implicit):
             self.pgthreshold = 0
         return self.pgthreshold
 
-    def manage_convertBTrees(self, threshold=200):
-        """Convert the catalog's data structures to use BTrees package"""
-        assert type(threshold) is type(0)
-        tt=time.time()
-        ct=time.clock()
-        self._catalog._convertBTrees(threshold)
-        tt=time.time()-tt
-        ct=time.clock()-ct
-        return 'Finished conversion in %s seconds (%s cpu)' % (tt, ct)
+    def manage_convertIndexes(self, REQUEST=None, RESPONSE=None, URL1=None):
+        """Recreate indexes derived from UnIndex because the implementation of
+           __len__ changed in Zope 2.8. Pre-Zope 2.7 installation used to implement
+           __len__ as persistent attribute of the index instance which is totally
+           incompatible with the new extension class implementation based on new-style
+           classes.
+        """
 
+        LOG.info('Start migration of indexes for %s' % self.absolute_url(1))
 
-    def manage_convertIndex(self, ids, REQUEST=None, RESPONSE=None, URL1=None):
-        """convert old-style indexes to new-style indexes"""
+        for idx in self.Indexes.objectValues():
+            bases = [str(name) for name in idx.__class__.__bases__]
+            found = False
+            for base in bases:
+                if 'UnIndex' in base:
+                    found = True
+                    break
 
-        from Products.PluginIndexes.KeywordIndex import KeywordIndex
-        from Products.PluginIndexes.FieldIndex import FieldIndex
-        from Products.PluginIndexes.TextIndex import TextIndex
+            if found:
+                idx_type = idx.meta_type
+                idx_id = idx.getId()
+                LOG.info('processing index %s' % idx_id)
+                indexed_attrs = getattr(idx, 'indexed_attrs', None)
+                self.delIndex(idx.getId())
+                self.addIndex(idx_id, idx_type)
+                new_idx = self.Indexes[idx_id]
+                if indexed_attrs:
+                    setattr(new_idx, 'indexed_attrs', indexed_attrs)
+                self.manage_reindexIndex(idx_id, REQUEST)
 
-        converted = []
-        for id in ids:
-            idx = self.Indexes[id]
-
-            iface = getattr(idx,'__implements__',None)
-            if iface is None:
-
-                mt = idx.meta_type
-
-                converted.append(id)
-                self.delIndex(id)
-
-                if mt in ('Field Index','Keyword Index'):
-                    self.addIndex(id,mt.replace(' ',''))
-                elif mt == 'Text Index':
-                    # TODO: Lexicon handling to be added
-                    self.addIndex(id,'TextIndex')
-
-        if converted:
-            RESPONSE.redirect(
-                URL1 +
-                '/manage_main?manage_tabs_message=Indexes%20converted')
-        else:
-            RESPONSE.redirect(
-                URL1 +
-                '/manage_main?'
-                'manage_tabs_message='
-                'No%20indexes%20found%20to%20be%20converted')
+        RESPONSE.redirect(
+            URL1 +
+            '/manage_main?manage_tabs_message=Indexes%20converted%20and%20reindexed')
 
 
     #

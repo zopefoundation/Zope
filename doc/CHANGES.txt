@@ -381,6 +381,11 @@ Zope Changes
        from such an old version to Zope 2.8, you need to clear and reindex
        your ZCatalog).
 
+     - Collector #1595: same as in Collector #1132 for indexes derived from
+       UnIndex. Exisiting ZCatalog instances must be converted manually
+       by calling the "manage_convertIndexes" method through-the-web for 
+       every single ZCatalog instance.
+
      - Collector #1457: ZCTextIndex's QueryError and ParseError
        are now available for import from untrusted code.
 
