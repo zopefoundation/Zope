@@ -39,6 +39,21 @@ kind>.
 <tr>
   <td align="left" valign="top">
   <div class="form-label">
+  Preview
+  </div>
+  </td>
+  <td align="left" valign="top">
+    <dtml-if "height < 250">
+    <dtml-var tag>
+    <dtml-else>
+    <dtml-var "tag(scale=250.0 / height)">
+    </dtml-if>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+  <div class="form-label">
   Last Modified
   </div>
   </td>

@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.131 $'[11:-2]
+__version__='$Revision: 1.132 $'[11:-2]
 
 import Globals, string, struct
 from OFS.content_types import guess_content_type
@@ -443,7 +443,8 @@ class File(Persistent, Implicit, PropertyManager,
         self.ZCacheable_invalidate()
         self.http__refreshEtag()
 
-    def manage_edit(self, title, content_type, precondition='', REQUEST=None):
+    def manage_edit(self, title, content_type, precondition='',
+                    filedata=None, REQUEST=None):
         """
         Changes the title and content type attributes of the File or Image.
         """
@@ -454,7 +455,10 @@ class File(Persistent, Implicit, PropertyManager,
         self.content_type=str(content_type)
         if precondition: self.precondition=str(precondition)
         elif self.precondition: del self.precondition
-        self.ZCacheable_invalidate()
+        if filedata is not None:
+            self.update_data(filedata, content_type, len(filedata))
+        else:
+            self.ZCacheable_invalidate()
         if REQUEST:
             message="Saved changes."
             return self.manage_main(self,REQUEST,manage_tabs_message=message)
