@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.169 2001/11/21 22:49:31 chrism Exp $'''
-__version__='$Revision: 1.169 $'[11:-2]
+$Id: Application.py,v 1.170 2001/11/26 15:52:07 evan Exp $'''
+__version__='$Revision: 1.170 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -529,13 +529,11 @@ def initialize(app):
     if not hasattr(app, 'Examples') and not \
        hasattr(app, '_Zope25_examples_have_been_added'):
         examples_path = os.path.join(Globals.data_dir, 'Examples.zexp')
-        if os.path.isfile(os.path.join(examples_path)):
-            examples=app._p_jar.importFile(examples_path)
-            app._setObject('Examples', examples)
+        if os.path.isfile(examples_path):
+            app._importObjectFromFile(examples_path)
             app._Zope25_examples_have_been_added=1
             get_transaction().note('Added Examples folder')
             get_transaction().commit()
-            del examples
         else:
             LOG('Zope Default Object Creation', INFO,
                 '%s examples import file could not be found.' % examples_path)
