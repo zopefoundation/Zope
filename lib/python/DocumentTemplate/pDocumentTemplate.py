@@ -58,8 +58,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.3 1997/10/27 17:42:07 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.4 1997/10/28 21:52:06 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import regex, string
 
@@ -148,12 +148,13 @@ class TemplateDict:
     def __getitem__(self,key,call=1):
 
         v=self.dicts[key]
-	try: isDocTemp=v.isDocTemp
-	except: isDocTemp=None
-	if isDocTemp: v=v(None,self)
-	elif call:
-	    try: v=v()
-	    except (AttributeError,TypeError): pass
+	if call:
+	    try: isDocTemp=v.isDocTemp
+	    except: isDocTemp=None
+	    if isDocTemp: v=v(None,self)
+	    else:
+		try: v=v()
+		except (AttributeError,TypeError): pass
         return v
 
     get=__getitem__
@@ -171,6 +172,9 @@ def render_blocks(self, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.4  1997/10/28 21:52:06  jim
+# Changed to not call document templates if not calling other functions.
+#
 # Revision 1.3  1997/10/27 17:42:07  jim
 # Removed old validation machinery.
 #
