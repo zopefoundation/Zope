@@ -7,23 +7,21 @@ import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 from ImageFile import ImageFile
 
-#$Id: MailHost.py,v 1.21 1997/12/19 21:46:37 jeffrey Exp $ 
-__version__ = "$Revision: 1.21 $"[11:-2]
+#$Id: MailHost.py,v 1.22 1997/12/31 21:15:19 brian Exp $ 
+__version__ = "$Revision: 1.22 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 addForm=HTMLFile('addMailHost_form', globals(), localhost=gethostname())
 def add(self, id, title='', smtp_host=None, 
-        localhost='localhost', smtp_port=25, acl_type='A',acl_roles=[], 
-        REQUEST=None):
+        localhost='localhost', smtp_port=25, REQUEST=None):
     ' add a MailHost into the system '
     i=MailHost()            #create new mail host
     i.id=id                 #give it id
     i.title=title           #title
     i._init(localHost=localhost, smtpHost=smtp_host, smtpPort=smtp_port)
-    i._setRoles(acl_type, acl_roles)
     self._setObject(id,i)   #register it
-    return self.manage_main(self,REQUEST)   #and whatever this does.. :)
+    if REQUEST: return self.manage_main(self,REQUEST)
 
 
 class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
@@ -38,12 +36,19 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
 		     'action':'manage_main', 'target':'manage_main',
 	            },
 		    {'icon':'', 'label':'Security',
-		     'action':'manage_rolesForm', 'target':'manage_main',
-		    },
-		    {'icon':'', 'label':'Undo',
-		     'action':'manage_UndoForm', 'target':'manage_main',
+		     'action':'manage_access', 'target':'manage_main',
 		    },
 		   )
+
+    __ac_permissions__=(
+    ('View management screens', ['manage','manage_tabs']),
+    ('Change permissions', ['manage_access']),
+    ('Change configuration', ['manage_makeChanges']),
+    ('Use mailhost services',['']),
+    )
+   
+    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
+		 )
 
 
     def __init__(self):
@@ -56,15 +61,13 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
         self.smtpPort=smtpPort
         self.sentMessages=0
 
-    def manage_makeChanges(self, title, localHost, smtpHost, smtpPort,
-                          acl_type='A',acl_roles=[], REQUEST=None):
+    def manage_makeChanges(self,title,localHost,smtpHost,smtpPort,REQUEST=None):
         'make the changes'
         self.title=title
         self.localHost=localHost
         self.smtpHost=smtpHost
         self.smtpPort=smtpPort
-        self._setRoles(acl_type, acl_roles)
-        return MessageDialog(
+	if REQUEST: return MessageDialog(
             title  ='Changed %s' % self.__name__,
             message='%s has been updated' % self.id,
             action =REQUEST['URL2']+'/manage_main',
@@ -226,6 +229,9 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.22  1997/12/31 21:15:19  brian
+#Security update
+#
 #Revision 1.21  1997/12/19 21:46:37  jeffrey
 #fixees
 #

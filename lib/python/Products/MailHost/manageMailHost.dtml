@@ -35,7 +35,6 @@
     <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<!--#var smtpPort-->">
   </TD>
 </TR>
-<!--#var smallRolesWidget-->
 <TR VALIGN="TOP">
 <TD></TD>
 <TD><BR><INPUT TYPE="SUBMIT" VALUE="Change"></TD>
