@@ -91,7 +91,8 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.45 $'[11:-2]
+__version__ = '$Revision: 1.46 $'[11:-2]
+
 
 import string, regex, regsub, ts_regex
 import operator
@@ -577,7 +578,6 @@ class UnTextIndex(Persistent, Implicit):
 
     def get_operands(self, q, i):
         """Evaluate and return the left and right operands for an operator"""
-        
         try:
             left  = q[i - 1]
             right = q[i + 1]
@@ -611,7 +611,7 @@ class UnTextIndex(Persistent, Implicit):
         # to evaluate, and we just get the results and return them.
         if (len(query) == 1):
             if (type(query[0]) is ListType):
-                return evaluate(query[0], self)
+                return self.evaluate(query[0])
 
             return self[query[0]]       # __getitem__
 

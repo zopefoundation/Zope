@@ -277,8 +277,9 @@ class GlobbingLexicon(Lexicon):
             else:
                 words.append(w)
 
-        return words
-
+        # if words is empty, return something that will make textindex's
+        # __getitem__ return an empty result list
+        return words or ['']
 
     def Splitter(self, astring, words=None):
         """ wrap the splitter """
