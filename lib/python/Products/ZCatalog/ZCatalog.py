@@ -213,15 +213,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """ index all Zope objects that 'urls' point to """
         if urls:
             for url in urls:
-                try:
-                    # if an error happens here, the catalog will be in
-                    # an unstable state.  If this happens, ignore the
-                    # object.
-                    obj = self.resolve_url(url, REQUEST)
-                except:
-                    continue
-                
-                self.catalog_object(obj, url)
+                obj = self.resolve_url(url, REQUEST)
+                if obj is not None: 
+                    self.catalog_object(obj, url)
 
         message = "Objects Cataloged"
         return self.manage_main(self, REQUEST,
@@ -232,11 +226,9 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
         if urls:
             for url in urls:
-                try:
-                    obj = self.resolve_url(url, REQUEST)
-                except:
-                    continue
-                self.uncatalog_object(url)
+                obj = self.resolve_url(url, REQUEST)
+                if obj is not None:
+                    self.uncatalog_object(url)
 
         message = "Object UnCataloged"
         return self.manage_main(self, REQUEST,
@@ -245,17 +237,15 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     def manage_catalogReindex(self, REQUEST):
         """ clear the catalog, then re-index everything """
 
-	import pdb
-        pdb.set_trace()
+	#import pdb
+        #pdb.set_trace()
         paths = tuple(self._catalog.paths.values())
 	self.manage_catalogClear(REQUEST)
 
 	for p in paths:
-	    try:
-		obj = self.resolve_url(p, REQUEST)
-		self.catalog_object(obj, p)		
-	    except:
-		pass
+	    obj = self.resolve_url(p, REQUEST)
+	    if obj is not None:
+                self.catalog_object(obj, p)		
 		
         message = "Catalog Reindexed"
         return self.manage_catalogView(self, REQUEST,
@@ -361,11 +351,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         """
         if REQUEST is None:
             REQUEST=self.REQUEST
-	try:
-	    obj = self.resolve_url(self.getpath(rid), REQUEST)
-	except:
-	    return None
-        return obj
+	return self.resolve_url(self.getpath(rid), REQUEST)
 
     def schema(self):
         return self._catalog.schema.keys()
@@ -447,46 +433,22 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 ## Note: do not use, this method is depricated.  Use 'getobject'
     
     def resolve_url(self, path, REQUEST):
-        """ The use of this function is depricated.  Use 'getobject' """
-        # Attempt to resolve a url into an object in the Zope
-        # namespace. The url must be a fully-qualified url. The
-        # method will return the requested object if it is found
-        # or raise the same HTTP error that would be raised in
-        # the case of a real web request. If the passed in url
-        # does not appear to describe an object in the system
-        # namespace (e.g. the host, port or script name dont
-        # match that of the current request), a ValueError will
-        # be raised.
-
-        while path and path[0]=='/':  path=path[1:]
-        while path and path[-1]=='/': path=path[:-1]
-        req=REQUEST.clone()
-        rsp=req.response
-        req['PATH_INFO']=path
-        object=None
-        try: object=req.traverse(path)
-        except: rsp.exception(0)
-        if object is not None:
-            # waaa - traversal may return a "default object"
-            # like an index_html document, though you really
-            # wanted to get a Folder back :(
-
-            if hasattr(object, 'id'):
-                if callable(object.id):
-                    name=object.id()
-                else: name=object.id
-            elif hasattr(object, '__name__'):
-                name=object.__name__
-            else: name=''
-                
-            if name != os.path.split(path)[-1]:
-                result = req.PARENTS[0]
-                req.close()
-                return result
-            req.close()
-            return object
-        req.close()
-        raise rsp.errmsg, sys.exc_value
+        """ 
+        Attempt to resolve a url into an object in the Zope
+        namespace. The url may be absolute or a catalog path
+        style url. If no object is found, None is returned.
+        No exceptions are raised.
+        """
+        script=REQUEST.script
+        if string.find(path, script) != 0:
+            path='%s/%s' % (script, path) 
+        
+        print "resolving", path
+        try:
+            return REQUEST.resolve_url(path)
+        except:
+            print "not found"
+            return None
 
 
 Globals.default__class_init__(ZCatalog)
