@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -8,8 +8,6 @@ from urllib import quote, unquote
 from App.Dialogs import MessageDialog
 
 rPickle.register('OFS.Moniker', 'Moniker', Moniker.Moniker)
-
-
 
 class CopyContainer:
     # Interface for containerish objects which allow
@@ -29,7 +27,6 @@ class CopyContainer:
 	return v
 
     def pasteFromClipboard(self,clip_id='',clip_data='',REQUEST=None):
-        """ """
 	if not clip_data: return eNoData
 
 	try:    moniker=rPickle.loads(unquote(clip_data))
@@ -46,17 +43,19 @@ class CopyContainer:
 
 	obj=obj._getCopy(self)
 
-	# Acquire roles from new environment
-	try:    del obj.__roles__
-	except: pass
+	return self.manage_paste(clip_id, obj, REQUEST)
 
+    def manage_paste(self,clip_id,obj,REQUEST=None):
+        """ """
+	obj=obj._getCopy(self)
         obj._setId(clip_id)
 	self._setObject(clip_id, obj)
 	obj._postCopy(self)
-	return self.manage_main(self, REQUEST, update_menu=1)
+	if REQUEST is not None:
+	    return self.manage_main(self, REQUEST, update_menu=1)
+	return ''
 
-
-
+Globals.default__class_init__(CopyContainer)
 
 
 class CopySource:
