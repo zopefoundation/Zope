@@ -106,8 +106,10 @@ class ExternalMethod(OFS.SimpleItem.Item, Persistent, Explicit,
 	    if (not args and 
 		self.func_code.co_argcount-len(self.func_defaults or ()) == 1
 		and self.func_code.co_varnames[0]=='self'):
-	        args=self.aq_parent,
-		return apply(f,args,kw)
+	
+	        try: parent=self.aq_acquire('REQUEST')['PARENTS'][0]
+		except: parent=self.aq_parent
+		return apply(f,(parent,),kw)
 	    raise TypeError, v
 		
 
