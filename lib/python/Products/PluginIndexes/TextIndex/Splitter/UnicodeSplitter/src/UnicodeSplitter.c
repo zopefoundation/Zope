@@ -313,7 +313,7 @@ PyUnicodeObject *prepareString(PyUnicodeObject *o)
     return  u;
 }
 
-static char *splitter_args[]={"encoding",NULL};
+static char *splitter_args[]={"doc","synstop","encoding",NULL};
 
 
 static PyObject *
@@ -384,7 +384,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.6 2001/10/17 19:11:09 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.7 2001/10/18 15:56:20 andreasjung Exp $\n"
     ;
 
 
@@ -392,7 +392,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.6 $";
+    char *rev="$Revision: 1.7 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
