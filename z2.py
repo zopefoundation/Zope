@@ -221,9 +221,13 @@ if swhome != 'INSERT_SOFTWARE_HOME':
     sys.path.insert(5, '%s' % swhome)
 
 
-import os, sys, getopt
+import os, sys, getopt, codecs
+# workaround to allow unicode encoding conversions in DTML
+dummy = codecs.lookup('iso-8859-1')
 
 sys.setcheckinterval(120)
+
+
 
 
 program=sys.argv[0]
