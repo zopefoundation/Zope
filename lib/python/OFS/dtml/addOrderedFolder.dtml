@@ -6,7 +6,7 @@
            help_topic='Folder_Add.stx'
 	   )">
 <p class="form-help">
-A ordered Folder contains other objects. Use Folders to organize your
+An ordered Folder contains other objects. Use Folders to organize your
 web objects in to logical groups. The <em>create public interface</em> 
 option creates an index document inside the Folder to give the
 Folder a default HTML representation. The <em>create user folder</em>
