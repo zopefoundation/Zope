@@ -15,13 +15,14 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import re, sys, ZTUtils
 from weakref import ref
 from MultiMapping import MultiMapping
 from DocumentTemplate.DT_Util import ustr
 from GlobalTranslationService import getGlobalTranslationService
+from zExceptions import Unauthorized
 
 StringType = type('')
 
@@ -270,12 +271,18 @@ class TALESTracebackSupplement:
 
     def getInfo(self, as_html=0):
         import pprint
+        from cgi import escape
         data = self.context.contexts.copy()
-        s = pprint.pformat(data)
+        try:
+            s = pprint.pformat(data)
+        except Unauthorized, e:
+            s = '   - %s: %s' % (getattr(e, '__class__', type(e)), e)
+            if as_html:
+                s = escape(s)
+            return s
         if not as_html:
             return '   - Names:\n      %s' % s.replace('\n', '\n      ')
         else:
-            from cgi import escape
             return '<b>Names:</b><pre>%s</pre>' % (escape(s))
 
 
