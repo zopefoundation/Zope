@@ -90,26 +90,13 @@ This provides generic script support
 
 __version__='$Revision$'[11:-2]
 
-import os
-from Globals import package_home, DTMLFile
+from Globals import DTMLFile
 from OFS.SimpleItem import SimpleItem
 from string import join
 from urllib import quote
 from BindingsUI import BindingsUI
 from Bindings import defaultBindings
 from DocumentTemplate.DT_Util import TemplateDict
-
-class FuncCode:
-
-    def __init__(self, varnames, argcount):
-        self.co_varnames=varnames
-        self.co_argcount=argcount
-
-    def __cmp__(self, other):
-        if other is None: return 1
-        try: return cmp((self.co_argcount, self.co_varnames),
-                        (other.co_argcount, other.co_varnames))
-        except: return 1
 
 class Script(SimpleItem, BindingsUI):
     """Web-callable script mixin
@@ -135,11 +122,5 @@ class Script(SimpleItem, BindingsUI):
             vv.append("%s=%s" % (quote(argvar.name), quote(argvar.value)))
         raise "Redirect", "%s?%s" % (REQUEST['URL1'], join(vv, '&'))
 
-    def _setFuncSignature(self, defaults, varnames, argcount):
-        # Generate a change only if we have to.
-        if self.func_defaults != defaults:
-            self.func_defaults = defaults
-        code = FuncCode(varnames, argcount)
-        if self.func_code != code:
-            self.func_code = code
+    from Signature import _setFuncSignature
 
