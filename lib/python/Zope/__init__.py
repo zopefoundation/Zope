@@ -108,7 +108,7 @@ def zpublisher_exception_hook(
              lower(t) in ('unauthorized', 'redirect'))
             or t is SystemExit):
             raise
-        if t is ConflictError:
+        if issubclass(t, ConflictError):
             # now what
             # First, we need to close the current connection. We'll
             # do this by releasing the hold on it. There should be
