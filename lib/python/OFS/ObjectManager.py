@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.14 1997/11/05 16:39:10 brian Exp $"""
+$Id: ObjectManager.py,v 1.15 1997/11/06 15:39:30 jim Exp $"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -242,10 +242,15 @@ class ObjectManager(Acquirer,Management,Persistent):
 	"""Add a subordinate object"""
 	for t in self.meta_types:
 	    if t['name']==type:
-		return getattr(self,t['action'])(self,REQUEST)
+		return getattr(self,t['action'])(
+		    self,REQUEST,
+		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked=''
+		    )
 	for t in self.dynamic_meta_types:
 	    if t['name']==type:
-		return getattr(self,t['action'])(self,REQUEST)
+		return getattr(self,t['action'])(
+		    self,REQUEST,
+		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked='')
 	raise 'BadRequest', 'Unknown object type: %s' % type
 
     def manage_delObjects(self,ids,REQUEST):
@@ -394,6 +399,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.15  1997/11/06 15:39:30  jim
+# Modified to pass access radio box settings into add templates.
+#
 # Revision 1.14  1997/11/05 16:39:10  brian
 # Style fix
 #
