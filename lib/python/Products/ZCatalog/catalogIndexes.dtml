@@ -5,6 +5,15 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 
+<p> This list defines what indexes the Catalog will contain.  When
+objects get cataloged, the values of any attributes they may have
+which match an index in this list will get indexed.  Indexes come in
+two flavors, TextIndexes and FieldIndexes.  TextIndexes break text up
+into individual words, and are often refered to as 'full text
+indexes'.  Field indexes treat the value of an objects attribute
+atomically, and can be used, for example, to track only a certain
+subset of object values, such as 'meta_type'.</p>
+
 <form action="<!--#var URL1-->">
 
 <ul>

@@ -1,7 +1,7 @@
 ##############################################################################
 # 
-# Zope Public License (ZPL) Version 0.9.7
-# ---------------------------------------
+# Zope Public License (ZPL) Version 1.0
+# -------------------------------------
 # 
 # Copyright (c) Digital Creations.  All rights reserved.
 # 
@@ -82,10 +82,10 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
+
 """Site Index product"""
 
-import ZCatalog
-
+import ZCatalog, Catalog
 
 def initialize(context):
     context.registerClass(
@@ -95,6 +95,13 @@ def initialize(context):
                       ZCatalog.manage_addZCatalog),
         icon='www/ZCatalog.gif',
         )
+    context.registerBaseClass(ZCatalog.ZCatalog)
+
+
+
+
+
+
 
 
 

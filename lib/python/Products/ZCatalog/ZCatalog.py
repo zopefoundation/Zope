@@ -89,7 +89,7 @@ A Catalog object provides an inteface to index objects.
 
 from Globals import HTMLFile, MessageDialog
 import Globals
-from OFS.SimpleItem import SimpleItem
+from OFS.Folder import Folder
 from OFS.FindSupport import FindSupport
 from SearchIndex import Query
 import string, regex, urlparse, urllib, os, sys
@@ -111,17 +111,20 @@ def manage_addZCatalog(self,id,title,REQUEST=None):
 		return self.manage_main(self,REQUEST)
 
 
-class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
+class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     """ZCatalog object"""
 
     meta_type = "ZCatalog"
 
     manage_options=(
-        {'label': 'Contents', 'action': 'manage_catalogView',
+	    
+        {'label': 'Contents', 'action': 'manage_main',
+         'target': 'manage_main'},
+        {'label': 'Cataloged Objects', 'action': 'manage_catalogView',
          'target': 'manage_main'},
         {'label': 'Find Items to ZCatalog', 'action': 'manage_catalogFind', 
          'target':'manage_main'},
-        {'label': 'Schema', 'action': 'manage_catalogSchema', 
+        {'label': 'MetaData Table', 'action': 'manage_catalogSchema', 
          'target':'manage_main'},
         {'label': 'Indexes', 'action': 'manage_catalogIndexes', 
          'target':'manage_main'},
@@ -152,8 +155,7 @@ class ZCatalog(SimpleItem, FindSupport, Persistent, Implicit):
     manage_catalogIndexes = HTMLFile('catalogIndexes', globals())
     manage_catalogStatus = HTMLFile('catalogStatus', globals())
 
-    manage_main = HTMLFile('catalogView',globals())
-    
+
     def __init__(self,id,title=None):
         self.id=id
         self.title=title
