@@ -618,7 +618,12 @@ class FTPServer(ftp_server):
         requestCloseOnExec(self.socket)
 
     def handle_accept (self):
-        conn, addr = self.accept()
+        try:
+            conn, addr = self.accept()
+        except TypeError:
+            # unpack non-sequence as result of accept
+            # returning None (in case of EWOULDBLOCK)
+            return
         self.total_sessions.increment()
         self.log_info('Incoming connection from %s:%d' % (addr[0], addr[1]))
         self.ftp_channel_class (self, conn, addr, self.module)  
