@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.60 2002/04/15 20:58:28 Brian Exp $'''
-__version__='$Revision: 1.60 $'[11:-2]
+$Id: HTTPResponse.py,v 1.61 2002/06/12 19:06:38 Brian Exp $'''
+__version__='$Revision: 1.61 $'[11:-2]
 
 import types, os, sys, re
 from string import translate, maketrans
@@ -381,14 +381,14 @@ class HTTPResponse(BaseResponse):
 
     def appendHeader(self, name, value, delimiter=","):
         '''\
-        Append a value to a cookie
+        Append a value to a header.
         
         Sets an HTTP return header "name" with value "value",
         appending it following a comma if there was a previous value
         set for the header. '''
         headers=self.headers
         if headers.has_key(name):
-            h=self.header[name]
+            h=headers[name]
             h="%s%s\n\t%s" % (h,delimiter,value)
         else: h=value
         self.setHeader(name,h)
