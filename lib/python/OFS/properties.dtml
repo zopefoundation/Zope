@@ -78,9 +78,11 @@ values and click "Save Changes".
   <!--#elif "type=='multiple selection'"-->
     <!--#if select_variable-->
     <select name="<!--#var id-->:list" multiple
-      size="<!--#var "_.max(7, len(_[select_variable]))"-->">
+      size="<!--#var "_.min(7, _.len(_[select_variable]))"-->">
       <!--#in "_[select_variable]"-->
-         <option><!--#var sequence-item--></option>
+         <option<!--#if 
+         "_['sequence-item'] in getProperty(id)"--> SELECTED<!--#endif
+         -->><!--#var sequence-item--></option>
       <!--#/in-->
     </select>
     <!--#/if-->
