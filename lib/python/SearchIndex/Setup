@@ -1,6 +1,3 @@
 *shared*
-Splitter Splitter.c -I/projects/_/python
-Query Query.c -I/projects/_/python
- 
-# install Index.py
-# install TextIndex.py
+Splitter Splitter.c
+Query Query.c
