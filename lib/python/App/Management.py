@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.20 1999/05/10 16:29:45 jim Exp $"""
+$Id: Management.py,v 1.21 1999/05/10 18:00:22 brian Exp $"""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -110,6 +110,8 @@ class Tabs(ExtensionClass.Base):
         return ''
 
     manage_options  =()
+
+    filtered_manage_options__roles__=None
 
     def filtered_manage_options(
         self, REQUEST=None,
