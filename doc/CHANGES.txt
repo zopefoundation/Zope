@@ -10,6 +10,8 @@ Zope Changes
 
       New Features
 
+        - Added Import/Export interfaces to Folders.
+
       Bugs Fixed
 
         - PUT and file uploads would fail if the content-type could
@@ -19,6 +21,9 @@ Zope Changes
           no content-type can be determined from headers or filename
           extensions.
 
+	- Fixed a permission bug left from a change to the Find support.
+
+        - Fixed misc typos in docstrings and docs.
 
     Zope  1.10.0 pr1
 
