@@ -1,7 +1,8 @@
-#! /usr/bin/env python1.5
+#! /usr/bin/env python
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -17,7 +18,6 @@ Driver program to run METAL and TAL regression tests.
 
 import sys
 import os
-import string
 from cStringIO import StringIO
 import glob
 import traceback
@@ -57,7 +57,7 @@ def main():
     if args and args[0] == "-Q":
         unittesting = 1
         del args[0]
-    while args and args[0][:1] == '-':
+    while args and args[0].startswith('-'):
         opts.append(args[0])
         del args[0]
     if not args:
@@ -76,12 +76,12 @@ def main():
     errors = 0
     for arg in args:
         locopts = []
-        if string.find(arg, "metal") >= 0 and "-m" not in opts:
+        if arg.find("metal") >= 0 and "-m" not in opts:
             locopts.append("-m")
         if not unittesting:
             print arg,
             sys.stdout.flush()
-        if tests.utils.skipxml and arg[-4:] == ".xml":
+        if tests.utils.skipxml and arg.endswith(".xml"):
             print "SKIPPED (XML parser not available)"
             continue
         save = sys.stdout, sys.argv
@@ -109,7 +109,7 @@ def main():
             continue
         head, tail = os.path.split(arg)
         outfile = os.path.join(
-            string.replace(head, "input", "output"),
+            head.replace("input", "output"),
             tail)
         try:
             f = open(outfile)

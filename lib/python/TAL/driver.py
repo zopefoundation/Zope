@@ -1,7 +1,8 @@
-#! /usr/bin/env python1.5
+#!/usr/bin/env python
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -17,7 +18,6 @@ Driver program to test METAL and TAL implementation.
 
 import os
 import sys
-import string
 
 import getopt
 
@@ -93,7 +93,7 @@ def compilefile(file, mode=None):
     assert mode in ("html", "xml", None)
     if mode is None:
         ext = os.path.splitext(file)[1]
-        if string.lower(ext) in (".html", ".htm"):
+        if ext.lower() in (".html", ".htm"):
             mode = "html"
         else:
             mode = "xml"

@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -247,7 +247,7 @@ class PythonScript(Script, Historical, Cacheable):
              '_getattr_': guarded_getattr,
              '_getitem_': guarded_getitem,
              '_write_': full_write_guard,
-             '_print_': RestrictedPython.PrintCollector
+             '_print_': RestrictedPython.PrintCollector,
              }
         l = {}
         exec code in g, l
@@ -286,15 +286,24 @@ class PythonScript(Script, Historical, Cacheable):
                 # Got a cached value.
                 return result
 
-        __traceback_info__ = bound_names, args, kw, self.func_defaults
+        #__traceback_info__ = bound_names, args, kw, self.func_defaults
 
         f = self._v_f
         if f is None:
+            __traceback_supplement__ = (
+                PythonScriptTracebackSupplement, self)
             raise RuntimeError, '%s %s has errors.' % (self.meta_type, self.id)
+
         if bound_names is not None:
-            # Updating func_globals directly *should* be thread-safe.
+            # XXX This causes the whole acquisition chain
+            # to be held by self._v_f.  I think we really should
+            # use new.function() instead, similar to
+            # CMFCore.FSPythonScript.  new.function() takes
+            # about 8 microseconds on a 1 GHz Athlon. - Shane
             f.func_globals.update(bound_names)
-    
+        f.func_globals['__traceback_supplement__'] = (
+            PythonScriptTracebackSupplement, self, -1)
+
         # Execute the function in a new security context.
         security=getSecurityManager()
         security.addContext(self)
@@ -466,6 +475,15 @@ class PythonScript(Script, Historical, Cacheable):
         if RESPONSE is not None:
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
+
+
+class PythonScriptTracebackSupplement:
+    """Implementation of ITracebackSupplement"""
+    def __init__(self, script, line=0):
+        self.object = script
+        # If line is set to -1, it means to use tb_lineno.
+        self.line = line
+
 
 _first_indent = re.compile('(?m)^ *(?! |$)')
 _nonempty_line = re.compile('(?m)^(.*\S.*)$')

@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -100,6 +100,10 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         self._cook_check()
         return PageTemplate.pt_macros(self)
 
+    def pt_source_file(self):
+        """Returns a file name to be compiled into the TAL code."""
+        return self.__name__  # Don't reveal filesystem paths
+
     def _cook_check(self):
         if self._v_last_read and not DevelopmentMode:
             return
@@ -132,6 +136,6 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
 
     __roles__ = ComputedAttribute(_get__roles__, 1)
 
-    def __setstate__(self, state):
+    def __getstate__(self):
         raise StorageError, ("Instance of AntiPersistent class %s "
                              "cannot be stored." % self.__class__.__name__)

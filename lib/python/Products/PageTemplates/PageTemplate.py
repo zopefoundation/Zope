@@ -15,9 +15,10 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
-import os, sys, traceback, pprint
+import sys
+
 from TAL.TALParser import TALParser
 from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALGenerator import TALGenerator
@@ -26,12 +27,8 @@ from Expressions import getEngine
 from string import join, strip, rstrip, split, replace, lower, find
 from cStringIO import StringIO
 from ExtensionClass import Base
+from ComputedAttribute import ComputedAttribute
 
-Z_DEBUG_MODE = os.environ.get('Z_DEBUG_MODE') == '1'
-
-class MacroCollection(Base):
-    def __of__(self, parent):
-        return parent.pt_macros()
 
 class PageTemplate(Base):
     "Page Templates using TAL, TALES, and METAL"
@@ -40,11 +37,16 @@ class PageTemplate(Base):
     expand = 0
     _v_errors = ()
     _v_warnings = ()
+    _v_program = None
+    _v_macros = None
+    _v_cooked = 0
     id = '(unknown)'
     _text = ''
     _error_start = '<!-- Page Template Diagnostics'
 
-    macros = MacroCollection()
+    def macros(self):
+        return self.pt_macros()
+    macros = ComputedAttribute(macros, 1)
 
     def pt_edit(self, text, content_type):
         if content_type:
@@ -72,13 +74,16 @@ class PageTemplate(Base):
     
     def pt_render(self, source=0, extra_context={}):
         """Render this Page Template"""
+        if not self._v_cooked:
+            self._cook()
+
+        __traceback_supplement__ = (PageTemplateTracebackSupplement, self)
+
         if self._v_errors:
             raise PTRuntimeError, 'Page Template %s has errors.' % self.id
         output = StringIO()
         c = self.pt_getContext()
         c.update(extra_context)
-        if Z_DEBUG_MODE:
-            __traceback_info__ = pprint.pformat(c)
 
         TALInterpreter(self._v_program, self._v_macros,
                        getEngine().getContext(c),
@@ -92,6 +97,8 @@ class PageTemplate(Base):
         return self.pt_render(extra_context={'options': kwargs})
 
     def pt_errors(self):
+        if not self._v_cooked:
+            self._cook()
         err = self._v_errors
         if err:
             return err
@@ -102,12 +109,20 @@ class PageTemplate(Base):
             return ('Macro expansion failed', '%s: %s' % sys.exc_info()[:2])
         
     def pt_warnings(self):
+        if not self._v_cooked:
+            self._cook()
         return self._v_warnings
 
     def pt_macros(self):
+        if not self._v_cooked:
+            self._cook()
         if self._v_errors:
+            __traceback_supplement__ = (PageTemplateTracebackSupplement, self)
             raise PTRuntimeError, 'Page Template %s has errors.' % self.id
         return self._v_macros
+
+    def pt_source_file(self):
+        return None  # Unknown.
 
     def write(self, text):
         assert type(text) is type('')
@@ -120,6 +135,8 @@ class PageTemplate(Base):
         self._cook()
 
     def read(self):
+        if not self._v_cooked:
+            self._cook()
         if not self._v_errors:
             if not self.expand:
                 return self._text
@@ -137,14 +154,14 @@ class PageTemplate(Base):
     def _cook(self):
         """Compile the TAL and METAL statments.
 
-        A Page Template must always be cooked, and cooking must not
-        fail due to user input.
+        Cooking must not fail due to compilation errors in templates.
         """
+        source_file = self.pt_source_file()
         if self.html():
-            gen = TALGenerator(getEngine(), xml=0)
+            gen = TALGenerator(getEngine(), xml=0, source_file=source_file)
             parser = HTMLTALParser(gen)
         else:
-            gen = TALGenerator(getEngine())
+            gen = TALGenerator(getEngine(), source_file=source_file)
             parser = TALParser(gen)
 
         self._v_errors = ()
@@ -155,6 +172,7 @@ class PageTemplate(Base):
             self._v_errors = ["Compilation failed",
                               "%s: %s" % sys.exc_info()[:2]]
         self._v_warnings = parser.getWarnings()
+        self._v_cooked = 1
 
     def html(self):
         if not hasattr(getattr(self, 'aq_base', self), 'is_html'):
@@ -174,3 +192,16 @@ ModuleImporter = _ModuleImporter()
 class PTRuntimeError(RuntimeError):
     '''The Page Template has template errors that prevent it from rendering.'''
     pass
+
+
+class PageTemplateTracebackSupplement:
+    #__implements__ = ITracebackSupplement
+
+    def __init__(self, pt):
+        self.object = pt
+        w = pt.pt_warnings()
+        e = pt.pt_errors()
+        if e:
+            w = list(w) + list(e)
+        self.warnings = w
+

@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +15,6 @@
 Parse XML and compile to TALInterpreter intermediate code.
 """
 
-import string
 from XMLParser import XMLParser
 from TALDefs import *
 from TALGenerator import TALGenerator
@@ -99,7 +99,7 @@ class TALParser(XMLParser):
 
     def fixname(self, name):
         if ' ' in name:
-            uri, name = string.split(name, ' ')
+            uri, name = name.split(' ')
             prefix = self.nsDict[uri]
             prefixed = name
             if prefix:

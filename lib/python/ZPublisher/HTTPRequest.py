@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import re, sys, os,  urllib, time, whrandom, cgi, codecs
 from BaseRequest import BaseRequest
@@ -934,7 +934,8 @@ class HTTPRequest(BaseRequest):
                 result=result + row % (escape(k), escape(repr(v)))
         return result+"</table>"
 
-    __repr__=__str__
+    def __repr__(self):
+        return "<%s, URL=%s>" % (self.__class__.__name__, self['URL'])
 
     def text(self):
         result="FORM\n\n"

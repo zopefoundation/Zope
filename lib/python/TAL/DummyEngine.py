@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -16,11 +17,10 @@ Dummy TALES engine so that I can test out the TAL implementation.
 
 import re
 import sys
-from string import rfind, strip
 
 import driver
 
-from TALDefs import NAME_RE, TALError, TALESError
+from TALDefs import NAME_RE, TALESError, ErrorInfo
 
 Default = []
 
@@ -32,6 +32,7 @@ class CompilerError(Exception):
 class DummyEngine:
 
     position = None
+    source_file = None
 
     def __init__(self, macros=None):
         if macros is None:
@@ -44,6 +45,9 @@ class DummyEngine:
     def getCompilerError(self):
         return CompilerError
 
+    def setSourceFile(self, source_file):
+        self.source_file = source_file
+
     def setPosition(self, position):
         self.position = position
 
@@ -51,7 +55,8 @@ class DummyEngine:
         return "$%s$" % expr
 
     def uncompile(self, expression):
-        assert expression[:1] == "$" == expression[-1:], expression
+        assert (expression.startswith("$") and expression.endswith("$"),
+            expression)
         return expression[1:-1]
 
     def beginScope(self):
@@ -71,7 +76,8 @@ class DummyEngine:
         self.globals[name] = value
 
     def evaluate(self, expression):
-        assert expression[:1] == "$" == expression[-1:], expression
+        assert (expression.startswith("$") and expression.endswith("$"),
+            expression)
         expression = expression[1:-1]
         m = name_match(expression)
         if m:
@@ -82,7 +88,7 @@ class DummyEngine:
         if type in ("string", "str"):
             return expr
         if type in ("path", "var", "global", "local"):
-            expr = strip(expr)
+            expr = expr.strip()
             if self.locals.has_key(expr):
                 return self.locals[expr]
             elif self.globals.has_key(expr):
@@ -97,8 +103,15 @@ class DummyEngine:
             try:
                 return eval(expr, self.globals, self.locals)
             except:
-                raise TALESError("evaluation error in %s" % `expr`,
-                                 info=sys.exc_info())
+                raise TALESError("evaluation error in %s" % `expr`)
+        if type == "position":
+            # Insert the current source file name, line number,
+            # and column offset.
+            if self.position:
+                lineno, offset = self.position
+            else:
+                lineno, offset = None, None
+            return '%s (%s,%s)' % (self.source_file, lineno, offset)
         raise TALESError("unrecognized expression: " + `expression`)
 
     def evaluateValue(self, expr):
@@ -122,7 +135,8 @@ class DummyEngine:
         return self.evaluate(expr)
 
     def evaluateMacro(self, macroName):
-        assert macroName[:1] == "$" == macroName[-1:], macroName
+        assert (macroName.startswith("$") and macroName.endswith("$"),
+            macroName)
         macroName = macroName[1:-1]
         file, localName = self.findMacroFile(macroName)
         if not file:
@@ -147,7 +161,7 @@ class DummyEngine:
     def findMacroFile(self, macroName):
         if not macroName:
             raise TALESError("empty macro name")
-        i = rfind(macroName, '/')
+        i = macroName.rfind('/')
         if i < 0:
             # No slash -- must be a locally defined macro
             return None, macroName
@@ -161,8 +175,8 @@ class DummyEngine:
         seq = self.evaluateSequence(expr)
         return Iterator(name, seq, self)
 
-    def getTALESError(self):
-        return TALESError
+    def createErrorInfo(self, err, position):
+        return ErrorInfo(err, position)
 
     def getDefault(self):
         return Default

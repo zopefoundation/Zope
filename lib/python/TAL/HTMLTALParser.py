@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -15,7 +16,6 @@ Parse HTML and compile to TALInterpreter intermediate code.
 """
 
 import sys
-import string
 
 from TALGenerator import TALGenerator
 from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS, METALError, TALError
@@ -74,7 +74,7 @@ class NestingError(HTMLParseError):
                        % (tagstack[0], endtag))
             else:
                 msg = ('Open tags <%s> do not match close tag </%s>'
-                       % (string.join(tagstack, '>, <'), endtag))
+                       % ('>, <'.join(tagstack), endtag))
         else:
             msg = 'No tags are open to match </%s>' % endtag
         HTMLParseError.__init__(self, msg, position)
@@ -235,7 +235,7 @@ class HTMLTALParser(HTMLParser):
     def scan_xmlns(self, attrs):
         nsnew = {}
         for key, value in attrs:
-            if key[:6] == "xmlns:":
+            if key.startswith("xmlns:"):
                 nsnew[key[6:]] = value
         if nsnew:
             self.nsstack.append(self.nsdict)
@@ -249,7 +249,7 @@ class HTMLTALParser(HTMLParser):
 
     def fixname(self, name):
         if ':' in name:
-            prefix, suffix = string.split(name, ':', 1)
+            prefix, suffix = name.split(':', 1)
             if prefix == 'xmlns':
                 nsuri = self.nsdict.get(suffix)
                 if nsuri in (ZOPE_TAL_NS, ZOPE_METAL_NS):

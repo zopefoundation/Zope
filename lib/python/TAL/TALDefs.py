@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -66,27 +67,22 @@ class METALError(TALError):
     pass
 
 class TALESError(TALError):
+    pass
 
-    # This exception can carry around another exception + traceback
 
-    def takeTraceback(self):
-        t = self.info[2]
-        self.info = self.info[:2] + (None,)
-        return t
+class ErrorInfo:
 
-    def __init__(self, msg, position=(None, None), info=(None, None, None)):
-        t, v, tb = info
-        if t:
-            if issubclass(t, Exception) and t.__module__ == "exceptions":
-                err = t.__name__
-            else:
-                err = str(t)
-            v = v is not None and str(v)
-            if v:
-                err = "%s: %s" % (err, v)
-            msg = "%s: %s" % (msg, err)
-        TALError.__init__(self, msg, position)
-        self.info = info
+    def __init__(self, err, position=(None, None)):
+        if isinstance(err, Exception):
+            self.type = err.__class__
+            self.value = err
+        else:
+            self.type = err
+            self.value = None
+        self.lineno = position[0]
+        self.offset = position[1]
+
+
 
 import re
 _attr_re = re.compile(r"\s*([^\s]+)\s+([^\s].*)\Z", re.S)
@@ -117,11 +113,10 @@ def parseSubstitution(arg, position=(None, None)):
 def splitParts(arg):
     # Break in pieces at undoubled semicolons and
     # change double semicolons to singles:
-    import string
-    arg = string.replace(arg, ";;", "\0")
-    parts = string.split(arg, ';')
-    parts = map(lambda s, repl=string.replace: repl(s, "\0", ";"), parts)
-    if len(parts) > 1 and not string.strip(parts[-1]):
+    arg = arg.replace(";;", "\0")
+    parts = arg.split(';')
+    parts = [p.replace("\0", ";") for p in parts]
+    if len(parts) > 1 and not parts[-1].strip():
         del parts[-1] # It ended in a semicolon
     return parts
 
@@ -139,7 +134,7 @@ def getProgramMode(program):
     return None
 
 def getProgramVersion(program):
-    if (isinstance(program, ListType) and len(program) >= 2 and
+    if (len(program) >= 2 and
         isinstance(program[0], TupleType) and len(program[0]) == 2):
         opcode, version = program[0]
         if opcode == "version":

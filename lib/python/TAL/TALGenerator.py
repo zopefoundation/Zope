@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -14,7 +15,6 @@
 Code generator for TALInterpreter intermediate code.
 """
 
-import string
 import re
 import cgi
 
@@ -24,8 +24,9 @@ class TALGenerator:
 
     inMacroUse = 0
     inMacroDef = 0
+    source_file = None
     
-    def __init__(self, expressionCompiler=None, xml=1):
+    def __init__(self, expressionCompiler=None, xml=1, source_file=None):
         if not expressionCompiler:
             from DummyEngine import DummyEngine
             expressionCompiler = DummyEngine()
@@ -40,6 +41,9 @@ class TALGenerator:
         self.xml = xml
         self.emit("version", TAL_VERSION)
         self.emit("mode", xml and "xml" or "html")
+        if source_file is not None:
+            self.source_file = source_file
+            self.emit("setSourceFile", source_file)
 
     def getCode(self):
         assert not self.stack
@@ -78,9 +82,9 @@ class TALGenerator:
                 # instructions to be joined together.
                 output.append(self.optimizeArgsList(item))
                 continue
-            text = string.join(collect, "")
+            text = "".join(collect)
             if text:
-                i = string.rfind(text, "\n")
+                i = text.rfind("\n")
                 if i >= 0:
                     i = len(text) - (i + 1)
                     output.append(("rawtextColumn", (text, i)))
@@ -272,7 +276,7 @@ class TALGenerator:
 
     def emitDefineMacro(self, macroName):
         program = self.popProgram()
-        macroName = string.strip(macroName)
+        macroName = macroName.strip()
         if self.macros.has_key(macroName):
             raise METALError("duplicate macro definition: %s" % `macroName`,
                              self.position)
@@ -291,7 +295,7 @@ class TALGenerator:
 
     def emitDefineSlot(self, slotName):
         program = self.popProgram()
-        slotName = string.strip(slotName)
+        slotName = slotName.strip()
         if not re.match('%s$' % NAME_RE, slotName):
             raise METALError("invalid slot name: %s" % `slotName`,
                              self.position)
@@ -299,7 +303,7 @@ class TALGenerator:
 
     def emitFillSlot(self, slotName):
         program = self.popProgram()
-        slotName = string.strip(slotName)
+        slotName = slotName.strip()
         if self.slots.has_key(slotName):
             raise METALError("duplicate fill-slot name: %s" % `slotName`,
                              self.position)
@@ -330,7 +334,7 @@ class TALGenerator:
                 self.program[i] = ("rawtext", text[:m.start()])
                 collect.append(m.group())
         collect.reverse()
-        return string.join(collect, "")
+        return "".join(collect)
 
     def unEmitNewlineWhitespace(self):
         collect = []
@@ -349,7 +353,7 @@ class TALGenerator:
                 break
             text, rest = m.group(1, 2)
             collect.reverse()
-            rest = rest + string.join(collect, "")
+            rest = rest + "".join(collect)
             del self.program[i:]
             if text:
                 self.emit("rawtext", text)
@@ -427,6 +431,8 @@ class TALGenerator:
         if self.inMacroUse:
             if fillSlot:
                 self.pushProgram()
+                if self.source_file is not None:
+                    self.emit("setSourceFile", self.source_file)
                 todo["fillSlot"] = fillSlot
                 self.inMacroUse = 0
         else:
@@ -438,6 +444,8 @@ class TALGenerator:
                 self.pushProgram()
                 self.emit("version", TAL_VERSION)
                 self.emit("mode", self.xml and "xml" or "html")
+                if self.source_file is not None:
+                    self.emit("setSourceFile", self.source_file)
                 todo["defineMacro"] = defineMacro
                 self.inMacroDef = self.inMacroDef + 1
             if useMacro:

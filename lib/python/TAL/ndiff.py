@@ -97,7 +97,6 @@ __version__ = 1, 5, 0
 # is sent to stdout.  Or you can call main(args), passing what would
 # have been in sys.argv[1:] had the cmd-line form been used.
 
-import string
 TRACE = 0
 
 # define what "junk" means

@@ -12,16 +12,23 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.55 2002/03/27 10:14:04 htrd Exp $'''
-__version__='$Revision: 1.55 $'[11:-2]
+$Id: HTTPResponse.py,v 1.56 2002/04/03 20:43:59 shane Exp $'''
+__version__='$Revision: 1.56 $'[11:-2]
 
 import types, os, sys, re
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType, UnicodeType
 from BaseResponse import BaseResponse
 from zExceptions import Unauthorized
+from zExceptions.ExceptionFormatter import format_exception
 
 nl2sp=maketrans('\n',' ')
+
+
+# Enable APPEND_TRACEBACKS to make Zope append tracebacks like it used to,
+# but a better solution is to make standard_error_message display error_tb.
+APPEND_TRACEBACKS = 0
+
 
 status_reasons={
 100: 'Continue',
@@ -92,16 +99,6 @@ start_of_header_search=re.compile('(<head[^>]*>)', re.IGNORECASE).search
 
 accumulate_header={'set-cookie': 1}.has_key
 
-tb_style = os.environ.get('HTTP_TRACEBACK_STYLE', '').lower()
-if tb_style == 'none':
-    tb_delims = None, None
-elif tb_style == 'js':
-    tb_delims = ('''<pre onclick="this.firstChild.data=this.lastChild.data">
-        &sect;<!--''',  '--></pre>')
-elif tb_style == 'plain':
-    tb_delims = '<pre>', '</pre>'
-else:
-    tb_delims = '<!--', '-->'
 
 class HTTPResponse(BaseResponse):
     """\
@@ -384,8 +381,15 @@ class HTTPResponse(BaseResponse):
         else: h=value
         self.setHeader(name,h)
 
-    def isHTML(self,str):
-        return str.strip().lower()[:6] == '<html>' or str.find('</') > 0
+    def isHTML(self, s):
+        s = s.lstrip()
+        # Note that the string can be big, so s.lower().startswith() is more
+        # expensive than s[:n].lower().
+        if (s[:6].lower() == '<html>' or s[:14].lower() == '<!doctype html'):
+            return 1
+        if s.find('</') > 0:
+            return 1
+        return 0
 
     def quoteHTML(self,text,
                   subs={'&':'&amp;', "<":'&lt;', ">":'&gt;', '\"':'&quot;'}
@@ -397,42 +401,9 @@ class HTTPResponse(BaseResponse):
         return text
          
 
-    def format_exception(self, etype, value, tb, limit=None):
-        import traceback
-        result=['Traceback (innermost last):']
-        if limit is None:
-                if hasattr(sys, 'tracebacklimit'):
-                        limit = sys.tracebacklimit
-        n = 0
-        while tb is not None and (limit is None or n < limit):
-                f = tb.tb_frame
-                lineno = tb.tb_lineno
-                co = f.f_code
-                filename = co.co_filename
-                name = co.co_name
-                locals=f.f_locals
-                result.append('  File %s, line %d, in %s'
-                              % (filename,lineno,name))
-                try: result.append('    (Object: %s)' %
-                                   locals[co.co_varnames[0]].__name__)
-                except: pass
-                try: result.append('    (Info: %s)' %
-                                   str(locals['__traceback_info__']))
-                except: pass
-                tb = tb.tb_next
-                n = n + 1
-        result.append(' '.join(traceback.format_exception_only(etype, value)))
-        return result
-
-    def _traceback(self, t, v, tb):
-        tb = self.format_exception(t, v, tb, 200)
-        tb = '\n'.join(tb)
-        tb = self.quoteHTML(tb)
-        if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
-        else:               _tbopen, _tbclose = tb_delims
-        if _tbopen is None:
-            return ''
-        return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
+    def _traceback(self, t, v, tb, as_html=1):
+        tb = format_exception(t, v, tb, as_html=as_html)
+        return '\n'.join(tb)
 
     def redirect(self, location, status=302, lock=0):
         """Cause a redirection without raising an error"""
@@ -621,20 +592,22 @@ class HTTPResponse(BaseResponse):
             if match is None:
                 body = self.setBody(
                     (str(t),
-                    'Sorry, a site error occurred.<p>'
+                     'Sorry, a site error occurred.<p>'
                      + self._traceback(t, v, tb)),
-                     is_error=1)
-            elif b.strip().lower()[:6]=='<html>' or \
-                  b.strip().lower()[:14]=='<!doctype html':
+                    is_error=1)
+            elif self.isHTML(b):
                 # error is an HTML document, not just a snippet of html
-                body = self.setBody(b + self._traceback(t, '(see above)', tb),
-                                  is_error=1)
+                if APPEND_TRACEBACKS:
+                    body = self.setBody(b + self._traceback(
+                        t, '(see above)', tb), is_error=1)
+                else:
+                    body = self.setBody(b, is_error=1)
             else:
-                body = self.setBody((str(t),
-                                   b + self._traceback(t,'(see above)', tb)),
-                                  is_error=1)
-            del tb
-            return body
+                body = self.setBody(
+                    (str(t), b + self._traceback(t,'(see above)', tb, 0)),
+                    is_error=1)
+        del tb
+        return body
 
     _wrote=None
 

@@ -1,6 +1,7 @@
 ##############################################################################
 #
-# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
 # 
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
@@ -85,7 +86,6 @@ class TALInterpreter:
         self.program = program
         self.macros = macros
         self.engine = engine
-        self.TALESError = engine.getTALESError()
         self.Default = engine.getDefault()
         self.stream = stream or sys.stdout
         self._stream_write = self.stream.write
@@ -112,6 +112,7 @@ class TALInterpreter:
         self.col = 0
         self.level = 0
         self.scopeLevel = 0
+        self.sourceFile = None
 
     def saveState(self):
         return (self.position, self.col, self.stream,
@@ -200,6 +201,11 @@ class TALInterpreter:
             self.endsep = "/>"
         self.endlen = len(self.endsep)
     bytecode_handlers["mode"] = do_mode
+
+    def do_setSourceFile(self, source_file):
+        self.sourceFile = source_file
+        self.engine.setSourceFile(source_file)
+    bytecode_handlers["setSourceFile"] = do_setSourceFile
 
     def do_setPosition(self, position):
         self.position = position
@@ -515,7 +521,12 @@ class TALInterpreter:
                 raise METALError("macro %s has incompatible mode %s" %
                                  (`macroName`, `mode`), self.position)
         self.pushMacro(macroName, compiledSlots)
+        saved_source = self.sourceFile
+        saved_position = self.position  # Used by Boa Constructor
         self.interpret(macro)
+        if self.sourceFile != saved_source:
+            self.engine.setSourceFile(saved_source)
+            self.sourceFile = saved_source
         self.popMacro()
     bytecode_handlers["useMacro"] = do_useMacro
 
@@ -531,10 +542,15 @@ class TALInterpreter:
             return
         macs = self.macroStack
         if macs and macs[-1] is not None:
+            saved_source = self.sourceFile
+            saved_position = self.position  # Used by Boa Constructor
             macroName, slots = self.popMacro()[:2]
             slot = slots.get(slotName)
             if slot is not None:
                 self.interpret(slot)
+                if self.sourceFile != saved_source:
+                    self.engine.setSourceFile(saved_source)
+                    self.sourceFile = saved_source
                 self.pushMacro(macroName, slots, entering=0)
                 return
             self.pushMacro(macroName, slots)
@@ -553,16 +569,16 @@ class TALInterpreter:
         self._stream_write = stream.write
         try:
             self.interpret(block)
-        except self.TALESError, err:
+        except:
+            exc = sys.exc_info()[1]
             self.restoreState(state)
             engine = self.engine
             engine.beginScope()
-            err.lineno, err.offset = self.position
-            engine.setLocal('error', err)
+            error = engine.createErrorInfo(exc, self.position)
+            engine.setLocal('error', error)
             try:
                 self.interpret(handler)
             finally:
-                err.takeTraceback()
                 engine.endScope()
         else:
             self.restoreOutputState(state)

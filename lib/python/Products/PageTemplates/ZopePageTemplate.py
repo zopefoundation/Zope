@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import DTMLFile, ImageFile, MessageDialog, package_home
@@ -35,7 +35,6 @@ from OFS.Cache import Cacheable
 from OFS.Traversable import Traversable
 from OFS.PropertyManager import PropertyManager
 from PageTemplate import PageTemplate
-from TALES import TALESError
 from Expressions import SecureModuleImporter
 from PageTemplateFile import PageTemplateFile
 
@@ -187,7 +186,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         try:
             self.REQUEST.RESPONSE.setHeader('content-type',
                                             self.content_type)
-        except AttributeError: pass
+        except AttributeError:
+            pass
 
         security=getSecurityManager()
         bound_names['user'] = security.getUser()
@@ -206,15 +206,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         # Execute the template in a new security context.
         security.addContext(self)
         try:
-            try:
-                result = self.pt_render(extra_context=bound_names)
-            except TALESError, err:
-                if (err.type == Unauthorized or
-                    (isinstance(Unauthorized, Exception) and
-                     isinstance(err.type, Unauthorized))):
-                    raise err.type, err.value, err.takeTraceback()
-                err.takeTraceback()
-                raise
+            result = self.pt_render(extra_context=bound_names)
             if keyset is not None:
                 # Store the result in the cache.
                 self.ZCacheable_set(result, keywords=keyset)
@@ -264,6 +256,8 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         """Return a list of icon URLs to be displayed by an ObjectManager"""
         icons = ({'path': 'misc_/PageTemplates/zpt.gif',
                   'alt': self.meta_type, 'title': self.meta_type},)
+        if not self._v_cooked:
+            self._cook()
         if self._v_errors:
             icons = icons + ({'path': 'misc_/PageTemplates/exclamation.gif',
                               'alt': 'Error',
@@ -271,12 +265,22 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         return icons
 
     def __setstate__(self, state):
+        # This is here for backward compatibility. :-(
         ZopePageTemplate.inheritedAttribute('__setstate__')(self, state)
-        self._cook()
+
+    def pt_source_file(self):
+        """Returns a file name to be compiled into the TAL code."""
+        try:
+            return '/'.join(self.getPhysicalPath())
+        except:
+            # This page template is being compiled without an
+            # acquisition context, so we don't know where it is. :-(
+            return None
 
     if not SUPPORTS_WEBDAV_LOCKS:
         def wl_isLocked(self):
             return 0
+
 
 class Src(Acquisition.Explicit):
     " "
@@ -294,6 +298,7 @@ class Src(Acquisition.Explicit):
 
 d = ZopePageTemplate.__dict__
 d['source.xml'] = d['source.html'] = Src()
+
 
 # Product registration and Add support
 manage_addPageTemplateForm = PageTemplateFile(
@@ -322,9 +327,13 @@ def manage_addPageTemplate(self, id, title=None, text=None,
             
         self._setObject(id, zpt)
 
-        try: u = self.DestinationURL()
-        except: u = REQUEST['URL1']
-        if submit==" Add and Edit ": u="%s/%s" % (u,quote(id))
+        try:
+            u = self.DestinationURL()
+        except AttributeError:
+            u = REQUEST['URL1']
+
+        if submit == " Add and Edit ":
+            u = "%s/%s" % (u, quote(id))
         REQUEST.RESPONSE.redirect(u+'/manage_main')
     return ''
 

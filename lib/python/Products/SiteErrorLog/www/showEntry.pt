@@ -1,0 +1,73 @@
+<h1 tal:replace="structure here/manage_page_header">Header</h1>
+<h1 tal:replace="structure here/manage_tabs">Tabs</h1>
+
+<h3>Exception traceback</h3>
+
+<div tal:define="entry python:container.getLogEntryById(request.get('id'))">
+
+<em tal:condition="not:entry">
+The specified log entry was not found.  It may have expired.
+</em>
+
+<div tal:condition="entry">
+
+<table>
+ <tr>
+  <th align="left" valign="top">Time</th>
+  <td tal:content="python: DateTime(entry['time'])"></td>
+ </tr>
+ <tr>
+  <th align="left" valign="top">User</th>
+  <td tal:content="entry/username">joe</td>
+ </tr>
+ <tr>
+  <th align="left" valign="top">Request URL</th>
+  <td tal:content="entry/url">http://example.com</td>
+ </tr>
+ <tr>
+  <th align="left" valign="top">Exception Type</th>
+  <td tal:content="entry/type">AttributeError</td>
+ </tr>
+ <tr>
+  <th align="left" valign="top">Exception Value</th>
+  <td tal:content="entry/value">zzope</td>
+ </tr>
+</table>
+
+<div tal:condition="python: entry['tb_html'] and
+                    not request.get('show_entry_as_text')">
+<div tal:content="structure entry/tb_html">
+Traceback
+</div>
+<p tal:condition="entry/tb_text"><a href="" tal:attributes="href
+   string:showEntry?id=${entry/id}&show_entry_as_text=1">Display
+   traceback as text</a></p>
+</div>
+
+<div tal:condition="python: not entry['tb_html'] or
+                    request.get('show_entry_as_text')">
+<pre tal:content="entry/tb_text">
+Traceback
+</pre>
+<p tal:condition="entry/tb_html"><a href="" tal:attributes="href
+   string:showEntry?id=${entry/id}">Display
+   traceback as HTML</a></p>
+</div>
+
+<div tal:condition="entry/req_html">
+<h3>REQUEST</h3>
+<div tal:replace="structure entry/req_html"></div>
+</div>
+
+</div>
+
+<p>
+<form action="manage_main" method="GET">
+<input type="submit" name="submit" value=" Return to log " />
+</form>
+</p>
+
+</div>
+
+<h1 tal:replace="structure here/manage_page_footer">Footer</h1>
+

@@ -15,7 +15,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -27,46 +27,10 @@ _parse_expr = re.compile(r"(%s):" % NAME_RE).match
 _valid_name = re.compile('%s$' % NAME_RE).match
 
 class TALESError(Exception):
-    __allow_access_to_unprotected_subobjects__ = 1
-    def __init__(self, expression, info=(None, None, None),
-                 position=(None, None)):
-        self.type, self.value, self.traceback = info
-        self.expression = expression
-        self.setPosition(position)
-    def setPosition(self, position):
-        self.lineno = position[0]
-        self.offset = position[1]
-    def takeTraceback(self):
-        t = self.traceback
-        self.traceback = None
-        return t
-    def __str__(self):
-        if self.type is None:
-            s = self.expression
-        else:
-            s = '%s on %s in %s' % (self.type, self.value,
-                                    `self.expression`)
-        if self.lineno is not None:
-            s = "%s, at line %d" % (s, self.lineno)
-        if self.offset is not None:
-            s = "%s, column %d" % (s, self.offset + 1)
-        return s
-    def __nonzero__(self):
-        return 1
+    """Error during TALES expression evaluation"""
 
 class Undefined(TALESError):
     '''Exception raised on traversal of an undefined path'''
-    def __str__(self):
-        if self.type is None:
-            s = self.expression
-        else:
-            s = '%s not found in %s' % (self.value,
-                                        `self.expression`)
-        if self.lineno is not None:
-            s = "%s, at line %d" % (s, self.lineno)
-        if self.offset is not None:
-            s = "%s, column %d" % (s, self.offset + 1)
-        return s
 
 class RegistrationError(Exception):
     '''TALES Type Registration Error'''
@@ -107,16 +71,25 @@ class Iterator(ZTUtils.Iterator):
         self._context = context
 
     def next(self):
-        try:
-            if ZTUtils.Iterator.next(self):
-                self._context.setLocal(self.name, self.item)
-                return 1
-        except TALESError:
-            raise
-        except:
-            raise TALESError, ('repeat/%s' % self.name,
-                               sys.exc_info()), sys.exc_info()[2]
+        if ZTUtils.Iterator.next(self):
+            self._context.setLocal(self.name, self.item)
+            return 1
         return 0
+
+
+class ErrorInfo:
+    """Information about an exception passed to an on-error handler."""
+    __allow_access_to_unprotected_subobjects__ = 1
+
+    def __init__(self, err, position=(None, None)):
+        if isinstance(err, Exception):
+            self.type = err.__class__
+            self.value = err
+        else:
+            self.type = err
+            self.value = None
+        self.lineno = position[0]
+        self.offset = position[1]
 
 
 class Engine:
@@ -181,13 +154,11 @@ class Context:
     '''
 
     _context_class = SafeMapping
-    _nocatch = TALESError
     position = (None, None)
+    source_file = None
 
     def __init__(self, engine, contexts):
         self._engine = engine
-        if hasattr(engine, '_nocatch'):
-            self._nocatch = engine._nocatch
         self.contexts = contexts
         contexts['nothing'] = None
         contexts['default'] = Default
@@ -243,18 +214,10 @@ class Context:
                  isinstance=isinstance, StringType=StringType):
         if isinstance(expression, StringType):
             expression = self._engine.compile(expression)
-        try:
-            v = expression(self)
-        except TALESError, err:
-            err.setPosition(self.position)
-            raise err, None, sys.exc_info()[2]
-        except self._nocatch:
-            raise
-        except:
-            raise TALESError, (`expression`, sys.exc_info(),
-                               self.position), sys.exc_info()[2]
-        else:
-            return v
+        __traceback_supplement__ = (
+            TALESTracebackSupplement, self, expression)
+        v = expression(self)
+        return v
 
     evaluateValue = evaluate
 
@@ -276,14 +239,41 @@ class Context:
         return self.evaluate(expr)
     evaluateMacro = evaluate
 
-    def getTALESError(self):
-        return TALESError
+    def createErrorInfo(self, err, position):
+        return ErrorInfo(err, position)
 
     def getDefault(self):
         return Default
 
+    def setSourceFile(self, source_file):
+        self.source_file = source_file
+
     def setPosition(self, position):
         self.position = position
+
+
+
+class TALESTracebackSupplement:
+    """Implementation of ITracebackSupplement"""
+    def __init__(self, context, expression):
+        self.context = context
+        self.source_url = context.source_file
+        self.line = context.position[0]
+        self.column = context.position[1]
+        self.expression = repr(expression)
+
+    def getInfo(self, as_html=0):
+        import pprint
+        data = self.context.contexts.copy()
+        s = pprint.pformat(data)
+        if not as_html:
+            return '   - Names:\n      %s' % s.replace('\n', '\n      ')
+        else:
+            from cgi import escape
+            return '<b>Names:</b><pre>%s</pre>' % (escape(s))
+        return None
+
+
 
 class SimpleExpr:
     '''Simple example of an expression type handler'''

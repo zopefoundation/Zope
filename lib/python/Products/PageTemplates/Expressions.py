@@ -17,11 +17,11 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.33 $'[11:-2]
+__version__='$Revision: 1.34 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
-     TALESError, Undefined, Default, _parse_expr
+     Undefined, Default, _parse_expr
 from string import strip, split, join, replace, lstrip
 from Acquisition import aq_base, aq_inner, aq_parent
 
@@ -33,7 +33,6 @@ def getEngine():
         from PathIterator import Iterator
         _engine = Engine(Iterator)
         installHandlers(_engine)
-        _engine._nocatch = (TALESError, 'Redirect')
     return _engine
 
 def installHandlers(engine):
@@ -171,7 +170,7 @@ class PathExpr:
     def _eval(self, econtext,
               isinstance=isinstance, StringType=type(''), render=render):
         for expr in self._subexprs[:-1]:
-            # Try all but the last subexpression, skipping undefined ones
+            # Try all but the last subexpression, skipping undefined ones.
             try:
                 ob = expr(econtext)
             except Undefs:
@@ -179,12 +178,8 @@ class PathExpr:
             else:
                 break
         else:
-            # On the last subexpression allow exceptions through, but
-            # wrap ones that indicate that the subexpression was undefined
-            try:
-                ob = self._subexprs[-1](econtext)
-            except Undefs[1:]:
-                raise Undefined(self._s, sys.exc_info())
+            # On the last subexpression allow exceptions through.
+            ob = self._subexprs[-1](econtext)
 
         if self._name == 'nocall' or isinstance(ob, StringType):
             return ob
@@ -234,8 +229,9 @@ class StringExpr:
         vvals = []
         for var in self._vars:
             v = var(econtext)
-            if isinstance(v, Exception):
-                raise v
+            # I hope this isn't in use anymore.
+            ## if isinstance(v, Exception):
+            ##     raise v
             vvals.append(v)
         return self._expr % tuple(vvals)
 
@@ -328,9 +324,10 @@ def restrictedTraverse(self, path, securityManager,
             if not validate(object, container, name, o):
                 raise Unauthorized, name
         else:
-            o=get(object, name, M)
+            # Try an attribute.
+            o = get(object, name, M)
             if o is not M:
-                # Check security.
+                # Check access to the attribute.
                 if has(object, 'aq_acquire'):
                     object.aq_acquire(
                         name, validate2, validate)
@@ -338,12 +335,31 @@ def restrictedTraverse(self, path, securityManager,
                     if not validate(object, object, name, o):
                         raise Unauthorized, name
             else:
+                # Try an item.
                 try:
-                    o=object[name]
-                except (AttributeError, TypeError):
-                    raise AttributeError, name
-                if not validate(object, object, name, o):
-                    raise Unauthorized, name
+                    # XXX maybe in Python 2.2 we can just check whether
+                    # the object has the attribute "__getitem__"
+                    # instead of blindly catching exceptions.
+                    o = object[name]
+                except AttributeError, exc:
+                    if str(exc).find('__getitem__') >= 0:
+                        # The object does not support the item interface.
+                        # Try to re-raise the original attribute error.
+                        # XXX I think this only happens with
+                        # ExtensionClass instances.
+                        get(object, name)
+                    raise
+                except TypeError, exc:
+                    if str(exc).find('unsubscriptable') >= 0:
+                        # The object does not support the item interface.
+                        # Try to re-raise the original attribute error.
+                        # XXX This is sooooo ugly.
+                        get(object, name)
+                    raise
+                else:
+                    # Check access to the item.
+                    if not validate(object, object, name, o):
+                        raise Unauthorized, name
         object = o
 
     return object

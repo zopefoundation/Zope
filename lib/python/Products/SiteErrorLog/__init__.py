@@ -8,7 +8,19 @@
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
-# FOR A PARTICULAR PURPOSE
+# FOR A PARTICULAR PURPOSE.
 # 
 ##############################################################################
-""" Template Attribute Language package """
+"""Site error log product.
+
+$Id: __init__.py,v 1.2 2002/04/03 20:43:55 shane Exp $
+"""
+
+import SiteErrorLog
+
+def initialize(context):
+    context.registerClass(SiteErrorLog.SiteErrorLog,
+                          constructors=(SiteErrorLog.manage_addErrorLog,),
+                          permission=SiteErrorLog.use_error_logging,
+                          icon='www/error.gif')
+

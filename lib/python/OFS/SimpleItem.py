@@ -17,8 +17,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.94 2002/03/27 10:14:03 htrd Exp $'''
-__version__='$Revision: 1.94 $'[11:-2]
+$Id: SimpleItem.py,v 1.95 2002/04/03 20:43:52 shane Exp $'''
+__version__='$Revision: 1.95 $'[11:-2]
 
 import re, sys, Globals, App.Management, Acquisition, App.Undo
 import AccessControl.Role, AccessControl.Owned, App.Common
@@ -29,9 +29,11 @@ from types import InstanceType, StringType
 from ComputedAttribute import ComputedAttribute
 from AccessControl import getSecurityManager
 from Traversable import Traversable
-from Acquisition import aq_base
+from Acquisition import aq_base, aq_parent, aq_inner, aq_acquire
 from DocumentTemplate.ustr import ustr
+from zExceptions.ExceptionFormatter import format_exception
 import time
+from zLOG import LOG, ERROR
 
 import marshal
 import ZDOM
@@ -146,19 +148,27 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
             if error_type  is None: error_type =sys.exc_info()[0]
             if error_value is None: error_value=sys.exc_info()[1]
             
-            # turn error_type into a string            
-            if hasattr(error_type, '__name__'):
-                error_type=error_type.__name__
-
             # allow for a few different traceback options
             if tb is None and error_tb is None:
                 tb=sys.exc_info()[2]
             if type(tb) is not type('') and (error_tb is None):
-                error_tb=pretty_tb(error_type, error_value, tb)
+                error_tb = pretty_tb(error_type, error_value, tb)
             elif type(tb) is type('') and not error_tb:
-                error_tb=tb
+                error_tb = tb
+
+            try:
+                log = aq_acquire(self, '__error_log__', containment=1)
+            except AttributeError:
+                pass
+            else:
+                log.raising((error_type, error_value, tb))
+
+            # turn error_type into a string
+            if hasattr(error_type, '__name__'):
+                error_type=error_type.__name__
 
             if hasattr(self, '_v_eek'):
+                # Stop if there is recursion.
                 raise error_type, error_value, tb
             self._v_eek=1
    
@@ -198,7 +208,11 @@ class Item(Base, Resource, CopySource, App.Management.Tabs, Traversable,
                 else:
                     v = HTML.__call__(s, client, REQUEST, **kwargs)
             except:
-                v = error_value or "Sorry, an error occurred"
+                LOG('OFS', ERROR, 'Exception while rendering an error message',
+                    error=sys.exc_info())
+                v = repr(error_value) + (
+                    " (Also, an error occurred while attempting "
+                    "to render the standard error message.)")
             raise error_type, v, tb
         finally:
             if hasattr(self, '_v_eek'): del self._v_eek
@@ -311,44 +325,18 @@ class Item_w__name__(Item):
         '''
         path = (self.__name__,)
         
-        p = getattr(self,'aq_inner', None)
+        p = aq_parent(aq_inner(self))
         if p is not None: 
-            path = p.aq_parent.getPhysicalPath() + path
+            path = p.getPhysicalPath() + path
             
         return path
 
 
-def format_exception(etype,value,tb,limit=None):
-    import traceback
-    result=['Traceback (innermost last):']
-    if limit is None:
-        if hasattr(sys, 'tracebacklimit'):
-            limit = sys.tracebacklimit
-    n = 0
-    while tb is not None and (limit is None or n < limit):
-        f = tb.tb_frame
-        lineno = tb.tb_lineno
-        co = f.f_code
-        filename = co.co_filename
-        name = co.co_name
-        locals=f.f_locals
-        result.append('  File %s, line %d, in %s'
-                      % (filename,lineno,name))
-        try: result.append('    (Object: %s)' %
-                           locals[co.co_varnames[0]].__name__)
-        except: pass
-        try: result.append('    (Info: %s)' %
-                           str(locals['__traceback_info__']))
-        except: pass
-        tb = tb.tb_next
-        n = n+1
-    result.append(' '.join(traceback.format_exception_only(etype, value)))
-    return result
-
-def pretty_tb(t,v,tb):
-    tb=format_exception(t,v,tb,200)
-    tb='\n'.join(tb)
+def pretty_tb(t, v, tb, as_html=1):
+    tb = format_exception(t, v, tb, as_html=as_html)
+    tb = '\n'.join(tb)
     return tb
+
 
 class SimpleItem(Item, Globals.Persistent,
                  Acquisition.Implicit,
@@ -365,3 +353,29 @@ class SimpleItem(Item, Globals.Persistent,
         )
  
     __ac_permissions__=(('View', ()),)
+
+    def __repr__(self):
+        """Show the physical path of the object and its context if available.
+        """
+        try:
+            path = '/'.join(self.getPhysicalPath())
+        except:
+            path = None
+        context_path = None
+        context = aq_parent(self)
+        container = aq_parent(aq_inner(self))
+        if aq_base(context) is not aq_base(container):
+            try:
+                context_path = '/'.join(context.getPhysicalPath())
+            except:
+                context_path = None
+        res = '<%s' % self.__class__.__name__
+        if path:
+            res += ' at %s' % path
+        else:
+            res += ' at 0x%x' % id(self)
+        if context_path:
+            res += ' used for %s' % context_path
+        res += '>'
+        return res
+
