@@ -131,11 +131,6 @@ class TALVisitor(CopyingDOMVisitor):
                 if slotNode:
                     self.visitElement(slotNode)
                     return
-        if node.hasAttributeNS(ZOPE_TAL_NS, "omit"):
-            # XXX Question: should 'omit' be done before or after
-            # 'define'?  (I.e., is it a shortcut for
-            # z:condition:"false" or is it stronger?)
-            return
         defines = node.getAttributeNS(ZOPE_TAL_NS, "define")
         if defines:
             self.engine.beginScope()
@@ -155,18 +150,24 @@ class TALVisitor(CopyingDOMVisitor):
             attrDict = parseAttributeReplacements(attributes)
         insert = node.getAttributeNS(ZOPE_TAL_NS, "insert")
         replace = node.getAttributeNS(ZOPE_TAL_NS, "replace")
-        if not (insert or replace):
-            done = 0
-        else:
-            if insert and replace:
-                print "Warning: z:insert overrides z:replace on the same node"
-            # XXX check for replace on documentElement
-            done = self.doModify(node, insert, insert or replace, attrDict)
-        if not done:
-            self.copyElement(node)
-            self.copyAttributes(node, attrDict)
-            self.visitAllChildren(node)
-            self.backUp()
+        repeat = node.getAttributeNS(ZOPE_TAL_NS, "repeat")
+        n = 0
+        if insert: n = n+1
+        if replace: n = n+1
+        if repeat: n = n+1
+        if n > 1:
+            print "Please use only one of z:insert, z:replace, z:repeat"
+        ok = 0
+        if insert:
+            ok = self.doInsert(node, insert, attrDict)
+        if not ok and replace:
+            # XXX Check that this isn't the documentElement
+            ok = self.doReplace(node, replace, attrDict)
+        if not ok and repeat:
+            # XXX Check that this isn't the documentElement
+            ok = self.doRepeat(node, repeat, attrDict)
+        if not ok:
+            self.copySubtree(node, attrDict)
 
     def findMacro(self, macroName):
         # XXX This is not written for speed :-)
@@ -191,7 +192,7 @@ class TALVisitor(CopyingDOMVisitor):
     def doDefine(self, arg):
         for part in splitParts(arg):
             m = re.match(
-                r"\s*(?:(global|local)\s+)?(%s)\s+as\s+(.*)" % NAME_RE, part)
+                r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
                 print "Bad syntax in z:define argument:", `part`
             else:
@@ -203,62 +204,33 @@ class TALVisitor(CopyingDOMVisitor):
                 else:
                     self.engine.setGlobal(name, value)
 
-    def doModify(self, node, inserting, arg, attrDict):
-        m = re.match(
-            r"(?:\s*(text|structure|for\s+(%s)\s+in)\s+)?(.*)" % NAME_RE, arg)
-        if not m:
-            print "Bad syntax in z:insert/replace:", `arg`
-            return 0
-        key, name, expr = m.group(1, 2, 3)
+    def doInsert(self, node, arg, attrDict):
+        key, expr = parseSubstitution(arg)
         if not key:
-            key = "text"
-        saveNode = self.curNode
-        if key[:3] == "for":
-            if inserting:
-                rv = self.doInsertLoop(node, name, expr, attrDict)
-            else:
-                rv = self.doReplaceLoop(node, name, expr, attrDict)
-        else:
-            rv = self.doNonLoop(node, inserting, key, expr, attrDict)
-        self.curNode = saveNode
-        return rv
-
-    def doInsertLoop(self, node, name, expr, attrDict):
-        sequence = self.engine.evaluateSequence(expr)
+            return 0
         self.copyElement(node)
         self.copyAttributes(node, attrDict)
-        for item in sequence:
-            self.engine.setLocal(name, item)
-            self.visitAllChildren(node)
+        self.doSubstitution(key, expr, {})
         self.backUp()
         return 1
 
-    def doReplaceLoop(self, node, name, expr, attrDict):
-        if not self.newDocument:
-            print "Can't have a z:replace for loop on the documentElement"
+    def doReplace(self, node, arg, attrDict):
+        key, expr = parseSubstitution(arg)
+        if not key:
             return 0
-        sequence = self.engine.evaluateSequence(expr)
-        for item in sequence:
-            self.engine.setLocal(name, item)
-            self.copyElement(node)
-            self.copyAttributes(node, attrDict)
-            self.visitAllChildren(node)
-            self.backUp()
+        self.doSubstitution(key, expr, attrDict)
         return 1
 
-    def doNonLoop(self, node, inserting, key, expr, attrDict):
-        if inserting:
-            self.copyElement(node)
-            self.copyAttributes(node, attrDict)
+    def doSubstitution(self, key, expr, attrDict):
         if key == "text":
-            if attrDict and not inserting:
+            if attrDict:
                 print "Warning: z:attributes unused for text replacement"
             data = self.engine.evaluateText(expr)
             newChild = self.newDocument.createTextNode(str(data))
             self.curNode.appendChild(newChild)
-        if key == "structure":
+        elif key == "structure":
             data = self.engine.evaluateStructure(expr)
-            attrDone = inserting or not attrDict
+            attrDone = not attrDict
             for newChild in data:
                 self.curNode.appendChild(newChild)
                 if not attrDone and newChild.nodeType == Node.ELEMENT_NODE:
@@ -267,7 +239,26 @@ class TALVisitor(CopyingDOMVisitor):
             if not attrDone:
                 # Apparently no element nodes were inserted
                 print "Warning: z:attributes unused for struct replacement"
+
+    def doRepeat(self, node, arg, attrDict):
+        if not self.newDocument:
+            print "Can't have z:repeat on the documentElement"
+            return 0
+        m = re.match("\s*(%s)\s+(.*)" % NAME_RE, arg)
+        if not m:
+            print "Bad syntax in z:repeat:", `arg`
+            return 0
+        name, expr = m.group(1, 2)
+        iterator = self.engine.setupLoop(name, expr)
+        while iterator.next():
+            self.copySubtree(node, attrDict)
         return 1
+
+    def copySubtree(self, node, attrDict):
+        self.copyElement(node)
+        self.copyAttributes(node, attrDict)
+        self.visitAllChildren(node)
+        self.backUp()
 
     def copyAttributes(self, node, attrDict):
         for attr in node.attributes.values():
@@ -294,7 +285,7 @@ class TALVisitor(CopyingDOMVisitor):
 def parseAttributeReplacements(arg):
     dict = {}
     for part in splitParts(arg):
-        m = re.match(r"\s*([^\s=]+)\s*=\s*(.*)", part)
+        m = re.match(r"\s*([^\s]+)\s*(.*)", part)
         if not m:
             print "Bad syntax in z:attributes:", `part`
             continue
@@ -304,6 +295,16 @@ def parseAttributeReplacements(arg):
             continue
         dict[name] = expr
     return dict
+
+def parseSubstitution(arg):
+    m = re.match(r"\s*(?:(text|structure)\s+)?(.*)", arg)
+    if not m:
+        print "Bad syntax in z:insert/replace:", `arg`
+        return None, None
+    key, expr = m.group(1, 2)
+    if not key:
+        key = "text"
+    return key, expr
 
 def splitParts(arg):
     # Break in pieces at undoubled semicolons and
