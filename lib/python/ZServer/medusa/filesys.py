@@ -1,5 +1,5 @@
 # -*- Mode: Python; tab-width: 4 -*-
-#	$Id: filesys.py,v 1.7 2001/04/25 19:07:30 andreas Exp $
+#	$Id: filesys.py,v 1.8 2001/04/27 18:25:42 andreas Exp $
 #	Author: Sam Rushing <rushing@nightmare.com>
 #
 # Generic filesystem interface.
@@ -69,9 +69,8 @@ class abstract_filesystem:
 
 # what to do if wd is an invalid directory?
 
-import os
+import os,re
 import stat
-
 import string
 
 def safe_stat (path):
@@ -80,7 +79,6 @@ def safe_stat (path):
 	except:
 		return None
 
-import regsub
 import glob
 
 class os_filesystem:
@@ -171,7 +169,7 @@ class os_filesystem:
 	# utility methods
 	def normalize (self, path):
 		# watch for the ever-sneaky '/+' path element
-		path = regsub.gsub ('/+', '/', path)
+		path = re.sub ('/+', '/', path)
 		p = self.path_module.normpath (path)
 		# remove 'dangling' cdup's.
 		if len(p) > 2 and p[:3] == '/..':
