@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.121 1999/01/25 20:48:46 brian Exp $"""
-__version__='$Revision: 1.121 $'[11:-2]
+$Id: Publish.py,v 1.122 1999/01/26 14:42:31 brian Exp $"""
+__version__='$Revision: 1.122 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -131,9 +131,9 @@ def sane_environment(env):
         while key[:9]=='REDIRECT_':
             key=key[9:]
         dict[key]=val
-    if env.has_key('HTTP_CGI_AUTHORIZATION'):
-        dict['HTTP_AUTHORIZATION']=env['HTTP_CGI_AUTHORIZATION']
-        try: del env['HTTP_CGI_AUTHORIZATION']
+    if dict.has_key('HTTP_CGI_AUTHORIZATION'):
+        dict['HTTP_AUTHORIZATION']=dict['HTTP_CGI_AUTHORIZATION']
+        try: del dict['HTTP_CGI_AUTHORIZATION']
         except: pass
     return dict
 
