@@ -23,7 +23,7 @@ Allow based on default roles
 Allow all users
 </TD>
 <TD VALIGN="TOP">
-<SELECT NAME="acl_roles:list" SIZE="5" MULTIPLE>
+<SELECT NAME="acl_roles:list" SIZE="4" MULTIPLE>
 <!--#in selectedRoles-->
 <!--#var sequence-item-->
 <!--#/in selectedRoles-->
@@ -35,20 +35,14 @@ Allow all users
 </TABLE>
 </FORM>
 
-<TABLE>
-<TR>
-  <TD VALIGN="TOP">
-  To add a new, user-defined role to this object, enter the name of
-  the new role and click &quot;Add&quot;.
-  </TD>
-  <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addRole" METHOD="POST">
-  <INPUT TYPE="TEXT" NAME="role" SIZE="20">
-  <BR>
-  <INPUT TYPE="SUBMIT" VALUE=" Add ">
-  </FORM>
-  </TD>
-</TR>
-</TABLE>
+<P>
+<FORM ACTION="<!--#var PARENT_URL-->/manage_addRole" METHOD="POST">
+To add a new, user-defined role to this object, enter the name of 
+the new role and click &quot;Add&quot;.
+<BR>
+<INPUT TYPE="TEXT" NAME="role" SIZE="20">
+<BR>
+<INPUT TYPE="SUBMIT" VALUE=" Add ">
+</FORM>
 </BODY>
 </HTML>
