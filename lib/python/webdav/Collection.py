@@ -85,12 +85,12 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string, Globals
 from common import urlfix, rfc1123_date
 from Resource import Resource
-
+from urllib import unquote
 
 
 class Collection(Resource):
@@ -104,7 +104,6 @@ class Collection(Resource):
 
     __ac_permissions__=(
         ('Add Documents, Images, and Files', ('PUT',)),
-#        ('Add Folders',                      ('MKCOL',)),
         ('Delete objects',                   ('DELETE',)),
     )
 
@@ -136,7 +135,7 @@ class Collection(Resource):
         success. Note that in Zope a DELETE currently never returns 207."""
         self.dav__init(REQUEST, RESPONSE)
         url=urlfix(REQUEST['URL'], 'DELETE')
-        name=filter(None, string.split(url, '/'))[-1]
+        name=unquote(filter(None, string.split(url, '/'))[-1])
         # TODO: add lock checking here
         self.aq_parent._delObject(name)
         RESPONSE.setStatus(204)

@@ -85,10 +85,11 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.24 $'[11:-2]
+__version__='$Revision: 1.25 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
+from urllib import quote, unquote
 import Globals
 
 class Resource(ExtensionClass.Base):
@@ -149,7 +150,7 @@ class Resource(ExtensionClass.Base):
             RESPONSE.setHeader('Content-Type', absattr(self.content_type))
         else:
             url=urlfix(REQUEST['URL'], 'HEAD')
-            name=filter(None, string.split(url, '/'))[-1]
+            name=unquote(filter(None, string.split(url, '/'))[-1])
             ct, ce=mimetypes.guess_type(name)
             # Could try harder here...
             ct=ct or 'application/octet-stream'
@@ -198,7 +199,7 @@ class Resource(ExtensionClass.Base):
         return either 200 or 204 (No Content) to indicate success."""
         self.dav__init(REQUEST, RESPONSE)
         url=urlfix(REQUEST['URL'], 'DELETE')
-        name=filter(None, string.split(url, '/'))[-1]
+        name=unquote(filter(None, string.split(url, '/'))[-1])
         # TODO: add lock checking here
         self.aq_parent._delObject(name)
         RESPONSE.setStatus(204)
@@ -256,6 +257,7 @@ class Resource(ExtensionClass.Base):
         if not oflag in ('T', 'F'):
             raise 'Bad Request', 'Invalid Overwrite header.'
         path, name=os.path.split(dest)
+        name=unquote(name)
         try: parent=REQUEST.resolve_url(path)
         except ValueError:
             raise 'Conflict', 'Attempt to copy to an unknown namespace.'
@@ -312,6 +314,7 @@ class Resource(ExtensionClass.Base):
         flag=string.upper(flag)
         body=REQUEST.get('BODY', '')
         path, name=os.path.split(dest)
+        name=unquote(name)
         try: parent=REQUEST.resolve_url(path)
         except ValueError:
             raise 'Conflict', 'Attempt to move to an unknown namespace.'
