@@ -2,7 +2,7 @@ from Persistence import Persistent
 import Acquisition
 import BTree, OIBTree, IOBTree
 from SearchIndex import UnIndex, UnTextIndex, Query
-import regex
+import regex, pdb
 import Record
 from Missing import MV
 
@@ -40,16 +40,26 @@ class Catalog(Persistent, Acquisition.Implicit):
     """
 
     _v_brains = NoBrainer
+    _v_result_class = NoBrainer
 
     def __init__(self, brains=None):
 
         self.schema = {}    # mapping from attribute name to column number
         self.names = ()     # sequence of column names
         self.indexes = {}
+
+        # the catalog maintains a BTree of object meta_data for
+        # convienient display on result pages.  meta_data attributes
+        # are turned into brain objects and returned by
+        # searchResults.  The indexing machinery indexes all records
+        # by an integer id (rid).  self.data is a mapping from the
+        # iteger id to the meta_data, self.uids is a mapping of the
+        # object unique identifier to the rid, and self.paths is a
+        # mapping of the rid to the unique identifier.
         
-        self.data = BTree.BTree()
-        self.uids = OIBTree.BTree()
-        self.paths = IOBTree.BTree()
+        self.data = BTree.BTree()       # mapping of rid to meta_data
+        self.uids = OIBTree.BTree()     # mapping of uid to rid
+        self.paths = IOBTree.BTree()    # mapping of rid to uid
 
         if brains is not None:
             self._v_brains = brains
@@ -61,6 +71,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         """ returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
+        self.useBrains(self._v_brains)
         
         r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
         r.data_record_id_ = index
@@ -93,7 +104,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
 
     def addColumn(self, name, default_value=None):
-        """ adds a row to the schema """
+        """ adds a row to the meta_data schema """
         
         schema = self.schema
         names = list(self.names)
@@ -121,7 +132,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
             
     def delColumn(self, name):
-        """ deletes a row from the schema """
+        """ deletes a row from the meta_data schema """
         names = list(self.names)
         _index = names.index(name)
 
@@ -147,7 +158,7 @@ class Catalog(Persistent, Acquisition.Implicit):
             
 
     def addIndex(self, name, type):
-        """ add an index """
+        """ adds an index """
         if self.indexes.has_key(name):
             raise 'Index Exists', 'The index specified allready exists'
         
@@ -157,7 +168,7 @@ class Catalog(Persistent, Acquisition.Implicit):
             self.indexes[name] = UnTextIndex.UnTextIndex(name)
 
     def delIndex(self, name):
-        """ delete an index """
+        """ deletes an index """
 
         if not self.indexes.has_key(name):
             raise 'No Index', 'The index specified does not exist'
@@ -174,19 +185,26 @@ class Catalog(Persistent, Acquisition.Implicit):
         'object' is the object to be cataloged
         'uid' is the unique Catalog identifier for this object
         """
-        # store a record in the dataset that coresponds to the object
+
         data = self.data
-        if data: i = data.keys()[-1] + 1  # find the next available
-        else: i = 0                       # rid
+
+        if uid in self.uids.keys():
+            i = self.uids[uid]
+        elif data:
+            i = data.keys()[-1] + 1  # find the next available rid
+        else:
+            i = 0                       
 
         self.uids[uid] = i
         self.paths[i] = uid
         
+        # meta_data is stored as a tuple for efficiency
         data[i] = self.recordify(object)
 
-        for x in self.indexes.keys():
-            if hasattr(self.indexes[x], 'index_object'):
-                self.indexes[x].index_object(i, object)
+        for x in self.indexes.values():
+            if hasattr(x, 'index_object'):
+                x.index_object(i, object)
+
         self.data = data
                                           
 
@@ -195,16 +213,33 @@ class Catalog(Persistent, Acquisition.Implicit):
         and 'uid' is a unique Catalog identifier
 
         Note, the uid must be the same as when the object was
-        cataloged, otherwise it will not get unindexed """
+        cataloged, otherwise it will not get removed from the catalog """
         
-        # un index the object
-
+        if uid not in self.uids.keys():
+            'no object with uid %s' % uid
+            return
+        
         rid = self.uids[uid]
 
-        for x in self.indexes.keys():
-            if hasattr(self.indexes[x], 'unindex_object'):
-                self.indexes[x].unindex_object(rid)
-        del self._data[rid]
+        for x in self.indexes.values():
+            if hasattr(x, 'unindex_object'):
+                x.unindex_object(rid)
+
+        del self.data[rid]
+        del self.uids[uid]
+        del self.paths[rid]
+
+
+    def clear(self):
+
+        """ clear catalog """
+        
+        self.data = BTree.BTree()
+        self.uids = OIBTree.BTree()
+        self.paths = IOBTree.BTree()
+
+        for x in self.indexes.values():
+            x.clear()
 
 
     def recordify(self, object):
@@ -224,17 +259,22 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         return tuple(record)
 
+
     def instantiate(self, record):
+        self.useBrains(self._v_brains)
+
         r=self._v_result_class(record[1])
         r.data_record_id_ = record[0]
         return r.__of__(self)
 
 
 
+# searching VOODOO follows
+
     def _indexedSearch(self, args, sort_index, append, used):
+
         rs=None
         data=self.data
-##        cid=self.id
         
         if used is None: used={}
         for i in self.indexes.keys():
@@ -337,42 +377,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                     lower(so) in ('reverse', 'descending')):
                     r.reverse()
                 r=LazyCat(map(lambda i: i[1], r))
-
-##        #################################################################
-##        # Add unindexed search criteria:
-##	# skey used to get the schema keys, but computed fields aren't in 
-##	# there anymore.  instead they're in the data_dictionary.
-##        skey=_data._data_dictionary.has_key
-##        ukey=used.has_key
-##        subqueries=[]
-##	# join the previously together computed field names and reg names
-##	allnames=list(_data._names)+list(_data._computed_fields)
-##        for name in allnames:
-##            try: v=kw[name]
-##            except: v=kw
-##            if v is not kw and (v or v==0) and not ukey(name) and skey(name):
-##                used[name]=1
-##		if name in _data._names:
-##		    # use the integer key of the column
-##		    key=_data._schema[name]
-##		else:
-##		    # it's a computed attribute, use its name.  Query.FieldTest
-##		    # will figure it out.
-##		    key=name
-##                try: q=query_map[type(v)](v)
-##                except: q=Query.Cmp(v)
-##                subqueries.append(Query.FieldTest(key,q))
-
-##        if subqueries:
-##            if len(subqueries) > 1: query=apply(Query.And,tuple(subqueries))
-##            else: query=subqueries[0]
-##            r=LazyFilter(query,r)
-##            try: data._len=atoi(kw['DP_CACHED_LENGTH'])
-##            except: pass
-
-        #################################################################
-        # decorate results and return:
-##        r._searchable_result_columns=self._searchable_result_columns
 
         return r
 

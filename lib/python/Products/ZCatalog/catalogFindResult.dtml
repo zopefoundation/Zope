@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>Find Results</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<P>
+
+<!--#in expr="('obj_ids', 'obj_metatypes', 'obj_searchterm', 'obj_expr', 'obj_mtime', 'obj_mspec', 'obj_permission', 'obj_roles', 'search_sub')"-->
+<!--#else expr="_.hasattr(REQUEST, _['sequence-item'])"-->
+<!--#call expr="REQUEST.set(_['sequence-item'], _.None)"-->
+<!--#/else-->
+<!--#/in-->
+
+<!--#if btn_submit-->
+<!--#with "_.namespace(
+    results=ZopeFind(PARENTS[-1], 
+	obj_ids=obj_ids, 
+        obj_metatypes=obj_metatypes, 
+        obj_searchterm=obj_searchterm, 
+        obj_expr=obj_expr, 
+        obj_mtime=obj_mtime, 
+        obj_mspec=obj_mspec, 
+        obj_permission=obj_permission, 
+        obj_roles=obj_roles, 
+        search_sub=search_sub, 
+        REQUEST=REQUEST))"-->
+
+<!--#if results-->
+<HR>
+<STRONG>
+Found <!--#var results fmt=collection-length--> item<!--#if expr="_.len(results) != 1"-->s<!--#/if-->. Boo!
+</STRONG>
+<HR>
+
+<form action="." method="post">
+<input type="submit" name="manage_catalogObject:method" value=" Catalog Items ">
+<input type="submit" name="manage_uncatalogObject:method" value=" UnCatalog Items ">
+<P>
+
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="2">
+<!--#in results-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="CHECKBOX" NAME="urls:list"
+  VALUE="<!--#var sequence-key-->"
+  CHECKED>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var SCRIPT_NAME-->/<!--#var sequence-key-->/manage_main">
+  <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
+   ALT="<!--#var meta_type-->" BORDER="0"></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <A HREF="<!--#var SCRIPT_NAME-->/<!--#var sequence-key-->/manage_main">
+  <!--#var sequence-key-->
+  <!--#if title-->
+  (<!--#var title-->)
+  <!--#/if-->
+  </A>
+  </TD>
+
+<!--#comment-->  
+  <TD>
+  <!--#if "inCatalog(_['sequence-key'])"-->
+  In Catalog
+  <!--#else-->
+  Not in Catalog
+  <!--#/if-->
+  </TD>
+<!--#/comment-->
+</TR>
+<!--#/in-->
+</TABLE>
+
+</form>
+
+<!--#else-->
+<HR>
+<STRONG>
+No items were found matching this query.
+</STRONG>
+<HR>
+<!--#/if-->
+<!--#/with-->
+<!--#/if-->
+
+</BODY>
+</HTML>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>Advanced Find</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+<P>
+Use this form to locate objects to be cataloged.
+<P>
+
+<FORM ACTION="manage_catalogFindResult" METHOD="GET">
+<TABLE>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Find objects of type:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
+  <OPTION VALUE="all" SELECTED> All types
+<!--#in all_meta_types mapping-->
+  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+<!--#/in-->
+  </SELECT>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>with ids:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_ids:tokens" SIZE="30">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>containing:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="obj_searchterm" SIZE="30">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>expr:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <TEXTAREA NAME="obj_expr" ROWS="4" COLS="30"></TEXTAREA>
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>modified:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_mspec">
+  <OPTION VALUE="<"> before
+  <OPTION VALUE=">"> after
+  </SELECT> 
+  <INPUT TYPE="TEXT" NAME="obj_mtime" SIZE="22">
+  </TD>
+</TR>
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>where the roles:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_roles:list" SIZE="3" MULTIPLE>
+<!--#in valid_roles-->
+  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+<!--#/in-->
+  </SELECT>
+  </TD>
+</TR>
+
+<!--#comment-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>have permission:</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <SELECT NAME="obj_permission">
+<!--#in permission_settings mapping-->
+  <OPTION VALUE="<!--#var name-->"> <!--#var name-->
+<!--#/in-->
+  </SELECT>
+  </TD>
+</TR>
+<!--#/comment-->
+
+<INPUT TYPE="HIDDEN" NAME="search_sub:int" VALUE="1" CHECKED> 
+
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="SUBMIT" NAME="btn_submit" VALUE="Find">  
+  </TD>
+</TR>
+
+</TABLE>
+</FORM>
+
+</BODY>
+</HTML>

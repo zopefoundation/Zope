@@ -1,0 +1,94 @@
+<HTML>
+<HEAD>
+<TITLE>View Catalog Records</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<!--#if searchResults-->
+
+<p> Updating the catalog will update all catalog records and remove
+invalid records. Clearing the catalog will remove all entries.  You
+can also remove or update individual catalog records.
+
+
+<form action=".">
+<input type="submit" name="manage_catalogReindex:method" value=" Update Catalog ">
+<input type="submit" name="manage_catalogClear:method" value=" Clear Catalog ">
+</form>
+
+<p>
+
+<!--#var id--> contains
+ <em><!--#var searchResults fmt=collection-length thousands_commas--></em>
+ record(s).<BR><BR>
+
+  <!--#in searchResults previous size=20 start=query_start -->
+          <a href="<!--#var URL-->?query_start=<!--#var
+                   previous-sequence-start-number-->">
+          [Previous <!--#var previous-sequence-size--> entries]
+          </a>
+  <!--#/in-->
+  <!--#in searchResults next size=20 start=query_start -->
+          <a href="<!--#var URL-->?query_start=<!--#var
+                   next-sequence-start-number-->">
+          [Next <!--#var next-sequence-size--> entries]
+          </a>
+  <!--#/in-->
+
+<form action="<!--#var URL1-->/">
+<input type="submit" value=" Remove " NAME="manage_catalogRemove:method">
+<input type="submit" value=" Update " NAME="manage_catalogReindex:method">
+<!--#comment-->
+<input type="submit" value=" VOODOO "
+NAME="manage_enterDebuger:method">
+<!--#/comment-->
+
+<input type="hidden" name="individual" value="1">
+  <table>
+     <!--#in searchResults size=20 start=query_start -->
+
+     <tr valign=top>
+	    <td valign="middle" align="center">
+	    <INPUT TYPE="checkbox" NAME="ids:int:list" VALUE="<!--#var
+data_record_id_-->">
+	    </TD>
+	    <td valign="top"><!--#var meta_type--></td>
+	    <td valign="top" align="left">
+
+
+<a href="<!--#var SCRIPT_NAME-->/<!--#var "getpath(data_record_id_)"-->/manage_main"><!--#var "getpath(data_record_id_)"-->
+
+<!--#if title--> (<!--#var title-->)<!--#/if--></a></td> 
+	 </tr>
+
+     <!--#/in-->
+  </table>
+
+<input type="submit" value=" Remove " NAME="unindexObject:method">
+<input type="submit" value=" Update " NAME="indexObject:method">
+
+</form>
+
+  <!--#in searchResults previous size=20 start=query_start -->
+          <a href="<!--#var URL-->?query_start=<!--#var
+                   previous-sequence-start-number-->">
+          [Previous <!--#var previous-sequence-size--> entries]
+          </a>
+  <!--#/in-->
+  <!--#in searchResults next size=20 start=query_start -->
+          <a href="<!--#var URL-->?query_start=<!--#var
+                   next-sequence-start-number-->">
+          [Next <!--#var next-sequence-size--> entries]
+          </a>
+  <!--#/in-->
+
+<!--#else-->
+
+ <P>There are no entries in the Catalog.</P>
+
+<!--#/if-->
+
+</BODY></HTML>
+
+
