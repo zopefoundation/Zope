@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -111,6 +111,7 @@ except:
                 home=os.path.split(home)[0]+d[2:]
             else:
                 home=home+d[1:]
+        else: home=d
     else:
         home=os.getcwd()
 
