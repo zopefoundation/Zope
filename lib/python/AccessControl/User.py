@@ -1,13 +1,13 @@
-"""Access control objects"""
+"""Access control package"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
-
-from Persistence import Persistent,PersistentMapping
+import Globals
+from Persistence import Persistent
+from Persistence import PersistentMapping
 from Acquisition import Implicit
 from DocumentTemplate import HTML
 from Globals import MessageDialog
-from Globals import Bobobase
 from base64 import decodestring
 from string import join,strip,split,lower
 
@@ -31,12 +31,14 @@ class SafeDtml(HTML):
 
 
 class User(Implicit, Persistent):
-    """ """
     def __init__(self,name=None,password=None,roles=[]):
 	if name is not None:
 	    self._name    =name
 	    self._password=password
 	    self._roles   =roles
+
+    def __len__(self):
+	return 1
 
     def __str__(self):
 	return self._name
@@ -44,6 +46,31 @@ class User(Implicit, Persistent):
     def __repr__(self):
         return self._name
 
+
+class SuperUser:
+    def __init__(self):
+	try:
+	    f=open('%s/access' % CUSTOMER_HOME, 'r')
+	    d=split(strip(f.readline()),':')
+	    f.close()
+	    self._name    =d[0]
+	    self._password=d[1]
+	    self._roles   =('manage',)
+	except:
+	    self._name    ='superuser'
+	    self._password='123'
+	    self._roles   =('manage',)
+
+    def __len__(self):
+	return 1
+
+    def __str__(self):
+	return self._name
+
+    def __repr__(self):
+        return self._name
+
+su=SuperUser()
 
 
 class UserFolder(Implicit, Persistent):
@@ -69,10 +96,7 @@ class UserFolder(Implicit, Persistent):
     )
 
     def _init(self):
-	self._data=PersistentMapping({'Brian': User('Brian','123',['manage',]),
-		    'Jim Fulton' : User('Jim Fulton', '123', ['manage',]),
-		    'Paul Everitt': User('Paul Everitt','123',['manage',])
-		    })
+	self._data=PersistentMapping()
 
     def __len__(self):
 	return len(self.userNames())
@@ -85,13 +109,14 @@ class UserFolder(Implicit, Persistent):
 	return self._data.keys()
 
     def roleNames(self):
-	return Bobobase['roles']
-#	return ['manage','foo','bar','spam']
+	return Globals.Bobobase['roles']
 
     def validate(self,request,auth,roles=None):
 	if lower(auth[:6])!='basic ':
 	    return None
 	[name,password]=split(decodestring(split(auth)[-1]), ':')
+	if (name==su._name) and (password==su._password):
+	    return su
 	try:    user=self._data[name]
 	except: return None
 	if password!=user._password:
@@ -154,7 +179,21 @@ class UserFolder(Implicit, Persistent):
             del self._data[n]
         return self.manage_main(self, REQUEST)
 
+    def manage_addRole(self,REQUEST,role):
+	""" """
+	roles=Globals.Bobobase['roles']
+	if role not in roles:
+	    Globals.Bobobase['roles']=tuple(roles)+(role,)
+	return self.manage_main(self, REQUEST)
 
+    def manage_deleteRole(self,REQUEST,role):
+	""" """
+	roles=Globals.Bobobase['roles']
+	if role in roles:
+	    roles=list(roles)
+	    del roles[roles.index(role)]
+	    Globals.Bobobase['roles']=tuple(roles)
+	return self.manage_main(self, REQUEST)
 
 
 
@@ -162,10 +201,6 @@ class UserFolder(Implicit, Persistent):
 
 def manage_addUserFolder(self,self2,REQUEST):
     """ """
-#    if self.__dict__.has_key('__allow_groups__'):
-#        return MessageDialog(title='Object exists',
-#                              message='This object already has a User Folder',
-#                              action='%s/manage' % REQUEST['PARENT_URL'])
     i=UserFolder()
     i._init()
     self._setObject('UserFolder', i)

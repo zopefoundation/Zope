@@ -24,8 +24,8 @@
 <!--#if userNames-->
 <TR>
   <TD VALIGN="TOP">
-  The following users have been defined. To edit a user, select a user
-  from the list and click the <I>Edit User</I> button.
+  The following users have been defined. To edit a user,
+  select a user and click the <I>Edit User</I> button.
   </TD>
   <TD VALIGN="TOP">
   <FORM ACTION="<!--#var PARENT_URL-->/manage_editForm" METHOD="POST">
@@ -48,7 +48,6 @@
 <!--#/if userNames-->
 <TR>
   <TD COLSPAN="2" VALIGN="TOP">
-  <BR>
   To add a new user, enter the name, password, confirmation and 
   roles for the new user and click the <I>Add User</I> button.
   </TD>
@@ -90,7 +89,6 @@
 <!--#if userNames-->
 <TR>
   <TD VALIGN="TOP">
-  <BR>
   To delete one or more users, select the users
   you wish to delete and click the <I>Delete Users</I> button.
   </TD>
