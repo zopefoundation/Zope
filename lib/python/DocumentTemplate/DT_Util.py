@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.12 1997/10/29 21:30:24 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.13 1997/10/29 22:06:06 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -73,11 +73,6 @@ def int_param(params,md,name,default=0):
 	    if type(v)==types.StringType:
 		v=atoi(v)
     return v
-
-class func_code:
-    def __init__(self,varnames=('self','REQUEST')):
-	self.co_varnames=varnames
-	self.co_argcount=len(varnames)
 
 def _tm(m, tag):
     return m + tag and (' in %s' % tag)
@@ -161,6 +156,55 @@ def name_param(params,tag='',expr=0):
 	
     raise ParseError, ('No name given', tag)
 
+Expr_doc="""
+
+
+Python expression support
+
+  Several document template tags, including 'var', 'in', 'if', 'else',
+  and 'elif' provide support for using Python expressions via an
+  'expr' tag attribute.
+
+  Expressions may be used where a simple variable value is
+  inadequate.  For example, an expression might be used to test
+  whether a variable is greater than some amount::
+
+     <!--#if expr="age > 18"-->
+
+  or to transform some basic data::
+
+     <!--#var expr="phone[:3]"-->
+
+  Objects available in the document templates namespace may be used.
+  Subobjects of these objects may be used as well, although subobject
+  access is restricted by the optional validation method.
+
+  In addition, certain special additional names are available:
+
+  '_vars' -- Provides access to the document template namespace as a
+     mapping object.  This variable can be useful for accessing
+     objects in a document template namespace that have names that are
+     not legal Python variable names::
+
+        <!--#var expr="_vars['sequence-number']*5"-->
+
+  '_' -- Provides access to a Python module containing standard
+     utility objects.  These utility objects include:
+
+     - The objects: 'None', 'abs', 'chr', 'divmod', 'float', 'hash',
+          'hex', 'int', 'len', 'max', 'min', 'oct', 'ord', 'pow',
+	  'round', and 'str' from the standard Python builtin module.
+
+     - The Python 'string' module, and
+
+     - The Python 'math' module. 
+
+     For example, to convert a value to lower case::
+
+       <!--#var expr="_.string.lower(title)"-->
+
+"""
+
 def parse_params(text,
 		 result=None,
 		 tag='',
@@ -234,6 +278,11 @@ TemplateDict.pop.__roles__=TemplateDict.push.__roles__=()
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.13  1997/10/29 22:06:06  jim
+# Moved func_code from DT_Util to DT_String.
+#
+# Took stab at expression documentation.
+#
 # Revision 1.12  1997/10/29 21:30:24  jim
 # Added "builtin" objects.
 #
