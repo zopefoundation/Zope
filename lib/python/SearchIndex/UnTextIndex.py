@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 from Globals import Persistent
@@ -108,7 +108,7 @@ from Splitter import Splitter
 from string import strip
 import string, regex, regsub, ts_regex
 from zLOG import LOG, ERROR
-
+from types import *
 
 from Lexicon import Lexicon, stop_word_dict
 from ResultList import ResultList
@@ -191,7 +191,7 @@ class UnTextIndex(Persistent, Implicit):
         Zope.  I don't think indexes were ever intended to participate 
         in this way, but I don't see too much of a problem with it.
         """
-        if type(vocab_id) is not type(""):
+        if type(vocab_id) is not StringType:
             vocab = vocab_id
         else:
             vocab = getattr(self, vocab_id)
@@ -212,8 +212,7 @@ class UnTextIndex(Persistent, Implicit):
         self._unindex = IOBTree()
 
 
-    def index_object(self, i, obj, threshold=None, tupleType=type(()),
-                     dictType=type({}), strType=type(""), callable=callable):
+    def index_object(self, i, obj, threshold=None):
         
         """ Index an object:
 
@@ -286,14 +285,14 @@ class UnTextIndex(Persistent, Implicit):
             r = get(word_id)
             if r is not None:
                 r = index[word_id]
-                if type(r) is tupleType:
+                if type(r) is TupleType:
                     r = {r[0]:r[1]}
                     r[i] = score
 
                     index[word_id] = r
                     unindex[i].append(word_id)
                     
-                elif type(r) is dictType:
+                elif type(r) is DictType:
                     if len(r) > 4:
                         b = IIBucket()
                         for k, v in r.items(): b[k] = v
@@ -320,7 +319,7 @@ class UnTextIndex(Persistent, Implicit):
         ## return the number of words you indexed
         return times
 
-    def unindex_object(self, i, tt=type(()) ): 
+    def unindex_object(self, i): 
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
         index = self._index
@@ -329,7 +328,7 @@ class UnTextIndex(Persistent, Implicit):
         if val is not None:
             for n in val:
                 v = index.get(n, None)
-                if type(v) is tt:
+                if type(v) is TupleType:
                     del index[n]
                 elif v is not None:
                     try:
@@ -364,7 +363,7 @@ class UnTextIndex(Persistent, Implicit):
         return r
 
 
-    def _apply_index(self, request, cid='', ListType=[]): 
+    def _apply_index(self, request, cid=''): 
         """ Apply the index to query parameters given in the argument,
         request
 
@@ -386,7 +385,7 @@ class UnTextIndex(Persistent, Implicit):
         else:
             return None
 
-        if type(keys) is type(''):
+        if type(keys) is StringType:
             if not keys or not strip(keys):
                 return None
             keys = [keys]
@@ -483,7 +482,7 @@ class UnTextIndex(Persistent, Implicit):
         return self.evaluate(q)
 
 
-    def get_operands(self, q, i, ListType=type([]), StringType=type('')):
+    def get_operands(self, q, i):
         '''Evaluate and return the left and right operands for an operator'''
         try:
             left  = q[i - 1]
@@ -501,7 +500,7 @@ class UnTextIndex(Persistent, Implicit):
         return (left, right)
 
 
-    def evaluate(self, q, ListType=type([])):
+    def evaluate(self, q):
         '''Evaluate a parsed query'''
     ##    import pdb
     ##    pdb.set_trace()
@@ -573,9 +572,7 @@ def parse(s):
     return l
 
 def parse2(q, default_operator,
-           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near},
-           ListType=type([]),
-           ):
+           operator_dict = {AndNot: AndNot, And: And, Or: Or, Near: Near}):
     '''Find operators and operands'''
     i = 0
     isop=operator_dict.has_key

@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 from Globals import Persistent
@@ -97,9 +97,7 @@ import operator
 from Missing import MV
 import string, pdb
 from zLOG import LOG, ERROR
-
-ListType=type([])
-StringType=type('s')
+from types import *
 
 
 def nonEmpty(s):
@@ -200,9 +198,6 @@ class UnIndex(Persistent, Implicit):
 
         k = unindex.get(i, None)
         if k is None:
-            LOG('UnIndex', ERROR, ('unindex_object couldn\'t unindex '
-                                  'document %s.  This should not happen.'
-                                   % str(i)))
             return None
         set = index.get(k, None)
         if set is not None:
@@ -251,7 +246,9 @@ class UnIndex(Persistent, Implicit):
         elif has_key(id): keys = request[id]
         else: return None
 
-        if type(keys) is not ListType: keys=[keys]
+        if type(keys) is not ListType and not TupleType:
+            keys = [keys]
+            
         index = self._index
         r = None
         anyTrue = 0
