@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -119,22 +119,10 @@ class ImageFile(Acquisition.Explicit):
         self.lmt=float(stat(path)[8]) or time()
         self.lmh=rfc1123_date(self.lmt)
 
-    def _init_headers(self, request, response):
-        # Attempt to handle If-Modified-Since headers.
-        ms=request.get_header('If-Modified-Since', None)
-        if ms is not None:
-            ms=split(ms, ';')[0]
-            ms=DateTime(ms).timeTime()
-            if self.lmt > ms:
-                response.setStatus(304)
-                return response
-        response.setHeader('Content-Type', self.content_type)
-        response.setHeader('Last-Modified', self.lmh)
 
     def index_html(self, REQUEST, RESPONSE):
         """Default document"""
-        if self._init_headers(REQUEST, RESPONSE):
-            return ''
+        RESPONSE.setHeader('Content-Type', self.content_type)
         f=open(self.path,'rb')
         data=f.read()
         f.close()
@@ -143,7 +131,8 @@ class ImageFile(Acquisition.Explicit):
     HEAD__roles__=None
     def HEAD(self, REQUEST, RESPONSE):
         """ """
-        self._init_headers(self, REQUEST, RESPONSE)
+        RESPONSE.setHeader('Content-Type', self.content_type)
+        RESPONSE.setHeader('Last-Modified', self.lmh)
         return ''
 
     def __len__(self):
