@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -1128,10 +1128,11 @@ class record:
         return ", ".join(map(lambda item: "%s: %s" % item, L1)) 
 
     def __repr__(self):
+        #return repr( self.__dict__ )
         L1 = self.__dict__.items()
         L1.sort()
-        return ', '.join(
-            map(lambda item: "%s: %s" % (item[0], repr(item[1])), L1))
+        return '{%s}' % ', '.join(
+            map(lambda item: "'%s': %s" % (item[0], repr(item[1])), L1))
 
 # Flags
 SEQUENCE=1

@@ -75,6 +75,9 @@ Zope Changes
 
     Bugs:
 
+      - Made repr of an HTTPRequest.record eval'able as a dict (Collector
+        #89).
+
       - Fixed bug #144: Upload button on dtml, py scripts, images, files and
         pts now raises an error if the file is not specified rather than
         clearing the source.
