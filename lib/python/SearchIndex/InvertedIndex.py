@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.17 1997/02/24 16:29:01 chris Exp $'''
+$Id: InvertedIndex.py,v 1.18 1997/03/05 19:21:36 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.17 1997/02/24 16:29:01 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.18  1997/03/05 19:21:36  chris
+# removed PersistentResultList, placing it in its own module
+#
 # Revision 1.17  1997/02/24 16:29:01  chris
 # *** empty log message ***
 #
@@ -138,10 +141,10 @@ $Id: InvertedIndex.py,v 1.17 1997/02/24 16:29:01 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 
-import regex, regsub, string, SingleThreadedTransaction, copy
+import regex, regsub, string, copy
 
 from types import *
 
@@ -454,7 +457,7 @@ class Index(SingleThreadedTransaction.Persistent):
     index = self._index_object
 
     src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
-    src = filter(None,self.split_words(src))
+    src = filter(None, self.split_words(src))
 
     if (len(src) < 2):
       raise IndexingError, 'cannot index document with fewer than two keywords'
@@ -462,8 +465,9 @@ class Index(SingleThreadedTransaction.Persistent):
     nwords = math.log(len(src))
 
     d = {}
-    for i in range(len(src)):
-      s = src[i]
+    s = -1
+    for s in src:
+      i = i + 1
       s = string.lower(s)
       stopword_flag = 0
 
@@ -496,7 +500,7 @@ class Index(SingleThreadedTransaction.Persistent):
 
 
   def __getitem__(self, key):
-    '''
+    '''\
     Get the ResultList objects for the inverted key, key.
 
     The key may be a regular expression, in which case a regular
@@ -554,11 +558,29 @@ class Index(SingleThreadedTransaction.Persistent):
 
   
   def remove_document(self, doc_key, s = None):
+    '''\
+    remove_document(doc_key, s = None)
+
+    Remove a specified document from the index, given the document key.
+
+    Optionally, the document source may be provided.  This helps to
+    speed up removal of documents from a large index.
+    '''
+
     if (s is None):
       for key in self.keys():
         try:
           del self[key][doc_key]
-        except:
+        except KeyError:
+          continue
+    else:
+      s = regsub.gsub('-[ \t]*\n[ \t]*', '', str(s)) # de-hyphenate
+      s = filter(None, self.split_words(s))
+
+      for key in s:
+        try:
+	  del self[key][doc_key]
+        except KeyError:
           continue
 
 
@@ -608,16 +630,6 @@ class Index(SingleThreadedTransaction.Persistent):
 
   def __getinitargs__(self):
     return (self._index_object, self.list_class)
-
-
-class PersistentResultList(ResultList, SingleThreadedTransaction.Persistent):
-
-  def addentry(self, key, *info):
-    '''Add a frequency/key pair to this object'''
-
-    t = (self, key) + info
-    apply(PersistentResultList.inheritedAttribute('addentry'), t)
-    self.__changed__(1)
 
 
 
