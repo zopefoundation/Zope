@@ -14,7 +14,7 @@
 
 from unittest import TestCase, TestSuite, main, makeSuite
 
-##from Interface import verify_class_implementation
+from Interface.Verify import verifyClass
 
 from Products.ZCTextIndex.IQueryParser import IQueryParser
 from Products.ZCTextIndex.IQueryParseTree import IQueryParseTree
@@ -29,14 +29,14 @@ from Products.ZCTextIndex.Lexicon import Lexicon, Splitter
 class TestInterfaces(TestCase):
 
     def testInterfaces(self):
-        verify_class_implementation(IQueryParser, QueryParser)
-        verify_class_implementation(IQueryParseTree, ParseTreeNode)
-        verify_class_implementation(IQueryParseTree, OrNode)
-        verify_class_implementation(IQueryParseTree, AndNode)
-        verify_class_implementation(IQueryParseTree, NotNode)
-        verify_class_implementation(IQueryParseTree, AtomNode)
-        verify_class_implementation(IQueryParseTree, PhraseNode)
-        verify_class_implementation(IQueryParseTree, GlobNode)
+        verifyClass(IQueryParser, QueryParser)
+        verifyClass(IQueryParseTree, ParseTreeNode)
+        verifyClass(IQueryParseTree, OrNode)
+        verifyClass(IQueryParseTree, AndNode)
+        verifyClass(IQueryParseTree, NotNode)
+        verifyClass(IQueryParseTree, AtomNode)
+        verifyClass(IQueryParseTree, PhraseNode)
+        verifyClass(IQueryParseTree, GlobNode)
 
 
 class TestQueryParserBase(TestCase):
@@ -289,7 +289,7 @@ class FakeStopWordRemover:
 def test_suite():
     return TestSuite((makeSuite(TestQueryParser),
                       makeSuite(StopWordTestQueryParser),
-##                      makeSuite(TestInterfaces),
+                      makeSuite(TestInterfaces),
                     ))
 
 
