@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.2 1999/03/10 00:15:51 klm Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: BaseResponse.py,v 1.3 1999/03/18 22:34:53 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -187,3 +187,36 @@ class BaseResponse:
 
         """
         self.body=self.body+data
+
+    def exception(self, fatal=0, info=None):
+        """Handle an exception.
+
+        The fatal argument indicates whether the error is fatal.
+
+        The info argument, if given should be a tuple with an
+        error type, value, and traceback.
+        """
+
+    def notFoundError(self, v=''):
+        """Generate an error indicating that an object was not found.
+        """
+        raise 'Not Found', v
+
+    def debugError(self, v=''):
+        """Raise an error with debigging info and in debugging mode"""
+        raise 'Debug Error', v
+
+    def badRequestError(self, v=''):
+        """Raise an error indicating something wrong with the request"""
+        raise 'Bad Request', v
+
+    def forbiddenError(self, v=''):
+        """Raise an error indicating that the request cannot be done"""
+        raise 'Forbidden', v
+
+    def unauthorized(self):
+        """Raise an eror indicating that the user was not authizated
+
+        Make sure to generate an appropriate challenge, as appropriate.
+        """
+        raise 'Unauthorized'
