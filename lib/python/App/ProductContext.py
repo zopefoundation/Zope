@@ -87,7 +87,7 @@
 from AccessControl.PermissionRole import PermissionRole
 import Globals, os, OFS.ObjectManager, OFS.misc_, Products, OFS.PropertySheets
 from HelpSys import HelpTopic, APIHelpTopic
-from HelpSys.HelpSystem import ProductHelp
+from HelpSys.HelpSys import ProductHelp
 import string, os.path
 import stat
 from DateTime import DateTime

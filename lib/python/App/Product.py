@@ -113,7 +113,7 @@ from string import rfind, atoi, find, strip, join
 from Factory import Factory
 from Permission import PermissionManager
 import ZClasses, ZClasses.ZClass
-from HelpSys.HelpSystem import ProductHelp
+from HelpSys.HelpSys import ProductHelp
 
 
 class ProductFolder(Folder):
