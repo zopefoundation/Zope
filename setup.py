@@ -281,14 +281,14 @@ setup(
                   sources=['DocumentTemplate/cDocumentTemplate.c'])]
     )
 
-# third_party.docutils.docutils
+# docutils
 setup(
-    name='third_party.docutils.docutils',
+    name='docutils',
     author='David Goodger and contributors',
-    packages=['third_party.docutils.docutils', 'third_party.docutils.docutils.languages', 'third_party.docutils.docutils.parsers',
-              'third_party.docutils.docutils.parsers.rst', 'third_party.docutils.docutils.parsers.rst.directives',
-              'third_party.docutils.docutils.parsers.rst.languages', 'third_party.docutils.docutils.readers',
-              'third_party.docutils.docutils.transforms', 'third_party.docutils.docutils.writers'],
+    packages=['docutils', 'docutils.languages', 'docutils.parsers',
+              'docutils.parsers.rst', 'docutils.parsers.rst.directives',
+              'docutils.parsers.rst.languages', 'docutils.readers',
+              'docutils.transforms', 'docutils.writers'],
     )
 
 # ExtensionClass
@@ -1080,13 +1080,6 @@ setup(
                 ['ZServer/medusa/test', ['ZServer/medusa/test/*.txt']]],
     )
 
-setup(
-    name='Site Customization',
-    author=AUTHOR,
-
-    data_files=[['', ['sitecustomize.py']],
-               ]
-    )
 
 # Call distutils setup with all lib/python packages and modules, and
 # flush setup_info.  Wondering why we run py_modules separately?  So am I.

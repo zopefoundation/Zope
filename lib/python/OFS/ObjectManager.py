@@ -664,6 +664,8 @@ class ObjectManager(
                     ):
                     mode=mode | 0770
             except: pass
+            import pdb
+            pdb.set_trace()
             if nobody.allowed(
                 self.manage_FTPlist,
                 getRoles(self, 'manage_FTPlist', self.manage_FTPlist, ()),
