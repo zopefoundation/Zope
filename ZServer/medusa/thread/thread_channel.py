@@ -1,6 +1,6 @@
 # -*- Mode: Python; tab-width: 4 -*-
 
-VERSION_STRING = "$Id: thread_channel.py,v 1.3 2001/05/01 11:45:27 andreas Exp $"
+VERSION_STRING = "$Id: thread_channel.py,v 1.4 2002/02/27 04:40:20 fdrake Exp $"
 
 # This will probably only work on Unix.
 
@@ -14,11 +14,15 @@ import asyncore
 import asynchat
 
 import fcntl
-import FCNTL
 import os
 import socket
 import string
 import thread
+
+try:
+    from fcntl import F_GETFL, F_SETFL, O_NDELAY
+except ImportError:
+    from FCNTL import F_GETFL, F_SETFL, O_NDELAY
 
 # this channel slaves off of another one.  it starts a thread which
 # pumps its output through the 'write' side of the pipe.  The 'read'
@@ -42,8 +46,8 @@ class thread_channel (asyncore.file_dispatcher):
         # The read side of the pipe is set to non-blocking I/O; it is
         # 'owned' by medusa.
         
-        flags = fcntl.fcntl (rfd, FCNTL.F_GETFL, 0)
-        fcntl.fcntl (rfd, FCNTL.F_SETFL, flags | FCNTL.O_NDELAY)
+        flags = fcntl.fcntl (rfd, F_GETFL, 0)
+        fcntl.fcntl (rfd, F_SETFL, flags | O_NDELAY)
         
         # The write side of the pipe is left in blocking mode; it is
         # 'owned' by the thread.  However, we wrap it up as a file object.
