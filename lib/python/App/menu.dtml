@@ -4,15 +4,15 @@
 </HEAD>
 <BODY BACKGROUND="<!--#var SOFTWARE_URL-->/App/border.gif"
       BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<TABLE WIDTH="100" BORDER="0">
+<TABLE WIDTH="120" BORDER="0">
 <TR>
   <TD ALIGN="LEFT" COLSPAN="2">
   <IMG SRC="<!--#var SOFTWARE_URL-->/App/logo.jpg" WIDTH="102" HEIGHT="54">
-  <FONT SIZE="-2">
-  &copy; Copyright 1997
   <BR>
-  Digital Creations L.C.
-  </FONT>
+  <A HREF="<!--#var PARENT_URL-->/manage_copyright" TARGET="manage_main">
+  <FONT SIZE="-2">
+  &copy; 1997 Digital Creations</FONT>
+  </A>
   </TD>
 </TR>
 <TR><TD></TD><TD></TD></TR>

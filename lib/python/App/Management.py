@@ -1,9 +1,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.4 1997/08/15 22:27:24 jim Exp $"""
+$Id: Management.py,v 1.5 1997/09/08 23:37:22 brian Exp $"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys,Globals
 from Dialogs import MessageDialog
@@ -98,3 +98,4 @@ class Management:
     manage_options      =[]
     manage              =HTMLFile('App/manage')
     manage_menu         =HTMLFile('App/menu')
+    manage_copyright    =HTMLFile('App/copyright')
