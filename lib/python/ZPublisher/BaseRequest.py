@@ -12,7 +12,7 @@
 ##############################################################################
 """ Basic ZPublisher request management.
 
-$Id: BaseRequest.py,v 1.53 2003/11/18 13:17:17 tseaver Exp $
+$Id: BaseRequest.py,v 1.54 2003/11/28 16:46:47 jim Exp $
 """
 
 from urllib import quote
@@ -31,11 +31,18 @@ try:
         def manage_property_types(self):
             return type_converters.keys()
 
-except:
+except ImportError:
     class RequestContainer:
         __roles__=None
         def __init__(self,**kw):
             for k,v in kw.items(): self.__dict__[k]=v
+
+try:
+    from AccessControl.ZopeSecurityPolicy import getRoles
+except ImportError:
+    def getRoles(container, name, value, default):
+        return getattr(value, '__roles__', default)
+
 
 _marker=[]
 class BaseRequest:
@@ -219,14 +226,14 @@ class BaseRequest:
         object=parents[-1]
         del parents[:]
 
-        roles = getattr(object, '__roles__', UNSPECIFIED_ROLES)
+        roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
 
         # if the top object has a __bobo_traverse__ method, then use it
         # to possibly traverse to an alternate top-level object.
         if hasattr(object,'__bobo_traverse__'):
             try:
                 object=object.__bobo_traverse__(request)
-                roles =getattr(object, '__roles__', UNSPECIFIED_ROLES)
+                roles = getRoles(None, None, object, UNSPECIFIED_ROLES)
             except: pass
 
         if not path and not method:
@@ -281,9 +288,9 @@ class BaseRequest:
                     entry_name = method
                     method = 'index_html'
                 else:
-                    if (hasattr(object, '__call__') and
-                        hasattr(object.__call__,'__roles__')):
-                        roles=object.__call__.__roles__
+                    if (hasattr(object, '__call__')):
+                        roles = getRoles(object, '__call__', object.__call__,
+                                         roles)
                     if request._hacked_path:
                         i=URL.rfind('/')
                         if i > 0: response.setBase(URL[:i])
@@ -358,13 +365,9 @@ class BaseRequest:
                         "The object at %s is not publishable." % URL
                         )
 
-                r = getattr(subobject, '__roles__', UNSPECIFIED_ROLES)
-                if r is not UNSPECIFIED_ROLES:
-                    roles = r
-                elif not got:
-                    # We got the subobject as an attribute, not an item,
-                    # so we should check "next to it" for __roles__.
-                    roles = getattr(object, entry_name+'__roles__', roles)
+                roles = getRoles(
+                    object, (not got) and entry_name or None, subobject,
+                    roles)
 
                 # Promote subobject to object
                 object=subobject
