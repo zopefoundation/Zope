@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -531,12 +531,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
     def _changeUser(self,name,password,confirm,roles,domains,REQUEST=None):
+        if password == 'password' and confirm == 'confirm':
+            # Protocol for editUser.dtml to indicate unchanged password
+            password = confirm = None
         if not name:
             return MessageDialog(
                    title  ='Illegal value', 
                    message='A username must be specified',
                    action ='manage_main')
-        if not password or not confirm:
+        if password == confirm == '':
             if not domains:
                 return MessageDialog(
                    title  ='Illegal value', 
@@ -680,7 +683,8 @@ class UserFolder(BasicUserFolder):
 
     def _doChangeUser(self, name, password, roles, domains):
         user=self.data[name]
-        user.__=password
+        if password is not None:
+            user.__=password
         user.roles=roles
         user.domains=domains
 
