@@ -46,10 +46,14 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1599: made sqltest work with unicode strings (thanks
+        to Peter Sabaini for the patch).
+
       - zopectl: fixed handling of child processes (patch by Dieter Maurer)
 
       - Collector #1593: fixed dumb _get_id() implementation in
-        OFS.CopySupport that produced copy_of_copy_of....files
+        OFS.CopySupport that produced copy_of_copy_of....files (thanks
+        to Alexandre Boeglin for the patch).
 
       - Collector #1450: files in utilities/ZODBTools are now installed
         during the installation process in the 'bin' directory
