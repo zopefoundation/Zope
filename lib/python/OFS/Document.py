@@ -1,18 +1,19 @@
 """Document object"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
-from Globals import HTML, HTMLFile
+from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
 from AccessControl.Role import RoleManager
-import SimpleItem, regex
-import Acquisition
+from SimpleItem import Item_w__name__
+from Acquisition import Explicit
+import regex
 
-class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
-	       Acquisition.Explicit):
-    """Document object"""
-    meta_type      ='Document'
-    icon='p_/doc'
+
+class Document(HTML, Explicit, RoleManager, Item_w__name__):
+    """ """
+    meta_type='Document'
+    icon     ='p_/doc'
     __state_names__=HTML.__state_names__+('title','__roles__')
 
     # Documents masquerade as functions:
@@ -21,17 +22,17 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
     func_code.co_varnames='self','REQUEST','RESPONSE'
     func_code.co_argcount=3
 
-    manage_options=({'icon':'', 'label':'Edit',
-		     'action':'manage_main', 'target':'manage_main',
+    manage_options=({'label':'Edit', 'action':'manage_main',
+		     'target':'manage_main',
 	            },
-		    {'icon':'', 'label':'Upload',
-		     'action':'manage_uploadForm', 'target':'manage_main',
+		    {'label':'Upload', 'action':'manage_uploadForm',
+		     'target':'manage_main',
 		    },
-		    {'icon':'', 'label':'View',
-		     'action':'', 'target':'manage_main',
+		    {'label':'View', 'action':'',
+		     'target':'manage_main',
 		    },
-		    {'icon':'', 'label':'Security',
-		     'action':'manage_access', 'target':'manage_main',
+		    {'label':'Security', 'action':'manage_access',
+		     'target':'manage_main',
 		    },
 		   )
 
@@ -47,6 +48,7 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 		 )
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
+	""" """
 	kw['document_id']   =self.id
         kw['document_title']=self.title
 	r=apply(HTML.__call__, (self, client, REQUEST), kw)
@@ -75,7 +77,7 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 
     def manage_edit(self,data,title,SUBMIT='Change',dtpref_cols='50',
 		    dtpref_rows='20',REQUEST=None):
-	"""Edit method"""
+	""" """
         if SUBMIT=='Smaller':
             rows=atoi(dtpref_rows)-5
             cols=atoi(dtpref_cols)-5
@@ -83,9 +85,8 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	    resp=REQUEST['RESPONSE']
 	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
 	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-	    return self.manage_editForm(self,REQUEST,title=title,__str__=data,
-				        acl_type=acl_type,acl_roles=acl_roles,
-					dtpref_cols=cols,dtpref_rows=rows)
+	    return self.manage_main(self,REQUEST,title=title,__str__=data,
+				    dtpref_cols=cols,dtpref_rows=rows)
         if SUBMIT=='Bigger':
             rows=atoi(dtpref_rows)+5
             cols=atoi(dtpref_cols)+5
@@ -93,24 +94,25 @@ class Document(HTML, RoleManager, SimpleItem.Item_w__name__,
 	    resp=REQUEST['RESPONSE']
 	    resp.setCookie('dtpref_rows',str(rows),path='/',expires=e)
 	    resp.setCookie('dtpref_cols',str(cols),path='/',expires=e)
-	    return self.manage_editForm(self,REQUEST,title=title,__str__=data,
-				        acl_type=acl_type,acl_roles=acl_roles,
-					dtpref_cols=cols,dtpref_rows=rows)
-
+	    return self.manage_main(self,REQUEST,title=title,__str__=data,
+				    dtpref_cols=cols,dtpref_rows=rows)
 	self.title=title
 	self.munge(data)
-	if REQUEST: return self.manage_editedDialog(REQUEST)
+	if REQUEST: return MessageDialog(
+		    title  ='Success!',
+		    message='Your changes have been saved',
+		    action ='manage_main')
 
     def manage_upload(self,file='', REQUEST=None):
-	"""Change image data"""
+	""" """
 	self.munge(file.read())
-	if REQUEST: return self.manage_editedDialog(REQUEST)
-
-    def validRoles(self):
-	return self.aq_parent.validRoles()
+	if REQUEST: return MessageDialog(
+		    title  ='Success!',
+		    message='Your changes have been saved',
+		    action ='manage_main')
 
     def PUT(self, BODY, REQUEST):
-	'handle PUT requests'
+	""" """
 	self.munge(BODY)
 	return 'OK'
 
@@ -123,13 +125,11 @@ the <!--#var title_and_id--> Folder.</P>
 
 
 class DocumentHandler:
-    """Document object handler mixin"""
-    #meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
-
+    """ """
     manage_addDocumentForm=HTMLFile('documentAdd', globals())
 
     def manage_addDocument(self,id,title='',file='',REQUEST=None):
-	"""Add a new Document object"""
+	""" """
 	if not file: file=default_html
         i=Document(file, __name__=id)
 	i.title=title

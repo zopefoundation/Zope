@@ -1,28 +1,25 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.30 1997/12/31 17:13:23 brian Exp $"""
+$Id: Folder.py,v 1.31 1998/01/02 17:22:56 brian Exp $"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
 from CopySupport import CopyContainer
-from Image import ImageHandler
+from Image import Image, File, ImageHandler
 from Document import DocumentHandler
 from AccessControl.User import UserFolderHandler
 from AccessControl.Role import RoleManager
 import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
-import Image
+
 
 class FolderHandler:
-    """Folder object handler"""
-
-    # meta_types=({'name':'Folder', 'action':'manage_addFolderForm'},)
-
+    """ """
     manage_addFolderForm=HTMLFile('folderAdd', globals())
 
     def folderClass(self):
@@ -36,13 +33,9 @@ class FolderHandler:
 	i.id=id
 	i.title=title
 	self._setObject(id,i)
-
-	if createUserF: i.manage_addUserFolder()
-	if createPublic:
-	    i.manage_addDocument(id='index_html', title='')
-
-	if REQUEST is not None:
-	    return self.manage_main(self,REQUEST)
+	if createUserF:  i.manage_addUserFolder()
+	if createPublic: i.manage_addDocument(id='index_html',title='')
+	if REQUEST: return self.manage_main(self,REQUEST)
 
     def folderIds(self):
 	t=[]
@@ -66,21 +59,19 @@ class FolderHandler:
 
     test_url___allow_groups__=None
     def test_url_(self):
-	'''Method for testing server connection information
-	when configuring aqueduct clients'''
+	"""Test connection"""
 	return 'PING'
 
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
 	     ImageHandler,FolderHandler,UserFolderHandler,
 	     SimpleItem.Item,CopyContainer):
-    """Folder object"""
+    """ """
     meta_type='Folder'
     id       ='folder'
     title    ='Folder object'
-    icon='p_/folder'
+    icon     ='p_/folder'
 
-    
     _properties=({'id':'title', 'type': 'string'},)
 
     meta_types=()
@@ -89,16 +80,16 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	)
 
     manage_options=(
-    {'icon':icon, 'label':'Contents',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
-     'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'AccessControl/AccessControl_icon.gif', 'label':'Security',
-     'action':'manage_access',   'target':'manage_main'},
-    {'icon':'App/undo_icon.gif', 'label':'Undo',
-     'action':'manage_UndoForm',   'target':'manage_main'},
-#    {'icon':'OFS/Help_icon.gif', 'label':'Help',
-#     'action':'manage_help',   'target':'_new'},
+    {'label':'Contents', 'action':'manage_main',
+     'target':'manage_main'},
+    {'label':'Properties', 'action':'manage_propertiesForm',
+     'target':'manage_main'},
+    {'label':'Security', 'action':'manage_access',
+     'target':'manage_main'},
+    {'label':'Undo', 'action':'manage_UndoForm',
+     'target':'manage_main'},
+#    {'label':'Help', 'action':'manage_help',
+#     'target':'_new'},
     )
 
     __ac_permissions__=(
@@ -139,25 +130,20 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	    id=key[19:]
 	    if hasattr(self, id): return getattr(self, id).manage_supervisor()
 	    raise KeyError, key
-
 	try:
 	    if self.REQUEST['REQUEST_METHOD']=='PUT': return PUTer(self,key)
 	except: pass
-
 	raise KeyError, key
 
-class PUTer:
-    'Temporary objects to handle PUT to non-existent images or documents'
 
+class PUTer:
+    """ """
     def __init__(self, parent, key):
 	self._parent=parent
 	self._key=key
 
-    def __str__(self): return self._key
-
-    PUT__roles__='manage',
     def PUT(self, REQUEST, BODY):
-	' '
+	""" """
 	name=self._key
 	try: type=REQUEST['CONTENT_TYPE']
 	except KeyError: type=''
@@ -174,17 +160,20 @@ class PUTer:
 		    raise 'Bad Request', 'Could not determine file type'
 		else: type=text_type(BODY)
 	    __traceback_info__=suf, dot, name, type
-
 	if lower(type)=='text/html':
 	    return self._parent.manage_addDocument(name,'',BODY,
 						   REQUEST=REQUEST)
-
-	if lower(type)[:6]=='image/': i=Image.Image()
-	else: i=Image.File()
-	i._init(name, BODY, type)
-	i.title=''
-	self._parent._setObject(name,i)
+	if lower(type)[:6]=='image/':
+	    self._parent._setObject(name, Image(name, '', BODY, type))
+	else:
+	    self._parent._setObject(name, File(name, '', BODY, type))
 	return 'OK'
+
+    def __str__(self): return self._key
+
+
+
+
 
 
 def subclass(c,super):
@@ -194,3 +183,5 @@ def subclass(c,super):
 	    if subclass(base,super): return 1
     except: pass
     return 0
+
+
