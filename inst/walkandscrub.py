@@ -99,10 +99,10 @@ def walkandscrub(path):
     print
     print '-'*78
     sys.stdout.write(
-        "Deleting '.pyc' and '.pyo' files recursively under %s... " % path
+        "Deleting '.pyc' and '.pyo' files recursively under %s...\n" % path
         )
     os.path.walk(path, scrub, [])
-    sys.stdout.write('done.\n')
+    sys.stdout.write('Done.\n')
 
 def scrub(list, dirname, filelist):
     for name in filelist:
@@ -112,6 +112,7 @@ def scrub(list, dirname, filelist):
         if ext == '.pyo' or ext == '.pyc':
             full = os.path.join(dirname, name)
             os.unlink(full)
+            filelist.remove(name)
             if DEBUG: print full
             
 if __name__ == '__main__':
