@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.11 1997/12/02 00:40:02 jim Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.12 1997/12/02 01:06:31 jim Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -26,10 +26,15 @@ class Tree:
 	args=parse_params(args, name=None, expr=None,
 			  expand=None, leaves=None,
 			  header=None, footer=None,
-			  nowrap=1)
-	if args.has_key('name'): name=args['name']
-	elif args.has_key(''): name=args['name']=args['']
+			  nowrap=1, branches=None)
+	has_key=args.has_key
+
+	if has_key('name'): name=args['name']
+	elif has_key(''): name=args['name']=args['']
 	else: name='a tree tag'
+
+	if not has_key('branches'): args['branches']='tpValues'
+	
 	self.__name__ = name
 	self.section=section
 	self.args=args
@@ -78,7 +83,7 @@ def tpRender(self, md, section, args):
 	    try:    expand_all=md['expand_all']
 	    except: expand_all=None
 	    if expand_all:
-		state=tpValuesIds(self)
+		state=tpValuesIds(self, args['branches'])
 	    else:
 		try:
 		    state=md['tree-state'] or md['state'] or md['-tree-state-']
@@ -108,7 +113,7 @@ def tpRender(self, md, section, args):
     md._push(treeData)
 
     try:
-	for item in self.tpValues():
+	for item in getattr(self, args['branches'])():
 	    data=tpRenderTABLE(item,root,url,state,substate,data,colspan,
 			       section,md,treeData, level, args)
 	if state is substate: data.append('</TABLE>\n')
@@ -122,17 +127,23 @@ def tpStateLevel(state, level=0):
         else: level=max(level,1)
     return level
 
-def tpValuesIds(self):
+def tpValuesIds(self, branches):
     # This should build the ids of subitems which are
     # expandable (non-empty). Leaves should never be
     # in the state - it will screw the colspan counting.
     r=[]
     try:
-	for item in self.tpValues():
+	try: items=getattr(self, branches)()
+	except AttributeError: items=()
+	for item in items:
 	    try:
-		if item.tpValues():
-		    id=item.tpId()
-		    e=tpValuesIds(item)
+		if getattr(item, branches)():
+
+		    if hasattr(item, 'tpId'): id=item.tpId()
+		    elif hasattr(item, '_p_oid'): id=item._p_oid
+		    else: id=pyid(item)
+
+		    e=tpValuesIds(item, branches)
 		    if e: id=[id,e]
 		    else: id=[id]
 		    r.append(id)
@@ -145,7 +156,7 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
                   colspan, section, md, treeData, level=0, args=None):
 
     have_arg=args.has_key
-    try:    items=self.tpValues()
+    try:    items=getattr(self, args['branches'])()
     except: items=None
     if not items and have_arg('leaves'): items=1
 
@@ -155,12 +166,10 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
     treeData['tree-level']=level
     treeData['tree-item-expanded']=0
 
-    try:    id=self.tpId()
-    except: id=None
-    if id is None:
-	try:    id=self._p_oid
-	except: id=None
-	if id is None: id=pyid(self)
+
+    if hasattr(self, 'tpId'): id=self.tpId()
+    elif hasattr(self, '_p_oid'): id=self._p_oid
+    else: id=pyid(self)
 
     exp=0
     sub=None
