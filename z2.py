@@ -134,6 +134,13 @@ Options:
     The username to run ZServer as. You may want to run ZServer as 'nobody'
     or some other user with limited resouces. The only works under Unix, and
     if ZServer is started by root. The default is: %(UID)s
+
+  -P number
+
+    Set the web, ftp and monitor port numbers simultaneously
+    as offsets from the number.  The web port number will be number+80.
+    The FTP port number will be number+21.  The monitoe port number will
+    be number+99.
     
   -w port
   
@@ -247,7 +254,7 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:l:2D')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:l:2DP:')
 
     # Get environment variables
     for a in args:
@@ -293,6 +300,15 @@ try:
                     if v < 1: raise 'Invalid port', v
                 except: raise 'Invalid port', v
             FTP_PORT=v
+        elif o=='-P':
+            if v:
+                try:
+                    v=string.atoi(v)
+                    if v < 1: raise 'Invalid port', v
+                except: raise 'Invalid port', v
+            FTP_PORT=v+21
+            HTTP_PORT=v+80
+            MONITOR_PORT=v+99
         elif o=='-p': PCGI_FILE=v
         elif o=='-h':
             print __doc__ % vars()
