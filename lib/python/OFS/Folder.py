@@ -105,9 +105,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.63 1999/02/16 15:55:43 brian Exp $"""
+$Id: Folder.py,v 1.64 1999/02/18 18:55:46 jim Exp $"""
 
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 import Globals, SimpleItem, Acquisition, mimetypes, content_types
 from Globals import HTMLFile
@@ -160,18 +160,12 @@ class Folder(ObjectManager, PropertyManager, RoleManager, SimpleItem.Item,
         )
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main',
-     'target':'manage_main'},
-    {'label':'Properties', 'action':'manage_propertiesForm',
-     'target':'manage_main'},
-    {'label':'Import/Export', 'action':'manage_importExportForm',
-     'target':'manage_main'},
-    {'label':'Security', 'action':'manage_access',
-     'target':'manage_main'},
-    {'label':'Undo', 'action':'manage_UndoForm',
-     'target':'manage_main'},
-    {'label':'Find', 'action':'manage_findFrame',
-     'target':'manage_main'},
+        {'label':'Contents', 'action':'manage_main'},
+        {'label':'Properties', 'action':'manage_propertiesForm'},
+        {'label':'Import/Export', 'action':'manage_importExportForm'},
+        {'label':'Security', 'action':'manage_access'},
+        {'label':'Undo', 'action':'manage_UndoForm'},
+        {'label':'Find', 'action':'manage_findFrame'},
     )
 
     __ac_permissions__=(
