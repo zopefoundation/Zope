@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.8 1996/12/13 13:53:11 jim Exp $'''
+$Id: InvertedIndex.py,v 1.9 1996/12/23 21:54:10 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.8 1996/12/13 13:53:11 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.9  1996/12/23 21:54:10  chris
+# Checked out by Chris for testing/editing.
+#
 # Revision 1.8  1996/12/13 13:53:11  jim
 # Checked in so I could edit.
 #
@@ -113,7 +116,7 @@ $Id: InvertedIndex.py,v 1.8 1996/12/13 13:53:11 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -299,7 +302,7 @@ class Index:
 
   Indexing is performed using the index() method.
 
-  Searching is performed using the Index object's mapping
+  Searching is performed using the Index object\'s mapping
   behaviour.  
 
   Example usage:
@@ -323,7 +326,7 @@ class Index:
 
     # perform a test search
     print i['blah']
-  '''
+  ''' #'
 
   list_class = ResultList
 
@@ -410,7 +413,7 @@ class Index:
 
 
   def __getitem__(self, key):
-    '''\
+    '''
     Get the ResultList objects for the inverted key, key, sorted by 
     frequency.
 
