@@ -5,6 +5,19 @@ ZTUtils history
   in the file CHANGES.txt.
 
 
+    Version 1.1.3
+
+      Brown-bag bugfix release.
+
+    Version 1.1.2
+
+      Bugs Fixed
+
+        - Orphans defaulted to 3, which was confusing and out of sync
+          with DTML-In.
+
+        - Orphan batches were broken.
+
     Version 1.1.1
 
       Bugs Fixed

@@ -4,14 +4,13 @@ ZTUtils changes
   Change information for previous versions can be found in the
   file HISTORY.txt.
 
-    Version 1.1.2
+    Version 1.1.4
 
       Bugs Fixed
 
-        - Orphans defaulted to 3, which was confusing and out of sync
-          with DTML-In.
+        - Handle both string and class Unauthorized exceptions.
 
-        - Orphan batches were broken.
-
+        - Batch construction masked sequence errors, such as
+          Unauthorized.
 
 
