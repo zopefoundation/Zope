@@ -3,7 +3,7 @@
 import os
 import sys
 
-mydir = os.path.abspath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+mydir = os.path.abspath(os.path.dirname(__file__))
 codedir = os.path.dirname(os.path.dirname(mydir))
 
 if codedir not in sys.path:
