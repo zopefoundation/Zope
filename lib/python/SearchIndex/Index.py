@@ -84,9 +84,9 @@
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
-from Globals import Persistent
+from Persistence import Persistent
 from BTree import BTree
 from intSet import intSet
 import operator
