@@ -5,7 +5,7 @@ _checkversion.py file"""
 import pyversioncheck
 
 _PACKAGE="pyexpat"
-_VERSION="1.2"
+_VERSION="1.3"
 _URL="http://www.cwi.nl/~jack/pyexpatversion.txt"
 
 try:
