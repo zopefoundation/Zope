@@ -384,7 +384,10 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
 
     def all_meta_types(self): return self.meta_types
 
-    manage=Globals.DTMLFile('OFS/dtml/main')
+
+    manage=Globals.DTMLFile('OFS/dtml/main',
+                            management_view='Property Sheets')
+    manage_main = manage
     manage_addCommonSheetForm=Globals.DTMLFile('dtml/addCommonSheet',
                                                globals())
 
@@ -392,7 +395,8 @@ class ZInstanceSheetsSheet(OFS.Traversable.Traversable,
         "Add a property sheet"
         o=ZCommonSheet(id, title)
         self._setObject(id, o)
-        if REQUEST is not None: return self.manage_main(self, REQUEST)
+        if REQUEST is not None:
+            return self.manage(self, REQUEST)
 
 def klass_sequence(klass,attr,result=None):
     if result is None: result={}
