@@ -156,6 +156,9 @@ Zope Changes
        is now installed into the 'bin' folder.
 
     Bugs fixed
+
+     - Collector #1332: Added in-place migration of the Catalog.__len__
+       attribute to avoid new-style class caching problems.
  
      - Collector #1457: ZCTextIndex's QueryError and ParseError 
        are now available for import from untrusted code.

@@ -78,13 +78,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # object unique identifier to the rid, and self.paths is a
         # mapping of the rid to the unique identifier.
 
-        # Note that it was unfortunate to use __len__ as the attribute
-        # name here. New-style classes cache slot methods in C slot
-        # pointers. The result is that instances can't override slots.
-        # This is not easy to change on account of old objects with
-        # __len__ attr.
-
-        self.__len__ = BTrees.Length.Length()
+        self._length = BTrees.Length.Length()
         self.clear()
 
         if brains is not None:
@@ -92,13 +86,16 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
         self.updateBrains()
 
+    
     def __len__(self):
-        try:
-            return self.__dict__['__len__']()
-        except KeyError:
-            # Fallback for *really* old catalogs that don't have
-            # Length objects. 
-            return len(self.data)
+        return self._length()
+
+    def migrate__len__(self):
+        """ migration of old __len__ magic for Zope 2.8 """
+        if not hasattr(self, '_length'):
+            n = self.__dict__['__len__']()
+            del self.__dict__['__len__'] 
+            self._length = BTrees.Length.Length(n)
 
     def clear(self):
         """ clear catalog """
@@ -106,37 +103,10 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         self.data  = IOBTree()  # mapping of rid to meta_data
         self.uids  = OIBTree()  # mapping of uid to rid
         self.paths = IOBTree()  # mapping of rid to uid
-
-        # convert old-style Catalog object to new in-place
-        try: self.__len__.set(0)
-        except AttributeError: self.__len__=BTrees.Length.Length()
+        self._length.set(0)
 
         for index in self.indexes.keys():
             self.getIndex(index).clear()
-
-    def _convertBTrees(self, threshold=200):
-
-        from BTrees.convert import convert
-
-        if type(self.data) is not IOBTree:
-            data=self.data
-            self.data=IOBTree()
-            convert(data, self.data, threshold)
-
-            self.__len__=BTrees.Length.Length(len(data))
-
-            uids=self.uids
-            self.uids=OIBTree()
-            convert(uids, self.uids, threshold)
-
-            paths=self.paths
-            self.paths=IOBTree()
-            convert(paths, self.paths, threshold)
-
-
-        for index in self.indexes.values():
-            if hasattr(index, '__of__'): index=index.__of__(self)
-            index._convertBTrees(threshold)
 
     def updateBrains(self):
         self.useBrains(self._v_brains)
@@ -369,9 +339,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if index is None:  # we are inserting new data
             index = self.updateMetadata(object, uid)
 
-            try: self.__len__.change(1)
-            except AttributeError: pass # No managed length (old-style)
-
+            self._length.change(1)
             self.uids[uid] = index
             self.paths[index] = uid
 
@@ -421,8 +389,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             del data[rid]
             del paths[rid]
             del uids[uid]
-            try: self.__len__.change(-1)
-            except AttributeError: pass # No managed length
+            self._length.change(-1)
+            
         else:
             LOG.error('uncatalogObject unsuccessfully '
                       'attempted to uncatalog an object '

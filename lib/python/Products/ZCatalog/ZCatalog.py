@@ -183,6 +183,9 @@ class ZCatalog(Folder, Persistent, Implicit):
         self._catalog = Catalog()
 
     def __len__(self):
+        # Perform a migration of _catalog.__len__ to _catalog._length
+        # to avoid with new-style class caching issues (see #1332)
+        self._catalog.migrate__len__()
         return len(self._catalog)
 
 
