@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.36 1998/01/26 21:01:33 brian Exp $"""
+$Id: Folder.py,v 1.37 1998/02/05 23:34:58 jim Exp $"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -16,7 +16,7 @@ from AccessControl.Role import RoleManager
 import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
-
+import Globals
 
 class FolderHandler:
     """ """
@@ -62,6 +62,7 @@ class FolderHandler:
 	"""Test connection"""
 	return 'PING'
 
+Globals.default__class_init__(FolderHandler)
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
 	     ImageHandler,FolderHandler,UserFolderHandler,
@@ -100,7 +101,9 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
       'manage_tabs','manage_propertiesForm','manage_UndoForm']),
     ('Undo changes',       ['manage_undo_transactions']),
     ('Change permissions', ['manage_access']),
-    ('Add objects',        ['manage_addObject']),
+    ('Add objects', [ 'manage_addObject', 'manage_addDocument',
+	'manage_addFile', 'manage_addImage', 'manage_addFolder',
+	'manage_addUserFolder']),
     ('Delete objects',     ['manage_delObjects']),
     ('Add properties',     ['manage_addProperty']),
     ('Change properties',  ['manage_editProperties']),
