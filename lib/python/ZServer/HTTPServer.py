@@ -124,6 +124,7 @@ from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
 
 from zLOG import LOG, register_subsystem, BLATHER, INFO, WARNING, ERROR
 
+
 register_subsystem('ZServer HTTPServer')
 
 CONTENT_LENGTH = regex.compile('Content-Length: \([0-9]+\)',regex.casefold)
@@ -197,7 +198,18 @@ class zhttp_handler:
             sin=StringIO()
             self.continue_request(sin,request)
 
-    def get_environment(self,request):
+    def get_environment(self, request,
+                        # These are strictly performance hackery...
+                        split=string.split,
+                        strip=string.strip,
+                        join =string.join,
+                        upper=string.upper,
+                        lower=string.lower,
+                        h2ehas=header2env.has_key,
+                        h2eget=header2env.get,
+                        workdir=os.getcwd(),
+                        ospath=os.path,
+                        ):
         [path, params, query, fragment] = split_path(request.uri)
         while path and path[0] == '/':
             path = path[1:]
@@ -206,11 +218,13 @@ class zhttp_handler:
         if query:
             # ZPublisher doesn't want the leading '?'
             query = query[1:]
+
+        server=request.channel.server
         env = {}
-        env['REQUEST_METHOD']=string.upper(request.command)
-        env['SERVER_PORT']=str(request.channel.server.port)
-        env['SERVER_NAME']=request.channel.server.server_name
-        env['SERVER_SOFTWARE']=request.channel.server.SERVER_IDENT
+        env['REQUEST_METHOD']=upper(request.command)
+        env['SERVER_PORT']=str(server.port)
+        env['SERVER_NAME']=server.server_name
+        env['SERVER_SOFTWARE']=server.SERVER_IDENT
         env['SERVER_PROTOCOL']=request.version
         if self.uri_base=='/':
             env['SCRIPT_NAME']=''
@@ -218,40 +232,38 @@ class zhttp_handler:
         else:
             env['SCRIPT_NAME'] = self.uri_base
             try:
-                path_info=string.split(path,self.uri_base[1:],1)[1]
+                path_info=split(path,self.uri_base[1:],1)[1]
             except:
                 path_info=''
             env['PATH_INFO']=path_info
-        env['PATH_TRANSLATED']=os.path.normpath(os.path.join(
-                os.getcwd(),env['PATH_INFO']))
+        env['PATH_TRANSLATED']=ospath.normpath(ospath.join(
+                workdir, env['PATH_INFO']))
         if query:
             env['QUERY_STRING'] = query
         env['GATEWAY_INTERFACE']='CGI/1.1'
         env['REMOTE_ADDR']=request.channel.addr[0]
+
         # If we're using a resolving logger, try to get the
-        # remote host from the resolver's cache. 
-        try:
-            dns_cache=request.channel.server.logger.resolver.cache
+        # remote host from the resolver's cache.
+        if hasattr(server.logger, 'resolver'):
+            dns_cache=server.logger.resolver.cache
             if dns_cache.has_key(env['REMOTE_ADDR']):
                 remote_host=dns_cache[env['REMOTE_ADDR']][2]
                 if remote_host is not None:
                     env['REMOTE_HOST']=remote_host
-        except AttributeError:
-            pass
-        
+
+        env_has=env.has_key
         for header in request.header:
-            key,value=string.split(header,":",1)
-            key=string.lower(key)
-            value=string.strip(value)
-            if header2env.has_key(key) and value:
-                env[header2env[key]]=value
+            key,value=split(header,":",1)
+            key=lower(key)
+            value=strip(value)
+            if h2ehas(key) and value:
+                env[h2eget(key)]=value
             else:
-                key='HTTP_' + string.upper(
-                    string.join(string.split(key, "-"), "_"))
-                if value and not env.has_key(key):
-                    env[key]=value        
-        for key, value in self.env_override.items():
-            env[key]=value
+                key='HTTP_%s' % upper(join(split(key, "-"), "_"))
+                if value and not env_has(key):
+                    env[key]=value
+        env.update(self.env_override)
         return env
 
     def continue_request(self, sin, request):
