@@ -4,7 +4,10 @@
 <TITLE>Change User</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<dtml-var manage_tabs>
+
+<H2>Change User</H2>
+
+<dtml-var "HelpSys.HelpButton('User-Folder_Edit-User.dtml')">
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>

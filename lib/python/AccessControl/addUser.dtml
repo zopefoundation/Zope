@@ -4,7 +4,11 @@
 <TITLE>Add User</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<dtml-var manage_tabs>
+
+<H2>Add User</H2>
+
+<dtml-var "HelpSys.HelpButton('User-Folder_Add-User.dtml')">
+
 <P>
 To add a new user, enter the name,
 <dtml-unless remote_user_mode__>

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.93 $'[11:-2]
+__version__='$Revision: 1.94 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -321,9 +321,12 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     isAUserFolder=1
 
     manage_options=(
-    {'label':'Contents', 'action':'manage_main'},
-    {'label':'Security', 'action':'manage_access'},
-    {'label':'Undo',     'action':'manage_UndoForm'},
+    {'label':'Contents', 'action':'manage_main',
+     'help':('OFSP','User-Folder_Contents.dtml')},
+    {'label':'Security', 'action':'manage_access',
+     'help':('OFSP','User-Folder_Security.dtml')},
+    {'label':'Undo',     'action':'manage_UndoForm',
+     'help':('OFSP','User-Folder_Undo.dtml')},
     )
 
     __ac_permissions__=(
