@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -663,10 +663,10 @@ class HTTPRequest(BaseRequest):
                             for x in item:
                                 # loop through the records
                                 if hasattr(x, attr):
-                                # If the record has the attribute
-                                # convert it to a tuple and set it
-                                value=tuple(getattr(x,attr))
-                                setattr(x,attr,value)          
+                                    # If the record has the attribute
+                                    # convert it to a tuple and set it
+                                    value=tuple(getattr(x,attr))
+                                    setattr(x,attr,value)          
                     else:
                         # the form does not have the split key 
                         if form.has_key(key):
