@@ -209,7 +209,8 @@ import ts_regex
 import regex
 from ts_regex import gsub
 from string import split, join, strip, find
-import string
+import string,re
+
 
 def untabify(aString,
              indent_tab=ts_regex.compile('\(\n\|^\)\( *\)\t').search_group,
@@ -307,8 +308,9 @@ class Table:
     ROW=' <TR>\n%s </TR>\n'
     TABLE='\n<TABLE BORDER=1 CELLPADDING=2>\n%s</TABLE>'
     
-    def create(self,aPar,td=ts_regex.compile(
-        '[ \t\n]*||\([^\0|]*\)').match_group):
+    def create(self,aPar,
+        td_reg=re.compile(r'[ \t\n]*\|\|([^\0x00|]*)')
+        ):
         '''parses a table and returns nested list representing the
         table'''
         self.table=[]
@@ -316,11 +318,12 @@ class Table:
         for line in text:
             row=[]
             while 1:
-                pos=td(line,(1,))
-                if not pos:return 0
-                row.append(pos[1])
-                if pos[0]==len(line):break
-                line=line[pos[0]:]
+                mo =  td_reg.match(line)
+                if not mo: return 0
+                pos = mo.end(1)
+                row.append(mo.group(1))
+                if pos==len(line):break
+                line=line[pos:]
             self.table.append(row)
         return 1
 
@@ -386,7 +389,7 @@ class StructuredText:
 
         protoless = find(aStructuredString, '<a href=":')
         if protoless != -1:
-            aStructuredString = gsub('<a href=":', '<a href="',
+            aStructuredString = re.sub('<a href=":', '<a href="',
                                      aStructuredString)
 
         self.level=level
@@ -401,26 +404,26 @@ class StructuredText:
         return str(self.structure)
 
 
-ctag_prefix="\([\0- (]\|^\)"
-ctag_suffix="\([\0- ,.:;!?)]\|$\)"
-ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
-ctag_middl2="[%s][%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s][%s]"
-        
+ctag_prefix=r'([\x00- \\(]|^)' 
+ctag_suffix=r'([\x00- ,.:;!?\\)]|$)'         
+ctag_middle=r'[%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s]' 
+ctag_middl2=r'[%s][%s]([^\x00- %s][^%s]*[^\x00- %s]|[^%s])[%s][%s]'    
+
 def ctag(s,
-         em=regex.compile(
+         em=re.compile(
              ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix),
-         strong=regex.compile(
+         strong=re.compile(
              ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix),
-         under=regex.compile(
+         under=re.compile(
              ctag_prefix+(ctag_middle % (("_",)*6) )+ctag_suffix),
-         code=regex.compile(
+         code=re.compile(
              ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix),
          ):
     if s is None: s=''
-    s=gsub(strong,'\\1<strong>\\2</strong>\\3',s)
-    s=gsub(under, '\\1<u>\\2</u>\\3',s)
-    s=gsub(code,  '\\1<code>\\2</code>\\3',s)
-    s=gsub(em,    '\\1<em>\\2</em>\\3',s)
+    s=strong.sub(r'\1<strong>\2</strong>\3',s)
+    s=under.sub( r'\1<u>\2</u>\3',s)
+    s=code.sub(  r'\1<code>\2</code>\3',s)
+    s=em.sub(    r'\1<em>\2</em>\3',s)
     return s    
 
 class HTML(StructuredText):
@@ -430,18 +433,18 @@ class HTML(StructuredText):
     '''\
 
     def __str__(self,
-                extra_dl=regex.compile("</dl>\n<dl>"),
-                extra_ul=regex.compile("</ul>\n<ul>"),
-                extra_ol=regex.compile("</ol>\n<ol>"),
+                extra_dl=re.compile("</dl>\n<dl>"),
+                extra_ul=re.compile("</ul>\n<ul>"),
+                extra_ol=re.compile("</ol>\n<ol>"),
                 ):
         '''\
         Return an HTML string representation of the structured text data.
 
         '''
         s=self._str(self.structure,self.level)
-        s=gsub(extra_dl,'\n',s)
-        s=gsub(extra_ul,'\n',s)
-        s=gsub(extra_ol,'\n',s)
+        s=extra_dl.sub('\n',s)
+        s=extra_ul.sub('\n',s)
+        s=extra_ol.sub('\n',s)
         return s
 
     def ul(self, before, p, after):
@@ -554,30 +557,30 @@ class HTML(StructuredText):
 
 def html_quote(v,
                character_entities=(
-                       (regex.compile('&'), '&amp;'),
-                       (regex.compile("<"), '&lt;' ),
-                       (regex.compile(">"), '&gt;' ),
-                       (regex.compile('"'), '&quot;')
+                       (re.compile('&'), '&amp;'),
+                       (re.compile("<"), '&lt;' ),
+                       (re.compile(">"), '&gt;' ),
+                       (re.compile('"'), '&quot;')
                        )): #"
         text=str(v)
         for re,name in character_entities:
-            text=gsub(re,name,text)
+            text=re.sub(name,text)
         return text
 
 def html_with_references(text, level=1):
-    text = gsub(
-        '[\0\n]\.\. \[\([0-9_%s-]+\)\]' % string.letters,
-        '\n  <a name="\\1">[\\1]</a>',
+    text = re.sub(
+        r'[\0\n]\.\. \[([0-9_%s-]+)\]' % string.letters,
+        r'\n  <a name="\1">[\1]</a>',
+        text)
+
+    text = re.sub(
+        r'([\x00- ,])\[(?P<ref>[0-9_%s-]+)\]([\x00- ,.:])'   % string.letters,
+        r'\1<a href="#\2">[\2]</a>\3',
         text)
     
-    text = gsub(
-        '\([\0- ,]\)\[\([0-9_%s-]+\)\]\([\0- ,.:]\)' % string.letters,
-        '\\1<a href="#\\2">[\\2]</a>\\3',
-        text)
-    
-    text = gsub(
-        '\([\0- ,]\)\[\([^]]+\)\.html\]\([\0- ,.:]\)',
-        '\\1<a href="\\2.html">[\\2]</a>\\3',
+    text = re.sub(
+        r'([\0- ,])\[([^]]+)\.html\]([\0- ,.:])',
+        r'\1<a href="\2.html">[\2]</a>\3',
         text)
 
     return HTML(text,level=level)
@@ -604,12 +607,12 @@ def main():
             locale.setlocale(locale.LC_ALL,"")
 
         if s[:2]=='#!':
-            s=ts_regex.sub('^#![^\n]+','',s)
+            s=re.sub('^#![^\n]+','',s)
 
-        r=ts_regex.compile('\([\0-\n]*\n\)')
-        ts_results = r.match_group(s, (1,))
-        if ts_results:
-            s=s[len(ts_results[1]):]
+        mo = re.compile('([\0-\n]*\n)').match(s)
+        if mo is not None:
+            s = s[len(mo.group(0)) :]
+            
         s=str(html_with_references(s))
         if s[:4]=='<h1>':
             t=s[4:find(s,'</h1>')]
