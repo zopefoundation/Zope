@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1392,7 +1392,7 @@ class DateTime:
         format = ts_regex.gsub('\(^\|[^%]\)%z',
                                '\\1%+05d' % (diff / 36),
                                format)
-        return strftime(format, gmtime(self.timeTime() + diff))
+        return strftime(format, safegmtime(self.timeTime() + diff))
 
     # General formats from previous DateTime
     def Date(self):
