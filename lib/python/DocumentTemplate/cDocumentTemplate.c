@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.28 1999/08/30 17:18:07 brian Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.29 1999/08/30 17:54:01 brian Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -409,7 +409,6 @@ MM_cget(MM *self, PyObject *key, int call)
                             AttributeError to avoid leaking.
                           */
 			  else {
-			    PyErr_Clear();
 			    Py_XDECREF(t);
 			    Py_XDECREF(rr);
 			    Py_XDECREF(tb);
@@ -1043,7 +1042,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.28 $";
+  char *rev="$Revision: 1.29 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
