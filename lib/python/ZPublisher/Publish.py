@@ -444,7 +444,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.8 1996/07/18 14:59:54 jfulton Exp $"""
+$Id: Publish.py,v 1.9 1996/07/23 19:59:29 jfulton Exp $"""
 #'
 #     Copyright 
 #
@@ -497,6 +497,15 @@ $Id: Publish.py,v 1.8 1996/07/18 14:59:54 jfulton Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.9  1996/07/23 19:59:29  jfulton
+# Fixed bugs:
+#
+#   - object[entryname] can fail with attribute as well as type error
+#   - flatten didn't work with multiple values\
+#   - inserted base was not absolute
+#
+# Added transaction support.
+#
 # Revision 1.8  1996/07/18 14:59:54  jfulton
 # Fixed bug in getting web_objects.
 #
@@ -526,7 +535,7 @@ $Id: Publish.py,v 1.8 1996/07/18 14:59:54 jfulton Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 def main():
@@ -693,12 +702,12 @@ class ModulePublisher:
 			except:
 			    try: realm=object[entry_name+'__realm__']
 			    except: pass
-		    except TypeError:
+		    except (TypeError,AttributeError):
 			if not path and entry_name=='help' and doc:
 			    object=doc
 			    entry_name, subobject = (
 				'__doc__', self.html
-				('Documentation for' +
+				('Documentation for ' +
 				 ((self.env('PATH_INFO') or
 				   ('/'+self.module_name))[1:]),
 				 '<pre>\n%s\n</pre>' % doc)
@@ -757,9 +766,17 @@ class ModulePublisher:
 		if name_index < nrequired:
 		    self.badRequestError(argument_name)
 
-    
+
+	# Attempt to start a transaction:
+	try:
+	    transaction=get_transaction()
+	    transaction.begin()
+	except: transaction=None
+
 	if args: result=apply(object,tuple(args))
 	else:    result=object()
+
+	if transaction: transaction.commit()
 
 	if result and result is not response: response.setBody(result)
 
@@ -780,7 +797,7 @@ def str_field(v):
 	except: pass
     return v
 
-def flatten_field(v,converter):
+def flatten_field(v,converter=None):
     if type(v) is types.ListType:
 	if len(v) > 1: return map(flatten_field,v)
 	v=v[0]
@@ -873,7 +890,7 @@ class Request:
 	categories. The search order is environment variables,
 	other variables, form data, and then cookies. 
 	
-	"""
+	""" #"
 	try:
 	    v= self.environ[key]
 	    if self.special_names.has_key(key) or key[:5] == 'HTTP_':
@@ -967,10 +984,15 @@ class CGIModulePublisher(ModulePublisher):
 	self.stdout=stdout
 	self.stderr=stderr
 	b=string.strip(self.environ['SCRIPT_NAME'])
-	if b[-1]=='/': b=b[:-1]
+	while b and b[-1]=='/': b=b[:-1]
 	p = string.rfind(b,'/')
-	if p >= 0: self.base=b[:p+1]
-	else: self.base=''
+	if p >= 0: b=b[:p+1]
+	else: b=''
+	while b and b[0]=='/': b=b[1:]
+	try:    server_url=          string.strip(self.environ['SERVER_URL' ])
+	except: server_url='http://'+string.strip(self.environ['SERVER_NAME'])
+	self.base="%s/%s" % (server_url,b)
+	
 
 def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
