@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -123,6 +123,7 @@ class View(App.Management.Tabs):
         if l >= 0: path=path[:l]
         return PropertySheet.inheritedAttribute('tabs_path_info')(
             self, script, path)
+
 
 class PropertySheet(Persistent, Implicit):
     """A PropertySheet is a container for a set of related properties and
@@ -169,7 +170,7 @@ class PropertySheet(Persistent, Implicit):
             return getattr(self.v_self(), id)
         return default
 
-    def setProperty(self, id, value, type='string', meta=None):
+    def _setProperty(self, id, value, type='string', meta=None):
         # Set a new property with the given id, value and optional type.
         # Note that different property sets may support different typing
         # systems.
@@ -182,7 +183,7 @@ class PropertySheet(Persistent, Implicit):
         self._properties=self._properties+(prop,)
         setattr(self, id, value)
 
-    def updateProperty(self, id, value):
+    def _updateProperty(self, id, value):
         # Update the value of an existing property. If value is a string,
         # an attempt will be made to convert the value to the type of the
         # existing property.
@@ -194,7 +195,7 @@ class PropertySheet(Persistent, Implicit):
                 value=type_converters[proptype](value)
         setattr(self.v_self(), id, value)
 
-    def delProperty(self, id):
+    def _delProperty(self, id):
         # Delete the property with the given id. If a property with the
         # given id does not exist, a ValueError is raised.
         if not self.hasProperty(id):
@@ -290,7 +291,7 @@ class PropertySheet(Persistent, Implicit):
         the given id, type, and value."""
         if type_converters.has_key(type):
             value=type_converters[type](value)
-        self.setProperty(id, value, type)
+        self._setProperty(id, value, type)
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
@@ -309,7 +310,7 @@ class PropertySheet(Persistent, Implicit):
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
                     raise 'BadRequest', '%s cannot be changed.' % name
-                vself.updateProperty(name, value)
+                vself._updateProperty(name, value)
         if REQUEST is not None:
             return MessageDialog(
                 title  ='Success!',
@@ -337,7 +338,7 @@ class PropertySheet(Persistent, Implicit):
                 title  ='Cannot delete %s' % id,
                 message='The property <em>%s</em> cannot be deleted.' % id,
                 action ='manage_propertiesForm')
-            self.delProperty(id)
+            self._delProperty(id)
         if REQUEST is not None:
             return self.manage_propertiesForm(self, REQUEST)
 
@@ -382,13 +383,13 @@ class DAVProperties(Virtual, PropertySheet):
             return default
         return getattr(self, method)()
 
-    def setProperty(self, id, value, type='string', meta=None):
+    def _setProperty(self, id, value, type='string', meta=None):
         raise ValueError, 'Property cannot be set.'
 
-    def updateProperty(self, id, value):
+    def _updateProperty(self, id, value):
         raise ValueError, 'Property cannot be set.'
 
-    def delProperty(self, id):
+    def _delProperty(self, id):
         raise ValueError, 'Property cannot be deleted.'
 
     def propertyMap(self):
