@@ -115,34 +115,6 @@ def manage_addZCatalog(self, id, title, vocab='', vocab_id='', REQUEST=None):
         return self.manage_main(self, REQUEST)
 
 
-def VocabularyIDs(self):
-    """ returns a list of acquireable vocabularies.  Stole this from
-    ZSQLMethods """
-
-    ids={}
-    have_id=ids.has_key
-    StringType=type('')
-
-    while self is not None:
-        if hasattr(self, 'objectValues'):
-            for o in self.objectValues():
-                if (hasattr(o,'_isAVocabulary') and o._isAVocabulary
-                    and hasattr(o,'id')):
-                    id=o.id
-                    if type(id) is not StringType: id=id()
-                    if not have_id(id):
-                        if hasattr(o,'title_and_id'): o=o.title_and_id()
-                        else: o=id
-                        ids[id]=id
-        if hasattr(self, 'aq_parent'): self=self.aq_parent
-        else: self=None
-
-    ids=map(lambda item: (item[1], item[0]), ids.items())
-    ids.sort()
-    return ids
-
-
-
 class ZCatalog(Folder, Persistent, Implicit):
     """ZCatalog object
 

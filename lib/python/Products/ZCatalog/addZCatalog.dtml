@@ -33,9 +33,9 @@
   <TD ALIGN="LEFT" VALIGN="TOP">
   <em>Select Vocabulary?</em> <input type="checkbox" name="vocab">
   <select name="vocab_id">
-    <dtml-in VocabularyIDs>
-      <option value="<dtml-var sequence-item html_quote>">
-        <dtml-var sequence-item>
+    <dtml-in "superValues('Vocabulary')">
+      <option value="<dtml-var id html_quote>">
+        <dtml-var id>
       </option>
     </dtml-in>
   </select><br>

@@ -112,10 +112,3 @@ def initialize(context):
     context.registerHelp()
 
 
-methods={
-    ## aparently this is bad, but I can't think of any other way!
-    
-    'VocabularyIDs' : ZCatalog.VocabularyIDs,
-    }
-
-
