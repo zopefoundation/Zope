@@ -144,11 +144,15 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     
     func_code = None
     func_defaults = None
+    _need__name__=1
 
     _Bindings_ns_class = TemplateDict
     def _get__roles__(self):
-        imp = getattr(self.aq_parent, '%s__roles__' % self.__name__)
-        return imp.__of__(self)
+        imp = getattr(self.aq_inner.aq_parent, '%s__roles__' % self.__name__)
+        if hasattr(imp, '__of__'):
+            return imp.__of__(self)
+        return imp
+
     __roles__ = ComputedAttribute(_get__roles__, 1)
 
     # By default, we want to look up names in our container.
