@@ -241,6 +241,20 @@ text
             ("starttag", "foo:bar", [("one", "1"), ("two", "2")]),
             ("starttag_text", s)])
 
+    def check_cdata_content(self):
+        s = """<script> <!-- not a comment --> &not-an-entity-ref; </script>"""
+        self._run_check(s, [
+            ("starttag", "script", []),
+            ("data", " <!-- not a comment --> &not-an-entity-ref; "),
+            ("endtag", "script"),
+            ])
+        s = """<script> <not a='start tag'> </script>"""
+        self._run_check(s, [
+            ("starttag", "script", []),
+            ("data", " <not a='start tag'> "),
+            ("endtag", "script"),
+            ])
+
 
 # Support for the Zope regression test framework:
 def test_suite():
