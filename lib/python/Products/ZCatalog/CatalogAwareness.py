@@ -160,9 +160,9 @@ class CatalogAware:
         __traceback_info__=(`uri`, `script_name`)
         if script_name:
             uri=filter(None, string.split(uri, script_name))[0]
+        if uri[0] != '/': uri = '/' + uri
         uri=uri or '/'
-        if uri[0]=='/': uri=uri[1:]
-        return uri
+        return urllib.unquote(uri)
 
     def summary(self, num=200):
         """Return a summary of the text content of the object."""
