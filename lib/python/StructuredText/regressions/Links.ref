@@ -6,6 +6,13 @@
 <h1>This is LinkTest</h1>
 
 <ul>
+<li><p>please click <a href="/Members/Zope">here</a></p></li>
+<li><p>please click <a href="/Members/Zope?a=b&c=d%20blabla">here</a></p></li>
+<li><p>please click <a href="http://www.zope.org">here</a>" </p></li>
+<li><p>please click <a href="http://www.zope.org/members/">here</a>" </p></li>
+<li><p>please click <a href="http://www.zope.org:2001">here</a>" </p></li>
+<li><p>please click <a href="http://www.zope.org:2001/members/">here</a>" </p></li>
+<li><p>please click <a href="http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test">here</a> </p></li>
 <li><p>please click <a href="http://www.zope.org:2001/%20/Members/zope?a=222&b=213&_xc=just%20a%20test">here</a> </p></li>
 
 </ul>
