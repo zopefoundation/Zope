@@ -43,12 +43,12 @@ Found <!--#var results fmt=collection-length--> item<!--#if expr="_.len(results)
 <!--#in results-->
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_main" TARGET="manage_main">
+  <A HREF="<!--#var sequence-key-->/manage_main">
   <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->"
    ALT="Click to open this item" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
-  <A HREF="<!--#var sequence-key-->/manage_main" TARGET="manage_main">
+  <A HREF="<!--#var sequence-key-->/manage_main">
   <!--#var sequence-key-->
   <!--#if title-->
   (<!--#var title-->)

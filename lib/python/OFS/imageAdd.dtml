@@ -11,7 +11,7 @@
  to the application.
 
 <FORM ACTION="manage_add<!--#var Kind-->" METHOD="POST"
-      ENCTYPE="multipart/form-data" TARGET="manage_main">
+      ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>
   <TD ALIGN="LEFT" VALIGN="TOP">

@@ -10,7 +10,7 @@ You may also choose to upload an existing html file from your
 local computer by clicking the <I>Browse</I> button.
 
 <FORM ACTION="manage_addDTMLDocument" METHOD="POST"
-      ENCTYPE="multipart/form-data" TARGET="manage_main">
+      ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>

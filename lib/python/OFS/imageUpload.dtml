@@ -10,7 +10,7 @@ Select a data file from your local computer by clicking the <EM>Browse</EM>
 button. The file you select will be uploaded to the application.
 
 <FORM ACTION="manage_upload" METHOD="POST"
- ENCTYPE="multipart/form-data" TARGET="manage_main">
+ ENCTYPE="multipart/form-data">
 <TABLE CELLSPACING="2">
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP">Id</TH>
