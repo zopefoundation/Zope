@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals, Moniker, rPickle
 from cPickle import loads, dumps
@@ -16,11 +16,18 @@ class CopyContainer:
     # Interface for containerish objects which allow
     # objects to be copied into them.
 
+    pasteDialog=Globals.HTMLFile('OFS/pasteDialog')
+
     def _getMoniker(self):
         # Ask an object to return a moniker for itself.
 	return Moniker.Moniker(self)
 
-    pasteDialog=Globals.HTMLFile('OFS/pasteDialog')
+    def validClipData(self):
+	# Return true if clipboard data is valid.
+	try:    moniker=rPickle.loads(unquote(self.REQUEST['clip_data']))
+	except: return 0
+	v=self.REQUEST['validClipData']=moniker.assert()
+	return v
 
     def pasteFromClipboard(self,clip_id='',clip_data='',REQUEST=None):
         """ """
@@ -78,8 +85,8 @@ class CopySource:
 	except: return eNotSupported
 	REQUEST['RESPONSE'].setCookie('clip_data',
 			    quote(dumps(moniker)),
-			    path='/',
-			    expires='Friday, 31-Dec-99 23:59:59 GMT')
+			    path='%s' % REQUEST['SCRIPT_NAME'])
+
 
 
 

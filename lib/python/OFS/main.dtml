@@ -57,20 +57,20 @@ click on the item's title and id.
 <TD></TD>
 <TD>
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Copy">
-<!--#if clip_data-->
+<!--#if validClipData-->
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
-<!--#/if clip_data-->
+<!--#/if validClipData-->
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete">
 </TD>
 </TR>
 </TABLE>
 </FORM>
 <!--#else objectValues-->
-<!--#if clip_data-->
+<!--#if validClipData-->
 <FORM ACTION="manage_delObjects" METHOD="POST">
 <INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
 </FORM>
-<!--#/if clip_data-->
+<!--#/if validClipData-->
 <!--#/if objectValues-->
 
 <TABLE>

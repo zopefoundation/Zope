@@ -8,7 +8,7 @@ Object monikers
 
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 
 import Globals
@@ -28,8 +28,14 @@ class Moniker:
 	    try:    self.aqp=Moniker(obj.aq_parent, 0)
 	    except: self.aqp=None
 
+    def assert(self):
+	# Return true if the named object exists
+	if self.jar is None: jar=Globals.Bobobase._jar
+	else: jar=Globals.SessionBase[self.jar].jar
+	return jar.has_key(self.oid)
 
     def bind(self):
+	# Return the real object named by this moniker
 	if self.jar is None: jar=Globals.Bobobase._jar
 	else: jar=Globals.SessionBase[self.jar].jar
 	obj=jar[self.oid]
