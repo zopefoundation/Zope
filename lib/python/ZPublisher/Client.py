@@ -1,4 +1,8 @@
-#!/bin/env python
+#!/bin/sh
+""":"
+exec python $0 ${1+"$@"}
+"""
+
 ############################################################################## 
 #
 #     Copyright 
@@ -71,7 +75,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
