@@ -17,7 +17,7 @@ Zope Changes
        sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
      - Add cyclic-garbage collection support to C extension classes,
-       especially to acquisition wrappers. 
+       especially to acquisition wrappers.
 
      - Change acquisition wrappers to implement the descr get slot
        directly, this speeding the use of the slot.
@@ -26,13 +26,13 @@ Zope Changes
 
      - Traversal now supports a "post traversal hook" that get's run
        after traversal finished and the security context is established.
-    
+
      - Using "_usage" parameters in a ZCatalog query is deprecated and
        logged as DeprecationWarning.
 
-     - MailHost now has two additional properties, a user id and a 
+     - MailHost now has two additional properties, a user id and a
        password. These are used to attempt ESMTP authentication
-       before sending a mail. 
+       before sending a mail.
 
      - Folder listings in FTP now include "." as well as "..".
 
@@ -46,7 +46,7 @@ Zope Changes
        method such as 'index_html'.
 
      - Extension Classes, a key Zope foundation, have been totally
-       rewritten based on Python new-style classes.  
+       rewritten based on Python new-style classes.
 
        This change provides a number of advantages:
 
@@ -61,7 +61,7 @@ Zope Changes
        o Pave the way for sharing code between Zope 2 and Zope 3.
 
        Note -- Extension classes with __of__ methods are made into
-         Python read descriptors.  
+         Python read descriptors.
 
          If an extension classes is used to implement a descriptor,
          indirectly by implementing __of__ or directly by implementing
@@ -103,13 +103,20 @@ Zope Changes
 
     Bugs fixed
 
+     - WebDAV property values were not being properly escaped on
+       'propstat'.
+
+     - WebDAV 'supportedlock' was not checking if the object did
+       implement the WriteLockInterface before returning it's
+       value.
+
      - reStructuredText ignored the encoding settings in zope.conf
 
      - ObjectManager no longer raises string exceptions
 
      - Collector #1260: Testing/__init__.py no longer changes the
        INSTANCE_HOME.
-    
+
      - App.config.setConfiguration() did not update the legacy source
        for debug_mode, Globals.DevelopmentMode.
 
@@ -198,7 +205,7 @@ Zope Changes
        (fixed by removing the "fossil" module from 2.7 branch and head).
 
      - Workaround for Collector #1081: The 'title' property for objects
-       derived from OFS.Folder or PropertyManager can now be 
+       derived from OFS.Folder or PropertyManager can now be
        removed and replaced with a ustring property. This allows the usage
        of non-ISO-8859-1 or ASCII charsets
 
@@ -227,7 +234,7 @@ Zope Changes
 
      - PathIndex and TopicIndex are now using a counter for the number
        of indexed objects instead of using a very expensive calculation
-       based on the keys of their indexes. 
+       based on the keys of their indexes.
 
      - Collector #1039: Whitespace problem in Z2.log fixed
 
@@ -316,8 +323,8 @@ Zope Changes
        * i18n:attributes="value msg_id;" (with semicolon) will always be
          treated as <attr> <msg_id>
 
-       * i18n:attributes="value title" will be treated as <attr> <attr> 
-         as long as title exist as attribute (both as static or in 
+       * i18n:attributes="value title" will be treated as <attr> <attr>
+         as long as title exist as attribute (both as static or in
          tal:attributes) plus deprecation warning
 
      - deny attributes being both part of tal:attributes
@@ -334,8 +341,8 @@ Zope Changes
      - ZConfig didn't report a line number and munged capitalization
        of replacement keys when a replacement error was provided.
 
-     - log-to-stderr on startup will now emit messages to the console at 
-       the lowest logging level defined by any of the handlers in the 
+     - log-to-stderr on startup will now emit messages to the console at
+       the lowest logging level defined by any of the handlers in the
        eventlog section.
 
      - entirely removed warning when the starting user's umask is "too
@@ -344,9 +351,9 @@ Zope Changes
 
      - debug-mode config file option did not work.
 
-     - ZClasses that subclassed ObjectManager that were created in 
-       earlier versions of Zope would not load under 2.6, due to 
-       the new Interfaces package. Added back a simple stub module 
+     - ZClasses that subclassed ObjectManager that were created in
+       earlier versions of Zope would not load under 2.6, due to
+       the new Interfaces package. Added back a simple stub module
        and changed a constructor to allow these ZClasses to work.
 
      - Bugfix: if zopectl is run as the root user, the debug, run, and
@@ -467,8 +474,8 @@ Zope Changes
 
      - Collector #953: fixed namespace collision with form_title in ZMI
 
-     - Collector #342: Avoiding insertion of a BASE tag for file objects 
-       with content-type text/html 
+     - Collector #342: Avoiding insertion of a BASE tag for file objects
+       with content-type text/html
 
      - Windows installer properly deletes pyc/pyo files on uninstall.
 
@@ -504,7 +511,7 @@ Zope Changes
        available via this module, alternate locations are deprecated,
        though will to be supported for Zope 2.7.
 
-     - Collector #435: Support for passwords encoded using MySQL's 
+     - Collector #435: Support for passwords encoded using MySQL's
        PASSWORD() function add to lib/python/AccessControl/AuthEncoding.py.
 
      - Collector #167: Support __getattr__ on cAccessControl PermissionRole
@@ -520,14 +527,14 @@ Zope Changes
 
      - DateTime module: added support to parse international dateformats. The
        Datetime constructor has a new "datefmt" parameter to enforce the
-       parsing of a date as "us" or "international" date. The new field        
+       parsing of a date as "us" or "international" date. The new field
        descriptor field descriptor "date_international" can be used to
-       enforce this behaviour inside the ZPublisher. See also 
-       doc/ENVIRONMENT.txt to check with the DATETIME_FORMAT 
- 
+       enforce this behaviour inside the ZPublisher. See also
+       doc/ENVIRONMENT.txt to check with the DATETIME_FORMAT
+
      - KeywordIndex, FieldIndex and ZCTextIndex  are now able to index more
        than one attribute of an object. This removes the ties between the
-       indexes ID and the attribute name to be indexed. 
+       indexes ID and the attribute name to be indexed.
 
      - Integration of reStructuredText (reST) and the ZReST product
        by Richard Jones.  See doc/RESTRUCTUREDTEXT.txt for details.
@@ -590,8 +597,8 @@ Zope Changes
        This restricts access to the Control_Panel and especially
        to the Products management to trusted users.
 
-     - Rename, Cut & Delete operations on locked objects (WebDAV) are 
-       no longer permitted and will raise an exception. Copies of 
+     - Rename, Cut & Delete operations on locked objects (WebDAV) are
+       no longer permitted and will raise an exception. Copies of
        locked objects are copied without lock.
 
      - Collector #634: Image objects can now be rendered without border
@@ -605,15 +612,15 @@ Zope Changes
 
      - Collector #686: intSets no longer lose their values.
 
-     - Collector #685: Improved documentation explaining how, where and 
+     - Collector #685: Improved documentation explaining how, where and
        why security assertions should be placed in:
        lib/python/Products/PythonScripts/README.txt
        lib/python/Products/PythonScripts/module_access_examples.py
 
-     - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path 
+     - The ZEO unit tests and wo_pcgi.py didn't run on Windows if the path
        to the python executable included a space.
 
-     - Some calls to os.system('chmod') has been replaced with the more 
+     - Some calls to os.system('chmod') has been replaced with the more
        portable os.chmod() call, to make install work properly on Windows.
 
      - Fixed an isinstance() check in SimpleItem on standard_error_message
@@ -653,10 +660,10 @@ Zope Changes
       - Product initialization would only consult a file named "version.txt"
         to read version information. Now it will check version.txt, VERSION.txt
         and VERSION.TXT.
-    
+
       - Make ZCTextIndex much less prone to generating conflict errors.
         Previously *any* concurrent updates would provoke a conflict.
-        
+
       - Fix query performance and scalability bug in ZCTextIndex.
 
       - Collector #928: DateIndex ignored timezones when indexing and
@@ -668,10 +675,10 @@ Zope Changes
         permission to join or leave versions to run a request in a
         version.
 
-      - Fixed a problem with potentially mis-acquiring 'func_code' in 
+      - Fixed a problem with potentially mis-acquiring 'func_code' in
         publisher BeforeTraverse hook.
 
-      - Fix for issue 683: Image cache manager headers were not sent 
+      - Fix for issue 683: Image cache manager headers were not sent
         when an image request returned a 304 (in response to an if-mod-since
         request).
 
