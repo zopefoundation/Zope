@@ -133,18 +133,28 @@ defaultBindings = {'name_context': 'context',
                    'name_subpath': 'traverse_subpath'}
 
 from Shared.DC.Scripts.Bindings import Bindings
-from Acquisition import Explicit
+from Acquisition import Explicit, aq_inner, aq_parent
 from DocumentTemplate.DT_String import _marker, DTReturn, render_blocks
 from DocumentTemplate.DT_Util import TemplateDict, InstanceDict
 from AccessControl import getSecurityManager
+from ComputedAttribute import ComputedAttribute
 
 class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
     "HTMLFile with bindings and support for __render_with_namespace__"
     
     func_code = None
     func_defaults = None
+    _need__name__=1
 
     _Bindings_ns_class = TemplateDict
+    def _get__roles__(self):
+        imp = getattr(aq_parent(aq_inner(self)),
+                      '%s__roles__' % self.__name__)
+        if hasattr(imp, '__of__'):
+            return imp.__of__(self)
+        return imp
+
+    __roles__ = ComputedAttribute(_get__roles__, 1)
 
     # By default, we want to look up names in our container.
     _Bindings_client = 'container'
