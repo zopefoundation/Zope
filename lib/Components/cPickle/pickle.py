@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.2 1997/01/02 22:22:19 chris Exp $
+#     $Id: pickle.py,v 1.3 1997/01/03 16:23:02 chris Exp $
 #
 #     Copyright 
 #
@@ -756,33 +756,31 @@ class C:
 
 def test():
     fn = 'out'
-#    c = C()
-#    c.foo = 1
-#    c.bar = 2
-#    c2 = C()
-#    x = [0, 1, 2, 3]
-#    y = ('abc', 'abc', c, c)
-#    x.append(y)
-#    x.append(y)
-#    x.append(5)
-#    x.append(c2)
-#    f = open(fn, 'w')
-#    F = Pickler(f)
-#    F.dump(x)
-#    f.close()
-#    del F
+    c = C()
+    c.foo = 1
+    c.bar = 2
+    c2 = C()
+    x = [0, 1, 2, 3]
+    y = ('abc', 'abc', c, c)
+    x.append(y)
+    x.append(y)
+    x.append(5)
+    x.append(c2)
+    f = open(fn, 'w')
+    F = Pickler(f)
+    F.dump(x)
+    f.close()
     f = open(fn, 'r')
     U = Unpickler(f)
     x2 = U.load()
-#    print x
-#    print x2
-#    print x == x2
-#    print map(id, x)
-#    print map(id, x2)
-#    print F.memo
+    print x
+    print x2
+    print x == x2
+    print map(id, x)
+    print map(id, x2)
+    print F.memo
     print U.memo
-
-#    return x, x2, F, U
 
 if __name__ == '__main__':
     test()
+
