@@ -1,6 +1,6 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys, os, string, regex, time, types
 import socket, httplib, mimetools
@@ -435,7 +435,10 @@ def marshal_int(name, val):
     return '%s:int=%s' % (name, val)
 
 def marshal_long(name, val):
-    return ('%s:long=%s' % (name, val))[:-1]
+    value = '%s:long=%s' % (name, val)
+    if value[-1] == 'L':
+        value = value[:-1]
+    return value
 
 def marshal_list(name, seq, tname='list', lt=type([]), tt=type(())):
     result=[]
