@@ -11,12 +11,12 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.3 1997/10/23 17:43:27 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: Undo.py,v 1.4 1997/11/07 17:06:28 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
-from string import atof, find, atoi, split
+from string import atof, find, atoi, split, rfind
 
 class UndoSupport:
 
@@ -37,7 +37,7 @@ class UndoSupport:
 	    try: last_transaction=self.REQUEST['last_transaction']
 	    except: last_transaction=first_transaction+20
 
-	db=Globals.Bobobase._jar.db
+	db=self._p_jar.db
 
 	r=[]
 	add=r.append
@@ -49,9 +49,12 @@ class UndoSupport:
 	for info in trans_info:
 	    while len(info) < 4: info.append('')
   	    [path, user] = (split(info[2],' ')+h)[:2]
+	    t=info[1]
+	    l=find(t,' ')
+	    if l >= 0: t=t[l:]
 	    add(
 		{'pos': info[0],
-		 'time': DateTime(atof(info[1])),
+		 'time': DateTime(atof(t)),
 		 'id': info[1],
 		 'identity': info[2],
 		 'user': user,
@@ -60,18 +63,23 @@ class UndoSupport:
 		 })
 	return r or []
     
-    def manage_undo_transactions(self, transaction_info, REQUEST):
+    def manage_undo_transactions(self, transaction_info, REQUEST=None):
 	"""
 	"""
 	info=[]
-	jar=Globals.Bobobase._jar
+	jar=self._p_jar
 	db=jar.db
 	for i in transaction_info:
-	    l=find(i,' ')
+	    l=rfind(i,' ')
 	    oids=db.Toops( (i[:l],), atoi(i[l:]))
 	    jar.reload_oids(oids)
 
-	if REQUEST: return self.manage_main(self, REQUEST)
+	if REQUEST is None: return
+
+	RESPONSE=REQUEST['RESPONSE']
+	RESPONSE.setStatus(302)
+	RESPONSE['Location']="%s/manage_main" % REQUEST['URL1']
+	return ''
 		 
 		 
 
@@ -79,6 +87,9 @@ class UndoSupport:
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.4  1997/11/07 17:06:28  jim
+# Added session support.
+#
 # Revision 1.3  1997/10/23 17:43:27  jim
 # Added fix to cover certain unusual situations.
 #
