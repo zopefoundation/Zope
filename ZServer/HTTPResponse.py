@@ -264,6 +264,21 @@ class ChannelPipe:
             self._close=1
         self._request.reply_code=response.status
         
+    def retry(self):
+        """Return a request object to be used in a retry attempt
+        """
+        
+        # This implementation is a bit lame, because it assumes that
+        # only stdout stderr were passed to the constructor. OTOH, I
+        # think that that's all that is ever passed.
+
+        r=self.__class__(stdout=self.stdout, stderr=self.stderr)
+        response._http_version=self._http_version
+        response._http_connection=self._http_connection
+        response._server_version=self._server_version
+        return r
+        
+    
         
 def make_response(request, headers):
     "Simple http response factory"
@@ -276,3 +291,4 @@ def make_response(request, headers):
     response._server_version=request.channel.server.SERVER_IDENT
     return response
     
+

@@ -99,11 +99,13 @@ import string
 
 class FTPRequest(HTTPRequest):
 
-    def __init__(self, path, command, channel, response, stdin=None):
-        if stdin is None:
-            stdin=StringIO()
-        env=self._get_env(path, command, channel, stdin)
-        HTTPRequest.__init__(self, stdin, env, response, clean=1)
+    def __init__(self, path, command, channel, response, stdin=None,
+                 environ=None):
+        if stdin is None: stdin=StringIO()
+        if environ is None:
+            environ=self._get_env(path, command, channel, stdin)
+        self._orig_env=environ
+        HTTPRequest.__init__(self, stdin, environ, response, clean=1)
         
         # support for cookies and cookie authentication
         self.cookies=channel.cookies
@@ -114,6 +116,15 @@ class FTPRequest(HTTPRequest):
             if not self.other.has_key(k):
                 self.other[k]=v
    
+    def retry(self):
+        r=self.__class__(stdin=self.stdin,
+                         environ=self._orig_env,
+                         response=self.response.retry(),
+                         channel=self, # For my cookies
+                         )
+        r._held=self._held
+        return r
+    
     def _get_env(self, path, command, channel, stdin):
         "Returns a CGI style environment"
         env={}
