@@ -100,8 +100,8 @@ Debugging and Logging
     ZSYSLOG="/dev/log"
 
         Setting this environment variable will cause Zope to try and write
-        to the named UNIX domain socket (usually '/dev/log').  This will
-        only work on UNIX.
+        the event log to the named UNIX domain socket (usually '/dev/log').
+        This will only work on UNIX.
 
         See also: LOGGING.txt
 
@@ -126,6 +126,13 @@ Debugging and Logging
 
         See also: LOGGING.txt
 
+    ZSYSLOG_ACCESS="/dev/log"
+    ZSYSLOG_ACCESS_FACILITY="facilityname"
+    ZSYSLOG_ACCESS_SERVER="machine.name:port"
+
+        Like ZSYSLOG, ZSYSLOG_FACILITY, and ZSYSLOG_SERVER, but
+        controlling the sending of access information to syslog
+        (rather than controlling the sending of the event log)
 
     Z_DEBUG_MODE      "yes" or "no"
     BOBO_DEBUG_MODE   "yes" or "no"  (obsolete)

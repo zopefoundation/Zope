@@ -27,6 +27,10 @@ Zope Logging
    to the named UNIX domain socket (usually '/dev/log').  This will only 
    work on UNIX.
 
+   (In versions up to Zope 2.6, this also caused the access log
+   to be sent to syslog. In version 2.6 this is now controlled
+   by the separate ZSYSLOG_ACCESS environment variable)
+
   ZSYSLOG_FACILITY="facilityname"
 
    Setting this environment variable will cause Zope to use the
@@ -41,6 +45,11 @@ Zope Logging
    'port' which must be an integer.  The default syslogd port is '514' 
    but Zope does not pick a sane default, you must specify a port.
    This may change, so check back here in future Zope releases.
+
+   (In versions up to Zope 2.6, this also caused the access log
+   to be sent to syslog. In version 2.6 this is now controlled
+   by the separate ZSYSLOG_ACCESS_SERVER environment variable)
+
 
 Calling the logger in your code
 
