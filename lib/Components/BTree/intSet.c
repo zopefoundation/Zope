@@ -10,7 +10,7 @@
 
 static char intSet_module_documentation[] = 
 ""
-"\n$Id: intSet.c,v 1.9 1998/03/24 15:17:34 jim Exp $"
+"\n$Id: intSet.c,v 1.10 1998/11/23 11:45:40 jim Exp $"
 ;
 
 #include <limits.h>
@@ -537,7 +537,7 @@ void
 initintSet()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
+  char *rev="$Revision: 1.10 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -563,8 +563,6 @@ initintSet()
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
   
 
-#include "dcprotect.h"
-	
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module intSet");
@@ -575,6 +573,9 @@ initintSet()
   Revision Log:
 
   $Log: intSet.c,v $
+  Revision 1.10  1998/11/23 11:45:40  jim
+  removed license checks
+
   Revision 1.9  1998/03/24 15:17:34  jim
   *** empty log message ***
 

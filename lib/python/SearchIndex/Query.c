@@ -1,6 +1,6 @@
 /*
 
-  $Id: Query.c,v 1.5 1997/11/13 20:38:37 jim Exp $
+  $Id: Query.c,v 1.6 1998/11/23 11:50:38 jim Exp $
 
   Query objects for building tests without python code generation.
 
@@ -890,14 +890,14 @@ static char Query_module_documentation[] =
 "against objects.  Each object type define objects that can be called\n"
 "with a single argument or with 'getitem' to check whether an object,\n"
 "such as a database record or a collection item satisfies a query.\n"
-"\n$Id: Query.c,v 1.5 1997/11/13 20:38:37 jim Exp $"
+"\n$Id: Query.c,v 1.6 1998/11/23 11:50:38 jim Exp $"
 ;
 
 void
 initQuery()
 {
     PyObject *m, *d, *regex, *string;
-    char *rev="$Revision: 1.5 $";
+    char *rev="$Revision: 1.6 $";
 
     AttrTesttype.ob_type      =&PyType_Type;
     CompAttrTesttype.ob_type  =&PyType_Type;
@@ -930,27 +930,9 @@ initQuery()
     d = PyModule_GetDict(m);
     PyDict_SetItemString(d, "__version__",
 			 PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-
-#include "dcprotect.h"
 	
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module BTree");
 
 }
-
-/****************************************************************************
-
- $Log: Query.c,v $
- Revision 1.5  1997/11/13 20:38:37  jim
- added dcprotect
-
- Revision 1.4  1997/03/23 01:33:50  jim
- Added repr operations.
-
- Revision 1.3  1997/03/22 14:56:35  jim
- Added RCS keywords.
- Rearranged init to handle errors better.
-
-
- ****************************************************************************/

@@ -11,7 +11,7 @@
 
 static char BTree_module_documentation[] = 
 ""
-"\n$Id: BTree.c,v 1.16 1998/03/24 15:17:44 jim Exp $"
+"\n$Id: BTree.c,v 1.17 1998/11/23 11:45:39 jim Exp $"
 ;
 
 #define PERSISTENT
@@ -1762,7 +1762,7 @@ initBTree()
 #endif
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
 
   UNLESS(PyExtensionClassCAPI=PyCObject_Import("ExtensionClass","CAPI"))
       return;
@@ -1800,8 +1800,6 @@ initBTree()
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
   
 
-#include "dcprotect.h"
-	
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module BTree");
@@ -1816,6 +1814,9 @@ initBTree()
 Revision Log:
 
   $Log: BTree.c,v $
+  Revision 1.17  1998/11/23 11:45:39  jim
+  removed license checks
+
   Revision 1.16  1998/03/24 15:17:44  jim
   Brought reinit/deactivate machinery up to date.
 
