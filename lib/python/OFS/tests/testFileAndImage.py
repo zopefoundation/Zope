@@ -225,13 +225,11 @@ class ImageTests(FileTests):
         
     def testStr(self):
         self.assertEqual(str(self.file),
-          ('<img src="http://foo/file" alt="" title="" height="16" width="16" '
-           'border="0" />'))
+          ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
 
     def testTag(self):
         self.assertEqual(self.file.tag(),
-          ('<img src="http://foo/file" alt="" title="" height="16" width="16" '
-           'border="0" />'))
+          ('<img src="http://foo/file" alt="" title="" height="16" width="16" />'))
 
     def testViewImageOrFile(self):
         pass # dtml method,screw it
