@@ -87,10 +87,12 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
+
+StringType = type('')
 
 NAME_RE = r"[a-zA-Z][a-zA-Z0-9_]*"
 _parse_expr = re.compile(r"(%s):(.*)" % NAME_RE).match
@@ -147,10 +149,7 @@ class SafeMapping(MultiMapping):
 
     def has_get(self, key, _marker=[]):
         v = self.get(key, _marker)
-        if v is _marker:
-            return 0, None
-        else:
-            return 1, v
+        return v is not _marker, v
 
 class Iterator(ZTUtils.Iterator):
     def __init__(self, name, seq, context):
@@ -276,28 +275,29 @@ class Context:
         self._current_ctxts['repeat'][name] = it
         return it
 
-    def evaluate(self, expression):
-        if type(expression) is type(''):
+    def evaluate(self, expression,
+                 isinstance=isinstance, StringType=StringType):
+        if isinstance(expression, StringType):
             expression = self._engine.compile(expression)
         try:
             v = expression(self)
-            if isinstance(v, Exception):
-                raise v
-            return v
         except TALESError:
             raise
         except:
-            if type(sys.exc_info()[0]) is type(''):
+            if isinstance(sys.exc_info()[0], StringType):
                 raise
             raise TALESError, (`expression`, sys.exc_info()), sys.exc_info()[2]
+        else:
+            if isinstance(v, Exception):
+                raise v
+            return v
 
     evaluateValue = evaluate
 
     def evaluateBoolean(self, expr):
-        bool = self.evaluate(expr)
-        return not not bool
+        return not not self.evaluate(expr)
 
-    def evaluateText(self, expr):
+    def evaluateText(self, expr, None=None):
         text = self.evaluate(expr)
         if text is Default or text is None:
             return text
@@ -305,10 +305,12 @@ class Context:
 
     def evaluateStructure(self, expr):
         return self.evaluate(expr)
+    evaluateStructure = evaluate
 
     def evaluateMacro(self, expr):
         # XXX Should return None or a macro definition
         return self.evaluate(expr)
+    evaluateMacro = evaluate
 
     def getTALESError(self):
         return TALESError
@@ -325,9 +327,4 @@ class SimpleExpr:
         return self._name, self._expr
     def __repr__(self):
         return '<SimpleExpr %s %s>' % (self._name, `self._expr`)
-
-
-
-
-
 
