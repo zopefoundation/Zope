@@ -86,7 +86,7 @@
 import re, ST, STDOM
 from string import split, join, replace, expandtabs, strip, find, rstrip
 from STletters import letters, digits, literal_punc, under_punc,\
-     strongem_punc, phrase_delimiters
+     strongem_punc, phrase_delimiters,dbl_quoted_punc
 
 StringType=type('')
 ListType=type([])
@@ -950,9 +950,10 @@ class DocumentClass:
            return None
 
     ## Some constants to make the doc_href() regex easier to read.
-    _DQUOTEDTEXT = r'("[ %s0-9\n\r\-\.\,\;\(\)\/\:\/\*\']+")' % letters ## double quoted text
+    _DQUOTEDTEXT = r'("[ %s0-9\n\r%s]+")' % (letters,dbl_quoted_punc) ## double quoted text
     _ABSOLUTE_URL=r'((http|https|ftp|mailto|file|about)[:/]+?[%s0-9_\@\.\,\?\!\/\:\;\-\#\~\=\&\%%]+)' % letters
     _ABS_AND_RELATIVE_URL=r'([%s0-9_\@\.\,\?\!\/\:\;\-\#\~\=\&\%%]+)' % letters
+
     _SPACES = r'(\s*)'
     
     def doc_href(self, s,
