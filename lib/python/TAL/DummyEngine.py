@@ -88,11 +88,15 @@ Dummy TALES engine so that I can test out the TAL implementation.
 
 import re
 import sys
-import string
+from string import rfind, strip
+
+import driver
 
 from TALDefs import NAME_RE, TALError, TALESError
 
 Default = []
+
+name_match = re.compile(r"(?s)(%s):(.*)\Z" % NAME_RE).match
 
 class DummyEngine:
 
@@ -128,8 +132,9 @@ class DummyEngine:
         self.globals[name] = value
 
     def evaluate(self, expression):
-        expression = self.uncompile(expression)
-        m = re.match(r"(?s)(%s):(.*)\Z" % NAME_RE, expression)
+        assert expression[:1] == "$" == expression[-1:], expression
+        expression = expression[1:-1]
+        m = name_match(expression)
         if m:
             type, expr = m.group(1, 2)
         else:
@@ -138,7 +143,7 @@ class DummyEngine:
         if type in ("string", "str"):
             return expr
         if type in ("path", "var", "global", "local"):
-            expr = string.strip(expr)
+            expr = strip(expr)
             if self.locals.has_key(expr):
                 return self.locals[expr]
             elif self.globals.has_key(expr):
@@ -146,8 +151,7 @@ class DummyEngine:
             else:
                 raise TALESError("unknown variable: %s" % `expr`)
         if type == "not":
-            v = self.evaluate(expr)
-            return not v
+            return not self.evaluate(expr)
         if type == "exists":
             return self.locals.has_key(expr) or self.globals.has_key(expr)
         if type == "python":
@@ -180,15 +184,15 @@ class DummyEngine:
         return self.evaluate(expr)
 
     def evaluateMacro(self, macroName):
-        macroName = self.uncompile(macroName)
+        assert macroName[:1] == "$" == macroName[-1:], macroName
+        macroName = macroName[1:-1]
         file, localName = self.findMacroFile(macroName)
         if not file:
             # Local macro
             macro = self.macros[localName]
         else:
             # External macro
-            from driver import compilefile
-            program, macros = compilefile(file)
+            program, macros = driver.compilefile(file)
             macro = macros.get(localName)
             if not macro:
                 raise TALESError("macro %s not found in file %s" %
@@ -199,14 +203,13 @@ class DummyEngine:
         file, localName = self.findMacroFile(macroName)
         if not file:
             return file, localName
-        from driver import parsefile
-        doc = parsefile(file)
+        doc = driver.parsefile(file)
         return doc, localName
 
     def findMacroFile(self, macroName):
         if not macroName:
             raise TALESError("empty macro name")
-        i = string.rfind(macroName, '/')
+        i = rfind(macroName, '/')
         if i < 0:
             # No slash -- must be a locally defined macro
             return None, macroName
