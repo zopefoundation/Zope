@@ -217,6 +217,11 @@ Zope Changes
 
         - A bug in sequence multiplication in DTML was fixed.
 
+        - A ZServer bug that prevented running multiple Zope2 installations 
+          on non-posix systems was fixed.
+
+        - An External Method error handling bug was fixed.
+
         - SECURITY: Fixed bug that allowed users with local roles gain 
           priviledges on acquired objects.  getRolesInContext did not 
           used the correct context, as defined by the inner-most object 
