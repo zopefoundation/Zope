@@ -43,7 +43,7 @@ for name in ('event', 'trace', 'access'):
                            'propagate':logger.propagate,
                            'handlers':logger.handlers,
                            'filters':logger.filters}
-    
+
 class ZopeStarterTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -66,6 +66,7 @@ class ZopeStarterTestCase(unittest.TestCase):
         # of the directory is checked.  This handles this in a
         # platform-independent way.
         schema = self.schema
+        text = "instancehome <<INSTANCE_HOME>>\n" + text
         sio = cStringIO.StringIO(
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         try:
@@ -83,10 +84,7 @@ class ZopeStarterTestCase(unittest.TestCase):
         # XXX this almost certainly won't work on all systems
         import locale
         try:
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                locale fr_FR"""
-                )
+            conf = self.load_config_text("locale fr_FR")
             starter = ZopeStarter(conf)
             starter.setupLocale()
             self.assertEqual(locale.getlocale(), ['fr_FR', 'ISO8859-1'])
@@ -98,7 +96,6 @@ class ZopeStarterTestCase(unittest.TestCase):
         import zLOG
         import sys
         conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
             debug-mode on
             <eventlog>
              level info
@@ -127,7 +124,6 @@ class ZopeStarterTestCase(unittest.TestCase):
         self.assertEqual(len(zLOG.EventLogger.EventLogger.logger.handlers), 1)
         self.failUnlessEqual(starter.startup_handler.stream, sys.stderr)
         conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
             debug-mode off
             <eventlog>
              level info
@@ -141,9 +137,7 @@ class ZopeStarterTestCase(unittest.TestCase):
         self.failIfEqual(starter.startup_handler.stream, sys.stderr)
 
     def testSetupZServerThreads(self):
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-           zserver-threads 10""")
+        conf = self.load_config_text("zserver-threads 10")
         starter = ZopeStarter(conf)
         starter.setupZServerThreads()
         from ZServer.PubCore import _n
@@ -151,7 +145,6 @@ class ZopeStarterTestCase(unittest.TestCase):
 
     def testSetupServers(self):
         conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
             <http-server>
                 address 18092
             </http-server>
@@ -171,9 +164,9 @@ class ZopeStarterTestCase(unittest.TestCase):
                              ZServer.FTPServer)
         finally:
             del conf.servers # should release servers
-            pass
+
+    def testSetupServersWithConflict(self):
         conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
             <http-server>
                 address 18092
             </http-server>
@@ -200,30 +193,23 @@ class ZopeStarterTestCase(unittest.TestCase):
         try:
             os.getuid = _return0
             # no effective user
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>""")
+            conf = self.load_config_text("")
             starter = ZopeStarter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # cant find user in passwd database
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user n0sucHuS3r""")
+            conf = self.load_config_text("effective-user n0sucHuS3r")
             starter = ZopeStarter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # can't specify '0' as effective user
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user 0""")
+            conf = self.load_config_text("effective-user 0")
             starter = ZopeStarter(conf)
             self.assertRaises(ZConfig.ConfigurationError,
                               starter.dropPrivileges)
             # setuid to test runner's uid XXX will this work cross-platform?
             runnerid = _old_getuid()
-            conf = self.load_config_text("""
-                instancehome <<INSTANCE_HOME>>
-                effective-user %s""" % runnerid)
+            conf = self.load_config_text("effective-user %s" % runnerid)
             starter = ZopeStarter(conf)
             finished = starter.dropPrivileges()
             self.failUnless(finished)
@@ -235,7 +221,6 @@ class ZopeStarterTestCase(unittest.TestCase):
         import logging
         import sys
         conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
             debug-mode off
             <eventlog>
              level info
@@ -280,10 +265,7 @@ class ZopeStarterTestCase(unittest.TestCase):
     def testMakeLockFile(self):
         # put something in the way (it should be deleted)
         name = os.path.join(TEMPNAME, 'lock')
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            lock-filename %s""" % name
-                                     )
+        conf = self.load_config_text("lock-filename %s" % name)
         f = open(name, 'a')
         f.write('hello')
         f.close()
@@ -298,10 +280,7 @@ class ZopeStarterTestCase(unittest.TestCase):
     def testMakePidFile(self):
         # put something in the way (it should be deleted)
         name = os.path.join(TEMPNAME, 'pid')
-        conf = self.load_config_text("""
-            instancehome <<INSTANCE_HOME>>
-            pid-filename %s""" % name
-                                     )
+        conf = self.load_config_text("pid-filename %s" % name)
         f = open(name, 'a')
         f.write('hello')
         f.close()
@@ -318,4 +297,3 @@ def test_suite():
 
 if __name__ == "__main__":
     unittest.main(defaultTest="test_suite")
-        
