@@ -53,7 +53,10 @@
   <td bgcolor="#ffffff" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   href="<!--#var action-->"<!--#if target--> target="<!--#var
+   <!--#if action-->href="<!--#var action-->"
+   <!--#else-->href="<!--#var URL1-->"
+   <!--#endif-->
+   <!--#if target--> target="<!--#var
    target-->"<!--#endif-->><font 
    color="#000000"><strong><!--#var 
    label--></strong></font></a>&nbsp;</font></td>
@@ -61,7 +64,10 @@
   <td bgcolor="#efefef" valign="bottom" 
    align="center"><font face="Verdana, Arial, Helvetica" 
    size="1">&nbsp;<a 
-   href="<!--#var action-->"<!--#if target--> target="<!--#var
+   <!--#if action-->href="<!--#var action-->"
+   <!--#else-->href="<!--#var URL1-->"
+   <!--#endif-->
+   <!--#if target--> target="<!--#var
    target-->"<!--#endif-->><font 
    color="#000000"><strong><!--#var 
    label--></strong></font></a>&nbsp;</font></td>
