@@ -9,7 +9,7 @@ Welcome to the Zope Tutorial
   The tutorial assumes that you are familiar with basic Internet
   technologies such as <a href="http://www.w3.org/MarkUp/Guide/"
   target="_blank">HTML</a>,
-  URLs, and web browers.
+  URLs, and web browsers.
   
   The "Back" and "Next" buttons on the bottom of each tutorial
   page allow you to navigate the tutorial.
@@ -655,7 +655,7 @@ Lesson 9. Elvis, Up Close and Personal
     You can use cookies to personalize a web page. Zope documents
     can dynamically control their presentation.
   
-    * You can set cookies with the 'REPONSE.setCookie' method.
+    * You can set cookies with the 'RESPONSE.setCookie' method.
     
     * The [<dtml-if>] tag allows you to test conditions.
     
