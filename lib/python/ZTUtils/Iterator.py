@@ -18,10 +18,8 @@ The Iterator() function accepts either a sequence or a Python
 iterator.  The next() method fetches the next item, and returns
 true if it succeeds.
 
-$Id: Iterator.py,v 1.5 2001/12/13 18:35:32 evan Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
-
-import string
+$Id: Iterator.py,v 1.6 2002/04/19 14:16:08 andreasjung Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 class Iterator:
     '''Simple Iterator class'''
@@ -88,8 +86,8 @@ class Iterator:
             s = s + r * rct
         return s
 
-    def roman(self, lower=string.lower):
-        return lower(self.Roman())
+    def roman(self):
+        return self.Roman().lower()
 
     def first(self, name=None):
         if self.start: return 1

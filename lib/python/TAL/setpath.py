@@ -21,7 +21,7 @@ else:
     for line in f.readlines():
         line = line.strip()
         if line and line[0] != '#':
-            for dir in string.split(line, os.pathsep):
+            for dir in line.split(os.pathsep):
                 dir = os.path.expanduser(os.path.expandvars(dir))
                 if dir not in sys.path:
                     sys.path.append(dir)

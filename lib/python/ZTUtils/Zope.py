@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Zope-specific versions of ZTUTils classes
 
-$Id: Zope.py,v 1.8 2002/02/15 16:26:56 evan Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Zope.py,v 1.9 2002/04/19 14:16:08 andreasjung Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import sys, cgi, urllib, cgi
 from Tree import encodeExpansion, decodeExpansion, TreeMaker
@@ -21,7 +21,6 @@ from SimpleTree import SimpleTreeMaker
 from Batch import Batch
 from Products.ZCatalog.Lazy import Lazy
 from AccessControl import getSecurityManager
-from string import split, join
 from types import StringType, ListType, IntType, FloatType
 from DateTime import DateTime
 
@@ -117,7 +116,7 @@ class SimpleTreeMaker(TreeSkipMixin, SimpleTreeMaker):
         if state:
             setst = req.form.get(set_name)
             if setst:
-                st, pn, expid = split(setst, ',')
+                st, pn, expid = setst.split(',')
                 state, (m, obid) = decodeExpansion(state, int(pn))
                 if m is None:
                     pass
@@ -178,7 +177,7 @@ def make_query(*args, **kwargs):
         k, m, v = qlist[i]
         qlist[i] = '%s%s=%s' % (uq(k), m, uq(str(v)))
 
-    return join(qlist, '&')
+    return '&'.join(qlist) 
                 
 def make_hidden_input(*args, **kwargs):
     '''Construct a set of hidden input elements, with marshalling markup.
@@ -205,7 +204,7 @@ def make_hidden_input(*args, **kwargs):
         qlist[i] = ('<input type="hidden" name="%s%s" value="%s">'
                     % (hq(k), m, hq(str(v))))
 
-    return join(qlist, '\n')
+    return '\n'.join(qlist)
                 
 def complex_marshal(pairs):
     '''Add request marshalling information to a list of name-value pairs.
@@ -274,7 +273,7 @@ def url_query(request, req_name="URL", omit=None):
     qs = request.get('QUERY_STRING', '')
     
     if qs and omit:
-        qsparts = split(qs, '&')
+        qsparts = qs.split('&')
 
         if isinstance(omit, StringType):
             omits = {omit: None}
@@ -286,17 +285,17 @@ def url_query(request, req_name="URL", omit=None):
 
         unq = urllib.unquote
         for i in range(len(qsparts)):
-            name = unq(split(qsparts[i], '=', 1)[0])
+            name = unq(qsparts[i].split('=', 1)[0])
             if omitted(name):
                 qsparts[i] = ''
-            name = split(name, ':', 1)[0]
+            name = name.split(':', 1)[0]
             if omitted(name):
                 qsparts[i] = ''
-            name = split(name, '.', 1)[0]
+            name = name.split('.', 1)[0]
             if omitted(name):
                 qsparts[i] = ''
             
-        qs = join(filter(None, qsparts), '&')
+        qs = '&'.join(filter(None, qsparts))
 
     # We alway append '?' since arguments will be appended to the URL
     return '%s?%s' % (base, qs)

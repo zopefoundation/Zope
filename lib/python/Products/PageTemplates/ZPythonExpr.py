@@ -17,23 +17,22 @@ Handler for Python expressions, using the pre-Python 2.1 restriction
 machinery from PythonScripts.
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from AccessControl import getSecurityManager
 from Products.PythonScripts.Guarded import _marker, \
      GuardedBlock, theGuard, safebin, WriteGuard, ReadGuard, UntupleFunction
 from TALES import CompilerError
-from string import strip, split, join, replace, lstrip
 
 from PythonExpr import PythonExpr
 
 class PythonExpr(PythonExpr):
     def __init__(self, name, expr, engine):
-        self.expr = expr = replace(strip(expr), '\n', ' ')
+        self.expr = expr = expr.strip().replace('\n', ' ')
         blk = GuardedBlock('def f():\n return \\\n %s\n' % expr)
         if blk.errors:
             raise CompilerError, ('Python expression error:\n%s' %
-                                  join(blk.errors, '\n') )
+                                  '\n'.join(blk.errors) )
         guards = {'$guard': theGuard, '$write_guard': WriteGuard,
                   '$read_guard': ReadGuard, '__debug__': __debug__}
         self._f = UntupleFunction(blk.t, guards, __builtins__=safebin)
@@ -43,7 +42,7 @@ class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1
     def __getitem__(self, module):
         mod = safebin['__import__'](module)
-        path = split(module, '.')
+        path = module.split('.')
         for name in path[1:]:
             mod = getattr(mod, name)
         return mod

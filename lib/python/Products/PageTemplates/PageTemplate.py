@@ -15,7 +15,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.23 $'[11:-2]
+__version__='$Revision: 1.24 $'[11:-2]
 
 import sys
 
@@ -24,7 +24,6 @@ from TAL.HTMLTALParser import HTMLTALParser
 from TAL.TALGenerator import TALGenerator
 from TAL.TALInterpreter import TALInterpreter
 from Expressions import getEngine
-from string import join, strip, rstrip, split, replace, lower, find
 from cStringIO import StringIO
 from ExtensionClass import Base
 from ComputedAttribute import ComputedAttribute
@@ -148,7 +147,7 @@ class PageTemplate(Base):
                          self._text) )
                                   
         return ('%s\n %s\n-->\n%s' % (self._error_start,
-                                      join(self._v_errors, '\n '),
+                                      '\n '.join(self._v_errors),
                                       self._text))
 
     def _cook(self):
@@ -182,7 +181,7 @@ class PageTemplate(Base):
 class _ModuleImporter:
     def __getitem__(self, module):
         mod = __import__(module)
-        path = split(module, '.')
+        path = module.split('.')
         for name in path[1:]:
             mod = getattr(mod, name)
         return mod

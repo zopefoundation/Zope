@@ -17,12 +17,11 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
      Undefined, Default, _parse_expr
-from string import strip, split, join, replace, lstrip
 from Acquisition import aq_base, aq_inner, aq_parent
 
 
@@ -104,7 +103,7 @@ def render(ob, ns):
 
 class SubPathExpr:
     def __init__(self, path):
-        self._path = path = split(strip(path), '/')
+        self._path = path = path.strip().split('/')
         self._base = base = path.pop(0)
         if not _valid_name(base):
             raise CompilerError, 'Invalid variable name "%s"' % base
@@ -145,15 +144,15 @@ class PathExpr:
     def __init__(self, name, expr, engine):
         self._s = expr
         self._name = name
-        paths = split(expr, '|')
+        paths = expr.split('|')
         self._subexprs = []
         add = self._subexprs.append
         for i in range(len(paths)):
-            path = lstrip(paths[i])
+            path = paths[i].lstrip()
             if _parse_expr(path):
                 # This part is the start of another expression type,
                 # so glue it back together and compile it.
-                add(engine.compile(lstrip(join(paths[i:], '|'))))
+                add(engine.compile(('|'.join(paths[i:]).lstrip())))
                 break
             add(SubPathExpr(path)._eval)
 
@@ -204,11 +203,11 @@ class StringExpr:
     def __init__(self, name, expr, engine):
         self._s = expr
         if '%' in expr:
-            expr = replace(expr, '%', '%%')
+            expr = expr.replace('%', '%%')
         self._vars = vars = []
         if '$' in expr:
             parts = []
-            for exp in split(expr, '$$'):
+            for exp in expr.split('$$'):
                 if parts: parts.append('$')
                 m = _interp.search(exp)
                 while m is not None:
@@ -222,7 +221,7 @@ class StringExpr:
                     raise CompilerError, (
                         '$ must be doubled or followed by a simple path')
                 parts.append(exp)
-            expr = join(parts, '')
+            expr = ''.join(parts)
         self._expr = expr
         
     def __call__(self, econtext):
@@ -243,7 +242,7 @@ class StringExpr:
 
 class NotExpr:
     def __init__(self, name, expr, compiler):
-        self._s = expr = lstrip(expr)
+        self._s = expr = expr.lstrip()
         self._c = compiler.compile(expr)
         
     def __call__(self, econtext):
@@ -265,7 +264,7 @@ class DeferWrapper:
 
 class DeferExpr:
     def __init__(self, name, expr, compiler):
-        self._s = expr = lstrip(expr)
+        self._s = expr = expr.lstrip()
         self._c = compiler.compile(expr)
         
     def __call__(self, econtext):

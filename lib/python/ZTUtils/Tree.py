@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.4 2001/11/28 15:51:22 matt Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Tree.py,v 1.5 2002/04/19 14:16:08 andreasjung Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -147,11 +147,10 @@ def aqcallback(self, inst, parent, name, value, filter):
     return filter(self, inst, parent, name, value)
 
 from binascii import b2a_base64, a2b_base64
-import string
-from string import split, join, translate
+from string import translate, maketrans
 
-a2u_map = string.maketrans('+/=', '-._')
-u2a_map = string.maketrans('-._', '+/=')
+a2u_map = maketrans('+/=', '-._')
+u2a_map = maketrans('-._', '+/=')
 
 def b2a(s):
     '''Encode a value as a cookie- and url-safe string.
@@ -164,7 +163,7 @@ def b2a(s):
     frags = []
     for i in range(0, len(s), 57):
         frags.append(b2a_base64(s[i:i + 57])[:-1])
-    return translate(join(frags, ''), a2u_map)
+    return translate(''.join(frags), a2u_map)
 
 def a2b(s):
     '''Decode a b2a-encoded string.'''
@@ -174,7 +173,7 @@ def a2b(s):
     frags = []
     for i in range(0, len(s), 76):
         frags.append(a2b_base64(s[i:i + 76]))
-    return join(frags, '')
+    return ''.join(frags)
 
 def encodeExpansion(nodes):
     '''Encode the expanded node ids of a tree into a string.
@@ -196,7 +195,7 @@ def encodeExpansion(nodes):
         steps.append(node.id)
         node.expansion_number = n
         n = n + 1
-    return join(steps, ':')
+    return ':'.join(steps)
         
 def decodeExpansion(s, nth=None):
     '''Decode an expanded node map from a string.
@@ -209,7 +208,7 @@ def decodeExpansion(s, nth=None):
     nth_pair = None
     if nth is not None:
         nth_pair = (None, None)
-    for step in split(s, ':'):
+    for step in s.split(':'):
         if step[:1] == '.':
             pop = len(step) - 1
             continue

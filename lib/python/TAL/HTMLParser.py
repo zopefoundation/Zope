@@ -10,7 +10,6 @@
 
 import markupbase
 import re
-import string
 
 # Regular expressions used for parsing
 
@@ -258,7 +257,7 @@ class HTMLParser(markupbase.ParserBase):
         match = tagfind.match(rawdata, i+1)
         assert match, 'unexpected call to parse_starttag()'
         k = match.end()
-        self.lasttag = tag = string.lower(rawdata[i+1:k])
+        self.lasttag = tag = rawdata[i+1:k].lower()
 
         while k < endpos:
             m = attrfind.match(rawdata, k)
@@ -271,16 +270,16 @@ class HTMLParser(markupbase.ParserBase):
                  attrvalue[:1] == '"' == attrvalue[-1:]:
                 attrvalue = attrvalue[1:-1]
                 attrvalue = self.unescape(attrvalue)
-            attrs.append((string.lower(attrname), attrvalue))
+            attrs.append((attrname.lower(), attrvalue))
             k = m.end()
 
-        end = string.strip(rawdata[k:endpos])
+        end = rawdata[k:endpos].strip()
         if end not in (">", "/>"):
             lineno, offset = self.getpos()
             if "\n" in self.__starttag_text:
-                lineno = lineno + string.count(self.__starttag_text, "\n")
+                lineno = lineno + self.__starttag_text.count("\n")
                 offset = len(self.__starttag_text) \
-                         - string.rfind(self.__starttag_text, "\n")
+                         - self.__starttag_text.rfind("\n")
             else:
                 offset = offset + len(self.__starttag_text)
             self.error("junk characters in start tag: %s"
@@ -338,7 +337,7 @@ class HTMLParser(markupbase.ParserBase):
         if not match:
             self.error("bad end tag: %s" % `rawdata[i:j]`)
         tag = match.group(1)
-        self.handle_endtag(string.lower(tag))
+        self.handle_endtag(tag.lower())
         return j
 
     # Overridable -- finish processing of start+end tag: <tag.../>
@@ -385,9 +384,9 @@ class HTMLParser(markupbase.ParserBase):
     def unescape(self, s):
         if '&' not in s:
             return s
-        s = string.replace(s, "&lt;", "<")
-        s = string.replace(s, "&gt;", ">")
-        s = string.replace(s, "&apos;", "'")
-        s = string.replace(s, "&quot;", '"')
-        s = string.replace(s, "&amp;", "&") # Must be last
+        s = s.replace("&lt;", "<")
+        s = s.replace("&gt;", ">")
+        s = s.replace("&apos;", "'")
+        s = s.replace("&quot;", '"')
+        s = s.replace("&amp;", "&") # Must be last
         return s

@@ -14,10 +14,9 @@
 """Generic Python Expression Handler
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from TALES import CompilerError
-from string import strip, split, join, replace, lstrip
 from sys import exc_info
 
 class getSecurityManager:
@@ -28,10 +27,10 @@ class getSecurityManager:
 
 class PythonExpr:
     def __init__(self, name, expr, engine):
-        self.expr = expr = replace(strip(expr), '\n', ' ')
+        self.expr = expr = expr.strip().replace('\n', ' ')
         try:
             d = {}
-            exec 'def f():\n return %s\n' % strip(expr) in d
+            exec 'def f():\n return %s\n' % expr.strip() in d
             self._f = d['f']
         except:
             raise CompilerError, ('Python expression error:\n'

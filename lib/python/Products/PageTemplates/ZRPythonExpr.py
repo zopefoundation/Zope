@@ -16,14 +16,13 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from AccessControl import full_read_guard, full_write_guard, \
      safe_builtins, getSecurityManager
 from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
 from RestrictedPython import compile_restricted_eval
 from TALES import CompilerError
-from string import strip, split, join, replace, lstrip
 
 from PythonExpr import PythonExpr
 
@@ -33,11 +32,11 @@ class PythonExpr(PythonExpr):
                 '_getattr_': guarded_getattr,
                 '_getitem_': guarded_getitem,}
     def __init__(self, name, expr, engine):
-        self.expr = expr = replace(strip(expr), '\n', ' ')
+        self.expr = expr = expr.strip().replace('\n', ' ')
         code, err, warn, use = compile_restricted_eval(expr, str(self))
         if err:
             raise CompilerError, ('Python expression error:\n%s' %
-                                  join(err, '\n') )
+                                  '\n'.join(err) )
         self._f_varnames = use.keys()
         self._code = code
         
@@ -52,7 +51,7 @@ class _SecureModuleImporter:
     __allow_access_to_unprotected_subobjects__ = 1
     def __getitem__(self, module):
         mod = safe_builtins['__import__'](module)
-        path = split(module, '.')
+        path = module.split('.')
         for name in path[1:]:
             mod = getattr(mod, name)
         return mod

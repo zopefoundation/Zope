@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -23,7 +23,6 @@ from Globals import DTMLFile, ImageFile, MessageDialog, package_home
 from zLOG import LOG, ERROR, INFO
 from OFS.SimpleItem import SimpleItem
 from DateTime.DateTime import DateTime
-from string import join, strip, rstrip, split, replace, lower
 from Shared.DC.Scripts.Script import Script, BindingsUI
 from Shared.DC.Scripts.Signature import FuncCode
 from AccessControl import getSecurityManager
@@ -119,7 +118,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
         message = "Saved changes."
         if getattr(self, '_v_warnings', None):
             message = ("<strong>Warning:</strong> <i>%s</i>" 
-                       % join(self._v_warnings, '<br>'))
+                       % '<br>'.join(self._v_warnings))
         return self.pt_editForm(manage_tabs_message=message)
 
     def pt_setTitle(self, title):

@@ -15,12 +15,11 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
 from zLOG import LOG, ERROR, INFO
-from string import join, strip, rstrip, split, lower
 from Shared.DC.Scripts.Script import Script, BindingsUI
 from Shared.DC.Scripts.Signature import FuncCode
 from AccessControl import getSecurityManager
@@ -116,7 +115,7 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         self._cook()
         if self._v_errors:
             LOG('PageTemplateFile', ERROR, 'Error in template',
-                join(self._v_errors, '\n'))
+                '\n'.join(self._v_errors))
             return
         self._v_last_read = mtime
 
