@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
     
+
+      - The title_or_id attribute of browser id managers and
+        session data managers is now accessible publically.
    
       - Browser ids can now be encoded in the URL and Zope can be
         instructed to automatically include the browser id in its
