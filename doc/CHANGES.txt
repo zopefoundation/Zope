@@ -20,6 +20,9 @@ Zope Changes
 
       - ZServer, the integration of Zope and Medusa,
 
+      - ZCatalog, a mechanism for indexing content and creating
+        catalogs
+
       - Beginnings of XML support
   
         o The Python pyexpat extension, which provides access to the
@@ -63,7 +66,27 @@ Zope Changes
 
       Features Added
 
+        - The ZCatalog now supports relevance raking.  Instead of
+          search results being returned in an essentially random
+          order, results are now sorted by 'score'.  For text indexes, 
+          the score is the number of occurrences of the search term in 
+          a document.  The score can be access by an attribute on
+          Catalog results 'data_record_score_' and
+          'data_record_normalized_score_' contain the score and
+          normalized score for the result object.
+
+	- Added Keyword Indexes to the Catalog.  Keyword indexes allow
+	  you to index a sequence of 'keywords' as an atomic property
+	  of an object.  This is useful for buiding catagorical
+	  hierarchies.
+
       Features Changed
+
+        - ZCatalog uses subtransactions to keep memory consuption low
+          at the expense of indexing speed.  Subtransactions can now
+          be disabled through the management interface for use with
+          non subtransactions compatible objects like ZSQL Methods (or
+          for raw speed if you have lots of RAM).
 
         - Added a coptimizations module.  The first optimization is
           to provide an implementation of persistent_id in C.  This
@@ -87,6 +110,11 @@ Zope Changes
           logged.
 
       Bugs Fixed
+
+        - ZCatalog now actually saves memory when using
+          subtransactions.  Plugged a couple memory leaks doing this.
+
+=======
 
         - Fixed a bug which allowed unauthorized options to be displayed 
 	  when adding a Folder. Now you only see options to add an 
@@ -123,6 +151,7 @@ Zope Changes
 	  acquired objects.  getRolesInContext did not used the correct 
           context, as defined by the inner-most object wrapping.
 
+>>>>>>> 1.157
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
