@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-# $Revision: 1.17 $
+# $Revision: 1.18 $
 __version__ = '0.1'
 
 import struct
@@ -994,7 +994,7 @@ class Full(BerkeleyBase):
         Raises KeyError if there is no object with oid.  The oid argument
         is an integer; the return value is a list of integers of oids.
         """
-        oids = {}
+        oids = []
         c = None
         self._lock_acquire()
         try:
@@ -1007,10 +1007,10 @@ class Full(BerkeleyBase):
                 # Sniff the pickle for object references
                 tmpoids = []
                 referencesf(pickle, tmpoids)
+                # Convert to unsigned longs
+                oids.extend(map(utils.U64, tmpoids))
                 # Make sure there's no duplicates, and convert to int
-                for oid in tmpoids:
-                    oids[utils.U64(oid)] = 1
-            return oids.keys()
+            return oids
         finally:
             if c:
                 c.close()
