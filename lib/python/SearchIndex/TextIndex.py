@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Text Index
@@ -71,7 +71,7 @@ Notes on a new text index design
     tree introduces overhead.
 
     Trie structure currently introduces an excessive number of nodes.
-    Typically, a node per two or three words.  Trie has potential to 
+    Typically, a node per two or three words.  Trie has potential to
     reduce storage because key storage is shared between words.
 
     Maybe an alternative to a Trie is some sort of nested BTree.  Or
@@ -86,9 +86,9 @@ Notes on a new text index design
     Then:
 
       - After some point, tree objects no longer change
-    
+
     If this is case, then it doesn\'t make sense to optimize tree for
-    change. 
+    change.
 
   Additional notes
 
@@ -112,7 +112,7 @@ Notes on a new text index design
           textSearchResult -- id -> (score, positions)
 
           id -- integer, say 4-byte.
-          
+
           positions -- sequence of integers.
 
           score -- numeric measure of relevence, f(numberOfWords, positions)
@@ -130,7 +130,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 #XXX I strongly suspect that this is broken, but I'm not going to fix it. :(
 
@@ -242,7 +242,7 @@ class TextIndex(Persistent):
             pass
 
 
-    def unindex_item(self, i, obj=None): 
+    def unindex_item(self, i, obj=None):
         return self.index_item(i, obj, 1)
 
 
@@ -255,12 +255,12 @@ class TextIndex(Persistent):
                         tupleType=type(()),
                         dictType=type({}),
                         ):
-        src = Splitter(document_text, self._syn)  
+        src = Splitter(document_text, self._syn)
 
         d = {}
         old = d.has_key
         last = None
-        
+
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1], d, old, last)
             else:
@@ -305,7 +305,7 @@ class TextIndex(Persistent):
 
     def _subindex(self, isrc, d, old, last):
 
-        src = Splitter(isrc, self._syn)  
+        src = Splitter(isrc, self._syn)
 
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1],d,old,last)
@@ -328,7 +328,7 @@ class TextIndex(Persistent):
             r = self._index.get(word,None)
             if r is None: r = {}
             return ResultList(r, (word,), self)
-            
+
         r = None
         for word in src:
             rr = self[word]
@@ -338,7 +338,7 @@ class TextIndex(Persistent):
         return r
 
 
-    def _apply_index(self, request, cid='', ListType=[]): 
+    def _apply_index(self, request, cid='', ListType=[]):
         """ Apply the index to query parameters given in the argument,
         request
 
@@ -350,7 +350,7 @@ class TextIndex(Persistent):
         Otherwise two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
         records.  The second object is a tuple containing the names of
-        all data fields used.  
+        all data fields used.
         """
 
         id = self.id
@@ -376,7 +376,7 @@ class TextIndex(Persistent):
             if r is None: r = rr
             else:
                 # Note that we *and*/*narrow* multiple search terms.
-                r = r.intersection(rr) 
+                r = r.intersection(rr)
 
         if r is not None: return r, (id,)
         return IISet(), (id,)
@@ -433,7 +433,7 @@ def parse2(q, default_operator,
         if ((i % 2) != 0):
             # This word should be an operator; if it is not, splice in
             # the default operator.
-            
+
             if type(q[i]) is not ListType and isop(q[i]):
                 q[i] = operator_dict[q[i]]
             else: q[i : i] = [ default_operator ]
@@ -450,7 +450,7 @@ def parens(s, parens_re = re.compile(r'(\|)').search):
     while 1:
         index = parens_re(s, index)
         if index is None : break
-    
+
         if s[index] == '(':
             paren_count = paren_count + 1
             if open_index == 0 : open_index = index + 1
@@ -465,36 +465,36 @@ def parens(s, parens_re = re.compile(r'(\|)').search):
     if paren_count == 0: # No parentheses Found
         return None
     else:
-        raise QueryError, "Mismatched parentheses"      
+        raise QueryError, "Mismatched parentheses"
 
 
 
 def quotes(s, ws = (string.whitespace,)):
-     # split up quoted regions
-     splitted = re.split( '[%s]*\"[%s]*' % (ws * 2),s)
-     split=string.split
+    # split up quoted regions
+    splitted = re.split( '[%s]*\"[%s]*' % (ws * 2),s)
+    split=string.split
 
-     if (len(splitted) > 1):
-         if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
-    
-         for i in range(1,len(splitted),2):
-             # split the quoted region into words
-             splitted[i] = filter(None, split(splitted[i]))
+    if (len(splitted) > 1):
+        if ((len(splitted) % 2) == 0): raise QueryError, "Mismatched quotes"
 
-             # put the Proxmity operator in between quoted words
-             for j in range(1, len(splitted[i])):
-                 splitted[i][j : j] = [ Near ]
+        for i in range(1,len(splitted),2):
+            # split the quoted region into words
+            splitted[i] = filter(None, split(splitted[i]))
 
-         for i in range(len(splitted)-1,-1,-2):
-             # split the non-quoted region into words
-             splitted[i:i+1] = filter(None, split(splitted[i]))
+            # put the Proxmity operator in between quoted words
+            for j in range(1, len(splitted[i])):
+                splitted[i][j : j] = [ Near ]
 
-         splitted = filter(None, splitted)
-     else:
-         # No quotes, so just split the string into words
-         splitted = filter(None, split(s))
+        for i in range(len(splitted)-1,-1,-2):
+            # split the non-quoted region into words
+            splitted[i:i+1] = filter(None, split(splitted[i]))
 
-     return splitted
+        splitted = filter(None, splitted)
+    else:
+        # No quotes, so just split the string into words
+        splitted = filter(None, split(s))
+
+    return splitted
 
 def get_operands(q, i, index, ListType=type([]), StringType=type('')):
     '''Evaluate and return the left and right operands for an operator'''
@@ -523,7 +523,7 @@ def evaluate(q, index, ListType=type([])):
             return evaluate(q[0], index)
 
         return index[q[0]]
-      
+
     i = 0
     while (i < len(q)):
         if q[i] is AndNot:

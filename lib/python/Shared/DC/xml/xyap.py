@@ -62,7 +62,7 @@ class xyap:
         append(top)
 
 class NoBlanks:
-    
+
     def handle_data(self, data):
         if string.strip(data): self.append(data)
 
@@ -78,12 +78,12 @@ def name(self, tag, data, join=string.join, strip=string.strip):
 def tuplef(self, tag, data): return tuple(data[2:])
 
 class XYap(xyap, xmllib.XMLParser):
-        def __init__(self):
-            xmllib.XMLParser.__init__(self)
-            top=[]
-            self._stack=_stack=[top]
-            self.push=_stack.append
-            self.append=top.append
+    def __init__(self):
+        xmllib.XMLParser.__init__(self)
+        top=[]
+        self._stack=_stack=[top]
+        self.push=_stack.append
+        self.append=top.append
 
 class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
     end_handlers={
@@ -117,7 +117,7 @@ class xmlrpc(NoBlanks, XYap, xmllib.XMLParser):
         }
 
 def test():
-    
+
     data="""<?xml version="1.0"?>
     <methodCall>
              <methodName>examples.getStateName
@@ -154,7 +154,7 @@ def test():
                 </params>
              </methodCall>
              """
-    
+
     data=string.split(data,'\n')
     r=[]
     for C in XYap, xmlrpc:
@@ -163,9 +163,8 @@ def test():
             p.feed(l)
         p.close()
         r.append(p._stack)
-    
+
     return r
 
 
 if __name__=='__main__': print test()
-    

@@ -165,9 +165,9 @@ class XMLParser:
                 break
             res = interesting.search(rawdata, i)
             if res:
-                    j = res.start(0)
+                j = res.start(0)
             else:
-                    j = n
+                j = n
             if i < j:
                 if self.__at_start:
                     self.syntax_error('illegal data at start of file')

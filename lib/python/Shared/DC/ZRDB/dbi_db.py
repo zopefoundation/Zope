@@ -1,26 +1,26 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''short description
 
 
-$Id: dbi_db.py,v 1.9 2001/11/28 15:51:13 matt Exp $'''
-#     Copyright 
+$Id: dbi_db.py,v 1.10 2002/08/14 21:50:59 mj Exp $'''
+#     Copyright
 #
 #       Copyright 1997 Digital Creations, Inc, 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-#       rights reserved. 
-# 
-__version__='$Revision: 1.9 $'[11:-2]
+#       rights reserved.
+#
+__version__='$Revision: 1.10 $'[11:-2]
 
 import string, sys
 from string import strip, split, find, join
@@ -51,7 +51,7 @@ class DB:
         self.connection=connection
         db=self.db=self.Database_Connection(connection)
         self.cursor=db.cursor()
-        
+
     def str(self,v, StringType=type('')):
         if v is None: return ''
         r=str(v)
@@ -70,7 +70,7 @@ class DB:
         if self._registered: return
         get_transaction().register(self)
         self._registered=1
-        
+
 
     def query(self,query_string, max_rows=9999999):
         global failures, calls
@@ -126,7 +126,7 @@ class DB:
                 desc=c.description
             else:
                 raise sys.exc_info()
-        
+
         if result:
             result=join(
                     map(

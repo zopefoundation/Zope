@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 """Provide conversion between Python pickles and XML
 
@@ -65,7 +65,7 @@ def convert(S, find=string.find):
             new=string.join(map(lambda s: reprs2.get(s,s), new), '')
     return encoding, new
 
-#  Function unconvert takes a encoding and a string and 
+#  Function unconvert takes a encoding and a string and
 #  returns the original string
 
 def unconvert(encoding,S):
@@ -96,7 +96,7 @@ def u64(v, unpack=struct.unpack):
 
 class Global:
 
-    def __init__(self, module, name): 
+    def __init__(self, module, name):
         self.module=module
         self.name=name
 
@@ -111,7 +111,7 @@ class Scalar:
 
     def __init__(self, v):
         self._v=v
-    
+
     def value(self): return self._v
 
     def __str__(self, indent=0):
@@ -130,7 +130,7 @@ def xmlstr(v):
     return v[1:-1]
 
 class Int(Scalar): pass
-class Long(Scalar): 
+class Long(Scalar):
     def value(self):
         result = str(self._v)
         if result[-1:] == 'L':
@@ -155,7 +155,7 @@ class String(Scalar):
 class Wrapper:
 
     def __init__(self, v): self._v=v
-    
+
     def value(self): return self._v
 
     def __str__(self, indent=0):
@@ -196,7 +196,7 @@ class Dictionary(Collection):
                 '%s<item>\n'
                 '%s'
                 '%s'
-                '%s</item>\n' 
+                '%s</item>\n'
                 %
                 (ind,
                  Key(i[0]).__str__(indent),
@@ -208,7 +208,7 @@ class Dictionary(Collection):
 
 class Sequence(Collection):
 
-    def __init__(self, v=None): 
+    def __init__(self, v=None):
         if not v: v=[]
         self._subs=v
 
@@ -238,7 +238,7 @@ class Reference(Scalar):
     def __str__(self, indent=0):
         v=self._v
         name=string.lower(self.__class__.__name__)
-        return '%s<%s id="%s"/>\n' % (' '*indent,name,v) 
+        return '%s<%s id="%s"/>\n' % (' '*indent,name,v)
 
 Get=Reference
 
@@ -282,7 +282,7 @@ class ToXMLUnpickler(Unpickler):
     def load_binint2(self):
         self.append(Int(mloads('i' + self.read(2) + '\000\000')))
     dispatch[BININT2] = load_binint2
- 
+
     def load_long(self):
         self.append(Long(string.atol(self.readline()[:-1], 0)))
     dispatch[LONG] = load_long
@@ -358,11 +358,11 @@ class ToXMLUnpickler(Unpickler):
         k = self.marker()
         klass = stack[k + 1]
         del stack[k + 1]
-        args = Tuple(stack[k + 1:]) 
+        args = Tuple(stack[k + 1:])
         del stack[k:]
         value=Object(klass,args)
         self.append(value)
-    dispatch[OBJ] = load_obj                
+    dispatch[OBJ] = load_obj
 
     def load_global(self):
         module = self.readline()[:-1]
@@ -422,13 +422,13 @@ def ToXMLloads(str):
 
 
 class NoBlanks:
-    
+
     def handle_data(self, data):
         if string.strip(data): self.append(data)
 
 def name(self, tag, data, join=string.join, strip=string.strip):
     return strip(join(data[2:],''))
-    
+
 def start_pickle(self, tag, attrs):
     self._pickleids={}
     return [tag,attrs]
@@ -490,7 +490,7 @@ class xmlUnpickler(NoBlanks, xyap):
         'state': lambda self, tag, data: data[2],
         'klass': lambda self, tag, data: data[2],
         }
-    
+
 def save_int(self, tag, data):
     binary=self.binary
     if binary:
@@ -584,7 +584,7 @@ def save_dict(self, tag, data):
 
 def save_reference(self, tag, data):
     binary=self.binary
-    a=data[1]    
+    a=data[1]
     id=a['id']
     prefix=string.rfind(id,'.')
     if prefix>=0: id=id[prefix+1:]
@@ -600,7 +600,7 @@ def save_reference(self, tag, data):
             get='j'
         v=get+id
     else: v=get+id+'\012'
-    
+
     return v
 
 def save_object(self, tag, data):
@@ -787,4 +787,3 @@ def test3():
 
 if __name__ == '__main__':
     test()
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 __version__='$Revision$'[11:-2]
@@ -142,7 +142,7 @@ class NameAssignments:
 
 
 class Bindings:
-    
+
     __ac_permissions__ = (
         ('View management screens', ('getBindingAssignments',)),
         ('Change bindings', ('ZBindings_edit', 'ZBindings_setClient')),
@@ -188,7 +188,7 @@ class Bindings:
 
     def _createBindCode(self, names):
         return names._createCodeBlockForMapping()
-        
+
     def _prepareBindCode(self):
         # Creates:
         # - a code block that quickly generates "bound_data" and
@@ -210,7 +210,7 @@ class Bindings:
         if bindcount is _marker:
             self._prepareBindCode()
             bindcount = self._v_bindcount
-        return bindcount            
+        return bindcount
 
     def _getContext(self):
         # Utility for bindcode.
@@ -281,6 +281,3 @@ class Bindings:
             exec bindcode
             bound_data = bound_data[0]
         return self._exec(bound_data, args, kw)
-
-
-

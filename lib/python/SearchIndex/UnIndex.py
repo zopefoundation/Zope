@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Simple column indices"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -42,7 +42,7 @@ class UnIndex(Persistent, Implicit):
 
         UnIndexes are indexes that contain two index components, the
         forward index (like plain index objects) and an inverted
-        index.  The inverted index is so that objects can be unindexed 
+        index.  The inverted index is so that objects can be unindexed
         even when the old value of the object is not known.
 
         e.g.
@@ -63,7 +63,7 @@ class UnIndex(Persistent, Implicit):
           to ignore exceptions raised while indexing instead of
           propagating them.
 
-          'call_methods' -- should be set to true if you want the index 
+          'call_methods' -- should be set to true if you want the index
           to call the attribute 'id' (note: 'id' should be callable!)
           You will also need to pass in an object in the index and
           uninded methods for this to work.
@@ -90,7 +90,7 @@ class UnIndex(Persistent, Implicit):
 
         _index=self._index
         self._index=OOBTree()
-        
+
         def convertSet(s,
                        IITreeSet=IITreeSet, IntType=type(0),
                        type=type, len=len,
@@ -103,7 +103,7 @@ class UnIndex(Persistent, Implicit):
                 except: pass # This is just an optimization.
 
             return IITreeSet(s)
-    
+
         convert(_index, self._index, threshold, convertSet)
 
         _unindex=self._unindex
@@ -152,8 +152,8 @@ class UnIndex(Persistent, Implicit):
             return self._unindex.get(documentId)
         else:
             return self._unindex.get(documentId, default)
-            
-        
+
+
     def removeForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and remove any reference to documentId
         in its entry in the index."""
@@ -170,7 +170,7 @@ class UnIndex(Persistent, Implicit):
                 # index row is an int
                 del self._index[entry]
                 try: self.__len__.change(-1)
-                except AttributeError: pass # pre-BTrees-module instance   
+                except AttributeError: pass # pre-BTrees-module instance
             except:
                 LOG(self.__class__.__name__, ERROR,
                     ('unindex_object could not remove '
@@ -184,7 +184,7 @@ class UnIndex(Persistent, Implicit):
                  'from index %s but couldn\'t.  This '
                  'should not happen.' % (repr(entry), str(self.id))))
 
-        
+
     def insertForwardIndexEntry(self, entry, documentId):
         """Take the entry provided and put it in the correct place
         in the forward index.
@@ -192,7 +192,7 @@ class UnIndex(Persistent, Implicit):
         This will also deal with creating the entire row if necessary."""
         global _marker
         indexRow = self._index.get(entry, _marker)
-        
+
         # Make sure there's actually a row there already.  If not, create
         # an IntSet and stuff it in first.
         if indexRow is _marker:
@@ -221,7 +221,7 @@ class UnIndex(Persistent, Implicit):
                 datum = datum()
         except AttributeError:
             datum = _marker
- 
+
         # We don't want to do anything that we don't have to here, so we'll
         # check to see if the new and existing information is the same.
         oldDatum = self._unindex.get(documentId, _marker)
@@ -247,14 +247,14 @@ class UnIndex(Persistent, Implicit):
             return None
 
         self.removeForwardIndexEntry(unindexRecord, documentId)
-        
+
         try:
             del self._unindex[documentId]
         except:
             LOG('UnIndex', ERROR, 'Attempt to unindex nonexistent document'
                 ' with id %s' % documentId)
 
-    def _apply_index(self, request, cid='', type=type, None=None): 
+    def _apply_index(self, request, cid='', type=type, None=None):
         """Apply the index to query parameters given in the request arg.
 
         The request argument should be a mapping object.
@@ -366,7 +366,7 @@ class UnIndex(Persistent, Implicit):
 
         if not withLengths:
             return tuple(self._index.keys())
-        else: 
+        else:
             rl=[]
             for i in self._index.keys():
                 set = self._index[i]
@@ -387,4 +387,3 @@ class UnIndex(Persistent, Implicit):
                 v = IISet((v,))
             items.append((k, v))
         return items
-

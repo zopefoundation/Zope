@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.55 2002/02/15 16:30:29 evan Exp $'''
-__version__='$Revision: 1.55 $'[11:-2]
+$Id: Aqueduct.py,v 1.56 2002/08/14 21:50:59 mj Exp $'''
+__version__='$Revision: 1.56 $'[11:-2]
 
 import Globals, os
 from Globals import Persistent
@@ -73,12 +73,12 @@ class BaseQuery(Persistent, SimpleItem.Item,
                         try:
                             if not arg['optional']: missing.append(name)
                         except: missing.append(name)
-                    
+
         # Note: the code above tries to check if an argument of the
         # ZSQL method above has the "optional" flag set (in case the
         # argument is omitted from the ZSQL function call). But there
-        # is neither corresponding code inside the parse() function to 
-        # check for the "optional" parameter nor any documentation. 
+        # is neither corresponding code inside the parse() function to
+        # check for the "optional" parameter nor any documentation.
         # So we omit the check for the optional parameter. There will
         # be probably no code break but there will be hopefully more code
         # to work as supposed to work.
@@ -114,7 +114,7 @@ class Searchable(BaseQuery):
 
     def manage_test(self, REQUEST):
         'Perform an actual query'
-        
+
         result=self(REQUEST)
         report=HTML(custom_default_report(self.id, result))
         return apply(report,(self,REQUEST),{self.id:result})
@@ -123,7 +123,7 @@ class Searchable(BaseQuery):
         " "
         raise 'Redirect', ("%s/manage_testForm" % URL1)
 
-class Composite:    
+class Composite:
 
     def _getquery(self,id):
 
@@ -141,7 +141,7 @@ class Composite:
             if i > 100: raise AttributeError, id
             i=i+1
             o=o.aq_parent
-            
+
     def myQueryIds(self):
         return map(
             lambda k, queries=self.queries:
@@ -291,10 +291,10 @@ def decode(input,output):
         output.write(s)
 
 def decodestring(s):
-        f = StringIO(s)
-        g = StringIO()
-        decode(f, g)
-        return g.getvalue()
+    f = StringIO(s)
+    g = StringIO()
+    decode(f, g)
+    return g.getvalue()
 
 class Args:
     def __init__(self, data, keys):
@@ -400,7 +400,7 @@ def decapitate(html, RESPONSE=None,
                ):
 
 
-    mo = header_re.match(html)  
+    mo = header_re.match(html)
     if mo is None: return html
 
     headers, html = mo.group(1,3)

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.19 2002/07/19 18:24:23 efge Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Search.py,v 1.20 2002/08/14 21:50:59 mj Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 from Globals import DTMLFile
 from Aqueduct import custom_default_report, custom_default_zpt_report, nicify, Args
@@ -39,14 +39,14 @@ def manage_addZSearch(self, report_id, report_title, report_style,
     arguments={}
     keys=[]
 
-    checkPermission=getSecurityManager().checkPermission    
+    checkPermission=getSecurityManager().checkPermission
 
     for q in qs:
         url=q.absolute_url()
         if input_id:
             for name, arg in q._searchable_arguments().items():
                 if len(qs) > 1: key="%s/%s" % (id,name)
-                else: key=name 
+                else: key=name
                 arguments[key]=arg
                 keys.append(key)
         if q._searchable_result_columns() is None:
@@ -75,7 +75,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
         self.manage_addDocument(
             report_id,report_title,
             ('<dtml-var standard_html_header>\n%s\n'
-             '<dtml-var standard_html_footer>' % 
+             '<dtml-var standard_html_footer>' %
              join(map(lambda q, report_style=report_style:
                       custom_default_report(q.id, q, no_table=report_style), qs),
                   '\n<hr>\n')))
@@ -99,13 +99,13 @@ def manage_addZSearch(self, report_id, report_title, report_style,
         self.manage_addProduct['PageTemplates'].manage_addPageTemplate(
             report_id,report_title,
             ('<html><body>\n%s\n'
-             '</body></html>' % 
+             '</body></html>' %
              join(map(lambda q, report_style=report_style:
                       custom_default_zpt_report(q.id, q, no_table=report_style), qs),
                   '\n<hr>\n')))
 
         if REQUEST: return self.manage_main(self,REQUEST)
-        
+
 
 def ZQueryIds(self):
     # Note that report server configurations will expend on this
@@ -133,26 +133,26 @@ def ZQueryIds(self):
         # Now extend search to parent
         try: o=o.aq_parent
         except: return t
-  
+
         if n > 100: return t # Seat belt
         n=n+1
 
 def _getquery(self,id):
 
-        o=self
-        i=0
-        while 1:
-            __traceback_info__=o
-            q=getattr(o,id)
-            try:
-                if hasattr(q,'_searchable_arguments'):
-                    try: q=q.__of__(self.aq_parent)
-                    except: pass
-                    return q
-            except: pass
-            if i > 100: raise AttributeError, id
-            i=i+1
-            o=o.aq_parent
+    o=self
+    i=0
+    while 1:
+        __traceback_info__=o
+        q=getattr(o,id)
+        try:
+            if hasattr(q,'_searchable_arguments'):
+                try: q=q.__of__(self.aq_parent)
+                except: pass
+                return q
+        except: pass
+        if i > 100: raise AttributeError, id
+        i=i+1
+        o=o.aq_parent
 
 
 def default_input_form(arguments,action='query',
@@ -252,14 +252,3 @@ def default_input_zpt_form(arguments,action='query',
             '</body></html>\n'
             % (tabs, action)
             )
-
-
-
-
-
-
-
-
-
-
-

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import TM, ThreadLock
@@ -18,7 +18,7 @@ thunk_lock=ThreadLock.allocate_lock()
 class THUNKED_TM(TM.TM):
     """A big heavy hammer for handling non-thread safe DAs
     """
-    
+
     def _register(self):
         if not self._registered:
             thunk_lock.acquire()
@@ -30,7 +30,7 @@ class THUNKED_TM(TM.TM):
                 raise
             else:
                 self._registered=1
-    
+
     def tpc_finish(self, *ignored):
         if self._registered:
             try: self._finish()

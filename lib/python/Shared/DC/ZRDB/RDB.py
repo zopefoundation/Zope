@@ -1,20 +1,20 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.32 2001/11/28 15:51:13 matt Exp $'''
-__version__='$Revision: 1.32 $'[11:-2]
+$Id: RDB.py,v 1.33 2002/08/14 21:50:59 mj Exp $'''
+__version__='$Revision: 1.33 $'[11:-2]
 
 from string import split, strip, lower, upper, atof, atoi, atol, find, join,find
 import DateTime,re
@@ -43,7 +43,7 @@ Parsers={'n': atof,
 class SQLAlias(ExtensionClass.Base):
     def __init__(self, name): self._n=name
     def __of__(self, parent): return getattr(parent, self._n)
- 
+
 class NoBrains: pass
 
 class DatabaseResults:
@@ -63,7 +63,7 @@ class DatabaseResults:
         self._parent=parent
         if zbrains is None: zbrains=NoBrains
 
-        
+
         while line and line.find('#') != -1 : line=readline()
 
         line=line[:-1]
@@ -91,14 +91,14 @@ class DatabaseResults:
         line=readline()
         line=line[:-1]
         if line[-1:] in '\r\n': line=line[:-1]
-        
+
         self._defs=defs=split(line,'\t')
         if not defs: raise ValueError, 'No column definitions'
         if len(defs) != nv:
             raise ValueError, (
                 """The number of column names and the number of column
                 definitions are different.""")
-        
+
         i=0
         self._parsers=parsers=[]
         defre=re.compile(r'([0-9]*)([a-zA-Z])?')
@@ -126,7 +126,7 @@ class DatabaseResults:
             d={'name': name, 'type': type, 'width': width, 'parser': parser}
             items.append(d)
             dd[name]=d
-            
+
             parsers.append((i,parser))
             i=i+1
 
@@ -134,7 +134,7 @@ class DatabaseResults:
         names=tuple(names)
 
         class r(Record, Implicit, brains, zbrains):
-            'Result record class'               
+            'Result record class'
 
         r.__record_schema__=schema
         for k in filter(lambda k: k[:2]=='__', Record.__dict__.keys()):
@@ -153,7 +153,7 @@ class DatabaseResults:
                 binit(self.__of__(parent))
 
             r.__dict__['__init__']=__init__
-                    
+
 
         self._class=r
 
@@ -191,7 +191,7 @@ class DatabaseResults:
                 raise ValueError, (
                     """The number of items in record %s is invalid
                     <pre>%s\n%s\n%s\n%s</pre>
-                    """ 
+                    """
                     % (index, ('='*40), line, ('='*40), fields))
         for i, parser in self._parsers:
             try: v=parser(fields[i])

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import ExtensionClass
 import string
@@ -19,7 +19,7 @@ from Record import Record
 class SQLAlias(ExtensionClass.Base):
     def __init__(self, name): self._n=name
     def __of__(self, parent): return getattr(parent, self._n)
- 
+
 class NoBrains: pass
 
 class Results:
@@ -60,12 +60,12 @@ class Results:
             i=i+1
 
         self._nv=nv=len(names)
-        
+
         # Create a record class to hold the records.
         names=tuple(names)
 
         class r(Record, Implicit, brains, zbrains):
-            'Result record class'               
+            'Result record class'
 
         r.__record_schema__=schema
         for k in Record.__dict__.keys():
@@ -86,7 +86,7 @@ class Results:
                 binit(self)
 
             r.__dict__['__init__']=__init__
-                    
+
         self._class=r
 
         # OK, we've read meta data, now get line indexes
@@ -137,7 +137,7 @@ class Results:
             else: nstrings.append(i)
             if item.has_key('width'): append('%s%s' % (item['width'], t))
             else: r.append(t)
-                
+
 
         r=[join(self._names, '\t'), join(r,'\t')]
         append=r.append
@@ -157,5 +157,5 @@ class Results:
                 row[i]=tostr(d[i])
             append(join(row,'\t'))
         append('')
-                
+
         return join(r,'\n')

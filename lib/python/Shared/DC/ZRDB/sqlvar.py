@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Inserting values with the 'sqlvar' tag
 
@@ -37,7 +37,7 @@
       <dtml-sqlvar x type=nb optional>
 
     if the value of 'x' is::
- 
+
       Let\'s do it
 
     then the text inserted is:
@@ -47,17 +47,17 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.12 2001/11/28 15:51:13 matt Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.13 2002/08/14 21:50:59 mj Exp $'
 
 ############################################################################
-#     Copyright 
+#     Copyright
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 #
-############################################################################ 
-__version__='$Revision: 1.12 $'[11:-2]
+############################################################################
+__version__='$Revision: 1.13 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -65,7 +65,7 @@ StringType=type('')
 
 str=__builtins__['str']
 
-class SQLVar: 
+class SQLVar:
     name='sqlvar'
 
     def __init__(self, args):
@@ -130,7 +130,7 @@ class SQLVar:
                 else:
                     raise ValueError, (
                         'Invalid empty string value for <em>%s</em>' % name)
-            
+
             v=md.getitem('sql_quote__',0)(v)
             #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
             #v="'%s'" % v

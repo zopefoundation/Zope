@@ -1,23 +1,23 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 '''Inserting optional tests with 'sqlgroup'
-  
+
     It is sometimes useful to make inputs to an SQL statement
     optinal.  Doing so can be difficult, because not only must the
     test be inserted conditionally, but SQL boolean operators may or
     may not need to be inserted depending on whether other, possibly
     optional, comparisons have been done.  The 'sqlgroup' tag
-    automates the conditional insertion of boolean operators.  
+    automates the conditional insertion of boolean operators.
 
     The 'sqlgroup' tag is a block tag that has no attributes. It can
     have any number of 'and' and 'or' continuation tags.
@@ -55,17 +55,17 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.17 2002/08/09 17:58:33 jshell Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.18 2002/08/14 21:50:59 mj Exp $'
 
 ############################################################################
-#     Copyright 
+#     Copyright
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 #
-############################################################################ 
-__version__='$Revision: 1.17 $'[11:-2]
+############################################################################
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -74,7 +74,7 @@ str=__builtins__['str']
 from string import find, split, join, atoi, atof
 from types import ListType, TupleType, StringType
 
-class SQLTest: 
+class SQLTest:
     name='sqltest'
     optional=multiple=None
 
@@ -83,14 +83,14 @@ class SQLTest:
                             multiple=1, optional=1, op=None)
         name,expr = name_param(args,'sqlvar',1)
 
-	if expr is None:
-	    expr=name
-	else: expr=expr.eval
-	self.__name__, self.expr = name, expr
+        if expr is None:
+            expr=name
+        else: expr=expr.eval
+        self.__name__, self.expr = name, expr
 
         self.args=args
         if not args.has_key('type'):
-	    raise ParseError, ('the type attribute is required', 'sqltest')
+            raise ParseError, ('the type attribute is required', 'sqltest')
 
         self.type=t=args['type']
         if not valid_type(t):
@@ -103,9 +103,9 @@ class SQLTest:
         elif self.__name__ is None:
             err = ' the column attribute is required if an expression is used'
             raise ParseError, (err, 'sqltest')
-	else:
+        else:
             self.column=self.__name__
-	
+
         # Deal with optional operator specification
         op = '='                        # Default
         if args.has_key('op'):
@@ -116,37 +116,37 @@ class SQLTest:
 
     def render(self, md):
 
-	name=self.__name__
-	
+        name=self.__name__
+
         t=self.type
         args=self.args
         try:
-	    expr=self.expr
-	    if type(expr) is type(''):
-		v=md[expr]
-	    else:
-		v=expr(md)
-	except KeyError:
-	    if args.has_key('optional') and args['optional']:
-		return ''
+            expr=self.expr
+            if type(expr) is type(''):
+                v=md[expr]
+            else:
+                v=expr(md)
+        except KeyError:
+            if args.has_key('optional') and args['optional']:
+                return ''
             raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
-        
+
         if type(v) in (ListType, TupleType):
             if len(v) > 1 and not self.multiple:
                 raise 'Multiple Values', (
                     'multiple values are not allowed for <em>%s</em>'
                     % name)
         else: v=[v]
-        
+
         vs=[]
         for v in v:
             if not v and type(v) is StringType and t != 'string': continue
             if t=='int':
                 try:
                     if type(v) is StringType:
-			if v[-1:]=='L':
-			    v=v[:-1]
-			atoi(v)
+                        if v[-1:]=='L':
+                            v=v[:-1]
+                        atoi(v)
                     else: v=str(int(v))
                 except ValueError:
                     raise ValueError, (
@@ -166,10 +166,10 @@ class SQLTest:
                 #v="'%s'" % v
             vs.append(v)
 
-	if not vs and t=='nb':
-	    if args.has_key('optional') and args['optional']:
-		return ''
-	    else:
+        if not vs and t=='nb':
+            if args.has_key('optional') and args['optional']:
+                return ''
+            else:
                 err = 'Invalid empty string value for <em>%s</em>' % name
                 raise ValueError, err
 

@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.34 2001/11/28 15:51:13 matt Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: Connection.py,v 1.35 2002/08/14 21:50:59 mj Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -30,7 +30,7 @@ class Connection(
     AccessControl.Role.RoleManager,
     OFS.SimpleItem.Item,
     Acquisition.Implicit,
-    ):    
+    ):
 
     # Specify definitions for tabs:
     manage_options=(
@@ -42,7 +42,7 @@ class Connection(
         +AccessControl.Role.RoleManager.manage_options
         +OFS.SimpleItem.Item.manage_options
         )
- 
+
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
         ('View management screens', ('manage_main',)),
@@ -69,7 +69,7 @@ class Connection(
         s=Connection.inheritedAttribute('title_and_id')(self)
         if hasattr(self, '_v_connected') and self._v_connected:
             s="%s, which is connected" % s
-        else: 
+        else:
             s="%s, which is <font color=red> not connected</font>" % s
         return s
 
@@ -77,7 +77,7 @@ class Connection(
         s=Connection.inheritedAttribute('title_or_id')(self)
         if hasattr(self, '_v_connected') and self._v_connected:
             s="%s (connected)" % s
-        else: 
+        else:
             s="%s (<font color=red> not connected</font>)" % s
         return s
 
@@ -87,7 +87,7 @@ class Connection(
         self.title=title
         self.connection_string=connection_string
         if check: self.connect(connection_string)
-    
+
     manage_properties=DTMLFile('dtml/connectionEdit', globals())
     def manage_edit(self, title, connection_string, check=None, REQUEST=None):
         """Change connection
@@ -116,7 +116,7 @@ class Connection(
 
         if REQUEST is None:
             return result       #return unadulterated result objects
-        
+
         if result._searchable_result_columns():
             r=custom_default_report(self.id, result)
         else:
@@ -132,7 +132,7 @@ class Connection(
         report=apply(report,(self,REQUEST),{self.id:result})
 
         return report
-                
+
 
     manage_main=DTMLFile('dtml/connectionStatus', globals())
 

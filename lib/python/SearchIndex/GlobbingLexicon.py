@@ -1,5 +1,5 @@
 ##############################################################################
-# 
+#
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -8,7 +8,7 @@
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 #############################################################################
 
 from Lexicon import Lexicon
@@ -82,7 +82,7 @@ class GlobbingLexicon(Lexicon):
 
         return digrams
 
-    
+
     def getWordId(self, word):
         """Provided 'word', return the matching integer word id."""
 
@@ -110,7 +110,7 @@ class GlobbingLexicon(Lexicon):
         try: insert=inverse.insert
         except AttributeError:
             # we have an "old" BTree object
-            if inverse:            
+            if inverse:
                 wid=inverse.keys()[-1]+1
             else:
                 self._inverseLex=IOBTree()
@@ -133,7 +133,7 @@ class GlobbingLexicon(Lexicon):
 
         return wid
 
-    
+
     def get(self, pattern):
         """ Query the lexicon for words matching a pattern."""
         wc_set = [self.multi_wc, self.single_wc]
@@ -161,7 +161,7 @@ class GlobbingLexicon(Lexicon):
             if result is None:
                 return ()
             return (result, )
-        
+
         ## now get all of the intsets that contain the result digrams
         result = None
         for digram in digrams:
@@ -185,7 +185,7 @@ class GlobbingLexicon(Lexicon):
                     hits.insert(x)
             return hits
 
-                
+
     def __getitem__(self, word):
         """ """
         return self.get(word)
@@ -235,12 +235,11 @@ class GlobbingLexicon(Lexicon):
         transTable = string.maketrans("", "")
         result = string.translate(pat, transTable,
                                   r'()&|!@#$%^{}\<>.')
-        
+
         # First, deal with multi-character globbing
         result = string.replace(result, '*', '.*')
 
         # Next, we need to deal with single-character globbing
         result = string.replace(result, '?', '.')
 
-        return "%s$" % result 
-
+        return "%s$" % result

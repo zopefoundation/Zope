@@ -1,24 +1,24 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 '''Inserting optional tests with 'sqlgroup'
-  
+
     It is sometimes useful to make inputs to an SQL statement
     optinal.  Doing so can be difficult, because not only must the
     test be inserted conditionally, but SQL boolean operators may or
     may not need to be inserted depending on whether other, possibly
     optional, comparisons have been done.  The 'sqlgroup' tag
-    automates the conditional insertion of boolean operators.  
+    automates the conditional insertion of boolean operators.
 
     The 'sqlgroup' tag is a block tag. It can
     have any number of 'and' and 'or' continuation tags.
@@ -26,7 +26,7 @@
     The 'sqlgroup' tag has an optional attribure, 'required' to
     specify groups that must include at least one test.  This is
     useful when you want to make sure that a query is qualified, but
-    want to be very flexible about how it is qualified. 
+    want to be very flexible about how it is qualified.
 
     Suppose we want to find people with a given first or nick name,
     city or minimum and maximum age.  Suppose we want all inputs to be
@@ -62,15 +62,15 @@
 '''
 
 ############################################################################
-#     Copyright 
+#     Copyright
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
 #       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
 #       rights reserved.
 #
-############################################################################ 
-__rcs_id__='$Id: sqlgroup.py,v 1.8 2001/11/28 15:51:13 matt Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+############################################################################
+__rcs_id__='$Id: sqlgroup.py,v 1.9 2002/08/14 21:50:59 mj Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from DocumentTemplate.DT_Util import parse_params
 str=__builtins__['str']
@@ -102,7 +102,7 @@ class SQLGroup:
             if s:
                 if r: r.append(tname)
                 r.append("%s\n" % s)
-                
+
         if r:
             if len(r) > 1: r="(%s)\n" % join(r,' ')
             else: r=r[0]

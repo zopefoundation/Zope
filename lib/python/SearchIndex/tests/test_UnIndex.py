@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 import unittest
@@ -23,10 +23,10 @@ class Dummy:
 
     def foo( self ):
         return self._foo
-    
+
     def __str__( self ):
         return '<Dummy: %s>' % self._foo
-    
+
     __repr__ = __str__
 
 class Tests( unittest.TestCase ):
@@ -54,7 +54,7 @@ class Tests( unittest.TestCase ):
             self._backward[k] = v
             keys = self._forward.get( v, [] )
             self._forward[v] = keys
-            
+
         self._noop_req  = { 'bar': 123 }
         self._request   = { 'foo': 'abce' }
         self._min_req   = { 'foo': 'abc'
@@ -77,7 +77,7 @@ class Tests( unittest.TestCase ):
     def _populateIndex( self ):
         for k, v in self._values:
             self._index.index_object( k, v )
-    
+
     def _checkApply( self, req, expectedValues ):
         result, used = self._index._apply_index( req )
         if hasattr(result, 'keys'):
@@ -87,7 +87,7 @@ class Tests( unittest.TestCase ):
           '%s | %s' % ( map( None, result ), expectedValues )
         for k, v in expectedValues:
             assert k in result
-    
+
     def testEmpty( self ):
         "Test an empty FieldIndex."
 
@@ -108,7 +108,7 @@ class Tests( unittest.TestCase ):
         self._checkApply( self._min_req, [] )
         self._checkApply( self._max_req, [] )
         self._checkApply( self._range_req, [] )
-    
+
     def testPopulated( self ):
         """ Test a populated FieldIndex """
         self._populateIndex()
@@ -166,10 +166,10 @@ class Tests( unittest.TestCase ):
             40, 41, 42, 43, 50, 51, 52, 53, 60, 61, 62, 63, 70, 71, 72, 73,
             80, 81, 82, 83, 90, 91, 92, 93
             ]
-        
-        assert r==expect, r 
-            
-        
+
+        assert r==expect, r
+
+
 def test_suite():
     return unittest.TestSuite((
         unittest.makeSuite(Tests),

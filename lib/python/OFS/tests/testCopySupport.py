@@ -31,7 +31,7 @@ class UnitTestSecurityPolicy:
                 , *args
                 , **kw):
         return 1
-    
+
     def checkPermission( self, permission, object, context) :
         return 1
 
@@ -41,7 +41,7 @@ class UnitTestUser( Acquisition.Implicit ):
     """
     def getId( self ):
         return 'unit_tester'
-    
+
     getUserName = getId
 
     def allowed( self, object, object_roles=None ):
@@ -55,7 +55,7 @@ def makeConnection():
     return ZODB.DB( s ).open()
 
 class TestCopySupport( unittest.TestCase ):
- 
+
     def setUp( self ):
 
         self.connection = makeConnection()
@@ -230,4 +230,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

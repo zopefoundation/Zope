@@ -1,18 +1,18 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Simple column indices"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 from Persistence import Persistent
 from BTrees.OOBTree import OOBTree
@@ -54,8 +54,8 @@ class Index(Persistent):
           either an attribute name or a record key.
 
         """
-	######################################################################
-	# For b/w compatability, have to allow __init__ calls with zero args
+        ######################################################################
+        # For b/w compatability, have to allow __init__ calls with zero args
 
         if not data==schema==id==ignore_ex==call_methods==None:
             self._data = data
@@ -64,7 +64,7 @@ class Index(Persistent):
             self.ignore_ex=ignore_ex
             self.call_methods=call_methods
             self._index = OOBTree()
-            
+
             self._reindex()
         else:
             pass
@@ -95,7 +95,7 @@ class Index(Persistent):
         if not withLengths: return tuple(
             filter(nonEmpty,self._index.keys())
             )
-        else: 
+        else:
             rl=[]
             for i in self._index.keys():
                 if not nonEmpty(i): continue
@@ -112,7 +112,7 @@ class Index(Persistent):
 
         index=self._index
         get=index.get
-        
+
         if not start: index.clear()
 
         id = self.id
@@ -180,7 +180,7 @@ class Index(Persistent):
         if set is not None: set.remove(i)
 
 
-    def _apply_index(self, request, cid=''): 
+    def _apply_index(self, request, cid=''):
         """Apply the index to query parameters given in the argument,
         request
 
@@ -244,20 +244,3 @@ class Index(Persistent):
             else: return None
 
         return r, (id,)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

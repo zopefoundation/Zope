@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 import os, sys, unittest
 
@@ -36,7 +36,7 @@ def createBigFile():
     size = (1<<16) * 5
     file = cStringIO.StringIO()
 
-    def addLetter(x, add=file.write, l=string.letters, 
+    def addLetter(x, add=file.write, l=string.letters,
             c=random.choice):
         add(c(l))
     filter(addLetter, range(size))
@@ -106,7 +106,7 @@ class TestRequestRange(unittest.TestCase):
 
     def createLastModifiedDate(self, offset=0):
         return rfc1123_date(self.file._p_mtime + offset)
-    
+
     def expectUnsatisfiable(self, range):
         req = self.app.REQUEST
         rsp = req.RESPONSE
@@ -115,7 +115,7 @@ class TestRequestRange(unittest.TestCase):
         req.environ['HTTP_RANGE'] = 'bytes=%s' % range
 
         body = self.doGET(req, rsp)
-        
+
         self.failUnless(rsp.getStatus() == 416,
             'Expected a 416 status, got %s' % rsp.getStatus())
 
@@ -138,7 +138,7 @@ class TestRequestRange(unittest.TestCase):
             req.environ['HTTP_IF_RANGE'] = if_range
 
         body = self.doGET(req, rsp)
-        
+
         self.failUnless(rsp.getStatus() == 200,
             'Expected a 200 status, got %s' % rsp.getStatus())
 
@@ -152,7 +152,7 @@ class TestRequestRange(unittest.TestCase):
             req.environ['HTTP_IF_RANGE'] = if_range
 
         body = self.doGET(req, rsp)
-        
+
         self.failUnless(rsp.getStatus() == 206,
             'Expected a 206 status, got %s' % rsp.getStatus())
 
@@ -167,7 +167,7 @@ class TestRequestRange(unittest.TestCase):
             'Incorrect Content-Length is set! Expected %d, got %d.' % (
                 rsp.getHeader('content-length'), len(body)))
 
-        self.failUnless(body == self.data[start:end], 
+        self.failUnless(body == self.data[start:end],
             'Incorrect range returned, expected %s, got %s' % (
                 `self.data[start:end]`, `body`))
 
@@ -183,10 +183,10 @@ class TestRequestRange(unittest.TestCase):
             req.environ['HTTP_REQUEST_RANGE'] = 'bytes=%s' % range
 
         body = self.doGET(req, rsp)
-        
+
         self.failUnless(rsp.getStatus() == 206,
             'Expected a 206 status, got %s' % rsp.getStatus())
-        self.failIf(rsp.getHeader('content-range'), 
+        self.failIf(rsp.getHeader('content-range'),
             'The Content-Range header should not be set!')
 
         ct = string.split(rsp.getHeader('content-type'), ';')[0]
@@ -231,7 +231,7 @@ class TestRequestRange(unittest.TestCase):
             # in Python 2.2.
             if body[-2:] == '\r\n':
                 body = body[:-2]
-            
+
             self.failIf(len(body) != end - start,
                 'Part (%d, %d) is of wrong length, expected %d, got %d.' % (
                     start, end, end - start, len(body)))
@@ -313,14 +313,14 @@ class TestRequestRange(unittest.TestCase):
 
     def testMultipleRangesBigFile(self):
         self.uploadBigFile()
-        self.expectMultipleRanges('3-700,10-15,-10000', 
+        self.expectMultipleRanges('3-700,10-15,-10000',
             [(3, 701), (len(self.data) - 10000, len(self.data))])
 
     def testMultipleRangesBigFileEndOverflow(self):
         self.uploadBigFile()
         l = len(self.data)
         start, end = l - 100, l + 100
-        self.expectMultipleRanges('3-700,%s-%s' % (start, end), 
+        self.expectMultipleRanges('3-700,%s-%s' % (start, end),
             [(3, 701), (len(self.data) - 100, len(self.data))])
 
     # If-Range headers

@@ -1,14 +1,14 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 
 """Text Index
@@ -19,7 +19,7 @@ undo information so that objects can be unindexed when the old value
 is no longer known.
 """
 
-__version__ = '$Revision: 1.52 $'[11:-2]
+__version__ = '$Revision: 1.53 $'[11:-2]
 
 
 import string, re
@@ -84,13 +84,13 @@ class UnTextIndex(Persistent, Implicit):
 
           'lexicon' is the lexicon object to specify, if None, the
           index will use a private lexicon."""
-        
+
         self.id = id
         self.ignore_ex = ignore_ex
         self.call_methods = call_methods
 
         self.clear()
-        
+
         if lexicon is None:
             ## if no lexicon is provided, create a default one
             self._lexicon = Lexicon()
@@ -102,7 +102,7 @@ class UnTextIndex(Persistent, Implicit):
 
     def getLexicon(self, vocab_id):
         """Return the Lexicon in use.
-        
+
         Bit of a hack, indexes have been made acquirers so that they
         can acquire a vocabulary object from the object system in
         Zope.  I don't think indexes were ever intended to participate
@@ -117,7 +117,7 @@ class UnTextIndex(Persistent, Implicit):
 
     def __nonzero__(self):
         return not not self._unindex
-    
+
     # Too expensive
     #def __len__(self):
     #    """Return the number of objects indexed."""
@@ -132,7 +132,7 @@ class UnTextIndex(Persistent, Implicit):
     def _convertBTrees(self, threshold=200):
 
         if type(self._lexicon) is type(''):
-            # Turn the name reference into a hard reference. 
+            # Turn the name reference into a hard reference.
             self._lexicon=self.getLexicon(self._lexicon)
 
         if type(self._index) is IOBTree: return
@@ -148,7 +148,7 @@ class UnTextIndex(Persistent, Implicit):
             if type(scores) is not TupleType and type(scores) is not IIBTree():
                 scores=IIBTree(scores)
             return scores
-                
+
 
         convert(_index, self._index, threshold, convertScores)
 
@@ -182,8 +182,8 @@ class UnTextIndex(Persistent, Implicit):
         else:
             return tuple(map(self.getLexicon(self._lexicon).getWord,
                              results))
-        
-            
+
+
     def insertForwardIndexEntry(self, entry, documentId, score=1):
         """Uses the information provided to update the indexes.
 
@@ -219,12 +219,12 @@ class UnTextIndex(Persistent, Implicit):
             else:
                 if indexRow.get(documentId, -1) != score:
                     # score changed (or new entry)
-                    
+
                     if type(indexRow) is DictType:
                         indexRow[documentId] = score
                         if len(indexRow) > 3:
                             # Big enough to give it's own database record
-                            indexRow=IIBTree(indexRow) 
+                            indexRow=IIBTree(indexRow)
                         index[entry] = indexRow
                     else:
                         indexRow[documentId] = score
@@ -236,7 +236,7 @@ class UnTextIndex(Persistent, Implicit):
     def index_object(self, documentId, obj, threshold=None):
         """ Index an object:
         'documentId' is the integer id of the document
-        
+
         'obj' is the objects to be indexed
 
         'threshold' is the number of words to process between
@@ -253,13 +253,13 @@ class UnTextIndex(Persistent, Implicit):
                 source = str(source)
         except (AttributeError, TypeError):
             return 0
-        
+
         lexicon = self.getLexicon(self._lexicon)
         splitter=lexicon.Splitter
 
         wordScores = OIBTree()
         last = None
-        
+
         # Run through the words and score them
         for word in splitter(source):
             if word[0] == '\"':
@@ -281,7 +281,7 @@ class UnTextIndex(Persistent, Implicit):
 
         # Get rid of document words that are no longer indexed
         self.unindex_objectWids(documentId, difference(currentWids, widScores))
-        
+
         # Now index the words. Note that the new xIBTrees are clever
         # enough to do nothing when there isn't a change. Woo hoo.
         insert=self.insertForwardIndexEntry
@@ -307,10 +307,10 @@ class UnTextIndex(Persistent, Implicit):
 
         return last
 
-    def unindex_object(self, i): 
+    def unindex_object(self, i):
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
-        
+
         index = self._index
         unindex = self._unindex
         wids = unindex.get(i, None)
@@ -318,7 +318,7 @@ class UnTextIndex(Persistent, Implicit):
             self.unindex_objectWids(i, wids)
             del unindex[i]
 
-    def unindex_objectWids(self, i, wids): 
+    def unindex_objectWids(self, i, wids):
         """ carefully unindex document with integer id 'i' from the text
         index and do not fail if it does not exist """
 
@@ -355,7 +355,7 @@ class UnTextIndex(Persistent, Implicit):
         Note that this differentiates between being passed an Integer
         and a String.  Strings are looked up in the lexicon, whereas
         Integers are assumed to be resolved word ids. """
-        
+
         if isinstance(word, IntType):
             # We have a word ID
             result = self._index.get(word, {})
@@ -365,7 +365,7 @@ class UnTextIndex(Persistent, Implicit):
 
             if not splitSource:
                 return ResultList({}, (word,), self)
-        
+
             if len(splitSource) == 1:
                 splitSource = splitSource[0]
                 if splitSource[:1] == splitSource[-1:] == '"':
@@ -392,7 +392,7 @@ class UnTextIndex(Persistent, Implicit):
             return r
 
 
-    def _apply_index(self, request, cid=''): 
+    def _apply_index(self, request, cid=''):
         """ Apply the index to query parameters given in the argument,
         request
 
@@ -400,11 +400,11 @@ class UnTextIndex(Persistent, Implicit):
 
         If the request does not contain the needed parameters, then
         None is returned.
- 
+
         Otherwise two objects are returned.  The first object is a
         ResultSet containing the record numbers of the matching
         records.  The second object is a tuple containing the names of
-        all data fields used.  
+        all data fields used.
         """
         if request.has_key(self.id):
             keys = request[self.id]
@@ -430,9 +430,9 @@ class UnTextIndex(Persistent, Implicit):
             if not keys or not string.strip(keys):
                 return None
             keys = [keys]
-            
+
         r = None
-        
+
         for key in keys:
             key = string.strip(key)
             if not key:
@@ -443,7 +443,7 @@ class UnTextIndex(Persistent, Implicit):
 
         if r is not None:
             return r, (self.id,)
-        
+
         return (IIBucket(), (self.id,))
 
 
@@ -481,7 +481,7 @@ class UnTextIndex(Persistent, Implicit):
 
     def query(self, s, default_operator=Or):
         """ Evaluate a query string.
-        
+
         Convert the query string into a data structure of nested lists
         and strings, based on the grouping of whitespace-separated
         strings by parentheses and quotes.  The 'Near' operator is
@@ -525,7 +525,7 @@ class UnTextIndex(Persistent, Implicit):
         if operandType is IntType:
             left = self[left]
         elif operandType is StringType:
-            left = self[left]        
+            left = self[left]
         elif operandType is ListType:
             left = self.evaluate(left)
 
@@ -533,7 +533,7 @@ class UnTextIndex(Persistent, Implicit):
         if operandType is IntType:
             right = self[right]
         elif operandType is StringType:
-            right = self[right]       
+            right = self[right]
         elif operandType is ListType:
             right = self.evaluate(right)
 
@@ -638,12 +638,12 @@ def parens(s, parens_re=re.compile('[()]').search):
     mo = parens_re(s)
     if mo is None:
         return
-    
+
     open_index = mo.start(0) + 1
     paren_count = 0
     while mo is not None:
         index = mo.start(0)
-    
+
         if s[index] == '(':
             paren_count = paren_count + 1
         else:
@@ -655,23 +655,23 @@ def parens(s, parens_re=re.compile('[()]').search):
                 break
         mo = parens_re(s, index + 1)
 
-    raise QueryError, "Mismatched parentheses"      
+    raise QueryError, "Mismatched parentheses"
 
 
 def quotes(s):
     split=string.split
     if '"' not in s:
         return split(s)
-    
+
     # split up quoted regions
     splitted = re.split('\s*\"\s*', s)
 
     if (len(splitted) % 2) == 0: raise QueryError, "Mismatched quotes"
-    
+
     for i in range(1,len(splitted),2):
         # split the quoted region into words
         words = splitted[i] = split(splitted[i])
-        
+
         # put the Proxmity operator in between quoted words
         j = len(words) - 1
         while j > 0:

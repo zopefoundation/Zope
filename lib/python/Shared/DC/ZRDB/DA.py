@@ -1,19 +1,19 @@
 ##############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
-# 
+#
 # This software is subject to the provisions of the Zope Public License,
 # Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
 # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
 # WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
 # FOR A PARTICULAR PURPOSE
-# 
+#
 ##############################################################################
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.104 $'[11:-2]
+__version__='$Revision: 1.105 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -74,7 +74,7 @@ class DA(
     _zclass=None
     allow_simple_one_argument_traversal=None
     template_class=SQL
-    
+
     manage_options=(
         (
         {'label':'Edit', 'action':'manage_main',
@@ -87,7 +87,7 @@ class DA(
         +AccessControl.Role.RoleManager.manage_options
         +OFS.SimpleItem.Item.manage_options
         )
- 
+
     # Specify how individual operations add up to "permissions":
     __ac_permissions__=(
         ('View management screens',
@@ -100,12 +100,12 @@ class DA(
           'manage_product_zclass_info', 'PUT')),
         ('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
         )
-   
+
 
     def __init__(self, id, title, connection_id, arguments, template):
         self.id=str(id)
         self.manage_edit(title, connection_id, arguments, template)
-    
+
     manage_advancedForm=DTMLFile('dtml/advanced', globals())
 
     test_url___roles__=None
@@ -125,7 +125,7 @@ class DA(
     def _er(self,title,connection_id,arguments,template,
             SUBMIT,sql_pref__cols,sql_pref__rows,REQUEST):
         dr,dc = self._size_changes[SUBMIT]
-        
+
         rows=max(1,atoi(sql_pref__rows)+dr)
         cols=max(40,atoi(sql_pref__cols)+dc)
         e=(DateTime('GMT') + 365).rfc822()
@@ -162,7 +162,7 @@ class DA(
 
         if self.wl_isLocked():
             raise ResourceLockedError, 'SQL Method is locked via WebDAV'
-        
+
         self.title=str(title)
         self.connection_id=str(connection_id)
         arguments=str(arguments)
@@ -211,7 +211,7 @@ class DA(
         'lib/python/Products/ACMEWidgets/Extensions/foo.py'. If this
         failes, then the file 'Extensions/ACMEWidgets.foo.py' will be
         used.
-  
+
         """
         # paranoid type checking
         if type(max_rows) is not type(1):
@@ -219,10 +219,10 @@ class DA(
         if type(max_cache) is not type(1):
             max_cache=atoi(max_cache)
         if type(cache_time) is not type(1):
-            cache_time=atoi(cache_time)            
+            cache_time=atoi(cache_time)
         class_name=str(class_name)
         class_file=str(class_file)
-        
+
         self.max_rows_ = max_rows
         self.max_cache_, self.cache_time_ = max_cache, cache_time
         self._v_cache={}, Bucket()
@@ -236,7 +236,7 @@ class DA(
                     self._zclass=d['meta_class']
                     break
 
-        
+
         if REQUEST is not None:
             m="ZSQL Method advanced settings have been set"
             return self.manage_advancedForm(self,REQUEST,manage_tabs_message=m)
@@ -329,7 +329,7 @@ class DA(
                     None, REQUEST, t, v, tb, None, report)
 
             return report
-        
+
         finally: tb=None
 
     def index_html(self, REQUEST):
@@ -359,7 +359,7 @@ class DA(
                 if int(cache[q][0]) == key:
                     del cache[q]
                 del keys[-1]
-                
+
         if cache.has_key(query):
             k, r = cache[query]
             if k > t: return r
@@ -398,7 +398,7 @@ class DA(
         try: DB__=dbc()
         except: raise 'Database Error', (
             '%s is not connected to a database' % self.id)
-        
+
         if hasattr(self, 'aq_parent'):
             p=self.aq_parent
             if self._isBeingAccessedAsZClassDefinedInstanceMethod():
@@ -455,7 +455,7 @@ class DA(
             r=results[0]
             # if hasattr(self, 'aq_parent'): r=r.__of__(self.aq_parent)
             return r
-            
+
         self._arg[key] # raise KeyError if not an arg
         return Traverse(self,{},key)
 
@@ -481,8 +481,8 @@ class DA(
             x['selected'] = (z is Z) and 'selected' or ''
             del x['meta_class']
             r.append(x)
-            
-        return r 
+
+        return r
 
 
 
@@ -515,7 +515,7 @@ class Traverse(ExtensionClass.Base):
 
             args[name]=key
 
-            if len(args) < len(da._arg):            
+            if len(args) < len(da._arg):
                 return self.__class__(da, args)
             key=self # "consume" key
 
@@ -547,4 +547,3 @@ class Traverse(ExtensionClass.Base):
         r=self.__dict__['_r']
         if hasattr(r, name): return getattr(r,name)
         return getattr(self.__dict__['_da'], name)
-
