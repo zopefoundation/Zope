@@ -745,7 +745,7 @@ instancehome $INSTANCE
 #   used for the main storage, and a TemporaryStorage is used for
 #   the mounted storage which backs the '/temp_folder'.
 #
-# Example:
+# Examples:
 #
 # <zodb_db main>
 #    <filestorage>
@@ -756,4 +756,12 @@ instancehome $INSTANCE
 #    pool-size                      7
 #    version-pool-size              3
 #    version-cache-size             100
+# </zodb_db>
+#
+# <zodb_db temporary>
+#    <temporarystorage>
+#      name sessions
+#    </temporarystorage>
+#    mount-point /temp_folder
+#    container-class Products.TemporaryFolder.TemporaryContainer
 # </zodb_db>
