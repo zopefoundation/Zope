@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.66 $'[11:-2]
+__version__='$Revision: 1.67 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -572,7 +572,13 @@ class DateTime:
             y=DateTime('Mar 9, 1997 13:45:00')
             # y is equal to x
 
+
             </PRE>
+            
+            New in Zope 2.4:
+            The DateTime constructor automatically detects and handles
+            ISO8601 compliant dates (YYYY-MM-DDThh:ss:mmTZD).
+            See http://www.w3.org/TR/NOTE-datetime for full specs.
 
             The date component consists of year, month, and day
             values. The year value must be a one-, two-, or
@@ -705,7 +711,12 @@ class DateTime:
 
             elif type(arg)==StringType:
                 # Date/time string
-                yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
+               
+                if arg.find(' ')==-1 and arg[4]=='-':
+                    yr,mo,dy,hr,mn,sc,tz=self._parse_iso8601(arg)
+                else:
+                    yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
+
                 
                 if not self._validDate(yr,mo,dy):
                     raise self.DateTimeError, 'Invalid date: %s' % arg
@@ -1076,6 +1087,7 @@ class DateTime:
             # on the given date.
             x = _calcDependentSecond2(year,month,day,hr,mn,sc)
             tz = self._calcTimezoneName(x, ms)
+
         return year,month,day,hr,mn,sc,tz
 
     # Internal methods
@@ -1607,6 +1619,52 @@ class DateTime:
                math.floor(dt.time * 86400000.0)
 
 
+    def _parse_iso8601(self,s):
+        try:
+            return self.__parse_iso8601(s)
+        except IndexError:
+            raise self.DateError,'Not an ISO 8601 compliant date string: %s' %  string
+
+
+    def __parse_iso8601(self,s):
+        """ parse an ISO 8601 compliant date """
+        year=0
+        month=day=1
+        hour=minute=seconds=hour_off=min_off=0
+        
+        datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
+        timereg = re.compile('([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
+    
+        # Date part
+    
+        fields = datereg.split(s.strip())
+        
+        if fields[1]:   year  = atoi(fields[1])
+        if fields[3]:   month = atoi(fields[3])
+        if fields[5]:   day   = atoi(fields[5])
+    
+        if s.find('T')>-1:
+            fields = timereg.split(s[s.find('T')+1:])
+    
+            if fields[1]:   hour     = atoi(fields[1])
+            if fields[3]:   minute   = atoi(fields[3])
+            if fields[5]:   seconds  = atoi(fields[5])
+            if fields[6]:   seconds  = seconds+atof(fields[6])
+    
+        if s.find('Z')>-1:
+            pass
+    
+        if s[-3]==':' and s[-6] in ['+','-']:
+            hour_off = atoi(s[-6:-3])
+            min_off  = atoi(s[-2:])
+    
+        ts = mktime((year,month,day,hour,minute,seconds,0,0,0))
+        ts = ts + (hour_off*60-min_off)
+    
+        return year,month,day,hour,minute,seconds,'GMT%+03d%02d' % (hour_off,min_off)
+
+
+
 class strftimeFormatter:
 
     def __init__(self, dt, format):
@@ -1622,53 +1680,4 @@ def Timezones():
     return _cache._zlst
 
 
-# Parse a ISO 8601
-
-def parse_iso8601(s):
-    """ parse an ISO 8601 compliant date string and return an 
-        instance of DateTime
-    """
-
-    try:
-        return _parse_iso8601(s)
-    except:
-        print sys.exc_type,sys.exc_value
-        raise 'DateTimeError','not ISO 8601 compliant date string: %s' %s
-
-def _parse_iso8601(s):
-
-    year=0
-    month=day=1
-    hour=minute=seconds=hour_off=min_off=0
-    
-    datereg = re.compile('([0-9]{4})(-([0-9][0-9]))?(-([0-9][0-9]))?')
-    timereg = re.compile('([0-9]{2})(:([0-9][0-9]))?(:([0-9][0-9]))?(\.[0-9]{1,20})?')
-
-    # Date part
-
-    fields = datereg.split(s.strip())
-    
-    if fields[1]:   year  = atoi(fields[1])
-    if fields[3]:   month = atoi(fields[3])
-    if fields[5]:   day   = atoi(fields[5])
-
-    if s.find('T')>-1:
-        fields = timereg.split(s[s.find('T')+1:])
-
-        if fields[1]:   hour     = atoi(fields[1])
-        if fields[3]:   minute   = atoi(fields[3])
-        if fields[5]:   seconds  = atoi(fields[5])
-        if fields[6]:   seconds  = seconds+atof(fields[6])
-
-    if s.find('Z')>-1:
-        pass
-
-    if s[-3]==':' and s[-6] in ['+','-']:
-        hour_off = atoi(s[-6:-3])
-        min_off  = atoi(s[-2:])
-
-    ts = mktime((year,month,day,hour,minute,seconds,0,0,0))
-    ts = ts + (hour_off*60-min_off)
-
-    return DateTime(ts)
 
