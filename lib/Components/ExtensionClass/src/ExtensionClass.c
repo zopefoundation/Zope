@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.13 1997/07/02 17:33:39 jim Exp $
+  $Id: ExtensionClass.c,v 1.14 1997/07/02 20:17:15 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.13 1997/07/02 17:33:39 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.14 1997/07/02 20:17:15 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -436,7 +436,7 @@ callCMethodWithHook(CMethod *self, PyObject *inst,
 		      inst, self->name, self->meth,
 		      self->flags, hook_mark)) return NULL;
 
-  if(hook=PyObject_GetAttr(inst,py__call_method__))
+  if((hook=PyObject_GetAttr(inst,py__call_method__)))
     {
       if(CMethod_Check(hook) && ((CMethod*)hook)->meth==self->meth)
 	{
@@ -629,7 +629,7 @@ PMethod_New(PyObject *meth, PyObject *inst)
 			"Attempt to use %s as method for %s, which is "
 			"not an extension class instance.",
 			"OO",meth,inst);
-  if(meth=newPMethod(ExtensionClassOf(inst), meth))
+  if((meth=newPMethod(ExtensionClassOf(inst), meth)))
     UNLESS_ASSIGN(((PMethod*)meth)->self,inst) return NULL;
   Py_INCREF(inst);
   return meth;
@@ -656,7 +656,7 @@ callMethodWithPossibleHook(PyObject *inst,
   if(HasMethodHook(inst))
     {
       PyObject *hook;
-      if(hook=PyObject_GetAttr(inst,py__call_method__))
+      if((hook=PyObject_GetAttr(inst,py__call_method__)))
 	{
 	  if(PMethod_Check(hook) && ((PMethod*)hook)->meth==meth)
 	    {
@@ -1069,7 +1069,7 @@ getBaseDictionary(PyExtensionClass *type)
   FILLENTRY(type->tp, getattro, getattr, METH_VARARGS, "Get an attribute");
   FILLENTRY(type->tp, setattro, setattr, METH_VARARGS, "Set an attribute");
 
-  if(sm=type->tp_as_sequence)
+  if((sm=type->tp_as_sequence))
     {
       FILLENTRY(sm->sq, length, len, METH_VARARGS, "Get the object length");
       FILLENTRY(sm->sq, repeat, mul, METH_VARARGS,
@@ -1080,7 +1080,7 @@ getBaseDictionary(PyExtensionClass *type)
       FILLENTRY(sm->sq, ass_slice, setslice, METH_VARARGS, "Assign a slice");
     }      
 
-  if(mm=type->tp_as_mapping)
+  if((mm=type->tp_as_mapping))
     {
       FILLENTRY(mm->mp, length, len, METH_VARARGS, "Get the object length");
       FILLENTRY(mm->mp, subscript, getitem, METH_VARARGS, "Get an item");
@@ -1123,7 +1123,7 @@ getBaseDictionary(PyExtensionClass *type)
 		"Convert to a hexadecimal string");
     }
 
-  if(sm=type->tp_as_sequence)
+  if((sm=type->tp_as_sequence))
     {
       FILLENTRY(sm->sq, concat, add, METH_VARARGS,
 		"Concatinate the object with another");
@@ -1145,7 +1145,7 @@ EC_reduce(PyObject *self, PyObject *args)
 {
   PyObject *state=0;
 
-  if(args=PyObject_GetAttr(self,py__getinitargs__))
+  if((args=PyObject_GetAttr(self,py__getinitargs__)))
     {
       UNLESS_ASSIGN(args,PyEval_CallObject(args,NULL)) return NULL;
       UNLESS_ASSIGN(args,PySequence_Tuple(args)) return NULL;
@@ -1156,7 +1156,7 @@ EC_reduce(PyObject *self, PyObject *args)
       args=PyTuple_New(0);
     }
 
-  if(state=PyObject_GetAttr(self,py__getstate__))
+  if((state=PyObject_GetAttr(self,py__getstate__)))
     {
       UNLESS_ASSIGN(state,PyEval_CallObject(state,NULL)) goto err;
       ASSIGN(args,Py_BuildValue("OOO", self->ob_type, args, state));
@@ -1166,7 +1166,7 @@ EC_reduce(PyObject *self, PyObject *args)
     {
       PyErr_Clear();
 
-      if(state=PyObject_GetAttr(self, py__dict__))
+      if((state=PyObject_GetAttr(self, py__dict__)))
 	{
 	  ASSIGN(args,Py_BuildValue("OOO", self->ob_type, args, state));
 	  Py_DECREF(state);
@@ -1284,7 +1284,7 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 		 onto a special method. */
 	      PyObject *m;
 
-	      if(m=PyMapping_GetItemString(dict,ml->ml_name))
+	      if((m=PyMapping_GetItemString(dict,ml->ml_name)))
 		{
 		  if(m->ob_type==&CMethodType)
 		    ((CMethod *)(m))->doc=ml->ml_doc;
@@ -1529,7 +1529,7 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 			"look up an attribute in a class's super classes");
     }
   
-  if(r=CCL_getattr(self,name,0)) return r;
+  if((r=CCL_getattr(self,name,0))) return r;
 
   return NULL;
 }
@@ -1677,7 +1677,7 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
       PyObject *var_size;
       int size;
       
-      if(var_size=CCL_getattr(self,py__var_size__, 0))
+      if((var_size=CCL_getattr(self,py__var_size__, 0)))
 	{
 	  UNLESS_ASSIGN(var_size,PyObject_CallObject(var_size,arg))
 	    return NULL;
@@ -1722,7 +1722,7 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
   if(ClassHasInstDict(self))
     UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
 
-  if(init=CCL_getattr(self,py__init__,0))
+  if((init=CCL_getattr(self,py__init__,0)))
     {
       UNLESS(args=Py_BuildValue("(O)",inst)) goto err;
       if(arg) UNLESS_ASSIGN(args,PySequence_Concat(args,arg)) goto err;
@@ -2594,7 +2594,7 @@ subclass_dealloc(PyObject *self)
     PyErr_Clear();
 
 
-  if(m=subclass_getspecial(self,py__del__))
+  if((m=subclass_getspecial(self,py__del__)))
     {
       if(UnboundEMethod_Check(m))
 	ASSIGN(m,PyObject_CallFunction(m,"O",self));
@@ -2626,7 +2626,7 @@ datafull_baseclassesf(PyExtensionClass *type, PyObject **c1, PyObject **c2)
   /* Find the number of classes that have data and return them.
      There should be no more than one.
      */
-  int l, i, n=0;
+  int l, i;
   PyObject *base;
   
   l=PyTuple_Size(type->bases);
@@ -2667,7 +2667,7 @@ static PyObject *
 datafull_baseclass(PyExtensionClass *type)
 {
   /* Find the baseclass that has data and.  There should be only one. */
-  int l, i, n=0;
+  int l, i;
   PyObject *base, *dbase;
   
   l=PyTuple_Size(type->bases);
@@ -2678,7 +2678,7 @@ datafull_baseclass(PyExtensionClass *type)
 	{
 	  if(AsExtensionClass(base)->bases)
 	    {
-	      if(dbase=datafull_baseclass(AsExtensionClass(base)))
+	      if((dbase=datafull_baseclass(AsExtensionClass(base))))
 		return dbase;
 	    }
 	  else
@@ -2697,7 +2697,7 @@ static PyObject *
 extension_baseclass(PyExtensionClass *type)
 {
   /* Find the first immediate base class that is an extension class */
-  int l, i, n=0;
+  int l, i;
   PyObject *base;
   
   l=PyTuple_Size(type->bases);
@@ -2715,7 +2715,7 @@ subclass_hasattr(PyExtensionClass *type, PyObject *name)
 {
   PyObject *o;
 
-  if(o=CCL_getattro(type,name))
+  if((o=CCL_getattro(type,name)))
     {
       Py_DECREF(o);
       return 1;
@@ -2910,7 +2910,7 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   self->tp_doc=0;
 
   /* Check for and use __class_init__ */
-  if(class_init=PyObject_GetAttrString(AsPyObject(self),"__class_init__"))
+  if((class_init=PyObject_GetAttrString(AsPyObject(self),"__class_init__")))
     {
       UNLESS_ASSIGN(class_init,PyObject_GetAttrString(class_init,"im_func"))
         return NULL;
@@ -3005,7 +3005,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
+  char *rev="$Revision: 1.14 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3022,6 +3022,8 @@ initExtensionClass()
 		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   init_py_names();
+
+  if(0) PyCObject_Import14("this will go away", "in 1.5 :-)");
 
   initializeBaseExtensionClass(&ECType);
   PyDict_SetItemString(d, "ExtensionClass", (PyObject*)&ECType);
@@ -3042,6 +3044,10 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.14  1997/07/02 20:17:15  jim
+  Added stupid parens and other changes to make 'gcc -Wall -pedantic'
+  and Barry happy.  Got rid of some extra variable declarations.
+
   Revision 1.13  1997/07/02 17:33:39  jim
   Included my version of PyErr_Format.
 
