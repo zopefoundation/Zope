@@ -6,6 +6,7 @@
 <H2>Add ZClass</H2>
 
 <!--#with "_(selected=[], unselected=[], baseclasses=[], id='', title='',
+             meta_type='',
              all=manage_subclassableClassNames(),
              )"-->
 <!--#with REQUEST-->
@@ -36,6 +37,19 @@
     <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
   </TD>
 </TR>
+
+<TR>
+  <TH ALIGN="LEFT" VALIGN="TOP">
+    <EM>Add list text<sup>1</sup></EM></TH>
+  <TD ALIGN="LEFT" VALIGN="TOP" COLSPAN="3">
+    <INPUT TYPE="TEXT" NAME="meta_type" SIZE="40" 
+       VALUE="<!--#var meta_type-->">
+  </TD>
+</TR>
+<tr><td colspan=5>
+  <EM><sup>1</sup> if you want a creation interface
+                   to be created automatically</EM>
+</td></tr>
 
 <TR>
   <TH ALIGN="LEFT" VALIGN="TOP"></TH>

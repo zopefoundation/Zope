@@ -101,7 +101,8 @@ class PersistentClass(Base):
 manage_addZClassForm=Globals.HTMLFile(
     'addZClass', globals(), default_class_='OFS.SimpleItem Item')
 
-def manage_addZClass(self, id, title='', baseclasses=[], REQUEST=None):
+def manage_addZClass(self, id, title='', baseclasses=[],
+                     meta_type='', REQUEST=None):
     """Add a Z Class
     """
     bases=[]
@@ -111,7 +112,28 @@ def manage_addZClass(self, id, title='', baseclasses=[], REQUEST=None):
         else:
             bases.append(getattr(self, b))
 
-    self._setObject(id, ZClass(id,title,bases))
+    Z=ZClass(id,title,bases)
+    if meta_type: Z._zclass_.meta_type=meta_type
+    self._setObject(id, Z)
+
+    if meta_type:
+        self.manage_addDTMLMethod(
+            id+'_addForm', 
+            id+' constructor input form', 
+            addFormDefault % {'id': id, 'meta_type': meta_type},
+            )
+        self.manage_addDTMLMethod(
+            id+'_add',
+            id+' constructor',
+            addDefault % {'id': id},
+            )
+        self.manage_addPrincipiaFactory(
+            id+'_factory',
+            id+' factory',
+            meta_type,
+            id+'_addForm',
+            )
+    
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 def manage_subclassableClassNames(self):
@@ -415,3 +437,65 @@ def findActions(klass, found):
                 found[d['action']]=1
             findActions(b, found)
         except: pass
+
+addFormDefault="""<HTML> 
+<HEAD><TITLE>Add %(meta_type)s</TITLE></HEAD> 
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555"> 
+<H2>Add %(meta_type)s</H2> 
+<form action="%(id)s_add"><table> 
+<tr><th>Id</th> 
+    <td><input type=text name=id></td> 
+</tr> 
+<tr><td></td><td><input type=submit value=" Add "></td></tr> 
+</table></form> 
+</body></html> 
+"""
+
+addDefault="""<HTML>
+<HEAD><TITLE>Add %(id)s</TITLE></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+
+<!--#comment--> We add the new object by calling the class in
+                a with tag.  Not only does this get the thing
+                added, it adds the new thing's attributes to
+                the DTML name space, so we can call methods
+                to initialize the object.
+<!--#/comment-->
+
+<!--#with "%(id)s(REQUEST['id'], REQUEST)"-->
+
+  <!--#comment-->
+
+     You can ad code that modifies the new instance here.
+
+     For example, if you have a property sheet that you want to update
+     from form values, you can call it here:
+
+       <!--#call "propertysheets.Basic.manage_editProperties(
+                  REQUEST)"-->
+
+  <!--#/comment-->
+
+<!--#/with-->
+
+<!--#comment--> Now we need to return something.  We do this via
+                a redirect so that the URL is correct.
+
+                Unfortunately, the way we do this depends on
+                whether we live in a product or in a class.
+                If we live in a product, we need to use DestinationURL
+                to decide where to go. If we live in a class,
+                DestinationURL won't be available, so we use URL2.
+<!--#/comment-->
+<!--#if DestinationURL-->
+
+ <!--#call "RESPONSE.redirect(
+       DestinationURL+'/manage_workspace')"-->
+
+<!--#else-->
+
+    <!--#call "RESPONSE.redirect(
+           URL2+'/manage_workspace')"-->
+<!--#/if-->
+</body></html>
+"""
