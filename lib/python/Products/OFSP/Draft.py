@@ -152,7 +152,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         try: db=self._jar.db()
         except:
             # BoboPOS 2
-            jar=Globals.VersionBase[version].jar
+            jar=Globals.VersionBase[self._version].jar
         else:
             # ZODB 3
             jar=db.open(self._version)
