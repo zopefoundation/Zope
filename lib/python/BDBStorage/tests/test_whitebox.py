@@ -85,6 +85,14 @@ class WhiteboxLowLevelMinimal(BerkeleyTestBase):
         # stored object isn't referenced by any other objects.
         eq(len(self._storage._refcounts.keys()), 0)
 
+    def checkStorageVersionAfterCreation(self):
+        from BDBStorage.BDBMinimalStorage import BDBMINIMAL_SCHEMA_VERSION
+        eq = self.assertEqual
+        eq(self._storage._info['version'], BDBMINIMAL_SCHEMA_VERSION)
+        self._storage.close()
+        self.open()
+        eq(self._storage._info['version'], BDBMINIMAL_SCHEMA_VERSION)
+
 
 
 class WhiteboxHighLevelMinimal(ZODBTestBase):
@@ -174,6 +182,19 @@ class WhiteboxHighLevelMinimal(ZODBTestBase):
 
 
 
+class WhiteboxLowLevelFull(BerkeleyTestBase):
+    ConcreteStorage = BDBFullStorage
+
+    def checkStorageVersionAfterCreation(self):
+        from BDBStorage.BDBFullStorage import BDBFULL_SCHEMA_VERSION
+        eq = self.assertEqual
+        eq(self._storage._info['version'], BDBFULL_SCHEMA_VERSION)
+        self._storage.close()
+        self.open()
+        eq(self._storage._info['version'], BDBFULL_SCHEMA_VERSION)
+
+
+
 class WhiteboxHighLevelFull(ZODBTestBase):
     ConcreteStorage = BDBFullStorage
 
@@ -229,6 +250,7 @@ def test_suite():
     if BDBStorage.is_available:
         suite.addTest(unittest.makeSuite(WhiteboxLowLevelMinimal, 'check'))
         suite.addTest(unittest.makeSuite(WhiteboxHighLevelMinimal, 'check'))
+        suite.addTest(unittest.makeSuite(WhiteboxLowLevelFull, 'check'))
         suite.addTest(unittest.makeSuite(WhiteboxHighLevelFull, 'check'))
     return suite
 
