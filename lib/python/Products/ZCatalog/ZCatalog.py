@@ -721,11 +721,10 @@ class ZCatalog(Folder, Persistent, Implicit):
 
     def manage_convertBTrees(self, threshold=200):
         """Convert the catalog's data structures to use BTrees package"""
+        assert type(threshold) is type(0)
         tt=time.time()
         ct=time.clock()
-        self._catalog._convertBTrees(threshold
-                                     *1 #make sure ints an int)
-                                     )
+        self._catalog._convertBTrees(threshold)
         tt=time.time()-tt
         ct=time.clock()-ct
         return 'Finished conversion in %s seconds (%s cpu)' % (tt, ct)
