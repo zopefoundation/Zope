@@ -185,6 +185,11 @@ class TestCase:
         finally:
             result.stopTest(self)
 
+    def debug(self):
+        self.setUp()
+        self.__testMethod()
+        self.tearDown()
+
     def assert_(self, expr, msg=None):
         """Equivalent of built-in 'assert', but is not optimised out when
            __debug__ is false.
@@ -271,6 +276,10 @@ class TestSuite:
                 break
             test(result)
         return result
+
+    def debug(self):
+        for test in self._tests: test.debug()
+        
 
 
 class FunctionTestCase(TestCase):
