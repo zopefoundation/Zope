@@ -39,7 +39,8 @@ functional test programs in the tests subdirectory show how to do
 this, for example mhindex.py, mailtest.py, indexhtml.py, and
 queryhtml.py.
 
-See the online help for how to use ZCTextIndex within Zope.
+See the online help for how to use ZCTextIndex within Zope.  (Included
+in the subdirectory "help".)
 
 
 Code overview
@@ -90,9 +91,11 @@ ISplitter.py
 
 Subdirectories:
 
-tests				unittests and some functional tests/examples
 dtml				ZMI templates
+help				ZMI help files
+tests				unittests and some functional tests/examples
 www				images used in the ZMI
+
 
 Tests
 -----
