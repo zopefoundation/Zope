@@ -27,6 +27,8 @@ class BaseFramework(unittest.TestCase):
             os.unlink(os.path.join(self._dbhome, file))
         os.removedirs(self._dbhome)
     
+
+class TestMixin:
     def checkDBHomeExists(self):
         assert os.path.isdir(self._dbhome)
 
@@ -37,7 +39,7 @@ class MinimalBaseFramework(BaseFramework):
     ConcreteStorage = Minimal.Minimal
 
 
-class MinimalDBHomeTest(MinimalBaseFramework):
+class MinimalDBHomeTest(MinimalBaseFramework, TestMixin):
     pass
 
 
@@ -46,7 +48,7 @@ class FullBaseFramework(BaseFramework):
     import Full
     ConcreteStorage = Full.Full
 
-class FullDBHomeTest(FullBaseFramework):
+class FullDBHomeTest(FullBaseFramework, TestMixin):
     pass
 
 
