@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.12 2001/11/20 20:30:30 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.13 2001/11/26 18:03:55 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -129,7 +129,7 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
          'help': ('PathIndex','PathIndex_Settings.stx')},
     )
 
-    query_options = ["query","level"]
+    query_options = ["query","level","operator"]
 
 
     def __init__(self,id,caller=None):
