@@ -106,6 +106,11 @@ class ZServerHTTPResponse(HTTPResponse):
     http_chunk=0
     http_chunk_size=1024
     
+    # defaults
+    _http_version='1.0'
+    _http_connection='close'
+    _server_version='Zope/2.0 ZServer/2.0'
+    
     def __str__(self,
                 html_search=regex.compile('<html>',regex.casefold).search,
                 ):        
