@@ -46,6 +46,16 @@ class XMLRPCResponseTests(unittest.TestCase):
         self.failUnless('public' in as_set.keys())
         self.assertEqual(as_set['public'], 'def')
 
+    def test_nil(self):
+        import xmlrpclib
+        body = FauxInstance(public=None)
+        faux = FauxResponse()
+        response = self._makeOne(faux)
+        response.setBody(body)
+        data, method = xmlrpclib.loads(faux._body)
+        self.assert_(data[0]['public'] is None)
+
+
 def test_suite():
     return unittest.TestSuite((unittest.makeSuite(XMLRPCResponseTests),))
 

@@ -98,7 +98,7 @@ class Response:
     def setBody(self, body, title='', is_error=0, bogus_str_search=None):
         if isinstance(body, xmlrpclib.Fault):
             # Convert Fault object to XML-RPC response.
-            body=xmlrpclib.dumps(body, methodresponse=1)
+            body=xmlrpclib.dumps(body, methodresponse=1, allow_none=True)
         else:
             if type(body) == types.InstanceType:
                 # Avoid disclosing private members. Private members are
@@ -117,7 +117,8 @@ class Response:
             # was a Python None. This is now patched in xmlrpclib to
             # allow Nones nested inside data structures too.
             try:
-                body = xmlrpclib.dumps((body,), methodresponse=1)
+                body = xmlrpclib.dumps(
+                    (body,), methodresponse=1, allow_none=True)
             except:
                 self.exception()
                 return
