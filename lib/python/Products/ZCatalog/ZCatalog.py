@@ -91,7 +91,6 @@ from Globals import HTMLFile, MessageDialog
 import Globals
 from OFS.SimpleItem import SimpleItem
 from OFS.FindSupport import FindSupport
-from Products.ZTablesCore import ZTablesCore
 from SearchIndex import Query
 import string, regex, urlparse, urllib, os, sys
 import Products
