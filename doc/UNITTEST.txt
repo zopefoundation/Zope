@@ -1,0 +1,305 @@
+Zope Unit Testing
+
+ Zope Testing
+
+  If you encounter a directory named "tests" in a package within
+  within the Zope source code, it most likely indicates that the
+  directory contains test code used to ensure that the code owned by
+  the package works as it was designed.  Many of the test scripts
+  contained within Zope "tests" directories will be scripts which
+  contain "unit tests".
+
+ What Unit Tests Are
+
+  A "unit" may be defined as a piece of code with a single intended
+  purpose.  A "unit test" is defined as a piece of code which exists
+  to codify the intended behavior of a unit and to compare its
+  intended behavior against its actual behavior.
+
+  Unit tests are a way for developers and quality assurance engineers
+  to quickly acertain whether independent units of code are working as
+  expected.  Unit tests are generally written at the same time as the
+  code they are intended to test.  A unit testing framework allows a
+  collection of unit tests to be run without human intervention,
+  producing a minimum of output if all the tests in the collection are
+  successful.
+
+ What Unit Tests Are Not
+
+  It's very useful to define unit tests in terms of what they are
+  not.  From the "Extreme Programming Enthusiast" website
+  (http://c2.com/cgi/wiki?UnitTestsDefined)::
+
+   Unit tests are not:
+
+    - Manually operated.
+
+    - Automated screen-driver tests that simulate user input (these
+      are "functional tests").
+
+    - Interactive.  They run "no questions asked."
+
+    - Coupled.  They run without dependencies except those native to
+      the thing being tested.
+
+    - Complicated.  Unit test code is typically straightforward
+      procedural code that simulates an event.
+
+ Unit Testing Frameworks
+
+  A unit testing framework is generally employed to collect related
+  unit tests together in order to make it easier to run them as a
+  group.  When used with a unit testing framework, unit tests live
+  outside of the modules of code they're intended to test.
+
+ How Unit Tests Help In The Development Process
+
+  Unit tests should be written at the same time the code they test is
+  written.  A short, healthy cycle of "code/write test/run
+  test/repeat" can help a developer code more quickly by reducing
+  "backtracking" effort and by helping the developer focus on the
+  actual problem at hand.  Additonally, the unit tests generated at
+  initial development time can serve as later assurance that
+  maintenance and refactoring performed on code does not break any of
+  its intended functionality or behavior.  The results of unit tests
+  may additionally be used as a metric by quality assurance personnel
+  along with the results of other tests to gauge code quality before
+  before it is "shipped."
+
+ Basic Unit Testing Philosophies
+
+  Write unit tests at the same time that you write the code.
+  Nothing's worse than being faced with the prospect of writing tests
+  against a huge chunk of existing code because you "have to."
+  Writing unit tests post-facto can be boring and also robs you of the
+  main benefits that unit testing can provide.  Writing unit tests at
+  the same time you write the code helps you focus on the task at
+  hand.  Writing unit tests in conjuction with code can be fun and
+  satisfying, and can help you improve the quality of your code while
+  its goals are fresh in your mind.  Used properly, unit testing may
+  also help you write code faster, because you will need to
+  "backtrack" less.  Some "Extreme Programming" enthusiasts posit that
+  you should write a test before you write its associated code, and
+  then develop the code until it passes the test.
+
+  Unit tests should be developed against as small and specific a
+  subset of a system's or subsystem's functionality as possible.  For
+  instance, a one unit test may test that a unique id generator
+  produces ids of a specific length, while another unit test in the
+  same group may ensure that a thousand ids from the same unique id
+  generator do not contain the same value.  Writing a single unit test
+  which tests a broad swath of a system's capabilities is
+  counterproductive, because it does not allow for a fine enough
+  granularity when attempting to figure out "what went wrong,"
+  requiring the developer to "backtrack".  Unit testing is capable of
+  helping to help reduce backtracking, but only if used properly.
+
+  A unit test does not produce any output unless it fails.  If a unit
+  test fails, it should print something useful, but short.  A unit
+  test should never fill the screen with output or otherwise produce
+  output that needs to be manually examined for "clues".  This is the
+  realm of other testing methodologies.  If unit tests are written at
+  sufficiently granular level, it is often enough just to know the
+  name of the unit test that failed.
+
+  "It is better to have tried to test and failed than to not have
+  tried to test at all" aka "test the riskist things first."  If the
+  prospect of writing a series of unit tests for an existing system
+  seems daunting, it's important to remember that no matter how many
+  unit tests you write, you cannot prove that your software does not
+  have bugs.  Therefore, you cannot possibly test every case while
+  developing.  You should plan to write tests against code based on
+  the risks involved in not testing that code.  Don't feel that you
+  need to write a test case for every "corner case" (although do try
+  to hit the riskiest ones).  In the worst case, it's better to have a
+  test module with one lonely unit test in it than none at all.
+
+  "Test fixtures" are employed by unit tests.  Test fixtures are bits
+  of state and environment that allow the unit test to perform its job
+  properly.  An example of a test fixture might be a file, an instance
+  of a class, or a row in a database table.  Any part of the
+  environment needed by a unit test besides the unit testing framework
+  itself is considered a test fixture.
+
+  In general, the common fixtures required by individual tests in a
+  testing group should be more or less identical.  If the fixtures
+  needed by a single test are radically different than the fixtures
+  required by the rest of the tests, or if the test does not require
+  the fixtures provided to the other tests, it probably belongs in
+  another (or its own) group of tests.
+
+  When a unit test in a group modifies the state of a test fixture,
+  the test fixture should be restored to a known state before the next
+  unit test in the group is run.  Often, this means "rolling back"
+  changes to a transactional database or restoring the state of a
+  string so the next unit test can inherit a known state of the same
+  fixtures.  The unit testing framework has capabilities which allow
+  you to automate most of this work by providing a "set up" method
+  which gets called before each test is run and a "tear down" method
+  that gets called after a test is finished.
+
+  Unit tests should play nicely with the unit testing framework they
+  employ.  Unit tests should not call "sys.exit()" or do similar
+  things which effect their ability to be run as part of a group of
+  tests.  The testing framework attempts to deal with misbehaved unit
+  tests, but it's better just to make them behave nicely in the first
+  place.
+
+  Unit tests should "grow" with the code that they're intended to
+  test.  For example, if a group of unit tests is intended to verify
+  the behavior of all of the routines within a module, additional unit
+  tests should be added to the test group when new functionality is
+  added to that module.
+
+ Writing Unit Tests For The Zope Core
+
+  If you're writing core code, you probably don't need to listen to
+  any more of this.  :-) The rules for writing tests for Zope core
+  code are simple:
+
+   - The testing code should make use of PyUnit
+     (/lib/python/unittest.py).  Instructions for using PyUnit are
+     available at http://pyunit.sourceforge.net.
+
+   - Tests must be placed in a "tests" subdirectory of the package or
+     directory in which the core code you're testing lives.
+
+   - Test modules should be named something which represents the
+     functionality they test, and should begin with the prefix "test."
+     E.g., a test module for BTree should be named testBTree.py.
+
+   - An individual test module should take no longer than 60 seconds
+     to complete.
+
+ Writing Unit Tests For Applications Based On Zope
+
+  Zope uses the PyUnit unit testing framework, the documentation for
+  which is available at http://pyunit.sourceforge.net.  The
+  lib/python/unittest.py module is the framework.  You should
+  establish your own conventions for naming and placement of test
+  modules.
+
+  Writing unit tests against applications based on Zope can be
+  difficult.  Zope is a collection of related modules, some with
+  non-trivial interdependencies.  Running its code successfully also
+  in some cases depends on state provided only in the context of a web
+  request, so calling Zope methods directly may not work as you
+  expect.  If you're not intimately familiar with Zope, implementing
+  unit tests can be fustrating.  For example, for the common case,
+  before you are able to write code which tests a Zope SQL Method, you
+  must establish a test fixture which represents your entire Zope
+  site.
+
+  Luckily, some tools are at your disposal to make writing unit tests
+  against Zope components and applications easier by making the
+  creation of these fixtures easier.
+
+  Surprisingly, one of the most effective tools for facilitating unit
+  testing is ZEO (http://www.zope.org/Products/ZEO).  ZEO is an
+  open-source clustering solution for Zope which makes it possible to
+  front-end a single "storage server" which manages a Zope object
+  database with multiple Zope clients that run a "client storage".
+  The reason ZEO is interesting for unit testing is mostly an
+  unintended side-effect of how it works as compared to Zope without
+  ZEO.  Zope without ZEO commonly uses a "FileStorage" to hold its
+  object database.  When Zope is started with a FileStorage, the
+  FileStorage code processes an "index" file.  This takes time.  Zope
+  using a ClientStorage as with ZEO does not process an index file,
+  making startup faster.  Fast startup of Zope is critical to
+  effective unit testing.  It is recommended that you implement ZEO if
+  you're heavy in to unit testing, as it really speeds things up.
+  It's not strictly required, however.
+
+  Making Zope itself into a test fixture is straightforward.  Your
+  test code must:
+
+   - add the 'lib/python' directory of your Zope installation to the
+     PYTHONPATH (via sys.path.insert())
+
+   - 'import ZODB' (may not be required, but just put it in for good measure)
+
+   - 'import Zope'
+
+   - 'app = Zope.app()'
+
+   - operate on the Zope instance space by calling methods from the
+     root object (bound to 'app'), e.g.:
+
+     app.acl_users.manage_addUser(<method signature>)
+
+   - a transaction will not be committed to the Zope object database
+     until you call the global function "get_transaction().commit()",
+     so changes made to the ZODB are not visible to succeeding tests
+     unless that function is called explicitly.
+
+   - As a part of your tearDown, make sure to call
+     "app._p_jar.close()".  This closes the database connection
+     cleanly.
+
+   For more information on operating on Zope programatically by
+   "importing" it, see Michel Pelletier's "The Debugger Is Your
+   Friend" at
+   http://www.zope.org/Members/michel/HowTos/TheDebuggerIsYourFriend
+
+   Sometimes, just importing Zope isn't enough.  For example, it's
+   often not possible to obtain the results of a DTML or Python method
+   by simply calling it from your running code without doing lots of
+   trickery by establishing fake REQUEST object to pass in to it, as
+   Zope expects a REQUEST object to exist in the context of a web
+   request (which a DTML method is somewhat logically designed to
+   serve).
+
+   If you find yourself getting bogged down while writing unit tests
+   by Zope's refusal to run certain methods due to missing state (like
+   REQUEST), it's useful to know about the "debug" method of the Zope
+   package.  This method allows you to simulate a web request, which
+   generally provides all the state necessary to run methods which
+   depend on web requests, and returns the results of the web request
+   as it would be seen in by a web browser.  To use the Zope debug
+   method, do the following:
+
+   - add the lib/python path to your PYTHONPATH (via sys.path.insert())
+
+   - 'import ZODB'
+
+   - 'import Zope'
+  
+   - 'Zope.debug('/a/url/representing/a/method?with=a?couple=arguments',
+                 u='username:password', s='silent', e={'some':'environment',
+                 'variable':'settings'})
+
+   The "silent" option causes Zope not to print anything.  You can set
+   your python's stdout to a file or a file-like object to capture the
+   output if you do not set the silent flag.
+
+   In Zope versions before 2.2.2, all calls to Zope.debug commit the
+   transaction represented by the call to Zope.debug by default.  Zope
+   2.2.2 and higher have allow an additional "dont_commit" flag to be
+   passed in to Zope.debug:
+
+   - 'Zope.debug('/a/url/representing/a/method?with=a?couple=arguments',
+                 u='username:password', dont_commit=1)
+
+ Administrivia
+
+  Unit test scripts found in the Zope source code currently make use
+  of the PyUnit unit testing framework, available from
+  http://pyunit.sourceforge.net, written by Stephen Purcell (thanks
+  Stephen!).  PyUnit is based on the JUnit testing framework for Java
+  (written by Kent Beck and Erich Gamma), which in turn was based on a
+  testing framework designed for Smalltalk (also written by Kent
+  Beck).
+
+  Unit testing is a primary tenet of "Extreme Programming", a software
+  development methodology designed to faciliate the rapid production
+  of high quality code with a minimum of developmental ceremony.  For
+  more information on unit tests as they relate to Extreme
+  Programming, see http://c2.com/cgi/wiki?UnitTestsDefined.  Although
+  Digital Creations has not embraced the entire spectrum of Extreme
+  Programming methodologies in its software development process, we've
+  found unit tests a way to speed development and produce
+  higher-quality code.
+
+
+
+
