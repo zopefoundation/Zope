@@ -1,7 +1,7 @@
 /*
- * $Id: cPickle.c,v 1.74 2002/03/21 15:48:54 htrd Exp $
+ * $Id: cPickle.c,v 1.75 2002/08/26 13:40:29 Brian Exp $
  * 
- * Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
+ * Copyright (c) 1996-1998, Zope Corporation, Fredericksburg, VA, USA.  
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -16,7 +16,7 @@
  *     the documentation and/or other materials provided with the
  *     distribution.
  * 
- *   o Neither the name of Digital Creations nor the names of its
+ *   o Neither the name of Zope Corporation nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  * 
@@ -37,11 +37,8 @@
  # 
  # If you have questions regarding this software, contact:
  #
- #   Digital Creations, L.C.
- #   910 Princess Ann Street
- #   Fredericksburge, Virginia  22401
- #
- #   info@digicool.com
+ #   Zope Corporation
+ #   info@zope.com
  #
  #   (540) 371-6909
  */
@@ -49,7 +46,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.74 2002/03/21 15:48:54 htrd Exp $\n"
+"$Id: cPickle.c,v 1.75 2002/08/26 13:40:29 Brian Exp $\n"
 ;
 
 #include "Python.h"

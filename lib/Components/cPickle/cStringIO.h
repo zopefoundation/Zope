@@ -2,27 +2,27 @@
 #define CSTRINGIO_INCLUDED
 /*
 
-  $Id: cStringIO.h,v 1.4 1997/12/07 14:27:00 jim Exp $
+  $Id: cStringIO.h,v 1.5 2002/08/26 13:40:29 Brian Exp $
 
   cStringIO C API
 
      Copyright 
 
-       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
+       Copyright 1996 Zope Corporation, Fredericksburg, Virginia 22401 
+       U.S.A. All
+       rights reserved.  Copyright in this software is owned by ZC,
        unless otherwise indicated. Permission to use, copy and
        distribute this software is hereby granted, provided that the
        above copyright notice appear in all copies and that both that
        copyright notice and this permission notice appear. Note that
        any product, process or technology described in this software
        may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
+       reserved by Zope Corporation and are not licensed
        hereunder.
 
      Trademarks 
 
-       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
+       Zope Corporation is a trademark of Zope Corporation.
        All other trademarks are owned by their respective companies. 
 
      No Warranty 
@@ -33,13 +33,14 @@
        purpose, or non-infringement. This software could include
        technical inaccuracies or typographical errors. Changes are
        periodically made to the software; these changes will be
-       incorporated in new editions of the software. DCLC may make
-       improvements and/or changes in this software at any time
+       incorporated in new editions of the software. Zope Corporation
+       may make improvements and/or changes in this software at any time
        without notice.
 
      Limitation Of Liability 
 
-       In no event will DCLC be liable for direct, indirect, special,
+       In no event will Zope Corporation be liable for direct, indirect, 
+       special, 
        incidental, economic, cover, or consequential damages arising
        out of the use of or inability to use this software even if
        advised of the possibility of such damages. Some states do not
@@ -51,8 +52,8 @@
     If you have questions regarding this software,
     contact:
    
-      info@digicool.com
-      Digital Creations L.C.  
+      Zope Corporation
+      info@zope.com
    
       (540) 371-6909
 
