@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -220,7 +220,7 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         kw['document_title']=self.title
         if client is None:
             # Called as subtemplate, so don't need error propigation!
-            r=apply(HTML.__call__, (self, client, REQUEST), kw)
+            r=apply(HTML.__call__, (self, self, REQUEST), kw)
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
         try: r=apply(HTML.__call__, (self, (client, self), REQUEST), kw)
