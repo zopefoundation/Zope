@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.70 $'[11:-2]
+__version__='$Revision: 1.71 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -144,7 +144,7 @@ class CopyContainer(ExtensionClass.Base):
         cp=_cb_encode(cp)
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
-            resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
+            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
         return cp
@@ -169,7 +169,7 @@ class CopyContainer(ExtensionClass.Base):
         cp=_cb_encode(cp)
         if REQUEST is not None:
             resp=REQUEST['RESPONSE']
-            resp.setCookie('__cp', cp, path='%s' % REQUEST['SCRIPT_NAME'])
+            resp.setCookie('__cp', cp, path='%s' % cookie_path(REQUEST))
             REQUEST['__cp'] = cp
             return self.manage_main(self, REQUEST)
         return cp
@@ -267,7 +267,7 @@ class CopyContainer(ExtensionClass.Base):
 
             if REQUEST is not None:
                 REQUEST['RESPONSE'].setCookie('__cp', 'deleted',
-                                    path='%s' % REQUEST['SCRIPT_NAME'],
+                                    path='%s' % cookie_path(REQUEST),
                                     expires='Wed, 31-Dec-97 23:59:59 GMT')
                 REQUEST['__cp'] = None
                 return self.manage_main(self, REQUEST, update_menu=1,
@@ -524,6 +524,10 @@ def _cb_encode(d):
 def _cb_decode(s):
     return loads(decompress(unquote(s)))
 
+def cookie_path(request):
+    # Return a "path" value for use in a cookie that refers
+    # to the root of the Zope object space.
+    return request['BASEPATH1'] or "/"
 
 
 
