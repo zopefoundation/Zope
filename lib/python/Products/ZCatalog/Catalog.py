@@ -476,20 +476,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 x = x.__of__(self)
                 if hasattr(x, 'unindex_object'):
                     x.unindex_object(rid)
-                    # this should never raise an exception
-            for btree in (data, paths):
-                try:
-                    del btree[rid]
-                except KeyError:
-                    LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
-                                           'attempted to delete rid %s '
-                                           'from paths or data btree.' % rid))
-                else:
-                    try: self.__len__.change(-1)
-                    except AttributeError: pass # No managed length
-
+            del data[rid]
+            del paths[rid]
             del uids[uid]
-            self.data = data
+            try: self.__len__.change(-1)
+            except AttributeError: pass # No managed length
         else:
             LOG('Catalog', ERROR, ('uncatalogObject unsuccessfully '
                                    'attempted to uncatalog an object '
