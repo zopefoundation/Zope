@@ -24,6 +24,27 @@
            form_title='Zope Quick Start',
 	   )">
 
+<dtml-if expr="not PARENTS[0].acl_users.hasUsers()">
+<div class="system-msg">
+<h3>
+You have not created any users in this Zope instance.  In order to
+log in and manage this Zope instance, you'll need to add an adminstrative
+user account.
+</h3>
+<p>
+If you're running Zope on UNIX or Linux, you can create an administrative
+user account via the "zopectl adduser" command from a shell.  If you're
+running Zope on Windows, you'll need to use the "zpasswd.py" utility in your
+Zope installation's "bin" directory
+at <i><dtml-var "Control_Panel.getZOPE_HOME()">\bin</i>
+to create a file named <i>inituser</i> in your Zope instance home at
+<i><dtml-var "Control_Panel.getINSTANCE_HOME()"></i> that contains the
+initial administrative username and password.
+</p>
+</div>
+</dtml-if>
+
+
 <p>
 Welcome to <strong>Zope</strong>, a high-performance object-oriented 
 platform for building dynamic Web applications. Here are some quick 

@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.178 $'[11:-2]
+__version__='$Revision: 1.179 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -1025,6 +1025,14 @@ class UserFolder(BasicUserFolder):
     def getUser(self, name):
         """Return the named user object or None"""
         return self.data.get(name, None)
+
+    def hasUsers(self):
+        """ This is not a formal API method: it is used only to provide
+        a way for the quickstart page to determine if the default user
+        folder contains any users to provide instructions on how to
+        add a user for newbies.  Using getUserNames or getUsers would have
+        posed a denial of service risk."""
+        return not not len(self.data)
 
     def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user"""
