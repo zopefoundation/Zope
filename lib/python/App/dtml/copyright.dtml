@@ -213,6 +213,12 @@ License Version 1.1</A>.
     long-time friend of Zope Corporation.  Zope Power is Python
     Power.</LI>
 
+    <LI>
+    Special thanks to Richard Stallman and the Free Software
+    Foundation for their assistance and feedback on the GPL-compatible 
+    2.0 version of the Zope Public License.
+    </LI>
+
 </UL>
  <P>
  Paul Everitt, <a href="mailto:paul@zope.com">paul@zope.com</a>.

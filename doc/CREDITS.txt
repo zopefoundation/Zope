@@ -55,6 +55,9 @@ Credits
       long-time friend of Digital Creations.  Zope Power is Python
       Power.
 
+    o Special thanks to Richard Stallman and the Free Software
+      Foundation for their assistance and feedback on the
+      GPL-compatible 2.0 version of the Zope Public License.
 
 
 
