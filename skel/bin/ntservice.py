@@ -1,0 +1,109 @@
+##############################################################################
+#
+# Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+#
+##############################################################################
+"""
+A Zope Windows NT service frontend.
+
+Usage:
+
+  Installation
+
+    The Zope service should be installed by the Zope Windows
+    installer. You can manually install, uninstall the service from
+    the commandline.
+
+      ntservice.py [options] install|update|remove|start [...]
+           |stop|restart [...]|debug [...]
+
+    Options for 'install' and 'update' commands only:
+
+     --username domain\username : The Username the service is to run
+                                  under
+
+     --password password : The password for the username
+
+     --startup [manual|auto|disabled] : How the service starts,
+                                        default = manual
+
+    Commands
+
+      install : Installs the service
+
+      update : Updates the service, use this when you change
+               the service class implementation 
+
+      remove : Removes the service
+
+      start : Starts the service, this can also be done from the
+              services control panel
+
+      stop : Stops the service, this can also be done from the
+             services control panel
+
+      restart : Restarts the service
+
+      debug : Runs the service in debug mode
+
+    You can view the usage options by running ntservice.py without any
+    arguments.
+
+    Note: you may have to register the Python service program first,
+
+      win32\PythonService.exe /register
+
+  Starting Zope
+
+    Start Zope by clicking the 'start' button in the services control
+    panel. You can set Zope to automatically start at boot time by
+    choosing 'Auto' startup by clicking the 'statup' button.
+
+  Stopping Zope
+
+    Stop Zope by clicking the 'stop' button in the services control
+    panel. You can also stop Zope through the web by going to the
+    Zope control panel and by clicking 'Shutdown'.
+
+  Event logging
+
+    Zope events are logged to the NT application event log. Use the
+    event viewer to keep track of Zope events.
+
+Note: to successfully run this script, the Zope software home needs to be on
+the PYTHONPATH.
+"""
+
+import os.path
+from os.path import dirname as dn
+import sys
+
+# these are replacements from mkzopeinstance
+PYTHON = r'C:\PROGRA~1\PYTHON~1.3\python.exe'
+SOFTWARE_HOME=r'C:\Program Files\Zope-2.7.0-a1\lib\python'
+INSTANCE_HOME = r'c:\Zope-Instance2'
+ZOPE_RUN = '%s\Zope\Startup\run.py' % SOFTWARE_HOME
+CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
+
+sys.path.insert(0, SOFTWARE_HOME)
+
+from Zope.Startup.nt import NTService
+
+servicename = 'Zope_%s' % str(hash(INSTANCE_HOME))
+
+class InstanceService(NTService.ZopeService):
+    start_cmd = '"%s" "%s" -C "%s"' % (PYTHON, ZOPE_RUN, CONFIG_FILE)
+    _svc_name_ = servicename
+    _svc_display_name_ = 'Zope instance at %s' % INSTANCE_HOME
+
+if __name__ == '__main__':
+    import win32serviceutil
+    win32serviceutil.HandleCommandLine(InstanceService)
+    
