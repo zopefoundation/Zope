@@ -105,7 +105,7 @@ TODO
 
 """
 
-import os, sys, time, signal
+import os, sys, time, signal, posix
 
 pyth = sys.executable
 
@@ -181,6 +181,12 @@ def run(argv, pidfile=''):
     
     os.environ['ZDAEMON_MANAGED']='TRUE'
     while 1:
+        pid = os.fork()
+        if pid:
+            sys.exit(0)
+
+        posix.setsid()
+
         lastt=time.time()
         try:
             pid = forkit()
