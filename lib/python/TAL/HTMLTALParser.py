@@ -191,15 +191,14 @@ class HTMLTALParser(HTMLParser):
     # Overriding HTMLParser methods
 
     def handle_starttag(self, tag, attrs):
-        if tag in EMPTY_HTML_TAGS:
-            return self.handle_startendtag(tag, attrs)
-        
         self.close_para_tags(tag)
         self.tagstack.append(tag)
         self.scan_xmlns(attrs)
         attrlist, taldict, metaldict = self.extract_attrs(attrs)
         self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
                                   self.getpos())
+        if tag in EMPTY_HTML_TAGS:
+            self.implied_endtag(tag, -1)
 
     def handle_startendtag(self, tag, attrs):
         self.close_para_tags(tag)
@@ -257,16 +256,16 @@ class HTMLTALParser(HTMLParser):
     def implied_endtag(self, tag, implied):
         assert tag == self.tagstack[-1]
         assert implied in (-1, 1, 2)
-        if implied > 0:
-            if tag in TIGHTEN_IMPLICIT_CLOSE_TAGS:
-                # Pick out trailing whitespace from the program, and
-                # insert the close tag before the whitespace.
-                white = self.gen.unEmitWhitespace()
-                self.gen.emitEndElement(tag, implied=implied)
-                if white:
-                    self.gen.emitRawText(white)
-            else:
-                self.gen.emitEndElement(tag, implied=implied)
+        isend = (implied < 0)
+        if tag in TIGHTEN_IMPLICIT_CLOSE_TAGS:
+            # Pick out trailing whitespace from the program, and
+            # insert the close tag before the whitespace.
+            white = self.gen.unEmitWhitespace()
+        else:
+            white = None
+        self.gen.emitEndElement(tag, isend=isend, implied=implied)
+        if white:
+            self.gen.emitRawText(white)
         self.tagstack.pop()
         self.pop_xmlns()
 
