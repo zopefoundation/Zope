@@ -22,8 +22,22 @@ Zope Changes
       - DTML-MIME tag: creates now a 'Mime-Version: 1.0' to make
         some fussy email programs happy
 
+      - utilities/requestprofiler - fixed bugs in timed mode which could
+        show nonsensical results.
 
     Features Added
+
+      - Enhancements to utilites/requestprofiler.py:
+
+        Added readstats and writestats features which allow for saves and
+        reuse of profile stats between runs of the requestprofiler.
+
+        Added urlfocus mode.  Urlfocus mode presents a summary of
+        activity within a period of time before and after the
+        invocation of a particular URL as it was recorded in the big M
+        log.  This can be useful when trying to track down a problem
+        which you believe is related to some series of URL invocations
+        as opposed to a single URL invocation.
 
       - added doc/ENVIRONMENT.txt to document all used environment
         variables Zope is using
