@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# Copyright (c) 2001 Zope Corporation and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -14,7 +14,6 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.38 $'.split()[-2:][0]
 
 import os
 import time
@@ -25,7 +24,7 @@ from types import StringType
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net
-from BDBStorage import db
+from BDBStorage import db, ZERO
 
 # BaseStorage provides primitives for lock acquisition and release, and a host
 # of other methods, some of which are overridden here, some of which are not.
@@ -289,7 +288,7 @@ class BerkeleyBase(BaseStorage):
         if value:
             self._oid = value[0]
         else:
-            self._oid = '\0\0\0\0\0\0\0\0'
+            self._oid = ZERO
 
     # It can be very expensive to calculate the "length" of the database, so
     # we cache the length and adjust it as we add and remove objects.
@@ -403,6 +402,7 @@ class BerkeleyBase(BaseStorage):
         self._env.close()
         os.unlink(lockfile)
 
+    # A couple of convenience methods
     def _update(self, deltas, data, incdec):
         refdoids = []
         referencesf(data, refdoids)
