@@ -11,11 +11,11 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.13 1998/02/06 22:41:48 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: RDB.py,v 1.14 1998/02/06 23:24:42 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import regex, regsub
-from string import split, strip, lower, atof, atoi, atol, find
+from string import split, strip, lower, atof, atoi, atol, find, join
 import DateTime
 from Missing import MV
 from array import array
@@ -196,6 +196,9 @@ File=DatabaseResults
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.14  1998/02/06 23:24:42  jim
+# *** empty log message ***
+#
 # Revision 1.13  1998/02/06 22:41:48  jim
 # Stupid bug I fixed at hway.
 #
