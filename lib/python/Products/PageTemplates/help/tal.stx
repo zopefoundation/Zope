@@ -30,24 +30,24 @@ TAL Overview
 
     These are the tal statements:
 
-    - "tal:attributes":tal-attributes.stx - dynamically change
+    - "tal:attributes":../tal-attributes.stx - dynamically change
       element attributes.
 
-    - "tal:define":tal-define.stx - define variables.
+    - "tal:define":../tal-define.stx - define variables.
 
-    - "tal:condition":tal-condition.stx - test conditions.
+    - "tal:condition":../tal-condition.stx - test conditions.
 
-    - "tal:content":tal-content.stx - replace the content of an
+    - "tal:content":../tal-content.stx - replace the content of an
       element.
 
-    - "tal:omit-tag":tal-omit-tag.stx - remove an element, leaving
+    - "tal:omit-tag":../tal-omit-tag.stx - remove an element, leaving
       the content of the element.
 
-    - "tal:on-error":tal-on-error.stx - handle errors.
+    - "tal:on-error":../tal-on-error.stx - handle errors.
 
-    - "tal:repeat":tal-repeat.stx - repeat an element.
+    - "tal:repeat":../tal-repeat.stx - repeat an element.
 
-    - "tal:replace":tal-replace.stx - replace the content of an
+    - "tal:replace":../tal-replace.stx - replace the content of an
       element and remove the element leaving the content.
 
     Expressions used in statements may return values of any type,
@@ -100,23 +100,23 @@ TAL Overview
 
   See Also
 
-    "TALES Overview":tales.stx
+    "TALES Overview":../tales.stx
 
-    "METAL Overview":metal.stx
+    "METAL Overview":../metal.stx
 
-    "tal:attributes":tal-attributes.stx
+    "tal:attributes":../tal-attributes.stx
 
-    "tal:define":tal-define.stx
+    "tal:define":../tal-define.stx
 
-    "tal:condition":tal-condition.stx
+    "tal:condition":../tal-condition.stx
 
-    "tal:content":tal-content.stx
+    "tal:content":../tal-content.stx
 
-    "tal:omit-tag":tal-omit-tag.stx
+    "tal:omit-tag":../tal-omit-tag.stx
 
-    "tal:on-error":tal-on-error.stx
+    "tal:on-error":../tal-on-error.stx
 
-    "tal:repeat":tal-repeat.stx
+    "tal:repeat":../tal-repeat.stx
 
-    "tal:replace":tal-replace.stx
+    "tal:replace":../tal-replace.stx
 

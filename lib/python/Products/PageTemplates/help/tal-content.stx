@@ -31,4 +31,4 @@ tal:content - replace the content of an element
 
   See Also
 
-    "'tal:replace'":tal-replace.stx
+    "'tal:replace'":../tal-replace.stx

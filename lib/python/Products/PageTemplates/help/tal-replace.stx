@@ -38,4 +38,4 @@ tal:replace - Replace an element
 
   See Also
 
-    "'tal:content'":tal-content.stx
+    "'tal:content'":../tal-content.stx

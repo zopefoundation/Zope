@@ -33,7 +33,7 @@ metal:define-slot - Define a macro customization point
 
   See Also
 
-    "metal:fill-slot":metal-fill-slot.stx
+    "metal:fill-slot":../metal-fill-slot.stx
 
 
 

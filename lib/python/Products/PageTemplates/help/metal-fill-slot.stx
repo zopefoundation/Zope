@@ -35,4 +35,4 @@ metal:fill-slot - Customize a macro
  
   See Also
     
-    "metal:define-slot":metal-define-slot.stx
+    "metal:define-slot":../metal-define-slot.stx

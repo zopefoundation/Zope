@@ -1,8 +1,8 @@
 TALES Overview
 
   The *Template Attribute Language Expression Syntax* (TALES) standard
-  describes expressions that supply "TAL":tal.stx and
-  "METAL":metal.stx with data.  TALES is *one* possible expression
+  describes expressions that supply "TAL":../tal.stx and
+  "METAL":../metal.stx with data.  TALES is *one* possible expression
   syntax for these languages, but they are not bound to this
   definition.  Similarly, TALES could be used in a context having
   nothing to do with TAL or METAL.
@@ -36,17 +36,17 @@ TALES Overview
 
     These are the TALES expression types supported by Zope:
 
-    * "path":tales-path.stx expressions - locate a value by its path.
+    * "path":../tales-path.stx expressions - locate a value by its path.
 
-    * "exists":tales-exists.stx expressions - test whether a path is valid.
+    * "exists":../tales-exists.stx expressions - test whether a path is valid.
 
-    * "nocall":tales-nocall.stx expressions - locate an object by its path.
+    * "nocall":../tales-nocall.stx expressions - locate an object by its path.
 
-    * "not":tales-not.stx expressions - negate an expression
+    * "not":../tales-not.stx expressions - negate an expression
   
-    * "string":tales-string.stx expressions - format a string
+    * "string":../tales-string.stx expressions - format a string
 
-    * "python":tales-python.stx expressions - execute a Python
+    * "python":../tales-python.stx expressions - execute a Python
       expression
 
   Built-in Names
@@ -97,19 +97,19 @@ TALES Overview
 
   See Also
 
-    "TAL Overview":tal.stx
+    "TAL Overview":../tal.stx
 
-    "METAL Overview":metal.stx
+    "METAL Overview":../metal.stx
 
-    "exists":tales-exists.stx expressions
+    "exists":../tales-exists.stx expressions
 
-    "nocall":tales-nocall.stx expressions
+    "nocall":../tales-nocall.stx expressions
 
-    "not":tales-not.stx expressions
+    "not":../tales-not.stx expressions
   
-    "string":tales-string.stx expressions
+    "string":../tales-string.stx expressions
 
-    "path":tales-path.stx expressions
+    "path":../tales-path.stx expressions
 
-    "python":tales-python.stx expressions
+    "python":../tales-python.stx expressions
   

@@ -45,7 +45,7 @@ metal:use-macro - Use a macro
 
   See Also
 
-    "metal:define-macro":metal-define-macro.stx
+    "metal:define-macro":../metal-define-macro.stx
 
-    "metal:fill-slot":metal-fill-slot.stx
+    "metal:fill-slot":../metal-fill-slot.stx
 
