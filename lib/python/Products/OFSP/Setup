@@ -7,4 +7,4 @@
 # install sessionAdd.dtml
 # install sessionEdit.dtml
 # install images
-# install OFSPe.lic lib/python/($package)/OFSP.lic
+# install OFSPe.lic lib/python/Products/OFSP/OFSP.lic
