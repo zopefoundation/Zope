@@ -1080,6 +1080,14 @@ setup(
                 ['ZServer/medusa/test', ['ZServer/medusa/test/*.txt']]],
     )
 
+setup(
+    name='Site Customization',
+    author=AUTHOR,
+
+    data_files=[['', ['sitecustomize.py']],
+               ]
+    )
+
 # Call distutils setup with all lib/python packages and modules, and
 # flush setup_info.  Wondering why we run py_modules separately?  So am I.
 # Distutils won't let us specify packages and py_modules in the same call.
