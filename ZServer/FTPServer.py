@@ -347,6 +347,7 @@ class zope_ftp_channel(ftp_channel):
             self.command_not_understood (string.join (line))
             return
         response=make_response(self, self.retr_completion, line[1])
+        self._response_producers = response.stdout._producers
         request=FTPRequest(line[1],'RETR',self,response)
         handle(self.module,request,response) 
 
@@ -357,8 +358,9 @@ class zope_ftp_channel(ftp_channel):
             if not response._wrote:
                 self.client_dc.push(response.body)
             else:
-                for producer in response.stdout._producers:
+                for producer in self._response_producers:
                     self.client_dc.push_with_producer(producer)
+                self._response_producers = None
             self.client_dc.close_when_done()
             self.respond(
                     "150 Opening %s mode data connection for file '%s'" % (
