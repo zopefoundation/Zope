@@ -13,4 +13,5 @@ Query Query.c
  
 # install Index.py
 # install InvertedIndex.py
+# install InvertedIndexQuery.py
 # install TextIndex.py
