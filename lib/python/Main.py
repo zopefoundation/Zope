@@ -32,7 +32,7 @@ import Scheduler.Scheduler
 
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
-SessionBase=Globals.SessionBase=TJar.TM(Bobobase, 1)
+SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
 
 
 SingleThreadedTransaction.Transaction.commit=SessionBase.committer()
@@ -43,6 +43,9 @@ bobo_application=app=Bobobase['Application']
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.14  1997/11/19 20:04:23  brian
+# Hmm, removed create flag for TM - seems only to be an issue with old bobobases.
+#
 # Revision 1.13  1997/11/19 19:59:31  brian
 # Added create flag to force creation of .trans file when transaction manager is created.
 #
