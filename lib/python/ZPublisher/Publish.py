@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.65 1997/11/11 19:31:18 jim Exp $"""
+$Id: Publish.py,v 1.66 1997/11/11 19:37:27 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.65 1997/11/11 19:31:18 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.65 $'[11:-2]
+__version__='$Revision: 1.66 $'[11:-2]
 
 
 def main():
@@ -479,6 +479,7 @@ class ModulePublisher:
 	    except: pass
 
 	form={}
+	form_has=form.has_key
 	other={}
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
 	try: fslist=fs.list
@@ -524,14 +525,14 @@ class ModulePublisher:
 		# Filter out special names from form:
 		if CGI_name(key) or key[:5]=='HTTP_': continue
 
-		try:
+		if form_has(key):
 		    found=form[key]
 		    if type(found) is lt: found.append(item)
 		    else:
 			found=[found,item]
 			form[key]=found
 			other[key]=found
-		except:
+		else:
 		    if seqf: item=[item]
 		    form[key]=item
 		    other[key]=item
@@ -1366,6 +1367,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.66  1997/11/11 19:37:27  jim
+# Minor change to speed form processing slightly.
+#
 # Revision 1.65  1997/11/11 19:31:18  jim
 # Moved setting of RESPONSE key in REQUEST to be ealier in the process.
 #
