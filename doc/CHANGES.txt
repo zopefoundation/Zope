@@ -31,6 +31,9 @@ Zope Changes
         - Win32 machines without an existing Python installation had problems
           due to PYTHONPATH bootstrapping.
 
+        - The included ZopeHTTPServer was failing to start correctly on
+          win32 machines that were not connected to the network.
+
     Zope 1.9 beta 2
 
       In addition to various documentation updates, this release includes:
