@@ -4,11 +4,13 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add <!--#var Kind--></H2>
+
 <P>
  You can create a new <!--#var kind--> in the system using the form below. 
  Select an <!--#var kind--> from your local computer by clicking the
  <em>Browse</em> button. The <!--#var kind--> you select will be uploaded
  to the application.
+</P>
 
 <FORM ACTION="manage_add<!--#var Kind-->" METHOD="POST"
       ENCTYPE="multipart/form-data">

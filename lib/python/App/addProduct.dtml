@@ -1,7 +1,13 @@
-<html><head><title>Create a product</title></head>
+<html><head><title>Add a product</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
 
-<h2>Create a Product</h2>
+<h2>Add a Product</h2>
+
+<P>
+Products allows you to define new types of Zope objects. A Product contains
+other objects including a Factory which allows you to make your Product objects
+available via the Product add list.
+</p>
 
 <form action="manage_addProduct" method="POST">
 <table cellspacing="2">

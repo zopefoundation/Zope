@@ -5,6 +5,10 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
 <P>
+Find allows you to locate Zope objects based on different
+criteria. For more find choices choose the <EM>Advanced</EM>
+find option.
+</P>
 
 <FORM ACTION="manage_findResult" METHOD="GET" TARGET="findResult">
 <TABLE>

@@ -5,6 +5,12 @@
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Add Draft Object</H2>
 
+<P>
+A Draft allows you to make a working copy of a Zope object./
+After you change the Draft, you can commit the changes to
+the original object.
+</P>
+
 <FORM ACTION="manage_addPrincipiaDraft" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>

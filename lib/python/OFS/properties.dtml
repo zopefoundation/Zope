@@ -11,7 +11,11 @@
 </p>
 <!--#/if Principia-Version-->
 
-<form action="." method="POST">
+<P>
+Properties allow you to assign simple values to Zope objects.
+</P>
+
+<form action="<!--#var URL1-->" method="POST">
 <!--#if propertyMap-->
 <p>
 The following properties are defined for this item. 
@@ -153,13 +157,6 @@ button.
 </table>
 </form>
 <!--#/if-->
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
-<br><br><br><br><br><br><br><br>
 
 </body>
 </html>

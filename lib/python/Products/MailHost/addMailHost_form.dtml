@@ -5,6 +5,21 @@
 
 <BODY BGCOLOR="#FFFFFF">
 <H2>Add MailHost</H2>
+
+<P>
+A Mail Host allows Zope to send email.
+</P>
+
+<P>
+Use the form below to specify the options for your Mail Host.
+<EM>Local Host</EM> is the name of the machine Zope is running on.
+<EM>SMTP Host</EM> is the name of the mail server machine.
+<EM>SMTP Port</EM> is the port on which the mail server is running
+the SMTP service.
+<EM>Max. Timeout</EM> is how long Zope should wait before giving up
+when trying to send mail.
+</P>
+
 <FORM ACTION="manage_addMailHost" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR VALIGN="TOP">

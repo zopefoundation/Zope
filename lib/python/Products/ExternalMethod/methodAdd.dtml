@@ -1,10 +1,24 @@
 <HTML>
 <HEAD>
-<TITLE>New External Method</TITLE>
+<TITLE>Add External Method</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
 
-<h2>New External Method</h2>
+<h2>Add External Method</h2>
+
+<P>
+External Methods allow you to add functionality to Zope by writing Python
+functions which are exposed as callable Zope objects.
+</P>
+
+<P>
+Use the form below to add and External Method. The <EM>Python module file</EM>
+should give the name of the Python module without &quote;.py&quot; Normally the
+Python module should be located in the Zope <EM>Extensions</EM> directory. You
+may also place the Python module inside a <EM>Extensions</EM> directory inside
+a Product directory, in which case the <EM>Python module file</EM> should be the
+name of the Product followed by a dot followed by the name of the Python module file.
+</P>
 
 <FORM ACTION="manage_addExternalMethod" METHOD="POST">
 <TABLE CELLSPACING="2">

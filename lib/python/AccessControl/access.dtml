@@ -10,7 +10,19 @@
 <P>
 The listing below shows the current security settings for this item. 
 Permissions are rows and roles are columns.  Checkboxes are used to
-indicate where roles are assigned permissions.  
+indicate where roles are assigned permissions.
+</P>
+<P>  
+When a role is assigned to a permission, users with the given role
+will be able to perform tasks associated with the permission on this
+item. When the <EM>Acquire permission settings</EM> checkbox is selected
+then the containing objects's permission settings are used. Note: the
+acquired permission settings may be augmented by selecting Roles for
+a permission in addition to selecting to acquire permissions.
+</P>
+<P>You can define new Roles by using the <EM>User defined roles</EM>
+form below.</P>
+
 
 <style type="text/css">
 <!--

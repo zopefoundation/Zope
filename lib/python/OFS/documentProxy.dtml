@@ -4,6 +4,17 @@
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <!--#var manage_tabs-->
+<P>
+Proxy Roles allow a DTML Document or Method to access 
+restricted Zope resources. Normally a DTML Method or Document
+can only access resources for which the user is authorized.
+By adding Proxy Roles, you allow the DTML Document or Method
+to act with additional roles, beyond what the user may have.
+</P>
+
+<P>Use the form below to select which roles this DTML document
+or Method will have.
+</P>
 
   <FORM ACTION="manage_proxy" METHOD="POST">
     <TABLE CELLSPACING="2">

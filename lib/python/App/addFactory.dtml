@@ -1,7 +1,17 @@
-<html><head><title>Create a factory</title></head>
+<html><head><title>Add an Object Factory</title></head>
 <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
 
-<h2>Create an object factory</h2>
+<h2>Add an Object Factory</h2>
+
+<P>A Factory allows you to place entries in the Zope Product add
+list.</P>
+
+<P>In the form below the <EM>Add list name</EM> is the name under which
+your entry will appear in the Zope Product add list.
+The <EM>Method</EM> is the method that will be invoked when a
+user adds a new object.  This must be one of the objects in the
+product, typically a Document.
+</P>
 
 <!--#if objectIds-->
 <form action="manage_addPrincipiaFactory" method="POST">
@@ -37,10 +47,6 @@
   <tr><td></td><td><br><input type="SUBMIT" value="Generate"></td></tr>
 
 </table></form>
-
-The <strong>Method</strong> is the method that will be invoked when a
-user adds a new object.  This must be one of the objects in the
-product, typically a Document.
       
 <!--#else-->
 
