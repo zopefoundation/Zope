@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.42 2001/04/27 20:59:34 shane Exp $"
+"$Id: DT_String.py,v 1.43 2001/04/28 07:20:28 chrism Exp $"
 
 from string import split, strip
 import thread,re
@@ -156,12 +156,12 @@ class String:
     def tagre(self):
         return re.compile(
             r'%('                                     # beginning
-            '(?P<name>[a-zA-Z0-9_/.-]+)'                       # tag name
-            '('
-            '[\000- ]+'                                # space after tag name
-            '(?P<args>([^)"]+("[^"]*")?)*)'      # arguments
-            ')?'
-            ')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]|[]![])' # end
+            r'(?P<name>[a-zA-Z0-9_/.-]+)'                       # tag name
+            r'('
+            r'[\000- ]+'                                # space after tag name
+            r'(?P<args>([^)"]+("[^"]*")?)*)'      # arguments
+            r')?'
+            r')(?P<fmt>[0-9]*[.]?[0-9]*[a-z]|[]![])' # end
             , re.I) 
 
     _parseTag__roles__=()
