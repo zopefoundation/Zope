@@ -13,16 +13,17 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.7 2002/06/21 01:51:43 chrism Exp $
+$Id: TransientObject.py,v 1.8 2002/06/24 19:31:16 chrism Exp $
 """
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
 import time, random, sys
 from TransienceInterfaces import ItemWithId, Transient, DictionaryLike,\
-     TTWDictionary, ImmutablyValuedMappingOfPickleableObjects
+     TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
+     TransientItemContainer
 from AccessControl import ClassSecurityInfo
 import Globals
 from zLOG import LOG, BLATHER, INFO
@@ -77,7 +78,13 @@ class TransientObject(Persistent, Implicit):
         if hasattr(self, '_invalid'):
             # we dont want to invalidate twice
             return
-        trans_ob_container = getattr(self, 'aq_parent', None)
+        trans_ob_container = None
+        # search our acquisition chain for a transient object container
+        # and delete ourselves from it.
+        for ob in getattr(self, 'aq_chain', []):
+            if TransientItemContainer.isImplementedBy(ob):
+                trans_ob_container = ob
+                break
         if trans_ob_container is not None:
             if trans_ob_container.has_key(self.token):
                 del trans_ob_container[self.token]

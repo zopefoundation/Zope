@@ -172,14 +172,20 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
     def _getSessionDataObject(self, key):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
-        ob = aq_base(container.new_or_existing(key))
+        ob = container.new_or_existing(key)
+        if hasattr(ob, '__of__') and hasattr(ob, 'aq_parent'):
+            # splice ourselves into the acquisition chain
+            return ob.__of__(self.__of__(ob.aq_parent))
         return ob.__of__(self)
 
     def _getSessionDataObjectByKey(self, key):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
-        ob = aq_base(container.get(key))
+        ob = container.get(key)
         if ob is not None:
+            if hasattr(ob, '__of__') and hasattr(ob, 'aq_parent'):
+                # splice ourselves into the acquisition chain
+                return ob.__of__(self.__of__(ob.aq_parent))
             return ob.__of__(self)
 
     def _getSessionDataContainer(self):
@@ -260,3 +266,5 @@ class SessionDataManagerTraverser(Persistent):
             return
         if self._requestSessionName is not None:
             request.set_lazy(self._requestSessionName, getSessionData)
+
+Globals.InitializeClass(SessionDataManager)

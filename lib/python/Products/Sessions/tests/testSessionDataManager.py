@@ -127,10 +127,13 @@ class TestSessionManager(TestBase):
         sd = self.app.session_data_manager.getSessionData()
         assert self.app.session_data_manager.hasSessionData()
 
-    def testSessionDataWrappedInSDM(self):
+    def testSessionDataWrappedInSDMandTOC(self):
         sd = self.app.session_data_manager.getSessionData(1)
         assert aq_base(sd.aq_parent) is \
-               aq_base(self.app.session_data_manager), sd.aq_parent
+               aq_base(getattr(self.app, 'session_data_manager')), sd.aq_parent
+        assert aq_base(sd.aq_parent.aq_parent) is \
+               aq_base(getattr(self.app.temp_folder, toc_name)), \
+               sd.aq_parent.aq_parent
 
     def testNewSessionDataObjectIsValid(self):
         sdType = type(TransientObject(1))
@@ -138,12 +141,6 @@ class TestSessionManager(TestBase):
         assert type(getattr(sd, 'aq_base', sd)) is sdType
         assert not hasattr(sd, '_invalid')
 
-    def testInvalidateSessionDataObject(self):
-        sd = self.app.session_data_manager.getSessionData()
-        sd.invalidate()
-        assert hasattr(sd, '_invalid')
-        assert not sd.isValid()
-        
     def testBrowserIdIsSet(self):
         sd = self.app.session_data_manager.getSessionData()
         mgr = getattr(self.app, idmgr_name)
