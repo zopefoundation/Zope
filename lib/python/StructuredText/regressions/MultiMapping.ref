@@ -1,16 +1,19 @@
+<html>
+<head>
+<title>Example: MultiMapping objects</title>
+</head>
+<body>
 <h1>Example: MultiMapping objects</h1>
 <p>  <a href="COPYRIGHT.html">Copyright (C) 1996-1998, Digital Creations</a>.</p>
-
 <p>  As an example, consider an extension class that implements a
   "MultiMapping". A multi-mapping is an object that encapsulates 0
   or more mapping objects.  When an attempt is made to lookup an
   object, the encapsulated mapping objects are searched until an
   object is found.</p>
-
 <p>  Consider an implementation of a MultiMapping extension type,
-  without use of the extension class mechanism:</p>
-<PRE>
-    #include &quot;Python.h&quot;
+  without use of the extension class mechanism:
+<pre>
+    #include "Python.h"
 
     #define UNLESS(E) if(!(E))
 
@@ -24,7 +27,7 @@
     static PyObject *
     MM_push(MMobject *self, PyObject *args){
         PyObject *src;
-        UNLESS(PyArg_ParseTuple(args, &quot;O&quot;, &amp;src)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "O", &amp;src)) return NULL;
         UNLESS(-1 != PyList_Append(self-&gt;data,src)) return NULL;
         Py_INCREF(Py_None);
         return Py_None;
@@ -37,7 +40,7 @@
         static PyObject *emptyList=0;
 
         UNLESS(emptyList) UNLESS(emptyList=PyList_New(0)) return NULL;
-        UNLESS(PyArg_ParseTuple(args, &quot;&quot;)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "")) return NULL;
         UNLESS(-1 != (l=PyList_Size(self-&gt;data))) return NULL;
         l--;
         UNLESS(r=PySequence_GetItem(self-&gt;data,l)) return NULL;
@@ -49,10 +52,10 @@
     }
 
     static struct PyMethodDef MM_methods[] = {
-        {&quot;push&quot;, (PyCFunction) MM_push, 1,
-         &quot;push(mapping_object) -- Add a data source&quot;},
-        {&quot;pop&quot;,  (PyCFunction) MM_pop,  1,
-         &quot;pop() -- Remove and return the last data source added&quot;}, 
+        {"push", (PyCFunction) MM_push, 1,
+         "push(mapping_object) -- Add a data source"},
+        {"pop",  (PyCFunction) MM_pop,  1,
+         "pop() -- Remove and return the last data source added"}, 
         {NULL,              NULL}           /* sentinel */
     };
 
@@ -60,7 +63,7 @@
     newMMobject(PyObject *ignored, PyObject *args){
         MMobject *self;
 
-        UNLESS(PyArg_ParseTuple(args, &quot;&quot;)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "")) return NULL;
         UNLESS(self = PyObject_NEW(MMobject, &amp;MMtype)) return NULL;
         UNLESS(self-&gt;data=PyList_New(0)) goto err;
         return (PyObject *)self;
@@ -120,13 +123,13 @@
     /* -------------------------------------------------------- */
 
     static char MMtype__doc__[] = 
-    &quot;MultiMapping -- Combine multiple mapping objects for lookup&quot;
+    "MultiMapping -- Combine multiple mapping objects for lookup"
     ;
 
     static PyTypeObject MMtype = {
               PyObject_HEAD_INIT(&amp;PyType_Type)
               0,                            /*ob_size*/
-              &quot;MultMapping&quot;,                        /*tp_name*/
+              "MultMapping",                        /*tp_name*/
               sizeof(MMobject),             /*tp_basicsize*/
               0,                            /*tp_itemsize*/
               /* methods */
@@ -149,8 +152,8 @@
     };
 
     static struct PyMethodDef MultiMapping_methods[] = {
-        {&quot;MultiMapping&quot;, (PyCFunction)newMMobject, 1,
-         &quot;MultiMapping() -- Create a new empty multi-mapping&quot;},
+        {"MultiMapping", (PyCFunction)newMMobject, 1,
+         "MultiMapping() -- Create a new empty multi-mapping"},
         {NULL,              NULL}           /* sentinel */
     };
 
@@ -159,16 +162,15 @@
         PyObject *m;
 
         m = Py_InitModule4(
-            &quot;MultiMapping&quot;, MultiMapping_methods,
-              &quot;MultiMapping -- Wrap multiple mapping objects for lookup&quot;,
+            "MultiMapping", MultiMapping_methods,
+              "MultiMapping -- Wrap multiple mapping objects for lookup",
               (PyObject*)NULL,PYTHON_API_VERSION);
 
         if (PyErr_Occurred()) 
-           Py_FatalError(&quot;can't initialize module MultiMapping&quot;);
+           Py_FatalError("can't initialize module MultiMapping");
     }
-
-</PRE>
-
+</pre>
+</p>
 <p>  This module defines an extension type, <code>MultiMapping</code>, and exports a
   module function, <code>MultiMapping</code>, that creates <code>MultiMapping</code>
   Instances. The type provides two methods, <code>push</code>, and <code>pop</code>, for
@@ -176,12 +178,11 @@
   The type provides mapping behavior, implementing mapping length
   and subscript operators but not mapping a subscript assignment
   operator.</p>
-
 <p>  Now consider an extension class implementation of MultiMapping
-  objects:</p>
-<PRE>
-    #include &quot;Python.h&quot;
-    #include &quot;ExtensionClass.h&quot;
+  objects:
+<pre>
+    #include "Python.h"
+    #include "ExtensionClass.h"
 
     #define UNLESS(E) if(!(E))
 
@@ -198,7 +199,7 @@
               PyObject *args;
     {
         PyObject *src;
-        UNLESS(PyArg_ParseTuple(args, &quot;O&quot;, &amp;src)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "O", &amp;src)) return NULL;
         UNLESS(-1 != PyList_Append(self-&gt;data,src)) return NULL;
         Py_INCREF(Py_None);
         return Py_None;
@@ -214,7 +215,7 @@
         static PyObject *emptyList=0;
 
         UNLESS(emptyList) UNLESS(emptyList=PyList_New(0)) return NULL;
-        UNLESS(PyArg_ParseTuple(args, &quot;&quot;)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "")) return NULL;
         UNLESS(-1 != (l=PyList_Size(self-&gt;data))) return NULL;
         l--;
         UNLESS(r=PySequence_GetItem(self-&gt;data,l)) return NULL;
@@ -230,7 +231,7 @@
            MMobject *self;
            PyObject *args;
     {
-        UNLESS(PyArg_ParseTuple(args, &quot;&quot;)) return NULL;
+        UNLESS(PyArg_ParseTuple(args, "")) return NULL;
         UNLESS(self-&gt;data=PyList_New(0)) goto err;
         Py_INCREF(Py_None);
         return Py_None;
@@ -240,12 +241,12 @@
     }
 
     static struct PyMethodDef MM_methods[] = {
-        {&quot;__init__&quot;, (PyCFunction)MM__init__, 1,
-         &quot;__init__() -- Create a new empty multi-mapping&quot;},
-        {&quot;push&quot;, (PyCFunction) MM_push, 1,
-         &quot;push(mapping_object) -- Add a data source&quot;},
-        {&quot;pop&quot;,  (PyCFunction) MM_pop,  1,
-         &quot;pop() -- Remove and return the last data source added&quot;}, 
+        {"__init__", (PyCFunction)MM__init__, 1,
+         "__init__() -- Create a new empty multi-mapping"},
+        {"push", (PyCFunction) MM_push, 1,
+         "push(mapping_object) -- Add a data source"},
+        {"pop",  (PyCFunction) MM_pop,  1,
+         "pop() -- Remove and return the last data source added"}, 
         {NULL,              NULL}           /* sentinel */
     };
 
@@ -310,13 +311,13 @@
     /* -------------------------------------------------------- */
 
     static char MMtype__doc__[] = 
-    &quot;MultiMapping -- Combine multiple mapping objects for lookup&quot;
+    "MultiMapping -- Combine multiple mapping objects for lookup"
     ;
 
     static PyExtensionClass MMtype = {
               PyObject_HEAD_INIT(&amp;PyType_Type)
               0,                            /*ob_size*/
-              &quot;MultMapping&quot;,                        /*tp_name*/
+              "MultMapping",                        /*tp_name*/
               sizeof(MMobject),             /*tp_basicsize*/
               0,                            /*tp_itemsize*/
               /* methods */
@@ -349,37 +350,34 @@
         PyObject *m, *d;
 
         m = Py_InitModule4(
-            &quot;MultiMapping&quot;, MultiMapping_methods,
-            &quot;MultiMapping -- Wrap multiple mapping objects for lookup&quot;,
+            "MultiMapping", MultiMapping_methods,
+            "MultiMapping -- Wrap multiple mapping objects for lookup",
             (PyObject*)NULL,PYTHON_API_VERSION);
         d = PyModule_GetDict(m);
-        PyExtensionClass_Export(d,&quot;MultiMapping&quot;,MMtype);
+        PyExtensionClass_Export(d,"MultiMapping",MMtype);
 
         if (PyErr_Occurred()) 
-           Py_FatalError(&quot;can't initialize module MultiMapping&quot;);
+           Py_FatalError("can't initialize module MultiMapping");
     }
-
-</PRE>
-
+</pre>
+</p>
 <p>  This version includes <code>ExtensionClass.h</code>.  The two declarations of
   <code>MMtype</code> have been changed from <code>PyTypeObject</code> to <code>PyExtensionClass</code>.
-  The <code>METHOD_CHAIN</code> macro has been used to add methods to the end of
+  The 'METHOD<u>CHAIN' macro has been used to add methods to the end of
   the definition for <code>MMtype</code>.  The module function, newMMobject has
-  been replaced by the <code>MMtype</code> method, <code>MM__init__</code>.  Note that this
-  method does not create or return a new object.  Finally, the lines:</p>
-<PRE>
+  been replaced by the <code>MMtype</code> method, 'MM</u><u>init</u>_'.  Note that this
+  method does not create or return a new object.  Finally, the lines:
+<pre>
     d = PyModule_GetDict(m);
-    PyExtensionClass_Export(d,&quot;MultiMapping&quot;,MMtype);
-
-</PRE>
-
+    PyExtensionClass_Export(d,"MultiMapping",MMtype);
+</pre>
+</p>
 <p>  Have been added to both initialize the extension class and to export
   it in the module dictionary.</p>
-
 <p>  To use this module, compile, link, and import it as with any other
   extension module.  The following python code illustrates the
-  module's use:</p>
-<PRE>
+  module's use:
+<pre>
     from MultiMapping import MultiMapping
     m=MultiMapping()
     m.push({'spam':1, 'eggs':2})
@@ -388,16 +386,15 @@
     m['spam'] # returns 3
     m['ham']  # returns 4
     m['foo']  # raises a key error
-
-</PRE>
-
+</pre>
+</p>
 <p>  Creating the <code>MultiMapping</code> object took three steps, one to create
   an empty <code>MultiMapping</code>, and two to add mapping objects to it.  We
   might wish to simplify the process of creating MultiMapping
   objects by providing a constructor that takes source mapping
   objects as parameters.  We can do this by sub-classing MultiMapping
-  in Python:</p>
-<PRE>
+  in Python:
+<pre>
     from MultiMapping import MultiMapping
     class ExtendedMultiMapping(MultiMapping):
         def __init__(self,*data):
@@ -409,13 +406,11 @@
     m['spam'] # returns 3
     m['ham']  # returns 4
     m['foo']  # raises a key error
-
-</PRE>
-
+</pre>
+</p>
 <p>  Note that the source file included in the ExtensionClass
   distribution has numerous enhancements beyond the version shown in
-  this document.
-</p>
-
-
+  this document.</p>
+</body>
+</html>
 

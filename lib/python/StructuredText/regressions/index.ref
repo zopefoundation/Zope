@@ -1,61 +1,49 @@
-<p>
-Extension Class</p>
+<html>
+<head>
+<title>Extension Class</title>
+</head>
+<body>
+<h1>Extension Class</h1>
 <p>    <a href="COPYRIGHT.html">Copyright (C) 1996-1998, Digital Creations</a>.</p>
-
 <p>    A lightweight mechanism has been developed for making Python
     extension types more class-like.  Classes can be developed in an
     extension language, such as C or C++, and these classes can be
     treated like other python classes:</p>
 
-<ul><li><p>They can be sub-classed in python,</p>
-
-
-<li><p>They provide access to method documentation strings, and</p>
-
-
-<li><p>They can be used to directly create new instances.</p>
+<ul>
+<li><p>They can be sub-classed in python,</p></li>
+<li><p>They provide access to method documentation strings, and</p></li>
+<li><p>They can be used to directly create new instances.</p></li>
 
 </ul>
 <p>    Extension classes provide additional extensions to class and
     instance semantics, including:</p>
 
-<ul><li><p>A protocol for accessing subobjects "in the context of" their
+<ul>
+<li><p>A protocol for accessing subobjects "in the context of" their
       containers.  This is used to implement custom method types
-      and <a href="Acquisition.html">environmental acquisition</a>.</p>
-
-
+      and <a href="Acquisition.html">environmental acquisition</a>.</p></li>
 <li><p>A protocol for overriding method call semantics.  This is used
       to implement "synchonized" classes and could be used to
-      implement argument type checking.</p>
-
-
+      implement argument type checking.</p></li>
 <li><p>A protocol for class initialization that supports execution of a
-      special <code>__class_init__</code> method after a class has been
-      initialized.</p>
+      special '_<u>class</u>init__' method after a class has been
+      initialized. </p></li>
 
 </ul>
 <p>    Extension classes illustrate how the Python class mechanism can be
     extended and may provide a basis for improved or specialized class
     models. </p>
-
-<h1>Releases</h1>
-<p>    The current release is <a href="ExtensionClass-1.2.tar.gz">1.2</a>
+<h2>  Releases</h2>
+<p>    The current release is <a href="ExtensionClass-1.2.tar.gz">1.2</a>,
     To find out what's changed in this release,
     see the <a href="release.html">release notes</a>.</p>
-
 <p>    Documentation is available <a href="ExtensionClass.html">on-line</a>.</p>
-
-
-<h1>Windows Binaries</h1>
-<p>    A win32 binary release, <a href="ec12.zip">ec12.zip</a> is available.  This
+<h3>  Windows Binaries</h3>
+<p>    A win32 binary release, <a href="ec12.zip">ec12.zip</a>, is available.  This
     release includes all of the ExtensionClass modules built as 
     Windows extension modules (.pyd) files.  These were built for
     Python 1.5.1 using Microsoft Visual C++ 5.0 in "Release" mode.</p>
-
-
-<p>
-<TABLE BORDER=1 CELLPADDING=2>
-</TABLE></p>
-
-
+</body>
+</html>
 
