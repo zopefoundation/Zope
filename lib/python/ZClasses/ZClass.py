@@ -243,27 +243,31 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
     manage_options=ComputedAttribute(manage_options)
 
-    def index_html(self, id, REQUEST):
-        """Create Z instance
+    def index_html(self, id, REQUEST, RESPONSE=None):
+        """
+        Create Z instance. If called with a RESPONSE,
+        the RESPONSE will be redirected to the management
+        screen of the new instance's parent Folder. Otherwise,
+        the instance will be returned.
         """
         i=mapply(self._zclass_, (), REQUEST)
         if not hasattr(i, 'id') or not i.id: i.id=id
 
         folder=durl=None
         if hasattr(self, 'Destination'):
-            try:
-                d=self.Destination
-                if d.im_self.__class__ is FactoryDispatcher:
-                    folder=d()
-                    durl=self.DestinationURL()
-            except: pass
+            d=self.Destination
+            if d.im_self.__class__ is FactoryDispatcher:
+                folder=d()
         if folder is None: folder=self.aq_parent
+        if not hasattr(folder,'_setObject'):
+            folder=folder.aq_parent
 
         folder._setObject(id, i)
 
-        if REQUEST.has_key('RESPONSE'):
-            if durl is None: durl=REQUEST['URL3']
-            REQUEST['RESPONSE'].redirect(durl+'/manage_workspace')
+        if RESPONSE is not None:
+            try: durl=self.DestinationURL()
+            except: durl=REQUEST['URL3']
+            RESPONSE.redirect(durl+'/manage_workspace')
         else:
             return getattr(folder, id)
         
