@@ -217,8 +217,8 @@ Evaluating expressions without rendering results
    
 
 ''' # '
-__rcs_id__='$Id: DT_Var.py,v 1.41 2001/06/18 18:12:22 chrism Exp $'
-__version__='$Revision: 1.41 $'[11:-2]
+__rcs_id__='$Id: DT_Var.py,v 1.42 2001/07/12 20:04:01 andreas Exp $'
+__version__='$Revision: 1.42 $'[11:-2]
 
 from DT_Util import parse_params, name_param, str
 import re, string, sys
@@ -410,8 +410,8 @@ def len_comma(v, name='(Unknown name)', md={}):
 StructuredText=None
 def structured_text(v, name='(Unknown name)', md={}):
     global StructuredText
-    if StructuredText is None: import StructuredText
-    return str(StructuredText.html_with_references(str(v), 3))
+    if StructuredText is None: from StructuredText import html_with_references
+    return str(html_with_references(str(v),level=3,header=0))
 
 def sql_quote(v, name='(Unknown name)', md={}):
     """Quote single quotes in a string by doubling them.

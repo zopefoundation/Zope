@@ -113,11 +113,13 @@ class HTMLClass:
         'StructuredTextSGML':'sgml',
         }
 
+
     def dispatch(self, doc, level, output):
         getattr(self, self.element_types[doc.getNodeName()])(doc, level, output)
         
-    def __call__(self, doc, level=1):
+    def __call__(self, doc, level=1, header=1):
         r=[]
+        self.header = header
         self.dispatch(doc, level-1, r.append)
         return join(r,'')
 
@@ -125,17 +127,22 @@ class HTMLClass:
         output(doc.getNodeValue())
 
     def document(self, doc, level, output):
-        output('<html>\n')
         children=doc.getChildNodes()
-        if (children and
-             children[0].getNodeName() == 'StructuredTextSection'):
-            output('<head>\n<title>%s</title>\n</head>\n' %
-                     children[0].getChildNodes()[0].getNodeValue())
-        output('<body>\n')
+
+        if self.header==1:
+            output('<html>\n')
+            if (children and
+                 children[0].getNodeName() == 'StructuredTextSection'):
+                output('<head>\n<title>%s</title>\n</head>\n' %
+                         children[0].getChildNodes()[0].getNodeValue())
+            output('<body>\n')
+
         for c in children:
             getattr(self, self.element_types[c.getNodeName()])(c, level, output)
-        output('</body>\n')
-        output('</html>\n')
+
+        if self.header==1:
+            output('</body>\n')
+            output('</html>\n')
 
     def section(self, doc, level, output):
         children=doc.getChildNodes()

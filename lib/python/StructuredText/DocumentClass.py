@@ -371,6 +371,7 @@ class DocumentClass:
         'doc_href',
         'doc_strong',
         'doc_emphasize',
+        'doc_underline',
         'doc_literal',
         'doc_sgml',
         'doc_xref',
@@ -924,6 +925,7 @@ class DocumentClass:
                       s,
                       #expr=re.compile(r"\_([a-zA-Z0-9\s\.,\?]+)\_").search, # old expr, inconsistent punc, failed to cross newlines
                       expr=re.compile(r'_([%s%s%s\s]+)_' % (letters, digits, under_punc)).search):
+
         result = expr(s)
         if result:
             if result.group(1)[:1] == '_':

@@ -11,6 +11,10 @@ Zope Changes
 
         - Collector # 2396: StructuredText did not allow URLs containing "%"
 
+        - Collector # 2397: StructuredText could not handle underlined text
+          properly. Also <dtml-var stxdoc ftm=structured-text> will no longer
+          produce <html>..<body>  and </body>..</html>
+
 
     Zope 2.4 beta 2
 

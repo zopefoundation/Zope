@@ -628,10 +628,13 @@ class DocumentClass:
     
     def doc_underline(self,
                       s,
-                      expr=re.compile("\_([%s0-9\s\.,\?\/]+)\_" % letters).search):
+                      expr=re.compile("_([%s0-9\s\.,\?\/]+)_" % letters).search):
+
+        print s
         
         result = expr(s)
         if result:
+            print "got it"
             start,end = result.span(1)
             st,e = result.span()
             return (StructuredTextUnderline(s[start:end]),st,e)

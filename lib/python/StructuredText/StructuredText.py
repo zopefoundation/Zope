@@ -96,15 +96,15 @@ from STletters import letters
 Document = DocumentClass.DocumentClass()
 HTMLNG = HTMLClass.HTMLClass()
 
-def HTML(aStructuredString, level=0):
+def HTML(aStructuredString, level=0, header=1):
     st = Basic(aStructuredString)
     doc = Document(st)
-    return HTMLNG(doc)
+    return HTMLNG(doc,header=header)
 
 def StructuredText(aStructuredString, level=0):
     return HTML(aStructuredString,level)
 
-def html_with_references(text, level=1):
+def html_with_references(text, level=1, header=1):
     text = re.sub(
         r'[\000\n]\.\. \[([0-9_%s-]+)\]' % letters,
         r'\n  <a name="\1">[\1]</a>',
@@ -120,7 +120,7 @@ def html_with_references(text, level=1):
         r'\1<a href="\2.html">[\2]</a>\3',
         text)
 
-    return HTML(text,level=level)
+    return HTML(text,level=level,header=header)
 
 def html_quote(v,
                character_entities=(
