@@ -1,6 +1,6 @@
 """Access control support"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog
@@ -12,6 +12,7 @@ from Permission import Permission
 ListType=type([])
 
 class RoleManager:
+    """An obect that has configurable permissions"""
 
     __ac_permissions__=(('View management screens', []),
 			('Change permissions', []),
@@ -27,6 +28,7 @@ class RoleManager:
     #------------------------------------------------------------
 
     def permission_settings(self):
+	"permission settings used by management screen"
 	result=[]
 	valid=self.valid_roles()
 	indexes=range(len(valid))
@@ -93,7 +95,7 @@ class RoleManager:
 	
     manage_access=HTMLFile('access', globals())
     def manage_changePermissions(self, REQUEST):
-	" "
+	"Change all permissions settings, called by management screen"
 	valid_roles=self.valid_roles()
 	indexes=range(len(valid_roles))
 	have=REQUEST.has_key
@@ -114,6 +116,7 @@ class RoleManager:
 
 
     def permissionsOfRole(self, role):
+	"used by management screen"
 	r=[]
 	for p in self.__ac_permissions__:
 	    name, value = p[:2]
@@ -125,6 +128,7 @@ class RoleManager:
 	return r
 
     def rolesOfPermission(self, permission):
+	"used by management screen"
 	valid_roles=self.valid_roles()
 	for p in self.__ac_permissions__:
 	    name, value = p[:2]
@@ -142,6 +146,7 @@ class RoleManager:
 	    "The permission <em>%s</em> is invalid." % permission)
 
     def acquiredRolesAreUsedBy(self, permission):
+	"used by management screen"
 	for p in self.__ac_permissions__:
 	    name, value = p[:2]
 	    if name==permission:
@@ -156,7 +161,7 @@ class RoleManager:
     #------------------------------------------------------------
 
     def access_debug_info(self):
-	# Return debug info
+	"Return debug info"
 	clas=class_attrs(self)
 	inst=instance_attrs(self)
 	data=[]
@@ -176,7 +181,7 @@ class RoleManager:
 	return data
 
     def valid_roles(self):
-	# Return list of valid roles
+	"Return list of valid roles"
         obj=self
 	dict={}
 	dup =dict.has_key
@@ -195,7 +200,7 @@ class RoleManager:
 	return roles
 
     def validate_roles(self, roles):
-	# Return true if all given roles are valid
+	"Return true if all given roles are valid"
 	valid=self.valid_roles()
 	for role in roles:
 	    if role not in valid:
@@ -203,7 +208,7 @@ class RoleManager:
 	return 1
 
     def userdefined_roles(self):
-	# Return list of user-defined roles
+	"Return list of user-defined roles"
 	roles=list(self.__ac_roles__)
 	for role in classattr(self.__class__,'__ac_roles__'):
 	    try:    roles.remove(role)
@@ -212,7 +217,7 @@ class RoleManager:
 
 
     def manage_defined_roles(self,submit=None,REQUEST=None):
-	""" """
+	"""Called by management screen."""
 
 	if submit=='Add Role':
 	    role=reqattr(REQUEST, 'role')
