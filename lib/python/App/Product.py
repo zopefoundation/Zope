@@ -108,7 +108,7 @@
 
 import Globals, OFS.Folder, OFS.SimpleItem, os, string, Acquisition
 from OFS.Folder import Folder
-import regex, zlib, Globals, cPickle, marshal, Main, rotor
+import regex, zlib, Globals, cPickle, marshal, rotor
 from string import rfind, atoi, find, strip, join
 from Factory import Factory
 import ZClasses
