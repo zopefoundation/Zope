@@ -125,11 +125,11 @@ def parseAttributeReplacements(arg):
     for part in splitParts(arg):
         m = _attr_re.match(part)
         if not m:
-            print "Bad syntax in z:attributes:", `part`
+            print "Bad syntax in attributes:", `part`
             continue
         name, expr = m.group(1, 2)
         if dict.has_key(name):
-            print "Duplicate attribute name in z:attributes:", `part`
+            print "Duplicate attribute name in attributes:", `part`
             continue
         dict[name] = expr
     return dict
@@ -137,7 +137,7 @@ def parseAttributeReplacements(arg):
 def parseSubstitution(arg):
     m = _subst_re.match(arg)
     if not m:
-        print "Bad syntax in z:insert/replace:", `arg`
+        print "Bad syntax in insert/replace:", `arg`
         return None, None
     key, expr = m.group(1, 2)
     if not key:
@@ -151,6 +151,8 @@ def splitParts(arg):
     arg = string.replace(arg, ";;", "\0")
     parts = string.split(arg, ';')
     parts = map(lambda s, repl=string.replace: repl(s, "\0", ";;"), parts)
+    if len(parts) > 1 and not string.strip(parts[-1]):
+        del parts[-1] # It ended in a semicolon
     return parts
 
 
