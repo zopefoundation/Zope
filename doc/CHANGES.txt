@@ -59,6 +59,18 @@ Zope Changes
 
   Releases
 
+    Zope 2.X
+
+      Features Added
+
+      Features Changed
+
+      Bugs Fixed
+
+        - Some unnecessary debug mode overhead eliminated - external
+          methods are now automatically reloaded only when the .py
+          files are changed. 
+
     Zope 2.0
 
       Features Added
