@@ -1,22 +1,27 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
+
 
 try:
-    home=CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL
-    CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL = home
+    home=CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL
+    CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL=home
 except:
-    CUSTOMER_HOME='../../customer'
-    SOFTWARE_HOME='../..'
-    SOFTWARE_URL=''
-    __builtins__['CUSTOMER_HOME']='../../customer'
-    __builtins__['SOFTWARE_HOME']='../..'
-    __builtins__['SOFTWARE_URL']='../..'
+    # Debugger support
+    import sys, os
+    try: home=os.environ['SOFTWARE_HOME']
+    except:
+	home=os.getcwd()
+        if home[-4:]=='/bin': home=home[:-4]
+    CUSTOMER_HOME=sys.modules['__builtin__'].CUSTOMER_HOME=home
+    SOFTWARE_HOME=sys.modules['__builtin__'].SOFTWARE_HOME=home
+    SOFTWARE_URL=sys.modules['__builtin__'].SOFTWARE_URL=''
+
+
 
 from SingleThreadedTransaction import PickleDictionary, Persistent
 from SingleThreadedTransaction import PersistentMapping
-
 import DocumentTemplate
 
 class HTML(DocumentTemplate.HTML,Persistent,):
@@ -47,6 +52,9 @@ SessionNameName='Principia-Session'
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.9  1997/11/21 19:33:45  brian
+# Fixed out-of-date debugger support to add correct SH, CH, SU
+#
 # Revision 1.8  1997/11/07 17:12:15  jim
 # Added SesionNameName.
 #
