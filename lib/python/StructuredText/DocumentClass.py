@@ -149,8 +149,8 @@ class StructuredTextTable(ST.StructuredTextParagraph):
     def _getColorizableTexts(self):
         return self.getColorizableTexts()
 
-    def _setColorizableTexts(self):
-        return self.setColorizableTexts()
+    def _setColorizableTexts(self, texts):
+        return self.setColorizableTexts(texts)
 
 # StructuredTextRow holds StructuredTextColumns
 class StructuredTextRow(ST.StructuredTextParagraph):
@@ -238,9 +238,9 @@ class StructuredTextMarkup(STDOM.Element):
         self._attributes=kw.keys()
         for k, v in kw.items(): setattr(self, k, v)
 
-    def getChildren(self, type=type, lt=type([])):
+    def getChildren(self):
         v=self._value
-        if type(v) is not lt: v=[v]
+        if not isinstance(v, ListType): v=[v]
         return v
 
     def getColorizableTexts(self): return self._value,
@@ -934,6 +934,8 @@ class DocumentClass:
             start,end = r.span()
             text = s[start:end]
             return (StructuredTextSGML(text),start,end)
+        else:
+            return None
 
 
     def doc_xref(self, s,

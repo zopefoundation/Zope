@@ -15,7 +15,7 @@
 use of StructuredTextNG """
 
 
-import HTMLClass, DocumentClass, ClassicDocumentClass
+import HTMLClass, DocumentClass 
 import DocumentWithImages, HTMLWithImages
 from ST import Basic
 

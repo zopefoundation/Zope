@@ -12,6 +12,7 @@
 ##############################################################################
 
 import re, STDOM
+from types import ListType
 
 #####################################################################
 #                              Updated functions                    #
@@ -187,9 +188,9 @@ class StructuredTextParagraph(STDOM.Element):
         self._attributes=kw.keys()
         for k, v in kw.items(): setattr(self, k, v)
 
-    def getChildren(self, type=type, lt=type([])):
+    def getChildren(self):
         src=self._src
-        if type(src) is not lt: src=[src]
+        if not isinstance(src, ListType): src=[src]
         return src+self._subs
 
     def getAttribute(self, name):
@@ -198,6 +199,8 @@ class StructuredTextParagraph(STDOM.Element):
     def getAttributeNode(self, name):
         if hasattr(self, name):
             return STDOM.Attr(name, getattr(self, name))
+        else:
+            return None
 
     def getAttributes(self):
         d={}
@@ -231,8 +234,8 @@ class StructuredTextParagraph(STDOM.Element):
     create aliases for all above functions in the pythony way.
     """
 
-    def _get_Children(self, type=type, lt=type([])):
-        return self.getChildren(type,lt)
+    def _get_Children(self):
+        return self.getChildren()
 
     def _get_Attribute(self, name):
         return self.getAttribute(name)
