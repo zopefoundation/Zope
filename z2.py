@@ -185,6 +185,14 @@ Options:
     log file will be written to the 'var' directory. The default is
     %(LOG_FILE)s. 
 
+  -r
+    
+    Run ZServer is read-only mode. ZServer won't write anything to disk.
+    No log files, no pid files, nothing. This means that you can't do a
+    lot of stuff like use PCGI, and zdaemon. ZServer will log hits to
+    STDOUT and zLOG will log to STDERR.
+    
+
 Environment settings are of the form: NAME=VALUE.
 
 Note: you *must* use Python 1.5.2 or later!
@@ -261,8 +269,9 @@ try:
     if string.split(sys.version)[0] < '1.5.2':
         raise 'Invalid python version', string.split(sys.version)[0]
     
-    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:')
+    opts, args = getopt.getopt(sys.argv[1:], 'hz:Z:t:a:d:u:w:f:p:m:Sl:2DP:r')
     DEBUG=0
+    READ_ONLY=0
     
     # Get environment variables
     for a in args:
@@ -279,6 +288,7 @@ try:
     for o, v in opts:
         if o=='-z': here=v
         elif o=='-Z': Zpid=v
+        elif o=='-r': READ_ONLY=1
         elif o=='-t':
             try: v=string.atoi(v)
             except: raise 'Invalid number of threads', v
@@ -355,7 +365,7 @@ sys.path=[os.path.join(here,'lib','python'),here
 # official one.
 import ZServer
 
-if Zpid:
+if Zpid and not READ_ONLY:
     import zdaemon, App.FindHomes, posix
     sys.ZMANAGED=1
     
@@ -367,7 +377,10 @@ exec "import "+MODULE in {}
 import zLOG
 from Zope import ZLogger
 
-zLOG.log_write = ZLogger.ZLogger.log_write
+if READ_ONLY:
+    zLOG._stupid_dest=sys.stderr
+else:
+    zLOG.log_write = ZLogger.ZLogger.log_write
 
 
 # Location of the ZServer log file. This file logs all ZServer activity.
@@ -402,7 +415,11 @@ if DNS_IP:
     rs = resolver.caching_resolver(DNS_IP)
 else:
     rs=None
-lg = logger.file_logger(LOG_PATH)
+
+if READ_ONLY:
+    lg = logger.file_logger('-') # log to stdout
+else:
+    lg = logger.file_logger(LOG_PATH)
 
 # HTTP Server
 if HTTP_PORT:
@@ -435,7 +452,7 @@ if FTP_PORT:
         logger_object=lg)
 
 # PCGI Server
-if PCGI_FILE:
+if PCGI_FILE and not READ_ONLY:
     PCGI_FILE=os.path.join(here, PCGI_FILE)
     if os.path.exists(PCGI_FILE):
         zpcgi = PCGIServer(
@@ -473,12 +490,13 @@ except:
 
 
 # if it hasn't failed at this point, create a .pid file.
-pf = open(PID_FILE, 'w')
-pid=str(os.getpid())
-try: pid=str(os.getppid())+' '+pid
-except: pass
-pf.write(pid)
-pf.close()
+if not READ_ONLY:
+    pf = open(PID_FILE, 'w')
+    pid=str(os.getpid())
+    try: pid=str(os.getppid())+' '+pid
+    except: pass
+    pf.write(pid)
+    pf.close()
 
 # Start Medusa, Ye Hass!
 sys.ZServerExitCode=0
