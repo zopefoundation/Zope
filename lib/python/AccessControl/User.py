@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.55 $'[11:-2]
+__version__='$Revision: 1.56 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -606,9 +606,11 @@ def domainSpecMatch(spec, request):
         return 0
 
     if not host:
-        host=socket.gethostbyaddr(addr)[0]
+        try: host=socket.gethostbyaddr(addr)[0]
+        except: pass
     if not addr:
-        addr=socket.gethostbyname(host)
+        try: addr=socket.gethostbyname(host)
+        except: pass
 
     _host=split(host, '.')
     _addr=split(addr, '.')
