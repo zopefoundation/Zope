@@ -15,7 +15,7 @@ import os,sys,exceptions
 
 availableSplitters = (
   ("ZopeSplitter" , "Zope Default Splitter"),
-  ("ISO_8859_1_Splitter" , "Werner Strobles ISO-8859-1 Splitter"),
+  ("ISO_8859_1_Splitter" , "Werner Strobls ISO-8859-1 Splitter"),
   ("UnicodeSplitter" , "Unicode-aware splitter")
 )
 
