@@ -8,6 +8,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #851: Traversable.py: A bare try..except shadowed
+       conflict errors
+
      - Collector #1058: Several fixes for PropertySheets when used
        outside ZClasses
 

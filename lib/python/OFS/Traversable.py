@@ -12,14 +12,15 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.20 2003/07/08 17:03:52 evan Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: Traversable.py,v 1.21 2003/09/29 12:34:38 andreasjung Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
+from ZODB.POSException import ConflictError
 from urllib import quote
 
 NotFound = 'NotFound'
@@ -150,6 +151,7 @@ class Traversable:
 
             return object
 
+        except ConflictError: raise
         except:
             if default==_marker: raise
             return default
