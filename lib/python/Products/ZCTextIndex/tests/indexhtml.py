@@ -33,7 +33,11 @@ def make_zc_index():
     return ZCTextIndex("read", extra, caller)
 
 def make_old_index():
-    return TextIndex("read")
+    from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
+    from Products.PluginIndexes.TextIndex.Lexicon \
+         import Lexicon, stop_word_dict
+
+    return TextIndex("read", lexicon=Lexicon(stop_word_dict))
 
 def main(db, root, dir):
     rt["index"] = index = INDEX()
@@ -115,7 +119,6 @@ if __name__ == "__main__":
         if o == '-n':
             LIMIT = int(v)
         if o == '-T':
-            from Products.PluginIndexes.TextIndex.TextIndex import TextIndex
             INDEX = make_old_index
 
     if len(args) != 1:
