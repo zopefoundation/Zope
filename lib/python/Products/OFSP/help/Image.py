@@ -1,7 +1,3 @@
-"""
-Image
-"""
-
 class Image:
     """
     A Image is a Zope object that contains image content.  A Image

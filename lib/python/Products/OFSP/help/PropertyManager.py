@@ -1,7 +1,3 @@
-"""
-PropertyManager
-"""
-
 class PropertyManager:
     """
     A Property Manager object has a collection of typed attributes

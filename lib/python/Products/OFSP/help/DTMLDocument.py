@@ -1,7 +1,3 @@
-"""
-DTML Document
-"""
-
 class DTMLDocument:
     """
     A DTML Document is a Zope object that contains and executes DTML

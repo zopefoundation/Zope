@@ -1,7 +1,3 @@
-"""
-ObjectManager
-"""
-
 class ObjectManager:
     """
     An ObjectManager contains other Zope objects. The contained
