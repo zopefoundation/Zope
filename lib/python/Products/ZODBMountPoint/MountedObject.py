@@ -13,7 +13,7 @@
 ##############################################################################
 """DBTab mount point (stored in ZODB).
 
-$Id: MountedObject.py,v 1.2 2003/12/20 16:58:57 chrism Exp $
+$Id: MountedObject.py,v 1.3 2004/02/25 18:29:58 jeremy Exp $
 """
 
 import os
@@ -283,7 +283,7 @@ def manage_addMounts(dispatcher, paths=(), create_mount_points=0,
         mo._test(app)
         blazer = SimpleTrailblazer(app)
         container = blazer.traverseOrConstruct(path, omit_final=1)
-        mo._p_jar = container._p_jar
+        container._p_jar.add(mo)
         loaded = mo.__of__(container)
 
         # Add a faux object to avoid generating manage_afterAdd() events
