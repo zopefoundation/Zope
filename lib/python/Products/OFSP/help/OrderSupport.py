@@ -10,19 +10,15 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-""" Order support interfaces.
-
-$Id: IOrderSupport.py,v 1.3 2003/12/11 17:39:18 yuppie Exp $
-"""
-
-from Interface import Interface
 
 
-class IOrderedContainer(Interface):
-    """ Ordered Container interface.
+class OrderSupport:
+    """ Ordered container mixin class.
 
-    This interface provides a common mechanism for maintaining ordered
-    collections.
+    This is an extension to the regular ObjectManager. It saves the objects in
+    order and lets you change the order of the contained objects. This is
+    particular helpful, if the order does not depend on object attributes, but
+    is totally user-specific.
     """
 
     def moveObjectsByDelta(ids, delta):

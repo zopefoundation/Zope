@@ -12,7 +12,7 @@
 ##############################################################################
 """ Order support for 'Object Manager'.
 
-$Id: OrderSupport.py,v 1.4 2003/09/20 10:59:51 yuppie Exp $
+$Id: OrderSupport.py,v 1.5 2003/12/11 17:39:18 yuppie Exp $
 """
 
 from types import StringType
@@ -29,7 +29,7 @@ from ObjectManager import ObjectManager
 
 class OrderSupport:
     """ Ordered container mixin class.
-    
+
     This is an extension to the regular ObjectManager. It saves the objects in
     order and lets you change the order of the contained objects. This is
     particular helpful, if the order does not depend on object attributes, but
@@ -216,7 +216,7 @@ class OrderSupport:
     security.declareProtected(manage_properties, 'moveObjectToPosition')
     def moveObjectToPosition(self, id, position):
         """ Move specified object to absolute position.
-        """        
+        """
         delta = position - self.getObjectPosition(id)
         return self.moveObjectsByDelta(id, delta)
 
