@@ -1,3 +1,7 @@
+"""
+DTML Document
+"""
+
 class DTMLDocument:
     """
     A DTML Document is a Zope object that contains and executes DTML
@@ -102,5 +106,4 @@ class DTMLDocument:
         Returns the size of the unrendered source text of the DTML
         Document in bytes.
         
-        Permission -- XXX None XXX
         """
