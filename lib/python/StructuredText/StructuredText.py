@@ -95,7 +95,7 @@ A structured string consists of a sequence of paragraphs separated by
 one or more blank lines.  Each paragraph has a level which is defined
 as the minimum indentation of the paragraph.  A paragraph is a
 sub-paragraph of another paragraph if the other paragraph is the last
-preceedeing paragraph that has a lower level.
+preceding paragraph that has a lower level.
 
 Special symbology is used to indicate special constructs:
 
@@ -153,7 +153,7 @@ Special symbology is used to indicate special constructs:
   Is interpreted as '... by Smith <a href="#12">[12]</a> this ...'. Together
   with the next rule this allows easy coding of references or end notes.
 
-- Text enclosed in brackets which is preceeded by the start of a line, two
+- Text enclosed in brackets which is preceded by the start of a line, two
   periods and a space is treated as a named link. For example:
 
     .. [12] "Effective Techniques" Smith, Joe ... 
@@ -161,7 +161,7 @@ Special symbology is used to indicate special constructs:
   Is interpreted as '<a name="12">[12]</a> "Effective ...'. Together with
   the previous rule this allows easy coding of references or end notes.
 
-$Id: StructuredText.py,v 1.10 1998/12/29 22:30:43 amos Exp $'''
+$Id: StructuredText.py,v 1.11 1999/02/08 18:13:12 klm Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -213,6 +213,13 @@ $Id: StructuredText.py,v 1.10 1998/12/29 22:30:43 amos Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.11  1999/02/08 18:13:12  klm
+# Trival checkin (spelling fix "preceedeing" -> "preceding" and similar)
+# to see what pitfalls my environment presents to accomplishing a
+# successful checkin.  (It turns out that i can't do it from aldous because
+# the new version of cvs doesn't support the '-t' and '-f' options in the
+# cvswrappers file...)
+#
 # Revision 1.10  1998/12/29 22:30:43  amos
 # Improved doc string to describe hyper link and references capabilities.
 #
