@@ -191,7 +191,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         ('Manage ZCatalog Entries',
          ['manage_catalogObject', 'manage_uncatalogObject',
-          'catalog_object', 'uncatalog_object',
+          'catalog_object', 'uncatalog_object', 'refreshCatalog',
           
           'manage_catalogView', 'manage_catalogFind',
           'manage_catalogSchema', 'manage_catalogIndexes',
@@ -323,16 +323,8 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         elapse = time.time()
         c_elapse = time.clock()
-        
-        paths = tuple(self._catalog.paths.values())
-        self._catalog.clear()
 
-        for p in paths:
-            obj = self.resolve_path(p)
-            if not obj:
-                obj = self.resolve_url(p, REQUEST)
-            if obj is not None:
-                self.catalog_object(obj, p)             
+        self.refreshCatalog(clear=1)
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
@@ -344,8 +336,24 @@ class ZCatalog(Folder, Persistent, Implicit):
                                        'Total CPU time: %s' % (`elapse`, `c_elapse`)))
         
 
+    def refreshCatalog(self, clear=0):
+        """ re-index everything we can find """
+
+        cat = self._catalog
+        paths = cat.paths.values()
+        if clear:
+            paths = tuple(paths)
+            cat.clear()
+
+        for p in paths:
+            obj = self.resolve_path(p)
+            if not obj:
+                obj = self.resolve_url(p, self.REQUEST)
+            if obj is not None:
+                self.catalog_object(obj, p)
+
     def manage_catalogClear(self, REQUEST=None, RESPONSE=None, URL1=None):
-        """ clears the whole enchelada """
+        """ clears the whole enchilada """
         self._catalog.clear()
 
         if REQUEST and RESPONSE:
