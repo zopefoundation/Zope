@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -1067,6 +1067,65 @@ class DateTime:
 	return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
 	    self._aday,self._day,self._amon,self._year,
 	    self._hour,self._minute,self._nearsec,self._tz)
+
+
+    # New formats useful with DocumentTemplates
+    def mo_d_y4_hm_pm_z(self):
+	"""Return a string representing the object\'s value
+           in the format: Mar 1, 1997 1:45 pm US/Eastern"""
+	return '%s %s, %4.4d %d:%2.2d %s %s' % (
+               self._amon,self._day,self._year,self._pmhour,
+               self._minute,self._pm,self._tz)
+
+    def Mo_d_y4_hm_pm_z(self):
+	"""Return a string representing the object\'s value
+           in the format: March 1, 1997 1:45 pm US/Eastern"""
+	return '%s %s, %4.4d %s:%2.2d %s %s' % (
+               self._fmon,self._day,self._year,self._pmhour,
+               self._minute,self._pm,self._tz)
+
+    def mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: Mar 1, 1997 1:45 pm"""
+	return '%s %s, %4.4d %s:%2.2d %s' % (
+               self._amon,self._day,self._year,self._pmhour,
+               self._minute,self._pm)
+
+    def Mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: March 1, 1997 1:45 pm"""
+	return '%s %s, %4.4d %s:%2.2d %s' % (
+               self._fmon,self._day,self._year,self._pmhour,
+               self._minute,self._pm)
+
+    def D_mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: Saturday Mar 1, 1997 1:45 pm"""
+	return '%s %s %s, %4.4d %s:%2.2d %s' % (
+               self._fday,self._amon,self._day,self._year,
+               self._pmhour,self._minute,self._pm)
+
+    def D_Mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: Saturday March 1, 1997 1:45 pm"""
+	return '%s %s %s, %4.4d %s:%2.2d %s' % (
+               self._fday,self._amon,self._day,self._year,
+               self._pmhour,self._minute,self._pm)
+
+    def d_Mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: Sat March 1, 1997 1:45 pm"""
+	return '%s %s %s, %4.4d %s:%2.2d %s' % (
+               self._aday,self._fmon,self._day,self._year,
+               self._pmhour,self._minute,self._pm)
+
+    def d_mo_d_y4_hm_pm(self):
+	"""Return a string representing the object\'s value
+           in the format: Sat Mar 1, 1997 1:45 pm"""
+	return '%s %s %s, %4.4d %s:%2.2d %s' % (
+               self._aday,self._amon,self._day,self._year,
+               self._pmhour,self._minute,self._pm)
+
 
 
     # Python protocols
