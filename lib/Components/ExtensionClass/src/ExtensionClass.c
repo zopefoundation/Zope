@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.35 1999/06/10 20:04:40 jim Exp $
+  $Id: ExtensionClass.c,v 1.36 1999/06/13 12:41:34 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.35 1999/06/10 20:04:40 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.36 1999/06/13 12:41:34 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1583,7 +1583,7 @@ CCL_dealloc(PyExtensionClass *self)
       
       Py_DECREF(self->bases);
     }
-  if (((PyExtensionClass*)self->ob_type) != self) Py_DECREF(self->ob_type);
+  if (((PyExtensionClass*)self->ob_type) != self) Py_XDECREF(self->ob_type);
   PyMem_DEL(self);
 }
   
@@ -2012,7 +2012,7 @@ err:
 static PyObject *
 CCL_repr(PyExtensionClass *self)
 {
-  char p[64], *pp;
+  char p[128], *pp;
   PyObject *m;
 
   if ((m=PyObject_GetAttr(OBJECT(self), py__module__)))
@@ -2280,7 +2280,7 @@ subclass_hash(PyObject *self)
 static PyObject *
 default_subclass_repr(PyObject *self)
 {
-  char p[64], *pp;
+  char p[128], *pp;
   
   PyErr_Clear();
   sprintf(p,"%p",self);
@@ -2990,7 +2990,7 @@ subclass_dealloc(PyObject *self)
   */
   base_dealloced=dealloc_base(self,(PyExtensionClass*)self->ob_type);
 
-  /* We only */
+  /* We only deallocate ourselves if a base class didn't */
   UNLESS(base_dealloced) 
     {
       Py_DECREF(self->ob_type);
@@ -3416,7 +3416,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.35 $";
+  char *rev="$Revision: 1.36 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
