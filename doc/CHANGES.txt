@@ -17,8 +17,6 @@ Zope Changes
      changes in C, brining the Python and C implementations back in
      sync.  See lib/python/AccessControl/ZopeSecurityPolicy.py.
 
-   - backport recent changes in cAccessControl from Zope 2.7
-
    - Change acquisition wrappers to implement the descr get slot
      directly, this speeding the use of the slot.
 
@@ -53,6 +51,8 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1617: Fixed crash in ZPT code (caused by improper
+        checks in cAccessControl)
 
       - Collector #1683: fixing batching in the DA "Test" tab
 

@@ -790,7 +790,6 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	PyObject *method = NULL;
 	PyObject *tmp = NULL;
 
-	char *sname;
 
         int i, l, contains;
         PyObject *r;
@@ -804,26 +803,33 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
           return NULL;
 
 	/*| # Provide special rules for acquisition attributes
-	**| if isinstance(name, str):
-	**|     if name.startswith('aq_') and name not in valid_aq_:
+	**| if type(name) in (StringType, UnicodeType):
+	**|     if name[:3] == 'aq_' and name not in valid_aq_:
 	**|	   raise Unauthorized(name, value)
 	*/ 
 
-	if ( PyString_Check(name) || PyUnicode_Check(name) ) {
-	    sname = PyString_AsString(name); 
-	    if (sname != NULL) {
-		if (*sname == 'a' && sname[1]=='q' && sname[2]=='_') {
-			if (strcmp(sname,"aq_parent")   != 0 &&
-                            strcmp(sname,"aq_inner") != 0 &&
-                            strcmp(sname,"aq_explicit") != 0) {
-				/* Access control violation */
-				unauthErr(name, value);
-				return NULL;  /* roles is not owned yet */
-		            }
-	        }
+	if (PyString_Check(name) || PyUnicode_Check(name)) {
+	    char *sname = PyString_AsString(name);
+	    /* Conversion to string may have failed, e.g. if name is Unicode
+	     * and can't be bashed into the default encoding.  Unclear what
+	     * to do then.  It's arguably conservative to raise Unauthorized
+	     * in this case.
+	     */
+	    if (sname == NULL || 
+     	            /* or starts with "aq_" */
+     	            (sname[0] == 'a' && sname[1] == 'q' && sname[2] == '_' &&
+     	                 /* and isn't aq_{parent, inner, explicit} */
+     	                 strcmp(sname + 3, "parent") &&
+     	                 strcmp(sname + 3, "inner") &&
+     	                 strcmp(sname + 3, "explicit")
+     	            )
+     	        )
+     	    {
+                /* Access control violation */
+		unauthErr(name, value);
+		return NULL;  /* roles is not owned yet */
 	    }
 	}
-
 	Py_XINCREF(roles);	/* Convert the borrowed ref to a real one */
 
 	/*| containerbase = aq_base(container)
@@ -974,7 +980,11 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                                   PyErr_Clear();
                               }
                             else
-                              p = PyInt_FromLong(1);
+                              {
+                                ASSIGN(p, PyInt_FromLong(1));
+                                if (p == NULL)
+                                  goto err;
+                              }
                           } 
                         else 
                           {
@@ -1454,28 +1464,27 @@ SecurityManager_dealloc(SecurityManager *self)
 static PyObject *
 SecurityManager_getattro(SecurityManager *self, PyObject *name)
 {
-  if ( (PyString_Check(name) || PyUnicode_Check(name) ) && 
-       PyString_AsString(name)[0]=='_' )
-    {
-      if (strcmp(PyString_AsString(name), "_thread_id")==0 
-          && self->thread_id)
-        {
+  if (PyString_Check(name) || PyUnicode_Check(name))  {
+    char *name_s = PyString_AsString(name); 
+
+    if (name_s == NULL)
+        return NULL;
+
+    if (name_s[0] == '_') {
+      if (! strcmp(name_s, "_thread_id") && self->thread_id) {
           Py_INCREF(self->thread_id);
           return self->thread_id;
-        }
-      else if (strcmp(PyString_AsString(name), "_context")==0 
-               && self->context)
-        {
+      }
+      else if (! strcmp(name_s, "_context") && self->context) {
           Py_INCREF(self->context);
           return self->context;
-        }
-      else if (strcmp(PyString_AsString(name), "_policy")==0 
-               && self->policy)
-        {
+      }
+      else if (! strcmp(name_s, "_policy") && self->policy) {
           Py_INCREF(self->policy);
           return self->policy;
-        }
+      }
     }
+  }
 
   return Py_FindAttr(OBJECT(self), name);
 }
@@ -1483,22 +1492,27 @@ SecurityManager_getattro(SecurityManager *self, PyObject *name)
 static int 
 SecurityManager_setattro(SecurityManager *self, PyObject *name, PyObject *v)
 {
-  if ( (PyString_Check(name) || PyUnicode_Check(name) ) && 
-       PyString_AsString(name)[0]=='_' )
+  if (PyString_Check(name) || PyUnicode_Check(name)) {
+    char *name_s = PyString_AsString(name);
+
+    if (name_s == NULL)
+        return -1;
+
+    if (name_s[0] == '_')
     {
-      if (strcmp(PyString_AsString(name), "_thread_id")==0)
+      if (! strcmp(name_s, "_thread_id"))
         {
           Py_INCREF(v);
           ASSIGN(self->thread_id, v);
           return 0;
         }
-      else if (strcmp(PyString_AsString(name), "_context")==0)
+      else if (! strcmp(name_s, "_context"))
         {
           Py_INCREF(v);
           ASSIGN(self->context, v);
           return 0;
         }
-      else if (strcmp(PyString_AsString(name), "_policy")==0)
+      else if (! strcmp(name_s, "_policy"))
         {
           Py_INCREF(v);
           ASSIGN(self->policy, v);
@@ -1515,10 +1529,11 @@ SecurityManager_setattro(SecurityManager *self, PyObject *name, PyObject *v)
           return 0;
         }
     }
+  }
+
   PyErr_SetObject(PyExc_AttributeError, name);
   return -1;
 }
-
 
 
 
@@ -1650,32 +1665,35 @@ static void PermissionRole_dealloc(PermissionRole *self) {
 **
 */
 
-static PyObject *PermissionRole_getattro(PermissionRole *self, PyObject *name) {
-  	PyObject  *result= NULL;
+static PyObject *
+PermissionRole_getattro(PermissionRole *self, PyObject *name) {
+  	PyObject  *result = NULL;
         char      *name_s = PyString_AsString(name);
 
 	/* see whether we know the attribute */
 	/* we support both the old "_d" (from the Python implementation)
 	   and the new "__roles__"
 	*/
-	if (name_s[0] == '_') {
-		if (name_s[1] == '_') {
-			if (strcmp(name_s,"__name__") == 0) 
-                                result= self->__name__;
-			else if (strcmp(name_s,"__roles__") == 0)
-                                result= self->__roles__;
-		}
-		else if (name_s[1] == 'p' && name_s[2] == 0)
-                                result= self->_p;
-		else if (name_s[1] == 'd' && name_s[2] == 0)
-                                result= self->__roles__;
+
+    	if (name_s == NULL)
+    		PyErr_Clear(); /* defer to ExtensionClassGetattro */
+	else if (name_s[0] == '_') {
+		if (! strcmp(name_s, "__name__")) 
+			result = self->__name__;
+		else if (! strcmp(name_s, "__roles__"))
+			result = self->__roles__;
+		else if (! strcmp(name_s, "_p"))
+			result = self->_p;
+		else if (! strcmp(name_s, "_d"))
+			result = self->__roles__;
 	}
+
 	if (result) {
 		Py_INCREF(result);
 		return result;
-	} else {
-		return ExtensionClassGetattro((PyObject *)self,name);
 	}
+	else
+		return ExtensionClassGetattro((PyObject *)self, name);
 }
 
 
