@@ -14,7 +14,6 @@
 from Persistence import Persistent
 import Acquisition
 import ExtensionClass
-from Products.PluginIndexes.TextIndex.Lexicon import Lexicon
 from MultiMapping import MultiMapping
 import Record
 from Missing import MV
@@ -26,25 +25,19 @@ from BTrees.IIBTree import intersection, weightedIntersection, IISet
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
 import BTrees.Length
-from Products.PluginIndexes.common.randid import randid
 
 import time, sys, types
 from bisect import bisect
-
-# Collector #771: provide a safe_callable() method with a
-# fallback (when ZCatalog might be used outside Zope)
+from random import randint
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
-except:
-
+except ImportError:
+    # Fallback to python implementation to avoid dependancy on DocumentTemplate
     def safe_callable(ob):
         # Works with ExtensionClasses and Acquisition.
         if hasattr(ob, '__class__'):
-            if hasattr(ob, '__call__'):
-                return 1
-            else:
-                return isinstance(ob, types.ClassType)
+            return hasattr(ob, '__call__') or isinstance(ob, types.ClassType)
         else:
             return callable(ob)
 
@@ -324,12 +317,13 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             # new data
 
             if type(data) is IOBTree:
-                # New style, get radom id
+                # New style, get random id
 
                 index=getattr(self, '_v_nextid', 0)
-                if index%4000 == 0: index = randid()
+                if index % 4000 == 0: 
+                    index = randint(-2000000000, 2000000000)
                 while not data.insert(index, newDataRecord):
-                    index=randid()
+                    index = randint(-2000000000, 2000000000)
 
                 # We want ids to be somewhat random, but there are
                 # advantages for having some ids generated
