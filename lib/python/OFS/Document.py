@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import HTML, HTMLFile,MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -91,7 +91,7 @@ the <!--#var title_and_id--> Folder.</P>
 
 class DocumentHandler:
     """Document object handler mixin"""
-    meta_types=() #({'name':'Document', 'action':'manage_addDocumentForm'},)
+    meta_types=({'name':'Document', 'action':'manage_addDocumentForm'},)
 
     manage_addDocumentForm=HTMLFile('OFS/documentAdd')
 
