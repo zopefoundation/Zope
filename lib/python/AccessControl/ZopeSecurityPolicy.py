@@ -85,8 +85,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.4 2000/05/25 18:34:08 brian Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.5 2000/06/01 13:46:15 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import SimpleObjectPolicies
 _noroles=[]
@@ -109,12 +109,8 @@ class ZopeSecurityPolicy:
             if name[:3]=='aq_' and name not in valid_aq_:
                 return 0
 
-        if container is None:
-            container=accessed
-            containerbase=accessedbase=accessed
-        else:
-            containerbase=getattr(container, 'aq_base', container)
-            accessedbase=getattr(accessed, 'aq_base', container)
+        containerbase=getattr(container, 'aq_base', container)
+        accessedbase=getattr(accessed, 'aq_base', container)
 
         ############################################################
         # Try to get roles
@@ -182,7 +178,7 @@ class ZopeSecurityPolicy:
             if (owner is not None) and not owner.hasRole(value, roles):
                 # We don't want someone to acquire if they can't
                 # get an unacquired!
-                if accessed is container:
+                if accessedbase is containerbase:
                     raise 'Unauthorized', (
                         'You are not authorized to access <em>%s</em>.' \
                         % cleanupName(name, value))
