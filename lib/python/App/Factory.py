@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.4 1998/12/04 20:15:25 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Factory.py,v 1.5 1999/02/22 21:48:46 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
@@ -141,3 +141,14 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
     def index_html(self, REQUEST):
         " "
         return getattr(self, self.initial)(self.aq_parent, REQUEST)
+
+    def objectIds(self):
+        return filter(
+            lambda id, myid=self.id: id != myid,
+            self.aq_parent.objectIds()
+            )
+
+
+
+
+
