@@ -334,8 +334,6 @@
     A switch which controls several aspects of Zope operation useful for
     developing under Zope.  When debug mode is on:
 
-     - The process will not detach from the controlling terminal
-
      - Errors in product initialization will cause startup to fail
        (instead of writing error messages to the event log file).
 
