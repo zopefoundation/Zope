@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -241,10 +241,12 @@ class PythonScript(Script, Historical, Cacheable):
 
     def ZScriptHTML_tryParams(self):
         """Parameters to test the script with."""
+        print self._params
         param_names = []
         for name in self._params.split(','):
+           
             name = name.strip()
-            if name and name[0] != '*':
+            if name and name[0] != '*' and re.match('\w',name):
                 param_names.append(name.split('=', 1)[0])
         return param_names
 
