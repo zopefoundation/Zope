@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import time, string, App.Management
 from ZPublisher.Converters import type_converters
@@ -543,7 +543,7 @@ class DAVProperties(Virtual, PropertySheet):
     def dav__source(self):
         vself=self.v_self()
         if hasattr(vself, 'meta_type') and vself.meta_type in \
-           ('Document', 'DTML Document', 'DTML Method', 'Z SQL Method'):
+           ('Document', 'DTML Document', 'DTML Method'):
             url=vself.absolute_url()
             return '\n  <n:src>%s</n:src>\n' \
                    '  <n:dst>%s/document_src</n:dst>\n  ' % (url, url)
