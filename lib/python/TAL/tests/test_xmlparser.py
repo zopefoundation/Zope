@@ -239,12 +239,13 @@ text
 
 
 # Support for the Zope regression test framework:
-def test_suite():
+def test_suite(skipxml=utils.skipxml):
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(XMLParserTestCase, "check_"))
+    if not skipxml:
+        suite.addTest(unittest.makeSuite(XMLParserTestCase, "check_"))
     return suite
 
 
 if __name__ == "__main__":
-    errs = utils.run_suite(test_suite())
+    errs = utils.run_suite(test_suite(skipxml=0))
     sys.exit(errs and 1 or 0)
