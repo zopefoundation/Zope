@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -14,8 +14,6 @@ from base64 import decodestring
 from ImageFile import ImageFile
 from Role import RoleManager
 import Globals, App.Undo
-
-
 
 class User(Implicit, Persistent):
     def __init__(self,name,password,roles):
@@ -275,45 +273,15 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		    '<EM>Cannot change the id of a UserFolder</EM>')
 
 
-Globals.default__class_init__(UserFolder)
-
-
-class UserFolderHandler:
+def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
     """ """
-    meta_types_=()
-
-    def manage_addUserFolder(self,dtself=None,REQUEST=None,**ignored):
-        """ """
-	try:    self._setObject('acl_users', UserFolder())
-	except: return MessageDialog(
-	               title  ='Item Exists',
-                       message='This object already contains a User Folder',
-                       action ='%s/manage_main' % REQUEST['PARENT_URL'])
-        self.__allow_groups__=self.acl_users
-	if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
-
-    def UserFolderIds(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='User Folder':
-		t.append(i['id'])
-	return t
-
-    def UserFolderValues(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='User Folder':
-		t.append(getattr(self,i['id']))
-	return t
-
-    def UserFolderItems(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='User Folder':
-		n=i['id']
-		t.append((n,getattr(self,n)))
-	return t
-
+    try:    self._setObject('acl_users', UserFolder())
+    except: return MessageDialog(
+                   title  ='Item Exists',
+                   message='This object already contains a User Folder',
+                   action ='%s/manage_main' % REQUEST['PARENT_URL'])
+    self.__allow_groups__=self.acl_users
+    if REQUEST: return self.manage_main(self,REQUEST,update_menu=1)
 
 def absattr(attr):
     if callable(attr): return attr()
@@ -322,5 +290,3 @@ def absattr(attr):
 def reqattr(request, attr):
     try:    return request[attr]
     except: return None
-
-Globals.default__class_init__(UserFolderHandler)
