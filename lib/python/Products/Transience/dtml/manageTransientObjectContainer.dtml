@@ -13,7 +13,7 @@ Transient Object Containers are used to store transient data.
 Transient data will persist, but only for a user-specified period of time
 (the "data object timeout") after which it will be flushed.
 </p>
-
+<dtml-call nudge><!-- turn the buckets if necessary -->
 <p class="form-label">
 <font color="green">
 <dtml-let l=getLen>
@@ -52,6 +52,21 @@ Transient data will persist, but only for a user-specified period of time
   <td align="left" valign="top">
     <input type="text" name="timeout_mins:int" size=10
      value=&dtml-getTimeoutMinutes;>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" valign="top">
+    <div class="form-label">
+     Maximum number of subobjects
+    </div>
+    <div class="form-help">
+      ("0" means infinite)
+    </div>
+  </td>
+  <td align="left" valign="top">
+    <input type="text" name="limit:int" size=10
+     value=&dtml-getSubobjectLimit;>
   </td>
 </tr>
 

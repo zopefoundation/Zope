@@ -83,48 +83,41 @@
 # 
 ##############################################################################
 """
-Core session tracking SessionData class.
+Transient Object Container class.
 
-$Id: Transience.py,v 1.20 2001/11/20 15:29:23 chrism Exp $
+$Id: Transience.py,v 1.21 2001/11/21 22:46:36 chrism Exp $
 """
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
-from TransienceInterfaces import Transient, DictionaryLike, ItemWithId,\
-     TTWDictionary, ImmutablyValuedMappingOfPickleableObjects,\
+from TransienceInterfaces import ItemWithId,\
      StringKeyedHomogeneousItemContainer, TransientItemContainer
+from TransientObject import TransientObject
 from OFS.SimpleItem import SimpleItem
-from Persistence import Persistent, PersistentMapping
-from Acquisition import Implicit, aq_base
+from Persistence import Persistent
 from AccessControl import ClassSecurityInfo, getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
 import AccessControl.SpecialUsers 
 from AccessControl.User import nobody
 from BTrees import OOBTree
+from BTrees.Length import Length
 from zLOG import LOG, WARNING, BLATHER
-import os
-import os.path
-import math
-import time
-import sys
-import random
-from types import InstanceType
+import os, os.path, math, time, sys, random
 
 DEBUG = os.environ.get('Z_TOC_DEBUG', '')
 
-def TLOG(*args):
+def DLOG(*args):
     tmp = []
     for arg in args:
         tmp.append(str(arg))
     LOG('Transience DEBUG', BLATHER, ' '.join(tmp))
 
+class MaxTransientObjectsExceeded(Exception): pass
+
 _notfound = []
 _marker = []
-
-WRITEGRANULARITY=30     # Timing granularity for write clustering, in seconds
-time = time.time
 
 # permissions
 ADD_CONTAINER_PERM = 'Add Transient Object Container'
@@ -137,82 +130,61 @@ MANAGE_CONTAINER_PERM = 'Manage Transient Object Container'
 constructTransientObjectContainerForm = HTMLFile(
     'dtml/addTransientObjectContainer', globals())
 
-
 def constructTransientObjectContainer(self, id, title='', timeout_mins=20,
-    addNotification=None, delNotification=None,
-    REQUEST=None):
-
+    addNotification=None, delNotification=None, limit=0, REQUEST=None):
     """ """
-    ob = TransientObjectContainer(id, title, timeout_mins,
-        addNotification, delNotification)
+    ob = TransientObjectContainer(
+        id, title, timeout_mins, addNotification, delNotification, limit=limit
+        )
     self._setObject(id, ob)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
 class TransientObjectContainer(SimpleItem):
-    """ akin to Session Data Container """
-
+    """ Persists objects for a user-settable time period, after which it
+    expires them """
     meta_type = "Transient Object Container"
-
     icon = "misc_/Transience/datacontainer.gif"
-
     __implements__ = (ItemWithId,
                       StringKeyedHomogeneousItemContainer,
                       TransientItemContainer
                       )
-
-
     manage_options = (
-        {   'label':    'Manage',
-            'action':   'manage_container',
-            'help':     ('Transience', 'Transience.stx')
+        {   'label': 'Manage',
+            'action': 'manage_container',
+            'help': ('Transience', 'Transience.stx')
         }, 
-
-        {   'label':    'Security',
-            'action':   'manage_access'
+        {   'label': 'Security',
+            'action': 'manage_access'
         },
-
     )
 
     security = ClassSecurityInfo()
+    security.setDefaultAccess('deny')
 
-    security.setPermissionDefault(MANAGE_CONTAINER_PERM,
-                                ['Manager',])
-    security.setPermissionDefault(MGMT_SCREEN_PERM,
-                                ['Manager',])
-    security.setPermissionDefault(ACCESS_CONTENTS_PERM,
-                                ['Manager','Anonymous'])
     security.setPermissionDefault(ACCESS_TRANSIENTS_PERM,
-                                ['Manager','Anonymous','Sessions'])
-    security.setPermissionDefault(CREATE_TRANSIENTS_PERM,
-                                ['Manager',])
+                                ['Manager','Anonymous'])
+    security.setPermissionDefault(MANAGE_CONTAINER_PERM,['Manager',])
+    security.setPermissionDefault(MGMT_SCREEN_PERM,['Manager',])
+    security.setPermissionDefault(ACCESS_CONTENTS_PERM,['Manager','Anonymous'])
+    security.setPermissionDefault(CREATE_TRANSIENTS_PERM,['Manager',])
 
     security.declareProtected(MGMT_SCREEN_PERM, 'manage_container')
     manage_container = HTMLFile('dtml/manageTransientObjectContainer',
         globals())
 
-    security.setDefaultAccess('deny')
-
-    #
-    # Initializer
-    #
+    _limit = 0
 
     def __init__(self, id, title='', timeout_mins=20, addNotification=None,
-        delNotification=None, err_margin=.20, ctype=OOBTree.OOBTree):
-
-
+        delNotification=None, err_margin=.20, limit=0):
         self.id = id
         self.title=title
-
-        self._ctype = ctype
-
         self._addCallback = None
         self._delCallback = None
         self._err_margin = err_margin
-
         self._setTimeout(timeout_mins)
+        self._setLimit(limit)
         self._reset()
-
         self.setDelNotificationTarget(delNotification)
         self.setAddNotificationTarget(addNotification)
 
@@ -228,35 +200,46 @@ class TransientObjectContainer(SimpleItem):
     # StringKeyedHomogenousItemContainer
     #
 
-    security.declareProtected(CREATE_TRANSIENTS_PERM, 'new')
-    def new(self, key, wrap_with=None):
-        if type(key) is not type(''):
-            raise TypeError, (key, "key is not a string type")
-        if self.get(key,None) is not None:
-            if self[key].isValid():
-                raise KeyError, key         # Not allowed to dup keys
-            del self[key]      
-        
-        item = TransientObject(key)
-        self[key] = item
-        self.notifyAdd(item)
-        if not wrap_with:
-            return item.__of__(self)
-        else:
-            return item.__of__(wrap_with)
-
     security.declareProtected(CREATE_TRANSIENTS_PERM, 'new_or_existing')
-    def new_or_existing(self, key, wrap_with=None):
-        item  = self.get(key,_notfound)
-        if item is _notfound:
-            return self.new(key, wrap_with)
-        if not item.isValid():
-            del self[key]
-            return self.new(key, wrap_with)
-        if not wrap_with:
-            return item.__of__(self)
+    def new_or_existing(self, k):
+        item  = self.get(k, _notfound)
+        if item is _notfound: return self.new(k)
+        else: return item
+
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'get')
+    def get(self, k, default=_marker):
+        # Intentionally uses a different marker than _notfound
+        try:
+            v = self[k]
+        except KeyError:
+            if default is _marker: return None
+            else: return default
         else:
-            return item.__of__(wrap_with)
+            if hasattr(v, 'isValid') and v.isValid():
+                return v.__of__(self)
+            elif not hasattr(v, 'isValid'):
+                return v
+            else:
+                del self[k] # item is no longer valid, so we delete it
+                if default is _marker: return None
+                else: return default
+        
+    security.declareProtected(CREATE_TRANSIENTS_PERM, 'new')
+    def new(self, k):
+        if type(k) is not type(''):
+            raise TypeError, (k, "key is not a string type")
+        if self.get(k, None) is not None:
+            raise KeyError, "duplicate key %s" % k # Not allowed to dup keys
+        item = TransientObject(k)
+        self[k] = item
+        self.notifyAdd(item)
+        return item.__of__(self)
+
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
+    def has_key(self, k):
+        v = self.get(k, _notfound) 
+        if v is _notfound: return 0
+        return 1
 
     # -----------------------------------------------------------------
     # TransientItemContainer 
@@ -274,15 +257,23 @@ class TransientObjectContainer(SimpleItem):
         """ """
         return self._timeout_secs / 60
 
+    security.declareProtected(MANAGE_CONTAINER_PERM, 'setSubobjectLimit')
+    def setSubobjectLimit(self, limit):
+        """ """
+        if limit != self.getSubobjectLimit():
+            self._setLimit(limit)
+
+    security.declareProtected(MGMT_SCREEN_PERM, 'getSubobjectLimit')
+    def getSubobjectLimit(self):
+        """ """
+        return self._limit
+
     security.declareProtected(MGMT_SCREEN_PERM, 'getAddNotificationTarget')
     def getAddNotificationTarget(self):
         return self._addCallback or ''
 
-    security.declareProtected(MANAGE_CONTAINER_PERM,
-        'setAddNotificationTarget')
+    security.declareProtected(MANAGE_CONTAINER_PERM,'setAddNotificationTarget')
     def setAddNotificationTarget(self, f):
-        # We should assert that the callback function 'f' implements
-        # the TransientNotification interface
         self._addCallback = f             
 
     security.declareProtected(MGMT_SCREEN_PERM, 'getDelNotificationTarget')
@@ -292,12 +283,9 @@ class TransientObjectContainer(SimpleItem):
     security.declareProtected(MANAGE_CONTAINER_PERM,
         'setDelNotificationTarget')
     def setDelNotificationTarget(self, f):
-        # We should assert that the callback function 'f' implements
-        # the TransientNotification interface
         self._delCallback = f
 
-
-    #
+    # ----------------------------------------------
     # Supporting methods (not part of the interface)
     #
 
@@ -309,14 +297,16 @@ class TransientObjectContainer(SimpleItem):
         if self._delCallback:
             self._notify(item, 'destruct')
 
-    def _notify(self, item, kind):
+    def _notify(self, items, kind):
+        if not type(items) in [type([]), type(())]:
+            items = [items]
+            
         if kind =='add':
             name = 'notifyAdd'
             callback = self._addCallback
         else:
             name = 'notifyDestruct'
             callback = self._delCallback
-
         if type(callback) is type(''):
             try:
                 method = self.unrestrictedTraverse(callback)
@@ -332,33 +322,31 @@ class TransientObjectContainer(SimpleItem):
         else:
             method = callback
 
-        if callable(method):
-            if DEBUG:
-                TLOG('calling %s at object %s' % (callback, kind))
-            try:
-                user = getSecurityManager().getUser()
+        for item in items:
+            if callable(method):
                 try:
-                    newSecurityManager(None, nobody)
-                    method(item, self)
-                except:
-                    # dont raise, just log
-                    path = self.getPhysicalPath()
-                    LOG('Transience',
-                        WARNING,
-                        '%s failed when calling %s in %s' % (name, callback,
-                                                        '/'.join(path)),
-                        error=sys.exc_info()
-                        )
-            finally:
-                newSecurityManager(None, user)
-        else:
-            err = '%s in %s attempted to call non-callable %s'
-            path = self.getPhysicalPath()
-            LOG('Transience',
-                WARNING,
-                err % (name, '/'.join(path), callback),
-                error=sys.exc_info()
-                )
+                    user = getSecurityManager().getUser()
+                    try:
+                        newSecurityManager(None, nobody)
+                        method(item, self)
+                    except:
+                        # dont raise, just log
+                        path = self.getPhysicalPath()
+                        LOG('Transience', WARNING,
+                            '%s failed when calling %s in %s' % (name,callback,
+                                                            '/'.join(path)),
+                            error=sys.exc_info()
+                            )
+                finally:
+                    newSecurityManager(None, user)
+            else:
+                err = '%s in %s attempted to call non-callable %s'
+                path = self.getPhysicalPath()
+                LOG('Transience',
+                    WARNING,
+                    err % (name, '/'.join(path), callback),
+                    error=sys.exc_info()
+                    )
 
     # -----------------------------------------------------------------
     # Management item support (non API)
@@ -368,14 +356,13 @@ class TransientObjectContainer(SimpleItem):
         'manage_changeTransientObjectContainer')
     def manage_changeTransientObjectContainer(self, title='',
         timeout_mins=20, addNotification=None, delNotification=None,
-        REQUEST=None):
-
+        limit=0, REQUEST=None):
         """
         Change an existing transient object container.
         """
-
         self.title = title
         self.setTimeoutMinutes(timeout_mins)
+        self.setSubobjectLimit(limit)
         if not addNotification:
             addNotification = None
         if not delNotification:
@@ -391,76 +378,101 @@ class TransientObjectContainer(SimpleItem):
             raise TypeError, (timeout_mins, "Must be integer")
         self._timeout_secs = timeout_mins * 60
 
-    def _reset(self):
+    def _setLimit(self, limit):
+        if type(limit) is not type(1):
+            raise TypeError, (limit, "Must be integer")
+        self._limit = limit
 
+    def _setLastAccessed(self, transientObject):
+        sla = getattr(transientObject, 'setLastAccessed', None)
+        if sla is not None: sla()
+
+    def _reset(self):
         if hasattr(self,'_ring'):
             for k in self.keys():
-                self.notifyDestruct(self[k])
-                del self[k]
-        
+                try: self.notifyDestruct(self[k])
+                except KeyError: pass
         t_secs = self._timeout_secs
         r_secs = self._resolution_secs = int(t_secs * self._err_margin) or 1
         numbuckets = int(math.floor(t_secs/r_secs)) or 1
         l = []
         i = 0
-        now = int(time())
+        now = int(time.time())
         for x in range(numbuckets):
             dump_after = now + i
-            c = self._ctype()
+            c = OOBTree.OOBTree()
             l.insert(0, [c, dump_after])
             i = i + r_secs
-        index = self._ctype()
+        index = OOBTree.OOBTree()
         self._ring = Ring(l, index)
+        try: self.__len__.set(0)
+        except AttributeError: self.__len__ = self.getLen = Length()
 
     def _getCurrentBucket(self, get_dump=0):
         # no timeout always returns last bucket
         if not self._timeout_secs:
             b, dump_after = self._ring._data[0]
             if DEBUG:
-                TLOG('no timeout, returning first bucket')
+                DLOG('no timeout, returning first bucket')
             return b
         index = self._ring._index
-        now = int(time())
+        now = int(time.time())
         i = self._timeout_secs
         # expire all buckets in the ring which have a dump_after time that
         # is before now, turning the ring as many turns as necessary to
         # get to a non-expirable bucket.
+        to_clean = []
         while 1:
             l = b, dump_after = self._ring._data[-1]
             if now > dump_after:
                 if DEBUG:
-                    TLOG('now is %s' % now)
-                    TLOG('dump_after for %s was %s, dumping'%(b, dump_after))
+                    DLOG('now is %s' % now)
+                    DLOG('dump_after for %s was %s, dumping'%(b, dump_after))
                 self._ring.turn()
                 # mutate elements in-place in the ring
                 new_dump_after = now + i
                 l[1] = new_dump_after
-                self._clean(b, index)
+                if b: to_clean.append(b)# only clean non-empty buckets
                 i = i + self._resolution_secs
             else:
                 break
+        if to_clean: self._clean(to_clean, index)
         if get_dump:
             return self._ring._data[0], dump_after, now
         else:
             b, dump_after = self._ring._data[0]
             return b
 
-    def _clean(self, b, index):
-        if DEBUG:
-            TLOG('building list of index items')
-        l = list(index.items())
-        if DEBUG:
-            TLOG('done building list of index items, now iterating over them')
-        tmp = []
-        for k, v in l:
-            if v is b:
-                tmp.append(k)
-                self.notifyDestruct(index[k][k])
+    def _clean(self, bucket_set, index):
+        # Build a reverse index.  Eventually, I'll keep this in another
+        # persistent struct but I'm afraid of creating more conflicts right
+        # now. The reverse index is a mapping from bucketref -> OOSet of string
+        # keys.
+        rindex = {}
+        for k, v in list(index.items()):
+            # listifying above is dumb, but I think there's a btrees bug
+            # that causes plain old index.items to always return a sequence
+            # of even numbers
+            if rindex.get(v, _marker) is _marker: rindex[v]=OOBTree.OOSet([k])
+            else: rindex[v].insert(k)
+
+        if DEBUG: DLOG("rindex", rindex)
+
+        trans_obs = [] # sequence of objects that we will eventually finalize
+
+        for bucket_to_expire in bucket_set:
+            keys = rindex.get(bucket_to_expire, [])
+            if keys and DEBUG: DLOG("deleting") 
+            for k in keys:
+                if DEBUG: DLOG(k)
+                trans_obs.append(bucket_to_expire[k])
                 del index[k]
-        if DEBUG:
-            TLOG('deleted %s' % tmp)
-            TLOG('clearing %s' % b)
-        b.clear()
+                try: self.__len__.change(-1)
+                except AttributeError: pass
+            bucket_to_expire.clear()
+            
+        # finalize em
+        self.notifyDestruct(trans_obs)
 
     def _show(self):
         """ debug method """
@@ -476,6 +488,12 @@ class TransientObjectContainer(SimpleItem):
         for x in t:
             print x
 
+    security.declareProtected(MGMT_SCREEN_PERM, 'nudge')
+    def nudge(self):
+        """ Used by mgmt interface to turn the bucket set each time
+        a screen is shown """
+        self._getCurrentBucket()
+
     def __setitem__(self, k, v):
         current = self._getCurrentBucket()
         index = self._ring._index
@@ -483,6 +501,19 @@ class TransientObjectContainer(SimpleItem):
         if b is None:
             # this is a new key
             index[k] = current
+            li = self._limit
+            # do OOM protection
+            if li and len(self) >= li:
+                LOG('Transience', WARNING,
+                    ('Transient object container %s max subobjects '
+                     'reached' % self.id)
+                    )
+                raise MaxTransientObjectsExceeded, (
+                 "%s exceeds maximum number of subobjects %s" % (len(self), li)
+                    )
+            # do length accounting
+            try: self.__len__.change(1)
+            except AttributeError: pass 
         elif b is not current:
             # this is an old key that isn't in the current bucket.
             del b[k] # delete it from the old bucket
@@ -506,31 +537,6 @@ class TransientObjectContainer(SimpleItem):
             del b[k] # delete the item from the old bucket.
         return v
 
-    def _setLastAccessed(self, transientObject):
-        # A safety valve; dont try to set the last accessed time if the
-        # object we were given doesnt support it
-        sla = getattr(transientObject, 'setLastAccessed', None)
-        if sla is not None: sla()
-
-    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'set')
-    def set(self, k, v):
-        """ """
-        if type(k) is not type(''):
-            raise TypeError, "Transient Object Container keys must be strings"
-        self[k] = v
-
-    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'get')
-    # Uses a different marker than _notfound
-    def get(self, k, default=_marker):
-        try: v = self[k]
-        except KeyError: v = _marker
-        if v is _marker:
-            if default is _marker:
-                return None
-            else:
-                return default
-        return v
-        
     def __delitem__(self, k):
         self._getCurrentBucket()
         index = self._ring._index
@@ -540,17 +546,13 @@ class TransientObjectContainer(SimpleItem):
 
     security.declareProtected(ACCESS_TRANSIENTS_PERM, '__len__')
     def __len__(self):
+        """ this won't be called unless we havent run __init__ """
+        if DEBUG: DLOG('Class __len__ called!')
         self._getCurrentBucket()
         return len(self._ring._index)
 
-    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'has_key')
-    def has_key(self, k):
-        v = self.get(k, _notfound) 
-        if v is _notfound: return 0
-        # Grr, test suite uses ints all over the place
-        if (type(v) is InstanceType and issubclass(v.__class__, TransientObject)
-            and not v.isValid()): return 0
-        return 1
+    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'getLen')
+    getLen = __len__
 
     def values(self):
         return map(lambda k, self=self: self[k], self.keys())
@@ -560,24 +562,10 @@ class TransientObjectContainer(SimpleItem):
 
     def keys(self):
         self._getCurrentBucket()
-        index = self._ring._index
-        return map(lambda x: x, index.keys())
+        return list(self._ring._index.keys())
 
-    def update(self):
-        raise NotImplementedError
-
-    def clear(self):
-        raise NotImplementedError
-
-    def copy(self):
-        raise NotImplementedError
-
-    security.declareProtected(ACCESS_TRANSIENTS_PERM, 'getLen')
-    getLen = __len__
-    
 class Ring(Persistent):
-    """ Instances of this class will be frequently written to the ZODB,
-    so it's optimized as best possible for write-friendliness """
+    """ ring of buckets """
     def __init__(self, l, index):
         if not len(l):
             raise "ring must have at least one element"
@@ -601,152 +589,9 @@ class Ring(Persistent):
     def _p_independent(self):
         return 1
 
-class TransientObject(Persistent, Implicit):
-    """ akin to Session Data Object """
-    __implements__ = (ItemWithId, # randomly generate an id
-                      Transient,
-                      DictionaryLike,
-                      TTWDictionary,
-                      ImmutablyValuedMappingOfPickleableObjects
-                      )
-
-    security = ClassSecurityInfo()
-    security.setDefaultAccess('allow')
-    security.declareObjectPublic()
-
-    #
-    # Initializer
-    #
-
-    def __init__(self, containerkey):
-        self.token = containerkey
-        self.id = self._generateUniqueId()
-        self._container = {}
-        self._created = self._last_accessed = time()
-        self._timergranularity = WRITEGRANULARITY # timer granularity
-
-    # -----------------------------------------------------------------
-    # ItemWithId
-    #
-
-    def getId(self):
-        return self.id
-
-    # -----------------------------------------------------------------
-    # Transient
-    #
-
-    def invalidate(self):
-        self._invalid = None
-
-    def isValid(self):
-        return not hasattr(self, '_invalid')
-
-    def getLastAccessed(self):
-        return self._last_accessed
-
-    def setLastAccessed(self):
-        # check to see if the last_accessed time is too recent, and avoid
-        # setting if so, to cut down on heavy writes
-        t = time()
-        if self._last_accessed and (self._last_accessed +
-            self._timergranularity < t):
-
-            self._last_accessed = t
-
-    def getCreated(self):
-        return self._created
-
-
-    # -----------------------------------------------------------------
-    # DictionaryLike
-    #
-
-    def keys(self):
-        return self._container.keys()
-
-    def values(self):
-        return self._container.values()
-
-    def items(self):
-        return self._container.items()
-
-    def get(self, k, default=_notfound):
-        v = self._container.get(k, default)
-        if v is _notfound: return None
-        return v
-        
-    def has_key(self, k):
-        if self._container.get(k, _notfound) is not _notfound: return 1
-        return 0
-
-    def clear(self):
-        self._container.clear()
-        self._p_changed = 1
-
-    def update(self, d):
-        for k in d.keys():
-            self[k] = d[k]
-
-
-    # -----------------------------------------------------------------
-    # ImmutablyValuedMappingOfPickleableObjects (what a mouthful!)
-    #
-
-    def __setitem__(self, k, v):
-        # if the key or value is a persistent instance,
-        # set up its _p_jar immediately
-        if hasattr(v, '_p_jar') and v._p_jar is None:
-            v._p_jar = self._p_jar
-            v._p_changed = 1
-        if hasattr(k, '_p_jar') and k._p_jar is None:
-            k._p_jar = self._p_jar
-            k._p_changed = 1
-        self._container[k] = v
-        self._p_changed = 1
-
-    def __getitem__(self, k):
-        return self._container[k]
-
-    def __delitem__(self, k):
-        del self._container[k]
-
-    # -----------------------------------------------------------------
-    # TTWDictionary
-    #
-
-    set = __setitem__
-
-    def delete(self, k):
-        del self._container[k]
-        self._p_changed = 1
-        
-    __guarded_setitem__ = __setitem__
-
-
-    # -----------------------------------------------------------------
-    # Other non interface code
-    #
-
-    def _p_independent(self):
-        # My state doesn't depend on or materially effect the state of
-        # other objects (eliminates read conflicts).
-        return 1
-
-    getName = getId # this is for SQLSession compatibility
-
-    def getContainerKey(self):
-        return self.token
-    
-    def _generateUniqueId(self):
-        t = str(int(time()))
-        d = "%010d" % random.randint(0, sys.maxint-1)
-        return "%s%s" % (t, d)
-
-    def __repr__(self):
-        return "id: %s, token: %s, contents: %s" % (
-            self.id, self.token, `self.items()`
-            )
+    # this should really have a _p_resolveConflict, but
+    # I've not had time to come up with a reasonable one that
+    # works in every circumstance.
 
 Globals.InitializeClass(TransientObjectContainer)
-Globals.InitializeClass(TransientObject)
+

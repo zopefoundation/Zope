@@ -30,6 +30,19 @@ TransientObjectContainer - Add
        they may not be deleted exactly after this number of minutes elapses.
        A setting of "0" indicates that objects should not expire.
 
+     - **Maximum number of subobjects **
+
+       The maximum number of subobjects that this container may
+       simultaneously hold.
+
+       If the value is "0", the number of objects addable to the container
+       will be not be artificially limited.
+
+       Note: This setting is useful to prevent accidental or deliberate denial
+       of service due to RAM shortage if the transient object container is
+       instantiated in a storage which is backed solely by RAM, such
+       as a Temporary Folder.
+
      - **Script to call when objects are added**
 
        *Optional*

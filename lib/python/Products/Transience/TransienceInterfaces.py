@@ -275,6 +275,9 @@ class HomogeneousItemContainer(Interface.Base):
         """
         Return value associated with key k via __getitem__.  If value
         associated with k does not exist, return default.
+
+        Returned item is acquisition-wrapped in self unless a default
+        is passed in and returned.
         """
 
     def has_key(self, k):
@@ -283,13 +286,8 @@ class HomogeneousItemContainer(Interface.Base):
         return false.
         """
 
-    def delete(self, k):
-        """
-        Delete value associated with key k, raise a KeyError if nonexistent.
-        """
-
 class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
-    def new(self, k, wrap_with=None):
+    def new(self, k):
         """
         Creates a new subobject of the type supported by this container
         with key "k" and returns it.
@@ -297,14 +295,15 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         If an object already exists in the container with key "k", a
         KeyError is raised.
 
-        If wrap_with is non-None, the subobject is returned in the
-        acquisition context of wrap_in, else it is returned in
-        the acquisition context of this transient object container.
-
         "k" must be a string, else a TypeError is raised.
+
+        If the container is 'full', a MaxTransientObjectsExceeded exception
+        will be raised.
+
+        Returned object is acquisition-wrapped in self.
         """
 
-    def new_or_existing(self, k, wrap_with=None):
+    def new_or_existing(self, k):
         """
         If an object already exists in the container with key "k", it
         is returned.
@@ -312,11 +311,12 @@ class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
         Otherwise, create a new subobject of the type supported by this
         container with key "k" and return it.
 
-        If wrap_with is non-None, the subobject is returned in the
-        acquisition context of wrap_in, else it is returned in
-        the acquisition context of this transient object container.
-
         "k" must be a string, else a TypeError is raised.
+
+        If a new object needs to be created and the container is 'full',
+        a MaxTransientObjectsExceeded exception will be raised.
+
+        Returned object is acquisition-wrapped in self.
         """
     
 class TransientItemContainer(Interface.Base):

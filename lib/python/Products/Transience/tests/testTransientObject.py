@@ -82,34 +82,38 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import sys, os, time, whrandom, unittest
+import sys, os, whrandom, unittest
 
 if __name__ == "__main__":
     sys.path.insert(0, '../../..')
-    #os.chdir('../../..')
 
 import ZODB
-from Products.Transience.Transience import \
-     TransientObjectContainer, TransientObject
+from Products.Transience.Transience import TransientObjectContainer
+from Products.Transience.TransientObject import TransientObject
+import Products.Transience.TransientObject
 import Products.Transience.Transience
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-
-epoch = time.time()
+import time as oldtime
+import fauxtime
 
 class TestTransientObject(TestCase):
     def setUp(self):
+        Products.Transience.Transience.time = fauxtime
+        Products.Transience.TransientObject.time = fauxtime
         self.errmargin = .20
         self.timeout = 60
-        Products.Transience.Transience.time = fauxtime
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
 
     def tearDown(self):
+        Products.Transience.Transience.time = oldtime
+        Products.Transience.TransientObject.time = oldtime
         self.t = None
         del self.t
         
     def test_id(self):
         t = self.t.new('xyzzy')
         assert t.getId() != 'xyzzy'
+        assert t.getContainerKey() == 'xyzzy'
 
     def test_validate(self):
         t = self.t.new('xyzzy')
@@ -119,22 +123,22 @@ class TestTransientObject(TestCase):
 
     def test_getLastAccessed(self):
         t = self.t.new('xyzzy')
-        ft = fauxtime()
+        ft = fauxtime.time()
         assert t.getLastAccessed() <= ft
 
     def test_getCreated(self):
         t = self.t.new('xyzzy')
-        ft = fauxtime()
+        ft = fauxtime.time()
         assert t.getCreated() <= ft
 
     def test_setLastAccessed(self):
         t = self.t.new('xyzzy')
-        ft = fauxtime()
+        ft = fauxtime.time()
         assert t.getLastAccessed() <= ft
-        fauxsleep(self.timeout)   # go to sleep past the granuarity
-        ft2 = fauxtime()
+        fauxtime.sleep(self.timeout)   # go to sleep past the granuarity
+        ft2 = fauxtime.time()
         t.setLastAccessed()
-        ft3 = fauxtime()
+        ft3 = fauxtime.time()
         assert t.getLastAccessed() <= ft3
         assert t.getLastAccessed() >= ft2
 
@@ -175,19 +179,11 @@ def test_suite():
     alltests = TestSuite((testsuite,))
     return alltests
 
-def fauxtime():
-    """ False timer -- returns time 10 x faster than normal time """
-    return (time.time() - epoch) * 10.0
-
-def fauxsleep(duration):
-    """ False sleep -- sleep for 1/10 the time specifed """
-    time.sleep(duration / 10.0)
-
 data = {
     'a': 'a',
     1: 1,
     'Mary': 'no little lamb for you today!',
-    'epoch': epoch,
+    'epoch': 999999999,
     'fauxtime': fauxtime
     }
 

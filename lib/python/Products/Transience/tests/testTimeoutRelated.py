@@ -10,15 +10,18 @@ import Acquisition
 from Acquisition import aq_base
 from Products.Transience.Transience import TransientObjectContainer
 import Products.Transience.Transience
+import Products.Transience.TransientObject
 from Products.PythonScripts.PythonScript import PythonScript
 from ZODB.POSException import InvalidObjectReference
 from DateTime import DateTime
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
 from ZODB.DemoStorage import DemoStorage
 from OFS.Application import Application
-import time, threading, whrandom
+import  threading, whrandom
+import fauxtime
+import time as oldtime
+
 WRITEGRANULARITY = 30
-epoch = time.time()
 stuff = {}
 
 def _getApp():
@@ -54,6 +57,7 @@ def _delApp():
 class TestBase(TestCase):
     def setUp(self):
         Products.Transience.Transience.time = fauxtime
+        Products.Transience.TransientObject.time = fauxtime
         self.app = makerequest.makerequest(_getApp())
         timeout = self.timeout = 1
         sm=TransientObjectContainer(
@@ -66,12 +70,14 @@ class TestBase(TestCase):
         get_transaction().abort()
         _delApp()
         del self.app
-
+        Products.Transience.Transience.time = oldtime
+        Products.Transience.TransientObject.time = oldtime
+        
 class TestLastAccessed(TestBase):
     def testLastAccessed(self):
         sdo = self.app.sm.new_or_existing('TempObject')
         la1 = sdo.getLastAccessed()
-        fauxsleep(WRITEGRANULARITY + 1)
+        fauxtime.sleep(WRITEGRANULARITY + 1)
         sdo = self.app.sm['TempObject']
         assert sdo.getLastAccessed() > la1, (sdo.getLastAccessed(), la1)
 
@@ -79,7 +85,7 @@ class TestNotifications(TestBase):
     def testAddNotification(self):
         self.app.sm.setAddNotificationTarget(addNotificationTarget)
         sdo = self.app.sm.new_or_existing('TempObject')
-        now = fauxtime()
+        now = fauxtime.time()
         k = sdo.get('starttime')
         assert type(k) == type(now)
         assert k <= now
@@ -88,35 +94,26 @@ class TestNotifications(TestBase):
         self.app.sm.setDelNotificationTarget(delNotificationTarget)
         sdo = self.app.sm.new_or_existing('TempObject')
         timeout = self.timeout * 60
-        fauxsleep(timeout + (timeout * .33))
+        fauxtime.sleep(timeout + (timeout * .33))
         try: sdo1 = self.app.sm['TempObject']
         except KeyError: pass
-        now = fauxtime()
+        now = fauxtime.time()
         k = sdo.get('endtime')
         assert type(k) == type(now)
         assert k <= now
 
 def addNotificationTarget(item, context):
-    item['starttime'] = fauxtime()
+    item['starttime'] = fauxtime.time()
 
 def delNotificationTarget(item, context):
-    item['endtime'] = fauxtime()
-
-def fauxtime():
-    """ False timer -- returns time 10 x faster than normal time """
-    return (time.time() - epoch) * 10.0
-
-def fauxsleep(duration):
-    """ False sleep -- sleep for 1/10 the time specifed """
-    time.sleep(duration / 10.0)
+    item['endtime'] = fauxtime.time()
 
 def test_suite():
     last_accessed = makeSuite(TestLastAccessed, 'test')
     start_end = makeSuite(TestNotifications, 'test')
-    runner = TextTestRunner()
     suite = TestSuite((start_end, last_accessed))
     return suite
 
 if __name__ == '__main__':
-    runner = TextTestRunner(sys.stdout)
+    runner = TextTestRunner(verbosity=9)
     runner.run(test_suite())

@@ -112,13 +112,6 @@ class TransientObjectContainer:
         Permission -- 'Access Transient Objects'
         """
 
-    def delete(self, k):
-        """
-        Delete value associated with key k, raise a KeyError if nonexistent.
-
-        Permission -- 'Access Transient Objects'
-        """
-
     def new(self, k):
         """
         Creates a new subobject of the type supported by this container
@@ -128,6 +121,9 @@ class TransientObjectContainer:
         KeyError is raised.
 
         "k" must be a string, else a TypeError is raised.
+
+        If the container is 'full', a MaxTransientObjectsExceeded will
+        be raised.
 
         Permission -- 'Create Transient Objects'
         """
@@ -141,6 +137,9 @@ class TransientObjectContainer:
         container with key "k" and return it.
 
         "k" must be a string, else a TypeError is raised.
+
+        If the container is 'full', a MaxTransientObjectsExceeded exception
+        be raised.
 
         Permission -- 'Create Transient Objects'
         """
@@ -345,6 +344,16 @@ class TransientObject:
         Permission -- Always available
         """
 
+class MaxTransientObjectsExceeded:
+    """
+    An exception importable from the Products.Transience.Transience module
+    which is raised when an attempt is made to add an item to a
+    TransientObjectContainer that is 'full'.
 
+    This exception may be caught in PythonScripts through a normal import.
+    A successful import of the exception can be achieved via::
+
+      from Products.Transience import MaxTransientObjectsExceeded
+    """
 
 

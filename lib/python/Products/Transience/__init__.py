@@ -85,10 +85,15 @@
 """
 Transience initialization routines
 
-$Id: __init__.py,v 1.4 2001/11/07 06:46:36 chrism Exp $
+$Id: __init__.py,v 1.5 2001/11/21 22:46:36 chrism Exp $
 """
 
+import ZODB # this is to help out testrunner, don't remove.
 import Transience
+# import of MaxTransientObjectsExceeded for easy import from scripts,
+# this is protected by a module security info declaration in the
+# Sessions package.
+from Transience import MaxTransientObjectsExceeded 
 
 def initialize(context):
     context.registerClass(
@@ -100,3 +105,4 @@ def initialize(context):
         )
     context.registerHelp()
     context.registerHelpTitle('Zope Help')
+

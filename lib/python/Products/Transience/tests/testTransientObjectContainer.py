@@ -86,29 +86,31 @@ import sys, os, time, whrandom, unittest
 
 if __name__ == "__main__":
     sys.path.insert(0, '../../..')
-    #os.chdir('../../..')
 
 import ZODB
-from Products.Transience.Transience import \
-     TransientObjectContainer, TransientObject
+from Products.Transience.Transience import TransientObjectContainer,\
+     MaxTransientObjectsExceeded
+from Products.Transience.TransientObject import TransientObject
 import Products.Transience.Transience
+import Products.Transience.TransientObject
 from ExtensionClass import Base
 from unittest import TestCase, TestSuite, TextTestRunner, makeSuite
-
-epoch = time.time()
-stash = {}
+import time as oldtime
+import fauxtime
 
 class TestTransientObjectContainer(TestCase):
     def setUp(self):
+        Products.Transience.Transience.time = fauxtime
+        Products.Transience.TransientObject.time = fauxtime
         self.errmargin = .20
         self.timeout = 60
-        Products.Transience.Transience.time = fauxtime
         self.t = TransientObjectContainer('sdc', timeout_mins=self.timeout/60)
 
     def tearDown(self):
         self.t = None
-        del self.t
-        
+        Products.Transience.Transience.time = oldtime
+        Products.Transience.TransientObject.time = oldtime
+
     def testGetItemFails(self):
         self.assertRaises(KeyError, self._getitemfail)
 
@@ -357,7 +359,7 @@ class TestTransientObjectContainer(TestCase):
         for x in range(10, 110):
             self.t[x] = x
         # these items will time out while we sleep
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         for x in range(110, 210):
             self.t[x] = x
         assert len(self.t.keys()) == 100, len(self.t.keys())
@@ -374,7 +376,7 @@ class TestTransientObjectContainer(TestCase):
         # 1 minute
         for x in range(10, 110):
             self.t[x] = x
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())
 
         # 2 minutes
@@ -382,9 +384,9 @@ class TestTransientObjectContainer(TestCase):
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())
 
         # 3 minutes
@@ -392,22 +394,22 @@ class TestTransientObjectContainer(TestCase):
         self.t._reset()
         for x in range(10, 110):
             self.t[x] = x
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 100, len(self.t.keys())
-        fauxsleep(self.timeout * (self.errmargin+1))
+        fauxtime.sleep(self.timeout * (self.errmargin+1))
         assert len(self.t.keys()) == 0, len(self.t.keys())
 
     def testGetItemDelaysTimeout(self):
         for x in range(10, 110):
             self.t[x] = x
         # current bucket will become old after we sleep for a while.
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         # these items will be added to the new current bucket by getitem
         for x in range(10, 110):
             self.t[x]
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         assert len(self.t.keys()) == 100, len(self.t.keys())
         for x in range(10, 110):
             assert self.t[x] == x
@@ -416,11 +418,11 @@ class TestTransientObjectContainer(TestCase):
         for x in range(10, 110):
             self.t[x] = x
         # current bucket will become old after we sleep for a while.
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         # these items will be added to the new current bucket by getitem
         for x in range(10, 110):
             self.t[x] = x + 1
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         assert len(self.t.keys()) == 100, len(self.t.keys())
         for x in range(10, 110):
             assert self.t[x] == x + 1
@@ -429,11 +431,11 @@ class TestTransientObjectContainer(TestCase):
         for x in range(10, 110):
             self.t[x] = x
         # current bucket will become old after we sleep for a while.
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         # these items will be added to the new current bucket by getitem
         for x in range(10, 110):
             self.t.get(x)
-        fauxsleep(self.timeout/2)
+        fauxtime.sleep(self.timeout/2)
         assert len(self.t.keys()) == 100, len(self.t.keys())
         for x in range(10, 110):
             assert self.t[x] == x
@@ -479,9 +481,18 @@ class TestTransientObjectContainer(TestCase):
     def test_getId(self):
         assert self.t.getId() == 'sdc'
 
-    def test_getContainerKey(self):
-        t = self.t.new('foobieblech')
-        assert t.getContainerKey() == 'foobieblech'
+    def testSubobjectLimitWorks(self):
+        self.t = TransientObjectContainer('a', timeout_mins=self.timeout/60,
+                                          limit=10)
+        self.assertRaises(MaxTransientObjectsExceeded, self._maxOut)
+
+    def testUnlimitedSubobjectLimitWorks(self):
+        self._maxOut()
+
+    def _maxOut(self):
+        for x in range(11):
+            self.t.new(str(x))
+
         
 def lsubtract(l1, l2):
    l1=list(l1)
@@ -491,18 +502,9 @@ def lsubtract(l1, l2):
    return l
 
 def test_suite():
-    #print "TransientObjectContainer tests take just about forever (10+ mins)"
     testsuite = makeSuite(TestTransientObjectContainer, 'test')
     alltests = TestSuite((testsuite,))
     return alltests
-
-def fauxtime():
-    """ False timer -- returns time 10 x faster than normal time """
-    return (time.time() - epoch) * 10.0
-
-def fauxsleep(duration):
-    """ False sleep -- sleep for 1/10 the time specifed """
-    time.sleep(duration / 10.0)
 
 if __name__ == '__main__':
     runner = TextTestRunner(verbosity=9)

@@ -34,6 +34,19 @@ TransientObjectContainer - Manage
 
        If the timeout value is "0", objects will not time out.
 
+     - **Maximum number of subobjects **
+
+       The maximum number of subobjects that this container may
+       simultaneously hold.
+
+       If the value is "0", the number of objects addable to the container
+       will be not be artificially limited.
+
+       This setting is useful to prevent accidental or deliberate denial
+       of service due to RAM shortage if the transient object container is
+       instantiated in a storage which is backed solely by RAM, such
+       as a Temporary Folder.
+
      - **Script to call when objects are added**
 
        *Optional*
