@@ -240,7 +240,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             raise 'Column Exists', 'The column exists'
 
         if name[0] == '_':
-            raise 'Invalid Meta-Data Name',
+            raise 'Invalid Meta-Data Name', \
                   'Cannot cache fields beginning with "_"'
         
         if not schema.has_key(name):
