@@ -12,7 +12,7 @@
 ##############################################################################
 """Object Histories"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import Globals, ExtensionClass, difflib
 from DateTime import DateTime
@@ -225,7 +225,6 @@ def replace(x, xlo, xhi, y, ylo, yhi, r):
                escape('\n'.join(rx2)), escape('\n'.join(ry2))))
 
 def html_diff(s1, s2):
-    from string import split
     a=s1.split('\n')
     b=s2.split('\n')
     cruncher=difflib.SequenceMatcher()
