@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -196,8 +196,10 @@ class File(Persistent,Implicit,PropertyManager,
                 c(REQUEST['PARENTS'][1],REQUEST)
             else:
                 c()
-        RESPONSE['content-type'] =self.content_type
+        RESPONSE.setHeader('content-type', self.content_type)
         return self.data
+
+
 
     def view_image_or_file(self, URL1):
         """

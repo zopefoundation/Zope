@@ -102,7 +102,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from ZPublisher.Converters import type_converters
 from Globals import HTML, HTMLFile, MessageDialog
@@ -218,41 +218,16 @@ class DTMLDocument(DTMLMethod, PropertyManager):
         Response, and key word arguments."""
         kw['document_id']   =self.id
         kw['document_title']=self.title
-
         if client is None:
             # Called as subtemplate, so don't need error propigation!
-            #__traceback_info__=(`self.__name__`, `self`, `self.aq_parent`)
-            r=apply(HTML.__call__, (self, self, REQUEST), kw)
-#            try:
-#                md=REQUEST
-#                md._push(InstanceDict(self.aq_parent, md))
-#                md._push(InstanceDict(self, md))
-#                r=apply(HTML.__call__, (self, self, REQUEST), kw)
-#            finally:
-#                md._pop(1)
+            r=apply(HTML.__call__, (self, client, REQUEST), kw)
             if RESPONSE is None: return r
             return decapitate(r, RESPONSE)
-
-##         md=TemplateDict()
-##         push=md._push
-##         globals=self.globals
-##         shared_globals=self.shared_globals
-##         mapping=REQUEST
-##         if shared_globals: push(shared_globals)
-##         if globals: push(globals)
-##         if mapping: push(mapping)
-##         push(InstanceDict(client, md))
-##         if hasattr(mapping, 'AUTHENTICATED_USER'):
-##             md.AUTHENTICATED_USER=mapping['AUTHENTICATED_USER']
-##         md.validate=self.validate
-##         md.this=self
-
-        try: r=apply(HTML.__call__, (self, self, REQUEST), kw)
+        try: r=apply(HTML.__call__, (self, (client, self), REQUEST), kw)
         except:
             if self.id()=='standard_error_message':
                 raise sys.exc_type, sys.exc_value, sys.exc_traceback
             return self.raise_standardErrorMessage(client, REQUEST)
-                
         if RESPONSE is None: return r
         return decapitate(r, RESPONSE)
 
