@@ -16,6 +16,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #904: Platform specific signals in zdaemon/Daemon.py
+       (fixed by removing the "fossil" module from 2.7 branch and head).
+
      - Collector #951: DateTime(None) is now equal to DateTime()
 
      - Collector #1056: aq_acquire() ignored the default argument
