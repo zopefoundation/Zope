@@ -20,17 +20,15 @@
 #include <unistd.h>
 
 static PyObject *
-initgroups_initgroups(self, args)
-PyObject *self;
-PyObject *args;
+initgroups_initgroups(PyObject *self, PyObject *args)
 {
 	char *username;
 	gid_t gid;
 
-	if(!PyArg_ParseTuple(args, "sl", &username, &gid))
+	if (!PyArg_ParseTuple(args, "sl:initgroups", &username, &gid))
 		return NULL;
 
-	if(initgroups(username, gid) == -1)
+	if (initgroups(username, gid) == -1)
 		return PyErr_SetFromErrno(PyExc_OSError);
 
 	Py_INCREF(Py_None);
@@ -53,8 +51,8 @@ static PyMethodDef InitgroupsMethods[] = {
 #endif /* defined(__unix__) || defined(unix) */
 
 void
-initinitgroups()
+initinitgroups(void)
 {
-	(void)Py_InitModule("initgroups", InitgroupsMethods);
+	Py_InitModule("initgroups", InitgroupsMethods);
 }
 
