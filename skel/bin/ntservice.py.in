@@ -89,8 +89,11 @@ import sys
 PYTHON = r'<<PYTHON>>'
 SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
+ZOPE_HOME = r'<<ZOPE_HOME>>'
+
 ZOPE_RUN = r'%s\Zope\Startup\run.py' % SOFTWARE_HOME
 CONFIG_FILE= os.path.join(INSTANCE_HOME, 'etc', 'zope.conf')
+PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
 
 sys.path.insert(0, SOFTWARE_HOME)
 
@@ -102,8 +105,8 @@ class InstanceService(NTService.ZopeService):
     start_cmd = '"%s" "%s" -C "%s"' % (PYTHON, ZOPE_RUN, CONFIG_FILE)
     _svc_name_ = servicename
     _svc_display_name_ = 'Zope instance at %s' % INSTANCE_HOME
+    _exe_name_ = PYTHONSERVICE_EXE
 
 if __name__ == '__main__':
     import win32serviceutil
     win32serviceutil.HandleCommandLine(InstanceService)
-    
