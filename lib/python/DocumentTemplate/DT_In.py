@@ -382,8 +382,8 @@
 
 ''' #'
 
-__rcs_id__='$Id: DT_In.py,v 1.44 2001/01/24 16:26:01 brian Exp $'
-__version__='$Revision: 1.44 $'[11:-2]
+__rcs_id__='$Id: DT_In.py,v 1.45 2001/02/13 11:58:26 mj Exp $'
+__version__='$Revision: 1.45 $'[11:-2]
 
 from DT_Util import ParseError, parse_params, name_param, str
 from DT_Util import render_blocks, InstanceDict, ValidationError, VSEval, expr_globals
@@ -758,7 +758,7 @@ class InClass:
                          if mapping: k = v[sort]
                          else: k = getattr(v, sort)
                      except AttributeError, KeyError: k = None
-                     if not basic_type(k):           
+                     if not basic_type(type(k)):           
                          try: k = k()
                          except: pass
 
