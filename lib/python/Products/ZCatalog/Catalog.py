@@ -30,7 +30,7 @@ import time, sys, types
 from bisect import bisect
 from random import randint
 
-LOG = logging.getLogger('ZCatalog')
+LOG = logging.getLogger('Zope.ZCatalog')
 
 try:
     from DocumentTemplate.cDocumentTemplate import safe_callable
