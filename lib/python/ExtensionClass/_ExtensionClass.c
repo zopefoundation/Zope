@@ -308,6 +308,15 @@ EC_init(PyTypeObject *self, PyObject *args, PyObject *kw)
   if (PyType_Type.tp_init(OBJECT(self), args, kw) < 0) 
     return -1; 
 
+  if (self->tp_dict != NULL)
+    {
+      r = PyDict_GetItemString(self->tp_dict, "__doc__");
+      if ((r == Py_None) && 
+          (PyDict_DelItemString(self->tp_dict, "__doc__") < 0)
+          )
+        return -1;
+    }
+
   /* set up __get__, if necessary */
   if (self->tp_descr_get != of_get)
     {

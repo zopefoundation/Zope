@@ -170,6 +170,8 @@ def test__basicnew__():
     {}
     """
 
+
+
 def cmpattrs(self, other, *attrs):
     for attr in attrs:
         if attr[:3] in ('_v_', '_p_'):
@@ -687,6 +689,23 @@ def test_of_not_called_when_not_accessed_through_EC_instance():
     >>> e = E()
     >>> e.eek == (E.__dict__['eek'], e)
     True
+
+    """
+
+def test_inheriting___doc__():
+    """Old-style ExtensionClass inherited __doc__ from base classes.
+
+    >>> class E(Base):
+    ...     "eek"
+
+    >>> class EE(E):
+    ...     pass
+
+    >>> EE.__doc__
+    'eek'
+
+    >>> EE().__doc__
+    'eek'
 
     """
 
