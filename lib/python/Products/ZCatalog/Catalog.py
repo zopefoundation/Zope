@@ -22,7 +22,6 @@ from zLOG import LOG, ERROR
 
 from Lazy import LazyMap, LazyFilter, LazyCat, LazyValues
 from CatalogBrains import AbstractCatalogBrain, NoBrainer
-from DocumentTemplate import cDocumentTemplate
 from BTrees.IIBTree import intersection, weightedIntersection, IISet
 from BTrees.OIBTree import OIBTree
 from BTrees.IOBTree import IOBTree
@@ -419,7 +418,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         # the unique id is allways the first element
         for x in self.names:
             attr=getattr(object, x, MV)
-            if(attr is not MV and cDocumentTemplate.safe_callable(attr)): attr=attr()
+            if(attr is not MV and safe_callable(attr)): attr=attr()
             record.append(attr)
         return tuple(record)
 
