@@ -7,11 +7,34 @@ import unittest,re
 import Zope,ZPublisher,cStringIO
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
+from OFS.DTMLDocument import DTMLDocument
+from OFS.DTMLMethod import DTMLMethod
 from AccessControl import ClassSecurityInfo
-from Acquisition import Implicit
 import Globals
 
-class TestObject(SimpleItem,Implicit):
+
+class ResultObject:
+
+    def __str__(self,expected=-1):
+        s  = '\n'
+        s+= '-'*78
+        s+= "\nRequest: %s" % self.request
+        s+= "\nUser: %s" % self.user
+        s+= "\nExpected: %s" % expected + "  got: %s %s" % (self.code,self.return_text)
+        s+= "\nOutput:"
+        s+= self.output
+        s+= "\n"
+
+        return s
+    
+    __repr__ = __str__
+
+    def __call__(self,expected=-1):
+        return self.__str__(expected)
+        
+        
+
+class TestObject(SimpleItem):
     """ test object """
 
     security = ClassSecurityInfo()
@@ -38,14 +61,33 @@ class TestObject(SimpleItem,Implicit):
         return "i am public"
 
 
+    security.declarePublic('dtmlProtected')
+    security.declarePublic('dtmlPrivate')
+    security.declarePublic('dtmlPublic')
+    # Using os.getcwd() sux here !
+    dtmlProtected = Globals.DTMLFile('dtmlProtected',os.getcwd()+'/dtml')
+    dtmlPublic    = Globals.DTMLFile('dtmlPublic',os.getcwd()+'/dtml')
+    dtmlPrivate   = Globals.DTMLFile('dtmlPublic',os.getcwd()+'/dtml')
+
+
 Globals.InitializeClass(TestObject)
 
 
-class TestFolder(Folder,Implicit):
+class TestFolder(Folder):
     """ test class """
+
+    def __init__(self,id):
+        self.id = id
+
+    def getId(self): return self.id 
+
+
+    meta_type = 'TestFolder'
 
     security = ClassSecurityInfo()
     security.declareObjectPrivate()
+
+
 
 Globals.InitializeClass(TestFolder)
 
@@ -112,13 +154,35 @@ class SecurityTests(unittest.TestCase) :
         obj = TestObject('looserObject','m1')
         self.root.folder1._setObject('looserObject',obj)
 
-
         obj = TestObject('object2','m2')
         self.root.folder1.folder2._setObject('object2',obj)
-        print self.root.folder1.folder2.getOwner()
     
         get_transaction().commit()
-    
+
+
+    def testPrintTestEnvironment(self):
+        """ print all test objects, permissions and roles """
+        self._PrintTestEnvironment(root=self.root.folder1)
+
+
+    def _PrintTestEnvironment(self,root):
+        """ print recursive all objects """
+
+        print '....'*len(root.getPhysicalPath()),root.getId()
+
+        folderObjs = []
+
+        for id,obj in root.objectItems():
+
+            if obj.meta_type in ['Folder','TestFolder']:
+                folderObjs.append(obj)
+
+            else:                
+                print '    '*(1+len(root.getPhysicalPath())),obj.getId()
+
+        for folder in folderObjs:
+            self._PrintTestEnvironment(folder)
+
 
 
     def testPublicFunc(self):
@@ -127,8 +191,9 @@ class SecurityTests(unittest.TestCase) :
         path = "/folder1/object1/public_func" 
 
         for user in USERS:
-            code,txt= self._request(path,u=user.auth())
-            assert code==200, (path,user,code,txt)
+            res = self._request(path,u=user.auth())
+            assert res.code==200, res(expected=200)
+
 
     def testPublicFuncWithWrongAuth(self):
         """ testing PublicFunc"""
@@ -136,8 +201,8 @@ class SecurityTests(unittest.TestCase) :
         path = "/folder1/object1/public_func" 
 
         for user in USERS:
-            code,txt= self._request(path,u=user.auth()+'xx')
-            assert code==200, (path,user,code,txt)
+            res = self._request(path,u=user.auth()+'xx')
+            assert res.code==200, res(expected=200)
 
 
     def testPrivateFunc(self):
@@ -146,8 +211,8 @@ class SecurityTests(unittest.TestCase) :
         path = "/folder1/object1/private_func" 
 
         for user in USERS:
-            code,txt= self._request(path,u=user.auth())
-            assert code==401, (path,user,code,txt)
+            res = self._request(path,u=user.auth())
+            assert res.code==401, res(expected=401)
 
 
     def testProtectedFunc(self):
@@ -156,19 +221,47 @@ class SecurityTests(unittest.TestCase) :
         path = "/folder1/object1/protected_func" 
 
         for user in USERS:
-            code,txt= self._request(path,u=user.auth())
+            res = self._request(path,u=user.auth())
 
             if 'Manager' in user.roles:
-                assert code==200, (path,user,code,txt)
+                assert res.code==200, res(expected=200)
             else:
-                assert code==401, (path,user,code,txt)
+                assert res.code==401, res(expected=401)
 
 
+    def _testDTMLPublicFunc(self):
+        """ test DTML functions """
 
-    def testXX(self):
-        """ xxx """
-        for id,obj in self.root.objectItems():
-            print id,obj.getOwner()
+        path = "/folder1/object1/dtmlPublic" 
+
+        for user in USERS:
+            res = self._request(path,u=user.auth())
+            assert res.code==200, res(expected=200)
+
+
+    def testDTMLPrivateFunc(self):
+        """ test DTML functions """
+
+        path = "/folder1/object1/dtmlPrivate" 
+
+        for user in USERS:
+            res = self._request(path,u=user.auth())
+            assert res.code==401, res(expected=401)
+
+
+    def _testDTMLProtectedFunc(self):
+        """ test DTML functions """
+
+        path = "/folder1/object1/dtmlProtected" 
+
+        for user in USERS:
+            res = self._request(path,u=user.auth())
+
+            if 'Manager' in user.roles:
+                assert res.code==200, res(expected=200)
+            else:
+                assert res.code==401, res(expected=401)
+
 
 
     def _request(self,*args,**kw):
@@ -183,9 +276,15 @@ class SecurityTests(unittest.TestCase) :
 
         code,txt = mo.groups()
 
-#        print "%-40s  %-20s   %3d %s" % (args[0],kw.get('u',''),int(code),txt)
-        return int(code),txt
-        
+        res = ResultObject()
+        res.request     = args
+        res.user        = kw.get('u','')
+        res.code        = int(code)
+        res.return_text = txt
+        res.output      = outp
+
+        return res
+
         
 framework()
 
