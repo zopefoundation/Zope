@@ -19,8 +19,9 @@ import PathIndex.PathIndex
 import TextIndex.TextIndex 
 import FieldIndex.FieldIndex
 import KeywordIndex.KeywordIndex
+import TopicIndex.TopicIndex
 
-_indexes =  ['TextIndex','KeywordIndex','FieldIndex','PathIndex']
+_indexes =  ('TextIndex','KeywordIndex','FieldIndex','PathIndex','TopicIndex')
 
 def initialize(context):
 
