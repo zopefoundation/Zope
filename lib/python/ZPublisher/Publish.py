@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.60 1997/10/28 19:29:57 brian Exp $"""
+$Id: Publish.py,v 1.61 1997/10/29 18:50:29 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.60 1997/10/28 19:29:57 brian Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 
 def main():
@@ -479,10 +479,13 @@ class ModulePublisher:
 	    except: pass
 
 	form={}
+	other={}
 	fs=FieldStorage(fp=fp,environ=environ,keep_blank_values=1)
 	try: fslist=fs.list
 	except: fslist=None
-	if fslist is None: form={'BODY':fs.value}
+	if fslist is None:
+	    form['BODY']=fs.value
+	    other['BODY']=fs.value
 	else:
 	    tuple_items={}
 
@@ -527,23 +530,32 @@ class ModulePublisher:
 		    else:
 			found=[found,item]
 			form[key]=found
+			other[key]=found
 		except:
 		    if seqf: item=[item]
 		    form[key]=item
+		    other[key]=item
 
-	    for key in tuple_items.keys(): form[key]=tuple(form[key])
+	    for key in tuple_items.keys():
+		item=tuple(form[key])
+		form[key]=item
+		other[key]=item
 
 	# Cookie values should *not* be appended to existing form
 	# vars with the same name - they are more like default values
 	# for names not otherwise specified in the form.
 
+	cookies=None
 	if environ.has_key('HTTP_COOKIE'):
 	    d=parse_cookie(self.environ['HTTP_COOKIE'])
-	    for k in d.keys():
+	    for k,item in d.items():
+		cookies[k]=item
 		if not form.has_key(k):
-		    form[k]=d[k]
+		    form[k]=item
 
-        request=self.request=Request(environ,form,stdin)
+        request=self.request=Request(environ,other,stdin)
+	request.form=form
+	if cookies is not None: request.cookies=cookies
 	self.response=Response(stdout=stdout, stderr=stderr)
 	self.stdin=stdin
 	self.stdout=stdout
@@ -574,7 +586,7 @@ class ModulePublisher:
 
 	raise 'BadRequest',self.html(
 	    "Invalid request",
-	    "The parameter, %s, was omitted from the request."
+	    "The parameter, <em>%s</em>, was omitted from the request."
 	    "<!--%s-->"
 	    % (name,self.request))
 
@@ -589,7 +601,7 @@ class ModulePublisher:
     def forbiddenError(self,object=None):
 	raise 'NotFound',self.html(
 	    "Resource not found",
-	    "Sorry, the requested document does not exist.\n"
+	    "Sorry, the requested document does not exist.<p>"
 	    "<!--%s-->" % object)
 
     def get_request_data(self,request_params):
@@ -897,8 +909,9 @@ class ModulePublisher:
 		else:
 		    args.append(defaults[name_index-nrequired])
 	    except:
-		raise 'BadRequest', ('<strong>Invalid entry for %s </strong>'
-				     % argument_name)
+		raise 'BadRequest', (
+		    '<strong>Invalid entry for <em>%s</em> </strong>'
+		    % argument_name)
 
 	if debug: result=self.call_object(object,tuple(args))
 	else:     result=apply(object,tuple(args))
@@ -972,28 +985,29 @@ def field2required(v):
     try: v=v.read()
     except: v=str(v)
     if strip(v): return v
-    raise ValueError, 'No input for required field'
+    raise ValueError, 'No input for required field<p>'
 
 def field2int(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atoi(v)
-    raise ValueError, 'Empty entry when integer expected'
+    raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2float(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atof(v)
-    raise ValueError, 'Empty entry when floating-point number expected'
+    raise ValueError, (
+	'Empty entry when <strong>floating-point number</strong> expected')
 
 def field2long(v):
     try: v=v.read()
     except: v=str(v)
     # we can remove the check for an empty string when we go to python 1.4
     if v: return atol(v)
-    raise ValueError, 'Empty entry when integer expected'
+    raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2Regex(v):
     try: v=v.read()
@@ -1051,10 +1065,10 @@ type_converters = {
     'date':	field2date,
     'list':	field2list,
     'tuple':	field2tuple,
-    'regex':	field2regex,
-    'Regex':	field2Regex,
-    'regexs':	field2regexs,
-    'Regexs':	field2Regexs,
+    #'regex':	field2regex,
+    #'Regex':	field2Regex,
+    #'regexs':	field2regexs,
+    #'Regexs':	field2Regexs,
     'required':	field2required,
     'tokens':	field2tokens,
     'lines':	field2lines,
@@ -1348,6 +1362,11 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.61  1997/10/29 18:50:29  jim
+# - Brought back .form and .cookies
+# - Changed user exceptions to include HTML markup.
+# - Got rid of regular expression input types.
+#
 # Revision 1.60  1997/10/28 19:29:57  brian
 # Fixed evil MSIE cookie handling.
 #
