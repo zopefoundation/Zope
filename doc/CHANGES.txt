@@ -41,6 +41,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1583/ZReST: Fixed handling of the title attribute
+        for non-ascii characters.
+
       - Collector #1577: Fixed cryptic error message in ZPublisher if a
         non-ASCII string is passed to a date, int, long or float property.
 

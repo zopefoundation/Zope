@@ -215,7 +215,7 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
         if document.children:
             item = document.children[0]
             if item.tagname == 'title':
-                self.title = str(item.children[0])
+                self.title = item.children[0].astext()
 
         # do the format
         self.formatted = pub.writer.write(document, pub.destination)
