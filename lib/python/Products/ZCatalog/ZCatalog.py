@@ -255,7 +255,6 @@ class ZCatalog(Folder, Persistent, Implicit):
         pgthreshold = self._getProgressThreshold()
         handler = (pgthreshold > 0) and ZLogHandler(pgthreshold) or None
         self.refreshCatalog(clear=1, pghandler=handler)
-        print handler
 
         elapse = time.time() - elapse
         c_elapse = time.clock() - c_elapse
