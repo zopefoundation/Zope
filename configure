@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Zope configure script
-# $Id: configure,v 1.5 2003/06/10 17:26:03 gvanrossum Exp $
-# $Revision: 1.5 $
+# $Id: configure,v 1.6 2003/06/10 17:40:39 fdrake Exp $
+# $Revision: 1.6 $
 
 #####################################################################
 #                    BEGIN EDITABLE PARAMETERS                      #
@@ -19,7 +19,7 @@ TARGET="2.2.3"
 # sys.version) below in "best" to "worst" order.  Up to six
 # acceptable python versions are allowed.  Do not include the target
 # version number in this list.
-ACCEPTABLE="2.3 1.2b1 2.3a1 2.3a0 2.2.2"
+ACCEPTABLE="2.3 2.3b1 2.3a1 2.3a0 2.2.2"
 
 # provide the executable names for all the acceptable versions
 # (and the target version) below
