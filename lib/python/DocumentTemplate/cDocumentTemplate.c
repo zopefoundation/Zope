@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.36 2001/04/27 20:27:39 shane Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.37 2001/05/23 18:20:03 shane Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -688,11 +688,6 @@ static PyExtensionClass MMtype = {
 	METHOD_CHAIN(MM_methods)
 };
 
-static struct PyMethodDef TemplateDict_methods[] = {
-  {NULL,		NULL}		/* sentinel */
-};
-
-
 
 /* List of methods defined in the module */
 
@@ -882,7 +877,7 @@ void
 initcDocumentTemplate(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.36 $";
+  char *rev="$Revision: 1.37 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
