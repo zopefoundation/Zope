@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.13 1999/05/18 15:56:19 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: HTTPResponse.py,v 1.14 1999/05/24 21:01:43 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -282,12 +282,8 @@ class HTTPResponse(BaseResponse):
             
         if (find(body,'>')==l-1 and body[:1]=='<' and l < 200 and
             bogus_str_search(body) > 0):
-
-            if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
-            else:               _tbopen, _tbclose = '<!--',  '-->'
             
-            self.notFoundError(
-                "\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
+            self.notFoundError(body[1:-1])
                 
         else:
             if(title):
