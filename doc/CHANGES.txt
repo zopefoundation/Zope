@@ -121,6 +121,13 @@ Zope Changes
         that affect whether products are installed in the database at
         application startup.
 
+      - Collector #547: xmlrpclib SlowParser should also handle CDATA
+        sections.
+
+      - Collector #525: Don't mask Unautorized exceptions as XML-RPC faults.
+
+      - Collector #465: Allow XML-RPC requests with no <params /> tag.
+
     Features Added
     
       - Browser ids can now be encoded in the URL and Zope can be
@@ -199,6 +206,10 @@ Zope Changes
         ZEO persistent cache.
       
         Documented FORCE_PRODUCT_LOAD
+
+      - xmlrpclib has been updated to the Python 2.2 version, which includes
+        support for the Expat parser for unmarshalling data, which speeds up
+        things considerably.
       
   Zope 2.6.0 alpha 1
 
