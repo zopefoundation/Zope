@@ -10,5 +10,6 @@ TAL changes
 
         - Adopted Zope-style CHANGES.txt and HISTORY.txt
         - Improved execution performance
+        - Added simple ZPT vs. TAL vs. DTML benchmarks, run by markbench.py
 
       Bugs Fixed
