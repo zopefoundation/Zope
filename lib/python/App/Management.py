@@ -1,9 +1,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.12 1998/06/11 20:29:55 jim Exp $"""
+$Id: Management.py,v 1.13 1998/12/03 21:02:27 jim Exp $"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys, Globals
 from Dialogs import MessageDialog
@@ -22,8 +22,8 @@ class Tabs:
         while script[:1]=='/': script=script[1:]
         while script[-1:]=='/': script=script[:-1]
         path=split(path,'/')[:-1]
-        if path: path=[script]+path
-        else: path=[script]
+        if script: path=[script]+path
+        if not path: return ''
         script=''
         last=path[-1]
         del path[-1]
