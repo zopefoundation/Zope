@@ -121,6 +121,7 @@ sdist_tgz:
            --exclude=CVS \
            --exclude=.cvsignore \
            --exclude=makefile \
+           --exclude=build-base \
            --exclude=*~ \
            --exclude=.#*
 	${RM} "${BASE_DIR}/lib/python/version.txt"
