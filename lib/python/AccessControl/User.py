@@ -84,11 +84,11 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.131 $'[11:-2]
+__version__='$Revision: 1.132 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
-from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
+from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
 from string import join, strip, split, lower, upper
 from App.Management import Navigation, Tabs
 from Acquisition import Implicit
@@ -675,10 +675,10 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
     def __len__(self):
         return 1
 
-    _mainUser=HTMLFile('dtml/mainUser', globals())
-    _add_User=HTMLFile('dtml/addUser', globals(),
+    _mainUser=DTMLFile('dtml/mainUser', globals())
+    _add_User=DTMLFile('dtml/addUser', globals(),
                        remote_user_mode__=_remote_user_mode)
-    _editUser=HTMLFile('dtml/editUser', globals(),
+    _editUser=DTMLFile('dtml/editUser', globals(),
                        remote_user_mode__=_remote_user_mode)
     manage=manage_main=_mainUser
 
