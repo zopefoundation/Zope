@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.118 $'[11:-2]
+__version__='$Revision: 1.119 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -158,15 +158,17 @@ class BasicUser(Implicit):
         local={}
         object=getattr(object, 'aq_inner', object)
         while 1:
-            if hasattr(object, '__ac_local_roles__'):
-                local_roles=object.__ac_local_roles__
+            local_roles = getattr(object, '__ac_local_roles__', None)
+            if local_roles:
                 if callable(local_roles):
                     local_roles=local_roles()
                 dict=local_roles or {}
                 for r in dict.get(name, []):
                     local[r]=1
-            if hasattr(object, 'aq_parent'):
-                object=object.aq_parent
+            inner = getattr(object, 'aq_inner', object)
+            parent = getattr(inner, 'aq_parent', None)
+            if parent:
+                object = parent
                 continue
             if hasattr(object, 'im_self'):
                 object=object.im_self
@@ -175,7 +177,6 @@ class BasicUser(Implicit):
             break
         roles=list(roles) + local.keys()
         return roles
-
 
     def getDomains(self):
         """Return the list of domain restrictions for a user"""

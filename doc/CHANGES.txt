@@ -37,6 +37,8 @@ Zope changes
 	  won't work.  This was reported by Steve Alexander with a
           patch. 
 
+        - Corrected local role computation (Hotfix 2000-12-15)
+
     Zope 2.3.0 alpha 1
     
       Features Added
