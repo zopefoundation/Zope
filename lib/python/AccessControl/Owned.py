@@ -12,7 +12,7 @@
 ##############################################################################
 """Support for owned objects
 
-$Id: Owned.py,v 1.22 2004/01/29 19:31:06 Brian Exp $
+$Id: Owned.py,v 1.23 2004/01/29 19:33:03 Brian Exp $
 """
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
@@ -63,7 +63,7 @@ class Owned(ExtensionClass.Base):
 
     getOwner__roles__=()
     def getOwner(self, info=0,
-                 aq_get=aq_get, None=None,
+                 aq_get=aq_get,
                  UnownableOwner=UnownableOwner,
                  getSecurityManager=getSecurityManager,
                  ):
