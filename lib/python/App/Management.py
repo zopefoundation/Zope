@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.37 2001/01/09 21:48:40 evan Exp $"""
+$Id: Management.py,v 1.38 2001/01/09 23:42:07 evan Exp $"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -215,10 +215,12 @@ class Navigation(ExtensionClass.Base):
     manage_page_footer=HTMLFile('dtml/manage_page_footer', globals())
 
     manage_form_title__roles__=None
-    manage_form_title =HTMLFile('dtml/manage_form_title', globals(),
+    manage_form_title =DTMLFile('dtml/manage_form_title', globals(),
                                 form_title='Add Form',
                                 help_product=None,
                                 help_topic=None)
+    manage_form_title._setFuncSignature(
+        varnames=('form_title', 'help_product', 'help_topic') )
 
     manage_copyright__roles__=None
     manage_copyright=HTMLFile('dtml/copyright', globals())
