@@ -87,6 +87,7 @@
 Driver program to test METAL and TAL implementation.
 """
 
+import os
 import sys
 
 import getopt
@@ -105,14 +106,14 @@ FILE = "test/test1.xml"
 def main():
     versionTest = 1
     macros = 0
-    html = 0
+    html = None
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hmnx")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
         sys.stderr.write(
             "usage: driver.py [-h|-x] [-m] [-n] [file]\n")
-        sys.stderr.write("-h/-x -- HTML/XML input (default XML)\n")
+        sys.stderr.write("-h/-x -- HTML/XML input (default auto)\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
         sys.exit(2)
@@ -144,7 +145,10 @@ def interpretit(it, engine=None, stream=None, tal=1):
         engine = DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream, wrap=0, tal=tal)()
 
-def compilefile(file, html=0):
+def compilefile(file, html=None):
+    if html is None:
+        ext = os.path.splitext(file)[1]
+        html = ext in (".html", ".htm")
     if html:
         from HTMLTALParser import HTMLTALParser
         p = HTMLTALParser()
