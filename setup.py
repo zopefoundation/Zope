@@ -168,7 +168,7 @@ setup(
     name='AccessControl',
     author=AUTHOR,
 
-    packages=['AccessControl', 'AccessControl.securitySuite',
+    packages=['AccessControl',
               'AccessControl.tests', 'AccessControl.tests.mixed_module',
               'AccessControl.tests.mixed_module.submodule',
               'AccessControl.tests.private_module',
@@ -178,7 +178,8 @@ setup(
     data_files=[['AccessControl', ['AccessControl/*.txt']],
                 ['AccessControl/dtml', ['AccessControl/dtml/*']],
                 ['AccessControl/securitySuite',
-                    ['AccessControl/securitySuite/README']],
+                    ['AccessControl/securitySuite/README',
+                     'AccessControl/securitySuite/*.py']],
                 ['AccessControl/www', ['AccessControl/www/*']]],
     ext_modules=[
         Extension(name='AccessControl.cAccessControl',
@@ -254,7 +255,7 @@ setup(
     author=AUTHOR,
 
     packages=['DateTime', 'DateTime.tests'],
-    data_files=[['DateTime', ['DateTime/DateTime.html']],
+    data_files=[['DateTime', ['DateTime/DateTime.txt']],
                 ['DateTime/tests', ['DateTime/tests/julian_testdata.txt.gz']]],
     )
 
@@ -274,6 +275,16 @@ setup(
                   sources=['DocumentTemplate/cDocumentTemplate.c'])]
     )
 
+# docutils
+setup(
+    name='docutils',
+    author='David Goodger and contributors',
+    packages=['docutils', 'docutils.languages', 'docutils.parsers',
+              'docutils.parsers.rst', 'docutils.parsers.rst.directives',
+              'docutils.parsers.rst.languages', 'docutils.readers',
+              'docutils.transforms', 'docutils.writers'],
+    )
+
 # ExtensionClass
 setup(
     name='ExtensionClass',
@@ -282,28 +293,29 @@ setup(
     ext_modules=[
         Extension(name='ExtensionClass',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/ExtensionClass.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/ExtensionClass.c"]),
         Extension(name='Acquisition',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/Acquisition.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/Acquisition.c"]),
         Extension(name='MethodObject',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/MethodObject.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/MethodObject.c"]),
         Extension(name='MultiMapping',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/MultiMapping.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/MultiMapping.c"]),
         Extension(name='ThreadLock',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/ThreadLock.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/ThreadLock.c"]),
         Extension(name='Missing',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/Missing.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/Missing.c"]),
         Extension(name='Record',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/Record.c']),
+                  sources=[EXTENSIONCLASS_SRCDIR + "/Record.c"]),
         Extension(name='ComputedAttribute',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
-                  sources=['../Components/ExtensionClass/src/ComputedAttribute.c'])]
+                  sources=[EXTENSIONCLASS_SRCDIR + "/ComputedAttribute.c"]),
+        ]
     )
 
 # HelpSys
@@ -388,11 +400,11 @@ setup(
     name='StructuredText',
     author=AUTHOR,
 
-    packages=['StructuredText', 'StructuredText.regressions',
-              'StructuredText.tests'],
+    packages=['StructuredText', 'StructuredText.tests'],
     data_files=[['StructuredText', ['StructuredText/*.txt']],
                 ['StructuredText/regressions',
-                    ['StructuredText/regressions/*.ref',
+                    ['StructuredText/regressions/*.py',
+                     'StructuredText/regressions/*.ref',
                      'StructuredText/regressions/*.stx']]],
     )
 
@@ -485,20 +497,13 @@ setup(
                 ['ZClasses/dtml', ['ZClasses/dtml/*']]],
     )
 
-# ZLogger
-setup(
-    name='ZLogger',
-    author=AUTHOR,
-
-    packages=['ZLogger']
-    )
-
 # ZODB
 setup(
     name='ZODB',
     author=AUTHOR,
 
     packages=['Persistence', 'ZODB', 'ZODB.tests'],
+    data_files=[['ZODB', ['ZODB/component.xml']]],
     ext_modules=[
         Extension(name='ZODB.cPersistence',
                   include_dirs=EXTENSIONCLASS_INCLUDEDIRS,
@@ -540,7 +545,9 @@ setup(
     name='Zope',
     author=AUTHOR,
 
-    packages=['Zope', 'Zope.App']
+    packages=['Zope', 'Zope.App', 'Zope.Startup', 'Zope.Startup.misc',
+              'Zope.Startup.nt'],
+    data_files=[ ['Zope/Startup', ['Zope/Startup/*.xml']] ],
     )
 
 # webdav
@@ -567,6 +574,7 @@ setup(
     author=AUTHOR,
 
     packages=['zLOG', 'zLOG.tests'],
+    data_files=[['zLOG', ['zLOG/*.xml']]],
     )
 
 # zdaemon
@@ -575,6 +583,7 @@ setup(
     author=AUTHOR,
 
     packages=['zdaemon', 'zdaemon.tests'],
+    data_files=[['zdaemon', ['zdaemon/sample.conf', 'zdaemon/schema.xml']]],
     )
 
 
@@ -602,7 +611,23 @@ setup(
     author=AUTHOR,
 
     packages=['ZEO', 'ZEO.tests', 'ZEO.zrpc'],
-    data_files=[['ZEO', ['ZEO/*.txt']]],
+    data_files=[['ZEO', ['ZEO/*.txt', 'ZEO/component.xml']]],
+    )
+
+# ZConfig
+setup(
+    name='ZConfig',
+    author=AUTHOR,
+
+    packages=['ZConfig', 'ZConfig.tests'],
+    data_files=[
+        ['../../doc/zconfig', ['ZConfig/doc/zconfig.pdf',
+                               'ZConfig/doc/schema.dtd']],
+        ['ZConfig/tests/input', ['ZConfig/tests/input/*']],
+        ['ZConfig/tests/library/thing', ['ZConfig/tests/library/thing/*']],
+        ['ZConfig/tests/library/widget', ['ZConfig/tests/library/widget/*']],
+        ],
+    scripts=["ZConfig/scripts/zconfig"],
     )
 
 # Other top-level packages (XXX should these be broken out at all?)
@@ -610,8 +635,7 @@ setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'LOG', 'ts_regex', 'xmlrpclib',
-                'Lifetime']
+    py_modules=['Globals', 'ImageFile', 'xmlrpclib', 'Lifetime']
     )
 
 # Products base directory
@@ -627,8 +651,7 @@ setup(
     name='ExternalMethod',
     author=AUTHOR,
 
-    packages=['Products.ExternalMethod', 'Products.ExternalMethod.tests',
-              'Products.ExternalMethod.tests.Extensions'],
+    packages=['Products.ExternalMethod', 'Products.ExternalMethod.tests'],
     data_files=[['Products/ExternalMethod',
                     ['Products/ExternalMethod/*.gif',
                      'Products/ExternalMethod/*.txt']],
@@ -636,6 +659,8 @@ setup(
                     ['Products/ExternalMethod/dtml/*']],
                 ['Products/ExternalMethod/help',
                     ['Products/ExternalMethod/help/*']],
+                ['Products/ExternalMethod/tests/Extensions',
+                    ['Products/ExternalMethod/tests/Extensions/*.py']],
                 ['Products/ExternalMethod/www',
                     ['Products/ExternalMethod/www/*']]],
     )
@@ -654,11 +679,11 @@ setup(
     name='MailHost',
     author=AUTHOR,
 
-    packages=['Products.MailHost', 'Products.MailHost.help',
-              'Products.MailHost.tests'],
+    packages=['Products.MailHost', 'Products.MailHost.tests'],
     data_files=[['Products/MailHost', ['Products/MailHost/*.txt']],
                 ['Products/MailHost/dtml', ['Products/MailHost/dtml/*']],
-                ['Products/MailHost/help', ['Products/MailHost/help/*.stx']],
+                ['Products/MailHost/help', ['Products/MailHost/help/*.py',
+                                            'Products/MailHost/help/*.stx']],
                 ['Products/MailHost/www', ['Products/MailHost/www/*']]],
     )
 
@@ -667,10 +692,11 @@ setup(
     name='OFSP',
     author=AUTHOR,
 
-    packages=['Products.OFSP', 'Products.OFSP.help'],
+    packages=['Products.OFSP'],
     data_files=[['Products/OFSP', ['Products/OFSP/*.txt']],
                 ['Products/OFSP/dtml', ['Products/OFSP/dtml/*']],
-                ['Products/OFSP/help', ['Products/OFSP/help/*.stx']],
+                ['Products/OFSP/help', ['Products/OFSP/help/*.py',
+                                        'Products/OFSP/help/*.stx']],
                 ['Products/OFSP/images', ['Products/OFSP/images/*']]],
     )
 
@@ -679,13 +705,14 @@ setup(
     name='PageTemplates',
     author=AUTHOR,
 
-    packages=['Products.PageTemplates', 'Products.PageTemplates.help',
-              'Products.PageTemplates.tests'],
+    packages=['Products.PageTemplates', 'Products.PageTemplates.tests'],
+
     data_files=[['Products/PageTemplates', ['Products/PageTemplates/*.txt']],
                 ['Products/PageTemplates/examples',
                     ['Products/PageTemplates/examples/*']],
                 ['Products/PageTemplates/help',
-                    ['Products/PageTemplates/help/*.stx']],
+                    ['Products/PageTemplates/help/*.py',
+                     'Products/PageTemplates/help/*.stx']],
                 ['Products/PageTemplates/tests/input',
                     ['Products/PageTemplates/tests/input/*']],
                 ['Products/PageTemplates/tests/output',
@@ -765,7 +792,7 @@ setup(
         Extension(name='Products.PluginIndexes.TextIndex.Splitter.ISO_8859_1_Splitter.ISO_8859_1_Splitter',
                   sources=['Products/PluginIndexes/TextIndex/Splitter/ISO_8859_1_Splitter/src/ISO_8859_1_Splitter.c']),
         Extension(name='Products.PluginIndexes.TextIndex.Splitter.UnicodeSplitter.UnicodeSplitter',
-                  sources=['Products/PluginIndexes/TextIndex/Splitter/UnicodeSplitter/src/UnicodeSplitter.c'])]
+                  sources=['Products/PluginIndexes/TextIndex/Splitter/UnicodeSplitter/src/UnicodeSplitter.c'])],
     )
 
 # PythonScripts product
@@ -773,12 +800,13 @@ setup(
     name='PythonScripts',
     author=AUTHOR,
 
-    packages=['Products.PythonScripts', 'Products.PythonScripts.Extensions',
-              'Products.PythonScripts.help', 'Products.PythonScripts.tests'],
-
+    packages=['Products.PythonScripts', 'Products.PythonScripts.tests'],
     data_files=[['Products/PythonScripts', ['Products/PythonScripts/*.txt']],
+                ['Products/PythonScripts/Extensions',
+                    ['Products/PythonScripts/Extensions/*.py']],
                 ['Products/PythonScripts/help',
-                    ['Products/PythonScripts/help/*.stx']],
+                    ['Products/PythonScripts/help/*.py',
+                     'Products/PythonScripts/help/*.stx']],
                 ['Products/PythonScripts/tests/tscripts',
                     ['Products/PythonScripts/tests/tscripts/*']],
                 ['Products/PythonScripts/www',
@@ -790,10 +818,12 @@ setup(
     name='Sessions',
     author=AUTHOR,
 
-    packages=['Products.Sessions', 'Products.Sessions.help',
-              'Products.Sessions.tests', 'Products.Sessions.stresstests'],
-    data_files=[['Products/Sessions/help', ['Products/Sessions/help/*.stx']],
+    packages=['Products.Sessions', 'Products.Sessions.tests'],
+    data_files=[['Products/Sessions/help', ['Products/Sessions/help/*.py',
+                                            'Products/Sessions/help/*.stx']],
                 ['Products/Sessions/dtml', ['Products/Sessions/dtml/*']],
+                ['Products/Sessions/stresstests',
+                     ['Products/Sessions/stresstests/*.py']],
                 ['Products/Sessions/www', ['Products/Sessions/www/*']]],
     )
 
@@ -802,9 +832,11 @@ setup(
     name='SiteAccess',
     author=AUTHOR,
 
-    packages=['Products.SiteAccess', 'Products.SiteAccess.Extensions'],
+    packages=['Products.SiteAccess'],
     data_files=[['Products/SiteAccess', ['Products/SiteAccess/*.txt']],
                 ['Products/SiteAccess/doc', ['Products/SiteAccess/doc/*']],
+                ['Products/SiteAccess/Extensions',
+                     ['Products/SiteAccess/Extensions/*.py']],
                 ['Products/SiteAccess/help', ['Products/SiteAccess/help/*']],
                 ['Products/SiteAccess/www', ['Products/SiteAccess/www/*']]],
     )
@@ -816,7 +848,7 @@ setup(
 
     packages=['Products.SiteErrorLog'],
     data_files=[['Products/SiteErrorLog/www',
-        ['Products/SiteErrorLog/www/*']]],
+                 ['Products/SiteErrorLog/www/*']]],
     )
 
 # StandardCacheManagers product
@@ -853,12 +885,12 @@ setup(
     name='Transience',
     author=AUTHOR,
 
-    packages=['Products.Transience', 'Products.Transience.help',
-              'Products.Transience.tests'],
+    packages=['Products.Transience', 'Products.Transience.tests'],
     data_files=[['Products/Transience', ['Products/Transience/*.stx']],
                 ['Products/Transience/dtml', ['Products/Transience/dtml/*']],
                 ['Products/Transience/help',
-                    ['Products/Transience/help/*.stx']],
+                    ['Products/Transience/help/*.py',
+                     'Products/Transience/help/*.stx']],
                 ['Products/Transience/www', ['Products/Transience/www/*']]],
     )
 
@@ -867,12 +899,14 @@ setup(
     name='ZCatalog',
     author=AUTHOR,
 
-    packages=['Products.ZCatalog', 'Products.ZCatalog.help',
-              'Products.ZCatalog.regressiontests', 'Products.ZCatalog.tests'],
-    data_files=[['Products/ZCatalog', ['Products/ZCatalog/*.gif',
-                                       'Products/ZCatalog/*.txt']],
+    packages=['Products.ZCatalog', 'Products.ZCatalog.tests'],
+    data_files=[['Products/ZCatalog',
+                     ['Products/ZCatalog/*.gif', 'Products/ZCatalog/*.txt']],
+                ['Products/ZCatalog/regressiontests',
+                     ['Products/ZCatalog/regressiontests/*.py']],
                 ['Products/ZCatalog/dtml', ['Products/ZCatalog/dtml/*']],
-                ['Products/ZCatalog/help', ['Products/ZCatalog/help/*.stx']],
+                ['Products/ZCatalog/help', ['Products/ZCatalog/help/*.stx',
+                                            'Products/ZCatalog/help/*.py']],
                 ['Products/ZCatalog/www', ['Products/ZCatalog/www/*']]],
     )
 
@@ -915,12 +949,13 @@ setup(
     name='ZSQLMethods',
     author=AUTHOR,
 
-    packages=['Products.ZSQLMethods', 'Products.ZSQLMethods.help'],
+    packages=['Products.ZSQLMethods'],
     data_files=[['Products/ZSQLMethods', ['Products/ZSQLMethods/*.txt',
                                           'Products/ZSQLMethods/*.gif']],
                 ['Products/ZSQLMethods/dtml', ['Products/ZSQLMethods/dtml/*']],
                 ['Products/ZSQLMethods/help',
-                    ['Products/ZSQLMethods/help/*.stx']]],
+                    ['Products/ZSQLMethods/help/*.stx',
+                     'Products/ZSQLMethods/help/*.py']]],
     )
 
 # ZopeTutorial product
