@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: IZCatalog.py,v 1.6 2003/06/09 20:02:48 sidnei Exp $
+$Id: IZCatalog.py,v 1.7 2003/10/07 18:20:58 chrism Exp $
 """
 
 from Interface import Interface
@@ -66,13 +66,18 @@ class IZCatalog(Interface):
 
     """
 
-    def catalog_object(obj, uid, idxs=[]):
+    def catalog_object(obj, uid, idxs=None, update_metadata=1):
         """Catalogs the object 'obj' with the unique identifier 'uid'.
 
         The uid must be a physical path, either absolute or relative to
         the catalog.
 
         If provided, idxs specifies the names of indexes to update.
+
+        If update_metadata is specified (the default), the object's metadata
+        is updated.  If it is not, the metadata is left untouched.  This
+        flag has no effect if the object is not yet cataloged (metadata
+        is always added for new objects).
         """
 
     def uncatalog_object(uid):

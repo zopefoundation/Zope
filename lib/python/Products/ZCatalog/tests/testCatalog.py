@@ -137,25 +137,31 @@ class TestAddDelIndexes(CatalogBase, unittest.TestCase):
 
 # Test of the ZCatalog object, as opposed to Catalog
 
+class zdummy(ExtensionClass.Base):
+    def __init__(self, num):
+        self.num = num
+
+    def title(self):
+        return '%d' % self.num
+
 class TestZCatalog(unittest.TestCase):
     def setUp(self):
         self._catalog = ZCatalog.ZCatalog('Catalog')
+        self._catalog.resolve_path = self._resolve_num
         self._catalog.addIndex('title', 'KeywordIndex')
         self._catalog.addColumn('title')
 
         self.upper = 10
 
-        class dummy(ExtensionClass.Base):
-            def __init__(self, num):
-                self.num = num
-
-            def title(self):
-                return '%d' % self.num
-
+        self.d = {}
         for x in range(0, self.upper):
             # make uid a string of the number
-            self._catalog.catalog_object(dummy(x), str(x))
+            ob = zdummy(x)
+            self.d[str(x)] = ob
+            self._catalog.catalog_object(ob, str(x))
 
+    def _resolve_num(self, num):
+        return self.d[num]
 
     def testGetMetadataForUID(self):
         testNum = str(self.upper - 3) # as good as any..
@@ -174,6 +180,26 @@ class TestZCatalog(unittest.TestCase):
         sr = self._catalog.search(query)
         self.assertEqual(len(sr), 3)
 
+    def testUpdateMetadata(self):
+        self._catalog.catalog_object(zdummy(1), '1')
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+        self._catalog.catalog_object(zdummy(2), '1', update_metadata=0)
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+        self._catalog.catalog_object(zdummy(2), '1', update_metadata=1)
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '2')
+        # update_metadata defaults to true, test that here
+        self._catalog.catalog_object(zdummy(1), '1')
+        data = self._catalog.getMetadataForUID('1')
+        self.assertEqual(data['title'], '1')
+
+    def testReindexIndexDoesntDoMetadata(self):
+        self.d['0'].num = 9999
+        self._catalog.reindexIndex('title', {})
+        data = self._catalog.getMetadataForUID('0')
+        self.assertEqual(data['title'], '0')
 
 class dummy(ExtensionClass.Base):
     att1 = 'att1'
@@ -404,13 +430,13 @@ class TestCatalogObject(unittest.TestCase):
         self.assertEqual(a.actual_result_count, self.upper)
         self.assertEqual(a[0].num, self.upper - 1)
 
-    def testUpdateIndexLeavesMetadataAlone(self):
+    def testUpdateMetadataFalse(self):
         ob = dummy(9999)
         self._catalog.catalogObject(ob, `9999`)
         brain = self._catalog(num=9999)[0]
         self.assertEqual(brain.att1, 'att1')
         ob.att1 = 'foobar'
-        self._catalog.catalogObject(ob, `9999`, idxs=['num'])
+        self._catalog.catalogObject(ob, `9999`, update_metadata=0)
         brain = self._catalog(num=9999)[0]
         self.assertEqual(brain.att1, 'att1')
         self._catalog.catalogObject(ob, `9999`)

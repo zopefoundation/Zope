@@ -328,14 +328,22 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         
     # the cataloging API
 
-    def catalogObject(self, object, uid, threshold=None,idxs=None):
+    def catalogObject(self, object, uid, threshold=None, idxs=None,
+                      update_metadata=1):
         """
-        Adds an object to the Catalog by iteratively applying it
+        Adds an object to the Catalog by iteratively applying it to
         all indexes.
 
         'object' is the object to be cataloged
 
         'uid' is the unique Catalog identifier for this object
+
+        If 'idxs' is specified (as a sequence), apply the object only
+        to the named indexes.
+
+        If 'update_metadata' is true (the default), also update metadata for
+        the object.  If the object is new to the catalog, this flag has
+        no effect (metadata is always created for new objects).
 
         """
 
@@ -354,11 +362,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             self.uids[uid] = index
             self.paths[index] = uid
 
-        else:  # we are updating old data
-            if not idxs:
-                # if the caller specifies that we should update only a
-                # specific set of indexes, we don't do a metadata update.
-                self.updateMetadata(object, uid)
+        elif update_metadata:  # we are updating and we need to update metadata
+            self.updateMetadata(object, uid)
 
         # do indexing
 

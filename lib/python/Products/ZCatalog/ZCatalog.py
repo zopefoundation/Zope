@@ -454,7 +454,9 @@ class ZCatalog(Folder, Persistent, Implicit):
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
             if obj is not None:
-                self.catalog_object(obj, p, idxs=[name])
+                # don't update metadata when only reindexing a single
+                # index via the UI
+                self.catalog_object(obj, p, idxs=[name], update_metadata=0)
 
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
@@ -483,7 +485,7 @@ class ZCatalog(Folder, Persistent, Implicit):
         return Splitter.availableSplitters
 
 
-    def catalog_object(self, obj, uid=None, idxs=[]):
+    def catalog_object(self, obj, uid=None, idxs=None, update_metadata=1):
         """ wrapper around catalog """
 
         if uid is None:
@@ -497,7 +499,8 @@ class ZCatalog(Folder, Persistent, Implicit):
         elif not isinstance(uid,types.StringType):
             raise CatalogError('The object unique id must be a string.')
 
-        self._catalog.catalogObject(obj, uid, None,idxs)
+        self._catalog.catalogObject(obj, uid, None, idxs,
+                                    update_metadata=update_metadata)
         # None passed in to catalogObject as third argument indicates
         # that we shouldn't try to commit subtransactions within any
         # indexing code.  We throw away the result of the call to
