@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -131,18 +131,18 @@ safebin['same_type'] = same_type
 
 _marker = []  # Create a new marker object.
 
-def aq_validate(*args):
-    return apply(getSecurityManager().validate, args[:4])
+def aq_validate(inst, obj, name, v, validate):
+    return validate(inst, obj, name, v)
 
 def __careful_getattr__(inst, name, default=_marker):
     if name[:1]!='_':
         try:
-            # Try to get the attribute normally so that we don't
-            # accidentally acquire when we shouldn't.
-            v = getattr(inst, name)
             # Filter out the objects we can't access.
             if hasattr(inst, 'aq_acquire'):
-                return inst.aq_acquire(name, aq_validate)
+                return inst.aq_acquire(name, aq_validate,
+                                       getSecurityManager().validate)
+            # Or just try to get the attribute directly.
+            v = getattr(inst, name)
         except AttributeError:
             if default is not _marker:
                 return default
