@@ -11,8 +11,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.6 1998/01/09 21:32:22 brian Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Undo.py,v 1.7 1998/01/12 16:50:32 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
@@ -20,11 +20,14 @@ from string import atof, find, atoi, split, rfind
 
 class UndoSupport:
 
-    manage_UndoForm=Globals.HTMLFile('undo', globals())
+    manage_UndoForm=Globals.HTMLFile('undo', globals(),
+				     batch_size=20, first_transaction=0,
+				     last_transaction=20)
 
     def undoable_transactions(self, AUTHENTICATION_PATH=None,
 			      first_transaction=None,
-			      last_transaction=None):
+			      last_transaction=None,
+			      batch_size=20):
 
 	if AUTHENTICATION_PATH is None:
 	    path=self.REQUEST['AUTHENTICATION_PATH']
@@ -35,7 +38,7 @@ class UndoSupport:
 	    except: first_transaction=0
 	if last_transaction is None:
 	    try: last_transaction=self.REQUEST['last_transaction']
-	    except: last_transaction=first_transaction+20
+	    except: last_transaction=first_transaction+batch_size
 
 	db=self._p_jar.db
 
@@ -87,6 +90,10 @@ Globals.default__class_init__(UndoSupport)
 ############################################################################## 
 #
 # $Log: Undo.py,v $
+# Revision 1.7  1998/01/12 16:50:32  jim
+# Made some changes to enhance batch processing.
+# Batch size is also now a parameter.
+#
 # Revision 1.6  1998/01/09 21:32:22  brian
 # Added __class_init__
 #
