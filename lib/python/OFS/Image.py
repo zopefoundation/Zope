@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -97,6 +97,7 @@ from cStringIO import StringIO
 from Globals import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
+
 
 
 manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
@@ -169,7 +170,6 @@ class File(Persistent,Implicit,PropertyManager,
         Returns the contents of the file or image.  Also, sets the
         Content-Type HTTP header to the objects content type.
         """
-
         if self.precondition and hasattr(self,self.precondition):
             # Grab whatever precondition was defined and then 
             # execute it.  The precondition will raise an exception 
@@ -180,7 +180,7 @@ class File(Persistent,Implicit,PropertyManager,
             else:
                 c()
         RESPONSE.setHeader('content-type', self.content_type)
-#        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
+        RESPONSE.setHeader('Last-Modified', rfc1123_date(self._p_mtime))
         return self.data
 
 
