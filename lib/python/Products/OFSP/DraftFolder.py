@@ -14,63 +14,52 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.8 1997/12/31 19:27:10 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: DraftFolder.py,v 1.9 1998/01/02 17:41:19 brian Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
-import time, OFS.SimpleItem, AccessControl.Role
-import Persistence, Acquisition, Globals
-import AccessControl.User, Session
-from string import rfind
+
+import Globals, Session, time
+from AccessControl.Role import RoleManager
+from AccessControl.User import UserFolder
 from App.Management import Management
+from Persistence import Persistent
+from Acquisition import Implicit
+from OFS.SimpleItem import Item
+from Session import Session
 from Globals import HTMLFile
+from string import rfind
+
+
+
 
 addForm=HTMLFile('draftFolderAdd', globals())
 
 def add(self,id,baseid,title='',REQUEST=None):
-    """Add a new Folder object"""
-    i=DraftFolder()
-    i._init(id, baseid, title, self,REQUEST)
-    self._setObject(id,i)
-    if REQUEST is not None: return self.manage_main(self,REQUEST)
+    """ """
+    self._setObject(id, DraftFolder(id, baseid, title, self, REQUEST))
+    if REQUEST: return self.manage_main(self,REQUEST)
 
-def hack(self):
-    return ({'icon':icon, 'label':'Contents',
-	     'action':'manage_main',   'target':'manage_main'},
-	    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
-	     'action':'manage_propertiesForm',   'target':'manage_main'},
-	    {'icon':'', 'label':'Security',
-	     'action':'manage_access',   'target':'manage_main'},
-	    {'icon':'App/undo_icon.gif', 'label':'Undo',
-	     'action':'manage_UndoForm',   'target':'manage_main'},
-	    {'icon':'OFS/DraftFolderControl.gif', 'label':'Supervise',
-	     'action':'manage_Supervise',   'target':'manage_main'},
-	   )
 
-class DraftFolder(Persistence.Persistent,
-		  AccessControl.Role.RoleManager,
-		  OFS.SimpleItem.Item,
-		  Acquisition.Implicit,
-		  Management,
-		  ):
-
+class DraftFolder(Persistent,Implicit,RoleManager,Management,Item):
+    """ """
     meta_type='Draft Folder'
     icon='misc_/OFSP/DraftFolderIcon'
     isPrincipiaFolderish=1
 
     manage_options=(
-    {'icon':icon, 'label':'Contents',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
-     'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'icon':'', 'label':'Security',
-     'action':'manage_access',   'target':'manage_main'},
-    {'icon':'App/undo_icon.gif', 'label':'Undo',
-     'action':'manage_UndoForm',   'target':'manage_main'},
-    {'icon':'OFS/DraftFolderControl.gif', 'label':'Supervise',
-     'action':'manage_Supervise',   'target':'manage_main'},
+    {'label':'Contents', 'action':'manage_main',
+     'target':'manage_main'},
+    {'label':'Properties', 'action':'manage_propertiesForm',
+     'target':'manage_main'},
+    {'label':'Security', 'action':'manage_access',
+     'target':'manage_main'},
+    {'label':'Undo', 'action':'manage_UndoForm',
+     'target':'manage_main'},
+    {'label':'Supervise', 'action':'manage_Supervise',
+     'target':'manage_main'},
     )
 
-    def _init(self, id, baseid, title, parent, REQUEST):
+    def __init__(self, id, baseid, title, parent, REQUEST):
 	if hasattr(parent, 'aq_self'): parent=parent.aq_self
 	if not hasattr(parent, baseid):
 	    raise 'Input Error', (
@@ -86,22 +75,19 @@ class DraftFolder(Persistence.Persistent,
 	if l >= 0: cookie=cookie[:l]
 	self.cookie="%s/%s" % (cookie, id)
 	self.cookie_name="%s-Draft-Folder-%s" % (id,baseid)
-
 	self.__allow_groups__=Supervisor()
-	self.__allow_groups__._init()
+
 
     def title_and_id(self):
 	r=DraftFolder.inheritedAttribute('title_and_id')(self)
 	r='%s *' % r
-	try: base=getattr(self.aq_parent, self.baseid)
+	try:    base=getattr(self.aq_parent, self.baseid)
 	except: base=None
-	
 	if base is not None:
 	    r="%s Draft Folder: %s" % (base.title_or_id(), r)
 	return r
 
     def _base(self, cookie):
-
 	# Check for base object
 	if hasattr(self, 'aq_parent'): parent=self.aq_parent
 	else: parent=None
@@ -114,7 +100,6 @@ class DraftFolder(Persistence.Persistent,
 	    does not exist.'''
 	    % self.cookie
 	    )
-
 	base=getattr(parent, baseid)
 
 	pd=Globals.SessionBase[cookie]
@@ -123,14 +108,11 @@ class DraftFolder(Persistence.Persistent,
 	    base=base.aq_parent
 	    if hasattr(base, '_p_oid'): oids.append(base._p_oid)
 	    else: break
-
 	while oids:
 	    oid=oids[-1]
 	    del oids[-1]
 	    base=pd.jar[oid].__of__(base)
-	base.manage_options=hack
 	return base
-
 
     def __bobo_traverse__(self, REQUEST, name):
 	cookie_name=self.cookie_name
@@ -198,11 +180,12 @@ class DraftFolder(Persistence.Persistent,
 	except: return ()
 
 
-class Supervisor(AccessControl.User.UserFolder, Session.Session):
-
+class Supervisor(UserFolder, Session):
     manage=manage_main=HTMLFile('DraftFolderSupervisor', globals())
-    manage_options=() # This is a simple item
+    manage_options=()
 
+    def __init__(self):
+	UserFolder.__init__(self)
     
     
     
@@ -210,6 +193,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.9  1998/01/02 17:41:19  brian
+# Made undo available only in folders
+#
 # Revision 1.8  1997/12/31 19:27:10  jim
 # *** empty log message ***
 #

@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 from Globals import HTMLFile, MessageDialog
 from AccessControl.Role import RoleManager
@@ -28,9 +28,6 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 		     'target':'manage_main',
 		    },
 		    {'label':'Security', 'action':'manage_access',
-		     'target':'manage_main',
-		    },
-		    {'label':'Undo', 'action':'manage_UndoForm',
 		     'target':'manage_main',
 		    },
 		   )
