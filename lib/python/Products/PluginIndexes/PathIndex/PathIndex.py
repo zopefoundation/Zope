@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.37 2003/11/04 15:47:35 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.38 2003/11/05 01:17:44 tiran Exp $'
 
 import warnings
 from types import StringType, ListType, TupleType
@@ -113,7 +113,7 @@ class PathIndex(Persistent, SimpleItem):
         comps = filter(None, path.split('/'))
        
         if not self._unindex.has_key(docid):
-            self._.migrate_length()
+            self._migrate_length()
             self._length.change(1)
 
         for i in range(len(comps)):
@@ -148,7 +148,7 @@ class PathIndex(Persistent, SimpleItem):
                     'Attempt to unindex document'
                     ' with id %s failed' % docid)
 
-        self._.migrate_length()
+        self._migrate_length()
         self._length.change(-1)
         del self._unindex[docid]
 
