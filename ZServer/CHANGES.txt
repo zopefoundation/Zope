@@ -6,13 +6,42 @@ ZServer Changes
 
   Releases
 
-    Zserver 1.0a1
+    ZServer 1.0a2
 
       New Features
 
-        Inital release. Includes new threaded architecture--currently
+        Preliminary support for PCGI has been added. It is still not
+        complete and bug free. The main problem is that all newlines
+        seem to get converted to carriage return newline pairs...
+        
+        Simple controls to limit FTP connections have been added to
+        help prevent denial of service attacks.
+        
+        FTP now supports login with a username and directory, i.e.
+        'joe@Projects/JoesProject' which authenticates the login in
+        the specified directory. You can still use a normal username
+        and defer authentication until you cd to a directory where you
+        are defined.
+
+      Bug Fixed
+
+        Data was being dropped from POST requests because of a bug in
+        the sized input collection of asynchat.
+
+        HTTP Response headers were not being correctly set.
+
+        URL prefixes for the the Zope HTTP handler could not be set to
+        ''. Now the empty prefix is the default, to simplify URLs.
+
+    ZServer 1.0a1
+
+      New Features
+
+        Initial release. Includes new threaded architecture--currently
         limited to a thread pool of 1. Includes preliminary FTP
         support. Includes HTTP support.
 
       Bugs Fixed
+ 
+        None
  
