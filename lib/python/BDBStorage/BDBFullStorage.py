@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.22 $'[-2:][0]
+__version__ = '$Revision: 1.23 $'[-2:][0]
 
 import struct
 import time
@@ -976,8 +976,9 @@ class Full(BerkeleyBase):
                     self._txnMetadata[tid] = PROTECTED_TRANSACTION + meta[1:]
                     tidmarks[tid] = 1
                 # For now, just remember which objects are touched by the
-                # packable 
-                oids[oid] = 1
+                # packable
+                if oid <> ZERO:
+                    oids[oid] = 1
             # Now look at every object revision metadata record for the
             # objects that have been touched in the packable transactions.  If
             # the metadata record points at the current revision of the
