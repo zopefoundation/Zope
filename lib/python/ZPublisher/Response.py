@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.28 1998/03/13 22:13:35 jim Exp $'''
+$Id: Response.py,v 1.29 1998/03/18 20:21:18 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.28 1998/03/13 22:13:35 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -148,6 +148,8 @@ absuri_re=regex.compile("[a-zA-Z0-9+.-]+:[^\0- \"\#<>]+\(#[^\0- \"\#<>]*\)?")
 
 bogus_str=regex.compile(" [a-fA-F0-9]+>$")
 accumulate_header={'set-cookie': 1}.has_key
+
+_tbopen, _tbclose = '<!--', '-->'
 
 class Response:
     """\
@@ -251,7 +253,7 @@ class Response:
 	    bogus_str.search(body) > 0):
 	    raise 'NotFound', (
 		"Sorry, the requested document does not exist.<p>"
-		"\n<!--\n%s\n-->" % body[1:-1])
+		"\n%s\n%s\n%s" % (_tbopen, body[1:-1], _tbclose))
 	    
 	if(title):
 	    self.body=('<html>\n<head>\n<title>%s</title>\n</head>\n'
@@ -406,7 +408,7 @@ class Response:
 	tb=self.format_exception(t,v,tb,200)
 	tb=join(tb,'\n')
 	tb=self.quoteHTML(tb)
-	return "\n<!--\n%s\n-->" % tb
+	return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
     def redirect(self, location):
 	"""Cause a redirection without raising an error"""
