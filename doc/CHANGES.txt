@@ -16,6 +16,9 @@ Zope Changes
 
       Bugs fixed
 
+        - Collector #2318: html_quote function re-aliased into
+          DT_Util so as not to break existing user code.
+
         - Corrections to the code that adds interface information to the
           meta type registry.
 
