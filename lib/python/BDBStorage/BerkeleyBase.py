@@ -14,12 +14,11 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.30 $'.split()[-2:][0]
+__version__ = '$Revision: 1.31 $'.split()[-2:][0]
 
 import os
 import time
 import errno
-import select
 import threading
 from types import StringType
 
@@ -199,19 +198,15 @@ class BerkeleyBase(BaseStorage):
         self._init_oid()
         # Set up the checkpointing thread
         if config.interval > 0:
-            r, self._checkpointfd = os.pipe()
-            poll = select.poll()
-            poll.register(r, select.POLLIN)
-            self._checkpointer = _Checkpoint(self, poll, config.interval)
+            self._checkpointstop = event = threading.Event()
+            self._checkpointer = _Checkpoint(self, event, config.interval)
             self._checkpointer.start()
         else:
             self._checkpointer = None
         # Set up the autopacking thread
         if config.frequency > 0:
-            r, self._autopackfd = os.pipe()
-            poll = select.poll()
-            poll.register(r, select.POLLIN)
-            self._autopacker = self._make_autopacker(poll)
+            self._autopackstop = event = threading.Event()
+            self._autopacker = self._make_autopacker(event)
             self._autopacker.start()
         else:
             self._autopacker = None
@@ -342,13 +337,13 @@ class BerkeleyBase(BaseStorage):
         # Stop the autopacker thread
         if self._autopacker:
             self.log('stopping autopacking thread')
-            self._autopacker.stop()
-            os.write(self._autopackfd, 'STOP')
+            # Setting the event also toggles the stop flag
+            self._autopackstop.set()
             self._autopacker.join(JOIN_TIME)
         if self._checkpointer:
             self.log('stopping checkpointing thread')
-            self._checkpointer.stop()
-            os.write(self._checkpointfd, 'STOP')
+            # Setting the event also toggles the stop flag
+            self._checkpointstop.set()
             self._checkpointer.join(JOIN_TIME)
         self._lock_acquire()
         try:
@@ -465,12 +460,13 @@ def env_from_string(envname, config):
 
 
 class _WorkThread(threading.Thread):
-    def __init__(self, storage, poll, checkinterval, name='work'):
+    NAME = 'worker'
+
+    def __init__(self, storage, event, checkinterval):
         threading.Thread.__init__(self)
         self._storage = storage
-        self._poll = poll
+        self._event = event
         self._interval = checkinterval
-        self._name = name
         # Bookkeeping.  _nextcheck is useful as a non-public interface aiding
         # testing.  See test_autopack.py.
         self._stop = False
@@ -480,29 +476,20 @@ class _WorkThread(threading.Thread):
         self.setDaemon(True)
 
     def run(self):
-        name = self._name
+        name = self.NAME
         self._storage.log('%s thread started', name)
         while not self._stop:
             now = time.time()
-            if now < self._nextcheck:
-                continue
-            self._storage.log('running %s', name)
-            self._dowork()
-            self._nextcheck = now + self._interval
-            # Now we sleep for a little while before we check again.  We use a
-            # poll timeout so that when the parent thread writes its "stop
-            # marker" to the readfd, we'll exit out immediately.
-            fds = self._poll.poll(self._interval * 1000)
-            for fd, event in self._poll.poll(self._interval):
-                # Just read and throw away the data.  The _stop flag will
-                # already have been set if we're being shutdown.
-                if event & select.POLLIN:
-                    #print name, 'data:', os.read(fd, 1024)
-                    os.read(fd, 1024)
+            if now >= self._nextcheck:
+                self._storage.log('running %s', name)
+                self._dowork()
+                # Recalculate `now' because _dowork() could have taken a
+                # while.  time.time() can be expensive, but oh well.
+                self._nextcheck = time.time() + self._interval
+            # Block w/ timeout on the shutdown event.
+            self._event.wait(self._interval)
+            self._stop = self._event.isSet()
         self._storage.log('%s thread finished', name)
-
-    def stop(self):
-        self._stop = True
 
     def _dowork(self):
         pass
@@ -510,8 +497,7 @@ class _WorkThread(threading.Thread):
 
 
 class _Checkpoint(_WorkThread):
-    def __init__(self, storage, poll, interval):
-        _WorkThread.__init__(self, storage, poll, interval, 'checkpointing')
+    NAME = 'checkpointing'
 
     def _dowork(self):
         self._storage.docheckpoint()

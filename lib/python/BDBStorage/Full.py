@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.57 $'.split()[-2:][0]
+__version__ = '$Revision: 1.58 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
@@ -237,12 +237,12 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # Do recovery and consistency checks
         self._withlock(self._dorecovery)
 
-    def _make_autopacker(self, poll):
+    def _make_autopacker(self, event):
         config = self._config
         lastpacktime = U64(self._last_packtime())
         return _Autopack(
-            self, poll, config.frequency,
-            config.packtime, config.classicpack,
+            self, event,
+            config.frequency, config.packtime, config.classicpack,
             lastpacktime)
 
     def _dorecovery(self):
@@ -1858,9 +1858,12 @@ class _Record:
 
 
 class _Autopack(_WorkThread):
-    def __init__(self, storage, poll, frequency, packtime, classicpack,
+    NAME = 'autopacking'
+
+    def __init__(self, storage, event,
+                 frequency, packtime, classicpack,
                  lastpacktime):
-        _WorkThread.__init__(self, storage, poll, frequency, 'autopacking')
+        _WorkThread.__init__(self, storage, event, frequency)
         self._packtime = packtime
         self._classicpack = classicpack
         # Bookkeeping

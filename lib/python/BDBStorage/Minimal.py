@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.21 $'[-2:][0]
+__version__ = '$Revision: 1.22 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.4 of
@@ -123,8 +123,8 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
             finally:
                 self._lock_release()
 
-    def _make_autopacker(self, poll):
-        return _Autopack(self, poll, self._config.frequency)
+    def _make_autopacker(self, event):
+        return _Autopack(self, event, self._config.frequency)
 
     def _doabort(self, txn, tid):
         co = cs = None
@@ -537,8 +537,7 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
 
 
 class _Autopack(_WorkThread):
-    def __init__(self, storage, poll, frequency):
-        _WorkThread.__init__(self, storage, poll, frequency, 'autopacking')
+    NAME = 'autopacking'
 
     def _dowork(self):
         # Run the autopack phase
