@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.12 1997/01/28 22:59:19 jim Exp $'''
+$Id: Response.py,v 1.13 1997/04/11 23:13:23 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,9 @@ $Id: Response.py,v 1.12 1997/01/28 22:59:19 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.13  1997/04/11 23:13:23  jim
+# Fixed cookies.
+#
 # Revision 1.12  1997/01/28 22:59:19  jim
 # Fixed bug that caused html didling of non-html data
 #
@@ -112,7 +115,7 @@ $Id: Response.py,v 1.12 1997/01/28 22:59:19 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -354,11 +357,7 @@ class Response:
 	browsers with a key "name" and value "value". If a value for the
 	cookie has previously been set in the response object, the new
 	value is appended to the old one separated by a colon. '''
-	try:
-	    v,expires,domain,path,secure=self.cookies[name]
-	except:
-	    v,expires,domain,path,secure='','','','',''
-	self.cookies[name]=v+value,expires,domain,path,secure
+	self.setCookie(name,value)
 
     def expireCookie(self, name):
 	'''\
@@ -368,10 +367,9 @@ class Response:
 	corresponding to "name" on the client, if one exists. This is
 	accomplished by sending a new cookie with an expiration date
 	that has already passed. '''
-	self.cookies[name]='deleted','01-Jan-96 11:11:11 GMT','','',''
+	self.setCookie(name,'deleted', max_age=0)
 
-    def setCookie(self,name, value=None,
-		  expires=None, domain=None, path=None, secure=None):
+    def setCookie(self,name,value,**kw):
 	'''\
 	Set an HTTP cookie on the browser
 
@@ -379,16 +377,10 @@ class Response:
 	browsers with a key "name" and value "value". This overwrites
 	any previously set value for the cookie in the Response object. '''
 	try: cookie=self.cookies[name]
-	except: cookie=('')*5
+	except: cookie=self.cookies[name]={}
 
-	def f(a,b):
-	    if b is not None: return b
-	    return a
-
-	self.cookies[name]=tuple(map(f,cookie,
-				     (value,expires,domain,path,secure)
-				     )
-				 )
+	for k, v in kw.items(): cookie[k]=v
+	cookie['value']=value
 
 
     def appendBody(self, body):
@@ -525,13 +517,22 @@ class Response:
 
     def _cookie_list(self):
 	cookie_list=[]
-	for name in self.cookies.keys():
-	    value,expires,domain,path,secure=self.cookies[name]
-	    cookie='set-cookie: %s=%s' % (name,value)
-	    if expires: cookie = "%s; expires=%s" % (cookie,expires)
-	    if domain: cookie = "%s; domain=%s" % (cookie,domain)
-	    if path: cookie = "%s; path=%s" % (cookie,path)
-	    if secure: cookie = cookie+'; secure'
+	for name, attrs in self.cookies.items():
+	    if attrs.has_key('expires'):
+		cookie='set-cookie: %s="%s"' % (name,attrs['value'])
+	    else:
+		cookie=('set-cookie: %s="%s"; Version="1"' %
+			(name,attrs['value']))
+	    for name, v in attrs.items():
+		if name=='expires': cookie = '%s; Expires="%s"' % (cookie,v)
+		elif name=='domain': cookie = '%s; Domain="%s"' % (cookie,v)
+		elif name=='path': cookie = '%s; Path=%s' % (cookie,v)
+		elif name=='max_age': cookie = '%s; Max-Age="%s"' % (cookie,v)
+		elif name=='comment': cookie = '%s; Comment="%s"' % (cookie,v)
+		elif name=='secure': cookie = '%s; Secure' % cookie
+		elif name!='value':
+		    raise ValueError, (
+			'Invalid cookie attribute, %s' % name)
 	    cookie_list.append(cookie)
 	return cookie_list
 
