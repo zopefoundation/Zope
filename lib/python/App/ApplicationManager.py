@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -308,7 +308,10 @@ class ApplicationManager(Folder,CacheManager):
 
     def version_info(self):
         r=[]
-        db=self._p_jar.db()
+        try: db=self._p_jar.db()
+        except: raise 'Zope database version error', """
+        Sorry, <em>Version management</em> is only supported if you use ZODB 3.
+        """
         for v in db.versions():
             if db.versionEmpty(v): continue
             r.append({'id': v})
