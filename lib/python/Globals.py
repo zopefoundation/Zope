@@ -1,11 +1,12 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
 from string import atof, rfind
+import Acquisition
 
 try:
     home=CUSTOMER_HOME,SOFTWARE_HOME,SOFTWARE_URL
@@ -139,6 +140,9 @@ else:
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.16  1998/09/29 19:22:03  jim
+# Added Acquisition
+#
 # Revision 1.15  1998/05/26 22:28:14  jim
 # Fixed stupid bug in bobobase_modification_time
 #
