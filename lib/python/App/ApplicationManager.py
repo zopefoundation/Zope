@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -17,12 +17,10 @@ class ApplicationManager(Acquirer,Management,CacheManager):
     manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
-    {'icon':'App/arrow.jpg', 'label':'Application',
-     'action':'manage_app',   'target':'_top'},
-    {'icon':'App/arrow.jpg', 'label':'Application Manager',
+    {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
      'action':'manage_main',   'target':'manage_main'},
-    {'icon':'App/arrow.jpg', 'label':'Cache Manager',
-     'action':'manage_cacheForm',   'target':'manage_main'},
+    {'icon':'App/CacheManager_icon.gif','label':'Cache Manager',
+     'action':'manage_cacheForm','target':'manage_main'},
     )
     name=title   ='Control Panel'
     process_id   =os.getpid()
