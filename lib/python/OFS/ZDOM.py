@@ -523,7 +523,12 @@ class NodeList:
     Python extensions: can use sequence-style 'len', 'getitem', and
     'for..in' constructs.
     """
-    
+
+    # The security machinery is not willing to treat this like a
+    # list just because we act like one. We need to assert that
+    # its ok to allow access to items in the nodelist.
+    __allow_access_to_unprotected_subobjects__=1
+
     def __init__(self,list=None):
         self._data = list or []
     
@@ -551,6 +556,9 @@ class NamedNodeMap:
     Python extensions: can use sequence-style 'len', 'getitem', and
     'for..in' constructs, and mapping-style 'getitem'.
     """
+
+    # Tell the security machinery to allow access to items.
+    __allow_access_to_unprotected_subobjects__=1
     
     def __init__(self, data=None):
         if data is None : data = {}
