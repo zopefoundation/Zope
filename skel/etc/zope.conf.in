@@ -1,0 +1,713 @@
+###############################################################################
+# Welcome to Zope 2.
+###############################################################################
+#
+# This is the Zope configuration file.  The Zope configuration file
+# shows what the default configuration directives are, and show
+# examples for each directive.  To declare a directive, make sure that
+# you add it to a line that does not begin with '#'.
+
+# ZConfig "defines" used for later textual substitution
+
+%define INSTANCE <<INSTANCE_HOME>>
+%define ZOPE <<ZOPE_HOME>>
+
+# Directive: instancehome
+#
+# Description:
+#     The path to the data files, local product files, import directory,
+#     and Extensions directory used by Zope.
+#
+# Influences: INSTANCE_HOME environment variable
+#
+# Required (no default)
+#
+# Example:
+#
+#    instancehome /home/chrism/projects/sessions
+
+instancehome $INSTANCE
+
+# Directive: clienthome
+#
+# Description:
+#     The directory in which a running Zope's process identifier files are
+#     placed.
+#
+# Influences: CLIENT_HOME environment variable
+#
+# Default: $INSTANCE/var
+#
+# Example:
+#
+#    clienthome /home/chrism/projects/sessions/var
+
+
+# Directive: debug-mode
+#
+# Description:
+#     If this directive is set to 'on', it causes the Zope process to not
+#     detach from the controlling terminal after it is run. It also
+#     influences the behavior of some Zope objects at runtime (for example,
+#     when debug mode is "on", you are able to view changes made to
+#     DTMLFile and PageTemplateFile objects immediately; When it is 'off',
+#     you must restart the server to see the changes. Additionally, event
+#     log and other log output will not be sent to the console when this
+#     directive is set to 'off'. Setting this to 'off' when Zope is in a
+#     production environment is encouraged, as it speeds execution.
+#
+# Influences: Z_DEBUG_MODE environment variable
+#
+# Default: on
+#
+# Example:
+#
+#    debug-mode on
+
+
+# Directive: effective-user
+#
+# Description:
+#     If you intend to run Zope as the "root" user, you must supply this
+#     directive with an effective username or userid number to which Zope
+#     will 'suid' after the server ports are bound. This directive only
+#     works under UNIX and if Zope is started as the root user.
+#
+# Influences: Zope configuration
+#
+# Default: unset
+#
+# Example:
+#
+#    effective-user chrism
+
+
+# Directive: enable-product-installation
+#
+# Description:
+#     If this directive is turned on, Zope performs 'product installation'
+#     (the registration of Python modules in various Products directories)
+#     at startup. Turning this off can speed Zope startup time, but it can
+#     also cause your Control_Panel Product list to become desynchronized
+#     with the contents of your Products directories. If the
+#     'zeo-client-name' directive is set, and this directive is unset, this
+#     directive will be implicitly turned off By default, it is on.
+#
+# Influences: FORCE_PRODUCT_LOAD environment variable
+#
+# Default: on
+#
+# Example:
+#
+#    enable-product-installation off
+
+
+# Directive: locale
+#
+# Description:
+#     Enable locale (internationalization) support by supplying a locale
+#     name to be used. See your operating system documentation for locale
+#     information specific to your system. If your Python module does not
+#     support the locale module, or if the requested locale is not
+#     supported by your system, an error will be raised and Zope will not
+#     start.
+#
+# Influences: Zope configuration
+#
+# Default: unset
+#
+# Example:
+#
+#    locale fr_FR
+
+
+# Directive: zserver-threads
+#
+# Description:
+#     Specify the number of threads that Zope's Zserver web server will use
+#     to service requests. The default is 4.
+#
+# Influences: Zope configuration
+#
+# Default: 4
+#
+# Example:
+#
+#    zserver-threads 10
+
+
+# Directive: python-check-interval
+#
+# Description:
+#     Specify an integer representing the Python interpreter "check
+#     interval" This interval determines how often the interpreter checks
+#     for periodic things such as thread switches and signal handlers. The
+#     Zope default is 500, but you may want to experiment with other values
+#     in order to attempt to increae performance in your particular
+#     environment.
+#
+# Influences: Zope configuration
+#
+# Default: 500
+#
+# Example:
+#
+#    python-check-interval 1000
+
+
+# Directive: zserver-read-only-mode
+#
+# Description:
+#     If this directive is set to 'on', it will cause Zope to inhibit the
+#     creation of log files and pid files. Access and event log files will
+#     be presented on standard output. Setting this directive 'on' causes
+#     pcgi, fastcgi, and daemon-related directives to have no effect.
+#
+# Influences: Zope configuration
+#
+# Default: off
+#
+# Example:
+#
+#    zserver-read-only-mode on
+
+
+# Directive: pid-filename
+#
+# Description:
+#     The path to the file in which the Zope process id(s) will be written.
+#     This defaults to client-home/Z2.pid.
+#
+# Influences: Zope configuration
+#
+# Default: CLIENT_HOME/Z2.pid
+#
+# Example:
+#
+#    pid-filename /home/chrism/projects/sessions/var/Z2.pid
+
+
+# Directive: lock-filename
+#
+# Description:
+#     The path to a "lock file" which will be locked by Zope while it's
+#     running.  This file is used by zopectl.py to determine if Zope is
+#     currently running.  This defaults to CLIENT_HOME/Z2.lock.
+#
+# Influences: Zope configuration
+#
+# Default: CLIENT_HOME/Z2.lock
+#
+# Example:
+#
+#    lock-filename /home/chrism/projects/sessions/var/Z2.lock
+
+
+
+# Directive: structured-text-header-level
+#
+# Description:
+#     Set the default starting HTML header level for structured text
+#     documents. The default is 3, which implies that top-level headers
+#     will be created with an <H3> tag.
+#
+# Influences: STX_DEFAULT_LEVEL environment variable
+#
+# Default: 3
+#
+# Example:
+#
+#    structured-text-header-level 1
+
+
+# Directive: publisher-profile-file
+#
+# Description:
+#     Causing this directive to point to a file on the filesystem will
+#     cause Zope's profiling capabilities to be enabled. For more
+#     information, see the Debug -> Profiling tab of the Control_Panel.
+#
+# Influences: PROFILE_PUBLISHER environment variable
+#
+# Default: unset
+#
+# Example:
+#
+#    publisher-profile-file /home/chrism/projects/sessions/var/profile.dat
+
+
+# Directive: cgi-environment
+#
+# Description:
+#     A key which allows a user to define arbitrary key-value pairs for
+#     use as the initial CGI environment variables. This is useful
+#     when you want to proxy requests from another web server to Zserver,
+#     and would like Zserver's CGI environment to reflect the CGI
+#     environment of the other web server.  This key may be defined
+#     multiple times to indicate more than one envvar.
+#
+# Influences: Zope configuration
+#
+# Default: unset
+#
+# Example:
+#
+# <cgi-environment>
+#   HTTPS_SERVER Foobar Server 1.0
+#   HTTPS_PORT 443
+# </cgi-environment>
+
+
+# Directive: dns-server
+#
+# Description:
+#     Specify the IP address of your DNS server in order to cause resolved
+#     hostnames to be written to Zope's access log. By default, Zope will
+#     not resolve hostnames unless this is set.
+#
+# Influences: Zope configuration
+#
+# Default: unset
+#
+# Example:
+#
+#    dns-server 127.0.0.1
+
+
+# Directive: ip-address
+#
+# Description:
+#     The default IP address on which Zope's various server protocol
+#     iimplementations will listen for requests. If this is unset, Zope
+#     will listen on all IP addresses supported by the machine. This
+#     directive can be overridden on a per-server basis in the servers
+#     section.
+#
+# Influences: Zope configuration
+#
+# Default: unset
+#
+# Example:
+#
+#    ip-address 127.0.0.1
+
+
+# Directive: http-realm
+#
+# Description:
+#     The HTTP "Realm" header value sent by this Zope instance. This value
+#     often shows up in basic authentication dialogs.
+#
+# Influences: Z_REALM environment variable
+#
+# Default: Zope
+#
+# Example:
+#
+#    http-realm Slipknot
+
+
+# Directive: automatically-quote-dtml-request-data
+#
+# Description:
+#     Set this directive to 'off' in order to disable the autoquoting of
+#     implicitly retrieved REQUEST data by DTML code which contains a '<'
+#     when used in <dtml-var> construction. When this directive is 'on',
+#     all data implicitly retrieved from the REQUEST in DTML (as opposed to
+#     addressing REQUEST.somevarname directly) that contains a '<' will be
+#     HTML-quoted when interpolated via a <dtml-var> or &dtml- construct. This
+#     mitigates the possibility that DTML programmers will leave their
+#     sites open to a "client-side trojan" attack.
+#
+# Influences: ZOPE_DTML_REQUEST_AUTOQUOTE environment variable
+#
+# Default: on
+#
+# Example:
+#
+#    automatically-quote-dtml-request-data on
+
+
+# Directive: maximum-security-manager-stack-size
+#
+# Description:
+#     This variable allows you to customize the size of the Zope
+#     SecurityManager stack. You shouldn't change this unless you know what
+#     it means.
+#
+# Influences: Z_MAX_STACK_SIZE environment variable
+#
+# Default: 100
+#
+# Example:
+#
+#    maximum-security-manager-stack-size 200
+
+
+# Directive: security-policy-implementation
+#
+# Description:
+#     The default Zope security machinery is implemented in C.
+#     Change this to "python" to use the Python version of the
+#     Zope security machinery.  This impacts performance but
+#     is useful for debugging purposes and required by Products such as
+#     VerboseSecurity, which need to "monkey-patch" the security
+#     machinery.
+#
+# Influences: ZOPE_SECURITY_POLICY environment variable
+#
+# Default: C
+#
+# Example:
+#
+#    security-policy-implementation python
+
+# Directive: skip-authentication-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to allow unauthenticated
+#     access to all resources. DANGEROUS. Only works if
+#     security-policy-implementation is C
+#
+# Influences: ZSP_AUTHENTICATED_SKIP environment variable
+#
+# Default: off
+#
+# Example:
+#
+#    skip-authentication-checking on
+
+
+# Directive: skip-ownership-checking
+#
+# Description:
+#     Set this directive to 'on' to cause Zope to ignore ownership checking
+#     when attempting to execute "through the web" code. By default, this
+#     directive is on in order to prevent 'trojan horse' security problems
+#     whereby a user with less privilege can cause a user with more
+#     privilege to execute dangerous code.
+#
+# Influences: ZSP_OWNEROUS_SKIP environment variable
+#
+# Default: off
+#
+# Example:
+#
+#    skip-ownership-checking on
+
+
+# Directive: maximum-number-of-session-objects
+#
+# Description:
+#     An integer value representing the number of items to use as a
+#     "maximum number of subobjects" value of the
+#     '/temp_folder/session_data' transient object container.
+#
+# Influences: ZSESSION_OBJECT_LIMIT environment variable
+#
+# Default: 1000
+#
+# Example:
+#
+#    maximum-number-of-session-objects 10000
+
+
+# Directive: session-add-notify-script-path
+#
+# Description:
+#     An optional fill Zope path name of a callable object to be set as the
+#     "script to call on object addition" of the sessioN_data transient
+#     object container created in the /temp_folder folder at startup.
+#
+# Influences: ZSESSION_ADD_NOTIFY environment variable
+#
+# Default: unset
+#
+# Example:
+#
+#    session-add-notify-script-path /scripts/add_notifier
+
+
+# Directive: session-delete-notify-script-path
+#
+# Description:
+#     An optional fill Zope path name of a callable object to be set as the
+#     "script to call on object deletion" of the sessioN_data transient
+#     object container created in the /temp_folder folder at startup.
+#
+# Influences: ZSESSION_DEL_NOTIFY environment variable
+#
+# Default: unset
+#
+# Example:
+#
+#    session-delete-notify-script-path /scripts/del_notifier
+
+
+# Directive: session-timeout-minutes
+#
+# Description:
+#     An integer value representing the number of minutes to be used as the
+#     "data object timeout" of the '/temp_folder/session_data' transient
+#     object container.
+#
+# Influences: ZSESSION_TIMEOUT_MINS environment variable
+#
+# Default: 20
+#
+# Example:
+#
+#    session-timeout-minutes 30
+
+
+# Directive: suppress-all-access-rules
+#
+# Description:
+#     If this directive is set to on, no access rules in your Zope site
+#     will be executed. This is useful if you "lock yourself out" of a
+#     particular part of your site by setting an improper access rule.
+#
+# Influences: SUPPRESS_ACCESRULE environment variable
+#
+# Default: off
+#
+# Example:
+#
+#    suppress-all-access-rules on
+
+
+# Directive: suppress-all-site-roots
+#
+# Description:
+#     If this directive is set to on, no site roots in your Zope site will
+#     be effective. This is useful if you "lock yourself out" of a
+#     particular part of your site by setting an improper site root.
+#
+# Influences: SUPPRESS_SITEROOT environment variable
+#
+# Default: off
+#
+# Example:
+#
+#    suppress-all-site-roots on
+
+
+# Directive: database-quota-size
+#
+# Description:
+#     Set this directive to an integer in bytes in order to place a hard
+#     limit on the size which the default FileStorage-backed Zope database
+#     can grow. Additions to the database will not be permitted once this
+#     filesize is exceeded.
+#
+# Influences: ZOPE_DATABASE_QUOTA environment variable
+#
+# Default: unset
+#
+# Example:
+#
+#    database-quota-size 1000000
+
+
+# Directive: read-only-database
+#
+# Description:
+#     This causes the main Zope FileStorage-backed ZODB to be opened in
+#     read-only mode.
+#
+# Influences: ZOPE_READ_ONLY environment variable
+#
+# Default: off
+#
+# Example:
+#
+#    read-only-database on
+
+
+# Directive: zeo-client-name
+#
+# Description:
+#     Provide a string value to uniquely identify the local cache files
+#     created if this Zope is a ZEO client. Setting this directive implies
+#     setting 'inhibit-product-installation' to 'on' if
+#     'inhibit-product-installation' is left unset.
+#
+# Influences: ZEO_CLIENT environment variable
+#
+# Default: unset
+#
+# Example:
+#
+#    zeo-client-name zeo1
+
+
+# Directives: logger
+#
+# Description:
+#     This area should define one or more "logger" sections of the
+#     names "access", "event", and "trace".  The "access" logger logs
+#     Zope server access.  The "event" logger logs Zope event
+#     information.  The "trace" logger logs detailed server request
+#     information (for debugging purposes only).  Each logger section
+#     may contain a "level" name/value pair which indicates the level
+#     of logging detail to capture for this logger.  The default level
+#     is INFO.  Level may be any of "CRITICAL", 'ERROR", WARN", "INFO",
+#     "DEBUG", and "ALL".  Each logger section may additionally contain
+#     one or more "handler" sections which indicates a types of log
+#     "handlers" (file, syslog, NT event log, etc) to be used for the
+#     logger being defined.  There are 5 types of handlers: logfile,
+#     syslog, win32-eventlog, http-handler, email-notifier.  Each
+#     handler type has its own set of allowable subkeys which define
+#     aspects of the handler.  All handler sections also allow for the
+#     specification of a "format" (the log message format string), a
+#     "dateformat" (the log message format for date strings), and a
+#     "level", which has the same semantics of the overall logger
+#     level but overrides the logger's level for the handler it's
+#     defined upon.  XXXX much more detail necessary here
+#
+# Influences: Zope configuration
+#
+# Default:
+#
+#     The access log will log to the file <isntancehome>/log/Z2.log at
+#     level INFO, the event log will log to the file
+#     <instancehome>/log/event.log at level INFO, and the trace log
+#     will not be written anywhere.
+#
+# Examples:
+
+<eventlog>
+  level all
+  <logfile>
+    path $INSTANCE/log/event.log
+    level info
+  </logfile>
+</eventlog>
+
+<logger access>
+  level WARN
+  <logfile>
+    path $INSTANCE/log/Z2.log
+    format %(message)s
+  </logfile>
+</logger>
+
+# <logger trace>
+#   level WARN
+#   <syslog-handler>
+#     host localhost
+#     port 514
+#   </syslog-handler>
+#   <nteventlog-handler>
+#     appname Zope
+#   </nteventlog-handler>
+# </logger>
+
+
+# Directives: servers
+#
+# Description:
+#     A set of sections which allow the specification of Zope's various
+#     Zserver servers.  7 different server types may be defined:
+#     http-server, ftp-server, webdav-source-server, persistent-cgi,
+#     fast-cgi, monitor-server, and icp-server.  If no servers are
+#     defined, the default servers are used.
+#
+#     Ports may be specified either in simple form (80) or in
+#     complex form including hostname 127.0.0.1:80.  If the hostname
+#     is "left off", the default-ip-address is used as the hostname.
+#
+#     Port numbers are offset by the setting of port-base, which
+#     defaults to 8000.
+#
+# Influences: Zope configuration
+#
+# Default:
+#
+#     An HTTP server starts on port 8080, an FTP server starts on port
+#     8021.
+
+<http-server>
+  # valid keys are "address" and "force-connection-close"
+  address 8080
+  # force-connection-close on
+</http-server>
+
+<ftp-server>
+  # valid key is "address"
+  address 8021
+</ftp-server>
+
+# Examples:
+#
+#  <webdav-source-server>
+#    # valid keys are "address" and "force-connection-close"
+#    address 1980
+#    force-connection-close off
+#  </webdav-source-server>
+#
+#  <persistent-cgi>
+#    # valid key is "path"
+#    path somefile
+#  </persistent-cgi>
+#
+#  <fast-cgi>
+#    # valid key is "address"; the address may be hostname:port, port,
+#    # or a path for a Unix-domain socket
+#    address somefile
+#  </fast-cgi>
+#
+#  <monitor-server>
+#    # valid keys are "address"
+#    address 99
+#  </monitor-server>
+#
+#  <icp-server>
+#    # valid key is "address"
+#    address 888
+#  </icp-server>
+
+
+# Directives: port-base
+#
+# Description:
+#     Offset applied to the port numbers used for the server
+#     configurations.  For example, if the HTTP-Server port is 8080 and
+#     the port-base is 1000, the HTTP server will listen on port 9080.
+#     This makes it easy to change the complete set of ports used by a
+#     Zope server process
+#
+# Influences: Zope configuration
+#
+# Default:
+#
+#     0
+#
+# Example:
+#
+#     port-base 1000
+
+
+# Database section
+#
+# Description:
+#     A database section allows the definition of custom database and
+#     storage types.  The standard 
+#
+# Influences: Zope configuration
+#
+# Default:
+#   If a database is not specified, a FileStorage in client-home is
+#   used.
+#
+# Example:
+#
+# <zodb>
+#    <filestorage>
+#      path $INSTANCE/var/Data.fs
+#    </filestorage>
+#    cache-size                     5000
+#    pool-size                      7
+#    version-pool-size              3
+#    version-cache-size             100
+# </zodb>

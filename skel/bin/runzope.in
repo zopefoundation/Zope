@@ -1,0 +1,12 @@
+#! /bin/sh
+
+PYTHON="<<PYTHON>>"
+ZOPE_HOME="<<ZOPE_HOME>>"
+INSTANCE_HOME="<<INSTANCE_HOME>>"
+
+CONFIG_FILE="$INSTANCE_HOME/etc/zope.conf"
+
+PYTHONPATH="$ZOPE_HOME/lib/python"
+export PYTHONPATH
+
+exec "$PYTHON" "$ZOPE_HOME/bin/runzope.py" -C "$CONFIG_FILE" "$@"
