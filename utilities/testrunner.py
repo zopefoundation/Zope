@@ -28,9 +28,10 @@ VERBOSE = 2
 class TestRunner:
     """Test suite runner"""
 
-    def __init__(self, basepath):
+    def __init__(self, basepath, verbosity=VERBOSE):
         # initialize python path
         self.basepath=path=basepath
+        self.verbosity = verbosity
         pjoin=os.path.join
         if sys.platform == 'win32':
             sys.path.insert(0, pjoin(path, 'lib/python'))
@@ -61,14 +62,23 @@ class TestRunner:
         return function()
 
     def smellsLikeATest(self, filepath, find=string.find):
-        file = open(filepath, 'r')
-        text = file.read()
-        file.close()
-        return ((find(text, 'unittest') > -1) or
-                (find(text, 'framework.py') > -1))
+        path, name = os.path.split(filepath)
+        fname, ext = os.path.splitext(name)
+        
+        if name[:4]=='test' and name[-3:]=='.py' and \
+           name != 'testrunner.py':
+            
+            file=open(filepath, 'r')
+            lines=file.readlines()
+            file.close()
+            for line in lines:
+                if (find(line, 'def test_suite(') > -1) or \
+                   (find(line, 'framework(') > -1):
+                    return 1
+        return 0
 
     def runSuite(self, suite):
-        runner=unittest.TextTestRunner(verbosity=VERBOSE)
+        runner=unittest.TextTestRunner(verbosity=self.verbosity)
         runner.run(suite)
 
     def report(self, message):
@@ -87,16 +97,11 @@ class TestRunner:
             pathname = os.path.join(self.basepath, pathname)
         names=os.listdir(pathname)
         for name in names:
-            fname, ext=os.path.splitext(name)
-            if name[:4]=='test' and name[-3:]=='.py' and \
-               name != 'testrunner.py':
-                filepath=os.path.join(pathname, name)
-                if self.smellsLikeATest(filepath):
-                    self.runFile(filepath)
-        for name in names:
             fullpath=os.path.join(pathname, name)
             if os.path.isdir(fullpath):
                 self.runPath(fullpath)
+            elif self.smellsLikeATest(fullpath):
+                self.runFile(fullpath)
 
     def runFile(self, filename):
         """Run the test suite defined by filename."""
@@ -105,19 +110,15 @@ class TestRunner:
         if dirname:
             os.chdir(dirname)
         self.report('Running: %s' % filename)
-        try:    suite=self.getSuiteFromFile(filename)
+        try:    suite=self.getSuiteFromFile(name)
         except:
             traceback.print_exc()
-            suite=None
-        if suite is None:
-            self.report('No test suite found in file:\n%s' % filename)
-            return
-        self.runSuite(suite)
+            suite=None            
+        if suite is not None:
+            self.runSuite(suite)
+        else:
+            self.report('No test suite found in file:\n%s\n' % filename)
         os.chdir(working_dir)
-
-
-
-
 
 
 def main(args):
@@ -148,13 +149,23 @@ def main(args):
           Run the test suite found in the file specified. The filepath
           should be a fully qualified path to the file to be run.
 
+       -v level
+
+          Set the Verbosity level to level.  Newer versions of
+          unittest.py allow more options than older ones.  Allowed
+          values are:
+
+            0 - Silent
+            1 - Quiet (produces a dot for each succesful test)
+            2 - Verbose (default - produces a line of output for each test)
+
        -q
        
           Run tests without producing verbose output.  The tests are
           normally run in verbose mode, which produces a line of
           output for each test that includes the name of the test and
-          whether it succeeded.  Quiet mode prints a period as
-          each test runs.
+          whether it succeeded.  Running with -q is the same as
+          running with -v1.
 
        -h
 
@@ -164,8 +175,9 @@ def main(args):
     pathname=None
     filename=None
     test_all=None
+    verbosity = VERBOSE
 
-    options, arg=getopt.getopt(args, 'ahd:f:q')
+    options, arg=getopt.getopt(args, 'ahd:f:v:q')
     if not options:
         err_exit(usage_msg)
     for name, value in options:
@@ -178,13 +190,14 @@ def main(args):
             filename=string.strip(value)
         elif name == 'h':
             err_exit(usage_msg, 0)
+        elif name == 'v':
+            verbosity = int(value)
         elif name == 'q':
-            global VERBOSE
-            VERBOSE = 1
+            verbosity = 1
         else:
             err_exit(usage_msg)
 
-    testrunner=TestRunner(os.getcwd())
+    testrunner = TestRunner(os.getcwd(), verbosity=verbosity)
     if test_all:
         testrunner.runAllTests()
     elif pathname:
