@@ -110,8 +110,8 @@ __doc__='''Conditional insertion
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_If.py,v 1.3 1997/09/22 14:42:49 jim Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: DT_If.py,v 1.4 1997/09/25 18:56:38 jim Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DT_Util import *
 
@@ -136,12 +136,13 @@ class If:
 	    if args:
 		ename,expr=name_param(args,'else',1)
 		if ename != name:
-		    raise ParseError, 'name in else does not match if'
+		    raise ParseError, ('name in else does not match if', 'in')
 	    self.elses=section
 
 	for tname, args, section in blocks[1:]:
 	    if tname=='else':
-		raise ParseError, 'more than one else tag for a single if tag'
+		raise ParseError, (
+		    'more than one else tag for a single if tag', 'in')
 	    args=parse_params(args, name='', expr='')
 	    name,expr=name_param(args,'elif',1)
 	    self.sections.append((name, expr, section))
@@ -184,6 +185,9 @@ class Else:
 ##########################################################################
 #
 # $Log: DT_If.py,v $
+# Revision 1.4  1997/09/25 18:56:38  jim
+# fixed problem in reporting errors
+#
 # Revision 1.3  1997/09/22 14:42:49  jim
 # added expr
 #

@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.3 1997/09/22 14:42:50 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.4 1997/09/25 18:56:39 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -101,10 +101,11 @@ def name_param(params,tag='',expr=0):
 	expr=VSEval.Eval(name, __mul__=VSEval.careful_mul, __getattr__=None)
 	return name, expr
 	
-    raise ParseError, 'No name given'
+    raise ParseError, ('No name given', tag)
 
 def parse_params(text,
 		 result=None,
+		 tag='',
 		 unparmre=regex.compile(
 		     '\([\0- ]*\([^\0- =\"]+\)\)'),
 		 parmre=regex.compile(
@@ -150,8 +151,8 @@ def parse_params(text,
 	if result.has_key(''):
 	    if parms.has_key(name): result[name]=parms[name]
 	    else: raise ParseError, (
-		'Invalid parameter name, %s <!--%s--> <!--u-->'
-		% (name, text))
+		('Invalid parameter name, %s <!--%s--> <!--u-->'
+		 % (name, text)), tag)
 	else:
 	    result['']=name
 	return apply(parse_params,(text[l:],result),parms)
@@ -160,7 +161,8 @@ def parse_params(text,
 	raise InvalidParameter, text
     
     if not parms.has_key(name):
-	raise ParseError, 'Invalid parameter name, %s <!--%s-->' % (name, text)
+	raise ParseError, (
+	    ('Invalid parameter name, %s <!--%s-->' % (name, text)), tag)
 
     result[name]=value
 
@@ -173,6 +175,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.4  1997/09/25 18:56:39  jim
+# fixed problem in reporting errors
+#
 # Revision 1.3  1997/09/22 14:42:50  jim
 # added expr
 #

@@ -212,7 +212,7 @@
       of the module 'Missing', if present.
 '''
 
-__rcs_id__='$Id: DT_In.py,v 1.3 1997/09/22 14:42:50 jim Exp $'
+__rcs_id__='$Id: DT_In.py,v 1.4 1997/09/25 18:56:38 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -266,7 +266,7 @@ __rcs_id__='$Id: DT_In.py,v 1.3 1997/09/22 14:42:50 jim Exp $'
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DT_Util import *
 
@@ -286,13 +286,15 @@ class In:
 	self.__name__, expr = name, expr
 	self.section=section
 	if len(blocks) > 1:
-	    if len(blocks) != 2: raise ParseError, 'too many else blocks'
+	    if len(blocks) != 2: raise ParseError, (
+		'too many else blocks', 'in')
 	    tname, args, section = blocks[1]
 	    args=parse_params(args, name='')
 	    if args:
 		ename=name_param(args)
 		if ename != name:
-		    raise ParseError, 'name in else does not match in'
+		    raise ParseError, (
+			'name in else does not match in', 'in')
 	    self.elses=section
 	    
 
@@ -718,6 +720,9 @@ class sequence_variables:
 
 ############################################################################
 # $Log: DT_In.py,v $
+# Revision 1.4  1997/09/25 18:56:38  jim
+# fixed problem in reporting errors
+#
 # Revision 1.3  1997/09/22 14:42:50  jim
 # added expr
 #

@@ -1,7 +1,7 @@
 
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.3 1997/09/22 14:42:08 jim Exp $"""
+$Id: DT_HTML.py,v 1.4 1997/09/25 18:56:37 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_Doc, DT_String, regex
@@ -38,7 +38,7 @@ class HTML(DT_String.String):
 	args=strip(args)
 	if end:
 	    if not command or name != command.name:
-		raise ParseError, 'unexpected end tag'
+		raise ParseError, ('unexpected end tag', tag)
 	    return tag, args, None, None
 
 	if command and name in command.blockContinuations:
@@ -178,6 +178,9 @@ class HTMLFile(FileMixin, HTML):
 ##########################################################################
 #
 # $Log: DT_HTML.py,v $
+# Revision 1.4  1997/09/25 18:56:37  jim
+# fixed problem in reporting errors
+#
 # Revision 1.3  1997/09/22 14:42:08  jim
 # *** empty log message ***
 #
