@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.16 2002/04/12 15:21:47 matt Exp $
+  $Id: cAccessControl.c,v 1.17 2002/07/23 14:08:55 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1028,7 +1028,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
                   }
 
 		if (owner != Py_None) {
-                  owner = PyObject_GetAttr(owner, allowed_str);
+                  ASSIGN(owner,PyObject_GetAttr(owner, allowed_str));
                   if (owner)
                     ASSIGN(owner, callfunction2(owner, value, roles));
                   if (owner == NULL)
@@ -2097,7 +2097,7 @@ void initcAccessControl(void) {
 
 	module = Py_InitModule3("cAccessControl",
 		cAccessControl_methods,
-		"$Id: cAccessControl.c,v 1.16 2002/04/12 15:21:47 matt Exp $\n");
+		"$Id: cAccessControl.c,v 1.17 2002/07/23 14:08:55 matt Exp $\n");
 
 	aq_init(); /* For Python <= 2.1.1, aq_init() should be after
                       Py_InitModule(). */

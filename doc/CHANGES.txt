@@ -73,6 +73,8 @@ Zope Changes
       - Fix bug in ISO_8859_1 splitter which corruped storage on
         initialization.
 
+      - Collector #421: Storage leak in cAccessControl
+
     Features Added
     
       - ZCatalog index management ui is now integrated into ZCatalog rather
