@@ -91,7 +91,9 @@ from ZPublisher.mapply import mapply
 from ExtensionClass import Base
 from App.FactoryDispatcher import FactoryDispatcher
 from ComputedAttribute import ComputedAttribute
-import OFS.PropertySheets
+import webdav.Collection
+
+import marshal
 
 if not hasattr(Products, 'meta_types'):
     Products.meta_types=()
@@ -158,7 +160,7 @@ from OFS.misc_ import p_
 
 p_.ZClass_Icon=Globals.ImageFile('class.gif', globals())
 
-class PersistentClass(Base):
+class PersistentClass(Base, webdav.Collection.Collection ):
     def __class_init__(self): pass
 
 manage_addZClassForm=Globals.DTMLFile(
@@ -267,7 +269,10 @@ def PersistentClassDict(doc=None, meta_type=None):
         return dict
 
 _marker=[]
-class ZClass(OFS.SimpleItem.SimpleItem):
+class ZClass( Base
+            , webdav.Collection.Collection
+            , OFS.SimpleItem.SimpleItem
+            ):
     """Zope Class
     """
     meta_type="Z Class"
@@ -319,10 +324,11 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         isheets_base_classes.append(Property.ZInstanceSheets)
 
         # Create the meta-class property sheet
+        sheet_id = id+'_ZPropertySheetsClass'
         zsheets_class=type(PersistentClass)(
-            id+'_ZPropertySheetsClass',
+            sheet_id,
             tuple(zsheets_base_classes)+(Globals.Persistent,),
-            PersistentClassDict(id+'_ZPropertySheetsClass'))
+            PersistentClassDict(sheet_id, sheet_id))
         self.propertysheets=sheets=zsheets_class()
 
         # Create the class
@@ -627,6 +633,47 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         return r
 
     def _getZClass(self): return self
+
+    #
+    #   FTP support
+    #
+    def manage_FTPlist(self,REQUEST):
+        "Directory listing for FTP"
+        out=()
+        files=self.__dict__.items()
+        if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
+                self.isTopLevelPrincipiaApplicationObject):
+             files.insert(0,('..',self.aq_parent))
+        for k,v in files:
+            try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
+            except:
+                stat=None
+            if stat is not None:
+                out=out+((k,stat),)
+        return marshal.dumps(out)
+
+    def manage_FTPstat(self,REQUEST):
+        "Psuedo stat used for FTP listings"
+        mode=0040000|0770
+        mtime=self.bobobase_modification_time().timeTime()
+        owner=group='Zope'
+        return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
+
+    #
+    #   WebDAV support
+    #
+    isAnObjectManager=1
+    def objectValues( self, filter=None ):
+        """
+        """
+        values = [ self.propertysheets ]
+        if filter is not None:
+            if type( filter ) == type( '' ):
+                filter = [ filter ]
+            for value in values:
+                if not self.propertysheets.meta_type in filter:
+                    values.remove( value )
+        return values
             
 class ZClassSheets(OFS.PropertySheets.PropertySheets):
     "Manage a collection of property sheets that provide ZClass management"
@@ -645,6 +692,39 @@ class ZClassSheets(OFS.PropertySheets.PropertySheets):
     def __init__(self):
         self.methods=Method.ZClassMethodsSheet('methods')
         self.common=Property.ZInstanceSheetsSheet('common')
+
+    #
+    #   FTP support
+    #
+    def manage_FTPlist(self,REQUEST):
+        "Directory listing for FTP"
+        out=()
+        files=self.__dict__.items()
+        if not (hasattr(self,'isTopLevelPrincipiaApplicationObject') and
+                self.isTopLevelPrincipiaApplicationObject):
+             files.insert(0,('..',self.aq_parent))
+        for k,v in files:
+            try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
+            except:
+                stat=None
+            if stat is not None:
+                out=out+((k,stat),)
+        return marshal.dumps(out)
+
+    def manage_FTPstat(self,REQUEST):
+        "Psuedo stat used for FTP listings"
+        mode=0040000|0770
+        mtime=self.bobobase_modification_time().timeTime()
+        owner=group='Zope'
+        return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
+
+    #
+    #   WebDAV support
+    #
+    isAnObjectManager=1
+
+    def objectValues( self, filter=None ):
+        return [ self.methods, self.common ]
 
 
 class ZObject:

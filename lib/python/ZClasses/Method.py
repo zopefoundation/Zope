@@ -92,6 +92,12 @@ import App.Dialogs, ZClasses, App.Factory, App.Product, App.ProductRegistry
 import ZClassOwner
 from AccessControl.PermissionMapping import aqwrap, PermissionMapper
 
+import OFS.content_types
+from OFS.DTMLMethod import DTMLMethod
+from Products.PythonScripts.PythonScript import PythonScript
+
+import marshal
+
 _marker=[]
 class ZClassMethodsSheet(
     OFS.PropertySheets.PropertySheet,
@@ -239,6 +245,30 @@ class ZClassMethodsSheet(
 
     def possible_permissions(self):
         return self.classDefinedAndInheritedPermissions()
+
+    #
+    #   FTP support
+    #
+    def manage_FTPstat(self,REQUEST):
+        "Psuedo stat used for FTP listings"
+        mode=0040000|0770
+        mtime=self.bobobase_modification_time().timeTime()
+        owner=group='Zope'
+        return marshal.dumps((mode,0,0,1,owner,group,0,mtime,mtime,mtime))
+
+    def PUT_factory( self, name, typ, body ):
+        """
+            Hook PUT creation to make objects of the right type when
+            new item uploaded via FTP/WebDAV.
+        """
+        if typ is None:
+            typ, enc = OFS.content_types.guess_content_type()
+        if typ == 'text/x-python':
+            return PythonScript( name )
+        if typ[ :4 ] == 'text':
+            return DTMLMethod( '', __name__=name )
+        return None # take the default, then
+
 
 default_dm_html='''<html>
 <head><title><dtml-var document_title></title></head>

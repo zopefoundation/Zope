@@ -11,6 +11,14 @@ Zope changes
           and standard_error_message in Data.fs.in to use "new" DTML syntax
           (as opposed to SSI-style syntax).
 
+    Zope 2.3.0 beta 3
+
+      Features Added
+
+        - Make ZClasses navigable to FTP/WebDAV; implement 'PUT_factory'
+          hook to create PythonScripts (for MIMEtype 'text/x-python')
+          and DTMLMethods (for other 'text' MIMEtypes) (Collector #998).
+
     Zope 2.3.0 beta 1
 
       Features Added
@@ -31,13 +39,13 @@ Zope changes
         - The logout function has been implemented in a fairly minimal 
           way. We may try to make this nicer by final if we get time.
 
-	- The ZCatalog interface is now cleaned up and matches the new 
-	  interface look and feel better. In addition some logical
-	  reorganization was made to move things onto an Advanced tab.
+        - The ZCatalog interface is now cleaned up and matches the new 
+          interface look and feel better. In addition some logical
+          reorganization was made to move things onto an Advanced tab.
 
-	- Result sets from the Catalog are now much Lazier, and will
-	  do concatenation with eachother in a lazy fashion.  This was
-	  suggested by Casey Duncan in Collector #1712.
+        - Result sets from the Catalog are now much Lazier, and will
+          do concatenation with eachother in a lazy fashion.  This was
+          suggested by Casey Duncan in Collector #1712.
 
       Bugs Fixed
 
@@ -66,9 +74,9 @@ Zope changes
           Objects view would be incorrect and list everything as a
           'ZCatalog'. Now it simply lists it as 'Unknown'.
 
-	- (Collector #1844) On the brains returned from ZCatalog
-	  queries, 'getObject()' now tries to resolve URLs as well as
-	  paths.  This should catch more cases.
+        - (Collector #1844) On the brains returned from ZCatalog
+          queries, 'getObject()' now tries to resolve URLs as well as
+          paths.  This should catch more cases.
 
         - Tags generated for ImageFile objects attempted to use 
           title_or_id(), which is not defined for those objects.
