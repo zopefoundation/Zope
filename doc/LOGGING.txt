@@ -1,13 +1,14 @@
 Zope Logging
 
  Zope2 now comes with a Logging facility called ZLogger.  ZLogger is
- an extesable logging system.  Currently, ZLogger will log either to a 
- file or to syslog (the syslog logging even works on windows because
+ an extensible logging system.  Currently, ZLogger will log either to a 
+ file or to syslog.  (Syslog logging works even on windows, because
  it talks directly to the syslog server using UDP, instead of the
  POSIX syslog calls).
 
- Logging is controlled by setting environment variables.  This is done 
- easiest by providing them on the z2.py command line.  For example::
+ Logging is controlled by setting environment variables.  This is done
+ most easily by providing the settings on the z2.py command line.  For
+ example::
 
   $ python1.5.2 z2.py ZSYSLOG_SERVER="syslog.mydomain.com:514" \
      STUPID_FILE_LOGGER=var/Zope.log"
@@ -17,8 +18,8 @@ Zope Logging
   STUPID_FILE_LOGGER="path"
 
    The stupid file logger writes Zope logging information to a file.
-   It is not very smart about it (it just dumps it to a file and the
-   format is not very configurable), hence the name.
+   It is not very smart about it - it just dumps it to a file and the
+   format is not very configurable - hence the name.
 
   ZSYSLOG="anything"
 
@@ -36,23 +37,20 @@ Zope Logging
 
 Calling the logger in your code
 
- If you want your own Zope extensions to use the logging, it can be
- done so::
-
+ If you want your own Zope extensions to use logging:
 
   import zLOG
   zLOG.LOG(subsystem, severity, summary, detail, error, reraise)
 
-
- The following required arguments are:
+ The following arguments are required:
 
       subsystem -- The subsystem generating the message (e.g. ZODB)
 
       severity -- The "severity" of the event.  This may be an integer or
                   a floating point number.  Logging back ends may
-                  consider the int() of this valua to be significant.
+                  consider the int() of this value to be significant.
                   For example, a backend may consider any severity
-                  who's integer value is WARNING to be a warning.  By
+                  with integer value of WARNING to be a warning.  By
                   default, the zLOG module defines the following
                   severities:
 
@@ -62,9 +60,9 @@ Calling the logger in your code
 		    ERROR=200   
 		    PANIC=300
 
-      summary -- A short summary of the event
+      summary -- A short summary of the event.
 
-      detail -- A detailed description
+      detail -- A detailed description.
 
       error -- A three-element tuple consisting of an error type, value, and
                traceback.  If provided, then a summary of the error
@@ -72,16 +70,15 @@ Calling the logger in your code
 
       reraise -- If provided with a true value, then the error given by
                  error is reraised.
-
   
 
 Creating your own Logger
 
- Creating your own Zope logger is easy.  Simply define an logger class 
+ Creating your own Zope logger is easy.  Simply define a logger class 
  with the following interface::
 
   class LumberJack:
-      """ a Logger
+      """ an ok Logger
 
       I sleep all night, I work all day
       """
@@ -93,8 +90,8 @@ Creating your own Logger
 	  print ' %s, %s, %s, %s, %s, %s' % (self, sub, sev, sum, det, err)
 
 
-Then you must edit lib/python/Zope/ZLogger/ZLogger.py and instanciate
-one of your Loggers into the 'logger' tuple::
+Then you must edit lib/python/Zope/ZLogger/ZLogger.py and instantiate
+one of your Loggers in the 'logger' tuple::
 
  loggers = (stupidFileLogger.stupidFileLogger(), 
             syslogLogger.syslogLogger(),

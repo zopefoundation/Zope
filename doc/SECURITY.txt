@@ -8,11 +8,11 @@ Setting the Zope "super manager" name and password
   A special "super manager" user name and password are defined outside
   the application for two reasons
  
-    * Some user name and password are needed to enable creation of
-      initial normal managers of your Zope site.
+    * Some user name and password is needed to authorize creation of
+      normal managers of your Zope site.
 
     * The "super manager" provides an all-powerful user that can do
-      anything in the application and whose password cannot be changed
+      anything in the application, and whose password cannot be changed
       through the application user interface.
 
   This user name and password is defined in the 'access' file located
