@@ -701,10 +701,13 @@ setup(
               'ZConfig.tests.library.thing',
               'ZConfig.components',
               'ZConfig.components.basic', 'ZConfig.components.basic.tests',
+              'ZConfig.components.logger', 'ZConfig.components.logger.tests',
               ],
     data_files=[
         ['../../doc/zconfig',
          ['ZConfig/doc/zconfig.pdf', 'ZConfig/doc/schema.dtd']],
+        ['ZConfig/components/basic', ['ZConfig/components/basic/*.xml']],
+        ['ZConfig/components/logger', ['ZConfig/components/logger/*.xml']],
         ['ZConfig/tests/input', ['ZConfig/tests/input/*']],
         ['ZConfig/tests/library/thing', ['ZConfig/tests/library/thing/*']],
         ['ZConfig/tests/library/thing/extras',
