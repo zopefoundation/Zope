@@ -80,6 +80,9 @@ Zope Changes
              
            o Added an option, -I, to automatically add an index_html
              method that redirects to index.html or index.htm.
+        
+        - Record objects returned by ':record' form-marshalling tag have
+          been enhanced to act like mapping objects.
 
       Bugs Fixed
 
