@@ -35,6 +35,9 @@ Zope authentication with existing web servers.
 
   Zope normally performs both authentication and authorization of users.
   Some web servers don't pass authentication information to CGI scripts.
+  If you keep getting rejected when you try to access Zope through the
+  web with the "super manager" user name and password, there is a good chance
+  that your web server is not passing authentication information to Zope.
 
   Tricking Apache to pass authentication headers
 
@@ -53,6 +56,11 @@ Zope authentication with existing web servers.
 
   Allowing your server to handle authentication itself
  
+    Sometimes you may prefer to handle authentication outside Zope, for
+    example if your web server already does complex authorization, or
+    if it seems too difficult to convince it to pass authentication
+    information to Zope.
+
     As of 1.0.9, Zope began supporting a mode that allowed the web
     server to handle authentication.  The 'REMOTE_USER' environment
     variable is then matched to the identity of a user object in
