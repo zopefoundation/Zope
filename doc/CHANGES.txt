@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #512,541: Fixed broken WebDAV compatiblity
+        with Cadaver 0.20.X due to a missing Lock-Token header.
+
       - Zope Page Templates set a 'content-type' header even if
         the result of their execution was not rendered to the browser.
         We now check to make sure a content-type header is not
