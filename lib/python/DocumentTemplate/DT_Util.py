@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.58 1999/08/24 16:48:43 jim Exp $''' 
-__version__='$Revision: 1.58 $'[11:-2]
+'''$Id: DT_Util.py,v 1.59 1999/09/27 13:14:15 jim Exp $''' 
+__version__='$Revision: 1.59 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -207,11 +207,19 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 d=TemplateDict.__dict__
 for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
-             'len', 'max', 'min', 'oct', 'ord', 'pow', 'round', 'str'):
+             'len', 'max', 'min', 'oct', 'ord', 'round', 'str'):
     d[name]=__builtins__[name]
 d['string']=string
 d['math']=math
 d['whrandom']=whrandom
+
+def careful_pow(self, x, y, z):
+    if not z: raise ValueError, 'pow(x, y, z) with z==0'
+    return pow(x,y,z)
+
+d['pow']=careful_pow
+
+
 
 try:
     import random
