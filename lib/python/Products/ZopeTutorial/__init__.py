@@ -122,6 +122,7 @@ def initialize(context):
     # create glossary
     text=open(glossary_path).read()
     text=term_pat.sub(defineTerm, text)
+    
     glossary=TutorialTopic.TutorialTopic('tutorialGlossary', 'Zope Tutorial Glossary', text)
     context.registerHelpTopic('tutorialGlossary', glossary)
 
@@ -170,7 +171,7 @@ def spacestrip(txt):
 # Glossary functions
 # ----------------
 
-term_pat=re.compile(r'\[([^\]])+?\]')
+term_pat=re.compile('\[(.*?)\]')
 terms=[]
 
 def glossaryTerm(match):
