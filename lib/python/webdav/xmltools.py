@@ -89,9 +89,10 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
-import sys, os, string, xmllib
+import sys, os, string
+import Shared.DC.xml.xmllib
 from Acquisition import Implicit
 from cStringIO import StringIO
 
@@ -359,9 +360,9 @@ class Comment(Node):
 
 
 
-class XmlParser(xmllib.XMLParser):
+class XmlParser(Shared.DC.xml.xmllib.XMLParser):
     def __init__(self):
-        xmllib.XMLParser.__init__(self)
+        Shared.DC.xml.xmllib.XMLParser.__init__(self)
         self.root=None
         self.node=None
         
