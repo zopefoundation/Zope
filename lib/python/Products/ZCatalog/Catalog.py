@@ -704,7 +704,10 @@ def mergeResults(r, has_sort_keys, reverse):
             return r[0][1]
     else:
         if not has_sort_keys:
-            return LazyCat(r, len(r))
+            # Note that the length of the final sequence is not
+            # the same as the length of r, since r may contain
+            # sequences of different sizes.
+            return LazyCat(r)
         else:
             r.sort()
             if reverse:
