@@ -442,7 +442,7 @@ if MONITOR_PORT:
     from AccessControl.User import super
     monitor=secure_monitor_server(
         password=super._getPassword(),
-        hostname=IP_ADDRESS,
+        hostname='127.0.0.1',
         port=MONITOR_PORT)
 
 # Try to set uid to server's uid. 
