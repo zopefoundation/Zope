@@ -163,9 +163,11 @@ def manage_addZClass(self, id, title='', baseclasses=[],
             id+'_addForm',
             'Add %ss' % meta_type 
             )
-        getattr(self,id).propertysheets.permissions.manage_edit(
-            selected=['Add %ss' % id]) 
-        getattr(self,id).manage_setPermissionMapping(
+
+        Z=self._getOb(id)
+        Z.propertysheets.permissions.manage_edit(
+            selected=['Add %ss' % id])
+        Z.manage_setPermissionMapping(
             permission_names=['Create class instances'],
             class_permissions=['Add %ss' % meta_type]
         ) 
