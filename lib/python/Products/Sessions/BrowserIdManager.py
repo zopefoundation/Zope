@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -51,7 +51,7 @@ TRAVERSAL_APPHANDLE = 'BrowserIdManager'
 
 def constructBrowserIdManager(
     self, id=BROWSERID_MANAGER_NAME, title='', idname='_ZopeId',
-    location=('cookies', 'url', 'form'), cookiepath='/', cookiedomain='',
+    location=('cookies', 'form'), cookiepath='/', cookiedomain='',
     cookielifedays=0, cookiesecure=0, auto_url_encoding=0, REQUEST=None
     ):
     """ """
@@ -94,7 +94,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     auto_url_encoding = 0
 
     def __init__(self, id, title='', idname='_ZopeId',
-                 location=('cookies', 'url', 'form'), cookiepath=('/'),
+                 location=('cookies', 'form'), cookiepath=('/'),
                  cookiedomain='', cookielifedays=0, cookiesecure=0,
                  auto_url_encoding=0):
         self.id = str(id)
@@ -257,7 +257,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
     security.declareProtected(CHANGE_IDMGR_PERM,
                               'manage_changeBrowserIdManager')
     def manage_changeBrowserIdManager(
-        self, title='', idname='_ZopeId', location=('cookies', 'form', 'url'),
+        self, title='', idname='_ZopeId', location=('cookies', 'form'),
         cookiepath='/', cookiedomain='', cookielifedays=0, cookiesecure=0,
         auto_url_encoding=0, REQUEST=None
         ):
@@ -288,7 +288,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
         return self.browserid_name
 
     security.declareProtected(CHANGE_IDMGR_PERM, 'setBrowserIdNamespaces')
-    def setBrowserIdNamespaces(self, ns=('cookies', 'form', 'url')):
+    def setBrowserIdNamespaces(self, ns):
         """
         accepts list of allowable browser id namespaces 
         """

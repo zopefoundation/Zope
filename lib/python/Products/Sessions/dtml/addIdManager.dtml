@@ -75,7 +75,7 @@ by interacting with the Zope sessioning machinery.
 </tr>
 <tr>
    <td align=left>
-    <input type="checkbox" name="location:list" value="url" CHECKED> URLs
+    <input type="checkbox" name="location:list" value="url"> URLs
    </td> 
 </tr>
 </table>
