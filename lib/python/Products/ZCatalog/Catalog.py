@@ -481,7 +481,7 @@ class Catalog(Persistent, Acquisition.Implicit):
                 for k, intset in sort_index._index.items():
                     append((k,LazyMap(self.__getitem__, intset)))
         elif rs:
-            if type(rs) is IIBType:
+            if sort_index is None and type(rs) is IIBType:
                 # then there is score information.  Build a new result 
                 # set, sort it by score, reverse it, compute the
                 # normalized score, and Lazify it.
@@ -505,7 +505,10 @@ class Catalog(Persistent, Acquisition.Implicit):
                 # context of text index query.  This should probably
                 # sort by relevance first, then the 'sort-on' attribute.
                 for k, intset in sort_index._index.items():
-                    intset=intset.intersection(rs)
+                    if type(rs) is IIBType:
+                        intset=rs.intersection(intset)
+                    else:
+                        intset=intset.intersection(rs)
                     if intset: 
                         append((k,LazyMap(self.__getitem__, intset)))
 
