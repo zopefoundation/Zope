@@ -14,7 +14,7 @@
 <tr>
 <td valign="top" align="left">
 <a href="http://www.zope.org/" target="_new"><img src="<dtml-var 
-BASEPATH1>/p_/zopelogo_jpg" height="32" width="75" border="0" 
+BASEPATH1>/p_/zopelogo_jpg" height="32" width="90" border="0" 
 alt="" />
 </td>
 <td valign="top" align="right" width="70%">
