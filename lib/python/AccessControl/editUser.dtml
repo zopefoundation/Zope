@@ -54,7 +54,7 @@
 <TD VALIGN="TOP">
 <SELECT NAME="roles:list" SIZE="5" MULTIPLE>
 <!--#in valid_roles-->
-<!--#if expr="_vars['sequence-item'] != 'Shared'"-->
+<!--#if expr="_vars['sequence-item'] != 'Anonymous'"-->
 <!--#if expr="_vars['sequence-item'] in user.roles"-->
 <OPTION VALUE="<!--#var sequence-item-->" SELECTED><!--#var sequence-item-->
 <!--#else-->
