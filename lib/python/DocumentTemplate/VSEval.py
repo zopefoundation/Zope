@@ -1,7 +1,7 @@
 
 """Very Safe Python Expressions
 """
-__rcs_id__='$Id: VSEval.py,v 1.9 1997/11/21 16:47:11 jim Exp $'
+__rcs_id__='$Id: VSEval.py,v 1.10 1998/03/10 17:30:41 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -11,10 +11,12 @@ __rcs_id__='$Id: VSEval.py,v 1.9 1997/11/21 16:47:11 jim Exp $'
 #       rights reserved.  
 #
 ############################################################################ 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
-from string import join
-import sys, gparse
+from string import join, find, split, translate
+import sys, gparse, string
+
+nltosp=string.maketrans('\r\n','  ')
 
 def default_slicer(env, s, *ind):
     l=len(ind)
@@ -43,6 +45,8 @@ default_globals={
     '__guarded_getslice__':  default_slicer,
     }
 
+
+
 class Eval:
     """Provide a very-safe environment for evaluating expressions
 
@@ -69,6 +73,7 @@ class Eval:
 	  globals -- A global namespace.
 	"""
 
+	expr=translate(expr,nltosp)
 	self.expr=expr
 	self.globals=globals
 
@@ -118,6 +123,9 @@ class Eval:
 ############################################################################
 #
 # $Log: VSEval.py,v $
+# Revision 1.10  1998/03/10 17:30:41  jim
+# Newlines (and carriage-returns are now allowed in expressions.
+#
 # Revision 1.9  1997/11/21 16:47:11  jim
 # Got rid of non-needed and non-portable import of new.
 #
