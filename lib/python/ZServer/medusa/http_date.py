@@ -104,9 +104,17 @@ def unpack_rfc850 (m):
     # parsdate.parsedate	- ~700/sec.
     # parse_http_date    	- ~1333/sec.
     
+weekdayname = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+monthname = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+             'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
 def build_http_date (when):
-    return time.strftime ('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(when))
-    
+    year, month, day, hh, mm, ss, wd, y, z = time.gmtime(when)
+    return "%s, %02d %3s %4d %02d:%02d:%02d GMT" % (
+            weekdayname[wd],
+            day, monthname[month], year,
+            hh, mm, ss)
+
 def parse_http_date (d):
     d = string.lower (d)
     tz = time.timezone
