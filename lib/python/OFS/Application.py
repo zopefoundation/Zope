@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.171 2001/11/26 16:07:07 evan Exp $'''
-__version__='$Revision: 1.171 $'[11:-2]
+$Id: Application.py,v 1.172 2001/11/26 18:42:03 evan Exp $'''
+__version__='$Revision: 1.172 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -786,6 +786,8 @@ def install_standards(app):
                 continue
             app.manage_addProduct['PageTemplates'].manage_addPageTemplate(
                 id=fn, title='', text=open(ob.filename))
+        else:
+            continue
         wrote = 1
         ob.__replaceable__ = Globals.REPLACEABLE
         setattr(Application, fn, ob)
