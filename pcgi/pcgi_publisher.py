@@ -215,15 +215,6 @@ class PCGIPublisher:
     def initPrincipia(self):
         if self.resource.has_key('SOFTWARE_NAME'):
             self.moduleName = self.resource['SOFTWARE_NAME']
-        if self.resource.has_key('SOFTWARE_HOME'):
-            import sys
-            builtin=sys.modules['__builtin__']
-            self.swhome=self.resource['SOFTWARE_HOME']
-            while self.swhome[-1:]=='/' or self.swhome[-1:]=='\\':
-                self.swhome=self.swhome[:-1]
-            builtin.SOFTWARE_HOME=self.swhome
-            builtin.CUSTOMER_HOME=self.swhome
-            builtin.SOFTWARE_URL=''
 
     def insertSysPath(self, insertPath=None):
         import os, sys, string
@@ -231,13 +222,6 @@ class PCGIPublisher:
             insertPath = self.insertPath
         if insertPath:
             sys.path[0:0]=string.split(insertPath,':')
-        elif self.swhome:
-            sys.path[0:0]=['%s/lib/python' % self.swhome,
-                           '%s/lib/python/Components' % self.swhome,
-                           '%s/lib/python/Components/%s' % (self.swhome, sys.platform),
-                           '%s/lib/python/python' % self.swhome,
-                           '%s/lib/python/python/%s' % (self.swhome, sys.platform),
-                           ]
         elif self.resource.has_key('PCGI_WORKING_DIR'):
             ### Note: PCGI_WORKING_DIR is a deprecated pcgi directive ###
             workDir = self.resource['PCGI_WORKING_DIR']
