@@ -14,21 +14,13 @@ def showdiff(a, b):
     import ndiff
     cruncher = ndiff.SequenceMatcher(ndiff.IS_LINE_JUNK, a, b)
     for tag, alo, ahi, blo, bhi in cruncher.get_opcodes():
-        if tag == 'replace':
-            print nicerange(alo, ahi) + "r" + nicerange(blo, bhi)
-            ndiff.dump('<', a, alo, ahi)
-            print "---"
-            ndiff.dump('>', b, blo, bhi)
-        elif tag == 'delete':
-            print nicerange(alo, ahi) + "d" + nicerange(blo, bhi)
-            ndiff.dump('<', a, alo, ahi)
-        elif tag == 'insert':
-            print nicerange(alo, ahi), "i", nicerange(blo, bhi)
-            ndiff.dump('>', b, blo, bhi)
-        elif tag == 'equal':
-            pass
-        else:
-            raise ValueError, 'unknown tag ' + `tag`
+        if tag == "equal":
+            continue
+        print nicerange(alo, ahi) + tag[0] + nicerange(blo, bhi)
+        ndiff.dump('<', a, alo, ahi)
+        if a and b:
+            print '---'
+        ndiff.dump('>', b, blo, bhi)
 
 def nicerange(lo, hi):
     if hi <= lo+1:
