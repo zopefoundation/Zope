@@ -32,7 +32,6 @@ Zope Changes
            - Compile pycs and pys as part of the desitination
              install.
 
-
       Features Added
 
         - A new 'utilities' directory is included in the distribution.
@@ -41,11 +40,14 @@ Zope Changes
           prunes the DTML namespace to only the namespace created
 	  with the with tag.
 
+        - Added contributed support for encoding options in the SendMail
+          tag and MailHost send method.
+
       Bugs Fixed
 
         - Construction, upload, and edit methods did not consistently
           support either string or file data.  This caused really weird
-          behavior when file upload was used with out including the 
+          behavior when file upload was used with out includeing the 
           ":string" suffix in the argument name when doing a file upload.
 
           This bug was previously (and incorrectly) reported as a 
@@ -60,6 +62,9 @@ Zope Changes
           limitations in stock Python 1.5.1.  We now link/copy the
           cPickle extension to BoboPOS to make sure that it uses the
           latest version.
+
+        - Fixed registration of MailHost settings and incorrect default
+          quoted-printable encoding of message bodies.
 
     Zope  1.10.2
 
