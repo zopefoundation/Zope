@@ -87,7 +87,7 @@ named .testinfo, it will not be searched for tests.  Really.)
     can be specified by using "-G OPTION1 -G OPTION2."
 
 --import-testing
-    Import the Testing module to setup the test ZODB.  Useful for running
+    Import the Testing package to setup the test ZODB.  Useful for running
     tests that forgot to "import Testing".
 
 --libdir test_root
@@ -371,7 +371,7 @@ class PathInit:
         self.libdir = "lib/python"
         # Hack sys.path
         self.home = os.path.dirname(os.path.realpath(sys.argv[0]))
-        # test.py lives in bin directory when installed ...
+        # test.py lives in $ZOPE_HOME/bin when installed ...
         dir, file = os.path.split(self.home)
         if file == 'bin': self.home = dir
         sys.path.insert(0, os.path.join(self.home, self.libdir))
@@ -633,8 +633,14 @@ def remove_stale_bytecode(arg, dirname, names):
             srcname = name[:-1]
             if srcname not in names:
                 fullname = os.path.join(dirname, name)
-                print "Removing stale bytecode file", fullname
-                os.unlink(fullname)
+                print "Removing stale bytecode file", fullname,
+                try:
+                    os.unlink(fullname)
+                except (OSError, IOError), e:
+                    print ' -->  %s (errno %d)' % (e.strerror, e.errno)
+                else:
+                    print
+
 
 def main(module_filter, test_filter, libdir):
     global pathinit
@@ -655,7 +661,15 @@ def main(module_filter, test_filter, libdir):
         import Zope
         Zope.configure(config_file)
 
-    # Import Testing module to setup the test ZODB
+    if not keepStaleBytecode:
+        from App.config import getConfiguration
+        softwarehome = os.path.realpath(getConfiguration().softwarehome)
+        instancehome = os.path.realpath(getConfiguration().instancehome)
+        softwarehome = os.path.normcase(softwarehome)
+        if not softwarehome.startswith(os.path.normcase(instancehome)):
+            walk_with_symlinks(instancehome, remove_stale_bytecode, None)
+
+    # Import Testing package to setup the test ZODB
     if import_testing:
         import Testing
 
