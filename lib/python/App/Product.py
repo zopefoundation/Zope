@@ -147,6 +147,7 @@ class Product(Folder):
     icon='p_/Product_icon'
     version=''
     configurable_objects_=()
+    __import_error__=None
 
     def new_version(self,
                     _intending=regex.compile("[.]?[0-9]+$").search,
