@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -266,7 +266,7 @@ class DocumentHandler:
 def decapitate(html, RESPONSE=None,
 	       header_re=regex.compile(
 		   '\(\('
-		   	  '[^\0\- <>:]+:[^\n]*\n'
+		   	  '[^\n\0\- <>:]+:[^\n]*\n'
 		      '\|'
 		   	  '[ \t]+[^\0\- ][^\n]*\n'
 		   '\)+\)[ \t]*\n\([\0-\377]+\)'
