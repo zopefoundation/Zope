@@ -10,10 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-from ZPublisher import publish_module
 
 class ZServerPublisher:
     def __init__(self, accept):
+        from ZPublisher import publish_module
         while 1:
             try:
                 name, request, response=accept()

@@ -103,6 +103,8 @@ def maximum_security_manager_stack_size(value):
 
 def publisher_profile_file(value):
     value is not None and _setenv('PROFILE_PUBLISHER', value)
+    from ZPublisher.Publish import install_profiling
+    install_profiling(value)
     return value
 
 def http_realm(value):

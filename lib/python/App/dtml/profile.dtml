@@ -62,11 +62,11 @@ Python profiler documentation</a>.
 <dtml-else>
 <br />
 <div class="form-text">
-Profiling is not currently enabled or there is not yet any profiling 
-data to report. To enable profiling, restart the Zope process with 
-the environment variable PROFILE_PUBLISHER defined. The value of this 
-variable should be the full system path to a file that will be used 
-to dump a profile report when the process restarts or exits.
+Profiling is not currently enabled or there is not yet any profiling
+data to report.  To enable profiling, restart the Zope process with
+the configuration setting 'publisher-profile-file' defined. The value
+of this variable should be the full system path to a file that will be
+used to dump a profile report when the process restarts or exits.
 </div>
 </dtml-if>
 </dtml-let>

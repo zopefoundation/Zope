@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.164 2003/04/18 13:51:21 andreasjung Exp $"""
-__version__='$Revision: 1.164 $'[11:-2]
+$Id: Publish.py,v 1.165 2003/10/21 14:10:16 chrism Exp $"""
+__version__='$Revision: 1.165 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -142,7 +142,7 @@ def publish(request, module_name, after_list, debug=0,
         else: raise
 
 
-def publish_module(module_name,
+def publish_module_standard(module_name,
                    stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
                    environ=os.environ, debug=0, request=None, response=None):
     must_die=0
@@ -295,66 +295,77 @@ class DefaultTransactionsManager:
         if auth_user is not None:
             T.setUser(auth_user, request_get('AUTHENTICATION_PATH'))
 
+# profiling support
 
-# ZPublisher profiler support
-# ---------------------------
+_pfile = None # profiling filename
+_plock=allocate_lock() # profiling lock
+_pfunc=publish_module_standard
+_pstat=None
 
-if os.environ.get('PROFILE_PUBLISHER', None):
+def install_profiling(filename):
+    global _pfile
+    _pfile = filename
+    
+def pm(module_name, stdin, stdout, stderr,
+       environ, debug, request, response):
+    try:
+        r=_pfunc(module_name, stdin=stdin, stdout=stdout,
+                 stderr=stderr, environ=environ, debug=debug,
+                 request=request, response=response)
+    except: r=None
+    sys._pr_=r
 
+def publish_module_profiled(module_name, stdin=sys.stdin, stdout=sys.stdout,
+                            stderr=sys.stderr, environ=os.environ, debug=0,
+                            request=None, response=None):
     import profile, pstats
+    global _pstat
+    _plock.acquire()
+    try:
+        if request is not None:
+            path_info=request.get('PATH_INFO')
+        else: path_info=environ.get('PATH_INFO')
+        if path_info[-14:]=='manage_profile':
+            return _pfunc(module_name, stdin=stdin, stdout=stdout,
+                          stderr=stderr, environ=environ, debug=debug,
+                          request=request, response=response)
+        pobj=profile.Profile()
+        pobj.runcall(pm, module_name, stdin, stdout, stderr,
+                     environ, debug, request, response)
+        result=sys._pr_
+        pobj.create_stats()
+        if _pstat is None:
+            _pstat=sys._ps_=pstats.Stats(pobj)
+        else: _pstat.add(pobj)
+    finally:
+        _plock.release()
 
-    _pfile=os.environ['PROFILE_PUBLISHER']
-    _plock=allocate_lock()
-    _pfunc=publish_module
-    _pstat=None
-
-    def pm(module_name, stdin, stdout, stderr,
-           environ, debug, request, response):
+    if result is None:
         try:
-            r=_pfunc(module_name, stdin=stdin, stdout=stdout,
-                     stderr=stderr, environ=environ, debug=debug,
-                     request=request, response=response)
-        except: r=None
-        sys._pr_=r
+            error=sys.exc_info()
+            file=open(_pfile, 'w')
+            file.write(
+            "See the url "
+            "http://www.python.org/doc/current/lib/module-profile.html"
+            "\n for information on interpreting profiler statistics.\n\n"
+                )
+            sys.stdout=file
+            _pstat.strip_dirs().sort_stats('cumulative').print_stats(250)
+            _pstat.strip_dirs().sort_stats('time').print_stats(250)
+            file.flush()
+            file.close()
+        except: pass
+        raise error[0], error[1], error[2]
+    return result
 
-    def publish_module(module_name, stdin=sys.stdin, stdout=sys.stdout,
-                       stderr=sys.stderr, environ=os.environ, debug=0,
-                       request=None, response=None):
-        global _pstat
-        _plock.acquire()
-        try:
-            if request is not None:
-                path_info=request.get('PATH_INFO')
-            else: path_info=environ.get('PATH_INFO')
-            if path_info[-14:]=='manage_profile':
-                return _pfunc(module_name, stdin=stdin, stdout=stdout,
-                              stderr=stderr, environ=environ, debug=debug,
-                              request=request, response=response)
-            pobj=profile.Profile()
-            pobj.runcall(pm, module_name, stdin, stdout, stderr,
-                         environ, debug, request, response)
-            result=sys._pr_
-            pobj.create_stats()
-            if _pstat is None:
-                _pstat=sys._ps_=pstats.Stats(pobj)
-            else: _pstat.add(pobj)
-        finally:
-            _plock.release()
+def publish_module(module_name,
+                   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
+                   environ=os.environ, debug=0, request=None, response=None):
+    """ publish a Python module, with or without profiling enabled """
+    if _pfile: # profiling is enabled
+        return publish_module_profiled(module_name, stdin, stdout, stderr,
+                                       environ, debug, request, response)
+    else:
+        return publish_module_standard(module_name, stdin, stdout, stderr,
+                                       environ, debug, request, response)
 
-        if result is None:
-            try:
-                error=sys.exc_info()
-                file=open(_pfile, 'w')
-                file.write(
-                "See the url "
-                "http://www.python.org/doc/current/lib/module-profile.html"
-                "\n for information on interpreting profiler statistics.\n\n"
-                    )
-                sys.stdout=file
-                _pstat.strip_dirs().sort_stats('cumulative').print_stats(250)
-                _pstat.strip_dirs().sort_stats('time').print_stats(250)
-                file.flush()
-                file.close()
-            except: pass
-            raise error[0], error[1], error[2]
-        return result
