@@ -164,7 +164,7 @@ class TestCase( unittest.TestCase ):
         assert len(self._index._unindex)==0
 
     
-    def testPopulateIndex( self ):
+    def testSimpleTests( self ):
 
         self._populateIndex()
         
@@ -186,14 +186,49 @@ class TestCase( unittest.TestCase ):
                 res = self._index._apply_index(
                                     {"path":{'query':path,"level":level}})
                 lst = list(res[0].keys())
-                assert lst==results,res
+                self.assertEqual(lst,results)
 
         for comp,level,results in tests:
             for path in [comp,"/"+comp,"/"+comp+"/"]:
                 res = self._index._apply_index(
                                     {"path":{'query':( (path,level),)}})
                 lst = list(res[0].keys())
-                assert lst==results,res
+                self.assertEqual(lst,results)
+                
+
+    def testComplexOrTests( self ):
+
+        self._populateIndex()
+        
+        tests = [
+            (['aa','bb'],1,[1,2,3,4,5,6,10,11,12,13,14,15]),
+            ([('cc',1),('cc',2)],0,[3,6,7,8,9,12,15,16,17,18]),
+        ]
+
+        for lst ,level,results in tests:
+
+            res = self._index._apply_index(
+                            {"path":{'query':lst,"level":level,"operator":"or"}})
+            lst = list(res[0].keys())
+            self.assertEqual(lst,results)
+
+    def testComplexANDTests( self ):
+
+        self._populateIndex()
+        
+        tests = [
+            (['aa','bb'],1,[]),
+            ([('aa',0),('bb',1)],0,[4,5,6]),
+            ([('aa',0),('cc',2)],0,[3,6,9]),
+        ]
+
+        for lst ,level,results in tests:
+
+            res = self._index._apply_index(
+                            {"path":{'query':lst,"level":level,"operator":"and"}})
+            lst = list(res[0].keys())
+            self.assertEqual(lst,results)
+
 
 def test_suite():
     return unittest.makeSuite( TestCase )
