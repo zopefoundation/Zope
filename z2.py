@@ -241,6 +241,7 @@ if swhome != 'INSERT_SOFTWARE_HOME':
 
 
 import os, sys, getopt, codecs, string
+from types import StringType, IntType
 # workaround to allow unicode encoding conversions in DTML
 dummy = codecs.lookup('iso-8859-1')
 
@@ -352,7 +353,7 @@ def server_info(old, v, offset=0):
         v=v+offset
     except: raise 'Invalid port', v
 
-    if type(old) is type(0): old=[(a,v)]
+    if isinstance(old, IntType): old=[(a,v)]
     else: old.append((a,v))
 
     return old    
@@ -624,7 +625,7 @@ try:
 
     # HTTP Server
     if HTTP_PORT:
-        if type(HTTP_PORT) is type(0): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
+        if isinstance(HTTP_PORT, IntType): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
         for address, port in HTTP_PORT:
             hs = zhttp_server(
                 ip=address,
@@ -650,7 +651,7 @@ try:
     # WebDAV source Server (runs HTTP, but munges request to return
     #  'manage_FTPget').
     if WEBDAV_SOURCE_PORT:
-        if type(WEBDAV_SOURCE_PORT) is type(0):
+        if isinstance(WEBDAV_SOURCE_PORT, IntType):
             WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
         for address, port in WEBDAV_SOURCE_PORT:
             hs = zhttp_server(
@@ -685,7 +686,7 @@ try:
 
     # FTP Server
     if FTP_PORT:
-        if type(FTP_PORT) is type(0): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
+        if isinstance(FTP_PORT, IntType): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
         for address, port in FTP_PORT:
             FTPServer(
                module=MODULE,
@@ -732,7 +733,7 @@ try:
             zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
                      ' because no emergency user exists.')
         if pw:
-            if type(MONITOR_PORT) is type(0): 
+            if ininstance(MONITOR_PORT, IntType): 
                 MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
             for address, port in MONITOR_PORT:
                 monitor=secure_monitor_server(
@@ -741,7 +742,7 @@ try:
                     port=port)
 
     if ICP_PORT:
-        if type(ICP_PORT) is type(0): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
+        if instrance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
         from ZServer.ICPServer import ICPServer
         for address, port in ICP_PORT:
             ICPServer(address,port)
@@ -791,10 +792,10 @@ try:
                 try:    UID = string.atoi(UID)
                 except: pass
                 gid = None
-                if type(UID) == type(""):
+                if instance(UID, StringType):
                     uid = pwd.getpwnam(UID)[2]
                     gid = pwd.getpwnam(UID)[3]
-                elif type(UID) == type(1):
+                elif instance(UID, IntType):
                     uid = pwd.getpwuid(UID)[2]
                     gid = pwd.getpwuid(UID)[3]
                     UID = pwd.getpwuid(UID)[0]
