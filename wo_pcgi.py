@@ -104,15 +104,16 @@ print '-'*78
 
 os.chdir(home)
 data_dir=os.path.join(home, 'var')
-db_path=os.path.join(data_dir, 'Data.bbb')
-dd_path=os.path.join(data_dir, 'Data.bbb.in')
 if not os.path.exists(data_dir):
     print 'creating data directory'
     os.mkdir('var')
-    
-if not os.path.exists(db_path):
-    print 'creating default database'
-    os.system('cp %s %s' % (dd_path, db_path))
+
+for suffix in 'bbb', 'fs':
+    db_path=os.path.join(data_dir, 'Data.%s' % suffix)
+    dd_path=os.path.join(data_dir, 'Data.%s.in' % suffix)
+    if not os.path.exists(db_path) and os.path.exists(dd_path):
+        print 'creating default database'
+        os.system('cp %s %s' % (dd_path, db_path))
 
 ac_path=os.path.join(home, 'access')
 if not os.path.exists(ac_path):
