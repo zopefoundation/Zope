@@ -379,8 +379,9 @@ class TALGenerator:
         replace = taldict.get("replace")
         attrsubst = taldict.get("attributes")
         onError = taldict.get("on-error")
-        if len(metaldict) > 1:
-            raise METALError("at most one METAL attribute per element",
+        if len(metaldict) > 1 and (defineMacro or useMacro):
+            raise METALError("define-macro and use-macro cannot be used "
+                             "together or with define-slot or fill-slot",
                              position)
         if content and replace:
             raise TALError("content and replace are mutually exclusive",
@@ -402,12 +403,12 @@ class TALGenerator:
             self.pushSlots()
             self.pushProgram()
             todo["useMacro"] = useMacro
-        if defineSlot:
-            self.pushProgram()
-            todo["defineSlot"] = defineSlot
         if fillSlot:
             self.pushProgram()
             todo["fillSlot"] = fillSlot
+        if defineSlot:
+            self.pushProgram()
+            todo["defineSlot"] = defineSlot
         if taldict:
             self.emit("beginScope")
             self.emit("rawAttrs", self.makeAttrDict(attrlist))
@@ -504,14 +505,14 @@ class TALGenerator:
             self.emitOnError(name, onError, position)
         if scope:
             self.emit("endScope")
-        if defineMacro:
-            self.emitDefineMacro(defineMacro, position)
-        if useMacro:
-            self.emitUseMacro(useMacro)
         if defineSlot:
             self.emitDefineSlot(defineSlot)
         if fillSlot:
             self.emitFillSlot(fillSlot, position)
+        if useMacro:
+            self.emitUseMacro(useMacro)
+        if defineMacro:
+            self.emitDefineMacro(defineMacro, position)
 
 def test():
     t = TALGenerator()

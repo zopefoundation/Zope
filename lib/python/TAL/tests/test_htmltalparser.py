@@ -468,8 +468,6 @@ class TALGeneratorTestCases(TestCaseBase):
         self._should_error("<html metal:use-macro='x'>" +
                            2*"<p metal:fill-slot='y' />" + "</html>", exc)
         self._should_error("<p metal:foobar='x' />", exc)
-        self._should_error("<p metal:define-slot='x' metal:fill-slot='x' />",
-                           exc)
         self._should_error("<p metal:define-macro='x'>", exc)
         
 

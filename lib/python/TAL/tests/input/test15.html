@@ -8,8 +8,8 @@
 
 <div metal:define-macro="OUTER">
 <div metal:use-macro="INNER">
-  <xxx metal:fill-slot="INNERSLOT">
-    <xxx metal:define-slot="OUTERSLOT">OUTERSLOT</xxx>
+  <xxx metal:define-slot="OUTERSLOT" metal:fill-slot="INNERSLOT">
+    OUTERSLOT
   </xxx>
 </div>
 </div>
