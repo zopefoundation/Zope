@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.22 1998/01/13 19:35:55 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.23 1998/03/04 18:18:40 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -62,6 +62,7 @@ from __builtin__ import *
 import VSEval
 
 ParseError='Document Template Parse Error'
+ValidationError='ValidationError'
 
 def int_param(params,md,name,default=0):
     try: v=params[name]
@@ -89,7 +90,7 @@ def careful_getattr(md, inst, name):
 	v=getattr(inst, name)
 	if validate(inst,inst,name,v,md): return v
 
-    raise AttributeError, name
+    raise ValidationError, name
 
 def careful_getitem(md, mapping, key):
     v=mapping[key]
@@ -98,7 +99,7 @@ def careful_getitem(md, mapping, key):
 
     validate=md.validate
     if validate is None or validate(mapping,mapping,key,v,md): return v
-    raise KeyError, key
+    raise Validation, key
 
 def careful_getslice(md, seq, *indexes):
     v=len(indexes)
@@ -114,7 +115,7 @@ def careful_getslice(md, seq, *indexes):
     if validate is not None:
 	for e in v:
 	    if not validate(seq,seq,'',e,md):
-		raise TypeError, 'unauthorized access to slice member'
+		raise ValidationError, 'unauthorized access to slice member'
 
     return v
 
@@ -150,26 +151,28 @@ expr_globals={
     '__guarded_getslice__': careful_getslice,
     }
 
-def name_param(params,tag='',expr=0):
+def name_param(params,tag='',expr=0, attr='name'):
     used=params.has_key
     if used(''):
-	if used('name'):
-	    raise ParseError, _tm('Two names were given', tag)
+	if used(attr):
+	    raise ParseError, _tm('Two %s values were given', (attr,tag))
 	if expr:
-	    if used('expr'): raise ParseError, _tm('name and expr given', tag)
+	    if used('expr'):
+		raise ParseError, _tm('%s and expr given', (attr,tag))
 	    return params[''],None
 	return params['']
-    elif used('name'):
+    elif used(attr):
 	if expr:
-	    if used('expr'): raise ParseError, _tm('name and expr given', tag)
-	    return params['name'],None
-	return params['name']
+	    if used('expr'):
+		raise ParseError, _tm('%s and expr given', (attr,tag))
+	    return params[attr],None
+	return params[attr]
     elif expr and used('expr'):
 	name=params['expr']
 	expr=VSEval.Eval(name, expr_globals)
 	return name, expr
 	
-    raise ParseError, ('No name given', tag)
+    raise ParseError, ('No %s given', (attr,tag))
 
 Expr_doc="""
 
@@ -304,6 +307,9 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.23  1998/03/04 18:18:40  jim
+# Extended the parse_name utility to handle other name-like tags.
+#
 # Revision 1.22  1998/01/13 19:35:55  jim
 # Added rand and whrand.
 #
