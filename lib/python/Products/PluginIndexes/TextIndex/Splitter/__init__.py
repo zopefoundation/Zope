@@ -1,8 +1,8 @@
 import os,sys,exceptions
 
 availableSplitters = (
-  ("ZopeSplitter" , "Zope Default Splitter"),
-  ("ISO_8859_1_Splitter" , "Werner Strobles ISO Splitter")
+  ("DefaultSplitter" , "Zope Default Splitter"),
+  ("ISO_8859_1_Splitter" , "Werner Strobles ISO-8859-1 Splitter")
 )
 
 splitterNames = map(lambda x: x[0],availableSplitters)
