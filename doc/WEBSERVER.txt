@@ -95,6 +95,15 @@ Using Zope in multi-threaded mode with ZServer
   the HTTP authentication header information to Zope.  See the section 
   'Zope authentication with existing web servers'.
 
+  There is an Apache module for Zope/PCGI:
+
+    http://www.zope.org/Members/phd/mod_pcgi2/
+
+  One can easily compile and configure it. It passes the HTTP
+  authentication header and other environment variables. It supports
+  virtual hosting.
+
+
  FastCGI
 
   FastCGI is relatively easy to set up if you have installed an Apache
@@ -392,9 +401,9 @@ Zope authentication with existing web servers
       * As mentioned above, Apache does not pass authorization
       information to CGI scripts by default. See above for information
       on how to deal with this situation.
- 
-      * An Apache module to support PCGI (mod_pcgi) is under
-        development.
+
+      * There is Apache module to support PCGI (mod_pcgi2). See the 
+      section "PCGI" above for details.
  
     Netscape Servers
   
