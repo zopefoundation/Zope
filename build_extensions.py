@@ -95,9 +95,7 @@ print 'Building extension modules'
 
 make('lib','python')
 make('lib','python','DocumentTemplate')
-make('lib','python','BoboPOS')
 make('lib','python','ZODB')
-make('lib','python','ZopeZODB3')
 make('lib','python','SearchIndex')
 
 # Try to link/copy cPickle.so to BoboPOS to out-fox
@@ -108,7 +106,7 @@ files=filter(
     os.listdir('python')
     )
 if files:
-    cd('python'); cd('BoboPOS')
+    cd('python'); cd('ZODB')
     for f in files:
         src=os.path.join('..',f)
         try: os.link(src,f)
