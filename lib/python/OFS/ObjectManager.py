@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.9 1997/09/18 20:03:37 brian Exp $"""
+$Id: ObjectManager.py,v 1.10 1997/09/18 22:48:45 brian Exp $"""
 
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -82,8 +82,6 @@ class ObjectManager(Acquirer,Management,Persistent):
 		return (self.aq_parent,)
 	except: pass
         return ()
-        #try:    return (self.aq_parent,)
-	#except: return ()
 
     def _setObject(self,id,object):
 	self._checkId(id)
@@ -94,8 +92,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def _delObject(self,id):
         delattr(self,id)
-        self._objects=tuple(filter(lambda i,n=id: i['id'] != n, 
-				                  self._objects))
+        self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
+
     def objectIds(self,t=None):
         # Return a list of subobject ids
 	if t is not None:
@@ -124,7 +122,34 @@ class ObjectManager(Acquirer,Management,Persistent):
 			  self._objects))
 	return map(lambda i,s=self: (i['id'], getattr(s,i['id'])),
 		                    self._objects)
+    def objectMap(self):
+	# Return a tuple of mappings containing subobject meta-data
+        return self._objects
 
+    def objectIds_d(self,t=None):
+	v=self.objectIds(t)
+	try:    n=self._reserved_names
+	except: return v
+	return filter(lambda x,r=n: x not in r, v)
+
+    def objectValues_d(self,t=None):
+	v=self.objectIds(t)
+	try:    n=self._reserved_names
+	except: return map(lambda i,s=self: getattr(s,i), v)
+	return map(lambda i,s=self: getattr(s,i),
+	            filter(lambda x,r=n: x not in r, v))
+
+    def objectItems_d(self,t=None):
+	v=self.objectItems(t)
+	try:    n=self._reserved_names
+	except: return v
+	return filter(lambda x,r=n: x[0] not in r, v)
+
+    def objectMap_d(self,t=None):
+	v=self._objects
+	try:    n=self._reserved_names
+	except: return v
+	return filter(lambda x,r=n: x['id'] not in r, v)
 
     def superIds(self,t):
         if type(t)==type('s'): t=(t,)
@@ -212,21 +237,6 @@ class ObjectManager(Acquirer,Management,Persistent):
 	    x=x+1
 	return vals
 
-
-    def objectMap(self):
-	# Return a tuple of mappings containing subobject meta-data
-        return self._objects
-
-
-
-
-
-
-
-
-
-
-
     def manage_addObject(self,type,REQUEST):
 	"""Add a subordinate object"""
 	for t in self.meta_types:
@@ -239,8 +249,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_delObjects(self,ids,REQUEST):
 	"""Delete a subordinate object"""
-	try:    p=map(lambda d: d['id'], self.__class__._objects)
-	except: p=[]
+	try:    p=self._reserved_names
+	except: p=()
 	for n in ids:
 	    if n in p:
 	        return MessageDialog(title  ='Not Deletable' % n,
@@ -277,6 +287,12 @@ class ObjectManager(Acquirer,Management,Persistent):
         # Return a tuple of mappings, giving meta-data for properties
         return self._properties
 
+    def propertyMap_d(self):
+	v=self._properties
+	try:    n=self._reserved_names
+	except: return v
+	return filter(lambda x,r=n: x['id'] not in r, v)
+
     def manage_addProperty(self,id,value,type,REQUEST):
 	"""Add a new property (www)"""
 	self._setProperty(id,value,type)
@@ -292,8 +308,8 @@ class ObjectManager(Acquirer,Management,Persistent):
 
     def manage_delProperties(self,ids,REQUEST):
 	"""Delete one or more properties"""
-	try:    p=map(lambda d: d['id'], self.__class__._properties)
-	except: p=[]
+	try:    p=self._reserved_names
+	except: p=()
 	for n in ids:
 	    if n in p:
 	        return MessageDialog(
@@ -375,6 +391,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.10  1997/09/18 22:48:45  brian
+# Deletable object filters added
+#
 # Revision 1.9  1997/09/18 20:03:37  brian
 # Added superX type sniffer
 #

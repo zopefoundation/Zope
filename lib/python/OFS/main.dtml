@@ -46,7 +46,7 @@ To add a new item, select an item type and click &quot;Add&quot;.
 </FORM>
 </TD>
 </TR>
-<!--#if objectValues-->
+<!--#if objectValues_d-->
 <TR>
 <TD VALIGN="TOP">
 To delete items, select one or more items and click &quot;Delete&quot;.
@@ -54,15 +54,15 @@ To delete items, select one or more items and click &quot;Delete&quot;.
 <TD VALIGN="TOP">
 <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
 <SELECT NAME="ids:list" MULTIPLE SIZE="4">
-<!--#in objectValues-->
+<!--#in objectValues_d-->
   <OPTION VALUE="<!--#var id-->"><!--#var title_and_id-->
-<!--#/in objectValues-->
+<!--#/in objectValues_d-->
 </SELECT><BR>
 <INPUT TYPE="SUBMIT" VALUE="Delete">
 </FORM>
 </TD>
 </TR>
-<!--#/if objectValues-->
+<!--#/if objectValues_d-->
 </TABLE>
 </BODY>
 </HTML>
