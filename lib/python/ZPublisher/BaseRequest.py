@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -119,6 +119,11 @@ class BaseRequest:
     collection of variable to value mappings.
     """
 
+    # While the following assignment is not strictly necessary, it
+    # prevents alot of unnecessary searches because, without it,
+    # acquisition of REQUEST is disallowed, which penalizes access
+    # in DTML with tags.
+    __roles__ = None
     _file=None
     common={} # Common request data
     _auth=None
