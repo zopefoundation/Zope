@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.8 1997/09/23 16:46:48 jim Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Index.py,v 1.9 1997/09/26 22:21:43 jim Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -113,7 +113,7 @@ class Index:
 	    set.remove(i)
 	except KeyError: pass
 
-    def _apply_index(self, request):
+    def _apply_index(self, request, cid=''):
 	"""Apply the index to query parameters given in the argument, request
 
 	The argument should be a mapping object.
@@ -128,8 +128,11 @@ class Index:
 
 	"""
 	id=self.id
-	try: keys=request[id]
-	except: return None
+
+	try: keys=request["%s/%s" % (cid,id)]
+	except:
+	    try: keys=request[id]
+	    except: return None
 
 	if type(keys) is not ListType: keys=[keys]
 	index=self._index
@@ -153,6 +156,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.9  1997/09/26 22:21:43  jim
+# added protocol needed by searchable objects
+#
 # Revision 1.8  1997/09/23 16:46:48  jim
 # Added logic to handle missing data.
 #

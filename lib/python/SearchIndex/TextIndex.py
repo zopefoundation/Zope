@@ -127,8 +127,8 @@ Notes on a new text index design
 
 
 
-$Id: TextIndex.py,v 1.3 1997/09/17 17:53:32 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: TextIndex.py,v 1.4 1997/09/26 22:21:44 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 from Globals import Persistent
 from Trie import Trie
@@ -248,7 +248,7 @@ class TextIndex(Persistent):
 
 	return r
 
-    def _apply_index(self, request,ListType=[]):
+    def _apply_index(self, request,cid='',ListType=[]):
 	"""Apply the index to query parameters given in the argument, request
 
 	The argument should be a mapping object.
@@ -262,9 +262,13 @@ class TextIndex(Persistent):
 	all data fields used.
 
 	"""
+
 	id=self.id
-	try: keys=request[id]
-	except: return None
+
+	try: keys=request["%s/%s" % (cid,id)]
+	except:
+	    try: keys=request[id]
+	    except: return None
 
 	if type(keys) is not ListType: keys=[keys]
 	r=None
@@ -289,6 +293,9 @@ class TextIndex(Persistent):
 ############################################################################## 
 #
 # $Log: TextIndex.py,v $
+# Revision 1.4  1997/09/26 22:21:44  jim
+# added protocol needed by searchable objects
+#
 # Revision 1.3  1997/09/17 17:53:32  jim
 # Added unindex_item.
 # This thing needs an overhaul; already. :-(
