@@ -91,59 +91,35 @@ import sys
 
 import getopt
 
-use_minidom = 0
 try:
     import setpath                      # Local hack to tweak sys.path etc.
     import Products.ParsedXML
 except ImportError:
-    sys.stderr.write("Using minidom\n")
-    use_minidom = 1
+    pass
 
 # Import local classes
-from CopyingDOMVisitor import CopyingDOMVisitor
 from DummyEngine import DummyEngine
 
 FILE = "test/test1.xml"
 
 def main():
-    global use_minidom
-    noVersionTest = use_minidom
+    versionTest = 1
     macros = 0
-    compile = 0
-    parse = 1
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "Mcmnpv")
+        opts, args = getopt.getopt(sys.argv[1:], "mn")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
         sys.stderr.write(
-            "usage: driver.py [-M] [-c] [-m] [-n] [-p] [-v] [file]\n")
-        sys.stderr.write("-M -- force using minidom\n")
-        sys.stderr.write("-c -- compiled mode\n")
+            "usage: driver.py [-m] [-n] [file]\n")
         sys.stderr.write("-m -- macro expansion only\n")
         sys.stderr.write("-n -- turn of the Python 1.5.2 test\n")
-        sys.stderr.write("-p -- parse XML file directly (fastest, default)\n")
-        sys.stderr.write("-v -- visiting mode (slower)\n")
         sys.exit(2)
     for o, a in opts:
-        if o == '-M':
-            use_minidom = 1
-        if o == '-c':
-            compile = 1
-            parse = 0
         if o == '-m':
             macros = 1
-            if not compile and not parse:
-                parse = 1
         if o == '-n':
-            noVersionTest = 1
-        if o == '-p':
-            parse = 1
-            compile = 0
-        if o == '-v':
-            compile = 0
-            parse = 0
-            macros = 0
-    if not noVersionTest:
+            versionTest = 0
+    if not versionTest:
         if sys.version[:5] != "1.5.2":
             sys.stderr.write(
                 "Use Python 1.5.2 only; use -n to disable this test\n")
@@ -152,64 +128,8 @@ def main():
         file = args[0]
     else:
         file = FILE
-    if parse:
-        it = compilefile(file)
-        interpretit(it, tal=(not macros))
-    else:
-        doc = parsefile(file)
-        if compile:
-            it = compiletree(doc)
-            interpretit(it, tal=(not macros))
-        else:
-            doc = talizetree(doc)
-            printtree(doc)
-
-def parsefile(file):
-    if use_minidom:
-        from xml.dom import minidom
-        return minidom.parse(file)
-    else:
-        from Products.ParsedXML.DOM import ExpatBuilder
-        return ExpatBuilder.parse(file, 1)
-
-def printtree(node, stream=None, encoding=None):
-    if stream is None:
-        stream = sys.stdout
-    if use_minidom:
-        assert not encoding
-        node.writexml(stream)
-    else:
-        from Products.ParsedXML import Printer
-        Printer.PrintVisitor(node, stream, encoding)()
-
-def getdom():
-    if use_minidom:
-        from xml.dom import minidom
-        return minidom.DOMImplementation()
-    else:
-        from Products.ParsedXML.DOM import Core
-        return Core.theDOMImplementation
-
-def copytree(root, dom=None):
-    if dom is None:
-        dom = getdom()
-    return CopyingDOMVisitor(root, dom)()
-
-def talizetree(root, dom=None, engine=None):
-    from TALVisitor import TALVisitor
-    if dom is None:
-        dom = getdom()
-    if engine is None:
-        engine = DummyEngine()
-    return TALVisitor(root, dom, engine)()
-
-def precompiletree(root):
-    from TALCompiler import METALCompiler
-    return METALCompiler(root)()
-
-def compiletree(root):
-    from TALCompiler import TALCompiler
-    return TALCompiler(root)()
+    it = compilefile(file)
+    interpretit(it, tal=(not macros))
 
 def interpretit(it, engine=None, stream=None, tal=1):
     from TALInterpreter import TALInterpreter
