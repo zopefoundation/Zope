@@ -22,6 +22,8 @@ DB=ZODB.FileStorage.FileStorage(
 DB=ZODB.DB(DB)
 Globals.DB=DB # Ick, this is temporary until we come up with some registry
 Globals.opened.append(DB)
+import ClassFactory
+DB.setClassFactory(ClassFactory.ClassFactory)
 
 # Set up the "application" object that automagically opens
 # connections
