@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.17 1999/03/25 15:25:31 jim Exp $"""
+$Id: Management.py,v 1.18 1999/03/31 15:02:46 brian Exp $"""
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
@@ -124,7 +124,7 @@ class Tabs(ExtensionClass.Base):
 
 Globals.default__class_init__(Tabs)
 
-class Navigation:
+class Navigation(ExtensionClass.Base):
     """Basic (very) navigation UI support"""
 
     manage          =HTMLFile('manage', globals())
