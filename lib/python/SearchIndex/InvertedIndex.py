@@ -32,7 +32,7 @@ Example usage:
 InvertedIndex provides three types of indexes: one non-persistent
 index, Index, and two persistent indexes, Persistent and Transactional.
       
-$Id: InvertedIndex.py,v 1.6 1996/12/09 15:50:15 jim Exp $'''
+$Id: InvertedIndex.py,v 1.7 1996/12/10 21:17:57 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -84,6 +84,9 @@ $Id: InvertedIndex.py,v 1.6 1996/12/09 15:50:15 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.7  1996/12/10 21:17:57  chris
+# Experimenting....
+#
 # Revision 1.6  1996/12/09 15:50:15  jim
 # Checked in so jim can hack.
 #
@@ -107,7 +110,7 @@ $Id: InvertedIndex.py,v 1.6 1996/12/09 15:50:15 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 
 import regex, regsub, string, marshal
@@ -470,24 +473,24 @@ class Index:
 class PersistentResultList(ResultList, PickleDictionary.Persistent):
 
   def __getstate__(self):
-#      l = self._list
-#      new_l = []
-#      for key, freq in l:
-#        new_l = new_l + [ key, freq ]
+    l = self._list
+    new_l = []
+    for key, freq in l:
+      new_l = new_l + [ key, freq ]
  
-      new_l = self._list       
-      return marshal.dumps(new_l)
+    new_l = self._list       
+    return marshal.dumps(new_l)
 
 
   def __setstate__(self, marshaled_state):
       l = marshal.loads(marshaled_state)
 
-#      if (len(l) and l[0] is not TupleType):
-#        new_l = []
-#	for i in range(0, len(l), 2):
-#          new_l.append(tuple(l[i : (i + 2)]))
-#
-#        l = new_l
+      if (len(l) and l[0] is not TupleType):
+        new_l = []
+	for i in range(0, len(l), 2):
+          new_l.append(tuple(l[i : (i + 2)]))
+
+        l = new_l
 
       self._list = l
 
