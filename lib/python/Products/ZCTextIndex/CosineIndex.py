@@ -145,58 +145,6 @@ class CosineIndex(BaseIndex):
             #print "->", weights[i]
         return d.keys(), weights, scaled_int(W)
 
-    DICT_CUTOFF = 10
-
-    def _add_wordinfo(self, wid, f, docid):
-        # Store a wordinfo in a dict as long as there are less than
-        # DICT_CUTOFF docids in the dict.  Otherwise use an IIBTree.
-
-        # The pickle of a dict is smaller than the pickle of an
-        # IIBTree, substantially so for small mappings.  Thus, we use
-        # a dictionary until the mapping reaches DICT_CUTOFF elements.
-
-        # The cutoff is chosen based on the implementation
-        # characteristics of Python dictionaries.  The dict hashtable
-        # always has 2**N slots and is resized whenever it is 2/3s
-        # full.  A pickled dict with 10 elts is half the size of an
-        # IIBTree with 10 elts, and 10 happens to be 2/3s of 2**4.  So
-        # choose 10 as the cutoff for now.
-
-        # The IIBTree has a smaller in-memory representation than a
-        # dictionary, so pickle size isn't the only consideration when
-        # choosing the threshold.  The pickle of a 500-elt dict is 92%
-        # of the size of the same IIBTree, but the dict uses more
-        # space when it is live in memory.  An IIBTree stores two C
-        # arrays of ints, one for the keys and one for the values.  It
-        # holds upto 120 key-value pairs in a single bucket.
-        try:
-            map = self._wordinfo[wid]
-        except KeyError:
-            map = {}
-        else:
-            # _add_wordinfo() is called for each update.  If the map
-            # size exceeds the DICT_CUTOFF, convert to an IIBTree.
-            if len(map) == self.DICT_CUTOFF:
-                map = IIBTree(map)
-        map[docid] = f
-        self._wordinfo[wid] = map # Not redundant, because of Persistency!
-
-    def _del_wordinfo(self, wid, docid):
-        try:
-            map = self._wordinfo[wid]
-            del map[docid]
-        except KeyError:
-            return
-        if len(map) == 0:
-            del self._wordinfo[wid]
-            return
-        if len(map) == self.DICT_CUTOFF:
-            new = {}
-            for k, v in map.items():
-                new[k] = v
-            map = new
-        self._wordinfo[wid] = map # Not redundant, because of Persistency!
-
     def _add_undoinfo(self, docid, wids):
         self._docwords[docid] = WidCode.encode(wids)
 

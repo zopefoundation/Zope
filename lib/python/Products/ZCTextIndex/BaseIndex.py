@@ -137,17 +137,6 @@ class BaseIndex(Persistent):
         # Okapi BM25 deals with weighting query terms.
         return 10   # arbitrary
 
-    def _get_frequencies(self, wids):
-        """Return individual term frequencies."""
-        # Computes f(d, t) for each term.
-        # Returns a dict mapping wid to the number of times wid appeares
-        # in wids, {t -> f(d, t)}
-        d = {}
-        dget = d.get
-        for wid in wids:
-            d[wid] = dget(wid, 0) + 1
-        return d
-
     DICT_CUTOFF = 10
 
     def _add_wordinfo(self, wid, f, docid):

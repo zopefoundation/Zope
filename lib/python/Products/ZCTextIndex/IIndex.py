@@ -19,6 +19,9 @@ import Interface
 class IIndex(Interface.Base):
     """Interface for an Index."""
 
+    def length():
+        """Return the number of documents in the index."""
+
     def search(term):
         """Execute a search on a single term given as a string.
 
