@@ -85,6 +85,8 @@
 # 
 ##############################################################################
 
+# $Id: testSecurity.py,v 1.7 2001/10/08 14:49:45 andreasjung Exp $
+
 import os, sys
 execfile(os.path.join(sys.path[0],'framework.py'))
 
@@ -92,44 +94,17 @@ import unittest,re
 import Zope,ZPublisher,cStringIO
 from OFS.Folder import Folder
 from OFS.SimpleItem  import SimpleItem
-from OFS.DTMLMethod import addDTMLMethod
 from AccessControl import ClassSecurityInfo,getSecurityManager
 from AccessControl.User import nobody
 import Globals
 
+import SecurityBase
 
 # let's define some permissions first
 
 MAGIC_PERMISSION1 = 'Magic Permission 1'
 MAGIC_PERMISSION2 = 'Magic Permission 2'
 
-
-##############################################################################
-# ResultObject class
-##############################################################################
-
-class ResultObject:
-    """ result object used for keeping results from the 
-        ZPublisher.Zope() calls 
-    """
-
-    def __str__(self,expected=-1):
-        s  = '\n'
-        s+= '-'*78
-        s+= "\nRequest: %s" % self.request
-        s+= "\nUser: %s" % self.user
-        s+= "\nExpected: %s" % expected + "  got: %s %s" % (self.code,self.return_text)
-        s+= "\nOutput:"
-        s+= self.output
-        s+= "\n"
-
-        return s
-    
-    __repr__ = __str__
-
-    def __call__(self,expected=-1):
-        return self.__str__(expected)
-        
 
 ##############################################################################
 # TestObject class
@@ -230,13 +205,7 @@ USERS = (
 )
 
 
-##############################################################################
-# Security tests
-##############################################################################
-
-class SecurityBase(unittest.TestCase) :
-
-    status_regex = re.compile("Status: ([0-9]{1,4}) (.*)",re.I)\
+class AVeryBasicSecurityTest(SecurityBase.SecurityBase):
 
     ################################################################
     # set up the test hierachy of objects
@@ -283,113 +252,6 @@ class SecurityBase(unittest.TestCase) :
         get_transaction().commit()
 
 
-    ################################################################
-    # print the object hierachy
-    ################################################################
-
-    def _testHierarchy(self):
-        """ print all test objects, permissions and roles """
-        self._PrintTestEnvironment(root=self.root.test)
-
-
-    def _PrintTestEnvironment(self,root):
-        """ print recursive all objects """
-
-        print '....'*len(root.getPhysicalPath()),root.getId()
-
-        folderObjs = []
-
-        for id,obj in root.objectItems():
-
-            if obj.meta_type in ['Folder','TestFolder']:
-                folderObjs.append(obj)
-
-            else:                
-                print '    '*(1+len(root.getPhysicalPath())),obj.getId(),
-                print getattr(obj,"__roles__",(None,))
-
-        for folder in folderObjs:
-            self._PrintTestEnvironment(folder)
-
-
-    ################################################################
-    # Check functions for permissions, roles and friends
-    ################################################################
-
-    def _checkPermission(self, user, hier, perm, expected):
-        """ low level permission check """
-
-        s = "self.root.test.%s" % hier
-        obj = eval(s)
-
-        res = user.has_permission(perm,obj)
-
-        if res != expected:        
-            raise AssertionError, \
-                self._perm_debug (s,perm,res,expected)
-
-
-    def _checkRoles(self,hier,expected_roles=()):
-        """ check roles for an object """
-        
-        s = "self.root.test.%s.__roles__" % hier
-        roles = eval(s)
-
-        if roles==None or len(roles)==0: 
-            roles=(None,)
-    
-        for r in roles:
-            if not r in expected_roles:
-                raise AssertionError, self._roles_debug(hier,roles,expected_roles)
-            
-
-    ################################################################
-    # Debugging helpers when raising AssertionError
-    ################################################################
-
-    def _perm_debug(self, obj , perm, res, expected):
-        s = '' 
-        s+=' Object: %s' % obj
-        s+=', Permission: %s' % perm 
-        s+=', has permission: %s' % res 
-        s+=', expected: %s' % expected
-
-        return s
-        
-
-    def _roles_debug(self,hier,expected_roles,got_roles):
-
-        s = ''
-        s+='Object: %s' % hier
-        s+=", has roles: %s " % got_roles        
-        s+=", expected roles: %s" % expected_roles
-
-        return s
- 
-    def _request(self,*args,**kw):
-        """ perform a Zope request """
-
-        io =cStringIO.StringIO()
-        kw['fp']=io
-        ZPublisher.Zope(*args,**kw)
-        outp = io.getvalue()
-        mo = self.status_regex.search(outp)
-
-        code,txt = mo.groups()
-
-        res = ResultObject()
-        res.request     = args
-        res.user        = kw.get('u','')
-        res.code        = int(code)
-        res.return_text = txt
-        res.output      = outp
-
-        return res
-
-
-class SecurityTests(SecurityBase):
-
-
     def testAttributeAccess(self):
         """ check access to attributes """
 
@@ -416,21 +278,21 @@ class SecurityTests(SecurityBase):
     def testNobody(self):
         """ check permissions for nobody user """
 
-        self._checkPermission(nobody,'f1',   'View',1) 
-        self._checkPermission(nobody,'f2',   'View',1) 
-        self._checkPermission(nobody,'f2.f3','View',1) 
-        self._checkPermission(nobody,'f1',   MAGIC_PERMISSION1, None) 
-        self._checkPermission(nobody,'f2',   MAGIC_PERMISSION1, None) 
-        self._checkPermission(nobody,'f2.f3',MAGIC_PERMISSION1, None) 
+        self._checkPermission(nobody,'test.f1',   'View',1) 
+        self._checkPermission(nobody,'test.f2',   'View',1) 
+        self._checkPermission(nobody,'test.f2.f3','View',1) 
+        self._checkPermission(nobody,'test.f1',   MAGIC_PERMISSION1, None) 
+        self._checkPermission(nobody,'test.f2',   MAGIC_PERMISSION1, None) 
+        self._checkPermission(nobody,'test.f2.f3',MAGIC_PERMISSION1, None) 
 
 
     def testPermissionAccess(self):
         """ check permission based access """
 
-        self._checkRoles('f2.f3.obj3.public_func',     (None,))    
-        self._checkRoles('f2.f3.obj3.protected_func',  ('Manager','Owner'))    
-        self._checkRoles('f2.f3.obj3.manage_func',     ('Manager',))    
-        self._checkRoles('f2.f3.obj3.private_func',    ('Manager',))    
+        self._checkRoles('test.f2.f3.obj3.public_func',     (None,))    
+        self._checkRoles('test.f2.f3.obj3.protected_func',  ('Manager','Owner'))    
+        self._checkRoles('test.f2.f3.obj3.manage_func',     ('Manager',))    
+        self._checkRoles('test.f2.f3.obj3.private_func',    ('Manager',))    
 
 
     def testZPublisherAccess(self):
@@ -442,11 +304,9 @@ class SecurityTests(SecurityBase):
 
         for path,auth,expected in _r:
             if auth:
-                res = self._request(path,u=auth)
+                res = self._checkRequest(path,u=auth,expected=expected)
             else:
-                res = self._request(path)
-
-            assert res.code==expected, (path,auth,expected,res)
+                res = self._checkRequest(path,expected=expected)
 
         
 framework()
