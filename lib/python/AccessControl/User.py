@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.114 $'[11:-2]
+__version__='$Revision: 1.115 $'[11:-2]
 
 import Globals, socket, regex, SpecialUsers
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -111,8 +111,22 @@ class BasicUser(Implicit):
     # Public User object interface
     # ----------------------------
     
-    # Allow (reluctantly) access to unprotected attributes
-    __allow_access_to_unprotected_subobjects__=1
+    # Maybe allow access to unprotected attributes. Note that this is
+    # temporary to avoid exposing information but without breaking
+    # everyone's current code. In the future the security will be
+    # clamped down and permission-protected here. Because there are a
+    # fair number of user object types out there, this method denies
+    # access to names that are private parts of the standard User
+    # interface or implementation only. The other approach (only
+    # allowing access to public names in the User interface) would
+    # probably break a lot of other User implementations with extended
+    # functionality that we cant anticipate from the base scaffolding.
+    def __allow_access_to_unprotected_subobjects__(self, name, value=None):
+        deny_names=('name', '__', 'roles', 'domains', '_getPassword',
+                    'authenticate', '_shared_roles')
+        if name in deny_names:
+            return 0
+        return 1
         
     def __init__(self,name,password,roles,domains):
         raise NotImplemented
@@ -122,11 +136,9 @@ class BasicUser(Implicit):
         raise NotImplemented
 
     def getId(self):
-        
         """Get the ID of the user. The ID can be used, at least from
         Python, to get the user from the user's
         UserDatabase"""
-
         return self.getUserName()        
 
     def _getPassword(self):
