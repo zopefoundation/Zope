@@ -59,7 +59,7 @@ Using Zope with ZopeHTTPServer:
   To start Zope using ZopeHTTPServer cd to the Zope directory and
   issue this command:
 
-    python server.py 
+    python serve.py 
 
   Note: you may wish to run ZopeHTTPServer in the background and redirect
   its output to a logfile or to /dev/null
