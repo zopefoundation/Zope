@@ -145,7 +145,7 @@ window.open("%s/manage_main", "manage_main");
 </SCRIPT>
 <p class="information">
 <a href="%s/manage_main" target="manage_main"
-onClick="javascript:window.open("%s/manage_main", "manage_main").focus()"
+onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
 >Show lesson examples</a> in another window.
 </p>""" % (url, url, url)
 
