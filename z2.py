@@ -520,8 +520,9 @@ import zdaemon
 # official one. Also gets SOFTWARE_HOME, INSTANCE_HOME, and CLIENT_HOME
 import ZServer
 
-# install signal handlers
-from SignalHandler import SignalHandler
+# install signal handlers if on posix
+if os.name == 'posix':
+    from SignalHandler import SignalHandler
 
 if Zpid and not READ_ONLY:
     import App.FindHomes
