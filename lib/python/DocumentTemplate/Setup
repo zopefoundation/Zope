@@ -11,9 +11,9 @@ cDocumentTemplate ./cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install DT_Util.py
 # install DT_Var.py
 # install DTtest.py
-# install DTtest_basicIn.py
 # install DTtestExpr.py
-# install VSEval.py
+# install DTtest_basicIn.py
 # install DocumentTemplate.py
+# install VSEval.py
 # install __init__.py
 # install gparse.py
