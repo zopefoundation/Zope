@@ -433,7 +433,7 @@ class HTTPResponse(BaseResponse):
         return self.use_HTTP_content_compression
 
     def _encode_unicode(self,body,
-                        charset_re=re.compile(r'text/[0-9a-z]+\s*;\s*' +
+                        charset_re=re.compile(r'(?:application|text)/[-+0-9a-z]+\s*;\s*' +
                                               r'charset=([-_0-9a-z]+' +
                                               r')(?:(?:\s*;)|\Z)',
                                               re.IGNORECASE)):
