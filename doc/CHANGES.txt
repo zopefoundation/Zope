@@ -74,6 +74,10 @@ Zope Changes
       - New implementation of ZODB object cache.
 
     Bugs:
+    
+      - Fixed bug #96: Narrower/Wider buttons now work on both CSS and non-CSS
+        compliant browsers. This allows better control for browsers that have a
+        hard time knowing what 100% means.
 
       - Fix for Collector #319: filtered_manage_options didn't
         correctly filter tabs based on permission.
