@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from STPDocumentTemplate import HTML
 from Globals import shared_dt_globals,HTMLFile
@@ -14,7 +14,6 @@ class Document(HTML):
     __state_names__=HTML.__state_names__+('description',)
     shared_globals =shared_dt_globals
     manage_edit__allow_groups__    =None
-    manage_editForm__allow_groups__=None
 
     def document_template_form_header(self):
 	return ("""<br>Description: 
