@@ -10,13 +10,14 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.9 1997/09/26 22:21:43 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Index.py,v 1.10 1997/10/10 18:34:56 jeffrey Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
 import operator
 from Missing import MV
+import string
 
 ListType=type([])
 
@@ -127,7 +128,7 @@ class Index:
 	all data fields used.
 
 	"""
-	id=self.id
+	id=self.id		#name of the column
 
 	try: keys=request["%s/%s" % (cid,id)]
 	except:
@@ -138,13 +139,37 @@ class Index:
 	index=self._index
 	r=None
 	anyTrue=0
-	for key in keys:
-	    if key: anyTrue=1
+	opr=None
+
+	if request.has_key(id+'_usage'):
+	    # see if any usage params are sent to field
+	    opr=string.split(string.lower(request[id+"_usage"]),':')
 	    try:
-		set=index[key]
-		if r is None: r=set
-		else: r = r.union(set)
+		opr, opr_args=opr[0], opr[1:]
+	    except IndexError:
+		opr, opr_args=opr[0], []
+
+	if opr=="range":
+	    if 'min' in opr_args: lo=min(keys)
+	    else: lo=None
+	    if 'max' in opr_args: hi=max(keys)
+	    else: hi=None
+
+	    anyTrue=1
+	    try:
+		setlist=index.items(lo,hi)
+		for k,set in setlist:
+		    if r is None: r=set
+		    else: r=r.union(set)
 	    except KeyError: pass
+	else:		#not a range
+	    for key in keys:
+		if key: anyTrue=1
+		try:
+		    set=index[key]
+		    if r is None: r=set
+		    else: r = r.union(set)
+		except KeyError: pass
 
 	if r is None:
 	    if anyTrue: r=intSet()
@@ -156,6 +181,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.10  1997/10/10 18:34:56  jeffrey
+# Added range searching/indexing
+#
 # Revision 1.9  1997/09/26 22:21:43  jim
 # added protocol needed by searchable objects
 #
