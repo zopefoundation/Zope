@@ -39,6 +39,9 @@ Zope Changes
       - When run as a daemon on Unix, Zope will now redirect
         stdin/stdout/stderr to /dev/null
 
+      - Nicer formatting for the increasingly tall permissions
+        table.
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
