@@ -32,9 +32,6 @@ def eq(scaled1, scaled2, epsilon=scaled_int(0.01)):
     if abs(scaled1 - scaled2) > epsilon:
         raise AssertionError, "%s != %s" % (scaled1, scaled2)
 
-# Subclasses should derive from one of testIndex.{CosineIndexTest,
-# OkapiIndexTest} too.
-
 # a series of text chunks to use for the re-index tests
 text = [
     """Here's a knocking indeed! If a
@@ -70,7 +67,8 @@ text = [
     way to the everlasting bonfire."""
 ]
 
-
+# Subclasses should derive from one of testIndex.{CosineIndexTest,
+# OkapiIndexTest} too.
 
 class ZCIndexTestsBase:
 
