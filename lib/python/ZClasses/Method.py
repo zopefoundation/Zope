@@ -254,7 +254,7 @@ class W(Globals.Persistent):
         m=self.__dict__[methodattr]
         if hasattr(m,'__of__'): 
             r=Helper()
-            r._ugh=self, m
+            r._ugh=self, m, parent
             return r
         return m
 
@@ -262,10 +262,24 @@ PermissionMapper=W
 
 class Helper(ExtensionClass.Base):
     def __of__(self, parent):
-        w, m = self._ugh
+        w, m, p = self._ugh
         return m.__of__(
             Acquisition.ImplicitAcquisitionWrapper(
                 w, parent))
+
+    def __getattr__(self, name):
+        w, m, parent = self._ugh
+        self=m.__of__(
+            Acquisition.ImplicitAcquisitionWrapper(
+                w, parent))
+        return getattr(self, name)
+
+    def __call__(self, *args, **kw):
+        w, m, parent = self._ugh
+        self=m.__of__(
+            Acquisition.ImplicitAcquisitionWrapper(
+                w, parent))
+        return apply(self, args, kw)
         
 class PermissionMapperManager(Acquisition.Implicit):
     def __init__(self, wrapper): self._wrapper___=wrapper
