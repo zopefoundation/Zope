@@ -37,6 +37,7 @@ edit the value and click "Change".
 <!--#/if propertyMap-->
 
 <P>
+<HR>
 <FORM ACTION="<!--#var URL1-->/manage_addProperty" METHOD="POST">
 To add a property, enter the id, type, and initial value of the new 
 property below and click &quot;Add&quot;.
@@ -81,6 +82,7 @@ property below and click &quot;Add&quot;.
 
 <!--#if propertyMap_d-->
 <P>
+<HR>
 <FORM ACTION="<!--#var URL1-->/manage_delProperties" METHOD="POST">
 To delete properties, select one or more property ids 
 from the list below and click &quot;Delete&quot;.
