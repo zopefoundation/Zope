@@ -12,8 +12,7 @@
 #
 ##############################################################################
 
-""" Windows NT/2K service installer/controller for Zope/ZEO/ZRS instance
-homes """
+"""Windows Services installer/controller for Zope/ZEO/ZRS instance homes"""
 
 import win32serviceutil
 import win32service
@@ -74,9 +73,34 @@ class Service(win32serviceutil.ServiceFramework):
             None, cmd, None, None, 0, 0, None, None,
             win32process.STARTUPINFO())
 
+    def logmsg(self, event):
+        # log a service event using servicemanager.LogMsg
+        from servicemanager import LogMsg
+        LogMsg(servicemanager.EVENTLOG_INFORMATION_TYPE, event,
+               (self._svc_name_, " (%s)" % self._svc_display_name_))
+
+    def info(self, s):
+        from servicemanager import LogInfoMsg
+        LogInfoMsg("%s (%s): %s" %
+                   (self._svc_name_, self._svc_display_name_, s))
+
+    def warning(self, s):
+        from servicemanager import LogWarningMsg
+        LogWarningMsg("%s (%s): %s" %
+                      (self._svc_name_, self._svc_display_name_, s))
+
+    def error(self, s):
+        from servicemanager import LogErrorMsg
+        LogErrorMsg("%s (%s): %s" %
+                    (self._svc_name_, self._svc_display_name_, s))
+
     def SvcDoRun(self):
         # indicate to Zope that the process is daemon managed (restartable)
         os.environ['ZMANAGED'] = '1'
+
+        # XXX the restart behavior is different here than it is for
+        # zdaemon.zdrun.  we should probably do the same thing in both
+        # places.
 
         # daemon behavior:  we want to to restart the process if it
         # dies, but if it dies too many times, we need to give up.
@@ -96,24 +120,14 @@ class Service(win32serviceutil.ServiceFramework):
         backoff_cumulative = 0
 
         import servicemanager
-        
-        # log a service started message
-        servicemanager.LogMsg(
-            servicemanager.EVENTLOG_INFORMATION_TYPE,
-            servicemanager.PYS_SERVICE_STARTED,
-            (self._svc_name_, ' (%s)' % self._svc_display_name_))
+        self.logmsg(servicemanager.PYS_SERVICE_STARTED)
         
         while 1:
             start_time = time.time()
             info = self.createProcess(self.start_cmd)
             self.hZope = info[0] # the pid
             if backoff_interval > BACKOFF_INITIAL_INTERVAL:
-                # if we're in a backoff state, log a message about
-                # starting a new process
-                servicemanager.LogInfoMsg(
-                    '%s (%s): recovering from died process, new process '
-                    'started' % (self._svc_name_, self._svc_display_name_)
-                    )
+                self.info("created process")
             rc = win32event.WaitForMultipleObjects(
                 (self.hWaitStop, self.hZope), 0, win32event.INFINITE)
             if rc == win32event.WAIT_OBJECT_0:
@@ -129,51 +143,26 @@ class Service(win32serviceutil.ServiceFramework):
                     # interface (or it otherwise exited cleanly)
                     break
                 else:
-                    # this was an abormal shutdown.  if we can, we want to
-                    # restart the process but if it seems hopeless,
-                    # don't restart an infinite number of times.
+                    # this was an abormal shutdown.
                     if backoff_cumulative > BACKOFF_MAX:
-                        # it's hopeless
-                        servicemanager.LogErrorMsg(
-                          '%s (%s): process could not be restarted due to max '
-                          'restart attempts exceeded' % (
-                            self._svc_display_name_, self._svc_name_
-                          ))
+                        self.error("restarting too frequently; quit")
                         self.SvcStop()
                         break
-                    servicemanager.LogWarningMsg(
-                       '%s (%s): process died unexpectedly.  Will attempt '
-                       'restart after %s seconds.' % (
-                            self._svc_name_, self._svc_display_name_,
-                            backoff_interval
-                            )
-                       )
-                    # if BACKOFF_CLEAR_TIME seconds have elapsed since we last
-                    # started the process, reset the backoff interval
-                    # and the cumulative backoff time to their original
-                    # states
+                    self.warning("sleep %s to avoid rapid restarts"
+                                 % backoff_interval)
                     if time.time() - start_time > BACKOFF_CLEAR_TIME:
                         backoff_interval = BACKOFF_INITIAL_INTERVAL
                         backoff_cumulative = 0
-                    # we sleep for the backoff interval.  since this is async
-                    # code, it would be better done by sending and
-                    # catching a timed event (a service
-                    # stop request will need to wait for us to stop sleeping),
-                    # but this works well enough for me.
+                    # XXX Since this is async code, it would be better
+                    # done by sending and catching a timed event (a
+                    # service stop request will need to wait for us to
+                    # stop sleeping), but this works well enough for me.
                     time.sleep(backoff_interval)
-                    # update backoff_cumulative with the time we spent
-                    # backing off.
-                    backoff_cumulative = backoff_cumulative + backoff_interval
-                    # bump the backoff interval up by 2* the last interval
-                    backoff_interval = backoff_interval * 2
+                    backoff_cumulative += backoff_interval
+                    backoff_interval *= 2
 
-                    # loop and try to restart the process
 
-        # log a service stopped message
-        servicemanager.LogMsg(
-            servicemanager.EVENTLOG_INFORMATION_TYPE, 
-            servicemanager.PYS_SERVICE_STOPPED,
-            (self._svc_name_, ' (%s) ' % self._svc_display_name_))
+        self.logmsg(servicemanager.PYS_SERVICE_STOPPED)
 
-if __name__=='__main__':
+if __name__ == '__main__':
     win32serviceutil.HandleCommandLine(Service)
