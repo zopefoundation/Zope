@@ -84,7 +84,7 @@
 ##############################################################################
 """HTML formated DocumentTemplates
 
-$Id: DT_HTML.py,v 1.17 1999/03/22 23:18:56 jim Exp $"""
+$Id: DT_HTML.py,v 1.18 1999/03/25 20:31:25 jim Exp $"""
 
 from DT_String import String, FileMixin
 import DT_String, regex
@@ -265,7 +265,7 @@ class HTMLFile(FileMixin, HTML):
         'Revert to factory defaults'
         if self.edited_source:
             self.edited_source=''
-            self.cooked=self.cook()
+            self._v_cooked=self.cook()
         if REQUEST: return self.editConfirmation(self,REQUEST)
 
     def manage_editForm(self, URL1, REQUEST):
@@ -296,7 +296,7 @@ class HTMLFile(FileMixin, HTML):
             
         if self.edited_source:
             self.edited_source=data
-            self.cooked=self.cook()
+            self._v_cooked=self.cook()
         else:
             __traceback_info__=self.__class__
             newHTML=self.__class__()
