@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -125,8 +125,8 @@ class ImageFile(Acquisition.Explicit):
             ms=split(ms, ';')[0]
             ms=DateTime(ms).timeTime()
             if self.lmt > ms:
-                RESPONSE.setStatus(304)
-                return RESPONSE
+                response.setStatus(304)
+                return response
         response.setHeader('Content-Type', self.content_type)
         response.setHeader('Last-Modified', self.lmh)
 
