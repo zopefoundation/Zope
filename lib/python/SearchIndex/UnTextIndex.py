@@ -85,124 +85,9 @@
 
 """Text Index
 
-Notes on a new text index design
-
-  The current inverted index algoirthm works well enough for our needs.
-  Speed of the algorithm does not seem to be a problem, however, data
-  management *is* a significant problem.  In particular:
-
-    - Process size grows unacceptably *during mass indexing*.
-
-    - Data load and store seems to take too long.  For example,
-      clearing an inverted index and committing takes a significant
-      amount of time.
-
-    - The current trie data structure contributes significantly to the
-      number of objects in the system.
-
-    - Removal/update of documents is especially problematic.  We have
-      to either:
-
-      - Unindex old version of an object before updating it.  This is
-        a real hassle for apps like sws.
-
-      - Tool through entire index looking for object references.  This
-        is *totally* impractical.
-
-  Some observations of competition:
-
-    - Xerox system can index "5-million word document in 256k".  What
-      does this mean?
-
-        - Does the system save word positions as we do?
-
-        - What is the index indexing?
-
-        - What was the vocabulary of the system?
-
-      Let\'s see.  Assume a 10,000 word vocabulary.  Then we use
-      25-bytes per entry.  Hm.....
-
-    - Verity has some sense of indexing in phases and packing index.
-      Verity keeps the index in multiple chunks and a search may
-      operate on multiple chunks.  This means that we can add data
-      without updating large records.
-
-      This may be especially handy for mass updates, like we do in
-      cv3.  In a sense we do this in cv3 and sws.  We index a large
-      batch of documents to a temporary index and then merge changes
-      in.
-
-      If "temporary" index was integral to system, then maybe merger
-      could be done as a background task....
-
-  Tree issues
-
-    Tree structures benefit small updates, because an update to an
-    entry does not cause update of entire tree, however, each node in
-    tree introduces overhead.
-
-    Trie structure currently introduces an excessive number of nodes.
-    Typically, a node per two or three words.  Trie has potential to 
-    reduce storage because key storage is shared between words.
-
-    Maybe an alternative to a Trie is some sort of nested BTree.  Or
-    maybe a Trie with some kind of binary-search-based indexing.
-
-    Suppose that:
-
-      - database objects were at leaves of tree
-      - vocabulary was finite
-      - we don\'t remove a leaf when it becomes empty
-
-    Then:
-
-      - After some point, tree objects no longer change
-    
-    If this is case, then it doesn\'t make sense to optimize tree for
-    change. 
-
-  Additional notes
-
-    Stemming reduces the number of words substantially.
-
-  Proposal -- new TextIndex
-
-    TextIndex -- word -> textSearchResult
-
-      Implemented with:
-
-        InvertedIndex -- word -> idSet
-
-        ResultIndex -- id -> docData
-
-        where:
-
-          word -- is a token, typically a word, but could be a name or a
-                  number
-
-          textSearchResult -- id -> (score, positions)
-
-          id -- integer, say 4-byte.
-          
-          positions -- sequence of integers.
-
-          score -- numeric measure of relevence, f(numberOfWords, positions)
-
-          numberOfWords -- number of words in source document.
-
-          idSet -- set of ids
-
-          docData -- numberOfWords, word->positions
-
-       Note that ids and positions are ints.  We will build C
-       extensions for efficiently storing and pickling structures
-       with lots of ints.  This should significantly improve space
-       overhead and storage/retrieveal times, as well as storeage
-       space.
 
 """
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree
@@ -232,8 +117,6 @@ class UnTextIndex(Persistent):
           of getattr or getitem to get an attribute.
 
         """
-        ######################################################################
-        # For b/w compatability, have to allow __init__ calls with zero args
         if not id==ignore_ex==call_methods==None:
             self.id=id
             self.ignore_ex=ignore_ex
@@ -282,8 +165,7 @@ class UnTextIndex(Persistent):
     def index_object(self, i, obj, tupleType=type(()),
                      dictType=type({}), callable=callable):
         
-        """Recompute index data for data with ids >= start.
-        if 'obj' is passed in, it is indexed instead of _data[i]"""
+        """ Please document """
 
         id = self.id
 
@@ -294,7 +176,7 @@ class UnTextIndex(Persistent):
             else:
                 k = str(k)
         except:
-            return
+            return 0
         
         d = {}
         old = d.has_key
@@ -302,7 +184,6 @@ class UnTextIndex(Persistent):
 
         src = Splitter(k, self._syn)
         # tuple the splitter object and store in the unindex
-        self._unindex[i] = tuple(src)
         
         for s in src:
             if s[0] == '\"': last=self.subindex(s[1:-1], d, old, last)
@@ -315,8 +196,6 @@ class UnTextIndex(Persistent):
         unindex = self._unindex
         get = index.get
 
-#         self._unindex[i] = tuple(d.keys())
-
         unindex[i] = []
         
         for word,score in d.items():
@@ -326,6 +205,7 @@ class UnTextIndex(Persistent):
                 if type(r) is tupleType:
                     r = {r[0]:r[1]}
                     r[i] = score
+
                     index[word] = r
                     unindex[i].append(word)
                     
@@ -335,6 +215,7 @@ class UnTextIndex(Persistent):
                         for k, v in r.items(): b[k] = v
                         r = b
                     r[i] = score
+
                     index[word] = r
                     unindex[i].append(word)
                     
@@ -344,10 +225,12 @@ class UnTextIndex(Persistent):
                 unindex[i].append(word)
 
         unindex[i] = tuple(unindex[i])
-
+        l = len(unindex[i])
+        
         self._index = index
         self._unindex = unindex
 
+        return l
 
 
     def unindex_object(self, i, tt=type(()) ): 
