@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.7 1999/03/22 16:56:52 jim Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Factory.py,v 1.8 1999/04/01 18:07:41 jim Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
@@ -93,6 +93,8 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
     "Model factory meta-data"
     meta_type='Zope Factory'
     icon='p_/Factory_icon'
+
+    _setObject=Acquisition.Acquired
 
     manage_options=(
         {'label':'Edit', 'action':'manage_main'},
