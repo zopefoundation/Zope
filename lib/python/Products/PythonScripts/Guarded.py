@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from zbytecodehacks.VSExec import SafeBlock, GuardedBinaryOps, \
      UntupleFunction, RedirectWrites, WriteGuard, RedirectReads, ReadGuard, \
@@ -92,10 +92,10 @@ from DocumentTemplate.VSEval import careful_mul
 from DocumentTemplate.DT_Util import TemplateDict, \
      careful_pow, d, ValidationError
 from DocumentTemplate.DT_Var import special_formats
-from AccessControl import getSecurityManager, getModuleSecurity
+from AccessControl import getSecurityManager, secureModule
 
-import standard
-standard.__allow_access_to_unprotected_subobjects__ = 1
+#import standard
+#standard.__allow_access_to_unprotected_subobjects__ = 1
 
 safefuncs = TemplateDict()
 safebin = {}
@@ -222,7 +222,6 @@ safebin['__import__'] = __careful_import__
 
 def load_module(module, mname, mnameparts, validate, globals, locals):
     modules = sys.modules
-    modsec = getModuleSecurity()
     while mnameparts:
         nextname = mnameparts.pop(0)
         if mname is None:
@@ -231,13 +230,11 @@ def load_module(module, mname, mnameparts, validate, globals, locals):
             mname = '%s.%s' % (mname, nextname)
         nextmodule = modules.get(mname, None)
         if nextmodule is None:
-            if not modsec.has_key(mname):
+            nextmodule = secureModule(mname, globals, locals)
+            if nextmodule is None:
                 return
-            __import__(mname, globals, locals)
-            nextmodule = modules[mname]
-        if not hasattr(nextmodule, 'ZopeSecurity'):
-            nextmodule.ZopeSecurity = zs = modsec[mname]
-            zs.apply(nextmodule)
+        else:
+            secureModule(mname)
         if module and not validate(module, module, nextname, nextmodule):
             return
         module = nextmodule
