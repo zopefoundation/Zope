@@ -84,10 +84,10 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 
-from Globals import HTMLFile, DTMLFile, MessageDialog, Dictionary
+from Globals import DTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
@@ -245,18 +245,17 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % permission_to_manage)
         
+    _normal_manage_access=DTMLFile('dtml/access', globals())
+
+    _method_manage_access=DTMLFile('dtml/methodAccess', globals())
     
-    def manage_access(
-        trueself, self, REQUEST,
-        _normal_manage_access=HTMLFile('dtml/access', globals()),
-        _method_manage_access=HTMLFile('dtml/methodAccess', globals()),
-        **kw):
+    def manage_access(self, REQUEST, **kw):
         "Return an interface for making permissions settings"
         if hasattr(self, '_isBeingUsedAsAMethod') and \
            self._isBeingUsedAsAMethod():
-            return apply(_method_manage_access,(trueself, self, REQUEST), kw)
+            return apply(self._method_manage_access,(), kw)
         else:
-            return apply(_normal_manage_access,(trueself, self, REQUEST), kw)
+            return apply(self._normal_manage_access,(), kw)
     
     def manage_changePermissions(self, REQUEST):
         "Change all permissions settings, called by management screen"
