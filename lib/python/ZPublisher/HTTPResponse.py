@@ -12,10 +12,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.53 2002/01/02 15:56:04 andreasjung Exp $'''
-__version__='$Revision: 1.53 $'[11:-2]
+$Id: HTTPResponse.py,v 1.54 2002/03/15 22:34:17 evan Exp $'''
+__version__='$Revision: 1.54 $'[11:-2]
 
-import  types, sys,  re
+import types, os, sys, re
 from string import translate, maketrans
 from types import StringType, InstanceType, LongType
 from BaseResponse import BaseResponse
@@ -91,6 +91,17 @@ status_codes['redirect']=300
 start_of_header_search=re.compile('(<head[^>]*>)', re.IGNORECASE).search
 
 accumulate_header={'set-cookie': 1}.has_key
+
+tb_style = os.environ.get('HTTP_TRACEBACK_STYLE', '').lower()
+if tb_style == 'none':
+    tb_delims = None, None
+elif tb_style == 'js':
+    tb_delims = ('''<pre onclick="this.firstChild.data=this.lastChild.data">
+        &sect;<!--''',  '--></pre>')
+elif tb_style == 'plain':
+    tb_delims = '<pre>', '</pre>'
+else:
+    tb_delims = '<!--', '-->'
 
 class HTTPResponse(BaseResponse):
     """\
@@ -399,9 +410,9 @@ class HTTPResponse(BaseResponse):
         tb = '\n'.join(tb)
         tb = self.quoteHTML(tb)
         if self.debug_mode: _tbopen, _tbclose = '<PRE>', '</PRE>'
-        else:               _tbopen, _tbclose = '''<pre
-          onclick="this.firstChild.data=this.lastChild.data">
-        &sect;<!--''',  '--></pre>'
+        else:               _tbopen, _tbclose = tb_delims
+        if _tbopen is None:
+            return ''
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
     def redirect(self, location, status=302, lock=0):
