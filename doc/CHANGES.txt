@@ -32,6 +32,11 @@ Zope changes
         - Caused PropertySheets to restrict IDs the same way
           ObjectManager does.
 
+	- (Collector #1586) Fixed situation where the Catalog would
+	  attempt to loop over a bucket as if it were a list, which
+	  won't work.  This was reported by Steve Alexander with a
+          patch. 
+
     Zope 2.3.0 alpha 1
     
       Features Added
