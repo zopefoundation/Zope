@@ -1,0 +1,24 @@
+Session Data Manager - Change
+
+  The session data manager add form displays these options:
+
+    title -- choose a title for the session data manager
+
+    transient object container path -- 
+    the path in Zope to a transient object container which will
+    store the actual session data.  This path is 
+    /temp_folder/transient_container in a default Zope installation.
+
+    automatic SESSION placement in REQUEST object --
+    check this option to have a SESSION object automatically
+    inserted into the REQUEST object, corresponding to the
+    current browser's session.
+
+  After reviewing and changing these options, click the "Change"
+  button to change the session data manager.
+
+See Also
+
+  - "Session Tracking":Sessions.stx
+
+  - "Session Administration":session-admin.stx
