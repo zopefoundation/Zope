@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -438,7 +438,7 @@ class UnIndex(Persistent, Implicit):
             return tuple(rl)
 
     def keyForDocument(self, id):
-        return self._unindex(id)
+        return self._unindex[id]
 
     def items(self): return self._index.items()
 
