@@ -53,21 +53,27 @@
 </tr>
 <tr>
 <dtml-in manage_options mapping>
-<dtml-if "_['sequence-index']==a_">
+<dtml-let s_item=sequence-item s_index=sequence-index>
+<dtml-if "s_index==a_">
   <td bgcolor="#ffffff" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
-   size="1" color="#000000">&nbsp;<a <dtml-if 
-   "_['sequence-item'].has_key('action')">href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
-   ><dtml-if "_['sequence-item'].has_key('target')"> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong><dtml-var "_['sequence-item']['label']"></strong></span></a>&nbsp;</font></td>
+   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
+   >href="&dtml-action;"<dtml-else
+   >href="&dtml-URL1;"</dtml-if
+   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
+   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
+   ></strong></span></a>&nbsp;</font></td>
 <dtml-else>
   <td bgcolor="#efefef" valign="bottom" class="tab-small" 
    align="center"><font face="Verdana, Arial, Helvetica" 
-   size="1" color="#000000">&nbsp;<a <dtml-if 
-   "_['sequence-item'].has_key('action')">href="&dtml-action;"<dtml-else>href="&dtml-URL1;"</dtml-if
-   ><dtml-if "_['sequence-item'].has_key('target')"> target="&dtml-target;"</dtml-if
-   >><span style="color: #000000;"><strong>&dtml-label;</strong></span></a>&nbsp;</font></td>
+   size="1" color="#000000">&nbsp;<a <dtml-if "s_item.get('action')"
+   >href="&dtml-action;"<dtml-else
+   >href="&dtml-URL1;"</dtml-if
+   ><dtml-if "s_item.get('target')"> target="&dtml-target;"</dtml-if
+   >><span style="color: #000000;"><strong><dtml-var "s_item['label']"
+   ></strong></span></a>&nbsp;</font></td>
 </dtml-if>
+</dtml-let>
 </dtml-in>
 </tr>
 <tr>
