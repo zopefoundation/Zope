@@ -117,6 +117,12 @@ def find_class(ob, name):
             continue
         raise AttributeError, name
 
+def dbVersionEquals(ver):
+    # A helper function to isolate db version checking.
+    return hasattr(Globals, 'DatabaseVersion') and \
+       Globals.DatabaseVersion == ver
+
+
 def manage_addZClass(self, id, title='', baseclasses=[],
                      meta_type='', CreateFactory=0, REQUEST=None):
     """Add a Z Class
@@ -303,7 +309,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         return '*'+id
 
     def changeClassId(self, newid=None):
-        if Globals.DatabaseVersion!='3': return
+        if not dbVersionEquals('3'):
+            return
         if newid is None: newid=self._new_class_id()
         self._unregister()
         if newid:
@@ -323,7 +330,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
             except: return
 
     def _register(self):
-        if Globals.DatabaseVersion!='3': return
+        if not dbVersionEquals('3'):
+            return
         z=self._zclass_
         class_id=z.__module__
         if not class_id: return
@@ -336,10 +344,10 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         globals[class_id]=z
 
     def _unregister(self):
-        if Globals.DatabaseVersion!='3': return
+        if not dbVersionEquals('3'):
+            return
         class_id=self._zclass_.__module__
         if not class_id: return
-        
         globals=self._p_jar.root()['ZGlobals']
         if globals.has_key(class_id):
             del globals[class_id]
@@ -349,14 +357,16 @@ class ZClass(OFS.SimpleItem.SimpleItem):
         self.propertysheets.methods.manage_afterClone(item)
         
     def manage_afterAdd(self, item, container):
-        if Globals.DatabaseVersion!='3': return
+        if not dbVersionEquals('3'):
+            return
         if not self._zclass_.__module__:
             self.setClassAttr('__module__', self._new_class_id())
         self._register()
         self.propertysheets.methods.manage_afterAdd(item, container)
 
     def manage_beforeDelete(self, item, container):
-        if Globals.DatabaseVersion!='3': return
+        if not dbVersionEquals('3'):
+            return
         self._unregister()
         self.propertysheets.methods.manage_beforeDelete(item, container)
 
