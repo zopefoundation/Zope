@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.155 2002/01/02 15:56:04 andreasjung Exp $"""
-__version__='$Revision: 1.155 $'[11:-2]
+$Id: Publish.py,v 1.156 2002/04/15 20:58:28 Brian Exp $"""
+__version__='$Revision: 1.156 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -175,6 +175,16 @@ def publish_module(module_name,
         if request is not None: request.close()
 
     if must_die:
+        # Try to turn exception value into an exit code.
+        try:
+            if hasattr(must_die[1], 'code'):
+                code = must_die[1].code
+            else: code = int(must_die[1])
+        except:
+            code = must_die[1] and 1 or 0
+        if hasattr(request.response, '_requestShutdown'):
+            request.response._requestShutdown(code)
+
         try: raise must_die[0], must_die[1], must_die[2]
         finally: must_die=None
 

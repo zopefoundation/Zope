@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.59 2002/04/12 17:27:44 andreasjung Exp $'''
-__version__='$Revision: 1.59 $'[11:-2]
+$Id: HTTPResponse.py,v 1.60 2002/04/15 20:58:28 Brian Exp $'''
+__version__='$Revision: 1.60 $'[11:-2]
 
 import types, os, sys, re
 from string import translate, maketrans
@@ -157,7 +157,18 @@ class HTTPResponse(BaseResponse):
         # think that that's all that is ever passed.
         
         return self.__class__(stdout=self.stdout, stderr=self.stderr)
-    
+
+    _shutdown_flag = None
+    def _requestShutdown(self, exitCode=0):
+        """Request that the server shut down with exitCode after fulfilling
+           the current request."""
+        sys.ZServerExitCode = exitCode
+        self._shutdown_flag = 1
+
+    def _shutdownRequested(self):
+        """Returns true if this request requested a server shutdown."""
+        return self._shutdown_flag is not None
+
     def setStatus(self, status, reason=None):
         '''\
         Sets the HTTP status code of the response; the argument may
