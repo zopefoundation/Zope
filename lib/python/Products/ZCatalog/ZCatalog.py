@@ -485,7 +485,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                     warn('catalog_object interface of %s not up to date'
                          % self.__class__.__name__,
                          DeprecationWarning)
-                    self.catalog_object(obj, p, idxs=[name])
+                    self.catalog_object(obj, p, idxs=name)
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
                             URL1=None):
