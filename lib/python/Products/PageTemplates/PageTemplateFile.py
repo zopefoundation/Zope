@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template from the filesystem.
 """
 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from Globals import package_home, DevelopmentMode
@@ -138,6 +138,15 @@ class PageTemplateFile(Script, PageTemplate, Traversable):
         return imp
 
     __roles__ = ComputedAttribute(_get__roles__, 1)
+
+    def getOwner(self, info=0):
+        """Gets the owner of the executable object.
+
+        This method is required of all objects that go into
+        the security context stack.  Since this object came from the
+        filesystem, it is owned by no one managed by Zope.
+        """
+        return None
 
     def __getstate__(self):
         from ZODB.POSException import StorageError
