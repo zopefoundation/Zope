@@ -301,8 +301,6 @@ def html_quote(v, name='(Unknown name)', md={},
                               (('&'),     '&amp;'),
                               (('<'),     '&lt;' ),
                               (('>'),     '&gt;' ),
-                              (('\213'), '&lt;' ),
-                              (('\233'), '&gt;' ),
                               (('"'),     '&quot;'))): #"
           text=str(v)
           for re,name in character_entities:

@@ -204,7 +204,7 @@ Special symbology is used to indicate special constructs:
     </TABLE>
 
     
-$Id: StructuredText.py,v 1.30 2001/01/04 15:01:59 brian Exp $'''
+$Id: StructuredText.py,v 1.31 2001/01/24 16:52:27 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -256,6 +256,14 @@ $Id: StructuredText.py,v 1.30 2001/01/04 15:01:59 brian Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.31  2001/01/24 16:52:27  brian
+# merged from 2.3
+#
+# Revision 1.30.4.1  2001/01/24 16:51:48  brian
+# Fixed regex in html_with_references (bug 1649) and also removed the \213
+# and \233 screening from html_quote (these must be an application-level
+# decision, else unicode cannot be supported).
+#
 # Revision 1.30  2001/01/04 15:01:59  brian
 # Merged StructuredText-Dev
 #
@@ -784,7 +792,7 @@ def html_quote(v,
 
 def html_with_references(text, level=1):
     text = gsub(
-        '[\0\n].. \[\([-_0-9_a-zA-Z-]+\)\]',
+        '[\0\n]\.\. \[\([0-9_a-zA-Z-]+\)\]',
         '\n  <a name="\\1">[\\1]</a>',
         text)
     
