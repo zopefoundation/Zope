@@ -264,7 +264,8 @@ class ExtensionBuilder:
                     module, config
                     ))
 
-                self.doCommand('del *.def *.mak')
+                self.doCommand('del *.def')
+                self.doCommand('del *.mak')
 
                 os.chdir(current_dir)
 
