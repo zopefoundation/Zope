@@ -15,7 +15,7 @@ class Orderable(Comparable):
 class Hashable(Base):
     """Objects that support hash"""
 
-class Key(Comparable, Hashable):
+class HashKey(Comparable, Hashable):
     """Objects that are immutable with respect to state that
     influences comparisons or hash values"""
 

@@ -16,7 +16,7 @@ class Sequence(Mapping):
 class Sequential(Sequence):
     "Keys must be used in order"
 
-Util.assertTypeImplements(type(()), (Sequence, Sized, Basic.Key))
+Util.assertTypeImplements(type(()), (Sequence, Sized, Basic.HashKey))
 Util.assertTypeImplements(type([]), (Sequence, Sized, MutableMapping))
 Util.assertTypeImplements(type({}), (Mapping, Sized, MutableMapping))
 

@@ -3,11 +3,16 @@
 Scarecrow version:
 
   Classes or objects can implement an __implements__ attribute that
-  names a sequence of interface objects.
+  names an interface object or a collection of interface objects.
 
   An interface is defined using the class statement and one or more base
   interfaces.
 """
+
+from Method import Method
+from Attr import Attribute
+from types import FunctionType, ClassType
+import Exceptions
 
 _typeImplements={}
 
@@ -31,7 +36,40 @@ class Interface:
 	self.__attrs=attrs
 
         if __doc__ is not None: self.__doc__=__doc__
-        
+
+	for k, v in attrs.items():
+	    if isinstance(v, Method):
+		v.interface=name
+		v.__name__=k
+	    elif isinstance(v, FunctionType):
+		attrs[k]=Method.fromFunction(v, name)
+            elif not isinstance(v, Attribute):
+                raise Exceptions.InvalidInterface(
+                    "Concrete attribute, %s" % k)
+
+    def defered(self):
+	"""Return a defered class corresponding to the interface
+	"""
+	if hasattr(self, "_defered"): return self._defered
+
+	klass={}
+	exec "class %s: pass" % self.__name__ in klass
+	klass=klass[self.__name__]
+	
+	self.__d(klass.__dict__)
+
+	self._defered=klass
+
+	return klass
+
+    def __d(self, dict):
+
+	for k, v in self.__dict__.items():
+	    if isinstance(v, Method) and not dict.has_key(k):
+		dict[k]=v
+
+	for b in self.__bases__: b.__d(dict)
+	    
 
     def extends(self, other):
         """Does an interface extend another?
@@ -45,11 +83,16 @@ class Interface:
                       tiget=_typeImplements.get):
         """Does the given object implement the interface?
         """
-        implements=tiget(type(object), None)
-        if implements is None:
-            if hasattr(object, '__implements__'):
-                implements=object.__implements__
-            else: return 0
+        t=type(object)
+        if t is ClassType:
+            if hasattr(object, '__class_implements__'):
+                implements=object.__class_implements__
+            else: implements=Class
+        elif hasattr(object, '__implements__'):
+            implements=object.__implements__
+        else:
+            implements=tiget(t, None)
+            if implements is None: return 0
     
 	if isinstance(implements,Interface):
             return implements is self or implements.extends(self)
@@ -64,9 +107,9 @@ class Interface:
             if hasattr(klass, '__implements__'):
                 implements=klass.__implements__
             else: return 0
-        elif hasattr(klass, 'instancesImplements'):
+        elif hasattr(klass, 'instancesImplement'):
             # Hook for ExtensionClass. :)
-            implements=klass.instancesImplements()
+            implements=klass.instancesImplement()
         else:
             implements=tiget(klass,None)
 
@@ -95,16 +138,36 @@ class Interface:
     def __any(self, interfaces):
         for i in interfaces:
             if isinstance(i,Interface):
-                return i is self or i.extends(self)
+                if i is self or i.extends(self): return 1
             else:
-                return self.__any(i)
+                if self.__any(i): return 1
+        return 0
 
-ClassType=type(Interface)
+    def __repr__(self):
+        return "<Interface %s at %x>" % (self.__name__, id(self))
 
 Base=Interface("Interface")
+
+class Named(Base):
+    "Objects that have a name."
+
+    __name__=Attribute("The name of the object")
+
+class Class(Named):
+    """Implement shared instance behavior and create instances
+    
+    Classes can be called to create an instance.  This interface does
+    not specify what if any arguments are required.
+    """
+
+    # Note that we don't use a function definition here, because
+    # we don't want to specify a signature!
+    __call__=Method("Instantiate instances of the class")
+
+    __bases__=Attribute("A sequence of base classes")
+
 
 def assertTypeImplements(type, interfaces):
     """Return the interfaces implemented by objects of the given type
     """
     _typeImplements[type]=interfaces
-

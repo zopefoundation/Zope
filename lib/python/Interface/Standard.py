@@ -7,16 +7,14 @@ Interface=Util.impliedInterface(
     """)
 iclass.Interface.__implements__=Interface
 
-from Basic import *
+from iclass import Named, Class
 
-class Class(Base):
-    """Implement shared instance behavior and create instances
-    
-    Classes can be called to create an instance.  This interface does
-    not specify what if any arguments are required.
-    """
+from Basic import *
 
 Util.assertTypeImplements(iclass.ClassType, Class)
 
 from Number import *
 from Mapping import *
+
+del iclass # cruft
+del Util   # cruft

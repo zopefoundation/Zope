@@ -1,4 +1,5 @@
-from iclass import Interface, ClassType, Base, assertTypeImplements
+from iclass import Interface, Class, ClassType, Base, assertTypeImplements
+from types import FunctionType
 
 def impliedInterface(klass, __name__=None, __doc__=None):
     """Create an interface object from a class
@@ -6,11 +7,13 @@ def impliedInterface(klass, __name__=None, __doc__=None):
     The interface will contain only objects with doc strings and with names
     that begin and end with '__' or names that don't begin with '_'.
     """
-    if __name__ is None: name="%sInterface" % klass.__name__
+    if __name__ is None: __name__="%sInterface" % klass.__name__
     return Interface(__name__, (), _ii(klass, {}), __doc__)
 
 def _ii(klass, items):
     for k, v in klass.__dict__.items():
+        if type(v) is not FunctionType or not v.__doc__:
+            continue
         if k[:1]=='_' and not (len(k) > 4 and k[:2]=='__' and k[-2:]=='__'):
             continue
         items[k]=v
@@ -22,19 +25,25 @@ def implementedBy(object):
     """
     r=[]
 
-    implements=tiget(type(object), None)
-    if implements is None:
-        if hasattr(object, '__implements__'):
-            implements=object.__implements__
-        else: return r
+    t=type(object)
+    if t is ClassType:
+        if hasattr(object, '__class_implements__'):
+            implements=object.__class_implements__
+        else:
+            implements=Class
+    elif hasattr(object, '__implements__'):
+        implements=object.__implements__
+    else:
+        implements=tiget(t, None)
+        if implements is None: return r
 
-    if isinstance(implements,Interface): r.append(i)
+    if isinstance(implements,Interface): r.append(implements)
     else: _wi(implements, r.append)
 
     return r
 
     
-def implementedByInstances(object):
+def implementedByInstancesOf(klass):
     """Return the interfaces that instanced implement (by default)
     """
     r=[]
@@ -50,7 +59,7 @@ def implementedByInstances(object):
         implements=tiget(klass,None)
 
     if implements is not None: 
-        if isinstance(implements,Interface): r.append(i)
+        if isinstance(implements,Interface): r.append(implements)
         else: _wi(implements, r.append)
 
     return r
