@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.25 1998/01/15 20:20:03 brian Exp $'''
+$Id: Response.py,v 1.26 1998/02/20 14:11:47 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -53,7 +53,7 @@ $Id: Response.py,v 1.25 1998/01/15 20:20:03 brian Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.25 $'[11:-2]
+__version__='$Revision: 1.26 $'[11:-2]
 
 import string, types, sys, regex, regsub
 from string import find, rfind, lower, upper, strip, split, join
@@ -434,7 +434,7 @@ class Response:
             ef=str(tb.tb_frame.f_code.co_filename)
 	    if find(ev,'<html>') >= 0: ev='bobo exception'
 	    self.setHeader('bobo-exception-type',et)
-	    self.setHeader('bobo-exception-value',ev)
+	    self.setHeader('bobo-exception-value',ev[:255])
 	    self.setHeader('bobo-exception-file',ef)
 	    self.setHeader('bobo-exception-line',el)
 
