@@ -84,16 +84,15 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
-
+from OFS.content_types import guess_content_type
 from Globals import package_home
 from Common import rfc1123_date
 from string import rfind, split
 from DateTime import DateTime
 from time import time
 from os import stat
-import mimetypes
 import Acquisition
 
 
@@ -106,31 +105,33 @@ class ImageFile(Acquisition.Explicit):
             _prefix=package_home(_prefix)
         path='%s/%s' % (_prefix, path)
         self.path=path
-        content_type, enc=mimetypes.guess_type(path)
+
+        file=open(path, 'rb')
+        data=file.read()
+        file.close()
+        content_type, enc=guess_content_type(path, data)
         if content_type:
             self.content_type=content_type
         else:
             self.content_type='image/%s' % path[rfind(path,'.')+1:]
         self.__name__=path[rfind(path,'/')+1:]
-        # Determine a reasonable last-modification time 
-        # to support aggressive image caching.
         self.lmt=float(stat(path)[8]) or time()
         self.lmh=rfc1123_date(self.lmt)
 
     def _init_headers(self, request, response):
-        # attempt aggressive caching!
-        ms=request.get_header('If-Modified-Since', None)
-        if ms is not None:
-            # Netscape inexplicably adds a length component
-            # to the IMS header. Waaaa....
-            ms=split(ms, ';')[0]
-            mst=DateTime(ms).timeTime()
-            if mst >= self.lmt:
-                response.setStatus(304)
-                return response
+#        Waaa... trying to cache aggressively seems to cause problems :(
+#
+#        ms=request.get_header('If-Modified-Since', None)
+#        if ms is not None:
+#            ms=split(ms, ';')[0]
+#            mst=DateTime(ms).timeTime()
+#            if mst >= self.lmt:
+#                response.setStatus(304)
+#                return response
+#        response.setHeader('Expires', rfc1123_date(time()+86400.0))
         response.setHeader('Content-Type', self.content_type)
         response.setHeader('Last-Modified', self.lmh)
-        response.setHeader('Expires', rfc1123_date(time()+86400.0))
+
         
     def index_html(self, REQUEST, RESPONSE):
         """Default document"""
