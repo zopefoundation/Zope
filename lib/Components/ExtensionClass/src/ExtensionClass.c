@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.42 2001/01/10 18:49:16 jim Exp $
+  $Id: ExtensionClass.c,v 1.43 2001/01/25 21:29:15 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.42 2001/01/10 18:49:16 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.43 2001/01/25 21:29:15 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -533,12 +533,13 @@ CMethod_call(CMethod *self, PyObject *args, PyObject *kw)
 	  )
       {
 	PyObject *rest=0;
+	UNLESS (rest=PySequence_GetSlice(args,1,size)) return NULL;
 	if (HasMethodHook(first) &&
 	   self->doc != hook_mark /* This check prevents infinite recursion */
 	   )
-	  return callCMethodWithHook(self,first,args,kw);
-	UNLESS(rest=PySequence_GetSlice(args,1,size)) return NULL;
-	ASSIGN(rest,call_cmethod(self,first,rest,kw));
+          ASSIGN(rest, callCMethodWithHook(self, first, rest, kw) );
+        else
+          ASSIGN(rest, call_cmethod(self, first, rest, kw) );
 	return rest;
       }
     }
@@ -3527,7 +3528,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.42 $";
+  char *rev="$Revision: 1.43 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
