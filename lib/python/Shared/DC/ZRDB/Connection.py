@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Generic Database Connection Support
 
-$Id: Connection.py,v 1.36 2003/09/24 14:28:43 chrisw Exp $'''
-__version__='$Revision: 1.36 $'[11:-2]
+$Id: Connection.py,v 1.37 2003/10/22 20:33:56 chrisw Exp $'''
+__version__='$Revision: 1.37 $'[11:-2]
 
 import Globals, OFS.SimpleItem, AccessControl.Role, Acquisition, sys
 from DateTime import DateTime
@@ -142,16 +142,19 @@ class Connection(
 
     manage_main=DTMLFile('dtml/connectionStatus', globals())
 
-    def manage_close_connection(self, REQUEST):
+    def manage_close_connection(self, REQUEST=None):
         " "
-        try: self._v_database_connection.close()
+        try: 
+            if hasattr(self,'_v_database_connection'):
+                self._v_database_connection.close()
         except:
             LOG('Shared.DC.ZRDB.Connection',
                 ERROR,
                 'Error closing relational database connection.',
                 error=exc_info())
         self._v_connected=''
-        return self.manage_main(self, REQUEST)
+        if REQUEST is not None:
+            return self.manage_main(self, REQUEST)
 
     def manage_open_connection(self, REQUEST=None):
         " "
@@ -169,13 +172,7 @@ class Connection(
                 '''The database connection is not connected''')
 
     def connect(self,s):
-        try: self._v_database_connection.close()
-        except:
-            LOG('Shared.DC.ZRDB.Connection',
-                ERROR,
-                'Error closing relational database connection.',
-                error=exc_info())
-        self._v_connected=''
+        self.manage_close_connection()
         DB=self.factory()
         try:
             try:
