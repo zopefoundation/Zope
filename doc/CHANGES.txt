@@ -41,6 +41,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Fixed test.py to not over-resolve symbolic links. Needed to run
+        tests when the Products directory and a product are symlinks.
+
       - Collector #1583/ZReST: Fixed handling of the title attribute
         for non-ascii characters.
 
