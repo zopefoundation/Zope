@@ -202,12 +202,13 @@ class TALGenerator:
     def emitText(self, text):
         self.emitRawText(cgi.escape(text))
 
-    def emitDefines(self, defines):
+    def emitDefines(self, defines, position):
         for part in splitParts(defines):
             m = re.match(
                 r"\s*(?:(global|local)\s+)?(%s)\s+(.*)" % NAME_RE, part)
             if not m:
-                raise TALError("invalid define syntax: " + `part`)
+                raise TALError("invalid define syntax: " + `part`,
+                               position)
             scope, name, expr = m.group(1, 2, 3)
             scope = scope or "local"
             cexpr = self.compileExpression(expr)
@@ -304,13 +305,14 @@ class TALGenerator:
             newlist.append(item)
         return newlist
 
-    def emitStartElement(self, name, attrlist, taldict, metaldict):
+    def emitStartElement(self, name, attrlist, taldict, metaldict,
+                         position):
         for key in taldict.keys():
             if key not in KNOWN_TAL_ATTRIBUTES:
-                raise TALError("bad TAL attribute: " + `key`)
+                raise TALError("bad TAL attribute: " + `key`, position)
         for key in metaldict.keys():
             if key not in KNOWN_METAL_ATTRIBUTES:
-                raise METALError("bad METAL attribute: " + `key`)
+                raise METALError("bad METAL attribute: " + `key`, position)
         todo = {}
         defineMacro = metaldict.get("define-macro")
         useMacro = metaldict.get("use-macro")
@@ -328,13 +330,15 @@ class TALGenerator:
         if fillSlot: n = n+1
         if defineSlot: n = n+1
         if n > 1:
-            raise METALError("only one METAL attribute per element")
+            raise METALError("only one METAL attribute per element",
+                             position)
         n = 0
         if content: n = n+1
-        if replace: n + n+1
+        if replace: n = n+1
         if repeat: n = n+1
         if n > 1:
-            raise TALError("can't use content, replace, repeat together")
+            raise TALError("at most one of content, replace, repeat",
+                           position)
         repeatWhitespace = None
         if repeat:
             # Hack to include preceding whitespace in the loop program
@@ -354,7 +358,7 @@ class TALGenerator:
             todo["fillSlot"] = fillSlot
         if defines:
             self.emit("beginScope")
-            self.emitDefines(defines)
+            self.emitDefines(defines, position)
             todo["define"] = defines
         if condition:
             self.pushProgram()

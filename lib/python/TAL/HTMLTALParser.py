@@ -90,7 +90,7 @@ import sys
 import string
 
 from TALGenerator import TALGenerator
-from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS
+from TALDefs import ZOPE_METAL_NS, ZOPE_TAL_NS, METALError, TALError
 from nsgmllib import SGMLParser
 
 BOOLEAN_HTML_ATTRS = [
@@ -209,7 +209,8 @@ class HTMLTALParser(SGMLParser):
         else:
             self.tagstack.append(tag)
         attrlist, taldict, metaldict = self.extract_attrs(attrs)
-        self.gen.emitStartElement(tag, attrlist, taldict, metaldict)
+        self.gen.emitStartElement(tag, attrlist, taldict, metaldict,
+                                  self.getpos())
 
     def finish_endtag(self, tag, implied=0):
         if tag in EMPTY_HTML_TAGS:
@@ -284,11 +285,17 @@ class HTMLTALParser(SGMLParser):
                 prefix, suffix = string.split(key, ':', 1)
                 nsuri = self.nsdict.get(prefix)
                 if nsuri == ZOPE_METAL_NS:
+                    if metaldict.has_key(suffix):
+                        raise METALError("duplicate METAL attribute " +
+                                         `suffix`, self.getpos())
                     item = (key, value)
                     metaldict[suffix] = value
                     if suffix == "define-macro":
                         item = (key,value,"macroHack")
                 elif nsuri == ZOPE_TAL_NS:
+                    if taldict.has_key(suffix):
+                        raise TALError("duplicate TAL attribute " +
+                                       `suffix`, self.getpos())
                     item = (key, value)
                     taldict[suffix] = value
             attrlist.append(item)
