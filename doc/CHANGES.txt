@@ -6,6 +6,16 @@ Zope Changes
 
   Releases
 
+    Zope  x.x.x
+
+      New Features
+
+      Bugs Fixed
+
+        - Fixed a permission problem with DTMLMethod objects that caused
+          errors when attempting to commit permission changes.
+
+
     Zope  1.10.1
 
       This is a Python 1.5.2 beta 2 compatability release.
