@@ -111,8 +111,8 @@ cPickle, A C Pickle Implementation
   
   Status
 
-    The current release of cPickle is "0.2.2",
-    http://www.digicool.com/ftp/pub/releases/cPickle/cPickle-0.2.2.tar.gz.
+    The current release of cPickle is "0.3",
+    http://www.digicool.com/releases/cPickle/cPickle-0.3.tar.gz.
     This release requires Python version 1.4.
 
     This version introduces a special binary mode format for floats.
@@ -121,54 +121,36 @@ cPickle, A C Pickle Implementation
     see the instructions in the Makefile.
 
   Installation
-  
-    Dynamic linking installation (Unix)
 
-    Simply run the included Makefile.  It is assumed that python
-    can be run using the command 'python1.4'.  If this is not the
-    case, edit the makefile so that it uses the appropriate command
-    or specify the command name on the command line as the value of
-    the PYTHON variable, i.e.::
-
-          make PYTHON=python
-      
-    Static linking installation
-     
-    To statically link the cPickle module into the Python
-    interpreter:
-      
-        1. copy the files: 'cPickle.c', 'cStringIO.c' and 'cStringIO.h' to
-           the 'Modules' directory in the Python source tree,
-      
-        2. add the following line to the 'Setup' file in the 'Modules'
-           directory::
-      
-              cStringIO cStringIO.c
-              cPickle cPickle.c
-      
-        3. rebuild python
+    The cPickle distribution now uses the "Universal Unix Makefile for
+    Python extensions", 'Makefile.pre.in', which was introduced as
+    part of Python1.4.  A copy of this make file is included with this
+    release.  See the instructions in the make file, itself.  
 
   Note that cPickle requires that both copy_reg and cStringIO be importable.
 
   Files
   
-     Makefile      -- The Makefile for building cPickle
+     Makefile.pre.in  -- The Universal Unix Makefile for Python extensions
      
-     cPickle.stx   -- This file in structured text format
-     
-     cPickle.html  -- This file in structured HTML format
-     
-     cPickle.c     -- The cPickle source
-     
-     cStringIO.c   -- The cStringIO source
-     
-     cStringIO.h   -- The cStringIO C-API definition
-     
-     pickle.py     -- The Python implementation of pickle with cPickle
-                      Extensions
-     
-     copy_reg.py   -- An auxilary module used to keep Pickle registration
-                      information used by cPickle
+     Setup	      -- a configuration file used bu the Universal
+		         Unix Makefile for Python extensions 
+
+     cPickle.stx      -- This file in structured text format
+     	
+     cPickle.html     -- This file in HTML format
+     	
+     cPickle.c        -- The cPickle source
+     	
+     cStringIO.c      -- The cStringIO source
+     	
+     cStringIO.h      -- The cStringIO C-API definition
+     	
+     pickle.py        -- The Python implementation of pickle with cPickle
+                   	 Extensions
+     	
+     copy_reg.py      -- An auxilary module used to keep Pickle registration
+                   	 information used by cPickle
 
   Release Notes
 
@@ -209,7 +191,85 @@ cPickle, A C Pickle Implementation
                  produced an extra MARK if there was already an empty tuple
                  in the memo.
 
-       
+               - Too few POPs written for recursive tuples.
+    
+               - Lists and dictionaries were not being placed into the memo
+                 before their items were saved
+  
+               - Only placing objects with a reference count > 1 in the memo
+                 was not always safe.
+
+               - PyMapping_HasKey() leaked memory
+
+     0.3 -- Bug fixes and minor new features
+     
+        New features:
+     
+        - In cStringIO, Guido added an unused softspace attribute for
+          compatibility with file objects.
+     
+        - In cStringIO, the getvalue() method now accepts an
+          optional argument.  If the argument is true, then the
+          string returned is the contents of the StringIO up to
+          the current file position.  Otherwise, the entire
+          contents are returned.
+     
+        - In cPickle, made some minor optimizations in
+          pickling.
+     
+        - In cPickle, added clear_memo method to Pickler
+          objects.  This is useful when reusing Picklers.
+     
+        Bug fixes
+     
+        - In cStringIO, getvalue() returned it's contents
+          only up to the file position, rather than the entire
+          contents. 
+     
+        - In cPickle, added logic from pickle.py to avoid
+          picking '__main__' as a class' module when pickling
+          classes.
+     
+        - Fixed bug (pointed out by Mark Lake) in saving
+     	 tuples that participate in circular references.
+     
+        This release includes a number of changes made for 1.5,
+        and changes to make 'gcc -Wall -pedantic' happy.
+	       
+
+  To do
+
+    I actually thought I was done some time ago, but a couple of
+    things have come up:
+
+    - ni support
+
+      We don't use ni, so I'm not certain that cPickle is broken, or
+      that it is any more broken than the original pickle module was.
+      I need to look into this when I get a chance.
+
+    - Support for pickling humongous arrays. Konrad Hinsen summed up
+      the issue:
+
+      	"With pickle.py, NumPy derives special pickler/unpickler
+      	classes that know how to deal with arrays. With cPickle, I'd
+      	have to use the method described under "pickling extension
+      	types". Unless I have missed something essential, that means I
+      	have to find a representation of the extension type in terms
+      	of built-in Python types. For large arrays, this will
+      	certainly eat up all speed advantage that cPickle can offer,
+      	and in addition it creates memory problems.
+
+      	Is there any specific reason for not simply allowing an extension
+      	type to pickle und unpickle itself with special methods?"
+
+      cPickle and it's associated version of pickle.py use a new
+      "reduce" protocol to handle new types.  Unfortunately, the
+      intermediate objects created in this protocol are imprectical
+      when working with millions of numbers.  Konrad and I have
+      discussed a number of options, but I'm not happy enough with any
+      of them to have implemented them. 
+    
 
 .. [1] An earlier version of the pickle module provided for saving
     extension type instances that had __class__ attributes.  Using
