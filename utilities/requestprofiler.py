@@ -15,9 +15,9 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
-import string, sys, time, getopt, tempfile, math
+import string, sys, time, getopt, tempfile, math, cPickle
 
 class ProfileException(Exception): pass
 
@@ -58,6 +58,13 @@ class Request:
         if self.start is not None:
             t = time.localtime(self.start)
             return time.strftime('%Y-%m-%dT%H:%M:%S', t)
+        else:
+            return "NA"
+
+    def shortprettystart(self):
+        if self.start is not None:
+            t = time.localtime(self.start)
+            return time.strftime('%H:%M:%S', t)
         else:
             return "NA"
         
@@ -254,54 +261,68 @@ def get_earliest_file_data(files):
             file.seek(file.tell() - linelen)
 
     return retn
-        
-def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
-            resolution=60):
-    beginrequests = {}
-    cumulative = {}
+
+def get_requests(files, start=None, end=None, statsfname=None,
+                 writestats=None, readstats=None):
     finished = []
     unfinished = {}
-    decidelines = {} # filename to filepos
-    computed_start = None
-    computed_end = None
-    while 1:
-        tup = get_earliest_file_data(files)
-        if tup is None:
-            break
-        code, id, fromepoch, desc = tup
-        if computed_start is None:
-            computed_start = fromepoch
-        computed_end = fromepoch
-        if start is not None and fromepoch < start: continue
-        if end is not None and fromepoch > end: break
-        if code == 'U':
-            finished.extend(unfinished.values())
-            unfinished.clear()
-            request = StartupRequest()
-            request.url = desc
-            request.start = int(fromepoch)
-            finished.append(request)
-            continue
-        request = unfinished.get(id)
-        if request is None:
-            if code != "B": continue # garbage at beginning of file
-            request = Request()
-            for pending_req in unfinished.values():
-                pending_req.active = pending_req.active + 1
-            unfinished[id] = request
-        t = int(fromepoch)
-        try:
-            request.put(code, t, desc)
-        except:
-            print "Unable to handle entry: %s %s %s"%(code, t, desc)
-        if request.isfinished():
-            del unfinished[id]
-            finished.append(request)
+    if readstats:
+        fp = open(statsfname, 'r')
+        u = cPickle.Unpickler(fp)
+        requests = u.load()
+        fp.close()
+        del u
+        del fp
+    else:
+        while 1:
+            tup = get_earliest_file_data(files)
+            if tup is None:
+                break
+            code, id, fromepoch, desc = tup
+            if start is not None and fromepoch < start: continue
+            if end is not None and fromepoch > end: break
+            if code == 'U':
+                finished.extend(unfinished.values())
+                unfinished.clear()
+                request = StartupRequest()
+                request.url = desc
+                request.start = int(fromepoch)
+                finished.append(request)
+                continue
+            request = unfinished.get(id)
+            if request is None:
+                if code != "B": continue # garbage at beginning of file
+                request = Request()
+                for pending_req in unfinished.values():
+                    pending_req.active = pending_req.active + 1
+                unfinished[id] = request
+            t = int(fromepoch)
+            try:
+                request.put(code, t, desc)
+            except:
+                print "Unable to handle entry: %s %s %s"%(code, t, desc)
+            if request.isfinished():
+                del unfinished[id]
+                finished.append(request)
 
-    finished.extend(unfinished.values())
-    requests = finished
+        finished.extend(unfinished.values())
+        requests = finished
+
+        if writestats:
+            fp = open(statsfname, 'w')
+            p = cPickle.Pickler(fp)
+            p.dump(requests)
+            fp.close()
+            del p
+            del fp
+
+    return requests
+
+def analyze(requests, top, sortf, start=None, end=None, mode='cumulative',
+            resolution=60, urlfocusurl=None, urlfocustime=60):
 
     if mode == 'cumulative':
+        cumulative = {}
         for request in requests:
             url = request.url
             stats = cumulative.get(url)
@@ -309,19 +330,13 @@ def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
                 stats = Cumulative(url)
                 cumulative[url] = stats
             stats.put(request)
-
-    cumulative = cumulative.values()
-    
-    if mode == 'cumulative':
-        dict = cumulative
-    elif mode == 'detailed':
-        dict = requests
-    elif mode == 'timed':
-        dict = requests
-    else:
-        raise "Invalid mode."
-
-    if mode=='timed':
+        requests = cumulative.values()
+        requests.sort(sortf)
+        write(requests, top)
+        
+    elif mode=='timed':
+        computed_start = requests[0].start
+        computed_end = requests[-1].t_end
         if start and end:
             timewrite(requests,start,end,resolution)
         if start and not end:
@@ -330,10 +345,70 @@ def analyze(files, top, sortf, start=None, end=None, mode='cumulative',
             timewrite(requests,computed_start,end,resolution)
         if not end and not start:
             timewrite(requests,computed_start,computed_end,resolution)
-    else:
-        dict.sort(sortf)
-        write(dict, top)
+
+    elif mode == 'urlfocus':
+        requests.sort(sortf)
+        urlfocuswrite(requests, urlfocusurl, urlfocustime)
     
+    else:
+        requests.sort(sortf)
+        write(requests, top)
+
+def urlfocuswrite(requests, url, t):
+    l = []
+    i = 0
+    for request in requests:
+        if request.url == url: l.append(i)
+        i = i + 1
+    before = {}
+    after = {}
+    x = 0
+    for n in l:
+        x = x + 1
+        r = requests[n]
+        start = r.start
+        earliest = start - t
+        latest = start + t
+        print 'URLs invoked %s seconds before and after %s (#%s, %s)' % \
+              (t, url, x, r.shortprettystart())
+        print '---'
+        i = -1
+        for request in requests:
+            i = i + 1
+            if request.start < earliest: continue
+            if request.start > latest: break
+            if n == i: # current request
+                print '%3d' % (request.start - start),
+                print '%s' % (request.shortprettystart()),
+                print request.url
+                continue
+            if request.start <= start:
+                if before.get(i):
+                    before[i] = before[i] + 1
+                else:
+                    before[i] = 1
+            if request.start > start:
+                if after.get(i):
+                    after[i] = after[i] + 1
+                else:
+                    after[i] = 1
+            print '%3d' % (request.start - start),
+            print '%s' % (request.shortprettystart()),
+            print request.url
+        print
+    print ('Summary of URLs invoked before (and at the same time as) %s '
+           '(times, url)' % url)
+    before = before.items()
+    before.sort()
+    for k,v in before:
+        print v, requests[k].url
+    print
+    print 'Summary of URLs invoked after %s (times, url)' % url
+    after = after.items()
+    after.sort()
+    for k,v in after:
+        print v, requests[k].url
+
 def write(requests, top=0):
     if len(requests) == 0:
         print "No data.\n"
@@ -368,8 +443,6 @@ def getTimeslice(period, utime):
             return x
 
 def timewrite(requests, start, end, resolution):
-    max_requests = 0
-
     print "Start: %s    End: %s   Resolution: %d secs" % \
         (tick2str(start), tick2str(end), resolution)
     print "-" * 78
@@ -377,9 +450,13 @@ def timewrite(requests, start, end, resolution):
     print "Date/Time                #requests requests/second"
 
     d = {}
+    max = 0
+    min = None
     for r in requests:
         t = r.start
         slice = getTimeslice(resolution,t)
+        if slice > max: max = slice
+        if (min is None) or (slice < min): min = slice
         if d.has_key(slice):
             d[slice] = d[slice] + 1
         else:
@@ -388,10 +465,9 @@ def timewrite(requests, start, end, resolution):
     num = 0
     hits = 0
     avg_requests = None
-    slices = d.keys()
-    slices.sort()
-    for slice in slices:
-        num = d[slice]
+    max_requests = 0
+    for slice in range(min, max, resolution):
+        num = d.get(slice, 0)
         if num>max_requests: max_requests = num
         hits = hits + num
         
@@ -454,9 +530,9 @@ def detailedusage():
     details = usage(0)
     pname = sys.argv[0]
     details = details + """
-Reports are of three types: cumulative,detailed or timed.  The default is
-cumulative. Data is taken from the one or more Zope detailed request logs
-(-M logs).
+Reports are of four types: cumulative, detailed, timed, or urlfocus.  The
+default is cumulative. Data is taken from one or more Zope detailed request
+logs (-M logs, aka 'big M' logs) or from a preprocessed statistics file.
 
 For cumulative reports, each line in the profile indicates information
 about a Zope method (URL) collected via a detailed request log.
@@ -467,11 +543,21 @@ a single request.
 For timed reports, each line in the profile indicates informations about
 the number of requests and the number of requests/second for a period of time.
 
+For urlfocus reports, ad-hoc information about requests surrounding the
+specified url is given.
+
 Each 'filename' is a path to a '-M' log that contains detailed request data.
 Multiple input files can be analyzed at the same time by providing the path
 to each file.  (Analyzing  multiple big M log files at once is useful if you
 have more than one Zope client on a single machine and you'd like to
 get an overview of all Zope activity on that machine).
+
+If you wish to make multiple analysis runs against the same input data, you
+may want to use the --writestats option.  The --writestats option creates a
+file which holds preprocessed data representing the specfified input files.
+Subsequent runs (for example with a different sort spec) will be much
+faster if the  --readstats option is used to specify a preprocessed stats
+file instead of actual input files because the logfile parse step is skipped.
 
 If a 'sort' value is specified, sort the profile info by the spec.  The sort
 order is descending unless indicated.    The default cumulative sort spec is
@@ -501,7 +587,7 @@ For detailed (non-cumulative) reports, the following sort specs are accepted:
   'active'      -- total num of requests pending at the end of this request
   'url'         -- the URL/method name (ascending)
 
-For timed reports there are no sort specs allowed.
+For timed and urlfocus reports, there are no sort specs allowed.
 
 If the 'top' argument is specified, only report on the top 'n' entries in
 the profile (as per the sort). The default is to show all data in the profile.
@@ -514,11 +600,18 @@ The 'resolution' argument is used only for timed reports and specifies the
 number of seconds between consecutive lines in the report 
 (default is 60 seconds).
 
+The 'urlfocustime' argument is used only for urlfocus reports and specifies the
+number of seconds to target before and after the URL provided in urlfocus mode.
+(default is 10 seconds).
+
 If the 'start' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
 limit results to hits received after this date/time.
 
 If the 'end' argument is specified in the form 'DD/MM/YYYY HH:MM:SS' (UTC),
 limit results to hits received before this date/time.
+
+'start' and 'end' arguments are not honored when request stats are obtained
+via the --readstats argument.
 
 Examples:
 
@@ -541,6 +634,12 @@ Examples:
     Show cumulative report statistics sorted by mean for entries in the log
     which happened today, and do not trim the URL in the resulting report.
 
+  %(pname)s debug.log --urlfocus='/manage_main' --urlfocustime=60
+
+    Show 'urlfocus' report which displays statistics about requests
+    surrounding the invocation of '/manage_main'.  Focus on the time periods
+    60 seconds before and after each invocation of the '/manage_main' URL.
+    
   %(pname)s debug.log --detailed --start='2001/05/10 06:00:00'
     --end='2001/05/11 23:00:00'
 
@@ -557,18 +656,31 @@ Examples:
   %(pname)s debug.log --top=100 --sort=max
 
     Show cumulative report of the the 'top' 100 methods sorted by maximum
-    elapsed time.""" % {'pname':pname}
+    elapsed time.
+
+  %(pname)s debug.log debug2.log --writestats='requests.stat'
+
+    Write stats file for debug.log and debug2.log into 'requests.stat' and
+    show default report.
+
+  %(pname)s --readstats='requests.stat' --detailed
+
+    Read from 'requests.stat' stats file (instead of actual -M log files)
+    and show detailed report against this data.""" % {'pname':pname}
     return details
 
 def usage(basic=1):
     usage = (
         """
-Usage: %s filename1 [filename2 ...] [--cumulative|--detailed|--timed]
+Usage: %s filename1 [filename2 ...]
+          [--cumulative | --detailed | [--timed --resolution=seconds]]
           [--sort=spec]
-          [--top==n]
+          [--top=n]
           [--verbose]
           [--today | [--start=date] [--end=date] ]
-          [--resolution=seconds]
+          [--writestats=filename | --readstats=filename]
+          [--urlfocus=url]
+          [--urlfocustime=seconds]
           [--help]
         
 Provides a profile of one or more Zope "-M" request log files.
@@ -592,7 +704,13 @@ if __name__ == '__main__':
     verbose = 0
     start = None
     end = None
-    resolution=10
+    resolution=60
+    urlfocustime=10
+    urlfocusurl=None
+    statsfname = None
+    readstats = 0
+    writestats = 0
+    
     files = []
     i = 1
     for arg in sys.argv[1:]:
@@ -605,15 +723,21 @@ if __name__ == '__main__':
         opts, extra = getopt.getopt(
             sys.argv[1:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
                                'cumulative', 'detailed', 'timed','start=',
-                               'end=','resolution=']
+                               'end=','resolution=', 'writestats=',
+                               'readstats=','urlfocus=','urlfocustime=']
             )
         for opt, val in opts:
+            if opt=='--readstats':
+                statsfname = val
+                readstats = 1
+            elif opt=='--writestats':
+                statsfname = val
+                writestats = 1
             if opt=='--sort': sortby = val
             if opt=='--top': top=int(val)
             if opt=='--help': print detailedusage(); sys.exit(0)
             if opt=='--verbose':
                 verbose = 1
-
             if opt=='--resolution':
                 resolution=int(val)
             if opt=='--today':
@@ -636,7 +760,11 @@ if __name__ == '__main__':
                 mode='cumulative'
             if opt=='--timed':
                 mode='timed'
-
+            if opt=='--urlfocus':
+                mode='urlfocus'
+                urlfocusurl = val
+            if opt=='--urlfocustime':
+                urlfocustime=int(val)
 
         validcumsorts = ['url', 'hits', 'hangs', 'max', 'min', 'median',
                          'mean', 'total']
@@ -662,10 +790,14 @@ if __name__ == '__main__':
                 sortf = Sort(sortby)
         elif mode=='timed':
             sortf = None
+        elif mode=='urlfocus':
+            sortf = Sort('start', ascending=1)
         else:
             raise 'Invalid mode'
-        
-        analyze(files, top, sortf, start, end, mode, resolution)
+
+        req=get_requests(files, start, end, statsfname, writestats, readstats)
+        analyze(req, top, sortf, start, end, mode, resolution, urlfocusurl,
+                urlfocustime)
 
     except AssertionError, val:
         a = "%s is not a valid %s sort spec, use one of %s"
@@ -684,10 +816,3 @@ if __name__ == '__main__':
         traceback.print_exc()
         print usage()
         sys.exit(0)
-
-
-
-
-
-
-
