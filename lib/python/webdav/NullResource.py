@@ -13,9 +13,9 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
-import sys, os, string, mimetypes, Globals, davcmds
+import sys, os,  mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
 from common import absattr, aq_base, urlfix, tokenFinder, IfParser
 from AccessControl.Permission import Permission
