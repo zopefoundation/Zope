@@ -11,8 +11,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.6 1998/12/15 21:10:31 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: __init__.py,v 1.7 1998/12/15 21:21:08 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 from ImageFile import ImageFile
 import Shared.DC.ZRDB.Search, SQL
 
@@ -22,7 +22,7 @@ meta_types=(
     {'name':SQL.SQL.meta_type,
      'action':'manage_addZSQLMethodForm',
      },
-    {'name':'Zope Search Interface',
+    {'name':'Z Search Interface',
      'action':'manage_addZSearchForm'
      },
     )
@@ -54,6 +54,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.7  1998/12/15 21:21:08  jim
+# Changed Z to Zope.
+#
 # Revision 1.6  1998/12/15 21:10:31  jim
 # first Zope
 #
