@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.20 2002/08/21 19:31:59 shane Exp $'''
-__version__='$Revision: 1.20 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.21 2002/10/01 14:09:46 gvanrossum Exp $'''
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -75,7 +75,7 @@ if _use_python_impl:
             self._authenticated=authenticated
 
         def validate(self, accessed, container, name, value, context,
-                     roles=_noroles, None=None, type=type, IntType=type(0),
+                     roles=_noroles, type=type, IntType=type(0),
                      DictType=type({}), getattr=getattr, _noroles=_noroles,
                      StringType=type(''),
                      Containers=SimpleObjectPolicies.Containers,

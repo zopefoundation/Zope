@@ -13,7 +13,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from Globals import Persistent
 from Acquisition import Implicit
@@ -278,7 +278,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
             LOG('UnIndex', ERROR, 'Attempt to unindex nonexistent document'
                 ' with id %s' % documentId)
 
-    def _apply_index(self, request, cid='', type=type, None=None):
+    def _apply_index(self, request, cid='', type=type):
         """Apply the index to query parameters given in the request arg.
 
         The request argument should be a mapping object.

@@ -171,8 +171,7 @@ class NodeWrapper(ParentNode):
     def getPreviousSibling(self,
                            type=type,
                            sts=StringTypes,
-                           getattr=getattr,
-                           None=None):
+                           getattr=getattr):
 
         """
         The node immediately preceding this node.  If
@@ -243,8 +242,7 @@ class NodeWrapper(ParentNode):
     def _get_PreviousSibling(self,
                            type=type,
                            sts=StringTypes,
-                           getattr=getattr,
-                           None=None):
+                           getattr=getattr):
 
         return self.getPreviousSibling(type,sts,getattr,None)
 
@@ -292,8 +290,7 @@ class Node(ParentNode):
     def getPreviousSibling(self,
                            type=type,
                            sts=StringTypes,
-                           getattr=getattr,
-                           None=None):
+                           getattr=getattr):
         """
         The node immediately preceding this node.  If
         there is no such node, this returns None.
@@ -346,8 +343,7 @@ class Node(ParentNode):
     def _get_PreviousSibling(self,
                            type=type,
                            sts=StringTypes,
-                           getattr=getattr,
-                           None=None):
+                           getattr=getattr):
 
         return self.getPreviousSibling(type,sts,getattr,None)
 

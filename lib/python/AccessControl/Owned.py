@@ -13,8 +13,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.18 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Owned.py,v 1.19 2002/10/01 14:09:46 gvanrossum Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
@@ -63,7 +63,7 @@ class Owned(ExtensionClass.Base):
 
     getOwner__roles__=()
     def getOwner(self, info=0,
-                 aq_get=aq_get, None=None,
+                 aq_get=aq_get,
                  UnownableOwner=UnownableOwner,
                  getSecurityManager=getSecurityManager,
                  ):
@@ -90,7 +90,7 @@ class Owned(ExtensionClass.Base):
 
     changeOwnership__roles__=()
     def changeOwnership(self, user, recursive=0,
-                        aq_get=aq_get, None=None,
+                        aq_get=aq_get,
                         ):
         """Change the ownership to the given user.  If 'recursive' is
         true then also take ownership of all sub-objects, otherwise
@@ -231,7 +231,7 @@ def absattr(attr):
     return attr
 
 def ownerInfo(user,
-              getattr=getattr, type=type, st=type(''), None=None):
+              getattr=getattr, type=type, st=type('')):
     if user is None:
         return None
     uid=user.getId()

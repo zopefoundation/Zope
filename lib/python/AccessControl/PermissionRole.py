@@ -13,8 +13,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.16 2002/08/14 21:29:07 mj Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: PermissionRole.py,v 1.17 2002/10/01 14:09:46 gvanrossum Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 _use_python_impl = 0
 import os
@@ -66,7 +66,7 @@ if _use_python_impl:
             self._p='_'+string.translate(name,name_trans)+"_Permission"
             self._d=default
 
-        def __of__(self, parent, None=None, getattr=getattr):
+        def __of__(self, parent, getattr=getattr):
             r=imPermissionRole()
             r._p=self._p
             r._pa=parent
@@ -85,7 +85,7 @@ if _use_python_impl:
         """Implement permission-based roles
         """
 
-        def __of__(self, parent,tt=type(()),st=type(''),getattr=getattr,None=None):
+        def __of__(self, parent,tt=type(()),st=type(''),getattr=getattr):
             obj=parent
             n=self._p
             r=None

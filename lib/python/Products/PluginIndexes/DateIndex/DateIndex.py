@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.7 2002/08/14 22:19:27 mj Exp $
+"""$Id: DateIndex.py,v 1.8 2002/10/01 14:09:47 gvanrossum Exp $
 """
 
 from DateTime.DateTime import DateTime
@@ -84,7 +84,7 @@ class DateIndex(UnIndex):
         return returnStatus
 
 
-    def _apply_index( self, request, cid='', type=type, None=None ):
+    def _apply_index( self, request, cid='', type=type ):
         """Apply the index to query parameters given in the argument
 
         Normalize the 'query' arguments into integer values at minute
