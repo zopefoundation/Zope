@@ -85,6 +85,14 @@
 __doc__='''Collected utilities to support database indexing.
 
 
-$Id: __init__.py,v 1.7 2001/04/27 18:51:24 chrism Exp $'''
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: __init__.py,v 1.8 2001/09/27 17:18:38 andreasjung Exp $'''
+__version__='$Revision: 1.8 $'[11:-2]
+import warnings
+warnings.warn("The usage of the SearchIndex package is deprecated since \
+Zope 2.4.\n\
+This package is only kept for backwards compatibility for a while\n\
+and will go away in a future release.\n\
+\n\
+Please use instead the re-factored modules in Products/PluginIndexes.\n\
+",DeprecationWarning)
 
