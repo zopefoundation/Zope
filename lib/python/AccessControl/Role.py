@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import Globals
 from User import SafeDtml
@@ -12,6 +12,7 @@ class RoleManager:
     """Mixin role management support"""
 
     manage_rolesForm=SafeDtml('RoleManager_manage_rolesForm')
+    smallRolesWidget=SafeDtml('smallRolesWidget')
 
     def validRoles(self):
 	return Globals.Bobobase['roles']
@@ -109,6 +110,9 @@ class RoleManager:
 
 
 # $Log: Role.py,v $
+# Revision 1.2  1997/09/02 18:12:13  jim
+# Added smallRolesWidget.
+#
 # Revision 1.1  1997/08/29 18:34:53  brian
 # Added basic role management to package.
 #
