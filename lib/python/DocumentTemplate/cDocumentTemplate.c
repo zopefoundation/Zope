@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.34 2000/11/13 16:46:05 brian Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.35 2000/11/21 22:08:50 evan Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -93,7 +93,7 @@ static PyObject *py_isDocTemp=0, *py_blocks=0, *py_=0, *join=0, *py_acquire;
 static PyObject *py___call__, *py___roles__, *py_AUTHENTICATED_USER;
 static PyObject *py_hasRole, *py__proxy_roles, *py_Unauthorized;
 static PyObject *py_Unauthorized_fmt, *py_validate;
-static PyObject *py__push, *py__pop, *py_aq_base;
+static PyObject *py__push, *py__pop, *py_aq_base, *py_renderNS;
 
 /* ----------------------------------------------------- */
 
@@ -402,7 +402,6 @@ static PyObject *
 MM_cget(MM *self, PyObject *key, int call)
 {
   long i;
-  int dt=0;
   PyObject *e, *t, *rr, *tb;
 
   UNLESS(-1 != (i=PyList_Size(self->data))) return NULL;
@@ -411,71 +410,56 @@ MM_cget(MM *self, PyObject *key, int call)
       e=PyList_GetItem(self->data,i);
       if (e=PyObject_GetItem(e,key))
 	{
-	  dt=0;
+          if (!call) return e;
 
-
-
-	  /*	  if (PyCallable_Check(e)) */
+          /* Try calling __render_with_namespace__ */
+          if (rr = PyObject_GetAttr(e, py_renderNS)) 
+            {
+              Py_DECREF(e);
+              UNLESS_ASSIGN(rr, PyObject_CallFunction(rr, "O", self))
+                return NULL;
+              return rr;
+            }
+          else PyErr_Clear();
 
 	  if (dtObjectIsCallable(e))
 	    {
-
-	      
-	      /* Decide whether we have a document template 
-	      if (rr=PyObject_GetAttr(e,py_isDocTemp))
-		{
-		  if (PyObject_IsTrue(rr)) dt=1;
-		  Py_DECREF(rr);
-		}
-	      else PyErr_Clear();
-	      */
-
-	      dt = dtObjectIsDocTemp(e);
-
-
 	      /* Try calling the object */
-	      if (call)
-		{
-		  if (dt)
-		    {
-		      ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
-		      UNLESS(e)
-			return NULL;
-		    }
-		  else
-		    {
-		      rr=PyObject_CallObject(e,NULL);
-		      if (rr) ASSIGN(e,rr);
-		      else
-			{
-			  PyErr_Fetch(&t, &rr, &tb);
-			  if (t!=PyExc_AttributeError ||
-			     PyObject_Compare(rr,py___call__) != 0)
-			    {
-			      PyErr_Restore(t,rr,tb);
-			      Py_DECREF(e);
-			      return NULL;
-			    }
-			  /* 
-                            Added by Brian on 08/30/99. We need to be sure
-                            to DECREF the exception in the event of an 
-                            AttributeError to avoid leaking.
-                          */
-			  else {
-			    Py_XDECREF(t);
-			    Py_XDECREF(rr);
-			    Py_XDECREF(tb);
-			  }
+              if (dtObjectIsDocTemp(e))
+                {
+                  ASSIGN(e,PyObject_CallFunction(e,"OO", Py_None, self));
+                  UNLESS(e) return NULL;
+                  return e;
+                }
 
-			}
-		    }
-		}
-	    }
-
+              rr=PyObject_CallObject(e,NULL);
+              if (rr) ASSIGN(e,rr);
+              else
+                {
+                  PyErr_Fetch(&t, &rr, &tb);
+                  if (t!=PyExc_AttributeError ||
+                      PyObject_Compare(rr,py___call__) != 0)
+                    {
+                      PyErr_Restore(t,rr,tb);
+                      Py_DECREF(e);
+                      return NULL;
+                    }
+                  /* 
+                     Added by Brian on 08/30/99. We need to be sure
+                     to DECREF the exception in the event of an 
+                     AttributeError to avoid leaking.
+                  */
+                  else {
+                    Py_XDECREF(t);
+                    Py_XDECREF(rr);
+                    Py_XDECREF(tb);
+                  }          
+                }
+            }
 	  return e;
 	}
       PyErr_Fetch(&e, &rr, &tb);
-      if (dt || e != PyExc_KeyError)
+      if (e != PyExc_KeyError)
 	{
 	  PyErr_Restore(e,rr,tb);
 	  return NULL;
@@ -931,11 +915,12 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.34 $";
+  char *rev="$Revision: 1.35 $";
 
   DictInstanceType.ob_type=&PyType_Type;
 
   UNLESS(py_isDocTemp=PyString_FromString("isDocTemp")) return;
+  UNLESS(py_renderNS=PyString_FromString("__render_with_namespace__")) return;
   UNLESS(py_blocks=PyString_FromString("blocks")) return;
   UNLESS(py_acquire=PyString_FromString("aq_acquire")) return;
   UNLESS(py___call__=PyString_FromString("__call__")) return;
