@@ -537,10 +537,6 @@ def guarded_getattr(inst, name, default=_marker):
             return default
         raise
 
-    return _verify_attribute_access(inst, name, v)
-
-def _verify_attribute_access(inst, name, v):
-
     try:
         container = v.im_self
     except AttributeError:
