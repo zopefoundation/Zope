@@ -14,8 +14,10 @@
 
 """Generic parser support: exception and parse tree nodes."""
 
-from BTrees.IIBTree import difference, weightedIntersection, weightedUnion
-from Products.ZCTextIndex.NBest import NBest
+from BTrees.IIBTree import difference
+
+from Products.ZCTextIndex.SetOps import mass_weightedIntersection, \
+                                        mass_weightedUnion
 
 class QueryError(Exception):
     pass
@@ -67,19 +69,13 @@ class AndNode(ParseTreeNode):
         Nots = []
         for subnode in self.getValue():
             if subnode.nodeType() == "NOT":
-                Nots.append(subnode.getValue().executeQuery(index))
+                Nots.append((subnode.getValue().executeQuery(index), 1))
             else:
-                L.append(subnode.executeQuery(index))
+                L.append((subnode.executeQuery(index), 1))
         assert L
-        L.sort(lambda x, y: cmp(len(x), len(y)))
-        set = L[0]
-        for x in L[1:]:
-            dummy, set = weightedIntersection(set, x)
+        set = mass_weightedIntersection(L)
         if Nots:
-            Nots.sort(lambda x, y: cmp(len(x), len(y)))
-            notset = Nots[0]
-            for x in Nots[1:]:
-                dummy, notset = weightedUnion(notset, x)
+            notset = mass_weightedUnion(Nots)
             set = difference(set, notset)
         return set
 
@@ -88,20 +84,9 @@ class OrNode(ParseTreeNode):
     _nodeType = "OR"
 
     def executeQuery(self, index):
-        # Balance unions as closely as possible, smallest to largest.
-        allofem = self.getValue()
-        merge = NBest(len(allofem))
-        for subnode in allofem:
-            result = subnode.executeQuery(index)
-            merge.add(result, len(result))
-        while len(merge) > 1:
-            # Merge the two smallest so far, and add back to the queue.
-            x, dummy = merge.pop_smallest()
-            y, dummy = merge.pop_smallest()
-            dummy, z = weightedUnion(x, y)
-            merge.add(z, len(z))
-        result, dummy = merge.pop_smallest()
-        return result
+        weighted = [(node.executeQuery(index), 1)
+                    for node in self.getValue()]
+        return mass_weightedUnion(weighted)
 
 class AtomNode(ParseTreeNode):
 
