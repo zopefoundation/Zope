@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.195 2003/11/18 13:17:02 tseaver Exp $'''
-__version__='$Revision: 1.195 $'[11:-2]
+$Id: Application.py,v 1.196 2003/11/28 16:45:25 jim Exp $'''
+__version__='$Revision: 1.196 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -174,8 +174,8 @@ class Application(Globals.ApplicationDefaultPermissions,
         result=0
 
         if rebuild:
-            import BTree
-            jar.root()['ZGlobals']=BTree.BTree()
+            from BTrees.OOBTree import OOBTree
+            jar.root()['ZGlobals'] = OOBTree()
             result=1
 
         zglobals =jar.root()['ZGlobals']
@@ -396,8 +396,8 @@ def initialize(app):
     # Make sure we have Globals
     root=app._p_jar.root()
     if not root.has_key('ZGlobals'):
-        import BTree
-        app._p_jar.root()['ZGlobals']=BTree.BTree()
+        from BTrees.OOBTree import OOBTree
+        app._p_jar.root()['ZGlobals'] = OOBTree()
         get_transaction().note('Added Globals')
         get_transaction().commit()
 
@@ -684,7 +684,7 @@ def install_product(app, product_dir, product_name, meta_types,
                 for permission, names in new_permissions:
                     folder_permissions[permission]=names
                 new_permissions.sort()
-                Folder.Folder.__dict__['__ac_permissions__']=tuple(
+                Folder.Folder.__ac_permissions__ = tuple(
                     list(Folder.Folder.__ac_permissions__)+new_permissions)
 
             if not doInstall():
