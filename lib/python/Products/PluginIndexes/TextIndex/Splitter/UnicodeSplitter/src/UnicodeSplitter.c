@@ -37,8 +37,10 @@ static PyObject *checkSynword(Splitter *self, PyObject *word)
     /* Always returns a borrowed reference */
     PyObject *value;
 
-    if (PyUnicode_GetSize(word)==1 && ! self->allow_single_chars)
+    if (PyUnicode_GetSize(word)==1 && ! self->allow_single_chars) {
+        Py_INCREF(Py_None);
         return Py_None;
+    }
 
     if (self->synstop) {
         value = PyDict_GetItem(self->synstop,word);
@@ -410,7 +412,7 @@ static char Splitter_module_documentation[] =
     "\n"
     "for use in an inverted index\n"
     "\n"
-    "$Id: UnicodeSplitter.c,v 1.14 2002/01/21 19:28:55 andreasjung Exp $\n"
+    "$Id: UnicodeSplitter.c,v 1.15 2002/01/24 20:01:56 andreasjung Exp $\n"
     ;
 
 
@@ -418,7 +420,7 @@ void
 initUnicodeSplitter(void)
 {
     PyObject *m, *d;
-    char *rev="$Revision: 1.14 $";
+    char *rev="$Revision: 1.15 $";
 
     /* Create the module and add the functions */
     m = Py_InitModule4("UnicodeSplitter", Splitter_module_methods,
