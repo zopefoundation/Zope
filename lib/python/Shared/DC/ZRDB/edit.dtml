@@ -1,0 +1,46 @@
+<html><head><title>DA Query: <!--#var name--></title></head><body>
+
+<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
+<FONT SIZE="+2" COLOR="#77003B">
+Aqueduct Database Adapter<br>
+Edit Native Query Template, <!--#var name-->
+</FONT>
+
+<form action="<!--#var URL2-->/<!--#var name-->/manage_edit"
+ method="<!--#var web__form__method-->">
+
+<table>
+
+<tr>	<td><strong>Name:</strong></td>
+        <td><!--#var name--></td></tr>
+<tr>	<td><strong>Description:</strong></td>
+        <td><input name="description" size="40"
+             value="<!--#var description-->"></td></tr>
+<tr>	<td><strong>Access key:</strong></td>
+	<td><input name="key" size="40" value="<!--#var key-->"></td></tr>
+<tr>	<td><strong>Arguments:</strong></td>
+	<td><input name="arguments" size="40" value="<!--#var arguments_src-->"></td>
+		</tr>
+<tr>	<td colspan=2><strong>Query template:</strong><br>
+	    <textarea name="template" rows=10 cols=60>
+<!--#var quoted_src-->
+</textarea></td></tr>
+
+<tr><td></td><td>
+<input type="SUBMIT" name="SUBMIT" value="OK">
+<input type="SUBMIT" name="SUBMIT" value="Cancel">
+<!--#if HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
+<!--#else HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var URL2-->/manage">
+<!--#/if HTTP_REFERER-->
+</td></tr>
+
+</table>
+
+</form>
+</body>
+
+</html>
+
+

@@ -1,0 +1,29 @@
+<html> <head>
+<title>DA Database Connection Information</title>
+</head>
+
+<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
+<FONT SIZE="+2" COLOR="#77003B">
+Aqueduct Database Adapter<br>
+Database Connection Information
+</FONT>
+
+<form action="<!--#var PARENT_URL-->/manage_connection" method="post">
+
+<strong>Enter the database connection string:</strong><br>
+<input name="value" size="60" value="<!--#var manage_connection-->"><p>
+
+<strong>Check here to test connection string:</strong>
+<input name="check" type="CHECKBOX" value="YES" CHECKED>
+
+<hr>
+<input type="SUBMIT" name="SUBMIT" value="Change Connection String">
+<input type="SUBMIT" name="SUBMIT" value="Cancel">
+<!--#if HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
+<!--#else HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var PARENT_URL-->">
+<!--#/if HTTP_REFERER-->
+</form>
+
+</body> </html>

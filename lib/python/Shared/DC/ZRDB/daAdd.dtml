@@ -1,0 +1,44 @@
+<html><head><title>DA New Query</title></head>
+
+<body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
+<FONT SIZE="+2" COLOR="#77003B">
+Aqueduct Database Adapter<br>
+New Native Query Template
+</FONT>
+
+<form action="<!--#var PARENT_URL-->/manage_addDA" method="post">
+
+<table>     
+            
+<tr>    <td><strong>Name:</strong></td>
+        <td><input name="name" size="40"></td></tr>
+<tr>	<td><strong>Description:</strong></td>
+        <td><input name="description" size="40"></td></tr>
+<tr>    <td><strong>Access key:</strong></td>
+        <td><input name="key" size="40"></td></tr>
+<tr>    <td><strong>Arguments:</strong></td>
+        <td><input name="arguments" size="40"></td></tr>
+<tr>    <td colspan=2><strong>Query template:</strong><br>
+            <textarea name="template" rows=10 cols=60>
+select *
+from data
+</textarea></td></tr>
+
+<tr><td></td><td>
+<input type="SUBMIT" name="SUBMIT" value="Add Server Query">
+<input type="SUBMIT" name="SUBMIT" value="Cancel">
+<!--#if HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
+<!--#else HTTP_REFERER-->
+  <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
+   VALUE="<!--#var PARENT_URL-->/manage">
+<!--#/if HTTP_REFERER-->
+</td></tr>
+
+</table>
+
+</form>
+</body>
+
+</html>
+
