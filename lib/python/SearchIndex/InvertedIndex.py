@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.30 1997/04/14 12:03:17 jim Exp $'''
+$Id: InvertedIndex.py,v 1.31 1997/04/18 18:32:46 chris Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,9 @@ $Id: InvertedIndex.py,v 1.30 1997/04/14 12:03:17 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.31  1997/04/18 18:32:46  chris
+# *** empty log message ***
+#
 # Revision 1.30  1997/04/14 12:03:17  jim
 # Fixed bug in proximity searches.
 #
@@ -187,12 +190,12 @@ $Id: InvertedIndex.py,v 1.30 1997/04/14 12:03:17 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 import regex, regsub, string, copy
 from string import lower
-
+from WordSequence import WordSequence
 from types import *
 
 class ResultList:
@@ -484,11 +487,13 @@ class Index:
     list_class=ResultList
   
   
-    def __init__(self, index_dictionary = None):
+    def __init__(self, index_dictionary = None, synstop = None):
         'Create an inverted index'
-        if (index_dictionary is None):
-            index_dictionary = copy.copy(default_stop_words)
-  
+        if (synstop is None):
+            synstop = copy.copy(default_stop_words)
+        
+        self.synstop = synstop
+	
         self.set_index(index_dictionary)
   
    
@@ -501,10 +506,7 @@ class Index:
         self._index_object = index_dictionary
   
   
-    def split_words(self, s):
-        'split a string into separate words'
-        return regsub.split(s, '[^a-zA-Z]+')
-  
+    split_words = None
   
     def index(self, src, srckey):
         '''\
@@ -517,45 +519,40 @@ class Index:
         key, srckey.  For simple objects, the srckey may be the object itself,
         or it may be a key into some other data structure, such as a table.
         '''
-  
-        import math
-  
-        index = self._index_object
-  
-        src = regsub.gsub('-[ \t]*\n[ \t]*', '', str(src)) # de-hyphenate
-        src = map(lower,filter(None, self.split_words(src)))
-  
-        if (len(src) < 2):
-            return
-  
-        nwords = math.log(len(src))
-  
+        synstop = self.synstop
+
+	if (self.split_words is not None):
+            src = self.split_words(str(src))
+	else:
+            src = WordSequence(src, synstop)  
+
         d = {}
         i = -1
         for s in src:
+            print s
             i = i + 1
-            stopword_flag = 0
-  
-            while (not stopword_flag):
+
+	    while (type(s) is StringType):
                 try:
-                    index_val = index[s]
+                    s = synstop[s]
                 except KeyError:
                     break
-  
-                if (index_val is None):
-                    stopword_flag = 1
-                elif (type(index_val) != StringType):
-                    break
-                else:
-                    s = index_val
-            else:  # s is a stopword
+
+            if (s is None):
                 continue
   
+	    print s
             try:
                 d[s].append(i)
             except KeyError:
                 d[s] = [ i ]
-  
+
+        if (i < 1):
+            return
+
+        import math
+        nwords = math.log(i + 1)
+
         addentry = self.addentry
         for word, positions in d.items():
             freq = int(10000 * (len(positions) / nwords))
@@ -569,6 +566,7 @@ class Index:
             rl = {}
             index[word] = rl
   
+        print key
         rl[key] = data
   
     def __getitem__(self, key):
