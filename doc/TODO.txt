@@ -2,18 +2,18 @@ The following is a TODO list dealing with installation and startup
 changes proposed for the Zope trunk.  It is organized into these
 categories:
 
-  "BEFORE RELEASE OF ZOPE 2.7B" (items to do before the  beta
-  release of Zope 2.7)
-
   "BEFORE 2.7 FINAL" (things that need to be done before we're
   finished, but not currently on the critical path)
 
   "MAYBE NEVER BUT NICE TO HAVE" (items that are not on any critical
   path)
 
---------------------------------
-  BEFORE RELEASE OF ZOPE 2.7B
---------------------------------
+  "COMMUNITY CONCERNS" (uncategorized concerns dealing with features
+  missing from HEAD and prior 2.7 releases)
+
+----------------------------------
+  BEFORE RELEASE OF ZOPE 2.7 FINAL
+----------------------------------
 
 Provide more intuitive command line option overrides
 
@@ -81,33 +81,6 @@ Server construction errors need to be better
   When a server is constructed, it attempts to bind to a port.  If the
   port cannot be bound, an error is raised.  The error currently doesn't
   include the port number, and should.
-
-Review impact of missing Data.fs.in
-
-  The branch install process doesn't copy the "Data.fs.in" file to an
-  instancehome/var directory.  This file is the "initial" filestorage
-  for Zope that gets copied to "Data.fs" during installation in every
-  prior branch of Zope.  This file is evil and must die at some point,
-  and most of the necessary code to set things up properly in the face
-  of an empty Data.fs already exists in OFS.Application.initialize.
-  Things seem to work fine without Data.fs.in but we should just give
-  it a bit of review to see what gets left out, if anything.
-
-  When we find that Data.fs.in isn't necessary, we need to remove it
-  from the HEAD.
-
-  XXX What is actually needed to verify that it isn't needed?
-
-  AAA The best way to do this is to write a unit test which verifies
-      that the default objects installed into a "new" ZODB when Zope
-      starts are present and working, and their content either matches
-      the content of what would have come from Data.fs.in or is "close
-      enough".  The code that installs these default objects exists in
-      the initialize function within lib/python/OFS/Application.
-
------------------
-BEFORE 2.7 FINAL
------------------
 
 Review the Zope Book 2.6 Edition chapters and come up with revisions
 or at least create a Zope 2.7 Install HowTo
