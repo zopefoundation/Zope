@@ -164,7 +164,6 @@ class ZopeStarter:
             # no log files written in read only mode
             return
 
-        # flush buffered startup messages to event logger
         if self.cfg.eventlog is not None:
             self.cfg.eventlog()
         if self.cfg.access is not None:
@@ -285,6 +284,7 @@ class UnixZopeStarter(ZopeStarter):
         if self.startup_handler in self.event_logger.handlers:
             self.event_logger.removeHandler(self.startup_handler)
         self.setupConfiguredLoggers()
+        # flush buffered startup messages to event logger
         logger = logging.getLogger('event')
         self.startup_handler.flushBufferTo(logger)
 
