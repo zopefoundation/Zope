@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.35 2000/05/11 18:54:14 jim Exp $"
+"$Id: DT_String.py,v 1.36 2000/06/15 18:50:47 brian Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -326,6 +326,7 @@ class String:
     def name(self): return self.__name__
     id=name
 
+    setName__roles__=[]
     def setName(self,v): self.__dict__['__name__']=v
 
     def default(self,name=None,**kw):
@@ -354,6 +355,7 @@ class String:
         for key in kw.keys(): self._vars[key]=kw[key]
         return name
 
+    munge__roles__=[]
     def munge(self,source_string=None,mapping=None,**vars):
         """\
         Change the text or default values for a document template.
