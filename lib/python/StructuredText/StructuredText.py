@@ -170,7 +170,7 @@ Special symbology is used to indicate special constructs:
   Together with the previous rule this allows easy coding of references or
   end notes. 
 
-$Id: StructuredText.py,v 1.22 1999/08/02 22:01:28 jim Exp $'''
+$Id: StructuredText.py,v 1.23 1999/08/03 20:49:05 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -222,6 +222,11 @@ $Id: StructuredText.py,v 1.22 1999/08/02 22:01:28 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.23  1999/08/03 20:49:05  jim
+# Fixed to allow list elements to introduce examples.
+#
+# Restructured _str using continue to avoid excessive nesting.
+#
 # Revision 1.22  1999/08/02 22:01:28  jim
 # Fixed a bunch of bugs introduced by making ts_regex actually thread
 # safe.
@@ -598,44 +603,49 @@ class HTML(StructuredText):
              ):
         r=''
         for s in structure:
-            # print s[0],'\n', len(s[1]), '\n\n'
             
             ts_results = bullet(s[0], (1,))
             if ts_results:
                 p = ts_results[1]
-                r=self.ul(r,p,self._str(s[1],level))
+                if s[0][-2:]=='::' and s[1]: ps=self.pre(s[1])
+                else: ps=self._str(s[1],level)
+                r=self.ul(r,p,ps)
+                continue
+            ts_results = ol(s[0], (3,))
+            if ts_results:
+                p = ts_results[1]
+                if s[0][-2:]=='::' and s[1]: ps=self.pre(s[1])
+                else: ps=self._str(s[1],level)
+                r=self.ol(r,p,ps)
+                continue
+            ts_results = olp(s[0], (1,))
+            if ts_results:
+                p = ts_results[1]
+                if s[0][-2:]=='::' and s[1]: ps=self.pre(s[1])
+                else: ps=self._str(s[1],level)
+                r=self.ol(r,p,ps)
+                continue
+            ts_results = dl(s[0], (1,2))
+            if ts_results:
+                t,d = ts_results[1]
+                r=self.dl(r,t,d,self._str(s[1],level))
+                continue
+            if example(s[0]) >= 0 and s[1]:
+                # Introduce an example, using pre tags:
+                r=self.normal(r,s[0],self.pre(s[1]))
+                continue
+            if s[0][-2:]=='::' and s[1]:
+                # Introduce an example, using pre tags:
+                r=self.normal(r,s[0][:-1],self.pre(s[1]))
             else:
-                ts_results = ol(s[0], (3,))
-                if ts_results:
-                    p = ts_results[1]
-                    r=self.ol(r,p,self._str(s[1],level))
-                else:
-                    ts_results = olp(s[0], (1,))
-                    if ts_results:
-                        p = ts_results[1]
-                        r=self.ol(r,p,self._str(s[1],level))
-                    else:
-                        ts_results = dl(s[0], (1,2))
-                        if ts_results:
-                            t,d = ts_results[1]
-                            r=self.dl(r,t,d,self._str(s[1],level))
-                        else:
-                            if example(s[0]) >= 0 and s[1]:
-                                # Introduce an example, using pre tags:
-                                r=self.normal(r,s[0],self.pre(s[1]))
-                            else:
-                                if s[0][-2:]=='::' and s[1]:
-                                    # Introduce an example, using pre tags:
-                                    r=self.normal(r,s[0][:-1],self.pre(s[1]))
-                                else:
 
-                                    if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
-                                        # Treat as a heading
-                                        t=s[0]
-                                        r=self.head(r,t,level,
-                                                    self._str(s[1],level and level+1))
-                                    else:
-                                        r=self.normal(r,s[0],self._str(s[1],level))
+                if nl(s[0]) < 0 and s[1] and s[0][-1:] != ':':
+                    # Treat as a heading
+                    t=s[0]
+                    r=self.head(r,t,level,
+                                self._str(s[1],level and level+1))
+                else:
+                    r=self.normal(r,s[0],self._str(s[1],level))
         return r
         
 
