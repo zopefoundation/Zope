@@ -338,6 +338,8 @@ class StructuredTextSGML(StructuredTextMarkup): pass
 
 class StructuredTextLink(StructuredTextMarkup): pass
 
+class StructuredTextXref(StructuredTextMarkup): pass
+
 class DocumentClass:
     """
     Class instance calls [ex.=> x()] require a structured text
@@ -368,7 +370,8 @@ class DocumentClass:
         'doc_strong',
         'doc_emphasize',
         'doc_literal',
-        'doc_sgml'
+        'doc_sgml',
+        'doc_xref',
         ]
     
     def __call__(self, doc):
@@ -976,3 +979,18 @@ class DocumentClass:
             start,end = r.span()
             text = s[start:end]
             return (StructuredTextSGML(text),start,end)
+
+
+    def doc_xref(self, s,
+        expr = re.compile('\[([a-zA-Z0-9\-.:/;,\n\~]+)\]').search
+        ):
+        r = expr(s)
+        if r:
+            start, end = r.span(1)
+            return (StructuredTextXref(s[start:end]), start-1, end+1)
+        else:
+            return None
+
+
+
+
