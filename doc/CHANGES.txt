@@ -100,6 +100,10 @@ Zope Changes
 
       Bugs Fixed
 
+        - Fixed problem with extra PermissionMapping objects being in
+          the aq_parents hierarchy during traversal when a method was
+          being accessed a ZClass defined instance method.
+
         - Fixed ZCatalog 'Find to ZCatalog' with expressions problem.
 
         - Fixed broken links in ZCatalog 'Cataloged objects' view.
