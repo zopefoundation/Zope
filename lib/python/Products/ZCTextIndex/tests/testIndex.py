@@ -146,6 +146,7 @@ class CosineIndexTest(IndexTest):
 
     def check_docid_known(self, docid):
         self.assert_(self.index._docweight.has_key(docid))
+        self.assert_(self.index._docweight[docid] > 0)
 
     def num_docs_known(self):
         return len(self.index._docweight)
@@ -155,6 +156,7 @@ class OkapiIndexTest(IndexTest):
 
     def check_docid_known(self, docid):
         self.assert_(self.index._doclen.has_key(docid))
+        self.assert_(self.index._doclen[docid] > 0)
 
     def num_docs_known(self):
         return len(self.index._doclen)
