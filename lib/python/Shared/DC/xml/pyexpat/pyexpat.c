@@ -575,7 +575,7 @@ xmlparse_setattr(xmlparseobject *self, char *name, PyObject *v) {
 			XMLSETHANDLERS(ElementHandler);
 			return 0;
 		}
-	        if (strcmp(name+5, "CDataSectionHandler") == 0) {
+	        if (strcmp(name+5, "CdataSectionHandler") == 0) {
 		        SET_HANDLER(StartCdataSectionHandler);
 			XMLSETHANDLERS(CdataSectionHandler);
 			return 0;
@@ -716,7 +716,7 @@ static char pyexpat_module_documentation[] =
 void
 initpyexpat() {
 	PyObject *m, *d;
-	char *rev="$Revision: 1.6 $";
+	char *rev="$Revision: 1.7 $";
 
 	Xmlparsetype.ob_type = &PyType_Type;
 
