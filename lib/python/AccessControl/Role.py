@@ -84,10 +84,10 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
-from Globals import HTMLFile, MessageDialog
+from Globals import HTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
 from Acquisition import Implicit
 import Globals
@@ -112,7 +112,8 @@ class RoleManager:
     #------------------------------------------------------------
 
     def permission_settings(self):
-        "permission settings used by management screen"
+        """Return user-role permission settings
+        """
         result=[]
         valid=self.valid_roles()
         indexes=range(len(valid))
@@ -139,6 +140,7 @@ class RoleManager:
     manage_roleForm=HTMLFile('roleEdit', globals())
     def manage_role(self, role_to_manage, permissions=[], REQUEST=None):
         "Change the permissions given to the given role"
+        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.__ac_permissions__:
             name, value = p[:2]
             p=Permission(name,value,self)
@@ -149,6 +151,7 @@ class RoleManager:
     manage_acquiredForm=HTMLFile('acquiredEdit', globals())
     def manage_acquiredPermissions(self, permissions=[], REQUEST=None):
         "Change the permissions that acquire"
+        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.__ac_permissions__:
             name, value = p[:2]
             p=Permission(name,value,self)
@@ -164,6 +167,7 @@ class RoleManager:
     def manage_permission(self, permission_to_manage,
                           roles=[], acquire=0, REQUEST=None):
         "Change the settings for the given permission"
+        self._isBeingUsedAsAMethod(REQUEST, 0)
         for p in self.__ac_permissions__:
             name, value = p[:2]
             if name==permission_to_manage:
@@ -177,9 +181,21 @@ class RoleManager:
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % permission_to_manage)
         
-    manage_access=HTMLFile('access', globals())
+    
+    def manage_access(
+        trueself, self, REQUEST,
+        _normal_manage_access=HTMLFile('access', globals()),
+        _method_manage_access=HTMLFile('methodAccess', globals()),
+        **kw):
+        "Return an interface for making permissions settings"
+        if self._isBeingUsedAsAMethod():
+            return apply(_method_manage_access,(trueself, self, REQUEST), kw)
+        else:
+            return apply(_normal_manage_access,(trueself, self, REQUEST), kw)
+    
     def manage_changePermissions(self, REQUEST):
         "Change all permissions settings, called by management screen"
+        self._isBeingUsedAsAMethod(REQUEST, 0)
         valid_roles=self.valid_roles()
         indexes=range(len(valid_roles))
         have=REQUEST.has_key
@@ -241,6 +257,8 @@ class RoleManager:
         raise 'Invalid Permission', (
             "The permission <em>%s</em> is invalid." % permission)
 
+            
+            
 
     #------------------------------------------------------------
 
