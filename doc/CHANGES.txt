@@ -241,6 +241,19 @@ Zope Changes
           (or packages) had been removed were not handled properly as
           broken objects when ZODB 3 was used.
 
+	- The DTML Python string format did not allow expressions for 
+	  simple variable insertion.  Expression insertion is now
+	  allowed if the var tag name if the var tag name is supplied,
+	  as in::
+
+	    %(var expr="x+1")s
+
+	  Note that, because of this change, the var tag name must
+	  also be supplied when a variable named 'var' is inserted, as
+	  in::
+
+	    %(var var)s
+
     Zope 2.0 alpha 2
 
       Features added
