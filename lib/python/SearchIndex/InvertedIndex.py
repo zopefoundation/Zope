@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.46 1997/04/30 21:56:12 jim Exp $'''
+$Id: InvertedIndex.py,v 1.47 1997/05/08 19:10:43 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,10 @@ $Id: InvertedIndex.py,v 1.46 1997/04/30 21:56:12 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.47  1997/05/08 19:10:43  jim
+# Changed some string literals for emacs hilit.
+# Added minimal index variety.
+#
 # Revision 1.46  1997/04/30 21:56:12  jim
 # Fixed highlighting for searches where a word occurs more than once in
 # the search.
@@ -237,7 +241,7 @@ $Id: InvertedIndex.py,v 1.46 1997/04/30 21:56:12 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 
 import regex, string, copy
@@ -575,7 +579,7 @@ class Index:
         src = WordSequence(isrc, self.synstop)  
 
         for s in src:
-	    if s[0] == '"':
+	    if s[0] == '\"':
 		self.subindex(s[1:-1],d,pos)
 	    else:
 		try:
@@ -605,7 +609,7 @@ class Index:
 		__traceback_info__=i, d, src, srckey, s
 		i = i + 1
 		
-		if s[0] == '"':
+		if s[0] == '\"':
 		    self.subindex(s[1:-1],d,i)
 		else:
 		    try:
@@ -625,6 +629,34 @@ class Index:
         for word, positions in d.items():
             freq = int(100 * (len(positions) / nwords))
             addentry(word,srckey,(freq, tuple(positions)))
+  
+
+    def minimal_index(self, isrc, srckey):
+        '''\
+        index(src, srckey)
+  
+        Update the index by indexing the words in src to the key, srckey
+  
+        The source object, src, will be converted to a string and the
+        words in the string will be used as indexes to retrieve the objects 
+        key, srckey.  For simple objects, the srckey may be the object itself,
+        or it may be a key into some other data structure, such as a table.
+        '''
+        src = WordSequence(isrc, self.synstop)  
+
+        d = {}
+	__traceback_info__=i, d, src, srckey
+	for s in src:
+		
+	    if s[0] == '"':
+		self.subindex(s[1:-1],d,i)
+	    else:
+		d[s]=1
+
+        if not d: return
+
+        addentry = self.addentry
+        for word in d.keys(): addentry(word,srckey,())
   
 
     def addentry(self,word,key,data):
