@@ -51,7 +51,7 @@ class File:
         provided, then a content type will not be set. If size is not
         provided, the size of the file will be computed from 'data'.
         
-        Permission -- XXX None XXX
+        Permission -- Python only
         """
 
     def getSize(self):

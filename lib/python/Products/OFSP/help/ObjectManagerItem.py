@@ -40,7 +40,7 @@ class ObjectManagerItem:
         If the title is not blank, return it, otherwise
         return the id.
         
-        Permission -- XXX None XXX
+        Permission -- 'Allways accessable'
         """
 
     def title_and_id(self):
@@ -48,7 +48,7 @@ class ObjectManagerItem:
         If the title is not blank, the return the title
         followed by the id in parentheses. Otherwise return the id.
 
-        Permission -- XXX None XXX
+        Permission -- 'Allways accessable'
         """
   
     def this(self):

@@ -85,5 +85,5 @@ class ObjectManager:
         specifying one meta_type, or it can be a list of strings to
         specify many.
         
-        Permission -- XXX None XXX
+        Permission -- Python only
         """
