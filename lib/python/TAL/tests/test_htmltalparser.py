@@ -105,6 +105,14 @@ class HTMLTALParserTestCases(TestCaseBase):
            matching the start <script> tag.  The contents are within a
            HTML comment, and should be ignored.
         """
+        # The above comment is not generally true.  The HTML 4 specification
+        # gives <script> a CDATA content model, which means comments are not
+        # syntactically recognized (those characters contribute to the text
+        # content of the <script> element).  The '</a' in the '</a>' causes
+        # the SGML markup-in-context rules to kick in, and '</a>' should then
+        # be recognized as an improperly nested end tag.  See:
+        # http://www.w3.org/TR/html401/types.html#type-cdata
+        #
         s = """<script>\n<!--\ndocument.write("</a>");\n// -->\n</script>"""
         output = [
             rawtext(s),
