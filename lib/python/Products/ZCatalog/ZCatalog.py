@@ -159,7 +159,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
         self.id=id
         self.title=title
         self.threshold = 1000
-        self.total = 0
+        self._v_total = 0
         self._catalog = Catalog()
 
 	self._catalog.addColumn('id')
@@ -176,7 +176,17 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
 	self._catalog.addColumn('summary')
 	self._catalog.addIndex('PrincipiaSearchSource', 'TextIndex')
+	
+	
+    def manage_edit(self, threshold=1000, REQUEST=None):
+        """ edit the catalog """
+	self.threshold = threshold
 
+	message = "Object changed"
+	return self.manage_main(self, REQUEST,
+				manage_tabs_message=message)
+
+	
 
     def manage_catalogObject(self, REQUEST, urls=None, blah=None):
 	""" index all Zope objects that 'urls' point to """
@@ -251,7 +261,6 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     
         """ Find object according to search criteria and Catalog them
         """
-
         results = self.ZopeFind(REQUEST.PARENTS[1],
                                 obj_metatypes=obj_metatypes,
                                 obj_ids=obj_ids,
@@ -309,10 +318,15 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 
     def catalog_object(self, obj, uid):
 	""" wrapper around catalog """
-	self.total = self.total + self._catalog.catalogObject(obj, uid)
-        if self.total > self.threshold:
+	if not hasattr(self, '_v_total'):
+	    self._v_total = 0
+	self._v_total = (self._v_total +
+			 self._catalog.catalogObject(obj, uid, self.threshold))
+	
+        if self._v_total > self.threshold:
+	    print 'commiting in ZCatalog'
             get_transaction().commit(1)
-            self.total = 0
+            self._v_total = 0
 
 
     def uncatalog_object(self, uid):

@@ -274,7 +274,7 @@ class Catalog(Persistent, Acquisition.Implicit):
 
     # the cataloging API
 
-    def catalogObject(self, object, uid):
+    def catalogObject(self, object, uid, threshold=None):
         """ 
 
 	Adds an object to the Catalog by iteratively applying it
@@ -304,7 +304,7 @@ class Catalog(Persistent, Acquisition.Implicit):
         total = 0
         for x in self.indexes.values():
             if hasattr(x, 'index_object'):
-                blah = x.index_object(i, object)
+                blah = x.index_object(i, object, threshold)
                 __traceback_info__=(`total`, `blah`)
                 total = total + blah
 
