@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 from OFS.content_types import guess_content_type
 from Globals import package_home
@@ -94,7 +94,7 @@ from DateTime import DateTime
 from time import time
 from os import stat
 import Acquisition
-import string
+import string, os
 
 
 class ImageFile(Acquisition.Explicit):
@@ -104,7 +104,7 @@ class ImageFile(Acquisition.Explicit):
         if _prefix is None: _prefix=SOFTWARE_HOME
         elif type(_prefix) is not type(''):
             _prefix=package_home(_prefix)
-        path='%s/%s' % (_prefix, path)
+        path = os.path.join(_prefix, path)
         self.path=path
 
         file=open(path, 'rb')
