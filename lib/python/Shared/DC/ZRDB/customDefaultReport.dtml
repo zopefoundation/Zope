@@ -1,0 +1,60 @@
+<html> <head>
+<title><!--#var name capitalize spacify--> Results</title>
+</head>
+
+<body>
+
+<h2><!--#var name capitalize spacify--> Results</h2>
+<em>As of <!--#var query_date-->
+</em><br><br>
+
+<!--#if query_results-->
+
+  <p>Results for this
+  <a href="<!--#var URL2-->/<!--#var name-->%(action)s">
+  <!--#var name capitalize spacify--> query</a>:</p>
+
+  <!--#in query_results size=50 start=query_start-->
+     <!--#if sequence-start-->
+        <!--#if previous-sequence-->
+          <a href="<!--#var
+                   PARENT_URL-->/<!--#var
+                   query_string-->&query_start=<!--#var
+                   previous-sequence-start-number-->">
+          (Previous <!--#var previous-sequence-size--> results)
+          </a>
+        <!--#/if previous-sequence-->
+        <table border>
+
+
+        %(heading)s
+
+
+     <!--#/if sequence-start-->
+
+
+     %(row)s
+
+
+     <!--#if sequence-end-->
+        </table>
+        <!--#if next-sequence-->
+           <a href="<!--#var
+              PARENT_URL-->/<!--#var
+              query_string-->&query_start=<!--#var
+              next-sequence-start-number-->">
+           (Next <!--#var next-sequence-size--> results)
+           </a>
+        <!--#/if next-sequence-->
+     <!--#/if sequence-end-->
+  <!--#/in query_results-->
+
+<!--#else query_results-->
+
+  There was no data matching this.
+  <a href="<!--#var URL2-->/<!--#var name-->%(action)s">
+  <!--#var name capitalize spacify--> query</a>.
+
+<!--#/if query_results-->
+
+</body> </html>
