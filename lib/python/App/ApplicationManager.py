@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.82 $'[11:-2]
+__version__='$Revision: 1.83 $'[11:-2]
 
 
 import sys,os,time,Globals, Acquisition, os, Undo
@@ -326,7 +326,7 @@ class ApplicationManager(Folder,CacheManager):
                 user = 'unknown user'
             zLOG.LOG("ApplicationManager", zLOG.INFO,
                      "Restart requested by %s" % user)
-            for db in Globals.opened: db.close()
+            #for db in Globals.opened: db.close()
             Lifetime.shutdown(1)
             return """<html>
             <head><meta HTTP-EQUIV=REFRESH CONTENT="5; URL=%s/manage_main">
