@@ -315,7 +315,7 @@ cPickle, A C Pickle Implementation
 	- Loading non-binary string pickles checks for insecure
 	  strings. This is needed because cPickle (still) uses
 	  a restricted eval to parse non-binary string pickles.
-	  This change is needed to prevent pickles like::
+	  This change is needed to prevent untrusted pickles like::
 
 	    "S'hello world'*2000000\012p0\012."
 
