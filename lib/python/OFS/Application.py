@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.107 1999/05/24 17:18:27 brian Exp $'''
-__version__='$Revision: 1.107 $'[11:-2]
+$Id: Application.py,v 1.108 1999/05/24 21:03:08 jim Exp $'''
+__version__='$Revision: 1.108 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
@@ -177,21 +177,6 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 
     p_=misc_.p_
     misc_=misc_.misc_
-
-    manage_options=(
-    {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
-     'action':'manage_propertiesForm',   'target':'manage_main'},
-    {'label':'Import/Export', 'action':'manage_importExportForm',
-     'target':'manage_main'},
-    {'icon':'', 'label':'Security',
-     'action':'manage_access',   'target':'manage_main'},
-    {'icon':'App/undo_icon.gif', 'label':'Undo',
-     'action':'manage_UndoForm',   'target':'manage_main'},
-    {'label':'Find', 'action':'manage_findFrame',
-     'target':'manage_main'},
-    )
 
     _reserved_names=('standard_html_header',
                      'standard_html_footer',
