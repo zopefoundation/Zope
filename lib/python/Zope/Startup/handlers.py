@@ -16,12 +16,6 @@ def _setenv(name, value):
     else:
         os.environ[name] = `value`
 
-def debug_mode(value):
-    value and _setenv('Z_DEBUG_MODE', '1')
-    import Globals
-    Globals.DevelopmentMode = not not value
-    return value
-
 def locale(value):
     import locale
     locale.setlocale(locale.LC_ALL, value)
@@ -93,10 +87,6 @@ def publisher_profile_file(value):
     value is not None and _setenv('PROFILE_PUBLISHER', value)
     from ZPublisher.Publish import install_profiling
     install_profiling(value)
-    return value
-
-def http_realm(value):
-    value is not None and _setenv('Z_REALM', value)
     return value
 
 def max_listen_sockets(value):

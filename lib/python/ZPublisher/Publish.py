@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.166 2003/11/18 13:17:17 tseaver Exp $"""
-__version__='$Revision: 1.166 $'[11:-2]
+$Id: Publish.py,v 1.167 2004/04/25 21:26:15 fdrake Exp $"""
+__version__='$Revision: 1.167 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -46,6 +46,17 @@ def missing_name(name, request):
 
 def dont_publish_class(klass, request):
     request.response.forbiddenError("class %s" % klass.__name__)
+
+_default_debug_mode = False
+_default_realm = None
+
+def set_default_debug_mode(debug_mode):
+    global _default_debug_mode
+    _default_debug_mode = debug_mode
+
+def set_default_authentication_realm(realm):
+    global _default_realm
+    _default_realm = realm
 
 def publish(request, module_name, after_list, debug=0,
             # Optimize:
@@ -224,10 +235,8 @@ def get_module_info(module_name, modules={},
             # Let the app specify a realm
             if hasattr(module,'__bobo_realm__'):
                 realm=module.__bobo_realm__
-            elif os.environ.has_key('Z_REALM'):
-                realm=os.environ['Z_REALM']
-            elif os.environ.has_key('BOBO_REALM'):
-                realm=os.environ['BOBO_REALM']
+            elif _default_realm is not None:
+                realm=_default_realm
             else:
                 realm=module_name
 
@@ -236,15 +245,7 @@ def get_module_info(module_name, modules={},
             if hasattr(module,'__bobo_debug_mode__'):
                 debug_mode=not not module.__bobo_debug_mode__
             else:
-
-                z1 = os.environ.get('Z_DEBUG_MODE','')
-                z2 = os.environ.get('BOBO_DEBUG_MODE','')
-
-                if z1.lower() in ('yes','y') or z1.isdigit():
-                    debug_mode = 1
-                elif z2.lower() in ('yes','y') or z2.isdigit():
-                    debug_mode = 1
-
+                debug_mode = _default_debug_mode
 
             bobo_before = getattr(module, "__bobo_before__", None)
             bobo_after = getattr(module, "__bobo_after__", None)

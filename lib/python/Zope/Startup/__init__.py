@@ -60,8 +60,11 @@ class ZopeStarter:
     """
     def __init__(self):
         self.event_logger = logging.getLogger()
-        # set up our initial logging environment (log everything to stderr
-        # if we're not in debug mode).
+        # We log events to the root logger, which is backed by a
+        # "StartupHandler" log handler.  The "StartupHandler" buffers
+        # log messages.  When the "real" loggers are set up, we flush
+        # accumulated messages in StartupHandler's buffers to the real
+        # logger.
         formatter = logging.Formatter(
             "%(asctime)s %(levelname)s %(name)s %(message)s",
             "%Y-%m-%d %H:%M:%S")
@@ -78,14 +81,10 @@ class ZopeStarter:
         self.cfg = cfg
 
     def prepare(self):
-        # we log events to the root logger, which is backed by a
-        # "StartupHandler" log handler.  The "StartupHandler" outputs to
-        # stderr but also buffers log messages.  When the "real" loggers
-        # are set up, we flush accumulated messages in StartupHandler's
-        # buffers to the real logger.
         self.setupInitialLogging()
         self.setupLocale()
         self.setupSecurityOptions()
+        self.setupPublisher()
         # Start ZServer servers before we drop privileges so we can bind to
         # "low" ports:
         self.setupZServerThreads()
@@ -126,6 +125,13 @@ class ZopeStarter:
 
     def error(self, msg):
         logger.error(msg)
+
+    def setupPublisher(self):
+        import Globals
+        import ZPublisher.Publish
+        Globals.DevelopmentMode = self.cfg.debug_mode
+        ZPublisher.Publish.set_default_debug_mode(self.cfg.debug_mode)
+        ZPublisher.Publish.set_default_realm(self.cfg.http_realm)
 
     def setupSecurityOptions(self):
         import AccessControl
