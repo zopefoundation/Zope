@@ -82,36 +82,91 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''MailHost Product Initialization
-$Id: __init__.py,v 1.12 1999/04/02 15:27:30 michel Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.1 1999/04/02 15:27:30 michel Exp $'
+__version__='$Revision: 1.1 $'[11:-2]
 
-import MailHost, SendMailTag, MIMETag
-from ImageFile import ImageFile
+from DocumentTemplate.DT_Util import *
+from DocumentTemplate.DT_String import String
+from MimeWriter import MimeWriter
+from cStringIO import StringIO
+import string, mimetools
 
-classes=('MailHost.MailHost',)
+MIMEError = "MIME Tag Error"
 
-meta_types=({'name':'Mail Host',
-            'action':'manage_addMailHost_form'
-            },)
+class MIMETag:
+    '''
+    '''
 
-methods={
-    'manage_addMailHost_form': MailHost.addForm,
-    'manage_addMailHost':     MailHost.add,
-    }
+    name='mime'
+    blockContinuations=('boundary',)
+    encode=None
 
-misc_={
-    'MHIcon': ImageFile("www/MailHost_icon.gif", globals())
-    }
+    def __init__(self, blocks):
+        self.sections = []
 
-__ac_permissions__=(
-    ('Add MailHost objects', ('manage_addMailHost_form', 'manage_addMailHost')),
-    ('Change configuration', ()),
-    ('Use mailhost services',()),
-    )
+        for tname, args, section in blocks:
+            args = parse_params(args, type=None, disposition=None, encode=None)
+
+            has_key=args.has_key
+
+            if has_key('type'): 
+                type = args['type']
+            else:
+                type = 'application/octet-stream'
+
+            if has_key('disposition'):
+                disposition = args['disposition']
+            else:
+                disposition = ''
+
+            if has_key('encode'):
+                encode = args['encode']
+            else:
+                encode = 'base64'
+
+            if encode not in \
+            ('base64', 'quoted-printable', 'uuencode', 'x-uuencode',
+             'uue', 'x-uue', '7bit'):
+                raise MIMEError, (
+                    'An unsupported encoding was specified in tag')
+
+            self.sections.append((type, disposition, encode, section.blocks))
+
+
+    def render(self, md):
+        contents=[]
+        mw = MimeWriter(StringIO())
+        outer = mw.startmultipartbody('mixed')
+        for x in self.sections:
+            inner = mw.nextpart()
+            t, d, e, b = x
+
+            if d:
+                inner.addheader('Content-Disposition', d)
+
+            inner.addheader('Content-Transfer-Encoding', e)
+            innerfile = inner.startbody(t)
+            output = StringIO()
+            if e == '7bit':
+                innerfile.write(render_blocks(b, md))
+            else:
+                mimetools.encode(StringIO(render_blocks(b, md)), output,
+                             e)
+                output.seek(0)
+                innerfile.write(output.read())
+
+            if x is self.sections[-1]:
+                mw.lastpart()
+                  
+        outer.seek(0)
+        return outer.read()
+
+
+    __call__=render
 
 
 
+String.commands['mime'] = MIMETag
 
 
 
