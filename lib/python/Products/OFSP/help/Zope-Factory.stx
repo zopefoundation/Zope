@@ -1,8 +1,10 @@
-Zope Factory: Insert Projects into product add list
+Zope Factory: Product creation facility.
 
-    Description
+  Description
   
-        Zope Factories allow you to insert objects into the product add
-        list.
+    Zope Factories insert objects into the product add list.
+
+    Typically Factories are used to place ZClasses in the product add
+    list. 
         
-        They will help you to setup constructor for the new Zope object.
+

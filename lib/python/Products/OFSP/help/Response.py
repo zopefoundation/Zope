@@ -98,7 +98,7 @@ class Response:
         Sets the HTTP status code of the response; the argument may
         either be an integer or one of the following strings:
 
-          { OK,
+            OK,
             Created,
             Accepted,
             NoContent,
@@ -113,11 +113,10 @@ class Response:
             NotImplemented,
             BadGateway,
             ServiceUnavailable
-          }
-
+        
         that will be converted to the correct integer value.
 
-        Permission - Always available
+        Permission -- Always available
 
         '''
 
@@ -130,7 +129,7 @@ class Response:
         preserved, otherwise word-capitalization will be performed on
         the header name on output.
 
-        Permission - Always available
+        Permission -- Always available
 
         '''
 
@@ -140,7 +139,7 @@ class Response:
         Set a new HTTP return header with the given value, while
         retaining any previously set headers with the same name.
 
-        Permission - Always available
+        Permission -- Always available
         
         '''
 
@@ -149,7 +148,7 @@ class Response:
 
         Set the base URL for the returned document.
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -161,7 +160,7 @@ class Response:
         cookie has previously been set in the response object, the new
         value is appended to the old one separated by a colon.
 
-        Permission - Always available
+        Permission -- Always available
         
         '''
 
@@ -179,7 +178,7 @@ class Response:
         when creating the cookie. The path can be specified as a keyword
         argument.
 
-        Permission - Always available
+        Permission -- Always available
         
         '''
 
@@ -193,7 +192,7 @@ class Response:
         "value". This overwrites any previously set value for the
         cookie in the Response object.
 
-        Permission - Always available
+        Permission -- Always available
         
         '''
 
@@ -206,7 +205,7 @@ class Response:
         appending it following a comma if there was a previous value
         set for the header.
 
-        Permission - Always available
+        Permission -- Always available
         
         '''
 
@@ -215,7 +214,7 @@ class Response:
 
         Cause a redirection without raising an error
 
-        Permission - Always available
+        Permission -- Always available
         
         """
 
@@ -232,6 +231,8 @@ class Response:
 
         Note that published objects must not generate any errors
         after beginning stream-oriented output. 
+
+        Permission -- XXX
 
         """
         

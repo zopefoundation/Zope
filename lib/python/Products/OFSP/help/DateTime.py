@@ -99,7 +99,7 @@ class DateTime:
    DateTime objects may be created from a wide variety of string 
    or numeric data, or may be computed from other DateTime objects.
    DateTimes support the ability to convert their representations
-   to many major timezones, as well as the ablility to create a
+   to many major timezones, as well as the ability to create a
    DateTime object in the context of a given timezone.
 
    DateTime objects provide partial numerical behavior:
@@ -160,44 +160,42 @@ class DateTime:
         that date/time will be returned.
 
         As a general rule, any date-time representation that is 
-        recognized and unambigous to a resident of North America is
+        recognized and unambiguous to a resident of North America is
         acceptable.(The reason for this qualification is that
         in North America, a date like: 2/1/1994 is interpreted
         as February 1, 1994, while in some parts of the world,
         it is interpreted as January 2, 1994.) A date/time
         string consists of two components, a date component and
         an optional time component, separated by one or more
-        spaces. If the time component is omited, 12:00am is
+        spaces. If the time component is omitted, 12:00am is
         assumed. Any recognized timezone name specified as the
         final element of the date/time string will be used for
         computing the date/time value. (If you create a DateTime
         with the string 'Mar 9, 1997 1:45pm US/Pacific', the
         value will essentially be the same as if you had captured
         time.time() at the specified date and time on a machine in
-        that timezone)
-        <PRE>
+        that timezone)::
 
-        e=DateTime('US/Eastern')
-        # returns current date/time, represented in US/Eastern.
+          e=DateTime("US/Eastern")
+          # returns current date/time, represented in US/Eastern.
 
-        x=DateTime('1997/3/9 1:45pm')
-        # returns specified time, represented in local machine zone.
+          x=DateTime("1997/3/9 1:45pm")
+          # returns specified time, represented in local machine zone.
 
-        y=DateTime('Mar 9, 1997 13:45:00')
-        # y is equal to x
+          y=DateTime("Mar 9, 1997 13:45:00")
+          # y is equal to x
 
-        </PRE>
 
         The date component consists of year, month, and day
         values. The year value must be a one-, two-, or
         four-digit integer. If a one- or two-digit year is
         used, the year is assumed to be in the twentieth
         century. The month may an integer, from 1 to 12, a
-        month name, or a month abreviation, where a period may
-        optionally follow the abreviation. The day must be an
+        month name, or a month abbreviation, where a period may
+        optionally follow the abbreviation. The day must be an
         integer from 1 to the number of days in the month. The
         year, month, and day values may be separated by
-        periods, hyphens, forward, shashes, or spaces. Extra
+        periods, hyphens, forward, slashes, or spaces. Extra
         spaces are permitted around the delimiters. Year,
         month, and day values may be given in any order as long
         as it is possible to distinguish the components. If all
@@ -210,7 +208,7 @@ class DateTime:
         must be an integer between 0 and 59 inclusively. The
         second value may be an integer value between 0 and
         59.999 inclusively. The second value or both the minute
-        and second values may be ommitted. The time may be
+        and second values may be omitted. The time may be
         followed by am or pm in upper or lower case, in which
         case a 12-hour clock is assumed.
 
@@ -240,21 +238,21 @@ class DateTime:
         in gmt (such as those returned by time.time()) and the 
         second a string naming a recognized timezone, a DateTime
         with a value of that gmt time will be returned, represented
-        in the given timezone.
-        <PRE>
-        import time
-        t=time.time()
+        in the given timezone.::
 
-        now_east=DateTime(t,'US/Eastern')
-        # Time t represented as US/Eastern
+          import time
+          t=time.time()
 
-        now_west=DateTime(t,'US/Pacific')
-        # Time t represented as US/Pacific
+          now_east=DateTime(t,'US/Eastern')
+          # Time t represented as US/Eastern
 
-        # now_east == now_west
-        # only their representations are different
+          now_west=DateTime(t,'US/Pacific')
+          # Time t represented as US/Pacific
 
-        </PRE>
+          # now_east == now_west
+          # only their representations are different
+
+
 
       - If the function is invoked with three or more numeric
         arguments, then the first is taken to be an integer
@@ -510,7 +508,7 @@ class DateTime:
     def aMonth(self):
         """
 
-        Return the abreviated month name.
+        Return the abbreviated month name.
 
         """
 
@@ -526,7 +524,7 @@ class DateTime:
     def pMonth(self):
         """
 
-        Return the abreviated (with period) month name.
+        Return the abbreviated (with period) month name.
 
         """
 
@@ -566,7 +564,7 @@ class DateTime:
     def aDay(self):
         """
 
-        Return the abreviated name of the day of the week
+        Return the abbreviated name of the day of the week
 
         """
 
@@ -574,7 +572,7 @@ class DateTime:
     def pDay(self):
         """
 
-        Return the abreviated (with period) name of the day of the
+        Return the abbreviated (with period) name of the day of the
         week
 
 
@@ -592,7 +590,7 @@ class DateTime:
     def dow(self):
         """
 
-        Return the integer day of the week, where sunday is 0
+        Return the integer day of the week, where Sunday is 0
 
         """
 
@@ -600,7 +598,7 @@ class DateTime:
     def dow_1(self):
         """
 
-        Return the integer day of the week, where sunday is 1
+        Return the integer day of the week, where Sunday is 1
 
         """
 

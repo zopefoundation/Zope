@@ -102,7 +102,7 @@ class PropertySheet:
         there is no default namespace for a given property sheet
         (especially property sheets added in ZClass definitions).
 
-        Permission -
+        Permission -- XXX
 
         """
 
@@ -112,17 +112,17 @@ class PropertySheet:
         Get the property 'id', returning the optional second 
         argument or None if no such property is found.
 
-        Permission -
+        Permission -- XXX
         
         """
 
     def getPropertyType(self, id):
         """
         
-        Get the type of property 'id'.  returns None if no such
+        Get the type of property 'id'. Returns None if no such
         property exists.
 
-        Permission -
+        Permission -- XXX
         
         """
 
@@ -132,7 +132,7 @@ class PropertySheet:
         Returns true if 'self' has a property with the given 'id', 
         false otherwise.
 
-        Permission - 'Access contents information'
+        Permission -- 'Access contents information'
 
         """
 
@@ -141,7 +141,7 @@ class PropertySheet:
 
         Returns a list of property ids.
 
-        Permission - 'Access contents information'
+        Permission --  'Access contents information'
 
         """
 
@@ -150,7 +150,7 @@ class PropertySheet:
 
         Returns a list of actual property values.
 
-        Permission - 'Access contents information'
+        Permission -- 'Access contents information'
 
         """
 
@@ -159,7 +159,7 @@ class PropertySheet:
 
         Return a list of (id, property) tuples.
 
-        Permission - 'Access contents information'
+        Permission -- 'Access contents information'
 
         """
         
@@ -168,7 +168,7 @@ class PropertySheet:
 
         Returns a tuple of mappings, giving meta-data for properties.
 
-        Perimssion - 
+        Perimssion -- XXX
 
         """
 
@@ -177,7 +177,7 @@ class PropertySheet:
 
         Returns a mapping containing property meta-data.
 
-        Permission
+        Permission -- XXX
 
         """
 
@@ -185,16 +185,17 @@ class PropertySheet:
         """
 
         Add a new property with the given 'id', 'value' and 'type'.
-        Supported values for the 'type' argument are outlined below 
-        in the section "property types". This method will use the 
-        passed in 'type' to try to convert the 'value' argument to 
-        the named type. If the given 'value' cannot be converted,
-        a ValueError will be raised.
 
-        *If the given 'type' is not recognized, the 'value' and 'type' 
-        
-        given are simply stored blindly by the object. This seems like 
-        
+        Property Types
+
+           XXX
+
+        This method will use the passed in 'type' to try to convert
+        the 'value' argument to the named type. If the given 'value'
+        cannot be converted, a ValueError will be raised.
+
+        *If the given 'type' is not recognized, the 'value' and 'type'
+        given are simply stored blindly by the object. This seems like
         bad behavior - it should probably raise an exception instead.*
 
         If no value is passed in for 'REQUEST', the method will return
@@ -205,7 +206,7 @@ class PropertySheet:
         This method may be called via the web, from DTML or from
         Python code.
 
-        Permission - 'Manage Properties'
+        Permission -- 'Manage Properties'
 
         """
 

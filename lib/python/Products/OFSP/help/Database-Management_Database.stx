@@ -1,53 +1,21 @@
-Database Management - Database: Allows you to view database status information and pack the database.
+Database Management - Database: Zope database information and pack.
   
-    Description
+  Description
 
-        What do we mean by packing the database? Before this question can
-        be answered, you need to have some insight of how Zope stores
-        objects. As you may know, the Zope database is  object-oriented;
-        therefore the Zope Object DataBase (ZODB). It is currently  in
-        version 3. Furthermore, the ZODB includes a simple but effective
-        version control system. In order to make this version control
-        work, the database needs to keep track of all the old versions in
-        the ZODB. An old version can never expired. As you can imagine
-        that soon the database will be pretty big.
-      
-        In order to keep this from happening you will be able to 
-        "truncate" the old Zope objects from teh database. So, packing 
-        simply looks at all the Zope old objects and deletes all that are
-        older than X days (specified in the 'days' field. You 
-        should check regulary, and when your Zope installation takes a 
-        performance hit, then it help most of the time to pack your 
-        database first.
+    This view gives you information about the size and location of the
+    Zope database. The Zope database stores all Zope objects.
 
-        Please refer to the general database help screen
-        to read more about what packing does and how it works.
+    You can reduce the size of your Zope database by packing
+    it. Packing removes old revisions of objects, thus freeing up
+    space but also limiting your ability to undo object changes.    
 
-    Controls
+  Controls
 
-        'Database Size' -- Indicates the size in kilobytes of the Zope database 
-        (ZODB) file.
-      
-        'Database Location' -- Indicates the path to the Zope database file.
-        **Note:** The Data.fs file is operating system independent.
-        Therefore you can just copy it into any Zope distribution
-        on any operating system and all your ojects are 
-        transfered given that the destination Zope installation
-        contains the same products as the original one.
-        
-        'Pack' -- Removes old versions of Zope objects, reducing the size of 
-        the Zope database. Once you pack the database you cannot 
-        retrieve old copies of objects that have been removed by the 
-        packing operation.
-      
-        'days (field)' -- Indicates how old object versions must be to be removed. For 
-        example, if you pack the database and specify 2 days, then you 
-        will not be able to revert to object versions older than 2 days.
-      
+    'Pack' -- Pack will remove all versions of objects from the Zope
+    database. This will reduce the size of your database. **Note Pack
+    will prevent you from undoing some or all old transactions.**
 
-
-
-
-
-
-
+    You can control which old revisions of objects are removed from
+    the database by specifying how many days old the revisions must be
+    to be removed. If you specify 0 days old, then all old object
+    revisions will be removed.

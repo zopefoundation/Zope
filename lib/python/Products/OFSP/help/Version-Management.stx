@@ -1,9 +1,5 @@
-Version Management - Control all Zope versions
+Version Management - Control Zope versions.
   
-    Description
+  Description
 
-        Version Management allows you to control Zope Versions for a central
-        location.
-        
-        That is in particular useful, when you try to get an overview on which 
-        parts of the Web Site people currently work on.
+    Version Management allows you to control all Zope Versions.

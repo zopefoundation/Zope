@@ -1,0 +1,21 @@
+Image - Edit: Image Properties.
+
+  Description
+
+    This view allows you to edit Image properties.
+
+    File information
+  
+      'Id' -- The id of the Image.
+
+      'Size' -- The size of the Image.
+
+      'Last modified' -- The last time the Image was changed.
+
+  Controls
+
+    'Title' -- The optional title of the Image.
+
+    'Content type' -- The content type of the Image. Zope will try to
+    guess an appropriate content type when you upload an Image.
+

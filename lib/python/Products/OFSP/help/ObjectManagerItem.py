@@ -121,7 +121,7 @@ class ObjectManagerItem:
         If the title is not blank, return it, otherwise
         return the id.
         
-        Permission -- 'Allways accessable'
+        Permission -- Always available
         """
 
     def title_and_id(self):
@@ -129,7 +129,7 @@ class ObjectManagerItem:
         If the title is not blank, the return the title
         followed by the id in parentheses. Otherwise return the id.
 
-        Permission -- 'Allways accessable'
+        Permission -- Always available
         """
 
     def manage_workspace(self):
@@ -138,6 +138,8 @@ class ObjectManagerItem:
         This is the web method that is called when a user selects an
         item in a object manager contents view or in the Zope
         Management navigation view.
+
+        Permission -- 'View management screens'
 
         """
   
@@ -154,7 +156,7 @@ class ObjectManagerItem:
         you are in a method of a non-item subobject of an item and you
         need to get the item outside of the context of the subobject.
 
-        Permission --
+        Permission -- XXX
         """
 
     def absolute_url(self, relative=None):
@@ -166,14 +168,14 @@ class ObjectManagerItem:
         virtual hosts are being used, then the path returned is a
         logical, rather than a physical path.
         
-        Permission --Always available
+        Permission -- Always available
         """
 
     def getPhysicalRoot(self):
         """
         Returns the top-level Zope Application object.
         
-        Permission --Python only
+        Permission -- Python only
         """
 
     def getPhysicalPath(self):
@@ -192,6 +194,11 @@ class ObjectManagerItem:
         with "unrestricted" because (almost) no security checks are
         performed.
 
+        If an object is not found then the 'default' argument will be
+        returned.
+
+        Permission -- XXX
+
         """
 
     def restrictedTraverse(self, path, default=None):
@@ -199,6 +206,11 @@ class ObjectManagerItem:
         Return the object obtained by traversing the given path from
         the object on which the method was called, performing security 
         checks along the way.
+        
+        If an object is not found then the 'default' argument will be
+        returned.
+
+        Permission -- XXX
 
         """
 

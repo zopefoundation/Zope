@@ -1,24 +1,25 @@
-File/Image - Edit: Allows you to manage the attributes of the file.
+File - Edit: File Properties.
 
-    Description
-    
-        Here you will be able to edit/view some of the file's properties.
+  Description
 
-    Controls
+    This view allows you to edit File properties.
 
-        'Id' -- Indicates the id of the File.
-      
-        'Title' -- Allows you to specify the title of the File.
-      
-        'Content type' -- Allows you to set the content type of the file. Zope will 
-        try to guess an appropriate content type when you upload a
-        file.
-      
-        'Precondition' -- Allows you to specify a precondition for the file. A 
-        precondition is a method or document which is  executed 
-        before the file is viewed or downloaded. If the precondition 
-        raises an exception then the file cannot be viewed.
-      
-        'Size' -- Indicates the size of the uploaded file.
-      
-        'Last modified' -- Indicates the last time the file was changed.
+    File information
+  
+      'Id' -- The id of the File.
+
+      'Size' -- The size of the File.
+
+      'Last modified' -- The last time the File was changed.
+
+  Controls
+
+    'Title' -- The optional title of the File.
+
+    'Content type' -- The content type of the file. Zope will try to
+    guess an appropriate content type when you upload a File.
+
+    'Precondition' -- Allows you to specify a precondition for the
+    File. A precondition is a method or document which is executed
+    before the File is viewed or downloaded. If the precondition
+    raises an exception then the File cannot be viewed.

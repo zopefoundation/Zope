@@ -115,7 +115,7 @@ class File:
       create a list of HTML hyperlinks to all of the File objects in
       the current Object Manager.
       
-      Also see Object Manager for details on the 'objectValues'
+      Also see ObjectManager for details on the 'objectValues'
       method.
     """
     

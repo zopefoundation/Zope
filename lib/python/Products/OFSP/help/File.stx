@@ -1,9 +1,11 @@
-File: Allows you to store files in Zope.
+File: Generic File.
   
-    Description
+  Description
 
-        This generic object can be used to store sound, video, and flash 
-        files as well as Java applets in the Zope object database.
-        **Note:** Remember that the ZODB is just a single file, and 
-        the more pages you serve using the ZODB, the more of a bottle
-        neck it becomes. 
+    File objects can hold any binary or textual data such as zip
+    files, Java applets, video, text, etcetera.
+
+    Files provide a very limited through the web interface and are
+    appropriate for data that will not be manipulated very much by
+    Zope.
+

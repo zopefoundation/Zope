@@ -1,13 +1,13 @@
-Folder - Manage User Local Roles: Manage a user's local role
+Security - User local roles: Manage local roles.
   
-	Description
+  Description
 
-		This view allows you to manage a user's local roles.
+    This view allows you to manage a user's local roles.
 
-	Controls
+  Controls
 
-		'User' -- Indicates the user whose roles you going to change.
+    'User' -- The user whose local roles you going to change.
 
-		'Roles'[Selection List] -- Allows you to select the role(s) you wish to assign to the named user.
+    'Roles' -- The user's local roles.
 
-		'Change' -- Clicked, it will change the local roles for the shown user.
+    'Change' -- Change the local roles.

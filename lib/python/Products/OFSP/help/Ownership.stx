@@ -1,4 +1,4 @@
-Ownership: Manage ownership
+Ownership: Manage ownership.
 
   Description
 
@@ -21,79 +21,66 @@ Ownership: Manage ownership
     security point of view. In other words, an executable cannot 
     perform operations that its owner could not perform directly.
 
-
-    While most Zope objects support ownership, objects may not 
-    always have an owner assigned. Objects that do not have an 
-    assigned owner are <tt>unowned</tt>. An unowned executable 
-    object executes with the permissions of the user running the
-    object.
-
+    While most Zope objects support ownership, objects may not always
+    have an owner assigned. Objects that do not have an assigned owner
+    are *unowned*. An unowned executable object executes with the
+    permissions of the user running the object.
 
     There are three possible states of ownership that a Zope object
-    may be in. The object may be <em>unowned</em>, it may be 
-    <em>owned directly</em> or it may be <em>owned implicitly</em>. 
-    If an object is owned directly, the ownership information is 
-    stored in the object itself. If an object is owned implicitly, 
-    it acquires its ownership information from its container (which 
-    may in turn acquire its ownership information from <em>its</em> 
-    container, and so on). 
+    may be in. The object may be *unowned*, it may be *owned directly*
+    or it may be *owned implicitly*.  If an object is owned directly,
+    the ownership information is stored in the object itself. If an
+    object is owned implicitly, it acquires its ownership information
+    from its container (which may in turn acquire its ownership
+    information from its container, and so on).
 
-    When Zope automatically assigns ownership 
-    to newly created or copied objects, it tries to use implict 
-    ownership if possible. This makes it easier to change the 
-    ownership of many objects at one time without having to visit 
-    each object directly. For example, if everything in the folder 
-    <tt>research</tt> is owned by Fred and you want to change the 
-    ownership of everything in the folder to Jim, you only need to 
-    visit the <tt>research</tt> folder and change the ownership there 
-    if all of the objects under <tt>research</tt> are owned implicitly.
+    When Zope automatically assigns ownership to newly created or
+    copied objects, it tries to use implicit ownership if
+    possible. This makes it easier to change the ownership of many
+    objects at one time without having to visit each object
+    directly. For example, if everything in the folder 'research' is
+    owned by Fred and you want to change the ownership of everything
+    in the folder to Jim, you only need to visit the 'research' folder
+    and change the ownership there if all of the objects under
+    'research' are owned implicitly.
 
-    It is possible to remove a user in your Zope installation while 
-    objects that were owned by that user remain (for instance, 
-    someone in your organization moves on, so you remove his account 
-    on your Zope server). When you remove a Zope user, objects that 
-    were owned by that user still have ownership information that 
-    refers to that user. This will not cause an error, but it is 
-    important to understand what happens to Zope objects whose owners 
-    no longer exist.
+    It is possible to remove a user in your Zope installation while
+    objects that were owned by that user remain (for instance, someone
+    in your organization moves on, so you remove his account on your
+    Zope server). When you remove a Zope user, objects that were owned
+    by that user still have ownership information that refers to that
+    user. This will not cause an error, but it is important to
+    understand what happens to Zope objects whose owners no longer
+    exist.
 
-    This is most important for "executable" objects. Usually, the 
-    abilities of executable objects are constrained by the abilities 
-    of the object's owner as well as the user causing the object to 
-    execute. If Zope cannot find the user that the executable's ownership 
-    information refers to when it tries to execute the object, it will 
-    use the special <tt>nobody</tt> or anonymous user instead. The 
-    <tt>nobody</tt> user has very minimal priveleges, so you should take 
-    this into account when deciding what to do about a user's owned 
-    objects when you delete the user. If the user had DTML documents or 
-    other executable objects that depended upon their owner to have a 
-    higher level of privilege than the <tt>nobody</tt> user, they will 
-    not work correctly until their ownership has been reassigned to 
-    another user with sufficient privileges.
+    This is most important for "executable" objects. Usually, the
+    abilities of executable objects are constrained by the abilities
+    of the object's owner as well as the user causing the object to
+    execute. If Zope cannot find the user that the executable's
+    ownership information refers to when it tries to execute the
+    object, it will use the special 'nobody' or anonymous user
+    instead. The 'nobody' user has very minimal privileges, so you
+    should take this into account when deciding what to do about a
+    user's owned objects when you delete the user. If the user had
+    DTML documents or other executable objects that depended upon
+    their owner to have a higher level of privilege than the 'nobody'
+    user, they will not work correctly until their ownership has been
+    reassigned to another user with sufficient privileges.
 
   Controls
 
-    'Take ownership' -- Allows you (the current user) to 
-    take the ownership of this project if you have the
-    'Take ownership' role.
+    'Take ownership' -- Gives you ownership of this object.
 
-      **Note:** This button will not show up, if you
-      (the current user) are the owner of the object.
+      **Note: For this operation you have the 'Take ownership' role.**
 
-    'Make ownership implicit (acquired)' -- Allows you
-    to adjust all sub-objects to have the same owner-
-    ship, if they have no owner.
+    'Make ownership implicit (acquired)' -- Remove ownership
+    information for this object so that it is acquired from its
+    container.
    
-      **Note:** This button will only show up, if the
-      object has an owner.
+      **Note: This operation will fail if it would result in a change
+      of ownership.**
 
-    'Make ownership explicit' -- Allows you to ignore 
-    aquisition and set you (the current user) as the 
-    owner of the object. 
+    'Make ownership explicit' -- Add ownership information to this
+    object.
    
-      **Note:** This button will only show, if the
-      ownership is acquired.
 
-    All options depend on your permissions for the system,
-    since just a regular user would not be allowed to give
-    her/himself ownership to an arbitrary object.

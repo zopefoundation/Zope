@@ -1,16 +1,14 @@
-Folder - Manage Permission: Allows you to assign roles to a permission
+Folder - Manage Permission: Assign roles to a permission.
 
-    Description
+  Description
     
-        This view allows you to assign roles to different perissions.
+    This view allows you to assign roles to a permission.
 
-    Controls
+  Controls
 
-        '[User List]' -- Allows you to select all the users that will have this permission
-        (indicated in bold and italic font).
+    '[Role List]' -- The roles assigned to the permission.
       
-        **Inheritence?** -- The 'Also use roles acquired from folders containing this object'
-        check box indicates whether or not to acquire permissions settings for the
-        named permission.
+    'Also use roles acquired from folders containing this object' --
+    Whether or not to acquire permissions settings for the permission.
       
-        'Change' -- Clicked, it will set the permissions for the selected user.
+    'Change' -- Changes the security settings.

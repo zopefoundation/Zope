@@ -1,16 +1,9 @@
-User Folder - Contains Zope users
+User Folder - Defines users.
   
-    Description
+  Description
 
-        User Folders allow you to define new Zope users.
-        
-        You can only have one User Folder per Folder. User Folders always
-        have 'acl_users' as an id.
-        
-        This help screen and the sections listed below are only for the
-        standard Zope user folder that comes with Zope itself. You can
-        install many other types of authentication products (user folders)
-        such as NTUserFolder, IMAPUserFolder, UserDB (RDB based),
-        etcUserFolder (authenticates off the '/etc/passwd' file) 
-        or write your own with the help of the Generic User Folder 
-        (GUF).
+    User Folders define Zope users.
+
+    You can only have one User Folder per Folder. User Folders always
+    have 'acl_users' as an id.
+

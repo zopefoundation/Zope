@@ -111,30 +111,34 @@ class DTMLMethod:
         interpretation, which can be any kind of object.
 
         To accomplish its task, DTML Method often needs to resolve various
-        names into objects.  For example, when the code <dtml-var
-        spam> is executed, the DTML engine tries to resolve the name
+        names into objects.  For example, when the code '&lt;dtml-var
+        spam&gt;' is executed, the DTML engine tries to resolve the name
         'spam'.
 
         In order to resolve names, the Method must be passed a
-        names pace to look them up in.  This can be done several ways:
+        namespace to look them up in.  This can be done several ways:
 
-          By passing a 'client' object -- If the argument 'client' is
+          * By passing a 'client' object -- If the argument 'client' is
             passed, then names are looked up as attributes on the
             argument.
 
-          By passing a 'REQUEST' mapping -- If the argument 'REQUEST'
+          * By passing a 'REQUEST' mapping -- If the argument 'REQUEST'
             is passed, then names are looked up as items on the
             argument.  If the object is not a mapping, an TypeError
             will be raised when a name lookup is attempted.
 
-          By passing keyword arguments -- names and their values can
-          be passed as keyword arguments to the Method.
+          * By passing keyword arguments -- names and their values can
+            be passed as keyword arguments to the Method.
 
-        The names pace given to a DTML Method is the composite of these
-        three methods.  You can pass any number of them or none at
-        all.
+        The namespace given to a DTML Method is the composite of
+        these three methods.  You can pass any number of them or none
+        at all. Names will be looked up first in the keyword argument,
+        next in the client and finally in the mapping.
 
-        Passing in a names pace to a DTML Method is often referred to
+        Unlike DTMLDocuments, DTMLMethods do not look up names in
+        their own instance dictionary.
+
+        Passing in a namespace to a DTML Method is often referred to
         as providing the Method with a *context*.
 
         DTML Methods are called three ways:
@@ -165,9 +169,7 @@ class DTMLMethod:
           By the Publisher -- When the URL of a DTML Method is fetched 
             from Zope, the DTML Method is called by the publisher.
             The REQUEST object is passes as the second argument to the 
-            Method.  More information on the REQUEST can be found "on
-            the online Interface
-            documentation.":http://www.zope.org/Members/michel/Projects/Interfaces/PublisherRequest
+            Method.
           
         Permission -- 'View'
         """

@@ -1,7 +1,10 @@
-Control Panel - Provides access to centralized Zope management facilties.
+Control Panel - Zope administration facilities.
   
-    Description
+  Description
 
-        From the Control Panel you can manage the Zope database, versions,
-        and Zope Products.
+    Control Panel provides centralized Zope administration facilities.
+    In the Control Panel you can restart and shutdown Zope, 
+    access debugging information, manage the Zope database, and manage
+    versions.
 
+    Zope products are located inside the Control Panel.

@@ -1,33 +1,21 @@
-DTML Document/Method - Proxy: Manage proxy roles for a document or method
-  
-    Description
+DTML Document/Method - Proxy: Manage proxy roles.
 
-        Proxy roles replace the roles of the user who is viewing the
-        document or method to allow the document additional access or to 
-        limit the access the document or method has.
-        
-        How can proxy roles be used to **limit** access? Suppose we want to
-        assure that a document can only access public resources. We might do
-        this if we allowed untrusted users to edit the document. All we need
-        to do is to set the proxy roles to Anonymous. As long as we don't let
-        untrusted users change the proxy roles, we can let them edit the
-        document freely without worrying about giving them the ability to have
-        protected resources accessed when the document is viewed.
-        
-        How can proxy roles be used to **grant** access? We might have a
-        method that performs some management task for an unpriviledged user.
-        For example, we might have a method that creates a folder for a user
-        and makes them the owner.  The method needs to call the
-        'manage_addFolder' method to add the folder. Perhaps the
-        'manage_addFolder' requires the 'Manager' role. Simply give the method
-        the 'Manager' proxy role.  This effectively allows the unpriviledged
-        user to create a folder, but only though the special method.
+  Description
 
-    Controls
+    Proxy roles control security for DTML Documents and Methods.
 
-        'Id' -- Indicates the id of the DTML Document or Method.
-      
-        'Title' -- Indicates the title of the DTML Document or Method.
-      
-        'Proxy Roles' -- Allows you to select the role(s) you wish to assign to the 
-        documents or method.
+    Normally a DTML Document or Method executes with an intersection
+    of the owner's and viewer's roles. This means that the DTML can
+    only perform actions that are available to both the owner and
+    viewer.
+
+    Proxy roles explicitly list the roles that a DTML Document or
+    Method will execute with. This allows you to carefully control
+    access. Proxy roles can either increase or decrease access. **Note:
+    Proxy roles are limited to a subset of the owner's roles.**
+
+  Controls
+
+    'Proxy Roles' -- The proxy roles for the DTML Document or Method.
+
+    'Change' -- Change the proxy roles.

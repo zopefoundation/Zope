@@ -84,6 +84,8 @@
 ##############################################################################
 
 
+
+
 class ExternalMethod:
     """
 
@@ -105,11 +107,10 @@ class ExternalMethod:
 
     def manage_edit(self, title, module, function, REQUEST=None):
         """
-
         Change the external method
 
         See the description of manage_addExternalMethod for a
-        descriotion of the arguments 'module' and 'function'.
+        description of the arguments 'module' and 'function'.
 
         Note that calling 'manage_edit' causes the "module" to be
         effectively reloaded.  This is useful during debugging to see

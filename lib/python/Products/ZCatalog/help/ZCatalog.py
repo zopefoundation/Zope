@@ -89,21 +89,27 @@ class ZCatalog:
 
     ZCatalog object
 
-    A ZCatalog contains arbirary index like references to Zope
+    A ZCatalog contains arbitrary index like references to Zope
     objects.  ZCatalog's can index either 'Field' values of object,
     'Text' values, or 'KeyWord' values:
 
+    Indexes
+
+      Text -- XXX
+
+      Field -- XXX
+
+      Keyword -- XXX
+
+    Meta-data
+
+      XXX
+
     ZCatalog does not store references to the objects themselves, but
     rather to a unique identifier that defines how to get to the
-    object.  In Zope, this unique idenfier is the object's relative
+    object.  In Zope, this unique identifier is the object's relative
     path to the ZCatalog (since two Zope object's cannot have the same 
     URL, this is an excellent unique qualifier in Zope).
-
-    Most of the dirty work is done in the _catalog object, which is an
-    instance of the Catalog class.  An interesting feature of this
-    class is that it is not Zope specific.  You can use it in any
-    Python program to catalog objects.
-
 
     """
 
@@ -147,7 +153,7 @@ class ZCatalog:
     def schema(self):
         """
 
-        Returns a sequence of names that corespond to columns in the
+        Returns a sequence of names that correspond to columns in the
         meta-data table.
 
         """
@@ -155,7 +161,7 @@ class ZCatalog:
     def indexes(self):
         """
 
-        Returns a sequence of names that corespond to indexes.
+        Returns a sequence of names that correspond to indexes.
 
         """
 
@@ -172,5 +178,13 @@ class ZCatalog:
         Search the catalog.  Search terms can be passed in the REQUEST
         or as keyword arguments.
 
+        
+        XXX search grammar, how terms are combined, special search
+        terms, format of returned results XXX
+
         """
     
+    def __call__(self, REQUEST=None, **kw):
+        """
+        Search the catalog, the same way as 'searchResults'.
+        """

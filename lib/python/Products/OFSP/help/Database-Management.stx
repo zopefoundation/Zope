@@ -1,14 +1,11 @@
-Database Management: Provide access to management facilities for the Zope database.
+Database Management: Zope Database Management.
   
-    Description
+  Description
 
-        The Zope database is an object-oriented database that saves all 
-        versions of an object. So, whenever an object is saved, a "new
-        version" object is created for it. Furthermore, the ZODB (Zope
-        Object DataBase) leaves commonly/often used objects in cache to
-        be able to access it faster.
-        
-        The database management screens allow you to do some maintanance
-        on the ZODB. One task you should often do, especially during 
-        development time or when you have often-changing Zope objects, is
-        to "pack" your database. You can find more here
+    Database Management gives you access to Zope database controls.
+    The Zope database stores Zope objects.
+
+    You can manage the size of the Zope database by packing it. You
+    can control memory usage with the Zope database cache parameters.
+
+

@@ -88,8 +88,8 @@ class MailHost:
     """
 
     MailHost objects work as adapters to Simple Mail Transfer Protocol
-    (SMTP) servers.  MailHosts are used by <dtml-sendmail> tags to
-    find the proper host to deliver mail to.
+    (SMTP) servers.  MailHosts are used by '&lt;dtml-sendmail&gt; tags
+    to find the proper host to deliver mail to.
 
     """
 
@@ -98,19 +98,19 @@ class MailHost:
              encode=None):
         """
 
-        Sends mail.
+        Sends an email message.
 
-        messageText - Is the body of the mail message.
+          messageText -- The body of the mail message.
 
-        mto - is a string or list of recipient(s) of the message.
+          mto -- A string or list of recipient(s) of the message.
 
-        mfrom - is the address of the message sender.
+          mfrom -- The address of the message sender.
 
-        subject - is the subject of the message.
+          subject -- The subject of the message.
 
-        encode - is the rfc822 defined encoding of the message.  The
-        default of 'None' means no encoding is done.  Valid values are
-        'base64', 'quoted-printable' and 'uuencode'.
+          encode - is the rfc822 defined encoding of the message.  The
+          default of 'None' means no encoding is done.  Valid values
+          are 'base64', 'quoted-printable' and 'uuencode'.
 
         """
 

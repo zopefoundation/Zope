@@ -87,13 +87,17 @@
 def manage_addFolder(self, id, title):
     """
     Add a Folder to the current ObjectManager
+
+    Permission -- 'Add Folders'
     """
 
 
 class Folder:
     """
 
-    A Folder is a generic container object in Zope
+    A Folder is a generic container object in Zope.
+
+    Folders are the most common ObjectManager subclass in Zope.
 
     """
 

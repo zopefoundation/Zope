@@ -88,8 +88,8 @@ class ZSQLMethod:
     """
 
     ZSQLMethods abstract SQL code in Zope.
-    
-        They support three important abstractions:
+
+    They support three important abstractions:
 
       - Method
 
@@ -137,5 +137,8 @@ class ZSQLMethod:
 
         The returned value is a sequence of record objects.
 
+        XXX describe record objects XXX
+
         """
     
+

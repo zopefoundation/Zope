@@ -1,4 +1,4 @@
-ZClass - Subobjects: Define suboject types
+ZClass - Subobjects: Define suboject types.
 
   Description
 
@@ -7,12 +7,13 @@ ZClass - Subobjects: Define suboject types
 
   Controls
 
-    [select list] -- Select one or more of the listed meta-types
-      to indicate that objects of these types can be added to
-      instances of your ZClass.
+    Select one or more of the listed meta-types to indicate that
+    objects of these types can be added to instances of your ZClass.
 
-    Objects should appear in folder lists -- Controls whether or not
-      instances of your ZClass appear as folders in the left Zope
-      management frame.
+    'Objects should appear in folder lists' -- Controls whether or not
+    instances of your ZClass appear as folders in the left Zope
+    management frame.
 
-    Change -- Makes the changes
+    'Change' -- Change subobject settings.
+
+

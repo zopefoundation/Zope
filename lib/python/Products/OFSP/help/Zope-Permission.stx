@@ -1,10 +1,7 @@
-Zope Permission: Define new Permissions for ZClasses
+Zope Permission: Define new Permissions.
   
-    Description
+  Description
 
-        Zope Permissions allow you to define new permissions for
-        ZClasses.
-        
-        You can use your custom permissions to create special roles
-        for your user and have therefore more flexibility in laying
-        out you security model.
+    Zope Permissions allow you to define new permissions.
+
+    Typically new Permissions are associated with operations on ZClasses.

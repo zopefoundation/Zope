@@ -1,24 +1,31 @@
-Database Management - Cache Parameters: Adjust the Cahe options for your ZODB
+Database Management - Cache Parameters: Zope database cache.
   
-    Description
+  Description
 
-        This view allows you to view cache statistics and set cache
-        parameters. The Zope cache operates by keeping frequently used objects in
-        memory to improve performance. A larger cache improves object access 
-        speed, but increases memory usage and vice versa.
-  
-    Controls
+    This view allows you to view Zope database cache statistics and
+    set cache parameters. The Zope database cache operates by keeping
+    frequently used objects in memory to improve performance. A large
+    cache improves object access speed, but increases memory usage. A
+    small cache reduces memory usage but may slow down object access
+    speed.
 
-        'Total number of objects in the database' -- Indicates the number of *persistent* objects in the Zope database.
-      
-        'Number of objects in the cache' -- Indicates the number of objects which are currently loaded in memory. The
-        amount of objects in the cache can never exeed the target size of objects.
-      
-        'Target size' -- Indicates ideal number of objects to have in memory. This number is usually
-        greater than the actual number of objects in the cache, especially on sites
-        that are not very busy.
-      
-        'Target maximum time between accesses' -- Indicates the amount of time after which Zope should remove an 
-        object from memory if it hasn't been accessed.
-        **Note: **The optimum entry for this field depends on your site's purpose 
-        and structure.
+    Information
+
+
+      'Total number of objects in the database' -- Indicates the
+      number of *persistent* objects in the Zope database.
+
+      'Total number of objects in all the caches combined' --
+      Indicates the number of objects which are currently cached in
+      memory.
+
+Controls
+
+    'Target size' -- Indicates ideal number of objects to have in
+    memory at any given time. This controls the size of the Zope
+    database cache.
+
+    'Target maximum time between accesses' -- Indicates the amount of
+    time after which Zope should remove an object from memory if it
+    hasn't been accessed. This controls how quickly the Zope database
+    cache removes objects that aren't being used.

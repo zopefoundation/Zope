@@ -1,15 +1,15 @@
-DTML Document/Method - Upload: Allows you to upload DTML files.
-  
-    Description
+DTML Document/Method - Upload: Upload contents.
 
-        Use this view to completely replace the contents of a document or method
-        with the contents of an uploaded text file from your local computer.
-      
-    Controls    
+  Description
 
-        'Browse...'[Button and Field] -- Allows you to locate and select the file to upload.
-      
-        'Change' -- Upon click, the system replaces the document's contents with the 
-        uploaded file. The upload will fail, if the uploaded file contains
-        a DTML syntax error.
+    Use this view to completely replace the contents of a DTML
+    Document or Method with the contents of an uploaded file from your
+    local computer.
+
+  Controls    
+
+    'File' -- The file to upload. Use the 'Browse ...' button to
+    select a local file.
+
+    'Change' -- Upload the file and change the contents.
 

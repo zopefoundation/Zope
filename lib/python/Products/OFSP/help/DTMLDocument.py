@@ -109,30 +109,35 @@ class DTMLDocument:
         interpretation, which can be any kind of object.
 
         To accomplish its task, DTML Document often needs to resolve various
-        names into objects.  For example, when the code <dtml-var
-        spam> is executed, the DTML engine tries to resolve the name
+        names into objects.  For example, when the code '&lt;dtml-var
+        spam&gt;' is executed, the DTML engine tries to resolve the name
         'spam'.
 
         In order to resolve names, the Document must be passed a
-        names pace to look them up in.  This can be done several ways:
+        namespace to look them up in.  This can be done several ways:
 
-          By passing a 'client' object -- If the argument 'client' is
+          * By passing a 'client' object -- If the argument 'client' is
             passed, then names are looked up as attributes on the
             argument.
 
-          By passing a 'REQUEST' mapping -- If the argument 'REQUEST'
+          * By passing a 'REQUEST' mapping -- If the argument 'REQUEST'
             is passed, then names are looked up as items on the
             argument.  If the object is not a mapping, an TypeError
             will be raised when a name lookup is attempted.
 
-          By passing keyword arguments -- names and their values can
-          be passed as keyword arguments to the Document.
+          * By passing keyword arguments -- names and their values can
+            be passed as keyword arguments to the Document.
 
-        The names pace given to a DTML Document is the composite of these
-        three methods.  You can pass any number of them or none at
-        all.
+        The namespace given to a DTML Document is the composite of
+        these three methods.  You can pass any number of them or none
+        at all. Names are looked up first in the keyword arguments,
+        then in the client, and finally in the mapping.
 
-        Passing in a names pace to a DTML Document is often referred to
+        A DTMLDocument implicitly pass itself as a client argument in
+        addition to the specified client, so names are looked up in
+        the DTMLDocument itself.
+
+        Passing in a namespace to a DTML Document is often referred to
         as providing the Document with a *context*.
 
         DTML Documents are called three ways:
@@ -163,9 +168,7 @@ class DTMLDocument:
           By the Publisher -- When the URL of a DTML Document is fetched 
             from Zope, the DTML Document is called by the publisher.
             The REQUEST object is passes as the second argument to the 
-            Document.  More information on the REQUEST can be found "on
-            the online Interface
-            documentation.":http://www.zope.org/Members/michel/Projects/Interfaces/PublisherRequest
+            Document.  
           
         Permission -- 'View'
 

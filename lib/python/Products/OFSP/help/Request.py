@@ -99,29 +99,61 @@ class Request:
 
       - Environment variables
 
-        These variables include input headers, server data, and other
-        request-related data.  The variable names are as <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
-        in the <a
-        href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
-        specification</a>
+          These variables include input headers, server data, and
+          other request-related data.  The variable names are as <a
+          href="http://hoohoo.ncsa.uiuc.edu/cgi/env.html">specified</a>
+          in the <a
+          href="http://hoohoo.ncsa.uiuc.edu/cgi/interface.html">CGI
+          specification</a>
 
       - Form data
 
-        These are data extracted from either a URL-encoded query
-        string or body, if present.
+          These are data extracted from either a URL-encoded query
+          string or body, if present.
 
       - Cookies
 
-        These are the cookie data, if present.
+          These are the cookie data, if present.
 
       - Other
 
-        Data that may be set by an application object.
+          Data that may be set by an application object.
 
     The request object may be used as a mapping object, in which case
     values will be looked up in the order: environment variables,
     other variables, form data, and then cookies.
+
+    Special Variables
+
+      These special variables are set in the Request
+
+        'PARENTS' -- A list of the objects traversed to get to the
+        published object. So, 'PARENTS[0]' would be the ancestor of
+        the published object.
+
+        'REQUEST' -- The Request object.
+
+        'RESPONSE' -- The Response object.
+
+        'URL' -- The URL of the Request without query string.
+
+        *URLn* -- 'URL0' is the same as 'URL'. 'URL1' is the same as
+        'URL0' with the last path element removed. 'URL2' is the same
+        as 'URL1' with the last element removed. Etcetera.
+
+          For example if URL='http://localhost/foo/bar', then
+          URL1='http://localhost/foo' and URL2='http://localhost'.
+
+        *BASEn* -- 'BASE0' is the URL up to but not including the Zope
+        application object. 'BASE1' is the URL of the Zope application
+        object. 'BASE2' is the URL of the Zope application object with
+        an additional path element added in the path to the published
+        object. Etcetera.
+
+          For example if URL='http://localhost/Zope.cgi/foo/bar', then
+          BASE0='http://localhost', BASE1='http://localhost/Zope.cgi',
+          and BASE2='http://localhost/Zope.cgi/foo'.
+        
 
     """
 
@@ -190,3 +222,13 @@ class Request:
         Permission - Always available
         
         """
+
+
+
+
+
+
+
+
+
+

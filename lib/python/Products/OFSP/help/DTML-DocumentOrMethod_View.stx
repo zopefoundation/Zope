@@ -1,8 +1,5 @@
-DTML Document/Method - View: Allows you to preview the document or method.
+DTML Document/Method - View: Display
   
-    Description
+  Description
 
-        **Note:** Zope will use the user with which you logged into the 
-        management system. That causes sometimes complications, if you use
-        user-sensitive code.
-
+    This view displays a DTML Document or Method.

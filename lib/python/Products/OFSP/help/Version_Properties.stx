@@ -1,13 +1,13 @@
-Version - Properties: Edit Version Properties
+Version - Properties: Edit Version Properties.
   
-    Description
+  Description
 
-        This view allows you to edit the title of the version.
+    This view allows you to edit the title of a Version.
 
-    Controls
+  Controls
 
-        'Id' -- Indicates the id of the Version.
+    'Title' -- The title of the Version.
 
-        'Title' -- Allows you to specify the title of the Version.
+    'Edit' -- Changes the title of the Version.
 
-        'Edit' -- Clicked, Zope will change the title of the version.
+

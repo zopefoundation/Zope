@@ -1,33 +1,32 @@
-DTML Document/Method - Edit: Edit contents
-  
-    Description
+DTML Document/Method - Edit: Edit contents.
 
-        This view allows you to edit the contents of a DTML Document or Method.
+  Description
 
-    Controls
+    This view allows you to edit the contents of a DTML Document or
+    Method.
 
-        'Id' -- Indicates the id of the DTML Document or Method.
-      
-        'Title' -- Allows you to specify the title of the DTML Document or Method.
-      
-        'Size' -- Indicates the size of the document's contents.
-      
-        'Last modified' -- Indicates the time the document was last changed.
-      
-        'body [Text area]' -- Allows you to edit the contents of the document directly. You 
-        can use any editing keys that your browser supports in the text area.
-      
-        'Taller' and 'Shorter' -- Allows to adjust the height of the body text area, so you can 
-        adjust it for you font size and screen resolution.
-      
-        'Wider' and 'Narrower' -- Allows to adjust the width of the body text area, so you can 
-        adjust it for you font size and screen resolution.
-      
-        'Change' -- Submits the contant changes. Before the new version is saved,
-        the body is parsed for correct DTML syntax. The system will 
-        throw an exception, if it found some incorrect DTML syntax,
-        such as a missing closing tag.
-        **Important:** After throwing an exception, Internet 
-        Explorer 5.x will not let you use the back button, so that
-        you have no way to recover your changes. You may use any
-        any other browser or an editor that works via FTP.
+    Information
+
+      'Id' -- The id of the DTML Document or Method.
+
+      'Size' -- The size of the contents.
+
+      'Last modified' -- The time the object was last changed.
+
+  Controls
+
+    'Title' -- The optional title.
+
+    '[Text area]' -- The contents of the DTML Document or Method.
+
+    'Taller' and 'Shorter' -- Allows to adjust the height of the
+    contents text area.
+
+    'Wider' and 'Narrower' -- Allows to adjust the width of the
+    contents text area.
+
+    'Change' -- Changes the contents.
+
+      **Note: When you change the contents it is parsed for correct
+      DTML syntax. If there is a syntax error, the contents will not
+      be changed.**

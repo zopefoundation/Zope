@@ -1,16 +1,18 @@
-File/Image - Add: Create a new File or Image
+File/Image - Add: Create a File or Image.
 
-    Description
+  Description
     
-        Creates a new File or Image.
+    Creates a new File or Image.
 
-    Controls
+  Controls
 
-        'Id' -- Allows you to specify the id of the File.
-      
-        'Title' -- Allows you to specify the title of the File.
-      
-        'Browse...'[Button and Field] -- Allows you to locate and select a file to be uploaded.
-      
-        'Add' -- Upon click, Zope uploads the file into the ZODB and 
-        creates the object.
+    'Id' -- The id of the File or Image.
+
+      **Note: If you do not provide an Id then the file name will be used.**
+
+    'Title' -- The optional title of the File or Image.
+
+    'File' -- The file to upload. use the 'Browse...' button to
+    select a local file.
+
+    'Add' -- Creates a new File or Image.

@@ -1,18 +1,16 @@
-User Folder - Contents: View and manage the users
+User Folder - Contents: Manage users.
   
-    Description
+  Description
 
-        This view allows you to manage the users defined in a user folder.
-      
-    Controls
+    This view allows you to manage the users defined in a User Folder.
 
-        '[List of Users]' -- There is one user per line listed. The checkbox allows you to
-        select users you wish to delete. The username/userid is also 
-        listed on this line. If you clcik on the username, you will be 
-        able to edit the user's information.
-      
-        'Add...' -- Clicked, it will bring you to the Add User screen.
-      
-        'Delete' -- Clicked, Zope will delete all the checked users from the User 
-        Folder.
+  Controls
+
+    Users are listed one per line. Click on a user to edit the user.
+
+    '[Checkbox]' -- Selects users.
+
+    'Add...' -- Adds a new user.
+
+    'Delete' -- Deletes the selected users.
 

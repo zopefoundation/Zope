@@ -98,10 +98,12 @@ class Vocabulary:
 
         Query Vocabulary for words matching pattern.
 
+        Pattern format -- XXX
+
         """
             
 
-    def insert(self, word=''):
+    def insert(self, word):
         """
 
         Insert a word in the Vocabulary.

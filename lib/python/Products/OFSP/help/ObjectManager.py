@@ -87,7 +87,27 @@ class ObjectManager:
     """
     An ObjectManager contains other Zope objects. The contained
     objects are Object Manager Items.
-    """
+
+    Creating Objects in an ObjectManager
+
+      To create an object inside an object manager use 'manage_addProduct'::
+
+        self.manage_addProduct['OFSP'].manage_addFolder(id, title)
+
+      In DTML this would be::
+
+          <dtml-call "manage_addProduct['OFSP'].manage_addFolder(id, title)">
+
+      These examples create a new Folder inside the current
+      ObjectManager.
+
+      'manage_addProduct' is a mapping that provides access to product
+      constructor methods. It is indexed by product id.
+
+      Constructor methods are registered during product initialization
+      and should be documented in the API docs for each addable
+      object.
+      """
 
     def objectIds(self, type=None):
         """
@@ -168,3 +188,7 @@ class ObjectManager:
         
         Permission -- Python only
         """
+
+
+
+

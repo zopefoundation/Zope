@@ -1,11 +1,11 @@
-Z Search Interface: Interface to search the ZODB
+Z Search Interface: Search wizard.
   
-    Description
+  Description
 
-        A Search Interface allows you to search Zope databases.
+    A Search Interface is a wizard that creates search and results forms.
   
-        The Search Interface will create a search-input form and a report
-        for displaying the search results. You will be able to specify 
-        search objects (usually Z SQL Methods) that generate the contents
-        that is searched.
+    The Search Interface will create a search-input form and a report
+    for displaying the search results. You can search ZSQL Methods,
+    ZCatalogs, or any other objects that implement the searchable
+    interface.
 

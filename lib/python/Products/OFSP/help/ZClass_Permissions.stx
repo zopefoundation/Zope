@@ -1,20 +1,22 @@
-ZClass - Permissions: Select usable ZClass permissions
+ZClass - Permissions: Select ZClass permissions.
   
-    Description
+  Description
 
-        This view allows you to select permissions to be used by a ZClass.
-        
-        When setting permissions for individual methods or property sheets
-        of a ZClass, you will be able to select from inherited permissions and 
-        those permission which you set with this view.
-        
-    Controls
+    This view allows you to select permissions to be used by a ZClass.
 
-        'Class permissions' -- Allows you to select the permissions you like your class to 
-        inherit. The multi select field lists all the permissions 
-        available in Zope.
+    When setting permissions for individual methods or property sheets
+    of a ZClass, you will be able to select from inherited permissions
+    and class permission which you set with this view.
         
-        'Inherited permissions' -- Indicates the inherited permissions of your ZClass.
-        
-        'Change' -- Clicked, Zope will add the selected permissions to the 
-        list of the inherited ZClass permissions.
+  Controls
+
+    'Class permissions' -- The permissions available to your ZClass in
+    addition to inherited permissions.
+
+    'Inherited permissions' -- Indicates the inherited permissions of
+    your ZClass.
+
+    'Change' -- Change Class permissions.
+
+
+
