@@ -28,3 +28,18 @@ Zope changes
           to the old manage_renameObject if the user just hit the enter 
           key in the browser on a single item rename.
 
+        - A bug that caused the tabs to disappear after performing cache
+          management operations was fixed.
+
+        - A problem that prevented multiple Zope instances from running 
+          at the same time on win32 was fixed.
+
+        - An algorithm in medusa's max_sockets.py code was updated to 
+          improve startup time on certain platforms.
+
+        - The behavior of manage_editProperties on PropertyManagers and
+          PropertySheets has been fixed so that existing properties that
+          are not found in the update request are not reset to empty 
+          values.
+
+
