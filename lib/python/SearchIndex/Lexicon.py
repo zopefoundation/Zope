@@ -155,11 +155,6 @@ class Lexicon(Persistent, Implicit):
                 hits.append(x)
         return hits
 
-    def ngramatize(self, word, word_id):
-        """ returns a dictionary of {ngram : word_id} pairs:
-        """
-        ngrams = []
-        for x in word:
 
 AndNot    = 'andnot'
 And       = 'and'
