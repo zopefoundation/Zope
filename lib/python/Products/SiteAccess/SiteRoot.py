@@ -3,7 +3,7 @@
 Defines the Traverser base class and SiteRoot class
 """
 
-from Globals import HTMLFile, MessageDialog, Persistent
+from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, ImplicitAcquisitionWrapper
 from ExtensionClass import Base
@@ -76,7 +76,7 @@ class SiteRoot(Traverser, Implicit):
 
     manage_options=({'label':'Edit', 'action':'manage_main', 'help': ('SiteAccess', 'SiteRoot_Edit.stx')},)
 
-    manage = manage_main = HTMLFile('www/SiteRootEdit', globals())
+    manage = manage_main = DTMLFile('www/SiteRootEdit', globals())
 
     def __init__(self, title, base, path):
         '''Title'''
@@ -138,6 +138,6 @@ def manage_addSiteRoot(self, title='', base='', path='', REQUEST=None,
         sr.manage_addToContainer(self.this())
 
 constructors = (
-  ('manage_addSiteRootForm', HTMLFile('www/SiteRootAdd', globals())),
+  ('manage_addSiteRootForm', DTMLFile('www/SiteRootAdd', globals())),
   ('manage_addSiteRoot', manage_addSiteRoot),
 )

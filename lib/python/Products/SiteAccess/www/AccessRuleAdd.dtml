@@ -1,8 +1,8 @@
 <dtml-var manage_page_header>
 
-<dtml-var "manage_form_title(this(), _,
-           form_title='Set Access Rule',
-	   )">
+<dtml-let form_title="'Set Access Rule'">
+  <dtml-var manage_form_title>
+</dtml-let>
 
 <p class="form-help">
 <strong>
@@ -18,11 +18,11 @@ Zope Folder which will be called whenever the Folder is published.
 It can implement rewrite rules, preload request variables, etc.
 </p>
 
-<dtml-if "manage_getAccessRule(this())">
+<dtml-if manage_getAccessRule>
 <p class="form-text">
 The current Access Rule is
-<a href="<dtml-var "'%s/%s/manage_workspace' % (this().absolute_url(), manage_getAccessRule(this()))">">
-"<dtml-var "manage_getAccessRule(this())">"</a>.
+<a href="&dtml-absolute_url;/&dtml-manage_getAccessRule;/manage_workspace">
+"&dtml-manage_getAccessRule;"</a>.
 </p>
 <dtml-else>
 <p class="form-text">

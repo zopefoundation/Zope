@@ -3,7 +3,7 @@
 Provide a simple method to set up Access Rules
 """
 
-from Globals import HTMLFile, MessageDialog
+from Globals import DTMLFile, MessageDialog
 from ZPublisher.BeforeTraverse import \
  registerBeforeTraverse, unregisterBeforeTraverse, queryBeforeTraverse, \
  NameCaller
@@ -77,7 +77,7 @@ def getAccessRule(self, REQUEST=None):
     return ''
 
 constructors = (
-  ('manage_addAccessRuleForm', HTMLFile('www/AccessRuleAdd', globals())),
+  ('manage_addAccessRuleForm', DTMLFile('www/AccessRuleAdd', globals())),
   ('manage_addAccessRule', manage_addAccessRule),
   ('manage_getAccessRule', getAccessRule),
 )

@@ -3,7 +3,7 @@
 Defines the VirtualHostMonster class
 """
 
-from Globals import HTMLFile, MessageDialog, Persistent
+from Globals import DTMLFile, MessageDialog, Persistent
 from OFS.SimpleItem import Item
 from Acquisition import Implicit, ImplicitAcquisitionWrapper
 from ExtensionClass import Base
@@ -24,7 +24,7 @@ class VirtualHostMonster(Persistent, Item, Implicit):
 
     manage_options=({'label':'View', 'action':'manage_main'},)
 
-    manage_main = HTMLFile('www/VirtualHostMonster', globals())
+    manage_main = DTMLFile('www/VirtualHostMonster', globals())
 
     def addToContainer(self, container):
         container._setObject(self.id, self)
@@ -102,6 +102,6 @@ def manage_addVirtualHostMonster(self, id, REQUEST=None, **ignored):
         vhm.addToContainer(self.this())
 
 constructors = (
-  ('manage_addVirtualHostMonsterForm', HTMLFile('www/VirtualHostMonsterAdd', globals())),
+  ('manage_addVirtualHostMonsterForm', DTMLFile('www/VirtualHostMonsterAdd', globals())),
   ('manage_addVirtualHostMonster', manage_addVirtualHostMonster),
 )
