@@ -84,6 +84,15 @@ Zope Changes
         - Permission objects are automatically created for new ZClass
           objects. 
 
+        - For Python programmers, there is a new convenience function for
+          debugging in the Zope package. 
+
+          For example, to debug methof spam in the Zope debugger::
+
+            python
+            import Zope
+            Zope.debug('spam', d=1)
+
       Bugs fixed
 
         - The ZService.py used to implement Zope as a Win32 service 
