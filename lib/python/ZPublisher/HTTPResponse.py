@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.72 2002/12/22 18:31:46 efge Exp $'''
-__version__ = '$Revision: 1.72 $'[11:-2]
+$Id: HTTPResponse.py,v 1.73 2003/03/18 21:39:06 fdrake Exp $'''
+__version__ = '$Revision: 1.73 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -190,7 +190,8 @@ class HTTPResponse(BaseResponse):
     def _requestShutdown(self, exitCode=0):
         """Request that the server shut down with exitCode after fulfilling
            the current request."""
-        sys.ZServerExitCode = exitCode
+        import ZServer
+        ZServer.exit_code = exitCode
         self._shutdown_flag = 1
 
     def _shutdownRequested(self):

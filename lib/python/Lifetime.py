@@ -28,7 +28,8 @@ def shutdown(exit_code,fast = 0):
     global _shutdown_timeout
     if _shutdown_phase == 0:
         # Thread safety? proably no need to care
-        sys.ZServerExitCode = exit_code
+        import ZServer
+        ZServer.exit_code = exit_code
         _shutdown_phase = 1
     if fast:
         # Someone wants us to shutdown fast. This is hooked into SIGTERM - so possibly
