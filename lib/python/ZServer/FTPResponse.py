@@ -86,16 +86,23 @@
 Response class for the FTP Server.
 """
 
-from ZPublisher.HTTPResponse import HTTPResponse
+from ZServer.HTTPResponse import ZServerHTTPResponse
 from PubCore.ZEvent import Wakeup
 from cStringIO import StringIO
 import marshal
 
 
-class FTPResponse(HTTPResponse):
+class FTPResponse(ZServerHTTPResponse):
     """
     Response to an FTP command
     """
+
+    def __str__(self):
+        ZServerHTTPResponse.__str__(self)
+        return
+
+    def outputBody(self):
+        pass
 
     def setCookie(self, name, value, **kw):
         self.cookies[name]=value
@@ -109,9 +116,6 @@ class FTPResponse(HTTPResponse):
     def _cookie_list(self):
         return []
 
-    def _finish(self):
-        self.stdout.finish(self)
-
     def _marshalledBody(self):
         return marshal.loads(self.body)
 
@@ -124,13 +128,15 @@ class CallbackPipe:
     def __init__(self, callback, args):
         self._callback=callback
         self._args=args
-        
-    def write(self, text):
-        pass
+        self._producers=[]
         
     def close(self):
         pass
         
+    def write(self, text, l=None):
+        if text:
+            self._producers.append(text)
+    
     def finish(self, response):
         self._response=response
         Wakeup(self.apply) # move callback to medusas thread
@@ -138,7 +144,7 @@ class CallbackPipe:
     def apply(self):
         result=apply(self._callback, self._args+(self._response,))
        
-        # is this necessary to break cycles?
+        # break cycles
         self._callback=None
         self._response=None
         self._args=None

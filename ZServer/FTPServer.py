@@ -350,11 +350,15 @@ class zope_ftp_channel(ftp_channel):
         request=FTPRequest(line[1],'RETR',self,response)
         handle(self.module,request,response) 
 
-    def retr_completion(self, file, response):
+    def retr_completion(self, file, response):        
         status=response.getStatus()
         if status==200:
             self.make_xmit_channel()
-            self.client_dc.push(response.body)
+            if not response._wrote:
+                self.client_dc.push(response.body)
+            else:
+                for producer in response.stdout._producers:
+                    self.client_dc.push_with_producer(producer)
             self.client_dc.close_when_done()
             self.respond(
                     "150 Opening %s mode data connection for file '%s'" % (
