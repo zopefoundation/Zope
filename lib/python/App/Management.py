@@ -13,14 +13,15 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.56 2002/02/07 17:37:10 andreasjung Exp $"""
+$Id: Management.py,v 1.57 2002/04/12 18:24:24 Brian Exp $"""
 
-__version__='$Revision: 1.56 $'[11:-2]
+__version__='$Revision: 1.57 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from AccessControl import getSecurityManager, Unauthorized
+from AccessControl.SimpleObjectPolicies import _noroles
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
@@ -54,7 +55,7 @@ class Tabs(ExtensionClass.Base):
             if o is None: continue
 
             try:
-                if validate(None, self, None, o, None):
+                if validate(None, self, None, o, _noroles):
                     result.append(d)
             except:
                 if not hasattr(o, '__roles__'):
