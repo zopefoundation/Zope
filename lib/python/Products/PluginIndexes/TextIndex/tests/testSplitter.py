@@ -63,12 +63,6 @@ class TestCase( unittest.TestCase ):
     
     def testISOSplitter(self):
         """test ISOSplitter"""
-        import sys, warnings
-            
-        if sys.platform in ('darwin5',):
-            warnings.warn("Due to internal problems on Mac OS-X, this test is disabled")
-            return
-
         for text,splitted in self.testdata:
             self._test("ISO_8859_1_Splitter",text,splitted)
 
