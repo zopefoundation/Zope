@@ -669,8 +669,8 @@ class TALGenerator:
             else:
                 repldict = {}
             if i18nattrs:
-                i18nattrs = _parseI18nAttributes(i18nattrs, attrlist, repldict, self.position,
-                                                 self.xml)
+                i18nattrs = _parseI18nAttributes(i18nattrs, attrlist, repldict,
+                                                 self.position, self.xml)
             else:
                 i18nattrs = {}
             # Convert repldict's name-->expr mapping to a
@@ -678,9 +678,9 @@ class TALGenerator:
             for key, value in repldict.items():
                 if i18nattrs.get(key, None):
                     raise I18NError(
-                      ("attribute [%s] cannot both be part of tal:attributes" +
-                      " and have a msgid in i18n:attributes") % key,
-                    position)
+                        ("attribute [%s] cannot both be part of tal:attributes"
+                         " and have a msgid in i18n:attributes") % key,
+                        position)
                 ce = self.compileExpression(value)
                 repldict[key] = ce, key in i18nattrs, i18nattrs.get(key)
             for key in i18nattrs:
@@ -789,7 +789,7 @@ class TALGenerator:
             self.emitI18nVariable(varname)
         # Do not test for "msgid is not None", i.e. we only want to test for
         # explicit msgids here.  See comment above.
-        if msgid is not None: 
+        if msgid is not None:
             # in case tal:content, i18n:translate and i18n:name in the
             # same tag insertTranslation opcode has already been
             # emitted
@@ -821,11 +821,13 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position, xml):
     d = {}
     if ';' in i18nattrs:
         i18nattrlist = i18nattrs.split(';')
-        i18nattrlist = [attr.strip().split() for attr in i18nattrlist if attr.strip()]
+        i18nattrlist = [attr.strip().split()
+                        for attr in i18nattrlist if attr.strip()]
         for parts in i18nattrlist:
             if len(parts) > 2:
-                raise TALError("illegal i18n:attributes specification: %r" % spec,
-                               position)
+                raise TALError(
+                    "illegal i18n:attributes specification: %r" % spec,
+                    position)
             if len(parts) == 2:
                 attr, msgid = parts
             else:
@@ -836,34 +838,34 @@ def _parseI18nAttributes(i18nattrs, attrlist, repldict, position, xml):
                 attr = attr.lower()
             if attr in d:
                 raise TALError(
-                    "attribute may only be specified once in i18n:attributes: %r"
-                    % attr,
+                    "attribute may only be specified once in i18n:attributes: "
+                    + `attr`,
                     position)
             d[attr] = msgid
     else:
         i18nattrlist = i18nattrs.split()
         if len(i18nattrlist) == 2:
             staticattrs = [attr[0] for attr in attrlist if len(attr) == 2]
-            if (not i18nattrlist[1] in staticattrs) and (not i18nattrlist[1] in repldict):
+            if (  (not i18nattrlist[1] in staticattrs)
+                  and (not i18nattrlist[1] in repldict)):
               attr, msgid = i18nattrlist
-              d[attr] = msgid    
+              d[attr] = msgid
             else:
                 import warnings
-                warnings.warn('Space separated attributes in i18n:attributes'
-                + ' are deprecated (i18n:attributes="value title"). Please use'
-                + ' semicolon to separate attributes'
-                + ' (i18n:attributes="value; title").', DeprecationWarning)
+                warnings.warn(I18N_ATTRIBUTES_WARNING, DeprecationWarning)
                 for attr in i18nattrlist:
                     d[attr] = None
-        else:    
+        else:
             import warnings
-            warnings.warn('Space separated attributes in i18n:attributes'
-            + ' are deprecated (i18n:attributes="value title"). Please use'
-            + ' semicolon to separate attributes'
-            + ' (i18n:attributes="value; title").', DeprecationWarning)
+            warnings.warn(I18N_ATTRIBUTES_WARNING, DeprecationWarning)
             for attr in i18nattrlist:
                 d[attr] = None
     return d
+
+I18N_ATTRIBUTES_WARNING = (
+    'Space separated attributes in i18n:attributes are deprecated'
+    ' (i18n:attributes="value title"). Please use a semicolon to'
+    ' separate attributes (i18n:attributes="value; title").')
 
 def test():
     t = TALGenerator()
