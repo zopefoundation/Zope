@@ -106,7 +106,7 @@ from AccessControl import getSecurityManager
 
 manage_addZCatalogForm=HTMLFile('addZCatalog',globals())
 
-def manage_addZCatalog(self, id, title, vocab_id='', REQUEST=None):
+def manage_addZCatalog(self, id, title, vocab_id=None, REQUEST=None):
     """Add a ZCatalog object
     """
     id=str(id)
@@ -195,7 +195,7 @@ class ZCatalog(Folder, Persistent, Implicit):
     threshold=10000
     _v_total=0
 
-    def __init__(self, id, title='', vocab_id='', container=None):
+    def __init__(self, id, title='', vocab_id=None, container=None):
         self.id=id
         self.title=title
         self.vocab_id = vocab_id
