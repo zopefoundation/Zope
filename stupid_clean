@@ -1,0 +1,11 @@
+#! /bin/sh
+
+# "python setup.py clean" doesn't work with a --inplace build, so use
+# this instead (copied from the Zope3 tree).
+
+files=`find -name \*.o -o -name \*.so -o -name \*.py[co] -o -name core\*`
+if [ ! -z "$files" ] ; then
+    rm $files
+fi
+
+
