@@ -86,8 +86,8 @@ __doc__='''Standard routines for handling Principia Extensions
 
 Principia extensions currently include external methods and pluggable brains.
 
-$Id: Extensions.py,v 1.9 1999/04/01 15:57:13 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Extensions.py,v 1.10 1999/06/10 18:56:25 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from string import find
 import os, zlib, rotor
@@ -162,8 +162,17 @@ def getPath(prefix, name, checkProduct=1, suffixes=('',)):
         r=_getPath(home, prefix, name, suffixes)
         if r is not None: return r
 
-def getObject(module, name, reload=0, modules={}):
+def getObject(module, name, reload=0,
+              # The use of a mutable default is intentional here,
+              # because modules is a module cache.
+              modules={} 
+              ):
 
+    # The use of modules here is not thread safe, however, there is
+    # no real harm in a rece condition here.  If two threads
+    # update the cache, then one will have simply worked a little
+    # harder than need be.  So, in this case, we won't incur
+    # the expense of a lock.
     if modules.has_key(module):
         old=modules[module]
         if old.has_key(name) and not reload: return old[name]
