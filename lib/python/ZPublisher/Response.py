@@ -3,7 +3,7 @@
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.16 1997/04/29 18:29:00 jim Exp $'''
+$Id: Response.py,v 1.17 1997/09/15 19:20:56 brian Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,6 +55,10 @@ $Id: Response.py,v 1.16 1997/04/29 18:29:00 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: Response.py,v $
+# Revision 1.17  1997/09/15 19:20:56  brian
+# NS Server apparently chokes on multi-line headers, so bci exception info
+# no longer uses ml.
+#
 # Revision 1.16  1997/04/29 18:29:00  jim
 # Changed bobo-exception header code to use tb tail, rather than head
 # for reporting errors.
@@ -126,7 +130,7 @@ $Id: Response.py,v 1.16 1997/04/29 18:29:00 jim Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import string, types, sys, regex, regsub
 
@@ -487,8 +491,8 @@ class Response:
 
 	try:
 	    # Try to capture exception info for bci calls
-	    et=regsub.gsub('\n','\t\n',str(t))
-            ev=regsub.gsub('\n','\t\n',str(v))
+	    et=regsub.gsub('\n',' ',str(t))
+            ev=regsub.gsub('\n',' ',str(v))
 	    # Get the tb tail, which is the interesting part:
 	    while tb.tb_next is not None: tb=tb.tb_next
 	    el=str(tb.tb_lineno)
