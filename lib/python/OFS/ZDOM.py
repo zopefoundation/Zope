@@ -150,56 +150,19 @@ class InUseAttributeException(DOMException):
 # Node classes
 # ------------
 
-class Root:    
-    """
-    Root - top level object, similar to Document also implements the DOM
-    DOMImplementation Interface
-    """
-
-    def getParentNode(self):
-        """The parent of this node.  All nodes except Document
-        DocumentFragment and Attr may have a parent"""
-        return None
-
-    def getPreviousSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
-        return None
-
-    def getNextSibling(self):
-        """The node immediately preceding this node.  If
-        there is no such node, this returns None."""
-        return None
-
-    def getOwnerDocument(self):
-        """The Document object associated with this node.
-        When this is a document this is None"""
-        return self
-
-    #DOM Method for INTERFACE DOMImplementation
-    def hasFeature(self, feature, version = None):
-        """ 
-        hasFeature - Test if the DOM implementation implements a specific
-        feature. Parameters: feature The package name of the feature to
-        test. In Level 1, the legal values are "HTML" and "XML"
-        (case-insensitive). version This is the version number of the
-        package name to test. In Level 1, this is the string "1.0". If the
-        version is not specified, supporting any version of the feature
-        will cause the method to return true. Return Value true if the
-        feature is implemented in the specified version, false otherwise.
-        """
-        feature=string.lower(feature)
-        if feature == 'html': return 0
-        if feature == 'xml':
-            if version is None: return 1
-            if version == '1.0': return 1
-            return 0
-
-
 class Node:
     """
     Node Interface
     """
+
+    __ac_permissions__=(
+        ('Access contents information',
+            ('getNodeName', 'getNodeValue', 'getParentNode',
+            'getChildNodes', 'getFirstChild', 'getLastChild',
+            'getPreviousSibling', 'getNextSibling', 'getOwnerDocument',
+            'getAttributes', 'hasChildNodes'),
+        ),         
+    )
 
     # DOM attributes    
     # --------------
@@ -263,12 +226,121 @@ class Node:
         """Returns true if the node has any children, false
         if it doesn't. """
         return len(self.objectIds())
+
+
+class Document(Acquisition.Explicit, Node):    
+    """
+    Document Interface
+    """
+    
+    __ac_permissions__=(
+        ('Access contents information',
+            ('getImplementation', 'getDoctype', 'getDocumentElement'),
+        ),         
+    )
+    
+    # Document Methods
+    # ----------------
+    
+    def getImplementation(self):
+        """
+        The DOMImplementation object that handles this document.
+        """
+        return DOMImplementation()
+
+    def getDoctype(self):
+        """
+        The Document Type Declaration associated with this document.
+        For HTML documents as well as XML documents without
+        a document type declaration this returns null.
+        """
+        return None
+        
+    def getDocumentElement(self):
+        """
+        This is a convenience attribute that allows direct access to
+        the child node that is the root element of the document.
+        """
+        return self.aq_parent
+        
+    # Node Methods
+    # ------------
+
+    def getNodeName(self):
+        """The name of this node, depending on its type"""
+        return '#document'
+
+    def getNodeType(self):
+        """A code representing the type of the node."""
+        return DOCUMENT_NODE 
+
+    def getOwnerDocument(self):
+        """The Document object associated with this node.
+        When this is a document this is None"""
+        return self
+        
+    def getChildNodes(self):
+        """Returns a NodeList that contains all children of this node.
+        If there are no children, this is a empty NodeList"""
+        return NodeList([self.aq_parent])
+
+    def getFirstChild(self):
+        """The first child of this node. If there is no such node
+        this returns None."""
+        return self.aq_parent
+
+    def getLastChild(self):
+        """The last child of this node. If there is no such node
+        this returns None."""
+        return self.aq_parent
+
+    def hasChildNodes(self):
+        """Returns true if the node has any children, false
+        if it doesn't. """
+        return 1
+        
+
+class DOMImplementation:
+    """
+    DOMImplementation Interface
+    """
+
+    __ac_permissions__=(
+        ('Access contents information',
+            ('hasFeature'),
+        ),         
+    )
+    
+    def hasFeature(self, feature, version = None):
+        """ 
+        hasFeature - Test if the DOM implementation implements a specific
+        feature. Parameters: feature The package name of the feature to
+        test. In Level 1, the legal values are "HTML" and "XML"
+        (case-insensitive). version This is the version number of the
+        package name to test. In Level 1, this is the string "1.0". If the
+        version is not specified, supporting any version of the feature
+        will cause the method to return true. Return Value true if the
+        feature is implemented in the specified version, false otherwise.
+        """
+        feature=string.lower(feature)
+        if feature == 'html': return 0
+        if feature == 'xml':
+            if version is None: return 1
+            if version == '1.0': return 1
+            return 0
             
 
 class Element(Node):
     """
     Element interface
     """
+
+    __ac_permissions__=(
+        ('Access contents information',
+            ('getTagName', 'getAttribute', 'getAttributeNode',
+            'getElementsByTagName'),
+        ),         
+    )
     
     # Element Attributes
     # ------------------
@@ -430,7 +502,18 @@ class ElementWithTitle(Element):
         if value:
             return Attr(name, value).__of__(self)
         return None
+
             
+class Root(ElementWithAttributes):
+    """
+    The top-level Zope object.
+    """
+    
+    def getOwnerDocument(self):
+        """
+        """
+        return Document().__of__(self)
+        
 
 class NodeList:
     """NodeList interface - Provides the abstraction of an ordered
