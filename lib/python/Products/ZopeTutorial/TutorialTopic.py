@@ -158,6 +158,13 @@ onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
 
+    def dtmlLink(self, tag, REQUEST):
+        """
+        Returns the URL to a DTML Reference page for a given tag.
+        """
+        url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['SCRIPT_NAME'], tag)
+        return '<a href="%s">DTML Reference</a>' % url
+
     tutorialNavigation=DTMLFile('dtml/tutorialNav', globals())
 
 

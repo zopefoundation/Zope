@@ -74,7 +74,7 @@ Lesson 1. "Elvis Lives" Home Page
 
       <dtml-var standard_html_footer>
       
-    2. Click the 'Change' button.
+    2. Click the 'Save Changes' button.
     
   The contents of the document are a mixture of HTML and special
   tags called [DTML].
@@ -160,7 +160,7 @@ Lesson 2. Going to Graceland
 
       <dtml-var standard_html_footer>
       
-    6. Click the 'Change' button.
+    6. Click the 'Save Changes' button.
   
   This adds a link the the 'graceland' folder. Now let's test
   out the link.
@@ -200,10 +200,7 @@ Lesson 3. Elvis's Favorite Foods
     
     3. Type 'Elvis and Food' for the folder title.
     
-    4. Uncheck the 'Create public interface' and 'Create user folder'
-    check boxes.
-
-    5. Click the 'Add' button.
+    4. Click the 'Add' button.
     
   Now we've got some place to put our food related resources. Let's
   move some objects into this folder.
@@ -234,7 +231,7 @@ Lesson 3. Elvis's Favorite Foods
       <a href="food/meatloaf">meatloaf</a>.
       </p>
       
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
     4. Click the 'View' tab at the top of the screen.
   
@@ -276,8 +273,8 @@ Lesson 4. Site Contact Information
     
     4. Click the 'Add' button.
     
-    Now you've created a property that defines your email address. Now
-    let's put a link to this address in the web page footer.
+  Now you've created a property that defines your email address. Now
+  let's put a link to this address in the web page footer.
   
     1. Click the 'Contents' tab to return to the list of items in the
        folder, then click the 'standard_html_footer' [DTML Method] to edit it.
@@ -290,16 +287,16 @@ Lesson 4. Site Contact Information
       </body>
       </html>
    
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
 
   We've change the standard Zope footer. Now let's verify that this
   change is reflected in our web pages.
     
-    4. Navigate to the 'home.html' document in the 'lesson4' folder
+    1. Navigate to the 'home.html' document in the 'lesson4' folder
     by clicking on the 'lesson4' location link and then clicking 
     on the 'home.html' document.
     
-    5. Now click the 'View' tab to view the web site.
+    2. Now click the 'View' tab to view the web site.
     
   Notice that there is now an email link at the bottom of every web
   page. The email link uses the property you defined and includes the
@@ -411,7 +408,7 @@ Lesson 6. Recent Elvis Sightings, cont.
       
       <dtml-var standard_html_footer>
       
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
     4. Click the 'View' tab.
     
@@ -475,7 +472,7 @@ Lesson 7. Elvis Photo Archive
       
       <dtml-var standard_html_footer>
      
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
     4. Click the 'View' tab.
     
@@ -539,15 +536,16 @@ Lesson 8. Elvis Photo Archive, cont.
       
       <dtml-var standard_html_footer>
   
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
   This document collects data needed to create an Image. It calls the
   'photoAction' document with that data. The 'photoAction' document
-  actually creates the Image.
+  actually creates the Image. Now let's customize the 'photoAction'
+  document to handle the image title.
     
-    4. Click the 'photoAction' document to edit it. 
+    1. Click the 'photoAction' document to edit it. 
    
-    5. Change the contents of the document to::
+    2. Change the contents of the document to::
     
       <dtml-var standard_html_header>
       
@@ -619,7 +617,7 @@ Lesson 9. Elvis, Up Close and Personal
       <p>Elvis spotted spare changing on Broadway.
       He denied being the King.</p>
     
-    9. Click the 'Change' button.
+    9. Click the 'Save Changes' button.
     
   Now you've created a new sighting. Let's see if it is marked as new
   by the sightings page.
@@ -638,17 +636,18 @@ Lesson 9. Elvis, Up Close and Personal
   Let's look at the DTML for the 'sightings' page to see how this is
   done.
   
-    1. Click the 'sightings' document to edit it.
+    1. Click the 'sightings' document to view its contents.
     
   The document sets a cookie with this code::
   
-    <dtml-call expr="RESPONSE.setCookie('lastVisited', ZopeTime())">
+    <dtml-call expr="RESPONSE.setCookie('lastVisited',
+      _.DateTime())">
  
   The document checks each sighting when displaying it to see if it is
   newer than the 'lastVisited' cookie::
   
     <dtml-if expr="bobobase_modification_time() >
-      ZopeTime(lastVisited)">
+      _.DateTime(lastVisited)">
   
   Summary
   
@@ -659,6 +658,8 @@ Lesson 9. Elvis, Up Close and Personal
     
     * The [<dtml-if>] tag allows you to test conditions.
     
+    * The [DateTime] function allows you to get the current time.
+
     * The 'bobobase_modification_time' method returns the last
     modification time of an object.
  
@@ -672,7 +673,7 @@ Lesson 10. So You've Seen Elvis
   "Elvis Lives" web site! Let's enhance our site to allow visitors to
   report their Elvis sightings.
   
-    1. Click 'mailhost' [Mail Host] object to edit it.
+    1. Click the 'mailhost' [Mail Host] object to edit it.
     
     2. Type the name of your mail server in the 'SMTP Host' field.
     
@@ -681,7 +682,7 @@ Lesson 10. So You've Seen Elvis
   server, ask your system administrator, or check the configuration of
   your mail client.
   
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
   Now Zope can send mail. Next let's edit the template for the Elvis
   sighting report mail message.
@@ -789,7 +790,7 @@ Lesson 11. The Elvis Files
       
       <dtml-var standard_html_footer>
       
-    3. Click the 'Change' button.
+    3. Click the 'Save Changes' button.
     
     4. Click the 'View' tab to view the document.
     
@@ -803,6 +804,82 @@ Lesson 11. The Elvis Files
     * [ZSQL Method]s get information out of or into a relational
     database.
 
+Lesson 12. The Elvis Files, cont.
+
+  <dtml-var "tutorialShowLesson(12, REQUEST)"> In the last lesson you
+  created an Elvis sightings database. Now let's adapt the this
+  database to allow site visitors to submit their own sightings.
+
+  This lesson builds on your experience from the last two lessons. To
+  allow folks to report sightings you'll need a report form just like
+  you used in lesson 10. 
+
+    1. Click on the 'reportForm' DTML Document to view its contents.
+
+  This document is almost exactly like the report form used in Lesson
+  10. It collects data and calls the 'reportAction' document to
+  process the data.
+
+    2. Click on the 'reportAction' DTML Document to view its contents.
+
+  This document its simplier than the 'reportAction' document in
+  Lesson 10. All it does is 
+  thank the user and call the 'insertSighting' ZSQL Method with this
+  code::
+
+    <dtml-call insertSighting>
+
+  The real work is done by the 'insertSighting' ZSQL Method. Let's see
+  how.
+
+    3. Click on the 'insertSighting' ZSQL Method to view its contents.
+
+  The query template contains the following SQL code::
+
+    insert into elvis_sightings
+      values(
+    <dtml-sqlvar location type="string">,
+    <dtml-sqlvar date type="string">,
+    <dtml-sqlvar name type="string">,
+    <dtml-sqlvar description type="string"> 
+    )
+  
+  This code inserts a row into the 'elvis_sightings' table. Notice how
+  the arguments of this ZSQL Method correspond to the form elements in
+  the 'reportSighting' document.
+
+  You can test this SQL code to make sure it
+  works correctly.
+
+    1. Click on the 'Test' tab.
+
+    2. Enter some sample data into the automatically generated form.
+
+    3. Click the 'Submit Query' button.
+
+  Zope will send the SQL code to the database and will tell you the
+  SQL code that was sent, and the results that the database
+  returned. In this case the database will not return anything, since
+  the SQL 'INSERT' command produces no results.
+
+  Now return to the 'sightings' document to see if the sample data was
+  added to the list of sightings. Play with the system a little bit
+  and see how the links between the 'sightings', 'reportForm', and
+  'reportAction' documents allow a visitor to navigate the site.
+
+  Summary
+
+    You can easily change data in a relational database with Zope. The
+    process for inserting data is very similar to the process for
+    querying a database; you use a ZSQL Method in both cases.
+
+    * [ZSQL Method]s can change information in a relational
+    database.
+
+    * You can pass arguments to ZSQL Methods from DTML. 
+
+    * Many ZSQL Methods can use the same [Database Connection].
+
 Congratulations
 
   Well done! You've finished the Zope Tutorial.
@@ -812,14 +889,19 @@ Congratulations
   changing them.
   
   To find out more about Zope visit
-  <a href="http://www.zope.org">Zope.org</a>.
+  <a href="http://www.zope.org" target="_blank">Zope.org</a>.
   
-  You may be especially interested in the Zope
-  <a href="http://www.zope.org/Documentation/How-To">How-Tos</a>, 
-  <a href="http://www.zope.org/Resources/MailingLists">mailing lists</a>,
-  Guides and the <a href="http://zdp.zope.org">Zope Documentation Project</a>.
+  You may be especially interested in the Zope <a
+  href="http://www.zope.org/Members/michel/ZB"
+  target="_blank">Book</a>, <a
+  href="http://www.zope.org/Documentation/How-To"
+  target="_blank">How-Tos</a>, <a
+  href="http://www.zope.org/Resources/MailingLists"
+  target="_blank">mailing lists</a>, Guides and the <a
+  href="http://zdp.zope.org" target="_blank">Zope Documentation
+  Project</a>.
   
-  Please <a href="mailto:docs@digicool.com">let us know</a> what you liked and disliked
-  about the Zope Tutorial. Telling us what you think helps us
-  improve it.
+  Please <a href="mailto:docs@digicool.com">let us know</a> what you
+  liked and disliked about the Zope Tutorial. Telling us what you
+  think helps us improve it.
   
