@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.17 1997/02/10 22:15:50 jim Exp $
+     $Id: cPickle.c,v 1.18 1997/02/10 23:48:43 jim Exp $
 
      Copyright 
 
@@ -2181,12 +2181,15 @@ static PyObject *
 Instance_New(PyObject *cls, PyObject *args)
 {
   int has_key;
-  PyObject *safe=0;
+  PyObject *safe=0, *r=0;
 
-  if (PyClass_Check(cls)) return PyInstance_New(cls, args, NULL);
+  if (PyClass_Check(cls))
+    if(r=PyInstance_New(cls, args, NULL)) return r;
+    else goto err;
+       
   
   if ((has_key = PyMapping_HasKey(safe_constructors, cls)) < 0)
-    return NULL;
+    goto err;
     
   if (!has_key)
     if(!(safe = PyObject_GetAttr(cls, __safe_for_unpickling___str)) ||
@@ -2196,7 +2199,20 @@ Instance_New(PyObject *cls, PyObject *args)
       return NULL;
   }
 
-  return PyObject_CallObject(cls, args);
+  if(r=PyObject_CallObject(cls, args)) return r;
+err:
+  {
+    PyObject *tp, *v, *tb;
+
+    PyErr_Fetch(&tp, &v, &tb);
+    if(r=Py_BuildValue("OOO",v,cls,args))
+      {
+	Py_XDECREF(v);
+	v=r;
+      }
+    PyErr_Restore(tp,v,tb);
+  }
+  return NULL;
 }
   
 
@@ -2219,10 +2235,10 @@ load_obj(Unpicklerobject *self, PyObject *args) {
     UNLESS(tup = PySequence_Tuple(slice))
         goto finally;
 
-    if (DEL_LIST_SLICE(self->stack, i, len) < 0)
+    UNLESS(obj = Instance_New(class, tup))
         goto finally;
 
-    UNLESS(obj = Instance_New(class, tup))
+    if (DEL_LIST_SLICE(self->stack, i, len) < 0)
         goto finally;
 
     if (PyList_Append(self->stack, obj) < 0)
@@ -2231,6 +2247,7 @@ load_obj(Unpicklerobject *self, PyObject *args) {
     res = 0;
 
 finally:
+    
     Py_XDECREF(class);
     Py_XDECREF(slice);
     Py_XDECREF(tup);
