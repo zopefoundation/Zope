@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -204,8 +204,8 @@ class Function:
             not headers.has_key('Authorization')):
             headers['Authorization']=(
                 "Basic %s" %
-                replace(encodestring('%s:%s' % (self.username,self.password),
-				     '\012','')))
+                replace(encodestring('%s:%s' % (self.username,self.password)),
+				     '\012',''))
 	    
         try:
             h=HTTP()
@@ -636,6 +636,4 @@ def main():
 
 
 if __name__ == "__main__":
-    #import pdb
-    #pdb.run('main()')
     main()
