@@ -93,8 +93,8 @@ import OFS.SimpleItem, re, quopri, rfc822
 import Globals
 from cStringIO import StringIO
 
-#$Id: MailHost.py,v 1.43 1999/07/15 16:28:50 jim Exp $ 
-__version__ = "$Revision: 1.43 $"[11:-2]
+#$Id: MailHost.py,v 1.44 1999/07/21 14:26:00 jeffrey Exp $ 
+__version__ = "$Revision: 1.44 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -337,7 +337,8 @@ def decapitate(message):
     hd={}
     hd['to']=[]
     for header in (mo.getaddrlist('to'),
-                   mo.getaddrlist('cc')):
+                   mo.getaddrlist('cc'),
+		   mo.getaddrlist('bcc')):
         if not header: continue
         for name, addr in header:
             hd['to'].append(addr)
