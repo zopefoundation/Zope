@@ -10,8 +10,8 @@
 __doc__='''Simple column indexes
 
 
-$Id: Index.py,v 1.6 1997/09/12 14:46:51 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Index.py,v 1.7 1997/09/17 18:58:08 brian Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
 from BTree import BTree
 from intSet import intSet
@@ -103,7 +103,7 @@ class Index:
 	k=f(row,id)
 	try:
 	    set=index[k]
-	    set.remove(k)
+	    set.remove(i)
 	except KeyError: pass
 
     def _apply_index(self, request):
@@ -146,6 +146,9 @@ class Index:
 ############################################################################## 
 #
 # $Log: Index.py,v $
+# Revision 1.7  1997/09/17 18:58:08  brian
+# Fixed a booboo in unindex_item
+#
 # Revision 1.6  1997/09/12 14:46:51  jim
 # *** empty log message ***
 #
