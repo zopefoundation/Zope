@@ -3,10 +3,13 @@
     For background information, see the
     <a href="../../OFSP/Help/Caching.stx">description of cache management</a>.
 
-    The RAM cache manager allows you to cache the result of calling DTML
-    methods, Python scripts, and SQL methods in memory.  It allows you
-    to cache entire pages as well as parts of pages.  It provides
-    access statistics and simple configuration options.
+    The RAM cache manager allows you to cache the result of calling 
+    expensive objects, such as Python Scripts and External Methods,
+    in memory.  It provides access statistics and simple configuration 
+    options.
+
+    Not all objects are appropriate for use with a RAM Cache Manager.
+    See the **caveats** section below.
 
     Storing the result in memory results in the fastest possible cache
     retrieval, but carries some risks.  Unconstrained, it can consume too
@@ -39,9 +42,30 @@
     of misses, you probably need to re-evaluate how that object is
     cached.
 
-    Although Zope does not prevent you from doing so, it generally does
-    not make sense to associate an image or a file object with a RAM
-    cache manager.  It will not cache the image or file data, since the
-    data is already available in RAM.  However, another kind of cache
-    manager, an *accelerated HTTP cache manager*, is available and is
-    suitable for images and file objects.
+   Caveats
+
+    You should generally not cache the following with RAM Cache Manager:
+
+    * Images 
+  
+    * Files
+
+    * Complete web pages
+
+    Although Zope does not prevent you from doing so, 
+    it generally does not make sense to associate any of these objects
+    with a RAM cache manager.  The cache will simply not cache image or 
+    file data, since the data is already available in RAM.  
+ 
+    In addition, be careful with complete web pages.
+    The problem is that most cacheable objects will cache only their
+    return value; important out-of-band information such as the HTTP
+    response code is typically not cached. For example, if you cache 
+    a page which calls RESPONSE.redirect(), a client that gets
+    a cache hit will see an HTTP 200 response code instead
+    of the redirect.  
+  
+    For all of the above objects, another kind of cache manager, an 
+    *accelerated HTTP cache manager*, is available and more suitable. 
+
+

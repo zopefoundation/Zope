@@ -323,7 +323,22 @@ caches = {}
 PRODUCT_DIR = __name__.split('.')[-2]
 
 class RAMCacheManager (CacheManager, SimpleItem):
-    ' '
+    """Manage a RAMCache, which stores rendered data in RAM. 
+
+    This is intended to be used as a low-level cache for
+    expensive Python code, not for objects published
+    under their own URLs such as web pages.
+
+    RAMCacheManager *can* be used to cache complete publishable
+    pages, such as DTMLMethods/Documents and Page Templates, 
+    but this is not advised: such objects typically do not attempt
+    to cache important out-of-band data such as 3xx HTTP responses,
+    and the client would get an erroneous 200 response.
+
+    Such objects should instead be cached with an                             
+    AcceleratedHTTPCacheManager and/or downstream                               
+    caching.
+    """
 
     __ac_permissions__ = (
         ('View management screens', ('getSettings',
