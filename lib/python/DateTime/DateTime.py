@@ -497,6 +497,15 @@ class DateTime:
     SyntaxError = SyntaxError
 
     def __init__(self,*args, **kw):
+        """Return a new date-time object"""
+
+        try:
+            return self._parse_args(*args, **kw)
+        except:
+            raise SyntaxError('Unable to parse %s, %s' % (args, kw))
+
+
+    def _parse_args(self, *args, **kw):
         """Return a new date-time object
 
         A DateTime object always maintains its value as an absolute
