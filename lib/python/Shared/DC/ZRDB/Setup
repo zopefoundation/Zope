@@ -1,5 +1,8 @@
 # install Connection.py
 # install DA.py
+# install sqlgroup.py
+# install sqltest.py
+# install sqlvar.py
 # install advanced.dtml
 # install connectionAdd.dtml
 # install connectionEdit.dtml
