@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -39,7 +39,7 @@ _marker = []
 
 constructBrowserIdManagerForm = Globals.DTMLFile('dtml/addIdManager',globals())
 
-ADD_BROWSER_ID_MANAGER_PERM="Add Browser ID Manager"
+ADD_BROWSER_ID_MANAGER_PERM="Add Browser Id Manager"
 
 def constructBrowserIdManager(
     self, id, title='', idname='_ZopeId', location='cookiethenform',
