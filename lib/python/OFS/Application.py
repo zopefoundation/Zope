@@ -1,4 +1,4 @@
-##############################################################################
+############################################################################
 #
 # Copyright (c) 2001 Zope Corporation and Contributors. All Rights Reserved.
 #
@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.199 2003/12/20 18:56:05 chrism Exp $'''
-__version__='$Revision: 1.199 $'[11:-2]
+$Id: Application.py,v 1.200 2004/01/11 15:32:44 chrism Exp $'''
+__version__='$Revision: 1.200 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -585,7 +585,6 @@ def install_products(app):
     Products.meta_types=Products.meta_types+tuple(meta_types)
     Globals.default__class_init__(Folder.Folder)
 
-
 def get_products():
     """ Return a list of tuples in the form:
     [(priority, dir_name, index, base_dir), ...] for each Product directory
@@ -595,11 +594,19 @@ def get_products():
     for product_dir in Products.__path__:
         product_names=os.listdir(product_dir)
         for name in product_names:
-            priority = (name != 'PluginIndexes') # import PluginIndexes 1st
-            # i is used as sort ordering in case a conflict exists
-            # between Product names.  Products will be found as
-            # per the ordering of Products.__path__
-            products.append((priority, name, i, product_dir))
+            fullpath = os.path.join(product_dir, name)
+            # Products must be directories
+            if os.path.isdir(fullpath):
+                # Products must be directories with an __init__.py[co]
+                if ( os.path.exists(os.path.join(fullpath, '__init__.py')) or
+                     os.path.exists(os.path.join(fullpath, '__init__.pyo')) or
+                     os.path.exists(os.path.join(fullpath, '__init__.pyc')) ):
+                    # import PluginIndexes 1st (why?)
+                    priority = (name != 'PluginIndexes') 
+                    # i is used as sort ordering in case a conflict exists
+                    # between Product names.  Products will be found as
+                    # per the ordering of Products.__path__
+                    products.append((priority, name, i, product_dir))
         i = i + 1
     products.sort()
     return products
@@ -620,6 +627,7 @@ def import_products():
             continue
         done[product_name]=product_dir
         import_product(product_dir, product_name, raise_exc=debug_mode)
+    return done.keys()
 
 def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     path_join=os.path.join
