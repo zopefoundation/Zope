@@ -10,9 +10,10 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 from urllib import quote
+import xmlrpc
 
 UNSPECIFIED_ROLES=''
 
@@ -196,7 +197,8 @@ class BaseRequest:
         # How did this request come in? (HTTP GET, PUT, POST, etc.)
         method=req_method=request_get('REQUEST_METHOD', 'GET').upper()
 
-        if method=='GET' or method=='POST':
+        if method=='GET' or method=='POST' and not isinstance(response,
+                                                              xmlrpc.Response):
             # Probably a browser
             no_acquire_flag=0
             # index_html is still the default method, only any object can

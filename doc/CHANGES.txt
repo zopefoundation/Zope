@@ -129,6 +129,10 @@ Zope Changes
 
       - Collector #465: Allow XML-RPC requests with no <params /> tag.
 
+      - Collector #528: Don't clear REQUEST_METHOD for XML-RPC requests;
+        instead check for an XML-RPC Response objetc in
+        BaseRequest.traverse.
+
     Features Added
     
       - Browser ids can now be encoded in the URL and Zope can be

@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.80 $'[11:-2]
+__version__='$Revision: 1.81 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -373,7 +373,6 @@ class HTTPRequest(BaseRequest):
                 meth, self.args = xmlrpc.parse_input(fs.value)
                 response=xmlrpc.response(response)
                 other['RESPONSE']=self.response=response
-                other['REQUEST_METHOD']='' # We don't want index_html!
                 self.maybe_webdav_client = 0
             else:
                 self._file=fs.file
