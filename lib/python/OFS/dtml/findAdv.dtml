@@ -13,7 +13,7 @@
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="form-element">
-  <SELECT NAME="obj_metatypes:list" SIZE="4" MULTIPLE>
+  <SELECT NAME="obj_metatypes:list" SIZE="8" MULTIPLE>
   <OPTION VALUE="all" SELECTED> All types
 <dtml-in all_meta_types mapping>
   <OPTION VALUE="&dtml-name;"> &dtml-name;
