@@ -1,6 +1,6 @@
 /*
 
-  $Id: cStringIO.c,v 1.23 1997/12/04 00:12:05 jim Exp $
+  $Id: cStringIO.c,v 1.24 1998/05/05 14:53:45 jim Exp $
 
   A simple fast partial StringIO replacement.
 
@@ -79,13 +79,13 @@ static char cStringIO_module_documentation[] =
 "  an_input_stream=StringIO(a_string)\n"
 "  spam=an_input_stream.readline()\n"
 "  spam=an_input_stream.read(5)\n"
-"  an_input_stream.reset()           # OK, start over, note no seek yet\n"
+"  an_input_stream.seek(0)           # OK, start over\n"
 "  spam=an_input_stream.read()       # and read it all\n"
 "  \n"
 "If someone else wants to provide a more complete implementation,\n"
 "go for it. :-)  \n"
 "\n"
-"$Id: cStringIO.c,v 1.23 1997/12/04 00:12:05 jim Exp $\n"
+"$Id: cStringIO.c,v 1.24 1998/05/05 14:53:45 jim Exp $\n"
 ;
 
 #include "Python.h"
