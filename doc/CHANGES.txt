@@ -70,6 +70,9 @@ Zope Changes
         instead of returning X, contradicting the docs and common
         sense.  difference(None, X) continues to return None.
 
+      - Fix bug in ISO_8859_1 splitter which corruped storage on
+        initialization.
+
     Features Added
     
       - ZCatalog index management ui is now integrated into ZCatalog rather
