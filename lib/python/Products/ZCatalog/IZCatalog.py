@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id: IZCatalog.py,v 1.3 2002/08/14 22:25:15 mj Exp $
+$Id: IZCatalog.py,v 1.4 2002/09/05 21:22:39 shane Exp $
 """
 
 from Interface import Interface
@@ -66,16 +66,20 @@ class IZCatalog(Interface):
 
     """
 
-    def catalog_object(obj, uid):
+    def catalog_object(obj, uid, idxs=[]):
         """Catalogs the object 'obj' with the unique identifier 'uid'.
 
-        The uid must be a physical path!
+        The uid must be a physical path, either absolute or relative to
+        the catalog.
+
+        If provided, idxs specifies the names of indexes to update.
         """
 
     def uncatalog_object(uid):
         """Uncatalogs the object with the unique identifier 'uid'.
 
-        The uid must be a physical path!
+        The uid must be a physical path, either absolute or relative to
+        the catalog.
         """
 
     def uniqueValuesFor(name):
