@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -22,6 +22,7 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_base, aq_inner, aq_parent
 from zExceptions import Unauthorized
 from AccessControl import getSecurityManager
+from webdav.Lockable import ResourceLockedError
 
 CopyError='Copy Error'
 
@@ -65,6 +66,10 @@ class CopyContainer(ExtensionClass.Base):
         oblist=[]
         for id in ids:
             ob=self._getOb(id)
+
+            if ob.wl_isLocked():
+                raise ResourceLockedError, 'Object "%s" is locked via WebDAV' % ob.getId()
+
             if not ob.cb_isMoveable():
                 raise CopyError, eNotSupported % id
             m=Moniker.Moniker(ob)
@@ -164,6 +169,7 @@ class CopyContainer(ExtensionClass.Base):
                 self._setObject(id, ob)
                 ob = self._getOb(id)
                 ob.manage_afterClone(ob)
+                ob.wl_clearLocks()
 
             if REQUEST is not None:
                 return self.manage_main(self, REQUEST, update_menu=1,
