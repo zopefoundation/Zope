@@ -14,7 +14,7 @@ import string
 # Regular expressions used for parsing
 
 interesting_normal = re.compile('[&<]')
-interesting_cdata = re.compile('</')
+interesting_cdata = re.compile(r'<(/|\Z)')
 incomplete = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*|#[0-9]*)?')
 
 entityref = re.compile('&([a-zA-Z][-.a-zA-Z0-9]*)[^a-zA-Z0-9]')
@@ -144,6 +144,9 @@ class HTMLParser:
     def set_cdata_mode(self):
         self.interesting = interesting_cdata
 
+    def clear_cdata_mode(self):
+        self.interesting = interesting_normal
+
     # Internal -- handle data as far as reasonable.  May leave state
     # and data to be processed by a subsequent call.  If 'end' is
     # true, force handling all data as if followed by EOF marker.
@@ -155,7 +158,6 @@ class HTMLParser:
             match = self.interesting.search(rawdata, i) # < or &
             if match:
                 j = match.start()
-                self.interesting = interesting_normal
             else:
                 j = n
             if i < j: self.handle_data(rawdata[i:j])
@@ -166,6 +168,8 @@ class HTMLParser:
                     k = self.parse_starttag(i)
                 elif endtagopen.match(rawdata, i): # </
                     k = self.parse_endtag(i)
+                    if k >= 0:
+                        self.clear_cdata_mode()
                 elif commentopen.match(rawdata, i): # <!--
                     k = self.parse_comment(i)
                 elif piopen.match(rawdata, i): # <?
