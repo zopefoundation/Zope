@@ -10,11 +10,11 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.24 1998/04/20 14:42:34 jim Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: Aqueduct.py,v 1.25 1998/05/12 20:14:54 jim Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 from Globals import HTMLFile, Persistent
-import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
+import DocumentTemplate, DateTime, regex, regsub, string, rotor
 import binascii, Acquisition
 DateTime.now=DateTime.DateTime
 from cStringIO import StringIO
@@ -193,7 +193,9 @@ def default_input_form(id,arguments,action='query',
 custom_default_report_src=DocumentTemplate.File(
     dtml_dir+'customDefaultReport.dtml')
 
-def custom_default_report(id, result, action='', no_table=0):
+def custom_default_report(id, result, action='', no_table=0,
+			  goofy=regex.compile('[^a-zA-Z0-9_]').search
+			  ):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
     heading=('<tr>\n%s\t</tr>' %
@@ -211,14 +213,14 @@ def custom_default_report(id, result, action='', no_table=0):
     if no_table: tr='<p>', '</p>'
     else: tr, _tr = '<tr>', '</tr>'
 
-    row=('%s\n%s\t%s' %
-	 (tr,string.joinfields(
-	     map(lambda c, td=td, _td=_td:
-		 '\t%s<!--#var %s%s-->%s\n'
-		 % (td,urllib.quote(c['name']),
-		    c['type']!='s' and ' null=""' or '',_td),
-		 columns),
-	     delim), _tr))
+    row=[]
+    for c in columns:
+	n=c['name']
+	if goofy(n) >= 0: n='expr="_vars[\'%s]"' % (`'"'+n`[2:])
+	row.append('\t%s<!--#var %s%s-->%s\n'
+		   % (td,n,c['type']!='s' and ' null=""' or '',_td))
+
+    row=('%s\n%s\t%s' % (tr,string.joinfields(row,delim), _tr))
 
     return custom_default_report_src(
 	id=id,heading=heading,row=row,action=action,no_table=no_table)
@@ -389,6 +391,9 @@ def delimited_output(results,REQUEST,RESPONSE):
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.25  1998/05/12 20:14:54  jim
+# Fixed report wizard to generate exprs when column names are goofy.
+#
 # Revision 1.24  1998/04/20 14:42:34  jim
 # Forgot __len__ in Args.
 #
