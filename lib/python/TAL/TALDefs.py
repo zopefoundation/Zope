@@ -156,54 +156,11 @@ def splitParts(arg):
         del parts[-1] # It ended in a semicolon
     return parts
 
-
-def macroIndexer(document):
-    """
-    Return a dictionary containing all define-macro nodes in a document.
-
-    The dictionary will have the form {macroName: node, ...}.
-    """
-    macroIndex = {}
-    _macroVisitor(document.documentElement, macroIndex)
-    return macroIndex
-
-from xml.dom import Node
-
-def _macroVisitor(node, macroIndex, __elementNodeType=Node.ELEMENT_NODE):
-    # Internal routine to efficiently recurse down the tree of elements
-    macroName = node.getAttributeNS(ZOPE_METAL_NS, "define-macro")
-    if macroName:
-        if macroIndex.has_key(macroName):
-            print ("Duplicate macro definition: %s in <%s>" %
-                   (macroName, node.nodeName))
-        else:
-            macroIndex[macroName] = node
-    for child in node.childNodes:
-        if child.nodeType == __elementNodeType:
-            _macroVisitor(child, macroIndex)
-
-
-def slotIndexer(rootNode):
-    """
-    Return a dictionary containing all fill-slot nodes in a subtree.
-
-    The dictionary will have the form {slotName: node, ...}.
-    """
-    slotIndex = {}
-    _slotVisitor(rootNode, slotIndex)
-    return slotIndex
-
-def _slotVisitor(node, slotIndex, __elementNodeType=Node.ELEMENT_NODE):
-    # Internal routine to efficiently recurse down the tree of elements
-    slotName = node.getAttributeNS(ZOPE_METAL_NS, "fill-slot")
-    if slotName:
-        if slotIndex.has_key(slotName):
-            print ("Duplicate slot definition: %s in <%s>" %
-                   (slotName, node.nodeName))
-        else:
-            slotIndex[slotName] = node
-    for child in node.childNodes:
-        if child.nodeType == __elementNodeType:
-            _slotVisitor(child, slotIndex)
-
-del Node
+import cgi
+_cgi = cgi
+del cgi
+def quote(s):
+    if '"' in s and "'" not in s:
+        return "'%s'" % _cgi.escape(s)
+    else:
+        return '"%s"' % _cgi.escape(s, 1)
