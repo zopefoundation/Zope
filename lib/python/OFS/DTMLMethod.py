@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import History
 from Globals import HTML, HTMLFile, MessageDialog
@@ -144,6 +144,10 @@ class DTMLMethod(cDocument, HTML, Acquisition.Implicit, RoleManager,
     ('View', ('__call__', '')),
     ('FTP access', ('manage_FTPstat','manage_FTPget','manage_FTPlist')),
     )
+
+    # support a more reasonable default for content-type
+    # for http HEAD requests.
+    default_content_type='text/html'
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
         """Render the document given a client object, REQUEST mapping,

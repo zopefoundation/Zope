@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -142,16 +142,21 @@ class Resource(ExtensionClass.Base):
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
         self.dav__init(REQUEST, RESPONSE)
+        
+        content_type=None
         if hasattr(self, 'content_type'):
-            RESPONSE.setHeader('Content-Type', absattr(self.content_type))
-        else:
+            content_type=absattr(self.content_type)
+        if content_type is None:
             url=urlfix(REQUEST['URL'], 'HEAD')
             name=unquote(filter(None, string.split(url, '/'))[-1])
-            ct, ce=mimetypes.guess_type(name)
-            # Could try harder here...
-            ct=ct or 'application/octet-stream'
-            ct=string.lower(ct)
-            RESPONSE.setHeader('Content-Type', ct)
+            content_type, encoding=mimetypes.guess_type(name)
+        if content_type is None:
+            if hasattr(self, 'default_content_type'):
+                content_type=absattr(self.default_content_type)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        RESPONSE.setHeader('Content-Type', string.lower(content_type))
+
         if hasattr(aq_base(self), 'get_size'):
             RESPONSE.setHeader('Content-Length', absattr(self.get_size))
         if hasattr(self, '_p_mtime'):
