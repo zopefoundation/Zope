@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import sys, os, string, mimetypes, xmlcmds
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -104,7 +104,7 @@ class Resource:
                       'MOVE',
                       )
 
-    def init_headers(self, r):
+    def dav__init(self, r):
         # Init expected HTTP 1.1 / WebDAV headers which are not
         # currently set by the response object automagically.
         r.setHeader('Connection', 'close')
@@ -158,8 +158,12 @@ class Resource:
 
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
-        self.init_headers(RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
+        self.dav__init(REQUEST, RESPONSE)
+        if hasattr(self, 'content_type'):
+            RESPONSE.setHeader('Content-Type', absattr(self.content_type))
+        if hasattr(self, 'getSize'):
+            RESPONSE.setHeader('Content-Length', absattr(self.getSize))
+        return RESPONSE
 
     def PUT(self, REQUEST, RESPONSE):
         """Replace the GET response entity of an existing resource.        
@@ -167,17 +171,19 @@ class Resource:
         PUT should override the default PUT implementation with an
         object-specific implementation. By default, PUT requests
         fail with a 405 (Method Not Allowed)."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
-    
+
+    OPTIONS__roles__=None
     def OPTIONS(self, REQUEST, RESPONSE):
         """Retrieve communication options."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setHeader('Allow', string.join(self.__http_methods__, ', '))
         RESPONSE.setHeader('Content-Length', 0)
         RESPONSE.setStatus(200)
         return RESPONSE
 
+    TRACE__roles__=None
     def TRACE(self, REQUEST, RESPONSE):
         """Return the HTTP message received back to the client as the
         entity-body of a 200 (OK) response. This will often usually
@@ -185,14 +191,13 @@ class Resource:
         request will fail with a 405 (Method Not Allowed), since it
         is not often possible to reproduce the HTTP request verbatim
         from within the Zope environment."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a resource. For non-collection resources, DELETE may
         return either 200 or 204 (No Content) to indicate success."""
-        self.init_headers(RESPONSE)
-#        self.dav__validate('manage_delObjects', REQUEST)
+        self.dav__init(REQUEST, RESPONSE)
         url=urlfix(REQUEST['URL'], 'DELETE')
         name=filter(None, string.split(url, '/'))[-1]
         # TODO: add lock checking here
@@ -202,7 +207,7 @@ class Resource:
 
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         try: cmd=xmlcmds.PropFind(REQUEST)
         except: raise 'Bad Request', 'Invalid xml request.'
         result=cmd.apply(self)
@@ -213,7 +218,7 @@ class Resource:
 
     def PROPPATCH(self, REQUEST, RESPONSE):
         """Set and/or remove properties defined on the resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         if not hasattr(self, '__propsets__'):
             raise 'Method Not Allowed', (
                   'Method not supported for this resource.')
@@ -229,7 +234,7 @@ class Resource:
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource. If called on an existing 
         resource, MKCOL must fail with 405 (Method Not Allowed)."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'The resource already exists.'
 
     def COPY(self, REQUEST, RESPONSE):
@@ -238,7 +243,7 @@ class Resource:
         as possible. Though we may later try to make a copy appear
         seamless across namespaces (e.g. from Zope to Apache), COPY 
         is currently only supported within the Zope namespace."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'cb_isCopyable') or \
            not self.cb_isCopyable():
             raise 'Method Not Allowed', 'This object may not be copied.'
@@ -285,7 +290,7 @@ class Resource:
         make a move appear seamless across namespaces (e.g. from Zope
         to Apache), MOVE is currently only supported within the Zope
         namespace."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         if not hasattr(aq_base(self), 'cb_isMoveable') or \
            not self.cb_isMoveable():
             raise 'Method Not Allowed', 'This object may not be moved.'
@@ -334,12 +339,12 @@ class Resource:
         DELETE, or MKCOL on the locked resource.  All other current methods,
         GET in particular, function independently of the lock.
         """
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
     
     def UNLOCK(self):
         """Remove an existing lock on a resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
 
 

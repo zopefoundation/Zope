@@ -85,11 +85,11 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string
 from Resource import Resource
-from common import urlfix
+from common import urlfix, rfc1123_date
 
 
 class Collection(Resource):
@@ -101,17 +101,19 @@ class Collection(Resource):
 
     __dav_collection__=1
 
-    def redirect_check(self, req, rsp):
+    def dav__init(self, request, response):
         # By the spec, we are not supposed to accept /foo for a
-        # collection, we have to redirect to /foo/.
-        if req['PATH_INFO'][-1]=='/':
-            return
-        raise 'Moved Permanently', req['URL1']+'/'
+        # collection, we are supposed to redirect to /foo/.
+        if request['PATH_INFO'][-1] != '/':
+            raise 'Moved Permanently', request['URL1']+'/'
+        response.setHeader('Connection', 'close')
+        response.setHeader('Date', rfc1123_date())
+        response.setHeader('DAV', '1')
+
 
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response body."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         RESPONSE.setStatus(200)
         return RESPONSE
 
@@ -120,18 +122,15 @@ class Collection(Resource):
         resources, though collections are not specifically forbidden
         to handle PUT requests. The default response to a PUT request
         for collections is 405 (Method Not Allowed)."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
-        raise 'Method Not Allowed', 'Method not supported for this resource.'
+        self.dav__init(REQUEST, RESPONSE)
+        raise 'Method Not Allowed', 'Method not supported for collections.'
 
     def DELETE(self, REQUEST, RESPONSE):
         """Delete a collection resource. For collection resources, DELETE
         may return either 200 (OK) or 204 (No Content) to indicate total
         success, or may return 207 (Multistatus) to indicate partial
         success. Note that in Zope a DELETE never returns 207."""
-        self.init_headers(RESPONSE)
-        self.redirect_check(REQUEST, RESPONSE)
-#        self.dav__validate('manage_delObjects', REQUEST)
+        self.dav__init(REQUEST, RESPONSE)
         url=urlfix(REQUEST['URL'], 'DELETE')
         name=filter(None, string.split(url, '/'))[-1]
         # TODO: add lock checking here

@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import sys, os, string, mimetypes
 import Acquisition, OFS.content_types
@@ -105,9 +105,18 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         self.__parent__=parent
         self.__roles__=parent.__roles__
 
+    def __bobo_traverse__(self, REQUEST, name=None):
+        # We must handle traversal so that we can recognize situations
+        # where a 409 Conflict must be returned instead of the normal
+        # 404 Not Found, per [WebDAV 8.3.1].
+        method=REQUEST.get('REQUEST_METHOD', 'GET')
+        if method in ('MKCOL',):
+            raise 'Conflict', 'Collection ancestors must already exist.'
+        raise 'Not Found', 'The requested resource was not found.'
+
     def HEAD(self, REQUEST, RESPONSE):
         """Retrieve resource information without a response message body."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Not Found', 'The requested resource does not exist.'
 
     # Most methods return 404 (Not Found) for null resources.
@@ -115,7 +124,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     def PUT(self, REQUEST, RESPONSE):
         """Create a new non-collection resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         type=REQUEST.get_header('content-type', None)
         body=REQUEST.get('BODY', '')
         if type is None:
@@ -140,8 +149,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     def MKCOL(self, REQUEST, RESPONSE):
         """Create a new collection resource."""
-        self.init_headers(RESPONSE)
-#        self.dav__validate('manage_addFolder', REQUEST)
+        self.dav__init(REQUEST, RESPONSE)
         if REQUEST.get('BODY', ''):
             raise 'Unsupported Media Type', 'Unknown request body.'
         parent=self.__parent__
@@ -158,10 +166,10 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
 
     def LOCK(self, REQUEST, RESPONSE):
         """Create a lock-null resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
     
     def UNLOCK(self):
         """Remove a lock-null resource."""
-        self.init_headers(RESPONSE)
+        self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'Method not supported for this resource.'
