@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.28 $'[11:-2]
+__version__='$Revision: 1.29 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -315,13 +315,17 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             return self.manage_propertiesForm(self, REQUEST)
 
     def manage_editProperties(self, REQUEST):
-        """Edit object properties via the web."""
+        """Edit object properties via the web.
+        The purpose of this method is to change all property values,
+        even those not listed in REQUEST; otherwise checkboxes that
+        get turned off will be ignored.  Use manage_changeProperties()
+        instead for most situations.
+        """
         for prop in self._properties:
             name=prop['id']
-            if REQUEST.has_key(name):
-                if 'w' in prop.get('mode', 'wd'):
-                    value=REQUEST.get(name)
-                    self._setPropValue(name, value)
+            if 'w' in prop.get('mode', 'wd'):
+                value=REQUEST.get(name, '')
+                self._setPropValue(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
