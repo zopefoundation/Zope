@@ -8,12 +8,12 @@
 <FORM ACTION="manage_changeBrowserIdManager" METHOD="POST">
 <TABLE CELLSPACING="2">
 <TR>
+  <dtml-comment> 
   <TD ALIGN="LEFT" VALIGN="TOP">
     <div class="form-label">
       Browser Id Mgr On
     </div>
   </TD>
-  <dtml-comment> 
   <TD ALIGN="LEFT" VALIGN="TOP">
     <INPUT TYPE="checkbox" NAME="on"
      <dtml-if isOn>CHECKED</dtml-if>>
