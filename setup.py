@@ -403,18 +403,6 @@ setup(
     packages=['RestrictedPython', 'RestrictedPython.tests'],
     )
 
-# SearchIndex
-setup(
-    name='SearchIndex',
-    author=AUTHOR,
-
-    packages=['SearchIndex', 'SearchIndex.tests'],
-    data_files=[['SearchIndex', ['SearchIndex/*.txt']]],
-    ext_modules=[
-        Extension(name='SearchIndex.Splitter',
-                  sources=['SearchIndex/Splitter.c'])]
-    )
-
 # Shared.DC bases
 setup(
     name='Shared.DC',
