@@ -818,37 +818,33 @@ instancehome $INSTANCE
 #
 # Description:
 #     A database section allows the definition of custom database and
-#     storage types.
+#     storage types.  More than one zodb_db section can be defined.
 #
-# Default:
-#   If a database is not specified, a FileStorage in client-home is
-#   used for the main storage, and a TemporaryStorage is used for
-#   the mounted storage which backs the '/temp_folder'.
+# Default: unset.
+#          IMPORTANT: At least one database with a mount-point of "/"
+#          must be specified for Zope to start properly.
+
+<zodb_db main>
+    # Main FileStorage database
+    <filestorage>
+      path $INSTANCE/var/Data.fs
+    </filestorage>
+    mount-point /
+</zodb_db>
+
+<zodb_db temporary>
+    # Temporary storage database (for sessions)
+    <temporarystorage>
+      name temporary storage for sessioning
+    </temporarystorage>
+    mount-point /temp_folder
+    container-class Products.TemporaryFolder.TemporaryContainer
+</zodb_db>
+
+# Other storage examples
 #
-# Examples:
-#
-# Filestorage:
-# <zodb_db main>
-#    <filestorage>
-#      path $INSTANCE/var/Data.fs
-#    </filestorage>
-#    mount-point /
-#    cache-size                     5000
-#    pool-size                      7
-#    version-pool-size              3
-#    version-cache-size             100
-# </zodb_db>
-#
-# Temporary storage:
-# <zodb_db temporary>
-#    <temporarystorage>
-#      name sessions
-#    </temporarystorage>
-#    mount-point /temp_folder
-#    container-class Products.TemporaryFolder.TemporaryContainer
-# </zodb_db>
-# 
 # ZEO client storage:
+#
 # <zodb_db main>
 #   mount-point /
 #   <zeoclient>
@@ -858,4 +854,3 @@ instancehome $INSTANCE
 #     var $INSTANCE/var
 #   </zeoclient>
 # </zodb_db>
-
