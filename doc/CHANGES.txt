@@ -71,6 +71,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #954: clear() method of TopicIndex removed all filter sets
+       instead of clearing them.
+
      - Collector #939: Fixed typo in TopicIndexes
 
      - Collector #937: UnicodeError exception available within PythonScripts
