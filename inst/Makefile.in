@@ -49,8 +49,10 @@ install: build
 	@echo Zope binaries installed successfully.
 	@echo Now run \'${PREFIX}/bin/mkzopeinstance\'
 
-instance:
+inplace:
 	${PYTHON} "${BASE_DIR}/setup.py" ${DISTUTILS_OPTS} build_ext -i
+
+instance:  inplace
 	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" .
 
 # testinst makes an instance home in the build directory without asking
