@@ -522,7 +522,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 and
                 (not obj_searchterm or
                  (hasattr(ob, 'PrincipiaSearchSource') and
-                  find(ob.PrincipiaSearchSource(), obj_searchterm) >= 0
+                  string.find(ob.PrincipiaSearchSource(), obj_searchterm) >= 0
                   ))
                 and
                 (not obj_expr or expr_match(ob, obj_expr))
