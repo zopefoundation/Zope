@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Search Interface Wizard
 
-$Id: Search.py,v 1.15 2001/01/12 17:12:43 chrism Exp $'''
-__version__='$Revision: 1.15 $'[11:-2]
+$Id: Search.py,v 1.16 2001/01/12 17:52:28 chrism Exp $'''
+__version__='$Revision: 1.16 $'[11:-2]
 
 from Globals import DTMLFile
 from Aqueduct import custom_default_report, nicify, Args
@@ -110,7 +110,7 @@ def manage_addZSearch(self, report_id, report_title, report_style,
     arguments={}
     keys=[]
     for q in qs:
-        url=q.absolute_url() + '/manage_main'
+        url=q.absolute_url()
         if input_id:
             for name, arg in q._searchable_arguments().items():
                 if len(qs) > 1: key="%s/%s" % (id,name)
