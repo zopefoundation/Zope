@@ -1,7 +1,8 @@
 # install DraftFolder.py
+# install DraftFolderSupervisor.dtml
 # install Session.py
 # install __init__.py
-# install DraftFolderSupervisor.dtml
+
 # install draftFolderAdd.dtml
 # install session.dtml
 # install sessionAdd.dtml

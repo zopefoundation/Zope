@@ -8,14 +8,14 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.4 1997/12/31 17:21:27 brian Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: __init__.py,v 1.5 1998/01/15 15:05:22 brian Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
 
 meta_types=(
-    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
+#    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
     {'name':'Session', 'action':'manage_addSessionForm'},
     {'name':'File', 'action':'manage_addFileForm'},
     {'name':'Image', 'action':'manage_addImageForm'},
@@ -26,8 +26,8 @@ meta_types=(
 methods={
     'manage_addSessionForm': Session.addForm,
     'manage_addSession': Session.add,
-    'manage_addDraftFolderForm': DraftFolder.addForm,
-    'manage_addDraftFolder': DraftFolder.add,
+#    'manage_addDraftFolderForm': DraftFolder.addForm,
+#    'manage_addDraftFolder': DraftFolder.add,
     }
 
 permissions=(
@@ -55,6 +55,9 @@ misc_={
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.5  1998/01/15 15:05:22  brian
+# Fixed setup and removed DraftFolders from 1.0 release
+#
 # Revision 1.4  1997/12/31 17:21:27  brian
 # *** empty log message ***
 #
