@@ -15,7 +15,7 @@
 Zope object encapsulating a Page Template.
 """
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import os, AccessControl, Acquisition, sys
 from types import StringType
@@ -149,7 +149,7 @@ class ZopePageTemplate(Script, PageTemplate, Historical, Cacheable,
             cols = max(cols, 25) # Min width 25%
             cols = max(cols, 100) # Max width 100%
             cols = "%d%%" % cols # Add percent sign back on
-        elif type(width) is StringType and dtpref_cols[-1:] == "%":
+        elif type(width) is StringType and dtpref_cols.endswith('%'):
             cols = int(dtpref_cols[:-1])
             cols = max(cols + szchw.get(width, 0), 25) # Min width 25%
             cols = min(cols, 100) # Max width 100%
