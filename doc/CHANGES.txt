@@ -13,6 +13,9 @@ Zope Changes
         modified in versions without this fix will have been corrupted in
         the zodb.
 
+      - Collector #256: Added a check in _doChangeUser to make sure 
+        passwords isn't encrypted twice.
+
 
   Zope 2.6.1 beta 1
 

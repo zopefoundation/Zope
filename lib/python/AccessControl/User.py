@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.172 $'[11:-2]
+__version__='$Revision: 1.173 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -1034,7 +1034,7 @@ class UserFolder(BasicUserFolder):
     def _doChangeUser(self, name, password, roles, domains, **kw):
         user=self.data[name]
         if password is not None:
-            if self.encrypt_passwords:
+            if self.encrypt_passwords and not self._isPasswordEncrypted(pw):
                 password = self._encryptPassword(password)
             user.__=password
         user.roles=roles
