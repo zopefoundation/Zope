@@ -103,7 +103,7 @@ class ZopeStarter:
         # if we're not in debug mode).
         import zLOG
 
-        from zLOG.LogHandlers import StartupHandler
+        from ZConfig.components.logger.loghandler import StartupHandler
 
         if self.cfg.eventlog is not None:
             # get the lowest handler level.  This is the effective level

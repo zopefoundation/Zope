@@ -16,8 +16,12 @@
       logging; event logging is handled by the zLOG package, which
       provides the loghandler type used here.
     </description>
-    <key name="level" datatype="zLOG.datatypes.logging_level" default="info"/>
-    <multisection type="zLOG.loghandler" attribute="handlers" name="*"
+    <key name="level"
+         datatype="ZConfig.components.logger.datatypes.logging_level"
+         default="info"/>
+    <multisection name="*"
+                  type="ZConfig.logger.handler"
+                  attribute="handlers"
                   required="yes"/>
   </sectiontype>
 
