@@ -1,7 +1,7 @@
 #!/usr/local/bin/python 
 # $What$
 
-__doc__='''Bobo test script
+__doc__='''Command-line Bobo
 
 Usage:
 
@@ -48,7 +48,7 @@ Options:
             s
 
 
-$Id: Test.py,v 1.3 1996/10/02 16:03:59 jim Exp $
+$Id: Test.py,v 1.4 1996/11/11 22:00:01 jim Exp $
 '''
 #     Copyright 
 #
@@ -101,6 +101,9 @@ $Id: Test.py,v 1.3 1996/10/02 16:03:59 jim Exp $
 #   (540) 371-6909
 #
 # $Log: Test.py,v $
+# Revision 1.4  1996/11/11 22:00:01  jim
+# Minor doc change
+#
 # Revision 1.3  1996/10/02 16:03:59  jim
 # Took out spurious line.
 #
@@ -115,7 +118,7 @@ $Id: Test.py,v 1.3 1996/10/02 16:03:59 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 
 #! /usr/local/bin/python
