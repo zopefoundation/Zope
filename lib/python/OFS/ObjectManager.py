@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.117 2000/12/13 19:57:44 evan Exp $"""
+$Id: ObjectManager.py,v 1.118 2000/12/19 16:01:42 brian Exp $"""
 
-__version__='$Revision: 1.117 $'[11:-2]
+__version__='$Revision: 1.118 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -351,9 +351,9 @@ class ObjectManager(
         except: pass
 
     def objectIds(self, spec=None):
-        """Returns a list of subobject ids of the current object.
-           If 'spec' is specified, returns objects whose meta_type
-           matches 'spec'."""
+        # Returns a list of subobject ids of the current object.
+        # If 'spec' is specified, returns objects whose meta_type
+        # matches 'spec'.
         if spec is not None:
             if type(spec)==type('s'):
                 spec=[spec]
@@ -365,9 +365,9 @@ class ObjectManager(
         return map(lambda i: i['id'], self._objects)
 
     def objectValues(self, spec=None):
-        """Returns a list of actual subobjects of the current object.
-           If 'spec' is specified, returns only objects whose meta_type
-           match 'spec'."""
+        # Returns a list of actual subobjects of the current object.
+        # If 'spec' is specified, returns only objects whose meta_type
+        # match 'spec'.
         return map(self._getOb, self.objectIds(spec))
 
     def objectItems(self, spec=None):
