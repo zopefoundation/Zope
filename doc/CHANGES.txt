@@ -65,6 +65,15 @@ Zope Changes
 
       Features Changed
 
+        - Added a coptimizations module.  The first optimization is
+          to provide an implementation of persistent_id in C.  This
+	  routine, which is called extremely often while pickling was
+	  found to be a significant bottleneck.
+
+        - More flexible cache management methods were added to ZODB
+          Connection objects so that apps that want to move objects
+	  out of memory can force aggressive cache behavior.
+
         - Added the beginnings of internationalization support to Zope.
           The Zope startup script (z2.py) now supports a "-L" option 
           that can be used to pass a locale name (such as "en" or "de")
@@ -79,8 +88,40 @@ Zope Changes
 
       Bugs Fixed
 
-        - A significant security problem: Users with local roles could
-          gain priviledges on acquired objects.
+        - Fixed a bug which allowed unauthorized options to be displayed 
+	  when adding a Folder. Now you only see options to add an 
+	  index_document and/or a user folder if you have adequate 
+	  permissions.
+
+        - Added ALT text fixed nested anchor tags produced by the Tree
+          tag to ensure that valid HTML is produced, and fixed the
+          reverse option to the Tree tag.
+
+        - A bug in FTP cookie authentication was fixed.
+
+        - Fixed a bug that caused External Methods to be reloaded every
+          time they were used in development mode.
+
+        - Fixed a permission typo in ZCatalog and a sort_on bug.
+
+        - Fix for missing REQUEST in a method signature in the 
+          CatalogAwareness module.
+
+        - Changed to propigate errors raised by _begin for thunked
+          database adapters. Also changed completion code to check 
+          registered status and avoid completion logic if not registered, 
+          which would be the case if _begin failed.
+
+        - A memory leak in cPersistence has been fixed, and a bug in
+          object deactivation that prevented deactivation of BTrees
+          was fixed.
+
+        - The permissions for Find support methods were not being properly
+          initialized.
+
+        - Fixed bug that allowed users with local roles gain priviledges on
+	  acquired objects.  getRolesInContext did not used the correct 
+          context, as defined by the inner-most object wrapping.
 
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
