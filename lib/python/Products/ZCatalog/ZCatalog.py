@@ -12,7 +12,7 @@
 ##############################################################################
 """ ZCatalog product
 
-$Id: ZCatalog.py,v 1.129 2003/12/31 21:17:28 poster Exp $
+$Id: ZCatalog.py,v 1.130 2004/03/19 13:25:34 andreasjung Exp $
 """
 
 from Globals import DTMLFile, MessageDialog
@@ -790,11 +790,12 @@ class ZCatalog(Folder, Persistent, Implicit):
         style url. If no object is found, None is returned.
         No exceptions are raised.
         """
-        script=REQUEST.script
-        if path.find(script) != 0:
-            path='%s/%s' % (script, path)
-        try: return REQUEST.resolve_url(path)
-        except: pass
+        if REQUEST:
+            script=REQUEST.script
+            if path.find(script) != 0:
+                path='%s/%s' % (script, path)
+            try: return REQUEST.resolve_url(path)
+            except: pass
 
     def resolve_path(self, path):
         """
