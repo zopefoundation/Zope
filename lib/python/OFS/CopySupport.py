@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -72,8 +72,14 @@ class CopyContainer:
 
 	if moniker.op==1:
 	    # Move operation
-
 	    prev_id=Moniker.absattr(obj.id)
+
+            # Check for special object!
+	    try:    r=obj.aq_parent._reserved_names
+	    except: r=()
+            if prev_id in special:
+                raise 'NotSupported', eNotSupported
+            
 	    obj.aq_parent._delObject(prev_id)
             if hasattr(obj, 'aq_base'):
                 obj=obj.aq_base
