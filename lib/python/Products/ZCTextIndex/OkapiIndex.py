@@ -23,6 +23,7 @@ from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex.BaseIndex import BaseIndex, \
                                            inverse_doc_frequency, \
                                            scaled_int
+from Products.ZCTextIndex.okascore import score
 
 class OkapiIndex(BaseIndex):
 
@@ -117,7 +118,6 @@ class OkapiIndex(BaseIndex):
     # Cautions:  okascore hardcodes the values of K, B1, and the scaled_int
     # function.
     def _search_wids(self, wids):
-        from Products.ZCTextIndex.okascore import score
         if not wids:
             return []
         N = float(len(self._docweight))  # total # of docs
