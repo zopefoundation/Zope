@@ -1,6 +1,9 @@
-<html>
-<head><title>Add Help Topic</title></head>
-<body>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<HTML lang="en">
+<HEAD>
+<TITLE>Add Help Topic</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <h2>Add Help Topic</h2>
 
 <form action="addTopic" method="post">

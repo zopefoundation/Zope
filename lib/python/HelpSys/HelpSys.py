@@ -91,6 +91,7 @@ from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCatalog.Lazy import LazyCat
 import Products
 import HelpTopic
+import Globals
 
 class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
     """
@@ -180,6 +181,8 @@ class HelpSys(Acquisition.Implicit, ObjectManager, Item, Persistent):
             cols.append(TreeCollection(k,v,0))
         return cols
 
+Globals.default__class_init__(HelpSys)
+
 
 class TreeCollection:
     """
@@ -241,9 +244,8 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
                 )
 
     manage_options=(
-        {'label':'Contents', 'action':'manage_main'},
-        {'label':'Import/Export', 'action':'manage_importExportForm'},
-        {'label':'Undo', 'action':'manage_UndoForm'},
+        ObjectManager.manage_options +
+        Item.manage_options
         )
 
     __ac_permissions__=(
@@ -320,3 +322,6 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
 
     standard_html_header=HTMLFile('topic_header', globals())
     standard_html_footer=HTMLFile('topic_footer', globals())
+
+
+Globals.default__class_init__(ProductHelp)
