@@ -12,7 +12,7 @@
 # 
 ##############################################################################
 """
-$Id: IZCatalog.py,v 1.1 2002/07/29 14:10:48 jim Exp $
+$Id: IZCatalog.py,v 1.2 2002/08/14 19:10:14 caseman Exp $
 """
 
 from Interface import Interface
@@ -108,6 +108,13 @@ class IZCatalog(Interface):
 
     def index_objects():
         """Returns a sequence of actual index objects.
+        
+        NOTE: This returns unwrapped indexes! You should probably use
+        getIndexObjects instead. Some indexes expect to be wrapped.
+        """
+        
+    def getIndexObjects():
+        """Returns a list of acquisition wrapped index objects
         """
 
     def searchResults(REQUEST=None, **kw):
@@ -154,8 +161,7 @@ class IZCatalog(Interface):
         There are some rules to consider when querying this method:
 
             - an empty query mapping (or a bogus REQUEST) returns all
-              items in the
-            catalog.
+              items in the catalog.
 
             - results from a query involving only field/keyword
               indexes, e.g.  {'id':'foo'} and no 'sort_on' will be

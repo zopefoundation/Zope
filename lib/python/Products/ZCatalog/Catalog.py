@@ -81,8 +81,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         try: self.__len__.set(0)
         except AttributeError: self.__len__=BTrees.Length.Length()
 
-        for x in self.indexes.values():
-            x.clear()
+        for index in self.indexes.values():
+            if hasattr(index, '__of__'): index=index.__of__(self)
+            index.clear()
 
     def _convertBTrees(self, threshold=200):
 
@@ -252,9 +253,6 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if not name:
             raise 'Invalid Index Name', 'Name of index is empty'
 
-        # this is currently a succesion of hacks.  Indexes should be
-        # pluggable and managable
-
         indexes = self.indexes
 
         if isinstance(index_type, types.StringType):
@@ -274,8 +272,11 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         indexes = self.indexes
         del indexes[name]
         self.indexes = indexes
-
-
+        
+    def getIndex(self, name):
+        """ get an index wrapped in the catalog """
+        return self.indexes[name].__of__(self)
+        
     # the cataloging API
 
     def catalogObject(self, object, uid, threshold=None,idxs=[]):
@@ -341,13 +342,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if idxs==[]: use_indexes = self.indexes.keys()
         else:        use_indexes = idxs
 
-        for item in use_indexes:
-            x = self.indexes[item]
-            
-            ## tricky!  indexes need to acquire now, and because they
-            ## are in a standard dict __getattr__ isn't used, so
-            ## acquisition doesn't kick in, we must explicitly wrap!
-            x = x.__of__(self)
+        for name in use_indexes:
+            x = self.getIndex(name)
             if hasattr(x, 'index_object'):
                 blah = x.index_object(index, object, threshold)
                 total = total + blah
@@ -372,12 +368,12 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         data = self.data
         uids = self.uids
         paths = self.paths
-        indexes = self.indexes
+        indexes = self.indexes.keys()
         rid = uids.get(uid, None)
 
         if rid is not None:
-            for x in indexes.values():
-                x = x.__of__(self)
+            for name in indexes:
+                x = self.getIndex(name)
                 if hasattr(x, 'unindex_object'):
                     x.unindex_object(rid)
             del data[rid]
@@ -393,7 +389,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
     def uniqueValuesFor(self, name):
         """ return unique values for FieldIndex name """
-        return self.indexes[name].uniqueValues()
+        return self.getIndex(name).uniqueValues()
 
     def hasuid(self, uid):
         """ return the rid if catalog contains an object with uid """
@@ -424,8 +420,8 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
     def getIndexDataForRID(self, rid):
         result = {}
-        for (id, index) in self.indexes.items():
-            result[id] = index.__of__(self).getEntryForObject(rid, "")
+        for name in self.indexes.keys():
+            result[name] = self.getIndex(name).getEntryForObject(rid, "")
         return result
     
 ## This is the Catalog search engine. Most of the heavy lifting happens below
@@ -465,7 +461,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
         if used is None:
             used = {}
         for i in self.indexes.keys():
-            index = self.indexes[i].__of__(self)
+            index = self.getIndex(i)
             _apply_index = getattr(index, "_apply_index", None)
             if _apply_index is None:
                 continue
@@ -633,6 +629,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
 
 
     def searchResults(self, REQUEST=None, used=None, _merge=1, **kw):
+        if REQUEST is None and not kw:
+            # Try to acquire request if we get no args for bw compat
+            REQUEST = getattr(self, 'REQUEST', None)
         args = CatalogSearchArgumentsMap(REQUEST, kw)
         sort_index = self._getSortIndex(args)
         # Perform searches with indexes and sort_index

@@ -121,18 +121,21 @@ class ZCatalog:
 
         """
 
-    def indexes():
-        """
-
-        Returns a sequence of names that correspond to indexes.
-
-        """
-
     def index_objects():
         """
-
+        
         Returns a sequence of actual index objects.
-
+        
+        NOTE: This returns unwrapped indexes! You should probably use
+        getIndexObjects instead. Some indexes expect to be wrapped.
+        
+        """
+        
+    def getIndexObjects():
+        """
+        
+        Returns a list of acquisition wrapped index objects
+        
         """
 
     def searchResults(REQUEST=None, **kw):

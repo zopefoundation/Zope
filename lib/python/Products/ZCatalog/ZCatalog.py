@@ -133,7 +133,7 @@ class ZCatalog(Folder, Persistent, Implicit):
 
         ('Search ZCatalog',
          ['searchResults', '__call__', 'uniqueValuesFor',
-          'getpath', 'schema', 'indexes', 'index_objects',
+          'getpath', 'schema', 'indexes', 'index_objects', 'getIndexObjects'
           'all_meta_types', 'valid_roles', 'resolve_url',
           'getobject'],
          ['Anonymous', 'Manager']), 
@@ -561,7 +561,14 @@ class ZCatalog(Folder, Persistent, Implicit):
         return self._catalog.indexes.keys()
 
     def index_objects(self):
+        # This method returns unwrapped indexes!
+        # You should probably use getIndexObjects instead
         return self._catalog.indexes.values()
+        
+    def getIndexObjects(self):
+        # Return a list of wrapped(!) indexes
+        catalog = self._catalog
+        return [index.__of__(catalog) for index in catalog.indexes.values()]
 
     def _searchable_arguments(self):
         r = {}
