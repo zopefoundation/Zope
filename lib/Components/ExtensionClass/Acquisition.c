@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.24 1998/11/17 19:49:43 jim Exp $
+  $Id: Acquisition.c,v 1.25 1999/02/26 20:27:55 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -254,10 +254,48 @@ Wrapper_special(Wrapper *self, char *name, PyObject *oname)
 	  return Py_FindAttr(OBJECT(self),oname);
 	}
       break;
+    case 'c':
+      if(strcmp(name,"chain")==0)
+	{
+	  if(r=PyList_New(0)) 
+	    while(1)
+	      {
+		if(PyList_Append(r,OBJECT(self)) >= 0)
+		  {
+		    if(isWrapper(self) && self->container) 
+		      {
+			self=WRAPPER(self->container);
+			continue;
+		      }
+		  }
+		else
+		  {
+		    Py_DECREF(r);
+		  }
+		break;
+	      }
+	  return r;
+	}
+      break;
     case 'i':
       if(strcmp(name,"inContextOf")==0)
 	{
 	  return Py_FindAttr(OBJECT(self),oname);
+	}
+      if(strcmp(name,"inner")==0)
+	{
+	  if(self->obj)
+	    {
+	      r=self->obj;
+	      while(isWrapper(r) && WRAPPER(r)->obj) 
+		{
+		  OBJECT(self)=r;
+		  r=WRAPPER(r)->obj;
+		}
+	    }
+	  else OBJECT(self)=Py_None;
+	  Py_INCREF(self);
+	  return OBJECT(self);
 	}
       break;
       
@@ -894,7 +932,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.24 $";
+  char *rev="$Revision: 1.25 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -913,7 +951,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.24 1998/11/17 19:49:43 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.25 1999/02/26 20:27:55 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
