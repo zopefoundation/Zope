@@ -46,8 +46,14 @@
       here too.
     </description>
 
+    <multikey name="program" required="no">
+      <description>
+       The program(s) that will be run by the runner
+      </description>
+    </multikey>
+
     <key name="daemon" datatype="boolean"
-	 required="no" default="false">
+	 required="no" default="true">
       <description>
         Command-line option: -d or --daemon.
 
@@ -163,6 +169,15 @@
        Use a Python dotted-path name to specify the class factory function.
       </description>
     </key>
+
+    <key name="container-class" datatype=".importable_name">
+      <description>
+       Change the contiainer class a (mounted) database uses on a
+       per-database basis to support a different container than a plain
+       Folder. Use a Python dotted-path name to specify the container class.
+      </description>
+    </key>
+
   </sectiontype>
 
   <!-- end of type definitions -->
