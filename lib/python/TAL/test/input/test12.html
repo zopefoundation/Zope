@@ -1,0 +1,24 @@
+<span tal:define="global true python:1; global false python:0" />
+
+<img ismap>
+<img ismap=ismap>
+<img ismap="ismap">
+<img ismap="foo">
+
+<img ismap tal:attributes="ismap true">
+<img ismap tal:attributes="ismap false">
+<img ismap tal:attributes="ismap nothing">
+
+<img ismap="foo" tal:attributes="ismap true">
+<img ismap="foo" tal:attributes="ismap false">
+<img ismap="foo" tal:attributes="ismap nothing">
+
+<img tal:attributes="ismap true">
+<img tal:attributes="ismap false">
+<img tal:attributes="ismap nothing">
+
+<span tal:define="global x string:x.gif" />
+
+<img src="foo">
+<img src="foo" tal:attributes="src x">
+<img src="foo" tal:attributes="src nothing">
