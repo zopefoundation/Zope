@@ -74,15 +74,19 @@ class HTMLParseError(Exception):
 
 
 # HTML parser class -- find tags and call handler functions.
-# Usage: p = HTMLParser(); p.feed(data); ...; p.close().
-# The dtd is defined by deriving a class which defines methods
-# with special names to handle tags: start_foo and end_foo to handle
-# <foo> and </foo>, respectively, or do_foo to handle <foo> by itself.
-# (Tags are converted to lower case for this purpose.)  The data
-# between tags is passed to the parser by calling self.handle_data()
-# with some data as argument (the data may be split up in arbitrary
-# chunks).  Entity references are passed by calling
-# self.handle_entityref() with the entity reference as argument.
+# Usage:
+#
+#     p = HTMLParser(); p.feed(data); ...; p.close()
+
+# Start tags are handled by calling self.handle_starttag() or
+# self.handle_startendtag(); end tags by self.handle_endtag().  The
+# data between tags is passed from the parser to the derived class by
+# calling self.handle_data() with the data as argument (the data may
+# be split up in arbitrary chunks).  Entity references are passed by
+# calling self.handle_entityref() with the entity reference as the
+# argument.  Numeric character references are passed to
+# self.handle_charref() with the string containing the reference as
+# the argument.
 
 class HTMLParser:
 
