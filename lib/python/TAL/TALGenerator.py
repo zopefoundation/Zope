@@ -127,23 +127,29 @@ class TALGenerator:
                 item = program[cursor]
             except IndexError:
                 item = (None, None)
-            if item[0] == "rawtext":
+            opcode = item[0]
+            if opcode == "rawtext":
                 collect.append(item[1])
                 continue
-            if item[0] == "endTag":
+            if opcode == "endTag":
                 collect.append("</%s>" % item[1])
                 continue
-            if item[0] == "startTag":
+            if opcode == "startTag":
                 if self.optimizeStartTag(collect, item[1], item[2], ">"):
                     continue
-            if item[0] == "startEndTag":
+            if opcode == "startEndTag":
                 if self.optimizeStartTag(collect, item[1], item[2], endsep):
                     continue
             text = string.join(collect, "")
             if text:
-                output.append(("rawtext", text))
-            if item[0] != None:
-                output.append(item)
+                i = string.rfind(text, "\n")
+                if i >= 0:
+                    i = len(text) - (i + 1)
+                    output.append(("rawtextColumn", (text, i)))
+                else:
+                    output.append(("rawtextOffset", (text, len(text))))
+            if opcode != None:
+                output.append((opcode, tuple(item[1:])))
             rawseen = cursor+1
             collect = []
         return output
