@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.3 2000/11/10 17:04:14 brian Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: SecurityManagement.py,v 1.4 2001/07/02 16:29:55 evan Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import SpecialUsers
 from SecurityManager import SecurityManager
@@ -139,6 +139,6 @@ class SecurityContext:
     def __init__(self, user):
         self.stack=[]
         self.user=user
-
+        self.objectCache = {}
 
     

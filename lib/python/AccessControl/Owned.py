@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.11 2001/04/27 20:27:37 shane Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Owned.py,v 1.12 2001/07/02 16:29:55 evan Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager, Unauthorized
@@ -135,7 +135,9 @@ class Owned(ExtensionClass.Base):
     
     getOwner__roles__=()
     def getOwner(self, info=0,
-                 aq_get=aq_get, None=None, UnownableOwner=UnownableOwner,
+                 aq_get=aq_get, None=None,
+                 UnownableOwner=UnownableOwner,
+                 getSecurityManager=getSecurityManager,
                  ):
         """Get the owner
 
@@ -143,19 +145,25 @@ class Owned(ExtensionClass.Base):
         returned. Otherwise, the owner object is returned.
         """
         owner=aq_get(self, '_owner', None, 1)
-        if owner is None: return owner
+        if info or (owner is None): return owner
 
-        if info: return owner
-            
         if owner is UnownableOwner: return None
 
         udb, oid = owner
+        upath = ('',) + tuple(udb) + (oid,)
+        objectCache = getSecurityManager()._context.objectCache
+        if objectCache.has_key(upath):
+            return objectCache[upath]
+
         root=self.getPhysicalRoot()
         udb=root.unrestrictedTraverse(udb, None)
-        if udb is None: return SpecialUsers.nobody
-        owner = udb.getUserById(oid, None)
-        if owner is None: return SpecialUsers.nobody
-        return owner
+        if udb is None:
+            user = SpecialUsers.nobody
+        else:
+            user = udb.getUserById(oid, None)
+            if user is None: user = SpecialUsers.nobody
+        objectCache[upath] = user
+        return user
 
     changeOwnership__roles__=()
     def changeOwnership(self, user, recursive=0,

@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.4 2001/04/11 17:53:22 evan Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: SecurityManager.py,v 1.5 2001/07/02 16:29:55 evan Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 import ZopeSecurityPolicy, os, string
 
@@ -214,7 +214,7 @@ class SecurityManager:
             self._policy=None
 
     def getUser(self):
-        """Gen the current authenticated user"""
+        """Get the current authenticated user"""
         return self._context.user
 
     def calledByExecutable(self):
