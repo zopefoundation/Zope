@@ -31,6 +31,12 @@ API CHANGES
 
 		- '_apply_index(request, cid="")'
 
+	All pluggable indexes must provide the following attributes:
+
+        - "query_options" -- a list of options that are allowed to be 
+          passed with a query (the option "query" is mandatory for
+          all indexes)
+
 	These are, respectively, the equivalent of get(), add(), remove(),
 	values() and search() on indexes.
 
