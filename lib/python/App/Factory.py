@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Factory objects
 
-$Id: Factory.py,v 1.18 2000/06/20 01:59:40 amos Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Factory.py,v 1.19 2000/08/07 15:44:26 brian Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals, AccessControl.Role
 import Products, Product
@@ -140,7 +140,8 @@ class Factory(
             container=self.aq_parent
         elif item is not self:
             container=None
-
+        self.manage_setPermissionMapping(('Use Factories',),
+                                         (self.permission,))
         if (item is self or
             getattr(container, '__class__', None) is Product.Product):
             self._register()
