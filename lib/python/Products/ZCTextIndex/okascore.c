@@ -93,10 +93,13 @@ score(PyObject *self, PyObject *args)
 		tf = f * K1_PLUS1 / (f + K1 * lenweight);
 		score = tf * idf;
 		scaled_int = PyInt_FromLong((long)(score * 1024.0 + 0.5));
-		status = PyObject_SetItem(result, d, scaled_int);
+		if (scaled_int == NULL)
+			status = -1;
+		else
+			status = PyObject_SetItem(result, d, scaled_int);
 		Py_DECREF(d_and_f);
 		Py_DECREF(doclen);
-		Py_DECREF(scaled_int);
+		Py_XDECREF(scaled_int);
 		if (status < 0)
 			return NULL;
 	}
