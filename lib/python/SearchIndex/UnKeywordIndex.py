@@ -111,16 +111,12 @@ class UnKeywordIndex(UnIndex):
         # self.id is the name of the index, which is also the name of the
         # attribute we're interested in.  If the attribute is callable,
         # we'll do so.
-        newKeywords = getattr(obj, self.id, None)
+        newKeywords = getattr(obj, self.id, ())
         if callable(newKeywords):
             newKeywords = newKeywords()
 
         if type(newKeywords) is StringType:
             newKeywords = (newKeywords, )
-
-        if newKeywords is None:
-            self.unindex_object(documentId)
-            return 0
 
         # Now comes the fun part, we need to figure out what's changed
         # if anything from the previous record.
