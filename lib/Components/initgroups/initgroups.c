@@ -13,7 +13,7 @@
 
 #include "Python.h"
 
-#if defined(__unix__) || defined(unix)
+#if defined(__unix__) || defined(unix) || defined(__MACH__) /* Mac OS X */
 
 #include <grp.h>
 #include <sys/types.h>

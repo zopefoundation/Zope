@@ -109,6 +109,9 @@ Zope Changes
 
     Bugs fixed
 
+     - Collector #1159: Added test for __MACH__ to initgroups.c so the
+       initgroups method becomes available on Mac OS X.
+
      - Collector #1004: text,token properties were missing in 
        PropertyManager management page.
 
