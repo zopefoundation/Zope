@@ -44,6 +44,10 @@ class Interface(InterfaceBase):
             if __doc__ is None: __doc__=attrs['__doc__']
             del attrs['__doc__']
 
+        if attrs.has_key('__module__'):
+            self.__module__ = attrs['__module__']
+            del attrs['__module__']
+
         if __doc__ is not None:
             self.__doc__=__doc__
         else:
