@@ -95,27 +95,33 @@
 
 from OFS.Folder import Folder
 
-class ProductRegistry:
+class ProductRegistryMixin:
     # This class implements a protocol for registering products that
-    # are defined through the web.  It also provides methods for
-    # getting hold of the Product Registry, Control_Panel.Products.
+    # are defined through the web.
 
     # This class is a mix-in class for the top-level application object.
-
-    def _getProducts(self): return self.Control_Panel.Products
-
-    _product_meta_types=()
     
-    def _manage_remove_product_meta_type(self, product, id, meta_type):
-        self._product_meta_types=filter(lambda mt, nmt=meta_type:
-                                        mt['name']!=nmt,
-                                        self._product_meta_types)
+    def _manage_remove_product_meta_type(self, product,
+                                         id=None, meta_type=None):
+        r=[]
+        pid=product.id
+        for mt in self._getProductRegistryMetaTypes():
+            if mt.has_key('product'):
+                if mt['product']==pid and (
+                    meta_type is None or meta_type==mt['name']):
+                    continue
+                elif meta_type==mt['name']: continue
+                r.append(mt)
+            
+        self._setProductRegistryMetaTypes(tuple(r))
         
     def _manage_add_product_meta_type(self, product, id, meta_type,
                                       permission=''):
         pid=product.id
 
-        for mt in self._product_meta_types:
+        meta_types=self._getProductRegistryMetaTypes()
+
+        for mt in meta_types:
             if mt['name']==meta_type:
                 if not mt.has_key('product'): mt['product']=pid
                 if mt['product'] != pid:
@@ -132,4 +138,22 @@ class ProductRegistry:
             }
         if permission: mt['permission']=permission
         
-        self._product_meta_types=self._product_meta_types+(mt,)
+        self._setProductRegistryMetaTypes(meta_types+(mt,))
+
+class ProductRegistry(ProductRegistryMixin):
+    # This class implements a protocol for registering products that
+    # are defined through the web.  It also provides methods for
+    # getting hold of the Product Registry, Control_Panel.Products.
+
+    # This class is a mix-in class for the top-level application object.
+
+    def _getProducts(self): return self.Control_Panel.Products
+
+    _product_meta_types=()
+
+    def _getProductRegistryMetaTypes(self): return self._product_meta_types
+    def _setProductRegistryMetaTypes(self, v): self._product_meta_types=v
+
+
+
+
