@@ -274,3 +274,5 @@ Lots of discussion!
  - Allow for the installation of platform-dependent files (basically
    Python extensions) to be installed to a place separate than that of
    platform independent files (as requested by Luca DeVitis).
+
+ - Make the examples folder installation nonmagical.
