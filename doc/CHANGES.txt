@@ -6,6 +6,8 @@ Zope Changes
 
   after Zope 2.5.1
 
+      - Collector #32: Use difflib instead of ndiff
+
       - Fixed long standing bug in PythonScript where get_size returned
         the incorrect length. This broke editing using EMACS via FTP or
         WebDAV. Thanks to John Glavin at South River Technologies for
