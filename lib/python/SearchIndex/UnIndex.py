@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 
 
@@ -330,7 +330,7 @@ class UnIndex(Persistent, Implicit):
         else:           #not a range
             get = index.get
             for key in keys:
-                if nonempty(key):
+                if nonEmpty(key):
                     anyTrue = 1
                 set=get(key)
                 if set is not None:
