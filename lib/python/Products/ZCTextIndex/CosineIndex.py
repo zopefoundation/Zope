@@ -75,7 +75,7 @@ class CosineIndex(BaseIndex):
         for i in range(len(uniqwids)):
             self._add_wordinfo(uniqwids[i], freqs[i], docid)
         self._docweight[docid] = docweight
-        self._add_undoinfo(docid, wids)
+        self._docwords[docid] = WidCode.encode(wids)
         return len(wids)
 
     def _search_wids(self, wids):
@@ -135,9 +135,6 @@ class CosineIndex(BaseIndex):
             weights[i] = scaled_int(weights[i] / W)
             #print "->", weights[i]
         return d.keys(), weights, scaled_int(W)
-
-    def _add_undoinfo(self, docid, wids):
-        self._docwords[docid] = WidCode.encode(wids)
 
     # The rest are helper methods to support unit tests
 
