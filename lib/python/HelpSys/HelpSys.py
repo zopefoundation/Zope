@@ -249,7 +249,7 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         )
 
     __ac_permissions__=(
-        ('Add Documents, Files, and Images', ('addTopicForm', 'addTopic')),
+        ('Add Documents, Images, and Files', ('addTopicForm', 'addTopic')),
         )
     
     def __init__(self, id='Help', title=''):
@@ -305,10 +305,15 @@ class ProductHelp(Acquisition.Implicit, ObjectManager, Item, Persistent):
         for topic in self.objectValues('Help Topic'):
             if hasattr(topic,'isAPIHelpTopic') and topic.isAPIHelpTopic:
                 apitopics.append(topic)
-            elif topic.getId()[:5]=='dtml-':
-                dtmltopics.append(topic)
             else:
-                topics.append(topic)
+                if callable(topic.id):
+                    id=topic.id()
+                else:
+                    id=topic.id
+                if id[:5]=='dtml-':
+                    dtmltopics.append(topic)
+                else:
+                    topics.append(topic)
         if dtmltopics:
             topics = topics + [TreeCollection(' DTML Reference', dtmltopics)]
         if apitopics:
