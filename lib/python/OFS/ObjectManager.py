@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.100 2000/06/23 18:02:03 brian Exp $"""
+$Id: ObjectManager.py,v 1.101 2000/06/27 15:47:50 brian Exp $"""
 
-__version__='$Revision: 1.100 $'[11:-2]
+__version__='$Revision: 1.101 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -300,9 +300,14 @@ class ObjectManager(
             pass
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
         self._delOb(id)
-        # Indicate to the object that it has been deleted.
-        # Necessary for mount points.
-        object._v__object_deleted__ = 1
+
+        # Indicate to the object that it has been deleted. This is 
+        # necessary for object DB mount points. Note that we have to
+        # tolerate failure here because the object being deleted could
+        # be a Broken object, and it is not possible to set attributes
+        # on Broken objects.
+        try:    object._v__object_deleted__ = 1
+        except: pass
 
     def objectIds(self, spec=None):
         """Returns a list of subobject ids of the current object.
