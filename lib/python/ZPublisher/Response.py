@@ -2,10 +2,11 @@
 """:"
 exec python $0 ${1+"$@"}
 """
+#" Waaaaa
 
 __doc__='''CGI Response Output formatter
 
-$Id: Response.py,v 1.31 1998/04/09 15:21:07 jim Exp $'''
+$Id: Response.py,v 1.32 1998/04/09 15:21:41 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -55,7 +56,7 @@ $Id: Response.py,v 1.31 1998/04/09 15:21:07 jim Exp $'''
 #   Digital Creations, info@Digicool.com
 #   (540) 371-6909
 # 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate

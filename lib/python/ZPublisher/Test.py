@@ -3,6 +3,8 @@
 exec python $0 ${1+"$@"}
 """
 
+#" Waaaa
+
 __doc__='''Command-line Bobo
 
 Usage
@@ -76,7 +78,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.13 1998/04/09 15:20:10 jim Exp $
+$Id: Test.py,v 1.14 1998/04/09 15:21:59 jim Exp $
 '''
 #     Copyright 
 #
@@ -130,7 +132,7 @@ $Id: Test.py,v 1.13 1998/04/09 15:20:10 jim Exp $
 #
 #
 # 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys,traceback, profile
 repeat_count=100
@@ -337,6 +339,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Test.py,v $
+# Revision 1.14  1998/04/09 15:21:59  jim
+# *** empty log message ***
+#
 # Revision 1.13  1998/04/09 15:20:10  jim
 # Fixed way that Python is invoked in command-line mode.
 #
