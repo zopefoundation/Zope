@@ -213,6 +213,16 @@ class TALGenerator:
         self.slots[slotName] = program
         self.emit("fillSlot", slotName, program)
 
+    def unEmitNewlineWhitespace(self):
+        if self.program and self.program[-1][0] == "rawtext":
+            text = self.program[-1][1]
+            m = re.match(r"(?s)^(.*)(\n[ \t]*)$", text)
+            if m:
+                text, rest = m.group(1, 2)
+                self.program[-1] = ("rawtext", text)
+                return rest
+        return None
+
 def test():
     t = TALGenerator()
     t.pushProgram()
