@@ -1,0 +1,13 @@
+
+External Methods 1.0.2 release notes
+
+  This is a bug-fix release.
+
+  Bugs Fixed
+
+   - A new copy of an external method was written the first time
+     it was used after being loaded from the database.  In addition to
+     database bloat, this could also cause strange session/locking behavior.
+
+
+
