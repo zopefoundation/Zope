@@ -15,7 +15,7 @@ such as database and product management.
 <li><em>Zope</em> version: <!--#var version_txt-->
 <li>Python version: <!--#var sys_version-->
 <li>System Platform: <!--#var sys_platform-->
-<li>Process ID: <!--#var process_id-->
+<li>Process ID: <!--#var process_id--> (<!--#var thread_get_ident-->)
 <li>Running for: <!--#var process_time-->
 </ul>
 <P>
