@@ -62,7 +62,7 @@ Zope Changes
 
   Releases
 
-    Zope 2.0.1
+    Zope 2.x
 
       Features Added
 
@@ -86,6 +86,10 @@ Zope Changes
 	- SQL Database Adapters now have a 'test' tab where arbitrary
 	  SQL may be entered and executed immediately through the
 	  connection object.  DTML is not supported in this tab.
+
+        - SQL Methods now support an option 'op' parameter on the DTML 
+          method <dtml-sqltest> which allows you to choose the
+          operator used for comparison. 
 
       Features Changed
 
@@ -121,11 +125,6 @@ Zope Changes
         - ZCatalog now actually saves memory when using
           subtransactions.  Plugged a couple memory leaks doing this.
 
-        - Fixed a bug which allowed unauthorized options to be displayed 
-	  when adding a Folder. Now you only see options to add an 
-	  index_document and/or a user folder if you have adequate 
-	  permissions.
-
         - Added ALT text fixed nested anchor tags produced by the Tree
           tag to ensure that valid HTML is produced, and fixed the
           reverse option to the Tree tag.
@@ -159,7 +158,17 @@ Zope Changes
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
-	  
+
+
+    Zope 2.0.1
+
+      Bugs Fixed
+
+        - Fixed a bug which allowed unauthorized options to be displayed 
+	  when adding a Folder. Now you only see options to add an 
+	  index_document and/or a user folder if you have adequate 
+	  permissions.
+
 
     Zope 2.0
 
