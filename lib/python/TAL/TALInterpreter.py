@@ -193,18 +193,7 @@ class TALInterpreter:
         self.interpret(macro)
 
     def do_useMacro(self, macroName, compiledSlots):
-        doc, localName = self.engine.findMacroDocument(macroName)
-        if not doc:
-            # Local macro
-            macro = self.macros[localName]
-        else:
-            # External macro
-            macroDict = macroIndexer(doc)
-            if not macroDict.has_key(localName):
-                print "Macro", macroName, "not found"
-                return
-            macroNode = macroDict[localName]
-            macro, dummy = TALCompiler(macroNode)()
+        macro = self.engine.evaluateMacro(macroName)
         save = self.slots, self.inMacro
         self.slots = compiledSlots
         self.inMacro = 1
