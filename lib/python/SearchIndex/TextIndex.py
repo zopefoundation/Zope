@@ -202,7 +202,7 @@ Notes on a new text index design
        space.
 
 """
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree
@@ -715,7 +715,7 @@ stop_words=(
     'couldnt', 'cry', 'describe', 'detail', 'do', 'done', 'down', 'due',
     'during', 'each', 'eg', 'eight', 'either', 'eleven', 'else',
     'elsewhere', 'empty', 'enough', 'even', 'ever', 'every', 'everyone',
-    'everything', 'everywhere', 'except', 'few', 'fifteen', 'fify',
+    'everything', 'everywhere', 'except', 'few', 'fifteen', 'fifty',
     'fill', 'find', 'fire', 'first', 'five', 'for', 'former', 'formerly',
     'forty', 'found', 'four', 'from', 'front', 'full', 'further', 'get',
     'give', 'go', 'had', 'has', 'hasnt', 'have', 'he', 'hence', 'her',
