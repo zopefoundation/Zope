@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, os, string, Globals
 from common import urlfix, rfc1123_date
@@ -114,6 +114,17 @@ class Collection(Resource):
         response.setHeader('Connection', 'close', 1)
         response.setHeader('Date', rfc1123_date(), 1)
         response.setHeader('MS-Author-Via', 'DAV')
+
+    def HEAD(self, REQUEST, RESPONSE):
+        """Retrieve resource information without a response body."""
+        self.dav__init(REQUEST, RESPONSE)
+        if hasattr(self, 'aq_base') and hasattr(self.aq_base, 'index_html'):
+            if hasattr(self.index_html, 'HEAD'):
+                return self.index_html.HEAD(REQUEST, RESPONSE)
+            raise 'Method Not Allowed', (
+                  'Method not supported for this resource.'
+                  )
+        raise 'Not Found', 'The requested resource does not exist.'
 
     def PUT(self, REQUEST, RESPONSE):
         """The PUT method has no inherent meaning for collection
