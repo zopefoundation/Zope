@@ -23,13 +23,13 @@ class ClassCaretaker:
     def __setattr__(self, name, v):
         klass=self._k
         setattr(klass, name, v)
-        if not getattr(klass,'_p_changed',None):
+        if not getattr(klass,'_p_changed',None) and klass._p_jar is not None:
             get_transaction().register(klass)
             klass._p_changed=1
     def __delattr__(self, name):
         klass=self._k
         delattr(klass, name)
-        if not getattr(klass,'_p_changed',None):
+        if not getattr(klass,'_p_changed',None) and klass._p_jar is not None:
             get_transaction().register(klass)
             klass._p_changed=1
 
@@ -270,7 +270,7 @@ class ZInstanceSheet(OFS.PropertySheets.FixedSchema,
 Globals.default__class_init__(ZInstanceSheet)
 
 def rclass(klass):
-    if not getattr(klass, '_p_changed', 0):
+    if not getattr(klass, '_p_changed', 0) and klass._p_jar is not None:
         get_transaction().register(klass)
         klass._p_changed=1
 

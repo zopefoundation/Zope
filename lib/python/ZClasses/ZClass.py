@@ -519,7 +519,7 @@ class ZClass( Base
     def setClassAttr(self, name, value):
         c=self._zclass_
         setattr(c, name, value)
-        if not c._p_changed:
+        if (not c._p_changed) and (c._p_jar is not None):
             get_transaction().register(c)
             c._p_changed=1
 
@@ -527,7 +527,7 @@ class ZClass( Base
     def delClassAttr(self, name):
         c=self._zclass_
         delattr(c, name)
-        if not c._p_changed:
+        if (not c._p_changed) and (c._p_jar is not None):
             get_transaction().register(c)
             c._p_changed=1
 
