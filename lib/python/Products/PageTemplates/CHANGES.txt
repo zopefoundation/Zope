@@ -1,3 +1,16 @@
+2001-04-27  Evan Simpson <evan@digicool.com>
+
+        * Version 1.2.0
+        * Depends on the new ZTUtils package, which adds batching and
+          tree widget capabilities.
+        * Path expressions now have optional path modifiers.  These
+          appear in parenthesis before the path, and include 'if',
+          'exists', and 'nocall'.
+        * Changed nocall: and exists: expressions types into path modifiers.
+        * tal:attributes no longer inserts empty attributes into
+          source.
+        * The 'if' path modifier can cancel any TAL action.
+
 2001-04-10  Evan Simpson <evan@digicool.com>
 
         * Version 1.1.0
