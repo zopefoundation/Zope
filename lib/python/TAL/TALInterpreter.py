@@ -96,7 +96,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
-from TALDefs import TALError, quote, TAL_VERSION
+from TALDefs import quote, TAL_VERSION
 from TALGenerator import TALGenerator
 
 BOOLEAN_HTML_ATTRS = [
