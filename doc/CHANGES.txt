@@ -108,6 +108,9 @@ Zope Changes
           absolute_url to be called on the displayed value.  This
           allows entity references like: '&dtml.url-foo;'
 
+        - The DTML built-in function, getattr, now accepts an additional 
+	  argument providing a default value.	 
+
       Features Changed
 
         - ZCatalog uses subtransactions to keep memory consuption low
