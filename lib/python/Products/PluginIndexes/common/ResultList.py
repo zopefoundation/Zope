@@ -137,7 +137,7 @@ class ResultList:
             union(self._words, x._words),
             self._index,
             )
-        return self.__class__(result, self._words+x._words, self._index)
+        # return self.__class__(result, self._words+x._words, self._index)
 
     def near(self, x):
         result = IIBucket()
