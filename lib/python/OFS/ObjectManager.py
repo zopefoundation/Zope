@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.18 1997/11/11 18:52:53 jim Exp $"""
+$Id: ObjectManager.py,v 1.19 1997/11/11 21:25:29 brian Exp $"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 from SingleThreadedTransaction import Persistent
@@ -77,6 +77,13 @@ class ObjectManager(Acquirer,Management,Persistent):
 	if hasattr(self,id): raise 'Bad Request', (
 	    """The id <em>%s<em>  is invalid - it
                is already in use.""" % id)
+
+    def _checkObject(self, object):
+	t=object.meta_type
+	if callable(t): t=t()
+	for d in self.all_meta_types():
+ 	    if d['name']==t: return
+	raise 'Bad Request', 'Object type is not supported'
 
     def parentObject(self):
 	try:
@@ -254,20 +261,41 @@ class ObjectManager(Acquirer,Management,Persistent):
 		    aclEChecked='', aclAChecked=' CHECKED', aclPChecked='')
 	raise 'BadRequest', 'Unknown object type: %s' % type
 
-    def manage_delObjects(self,ids,REQUEST):
+    def manage_delObjects(self,ids=[],submit='',clip_id='',
+			  clip_data='',REQUEST):
 	"""Delete a subordinate object"""
-	try:    p=self._reserved_names
-	except: p=()
-	for n in ids:
-	    if n in p:
-	        return MessageDialog(title  ='Not Deletable' % n,
-	               message='<EM>%s</EM> cannot be deleted.' % n,
-	               action ='./manage_main',)
-	while ids:
-	    try:    self._delObject(ids[-1])
-	    except: raise 'BadRequest', ('%s does not exist' % ids[-1])
-	    del ids[-1]
-	return self.manage_main(self, REQUEST)
+	if submit=='Copy':
+	    c=len(ids)
+	    if (c <= 0) or (c > 1):
+		return MessageDialog(
+		       title='Invalid Selection',
+		       message='Please select one and only one item to copy',
+		       action ='./manage_main',)
+	    obj=getattr(self, ids[0])
+	    err=obj.copyToClipboard(REQUEST)
+	    return err or self.manage_main(self, REQUEST)
+
+	if submit=='Paste':
+	    return self.pasteFromClipboard(clip_id,clip_data,REQUEST)
+
+	if submit=='Delete':
+	    if not ids:
+		return MessageDialog(title='No items specified',
+		       message='No items were specified!',
+		       action ='./manage_main',)
+
+	    try:    p=self._reserved_names
+	    except: p=()
+	    for n in ids:
+		if n in p:
+		    return MessageDialog(title='Not Deletable',
+			   message='<EM>%s</EM> cannot be deleted.' % n,
+			   action ='./manage_main',)
+	    while ids:
+		try:    self._delObject(ids[-1])
+		except: raise 'BadRequest', ('%s does not exist' % ids[-1])
+	        del ids[-1]
+            return self.manage_main(self, REQUEST)
 
     def _setProperty(self,id,value,type='string'):
         self._checkId(id)
@@ -421,6 +449,9 @@ class ObjectManager(Acquirer,Management,Persistent):
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.19  1997/11/11 21:25:29  brian
+# Added copy/paste support, restricted unpickling, fixed DraftFolder bug
+#
 # Revision 1.18  1997/11/11 18:52:53  jim
 # Fixed bug in modified_in_session.
 #

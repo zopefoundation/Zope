@@ -14,8 +14,8 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.1 1997/11/11 21:05:44 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: DraftFolder.py,v 1.2 1997/11/11 21:25:28 brian Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import time, SimpleItem, AccessControl.Role, Persistence, Acquisition, Globals
 import AccessControl.User, Session
@@ -186,6 +186,11 @@ class DraftFolder(Persistence.Persistent,
 
     def manage_supervisor(self): return self.__allow_groups__
     
+    def parentObject(self):
+	try:    return (self.aq_parent,)
+	except: return ()
+
+
 class Supervisor(AccessControl.User.UserFolder, Session.Session):
 
     manage=manage_main=HTMLFile('OFS/DraftFolderSupervisor')
@@ -198,6 +203,9 @@ class Supervisor(AccessControl.User.UserFolder, Session.Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.2  1997/11/11 21:25:28  brian
+# Added copy/paste support, restricted unpickling, fixed DraftFolder bug
+#
 # Revision 1.1  1997/11/11 21:05:44  jim
 # Draft Folders
 #

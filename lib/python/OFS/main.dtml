@@ -1,66 +1,83 @@
 <HTML><HEAD><TITLE><!--#var title_or_id--></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 
-<table border=0 width="100%" cellpadding=0 cellspacing=0>
-<tr>
-  <td align=left  width="90%">
+<TABLE BORDER="0" WIDTH="100%" CELLSPACING="0" CELLPADDING="2">
+<TR>
+  <TD ALIGN="LEFT" WIDTH="90%">
     <H2><!--#var title_or_id--></H2>
     <!--#if Principia-Session-->
-      <em>You are currently working in session
-      <!--#var Principia-Session--></em><br><br>
-    <!--#/if-->
-  </td>
-  <td align=right width="10%">
+    <EM>
+    You are currently working in session <!--#var Principia-Session-->
+    </EM>
+    <BR><BR>
+    <!--#/if Principia-Session-->
+  </TD>
+  <TD ALIGN="RIGHT">
   <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/Help_icon.gif" BORDER=0>
-  </td>
-</tr>
-</table>
+  </TD>
+</TR>
+</TABLE>
 
 <!--#if objectValues-->
 The following items have been defined.  To <strong>manage</strong> the
 item, click on the item's icon.  To <strong>view</strong> the item,
 click on the item's title and id.
-<BR><BR>
 
-<table border=0 cellspacing=0 cellpadding=2>
-
-<tr>
-  <th align=center>
-  <font size="-1">Manage</font></th>
-  <th align=left><font size="-1">View</font></th>
-</tr>
-
-  <!--#in objectValues sort=title_and_id-->
-<tr>
-    <td align=center>
+<FORM ACTION="manage_delObjects" METHOD="POST">
+<TABLE BORDER="0" CELLSPACING="0" CELLPADDING=2>
+<TR>
+  <TH ALIGN="CENTER">
+  <FONT SIZE="-1">Manage</FONT>
+  </TH>
+  <TH ALIGN="LEFT">
+  <FONT SIZE="-1">View</FONT>
+  </TH>
+</TR>
+<!--#in objectValues sort=title_and_id-->
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="CHECKBOX" NAME="ids:list" VALUE="<!--#var id-->"> 
     <A HREF="<!--#var URL1-->/<!--#var id-->/manage"
     <!--#if sequence-var-manage_options-->
     TARGET="_top"
     <!--#/if sequence-var-manage_options-->>
     <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->"
-         ALT="manage" BORDER="0"></A></td>
-    <td>
-    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A>
-
+         ALT="manage" BORDER="0"></A>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+    <A HREF="<!--#var URL1-->/<!--#var id-->">
+    <!--#var title_and_id--></A>
     <!--#if modified_in_session-->
-    <img src="<!--#var SOFTWARE_URL-->/OFS/modified.gif">
-    <!--#/if-->
-
-    </td>
-</tr>
-  <!--#/in objectValues-->
-</table>
-
+    <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/modified.gif">
+    <!--#/if modified_in_session-->
+  </TD>
+</TR>
+<!--#/in objectValues-->
+<TR>
+<TD></TD>
+<TD>
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Copy">
+<!--#if clip_data-->
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
+<!--#/if clip_data-->
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Delete">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+<!--#else objectValues-->
+<!--#if clip_data-->
+<FORM ACTION="manage_delObjects" METHOD="POST">
+<INPUT TYPE="SUBMIT" NAME="submit" VALUE="Paste">
+</FORM>
+<!--#/if clip_data-->
 <!--#/if objectValues-->
-
-
 
 <TABLE>
 <TR>
 <TD VALIGN="TOP">
   To add a new item, select an item type and click &quot;Add&quot;.
 </TD>
-
 <TD VALIGN="TOP">
   <FORM ACTION="manage_addObject" METHOD="GET">
   <SELECT NAME="type">
@@ -72,32 +89,7 @@ click on the item's title and id.
   </FORM>
 </TD>
 </TR>
-<!--#if objectValues_d-->
-
-<TR>
-<TD VALIGN="TOP">
-  To delete items, select one or more items and click &quot;Delete&quot;.
-</TD>
-
-<TD VALIGN="TOP">
-  <FORM ACTION="manage_delObjects" METHOD="GET">
-  <SELECT NAME="ids:list" MULTIPLE SIZE="4">
-  <!--#in objectValues_d-->
-    <OPTION VALUE="<!--#var id-->">
-    <!--#if title-->
-      <!--#var title size=25--> (<!--#var id-->)
-    <!--#else-->
-      <!--#var id-->
-    <!--#endif-->
-  <!--#/in objectValues_d-->
-  </SELECT><BR>
-  <INPUT TYPE="SUBMIT" VALUE="Delete">
-  </FORM>
-</TD>
-</TR>
-<!--#/if objectValues_d-->
 </TABLE>
-
 
 </BODY>
 </HTML>

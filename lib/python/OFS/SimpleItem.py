@@ -16,13 +16,15 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.5 1997/11/11 19:26:09 jim Exp $'''
-__version__='$Revision: 1.5 $'[11:-2]
+$Id: SimpleItem.py,v 1.6 1997/11/11 21:25:29 brian Exp $'''
+__version__='$Revision: 1.6 $'[11:-2]
 
 import Globals
 from DateTime import DateTime
+from CopySupport import CopySource
 
-class Item:
+
+class Item(CopySource):
 
     # Name, relative to SOFTWARE_URL of icon used to display item
     # in folder listings.
@@ -100,9 +102,15 @@ class Item_w__name__(Item):
 	t=self.title
 	return t and ("%s (%s)" % (t,self.__name__)) or self.__name__
 
+    def _setId(self, id):
+	self.__name__=id
+
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.6  1997/11/11 21:25:29  brian
+# Added copy/paste support, restricted unpickling, fixed DraftFolder bug
+#
 # Revision 1.5  1997/11/11 19:26:09  jim
 # Fixed bug in modified_in_session.
 #

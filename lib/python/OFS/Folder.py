@@ -1,13 +1,14 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.18 1997/11/11 18:52:20 jim Exp $"""
+$Id: Folder.py,v 1.19 1997/11/11 21:25:28 brian Exp $"""
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 from Globals import HTMLFile
 from ObjectManager import ObjectManager
+from CopySupport import CopyContainer
 from Image import ImageHandler
 from Document import DocumentHandler
 from AccessControl.User import UserFolderHandler
@@ -16,6 +17,9 @@ import SimpleItem
 from string import rfind, lower
 from content_types import content_type, find_binary, text_type
 import Image
+
+
+
 
 class FolderHandler:
     """Folder object handler"""
@@ -67,7 +71,7 @@ class FolderHandler:
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
 	     ImageHandler,FolderHandler,UserFolderHandler,
-	     SimpleItem.Item):
+	     SimpleItem.Item,CopyContainer):
     """Folder object"""
     meta_type='Folder'
     id       ='folder'

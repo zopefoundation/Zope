@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<TITLE>Paste Item</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#if moniker-->
+<!--#in moniker-->
+<H2>Paste <!--#var sequence-var-mtype--></H2>
+<!--#/in moniker-->
+<!--#else moniker-->
+<H2>Paste Item</H2>
+<!--#/if moniker-->
+
+<!--#if bad-->
+<EM>An item with the specified id exists</EM>. 
+Please specify another id.
+<!--#else bad-->
+Please specify the id to use for this item.
+<!--#/if bad-->
+
+<FORM ACTION="pasteFromClipboard" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="clip_id" SIZE="40"
+   <!--#if moniker-->
+   <!--#in moniker-->
+   VALUE="<!--#var sequence-var-id-->"
+   <!--#/in moniker-->
+   <!--#/if moniker-->>
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD>
+<BR><INPUT TYPE="SUBMIT" VALUE=" OK ">
+</TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+
