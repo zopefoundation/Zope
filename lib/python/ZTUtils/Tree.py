@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.12 2002/10/05 02:10:01 mj Exp $'''
-__version__='$Revision: 1.12 $'[11:-2]
+$Id: Tree.py,v 1.13 2002/10/05 21:24:03 mj Exp $'''
+__version__='$Revision: 1.13 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -64,7 +64,10 @@ class TreeMaker:
     _assume_children = 0
     _values_filter = None
     _values_function = None
+    _state_function = None
     _expand_root = 1
+
+    _cached_children = None
 
     def setChildAccess(self, attrname=_marker, filter=_marker,
                        function=_marker):
@@ -120,6 +123,23 @@ class TreeMaker:
         """
         self._assume_children = assume and True or False
 
+    def setStateFunction(self, function):
+        """Set the expansion state function.
+
+        This function will be called to determine if a node should be open or
+        collapsed, or should be treated as a leaf node. The function is passed
+        the current object, and the intended state for that object. It should
+        return the actual state the object should be in. State is encoded as an
+        integer, meaning:
+
+            -1: Node closed. Children will not be processed.
+             0: Leaf node, cannot be opened or closed, no children are
+                processed.
+             1: Node opened. Children will be processed as part of the tree.
+        
+        """
+        self._state_function = function
+
     def tree(self, root, expanded=None, subtree=0):
         '''Create a tree from root, with specified nodes expanded.
 
@@ -134,14 +154,17 @@ class TreeMaker:
             # Assume a mapping
             expanded = expanded.has_key(node.id)
             child_exp = child_exp.get(node.id)
-        if expanded or (not subtree and self._expand_root):
-            children = self.getChildren(root)
-            if children:
-                node.state = 1 # expanded
-                for child in children:
-                    node._add_child(self.tree(child, child_exp, 1))
-        elif self.hasChildren(root):
-            node.state = -1 # collapsed
+
+        expanded = expanded or (not subtree and self._expand_root)
+        # Set state to 0 (leaf), 1 (opened), or -1 (closed)
+        state = self.hasChildren(root) and (expanded or -1)
+        if self._state_function is not None:
+            state = self._state_function(node.object, state)
+        node.state = state
+        if state > 0:
+            for child in self.getChildren(root):
+                node._add_child(self.tree(child, child_exp, 1))
+
         if not subtree:
             node.depth = 0
         return node
@@ -164,9 +187,18 @@ class TreeMaker:
     def hasChildren(self, object):
         if self._assume_children:
             return 1
-        return self.getChildren(object)
+        # Cache generated children for a subsequent call to getChildren
+        self._cached_children = (object, self.getChildren(object))
+        return not not self._cached_children[1]
 
     def getChildren(self, object):
+        # Check and clear cache first
+        if self._cached_children is not None:
+            ob, children = self._cached_children
+            self._cached_children = None
+            if ob is object:
+                return children
+    
         if self._values_function is not None:
             return self._values_function(object)
 

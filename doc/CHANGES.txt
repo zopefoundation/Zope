@@ -11,6 +11,10 @@ Zope Changes
       - ZTUtils.Tree.TreeMaker now has additional methods for setting
         various flags and attributes that influence how the tree is built,
         making these aspects accessible to PythonScripts.
+
+      - ZTUtils.Tree.TreeMaker has a new method setStateFunction, which
+        allows you to set a callback function that can influence the state
+        (open, closed, leaf) of each node in the tree.
   
   Zope 2.6.0 beta 1
 

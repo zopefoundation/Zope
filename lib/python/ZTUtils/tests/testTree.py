@@ -165,6 +165,24 @@ class TreeTests(unittest.TestCase):
 
         self.assertEqual(len(treeroot), 2)
 
+    def testStateFunction(self):
+        def stateFunction(object, state):
+            if object.id == 'b':
+                return 1
+            if object.id == 'd':
+                return -1
+            return state
+        
+        self.tm.setStateFunction(stateFunction)
+        treeroot = self.tm.tree(self.root)
+
+        self.assertEqual(treeroot.size, 5)
+        self.assertEqual(treeroot.state, 1)
+        self.assertEqual(treeroot[0].state, 1)
+        self.assertEqual(treeroot[0][0].state, -1)
+        self.assertEqual(treeroot[0][1].state, 0)
+        self.assertEqual(treeroot[1].state, -1)
+
     def testEncodeDecode(self):
         treeroot1 = self.tm.tree(self.root, self.expansionmap)
 
