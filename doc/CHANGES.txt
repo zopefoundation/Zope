@@ -114,8 +114,6 @@ Zope Changes
         - ZCatalog now actually saves memory when using
           subtransactions.  Plugged a couple memory leaks doing this.
 
-=======
-
         - Fixed a bug which allowed unauthorized options to be displayed 
 	  when adding a Folder. Now you only see options to add an 
 	  index_document and/or a user folder if you have adequate 
@@ -151,7 +149,6 @@ Zope Changes
 	  acquired objects.  getRolesInContext did not used the correct 
           context, as defined by the inner-most object wrapping.
 
->>>>>>> 1.157
         - Some unnecessary debug mode overhead eliminated - external
           methods are now automatically reloaded only when the .py
           files are changed. 
