@@ -50,7 +50,7 @@ database packing, and &quot;undoing&quot; previous changes to your site.
 <TR>
 <FORM ACTION="manage_pack" METHOD="POST" TARGET="manage_main">
 <TD ALIGN="LEFT" VALIGN="TOP">
-<BR>Click &quot;Pack&quot; to pack the Site Studio database, removing 
+<BR>Click &quot;Pack&quot; to pack the Principia database, removing 
 previous revisions of objects that are older than
 <INPUT TYPE="TEXT" VALUE="0" NAME="days:float" SIZE="3"> days.
 </TD>
@@ -63,7 +63,7 @@ previous revisions of objects that are older than
 <TR>
 <TD ALIGN="LEFT" VALIGN="TOP">
 <BR>
-Click &quot;Shutdown&quot; to shutdown the Site Studio process.
+Click &quot;Shutdown&quot; to shutdown the Principia process.
 <BR>
 It will be restarted on the next web request.
 </TD>
