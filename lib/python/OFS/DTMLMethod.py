@@ -84,7 +84,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.64 $'[11:-2]
+__version__='$Revision: 1.65 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -424,7 +424,7 @@ def decapitate(html, RESPONSE=None):
     if RESPONSE is not None:
         for header in headers:
             hkey = header.pop(0)
-            RESPONSE.setHeader(hkey, join(header, ' '))
+            RESPONSE.setHeader(hkey, ' '.join(header).strip())
     return html[spos + 1:]
 
 default_dm_html="""<dtml-var standard_html_header>
