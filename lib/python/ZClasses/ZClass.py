@@ -355,8 +355,8 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
 
     def _register(self):
-        if not dbVersionEquals('3'):
-            return
+
+        # Register the global id of the managed class:
         z=self._zclass_
         class_id=z.__module__
         if not class_id: return
@@ -368,14 +368,30 @@ class ZClass(OFS.SimpleItem.SimpleItem):
 
         globals[class_id]=z
 
+        # Register self as a ZClass:
+        self.aq_acquire('_manage_add_product_data')(
+            'zclasses',
+            product=self.aq_inner.aq_parent.id,
+            id=self.id,
+            meta_type=z.meta_type or '',
+            meta_class=self,
+            )
+
     def _unregister(self):
-        if not dbVersionEquals('3'):
-            return
+
+        # Unregister the global id of the managed class:
         class_id=self._zclass_.__module__
         if not class_id: return
         globals=self._p_jar.root()['ZGlobals']
         if globals.has_key(class_id):
             del globals[class_id]
+
+        # Unregister self as a ZClass:
+        self.aq_acquire('_manage_remove_product_data')(
+            'zclasses',
+            product=self.aq_inner.aq_parent.id,
+            id=self.id,
+            )
 
     def manage_afterClone(self, item):
         self.setClassAttr('__module__', None)
