@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, os
 from DateTime import DateTime
@@ -238,6 +238,7 @@ data_dir     = INSTANCE_HOME+'/var'
 BobobaseName = '%s/Data.bbb' % data_dir
 
 from App.Dialogs import MessageDialog
+from ImageFile import ImageFile
 
 VersionNameName='Zope-Version'
     
