@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: PathIndex.py,v 1.7 2001/10/03 13:04:06 andreasjung Exp $'
+__version__ = '$Id: PathIndex.py,v 1.8 2001/10/03 13:11:02 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -180,10 +180,13 @@ class PathIndex(PluggableIndex.PluggableIndex, Persistent,
 
         if hasattr(obj,self.id):
             f = getattr(obj,self.id)
-            if callable(f):
-                path = f()
-            else:
-                path = f
+
+            try:
+                if callable(f): path = f()
+                else:           path = f
+            except:
+                return 0
+
         else:             
 
             try:
