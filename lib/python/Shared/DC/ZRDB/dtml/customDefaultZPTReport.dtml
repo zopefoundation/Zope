@@ -20,11 +20,11 @@
         %(heading)s
       %(else)]
  
-  <div tal:repeat="result batch" >
+  <tal:x repeat="result batch" >
   
     %(row)s
 
-  </div>
+  </tal:x>
 
       %(else no_table)[</table>%(else)]
 
