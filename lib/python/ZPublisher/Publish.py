@@ -522,7 +522,7 @@ Publishing a module using the ILU Requestor (future)
     o Configure the web server to call module_name@server_name with
       the requestor.
 
-$Id: Publish.py,v 1.21 1996/10/15 15:45:35 jim Exp $"""
+$Id: Publish.py,v 1.22 1996/10/25 19:34:27 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -575,6 +575,9 @@ $Id: Publish.py,v 1.21 1996/10/15 15:45:35 jim Exp $"""
 #   (540) 371-6909
 #
 # $Log: Publish.py,v $
+# Revision 1.22  1996/10/25 19:34:27  jim
+# Fixed bug in handling of import errors.
+#
 # Revision 1.21  1996/10/15 15:45:35  jim
 # Added tuple argument type and enhances error handling.
 #
@@ -667,7 +670,7 @@ $Id: Publish.py,v 1.21 1996/10/15 15:45:35 jim Exp $"""
 #
 #
 # 
-__version__='$Revision: 1.21 $'[11:-2]
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 def main():
@@ -1413,7 +1416,8 @@ def publish_module(module_name,
 	must_die=1
 	response.exception(must_die)
     except ImportError, v:
-	sys.exc_type, sys.exc_value, sys.exc_traceback = v
+	if type(v)==types.TupleType && len(v)==3:
+	    sys.exc_type, sys.exc_value, sys.exc_traceback = v
 	must_die=1
 	response.exception(must_die)
     except:
