@@ -1,9 +1,11 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.53 1998/08/26 18:33:44 brian Exp $"""
+Folders are the basic container objects and are analogous to directories.
 
-__version__='$Revision: 1.53 $'[11:-2]
+$Id: Folder.py,v 1.54 1998/11/26 21:11:35 amos Exp $"""
+
+__version__='$Revision: 1.54 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -97,6 +99,7 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
     manage_addObject__roles__=None
 
     def tpValues(self):
+	"""Returns a list of the folder's sub-folders, used by tree tag."""
 	r=[]
 	if hasattr(self.aq_base,'tree_ids'):
 	    for id in self.aq_base.tree_ids:
@@ -134,7 +137,8 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 
     # The Following methods are short-term measures to get Paul off my back;)
     def manage_exportHack(self, id=None):
-	" "
+	"""Exports a folder and its contents to /var/export.bbe
+	This file can later be imported by using manage_importHack"""
 	if id is None: o=self
 	else: o=getattr(self.o)
 	f=Globals.data_dir+'/export.bbe'
@@ -142,7 +146,7 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
 	return f
 
     def manage_importHack(self, REQUEST=None):
-	" "
+	"Imports a previously exported object from /var/export.bbe"
 	f=Globals.data_dir+'/export.bbe'
 	o=self._p_jar.import_file(f)
         id=o.id
@@ -151,14 +155,16 @@ class Folder(ObjectManager,RoleManager,DocumentHandler,
         return 'OK, I imported %s' % id
 
 class PUTer:
-    """ """
+    """Class to support the HTTP PUT protocol."""
+
     def __init__(self, parent, key):
 	self._parent=parent
 	self._key=key
 	self.__roles__=parent.PUT__roles__
 
     def PUT(self, REQUEST, BODY):
-	""" """
+	"""Adds a document, image or file to the folder when a PUT
+	request is received."""
 	name=self._key
 	try: type=REQUEST['CONTENT_TYPE']
 	except KeyError: type=''
@@ -203,6 +209,9 @@ def subclass(c,super):
 ############################################################################## 
 #
 # $Log: Folder.py,v $
+# Revision 1.54  1998/11/26 21:11:35  amos
+# Added more doc strings and converted some comments to doc strings.
+#
 # Revision 1.53  1998/08/26 18:33:44  brian
 # Updated permissions in Folder folder for the copy/paste methods and added
 # cvs log to Folder.py

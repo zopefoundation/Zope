@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.67 $'[11:-2]
+__version__='$Revision: 1.68 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi,lower
@@ -13,7 +13,8 @@ from DocumentTemplate.DT_Util import cDocument
 class Document(cDocument, HTML, Explicit,
 	       RoleManager, Item_w__name__,
 	       ):
-    """ """
+    """Document object. Basically a DocumentTemplate.HTML object
+    which operates as a Principia object."""
     meta_type='Document'
     icon     ='p_/doc'
     _proxy_roles=()
@@ -67,7 +68,8 @@ class Document(cDocument, HTML, Explicit,
    
 
     def __call__(self, client=None, REQUEST={}, RESPONSE=None, **kw):
-	""" """
+	"""Render the document given a client object, REQUEST mapping,
+	Response, and key word arguments."""
 	kw['document_id']   =self.id
         kw['document_title']=self.title
         if client is None:
@@ -179,7 +181,7 @@ class Document(cDocument, HTML, Explicit,
 
     def PUT(self, BODY, REQUEST):
 	"""
-   replaces the contents of the document with the BODY of an HTTP PUT request.
+    replaces the contents of the document with the BODY of an HTTP PUT request.
 	"""
 	self._validateProxy(REQUEST)
 	self.munge(BODY)
@@ -215,7 +217,9 @@ class Document(cDocument, HTML, Explicit,
 		    message='Your changes have been saved',
 		    action ='manage_main')
 
-    def PrincipiaSearchSource(self): return self.read()
+    def PrincipiaSearchSource(self):
+	"Support for searching - the document's contents are searched."
+	return self.read()
 
 default_html="""<!--#var standard_html_header-->
 <H2><!--#var title_or_id--> <!--#var document_title--></H2>
@@ -243,7 +247,7 @@ def manage_addDocument(self, id, title='',file='', REQUEST=None, submit=None):
     return ''
 
 class DocumentHandler:
-    """ """
+    """Mixin class for objects that can contain Documents."""
 
     def documentIds(self):
 	t=[]

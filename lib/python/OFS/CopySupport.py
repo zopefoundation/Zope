@@ -1,5 +1,5 @@
 __doc__="""Copy interface"""
-__version__='$Revision: 1.22 $'[11:-2]
+__version__='$Revision: 1.23 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile
 from marshal import loads, dumps
@@ -11,7 +11,7 @@ from App.Dialogs import MessageDialog
 CopyError='Copy Error'
 
 class CopyContainer:
-    # Interface for containerish objects which allow cut/copy/paste
+    """Interface for containerish objects which allow cut/copy/paste"""
 
     def manage_cutObjects(self, ids, REQUEST=None):
         """Put a reference to the objects named in ids in the clip board"""
@@ -176,12 +176,13 @@ class CopyContainer:
         return ob
 
     def cb_dataValid(self):
-	# Return true if clipboard data seems valid.
+	"Return true if clipboard data seems valid."
 	try:    cp=_cb_decode(self.REQUEST['__cp'])
 	except: return 0
         return 1
 
     def cb_dataItems(self):
+	"List of objects in the clip board"
 	try:    cp=_cb_decode(self.REQUEST['__cp'])
         except: return []
         oblist=[]
@@ -252,17 +253,17 @@ Globals.default__class_init__(CopyContainer)
 
 
 class CopySource:
-    # Interface for objects which allow themselves to be copied.
+    """Interface for objects which allow themselves to be copied."""
     
     def _canCopy(self, op=0):
-        # Called to make sure this object is copyable. The op var
-        # is 0 for a copy, 1 for a move.
+        """Called to make sure this object is copyable. The op var
+        is 0 for a copy, 1 for a move."""
         return 1
 
     def _notifyOfCopyTo(self, container, op=0):
-        # Overide this to be pickly about where you go! If you dont
-        # want to go there, raise an exception. The op variable is
-        # 0 for a copy, 1 for a move.
+        """Overide this to be pickly about where you go! If you dont
+        want to go there, raise an exception. The op variable is
+        0 for a copy, 1 for a move."""
         pass
 
     def _getCopy(self, container):
@@ -284,13 +285,15 @@ class CopySource:
 	self.id=id
 
     def cb_isCopyable(self):
-        if not (hasattr(self, '_canCopy') and self._canCopy(0)):
+        """Is object copyable? Returns 0 or 1"""
+	if not (hasattr(self, '_canCopy') and self._canCopy(0)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
             return 0
         return 1
 
     def cb_isMoveable(self):
+	"""Is object moveable? Returns 0 or 1"""
         if not (hasattr(self, '_canCopy') and self._canCopy(1)):
             return 0
         if hasattr(self, '_p_jar') and self._p_jar is None:
@@ -395,6 +398,9 @@ eNotSupported=fMessageDialog(
 ############################################################################## 
 #
 # $Log: CopySupport.py,v $
+# Revision 1.23  1998/11/26 21:11:35  amos
+# Added more doc strings and converted some comments to doc strings.
+#
 # Revision 1.22  1998/10/07 15:21:13  jim
 # Rearranged order of operations to make move and copy consistent.
 # In particular, copy or moved object has new ID *before* it gets

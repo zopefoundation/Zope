@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.23 1998/11/23 22:57:05 jim Exp $'''
-__version__='$Revision: 1.23 $'[11:-2]
+$Id: SimpleItem.py,v 1.24 1998/11/26 21:11:35 amos Exp $'''
+__version__='$Revision: 1.24 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -28,7 +28,7 @@ from types import InstanceType, StringType
 HTML=Globals.HTML
 
 class Item(CopySource, App.Management.Tabs):
-
+    """A simple Principia object. Not Folderish."""
     isPrincipiaFolderish=0
     isTopLevelPrincipiaApplicationObject=0
 
@@ -54,30 +54,36 @@ class Item(CopySource, App.Management.Tabs):
 		    },
 		   )
 
-    # Utility that returns the title if it is not blank and the id
-    # otherwise.
     def title_or_id(self):
+	"""
+	Utility that returns the title if it is not blank and the id
+	otherwise.
+	"""
 	return self.title or self.id
 
-    # Utility that returns the title if it is not blank and the id
-    # otherwise.  If the title is not blank, then the id is included
-    # in parens.
     def title_and_id(self):
+	"""
+	Utility that returns the title if it is not blank and the id
+	otherwise.  If the title is not blank, then the id is included
+	in parens.
+	"""
 	t=self.title
 	return t and ("%s (%s)" % (t,self.id)) or self.id
 
     
-    # Handy way to talk to ourselves in document templates.
     def this(self):
+    	"Handy way to talk to ourselves in document templates."
 	return self
 
-    # Interact with tree tag
     def tpURL(self):
+	"My URL as used by tree tag"
 	url=self.id
 	if hasattr(url,'im_func'): url=url()
 	return url
 
-    def tpValues(self): return ()
+    def tpValues(self):
+	"My sub-objects as used by the tree tag"
+	 return ()
 
     _manage_editedDialog=Globals.HTMLFile('editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
@@ -137,16 +143,17 @@ class Item(CopySource, App.Management.Tabs):
         raise 'Redirect', "%s/manage_main" % URL1 
 
 class Item_w__name__(Item):
+    """Mixin class to support common name/id functions"""
 
-    # Utility that returns the title if it is not blank and the id
-    # otherwise.
     def title_or_id(self):
+	"""Utility that returns the title if it is not blank and the id
+	otherwise."""
 	return self.title or self.__name__
 
-    # Utility that returns the title if it is not blank and the id
-    # otherwise.  If the title is not blank, then the id is included
-    # in parens.
     def title_and_id(self):
+	"""Utility that returns the title if it is not blank and the id
+	otherwise.  If the title is not blank, then the id is included
+	in parens."""
 	t=self.title
 	return t and ("%s (%s)" % (t,self.__name__)) or self.__name__
 
@@ -191,6 +198,9 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.24  1998/11/26 21:11:35  amos
+# Added more doc strings and converted some comments to doc strings.
+#
 # Revision 1.23  1998/11/23 22:57:05  jim
 # First crack at updating error handling to work with 1.5
 #
