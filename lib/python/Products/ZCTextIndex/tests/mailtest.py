@@ -84,7 +84,7 @@ def index(rt, mboxfile, db):
         rt["documents"] = docs = IOBTree()
     get_transaction().commit()
 
-    mbox = mailbox.UnixMailbox(open(mboxfile))
+    mbox = mailbox.UnixMailbox(open(mboxfile, 'rb'))
     if VERBOSE:
         print "opened", mboxfile
     if not NUM:
@@ -121,7 +121,7 @@ def index(rt, mboxfile, db):
 
     get_transaction().commit()
 
-    if PACK_INTERVAL and i % PACK_INTERVAL != 0:
+    if PACK_INTERVAL:
         if VERBOSE >= 2:
             print "packing one last time..."
         p0 = time.clock()
