@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__ = '$Id: TopicIndex.py,v 1.3 2002/03/11 14:54:36 andreasjung Exp $'
+__version__ = '$Id: TopicIndex.py,v 1.4 2002/04/15 19:00:45 andreasjung Exp $'
 
 from Products.PluginIndexes import PluggableIndex 
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -180,7 +180,8 @@ class TopicIndex(PluggableIndex.PluggableIndex, Persistent,
         self.addFilteredSet(filterId, typeFilteredSet, expr)
 
         if RESPONSE:
-            RESPONSE.redirect(URL1+'/manage_workspace?manage_tabs_message=FilteredSet%20added')
+            RESPONSE.redirect(URL1+'/manage_workspace?'
+            'manage_tabs_message=FilteredSet%20added')
 
 
     def manage_delFilteredSet(self, filterIds=[], URL1=None, \
@@ -191,7 +192,8 @@ class TopicIndex(PluggableIndex.PluggableIndex, Persistent,
             self.delFilteredSet(filterId)
 
         if RESPONSE:
-            RESPONSE.redirect(URL1+'/manage_workspace?manage_tabs_message=FilteredSet(s)%20deleted')
+            RESPONSE.redirect(URL1+'/manage_workspace?'
+            'manage_tabs_message=FilteredSet(s)%20deleted')
 
 
     def manage_saveFilteredSet(self,filterId, expr, URL1=None,\
@@ -201,7 +203,8 @@ class TopicIndex(PluggableIndex.PluggableIndex, Persistent,
         self.filteredSets[filterId].setExpression(expr)
 
         if RESPONSE:
-            RESPONSE.redirect(URL1+'/manage_workspace?manage_tabs_message=FilteredSet(s)%20updated')
+            RESPONSE.redirect(URL1+'/manage_workspace?'
+            'manage_tabs_message=FilteredSet(s)%20updated')
 
 
     def manage_clearFilteredSet(self, filterIds=[], URL1=None, \
@@ -212,7 +215,8 @@ class TopicIndex(PluggableIndex.PluggableIndex, Persistent,
             self.clearFilteredSet(filterId)
 
         if RESPONSE:
-            RESPONSE.redirect(URL1+'/manage_workspace?manage_tabs_message=FilteredSet(s)%20cleared')
+            RESPONSE.redirect(URL1+'/manage_workspace?'
+             'manage_tabs_message=FilteredSet(s)%20cleared')
 
 
     editFilteredSet = DTMLFile('dtml/editFilteredSet',globals())
