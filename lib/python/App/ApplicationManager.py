@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""System management components"""
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition, os
@@ -95,6 +95,7 @@ from OFS import SimpleItem
 from App.Dialogs import MessageDialog
 from Product import ProductFolder
 from version_txt import version_txt
+
 
 class Fake:
     def locked_in_version(self): return 0
@@ -125,6 +126,10 @@ class VersionManager(Fake, SimpleItem.Item, Acquisition.Implicit):
     manage_options=(
         {'label':'Version', 'action':'manage_main'},
         )
+
+
+
+
 
 class ApplicationManager(Folder,CacheManager):
     """System management"""
@@ -231,6 +236,29 @@ class ApplicationManager(Folder,CacheManager):
         s=os.stat(self.db_name())[6]
         if s >= 1048576.0: return '%.1fM' % (s/1048576.0)
         return '%.1fK' % (s/1024.0)
+
+
+    manage_debug=HTMLFile('debug', globals())
+
+    def get_refcounts(self, n=100, t=(type(Fake), type(Acquisition.Implicit))):
+        # get class refcount info
+	dict={}
+	for m in sys.modules.values():
+            for sym in dir(m):
+                ob=getattr(m, sym)
+                if type(ob) in t:
+                    dict[ob]=sys.getrefcount(ob)
+        pairs = map(lambda x: (x[1], '%s' %  x[0].__name__), dict.items())
+        pairs.sort()
+        pairs.reverse()
+        pairs=pairs[:n]
+        return pairs
+
+
+
+
+
+
 
     if hasattr(sys, 'ZMANAGED'):
         

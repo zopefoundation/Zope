@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>Debug Information</title>
+</head>
+<body bgcolor="#FFFFFF" link="#000099" vlink="#555555">
+<!--#var manage_tabs-->
+
+<h3>Debug Information</h3>
+<form>
+<p>
+<ul>
+<li>Zope version: <!--#var version_txt-->
+<li>Python version: <!--#var sys_version-->
+<li>System Platform: <!--#var sys_platform-->
+<li>Process ID: <!--#var process_id-->
+<li>Running for: <!--#var process_time-->
+<li>Refcounts: <select name="foo"><!--#in 
+    get_refcounts--><option><!--#var 
+    sequence-item-->: <!--#var sequence-key--></option><!--#/in
+    --></select>
+</ul>
+</p>
+
+
+</form>
+</body>
+</html>
