@@ -106,6 +106,7 @@ class LoggingProducer:
 
     def more(self):
         getattr(self.logger, self.method)(self.bytes)
+        self.logger=None
         return ''
     
 
@@ -117,5 +118,6 @@ class CallbackProducer:
     
     def more(self):
         self.callback()
+        self.callback=None
         return ''
         

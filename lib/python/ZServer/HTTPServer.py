@@ -119,7 +119,7 @@ from ZPublisher.HTTPRequest import HTTPRequest
 from medusa.http_server import http_server, http_channel
 from medusa import counter, producers, asyncore, max_sockets
 from medusa.default_handler import split_path, unquote, get_header
-from medusa.asyncore import compact_traceback
+from medusa.asyncore import compact_traceback, dispatcher
 
 from ZServer import CONNECTION_LIMIT, ZOPE_VERSION, ZSERVER_VERSION
 
@@ -314,6 +314,8 @@ class zhttp_handler:
 
 class zhttp_channel(http_channel):
     "http channel"
+
+    closed=0
     
     def __init__(self, server, conn, addr):
         http_channel.__init__(self, server, conn, addr)
@@ -324,6 +326,8 @@ class zhttp_channel(http_channel):
         # this is thread-safe when send is false
         # note, that strings are not wrapped in 
         # producers by default
+        if self.closed:
+            return
         self.producer_fifo.push(producer)
         if send: self.initiate_send()
         
@@ -338,33 +342,37 @@ class zhttp_channel(http_channel):
                 except: return
                 handle(module_name, request, response)
 
-    def handle_close(self):
+    def close(self):
+        self.closed=1
+        while self.queue:
+            self.queue.pop()
         if self.current_request is not None:
             self.current_request.channel=None # break circ refs
             self.current_request=None
         while self.producer_fifo:
-            self.producer_fifo.pop()
-        self.close()
+            p=self.producer_fifo.pop()
+            p.more()
+        dispatcher.close(self)
 
-    def handle_error (self):
-        (file,fun,line), t, v, tbinfo = compact_traceback()
-
-        # sometimes a user repr method will crash.
-        try:
-            self_repr = repr (self)
-        except:
-            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
-
-        self.log_info (
-            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
-                self_repr,
-                t,
-                v,
-                tbinfo
-                ),
-            'error'
-            )
-        self.handle_close()
+#    def handle_error (self):
+#        (file,fun,line), t, v, tbinfo = compact_traceback()
+#
+#        # sometimes a user repr method will crash.
+#        try:
+#            self_repr = repr (self)
+#        except:
+#            self_repr = '<__repr__ (self) failed for object at %0x>' % id(self)
+#
+#        self.log_info (
+#            'uncaptured python exception, closing channel %s (%s:%s %s)' % (
+#                self_repr,
+#                t,
+#                v,
+#                tbinfo
+#                ),
+#            'error'
+#            )
+#        self.handle_close()
 
     def done(self):
         "Called when a publishing request is finished"

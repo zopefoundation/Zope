@@ -288,26 +288,29 @@ class ChannelPipe:
         self._bytes=0
     
     def write(self, text, l=None):
+        if self._channel.closed:
+            return
         if l is None: l=len(text)
         self._bytes=self._bytes + l
         self._channel.push(text,0)
         Wakeup()
         
     def close(self):
-        DebugLogger.log('A', id(self._request), 
-            '%s %s' % (self._request.reply_code, self._bytes))
-        self._channel.push(LoggingProducer(self._request, self._bytes), 0)
-        self._channel.push(CallbackProducer(self._channel.done), 0)
-        self._channel.push(CallbackProducer(
-            lambda t=('E', id(self._request)): apply(DebugLogger.log, t)), 0)
-        if self._shutdown:
-            try: r=self._shutdown[0]
-            except: r=0
-            sys.ZServerExitCode=r
-            self._channel.push(ShutdownProducer(), 0)
-            Wakeup(lambda: asyncore.close_all())
-        else:
-            if self._close: self._channel.push(None, 0)
+        if not self._channel.closed:
+            DebugLogger.log('A', id(self._request), 
+                '%s %s' % (self._request.reply_code, self._bytes))
+            self._channel.push(LoggingProducer(self._request, self._bytes), 0)
+            self._channel.push(CallbackProducer(self._channel.done), 0)
+            self._channel.push(CallbackProducer(
+                lambda t=('E', id(self._request)): apply(DebugLogger.log, t)), 0)
+            if self._shutdown:
+                try: r=self._shutdown[0]
+                except: r=0
+                sys.ZServerExitCode=r
+                self._channel.push(ShutdownProducer(), 0)
+                Wakeup(lambda: asyncore.close_all())
+            else:
+                if self._close: self._channel.push(None, 0)
             Wakeup()
 
         self._channel=None #need to break cycles?
