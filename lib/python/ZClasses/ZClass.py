@@ -519,7 +519,9 @@ class ZClass( Base
         the instance will be returned.
         """
         i=mapply(self._zclass_, (), REQUEST)
-        i._setId(id)
+        try: i._setId(id)
+        except AttributeError:
+            i.id=id
         folder=durl=None
         if hasattr(self, 'Destination'):
             d=self.Destination
