@@ -83,9 +83,9 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
-import regex, re, sys, os, string, urllib
+import regex, re, sys, os, string, urllib, time, whrandom
 from string import lower, atoi, rfind, split, strip, join, upper, find
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -175,7 +175,10 @@ class HTTPRequest(BaseRequest):
     _urls = ()
 
     retry_max_count=3
-    def supports_retry(self): return self.retry_count < self.retry_max_count
+    def supports_retry(self):
+        if self.retry_count < self.retry_max_count:
+            time.sleep(whrandom.uniform(0, 2**(self.retry_count)))
+            return 1
 
     def retry(self):
         self.retry_count=self.retry_count+1
