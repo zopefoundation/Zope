@@ -15,9 +15,11 @@
 
 """ Request log profiler script """
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import string, sys, time, getopt, tempfile, math, cPickle
+try: import gzip
+except: pass
 
 class ProfileException(Exception): pass
 
@@ -596,6 +598,8 @@ If the 'verbose' argument is specified, do not trim url to fit into 80 cols.
 
 If the 'today' argument is specified, limit results to hits received today.
 
+If the 'daysago' argument is specified, limit results to hits received n days ago.
+
 The 'resolution' argument is used only for timed reports and specifies the
 number of seconds between consecutive lines in the report 
 (default is 60 seconds).
@@ -633,6 +637,11 @@ Examples:
 
     Show cumulative report statistics sorted by mean for entries in the log
     which happened today, and do not trim the URL in the resulting report.
+
+  %(pname)s debug.log --cumulative --sort=mean --daysago=3 --verbose
+
+    Show cumulative report statistics sorted by mean for entries in the log
+    which happened three days ago, and do not trim the URL in the resulting report.
 
   %(pname)s debug.log --urlfocus='/manage_main' --urlfocustime=60
 
@@ -677,7 +686,7 @@ Usage: %s filename1 [filename2 ...]
           [--sort=spec]
           [--top=n]
           [--verbose]
-          [--today | [--start=date] [--end=date] ]
+          [--today | [--start=date] [--end=date] | --daysago=n ] 
           [--writestats=filename | --readstats=filename]
           [--urlfocus=url]
           [--urlfocustime=seconds]
@@ -715,7 +724,10 @@ if __name__ == '__main__':
     i = 1
     for arg in sys.argv[1:]:
         if arg[:2] != '--':
-            files.append(open(arg))
+            if arg[-3:] == '.gz' and globals().has_key('gzip'):
+                files.append(gzip.GzipFile(arg,'r'))
+            else:
+                files.append(open(arg))
             sys.argv.remove(arg)
             i = i + 1
 
@@ -723,10 +735,11 @@ if __name__ == '__main__':
         opts, extra = getopt.getopt(
             sys.argv[1:], '', ['sort=', 'top=', 'help', 'verbose', 'today',
                                'cumulative', 'detailed', 'timed','start=',
-                               'end=','resolution=', 'writestats=',
+                               'end=','resolution=', 'writestats=','daysago=',
                                'readstats=','urlfocus=','urlfocustime=']
             )
         for opt, val in opts:
+
             if opt=='--readstats':
                 statsfname = val
                 readstats = 1
@@ -742,6 +755,15 @@ if __name__ == '__main__':
                 resolution=int(val)
             if opt=='--today':
                 now = time.localtime(time.time())
+                # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
+                start = list(now)
+                start[3] = start[4] = start[5] = 0
+                start = time.mktime(start)
+                end = list(now)
+                end[3] = 23; end[4] = 59; end[5] = 59
+                end = time.mktime(end)
+            if opt=='--daysago':
+                now = time.localtime(time.time() - int(val)*3600*24 )
                 # for testing - now = (2001, 04, 19, 0, 0, 0, 0, 0, -1)
                 start = list(now)
                 start[3] = start[4] = start[5] = 0

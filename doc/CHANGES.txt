@@ -16,6 +16,9 @@ Zope Changes
         a ZCatalog multiple times it is much faster to use a
         TopicIndex instead.
 
+      - requestprofiler: added new --daysago option and added
+        support for reading gzipped detailed logfiles
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff
