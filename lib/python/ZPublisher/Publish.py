@@ -478,11 +478,11 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.94 1998/09/03 17:06:00 jim Exp $"""
+$Id: Publish.py,v 1.95 1998/09/03 18:08:49 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.94 $'[11:-2]
+__version__='$Revision: 1.95 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
@@ -1217,6 +1217,9 @@ class Request:
         else:
              if have_env('HTTPS') and (
                  environ['HTTPS'] == "on" or environ['HTTPS'] == "ON"):
+                 server_url='https://'
+             elif (have_env('SERVER_PORT_SECURE') and 
+                   environ['SERVER_PORT_SECURE'] == "1"):
                  server_url='https://'
              else: server_url='http://'
 
