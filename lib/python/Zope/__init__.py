@@ -25,7 +25,8 @@ Globals.opened.append(DB)
 # Set up the "application" object that automagically opens
 # connections
 app=bobo_application=ZODB.ZApplication.ZApplicationWrapper(
-    DB, 'Application', OFS.Application.Application, (), 'ZopeVersion')
+    DB, 'Application', OFS.Application.Application, (),
+    Globals.VersionNameName)
 
 # Initialize products:
 c=app()
