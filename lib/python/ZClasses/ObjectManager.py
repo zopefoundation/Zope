@@ -85,7 +85,7 @@
 """Object-manager mix-in for ZClasses
 """
 
-import OFS.ObjectManager, Globals
+import OFS.ObjectManager, Globals, Products
 
 class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
                       OFS.PropertySheets.View):
@@ -94,7 +94,7 @@ class SubobjectsSheet(OFS.PropertySheets.PropertySheet,
     manage=Globals.HTMLFile('subobjects', globals())
     
     def possible_meta_types(self):
-        return self.aq_acquire('_product_meta_types')
+        return self.aq_acquire('_product_meta_types')+Products.meta_types
 
     def selected_meta_types(self):
         return map(lambda v: v['name'], self.getClassAttr('meta_types',()))
@@ -121,8 +121,10 @@ class ZObjectManagerPropertySheets(OFS.PropertySheets.PropertySheets):
 
 class ObjectManager(OFS.ObjectManager.ObjectManager):
 
+    _zclass_method_meta_types=()
+
     def all_meta_types(self):
-        return self.meta_types
+        return self.meta_types+self._zclass_method_meta_types
 
 class ZObjectManager:
     """Mix-in for Object Management
