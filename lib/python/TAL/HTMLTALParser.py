@@ -194,7 +194,7 @@ class HTMLTALParser(SGMLParser):
                     close_to = i
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
-                    self.close_to_level(close_to)
+            self.close_to_level(close_to)
             self.tagstack.append(tag)
         elif tag in PARA_LEVEL_HTML_TAGS + BLOCK_LEVEL_HTML_TAGS:
             close_to = -1
