@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 import regex
 from string import atoi, atol, atof, join, split, strip
@@ -119,8 +119,12 @@ def field2int(v):
         return map(field2int, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
-    if v: return atoi(v)
+    if v:
+        try: return atoi(v)
+        except ValueError:
+            raise ValueError, (
+                "An integer was expected in the value '%s'" % v
+                )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2float(v):
@@ -128,8 +132,12 @@ def field2float(v):
         return map(field2float, v)
     if hasattr(v,'read'): v=v.read()
     else: v=str(v)
-    # we can remove the check for an empty string when we go to python 1.4
-    if v: return atof(v)
+    if v:
+        try: return atof(v)
+        except ValueError:
+            raise ValueError, (
+                "A floating-point number was expected in the value '%s'" % v
+                )
     raise ValueError, (
         'Empty entry when <strong>floating-point number</strong> expected')
 
@@ -142,7 +150,12 @@ def field2long(v):
     # handle trailing 'L' if present.
     if v[-1:] in ('L', 'l'):
         v = v[:-1]
-    if v: return atol(v)
+    if v:
+        try: return atol(v)
+        except ValueError:
+            raise ValueError, (
+                "A long integer was expected in the value '%s'" % v
+                )
     raise ValueError, 'Empty entry when <strong>integer</strong> expected'
 
 def field2tokens(v):
