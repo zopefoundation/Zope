@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 import sys, os, string, time, Globals, ExtensionClass
@@ -265,3 +265,7 @@ def absattr(attr):
 
 def p_name(name):
     return '_' + string.translate(name, name_trans) + '_Permission'
+
+
+Globals.default__class_init__(FindSupport)
+
