@@ -83,17 +83,19 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.17 1998/12/04 20:15:31 jim Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: __init__.py,v 1.18 1999/01/27 20:30:37 brian Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 import Session, Draft
+import OFS.Image, OFS.Folder, AccessControl.User
+import OFS.DTMLMethod, OFS.DTMLDocument
 from ImageFile import ImageFile
-import OFS.Image, OFS.Document, OFS.Folder, AccessControl.User
 
-product_name='Base Principia'
+product_name='Zope built-in objects'
 
-classes=('Session.Session', 'OFS.Image.File', 
-         'OFS.Image.Image', 'OFS.Document.Document')
+classes=('OFS.DTMLMethod.DTMLMethod', 'OFS.DTMLDocument.DTMLDocument',
+         'Session.Session', 'OFS.Image.File', 'OFS.Image.Image',
+         )
 klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
 meta_types=(
@@ -103,7 +105,8 @@ meta_types=(
     {'name': 'File', 'action':'manage_addFileForm'},
     {'name': 'Image', 'action':'manage_addImageForm'},
     {'name': 'Folder', 'action':'manage_addFolderForm'},
-    {'name': 'Document', 'action':'manage_addDocumentForm'},
+    {'name': 'DTML Method', 'action':'manage_addDTMLMethodForm'},
+    {'name': 'DTML Document', 'action':'manage_addDTMLDocumentForm'},
     )
 
 
@@ -112,16 +115,21 @@ def PUT(self):
     raise TypeError, 'Directory PUT is not supported'
 
 methods={
-    'manage_addSessionForm': Session.manage_addSessionForm,
-    'manage_addSession': Session.manage_addSession,
-    'manage_addDocument': OFS.Document.manage_addDocument,
-    'manage_addDocumentForm': OFS.Document.manage_addDocumentForm,
+    # for bw compatibility
+    'manage_addDocument': OFS.DTMLMethod.add,
+    
+    'manage_addDTMLMethod': OFS.DTMLMethod.add,
+    'manage_addDTMLMethodForm': OFS.DTMLMethod.addForm,
+    'manage_addDTMLDocument': OFS.DTMLDocument.add,
+    'manage_addDTMLDocumentForm': OFS.DTMLDocument.addForm,
     'manage_addFolder': OFS.Folder.manage_addFolder,
     'manage_addFolderForm': OFS.Folder.manage_addFolderForm,
     'manage_addImage': OFS.Image.manage_addImage,
     'manage_addImageForm': OFS.Image.manage_addImageForm,
     'manage_addFile': OFS.Image.manage_addFile,
     'manage_addFileForm': OFS.Image.manage_addFileForm,
+    'manage_addSessionForm': Session.manage_addSessionForm,
+    'manage_addSession': Session.manage_addSession,
     'PUT': PUT,
     'PUT__roles__': ('Manager',),
     'manage_addUserFolder': AccessControl.User.manage_addUserFolder,
@@ -136,14 +144,16 @@ misc_={
 __ac_permissions__=(
     ('Add Sessions',('manage_addSessionForm', 'manage_addSession')),
     ('Add Documents, Images, and Files',
-     ('manage_addDocumentForm', 'manage_addDocument',
+     ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
+      'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
       'manage_addFileForm', 'manage_addFile',
       'manage_addImageForm', 'manage_addImage',
       'PUT')
      ),
     ('Add Folders',('manage_addFolderForm', 'manage_addFolder')),
     ('Add User Folders',('manage_addUserFolder',)),
-    ('Change Documents', ()),
+    ('Change DTML Documents', ()),
+    ('Change DTML Methods', ()),
     ('Change Images and Files', ()),
     ('Change proxy roles', ()),
     ('Change Sessions', ()),
