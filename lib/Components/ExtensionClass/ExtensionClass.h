@@ -1,159 +1,110 @@
 /*
 
-  $Id: ExtensionClass.h,v 1.11 1998/03/23 23:05:09 jim Exp $
+  $Id: ExtensionClass.h,v 1.12 1998/11/17 19:53:27 jim Exp $
 
   Extension Class Definitions
 
-     Copyright 
-
-       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
-       unless otherwise indicated. Permission to use, copy and
-       distribute this software is hereby granted, provided that the
-       above copyright notice appear in all copies and that both that
-       copyright notice and this permission notice appear. Note that
-       any product, process or technology described in this software
-       may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
-       hereunder.
-
-     Trademarks 
-
-       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-       All other trademarks are owned by their respective companies. 
-
-     No Warranty 
-
-       The software is provided "as is" without warranty of any kind,
-       either express or implied, including, but not limited to, the
-       implied warranties of merchantability, fitness for a particular
-       purpose, or non-infringement. This software could include
-       technical inaccuracies or typographical errors. Changes are
-       periodically made to the software; these changes will be
-       incorporated in new editions of the software. DCLC may make
-       improvements and/or changes in this software at any time
-       without notice.
-
-     Limitation Of Liability 
-
-       In no event will DCLC be liable for direct, indirect, special,
-       incidental, economic, cover, or consequential damages arising
-       out of the use of or inability to use this software even if
-       advised of the possibility of such damages. Some states do not
-       allow the exclusion or limitation of implied warranties or
-       limitation of liability for incidental or consequential
-       damages, so the above limitation or exclusion may not apply to
-       you.
+  Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
+  All rights reserved.
   
-     Implementing base extension classes
-     
-       A base extension class is implemented in much the same way that an
-       extension type is implemented, except:
-     
-       - The include file, 'ExtensionClass.h', must be included.
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are
+    met:
+    
+      o Redistributions of source code must retain the above copyright
+	notice, this list of conditions, and the disclaimer that follows.
+    
+      o Redistributions in binary form must reproduce the above copyright
+	notice, this list of conditions, and the following disclaimer in
+	the documentation and/or other materials provided with the
+	distribution.
+    
+      o Neither the name of Digital Creations nor the names of its
+	contributors may be used to endorse or promote products derived
+	from this software without specific prior written permission.
+    
+    
+    THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS AND CONTRIBUTORS *AS
+    IS* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+    TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+    PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL
+    CREATIONS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+    OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+    USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+    DAMAGE.
 
-       - The type structure is declared to be of type
-	 'PyExtensionClass', rather than of type 'PyTypeObject'.
-
-       - The type structure has an additional member that must be defined
-	 after the documentation string.  This extra member is a method chain
-	 ('PyMethodChain') containing a linked list of method definition
-	 ('PyMethodDef') lists.  Method chains can be used to implement
-	 method inheritance in C.  Most extensions don't use method chains,
-	 but simply define method lists, which are null-terminated arrays
-	 of method definitions.  A macro, 'METHOD_CHAIN' is defined in
-	 'ExtensionClass.h' that converts a method list to a method chain.
-	 (See the example below.)
-     
-       - Module functions that create new instances must be replaced by an
-	 '__init__' method that initializes, but does not create storage for 
-	 instances.
-     
-       - The extension class must be initialized and exported to the module
-	 with::
-     
-	     PyExtensionClass_Export(d,"name",type);
-     
-	 where 'name' is the module name and 'type' is the extension class
-	 type object.
-     
-       Attribute lookup
-     
-	 Attribute lookup is performed by calling the base extension class
-	 'getattr' operation for the base extension class that includes C
-	 data, or for the first base extension class, if none of the base
-	 extension classes include C data.  'ExtensionClass.h' defines a
-	 macro 'Py_FindAttrString' that can be used to find an object's
-	 attributes that are stored in the object's instance dictionary or
-	 in the object's class or base classes::
-     
-	    v = Py_FindAttrString(self,name);
-     
-	 In addition, a macro is provided that replaces 'Py_FindMethod'
-	 calls with logic to perform the same sort of lookup that is
-	 provided by 'Py_FindAttrString'.
-     
-       Linking
-     
-	 The extension class mechanism was designed to be useful with
-	 dynamically linked extension modules.  Modules that implement
-	 extension classes do not have to be linked against an extension
-	 class library.  The macro 'PyExtensionClass_Export' imports the
-	 'ExtensionClass' module and uses objects imported from this module
-	 to initialize an extension class with necessary behavior.
-   
-    If you have questions regarding this software,
-    contact:
-   
-      Jim Fulton, jim@digicool.com
-      Digital Creations L.C.  
-   
-      (540) 371-6909
-
-
-  $Log: ExtensionClass.h,v $
-  Revision 1.11  1998/03/23 23:05:09  jim
-  Updated doc.
-
-  Revision 1.10  1998/03/13 22:19:04  jim
-  Added an interface for testing subclass relationships.
-
-  Added macro to test whether ExtensionClass has been imported and
-  import it if it hasn't been.  This is handy in cases where extension
-  modules are implemented in multiple C files.
-
-  Revision 1.9  1997/12/11 15:37:54  jim
-  Added EXTENSIONCLASS_BASICNEW_FLAG.
-
-  Revision 1.8  1997/07/02 20:18:20  jim
-  Added stupid parens and other changes to make 'gcc -Wall -pedantic'
-  and Barry happy.  Renamed PyCObject_Import to avoid conflict with
-  version in 1.5.
-
-  Revision 1.7  1997/07/02 17:32:34  jim
-  *** empty log message ***
-
-  Revision 1.6  1997/04/11 21:47:51  jim
-  Got rid of class attributes.
-  Added method hooks.
-
-  Revision 1.5  1997/03/08 12:44:13  jim
-  Moved INSTANCE_DICT macro to public interface.
-
-  Revision 1.4  1997/02/17 16:26:59  jim
-  Many changes in access to CAPI.
-
-  Revision 1.3  1996/12/06 17:13:17  jim
-  Added support for attro functions and made use of cobject to export C
-  interfaces.
-
-  Revision 1.2  1996/11/08 22:07:26  jim
-  Added parens in if to make -Wall happy.
-
-  Revision 1.1  1996/10/22 22:25:43  jim
-  *** empty log message ***
-
+  Implementing base extension classes
+  
+    A base extension class is implemented in much the same way that an
+    extension type is implemented, except:
+  
+    - The include file, 'ExtensionClass.h', must be included.
+ 
+    - The type structure is declared to be of type
+	  'PyExtensionClass', rather than of type 'PyTypeObject'.
+ 
+    - The type structure has an additional member that must be defined
+	  after the documentation string.  This extra member is a method chain
+	  ('PyMethodChain') containing a linked list of method definition
+	  ('PyMethodDef') lists.  Method chains can be used to implement
+	  method inheritance in C.  Most extensions don't use method chains,
+	  but simply define method lists, which are null-terminated arrays
+	  of method definitions.  A macro, 'METHOD_CHAIN' is defined in
+	  'ExtensionClass.h' that converts a method list to a method chain.
+	  (See the example below.)
+  
+    - Module functions that create new instances must be replaced by an
+	  '__init__' method that initializes, but does not create storage for 
+	  instances.
+  
+    - The extension class must be initialized and exported to the module
+	  with::
+  
+	      PyExtensionClass_Export(d,"name",type);
+  
+	  where 'name' is the module name and 'type' is the extension class
+	  type object.
+  
+    Attribute lookup
+  
+	  Attribute lookup is performed by calling the base extension class
+	  'getattr' operation for the base extension class that includes C
+	  data, or for the first base extension class, if none of the base
+	  extension classes include C data.  'ExtensionClass.h' defines a
+	  macro 'Py_FindAttrString' that can be used to find an object's
+	  attributes that are stored in the object's instance dictionary or
+	  in the object's class or base classes::
+  
+	     v = Py_FindAttrString(self,name);
+  
+	  In addition, a macro is provided that replaces 'Py_FindMethod'
+	  calls with logic to perform the same sort of lookup that is
+	  provided by 'Py_FindAttrString'.
+  
+    Linking
+  
+	  The extension class mechanism was designed to be useful with
+	  dynamically linked extension modules.  Modules that implement
+	  extension classes do not have to be linked against an extension
+	  class library.  The macro 'PyExtensionClass_Export' imports the
+	  'ExtensionClass' module and uses objects imported from this module
+	  to initialize an extension class with necessary behavior.
+ 
+  If you have questions regarding this software,
+  contact:
+ 
+  
+  If you have questions regarding this software,
+  contact:
+ 
+    Digital Creations L.C.  
+    info@digicool.com
+ 
+    (540) 371-6909
 
 */
 

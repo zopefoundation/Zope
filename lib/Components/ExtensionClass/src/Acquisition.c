@@ -1,59 +1,47 @@
 /*
 
-  $Id: Acquisition.c,v 1.23 1998/11/17 19:47:59 jim Exp $
+  Copyright (c) 1996-1998, Digital Creations, Fredericksburg, VA, USA.  
+  All rights reserved.
+  
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+  
+    o Redistributions of source code must retain the above copyright
+      notice, this list of conditions, and the disclaimer that follows.
+  
+    o Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions, and the following disclaimer in
+      the documentation and/or other materials provided with the
+      distribution.
+  
+    o Neither the name of Digital Creations nor the names of its
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+  
+  
+  THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS AND CONTRIBUTORS *AS
+  IS* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+  PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL
+  CREATIONS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+  OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+  USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+  DAMAGE.
 
-  Acquisition Wrappers -- Implementation of acquisition through wrappers
+  $Id: Acquisition.c,v 1.24 1998/11/17 19:49:43 jim Exp $
 
-
-     Copyright 
-
-       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
-       Street, Suite 300, Fredericksburg, Virginia 22401 U.S.A. All
-       rights reserved.  Copyright in this software is owned by DCLC,
-       unless otherwise indicated. Permission to use, copy and
-       distribute this software is hereby granted, provided that the
-       above copyright notice appear in all copies and that both that
-       copyright notice and this permission notice appear. Note that
-       any product, process or technology described in this software
-       may be the subject of other Intellectual Property rights
-       reserved by Digital Creations, L.C. and are not licensed
-       hereunder.
-
-     Trademarks 
-
-       Digital Creations & DCLC, are trademarks of Digital Creations, L.C..
-       All other trademarks are owned by their respective companies. 
-
-     No Warranty 
-
-       The software is provided "as is" without warranty of any kind,
-       either express or implied, including, but not limited to, the
-       implied warranties of merchantability, fitness for a particular
-       purpose, or non-infringement. This software could include
-       technical inaccuracies or typographical errors. Changes are
-       periodically made to the software; these changes will be
-       incorporated in new editions of the software. DCLC may make
-       improvements and/or changes in this software at any time
-       without notice.
-
-     Limitation Of Liability 
-
-       In no event will DCLC be liable for direct, indirect, special,
-       incidental, economic, cover, or consequential damages arising
-       out of the use of or inability to use this software even if
-       advised of the possibility of such damages. Some states do not
-       allow the exclusion or limitation of implied warranties or
-       limitation of liability for incidental or consequential
-       damages, so the above limitation or exclusion may not apply to
-       you.
-
-    If you have questions regarding this software,
-    contact:
-   
-      Jim Fulton, jim@digicool.com
-      Digital Creations L.C.  
-   
-      (540) 371-6909
+  If you have questions regarding this software,
+  contact:
+ 
+    Digital Creations L.C.  
+    info@digicool.com
+ 
+    (540) 371-6909
 
 */
 #include "ExtensionClass.h"
@@ -906,7 +894,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.23 $";
+  char *rev="$Revision: 1.24 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -925,7 +913,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.23 1998/11/17 19:47:59 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.24 1998/11/17 19:49:43 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -945,105 +933,3 @@ initAcquisition()
 
   CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }
-
-/*****************************************************************************
-  $Log: Acquisition.c,v $
-  Revision 1.23  1998/11/17 19:47:59  jim
-  A typo probably caused __delitem__
-  calls on wrapped mapping objects to fail.
-
-  Revision 1.22  1998/05/20 17:17:17  jim
-  Fixed a bug in aq_acquire machinery.  If aq_self was a wrapper,
-  then aq_acquire needed to be called on it, but that wasn't hapenning.
-
-  Revision 1.21  1998/05/07 22:10:49  jim
-  Added aq_inContextOf method.
-
-  Changed the way wrapping is done when getting an explicitly-wrapped
-  object from an implicitly-wrapped object to avoid an extra level of
-  wrapping.
-
-  Fixed a bug that prevented propigation of some filtering errors.
-
-  Revision 1.20  1998/04/08 14:50:51  jim
-  No longer acquire __roles__ explicitly.
-
-  Revision 1.19  1998/03/24 16:23:19  jim
-  Added parens to make gcc SHUT UP!
-
-  Revision 1.18  1998/03/24 16:21:17  jim
-  Fixed bad return in wrapper special.
-
-  Revision 1.17  1998/03/24 16:17:01  jim
-  Rearranged.
-
-  Revision 1.16  1998/03/23 20:23:35  jim
-  Added lots of new machinery to handle wrapping of acquired objects.
-
-  Revision 1.15  1998/01/21 19:00:48  jim
-  Fixed __len__ bugs and added free lists for methods and wrappers
-
-  Revision 1.14  1998/01/05 13:38:31  jim
-  Added special module variable, 'Acquired'.  If the value of this
-  variable is assigned to an attribute, then the value of the attribute
-  will be acquired, even if it might not otherwize be acquired.
-
-  Revision 1.13  1997/11/19 13:51:14  jim
-  Extended compile option to implicitly acquire __roles__ to
-  implicitly acquire roles even for explicit acquirers.
-
-  Revision 1.12  1997/11/19 13:39:32  jim
-  Changed filter machinery so that wrapped objects are used as
-  inst and parent in filter.
-
-  Revision 1.11  1997/11/07 19:00:34  jim
-  Added compile option to implicitly acquire __roles__.
-
-  Revision 1.10  1997/10/28 22:09:17  jim
-  Added another argument to the aq_acquire filter signature.
-  Changed name of acquire method to aq_acquire.  Explicit.acquire is
-  an alias.
-
-  Revision 1.9  1997/10/28 19:36:46  jim
-  Changed semantics is acquire method:
-
-    - Available for Implicit and Explicit,
-
-    - Does not filter names with leading underscore,
-
-    - Accepts optional 'filter' and 'extra' arguments.  If 'filter'
-      is provided, then it must be a callable object and it is
-      called with five arguments:
-
-        orig -- The original (unwrapped) object
-
-        inst -- The object in which an attribute is found
-
-        name -- The attribute name
-
-        v -- The attribute value
-
-        extra -- The 'extra' value passed to 'acquire' or None.
-
-      The filter function should return 1 if the attribute should
-      be returned by acquire and 0 otherwise.  It may also raise an
-      error, in which case the error is propigated.
-
-  Revision 1.8  1997/07/02 20:15:27  jim
-  Added stupid parens to make 'gcc -Wall -pedantic' and Barry happy.
-
-  Revision 1.6  1997/06/19 19:31:39  jim
-  Added ident string.
-
-  Revision 1.5  1997/06/19 19:24:21  jim
-  Many fixes and consolodation with Xaq.
-
-  Revision 1.3  1997/02/19 22:30:33  jim
-  Added $#@! missing static declaration.
-
-  Revision 1.2  1997/02/17 16:20:11  jim
-  Fixed bug in mix-in class declaration.
-  Added __version__.
-
-
-*/
