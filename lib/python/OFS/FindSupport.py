@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.9 $'[11:-2]
+__version__='$Revision: 1.10 $'[11:-2]
 
 
-import sys, os, string, time, Globals
+import sys, os, string, time, Globals, ExtensionClass
 from DocumentTemplate.DT_Util import Eval, expr_globals
 from AccessControl.Permission import name_trans
 from Globals import HTMLFile
@@ -96,22 +96,29 @@ from string import find
 
 
 
-class FindSupport:
-    """Find support for Principia Folders"""
+class FindSupport(ExtensionClass.Base):
+    """Find support for Zope Folders"""
 
     manage_findFrame=HTMLFile('findFrame', globals())
     manage_findForm=HTMLFile('findForm', globals())
     manage_findAdv=HTMLFile('findAdv', globals())
     manage_findResult=HTMLFile('findResult', globals())
 #    manage_findOpt=HTMLFile('findOpt', globals())
+
+
+    __ac_permissions__=(
+        ('View management screens',
+         ('manage_findFrame', 'manage_findForm', 'manage_findAdv',
+          'manage_findResult')),
+        )
     
-    def PrincipiaFind(self, obj, obj_ids=None, obj_metatypes=None,
-                      obj_searchterm=None, obj_expr=None,
-                      obj_mtime=None, obj_mspec=None,
-                      obj_permission=None, obj_roles=None,
-                      search_sub=0,
-                      REQUEST=None, result=None, pre=''):
-        """Principia Find interface"""
+    def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
+                 obj_searchterm=None, obj_expr=None,
+                 obj_mtime=None, obj_mspec=None,
+                 obj_permission=None, obj_roles=None,
+                 search_sub=0, search_sup=0,
+                 REQUEST=None, result=None, pre=''):
+        """Zope Find interface"""
 
         if result is None:
             result=[]
@@ -183,7 +190,7 @@ class FindSupport:
                 dflag=0
                     
             if search_sub and hasattr(bs, 'objectItems'):
-                self.PrincipiaFind(ob, obj_ids, obj_metatypes,
+                self.ZopeFind(ob, obj_ids, obj_metatypes,
                                    obj_searchterm, obj_expr,
                                    obj_mtime, obj_mspec,
                                    obj_permission, obj_roles,
@@ -191,8 +198,22 @@ class FindSupport:
                                    REQUEST, result, p)
             if dflag: ob._p_deactivate()
 
-        return result
+        if search_sup and not search_sub and hasattr(obj, 'aq_parent'):
+            obj=obj.aq_parent
+            if pre: p="%s/%s" % ('..',pre)
+            else:   p='..'
+            if hasattr(obj, 'ZopeFind'):
+                self.ZopeFind(obj, obj_ids, obj_metatypes,
+                                   obj_searchterm, obj_expr,
+                                   obj_mtime, obj_mspec,
+                                   obj_permission, obj_roles,
+                                   search_sub, search_sup,
+                                   REQUEST, result, p)
 
+        return result
+    
+    ZopeFind=ZopeFind
+ 
 
 
 class td(TemplateDict, cDocument):

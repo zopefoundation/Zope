@@ -85,17 +85,22 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.16 1999/03/23 22:41:15 amos Exp $"""
+$Id: Management.py,v 1.17 1999/03/25 15:25:31 jim Exp $"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
-import sys, Globals
+import sys, Globals, ExtensionClass
 from Dialogs import MessageDialog
 from Globals import HTMLFile
 from string import split, join
 
-class Tabs:
+class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
+
+    __ac_permissions__=(
+        ('View management screens', ('manage_tabs',)),
+        )
+
     manage_tabs     =HTMLFile('manage_tabs', globals())
     manage_options  =()
     def tabs_path_info(self, script, path):
@@ -116,8 +121,6 @@ class Tabs:
             out.append('<a href="%s/manage_workspace">%s</a>' % (script, p))
         out.append(last)
         return join(out,'&nbsp;/&nbsp;')
-                
-        
 
 Globals.default__class_init__(Tabs)
 
@@ -127,5 +130,10 @@ class Navigation:
     manage          =HTMLFile('manage', globals())
     manage_menu     =HTMLFile('menu', globals())
     manage_copyright=HTMLFile('copyright', globals())
+    manage_copyright__roles__=None
+
+    __ac_permissions__=(
+        ('View management screens', ('manage', 'manage_menu',)),
+        )
 
 Globals.default__class_init__(Navigation)

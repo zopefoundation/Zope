@@ -85,14 +85,21 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.11 1999/03/10 00:14:56 klm Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Undo.py,v 1.12 1999/03/25 15:26:53 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
-import Globals
+import Globals, ExtensionClass
 from DateTime import DateTime
 from string import atof, find, atoi, split, rfind
 
-class UndoSupport:
+class UndoSupport(ExtensionClass.Base):
+
+    __ac_permissions__=(
+        ('Undo changes', (
+            'manage_undo_transactions', 'undoable_transactions',
+            )),
+        ('View management screens', ('manage_UndoForm',)),
+        )
 
     manage_UndoForm=Globals.HTMLFile(
         'undo', globals(),
@@ -111,8 +118,6 @@ class UndoSupport:
             if hasattr(self, name): v=getattr(self, name)
             else: v=default
             return v
-            
-                
 
     def undoable_transactions(self, AUTHENTICATION_PATH=None,
                               first_transaction=None,
