@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -291,16 +291,17 @@ class RoleManager(ExtensionClass.Base):
     # extra roles in a particular object, an entry for that user is made
     # in the __ac_local_roles__ dict containing the extra roles.
     
-    __ac_local_roles__={}
+    __ac_local_roles__=None
 
     manage_listLocalRoles=HTMLFile('listLocalRoles', globals())
     manage_editLocalRoles=HTMLFile('editLocalRoles', globals())
 
     def has_local_roles(self):
-        return len(self.__ac_local_roles__)
+        dict=self.__ac_local_roles__ or {}
+        return len(dict)
 
     def get_local_roles(self):
-        dict=self.__ac_local_roles__
+        dict=self.__ac_local_roles__ or {}
         keys=dict.keys()
         keys.sort()
         info=[]
@@ -324,7 +325,8 @@ class RoleManager(ExtensionClass.Base):
         return keys
 
     def get_local_roles_for_userid(self, userid):
-        return self.__ac_local_roles__.get(userid, [])
+        dict=self.__ac_local_roles__ or {}
+        return dict.get(userid, [])
 
     def manage_setLocalRoles(self, userid, roles, REQUEST=None):
         """Set local roles for a user."""
@@ -332,7 +334,7 @@ class RoleManager(ExtensionClass.Base):
             raise ValueError, 'One or more roles must be given!'
         if not self.validate_roles(roles):
             raise ValueError, 'Invalid role given.'
-        dict=self.__ac_local_roles__
+        dict=self.__ac_local_roles__ or {}
         dict[userid]=roles
         self.__ac_local_roles__=dict
         if REQUEST is not None:
@@ -341,7 +343,7 @@ class RoleManager(ExtensionClass.Base):
 
     def manage_delLocalRoles(self, userids, REQUEST=None):
         """Remove all local roles for a user."""
-        dict=self.__ac_local_roles__
+        dict=self.__ac_local_roles__ or {}
         for userid in userids:
             if dict.has_key(userid):
                 del dict[userid]

@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -138,7 +138,8 @@ class BasicUser(Implicit):
         local={}
         while 1:
             if hasattr(object, '__ac_local_roles__'):
-                for r in object.__ac_local_roles__.get(name, []):
+                dict=object.__ac_local_roles__ or {}
+                for r in dict.get(name, []):
                     local[r]=1
             if not hasattr(object, 'aq_parent'):
                 break
