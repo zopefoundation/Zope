@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -171,14 +171,15 @@ class PathExpr:
         dp.reverse()
         return base, path, dp
 
-    def _eval(self, (base, path, dp), econtext):
+    def _eval(self, (base, path, dp), econtext,
+              list=list, isinstance=isinstance, StringType=type('')):
         path = list(path) # Copy!
         contexts = econtext.contexts
         var = contexts['var']
         # Expand dynamic path parts from right to left.
         for i, varname in dp:
             val = var[varname]
-            if type(val) is type(''):
+            if isinstance(val, StringType):
                 path[i] = val
             else:
                 # If the value isn't a string, assume it's a sequence
@@ -270,26 +271,24 @@ class NotExpr:
         return '<NotExpr %s>' % `self._s`
 
 
-def restrictedTraverse(self, path):
+def restrictedTraverse(self, path,
+                       get=getattr, has=hasattr, N=None, M=[]):
 
     if not path: return self
 
-    get=getattr
-    N=None
-    M=[] #marker
-
-    REQUEST={'TraversalRequestNameStack': path}
     securityManager = getSecurityManager()
     
-    plen = len(path)
     i = 0
     if not path[0]:
         # If the path starts with an empty string, go to the root first.
-        i = 1
         self = self.getPhysicalRoot()
         if not securityManager.validateValue(self):
             raise 'Unauthorized', name
-                    
+        i = 1
+
+    plen = len(path)
+    REQUEST={'TraversalRequestNameStack': path}
+    validate = securityManager.validate
     object = self
     while i < plen:
         __traceback_info__ = (path, i)
@@ -301,9 +300,9 @@ def restrictedTraverse(self, path):
             raise AttributeError, name
 
         if name=='..':
-            o = getattr(object, 'aq_parent', M)
+            o = get(object, 'aq_parent', M)
             if o is not M:
-                if not securityManager.validate(object, object, name, o):
+                if not validate(object, object, name, o):
                     raise 'Unauthorized', name
                 object=o
                 continue
@@ -313,27 +312,27 @@ def restrictedTraverse(self, path):
             o=t(REQUEST, name)
                     
             container = None
-            if (hasattr(get(object, 'aq_base', object), name)
+            if (has(get(object, 'aq_base', object), name)
                 and get(object, name) is o):
                 container = object
-            if not securityManager.validate(object, container, name, o):
+            if not validate(object, container, name, o):
                 raise 'Unauthorized', name
         else:
             o=get(object, name, M)
             if o is not M:
                 # Check security.
-                if hasattr(object, 'aq_acquire'):
+                if has(object, 'aq_acquire'):
                     object.aq_acquire(
-                        name, validate2, securityManager.validate)
+                        name, validate2, validate)
                 else:
-                    if not securityManager.validate(object, object, name, o):
+                    if not validate(object, object, name, o):
                         raise 'Unauthorized', name
             else:
                 try:
                     o=object[name]
                 except (AttributeError, TypeError):
                     raise AttributeError, name
-                if not securityManager.validate(object, object, name, o):
+                if not validate(object, object, name, o):
                     raise 'Unauthorized', name
         object = o
 
