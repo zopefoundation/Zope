@@ -37,6 +37,12 @@ a {
   color: #000099;
 }
 
+a.strong-link {
+  font-family: Verdana, Helvetica, sans-serif;
+  text-decoration: underline;
+  color: #000099;
+}
+
 p {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 10pt;
