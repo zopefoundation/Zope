@@ -12,7 +12,6 @@
 
  ****************************************************************************/
 
-#include "Python.h"
 #include "ExtensionClass.h"
 
 #define UNLESS(E) if(!(E))
@@ -207,7 +206,7 @@ initMultiMapping(void)
       "MultiMapping", MultiMapping_methods,
       "MultiMapping -- Wrap multiple mapping objects for lookup"
       "\n\n"
-      "$Id: MultiMapping.c,v 1.11 2002/06/10 22:48:46 jeremy Exp $\n",
+      "$Id: MultiMapping.c,v 1.12 2002/11/12 20:06:22 jeremy Exp $\n",
       (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
