@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.182 2002/03/27 22:18:54 caseman Exp $'''
-__version__='$Revision: 1.182 $'[11:-2]
+$Id: Application.py,v 1.183 2002/04/12 16:06:01 Brian Exp $'''
+__version__='$Revision: 1.183 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -243,9 +243,6 @@ class Expired(Globals.Persistent):
 def initialize(app):
     # Initialize the application
 
-    # Initialize the cache:
-    app.Control_Panel.initialize_cache()
-
     # The following items marked b/c are backward compatibility hacks
     # which make sure that expected system objects are added to the
     # bobobase. This is required because the bobobase in use may pre-
@@ -259,6 +256,9 @@ def initialize(app):
         app._setObject('Control_Panel', cpl)
         get_transaction().note('Added Control_Panel')
         get_transaction().commit()
+
+    # Initialize the cache:
+    app.Control_Panel.initialize_cache()
 
     # b/c: Ensure that a ProductFolder exists.
     if not hasattr(app.Control_Panel.aq_base, 'Products'):
