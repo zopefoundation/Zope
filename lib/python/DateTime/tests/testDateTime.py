@@ -1,3 +1,4 @@
+
 # To run these tests, use:
 #   python unittest.py DateTime.tests.suite
 
@@ -5,9 +6,7 @@ import unittest
 from DateTime import DateTime
 import string
 import math
-
-import os
-__basedir__ = os.getcwd()
+import time
 
 class DateTimeTests (unittest.TestCase):
 
@@ -94,7 +93,7 @@ class DateTimeTests (unittest.TestCase):
         # Compare representations as it's the
         # only way to compare the dates to the same accuracy
         self.assertEqual(repr(dt),repr(dt1))
-
+        
     def testDayOfWeek(self):
         '''strftime() used to always be passed a day of week of 0.'''
         dt = DateTime('2000/6/16')
@@ -218,27 +217,32 @@ class DateTimeTests (unittest.TestCase):
         isoDt = DateTime('2002-05-02T08:00:00Z-04:00')
         self.assertEqual( ref1, isoDt)
 
+    def testRFC822(self):
+        '''rfc822 conversion'''
+        isDST = time.localtime(time.time())[8]
+        if isDST:
+            offset = time.altzone
+        else:
+            offset = time.timezone
+        
+        rfc822zone = "%+03d%02d" % divmod( (-offset/60), 60)
+        wrongzone = "%+03d:%02d" % divmod( (60-offset/60), 60) #one hour off, ISO format
+        
+        # Create a local DateTime and test
+        dt = DateTime(2002, 5, 2, 8, 0, 0)
+        self.assertEqual(dt.rfc822(),  'Thu, 02 May 2002 08:00:00' + ' ' + rfc822zone)
 
-    def testJulianWeek(self):
-        """ check JulianDayWeek function """
+        # Create a non-local date time and test
+        dt = DateTime('2002-05-02T08:00:00Z'+wrongzone)
+        self.assertEqual(dt.rfc822(),  'Thu, 02 May 2002 08:00:00 -0000')
 
-        try:
-            import gzip
-        except ImportError:
-            print "Warning: testJulianWeek disabled: module gzip not found"
-            return 0
-
-        lines  = gzip.GzipFile(os.path.join(__basedir__,
-                                'julian_testdata.txt.gz')).readlines()
-
-        for line in lines:
-            d = DateTime(line[:10])
-            result_from_mx=tuple(map(int, line[12:-2].split(',')))
-            self.assertEqual(result_from_mx[1], d.week())
+        
+        
+        #print dt.rfc822()
 
 
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
 
 if __name__=="__main__":
-    unittest.TextTestRunner().run(test_suite())
+   unittest.TextTestRunner().run(test_suite())

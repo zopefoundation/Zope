@@ -12,13 +12,12 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.79 $'[11:-2]
+__version__='$Revision: 1.80 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
 from time import time, gmtime, localtime, asctime
-from time import timezone, strftime
-from time import daylight, timezone, altzone
+from time import daylight, timezone, altzone, strftime
 from types import InstanceType,IntType,FloatType,StringType,UnicodeType
 try: from time import tzname
 except: tzname=('UNKNOWN','UNKNOWN')
@@ -399,6 +398,9 @@ def safelocaltime(t):
               'of this Python implementation.' % float(t)
     rval = localtime(t_int)
     return rval
+
+def _tzoffset2rfc822zone(seconds):
+    return "%+03d%02d" % divmod( (-seconds/60), 60) 
 
 
 class DateTime:
@@ -1435,9 +1437,16 @@ class DateTime:
 
     def rfc822(self):
         """Return the date in RFC 822 format"""
+        if self._tz == self._localzone0: #Use local standard time
+            tzoffset = _tzoffset2rfc822zone(localzone)
+        elif self._tz == self._localzone1: # Use local daylight saving time
+            tzoffset = _tzoffset2rfc822zone(altzone)
+        else:
+            tzoffset = '-0000' # unknown time zone offset
+            
         return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
             self._aday,self._day,self._amon,self._year,
-            self._hour,self._minute,self._nearsec,self._tz)
+            self._hour,self._minute,self._nearsec,tzoffset)
 
 
     # New formats
