@@ -51,6 +51,12 @@ Zope Changes
         - Date strings with years < 31 were not accepted, even
           through the documentation says they should be.
 
+        - If Zope crashed or was unable to completely write a database
+          record, then on restart, a data corruption error was reported.
+          Now, truncated records are removed if necessary on start up.
+          If necessary, other records are removed as well to avoid 
+          partially-written transactions.
+
     Zope 1.9.0
 
       New Features
