@@ -87,9 +87,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.94 2001/01/31 21:26:52 jeffrey Exp $"""
+$Id: Folder.py,v 1.95 2001/10/15 14:38:13 evan Exp $"""
 
-__version__='$Revision: 1.94 $'[11:-2]
+__version__='$Revision: 1.95 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -127,11 +127,12 @@ def manage_addFolder(self, id, title='',
         ob.manage_addUserFolder()
 
     if createPublic:
-        if not checkPermission('Add Documents, Images, and Files', ob):
+        if not checkPermission('Add Page Templates', ob):
             raise 'Unauthorized', (
-                  'You are not authorized to add DTML Documents.'
+                  'You are not authorized to add Page Templates.'
                   )
-        ob.manage_addDTMLDocument(id='index_html', title='')
+        ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
+            id='index_html', title='')
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
