@@ -92,9 +92,9 @@ class PythonScript:
       o Calling the script through the web by going to its location with a
         web browser.
 
-      o Calling the script from another script objects.
+      o Calling the script from another script object.
 
-      o Calling the script from a method object.
+      o Calling the script from a method object, such as a DTML Method.
 
     Python scripts can contain a "safe" subset of the python language.
     Python Scripts must be safe because they can be potentially edited by
@@ -122,7 +122,9 @@ class PythonScript:
 
           o math
 
-          o XXX
+          o whrandom and random
+
+          o Products.PythonScripts.standard
 
       o Because it allows you to execute arbitrary python code, the python
         "exec" statement is not allowed in Python methods.
@@ -131,9 +133,15 @@ class PythonScript:
         Python builtin functions are not allowed or are restricted.  The
         following Python builtins are not allowed:
 
-          o open
+          o open, input, raw_input
 
-          o XXX
+          o eval, execfile, compile
+
+          o type, coerce, intern
+
+          o dir, globals, locals, vars
+
+          o buffer, reduce
 
         Other builtins are restricted in nature.  The following builtins
         are restricted:
@@ -142,15 +150,29 @@ class PythonScript:
           range builtin is restricted to creating ranges less than 10,000
           elements long.
 
-          getattr -- Because getattr may enable Python code to circumvent
-          Zope's security system, the getattr builtin is replaced with a
-          custom, security constrained version.
+          filter, map, tuple, list -- For the same reason, builtins
+          that construct lists from sequences do not operate on strings.
+          
+          getattr, setattr, delattr -- Because these may enable Python
+          code to circumvent Zope's security system, they are replaced with
+          custom, security constrained versions.
 
-          XXX -- XXX
+      o In order to be consistent with the Python expressions
+      available to DTML, the builtin functions are augmented with a
+      small number of functions and a class:
 
-      o XXX    
+          o test, namespace, render
 
-    XXX      
+          o same_type
+
+          o DateTime
+
+      o Because the "print" statement cannot operate normally in Zope,
+        its effect has been changed.  Rather than sending text to
+        stdout, "print" appends to an internal variable.  The special
+        builtin name "printed" evaluates to the concatenation of all
+        text printed so far during the current execution of the
+        script.
 
     """
 
@@ -168,9 +190,9 @@ class PythonScript:
           params -- The new value of the Python Script's parameters.  Must
           be a comma seperated list of values in valid python function
           signature syntax.  If it does not contain a valid signature
-          string, a XXXError is raised.
+          string, a SyntaxError is raised.
 
-          body -- THe new value of the Python Script's body.  Must contain
+          body -- The new value of the Python Script's body.  Must contain
           valid Python syntax.  If it does not contain valid Python syntax,
           a SyntaxError is raised.
 
@@ -194,9 +216,9 @@ class PythonScript:
           params -- The new value of the Python Script's parameters.  Must
           be a comma seperated list of values in valid python function
           signature syntax.  If it does not contain a valid signature
-          string, a XXXError is raised.
+          string, a SyntaxError is raised.
 
-          body -- THe new value of the Python Script's body.  Must contain
+          body -- The new value of the Python Script's body.  Must contain
           valid Python syntax.  If it does not contain valid Python syntax,
           a SyntaxError is raised.
 
@@ -205,7 +227,7 @@ class PythonScript:
     def ZPythonScriptHTML_upload(REQUEST, file=''):
         """
 
-        Replace the body of the script with the text in file.
+        Pass the text in file to the 'write' method.
 
         """
 
@@ -213,8 +235,8 @@ class PythonScript:
     def ZScriptHTML_tryParams(self):
         """
 
-        This method returns a list containing the required parameters to
-        test the script with.
+        Return a list of the required parameters with which to
+        test the script.
 
         """
 
@@ -222,21 +244,28 @@ class PythonScript:
     def read(self):
         """
 
-        XXX
+        Return the body of the Python Script, with a special comment
+        block prepended.  This block contains meta-data in the form of
+        comment lines as expected by the 'write' method.
 
         """
 
-    def params(self):
+    def write(self, text):
         """
 
-        XXX
+        Change the script by parsing the text argument into parts.
+        Leading lines that begin with '##' are stripped off, and if
+        they are of the form '##name=value', they are used to set
+        meta-data such as the title and parameters.  The remainder of
+        the text is set as the body of the Python Script.
 
         """
 
     def document_src(REQUEST=None, RESPONSE=None):
         """
 
-        Return unprocessed document source.
+        Return the text of the 'read' method, with content type
+        'text/plain' set on the RESPONSE.
 
         """
 
