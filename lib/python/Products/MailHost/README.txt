@@ -1,0 +1,6 @@
+MailHost
+
+
+  The MailHost product provides support for sending email from
+  within the Zope environment using MailHost objects.
+
