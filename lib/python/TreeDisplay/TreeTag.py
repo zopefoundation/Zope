@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.20 1997/12/22 15:09:52 jim Exp $'
-__version__='$Revision: 1.20 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.21 1998/01/20 16:13:10 jim Exp $'
+__version__='$Revision: 1.21 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -265,8 +265,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	else: h=''
 
 	if have_arg('header'):
-	    if md.has_key(args['header']):
-		output(md.getitem(args['header'],0)(
+	    doc=args['header']
+	    if hasattr(self, doc): doc=getattr(self, doc)
+	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    else: doc=None
+	    if doc is not None:
+		output(doc(
 		    self, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
@@ -279,19 +283,25 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    
 	if items==1:
 	    # leaves
-	    treeData['-tree-substate-']=sub
-	    treeData['tree-level']=level
-	    md._push(treeData)
-	    output(md.getitem(args['leaves'],0)(
-		self,md,
-		standard_html_header=(
-		    '<TR>%s<TD WIDTH="16"></TD>'
-		    '<TD%s VALIGN="TOP">'
-		    % (h,
-		       (dataspan > 1 and (' COLSPAN="%s"' % dataspan) or ''))),
-		standard_html_footer='</TD></TR>',
-		))
-	    md._pop(1)
+	    doc=args['leaves']
+	    if hasattr(self, doc): doc=getattr(self, doc)
+	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    else: doc=None
+	    if doc is not None:
+		treeData['-tree-substate-']=sub
+		treeData['tree-level']=level
+		md._push(treeData)
+		output(doc(
+		    self,md,
+		    standard_html_header=(
+			'<TR>%s<TD WIDTH="16"></TD>'
+			'<TD%s VALIGN="TOP">'
+			% (h,
+			   (dataspan > 1 and
+			    (' COLSPAN="%s"' % dataspan) or ''))),
+		    standard_html_footer='</TD></TR>',
+		    ))
+		md._pop(1)
 	elif have_arg('expand'):
 	    treeData['-tree-substate-']=sub
 	    treeData['tree-level']=level
@@ -318,8 +328,12 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 		if not ids(substate[i][0]): del substate[i]
 
 	if have_arg('footer'):
-	    if md.has_key(args['footer']):
-		output(md.getitem(args['footer'],0)(
+	    doc=args['footer']
+	    if hasattr(self, doc): doc=getattr(self, doc)
+	    elif md.has_key(doc): doc=md.getitem(args['header'],0)
+	    else: doc=None
+	    if doc is not None:
+		output(doc(
 		    self, md,
 		    standard_html_header=(
 			'<TR>%s<TD WIDTH="16"></TD>'
