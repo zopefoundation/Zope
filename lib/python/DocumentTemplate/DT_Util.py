@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.37 1998/05/20 17:54:34 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.38 1998/07/27 23:42:12 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -74,9 +74,6 @@ def int_param(params,md,name,default=0):
 	    if type(v)==types.StringType:
 		v=atoi(v)
     return v
-
-def _tm(m, tag):
-    return m + tag and (' in %s' % tag)
 
 def careful_getattr(md, inst, name):
     if name[:1]!='_':
@@ -220,23 +217,41 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
     used=params.has_key
     __traceback_info__=params, tag, expr, attr
 
-    if expr and used('expr') and used('') and not used(params['']):
-	# Fix up something like: <!--#in expr="whatever" mapping-->
-	params[params['']]=default_unnamed
-	del params['']
+    #if expr and used('expr') and used('') and not used(params['']):
+    #	# Fix up something like: <!--#in expr="whatever" mapping-->
+    #	params[params['']]=default_unnamed
+    #	del params['']
 	
     if used(''):
-	if used(attr):
-	    raise ParseError, _tm('Two %s values were given', (attr,tag))
-	if expr:
-	    if used('expr'):
-		raise ParseError, _tm('%s and expr given', (attr,tag))
-	    return params[''],None
-	return params['']
+        v=params['']
+
+        if v[:1]=='"' and v[-1:]=='"' and len(v) > 1: # expr shorthand
+            if used(attr):
+                raise ParseError, ('%s and expr given' % attr, tag)
+            if expr:
+                if used('expr'):
+                    raise ParseError, ('two exprs given', tag)
+                v=v[1:-1]
+                expr=Eval(v, expr_globals)
+                return v, expr
+            else: raise ParseError, (
+                'The "..." shorthand for expr was used in a tag that doesn\'t support expr attributes.',
+                tag)
+
+        else: # name shorthand            
+            if used(attr):
+                raise ParseError, ('Two %s values were given' % attr, tag)
+            if expr:
+                if used('expr'):
+                    # raise 'Waaaaaa', 'waaa'
+                    raise ParseError, ('%s and expr given' % attr, tag)
+                return params[''],None
+            return params['']
+
     elif used(attr):
 	if expr:
 	    if used('expr'):
-		raise ParseError, _tm('%s and expr given', (attr,tag))
+		raise ParseError, ('%s and expr given' % attr, tag)
 	    return params[attr],None
 	return params[attr]
     elif expr and used('expr'):
@@ -244,7 +259,7 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
 	expr=Eval(name, expr_globals)
 	return name, expr
 	
-    raise ParseError, ('No %s given', (attr,tag))
+    raise ParseError, ('No %s given' % attr, tag)
 
 Expr_doc="""
 
@@ -303,11 +318,14 @@ Python expression support
 
 """
 
+ListType=type([])
 def parse_params(text,
 		 result=None,
 		 tag='',
 		 unparmre=regex.compile(
 		     '\([\0- ]*\([^\0- =\"]+\)\)'),
+		 qunparmre=regex.compile(
+		     '\([\0- ]*\("[^\0- =\"]+"\)\)'),
 		 parmre=regex.compile(
 		     '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
 		 qparmre=regex.compile(
@@ -326,7 +344,7 @@ def parse_params(text,
     keyword parameters give valid parameter names and default values.
 
     If a specification is not a name-value pair and it is not the
-    first specification that is not a name-value pair and it is a
+    first specification and it is a
     valid parameter name, then it is treated as a name-value pair with
     a value as given in the keyword argument.  Otherwise, if it is not
     a name-value pair, it is treated as an unnamed value.
@@ -348,7 +366,7 @@ def parse_params(text,
     elif unparmre.match(text) >= 0:
 	name=unparmre.group(2)
 	l=len(unparmre.group(1))
-	if result.has_key(''):
+	if result:
 	    if parms.has_key(name):
 		if parms[name] is None: raise ParseError, (
 		    'Attribute %s requires a value' % name, tag)
@@ -359,6 +377,13 @@ def parse_params(text,
 	else:
 	    result['']=name
 	return apply(parse_params,(text[l:],result),parms)
+    elif qunparmre.match(text) >= 0:
+	name=qunparmre.group(2)
+	l=len(qunparmre.group(1))
+	if result: raise ParseError, (
+            'Invalid attribute name, "%s"' % name, tag)
+	else: result['']=name
+	return apply(parse_params,(text[l:],result),parms)
     else:
 	if not text or not strip(text): return result
 	raise ParseError, ('invalid parameter: "%s"' % text, tag)
@@ -367,6 +392,12 @@ def parse_params(text,
 	raise ParseError, (
 	    'Invalid attribute name, "%s"' % name, tag)
 
+    if result.has_key(name):
+        p=parms[name]
+        if type(p) is not ListType or p:
+            raise ParseError, (
+                'Duplicate values for attribute "%s"' % name, tag)
+            
     result[name]=value
 
     text=strip(text[l:])
@@ -375,6 +406,17 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.38  1998/07/27 23:42:12  jim
+# Revamped attribute parsing to:
+#
+#   - Handle valueless attributes a bit better.
+#     In particular, if a valueless parameter is not
+#     in the first position, it is not confused for a name,
+#
+#   - Added "..." shorthand for exprs, so now you can:
+#
+#       <!--#if "x < 1"-->
+#
 # Revision 1.37  1998/05/20 17:54:34  jim
 # Fixed obsolete stupid attr function. Blech.
 #
