@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import regex, re, sys, os, string, urllib
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -281,6 +281,13 @@ class HTTPRequest(BaseRequest):
              if have_env('HTTP_HOST'):
                  host = strip(environ['HTTP_HOST'])
                  hostname, port = splitport(host)
+
+                 # some clients manage to forget the port :(
+                 if port is None and environ.has_key('SERVER_PORT'):
+                     s_port=environ['SERVER_PORT']
+                     if s_port not in ('80', '443'):
+                         port=s_port
+
              else:
                  hostname = strip(environ['SERVER_NAME'])
                  port = environ['SERVER_PORT']
