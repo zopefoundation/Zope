@@ -21,6 +21,8 @@
       acura
     </p>
 
+    <p xml:foo="bar">foo bar</p>
+
   <!-- more examples -->
 
     <ul>

@@ -21,6 +21,8 @@ Title">Title</h1>
       <span z:replace="var:car"/>
     </p>
 
+    <p xml:foo="bar">foo bar</p>
+
   <!-- more examples -->
 
     <ul>
