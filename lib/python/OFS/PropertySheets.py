@@ -84,9 +84,9 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
-import time, string, App.Management
+import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
 from DocumentTemplate.DT_Util import html_quote
 from Globals import HTMLFile, MessageDialog
@@ -95,7 +95,7 @@ from Acquisition import Implicit, Explicit
 from ExtensionClass import Base
 from Globals import Persistent
 
-class View(App.Management.Tabs):
+class View(App.Management.Tabs, Base):
     """A view of an object, typically used for management purposes
     """
 
@@ -104,7 +104,8 @@ class View(App.Management.Tabs):
         """
         try: r=self.REQUEST
         except: r=None
-        if r is None: pre='../../'
+        if r is None:
+            pre='../../'
         else:
             pre=r['URL']
             for i in (1,2,3):
@@ -115,14 +116,13 @@ class View(App.Management.Tabs):
             
         r=[]
         for d in self.aq_parent.aq_parent.manage_options:
-            r.append({'label': d['label'],
-                      'action': pre+d['action']+'/index_html'})
+            r.append({'label': d['label'], 'action': pre+d['action']})
         return r
 
     def tabs_path_info(self, script, path):
         l=rfind(path,'/')
         if l >= 0: path=path[:l]
-        return PropertySheet.inheritedAttribute('tabs_path_info')(
+        return View.inheritedAttribute('tabs_path_info')(
             self, script, path)
 
 
@@ -150,6 +150,9 @@ class PropertySheet(Persistent, Implicit):
 
     def v_self(self):
         return self
+
+    def p_self(self):
+        return self.v_self()
 
     def valid_property_id(self, id):
         # Return a true value if the given id is valid to use as 
@@ -183,13 +186,14 @@ class PropertySheet(Persistent, Implicit):
         if not self.property_extensible_schema__():
             raise 'Bad Request', (
                 'Properties cannot be added to this property sheet')
+        pself=self.p_self()
         self=self.v_self()
         if hasattr(aq_base(self),id):
             raise 'Bad Request', (
                 'Invalid property id, %s. It is in use.' % id)
         if meta is None: meta={}
         prop={'id':id, 'type':type, 'meta':meta}
-        self._properties=self._properties+(prop,)
+        pself._properties=pself._properties+(prop,)
         setattr(self, id, value)
 
     def _updateProperty(self, id, value, meta=None):
@@ -208,10 +212,11 @@ class PropertySheet(Persistent, Implicit):
                 value=type_converters[proptype](value)
         if meta is not None:
             props=[]
-            for prop in self.v_self()._properties:
+            pself=self.p_self()
+            for prop in pself._properties:
                 if prop['id']==id: prop['meta']=meta
                 props.append(prop)
-            self.v_self()._properties=tuple(props)
+            pself._properties=tuple(props)
         setattr(self.v_self(), id, value)
 
     def _delProperty(self, id):
@@ -226,8 +231,9 @@ class PropertySheet(Persistent, Implicit):
         if (not 'd' in self.propertyInfo(id).get('mode', 'wd')) or (id in nd):
             raise 'Bad Request', '%s cannot be deleted.' % id
         delattr(vself, id)
-        vself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
-                                       vself._properties))
+        pself=self.p_self()
+        pself._properties=tuple(filter(lambda i, n=id: i['id'] != n,
+                                       pself._properties))
 
     def propertyIds(self):
         # Return a list of property ids.
@@ -251,7 +257,7 @@ class PropertySheet(Persistent, Implicit):
 
     def propertyMap(self):
         # Return a tuple of mappings, giving meta-data for properties.
-        return self.v_self()._properties
+        return self.p_self()._properties
 
     def _propdict(self):
         dict={}
@@ -458,7 +464,6 @@ class PropertySheet(Persistent, Implicit):
     
     manage_propertiesForm=HTMLFile('properties', globals())
     
-    
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
@@ -488,6 +493,17 @@ class PropertySheet(Persistent, Implicit):
                 message='Your changes have been saved.',
                 action ='manage_propertiesForm')
 
+    def manage_editProperties(self, REQUEST):
+        """Edit object properties via the web."""
+        for p in self.propertyMap():
+            n=p['id']
+            self._updateProperty(n, REQUEST.get(n, ''))
+
+        return MessageDialog(
+               title  ='Success!',
+               message='Your changes have been saved',
+               action ='manage_propertiesForm')
+
     def manage_delProperties(self, ids=None, REQUEST=None):
         """Delete one or more properties specified by 'ids'."""
         if ids is None:
@@ -508,7 +524,7 @@ class Virtual:
     def v_self(self):
         return self.aq_parent.aq_parent
 
-class DefaultProperties(Virtual, PropertySheet):
+class DefaultProperties(Virtual, PropertySheet, View):
     """The default property set mimics the behavior of old-style Zope
        properties -- it stores its property values in the instance of
        its owner."""
@@ -517,7 +533,7 @@ class DefaultProperties(Virtual, PropertySheet):
     _md={'xmlns': 'http://www.zope.org/propsets/default'}
 
 
-class DAVProperties(Virtual, PropertySheet):
+class DAVProperties(Virtual, PropertySheet, View):
     """WebDAV properties"""
 
     id='webdav'
@@ -598,7 +614,7 @@ class DAVProperties(Virtual, PropertySheet):
                '  </n:lockentry>\n  '
 
 
-class PropertySheets(Implicit):
+class PropertySheets(Implicit, App.Management.Tabs):
     """A tricky container to keep property sets from polluting
        an object's direct attribute namespace."""
     
@@ -609,6 +625,7 @@ class PropertySheets(Implicit):
 
     def __propsets__(self):
         propsets=self.aq_parent.__propsets__
+        __traceback_info__= propsets, type(propsets)
         return (self.default, self.webdav) + propsets
 
     def __bobo_traverse__(self, REQUEST, name=None):
@@ -665,10 +682,43 @@ class PropertySheets(Implicit):
     def __len__(self):
         return len(self.__propsets__())
 
+
+    # Management interface:
+
+    manage_propertiesForm=Globals.HTMLFile('propertysheets', globals())
+
+    def manage_options(self):
+        """Return a manage option data structure for me instance
+        """
+        try: r=self.REQUEST
+        except: r=None
+        if r is None:
+            pre='../'
+        else:
+            pre=r['URL']
+            for i in (1,2):
+                l=rfind(pre,'/')
+                if l >= 0:
+                    pre=pre[:l]
+            pre=pre+'/'
+            
+        r=[]
+        for d in self.aq_parent.manage_options:
+            r.append({'label': d['label'], 'action': pre+d['action']})
+        return r
+
+    def tabs_path_info(self, script, path):
+        l=rfind(path,'/')
+        if l >= 0: path=path[:l]
+        return PropertySheets.inheritedAttribute('tabs_path_info')(
+            self, script, path)
+
+
+
 class FixedSchema(PropertySheet):
 
     def __init__(self, id, base, md=None):
-        FixedSchema.inheritedAttribute('')(self, id, md)
+        FixedSchema.inheritedAttribute('__init__')(self, id, md)
         self._base=base
 
     def propertyMap(self):
@@ -683,9 +733,11 @@ class FixedSchema(PropertySheet):
                 d['mode']=filter(lambda c: c != 'd', mode)
             r.append(d)
             
-        return tuple(r)+self.v_self()._properties
+        return tuple(r)
 
-    def property_extensible_schema__(self): return self._base._extensible
+    def property_extensible_schema__(self):
+        return 0
+        return self._base._extensible
     
 
 
