@@ -1,7 +1,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 try:
     home=CUSTOMER_HOME, SOFTWARE_HOME, SOFTWARE_URL
@@ -39,11 +39,17 @@ HTML.shared_globals['SOFTWARE_URL']=SOFTWARE_URL
 
 from App.Dialogs import MessageDialog
 
+SessionNameName='Principia-Session'
+
+
 ##########################################################################
 #
 # Log
 #
 # $Log: Globals.py,v $
+# Revision 1.8  1997/11/07 17:12:15  jim
+# Added SesionNameName.
+#
 # Revision 1.7  1997/09/15 17:03:53  jim
 # Got rid of private.
 #
