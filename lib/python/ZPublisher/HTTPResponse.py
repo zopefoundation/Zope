@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.24 1999/11/11 16:45:39 brian Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: HTTPResponse.py,v 1.25 2000/02/14 18:44:22 amos Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import string, types, sys, regex
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -331,7 +331,8 @@ class HTTPResponse(BaseResponse):
                     if b < 0:
                         self.body=('%s\t<base href="%s">\n%s' %
                                    (body[:e],self.base,body[e:]))
-
+                        self.setHeader('content-length', len(self.body))
+                        
     def appendCookie(self, name, value):
         '''\
         Returns an HTTP header that sets a cookie on cookie-enabled
