@@ -1,0 +1,49 @@
+TransientObjectContainer - Change
+
+  Transient Object Containers
+
+     A TransientObjectContainer contains objects which will expire after
+     a given period of time.  A TransientObjectContainer is used by 
+     SessionDataMangers to store session information.
+
+  To change a TransientObjectContainer, specify the following:
+
+     - *title* 
+
+       The title of the object.
+
+     - **timeout_minutes**
+
+       The minimum number of minutes that objects in the container will
+       persist for.  Objects in the container are passively deleted, so
+       they may not be deleted exactly after timeout_minutes elapses.
+
+     - *addNotification*
+
+       The name of an object to receive notifications when objects are
+       added to the TransientObjectContainer.  See NotificationTargets.
+
+     - *delNotification*
+
+       The name of an object to receive notifications when objects are
+       deleted from the TransientObjectContainer.  See NotificationTargets.
+
+  
+  Notification Targets
+
+        A NotificationTarget is a callable (a bound method, function, or
+	named Zope object) which is called when an object is added or removed
+	from a TransientObjectContainer. 
+
+	NotificationTargets are called with two arguments, the first being
+	the item being added or removed from the container, and the second
+	being the container itself.  Within Zope, the container will be
+	acquisition wrapped, allowing the container to be used as a context
+	to reference other Zope objects.
+
+
+  See Also
+
+     - "Transient Objects":Transience.stx
+
+     - "Transience API":TransienceInterfaces.py

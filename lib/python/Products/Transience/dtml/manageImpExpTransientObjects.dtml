@@ -1,5 +1,9 @@
 <dtml-var manage_page_header>
-<dtml-var manage_tabs>
+<dtml-var "manage_tabs(this(), _,
+           form_title='Change Transient Object Container',
+           help_product='Transience',
+           help_topic='Transience-export.stx'
+	   )">
 <div class="form-help">
 Transient object data will be imported/exported to/from the file 
 'var/transientobjects.zexp' on your server's hard disk in your Zope

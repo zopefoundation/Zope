@@ -1,5 +1,9 @@
 <dtml-var manage_page_header>
-<dtml-var manage_tabs>
+<dtml-var "manage_tabs(this(), _,
+           form_title='Change Transient Object Container',
+           help_product='Transience',
+           help_topic='Transience-change.stx'
+	   )">
 
 <table cellspacing="2">
 <form action="manage_changeTransientObjectContainer" method="post">

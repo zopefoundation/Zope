@@ -2,8 +2,8 @@
 
 <dtml-var "manage_form_title(this(), _,
            form_title='Add Transient Object Container',
-           help_product='Zope Help',
-           help_topic='Transience.stx'
+           help_product='Transience',
+           help_topic='Transience-add.stx'
 	   )">
 
 <FORM ACTION="constructTransientObjectContainer" METHOD="POST">
