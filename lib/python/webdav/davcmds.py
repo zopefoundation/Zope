@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sys, os, string, regex
 from common import absattr, aq_base, urlfix, urlbase
@@ -214,68 +214,6 @@ class PropFind:
         result.write('</d:multistatus>')
         return result.getvalue()
 
-
-    def oapply(self, obj, url=None, depth=0, result=None, top=1):
-        if result is None:
-            result=StringIO()
-            depth=self.depth
-            url=urlfix(self.request['URL'], 'PROPFIND')
-            url=urlbase(url)
-            result.write('<?xml version="1.0" encoding="utf-8"?>\n' \
-                         '<d:multistatus xmlns:d="DAV:">\n')
-        iscol=hasattr(obj, '__dav_collection__')
-        if iscol and url[-1] != '/': url=url+'/'
-        result.write('<d:response>\n<d:href>%s</d:href>\n' % url)
-        if hasattr(obj, '__propsets__'):
-            propsets=obj.propertysheets.values()
-            obsheets=obj.propertysheets
-        else:
-            davprops=DAVProps(obj)
-            propsets=(davprops,)
-            obsheets={'DAV:': davprops}
-        if self.allprop:
-            stats=[]
-            for ps in propsets:
-                if hasattr(aq_base(ps), 'dav__allprop'):
-                    stats.append(ps.dav__allprop())
-            stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
-            result.write(stats)            
-        elif self.propname:
-            stats=[]
-            for ps in propsets:
-                if hasattr(aq_base(ps), 'dav__propnames'):
-                    stats.append(ps.dav__propnames())
-            stats=string.join(stats, '') or '<d:status>200 OK</d:status>\n'
-            result.write(stats)
-        elif self.propnames:
-            for name, ns in self.propnames:
-                ps=obsheets.get(ns, None)
-                if ps is not None and hasattr(aq_base(ps), 'dav__propstat'):
-                    stat=ps.dav__propstat(name)
-                else:
-                    stat='<d:propstat xmlns:n="%s">\n' \
-                    '  <d:prop>\n' \
-                    '  <n:%s/>\n' \
-                    '  </d:prop>\n' \
-                    '  <d:status>HTTP/1.1 404 Not Found</d:status>\n' \
-                    '  <d:responsedescription>\n' \
-                    '  The property %s does not exist.\n' \
-                    '  </d:responsedescription>\n' \
-                    '</d:propstat>\n' % (ns, name, name)
-                result.write(stat)
-        else: raise 'Bad Request', 'Invalid request'
-        result.write('</d:response>\n')        
-        if depth in ('1', 'infinity') and iscol:
-            for ob in obj.objectValues():
-                dflag=hasattr(ob, '_p_changed') and (ob._p_changed == None)
-                if hasattr(ob, '__dav_resource__'):
-                    uri=os.path.join(url, absattr(ob.id))
-                    depth=depth=='infinity' and depth or 0
-                    self.apply(ob, uri, depth, result, top=0)
-                    if dflag: ob._p_deactivate()
-        if not top: return result
-        result.write('</d:multistatus>')
-        return result.getvalue()
 
 
 class PropPatch:

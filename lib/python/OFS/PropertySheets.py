@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -372,114 +372,9 @@ class PropertySheet(Persistent, Implicit):
             return            
 
 
-    def odav__propstat(self, name, propstat=propstat, propdesc=propdesc,
-                      join=string.join):
-        # DAV helper method - return a propstat element indicating
-        # property name and value for the requested property.
-        xml_id=self.xml_namespace()
-        propdict=self._propdict()
-        if not propdict.has_key(name):
-            prop='  <n:%s/>' % name
-            error=propdesc % ('The property %s does not exist.' % name)
-            return propstat % (xml_id, prop, '404 Not Found', error)
-        else:
-            item=propdict[name]
-            name, type=item['id'], item.get('type','string')
-            value=self.getProperty(name)
-            if type=='tokens':
-                value=join(value, ' ')
-            elif type=='lines':
-                value=join(value, '\n')
-            # allow for xml properties
-            attrs=item.get('meta', {}).get('__xml_attrs__', None)
-            if attrs is not None:
-                attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                attrs=join(attrs, '')
-            else:
-                # quote non-xml items here?
-                attrs=''
-            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
-            return propstat % (xml_id, prop, '200 OK', '')
-
     del propstat
     del propdesc
 
-    def olddav__propstat(self, allprop, names, join=string.join):
-        # The dav__propstat method returns a chunk of xml containing
-        # one or more propstat elements indicating property names,
-        # values, errors and status codes. This is called by some
-        # of the WebDAV support machinery. If a property set does
-        # not support WebDAV, this method should return an empty
-        # string.
-        propstat='<d:propstat xmlns:n="%s">\n' \
-                 '  <d:prop>\n' \
-                 '%%s\n' \
-                 '  </d:prop>\n' \
-                 '  <d:status>HTTP/1.1 %%s</d:status>\n%%s' \
-                 '</d:propstat>\n' % self.xml_namespace()
-        errormsg='  <d:responsedescription>\n  %s\n' \
-                 '  </d:responsedescription>\n'
-        result=[]
-        if not allprop and not names:
-            # return property names only.
-            for name in self.propertyIds():
-                result.append('  <n:%s/>' % name)
-            if not result: return ''
-            result=join(result, '\n')
-            return propstat % (result, '200 OK', '')
-        elif allprop:
-            # return property names and values.
-            for item in self.propertyMap():
-                name, type=item['id'], item.get('type','string')
-                value=self.getProperty(name)
-                if type=='tokens':
-                    value=join(value, ' ')
-                elif type=='lines':
-                    value=join(value, '\n')
-
-                # allow for xml properties
-                meta=item.get('meta', {})
-                attrs=meta.get('__xml_attrs__', None)
-                if attrs is not None:
-                    attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                    attrs=join(attrs, '')
-                else: attrs=''
-                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
-                result.append(prop)
-            if not result: return ''
-            result=join(result, '\n')
-            return propstat % (result, '200 OK', '')
-        else:
-            # return names and values for named properties.
-            propdict=self._propdict()
-            xml_id=self.xml_namespace()
-            for name, ns in names:
-                if ns==xml_id:
-                    if not propdict.has_key(name):
-                        prop='  <n:%s/>' % name
-                        emsg=errormsg % (
-                            'The property %s does not exist.' % name)
-                        result.append(propstat % (prop, '404 Not Found', emsg))
-                    else:
-                        item=propdict[name]
-                        name, type=item['id'], item.get('type','string')
-                        value=self.getProperty(name)
-                        if type=='tokens':
-                            value=join(value, ' ')
-                        elif type=='lines':
-                            value=join(value, '\n')
-
-                        # allow for xml properties
-                        meta=item.get('meta', {})
-                        attrs=meta.get('__xml_attrs__', None)
-                        if attrs is not None:
-                            attrs=map(lambda n: ' %s="%s"' % n, attrs.items())
-                            attrs=join(attrs, '')
-                        else: attrs=''
-                        prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
-                        result.append(propstat % (prop, '200 OK', ''))
-            if not result: return ''
-            return join(result, '')
 
     # Web interface
     
