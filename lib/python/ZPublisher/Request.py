@@ -82,10 +82,10 @@
 # file.
 # 
 ##############################################################################
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 import regex
-from string import atoi, atol, join, split, strip, rfind
+from string import atoi, atol, join, upper, split, strip, rfind
 
 isCGI_NAME = {
         'SERVER_SOFTWARE' : 1, 
@@ -279,3 +279,8 @@ class Request:
     def has_key(self,key):
         return self.get(key, Request) is not Request
 
+    def get_header(self, name, default=None):
+        # Return the named HTTP header, or an optional default
+        # argument or None if the header is not found.
+        name=upper(join(split(name,"-"),"_"))
+        return self.environ.get(name, default)
