@@ -1,5 +1,6 @@
+
 /*
-     $Id: cPickle.c,v 1.8 1997/01/02 22:00:47 chris Exp $
+     $Id: cPickle.c,v 1.9 1997/01/03 21:44:46 chris Exp $
 
      Copyright 
 
@@ -1706,7 +1707,7 @@ find_class(ARG(char *, module_name), ARG(char *, class_name))
   
   UNLESS(PyTuple_SET_ITEM((PyTupleObject *)t, 1, py_class_name))
     goto err;
-  Py_INCREF(py_module_name);
+  Py_INCREF(py_class_name);
 
   if ((has_key = PyMapping_HasKey(class_map, t)) == -1)
     goto err;
@@ -1716,8 +1717,6 @@ find_class(ARG(char *, module_name), ARG(char *, class_name))
     UNLESS(class = PyDict_GetItem(class_map, t))
       goto err;
 
-    Py_INCREF(class);
-  
     Py_DECREF(py_module_name);
     Py_DECREF(py_class_name);
     Py_DECREF(t);
@@ -1726,10 +1725,10 @@ find_class(ARG(char *, module_name), ARG(char *, class_name))
   }
 
   if (!(import = PyImport_ImportModule(module_name)) ||
-      !(class = PyObject_GetAttrString(import, class_name)))
+      !(class = PyObject_GetAttr(import, py_class_name)))
   {
     UNLESS(error_str = (char *)malloc((strlen(module_name) + 
-        strlen(class_name)  + 40) * sizeof(char)))
+        strlen(class_name) + 40) * sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError, "out of memory");
       goto err;
@@ -1747,7 +1746,7 @@ find_class(ARG(char *, module_name), ARG(char *, class_name))
   if (class->ob_type == BuiltinFunctionType)
   {
     UNLESS(error_str = (char *)malloc((strlen(module_name) + 
-        strlen(class_name)  + 45) * sizeof(char)))
+        strlen(class_name) + 45) * sizeof(char)))
     {
       PyErr_SetString(PyExc_MemoryError, "out of memory");
       goto err;
@@ -1765,6 +1764,7 @@ find_class(ARG(char *, module_name), ARG(char *, class_name))
   if (PyDict_SetItem(class_map, t, class) == -1)
     goto err;
 
+  Py_DECREF(class);
   Py_DECREF(t);
   Py_DECREF(py_module_name);
   Py_DECREF(py_class_name);
@@ -2534,7 +2534,6 @@ load_inst(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
 
   Py_DECREF(arg_slice);
   Py_DECREF(arg_tup);
-  Py_DECREF(class);
   Py_DECREF(obj);
 
   Py_INCREF(Py_None);
@@ -2543,7 +2542,6 @@ load_inst(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
 err:
   Py_XDECREF(arg_slice);
   Py_XDECREF(arg_tup);
-  Py_XDECREF(class);
   Py_XDECREF(obj);
 
   return NULL;
@@ -2582,17 +2580,10 @@ load_class(ARG(Unpicklerobject *, self), ARG(PyObject *, args))
   free(class_name);
 
   if (PyList_Append(self->stack, class) == -1)
-    goto err;
-
-  Py_DECREF(class);
+    return NULL;
 
   Py_INCREF(Py_None);
   return Py_None;
-
-err:
-  Py_XDECREF(class);
-
-  return NULL;
 }
 
 
