@@ -380,11 +380,12 @@ class PathInit:
         self.cwd = os.path.realpath(os.getcwd())
         # Hack again for external products.
         if libdir:
-            self.libdir = os.path.realpath(os.path.join(self.cwd, libdir))
+            self.libdir = os.path.join(self.cwd, libdir)
         else:
-            self.libdir = os.path.realpath(os.path.join(self.cwd, self.libdir))
-        if self.libdir not in sys.path:
-            sys.path.insert(0, self.libdir)
+            self.libdir = os.path.join(self.cwd, self.libdir)
+        real_libdir = os.path.realpath(self.libdir)
+        if real_libdir not in sys.path:
+            sys.path.insert(0, real_libdir)
         # Determine where to look for tests
         if test_dir:
             self.testdir = os.path.abspath(os.path.join(self.cwd, test_dir))
