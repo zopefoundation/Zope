@@ -88,9 +88,14 @@ class DateIndex(UnIndex, PropertyManager):
                   'mode':'w'},)
 
     manage = manage_main = DTMLFile( 'dtml/manageDateIndex', globals() )
+    manage_browse = DTMLFile('../dtml/browseIndex', globals())
+
     manage_main._setName( 'manage_main' )
     manage_options = ( { 'label' : 'Settings'
                        , 'action' : 'manage_main'
+                       },
+                       {'label': 'Browse',
+                        'action': 'manage_browse',
                        },
                      ) + PropertyManager.manage_options
 

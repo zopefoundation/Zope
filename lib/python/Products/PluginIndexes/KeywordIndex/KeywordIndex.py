@@ -34,6 +34,9 @@ class KeywordIndex(UnIndex):
         {'label': 'Settings',
          'action': 'manage_main',
          'help': ('KeywordIndex','KeywordIndex_Settings.stx')},
+        {'label': 'Browse',
+         'action': 'manage_browse',
+         'help': ('FieldIndex','FieldIndex_Settings.stx')},
     )
 
     query_options = ("query","operator", "range")
@@ -128,6 +131,7 @@ class KeywordIndex(UnIndex):
 
     index_html = DTMLFile('dtml/index', globals())
     manage_workspace = DTMLFile('dtml/manageKeywordIndex', globals())
+    manage_browse = DTMLFile('../dtml/browseIndex', globals())
 
 
 
