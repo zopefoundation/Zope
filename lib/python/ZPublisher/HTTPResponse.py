@@ -84,8 +84,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.34 2000/08/16 19:30:04 brian Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: HTTPResponse.py,v 1.35 2000/08/18 16:53:44 shane Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import string, types, sys, regex, re
 from string import find, rfind, lower, upper, strip, split, join, translate
@@ -457,13 +457,16 @@ class HTTPResponse(BaseResponse):
         else:               _tbopen, _tbclose = '<!--',  '-->'
         return "\n%s\n%s\n%s" % (_tbopen, tb, _tbclose)
 
-    def redirect(self, location, status=302):
+    def redirect(self, location, status=302, lock=0):
         """Cause a redirection without raising an error"""
         self.setStatus(status)
         self.setHeader('Location', location)
 
-        # Don't let anything change the status code.
-        self._locked_status = 1
+        if lock:
+            # Don't let anything change the status code.
+            # The "lock" argument needs to be set when redirecting
+            # from a standard_error_message page.
+            self._locked_status = 1
         return location
 
 
