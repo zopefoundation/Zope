@@ -41,15 +41,16 @@ Commands:
           and adding them as documents to the mail folder.
 
 
-    index threshold
+    index [threshold]
 
        Index all of the DTML documents in the database, committing
-       sub-transactions after each threshold objects.
+       sub-transactions after each threshold objects.  threshold defaults to
+       1000.
 
        If the threshold is less than the number of messages, then the
        size of the temporary sub-transaction commit file is output.
 
-    inc mbox start end [threads wait]
+    inc mbox start end [threads [wait]]
 
        Incrementally index messages start to end in unix mailbox mbox.
 
@@ -73,9 +74,9 @@ Commands:
 
           - The cpu time
 
-          - The number of ZODB trabsaction conflicts detected when reading
+          - The number of ZODB transaction conflicts detected when reading
 
-          - The number of ZODB trabsaction conflicts detected when committing
+          - The number of ZODB transaction conflicts detected when committing
 
     edit edits deletes inserts threads wait
 
@@ -266,13 +267,15 @@ def index():
     import AccessControl.SecurityManagement, AccessControl.SpecialUsers
     app=Zope.app()
     Products.ZCatalog.ZCatalog.manage_addZCatalog(app, 'cat', '')
-    app.cat.threshold=atoi(sys.argv[2])
+    try:
+        app.cat.threshold = atoi(sys.argv[2])
+    except IndexError:
+        app.cat.threashold = 1000
 
     from Products.ZCTextIndex.ZCTextIndex \
          import PLexicon
     from Products.ZCTextIndex.Lexicon \
          import Splitter, CaseNormalizer
-    
     
     app.cat._setObject('lex',
                        PLexicon('lex', '', Splitter(), CaseNormalizer())
