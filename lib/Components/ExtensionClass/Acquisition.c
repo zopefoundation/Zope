@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.26 1999/04/23 12:51:46 jim Exp $
+  $Id: Acquisition.c,v 1.27 1999/04/23 13:47:43 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -353,7 +353,16 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 
   name=PyString_AsString(oname);
   if (*name++=='a' && *name++=='q' && *name++=='_'
-     && (r=Wrapper_special(self, name, oname))) return r;
+     && (r=Wrapper_special(self, name, oname))) 
+    {
+      if (filter)
+	switch(apply_filter(filter,OBJECT(self),oname,r,extra,orig))
+	  {
+	  case -1: return NULL;
+	  case 1: return r;
+	  }
+      else return r;
+    }
 
   if (sob && self->obj)
     {
@@ -943,7 +952,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.26 $";
+  char *rev="$Revision: 1.27 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -962,7 +971,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.26 1999/04/23 12:51:46 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.27 1999/04/23 13:47:43 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
