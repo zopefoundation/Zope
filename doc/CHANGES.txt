@@ -67,6 +67,8 @@ Zope Changes
       - Collector #259: walkandscrub.py did not delete all .pyc and .pyo
         files during installation. Fixed.
 
+      - Collector #231: BTrees ignoring errors from comparison function
+
       - Collector #278: DocumentWithImages could not handle URLs with
         underscores
 
