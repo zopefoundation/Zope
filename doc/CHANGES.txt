@@ -12,6 +12,10 @@ Zope Changes
 
         - Added automatic height/width detection for JPEG images.
 
+        - Added new product registration interface.
+
+        - Added Z Classes.
+
       Bugs Fixed
 
         - Added small fixes to ZopeHTTPServer in anticipation of DAV.
