@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.31 $'[11:-2]
+__version__='$Revision: 1.32 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -131,7 +131,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         raise 'Not Found', 'The requested resource does not exist.'
 
     # Most methods return 404 (Not Found) for null resources.
-    DELETE=OPTIONS=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
+    DELETE=TRACE=PROPFIND=PROPPATCH=COPY=MOVE=HEAD
 
     def _default_PUT_factory( self, name, typ, body ):
         #   Return DTMLDoc/Image/File, based on sniffing.
@@ -315,11 +315,6 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
     title_or_id__roles__=None
     def title_or_id(self):
         return 'Foo'
-
-    OPTIONS__roles__=None
-    def OPTIONS(self, REQUEST, RESPONSE):
-        """Retrieve communication options."""
-        return Resource.OPTIONS(self, REQUEST, RESPONSE)
 
     def PROPFIND(self, REQUEST, RESPONSE):
         """Retrieve properties defined on the resource."""
