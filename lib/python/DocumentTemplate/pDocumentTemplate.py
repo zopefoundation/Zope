@@ -58,10 +58,10 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.13 1998/05/14 16:27:49 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.14 1998/08/04 13:54:04 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
-import regex, string, sys
+import string, sys
 from string import join
 
 StringType=type('')
@@ -169,6 +169,13 @@ class TemplateDict:
 		except (AttributeError,TypeError): pass
         return v
 
+    def has_key(self,key):
+        try:
+            v=self.dicts[key]
+        except KeyError:
+            return 0
+        return 1
+    
     getitem=__getitem__
 
 def render_blocks(blocks, md):
@@ -230,6 +237,9 @@ def render_blocks(blocks, md):
 ############################################################################## 
 #
 # $Log: pDocumentTemplate.py,v $
+# Revision 1.14  1998/08/04 13:54:04  jim
+# Added has_key
+#
 # Revision 1.13  1998/05/14 16:27:49  jim
 # Optimized TemplateDict __getitem__ by removing some exception usage
 # and by adding test to short circuit rendering of common simple objects
