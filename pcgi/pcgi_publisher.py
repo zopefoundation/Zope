@@ -307,12 +307,31 @@ class PCGIPublisher:
         stdin.close()
         stdout=stdout.getvalue()
         stderr=stderr.getvalue()
+
+        stdout_len=len(stdout)
         conn.send('%010d' % len(stdout))
-        if len(stdout) > 0:
-            conn.send(stdout)
-        conn.send('%010d' % len(stderr))
-        if len(stderr) > 0:
-            conn.send(stderr)
+        to_send=stdout_len
+        if to_send > 0:
+            while 1:
+                sent = conn.send(stdout)
+                if sent == to_send:
+                    break
+                else:
+                    to_send = to_send - sent
+                    stdout = stdout[sent:]
+                
+        stderr_len=len(stderr)
+        conn.send('%010d' % stderr_len)
+        to_send=stderr_len
+        if to_send > 0:
+            while 1:
+                sent = conn.send(stderr)
+                if sent == to_send:
+                    break
+                else:
+                    to_send = to_send - sent
+                    stderr = stderr[sent:]
+                    
         conn.close()
 
     def listen(self):
