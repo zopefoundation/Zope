@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ComputedAttribute.c,v 1.2 1999/06/10 20:08:55 jim Exp $
+  $Id: ComputedAttribute.c,v 1.3 1999/10/16 14:30:31 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -61,16 +61,32 @@ PyVar_Assign(PyObject **v,  PyObject *e)
 typedef struct {
   PyObject_HEAD
   PyObject *callable;
+  int level;
 } CA;
 
 static PyObject *
 CA__init__(CA *self, PyObject *args)
 {
   PyObject *callable;
+  int level=0;
 
-  UNLESS(PyArg_ParseTuple(args,"O",&callable)) return NULL;
-  Py_INCREF(callable);
+  UNLESS(PyArg_ParseTuple(args,"O|i",&callable, &level)) return NULL;
+
+  if (level > 0) 
+    {
+      callable=PyObject_CallFunction(OBJECT(self->ob_type), "Oi", 
+				     callable, self->level-1);
+      UNLESS (callable) return NULL;
+      self->level=level;
+    }
+  else
+    {
+      Py_INCREF(callable);
+      self->level=0;
+    }
+
   self->callable=callable;
+
   Py_INCREF(Py_None);
   return Py_None;
 }
@@ -86,17 +102,13 @@ CA_dealloc(CA *self)
 static PyObject *
 CA_of(CA *self, PyObject *args)
 {
-  PyObject *inst, *r;
+  if (self->level > 0) 
+    {
+      Py_INCREF(self->callable);
+      return self->callable;
+    }
 
-  UNLESS(PyArg_ParseTuple(args,"O",&inst)
-	 && (r=PyTuple_New(1))) return NULL;
-  PyTuple_SET_ITEM(r,0,inst);
-  Py_INCREF(inst);
-  
-  if (self->callable) 
-    ASSIGN(r, PyObject_CallObject(self->callable, r));
-
-  return r;
+  return PyObject_CallObject(self->callable, args);
 }
 
 static struct PyMethodDef CA_methods[] = {
@@ -124,7 +136,7 @@ void
 initComputedAttribute()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.2 $";
+  char *rev="$Revision: 1.3 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -134,7 +146,7 @@ initComputedAttribute()
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.2 1999/06/10 20:08:55 jim Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.3 1999/10/16 14:30:31 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
