@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.68 $'[11:-2]
+__version__='$Revision: 1.69 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -380,7 +380,7 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         # Only do basic authentication
         if lower(auth[:6])!='basic ':
             return None
-        name,password=tuple(split(decodestring(split(auth)[-1]), ':'))
+        name,password=tuple(split(decodestring(split(auth)[-1]), ':', 1))
 
         # Check for superuser
         super=self._super
