@@ -11,10 +11,11 @@
 #
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.7 2003/09/09 19:48:24 sf Exp $
+"""$Id: DateRangeIndex.py,v 1.8 2003/11/02 11:57:58 chrism Exp $
 """
 
 import os
+import sys
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
@@ -404,6 +405,15 @@ class DateRangeIndex(UnIndex):
             value = dt_obj.millis() / 1000 / 60 # flatten to minutes
         if isinstance( value, DateTime ):
             value = value.millis() / 1000 / 60 # flatten to minutes
+        # XXX 2038K bug:
+        # we might still be dealing with a long.
+        # we're using IOBTrees with dates as keys and we
+        # cant convert long to int if its > sys.maxint.
+        # BTrees code blows up if we try to ask it for a long key,
+        # so we punt here.  In a future version, we should either
+        # come up with a LOBTree or use OOBTrees to store datum.
+        if value > sys.maxint: 
+            value = sys.maxint
         return int( value )
 
 InitializeClass( DateRangeIndex )
