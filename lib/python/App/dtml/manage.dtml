@@ -16,7 +16,7 @@ function update_menu() {
 
 <dtml-if tf>
   <dtml-if "ag[:9] == 'Mozilla/4' and _.string.find(ag, 'MSIE') < 0">
-  <frameset rows="40, *">
+  <frameset rows="42, *">
   <dtml-else>
   <frameset rows="34, *">
   </dtml-if>
