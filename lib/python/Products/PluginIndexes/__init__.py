@@ -20,8 +20,17 @@ import TextIndex.TextIndex
 import FieldIndex.FieldIndex
 import KeywordIndex.KeywordIndex
 import TopicIndex.TopicIndex
+import DateIndex.DateIndex
+import DateRangeIndex.DateRangeIndex
 
-_indexes =  ('TextIndex','KeywordIndex','FieldIndex','PathIndex','TopicIndex')
+_indexes =  ('TextIndex',
+             'KeywordIndex',
+             'FieldIndex',
+             'PathIndex',
+             'TopicIndex',
+             'DateIndex',
+             'DateRangeIndex',
+            )
 
 def initialize(context):
 
