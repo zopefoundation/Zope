@@ -49,6 +49,9 @@ Zope Changes
 	- temporary folder
 
       - Zope will create default sessioning objects on startup
+
+      - Zope will create an Examples folder on startup. This folder
+      contains a collection of simple example applications.
   
     Bugs Fixed
     

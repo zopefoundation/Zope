@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.161 2001/11/13 22:02:47 matt Exp $'''
-__version__='$Revision: 1.161 $'[11:-2]
+$Id: Application.py,v 1.162 2001/11/17 00:00:20 amos Exp $'''
+__version__='$Revision: 1.162 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -472,6 +472,14 @@ def initialize(app):
         get_transaction().note('Added session_data_manager')
         get_transaction().commit()
         del sdm
+
+    # b/c: Ensure that there's an Examples folder with examples
+    if not hasattr(app, 'Examples'):
+        examples=app._p_jar.importFile(
+            os.path.join(Globals.data_dir, 'Examples.zexp'),
+            clue='Added Examples folder')
+        app._setObject('Examples', examples)
+        del examples
 
     # b/c: Ensure that Owner role exists.
     if hasattr(app, '__ac_roles__') and not ('Owner' in app.__ac_roles__):

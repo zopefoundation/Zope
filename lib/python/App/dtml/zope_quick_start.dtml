@@ -54,6 +54,14 @@ begin working with the tutorial.
 
 <li>
 <p>
+Check out the <b>new</b> <a href="Examples">example Zope
+applications</a>. These examples show you simple working Zope
+applications that you can copy and modify.
+</p>
+</li>
+
+<li>
+<p>
 Go to the main <a href="http://www.zope.org/Documentation/" target="_new">
 Documentation Overview</a> on Zope.org.  Here you will find pointers to 
 official and community contributed documentation.
