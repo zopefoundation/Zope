@@ -10,19 +10,29 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
+"""Wrapper to integrate reStructuredText into Zope
 
-""" Wrapper to integrate reStructuredText into Zope """
+This implementation requires docutils 0.3.4+ from http://docutils.sf.net/
+"""
 
-__all__ = ("HTML", ) 
+import sys, os, locale
+from App.config import getConfiguration
+from docutils.core import publish_parts
 
-import sys, os
-import docutils.core 
-from docutils.io import StringOutput, StringInput
-from App.config import getConfiguration 
-
+# get encoding
 default_enc = sys.getdefaultencoding()
 default_output_encoding = getConfiguration().rest_output_encoding or default_enc
 default_input_encoding = getConfiguration().rest_input_encoding or default_enc
+
+# starting level for <H> elements (default behaviour inside Zope is <H3>)
+default_level = int(os.environ.get('STX_DEFAULT_LEVEL', 3))
+initial_header_level = getConfiguration().rest_header_level or default_level
+
+# default language
+default_lang = getConfiguration().locale or locale.getdefaultlocale()[0]
+if default_lang and '_' in default_lang:
+    default_lang = default_lang[:default_lang.index('_')]
+
 
 class Warnings:
 
@@ -32,12 +42,15 @@ class Warnings:
     def write(self, message):
         self.messages.append(message)
 
-def HTML(src, 
-         writer='html4zope', 
-         report_level=1, 
+def HTML(src,
+         writer='html4css1',
+         report_level=1,
          stylesheet='default.css',
-         input_encoding=default_input_encoding, 
-         output_encoding=default_output_encoding):
+         input_encoding=default_input_encoding,
+         output_encoding=default_output_encoding,
+         language_code=default_lang,
+         warnings = None,
+         settings = {}):
 
     """ render HTML from a reStructuredText string 
 
@@ -52,48 +65,44 @@ def HTML(src,
         - 'input_encoding' - encoding of the reST input string
 
         - 'output_encoding' - encoding of the rendered HTML output
+        
+        - 'report_level' - verbosity of reST parser
+
+        - 'language_code' - docutils language
+        
+        - 'warnings' - will be overwritten with a string containing the warnings
+        
+        - 'settings' - dict of settings to pass in to Docutils, with priority
+
     """
+    # Docutils settings:
+    settings = settings.copy()
+    settings['input_encoding'] = input_encoding
+    settings['output_encoding'] = output_encoding
+    settings['stylesheet'] = stylesheet
+    settings['language_code'] = language_code
+    # starting level for <H> elements:
+    settings['initial_header_level'] = initial_header_level
+    # set the reporting level to something sane:
+    settings['report_level'] = report_level
+    # don't break if we get errors:
+    settings['halt_level'] = 6
+    # remember warnings:
+    settings['warning_stream'] = warning_stream = Warnings()
 
-    pub = docutils.core.Publisher()
-    pub.set_reader('standalone', None, 'restructuredtext')
-    pub.set_writer(writer)
+    parts = publish_parts(source=src, writer_name=writer,
+                          settings_overrides=settings,
+                          config_section='zope application')
 
-    # go with the defaults
-    pub.get_settings()
+    output = ('<h%(level)s class="title">%(title)s</h%(level)s>\n%(body)s'
+              % {'level': initial_header_level,
+                 'title': parts['title'],
+                 'body': parts['body']}).encode(output_encoding)
 
-    pub.settings.stylesheet = stylesheet
+    # what to do with this? (not used in the original code)
+    warnings = ''.join(warning_stream.messages)
 
-    # this is needed, but doesn't seem to do anything
-    pub.settings._destination = ''
+    return output
 
-    # set the reporting level to something sane
-    pub.settings.report_level = report_level
 
-    # don't break if we get errors
-    pub.settings.halt_level = 6
-
-    # remember warnings
-    pub.settings.warning_stream = Warnings()
-
-    # input
-    pub.source = StringInput(source=src, encoding=input_encoding)
-
-    # output - not that it's needed
-    pub.destination = StringOutput(encoding=output_encoding)
-
-    # parse!
-    document = pub.reader.read(pub.source, pub.parser, pub.settings)
-
-    # transform
-    pub.apply_transforms(document)
-    
-    warnings = ''.join(pub.settings.warning_stream.messages)
-
-    # do the format
-    return pub.writer.write(document, pub.destination)
-
-from docutils import writers
-import html4zope
-
-writers.html4zope = html4zope
-sys.modules['docutils.writers.html4zope'] = html4zope
+__all__ = ("HTML", )
