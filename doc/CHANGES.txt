@@ -58,6 +58,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Forward-ported 'aq_acquire'-related fix and associated tests
+        from Zope 2.7.4.
+
       - Collector #1730: XML page templates couldn't call aq_parent in
         path expressions.
 

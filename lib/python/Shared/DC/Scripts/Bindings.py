@@ -15,6 +15,7 @@ __version__='$Revision$'[11:-2]
 
 import Globals
 from AccessControl import getSecurityManager
+from AccessControl.PermissionRole import _what_not_even_god_should_do
 from AccessControl.ZopeGuards import guarded_getattr
 from Persistence import Persistent
 from string import join, strip
@@ -167,15 +168,19 @@ class UnauthorizedBinding:
         self._wrapped = wrapped
 
     __allow_access_to_unprotected_subobjects__ = 1
+    __roles__ = _what_not_even_god_should_do
+
+    def __repr__(self):
+        return '<UnauthorizedBinding: %s>' % self._name
 
     def __getattr__(self, name, default=None):
-
         # Make *extra* sure that the wrapper isn't used to access
-        # __call__, __str__, __repr__, etc.
+        # __call__, etc.
         if name.startswith('__'):
             self.__you_lose()
 
         return guarded_getattr(self._wrapped, name, default)
+        #return getattr(self._wrapped, name, default)
 
     def __you_lose(self):
         name = self.__dict__['_name']
