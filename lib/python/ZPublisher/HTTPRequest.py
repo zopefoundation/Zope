@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.26 $'[11:-2]
+__version__='$Revision: 1.27 $'[11:-2]
 
 import regex, sys, os, string
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -170,6 +170,7 @@ class HTTPRequest(BaseRequest):
     _hacked_path=None
     args=()
     _file=None
+    _urls = ()
 
     retry_max_count=3
     def supports_retry(self): return self.retry_count < self.retry_max_count
@@ -181,6 +182,21 @@ class HTTPRequest(BaseRequest):
                          response=self.response.retry()
                          )
         return r
+
+
+    def setSite(self, base=None):
+        """ blah """
+        if base is not None:
+            self.script = self.base = base
+
+        # reset the URL
+        self.other['URL'] = self.script
+        # clear the 'cache' of URLx and BASEx
+        for x in self._urls:
+            del self.other[x]
+            
+        del self.other['PARENTS'][:]
+
 
     def __init__(self, stdin, environ, response, clean=0):
         self._orig_env=environ
@@ -194,7 +210,7 @@ class HTTPRequest(BaseRequest):
             self._auth=environ['HTTP_AUTHORIZATION']
             response._auth=1
             del environ['HTTP_AUTHORIZATION']
-        
+
         self.stdin=stdin
         self.environ=environ
         have_env=environ.has_key
@@ -712,6 +728,7 @@ class HTTPRequest(BaseRequest):
                 else: raise KeyError, key
                 if len(URL) < len(self.base) and n > 1: raise KeyError, key
             other[key]=URL
+            self._urls = self._urls + (key,)
             return URL
 
         if isCGI_NAME(key) or key[:5] == 'HTTP_':
@@ -738,6 +755,7 @@ class HTTPRequest(BaseRequest):
                     v=self.base
                     while v[-1:]=='/': v=v[:-1]
                 other[key]=v
+                self._urls = self._urls + (key,)
                 return v
 
             if key=='BODY' and self._file is not None:
