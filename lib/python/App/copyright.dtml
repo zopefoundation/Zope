@@ -3,8 +3,18 @@
 <TITLE>Copyright</TITLE>
 </HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>Zope Public License (ZPL) Version 0.9.7</H2>
-<h3>Copyright &copy; 1997, 1998
+
+<P align="center">
+<a href="#ZPL">Zope License</a> |
+<a href="#PYTHON">Python License</a> |
+<a href="#CREDITS">Zope Credits</a>
+</P>
+
+<A NAME="ZPL">
+
+<H2>Zope Public License (ZPL) Version 1.0</H2>
+
+<h3>Copyright &copy; 1997, 1998, 1999
   <a href="http://www.digicool.com/" TARGET="_top">
   Digital Creations</a>, All rights reserved.</h3>
 
@@ -19,21 +29,16 @@ met:
 </p>
 
 
-<p>Redistribution and use in source and binary forms, with or
-without modification, are permitted provided that the following
-conditions are met:</p>
-
 <ol>
-<li> Redistributions in source code must retain the above
-   copyright notice, this list of conditions, and the following
-   disclaimer.
+<li>Redistributions in source code must retain the above copyright
+   notice, this list of conditions, and the following disclaimer.
 
-<li> Redistributions in binary form must reproduce the above
-   copyright notice, this list of conditions, and the following
-   disclaimer in the documentation and/or other materials
-   provided with the distribution.
+<li>Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions, and the following disclaimer in
+   the documentation and/or other materials provided with the
+   distribution.
 
-<li> Digital Creations requests that attribution be given to Zope
+<li>Digital Creations requests that attribution be given to Zope
    in any manner possible. Zope includes a "Powered by Zope"
    button that is installed by default. While it is not a license
    violation to remove this button, it is requested that the
@@ -42,9 +47,9 @@ conditions are met:</p>
    continues to grow. This is one way to assure that growth.
 
 <li><dl><dt> 
-   All advertising materials, documentation, or technical papers
-   mentioning features derived from or use of this software must
-   display the following acknowledgement:
+   All advertising materials and documentation mentioning
+      features derived from or use of this software must display
+   the following acknowledgement:
 
      <dd>"This product includes software developed by Digital
      Creations for use in the Z Object Publishing Environment
@@ -60,26 +65,28 @@ conditions are met:</p>
    software without prior written permission from Digital
    Creations.
 
-<li><dl><dt> 
-   Modified redistributions of any form whatsoever must retain the
-   following acknowledgment:
+<li><dl><dt>Modified redistributions of any form whatsoever must retain
+   the following acknowledgment:
 
-     <dd>"This product includes software developed by Digital
-     Creations for use in the Z Object Publishing Environment
+     <dd>"This product includes software developed by Digital Creations
+     for use in the Z Object Publishing Environment
      (http://www.zope.org/)."
-   </dl>
 
-<li> Modifications are encouraged but must be packaged separately
-   as patches to official Zope releases.  Distributions that do
-   not clearly separate the patches from the original work must
-   be clearly labeled as unofficial distributions. Modifications which 
-   do not carry the name Zope may be packaged in any form, as long as 
-   they conform to all of the clauses above.
+   Intact (re-)distributions of any official Zope release do not
+   require an external acknowledgement.
+</dl>
+
+<li> Modifications are encouraged but must be packaged separately as
+   patches to official Zope releases.  Distributions that do not
+   clearly separate the patches from the original work must be clearly
+   labeled as unofficial distributions.  Modifications which do not
+   carry the name Zope may be packaged in any form, as long as they
+   conform to all of the clauses above.
 </ol>
 <dl>
 <dt>Disclaimer
 
-  <dd> THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND ANY
+  <dd>  THIS SOFTWARE IS PROVIDED BY DIGITAL CREATIONS ``AS IS'' AND ANY
   EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
   PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL DIGITAL CREATIONS OR ITS
@@ -92,29 +99,16 @@ conditions are met:</p>
   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
   SUCH DAMAGE.
 
-<dt>Attribution
-
-  <dd>Individuals or organizations using this software as a web site
-  must provide attribution by placing the accompanying "button"
-  and a link to the accompanying "credits page" on the website's
-  main entry point.  In cases where this placement of
-  attribution is not feasible, a separate arrangment must be
-  concluded with Digital Creations.  Those using the software
-  for purposes other than web sites must provide a corresponding
-  attribution in locations that include a copyright using a
-  manner best suited to the application environment.
-</dl>
-
-This software consists of contributions made by Digital
-Creations and many individuals on behalf of Digital Creations.
-Specific attributions are listed in the accompanying credits
-file.
-
-
+<p>
+This software consists of contributions made by Digital Creations and
+many individuals on behalf of Digital Creations.  Specific
+attributions are listed in the accompanying credits file.
+</p>
 
 <hr>
 
 <A NAME="PYTHON">
+
 <H3>
 <img src="<!--#var SCRIPT_NAME-->/p_/PyPoweredSmall_Gif">
 This software is powered by <a href="http://www.python.org/" TARGET="_top">Python</a>!
@@ -148,6 +142,46 @@ PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.</p>
 
+<hr>
+
+<A NAME="CREDITS">
+
+<H3>Zope Credits</H3>
+
+
+<P>
+  The Zope software receives contributions from far and wide.  Here's
+  the Zope Hall of Fame:
+</P>
+<UL>
+    <LI>Jeff Bauer is Zope Dude Number One.  Jeff took over PCGI and
+    kept pushing it forward through the years.
+</LI>
+    <LI>Sam Rushing worked with us at Digital Creations to make Medusa
+    the publishing platform for ZServer and the concurrency of Zope2.
+</LI>
+    <LI>The DateTime module was based on work from Ted Horst.
+</LI>
+    <LI>Jordan Baker contributed the 'try' tag, something I've wanted
+    for a long, long time.
+</LI>
+    <LI>Martijn Pieters chipped in with a safe range function.
+</LI>
+    <LI>Michael Hauser came up with the name "Zope".
+</LI>
+    <LI>All the other Zopistas far and wide that stuck with us during
+    the Bobo/Principia days and politely push us to make the best damn
+    app server on this or any other planet.
+</LI>
+</UL>
+ <P> 
+  Of course the list of credits would be quite incomplete without
+  mentioning Guido van Rossum, benevolent dictator of Python and
+  long-time friend of Digital Creations.  Zope Power is Python Power.
+</P>
+ <P>
+ Paul Everitt, <a href="mailto:paul@digicool.com">paul@digicool.com</a>.
+</P>
 </BODY>
 </HTML>
 
