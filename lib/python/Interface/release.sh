@@ -12,7 +12,7 @@ for f in `cat pyfiles`; do
   cp $f  "$M-$R/Interface/"
 done
 
-for f in README.txt test.py; do
+for f in README.txt CHANGES.txt test.py; do
   cp $f  "$M-$R/"
 done
 

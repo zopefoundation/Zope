@@ -245,7 +245,14 @@ Details
     Tim Peter's has expressed the desire to provide abstract
     implementations in an interface definitions, where, presumably, an
     abstract implementation uses only features defined by the
-    interface.  For example:
+    interface.  
+
+    Perhaps if a method definition has a body (other than a doc
+    string) then the corresponding method in the defered class
+    will not be defered. This would not be hard to do in CPython
+    if I cheat and sniff at method bytecodes.
+
+    For example:
 
       class ListInterface(Interface.Standard.MutableSequence):
 
@@ -256,10 +263,14 @@ Details
            "add a value to the end of the object"
            self.append(v)
 
-    Perhaps if a method definition has a body (other than a doc
-    string) then the corresponding method in the defered class
-    will not be defered. This would not be hard to do in CPython
-    if I cheat and sniff at method bytecodes.
+      ListBase=ListInterface.defered()
+
+      class ListImplementer(Listbase):
+         def append(self, v): ...
+
+    In this example, we can create a base class, ListBase, that provides an
+    abstract implementation of 'push' and an implementation of append
+    that raises an error if not overridden.
 
   Standard interfaces
 
@@ -279,9 +290,6 @@ Details
          type(1L), 
          (AbritraryPrecision, BitNumber, Signed))
 
-
-    
-
 Issues
 
   o What should the objects that define attributes look like?
@@ -290,6 +298,10 @@ Issues
 
     Note that we've made a first cut with 'Attribute' and
     'Method' objects.
+
+    Note that the information contained in a non-method attribute
+    object might contain the attribute value's interface as well as
+    other information, such as an attribute's usage.
 
   o There are places in the current implementation that use
     'isinstance' that should be changed to use interface
