@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Acquisition.c,v 1.54 2001/12/23 15:12:34 Brian Exp $
+  $Id: Acquisition.c,v 1.55 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -1527,7 +1527,7 @@ initAcquisition(void)
 {
   PyObject *m, *d;
   PyObject *api;
-  char *rev="$Revision: 1.54 $";
+
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -1546,7 +1546,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.54 2001/12/23 15:12:34 Brian Exp $\n",
+	   "$Id: Acquisition.c,v 1.55 2002/01/25 15:34:06 gvanrossum Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -1559,10 +1559,6 @@ initAcquisition(void)
   /* Create aliases */
   PyDict_SetItemString(d,"Implicit",OBJECT(&AcquirerType));
   PyDict_SetItemString(d,"Explicit",OBJECT(&ExplicitAcquirerType));
-  
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  PyDict_SetItemString(d,"Acquired",Acquired);
 
   AcquisitionCAPI.AQ_Acquire = capi_aq_acquire;
   AcquisitionCAPI.AQ_Get = capi_aq_get;

@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Missing.c,v 1.11 2001/03/28 14:06:51 jeremy Exp $
+  $Id: Missing.c,v 1.12 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,7 +47,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.11 2001/03/28 14:06:51 jeremy Exp $"
+"\n$Id: Missing.c,v 1.12 2002/01/25 15:34:06 gvanrossum Exp $"
 ;
 
 #include <string.h>
@@ -304,7 +304,6 @@ void
 initMissing(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.11 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -318,9 +317,6 @@ initMissing(void)
 
   /* Add some symbolic constants to the module */
   d = PyModule_GetDict(m);
-
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   PyExtensionClass_Export(d,"Missing",MissingType);
 
@@ -340,6 +336,9 @@ initMissing(void)
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.12  2002/01/25 15:34:06  gvanrossum
+  Get rid of __version__, as Jim recommends.  Use $ from docstring instead.
+
   Revision 1.11  2001/03/28 14:06:51  jeremy
   gcc -Wall cleanup
       - make function decls prototypes

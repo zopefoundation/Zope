@@ -12,7 +12,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.13 2001/11/28 15:50:51 matt Exp $"
+"\n$Id: Record.c,v 1.14 2002/01/25 15:34:06 gvanrossum Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -521,7 +521,6 @@ void
 initRecord(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.13 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -548,10 +547,6 @@ initRecord(void)
 
   PyExtensionClass_Export(d,"Record",RecordType);
 
-  PyDict_SetItemString(d, "__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
-  
-	
   /* Check for errors */
   if (PyErr_Occurred()) Py_FatalError("can't initialize module Record");
 }

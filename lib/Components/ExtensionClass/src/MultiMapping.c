@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: MultiMapping.c,v 1.9 2001/03/28 14:06:51 jeremy Exp $
+  $Id: MultiMapping.c,v 1.10 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -234,18 +234,15 @@ void
 initMultiMapping(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.9 $";
 
   m = Py_InitModule4(
       "MultiMapping", MultiMapping_methods,
       "MultiMapping -- Wrap multiple mapping objects for lookup"
       "\n\n"
-      "$Id: MultiMapping.c,v 1.9 2001/03/28 14:06:51 jeremy Exp $\n",
+      "$Id: MultiMapping.c,v 1.10 2002/01/25 15:34:06 gvanrossum Exp $\n",
       (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   if (PyErr_Occurred()) Py_FatalError("can't initialize module MultiMapping");
 }

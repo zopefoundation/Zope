@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.49 2001/12/27 22:30:51 fdrake Exp $
+  $Id: ExtensionClass.c,v 1.50 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.49 2001/12/27 22:30:51 fdrake Exp $\n"
+"$Id: ExtensionClass.c,v 1.50 2002/01/25 15:34:06 gvanrossum Exp $\n"
 ;
 
 #include <stdio.h>
@@ -3519,7 +3519,6 @@ void
 initExtensionClass(void)
 {
   PyObject *m, *d, *s;
-  char *rev="$Revision: 1.49 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3534,9 +3533,6 @@ initExtensionClass(void)
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
-  s = PyString_FromStringAndSize(rev+11,strlen(rev+11)-2);
-  PyDict_SetItemString(d,"__version__", s);
-  Py_XDECREF(s);
 
   init_py_names();
 

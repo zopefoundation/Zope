@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: MethodObject.c,v 1.6 2001/03/28 14:06:51 jeremy Exp $
+  $Id: MethodObject.c,v 1.7 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -67,7 +67,6 @@ void
 initMethodObject(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.6 $";
   PURE_MIXIN_CLASS(Method,
 	"Base class for objects that want to be treated as methods\n"
 	"\n"
@@ -83,13 +82,11 @@ initMethodObject(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("MethodObject", methods,
 		     "Method-object mix-in class module\n\n"
-		     "$Id: MethodObject.c,v 1.6 2001/03/28 14:06:51 jeremy Exp $\n",
+		     "$Id: MethodObject.c,v 1.7 2002/01/25 15:34:06 gvanrossum Exp $\n",
 		     (PyObject*)NULL,PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"Method",MethodType);
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   /* Check for errors */
   CHECK_FOR_ERRORS("can't initialize module MethodObject");

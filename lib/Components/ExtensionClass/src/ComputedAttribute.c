@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ComputedAttribute.c,v 1.5 2001/05/23 18:28:33 shane Exp $
+  $Id: ComputedAttribute.c,v 1.6 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -136,7 +136,6 @@ void
 initComputedAttribute(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.5 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -146,12 +145,10 @@ initComputedAttribute(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.5 2001/05/23 18:28:33 shane Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.6 2002/01/25 15:34:06 gvanrossum Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"ComputedAttribute",ComputedAttributeType);
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
   CHECK_FOR_ERRORS("can't initialize module Acquisition");
 }

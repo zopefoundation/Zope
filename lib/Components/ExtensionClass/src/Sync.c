@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Sync.c,v 1.3 2001/03/28 14:06:51 jeremy Exp $
+  $Id: Sync.c,v 1.4 2002/01/25 15:34:06 gvanrossum Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,7 +47,7 @@
 
 static char Sync_module_documentation[] = 
 ""
-"\n$Id: Sync.c,v 1.3 2001/03/28 14:06:51 jeremy Exp $"
+"\n$Id: Sync.c,v 1.4 2002/01/25 15:34:06 gvanrossum Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -114,7 +114,6 @@ void
 initSync(void)
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.3 $";
   PURE_MIXIN_CLASS(
        Synchronized,
        "Mix-in class that provides synchonization of method calls\n"
@@ -138,8 +137,6 @@ initSync(void)
 
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"Synchronized",SynchronizedType);
-  PyDict_SetItemString(d,"__version__",
-		       PyString_FromStringAndSize(rev+11,strlen(rev+11)-2));
 
   CHECK_FOR_ERRORS("can't initialize module MethodObject");
 }
