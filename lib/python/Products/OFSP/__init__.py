@@ -8,8 +8,8 @@
 #
 ############################################################################## 
 __doc__='''OFS
-$Id: __init__.py,v 1.9 1998/02/10 18:41:40 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: __init__.py,v 1.10 1998/02/13 21:03:48 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import Session, DraftFolder
 from ImageFile import ImageFile
@@ -20,12 +20,12 @@ classes=('Session.Session', 'OFS.Image.File',
 
 meta_types=(
 #    {'name':'Draft Folder', 'action':'manage_addDraftFolderForm'},
+    {'name':'User Folder', 'action':'manage_addUserFolder'},
     {'name':'Session', 'action':'manage_addSessionForm'},
     {'name':'File', 'action':'manage_addFileForm'},
     {'name':'Image', 'action':'manage_addImageForm'},
     {'name':'Folder', 'action':'manage_addFolderForm'},
     {'name':'Document', 'action':'manage_addDocumentForm'},
-    {'name':'User Folder', 'action':'manage_addUserFolder'},
     )
 
 methods={
@@ -50,6 +50,9 @@ __ac_permissions__=(
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.10  1998/02/13 21:03:48  jim
+# Rearranged meta_types so Document shows up first.
+#
 # Revision 1.9  1998/02/10 18:41:40  jim
 # Changed session creation method names for latest security scheme.
 #
