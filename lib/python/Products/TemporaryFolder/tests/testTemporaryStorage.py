@@ -12,7 +12,7 @@ import sys, os, unittest, time
 
 from ZODB.tests import StorageTestBase, BasicStorage, \
      Synchronization, ConflictResolution, \
-     Corruption, RevisionStorage
+     Corruption, RevisionStorage, MTStorage
 
 class TemporaryStorageTests(
     StorageTestBase.StorageTestBase,
@@ -20,14 +20,15 @@ class TemporaryStorageTests(
     BasicStorage.BasicStorage,
     Synchronization.SynchronizedStorage,
     ConflictResolution.ConflictResolvingStorage,
+    MTStorage.MTStorage,
     ):
 
     def open(self, **kwargs):
         self._storage = TemporaryStorage.TemporaryStorage('foo')
 
     def setUp(self):
-        self.open()
         StorageTestBase.StorageTestBase.setUp(self)
+        self.open()
 
     def tearDown(self):
         StorageTestBase.StorageTestBase.tearDown(self)
