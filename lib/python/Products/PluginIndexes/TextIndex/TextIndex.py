@@ -87,7 +87,7 @@
 
 """
 
-__version__ = '$Revision: 1.11 $'[11:-2]
+__version__ = '$Revision: 1.12 $'[11:-2]
 
 
 import string, re
@@ -185,8 +185,14 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
 
         self.clear()
 
-        if extra:   self.vocabulary_id = extra.vocabulary
-        else:       self.vocabulary_id = "Vocabulary"
+        if extra:   
+            self.vocabulary_id = extra.vocabulary
+            self.catalog       = extra.catalog
+        else:           
+            self.vocabulary_id = "Vocabulary"
+            self.catalog       = None
+
+        
 
         self._lexicon = None
 
@@ -198,13 +204,16 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
             self.vocabulary_id = '__userdefined__'
 
 
+
     def getLexicon(self, vocab_id=None):
         """Return the Lexicon in use. Removed lots of stinking code"""
+
+        
 
         if self._lexicon is None:
             ## if no lexicon is provided, create a default one
             try:
-                self._lexicon = self.aq_parent.getattr(self.vocabulary_id).getLexicon()
+                self._lexicon = getattr(self.catalog,self.vocabulary_id).getLexicon()
             except:                
                 self._lexicon = Lexicon()
                 self.vocabulary_id = '__intern__'
@@ -348,6 +357,7 @@ class TextIndex(PluggableIndex.PluggableIndex, Persistent,
             return 0
         
         lexicon = self.getLexicon()
+
         splitter = lexicon.Splitter
 
         wordScores = OIBTree()
