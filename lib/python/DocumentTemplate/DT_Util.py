@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.53 1999/03/22 18:45:29 jim Exp $''' 
-__version__='$Revision: 1.53 $'[11:-2]
+'''$Id: DT_Util.py,v 1.54 1999/04/05 13:14:01 jim Exp $''' 
+__version__='$Revision: 1.54 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -316,7 +316,6 @@ def name_param(params,tag='',expr=0, attr='name', default_unnamed=1):
                 v=v[1:-1]
                 try: expr=Eval(v, expr_globals)
                 except SyntaxError, v:
-                    m,(huh,l,c,src) = v
                     raise ParseError, (
                         '<strong>Expression (Python) Syntax error</strong>:'
                         '\n<pre>\n%s\n</pre>\n' % v[0],
