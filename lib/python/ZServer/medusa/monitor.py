@@ -5,7 +5,7 @@
 # python REPL channel.
 #
 
-RCS_ID = '$Id: monitor.py,v 1.1 1999/05/26 02:11:36 amos Exp $'
+RCS_ID = '$Id: monitor.py,v 1.2 1999/05/27 17:25:55 amos Exp $'
 
 import md5
 import socket
