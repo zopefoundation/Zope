@@ -204,7 +204,7 @@ Writing Tests
 
         - The ZopeTestCase class is defined in file 'ZopeTestCase.py'.
 
-        - The interfaces implemented by this class are documented in 'doc/IZopeTestCase.py'.
+        - The interfaces implemented by this class are documented in 'interfaces.py'.
 
         - All names exported by the ZopeTestCase package are listed in '__init__.py'. 
 

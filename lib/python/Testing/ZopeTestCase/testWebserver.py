@@ -16,7 +16,7 @@
 # example instead.
 #
 
-# $Id: testWebserver.py,v 1.15 2004/09/04 18:01:08 shh42 Exp $
+# $Id: testWebserver.py,v 1.16 2005/02/12 13:11:10 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
@@ -54,23 +54,22 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
     def afterSetUp(self):
         uf = self.folder.acl_users
         uf.userFolderAddUser('manager', 'secret', ['Manager'], [])
-        manager = uf.getUserById('manager').__of__(uf)
 
-        self.folder.addDTMLMethod('index_html', file='index_html called')
-        self.folder.addDTMLMethod('secret_html', file='secret_html called')
-        self.folder.manage_addFolder('object', '')
+        # A simple document
+        self.folder.addDTMLDocument('index_html', file='index_html called')
+
+        # A document only accessible to manager
+        self.folder.addDTMLDocument('secret_html', file='secret_html called')
 
         for p in ZopeTestCase.standard_permissions:
-            self.folder.secret_html.manage_permission(p, ['Manager'], acquire=0)
+            self.folder.secret_html.manage_permission(p, ['Manager'])
 
-        self.folder.addDTMLMethod('object_ids', file='<dtml-var objectIds>')
-        self.folder.addDTMLMethod('user_ids', file='<dtml-var "acl_users.getUserNames()">')
+        # A method to change the title property of an object
         self.folder.addDTMLMethod('change_title', 
             file='''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
                  '''<dtml-var title_or_id>''')
 
-        self.folder.object_ids.changeOwnership(manager)
-        self.folder.user_ids.changeOwnership(manager)
+        manager = uf.getUserById('manager').__of__(uf)
         self.folder.change_title.changeOwnership(manager)
 
         # Commit so the ZServer threads can see the changes
@@ -142,15 +141,15 @@ class TestWebserver(ZopeTestCase.ZopeTestCase):
         # Test a script that modifies the ZODB
         self.setRoles(['Manager'])
         self.app.REQUEST.set('title', 'Foo')
-        page = self.folder.object.change_title(self.folder.object, 
-                                               self.app.REQUEST)
+        page = self.folder.index_html.change_title(self.folder.index_html,
+                                                   self.app.REQUEST)
         self.assertEqual(page, 'Foo')
-        self.assertEqual(self.folder.object.title, 'Foo')
+        self.assertEqual(self.folder.index_html.title, 'Foo')
 
     def testURLModifyObject(self):
         # Test a transaction that actually commits something
         urllib._urlopener = ManagementOpener()
-        page = urllib.urlopen(folder_url+'/object/change_title?title=Foo').read()
+        page = urllib.urlopen(folder_url+'/index_html/change_title?title=Foo').read()
         self.assertEqual(page, 'Foo')
 
     def testAbsoluteURL(self):
@@ -169,10 +168,10 @@ class TestSandboxedWebserver(ZopeTestCase.Sandboxed, TestWebserver):
     def testConnectionIsShared(self):
         # Due to sandboxing the ZServer thread operates on the
         # same connection as the main thread, allowing us to
-        # see changes made to 'object' right away.
+        # see changes made to 'index_html' right away.
         urllib._urlopener = ManagementOpener()
-        urllib.urlopen(folder_url+'/object/change_title?title=Foo')
-        self.assertEqual(self.folder.object.title, 'Foo')
+        urllib.urlopen(folder_url+'/index_html/change_title?title=Foo')
+        self.assertEqual(self.folder.index_html.title, 'Foo')
 
     def testCanCommit(self):
         # Additionally, it allows us to commit transactions without

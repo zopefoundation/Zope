@@ -33,15 +33,9 @@ Security API
     - **'self.setRoles(roles, name=user_name)'** allows to change the roles assigned to a user.
       If the 'name' argument is omitted, changes the roles of the default user.
 
-    - **'self.getRoles(name=user_name)'** returns the roles assigned to a user. If the name argument is
-      omitted, returns the roles assigned to the default user.
-
     - **'self.setPermissions(permissions, role=user_role)'** allows to change the permissions
       assigned to a role. If the 'role' argument is omitted, changes the permissions of the
       default role.
-
-    - **'self.getPermissions(role=user_role)'** return the permissions assigned to a role. If the role
-      argument is omitted, returns the permissions assigned to the default role.
 
     - **'self.login(name=user_name)'** allows to log in as a specified user.
       If the 'name' argument is omitted, logs in as the default user.
@@ -50,12 +44,12 @@ Security API
 
 Testing Security
 
-    - **'ob.restrictedTraverse(attr)'** is a simple way to check whether the currently logged in user is
+    - **'ob.restrictedTraverse("attr")'** is a simple way to check whether the currently logged in user is
       allowed to access attribute 'attr' of object 'ob'.
 
-    - **'getSecurityManager().validate(None, ob, attr, ob.attr)'** uses the security manager to do the same.
+    - **'getSecurityManager().validate(None, ob, "attr", ob.attr)'** uses the security manager to do the same.
       The convenience method 'getSecurityManager().validateValue(ob.attr)' will no longer work 
-      in Zope 2.8 (from what I hear).
+      in Zope 2.8.
 
     Also see the 'testPythonScript.py' example test.
 

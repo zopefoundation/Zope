@@ -5,7 +5,7 @@
 # module level to add functionality to the test environment.
 #
 
-# $Id: utils.py,v 1.16 2004/08/19 13:59:41 shh42 Exp $
+# $Id: utils.py,v 1.21 2005/02/11 09:00:21 shh42 Exp $
 
 
 def setupCoreSessions(app=None):
@@ -137,6 +137,19 @@ def appcall(function, *args, **kw):
         close(app)
 
 
+def makelist(arg):
+    '''Turns arg into a list. Where arg may be
+       list, tuple, or string.
+    '''
+    if type(arg) == type([]):
+        return arg
+    if type(arg) == type(()):
+        return list(arg)
+    if type(arg) == type(''):
+       return filter(None, [arg])
+    raise ValueError('Argument must be list, tuple, or string')
+
+
 class ConnectionRegistry:
     '''ZODB connection registry'''
 
@@ -163,4 +176,14 @@ class ConnectionRegistry:
 
     def contains(self, conn):
         return conn in self._conns
+
+
+__all__ = [
+    'setupCoreSessions',
+    'setupSiteErrorLog',
+    'setupZGlobals',
+    'startZServer',
+    'importObjectFromFile',
+    'appcall',
+]
 

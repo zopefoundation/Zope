@@ -11,10 +11,12 @@
 # and 'View' permissions given to his role.
 #
 
-# $Id: ZopeTestCase.py,v 1.21 2004/09/04 18:01:08 shh42 Exp $
+# $Id: ZopeTestCase.py,v 1.29 2005/02/09 12:42:40 shh42 Exp $
 
 import base
-import types
+import functional
+import interfaces
+import utils
 
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -30,12 +32,10 @@ standard_permissions = [access_contents_information, view]
 
 
 class ZopeTestCase(base.TestCase):
-    '''Base test case for Zope testing
+    '''Base test case for Zope testing'''
 
-       __implements__ = (IZopeTestCase, ISimpleSecurity, IExtensibleSecurity)
-
-       See doc/IZopeTestCase.py for more
-    '''
+    __implements__ = (interfaces.IZopeSecurity,
+                      base.TestCase.__implements__)
 
     _setup_fixture = 1
 
@@ -75,30 +75,18 @@ class ZopeTestCase(base.TestCase):
             pass
         base.TestCase._clear(self, call_close_hook)
 
-    # Security interfaces
+    # Security interface
 
     def setRoles(self, roles, name=user_name):
         '''Changes the user's roles.'''
-        self.assertEqual(type(roles), types.ListType)
         uf = self.folder.acl_users
-        uf.userFolderEditUser(name, None, roles, [])
+        uf.userFolderEditUser(name, None, utils.makelist(roles), [])
         if name == getSecurityManager().getUser().getId():
             self.login(name)
 
-    def getRoles(self, name=user_name):
-        '''Returns the user's roles.'''
-        uf = self.folder.acl_users
-        return uf.getUserById(name).getRoles()
-
     def setPermissions(self, permissions, role=user_role):
         '''Changes the user's permissions.'''
-        self.assertEqual(type(permissions), types.ListType)
-        self.folder.manage_role(role, permissions)
-
-    def getPermissions(self, role=user_role):
-        '''Returns the user's permissions.'''
-        perms = self.folder.permissionsOfRole(role)
-        return [p['name'] for p in perms if p['selected']]
+        self.folder.manage_role(role, utils.makelist(permissions))
 
     def login(self, name=user_name):
         '''Logs in.'''
@@ -122,6 +110,13 @@ class ZopeTestCase(base.TestCase):
         self.login(name)
     def _logout(self):
         self.logout()
+
+
+class FunctionalTestCase(functional.Functional, ZopeTestCase):
+    '''Base class for functional Zope tests'''
+
+    __implements__ = (functional.Functional.__implements__,
+                      ZopeTestCase.__implements__)
 
 
 # b/w compatibility names

@@ -16,6 +16,9 @@
 
 import os, sys, time
 
+# Allow code to tell it is run by the test framework
+os.environ['ZOPETESTCASE'] = '1'
+
 # Increase performance on MP hardware
 sys.setcheckinterval(2500)
 

@@ -9,7 +9,7 @@
 # way of getting started.
 #
 
-# $Id: testBaseTestCase.py,v 1.2 2004/09/04 18:56:41 shh42 Exp $
+# $Id: testBaseTestCase.py,v 1.7 2005/02/09 12:42:40 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
@@ -285,6 +285,43 @@ class TestRequestVariables(base.TestCase):
         self.failIfEqual(request.get('BASE2', ''), '')
 
 
+class TestListConverter(base.TestCase):
+
+    def testList0(self):
+        self.assertEqual(utils.makelist([]), [])
+
+    def testList1(self):
+        self.assertEqual(utils.makelist(['foo']), ['foo'])
+
+    def testList2(self):
+        self.assertEqual(utils.makelist(['foo', 'bar']), ['foo', 'bar'])
+
+    def testTuple0(self):
+        self.assertEqual(utils.makelist(()), [])
+
+    def testTuple1(self):
+        self.assertEqual(utils.makelist(('foo',)), ['foo'])
+
+    def testTuple2(self):
+        self.assertEqual(utils.makelist(('foo', 'bar')), ['foo', 'bar'])
+
+    def testString0(self):
+        self.assertEqual(utils.makelist(''), [])
+
+    def testString1(self):
+        self.assertEqual(utils.makelist('foo'), ['foo'])
+
+    def testString2(self):
+        self.assertEqual(utils.makelist('foo, bar'), ['foo, bar'])
+
+    def testInteger(self):
+        self.assertRaises(ValueError, utils.makelist, 0)
+
+    def testObject(self):
+        class dummy: pass
+        self.assertRaises(ValueError, utils.makelist, dummy())
+
+
 def test_suite():
     from unittest import TestSuite, makeSuite
     suite = TestSuite()
@@ -293,6 +330,7 @@ def test_suite():
     suite.addTest(makeSuite(TestTearDownRaises))
     suite.addTest(makeSuite(TestConnectionRegistry))
     suite.addTest(makeSuite(TestRequestVariables))
+    suite.addTest(makeSuite(TestListConverter))
     return suite
 
 if __name__ == '__main__':

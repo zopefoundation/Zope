@@ -7,7 +7,7 @@ Functional Testing Readme
 
     Deriving from the 'Functional' mix-in (and an xTestCase) adds a
     'publish' method to your test case class. Tests can call
-    'self.publish(path, basic=None, env=None, extra=None, request_method='GET')', 
+    'self.publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None)', 
     passing a path and, optionally, basic-auth info and form data. 
     The path may contain a query string.
 

@@ -1,3 +1,30 @@
+0.9.6
+- Dropped support for Zope 2.5 as it lacks the setSecurityManager() API.
+- Moved interfaces from doc section to interfaces.py module.
+- Test classes now assert their interfaces.
+- Refactored security interfaces to IZopeSecurity and IPortalSecurity.
+- Added a class diagram to the doc section.
+- setRoles() and setPermissions() no longer insist on ListType arguments
+  but now accept lists, tuples, and strings.
+- getRoles() and getPermissions() are no longer part of the security API
+  because of YAGNI.
+- Added getHeader() and getCookie() accessors to the response wrapper
+  used in functional tests.
+- publish() now accepts an optional 'stdin' argument, allowing to pass
+  the input stream for POST and PUT requests.
+- runalltests.py now supports a '-R' (recursive) command line option.
+
+0.9.4 (not released)
+- Backported functional doc tests from Zope 3.
+- Included a copy of doctest.py from Zope 3 (which is copied from
+  Python2.4 CVS). It will be removed when we start requiring Python2.4.
+- Added dochttp.py script from Zope 3, which is used to convert
+  tcpwatch.py output to functional doc tests.
+- Added warnhook.py from ZODB. It is used to capture the output of
+  warnings.warn() calls.
+- Added missing 'user_password' constant.
+- Many thanks to Sidnei da Silva!
+
 0.9.2
 - Introduced new base.TestCase class which contains the bare-
   bones framework code and serves as baseclass for ZTC and PTC.
@@ -26,7 +53,7 @@
 - ZopeLite now loads silently if it does not control the import process.
 
 0.8.6
-- Revised and amended much of the existing documentation. 
+- Revised and amended much of the existing documentation.
 - Added an API reference (skeleton), API.stx.
 - Documented what's going on when tests are run in TIMELINES.txt.
 - Fixed issues with testZODBCompat.py and Zope < 2.6.
@@ -35,15 +62,15 @@
 
 0.8.4
 - framework.py now flushes stdout to not mess up the output in batch mode.
-- framework.py no longer adds os.pardir to the sys.path. Thanks to 
+- framework.py no longer adds os.pardir to the sys.path. Thanks to
   Yoshinori Okuji.
 - Made sure user objects are not inadvertently wrapped twice by login().
-- Made sure "renegade" transactions are aborted if something goes wrong 
+- Made sure "renegade" transactions are aborted if something goes wrong
   during the setup phase.
 - initialize_cache() is no longer called for Zope 2.7.
 
 0.8.2
-- Removed the leading underscores from all constant names. They proved 
+- Removed the leading underscores from all constant names. They proved
   non-private in "real life" anyway. The old names are still available
   for backward compatibility, but are deprecated.
 - Removed NO_PRODUCT_LOAD for reasons of obscureness and YAGNI.
@@ -62,7 +89,7 @@
   role-mapping assumes it can append to it. :-/
 
 0.7.0
-- Fixed a bug that caused setRoles() to only work with the 
+- Fixed a bug that caused setRoles() to only work with the
   default user folder. Refactored the fixture code in the process.
 - Reworked the connection registry and wrote tests for it.
 - Made afterClear() largely redundant because it turned out to be just that.
@@ -77,13 +104,13 @@
 - Added IZopeTestCase and IZopeTestCaseFX interfaces.
 
 0.6.2
-- The effects of setting INSTANCE_HOME have been changed to something 
+- The effects of setting INSTANCE_HOME have been changed to something
   less surprising. Please see ENVIRONMENT.txt for details.
-- Now uses the environment variable ZEO_INSTANCE_HOME to enable ZEO 
+- Now uses the environment variable ZEO_INSTANCE_HOME to enable ZEO
   support.
 
 0.6.0
-- Use a module-level database connection registry to avoid freezing 
+- Use a module-level database connection registry to avoid freezing
   after too many errors.
 - All tests are now transactional by default.
 - Added beforeSetUp() and beforeClose() hooks to the ZopeTestCase class.
@@ -99,7 +126,7 @@
 - Hardening in the face of incomplete Zope installations.
 
 0.5.2
-- Delete ZEO_CLIENT environment variable to enforce a temporary client 
+- Delete ZEO_CLIENT environment variable to enforce a temporary client
   cache. Repair Zope 2.4 Testing package issue in the process.
 - Provide NO_PRODUCT_LOAD environment variable for completeness.
 - Added hasProduct() method to allow testing for product availability.

@@ -1,57 +1,14 @@
-from Interface import Interface
-
-# $Id: IZopeTestCase.py,v 1.14 2004/09/04 18:01:11 shh42 Exp $
-
-
 #
-#   ZopeTestCase.__implements__ = (
-#           IZopeTestCase, ISimpleSecurity, IExtensibleSecurity)
-#
-#   PortalTestCase.__implements__ = (
-#           IPortalTestCase, ISimpleSecurity, IExtensibleSecurity)
+# ZopeTestCase interfaces
 #
 
+# $Id: interfaces.py,v 1.5 2005/02/07 21:59:35 shh42 Exp $
 
-class ISimpleSecurity(Interface):
-
-    def setRoles(roles):
-        '''Changes the user's roles.'''
-
-    def getRoles():
-        '''Returns the user's roles.'''
-
-    def setPermissions(permissions):
-        '''Changes the user's permissions.'''
-
-    def getPermissions():
-        '''Returns the user's permissions.'''
-
-    def login():
-        '''Logs in.'''
-
-    def logout():
-        '''Logs out.'''
-
-
-class IExtensibleSecurity(Interface):
-
-    def setRoles(roles, name):
-        '''Changes the roles assigned to a user.'''
-
-    def getRoles(name):
-        '''Returns the specified user's roles.'''
-
-    def setPermissions(permissions, role):
-        '''Changes the permissions assigned to a role.'''
-
-    def getPermissions(role):
-        '''Returns the permissions assigned to a role.'''
-
-    def login(name):
-        '''Logs in as the specified user.'''
-
-    def logout():
-        '''Logs out.'''
+try:
+    from Interface import Interface
+except ImportError:
+    # Old interface package
+    from Interface import Base as Interface
 
 
 class IZopeTestCase(Interface):
@@ -86,6 +43,30 @@ class IZopeTestCase(Interface):
         '''
 
 
+class IZopeSecurity(Interface):
+
+    def setRoles(roles, name=None):
+        '''Changes the roles assigned to a user.
+           If the 'name' argument is omitted, changes the
+           roles of the default user.
+        '''
+
+    def setPermissions(permissions, role=None):
+        '''Changes the permissions assigned to a role.
+           If the 'role' argument is omitted, changes the
+           permissions assigned to the default role.
+        '''
+
+    def login(name=None):
+        '''Logs in as the specified user.
+           If the 'name' argument is omitted, logs in
+           as the default user.
+        '''
+
+    def logout():
+        '''Logs out.'''
+
+
 class IPortalTestCase(IZopeTestCase):
 
     def getPortal():
@@ -96,11 +77,15 @@ class IPortalTestCase(IZopeTestCase):
            Note: This method should not be called by tests!
         '''
 
-    def createMemberarea(member_id):
-        '''Creates a memberarea for the specified member.
-           Subclasses may override to provide a customized 
+    def createMemberarea(name):
+        '''Creates a memberarea for the specified user.
+           Subclasses may override to provide a customized
            or more lightweight version of the memberarea.
         '''
+
+
+class IPortalSecurity(IZopeSecurity):
+    '''This is currently the same as IZopeSecurity'''
 
 
 class IProfiled(Interface):
@@ -113,7 +98,7 @@ class IProfiled(Interface):
 
 class IFunctional(Interface):
 
-    def publish(path, basic=None, env=None, extra=None, request_method='GET'):
+    def publish(path, basic=None, env=None, extra=None, request_method='GET', stdin=None):
         '''Publishes the object at 'path' returning an
            extended response object. The path may contain 
            a query string.

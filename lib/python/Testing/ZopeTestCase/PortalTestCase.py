@@ -14,10 +14,11 @@
 # getPortal() returns a usable portal object to the setup code.
 #
 
-# $Id: PortalTestCase.py,v 1.29 2004/09/09 18:48:59 shh42 Exp $
+# $Id: PortalTestCase.py,v 1.38 2005/02/09 12:42:40 shh42 Exp $
 
 import base
-import types
+import interfaces
+import utils
 
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager
@@ -30,31 +31,13 @@ from ZopeTestCase import user_password
 
 
 class PortalTestCase(base.TestCase):
-    '''Base test case for testing CMF-style portals
+    '''Base test case for testing CMF-style portals'''
 
-       __implements__ = (IPortalTestCase, ISimpleSecurity, IExtensibleSecurity)
-
-       See doc/IZopeTestCase.py for more.
-    '''
+    __implements__ = (interfaces.IPortalTestCase,
+                      interfaces.IPortalSecurity,
+                      base.TestCase.__implements__)
 
     _configure_portal = 1
-
-    def getPortal(self):
-        '''Returns the portal object to the setup code.
-           Will typically be overridden by subclasses
-           to return the object serving as the "portal".
-
-           Note: This method should not be called by tests!
-        '''
-        return self.app[portal_name]
-
-    def createMemberarea(self, member_id):
-        '''Creates a memberarea for the specified member. 
-           Subclasses may override to provide a customized
-           or more lightweight version of the memberarea.
-        '''
-        pm = self.portal.portal_membership
-        pm.createMemberarea(member_id)
 
     def setUp(self):
         '''Sets up the fixture. Do not override,
@@ -63,13 +46,17 @@ class PortalTestCase(base.TestCase):
         try:
             self.beforeSetUp()
             self.app = self._app()
-            self.portal = self.getPortal()
+            self.portal = self._portal()
             self._setup()
             self._refreshSkinData()
             self.afterSetUp()
         except:
             self._clear()
             raise
+
+    def _portal(self):
+        '''Returns the portal object for a test.'''
+        return self.getPortal()
 
     def _setup(self):
         '''Configures the portal. Framework authors may
@@ -104,30 +91,37 @@ class PortalTestCase(base.TestCase):
         if hasattr(self.portal, 'setupCurrentSkin'):
             self.portal.setupCurrentSkin()
 
-    # Security interfaces
+    # Portal interface
+
+    def getPortal(self):
+        '''Returns the portal object to the setup code.
+           Will typically be overridden by subclasses
+           to return the object serving as the "portal".
+
+           Note: This method should not be called by tests!
+        '''
+        return self.app[portal_name]
+
+    def createMemberarea(self, name):
+        '''Creates a memberarea for the specified user.
+           Subclasses may override to provide a customized
+           or more lightweight version of the memberarea.
+        '''
+        pm = self.portal.portal_membership
+        pm.createMemberarea(name)
+
+    # Security interface
 
     def setRoles(self, roles, name=user_name):
         '''Changes the user's roles.'''
-        self.assertEqual(type(roles), types.ListType)
         uf = self.portal.acl_users
-        uf.userFolderEditUser(name, None, roles, [])
+        uf.userFolderEditUser(name, None, utils.makelist(roles), [])
         if name == getSecurityManager().getUser().getId():
             self.login(name)
 
-    def getRoles(self, name=user_name):
-        '''Returns the user's roles.'''
-        uf = self.portal.acl_users
-        return uf.getUserById(name).getRoles()
-
     def setPermissions(self, permissions, role='Member'):
         '''Changes the permissions assigned to role.'''
-        self.assertEqual(type(permissions), types.ListType)
-        self.portal.manage_role(role, permissions)
-
-    def getPermissions(self, role='Member'):
-        '''Returns the permissions assigned to role.'''
-        perms = self.portal.permissionsOfRole(role)
-        return [p['name'] for p in perms if p['selected']]
+        self.portal.manage_role(role, utils.makelist(permissions))
 
     def login(self, name=user_name):
         '''Logs in.'''

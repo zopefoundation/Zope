@@ -2,9 +2,10 @@
 # Profiling support for ZTC
 #
 
-# $Id: profiler.py,v 1.2 2004/01/12 18:45:42 shh42 Exp $
+# $Id: profiler.py,v 1.3 2005/01/01 14:02:44 shh42 Exp $
 
 import os, sys
+import interfaces
 
 from profile import Profile
 from pstats import Stats
@@ -35,7 +36,7 @@ def print_stats(limit=limit, sort=sort, strip_dirs=strip_dirs):
 def dump_stats(filename):
     if _have_stats:
         _profile.dump_stats(filename)
-    
+
 
 class Profiled:
     '''Derive from this class and an xTestCase to get profiling support::
@@ -49,6 +50,8 @@ class Profiled:
 
        Profiler statistics will be printed after the test results.
     '''
+
+    __implements__ = (interfaces.IProfiled,)
 
     def runcall(self, *args, **kw):
         return apply(runcall, args, kw)

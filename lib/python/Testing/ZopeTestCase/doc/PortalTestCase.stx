@@ -85,7 +85,7 @@ Read the Source
 
     As always, I recommend to look at the source code of both 
     'ZopeTestCase.py' and 'PortalTestCase.py' for all the details you may need.
-    Interface documentation can be found in 'doc/IZopeTestCase.py'.
+    Interface documentation can be found in 'interfaces.py'.
 
     The test framework shipping with Plone 2.0 is a good example of how the 
     PortalTestCase class can be put to use.

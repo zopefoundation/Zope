@@ -10,6 +10,7 @@ import unittest
 import transaction
 import profiler
 import utils
+import interfaces
 
 from AccessControl.SecurityManagement import noSecurityManager
 
@@ -35,11 +36,10 @@ def closeConnections():
 
 class TestCase(profiler.Profiled, unittest.TestCase):
     '''Base test case for Zope testing
-
-       __implements__ = (IZopeTestCase,)
-
-       See doc/IZopeTestCase.py for more
     '''
+
+    __implements__ = (interfaces.IZopeTestCase,
+                      profiler.Profiled.__implements__)
 
     def afterSetUp(self):
         '''Called after setUp() has completed. This is
@@ -107,6 +107,7 @@ class TestCase(profiler.Profiled, unittest.TestCase):
         '''Sets up the fixture. Framework authors may
            override.
         '''
+        pass
 
     def _clear(self, call_close_hook=0):
         '''Clears the fixture.'''

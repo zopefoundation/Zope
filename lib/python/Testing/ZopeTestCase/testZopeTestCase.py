@@ -9,7 +9,7 @@
 # way of getting started.
 #
 
-# $Id: testZopeTestCase.py,v 1.21 2004/09/04 18:01:08 shh42 Exp $
+# $Id: testZopeTestCase.py,v 1.25 2005/01/30 14:22:48 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
@@ -20,7 +20,8 @@ from Testing import ZopeTestCase
 from Acquisition import aq_base
 from AccessControl import getSecurityManager
 from types import ListType
-from transaction import begin
+
+import transaction
 
 folder_name = ZopeTestCase.folder_name
 user_name = ZopeTestCase.user_name
@@ -43,7 +44,7 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         # with an empty fixture.
         self._called = []
         # Implicitly aborts previous transaction
-        begin()
+        transaction.begin()
 
     def beforeSetUp(self):
         self._called.append('beforeSetUp')
@@ -121,32 +122,33 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         acl_user = self.folder.acl_users.getUserById('user_2')
         self.assertRolesOfUser(test_roles, acl_user)
 
-    def test_setRolesAssertsArgumentType(self):
-        # setRoles should fail if 'roles' argument is not a list
-        self.assertRaises(self.failureException, self.setRoles, 'foo')
-        self.assertRaises(self.failureException, self.setRoles, ('foo',))
-
-    def test_getRoles(self):
-        # Should return roles of user
+    def test_setRoles_4(self):
+        # Roles should be set from a tuple
         self.app = self._app()
         self._setupFolder()
         self._setupUserFolder()
         self._setupUser()
-        self.assertEqual(self.getRoles(), (user_role, 'Authenticated'))
+        test_roles = ['Manager', user_role]
+        self.setRoles(tuple(test_roles))
+        acl_user = self.folder.acl_users.getUserById(user_name)
+        self.assertRolesOfUser(test_roles, acl_user)
 
-    def test_getRoles_2(self):
-        # Should return roles of specified user
+    def test_setRoles_5(self):
+        # Roles should be set from a string
         self.app = self._app()
         self._setupFolder()
         self._setupUserFolder()
-        self.folder.acl_users.userFolderAddUser('user_2', 'secret', ['Manager'], [])
-        self.assertEqual(self.getRoles('user_2'), ('Manager', 'Authenticated'))
+        self._setupUser()
+        test_roles = ['Manager']
+        self.setRoles('Manager')
+        acl_user = self.folder.acl_users.getUserById(user_name)
+        self.assertRolesOfUser(test_roles, acl_user)
 
     def test_setPermissions(self):
         # Permissions should be set for user
         self.app = self._app()
         self._setupFolder()
-        test_perms = ['Add Folders']
+        test_perms = ['Add Folders', 'Delete objects']
         self.assertPermissionsOfRole(standard_permissions, user_role)
         self.setPermissions(test_perms)
         self.assertPermissionsOfRole(test_perms, user_role)
@@ -160,25 +162,23 @@ class TestZopeTestCase(ZopeTestCase.ZopeTestCase):
         self.setPermissions(standard_permissions, 'role_2')
         self.assertPermissionsOfRole(standard_permissions, 'role_2')
 
-    def test_setPermissionsAssertsArgumentType(self):
-        # setPermissions should fail if 'permissions' argument is not a list
-        self.assertRaises(self.failureException, self.setPermissions, 'foo')
-        self.assertRaises(self.failureException, self.setPermissions, ('foo',))
-
-    def test_getPermissions(self):
-        # Should return permissions of user
+    def test_setPermissions_3(self):
+        # Permissions should be set from a tuple
         self.app = self._app()
         self._setupFolder()
-        self.assertEqual(self.getPermissions(), standard_permissions) 
+        test_perms = ['Add Folders', 'Delete objects']
+        self.assertPermissionsOfRole(standard_permissions, user_role)
+        self.setPermissions(tuple(test_perms))
+        self.assertPermissionsOfRole(test_perms, user_role)
 
-    def test_getPermissions_2(self):
-        # Should return permissions of specified role
+    def test_setPermissions_4(self):
+        # Permissions should be set from a comma separated string
         self.app = self._app()
         self._setupFolder()
         test_perms = ['Add Folders']
-        self.folder._addRole('role_2')
-        self.setPermissions(test_perms, 'role_2')
-        self.assertEqual(self.getPermissions('role_2'), test_perms) 
+        self.assertPermissionsOfRole(standard_permissions, user_role)
+        self.setPermissions('Add Folders')
+        self.assertPermissionsOfRole(test_perms, user_role)
 
     def test_login(self):
         # User should be able to log in

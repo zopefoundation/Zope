@@ -2,7 +2,7 @@
 # Example functional ZopeTestCase
 #
 
-# $Id: testFunctional.py,v 1.7 2004/09/04 18:01:08 shh42 Exp $
+# $Id: testFunctional.py,v 1.16 2005/02/12 13:13:04 shh42 Exp $
 
 import os, sys
 if __name__ == '__main__':
@@ -12,27 +12,57 @@ from Testing import ZopeTestCase
 
 ZopeTestCase.installProduct('PythonScripts')
 
+from Testing.ZopeTestCase import user_name
+from Testing.ZopeTestCase import user_password
 
-class TestFunctional(ZopeTestCase.Functional, ZopeTestCase.ZopeTestCase):
+from AccessControl import getSecurityManager
+from AccessControl.Permissions import view
+from AccessControl.Permissions import manage_properties
+from AccessControl.Permissions import add_documents_images_and_files
+from AccessControl.Permissions import change_dtml_documents
+
+from StringIO import StringIO
+from urllib import urlencode
+
+
+class TestFunctional(ZopeTestCase.FunctionalTestCase):
 
     def afterSetUp(self):
-        self.folder_path = '/%s' % self.folder.absolute_url(1)
-        self.basic_auth = '%s:%s' % (ZopeTestCase.user_name, ZopeTestCase.user_password)
+        self.folder_path = '/'+self.folder.absolute_url(1)
+        self.basic_auth = '%s:%s' % (user_name, user_password)
 
-        self.folder.addDTMLMethod('index_html', file='foo')
+        # A simple document
+        self.folder.addDTMLDocument('index_html', file='index')
 
-        dispatcher = self.folder.manage_addProduct['PythonScripts']
-        dispatcher.manage_addPythonScript('script')
-        self.folder.script.ZPythonScript_edit('a=0', 'return a+1')
+        # A document accessible only to its owner
+        self.folder.addDTMLDocument('secret_html', file='secret')
+        self.folder.secret_html.manage_permission(view, ['Owner'])
 
-        self.folder.manage_addFolder('object', '')
-        self.folder.addDTMLMethod('change_title', 
-            file='''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">''')
+        # A Python Script performing integer computation
+        self.folder.manage_addProduct['PythonScripts'].manage_addPythonScript('script')
+        self.folder.script.ZPythonScript_edit(params='a=0', body='return a+1')
+
+        # A method redirecting to the Zope root
+        redirect = '''<dtml-call "RESPONSE.redirect('%s')">''' % self.app.absolute_url()
+        self.folder.addDTMLMethod('redirect', file=redirect)
+
+        # A method setting a cookie
+        set_cookie = '''<dtml-call "RESPONSE.setCookie('foo', 'Bar', path='/')">'''
+        self.folder.addDTMLMethod('set_cookie', file=set_cookie)
+
+        # A method changing the title property of an object
+        change_title = '''<dtml-call "manage_changeProperties(title=REQUEST.get('title'))">'''
+        self.folder.addDTMLMethod('change_title', file=change_title)
+
+    def testPublishFolder(self):
+        response = self.publish(self.folder_path)
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(response.getBody(), 'index')
 
     def testPublishDocument(self):
         response = self.publish(self.folder_path+'/index_html')
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), 'foo')
+        self.assertEqual(response.getBody(), 'index')
 
     def testPublishScript(self):
         response = self.publish(self.folder_path+'/script')
@@ -49,24 +79,85 @@ class TestFunctional(ZopeTestCase.Functional, ZopeTestCase.ZopeTestCase):
         self.assertEqual(response.getStatus(), 500)
 
     def testUnauthorized(self):
-        self.folder.index_html.manage_permission('View', ['Owner'])
-        response = self.publish(self.folder_path+'/index_html')
+        response = self.publish(self.folder_path+'/secret_html')
         self.assertEqual(response.getStatus(), 401)
 
-    def testBasicAuthentication(self):
-        self.folder.index_html.manage_permission('View', ['Owner'])
-        response = self.publish(self.folder_path+'/index_html',
-                                self.basic_auth)
+    def testBasicAuth(self):
+        response = self.publish(self.folder_path+'/secret_html', self.basic_auth)
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(response.getBody(), 'foo')
+        self.assertEqual(response.getBody(), 'secret')
 
-    def testModifyObject(self):
-        from AccessControl.Permissions import manage_properties
-        self.setPermissions([manage_properties])
-        response = self.publish(self.folder_path+'/object/change_title?title=Foo',
-                                self.basic_auth)
+    def testRedirect(self):
+        response = self.publish(self.folder_path+'/redirect')
+        self.assertEqual(response.getStatus(), 302)
+        self.assertEqual(response.getHeader('Location'), self.app.absolute_url())
+
+    def testCookie(self):
+        response = self.publish(self.folder_path+'/set_cookie')
         self.assertEqual(response.getStatus(), 200)
-        self.assertEqual(self.folder.object.title_or_id(), 'Foo')
+        self.assertEqual(response.getCookie('foo').get('value'), 'Bar')
+        self.assertEqual(response.getCookie('foo').get('path'), '/')
+
+    def testChangeTitle(self):
+        # Change the title of a document
+        self.setPermissions([manage_properties])
+
+        # Note that we must pass basic auth info
+        response = self.publish(self.folder_path+'/index_html/change_title?title=Foo',
+                                self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
+
+    def testPOST(self):
+        # Change the title in a POST request
+        self.setPermissions([manage_properties])
+
+        form = {'title': 'Foo'}
+        post_data = StringIO(urlencode(form))
+
+        response = self.publish(self.folder_path+'/index_html/change_title',
+                                request_method='POST', stdin=post_data,
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 200)
+        self.assertEqual(self.folder.index_html.title_or_id(), 'Foo')
+
+    def testPUTExisting(self):
+        # FTP new data into an existing object
+        self.setPermissions([change_dtml_documents])
+
+        put_data = StringIO('foo')
+        response = self.publish(self.folder_path+'/index_html',
+                                request_method='PUT', stdin=put_data,
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 204)
+        self.assertEqual(self.folder.index_html(), 'foo')
+
+    def testPUTNew(self):
+        # Create a new object via FTP or WebDAV
+        self.setPermissions([add_documents_images_and_files])
+
+        put_data = StringIO('foo')
+        response = self.publish(self.folder_path+'/new_document',
+                                env={'CONTENT_TYPE': 'text/html'},
+                                request_method='PUT', stdin=put_data,
+                                basic=self.basic_auth)
+
+        self.assertEqual(response.getStatus(), 201)
+        self.failUnless('new_document' in self.folder.objectIds())
+        self.assertEqual(self.folder.new_document.meta_type, 'DTML Document')
+        self.assertEqual(self.folder.new_document(), 'foo')
+
+    def testSecurityContext(self):
+        # The authenticated user should not change as a result of publish
+        self.assertEqual(getSecurityManager().getUser().getId(), user_name)
+
+        self.folder.acl_users.userFolderAddUser('barney', 'secret', [], [])
+        response = self.publish(self.folder_path, basic='barney:secret')
+
+        self.assertEqual(getSecurityManager().getUser().getId(), user_name)
 
 
 def test_suite():
