@@ -85,7 +85,7 @@
 
 """Global definitions"""
 
-__version__='$Revision: 1.46 $'[11:-2]
+__version__='$Revision: 1.47 $'[11:-2]
 
 import Acquisition, ComputedAttribute, App.PersistentExtra, os
 import TreeDisplay, string
@@ -95,6 +95,10 @@ from App.Common import package_home, attrget, Dictionary
 from Persistence import Persistent, PersistentMapping
 from App.special_dtml import HTML, HTMLFile, DTMLFile
 from App.class_init import default__class_init__, ApplicationDefaultPermissions
+
+# Nicer alias for class initializer.
+InitializeClass = default__class_init__
+
 from App.Dialogs import MessageDialog
 from App.ImageFile import ImageFile
 
@@ -114,5 +118,3 @@ for n in 'Z', 'BOBO':
 opened=[]
 
 
-# Nicer alias for class initializer.
-InitializeClass = default__class_init__
