@@ -569,9 +569,9 @@ class DocumentClass:
     def doc_literal(
         self, s,
         expr=re.compile(
-          "(?:\s|^)'"                                                  # open
+          "(?:\s|^)'"                                               # open
           "([^ \t\n\r\f\v']|[^ \t\n\r\f\v'][^\n']*[^ \t\n\r\f\v'])" # contents
-          "'(?:\s|[,.;:!?]|$)"                                        # close
+          "'(?:\s|[,.;:!?]|$)"                                      # close
           ).search):
         
         r=expr(s)
@@ -583,7 +583,7 @@ class DocumentClass:
 
     def doc_emphasize(
         self, s,
-        expr = re.compile('\s*\*([ \na-zA-Z0-9.:/;,\'\"\?]+)\*(?!\*|-)').search
+        expr = re.compile('\s*\*([ \na-zA-Z0-9.:/;,\'\"\?\=\-\>\<\(\)]+)\*(?!\*|-)').search
         ):
 
         r=expr(s)
