@@ -1,6 +1,6 @@
 """Image object"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -10,20 +10,11 @@ from Persistence import Persistent
 from Acquisition import Implicit
 from DateTime import DateTime
 
-
-class Pdata(Persistent, Implicit):
-    # Wrapper for possibly large data
-    def __init__(self, data):
-	self.data=data
-
-    def __str__(self):
-	return self.data
-
-    def __len__(self):
-	return len(self.data)
-
-
-
+manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
+def manage_addFile(self,id,file,title='',REQUEST=None):
+    """ """
+    self._setObject(id, File(id,title,file))
+    return self.manage_main(self,REQUEST)
 
 
 class File(Persistent,Implicit,RoleManager,Item_w__name__):
@@ -150,14 +141,19 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     def __len__(self): return 1
 
 
-
+manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
+def manage_addImage(self,id,file,title='',REQUEST=None):
+    """ """
+    self._setObject(id, Image(id,title,file))
+    return self.manage_main(self,REQUEST)
 
 class Image(File):
     meta_type='Image'
     icon     ='p_/image'
 
     manage_editForm  =HTMLFile('imageEdit',globals(),Kind='Image',kind='image')
-    manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='Image',kind='image')
+    manage_uploadForm=HTMLFile('imageUpload',globals(),Kind='Image',
+			       kind='image')
     manage=manage_main=manage_editForm
 
     PUT__roles__=['Manager']
@@ -165,62 +161,14 @@ class Image(File):
     def __str__(self):
 	return '<IMG SRC="%s" ALT="%s">' % (self.__name__, self.title_or_id()) 
 
+class Pdata(Persistent, Implicit):
+    # Wrapper for possibly large data
+    def __init__(self, data):
+	self.data=data
 
-class ImageHandler:
-    """ """
-    manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
-    manage_addImageForm=HTMLFile('imageAdd',globals(),Kind='Image',kind='image')
+    def __str__(self):
+	return self.data
 
-    def manage_addImage(self,id,file,title='',REQUEST=None):
-	""" """
-	self._setObject(id, Image(id,title,file))
-	return self.manage_main(self,REQUEST)
-
-    def manage_addFile(self,id,file,title='',REQUEST=None):
-	""" """
-	self._setObject(id, File(id,title,file))
-	return self.manage_main(self,REQUEST)
-
-    def imageIds(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Image': t.append(i['id'])
-	return t
-
-    def imageValues(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Image': t.append(getattr(self,i['id']))
-	return t
-
-    def imageItems(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='Image':
-		n=i['id']
-		t.append((n,getattr(self,n)))
-	return t
-
-    def fileIds(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='File': t.append(i['id'])
-	return t
-
-    def fileValues(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='File': t.append(getattr(self,i['id']))
-	return t
-
-    def fileItems(self):
-	t=[]
-	for i in self.objectMap():
-	    if i['meta_type']=='File':
-		n=i['id']
-		t.append((n,getattr(self,n)))
-	return t
-
-
-Globals.default__class_init__(ImageHandler)
+    def __len__(self):
+	return len(self.data)
 
