@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.135 $'[11:-2]
+__version__='$Revision: 1.136 $'[11:-2]
 
 import Globals, socket, ts_regex, SpecialUsers
 import os
@@ -344,6 +344,49 @@ class UnrestrictedUser(SpecialUser):
     def has_permission(self, permission, object): return 1
 
 
+class NullUnrestrictedUser(SpecialUser):
+    """User created if no emergency user exists. It is only around to
+       satisfy third party userfolder implementations that may
+       expect the emergency user to exist and to be able to call certain
+       methods on it (in other words, backward compatibility).
+
+       Note that when no emergency user is installed, this object that
+       exists in its place is more of an anti-superuser since you cannot
+       login as this user and it has no priveleges at all."""
+
+    __null_user__=1
+
+    def __init__(self):
+        pass
+
+    def getUserName(self):
+        # return an unspellable username
+        return (None, None)
+    _getPassword=getUserName
+
+    def getRoles(self):
+        return ()
+    getDomains=getRoles
+
+    def getRolesInContext(self, object):
+        return ()
+
+    def authenticate(self, password, request):
+        return 0
+
+    def allowed(self, parent, roles=None):
+        return 0
+
+    hasRole=allowed
+
+    def has_role(self, roles, object=None):
+        return 0
+
+    def has_permission(self, permission, object):
+        return 0
+
+    
+
 def readUserAccessFile(filename):
     '''Reads an access file from INSTANCE_HOME.
     Returns name, password, domains, remote_user_mode.
@@ -374,7 +417,7 @@ if info:
     emergency_user = UnrestrictedUser(
         info[0], info[1], ('manage',), info[2])
 else:
-    emergency_user = None
+    emergency_user = NullUnrestrictedUser()
 
 super = emergency_user  # Note: use of the 'super' name is deprecated.
 del info

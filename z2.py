@@ -700,7 +700,7 @@ if FCGI_PORT and not READ_ONLY:
 # Monitor Server
 if MONITOR_PORT:
     from AccessControl.User import emergency_user
-    if emergency_user:
+    if not hasattr(emergency_user, '__null_user__'):
         pw = emergency_user._getPassword()
     else:
         pw = None
