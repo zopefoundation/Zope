@@ -370,7 +370,7 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.63 1997/11/05 14:48:07 jim Exp $"""
+$Id: Publish.py,v 1.64 1997/11/07 15:01:30 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -425,7 +425,7 @@ $Id: Publish.py,v 1.63 1997/11/05 14:48:07 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.63 $'[11:-2]
+__version__='$Revision: 1.64 $'[11:-2]
 
 
 def main():
@@ -730,6 +730,13 @@ class ModulePublisher:
 
 	# Traverse the URL to find the object:
 	parents=[]
+
+	# if the top object has a __bobo_traverse__ method, then use it
+	# to possibly traverse to an alternate top-level object.
+	if hasattr(object,'__bobo_traverse__'):
+	    request['URL']=URL
+	    try: object=object.__bobo_traverse__(request)
+	    except: pass	    
     
 	try:  # Try to bind the top-level object to the request
 	    object=object.__of__(RequestContainer(REQUEST=self.request))
@@ -742,11 +749,10 @@ class ModulePublisher:
 	    got=0
 	    if entry_name:
 		if entry_name[:1]=='_': self.forbiddenError(entry_name)
-		try: traverse=object.__bobo_traverse__
-		except: traverse=None
-		if traverse is not None:
+
+		if hasattr(object,'__bobo_traverse__'):
 		    request['URL']=URL
-		    subobject=traverse(request,entry_name)
+		    subobject=object.__bobo_traverse__(request,entry_name)
 		else:
 		    try:
 			subobject=getattr(object,entry_name)
@@ -1322,7 +1328,6 @@ def old_validation(groups, HTTP_AUTHORIZATION, roles=UNSPECIFIED_ROLES):
 	    """<strong>You are not authorized to access this resource""")
 
     return None
-	
 
 def publish_module(module_name,
 		   stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr,
@@ -1345,8 +1350,8 @@ def publish_module(module_name,
 	must_die=1
 	response.exception(must_die)
     except:
-	status=response.getStatus()
 	response.exception()
+	status=response.getStatus()
     if response:
 	response=str(response)
     if response: stdout.write(response)
@@ -1361,6 +1366,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.64  1997/11/07 15:01:30  jim
+# Updated bobo traverse machinery and fixed bug in setting return status
+# when exceptions occur.
+#
 # Revision 1.63  1997/11/05 14:48:07  jim
 # Fixed bug that broke cookies.
 #
