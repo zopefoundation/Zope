@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.45 1997/04/25 17:50:26 chris Exp $'''
+$Id: InvertedIndex.py,v 1.46 1997/04/30 21:56:12 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,10 @@ $Id: InvertedIndex.py,v 1.45 1997/04/25 17:50:26 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.46  1997/04/30 21:56:12  jim
+# Fixed highlighting for searches where a word occurs more than once in
+# the search.
+#
 # Revision 1.45  1997/04/25 17:50:26  chris
 # Fixed problem with tuple positions in ResultList.near()
 #
@@ -233,7 +237,7 @@ $Id: InvertedIndex.py,v 1.45 1997/04/25 17:50:26 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 import regex, string, copy
@@ -791,9 +795,13 @@ class Index:
 
         positions.sort()
         positions.reverse()
+	lpos=None
 	for position in positions:
-	    start, end = ws.pos(position)
-            text = text[:start] + before + text[start:end] + after + text[end:]
+	    if lpos != position:
+		lpos=position
+		start, end = ws.pos(position)
+		text = (text[:start] + before + text[start:end] +
+			after + text[end:])
     
 	return text
 
