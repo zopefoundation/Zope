@@ -105,7 +105,7 @@ class TALParser(XMLParser):
         self.nsNew = []
 
     def getCode(self):
-        return self.gen.program, self.gen.macros
+        return self.gen.getCode()
 
     def StartNamespaceDeclHandler(self, prefix, uri):
         self.nsStack.append(self.nsDict.copy())

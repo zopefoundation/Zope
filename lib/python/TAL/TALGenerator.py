@@ -86,6 +86,7 @@
 Code generator for TALInterpreter intermediate code.
 """
 
+import string
 import re
 import cgi
 
@@ -109,6 +110,12 @@ class TALGenerator:
         self.slots = {}
         self.slotStack = []
 
+    def getCode(self):
+        return self.optimize(self.program), self.macros
+
+    def optimize(self, program):
+        return program # XXX later
+
     def todoPush(self, todo):
         self.todoStack.append(todo)
 
@@ -125,7 +132,7 @@ class TALGenerator:
     def popProgram(self):
         program = self.program
         self.program = self.stack.pop()
-        return program
+        return self.optimize(program)
 
     def pushSlots(self):
         self.slotStack.append(self.slots)
@@ -150,10 +157,6 @@ class TALGenerator:
             self.program.append(("endTag", name))
 
     def emitRawText(self, text):
-        if self.program and self.program[-1][0] == "rawtext":
-            # Concatenate text
-            self.program[-1] = ("rawtext", self.program[-1][1] + text)
-            return
         self.program.append(("rawtext", text))
 
     def emitText(self, text):
@@ -223,13 +226,27 @@ class TALGenerator:
         self.emit("fillSlot", slotName, program)
 
     def unEmitNewlineWhitespace(self):
-        if self.program and self.program[-1][0] == "rawtext":
-            text = self.program[-1][1]
-            m = re.match(r"(?s)^(.*)(\n[ \t]*)$", text)
-            if m:
-                text, rest = m.group(1, 2)
-                self.program[-1] = ("rawtext", text)
-                return rest
+        collect = []
+        i = len(self.program)
+        while i > 0:
+            i = i-1
+            item = self.program[i]
+            if item[0] != "rawtext":
+                break
+            text = item[1]
+            if re.match(r"\A[ \t]*\Z", text):
+                collect.append(text)
+                continue
+            m = re.match(r"(?s)^(.*)(\n[ \t]*)\Z", text)
+            if not m:
+                break
+            text, rest = m.group(1, 2)
+            collect.reverse()
+            rest = rest + string.join(collect, "")
+            del self.program[i:]
+            if text:
+                self.program.append(("rawtext", text))
+            return rest
         return None
 
     def replaceAttrs(self, attrlist, repldict):

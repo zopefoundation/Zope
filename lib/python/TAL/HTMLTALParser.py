@@ -86,7 +86,7 @@ class HTMLTALParser(SGMLParser):
         assert self.nsdict == {}, self.nsdict
 
     def getCode(self):
-        return self.gen.program, self.gen.macros
+        return self.gen.getCode()
 
     # Overriding SGMLParser methods
 
