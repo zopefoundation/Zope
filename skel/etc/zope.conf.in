@@ -781,6 +781,7 @@ instancehome $INSTANCE
 #
 # Examples:
 #
+# Filestorage:
 # <zodb_db main>
 #    <filestorage>
 #      path $INSTANCE/var/Data.fs
@@ -792,6 +793,7 @@ instancehome $INSTANCE
 #    version-cache-size             100
 # </zodb_db>
 #
+# Temporary storage:
 # <zodb_db temporary>
 #    <temporarystorage>
 #      name sessions
@@ -799,3 +801,15 @@ instancehome $INSTANCE
 #    mount-point /temp_folder
 #    container-class Products.TemporaryFolder.TemporaryContainer
 # </zodb_db>
+# 
+# ZEO client storage:
+# <zodb_db main>
+#   mount-point /
+#   <zeoclient>
+#     server localhost:8100
+#     storage 1
+#     name zeostorage
+#     var $INSTANCE/var
+#   </zeoclient>
+# </zodb_db>
+
