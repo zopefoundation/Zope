@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from PersistentMapping import PersistentMapping
@@ -493,11 +493,16 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
     # Copy/Paste support
 
-    def _postCopy(self, container):
+    def _notifyOfCopyTo(self, container, op=0):
+        if hasattr(container, '__allow_groups__'):
+            raise TypeError, (
+                'Target already contains a UserFolder.')
+
+    def _postCopy(self, container, op=0):
 	container.__allow_groups__=container.acl_users
 
-    def _setId(self, clip_id):
-	if clip_id != self.id:
+    def _setId(self, id):
+	if id != self.id:
             raise Globals.MessageDialog(
                 title='Invalid Id',
                 message='Cannot change the id of a UserFolder',
