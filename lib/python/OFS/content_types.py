@@ -83,34 +83,10 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.12 $'[11:-2]
-
-src="""
-htm, html: text/html
-gif: image/gif
-jpg, jpe, jpeg: image/jpeg
-pdf: application/pdf
-aiff, aif, aifc: audio/aiff
-au, snd: audio/basic
-xbm: application/x-bitmap
-ra, ram: audio/x-pn-realaudio
-txt, py, c, h, pl, bat, sh, ksh: text/plain
-avi: video/avi
-wav: audio/wav
-mp3: audio/mpeg
-tar: application/x-tar
-zip: application/x-zip
-"""
+__version__='$Revision: 1.13 $'[11:-2]
 
 from string import split, strip, lower, find
 import ts_regex, mimetypes
-
-content_type={}
-for l in filter(lambda s: s and s[:1] != '#', map(strip, split(src,'\n'))):
-    [e, t]=split(l, ':')
-    t=strip(t)
-    for e in map(strip, split(e, ',')):
-        content_type[e]=t
 
 
 find_binary=ts_regex.compile('[\0-\7]').search
@@ -126,6 +102,14 @@ def text_type(s):
 # This gives us a hook to add content types that
 # aren't currently listed in the mimetypes module.
 _addtypes=(
+    ('.mp3', 'audio/mpeg'),
+    ('.ra', 'audio/x-pn-realaudio'),
+    ('.pdf', 'application/pdf'),
+    ('.c', 'text/plain'),
+    ('.bat', 'text/plain'),
+    ('.h', 'text/plain'),
+    ('.pl', 'text/plain'),
+    ('.ksh', 'text/plain'),
     ('.ram', 'application/x-pn-realaudio'),
     ('.cdf', 'application-x-cdf'),
     ('.doc', 'application/msword'),
@@ -159,7 +143,6 @@ _addtypes=(
     )
 for name, val in _addtypes:
     mimetypes.types_map[name]=val
-    
 
 def guess_content_type(name='', body='', default=None):
     # Attempt to determine the content type (and possibly
@@ -179,7 +162,7 @@ def guess_content_type(name='', body='', default=None):
     return lower(type), enc and lower(enc) or None
 
 if __name__=='__main__':
-    items=content_type.items()
+    items=mimetypes.types_map.items()
     items.sort()
     for item in items: print "%s:\t%s" % item
 
