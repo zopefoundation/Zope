@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.38 1998/07/27 23:42:12 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.39 1998/07/29 15:35:27 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -325,7 +325,7 @@ def parse_params(text,
 		 unparmre=regex.compile(
 		     '\([\0- ]*\([^\0- =\"]+\)\)'),
 		 qunparmre=regex.compile(
-		     '\([\0- ]*\("[^\0- =\"]+"\)\)'),
+		     '\([\0- ]*\("[^"]*"\)\)'),
 		 parmre=regex.compile(
 		     '\([\0- ]*\([^\0- =\"]+\)=\([^\0- =\"]+\)\)'),
 		 qparmre=regex.compile(
@@ -406,6 +406,9 @@ def parse_params(text,
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.39  1998/07/29 15:35:27  jim
+# Fixed bug in handling "..." shorthand.
+#
 # Revision 1.38  1998/07/27 23:42:12  jim
 # Revamped attribute parsing to:
 #
