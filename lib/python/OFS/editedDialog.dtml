@@ -1,7 +1,6 @@
 <HTML><HEAD><TITLE>Changed: <!--#var title_or_id--></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF">
-<FORM ACTION="<!--#var URL2-->/manage_main" METHOD="GET" 
-      TARGET="manage_main">
+<FORM ACTION="manage_main" METHOD="POST">
 <TABLE BORDER="0" WIDTH="100%" CELLPADDING="10">
 <TR>
   <TD VALIGN="TOP">
