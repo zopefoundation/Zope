@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -340,7 +340,7 @@ class BaseRequest:
                     subobject=object.__bobo_traverse__(request,entry_name)
                     if type(subobject) is type(()) and len(subobject) > 1:
                         # Add additional parents into the path
-                        parents[-1:] = subobject[:-1]
+                        parents[-1:] = list(subobject[:-1])
                         object, subobject = subobject[-2:]
                 else:
                     try:
