@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: Missing.c,v 1.8 1998/11/17 19:54:33 jim Exp $
+  $Id: Missing.c,v 1.9 1999/06/10 20:09:47 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -47,7 +47,7 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.8 1998/11/17 19:54:33 jim Exp $"
+"\n$Id: Missing.c,v 1.9 1999/06/10 20:09:47 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -64,6 +64,7 @@ static PyObject *theValue;
 static void
 Missing_dealloc(Missing *self)
 {
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -288,7 +289,7 @@ void
 initMissing()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.8 $";
+  char *rev="$Revision: 1.9 $";
 
   if(! ((vname=PyString_FromString("V"))
 	&& (Missing_dot_Value=PyString_FromString("Missing.Value"))
@@ -324,6 +325,9 @@ initMissing()
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.9  1999/06/10 20:09:47  jim
+  Updated to use new ExtensionClass destructor protocol.
+
   Revision 1.8  1998/11/17 19:54:33  jim
   new copyright.
 

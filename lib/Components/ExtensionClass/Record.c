@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char Record_module_documentation[] = 
 ""
-"\n$Id: Record.c,v 1.7 1999/04/16 15:21:40 jim Exp $"
+"\n$Id: Record.c,v 1.8 1999/06/10 20:11:53 jim Exp $"
 ;
 
 #ifdef PERSISTENCE
@@ -250,6 +250,7 @@ static void
 Record_dealloc(Record *self)
 {
   Record_deal(self);
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -591,7 +592,7 @@ void
 initRecord()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
 
   UNLESS(py___record_schema__=PyString_FromString("__record_schema__")) return;
 
@@ -630,6 +631,9 @@ initRecord()
 Revision Log:
 
   $Log: Record.c,v $
+  Revision 1.8  1999/06/10 20:11:53  jim
+  Updated to use new ExtensionClass destructor protocol.
+
   Revision 1.7  1999/04/16 15:21:40  jim
   Added logic to fall back to getattr when getitem fails.
   This is needed to make computed attributes work in ZTables,

@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: MultiMapping.c,v 1.7 1998/11/17 20:20:17 jim Exp $
+  $Id: MultiMapping.c,v 1.8 1999/06/10 20:10:46 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -162,6 +162,7 @@ static void
 MM_dealloc(MMobject *self)
 {
   Py_XDECREF(self->data);
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -233,13 +234,13 @@ void
 initMultiMapping()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.7 $";
+  char *rev="$Revision: 1.8 $";
 
   m = Py_InitModule4(
       "MultiMapping", MultiMapping_methods,
       "MultiMapping -- Wrap multiple mapping objects for lookup"
       "\n\n"
-      "$Id: MultiMapping.c,v 1.7 1998/11/17 20:20:17 jim Exp $\n",
+      "$Id: MultiMapping.c,v 1.8 1999/06/10 20:10:46 jim Exp $\n",
       (PyObject*)NULL,PYTHON_API_VERSION);
   d = PyModule_GetDict(m);
   PyExtensionClass_Export(d,"MultiMapping",MMtype);

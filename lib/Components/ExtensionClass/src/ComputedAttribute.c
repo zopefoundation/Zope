@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ComputedAttribute.c,v 1.1 1999/03/10 15:20:23 jim Exp $
+  $Id: ComputedAttribute.c,v 1.2 1999/06/10 20:08:55 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -79,6 +79,7 @@ static void
 CA_dealloc(CA *self)     
 {
   Py_DECREF(self->callable);
+  Py_DECREF(self->ob_type);
   PyMem_DEL(self);
 }
 
@@ -123,7 +124,7 @@ void
 initComputedAttribute()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.1 $";
+  char *rev="$Revision: 1.2 $";
 
   UNLESS(ExtensionClassImported) return;
 
@@ -133,7 +134,7 @@ initComputedAttribute()
   /* Create the module and add the functions */
   m = Py_InitModule4("ComputedAttribute", methods,
 	   "Provide Computed Attributes\n\n"
-	   "$Id: ComputedAttribute.c,v 1.1 1999/03/10 15:20:23 jim Exp $\n",
+	   "$Id: ComputedAttribute.c,v 1.2 1999/06/10 20:08:55 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
