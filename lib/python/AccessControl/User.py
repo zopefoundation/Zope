@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 import Globals
 from Persistence import Persistent
@@ -187,7 +187,7 @@ class UserFolder(Implicit, Persistent):
 
 class UserFolderHandler:
     """ """
-    meta_types=({'name':'UserFolder', 'action':'manage_addUserFolder'},)
+    meta_types=({'name':'User Folder', 'action':'manage_addUserFolder'},)
 
     def manage_addUserFolder(self,dtself,REQUEST):
         """ """
@@ -203,21 +203,21 @@ class UserFolderHandler:
     def UserFolderIds(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='UserFolder':
+	    if i['meta_type']=='User Folder':
 		t.append(i['id'])
 	return t
 
     def UserFolderValues(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='UserFolder':
+	    if i['meta_type']=='User Folder':
 		t.append(getattr(self,i['id']))
 	return t
 
     def UserFolderItems(self):
 	t=[]
 	for i in self.objectMap():
-	    if i['meta_type']=='UserFolder':
+	    if i['meta_type']=='User Folder':
 		n=i['id']
 		t.append((n,getattr(self,n)))
 	return t
@@ -226,6 +226,9 @@ class UserFolderHandler:
 
 
 # $Log: User.py,v $
+# Revision 1.8  1997/08/29 18:34:54  brian
+# Added basic role management to package.
+#
 # Revision 1.7  1997/08/27 19:49:48  brian
 # Added forgotten dtml
 #
