@@ -179,8 +179,10 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         """ returns new or existing session data object """
         container = self._getSessionDataContainer()
         ob = container.new_or_existing(key)
-        # hasattr hides conflicts
-        if getattr(ob, '__of__', None) and getattr(ob, 'aq_parent', None):
+        # hasattr hides conflicts; be explicit by comparing to None
+        # because otherwise __len__ of the requested object might be called!
+        if ( getattr(ob, '__of__', None) is not None and
+             getattr(ob, 'aq_parent', None) is not None ):
             # splice ourselves into the acquisition chain
             return ob.__of__(self.__of__(ob.aq_parent))
         return ob.__of__(self)
@@ -190,8 +192,11 @@ class SessionDataManager(Item, Implicit, Persistent, RoleManager, Owned, Tabs):
         container = self._getSessionDataContainer()
         ob = container.get(key)
         if ob is not None:
-            # hasattr hides conflicts
-            if getattr(ob, '__of__', None) and getattr(ob, 'aq_parent', None):
+            # hasattr hides conflicts; be explicit by comparing to None
+            # because otherwise __len__ of the requested object might be
+            # called!
+            if ( getattr(ob, '__of__', None) is not None and
+                 getattr(ob, 'aq_parent', None) is not None ):
                 # splice ourselves into the acquisition chain
                 return ob.__of__(self.__of__(ob.aq_parent))
             return ob.__of__(self)
