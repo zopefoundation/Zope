@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -315,7 +315,16 @@ class LockNullResource(NullResource, OFS.SimpleItem.Item_w__name__):
     title_or_id__roles__=None
     def title_or_id(self):
         return 'Foo'
-    
+
+    OPTIONS__roles__=None
+    def OPTIONS(self, REQUEST, RESPONSE):
+        """Retrieve communication options."""
+        return Resource.OPTIONS(self, REQUEST, RESPONSE)
+
+    def PROPFIND(self, REQUEST, RESPONSE):
+        """Retrieve properties defined on the resource."""
+        return Resource.PROPFIND(self, REQUEST, RESPONSE)
+
     def LOCK(self, REQUEST, RESPONSE):
         """ A Lock command on a LockNull resource should only be a
         refresh request (one without a body) """
