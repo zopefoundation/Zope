@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -401,6 +401,7 @@ class DateTime:
 	    # Current time, exp in local timezone
 	    t,tz=time(),self._localzone
 	    yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
+	    sc=sc+(t-int(t))
 	    s=(hr/24.0+mn/1440.0+sc/86400.0)
 	    d=(self._julianday(yr,mo,dy)-jd1901)+s
             yr,mo,dy,hr,mn,sc=localtime(t)[:6]
@@ -412,6 +413,7 @@ class DateTime:
 		# Current time, exp in specified timezone
 	        t,tz=time(),self._tzinfo._zmap[lower(arg)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
+		sc=sc+(t-int(t))
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
@@ -450,6 +452,7 @@ class DateTime:
 		# Seconds from epoch, gmt
 	        t,tz=arg,self._localzone
 	        yr,mo,dy,hr,mn,sc=gmtime(int(t))[:6]
+		sc=sc+(t-int(t))
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
                 yr,mo,dy,hr,mn,sc=localtime(t)[:6]
@@ -485,6 +488,7 @@ class DateTime:
 	        t,tz=args
 		tz=self._tzinfo._zmap[lower(tz)]
 	        yr,mo,dy,hr,mn,sc=gmtime(t)[:6]
+		sc=sc+(t-int(t))
 	        s=(hr/24.0+mn/1440.0+sc/86400.0)
 	        d=(self._julianday(yr,mo,dy)-jd1901)+s
 		_d=d+(self._tzinfo[tz].info(t)[0]/86400.0)
@@ -529,7 +533,6 @@ class DateTime:
 		d=d-(self._tzinfo[tz].info(t)[0]/86400.0)
 		s=d-int(d)
 		t=(d*86400.0)-EPOCH
-
 	else:
 	    # Explicit format
 	    yr,mo,dy=args[:3]
