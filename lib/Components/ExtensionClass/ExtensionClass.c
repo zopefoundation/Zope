@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.16 1997/10/22 15:09:43 jim Exp $
+  $Id: ExtensionClass.c,v 1.17 1997/11/13 21:05:35 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.16 1997/10/22 15:09:43 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.17 1997/11/13 21:05:35 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2583,12 +2583,12 @@ subclass_ass_subscript(PyObject *self, PyObject *index, PyObject *v)
 	  UNLESS(PyInt_Check(index))
 	    {
 	      PyErr_SetString(PyExc_TypeError, "sequence subscript not int");
-	      return NULL;
+	      return -1;
 	    }
 	  i=PyInt_AsLong(index);
 	  if(i < 0)
 	    {
-	      if((l=PyObject_Length(self)) < 0) return NULL;
+	      if((l=PyObject_Length(self)) < 0) return -1;
 	      i+=l;
 	    }
 	  return t->tp_as_sequence->sq_ass_item(self,i,v);
@@ -3071,7 +3071,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.16 $";
+  char *rev="$Revision: 1.17 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3110,6 +3110,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.17  1997/11/13 21:05:35  jim
+  Fixed some bad return values.
+
   Revision 1.16  1997/10/22 15:09:43  jim
   Added support for function and method attributes.
 
