@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.3 $'[11:-2]
+__version__='$Revision: 1.4 $'[11:-2]
 
 import Globals
 from Globals import Persistent, HTMLFile, package_home
@@ -106,8 +106,8 @@ class NameAssignments:
     # Note that instances of this class are intended to be immutable
     # and persistent but not inherit from ExtensionClass.
 
-    _exprs = (('name_context',   'self.aq_parent'),
-              ('name_container', 'self.aq_inner.aq_parent'),
+    _exprs = (('name_context',   'self._getContext()'),
+              ('name_container', 'self._getContainer()'),
               ('name_m_self',    'self'),
               ('name_ns',        'self._getNamespace(caller_namespace, kw)'),
               ('name_subpath',   'self._getTraverseSubpath()'),
@@ -293,6 +293,20 @@ class Bindings (Persistent):
             self._prepareBindCode()
             bindcount = self._v_bindcount
         return bindcount            
+
+    def _getContext(self):
+        # Utility for bindcode.
+        while 1:
+            self = self.aq_parent
+            if not getattr(self, '_is_wrapperish', None):
+                return self
+
+    def _getContainer(self):
+        # Utility for bindcode.
+        while 1:
+            self = self.aq_inner.aq_parent
+            if not getattr(self, '_is_wrapperish', None):
+                return self
 
     def _getTraverseSubpath(self):
         # Utility for bindcode.
