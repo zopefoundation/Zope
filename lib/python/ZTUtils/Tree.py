@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.8 2002/10/03 21:50:17 mj Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Tree.py,v 1.9 2002/10/04 14:47:54 mj Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
@@ -200,6 +200,9 @@ def decodeExpansion(s, nth=None):
 
     If nth is an integer, also return the (map, key) pair for the nth entry.
     '''
+    if len(s) > 8192: # Set limit to 8K, to avoid DoS attacks.
+        raise ValueError('Encoded node map too large')
+    
     map = m = {}
     mstack = []
     pop = 0
@@ -207,7 +210,7 @@ def decodeExpansion(s, nth=None):
     if nth is not None:
         nth_pair = (None, None)
     for step in s.split(':'):
-        if step == len(step) * '_':
+        if step[0] == '_':
             pop = len(step) - 1
             continue
         if pop < 0:
