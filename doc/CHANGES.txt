@@ -223,6 +223,10 @@ Zope Changes
       - Collector #348: decapitate() now recognizes both \r\n and \n\n
         to be compliant with the HTTP RFC
 
+      - Collector 386: workaround for hanging FTP connections
+        with NcFTP
+
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed

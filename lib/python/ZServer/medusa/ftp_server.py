@@ -5,7 +5,7 @@
 #						 All Rights Reserved.
 #
 
-RCS_ID =  '$Id: ftp_server.py,v 1.20 2002/04/08 17:03:57 shane Exp $'
+RCS_ID =  '$Id: ftp_server.py,v 1.21 2002/05/09 16:58:38 andreasjung Exp $'
 
 # An extensible, configurable, asynchronous FTP server.
 # 
@@ -683,9 +683,9 @@ class ftp_channel (asynchat.async_chat):
         if help_lines:
             self.push ('214-The following commands are recognized\r\n')
             self.push_with_producer (producers.lines_producer (help_lines))
-            self.push ('214\r\n')
+            self.push ('214 \r\n')
         else:
-            self.push ('214-\r\n\tHelp Unavailable\r\n214\r\n')
+            self.push ('214-\r\n\tHelp Unavailable\r\n214 \r\n')
             
 class ftp_server (asyncore.dispatcher):
         # override this to spawn a different FTP channel class.
