@@ -12,9 +12,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.173 2004/03/23 06:51:13 Zen Exp $"""
+$Id: ObjectManager.py,v 1.174 2004/03/31 22:41:13 shane Exp $"""
 
-__version__='$Revision: 1.173 $'[11:-2]
+__version__='$Revision: 1.174 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, re, Products
@@ -613,13 +613,14 @@ class ObjectManager(
         for k,v in files:
             # Note that we have to tolerate failure here, because
             # Broken objects won't stat correctly. If an object fails
-            # to be able to stat itself, we will ignore it.
-            try:    stat=marshal.loads(v.manage_FTPstat(REQUEST))
+            # to be able to stat itself, we will ignore it, but log
+            # the error.
+            try:
+                stat=marshal.loads(v.manage_FTPstat(REQUEST))
             except:
+                LOG("FTP", ERROR, "Failed to stat file '%s'" % k,
+                    error=sys.exc_info())
                 stat=None
-                if k != "Control_Panel":
-                    __traceback_info__ = (k, v)
-                    raise
             if stat is not None:
                 out=out+((k,stat),)
         return marshal.dumps(out)
