@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.10 1999/08/04 01:18:23 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.11 1999/09/10 15:02:47 petrilli Exp $'
 
 # python modules
 import os
@@ -266,14 +266,20 @@ class http_request:
 			) + tz_for_log
 
 	def log (self, bytes):
+		user_agent=self.get_header('user-agent')
+		if not user_agent: user_agent=''
+		referer=self.get_header('referer')
+		if not referer: referer=''
 		self.channel.server.logger.log (
 			self.channel.addr[0],
-			'%d - - [%s] "%s" %d %d\n' % (
+			'%d - - [%s] "%s" %d %d "%s" "%s"\n' % (
 				self.channel.addr[1],
 				self.log_date_string (time.time()),
 				self.request,
 				self.reply_code,
-				bytes
+				bytes,
+				referer,
+				user_agent
 				)
 			)
 
