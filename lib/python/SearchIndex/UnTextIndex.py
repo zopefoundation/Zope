@@ -92,7 +92,7 @@ is no longer known.
 
 
 """
-__version__='$Revision: 1.27 $'[11:-2]
+__version__='$Revision: 1.28 $'[11:-2]
 
 from Globals import Persistent
 import BTree, IIBTree, IOBTree, OIBTree
@@ -331,7 +331,7 @@ class UnTextIndex(Persistent, Implicit):
                     try:
                         del index[n][i]
                     except (KeyError, IndexError, TypeError):
-                        LOG('UnTextIndex', PROBLEM,
+                        LOG('UnTextIndex', ERROR,
                             'unindex_object tried to unindex nonexistent'
                             ' document %s' % str(i))
             del unindex[i]
