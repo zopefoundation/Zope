@@ -1,0 +1,61 @@
+<html>
+  <head>
+    <title>Add Aqueduct <!--#var database_type--> Database Connection</title>
+  </head>
+  <body bgcolor="#FFFFFF" link="#000099" vlink="#555555" alink="#77003B">
+  
+    <h2>Add Aqueduct <!--#var database_type--> Database Connection</h2>
+
+    <!--#if data_sources-->
+    
+    <form action="manage_addAqueduct<!--#var database_type-->Connection" 
+          method="POST">
+      <table cellspacing="2">
+	<tr>
+	  <th align="LEFT" valign="TOP">Id</th>
+	  <td align="LEFT" valign="TOP">
+            <input type="TEXT" name="id" size="40"
+                value="<!--#var database_type-->_database_connection">
+          </td>
+	</tr>
+	<tr>
+	  <th align="LEFT" valign="TOP"><em>Title</em></th>
+	  <td align="LEFT" valign="TOP">
+            <input type="TEXT" name="title" size="40"
+                value="Aqueduct <!--#var database_type--> Database Connection">
+          </td>
+	</tr>
+	<tr>
+	  <th align="LEFT" valign="TOP">Select a Data Source</th>
+	  <td align="LEFT" valign="TOP"><select name=connection size=7>
+            <!--#in data_sources-->
+              <option value="<!--#var sequence-key-->">
+                <!--#var sequence-key--><!--#if 
+                   sequence-item-->, <!--#var sequence-item--><!--#/if-->
+              </option-->
+            <!--#/in-->
+          </select></td>
+	</tr>
+	<tr>
+	  <th align="LEFT" valign="TOP">Connect immediately</th>
+	  <td align="LEFT" valign="TOP">
+            <input name="check" type="CHECKBOX" value="YES" CHECKED>
+          </td>
+	</tr>
+	<tr>
+	  <td></td>
+	  <td><br><input type="SUBMIT" value="Add"></td>
+	</tr>
+      </table>
+    </form>
+
+    <!--#else-->
+
+    Sorry, you cannot create any Aqueduct <!--#var database_type--> Database
+    Connections because no <!--#var database_type--> databases exist, or
+    all of the existing databases are in use.
+
+    <!--#/if-->
+
+  </body>
+</html>
