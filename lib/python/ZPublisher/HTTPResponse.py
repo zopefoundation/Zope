@@ -12,8 +12,8 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: HTTPResponse.py,v 1.77 2003/11/18 13:17:17 tseaver Exp $'''
-__version__ = '$Revision: 1.77 $'[11:-2]
+$Id: HTTPResponse.py,v 1.78 2003/12/26 23:48:18 jeremy Exp $'''
+__version__ = '$Revision: 1.78 $'[11:-2]
 
 import types, os, sys, re
 import zlib, struct
@@ -288,7 +288,7 @@ class HTTPResponse(BaseResponse):
             return self
 
         if isinstance(body, tuple) and len(body) == 2:
-            title,body = body
+            title, body = body
 
         if not isinstance(body, str):
             if hasattr(body,'asHTML'):

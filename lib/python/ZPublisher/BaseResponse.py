@@ -12,13 +12,10 @@
 ##############################################################################
 '''CGI Response Output formatter
 
-$Id: BaseResponse.py,v 1.18 2003/11/18 13:17:17 tseaver Exp $'''
-__version__ = '$Revision: 1.18 $'[11:-2]
+$Id: BaseResponse.py,v 1.19 2003/12/26 23:48:18 jeremy Exp $'''
+__version__ = '$Revision: 1.19 $'[11:-2]
 
-import  types, sys
-from types import StringType, InstanceType
-from zExceptions import Unauthorized, Forbidden
-from zExceptions import NotFound, BadRequest
+from zExceptions import Unauthorized, Forbidden, NotFound, BadRequest
 
 class BaseResponse:
     """Base Response Class

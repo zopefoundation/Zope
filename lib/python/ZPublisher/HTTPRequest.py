@@ -11,9 +11,9 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.95 $'[11:-2]
+__version__='$Revision: 1.96 $'[11:-2]
 
-import re, sys, os,  urllib, time, random, cgi, codecs
+import re, sys, os, time, random, codecs
 from types import StringType, UnicodeType
 from BaseRequest import BaseRequest
 from HTTPResponse import HTTPResponse
@@ -205,7 +205,6 @@ class HTTPRequest(BaseRequest):
             If the URL makes no sense in light of the current virtual
             hosting context, a ValueError is raised."""
         other = self.other
-        bad_server_url = 0
         path = filter(None, URL.split( '/'))
 
         if URL.find( '://') >= 0:
@@ -214,7 +213,6 @@ class HTTPRequest(BaseRequest):
         # Check the path against BASEPATH1
         vhbase = self._script
         vhbl = len(vhbase)
-        bad_basepath = 0
         if path[:vhbl] == vhbase:
             path = path[vhbl:]
         else:
@@ -404,7 +402,7 @@ class HTTPRequest(BaseRequest):
             CGI_name=isCGI_NAME
             defaults={}
             tainteddefaults={}
-            converter=seqf=None
+            converter=None
 
             for item in fslist:
 
@@ -453,10 +451,8 @@ class HTTPRequest(BaseRequest):
                             converter_type = type_name
                             flags=flags|CONVERTED
                         elif type_name == 'list':
-                            seqf=list
                             flags=flags|SEQUENCE
                         elif type_name == 'tuple':
-                            seqf=tuple
                             tuple_items[key]=1
                             flags=flags|SEQUENCE
                         elif (type_name == 'method' or type_name == 'action'):
