@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <html>
 
-  <body xmlns:z="http://xml.zope.org/namespaces/tal" xmlns:m="http://xml.zope.org/namespaces/metal" m:define-macro="body" z:define="global count python:0">
+  <body xmlns:m="http://xml.zope.org/namespaces/metal" xmlns:z="http://xml.zope.org/namespaces/tal" m:define-macro="body" z:define="global count python:0">
 
     <ul m:define-macro="whoops">
         
