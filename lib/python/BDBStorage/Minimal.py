@@ -1,10 +1,24 @@
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+# 
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+# 
+##############################################################################
+
 """Berkeley storage without undo or versioning.
 
 See Full.py for an implementation of Berkeley storage that does support undo
 and versioning.
 """
 
-__version__ = '$Revision: 1.11 $'[-2:][0]
+__version__ = '$Revision: 1.12 $'[-2:][0]
 
 # This uses the Dunn/Kuchling PyBSDDB v3 extension module available from
 # http://pybsddb.sourceforge.net.  It is compatible with release 3.0 of
@@ -176,8 +190,7 @@ class Minimal(BerkeleyBase):
                 # given in the call is not the same as the last stored serial
                 # number.  Raise a ConflictError.
                 raise POSException.ConflictError(
-                    'serial number mismatch (was: %s, has: %s)' %
-                    (utils.U64(oserial), utils.U64(serial)))
+                    serials=(oserial, serial))
             # Our serial number is updated in BaseStorage's tpc_begin() call,
             # which sets the serial number to the current timestamp.
             serial = self._serial

@@ -1,10 +1,24 @@
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+# 
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+# 
+##############################################################################
+
 """Berkeley storage with full undo and versioning support.
 
 See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.38 $'.split()[-2:][0]
+__version__ = '$Revision: 1.39 $'.split()[-2:][0]
 
 import sys
 import struct
@@ -593,9 +607,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 if data:
                     conflictresolved = 1
                 else:
-                    raise POSException.ConflictError(
-                        'serial number mismatch (was: %s, has: %s)' %
-                        (U64(oserial), serial and U64(serial)))
+                    raise POSException.ConflictError(serials=(oserial, serial))
             # Do we already know about this version?  If not, we need to
             # record the fact that a new version is being created.  `version'
             # will be the empty string when the transaction is storing on the

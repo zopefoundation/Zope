@@ -11,13 +11,14 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
+
 """
 An implementation of a BerkeleyDB-backed storage that uses a reference-
 counting garbage-collection strategy which necessitates packing only when
 the stored data has cyclically-referenced garbage.
 """
 
-__version__ ='$Revision: 1.6 $'[11:-2]
+__version__ ='$Revision: 1.7 $'[11:-2]
 
 from base import Base, DBError
 from base import BerkeleyDBError
@@ -84,7 +85,8 @@ class Packless(Base):
         try:
             if self._index.has_key(oid):
                 oserial=self._index[oid]
-                if serial != oserial: raise POSException.ConflictError
+                if serial != oserial:
+                    raise POSException.ConflictError(serials=(oserial, serial))
                 
             serial=self._serial
             try:

@@ -1,3 +1,17 @@
+##############################################################################
+#
+# Copyright (c) 2001, 2002 Zope Corporation and Contributors.
+# All Rights Reserved.
+# 
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.0 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE
+# 
+##############################################################################
+
 from base import Base
 from bsddb3 import db
 from struct import pack, unpack
@@ -28,7 +42,8 @@ class Minimal(Base):
         try:
             if self._index.has_key(oid):
                 oserial=self._index[oid]
-                if serial != oserial: raise POSException.ConflictError
+                if serial != oserial:
+                    raise POSException.ConflictError(serials=(oserial, serial))
                 
             serial=self._serial
             self._tmp.write(oid+pack(">I", len(data)))
