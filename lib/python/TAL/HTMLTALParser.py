@@ -28,12 +28,14 @@ PARA_LEVEL_HTML_TAGS = [
     "h1", "h2", "h3", "h4", "h5", "h6", "p",
     ]
 
-CLOSING_BLOCK_LEVEL_HTML_TAGS = [
-    # These are HTML tags that close others in this list, but are not
-    # closed by paragraph-level tags.  They don't close across other
-    # block-level boundaries.
-    "li", "dt", "dd", "td", "th", "tr",
-    ]
+BLOCK_CLOSING_TAG_MAP = {
+    "tr": ("tr", "td", "th"),
+    "td": ("td", "th"),
+    "th": ("td", "th"),
+    "li": ("li",),
+    "dd": ("dd", "dt"),
+    "dt": ("dd", "dt"),
+    }
 
 BLOCK_LEVEL_HTML_TAGS = [
     # List of HTML tags that denote larger sections than paragraphs.
@@ -42,7 +44,7 @@ BLOCK_LEVEL_HTML_TAGS = [
     ]
 
 TIGHTEN_IMPLICIT_CLOSE_TAGS = (PARA_LEVEL_HTML_TAGS
-                               + CLOSING_BLOCK_LEVEL_HTML_TAGS)
+                               + BLOCK_CLOSING_TAG_MAP.keys())
 
 
 class NestingError(Exception):
@@ -108,15 +110,16 @@ class HTMLTALParser(SGMLParser):
         self.scan_xmlns(attrs)
         if tag in EMPTY_HTML_TAGS:
             self.pop_xmlns()
-        elif tag in CLOSING_BLOCK_LEVEL_HTML_TAGS:
+        elif BLOCK_CLOSING_TAG_MAP.has_key(tag):
+            blocks_to_close = BLOCK_CLOSING_TAG_MAP[tag]
             close_to = -1
             for i in range(len(self.tagstack)):
                 t = self.tagstack[i]
-                if t in CLOSING_BLOCK_LEVEL_HTML_TAGS:
+                if t in blocks_to_close:
                     close_to = i
                 elif t in BLOCK_LEVEL_HTML_TAGS:
                     close_to = -1
-            self._close_to_level(close_to)
+                    self._close_to_level(close_to)
             self.tagstack.append(tag)
         elif tag in PARA_LEVEL_HTML_TAGS + BLOCK_LEVEL_HTML_TAGS:
             close_to = -1
