@@ -1034,6 +1034,7 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 {
   PyObject *name, *filter=0, *extra=Py_None;
   PyObject *expl=0, *defalt=0;
+  PyObject *result;
   int explicit=1;
   int containment=0;
 
@@ -1047,10 +1048,23 @@ Wrapper_acquire_method(Wrapper *self, PyObject *args, PyObject *kw)
 
   if (filter==Py_None) filter=0;
 
-  return Wrapper_findattr(self,name,filter,extra,OBJECT(self),1,
+  result=Wrapper_findattr(self,name,filter,extra,OBJECT(self),1,
 			  explicit || 
 			  self->ob_type==(PyTypeObject*)&Wrappertype,
 			  explicit, containment);
+  if (result == NULL && defalt != NULL) {
+    /* contrary to "Python/bltinmodule.c:builtin_getattr" turn
+       only 'AttributeError' into a default value, such
+       that e.g. "ConflictError" and errors raised by the filter
+       are not mapped to the default value.
+    */
+    if (PyErr_ExceptionMatches(PyExc_AttributeError)) {
+      PyErr_Clear();
+      Py_INCREF(defalt);
+      result = defalt;
+    }
+  }
+  return result;
 }
 
 static PyObject *
@@ -1528,7 +1542,7 @@ initAcquisition(void)
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.61 2003/06/10 15:28:46 shane Exp $\n",
+	   "$Id: Acquisition.c,v 1.62 2003/10/21 12:43:22 andreasjung Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
