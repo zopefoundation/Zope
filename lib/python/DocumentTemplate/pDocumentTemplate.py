@@ -54,8 +54,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.19 1998/09/16 20:19:12 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.20 1998/09/17 10:12:20 jim Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -64,7 +64,7 @@ StringType=type('')
 TupleType=type(())
 isFunctionType={}
 for name in ['BuiltinFunctionType', 'BuiltinMethodType', 'ClassType',
-             'FunctionType', 'LambdaType', 'MethodType']:
+             'FunctionType', 'LambdaType', 'MethodType', 'UnboundMethodType']:
     try: isFunctionType[getattr(types,name)]=1
     except: pass
 
@@ -75,6 +75,14 @@ try: # Add function and method types from Extension Classes
 except: pass
 
 isFunctionType=isFunctionType.has_key
+
+isSimpleType={}
+for n in dir(types):
+    if (n[-4:]=='Type' and n != 'InstanceType' and
+        not isFunctionType(getattr(types, n))):
+        isSimpleType[getattr(types, n)]=1
+
+isSimpleType=isSimpleType.has_key
 
 class InstanceDict:
 
@@ -151,33 +159,24 @@ class TemplateDict:
         except: pass
 
     def __getitem__(self,key,call=1,
-                    simple={
-                        type(''): 1, type(0): 1, type(0.0): 1,
-                        type([]): 1, type(()): 1,
-                        }.has_key):
+                    simple=isSimpleType,
+                    isFunctionType=isFunctionType,
+                    ):
 
         v=self.dicts[key]
         if call and not simple(type(v)):
-            if hasattr(v,'isDocTemp') and v.isDocTemp:
-                v=v(None, self)
+            if hasattr(v,'isDocTemp') and v.isDocTemp: return v(None, self)
+            elif isFunctionType(type(v)): return v()
             else:
                 try: return v()
                 except AttributeError, ev:
                     try:
                         tb=sys.exc_traceback
                         if hasattr(sys, 'exc_info'): tb=sys.exc_info()[2]
-                        if isFunctionType(type(v)):
-                            raise AttributeError, ev, tb
                         if hasattr(v,'__call__'):
                             raise AttributeError, ev, tb
                     finally: tb=None
-                except TypeError, ev:
-                    try:
-                        tb=sys.exc_traceback
-                        if hasattr(sys, 'exc_info'): tb=sys.exc_info()[2]
-                        if isFunctionType(type(v)):
-                            raise AttributeError, ev, tb
-                    finally: tb=None
+                except TypeError: pass
                         
         return v
 
