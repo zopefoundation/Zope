@@ -39,8 +39,6 @@ import ZPublisher
 def startup():
     global ZODB, app
 
-    Globals.BobobaseName = os.path.join(getConfiguration().clienthome,
-                                        'Data.fs')
     Globals.DatabaseVersion='3'
 
     # Import products
@@ -90,7 +88,7 @@ def startup():
         Globals.VersionNameName)
     Zope.bobo_application = app
 
-    # Initialize products:
+    # Initialize the app object
     application = app()
     OFS.Application.initialize(application)
     if Globals.DevelopmentMode:
