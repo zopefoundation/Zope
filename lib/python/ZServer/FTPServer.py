@@ -168,8 +168,10 @@ class zope_ftp_channel(ftp_channel):
         self.listdir(dir, long)
 
     def listdir (self, path, long=0):
-        response=make_response(self, self.listdir_completion, long)
-        request=FTPRequest(path, 'LST', self, response,globbing=self.globbing,recursive=self.recursive)
+        response = make_response(self, self.listdir_completion, long)
+        request = FTPRequest(path, 'LST', self, response,
+                             globbing=self.globbing,
+                             recursive=self.recursive)
         handle(self.module, request, response)
 
     def listdir_completion(self, long, response):
