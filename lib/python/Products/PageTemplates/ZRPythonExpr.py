@@ -16,21 +16,20 @@
 Handler for Python expressions that uses the RestrictedPython package.
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
-from AccessControl import full_read_guard, full_write_guard, \
-     safe_builtins, getSecurityManager
-from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
+from AccessControl import safe_builtins
+from AccessControl.ZopeGuards import guarded_getattr, get_safe_globals
 from RestrictedPython import compile_restricted_eval
 from TALES import CompilerError
 
 from PythonExpr import PythonExpr
 
 class PythonExpr(PythonExpr):
-    _globals = {'__debug__': __debug__,
-                '__builtins__': safe_builtins,
-                '_getattr_': guarded_getattr,
-                '_getitem_': guarded_getitem,}
+    _globals = get_safe_globals()
+    _globals['_getattr_'] = guarded_getattr
+    _globals['__debug__' ] = __debug__
+
     def __init__(self, name, expr, engine):
         self.expr = expr = expr.strip().replace('\n', ' ')
         code, err, warn, use = compile_restricted_eval(expr, str(self))

@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import sys, os, traceback, re, marshal, new
 from Globals import DTMLFile, MessageDialog, package_home
@@ -31,10 +31,10 @@ from Shared.DC.Scripts.Script import Script, BindingsUI, defaultBindings
 from AccessControl import getSecurityManager
 from OFS.History import Historical, html_diff
 from OFS.Cache import Cacheable
-from AccessControl import full_write_guard, safe_builtins
-from AccessControl.ZopeGuards import guarded_getattr, guarded_getitem
+from AccessControl.ZopeGuards import get_safe_globals, guarded_getattr
 from zLOG import LOG, ERROR, INFO, PROBLEM
 from zExceptions import Forbidden
+import Globals
 
 # Track the Python bytecode version
 import imp
@@ -223,6 +223,7 @@ class PythonScript(Script, Historical, Cacheable):
 
     def _compiler(self, *args, **kw):
         return RestrictedPython.compile_restricted_function(*args, **kw)
+
     def _compile(self):
         bind_names = self.getBindingAssignments().getAssignedNamesInOrder()
         r = self._compiler(self._params, self._body or 'pass',
@@ -255,14 +256,11 @@ class PythonScript(Script, Historical, Cacheable):
         self._v_change = 0
 
     def _newfun(self, code):
-        g = {'__debug__': __debug__,
-             '__name__': None,
-             '__builtins__': safe_builtins,
-             '_getattr_': guarded_getattr,
-             '_getitem_': guarded_getitem,
-             '_write_': full_write_guard,
-             '_print_': RestrictedPython.PrintCollector,
-             }
+        g = get_safe_globals()
+        g['_getattr_'] = guarded_getattr
+        g['__debug__'] = __debug__
+        g['__name__'] = None
+
         l = {}
         exec code in g, l
         self._v_f = f = l.values()[0]
@@ -489,6 +487,8 @@ class PythonScript(Script, Historical, Cacheable):
             RESPONSE.setHeader('Content-Type', 'text/plain')
         return self.read()
 
+
+Globals.InitializeClass(PythonScript)
 
 class PythonScriptTracebackSupplement:
     """Implementation of ITracebackSupplement"""

@@ -17,7 +17,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, string literals, and paths.
 """
 
-__version__='$Revision: 1.44 $'[11:-2]
+__version__='$Revision: 1.45 $'[11:-2]
 
 import re, sys
 from TALES import Engine, CompilerError, _valid_name, NAME_RE, \
@@ -54,12 +54,7 @@ if sys.modules.has_key('Zope'):
         from AccessControl import Unauthorized
     except ImportError:
         Unauthorized = "Unauthorized"
-    if hasattr(AccessControl, 'full_read_guard'):
-        from ZRPythonExpr import PythonExpr, _SecureModuleImporter, \
-             call_with_ns
-    else:
-        from ZPythonExpr import PythonExpr, _SecureModuleImporter, \
-             call_with_ns
+    from ZRPythonExpr import PythonExpr, _SecureModuleImporter, call_with_ns
 else:
     from PythonExpr import getSecurityManager, PythonExpr
     guarded_getattr = getattr
@@ -312,7 +307,7 @@ def restrictedTraverse(object, path, securityManager,
             # Skip directly to item access
             o = object[name]
             # Check access to the item.
-            if not validate(object, object, name, o):
+            if not validate(object, object, None, o):
                 raise Unauthorized, name
             object = o
             continue
@@ -367,7 +362,7 @@ def restrictedTraverse(object, path, securityManager,
                     raise
                 else:
                     # Check access to the item.
-                    if not validate(object, object, name, o):
+                    if not validate(object, object, None, o):
                         raise Unauthorized, name
         object = o
 

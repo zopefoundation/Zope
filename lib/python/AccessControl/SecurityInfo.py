@@ -38,17 +38,18 @@
 
 """
 
-__version__='$Revision$'[11:-2]
+import sys
 
+import Acquisition
 
-import Acquisition, PermissionRole, sys
+from AccessControl.ImplPython import _what_not_even_god_should_do
 from zLOG import LOG, WARNING
 
 
 # Security constants - these are imported into the AccessControl
 # namespace and can be referenced as AccessControl.PUBLIC etc.
 
-ACCESS_NONE    = PermissionRole._what_not_even_god_should_do
+ACCESS_NONE    = _what_not_even_god_should_do
 ACCESS_PRIVATE = ()
 ACCESS_PUBLIC  = None
 

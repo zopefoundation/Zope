@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-import os, sys, unittest
+import os, unittest
 
-import ZODB
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
+from RestrictedPython.tests.verify import verify
 
 
 if __name__=='__main__':
@@ -28,13 +28,17 @@ else:
 # Test Classes
 
 def readf(name):
-    return open( os.path.join( here
-                             , 'tscripts'
-                             , '%s.ps' % name
-                             ), 'r').read()
+    path = os.path.join(here, 'tscripts', '%s.ps' % name)
+    return open(path, 'r').read()
 
-class TestPythonScriptNoAq(unittest.TestCase):
+class VerifiedPythonScript(PythonScript):
 
+    def _newfun(self, code):
+        verify(code)
+        return PythonScript._newfun(self, code)
+
+
+class PythonScriptTestBase(unittest.TestCase):
     def setUp(self):
         newSecurityManager(None, None)
 
@@ -42,10 +46,12 @@ class TestPythonScriptNoAq(unittest.TestCase):
         noSecurityManager()
 
     def _newPS(self, txt, bind=None):
-        ps = PythonScript('ps')
+        ps = VerifiedPythonScript('ps')
         ps.ZBindings_edit(bind or {})
         ps.write(txt)
         ps._makeFunction()
+        if ps.errors:
+            raise SyntaxError, ps.errors[0]
         return ps
 
     def _filePS(self, fname, bind=None):
@@ -55,113 +61,181 @@ class TestPythonScriptNoAq(unittest.TestCase):
         ps._makeFunction()
         return ps
 
+
+class TestPythonScriptNoAq(PythonScriptTestBase):
+
     def fail(self):
         'Fail if called'
         assert 0, 'Fail called'
 
     def testEmpty(self):
         empty = self._newPS('')()
-        assert empty is None, empty
+        self.failUnless(empty is None)
 
     def testIndented(self):
         # This failed to compile in Zope 2.4.0b2.
         res = self._newPS('if 1:\n return 2')()
-        assert res == 2, res
+        self.assertEqual(res, 2)
 
     def testReturn(self):
-        return1 = self._newPS('return 1')()
-        assert return1 == 1, return1
+        res = self._newPS('return 1')()
+        self.assertEqual(res, 1)
 
     def testReturnNone(self):
-        none = self._newPS('return')()
-        assert none == None
+        res = self._newPS('return')()
+        self.failUnless(res is None)
 
     def testParam1(self):
-        txt = self._newPS('##parameters=x\nreturn x')('txt')
-        assert txt == 'txt', txt
+        res = self._newPS('##parameters=x\nreturn x')('txt')
+        self.assertEqual(res, 'txt')
 
     def testParam2(self):
+        eq = self.assertEqual
         one, two = self._newPS('##parameters=x,y\nreturn x,y')('one','two')
-        assert one == 'one'
-        assert two == 'two'
+        eq(one, 'one')
+        eq(two, 'two')
 
     def testParam26(self):
         import string
         params = string.letters[:26]
         sparams = ','.join(params)
         ps = self._newPS('##parameters=%s\nreturn %s' % (sparams, sparams))
-        tup = ps(*params)
-        assert tup == tuple(params), (tup, params)
+        res = ps(*params)
+        self.assertEqual(res, tuple(params))
 
     def testArithmetic(self):
-        one = self._newPS('return 1 * 5 + 4 / 2 - 6')()
-        assert one == 1, one
+        res = self._newPS('return 1 * 5 + 4 / 2 - 6')()
+        self.assertEqual(res, 1)
+
+    def testReduce(self):
+        res = self._newPS('return reduce(lambda x, y: x + y, [1,3,5,7])')()
+        self.assertEqual(res, 16)
+        res = self._newPS('return reduce(lambda x, y: x + y, [1,3,5,7], 1)')()
+        self.assertEqual(res, 17)
 
     def testImport(self):
-        a,b,c = self._newPS('import string; return string.split("a b c")')()
-        assert a == 'a'
-        assert b == 'b'
-        assert c == 'c'
+        eq = self.assertEqual
+        a, b, c = self._newPS('import string; return string.split("a b c")')()
+        eq(a, 'a')
+        eq(b, 'b')
+        eq(c, 'c')
 
     def testWhileLoop(self):
-        one = self._filePS('while_loop')()
-        assert one == 1
+        res = self._filePS('while_loop')()
+        self.assertEqual(res, 1)
 
     def testForLoop(self):
-        ten = self._filePS('for_loop')()
-        assert ten == 10
+        res = self._filePS('for_loop')()
+        self.assertEqual(res, 10)
 
     def testMutateLiterals(self):
+        eq = self.assertEqual
         l, d = self._filePS('mutate_literals')()
-        assert l == [2], l
-        assert d == {'b': 2}
+        eq(l, [2])
+        eq(d, {'b': 2})
 
     def testTupleUnpackAssignment(self):
+        eq = self.assertEqual
         d, x = self._filePS('tuple_unpack_assignment')()
-        assert d == {'a': 0, 'b': 1, 'c': 2}, d
-        assert x == 3, x
+        eq(d, {'a': 0, 'b': 1, 'c': 2})
+        eq(x, 3)
 
     def testDoubleNegation(self):
-        one = self._newPS('return not not "this"')()
-        assert one == 1
+        res = self._newPS('return not not "this"')()
+        self.assertEqual(res, 1)
 
     def testTryExcept(self):
-        a,b = self._filePS('try_except')()
-        assert a==1
-        assert b==1
+        eq = self.assertEqual
+        a, b = self._filePS('try_except')()
+        eq(a, 1)
+        eq(b, 1)
 
     def testBigBoolean(self):
-        true = self._filePS('big_boolean')()
-        assert true, true
+        res = self._filePS('big_boolean')()
+        self.failUnless(res)
 
     def testFibonacci(self):
-        r = self._filePS('fibonacci')()
-        assert r == [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377,
-                     610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657,
-                     46368, 75025, 121393, 196418, 317811, 514229, 832040,
-                     1346269, 2178309, 3524578, 5702887, 9227465, 14930352,
-                     24157817, 39088169, 63245986], r
+        res = self._filePS('fibonacci')()
+        self.assertEqual(
+            res, [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377,
+                  610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657,
+                  46368, 75025, 121393, 196418, 317811, 514229, 832040,
+                  1346269, 2178309, 3524578, 5702887, 9227465, 14930352,
+                  24157817, 39088169, 63245986])
 
     def testSimplePrint(self):
-        txt = self._filePS('simple_print')()
-        assert txt == 'a 1 []\n', txt
+        res = self._filePS('simple_print')()
+        self.assertEqual(res, 'a 1 []\n')
 
     def testComplexPrint(self):
-        txt = self._filePS('complex_print')()
-        assert txt == 'double\ndouble\nx: 1\ny: 0 1 2\n\n', txt
+        res = self._filePS('complex_print')()
+        self.assertEqual(res, 'double\ndouble\nx: 1\ny: 0 1 2\n\n')
 
     def testNSBind(self):
         f = self._filePS('ns_bind', bind={'name_ns': '_'})
         bound = f.__render_with_namespace__({'yes': 1, 'no': self.fail})
-        assert bound == 1, bound
+        self.assertEqual(bound, 1)
 
     def testBooleanMap(self):
-        true = self._filePS('boolean_map')()
-        assert true
+        res = self._filePS('boolean_map')()
+        self.failUnless(res)
 
     def testGetSize(self):
         f = self._filePS('complex_print')
-        self.assertEqual(f.get_size(),len(f.read()))
+        self.assertEqual(f.get_size(), len(f.read()))
+
+
+class TestPythonScriptErrors(PythonScriptTestBase):
+    
+    def assertPSRaises(self, error, path=None, body=None):
+        assert not (path and body) and (path or body)
+        if body is None:
+            body = readf(path)
+        if error is SyntaxError:
+            self.assertRaises(SyntaxError, self._newPS, body)
+        else:
+            ps = self._newPS(body)
+            self.assertRaises(error, ps)
+
+    def testSubversiveExcept(self):
+        self.assertPSRaises(SyntaxError, path='subversive_except')
+
+    def testBadImports(self):
+        self.assertPSRaises(ImportError, body="from string import *")
+        self.assertPSRaises(ImportError, body="import mmap")
+
+    def testAttributeAssignment(self):
+        # It's illegal to assign to attributes of anything except
+        # list or dict.
+        cases = [("import string", "string"),
+                 ("class Spam: pass", "Spam"),
+                 ("def f(): pass", "f"),
+                 ("class Spam: pass\nspam = Spam()", "spam"),
+                 ]
+        assigns = ["%s.splat = 'spam'",
+                   "setattr(%s, '_getattr_', lambda x, y: True)",
+                   "del %s.splat",
+                   ]
+        
+        for defn, name in cases:
+            for asn in assigns:
+                f = self._newPS(defn + "\n" + asn % name)
+                self.assertRaises(TypeError, f)
+
+class TestPythonScriptGlobals(PythonScriptTestBase):
+    def _exec(self, script, bound_names=None, args=None, kws=None):
+        if args is None:
+            args = ()
+        if kws is None:
+            kws = {}
+        bindings = {'name_container': 'container'}
+        f = self._filePS(script, bindings)
+        return f._exec(bound_names, args, kws)
+
+    def testGlobalIsDeclaration(self):
+        bindings = {'container': 7}
+        results = self._exec('global_is_declaration', bindings)
+        self.assertEqual(results, 8)
 
     def test__name__(self):
         fname = 'class.__name__'
@@ -170,11 +244,15 @@ class TestPythonScriptNoAq(unittest.TestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest( unittest.makeSuite( TestPythonScriptNoAq ) )
+    suite.addTest(unittest.makeSuite(TestPythonScriptNoAq))
+    suite.addTest(unittest.makeSuite(TestPythonScriptErrors))
+    suite.addTest(unittest.makeSuite(TestPythonScriptGlobals))
     return suite
+
 
 def main():
     unittest.TextTestRunner().run(test_suite())
+
 
 if __name__ == '__main__':
     main()

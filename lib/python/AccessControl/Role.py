@@ -12,7 +12,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
@@ -210,7 +210,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if fails:
             return MessageDialog(title="Warning!",
                                  message="Some permissions had errors: "
-                                   + ', '.join(fails),
+                                   + escape(', '.join(fails)),
                                  action='manage_access')
         return MessageDialog(
             title  ='Success!',

@@ -10,9 +10,9 @@
 # FOR A PARTICULAR PURPOSE
 #
 ##############################################################################
-"""Constant definitions for built-in Zope permissions"""
+"""Constant definitions for built-in Zope permissions
 
-__version__='$Revision: 1.7 $'[11:-2]
+$Id: Permissions.py,v 1.8 2004/01/15 23:09:03 tseaver Exp $"""
 
 
 access_contents_information='Access contents information'

@@ -12,40 +12,16 @@
 ##############################################################################
 '''Add security system support to Document Templates
 
-$Id: DTML.py,v 1.11 2003/11/28 16:43:51 jim Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: DTML.py,v 1.12 2004/01/15 23:09:03 tseaver Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 from DocumentTemplate import DT_Util
 import SecurityManagement, string, math, whrandom, random
 import DocumentTemplate.sequence
 
-from ZopeGuards import guarded_getattr, guarded_getitem
+from ZopeGuards import safe_builtins
 
-class RestrictedDTML:
-    '''
-    A mix-in for derivatives of DT_String.String that adds Zope security.
-    '''
-    def guarded_getattr(self, *args): # ob, name [, default]
-        return guarded_getattr(*args)
-
-    def guarded_getitem(self, ob, index):
-        return guarded_getitem(ob, index)
-
-
-try:
-    #raise ImportError
-    import os
-    if os.environ.get("ZOPE_SECURITY_POLICY", None) == "PYTHON":
-        raise ImportError # :)
-    from cAccessControl import RestrictedDTMLMixin
-except ImportError:
-    pass
-else:
-
-    class RestrictedDTML(RestrictedDTMLMixin, RestrictedDTML):
-        '''
-        A mix-in for derivatives of DT_String.String that adds Zope security.
-        '''
+# RestrictedDTML is inserted by AccessControl.Implementation.
 
 
 # Allow access to unprotected attributes
@@ -121,3 +97,9 @@ class DTMLSecurityAPI:
 for name, v in DTMLSecurityAPI.__dict__.items():
     if name[0] != '_':
         setattr(DT_Util.TemplateDict, name, v)
+
+for name, v in safe_builtins.items():
+    v = DT_Util.NotBindable(v)
+    if name.startswith('__'):
+        continue
+    setattr(DT_Util.TemplateDict, name, v)

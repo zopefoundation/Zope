@@ -13,8 +13,8 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.8 2003/05/14 21:51:23 shane Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: SecurityManagement.py,v 1.9 2004/01/15 23:09:03 tseaver Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 def getSecurityManager():
     """Get a security manager, for the current thread.
@@ -33,10 +33,14 @@ def getSecurityManager():
     return manager
 
 import SpecialUsers
-from SecurityManager import SecurityManager
-try:    import thread
-except: get_ident=lambda: 0
-else:   get_ident=thread.get_ident
+
+# AccessControl.Implementation inserts SecurityManager.
+
+try:
+    from thread import get_ident
+except ImportError:
+    def get_ident():
+        return 0
 
 _managers={}
 
