@@ -85,12 +85,12 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.86 1999/02/04 19:02:31 jim Exp $'''
-__version__='$Revision: 1.86 $'[11:-2]
+$Id: Application.py,v 1.87 1999/02/05 18:02:12 jim Exp $'''
+__version__='$Revision: 1.87 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
-import time, traceback
+import time, traceback, os, string
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
@@ -307,7 +307,15 @@ def open_bobobase():
 
     import_products()
 
-    Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
+    revision=read_only=None
+
+    if os.environ.has_key('ZOPE_READ_ONLY'):
+        read_only=1
+        try: revision=DateTime(os.environ['ZOPE_READ_ONLY']).timeTime()
+        except: pass
+        
+    Bobobase=Globals.Bobobase=Globals.PickleDictionary(
+        Globals.BobobaseName, read_only=read_only, revision=revision)
 
     product_dir=os.path.join(SOFTWARE_HOME,'Products')
 
@@ -420,6 +428,7 @@ def install_products(app):
 
     for product_name in product_names:
         package_dir=path_join(product_dir, product_name)
+        __traceback_info__=product_name
         if not isdir(package_dir): continue
         if not exists(path_join(package_dir, '__init__.py')):
             if not exists(path_join(package_dir, '__init__.pyc')):
@@ -467,6 +476,9 @@ def install_products(app):
 
         # Set up dynamic project information.
         App.Product.initializeProduct(product, product_name, package_dir, app)
+
+        get_transaction().note('Installed product '+product_name)
+        get_transaction().commit()
 
     Folder.dynamic_meta_types=tuple(meta_types)
 
