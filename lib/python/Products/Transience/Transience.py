@@ -85,10 +85,10 @@
 """
 Core session tracking SessionData class.
 
-$Id: Transience.py,v 1.4 2001/10/22 20:00:34 matt Exp $
+$Id: Transience.py,v 1.5 2001/10/23 19:17:27 matt Exp $
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
@@ -106,6 +106,9 @@ import time
 
 _notfound = []
 _marker = []
+
+WRITEGRANULARITY=30     # Timing granularity for write clustering, in seconds
+time = time.time
 
 # permissions
 ADD_DATAMGR_PERM = 'Add Transient Object Container'
@@ -228,6 +231,8 @@ class TransientObjectContainer(SimpleItem):
         item = TransientObject(key, parent=self)
 
         self[key] = item
+
+        self.notifyAdd(item)
 
         return item
         
@@ -378,7 +383,7 @@ class TransientObjectContainer(SimpleItem):
         numbuckets = int(math.floor(t_secs/r_secs)) or 1
         l = []
         i = 0
-        now = int(time.time())
+        now = int(time())
         for x in range(numbuckets):
             dump_after = now + i
             c = self._ctype()
@@ -394,7 +399,7 @@ class TransientObjectContainer(SimpleItem):
             b, dump_after = self._ring._data[0]
             return b
         index = self._ring._index
-        now = int(time.time())
+        now = int(time())
         i = self._timeout_secs
         # expire all buckets in the ring which have a dump_after time that
         # is before now, turning the ring as many turns as necessary to
@@ -465,13 +470,13 @@ class TransientObjectContainer(SimpleItem):
         if b is None:
             # this is a new key
             index[k] = current
-            self.notifyAdd(v)
         elif b is not current:
             # this is an old key that isn't in the current bucket.
             del b[k] # delete it from the old bucket
             index[k] = current
         # change the value
         current[k] = v
+        v.setLastAccessed()
         
     def __getitem__(self, k):
         current = self._getCurrentBucket()
@@ -484,6 +489,7 @@ class TransientObjectContainer(SimpleItem):
             # we accessed the object, so it should become current.
             index[k] = current # change the index to the current bucket.
             current[k] = v # add the value to the current bucket.
+            v.setLastAccessed()
             del b[k] # delete the item from the old bucket.
         return v
 
@@ -592,12 +598,12 @@ class TransientObject(Persistent, Implicit):
     # Initialzer
     #
 
-    def __init__(self, id, parent=None, time=time.time):
+    def __init__(self, id, parent=None):
         self.id = id
         self._parent = parent
         self._container = {}
         self._created = self._last_accessed = time()
-        self._timergranularity = 30 # timer granularity for last accessed
+        self._timergranularity = WRITEGRANULARITY # timer granularity
 
 
     # -----------------------------------------------------------------
@@ -619,7 +625,7 @@ class TransientObject(Persistent, Implicit):
     def getLastAccessed(self):
         return self._last_accessed
 
-    def setLastAccessed(self, time=time.time):
+    def setLastAccessed(self):
         # check to see if the last_accessed time is too recent, and avoid
         # setting if so, to cut down on heavy writes
         t = time()
