@@ -1,0 +1,36 @@
+condition - Conditionally insert or remove an element
+  
+  Syntax
+
+    'tal:condition' syntax::
+
+      argument ::= expression
+
+  Description
+
+    The 'tal:condition' statement includes a particular part of a
+    template only under certain conditions, and omits it otherwise.  If
+    its expression evaluates to a *true* value, then normal processing
+    of the element continues, otherwise the statement element is
+    immediately removed from the document.  It is up to the interface
+    between TAL and the expression engine to determine the value of
+    *true* and *false*.  For these purposes, the value *nothing* is
+    false, and *default* has the same effect as returning a true value.
+
+    *Note: Zope considers missing variables, None, zero, empty strings,
+    and empty sequences false; all other values are true.*
+
+  Examples
+
+    Test for variable before inserting it::
+
+      <p tal:condition="request/message"
+	 tal:content="request/message">message goes here</p>
+
+    Test for alternate conditions::
+
+      <div tal:repeat="item python:range(10)">
+	<p tal:condition="repeat/item/even">Even</p>
+	<p tal:condition="repeat/item/odd">Odd</p>
+      </div>
+
