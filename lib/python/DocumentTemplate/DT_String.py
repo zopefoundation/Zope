@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.24 1999/03/30 18:26:34 jim Exp $"
+"$Id: DT_String.py,v 1.25 1999/03/31 22:32:51 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -268,7 +268,7 @@ class String:
             else:
                 # Either a continuation tag or an end tag
                 section=self.SubTemplate(sname)
-                section.blocks=self.parse(text[:l],sstart)
+                section._v_blocks=section.blocks=self.parse(text[:l],sstart)
                 section._v_cooked=None
                 blocks.append((tname,sargs,section))
     
