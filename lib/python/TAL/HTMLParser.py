@@ -35,6 +35,7 @@ attrfind = re.compile(
 locatestarttagend = re.compile("('[^']*'|\"[^\"]*\"|[^'\">]+)*/?>")
 endstarttag = re.compile(r"\s*/?>")
 endendtag = re.compile('>')
+endtagfind = re.compile('</\s*([a-zA-Z][-.a-zA-Z0-9:_]*)\s*>')
 
 declname = re.compile(r'[a-zA-Z][-_.a-zA-Z0-9]*\s*')
 declstringlit = re.compile(r'(\'[^\']*\'|"[^"]*")\s*')
@@ -309,9 +310,11 @@ class HTMLParser:
         if not match:
             return -1
         j = match.end()
-        tag = string.lower(string.strip(rawdata[i+2:j-1]))
-        if not tag:
-            raise HTMLParseError("empty start tag", self.getpos())
+        match = endtagfind.match(rawdata, i) # </ + tag + >
+        if not match:
+            raise HTMLParseError("bad end tag: %s" % `rawdata[i:j]`,
+                                 self.getpos())
+        tag = match.group(1)
         self.handle_endtag(tag)
         return j
 
