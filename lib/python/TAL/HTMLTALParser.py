@@ -170,7 +170,7 @@ class HTMLTALParser(HTMLParser):
         self.gen = gen
         self.tagstack = []
         self.nsstack = []
-        self.nsdict = {}
+        self.nsdict = {'tal': ZOPE_TAL_NS, 'metal': ZOPE_METAL_NS}
 
     def parseFile(self, file):
         f = open(file)
@@ -184,7 +184,6 @@ class HTMLTALParser(HTMLParser):
         while self.tagstack:
             self.implied_endtag(self.tagstack[-1], 2)
         assert self.nsstack == [], self.nsstack
-        assert self.nsdict == {}, self.nsdict
 
     def getCode(self):
         return self.gen.getCode()
