@@ -281,7 +281,12 @@ class _SensitiveSecurityPolicy:
         self._lambdas = ( validate_lambda, checkPermission_lambda )
 
     def validate( self, *args, **kw ):
-        return self._lambdas[ 0 ]( *args, **kw )
+        from zExceptions import Unauthorized
+
+        allowed = self._lambdas[ 0 ]( *args, **kw )
+        if not allowed:
+            raise Unauthorized
+        return 1
 
     def checkPermission( self, *args, **kw ) :
         return self._lambdas[ 1 ]( *args, **kw )
