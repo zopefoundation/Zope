@@ -15,9 +15,9 @@
 
 Folders are the basic container objects and are analogous to directories.
 
-$Id: Folder.py,v 1.99 2002/04/01 19:52:39 andreasjung Exp $"""
+$Id: Folder.py,v 1.100 2002/06/07 18:10:31 caseman Exp $"""
 
-__version__='$Revision: 1.99 $'[11:-2]
+__version__='$Revision: 1.100 $'[11:-2]
 
 import Globals, SimpleItem, ObjectManager, PropertyManager
 import AccessControl.Role, webdav.Collection, FindSupport
@@ -45,9 +45,6 @@ def manage_addFolder(self, id, title='',
     ob.title=title
     self._setObject(id, ob)
     ob=self._getOb(id)
-    
-    # Acquire browser_default from parent
-    ob.setBrowserDefaultId(acquire=1)
 
     checkPermission=getSecurityManager().checkPermission    
 
@@ -64,7 +61,7 @@ def manage_addFolder(self, id, title='',
                   'You are not authorized to add Page Templates.'
                   )
         ob.manage_addProduct['PageTemplates'].manage_addPageTemplate(
-            id=ob.getBrowserDefaultId(acquire=1), title='') 
+            id='index_html', title='') 
 
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
