@@ -87,17 +87,17 @@ import sys, os
 from do import *
 
 def sh(home, user, group):
-    z2=os.path.join(home, 'z2.py')
     start=os.path.join(home, 'start')
     if not os.path.exists(start):
         print '-'*78
         print 'Creating start script, start'
         open(start,'w').write(
             "#! /bin/sh\n"
-            "PYTHONHOME=%s\n"
+            "reldir=`dirname $0`\n"
+            "PYTHONHOME=`cd $reldir; pwd`\n"
             "export PYTHONHOME\n"
-            'exec %s \\\n  %s \\\n  -D "$@"\n'
-            % (home, sys.executable, z2))
+            'exec %s \\\n     $PYTHONHOME/z2.py \\\n     -D "$@"\n'
+            % sys.executable)
         ch(start,user,group,0711)
 
     stop=os.path.join(home, 'stop')
