@@ -13,10 +13,10 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.14 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: Owned.py,v 1.15 2001/12/13 14:24:02 andreasjung Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
-import Globals, urlparse, SpecialUsers, ExtensionClass, string
+import Globals, urlparse, SpecialUsers, ExtensionClass
 from AccessControl import getSecurityManager, Unauthorized
 from Acquisition import aq_get, aq_parent, aq_base
 
@@ -54,7 +54,7 @@ class Owned(ExtensionClass.Base):
         """
         owner=self.getOwner(1)
         if owner is None or owner is UnownableOwner: return owner
-        d={'path': string.join(owner[0], '/'), 'id': owner[1],
+        d={'path': '/'.join(owner[0]), 'id': owner[1],
            'explicit': hasattr(self, '_owner'),
            'userCanChangeOwnershipType':
            getSecurityManager().checkPermission('Take ownership', self)

@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.16 2001/11/28 15:50:52 matt Exp $'''
-__version__='$Revision: 1.16 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.17 2001/12/13 14:25:19 andreasjung Exp $'''
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -85,7 +85,7 @@ if _use_python_impl:
             ############################################################
             # Provide special rules for the acquisition attributes
             if type(name) is StringType:
-                if name[:3]=='aq_' and name not in valid_aq_:
+                if name.startswith('aq_') and name not in valid_aq_:
                     return 0
 
             containerbase = aq_base(container)

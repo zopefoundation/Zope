@@ -13,8 +13,8 @@
 __doc__='''Objects that implement Permission-based roles.
 
 
-$Id: PermissionRole.py,v 1.14 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.14 $'[11:-2]
+$Id: PermissionRole.py,v 1.15 2001/12/13 14:24:41 andreasjung Exp $'''
+__version__='$Revision: 1.15 $'[11:-2]
 
 _use_python_impl = 0
 import os
@@ -40,7 +40,7 @@ if _use_python_impl:
 
     name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                       map(chr,range(256)))
-    name_trans=string.maketrans(string.join(name_trans,''), '_'*len(name_trans))
+    name_trans=string.maketrans(''.join(name_trans), '_'*len(name_trans))
 
     def rolesForPermissionOn(perm, object, default=('Manager',)):
         """Return the roles that have the given permission on the given object

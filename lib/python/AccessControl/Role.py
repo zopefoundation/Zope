@@ -12,11 +12,10 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 
 from Globals import DTMLFile, MessageDialog, Dictionary
-from string import join, strip, split, find
 from Acquisition import Implicit, Acquired, aq_get
 import Globals, ExtensionClass, PermissionMapping, Products
 from Permission import Permission
@@ -209,7 +208,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         if fails:
             return MessageDialog(title="Warning!",
                                  message="Some permissions had errors: "
-                                   + join(fails, ', '),
+                                   + ', '.join(fails),
                                  action='manage_access')
         return MessageDialog(
             title  ='Success!',
@@ -380,13 +379,13 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         data=[]
         _add=data.append
         for key, value in inst.items():
-            if find(key,'__roles__') >= 0:
+            if key.find('__roles__') >= 0:
                 _add({'name': key, 'value': value, 'class': 0})
             if hasattr(value, '__roles__'):
                 _add({'name': '%s.__roles__' % key, 'value': value.__roles__, 
                       'class': 0})
         for key, value in clas.items():
-            if find(key,'__roles__') >= 0:
+            if key.find('__roles__') >= 0:
                 _add({'name': key, 'value': value, 'class' : 1})
             if hasattr(value, '__roles__'):
                 _add({'name': '%s.__roles__' % key, 'value': value.__roles__, 

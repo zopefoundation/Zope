@@ -11,11 +11,10 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 import sha, binascii
 from binascii import b2a_base64, a2b_base64
-from string import upper
 from random import choice, randrange
 
 

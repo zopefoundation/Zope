@@ -13,14 +13,14 @@
 __doc__='''short description
 
 
-$Id: SecurityManager.py,v 1.11 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: SecurityManager.py,v 1.12 2001/12/13 14:23:44 andreasjung Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
-import ZopeSecurityPolicy, os, string
+import ZopeSecurityPolicy, os
 
 _noroles = ZopeSecurityPolicy._noroles
 
-try: max_stack_size=string.atoi(os.environ.get('Z_MAX_STACK_SIZE','100'))
+try: max_stack_size=int(os.environ.get('Z_MAX_STACK_SIZE','100'))
 except: max_stack_size=100
 
 if os.environ.has_key("ZSP_OWNEROUS_SKIP"): ownerous=0

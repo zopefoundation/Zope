@@ -13,8 +13,8 @@
 __doc__='''short description
 
 
-$Id: Permission.py,v 1.8 2001/11/28 15:50:51 matt Exp $'''
-__version__='$Revision: 1.8 $'[11:-2]
+$Id: Permission.py,v 1.9 2001/12/13 14:24:26 andreasjung Exp $'''
+__version__='$Revision: 1.9 $'[11:-2]
 
 import string, Products, Globals
 
@@ -22,7 +22,7 @@ ListType=type([])
 
 name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
-name_trans=string.maketrans(string.join(name_trans,''), '_'*len(name_trans))
+name_trans=string.maketrans(''.join(name_trans), '_'*len(name_trans))
 
 def pname(name, translate=string.translate, name_trans=name_trans):
     return '_'+translate(name,name_trans)+"_Permission"

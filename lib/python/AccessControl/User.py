@@ -12,12 +12,11 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.165 $'[11:-2]
+__version__='$Revision: 1.166 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
-from string import join, strip, split, lower, upper
 from App.Management import Navigation, Tabs
 from Acquisition import Implicit
 from OFS.SimpleItem import Item
@@ -399,9 +398,9 @@ def readUserAccessFile(filename):
         return None
 
     if line:
-        data = split(strip(line), ':')
+        data = line.strip().split(':')
         remote_user_mode = not data[1]
-        try:    ds = split(data[2], ' ')
+        try:    ds = data[2].split(' ')
         except: ds = []
         return data[0], data[1], ds, remote_user_mode
     else:
@@ -558,9 +557,9 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 
 
     def identify(self, auth):
-        if auth and lower(auth[:6])=='basic ':
-            try: name, password=tuple(split(decodestring(
-                                      split(auth)[-1]), ':', 1))
+        if auth and auth.lower().startswith('basic '):
+            try: name, password=tuple(decodestring(
+                                      auth.split(' ')[-1]).split(':', 1))
             except:
                 raise 'Bad Request', 'Invalid authentication token'
             return name, password
@@ -1125,14 +1124,14 @@ def domainSpecMatch(spec, request):
         except: pass
 
 
-    _host=split(host, '.')
-    _addr=split(addr, '.')
+    _host=host.split('.')
+    _addr=addr.split('.')
     _hlen=len(_host)
     _alen=len(_addr)
     
     for ob in spec:
         sz=len(ob)
-        _ob=split(ob, '.')
+        _ob=ob.split('.')
         _sz=len(_ob)
 
         mo = addr_match(ob)

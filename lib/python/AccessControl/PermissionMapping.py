@@ -117,7 +117,7 @@ class PM(ExtensionClass.Base):
     def __getattr__(self, name):
         # We want to make sure that any non-explicitly set methods are
         # private!
-        if name[:1]=='_' and name[-11:]=="_Permission": return ''
+        if name.startswith('_') and name.endswith("_Permission"): return ''
         raise AttributeError, name
         
 PermissionMapper=PM

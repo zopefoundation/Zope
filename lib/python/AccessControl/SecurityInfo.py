@@ -42,7 +42,6 @@ __version__='$Revision$'[11:-2]
 
 
 import Acquisition, PermissionRole, sys
-from string import lower
 from zLOG import LOG, WARNING
 
 
@@ -127,7 +126,7 @@ class SecurityInfo(Acquisition.Implicit):
         booleans, or a callable (name, value) -> boolean.
         """
         if type(access) == type(''):
-            access = lower(access)
+            access = access.lower()
             if access == 'allow':
                 access = 1
             elif access == 'deny':
