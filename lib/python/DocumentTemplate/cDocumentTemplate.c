@@ -84,7 +84,7 @@
  ****************************************************************************/
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.24 1999/04/30 19:01:58 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.25 1999/06/08 15:39:31 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -197,7 +197,11 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
     {
       /* Sanity check in case of explicit Aq */
       if (v=PyObject_GetAttr(self->inst, key)) Py_DECREF(v);  
-      else goto KeyError;
+      else 
+	{
+	  Py_DECREF(r);
+	  goto KeyError;
+	}
 
       if (self->validate != Py_None)
 	{
@@ -1025,7 +1029,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.24 $";
+  char *rev="$Revision: 1.25 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
