@@ -94,7 +94,7 @@ class I18NCornerTestCase(TestCaseBase):
                     '<div>THIS IS TEXT FOR <span>BARVALUE</span>.</div>\n')
 
     def test_translate_static_text_as_dynamic_from_bytecode(self):
-        program =  [('version', '1.4'),
+        program =  [('version', '1.5'),
  ('mode', 'html'),
 ('setPosition', (1, 0)),
 ('beginScope', {'i18n:translate': ''}),
@@ -116,7 +116,8 @@ class I18NCornerTestCase(TestCaseBase):
            ('',
              [('insertText', ('$bar$', []))])),
          ('rawtextOffset', ('</span>', 7))],
-      None)),
+        None,
+        0)),
    ('endScope', ()),
    ('rawtextOffset', ('.', 1))])),
 ('endScope', ()),

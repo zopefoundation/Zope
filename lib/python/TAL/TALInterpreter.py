@@ -14,7 +14,7 @@
 """
 Interpreter for a pre-compiled TAL program.
 """
-
+import cgi
 import sys
 import getopt
 import re
@@ -496,7 +496,7 @@ class TALInterpreter:
     bytecode_handlers["insertText"] = do_insertText
 
     def do_i18nVariable(self, stuff):
-        varname, program, expression = stuff
+        varname, program, expression, structure = stuff
         if expression is None:
             # The value is implicitly the contents of this tag, so we have to
             # evaluate the mini-program to get the value of the variable.
@@ -510,7 +510,14 @@ class TALInterpreter:
         else:
             # Evaluate the value to be associated with the variable in the
             # i18n interpolation dictionary.
-            value = self.engine.evaluate(expression)
+            if structure:
+                value = self.engine.evaluateStructure(expression)
+            else:
+                value = self.engine.evaluate(expression)
+
+            if not structure:
+                value = cgi.escape(str(value))
+
         # Either the i18n:name tag is nested inside an i18n:translate in which
         # case the last item on the stack has the i18n dictionary and string
         # representation, or the i18n:name and i18n:translate attributes are

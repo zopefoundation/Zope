@@ -352,9 +352,8 @@ class TALGenerator:
             assert action == I18N_EXPRESSION
             key, expr = parseSubstitution(expression)
             cexpr = self.compileExpression(expr)
-        # XXX Would key be anything but 'text' or None?
-        assert key in ('text', None)
-        self.emit('i18nVariable', varname, program, cexpr)
+        self.emit('i18nVariable',
+                  varname, program, cexpr, int(key == "structure"))
 
     def emitTranslation(self, msgid, i18ndata):
         program = self.popProgram()
@@ -783,7 +782,8 @@ class TALGenerator:
             #   - I18N_CONTENT for tal:content
             #   - I18N_EXPRESSION for explicit tal:replace
             # o varname[2] will be None for the first two actions and the
-            #   replacement tal expression for the third action.
+            #   replacement tal expression for the third action.  This
+            #   can include a 'text' or 'structure' indicator.
             assert (varname[1]
                     in [I18N_REPLACE, I18N_CONTENT, I18N_EXPRESSION])
             self.emitI18nVariable(varname)

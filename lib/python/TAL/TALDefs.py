@@ -19,7 +19,7 @@ from types import ListType, TupleType
 
 from ITALES import ITALESErrorInfo
 
-TAL_VERSION = "1.4"
+TAL_VERSION = "1.5"
 
 XML_NS = "http://www.w3.org/XML/1998/namespace" # URI for XML namespace
 XMLNS_NS = "http://www.w3.org/2000/xmlns/" # URI for XML NS declarations
