@@ -33,7 +33,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: ExtensionClass.c,v 1.33 1999/05/12 15:49:55 jim Exp $
+  $Id: ExtensionClass.c,v 1.34 1999/05/24 13:47:02 jim Exp $
 
   If you have questions regarding this software,
   contact:
@@ -54,7 +54,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.33 1999/05/12 15:49:55 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.34 1999/05/24 13:47:02 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -2012,7 +2012,7 @@ err:
 static PyObject *
 CCL_repr(PyExtensionClass *self)
 {
-  char p[128];
+  char p[64], *pp;
   PyObject *m;
 
   if ((m=PyObject_GetAttr(OBJECT(self), py__module__)))
@@ -2026,11 +2026,14 @@ CCL_repr(PyExtensionClass *self)
   else PyErr_Clear();
 
   sprintf(p,"%p",self);
+  if (*p=='0' && p[1]=='x') pp=p+2;
+  else                      pp=p;
+			      
 
   if (m) ASSIGN(m, JimString_Build("<extension class %s.%s at %s>","Oss",
-				   m, self->tp_name, p));
+				   m, self->tp_name, pp));
   else          m= JimString_Build("<extension class %s at %s>","ss",
-				   self->tp_name, p);
+				   self->tp_name, pp);
 
   return m;
 }
@@ -2277,12 +2280,14 @@ subclass_hash(PyObject *self)
 static PyObject *
 default_subclass_repr(PyObject *self)
 {
-  char p[64];
+  char p[64], *pp;
   
   PyErr_Clear();
   sprintf(p,"%p",self);
+  if (*p=='0' && p[1]=='x') pp=p+2;
+  else                      pp=p;
   return JimString_Build("<%s instance at %s>","ss",
-			self->ob_type->tp_name, p);
+			self->ob_type->tp_name, pp);
 }
 
 static PyObject *
@@ -3398,7 +3403,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.33 $";
+  char *rev="$Revision: 1.34 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
