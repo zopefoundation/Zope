@@ -75,6 +75,10 @@ def HTML(src, writer='html4zope', report_level=1, stylesheet='default.css',
 
     # parse!
     document = pub.reader.read(pub.source, pub.parser, pub.settings)
+
+    # transform
+    pub.apply_transforms(document)
+    
     warnings = ''.join(pub.settings.warning_stream.messages)
 
     # do the format

@@ -1,5 +1,5 @@
 # 
-# $Id: ZReST.py,v 1.5 2003/02/06 09:05:57 andreasjung Exp $
+# $Id: ZReST.py,v 1.6 2003/02/22 07:08:12 andreasjung Exp $
 #
 ''' ReStructuredText Product for Zope
 
@@ -195,6 +195,10 @@ class ZReST(Item, PropertyManager, Historical, Implicit, Persistent):
 
         # parse!
         document = pub.reader.read(pub.source, pub.parser, pub.settings)
+
+        # transform
+        pub.apply_transforms(document)
+
         self.warnings = ''.join(pub.settings.warning_stream.messages)
 
         if document.children:
@@ -269,47 +273,4 @@ InitializeClass(ZReST)
 modulesecurity.apply(globals())
 
 
-#
-# $Log: ZReST.py,v $
-# Revision 1.5  2003/02/06 09:05:57  andreasjung
-# fixed invalid MIME header
-#
-# Revision 1.4  2003/02/02 14:21:51  andreasjung
-# the content-type header is now set with the corresponding encoding parameter
-#
-# Revision 1.3  2003/02/01 10:23:10  andreasjung
-# input/output_encoding are now properties making ZReST more configurable
-#
-# Revision 1.2  2003/02/01 09:28:30  andreasjung
-# merge from ajung-restructuredtext-integration-branch
-#
-# Revision 1.1.2.5  2003/01/30 19:00:24  andreasjung
-# forgot to import sys
-#
-# Revision 1.1.2.4  2003/01/30 18:10:57  andreasjung
-# using Pythons  default encoding instead of the docutils defaults
-#
-# Revision 1.1.2.3  2003/01/30 18:09:44  andreasjung
-# update from RIchards sandbox
-#
-# Revision 1.6  2002/11/28 03:44:50  goodger
-# updated
-#
-# Revision 1.5  2002/11/05 05:27:56  goodger
-# fixed Reader name
-#
-# Revision 1.4  2002/10/18 05:10:33  goodger
-# Refactored names (options -> settings; etc.); updated.
-#
-# Revision 1.3  2002/08/15 05:02:41  richard
-# pull out the document title too
-#
-# Revision 1.2  2002/08/15 04:36:56  richard
-# FTP interface and Reporter message snaffling
-#
-# Revision 1.1  2002/08/14 05:15:37  richard
-# Zope ReStructuredText Product
-#
-#
-#
 # vim: set filetype=python ts=4 sw=4 et si
