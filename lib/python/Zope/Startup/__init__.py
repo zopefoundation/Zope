@@ -77,9 +77,6 @@ class ZopeStarter:
     makes it easier to unit test. """
     def __init__(self, cfg):
         self.cfg = cfg
-        import zLOG
-        # don't initialize the event logger from the environment
-        zLOG._call_initialize = 0
         self.event_logger = logging.getLogger()
 
     def info(self, msg):
