@@ -103,9 +103,9 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
-import sys, regex, socket, mimetools
+import sys, re, socket, mimetools
 from httplib import HTTP
 from os import getpid
 from time import time
@@ -143,7 +143,7 @@ class Function:
         if timeout is not None: self.timeout=timeout
 
         mo = urlregex.match(url)
-        if mo:
+        if mo is not None:
             host,port,rurl=mo.group(1,2,3)
             if port: port=atoi(port[1:])
             else: port=80
@@ -347,7 +347,7 @@ def call(url,username=None, password=None, **kw):
 ##############################################################################
 # Implementation details below here
 
-urlregex=re.compile('http://([^:/]+)(:[0-9]+)?(/.+)?', re.I)
+urlregex=re.compile(r'http://([^:/]+)(:[0-9]+)?(/.+)?', re.I)
 
 dashtrans=maketrans('_','-')
 
@@ -358,16 +358,6 @@ def marshal_long(n,f):
     if value[-1] == 'L':
         value = value[:-1]
     return value
-
-sample_regex=regex.compile('')
-def marshal_regex(n,r):
-    if r.translate is sample_regex.translate:
-        t='Regex'
-    elif r.translate is regex.casefold:
-        t='regex'
-    else:
-        raise ValueError, 'regular expression used unsupported translation'
-    return "%s:%s=%s" % (n,t,quote(r.givenpat))
 
 def marshal_list(n,l,tname='list', lt=type([]), tt=type(())):
     r=[]
@@ -386,7 +376,6 @@ type2marshal={
     type(1.0):                  marshal_float,
     type(1):                    marshal_int,
     type(1L):                   marshal_long,
-    type(regex.compile('')):    marshal_regex,
     type([]):                   marshal_list,
     type(()):                   marshal_tuple,
     }
