@@ -19,6 +19,7 @@ from OFS.Application import Application, AppInitializer, get_products
 import Zope2.Startup
 import ZConfig
 from App.config import getConfiguration, setConfiguration
+import Products
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -84,6 +85,8 @@ class TestProductInit( unittest.TestCase ):
         del self.schema
         App.config.setConfiguration(original_config)
         shutil.rmtree(TEMPNAME)
+        Products.__path__ = [d for d in Products.__path__
+                             if os.path.exists(d)]
 
     def configure(self, text):
         # We have to create a directory of our own since the existence
