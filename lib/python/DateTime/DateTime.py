@@ -44,7 +44,7 @@
 
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 
 import sys,os,regex,DateTimeZone
@@ -1156,8 +1156,8 @@ class DateTime:
                self._minute,self._pm,self._tz)
 
 
-    def osi(self):
-        """Return the object in OSI standard format
+    def ISO(self):
+        """Return the object in ISO standard format
 
         Dates are output as: YYYY-MM-DD HH:MM:SS
         """
