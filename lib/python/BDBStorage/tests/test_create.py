@@ -8,7 +8,7 @@ import BerkeleyTestBase
 
 class TestMixin:
     def checkDBHomeExists(self):
-        assert os.path.isdir(BerkeleyTestBase.DBHOME)
+        self.failUnless(os.path.isdir(BerkeleyTestBase.DBHOME))
 
 
 class MinimalCreateTest(BerkeleyTestBase.BerkeleyTestBase,
@@ -33,16 +33,17 @@ class FullOpenExistingTest(BerkeleyTestBase.BerkeleyTestBase,
         # Now close the current storage and re-open it
         self._storage.close()
         self._storage = self.ConcreteStorage(BerkeleyTestBase.DBHOME)
-        assert self._storage.modifiedInVersion(oid) == version
+        self.assertEqual(self._storage.modifiedInVersion(oid), version)
 
     def checkOpenAddVersion(self):
+        eq = self.assertEqual
         version1 = 'test-version'
         oid1 = self._storage.new_oid()
         revid = self._dostore(oid1, data=7, version=version1)
         # Now close the current storage and re-open it
         self._storage.close()
         self._storage = self.ConcreteStorage(BerkeleyTestBase.DBHOME)
-        assert self._storage.modifiedInVersion(oid1) == version1
+        eq(self._storage.modifiedInVersion(oid1), version1)
         # Now create a 2nd version string, then close/reopen
         version2 = 'new-version'
         oid2 = self._storage.new_oid()
@@ -50,9 +51,9 @@ class FullOpenExistingTest(BerkeleyTestBase.BerkeleyTestBase,
         # Now close the current storage and re-open it
         self._storage.close()
         self._storage = self.ConcreteStorage(BerkeleyTestBase.DBHOME)
-        assert self._storage.modifiedInVersion(oid1) == version1
+        eq(self._storage.modifiedInVersion(oid1), version1)
         # Now create a 2nd version string, then close/reopen
-        assert self._storage.modifiedInVersion(oid2) == version2
+        eq(self._storage.modifiedInVersion(oid2), version2)
 
 
 

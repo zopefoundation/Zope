@@ -12,18 +12,19 @@ from Persistence import PersistentMapping
 
 class CommitAndRead:
     def checkCommit(self):
-        assert not self._root
+        self.failUnless(not self._root)
         names = self._root['names'] = PersistentMapping()
         names['Warsaw'] = 'Barry'
         names['Hylton'] = 'Jeremy'
         get_transaction().commit()
 
     def checkReadAfterCommit(self):
+        eq = self.assertEqual
         self.checkCommit()
         names = self._root['names']
-        assert names['Warsaw'] == 'Barry'
-        assert names['Hylton'] == 'Jeremy'
-        assert names.get('Drake') is None
+        eq(names['Warsaw'], 'Barry')
+        eq(names['Hylton'], 'Jeremy')
+        self.failUnless(names.get('Drake') is None)
 
     def checkAbortAfterRead(self):
         self.checkReadAfterCommit()
@@ -34,7 +35,7 @@ class CommitAndRead:
     def checkReadAfterAbort(self):
         self.checkAbortAfterRead()
         names = self._root['names']
-        assert names.get('Drake') is None
+        self.failUnless(names.get('Drake') is None)
 
     def checkChangingCommits(self):
         self.checkReadAfterAbort()
@@ -44,7 +45,7 @@ class CommitAndRead:
         if timestamp is None:
             timestamp = self._root['timestamp'] = 0
             get_transaction().commit()
-        assert now > timestamp + 3
+        self.failUnless(now > timestamp + 3)
         self._root['timestamp'] = now
         time.sleep(3)
 

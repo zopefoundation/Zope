@@ -9,7 +9,7 @@ from Persistence import PersistentMapping
 
 class InsertMixin:
     def checkIsEmpty(self):
-        assert not self._root.has_key('names')
+        self.failUnless(not self._root.has_key('names'))
 
     def checkNewInserts(self):
         self._root['names'] = names = PersistentMapping()

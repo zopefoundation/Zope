@@ -16,22 +16,24 @@ from bsddb3Storage import CommitLog
 
 class CreateCommitLogTest(unittest.TestCase):
     def checkCreateNoFile(self):
+        unless = self.failUnless
         log = CommitLog.CommitLog()
         filename = log.get_filename()
         try:
-            assert os.path.exists(filename)
+            unless(os.path.exists(filename))
         finally:
             log.close(unlink=1)
-            assert not os.path.exists(filename)
+            unless(not os.path.exists(filename))
 
     def checkCreateWithFilename(self):
+        unless = self.failUnless
         filename = 'commit.log'
         log = CommitLog.CommitLog(filename)
         try:
-            assert os.path.exists(filename)
+            unless(os.path.exists(filename))
         finally:
             log.close(unlink=1)
-            assert not os.path.exists(filename)
+            unless(not os.path.exists(filename))
 
     def checkCreateWithFileobj(self):
         filename = 'commit.log'
@@ -41,19 +43,19 @@ class CreateCommitLogTest(unittest.TestCase):
                               CommitLog.CommitLog, fp)
         finally:
             fp.close()
-            assert not os.path.exists(filename)
+            self.failUnless(not os.path.exists(filename))
 
     def checkCloseDoesUnlink(self):
         log = CommitLog.CommitLog()
         filename = log.get_filename()
         log.close()
-        assert not os.path.exists(filename)
+        self.failUnless(not os.path.exists(filename))
 
     def checkDel(self):
         log = CommitLog.CommitLog()
         filename = log.get_filename()
         del log
-        assert not os.path.exists(filename)
+        self.failUnless(not os.path.exists(filename))
 
 
 
@@ -115,14 +117,17 @@ class Gen:
 
 class LowLevelStoreAndLoadTest(BaseSetupTearDown):
     def checkOneStoreAndLoad(self):
+        eq = self.assertEqual
         self._log.start()
         self._log._append('x', 'ignore')
         self._log.promise()
         x, ignore = self._log._next()
-        assert x == 'x' and ignore == 'ignore'
-        assert None == self._log._next()
+        eq(x, 'x')
+        eq(ignore, 'ignore')
+        eq(self._log._next(), None)
 
     def checkTenStoresAndLoads(self):
+        eq = self.assertEqual
         self._log.start()
         for k, v in Gen():
             self._log._append(k, v)
@@ -133,7 +138,8 @@ class LowLevelStoreAndLoadTest(BaseSetupTearDown):
             if rec is None:
                 break
             c, i = g()
-            assert rec[0] == c and rec[1] == i
+            eq(rec[0], c)
+            eq(rec[1], i)
         self.assertRaises(IndexError, g)
         
 
@@ -144,13 +150,16 @@ class PacklessLogTest(BaseSetupTearDown):
         self._log.start()
 
     def checkOneStoreAndLoad(self):
+        eq = self.assertEqual
         self._log.write_object(oid=10, pickle='ignore')
         self._log.promise()
         oid, pickle = self._log.next()
-        assert oid == 10 and pickle == 'ignore'
-        assert None == self._log.next()
+        eq(oid, 10)
+        eq(pickle, 'ignore')
+        eq(self._log.next(), None)
 
     def checkTenStoresAndLoads(self):
+        eq = self.assertEqual
         for k, v in Gen():
             self._log.write_object(v, k*10)
         self._log.promise()
@@ -161,7 +170,8 @@ class PacklessLogTest(BaseSetupTearDown):
                 break
             c, i = g()
             oid, pickle = rec
-            assert oid == i and pickle == c*10
+            eq(oid, i)
+            eq(pickle, c*10)
         self.assertRaises(IndexError, g)
 
 
@@ -172,6 +182,7 @@ class FullLogTest(BaseSetupTearDown):
         self._log.start()
 
     def checkOneStoreAndLoad(self):
+        eq = self.assertEqual
         oid = 10
         vid = 8
         nvrevid = 0
@@ -180,14 +191,16 @@ class FullLogTest(BaseSetupTearDown):
         self._log.write_object(oid, vid, nvrevid, pickle, prevrevid)
         self._log.promise()
         rec = self._log.next()
-        assert rec
+        self.failUnless(rec)
         key, rec = rec
-        assert key == 'o' and len(rec) == 6
-        assert rec[0] == oid and rec[1] == vid and rec[2] == nvrevid
-        assert rec[3] == '' and rec[4] == pickle and rec[5] == prevrevid
-        assert None == self._log.next()
+        eq(key, 'o')
+        eq(len(rec), 6)
+        eq(rec, (oid, vid, nvrevid, '', pickle, prevrevid))
+        eq(self._log.next(), None)
 
     def checkOtherWriteMethods(self):
+        eq = self.assertEqual
+        unless = self.failUnless
         oid = 10
         vid = 1
         nvrevid = 0
@@ -202,27 +215,29 @@ class FullLogTest(BaseSetupTearDown):
         self._log.write_discard_version(vid)
         self._log.promise()
         rec = self._log.next()
-        assert rec
+        unless(rec)
         key, rec = rec
-        assert key == 'o' and len(rec) == 6
-        assert rec[0] == oid and rec[1] == zero and rec[2] == zero
-        assert rec[3] == lrevid and rec[4] == '' and rec[5] == prevrevid
+        eq(key, 'o')
+        eq(len(rec), 6)
+        eq(rec, (oid, zero, zero, lrevid, '', prevrevid))
         rec = self._log.next()
-        assert rec
+        unless(rec)
         key, rec = rec
-        assert key == 'o' and len(rec) == 6
-        assert rec[0] == oid and rec[1] == vid and rec[2] == nvrevid
-        assert rec[3] == lrevid and rec[4] == '' and rec[5] == prevrevid
+        eq(key, 'o')
+        eq(len(rec), 6)
+        eq(rec, (oid, vid, nvrevid, lrevid, '', prevrevid))
         rec = self._log.next()
-        assert rec
+        unless(rec)
         key, rec = rec
-        assert key == 'v' and len(rec) == 2
-        assert rec[0] == version and rec[1] == vid
+        eq(key, 'v')
+        eq(len(rec), 2)
+        eq(rec, (version, vid))
         rec = self._log.next()
-        assert rec
+        unless(rec)
         key, rec = rec
-        assert key == 'd' and len(rec) == 1
-        assert rec[0] == vid
+        eq(key, 'd')
+        eq(len(rec), 1)
+        eq(rec, (vid,))
 
 
 
