@@ -249,22 +249,31 @@ class DateTimeTests(unittest.TestCase):
 
     def testRFC822(self):
         '''rfc822 conversion'''
-        isDST = time.localtime(time.time())[8]
-        if isDST:
-            offset = time.altzone
-        else:
-            offset = time.timezone
+        dt = DateTime('2002-05-02T08:00:00Z+00:00')
+        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 +0000')
 
-        rfc822zone = "%+03d%02d" % divmod((-offset/60), 60)
-        wrongzone = "%+03d:%02d" % divmod((60-offset/60), 60) #one hour off, ISO format
+        dt = DateTime('2002-05-02T08:00:00Z+02:00')
+        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 +0200')
 
-        # Create a local DateTime and test
-        dt = DateTime(2002, 5, 2, 8, 0, 0)
-        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00' + ' ' + rfc822zone)
+        dt = DateTime('2002-05-02T08:00:00Z-02:00')
+        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 -0200')
 
-        # Create a non-local date time and test
-        dt = DateTime('2002-05-02T08:00:00Z'+wrongzone)
-        self.assertEqual(dt.rfc822(), 'Thu, 02 May 2002 08:00:00 -0000')
+        # Checking that conversion from local time is working.
+        dt = DateTime()
+        dts = dt.rfc822().split(' ')
+        times = dts[4].split(':')
+        _isDST = time.localtime(time.time())[8]
+        if _isDST: offset = time.altzone
+        else:      offset = time.timezone
+
+        self.assertEqual(dts[0], dt.aDay() + ',')
+        self.assertEqual(int(dts[1]), dt.day())
+        self.assertEqual(dts[2], dt.aMonth())
+        self.assertEqual(int(dts[3]), dt.year())
+        self.assertEqual(int(times[0]), dt.h_24())
+        self.assertEqual(int(times[1]), dt.minute())
+        self.assertEqual(int(times[2]), int(dt.second()))
+        self.assertEqual(dts[5], "%+03d%02d" % divmod( (-offset/60), 60) )
 
 
 def test_suite():

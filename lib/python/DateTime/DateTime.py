@@ -12,7 +12,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 
 import re,sys, os, math,  DateTimeZone
@@ -362,6 +362,10 @@ def _calendarday(j):
     return int(yr),int(mo),int(dy)
 
 def _tzoffset(tz, t):
+    """Returns the offset in seconds to GMT from a specific timezone (tz) at 
+    a specific time (t).  NB! The _tzoffset result is the same same sign as 
+    the time zone, i.e. GMT+2 has a 7200 second offset. This is the opposite 
+    sign of time.timezone which (confusingly) is -7200 for GMT+2."""
     try:
         return DateTime._tzinfo[tz].info(t)[0]
     except:
@@ -400,7 +404,10 @@ def safelocaltime(t):
     return rval
 
 def _tzoffset2rfc822zone(seconds):
-    return "%+03d%02d" % divmod( (-seconds/60), 60) 
+    """Takes an offset, such as from _tzoffset(), and returns an rfc822 
+       compliant zone specification. Please note that the result of 
+       _tzoffset() is the negative of what time.localzone and time.altzone is."""
+    return "%+03d%02d" % divmod( (seconds/60), 60) 
 
 
 class DateTime:
@@ -1437,17 +1444,11 @@ class DateTime:
 
     def rfc822(self):
         """Return the date in RFC 822 format"""
-        if self._tz == self._localzone0: #Use local standard time
-            tzoffset = _tzoffset2rfc822zone(timezone)
-        elif self._tz == self._localzone1: # Use local daylight saving time
-            tzoffset = _tzoffset2rfc822zone(altzone)
-        else:
-            tzoffset = '-0000' # unknown time zone offset
+        tzoffset = _tzoffset2rfc822zone(_tzoffset(self._tz, self._t))
             
         return '%s, %2.2d %s %d %2.2d:%2.2d:%2.2d %s' % (
             self._aday,self._day,self._amon,self._year,
             self._hour,self._minute,self._nearsec,tzoffset)
-
 
     # New formats
     def fCommon(self):
