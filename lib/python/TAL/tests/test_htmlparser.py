@@ -1,3 +1,4 @@
+#! /usr/bin/env python1.5
 """Test suite for nsgmllib.py."""
 
 import sys
@@ -58,7 +59,11 @@ class EventCollector(HTMLParser.HTMLParser):
 class HTMLParserTestCase(unittest.TestCase):
     def _run_check(self, source, events):
         parser = EventCollector()
-        parser.feed(source)
+        if isinstance(source, type([])):
+            for s in source:
+                parser.feed(s)
+        else:
+            parser.feed(source)
         parser.close()
         assert parser.get_events() == events, parser.get_events()
 
@@ -126,6 +131,36 @@ text
             ("starttag", "a", [("a.b", "v"), ("c:d", "v"), ("e-f", "v")]),
             ])
 
+    def check_starttag_end_boundary(self):
+        self._run_check("""<a b='<'>""", [("starttag", "a", [("b", "<")])])
+        self._run_check("""<a b='>'>""", [("starttag", "a", [("b", ">")])])
+
+    def check_buffer_artefacts(self):
+        output = [("starttag", "a", [("b", "<")])]
+        self._run_check(["<a b='<'>"], output)
+        self._run_check(["<a ", "b='<'>"], output)
+        self._run_check(["<a b", "='<'>"], output)
+        self._run_check(["<a b=", "'<'>"], output)
+        self._run_check(["<a b='<", "'>"], output)
+        self._run_check(["<a b='<'", ">"], output)
+
+        output = [("starttag", "a", [("b", ">")])]
+        self._run_check(["<a b='>'>"], output)
+        self._run_check(["<a ", "b='>'>"], output)
+        self._run_check(["<a b", "='>'>"], output)
+        self._run_check(["<a b=", "'>'>"], output)
+        self._run_check(["<a b='>", "'>"], output)
+        self._run_check(["<a b='>'", ">"], output)
+
+    def check_starttag_junk_chars(self):
+        self._parse_error("<a $>")
+
+    def _parse_error(self, source):
+        def parse(source=source):
+            parser = HTMLParser.HTMLParser()
+            parser.feed(source)
+            parser.close()
+        self.assertRaises(HTMLParser.HTMLParseError, parse)
 
 
 # Support for the Zope regression test framework:
