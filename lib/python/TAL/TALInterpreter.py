@@ -93,6 +93,23 @@ import cgi
 
 from TALCompiler import TALCompiler
 
+BOOLEAN_HTML_ATTRS = [
+    # List of Boolean attributes in HTML that should be rendered in
+    # minimized form (e.g. <img ismap> rather than <img ismap="">)
+    # From http://www.w3.org/TR/xhtml1/#guidelines (C.10)
+    "compact", "nowrap", "ismap", "declare", "noshade", "checked",
+    "disabled", "readonly", "multiple", "selected", "noresize",
+    "defer"
+]
+
+EMPTY_HTML_TAGS = [
+    # List of HTML tags with an empty content model; these are
+    # rendered in minimized form, e.g. <img />.
+    # From http://www.w3.org/TR/xhtml1/#dtds
+    "base", "meta", "link", "hr", "br", "param", "img", "area",
+    "input", "col", "basefont", "isindex", "frame", 
+]
+
 class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
@@ -146,7 +163,11 @@ class TALInterpreter:
         self.level = self.level - 1
 
     def do_startEndTag(self, name, attrList):
-        self.do_startTag(name, attrList, self.endsep)
+        if self.html and string.lower(name) not in EMPTY_HTML_TAGS:
+            self.do_startTag(name, attrList)
+            self.do_endTag(name)
+        else:
+            self.do_startTag(name, attrList, self.endsep)
 
     def do_startTag(self, name, attrList, end=">"):
         if not attrList:
@@ -164,14 +185,17 @@ class TALInterpreter:
                       name[-13:] == ":define-macro" and self.metal):
                     name = name[:-13] + ":use-macro"
                     value = self.currentMacro
-            s = "%s=%s" % (name, quote(value))
+            if (self.html and not value and
+                string.lower(name) in BOOLEAN_HTML_ATTRS):
+                s = name
+            else:
+                s = "%s=%s" % (name, quote(value))
             if (self.wrap and
                 self.col >= align and
                 self.col + 1 + len(s) > self.wrap):
-                self.stream_write("\n" + " "*align)
+                self.stream_write("\n" + " "*align + s)
             else:
-                self.stream_write(" ")
-            self.stream_write(s)
+                self.stream_write(" " + s)
         self.stream_write(end)
 
     def do_endTag(self, name):
