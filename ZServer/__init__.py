@@ -126,7 +126,8 @@ try:
     import fcntl, FCNTL
     FCNTL.F_SETFD; FCNTL.FD_CLOEXEC
     def requestCloseOnExec(sock):
-        fcntl.fcntl(sock.fileno(), FCNTL.F_SETFD, FCNTL.FD_CLOEXEC)
+        try:    fcntl.fcntl(sock.fileno(), FCNTL.F_SETFD, FCNTL.FD_CLOEXEC)
+        except: pass
 
 except (ImportError, AttributeError):
 
