@@ -84,7 +84,7 @@
 ##############################################################################
 
 class PropertySheet:
-    """"
+    """
 
     A PropertySheet is an abstraction for organizing and working
     with a set of related properties. Conceptually it acts like a

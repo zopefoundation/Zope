@@ -121,7 +121,7 @@ class Response:
 
         '''
 
-    def setHeader(self, name, value, literal=0):
+    def setHeader(self, name, value):
         '''
         
         Sets an HTTP return header "name" with value "value", clearing
@@ -139,27 +139,6 @@ class Response:
         
         Set a new HTTP return header with the given value, while
         retaining any previously set headers with the same name.
-
-        Permission - Always available
-        
-        '''
-
-    def setBody(self, body, title='', is_error=0):
-        '''
-        
-        Set the body of the response
-        
-        Sets the return body equal to the (string) argument
-        "body". Also updates the "content-length" return header.
-
-        You can also specify a title, in which case the title and body
-        will be wrapped up in html, head, title, and body tags.
-
-        If the body is a 2-element tuple, then it will be treated as
-        (title,body)
-        
-        If is_error is true then the HTML will be formatted as a Zope
-        error message instead of a generic HTML page.
 
         Permission - Always available
         
@@ -239,3 +218,20 @@ class Response:
         Permission - Always available
         
         """
+
+    def write(self, data):
+        """\
+        Return data as a stream
+
+        HTML data may be returned using a stream-oriented interface.
+        This allows the browser to display partial results while
+        computation of a response to proceed.
+
+        The published object should first set any output headers or
+        cookies on the response object.
+
+        Note that published objects must not generate any errors
+        after beginning stream-oriented output. 
+
+        """
+        
