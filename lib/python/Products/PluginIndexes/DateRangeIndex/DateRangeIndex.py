@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.6 2003/06/17 19:01:06 sidnei Exp $
+"""$Id: DateRangeIndex.py,v 1.7 2003/09/09 19:48:24 sf Exp $
 """
 
 import os
@@ -221,7 +221,7 @@ class DateRangeIndex(UnIndex):
         result = []
         IntType = type( 0 )
 
-        if not withValues:
+        if not withLengths:
 
             result.extend( t1.keys() )
             result.extend( t2.keys() )
