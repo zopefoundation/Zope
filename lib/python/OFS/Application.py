@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.11 1997/09/19 18:22:29 brian Exp $'''
-__version__='$Revision: 1.11 $'[11:-2]
+$Id: Application.py,v 1.12 1997/09/23 10:30:44 jim Exp $'''
+__version__='$Revision: 1.12 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -34,6 +34,8 @@ class Application(Folder.Folder):
      'action':'manage_rolesForm',   'target':'manage_main'},
     {'icon':'OFS/ControlPanel_icon.gif', 'label':'Control Panel',
      'action':'app/manage',   'target':'_top'},
+    {'icon':'App/undo_icon.gif', 'label':'Undo',
+     'action':'manage_UndoForm',   'target':'manage_main'},
 #    {'icon':'OFS/Help_icon.gif', 'label':'Help',
 #     'action':'manage_help',   'target':'_new'},
     )
@@ -163,6 +165,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.12  1997/09/23 10:30:44  jim
+# added undo to menu
+#
 # Revision 1.11  1997/09/19 18:22:29  brian
 # Nicified Application
 #
