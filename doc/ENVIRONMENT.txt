@@ -90,7 +90,7 @@ Debugging and Logging
         See also: LOGGING.txt
 
 
-    STUPID_LOG_SEVERITY
+    STUPID_LOG_SEVERITY <number>
 
         If set, Zope logs only messages whose severity is level
         is higher than the specified one.
@@ -133,7 +133,17 @@ Debugging and Logging
         Run Zope in debug mode if set. Same as -D options (z2.py)
 
 
-Security issues
+Misc.
+
+    Z_REALM       "your realm"
+    BOBO_REALM    "your realm" (obsolete)
+
+        Realm to be used when send HTTP authentication requests to a web
+        client. The real string is displayed when the web browser pops up
+        the username/password requester
+
+
+Security related 
 
     NO_SECURITY
 
@@ -153,10 +163,12 @@ Security issues
         If set, will cause the Zope Security Policy to skip checks relating
 	to ownership, for servers on which ownership is not important.
 
+
     ZSP_AUTHENTICATED_SKIP
 
         If set, will cause the Zope Security Policy to skip checks relating
 	to authentication, for servers which serve only anonymous content.
+
 
     DISALLOW_LOCAL_PRODUCTS
 
@@ -187,13 +199,6 @@ Esoteric
 
         This variable allows you to customize the size of the Zope stack
         used by the SecurityManager (default 100).
-
-
-    Z_REALM       "your realm"
-    BOBO_REALM    "your realm" (obsolete)
-
-        Realm to be used when send HTTP authentication requests to a web
-        client.
 
 
     FORCE_PRODUCT_RELOAD
