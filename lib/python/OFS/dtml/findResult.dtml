@@ -80,13 +80,13 @@ your search terms below.
 <TR class="row-hilite">
 </dtml-if>
   <TD ALIGN="LEFT" VALIGN="TOP" WIDTH="16">
-  <A HREF="&dtml-sequence-key;/manage_workspace">
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
   <IMG SRC="&dtml-BASEPATH1;/&dtml-icon;"
    ALT="[<dtml-var meta_type>]" BORDER="0"></A>
   </TD>
   <TD ALIGN="LEFT" VALIGN="TOP">
   <div class="list-item">
-  <A HREF="&dtml-sequence-key;/manage_workspace">
+  <A HREF="&dtml.url_quote-sequence-key;/manage_workspace">
   &dtml-sequence-key;
   <dtml-if title>
   (&dtml-title;)
@@ -278,11 +278,3 @@ your search terms below.
 </FORM>
 
 <dtml-var manage_page_footer>
-
-
-
-
-
-
-
-
