@@ -65,8 +65,8 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__rcs_id__='$Id: DT_Raise.py,v 1.2 1998/03/04 18:50:39 jim Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: DT_Raise.py,v 1.3 1998/04/02 19:05:53 jim Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DT_Util import *
 import sys
@@ -78,7 +78,8 @@ class Raise:
 
     def __init__(self, blocks):
 
-	tname, args, self.section = blocks[0]
+	tname, args, section = blocks[0]
+	self.section=section.blocks
 	args=parse_params(args, type='', expr='')
 	self.__name__, self.expr = name_param(args, 'raise', 1, attr='type')
 
@@ -92,7 +93,7 @@ class Raise:
 	    try: t=expr.eval(md)
 	    except: t='Invalid Error Type Expression'
 
-	try: v=self.section(None,md)
+	try: v=render_blocks(self.section,md)
 	except: v='Invalid Error Value'
 
 	raise t, v
@@ -103,6 +104,9 @@ class Raise:
 ##########################################################################
 #
 # $Log: DT_Raise.py,v $
+# Revision 1.3  1998/04/02 19:05:53  jim
+# Updated rendering code.
+#
 # Revision 1.2  1998/03/04 18:50:39  jim
 # *** empty log message ***
 #
