@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.51 $'.split()[-2:][0]
+__version__ = '$Revision: 1.52 $'.split()[-2:][0]
 
 import sys
 import time
@@ -1452,13 +1452,24 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
                 # with it again.  Otherwise, we can remove the metadata record
                 # for this revision and decref the corresponding pickle.
                 if oldserial <> ZERO:
-                    metadata = self._metadata[oid+oldserial]
-                    self._metadata.delete(oid+oldserial, txn=txn)
-                    # Decref the pickle
-                    self._decrefPickle(oid, metadata[16:24], txn)
-                    # Remove the txnoids entry.  We have to use a cursor here.
-                    ct.set_both(oldserial, oid)
-                    ct.delete()
+                    # It's possible this object revision has already been
+                    # deleted, if the oid points to a decref'd away object
+                    try:
+                        metadata = self._metadata[oid+oldserial]
+                    except KeyError:
+                        pass
+                    else:
+                        self._metadata.delete(oid+oldserial, txn=txn)
+                        # Decref the pickle
+                        self._decrefPickle(oid, metadata[16:24], txn)
+                    try:
+                        # Remove the txnoids entry.  We have to use a cursor
+                        # here because of the set_both().
+                        ct.set_both(oldserial, oid)
+                    except db.DBNotFoundError:
+                        pass
+                    else:
+                        ct.delete()
                 co.delete()
                 rec = co.next()
         finally:
@@ -1467,6 +1478,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # Note that before we commit this Berkeley transaction, we also need
         # to update the packtime table, so we can't have the possibility of a
         # race condition with undoLog().
+        self._packtime.truncate(txn)
         self._packtime.put(packtid, PRESENT, txn=txn)
 
     def _decrefPickle(self, oid, lrevid, txn):
