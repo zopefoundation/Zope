@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Copy interface"""
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, string, Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
@@ -194,7 +194,7 @@ class CopyContainer(ExtensionClass.Base):
         for j, d in cp[1]:
             m.jar=j
             m.ids=d
-            try: ob=m.bind()
+            try: ob=m.bind(self._p_jar)
             except: raise CopyError, eNotFound
             self._verifyObjectPaste(ob, REQUEST)
             # try:    ob._notifyOfCopyTo(self, op=op)
@@ -318,7 +318,7 @@ class CopyContainer(ExtensionClass.Base):
         for j, d in cp[1]:
             m.jar=j
             m.ids=d
-            oblist.append(m.bind())
+            oblist.append(m.bind(self._p_jar))
         return oblist
 
     validClipData=cb_dataValid
