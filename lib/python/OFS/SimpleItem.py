@@ -16,12 +16,15 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.18 1998/04/09 17:18:28 jim Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: SimpleItem.py,v 1.19 1998/05/01 14:41:59 jeffrey Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
-import Globals, App.Management
+import regex, sys, Globals, App.Management
 from DateTime import DateTime
 from CopySupport import CopySource
+from string import join, lower
+
+HTML=Globals.HTML
 
 class Item(CopySource, App.Management.Tabs):
 
@@ -80,6 +83,41 @@ class Item(CopySource, App.Management.Tabs):
     def manage_editedDialog(self, REQUEST, **args):
 	return apply(self._manage_editedDialog,(self, REQUEST), args)
 
+    def raise_standardErrorMessage(self, client=None, REQUEST={},
+				   error_type=None, error_value=None, tb=None,
+				   error_tb=None, error_message=''):
+	try:
+	    if not error_type: error_type=sys.exc_type
+	    if not error_value: error_value=sys.exc_value
+	    
+	    # allow for a few different traceback options
+	    if tb is None and (error_tb is None):
+		tb=sys.exc_traceback
+	    if type(tb) is not type('') and (error_tb is None):
+		error_tb=pretty_tb(error_type, error_value, tb)
+	    elif type(tb) is type('') and not error_tb:
+		error_tb=tb
+
+	    if lower(error_type) in ('redirect',):
+		raise error_type, error_value, tb
+	    if (type(error_value) is type('') and not error_message and
+		regex.search('[a-zA-Z]>', error_value) > 0):
+		error_message=error_value
+
+	    if client is None: client=self
+	    if not REQUEST: REQUEST=self.aq_acquire('REQUEST')
+
+	    try:
+		s=getattr(client, 'standard_error_message')
+		v=HTML.__call__(s, client, REQUEST, error_type=error_type,
+				error_value=error_value,
+				error_tb=error_tb,error_traceback=error_tb,
+				error_message=error_message)
+	    except: v='Sorry, an error occured'
+	    raise error_type, v, tb
+	finally:
+	    tb=None
+
     def bobobase_modification_time(self):
 	try:
 	    t=self._p_mtime
@@ -128,9 +166,47 @@ class Item_w__name__(Item):
     def _setId(self, id):
 	self.__name__=id
 
+def format_exception(etype,value,tb,limit=None):
+    import traceback
+    result=['Traceback (innermost last):']
+    if limit is None:
+	    if hasattr(sys, 'tracebacklimit'):
+		    limit = sys.tracebacklimit
+    n = 0
+    while tb is not None and (limit is None or n < limit):
+	    f = tb.tb_frame
+	    lineno = tb.tb_lineno
+	    co = f.f_code
+	    filename = co.co_filename
+	    name = co.co_name
+	    locals=f.f_locals
+	    result.append('  File %s, line %d, in %s'
+			  % (filename,lineno,name))
+	    try: result.append('    (Object: %s)' %
+			       locals[co.co_varnames[0]].__name__)
+	    except: pass
+	    try: result.append('    (Info: %s)' %
+			       str(locals['__traceback_info__']))
+	    except: pass
+	    tb = tb.tb_next
+	    n = n+1
+    result.append(join(traceback.format_exception_only(etype, value),
+		       ' '))
+#    sys.exc_type,sys.exc_value,sys.exc_traceback=etype,value,tb
+    return result
+
+def pretty_tb(t,v,tb):
+    tb=format_exception(t,v,tb,200)
+    tb=join(tb,'\n')
+    return tb
+
+
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.19  1998/05/01 14:41:59  jeffrey
+# added raise_standardErrorMessage logic
+#
 # Revision 1.18  1998/04/09 17:18:28  jim
 # Added extra logic to verify session locks, which can become
 # stale after a session undo.
