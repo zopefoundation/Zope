@@ -1,21 +1,6 @@
-<HTML>
-<HEAD>
-<TITLE>
-<!--#if title-->
-<!--#var title-->
-<!--#else title-->
-<!--#var id-->
-<!--#/if title-->
-</TITLE>
-</HEAD>
+<HTML><HEAD><TITLE><!--#var title_or_id--></TITLE></HEAD>
 <BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
-<H2>
-<!--#if title-->
-<!--#var title-->
-<!--#else title-->
-<!--#var id-->
-<!--#/if title-->
-</H2>
+<H2><!--#var title_or_id--></H2>
 <P>
 
 <!--#if parentObject-->
@@ -23,11 +8,7 @@
      <A HREF="<!--#var URL2-->/manage" target="_top">
      <IMG SRC="<!--#var SOFTWARE_URL-->/OFS/UpFolder_icon.gif" BORDER=0>
      </A>
-     Return to <!--#if title-->
-               <!--#var title-->
-               <!--#else title-->
-               <!--#var id-->
-               <!--#/if title-->
+     Return to <!--#var title_or_id-->
      <BR>
   <!--#/in parentObject-->
 <!--#/if parentObject-->
@@ -44,9 +25,7 @@
     <!--#/if sequence-var-manage_options-->>
     <IMG SRC="<!--#var SOFTWARE_URL-->/<!--#var icon-->" BORDER="0">
     </A>
-    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#if title-->
-    <!--#var title--> (<!--#var id-->)<!--#else title-->
-    <!--#var id--><!--#/if title--></A><BR>
+    <A HREF="<!--#var URL1-->/<!--#var id-->"><!--#var title_and_id--></A><BR>
   <!--#/in objectValues-->
 <!--#/if objectValues-->
 
@@ -76,7 +55,7 @@ To delete items, select one or more items and click &quot;Delete&quot;.
 <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
 <SELECT NAME="ids:list" MULTIPLE SIZE="4">
 <!--#in objectValues-->
-  <OPTION VALUE="<!--#var id-->"><!--#var title-->
+  <OPTION VALUE="<!--#var id-->"><!--#var title_and_id-->
 <!--#/in objectValues-->
 </SELECT><BR>
 <INPUT TYPE="SUBMIT" VALUE="Delete">

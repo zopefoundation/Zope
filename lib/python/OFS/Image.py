@@ -1,23 +1,22 @@
 """Image object"""
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
+from Globals import MessageDialog
 from AccessControl.Role import RoleManager
+import SimpleItem
 
-class Image(Persistent,RoleManager):
+class Image(Persistent,RoleManager,SimpleItem.Item_w__name__):
     """Image object"""
     meta_type='Image'
-    title    =''
     icon     ='OFS/Image_icon.gif'
 
     manage_editForm   =HTMLFile('OFS/imageEdit')
     manage=manage_main=manage_editForm
 
-    manage_options=()
-
-    def manage_edit(self,file,title,content_type='',acl_type='A',acl_roles=[]):
+    def manage_edit(self,file,title,content_type='',acl_type='A',acl_roles=[], REQUEST=None):
 	""" """
 	try:    headers=file.headers
 	except: headers=None
@@ -28,11 +27,20 @@ class Image(Persistent,RoleManager):
 	    self.content_type=content_type
 	    self.data=file
 	elif file:
-	    data=file.read()
-	    self.content_type=headers['content-type']
-	    self.data=data
+	    try: 
+		data=file.read()
+		content_type=headers['content-type']
+		if data:
+		    self.data=data
+		    self.content_type=content_type
+	    except: pass
 	self.title=title
 	self._setRoles(acl_type,acl_roles)
+	return MessageDialog(
+	    title  ='Changed %s' % self.__name__,
+	    message='%s has been updated' % self.__name__,
+	    action =REQUEST['URL2']+'/manage_main',
+	    target ='manage_main')
 
     def _init(self,id,file,content_type=''):
 	try:    headers=file.headers

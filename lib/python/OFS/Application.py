@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.9 1997/09/09 14:21:07 brian Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Application.py,v 1.10 1997/09/10 18:42:35 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 
 import Globals,Folder,regex
@@ -48,7 +48,7 @@ class Application(Folder.Folder):
 	raise 'Redirect', ("%s/%s" % (PARENT_URL, destination))
 
     __allow_groups__=UserFolder()
-
+	
 
 def open_bobobase():
     # Open the application database
@@ -145,6 +145,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.10  1997/09/10 18:42:35  jim
+# Added SimpleItem mix-in and new title/id methods.
+#
 # Revision 1.9  1997/09/09 14:21:07  brian
 # Fixed Image editing
 #

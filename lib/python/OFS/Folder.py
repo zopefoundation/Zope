@@ -1,9 +1,9 @@
 
 """Folder object
 
-$Id: Folder.py,v 1.8 1997/08/29 18:39:31 brian Exp $"""
+$Id: Folder.py,v 1.9 1997/09/10 18:42:36 jim Exp $"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 from Globals import HTMLFile
@@ -12,6 +12,7 @@ from Image import ImageHandler
 from Document import DocumentHandler
 from AccessControl.User import UserFolderHandler
 from AccessControl.Role import RoleManager
+import SimpleItem
 
 class FolderHandler:
     """Folder object handler"""
@@ -55,7 +56,8 @@ class FolderHandler:
 
 
 class Folder(ObjectManager,RoleManager,DocumentHandler,
-	     ImageHandler,FolderHandler,UserFolderHandler):
+	     ImageHandler,FolderHandler,UserFolderHandler,
+	     SimpleItem.Item):
     """Folder object"""
     meta_type='Folder'
     id       ='folder'
