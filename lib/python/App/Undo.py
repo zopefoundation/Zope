@@ -85,8 +85,8 @@
 __doc__='''short description
 
 
-$Id: Undo.py,v 1.13 1999/04/29 19:16:04 jim Exp $'''
-__version__='$Revision: 1.13 $'[11:-2]
+$Id: Undo.py,v 1.14 1999/05/18 15:40:21 jim Exp $'''
+__version__='$Revision: 1.14 $'[11:-2]
 
 import Globals, ExtensionClass
 from DateTime import DateTime
@@ -143,7 +143,7 @@ class UndoSupport(ExtensionClass.Base):
 
         db=self._p_jar.db
         try:
-            r=db().undoLog()
+            r=db().undoLog(first_transaction, last_transaction)
         except:
             # BoboPOS2
             r=[]
@@ -172,7 +172,7 @@ class UndoSupport(ExtensionClass.Base):
 
         else:
             # ZODB 3
-            for d in r: r['time']=DateTime(r['time'])
+            for d in r: d['time']=DateTime(d['time'])
 
         return r
     
