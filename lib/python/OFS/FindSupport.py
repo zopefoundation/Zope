@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 __doc__="""Principia Find support"""
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 
 import sys, os, string, time, Globals
@@ -158,6 +158,7 @@ class FindSupport:
 
             if hasattr(ob, 'aq_base'):
                 bs=ob.aq_base
+            else: bs=ob
 
             if (
                 (not obj_ids or absattr(bs.id) in obj_ids)
