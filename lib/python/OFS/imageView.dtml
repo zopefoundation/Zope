@@ -6,7 +6,7 @@
 <!--#var manage_tabs-->
 
 <p>
-<img src="<!--#var id-->" <!--#if width-->width="<!--#var width-->" <!--#/if
+<img src="<!--#var id url_quote-->" <!--#if width-->width="<!--#var width-->" <!--#/if
 --><!--#if height-->height="<!--#var height-->" <!--#/if-->ALT="<!--#var 
 title_or_id-->">
 </p>
