@@ -21,7 +21,6 @@ from Permission import Permission
 from App.Common import aq_base
 from cgi import escape
 
-ListType=type([])
 
 DEFAULTMAXLISTUSERS=250
 
@@ -109,7 +108,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             p=Permission(name,value,self)
             roles=p.getRoles(default=[])
             d={'name': name,
-               'acquire': type(roles) is ListType and 'CHECKED' or '',
+               'acquire': isinstance(roles, list) and 'CHECKED' or '',
                'roles': map(
                    lambda ir, roles=roles, valid=valid, ip=ip:
                    {
@@ -262,7 +261,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             if name==permission:
                 p=Permission(name,value,self)
                 roles=p.getRoles()
-                return type(roles) is ListType and 'CHECKED' or ''
+                return isinstance(roles, list) and 'CHECKED' or ''
 
         raise ValueError, (
             "The permission <em>%s</em> is invalid." % escape(permission))
@@ -317,7 +316,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
             aclu = getattr(aq_base(item), '__allow_groups__', _notfound)
             if aclu is not _notfound:
                 mlu = getattr(aclu, 'maxlistusers', _notfound)
-                if type(mlu) != type(1): mlu = DEFAULTMAXLISTUSERS
+                if not isinstance(mlu, int): mlu = DEFAULTMAXLISTUSERS
                 if mlu < 0: raise OverflowError
                 un = getattr(aclu, 'user_names', _notfound)
                 if un is not _notfound:

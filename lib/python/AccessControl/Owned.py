@@ -275,8 +275,7 @@ def absattr(attr):
     if callable(attr): return attr()
     return attr
 
-def ownerInfo(user,
-              getattr=getattr, type=type, st=type('')):
+def ownerInfo(user, getattr=getattr):
     if user is None:
         return None
     uid=user.getId()
@@ -290,7 +289,7 @@ def ownerInfo(user,
         db=db.aq_parent
         if db is root: break
         id=db.id
-        if type(id) is not st:
+        if not isinstance(id, str):
             try: id=id()
             except: id=str(id)
         path.append(id)

@@ -14,9 +14,9 @@
 
 $Id$
 """
+
 import string, Products, Globals
 
-ListType=type([])
 
 name_trans=filter(lambda c, an=string.letters+string.digits+'_': c not in an,
                   map(chr,range(256)))
@@ -83,7 +83,7 @@ class Permission:
     def setRoles(self, roles):
         obj=self.obj
 
-        if type(roles) is ListType and not roles:
+        if isinstance(roles, list) and not roles:
             if hasattr(obj, self._p): delattr(obj, self._p)
         else:
             setattr(obj, self._p, roles)
@@ -100,14 +100,14 @@ class Permission:
         roles=self.getRoles()
         if role in roles:
             if present: return
-            if type(roles) is ListType: roles.remove(role)
+            if isinstance(roles, list): roles.remove(role)
             else:
                 roles=list(roles)
                 roles.remove(role)
                 roles=tuple(roles)
         elif not present: return
         else:
-            if type(roles) is ListType: roles.append(role)
+            if isinstance(roles, list): roles.append(role)
             else: roles=roles+(role,)
         self.setRoles(roles)
 

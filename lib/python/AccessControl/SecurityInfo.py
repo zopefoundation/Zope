@@ -126,7 +126,7 @@ class SecurityInfo(Acquisition.Implicit):
         This should be a boolean value, a map of attribute names to
         booleans, or a callable (name, value) -> boolean.
         """
-        if type(access) == type(''):
+        if isinstance(access, str):
             access = access.lower()
             if access == 'allow':
                 access = 1
