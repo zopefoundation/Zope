@@ -664,7 +664,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
             if sort_index is None: r=r[0]
             else: r=r[0][1]
         else:
-            if sort_index is None: r=LazyCat(r)
+            if sort_index is None: r=LazyCat(r, len(r))
             else:
                 r.sort()
                 if kw.has_key('sort-order'):
@@ -677,7 +677,7 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 if (type(so) is type('') and
                     lower(so) in ('reverse', 'descending')):
                     r.reverse()
-                r=LazyCat(map(lambda i: i[1], r))
+                r=LazyCat(map(lambda i: i[1], r), len(r))
 
         return r
 
