@@ -88,10 +88,10 @@ class ZopeStarterTestCase(unittest.TestCase):
         # XXX this almost certainly won't work on all systems
         import locale
         try:
-            conf = self.load_config_text("locale fr_FR")
+            conf = self.load_config_text("locale en_GB")
             starter = ZopeStarter(conf)
             starter.setupLocale()
-            self.assertEqual(locale.getlocale(), ['fr_FR', 'ISO8859-1'])
+            self.assertEqual(locale.getlocale(), ['en_GB', 'ISO8859-1'])
         finally:
             # resest to system-defined locale
             locale.setlocale(locale.LC_ALL, '')
