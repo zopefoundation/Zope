@@ -13,7 +13,7 @@
 ##############################################################################
 """Site error log module.
 
-$Id: SiteErrorLog.py,v 1.8 2002/06/25 20:52:56 caseman Exp $
+$Id: SiteErrorLog.py,v 1.9 2002/06/29 18:46:45 chrism Exp $
 """
 
 import os
@@ -183,14 +183,13 @@ class SiteErrorLog (SimpleItem):
                         del log[:-self.keep_entries]
                 finally:
                     cleanup_lock.release()
-                    
-                return '%s/showEntry?id=%s' % (self.absolute_url(), entry_id)
             except:
                 LOG('SiteError', ERROR, 'Error while logging',
                     error=sys.exc_info())
             else:
                 if self.copy_to_zlog:
                     self._do_copy_to_zlog(now,strtype,str(url),info)
+                return '%s/showEntry?id=%s' % (self.absolute_url(), entry_id)
         finally:
             info = None
 
