@@ -30,23 +30,6 @@ from the most relevant to the least relevant.
   <tr>
     <td align="left" valign="top">
     <div class="form-label">
-    Vocabulary
-    </div>
-    </td>
-    <td>
-
-    <select name="extra.vocabulary:record">  
-      <dtml-in "this().aq_parent.objectItems('Vocabulary')">
-        <option value="&dtml-sequence-key;">&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">)
-      </dtml-in>
-    </select>
-    
-    </td> 
-  </tr>
-
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
     Field name
     </div></td>
     <td align="left" valign="top">
@@ -60,12 +43,19 @@ from the most relevant to the least relevant.
     Lexicon
     </div></td>
     <td>
-    <select name="extra.lexicon_id:record">  
-      <dtml-in "this().aq_parent.objectItems('Lexicon')">
-        <option value="&dtml-sequence-key;">&dtml-sequence-key; (<dtml-var "_['sequence-item'].title">)
-      </dtml-in>
-    </select>
-    
+    <dtml-in expr="superValues('ZCTextIndex Lexicon')">
+      <dtml-if sequence-start>
+        <select name="extra.lexicon_id:record">
+      </dtml-if>
+      <option value="&dtml-id;">
+        &dtml-id; <dtml-var title fmt="(%s)" missing>
+      </option>
+      <dtml-if sequence-end>
+        </select>
+      </dtml-if>
+    <dtml-else>
+      <em>You must create a ZCTextIndex Lexicon first.</em>
+    </dtml-in>
     </td> 
   </tr>
 

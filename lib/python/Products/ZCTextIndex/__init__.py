@@ -21,8 +21,15 @@ def initialize(context):
 
     context.registerClass(
         ZCTextIndex.ZCTextIndex,
-        permission='Add Pluggable Index',
-        constructors=(ZCTextIndex.manage_addZCTextIndexForm,
+        permission = 'Add Pluggable Index',
+        constructors = (ZCTextIndex.manage_addZCTextIndexForm,
                       ZCTextIndex.manage_addZCTextIndex),
         visibility=None
+    )
+
+    context.registerClass(
+        ZCTextIndex.PLexicon,
+        permission = 'Add Vocabularies',
+        constructors = (ZCTextIndex.manage_addLexiconForm,
+                        ZCTextIndex.manage_addLexicon),
     )

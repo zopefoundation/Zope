@@ -23,6 +23,9 @@ from BTrees.IIBTree import weightedIntersection, weightedUnion
 from Products.ZCTextIndex.IIndex import IIndex
 from Products.ZCTextIndex import WidCode
 
+import ZODB
+from Persistence import Persistent
+
 # Instead of storing floats, we generally store scaled ints.  Binary pickles
 # can store those more efficiently.  The default SCALE_FACTOR of 1024
 # is large enough to get about 3 decimal digits of fractional info, and
@@ -39,7 +42,7 @@ def scaled_int(f, scale=SCALE_FACTOR):
     # expensive.
     return int(f * scale + 0.5)
 
-class Index:
+class Index(Persistent):
 
     __implements__ = IIndex
 
@@ -59,6 +62,10 @@ class Index:
     def length(self):
         """Return the number of documents in the index."""
         return len(self._docwords)
+        
+    def get_words(self, docid):
+        """Returns the wordids for a given docid"""
+        return WidCode.decode(self._docwords[docid])
 
     # Most of the computation for computing a relevance score for the
     # document occurs in the search() method.  The code currently
@@ -97,6 +104,7 @@ class Index:
             self._add_wordinfo(uniqwids[i], freqs[i], docid)
         self._docweight[docid] = docweight
         self._add_undoinfo(docid, wids)
+        return len(wids)
 
     def unindex_doc(self, docid):
         for wid in self._get_undoinfo(docid):

@@ -33,7 +33,7 @@
     splitter?
     </td>
     <td align="left" valign="top">
-    <input type="checkbox" name="splitter" />
+    <input type="checkbox" name="splitter" checked />
     </td>
   </tr>
 
@@ -43,7 +43,7 @@
     case normalizer?
     </td>
     <td align="left" valign="top">
-    <input type="checkbox" name="normalizer" />
+    <input type="checkbox" name="normalizer" checked />
     </td>
   </tr>
 
@@ -53,7 +53,7 @@
     remove stop words?
     </td>
     <td align="left" valign="top">
-    <input type="checkbox" name="stopword" />
+    <input type="checkbox" name="stopwords" checked />
     </td>
   </tr>
 
