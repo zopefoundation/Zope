@@ -83,6 +83,9 @@ Zope Changes
 
       Bugs Fixed
 
+        - Fixed a bug in cDocumentTemplate that could cause AttributeError
+          instances to be leaked in certain situations.
+
         - 'reverse' option for the 'in' tag as well as the 'tree' tag
           has been changed to deal with a copy of the data, rather
           than the original.  The database was being modified in
