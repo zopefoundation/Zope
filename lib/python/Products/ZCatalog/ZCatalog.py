@@ -495,10 +495,7 @@ class ZCatalog(Folder, Persistent, Implicit):
                 message='No items were specified!',
                 action = "./manage_catalogIndexes",)
 
-        if isinstance(ids, str):
-            ids = (ids,)
-
-        self.reindexIndex(name, REQUEST, ids)
+        self.reindexIndex(ids, REQUEST)
 
         if REQUEST and RESPONSE:
             RESPONSE.redirect(
