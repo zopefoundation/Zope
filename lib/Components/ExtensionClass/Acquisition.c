@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.14 1998/01/05 13:38:31 jim Exp $
+  $Id: Acquisition.c,v 1.15 1998/01/21 19:00:48 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -147,6 +147,8 @@ typedef struct {
   PyObject *container;
 } Wrapper;
 
+static Wrapper *freeWrappers=0;
+
 staticforward PyExtensionClass Wrappertype, XaqWrappertype;
 
 #define isWrapper(O) ((O)->ob_type==(PyTypeObject*)&Wrappertype || \
@@ -175,7 +177,16 @@ newWrapper(PyObject *obj, PyObject *container, PyTypeObject *Wrappertype)
 {
   Wrapper *self;
   
-  UNLESS(self = PyObject_NEW(Wrapper, Wrappertype)) return NULL;
+  if(freeWrappers)
+    {
+      self=freeWrappers;
+      freeWrappers=(Wrapper*)self->obj;
+      self->ob_type=Wrappertype;
+      self->ob_refcnt=1;
+    }
+  else
+    UNLESS(self = PyObject_NEW(Wrapper, Wrappertype)) return NULL;
+
   Py_INCREF(obj);
   Py_INCREF(container);
   self->obj=obj;
@@ -189,7 +200,8 @@ Wrapper_dealloc(Wrapper *self)
 {
   Py_DECREF(self->obj);
   Py_DECREF(self->container);
-  PyMem_DEL(self);
+  self->obj=OBJECT(freeWrappers);
+  freeWrappers=self;
 }
 
 static PyObject *
@@ -518,7 +530,33 @@ Wrapper_length(Wrapper *self)
   long l;
   PyObject *r;
 
-  UNLESS(r=CallMethodO(OBJECT(self),py__len__,NULL,NULL))  return -1;
+  UNLESS(r=PyObject_GetAttr(OBJECT(self), py__len__))
+    {
+      /* Hm. Maybe we are being checked to see if we are true.
+	 
+	 Check to see if we have a __getitem__.  If we don't, then
+	 answer that we are true, otherwise raise an error.
+	 */
+      PyErr_Clear();
+      if(r=PyObject_GetAttr(OBJECT(self), py__getitem__))
+	{
+	  /* Hm, we have getitem, must be error */
+	  Py_DECREF(r);
+	  PyErr_SetObject(PyExc_AttributeError, py__len__);
+	  return -1;
+	}
+      PyErr_Clear();
+
+      /* Try nonzero */
+      UNLESS(r=PyObject_GetAttr(OBJECT(self), py__nonzero__))
+	{
+	  /* No nonzero, it's true :-) */
+	  PyErr_Clear();
+	  return 1;
+	}
+    }
+  
+  UNLESS_ASSIGN(r,PyObject_CallObject(r,NULL)) return -1;
   l=PyInt_AsLong(r);
   Py_DECREF(r);
   return l;
@@ -766,7 +804,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.14 $";
+  char *rev="$Revision: 1.15 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -785,7 +823,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.14 1998/01/05 13:38:31 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.15 1998/01/21 19:00:48 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -808,6 +846,9 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.15  1998/01/21 19:00:48  jim
+  Fixed __len__ bugs and added free lists for methods and wrappers
+
   Revision 1.14  1998/01/05 13:38:31  jim
   Added special module variable, 'Acquired'.  If the value of this
   variable is assigned to an attribute, then the value of the attribute

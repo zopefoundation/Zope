@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.22 1998/01/02 18:18:28 jim Exp $
+  $Id: ExtensionClass.c,v 1.23 1998/01/21 19:00:49 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.22 1998/01/02 18:18:28 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.23 1998/01/21 19:00:49 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -101,6 +101,15 @@ staticforward PyExtensionClass ECType;
    ((O)->ob_type->ob_type == (PyTypeObject*)&ECType && \
     (((PyExtensionClass*)((O)->ob_type))->class_flags & \
      EXTENSIONCLASS_METHODHOOK_FLAG))
+
+#define ALLOC_FREE(T) \
+  if(free ## T) { \
+      self=free ## T; \
+      free ## T=(T*)self->self; \
+      self->ob_refcnt=1; \
+    } \
+  else UNLESS(self = PyObject_NEW(T, & T ## Type)) return NULL;
+
 
 static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__mod__, *py__pow__, *py__divmod__, *py__lshift__, *py__rshift__,
@@ -349,14 +358,16 @@ CMethod_issubclass(PyExtensionClass *sub, PyExtensionClass *type)
 		     (PyExtensionClass *)(C2))
 
 
+static CMethod *freeCMethod=0;
+
 static PyObject *
 newCMethod(PyExtensionClass *type, PyObject *inst,
 	   char *name, PyCFunction meth, int flags, char *doc)
 {
   CMethod *self;
 
+  ALLOC_FREE(CMethod);
   
-  UNLESS(self = PyObject_NEW(CMethod, &CMethodType)) return NULL;
   Py_INCREF(type);
   Py_XINCREF(inst);
   self->type=(PyTypeObject*)type;
@@ -382,7 +393,7 @@ bindCMethod(CMethod *m, PyObject *inst)
       return m;
     }
 
-  UNLESS(self = PyObject_NEW(CMethod, &CMethodType)) return NULL;
+  ALLOC_FREE(CMethod);
 
   Py_INCREF(inst);
   Py_INCREF(m->type);
@@ -403,7 +414,8 @@ CMethod_dealloc(CMethod *self)
 #endif
   Py_XDECREF(self->type);
   Py_XDECREF(self->self);
-  PyMem_DEL(self);
+  self->self=(PyObject*)freeCMethod;
+  freeCMethod=self;
 }
 
 static PyObject *
@@ -618,6 +630,7 @@ static PyTypeObject CMethodType = {
 /* PMethod objects: */
 
 #define PMethod PyECMethodObject
+#define PMethodType PyECMethodObjectType
 
 staticforward PyTypeObject PMethodType;
 
@@ -630,12 +643,15 @@ staticforward PyTypeObject PMethodType;
    && ! ((PMethod*)(O))->self)
 
 
+static PMethod *freePMethod=0;
+
 static PyObject *
 newPMethod(PyExtensionClass *type, PyObject *meth)
 {
   PMethod *self;
   
-  UNLESS(self = PyObject_NEW(PMethod, &PMethodType)) return NULL;
+  ALLOC_FREE(PMethod);
+
   Py_INCREF(type);
   Py_INCREF(meth);
   self->type=(PyTypeObject*)type;
@@ -659,7 +675,7 @@ bindPMethod(PMethod *m, PyObject *inst)
       return (PyObject*)m;
     }
   
-  UNLESS(self = PyObject_NEW(PMethod, &PMethodType)) return NULL;
+  ALLOC_FREE(PMethod);
 
   Py_INCREF(inst);
   Py_INCREF(m->type);
@@ -692,7 +708,8 @@ PMethod_dealloc(PMethod *self)
 #endif
   Py_XDECREF(self->type);
   Py_XDECREF(self->self);
-  PyMem_DEL(self);
+  self->self=(PyObject*)freePMethod;
+  freePMethod=self;
 #ifdef TRACE_DEALLOC
   fprintf(stderr," Done Deallocating PM\n");
 #endif
@@ -2508,7 +2525,24 @@ subclass_length(PyObject *self)
   long r;
   PyExtensionClass *t;
 
-  UNLESS(m=subclass_getspecial(self,py__len__)) return -1;
+  UNLESS(m=subclass_getspecial(self,py__len__))
+    {
+      /* Hm. Maybe we are being checked to see if we are true.
+
+	 Check to see if we have a __getitem__.  If we don't, then
+	 answer that we are true.
+       */
+      PyErr_Clear();
+      if(m=subclass_getspecial(self,py__getitem__))
+	{
+	  /* Hm, we have getitem, must be error */
+	  Py_DECREF(m);
+	  PyErr_SetObject(PyExc_AttributeError, py__len__);
+	  return -1;
+	}
+      PyErr_Clear();
+      return subclass_nonzero(self);
+    }
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==length_by_name
      && SubclassInstance_Check(self,AsCMethod(m)->type)
      && ! HasMethodHook(self))
@@ -3285,7 +3319,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.22 $";
+  char *rev="$Revision: 1.23 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3326,6 +3360,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.23  1998/01/21 19:00:49  jim
+  Fixed __len__ bugs and added free lists for methods and wrappers
+
   Revision 1.22  1998/01/02 18:18:28  jim
   Fixed bug in instance getattr so that instances don't get __bases__
   from their class.
