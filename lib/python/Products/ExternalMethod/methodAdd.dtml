@@ -13,7 +13,7 @@ functions which are exposed as callable Zope objects.
 
 <P>
 Use the form below to add and External Method. The <EM>Python module file</EM>
-should give the name of the Python module without &quote;.py&quot; Normally the
+should give the name of the Python module without &quot;.py&quot; Normally the
 Python module should be located in the Zope <EM>Extensions</EM> directory. You
 may also place the Python module inside a <EM>Extensions</EM> directory inside
 a Product directory, in which case the <EM>Python module file</EM> should be the
