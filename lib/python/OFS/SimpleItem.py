@@ -16,9 +16,10 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.2 1997/10/30 19:51:09 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: SimpleItem.py,v 1.3 1997/11/06 18:41:56 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
+import Globals
 
 class Item:
 
@@ -61,6 +62,12 @@ class Item:
 
     def tpValues(self): return ()
 
+    _manage_editedDialog=Globals.HTMLFile('OFS/editedDialog')
+    def manage_editedDialog(self, REQUEST, **args):
+	return apply(self._manage_editedDialog,(self, REQUEST), args)
+    
+
+
 class Item_w__name__(Item):
 
     # Utility that returns the title if it is not blank and the id
@@ -78,6 +85,9 @@ class Item_w__name__(Item):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.3  1997/11/06 18:41:56  jim
+# Added manage_editedDialog.
+#
 # Revision 1.2  1997/10/30 19:51:09  jim
 # Added methods to support tree browsing.
 #
