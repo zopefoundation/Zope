@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.45 1998/02/05 23:33:46 jim Exp $'''
-__version__='$Revision: 1.45 $'[11:-2]
+$Id: Application.py,v 1.46 1998/02/06 00:25:28 jim Exp $'''
+__version__='$Revision: 1.46 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -266,7 +266,7 @@ def install_products():
 		    Folder.__dict__[name+'__roles__']='Manager',
 		if permissions.has_key(name):
 		    permission=permissions[name]
-		    if folder_permissions.has_key[permission]:
+		    if folder_permissions.has_key(permission):
 			folder_permissions[permission].append(name)
 		    else:
 			folder_permissions[permission]=[name]
@@ -287,6 +287,8 @@ def install_products():
     Folder.__dict__['__ac_permissions__']=tuple(permissions+folder_permissions)
     Folder.dynamic_meta_types=tuple(meta_types)
 
+
+    Globals.default__class_init__(Folder)
 
 
 
@@ -376,6 +378,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.46  1998/02/06 00:25:28  jim
+# Fixed bug in handling product permissions.
+#
 # Revision 1.45  1998/02/05 23:33:46  jim
 # Added logic to product installation machinery to handle product
 # permissions.
