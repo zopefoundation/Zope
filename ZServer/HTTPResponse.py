@@ -257,9 +257,6 @@ class ChannelPipe:
             self._channel.push(CallbackProducer(
                 lambda t=('E', id(self._request)): apply(DebugLogger.log, t)), 0)
             if self._shutdown:
-                try: r=self._shutdown[0]
-                except: r=0
-                sys.ZServerExitCode=r
                 self._channel.push(ShutdownProducer(), 0)
                 Wakeup()
             else:
@@ -272,9 +269,6 @@ class ChannelPipe:
             DebugLogger.log('E', id(self._request))
 
             if self._shutdown:
-                try: r=self._shutdown[0]
-                except: r=0
-                sys.ZServerExitCode=r
                 Wakeup(lambda: asyncore.close_all())
             else:
                 Wakeup()
@@ -285,13 +279,8 @@ class ChannelPipe:
     def flush(self): pass # yeah, whatever
     
     def finish(self, response):
-        if response.headers.get('bobo-exception-type', '') == \
-                'exceptions.SystemExit':
-
-            r=response.headers.get('bobo-exception-value','0')
-            try: r=int(r)
-            except: r = r and 1 or 0
-            self._shutdown=r,
+        if response._shutdownRequested():
+            self._shutdown = 1
         if response.headers.get('connection','') == 'close' or \
                 response.headers.get('Connection','') == 'close':
             self._close=1

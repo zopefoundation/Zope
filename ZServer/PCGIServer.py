@@ -393,10 +393,6 @@ class PCGIPipe:
         self._channel=None
         
     def finish(self, response):
-        if response.headers.get('bobo-exception-type','') == \
-                'exceptions.SystemExit':
-            r=response.headers.get('bobo-exception-value','0')
-            try: r=string.atoi(r)
-            except: r = r and 1 or 0
-            self._shutdown=r,
+        if response._shutdownRequested():
+            self._shutdown = 1
         self._channel.reply_code=response.status

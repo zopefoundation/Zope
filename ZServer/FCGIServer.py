@@ -722,22 +722,11 @@ class FCGIResponse(HTTPResponse):
         self.stdout.close()
         self.stderr.close()
 
-        # The following was adapted from PCGIPipe.finish and PCGIPipe.close
-        # I don't really understand it enough to know if I got it right...
-        shutdown = 0
-        if self.headers.get('bobo-exception-type','') == \
-                'exceptions.SystemExit':
-            r = self.headers.get('bobo-exception-value','0')
-            try: r=string.atoi(r)
-            except: r = r and 1 or 0
-            shutdown = r,
-
         if not self.channel.closed:
             self.channel.push_with_producer(LoggingProducer(self.channel,
                                                             self.stdout.length,
                                                             'log_request'), 0)
-        if shutdown:
-            sys.ZServerExitCode = shutdown[0]
+        if self._shutdownRequested():
             self.channel.push(ShutdownProducer(), 0)
             Wakeup(lambda: asyncore.close_all())
         else:
