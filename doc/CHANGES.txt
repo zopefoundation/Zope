@@ -34,6 +34,9 @@ Zope Changes
 
     Bugs fixed
 
+      - ZPublisher: changed some hardcoded 'latin1' arguments to 'iso-8859-15'
+        since latin1 is obsolete.
+
       - Collector #1566: Installation of Zope on some older Solaris versions
         could fail due to a broken "echo" implementation causing the 
         creation of a borked version.txt file.                       
