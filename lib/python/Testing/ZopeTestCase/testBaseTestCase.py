@@ -134,7 +134,7 @@ class TestTestCase(HookTest):
         self.assertEqual(getSecurityManager().getUser().getUserName(), 'Anonymous User')
 
     def getObjectsInTransaction(self):
-        # Let's us spy into the transaction
+        # Lets us spy into the transaction
         t = get_transaction()
         if hasattr(t, '_objects'):      # Zope < 2.8
             return t._objects
