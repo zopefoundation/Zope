@@ -85,12 +85,14 @@
 __doc__='''short description
 
 
-$Id: SecurityManagement.py,v 1.2 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: SecurityManagement.py,v 1.3 2000/11/10 17:04:14 brian Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import SpecialUsers
-from thread import get_ident
 from SecurityManager import SecurityManager
+try:    import thread
+except: get_ident=lambda: 0
+else:   get_ident=thread.get_ident
 
 _managers={}
 
