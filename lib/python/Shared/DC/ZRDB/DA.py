@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.46 1998/05/08 15:00:27 jim Exp $'''
-__version__='$Revision: 1.46 $'[11:-2]
+$Id: DA.py,v 1.47 1998/05/11 15:00:13 jim Exp $'''
+__version__='$Revision: 1.47 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, base64, DateTime, Acquisition, os
@@ -66,15 +66,12 @@ class DA(
 				     'manage_advancedForm',
 				     )),
 	('Change permissions',      ('manage_access',)            ),
-	('Change',                  ('manage_edit','manage_advanced')  ),
-	('Test',                  ('manage_testForm','manage_test')  ),
-	('Use', ('__call__',)),
+	('Change Database Methods',
+	 ('manage_edit','manage_advanced',
+	  'manage_testForm','manage_test')),
+	('Use Database Methods', ('__call__',''), ('Anonymous','Manager')),
 	)
    
-    # Define pre-defined types of access:
-    __ac_types__=(('Full Access', map(lambda x: x[0], __ac_permissions__)),
-		  )
-
 
     def __init__(self, id, title, connection_id, arguments, template):
 	self.id=id
@@ -434,6 +431,9 @@ def getBrain(self,
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.47  1998/05/11 15:00:13  jim
+# Updated permissions.
+#
 # Revision 1.46  1998/05/08 15:00:27  jim
 # Changed permission settings to be in line with new machinery.
 #

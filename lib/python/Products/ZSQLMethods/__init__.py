@@ -11,8 +11,8 @@
 __doc__='''SQL Method Product
 
 
-$Id: __init__.py,v 1.3 1998/02/23 19:00:31 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: __init__.py,v 1.4 1998/05/11 15:00:46 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 from ImageFile import ImageFile
 import Aqueduct.Search, SQL
 
@@ -45,11 +45,18 @@ misc_={
 __ac_permissions__=(
     ('Add Database Methods',
      ('manage_addAqueductSQLMethodForm', 'manage_addAqueductSQLMethod')),
+    ('Open/Close Database Connections',   ()),
+    ('Change Database Methods',           ()),
+    ('Change Database Connections',           ()),
+    ('Use Database Methods', ()),
     )
 
 ############################################################################## 
 #
 # $Log: __init__.py,v $
+# Revision 1.4  1998/05/11 15:00:46  jim
+# Updated permissions.
+#
 # Revision 1.3  1998/02/23 19:00:31  jim
 # updated permissions
 #
