@@ -119,7 +119,7 @@
     however, if x is ommitted or an empty string, then the value
     inserted is 'null'.
 '''
-__rcs_id__='$Id: sqlvar.py,v 1.7 1999/03/25 13:31:04 jeffrey Exp $'
+__rcs_id__='$Id: sqlvar.py,v 1.8 1999/04/09 17:17:38 jim Exp $'
 
 ############################################################################
 #     Copyright 
@@ -129,7 +129,7 @@ __rcs_id__='$Id: sqlvar.py,v 1.7 1999/03/25 13:31:04 jeffrey Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.7 $'[11:-2]
+__version__='$Revision: 1.8 $'[11:-2]
 
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
 from string import find, split, join, atoi, atof
@@ -188,11 +188,11 @@ class SQLVar:
         else:
             v=str(v)
             if not v and t=='nb':
-		if args.has_key('optional') and args['optional']:
-		    return 'null'
-		else:
-		    raise ValueError, (
-			'Invalid empty string value for <em>%s</em>' % name)
+                if args.has_key('optional') and args['optional']:
+                    return 'null'
+                else:
+                    raise ValueError, (
+                        'Invalid empty string value for <em>%s</em>' % name)
             
             v=md.getitem('sql_quote__',0)(v)
             #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")

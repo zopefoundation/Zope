@@ -189,17 +189,17 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
         if n < 1: break
 
         seek(pos+24)
-	if plen > 0:
-	    p=read(plen)
-	    if p[-1:] != '.': 
-		error('Corrupted pickle at %s %s %s' % (pos,plen,len(p)))
-		if show > 0:
-		    seek(pos+24)
-		    error(read(show))
-		err=1
-		break
+        if plen > 0:
+            p=read(plen)
+            if p[-1:] != '.': 
+                error('Corrupted pickle at %s %s %s' % (pos,plen,len(p)))
+                if show > 0:
+                    seek(pos+24)
+                    error(read(show))
+                err=1
+                break
 
-	else: p=''
+        else: p=''
         t=split(read(tlen-plen-28),'\t')
         tname, user = (t+[''])[:2]
         t=join(t[2:],'\t')
@@ -208,7 +208,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
         s=s+f
         start="%.4d-%.2d-%.2d %.2d:%.2d:%.3f" % (y,m,d,h,mn,s)
         rpt(pos,oid,start,tname,user,t,p,first)
-	first=0
+        first=0
 
     if err and both and not fromEnd:
         _read_and_report(file, rpt, 1, 0, n, show)
@@ -237,13 +237,13 @@ def xml(pos, oid, start, tname, user, t, p, first):
 
     if first: write('<?xml version="1.0">\n<ZopeData>\n')
     if pos is None: 
-	write('</transaction>\n')
-	write('</ZopeData>\n')
-	return
+        write('</transaction>\n')
+        write('</ZopeData>\n')
+        return
 
     if user or t or first:
-	if pos > 9: write('</transaction>\n')
-	write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
+        if pos > 9: write('</transaction>\n')
+        write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
     l=len(p)
     pp=p
     f=StringIO(p)
@@ -251,7 +251,7 @@ def xml(pos, oid, start, tname, user, t, p, first):
     u.idprefix='%s.' % pos
     p=u.load().__str__(4)
     if f.tell() < l:
-	p=p+u.load().__str__(4)
+        p=p+u.load().__str__(4)
     write('  <rec id="%s" time="%s">\n%s  </rec>\n' % (oid, start, p))
 
 def xmls(pos, oid, start, tname, user, t, p, first):
@@ -259,14 +259,14 @@ def xmls(pos, oid, start, tname, user, t, p, first):
 
     if first: write('<?xml version="1.0">\n<transactions>\n')
     if pos is None: 
-	write('</transaction>\n')
-	write('</transactioons>\n')
-	return
+        write('</transaction>\n')
+        write('</transactioons>\n')
+        return
 
     if user or t or first:
-	if pos > 9: write('</transaction>\n')
-	write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
-	
+        if pos > 9: write('</transaction>\n')
+        write('<transaction name="%s" user="%s">\n%s\n' % (tname, user,t))
+        
 reports={
     'none': (none,
              ('Read a database file checking for errors',

@@ -89,8 +89,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.44 1999/04/02 00:11:40 jim Exp $'''
-__version__='$Revision: 1.44 $'[11:-2]
+$Id: SimpleItem.py,v 1.45 1999/04/09 17:17:02 jim Exp $'''
+__version__='$Revision: 1.45 $'[11:-2]
 
 import regex, sys, Globals, App.Management, Acquisition
 from webdav.Resource import Resource
@@ -132,8 +132,8 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
 
  
     __ac_permissions__=(
-	('View management screens', ('manage_workspace',)),
-	)
+        ('View management screens', ('manage_workspace',)),
+        )
 
 
     manage_info   =Globals.HTMLFile('App/manage_info')
@@ -145,7 +145,7 @@ class Item(Base, Resource, CopySource, App.Management.Tabs):
         try:
             m=self.manage_options[0]['action']
             if m=='manage_workspace': raise TypeError
-	except: return 'This object has no management interface'
+        except: return 'This object has no management interface'
 
         if find(m,'/'):
             raise 'Redirect', (
@@ -392,7 +392,7 @@ class SimpleItem(Item, Globals.Persistent,
     """
 
     manage_options=(
-	{'label':'Security',   'action':'manage_access'},
-	)
+        {'label':'Security',   'action':'manage_access'},
+        )
  
     __ac_permissions__=(('View', ()),)
