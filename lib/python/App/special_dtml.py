@@ -188,6 +188,7 @@ class DTMLFile(Bindings, Explicit, ClassicHTMLFile):
             # Someone called us.
             push(cns)
             ns.level = cns.level + 1
+            ns.this = cns.this
             # Get their bindings.  Copy the request reference
             # forward, and include older keyword arguments in the
             # current 'keyword_args' binding.

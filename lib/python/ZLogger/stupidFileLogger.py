@@ -82,12 +82,13 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-import time, sys, string, os
+import time, sys, string, os, thread
 
 from zLOG import severity_string, log_time, format_exception
 
 _stupid_dest=None
 _stupid_severity=None
+_stupid_format=None
 _no_stupid_log=[]
 format_exception_only=None
 
@@ -100,7 +101,7 @@ class stupidFileLogger:
 def stupid_log_write(subsystem, severity, summary, detail, error):
 
     # Check where to log
-    global _stupid_dest
+    global _stupid_dest, _stupid_format
     if _stupid_dest is None:
         if os.environ.has_key('STUPID_LOG_FILE'):
             f=os.environ['STUPID_LOG_FILE']
@@ -110,6 +111,10 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
             _stupid_dest=sys.stderr
         else:
             _stupid_dest=_no_stupid_log
+
+        if os.environ.has_key('STUPID_LOG_FORMAT'):
+            _stupid_format = os.environ['STUPID_LOG_FORMAT']
+
 
     # Check id to log
     if _stupid_dest is _no_stupid_log: return
@@ -121,17 +126,39 @@ def stupid_log_write(subsystem, severity, summary, detail, error):
         
     if severity < _stupid_severity: return
 
-    _stupid_dest.write(
-        "------\n"
-        "%s %s %s %s\n%s"
-        %
-        (log_time(),
-         severity_string(severity),
-         subsystem,
-         summary,
-         detail,
-         )
-        )
+    if _stupid_format is not None:
+        fmap = {'time': log_time(),
+                'severity': severity_string(severity),
+                'subsystem': subsystem,
+                'summary': summary,
+                'detail': detail,
+                'thread': thread.get_ident()
+                }
+        try:
+            s = _stupid_format % fmap
+        except:
+            failedf, _stupid_format = _stupid_format, None
+            _stupid_dest.write("------\n%s %s zLOG Format string error\n"
+                               "The STUPID_LOG_FORMAT string '%s' "
+                               "caused an error, so we won't use it.\n" %
+                               (fmap['time'],
+                                severity_string(100),
+                                failedf)
+                               )
+        else:
+            _stupid_dest.write(s)
+    if _stupid_format is None:
+        _stupid_dest.write(
+            "------\n"
+            "%s %s %s %s\n%s"
+            %
+            (log_time(),
+             severity_string(severity),
+             subsystem,
+             summary,
+             detail,
+             )
+            )
 
     _stupid_dest.flush()
 
