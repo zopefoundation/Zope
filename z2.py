@@ -547,215 +547,224 @@ if Zpid and not READ_ONLY:
     
     zdaemon.run(sys.argv, os.path.join(CLIENT_HOME, Zpid))
 
-# Import logging support
-import zLOG
-import ZLogger
-
-if READ_ONLY:
-    zLOG._stupid_dest=sys.stderr
-else:
-    zLOG.log_write = ZLogger.ZLogger.log_write
-
-if DETAILED_LOG_FILE:
-    from ZServer import DebugLogger
-    logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
-    DebugLogger.log=DebugLogger.DebugLogger(logfile).log
-    
-# Import Zope (or Main)
-exec "import "+MODULE in {}
-
-# Location of the ZServer log file. This file logs all ZServer activity.
-# You may wish to create different logs for different servers. See
-# medusa/logger.py for more information.
-if not os.path.isabs(LOG_FILE):
-    LOG_PATH=os.path.join(CLIENT_HOME, LOG_FILE)
-else:
-    LOG_PATH=LOG_FILE
-
-# Location of the ZServer pid file. When ZServer starts up it will write
-# its PID to this file.
-PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
-
-
-# import ZServer stuff
-
-# First, we need to increase the number of threads
-if MODULE=='Zope':
-    from ZServer import setNumberOfThreads
-    setNumberOfThreads(NUMBER_OF_THREADS)
-
-from ZServer import resolver, logger, asyncore
-
-from ZServer import zhttp_server, zhttp_handler
-from ZServer.WebDAVSrcHandler import WebDAVSrcHandler
-from ZServer import PCGIServer,FTPServer,FCGIServer
-
-from ZServer import secure_monitor_server
-
-## ZServer startup
-##
-
-# Resolver and Logger, used by other servers
-if DNS_IP:
-    rs = resolver.caching_resolver(DNS_IP)
-else:
-    rs=None
-
-if READ_ONLY:
-    lg = logger.file_logger('-') # log to stdout
-elif os.environ.has_key('ZSYSLOG'):
-    lg = logger.syslog_logger(os.environ['ZSYSLOG'])
-elif os.environ.has_key('ZSYSLOG_SERVER'):
-    lg = logger.syslog_logger(string.split(os.environ['ZSYSLOG_SERVER'], ':'))
-else:
-    lg = logger.file_logger(LOG_PATH)
-
-# HTTP Server
-if HTTP_PORT:
-    if type(HTTP_PORT) is type(0): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
-    for address, port in HTTP_PORT:
-        hs = zhttp_server(
-            ip=address,
-            port=port,
-            resolver=rs,
-            logger_object=lg)
-
-        # Handler for a published module. zhttp_handler takes 3 arguments:
-        # The name of the module to publish, and optionally the URI base
-        # which is basically the SCRIPT_NAME, and optionally a dictionary
-        # with CGI environment variables which override default
-        # settings. The URI base setting is useful when you want to
-        # publish more than one module with the same HTTP server. The CGI
-        # environment setting is useful when you want to proxy requests
-        # from another web server to ZServer, and would like the CGI
-        # environment to reflect the CGI environment of the other web
-        # server.    
-        zh = zhttp_handler(MODULE, '', HTTP_ENV)
-        hs.install_handler(zh)
-
-# WebDAV source Server (runs HTTP, but munges request to return
-#  'manage_FTPget').
-if WEBDAV_SOURCE_PORT:
-    if type(WEBDAV_SOURCE_PORT) is type(0):
-        WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
-    for address, port in WEBDAV_SOURCE_PORT:
-        hs = zhttp_server(
-            ip=address,
-            port=port,
-            resolver=rs,
-            logger_object=lg)
-
-        # Handler for a published module. zhttp_handler takes 3 arguments:
-        # The name of the module to publish, and optionally the URI base
-        # which is basically the SCRIPT_NAME, and optionally a dictionary
-        # with CGI environment variables which override default
-        # settings. The URI base setting is useful when you want to
-        # publish more than one module with the same HTTP server. The CGI
-        # environment setting is useful when you want to proxy requests
-        # from another web server to ZServer, and would like the CGI
-        # environment to reflect the CGI environment of the other web
-        # server.    
-        zh = WebDAVSrcHandler(MODULE, '', HTTP_ENV)
-        hs.install_handler(zh)
-
-# FTP Server
-if FTP_PORT:
-    if type(FTP_PORT) is type(0): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
-    for address, port in FTP_PORT:
-        FTPServer(
-           module=MODULE,
-           ip=address,
-           port=port,
-           resolver=rs,
-           logger_object=lg)
-
-# PCGI Server
-if PCGI_FILE and not READ_ONLY:
-    PCGI_FILE=os.path.join(here, PCGI_FILE)
-    if os.path.exists(PCGI_FILE):
-        zpcgi = PCGIServer(
-            module=MODULE,
-            ip=IP_ADDRESS,
-            pcgi_file=PCGI_FILE,
-            resolver=rs,
-            logger_object=lg)
-
-
-# FastCGI Server
-if FCGI_PORT and not READ_ONLY:
-    fcgiPort = None
-    fcgiPath = None
-    try:
-        fcgiPort = string.atoi(FCGI_PORT)
-    except ValueError:
-        fcgiPath = FCGI_PORT
-    zfcgi = FCGIServer(module=MODULE,
-                       ip=IP_ADDRESS,
-                       port=fcgiPort,
-                       socket_file=fcgiPath,
-                       resolver=rs,
-                       logger_object=lg)
-
-
-# Monitor Server
-if MONITOR_PORT:
-    from AccessControl.User import emergency_user
-    if not hasattr(emergency_user, '__null_user__'):
-        pw = emergency_user._getPassword()
-    else:
-        pw = None
-        zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
-                 ' because no emergency user exists.')
-    if pw:
-        if type(MONITOR_PORT) is type(0): 
-            MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
-        for address, port in MONITOR_PORT:
-            monitor=secure_monitor_server(
-                password=pw,
-                hostname=address,
-                port=port)
-
-# Try to set uid to "-u" -provided uid.
-# Try to set gid to  "-u" user's primary group. 
-# This will only work if this script is run by root.
 try:
-    import pwd
-    try:
-        try:    UID = string.atoi(UID)
-        except: pass
-        gid = None
-        if type(UID) == type(""):
-            uid = pwd.getpwnam(UID)[2]
-            gid = pwd.getpwnam(UID)[3]
-        elif type(UID) == type(1):
-            uid = pwd.getpwuid(UID)[2]
-            gid = pwd.getpwuid(UID)[3]
-        else:
-            raise KeyError 
+    # Import logging support
+    import zLOG
+    import ZLogger
+
+    if READ_ONLY:
+        zLOG._stupid_dest=sys.stderr
+    else:
+        zLOG.log_write = ZLogger.ZLogger.log_write
+
+    if DETAILED_LOG_FILE:
+        from ZServer import DebugLogger
+        logfile=os.path.join(CLIENT_HOME, DETAILED_LOG_FILE)
+        DebugLogger.log=DebugLogger.DebugLogger(logfile).log
+
+    # Import Zope (or Main)
+    exec "import "+MODULE in {}
+
+    # Location of the ZServer log file. This file logs all ZServer activity.
+    # You may wish to create different logs for different servers. See
+    # medusa/logger.py for more information.
+    if not os.path.isabs(LOG_FILE):
+        LOG_PATH=os.path.join(CLIENT_HOME, LOG_FILE)
+    else:
+        LOG_PATH=LOG_FILE
+
+    # Location of the ZServer pid file. When ZServer starts up it will write
+    # its PID to this file.
+    PID_FILE=os.path.join(CLIENT_HOME, 'Z2.pid')
+
+
+    # import ZServer stuff
+
+    # First, we need to increase the number of threads
+    if MODULE=='Zope':
+        from ZServer import setNumberOfThreads
+        setNumberOfThreads(NUMBER_OF_THREADS)
+
+    from ZServer import resolver, logger, asyncore
+
+    from ZServer import zhttp_server, zhttp_handler
+    from ZServer.WebDAVSrcHandler import WebDAVSrcHandler
+    from ZServer import PCGIServer,FTPServer,FCGIServer
+
+    from ZServer import secure_monitor_server
+
+    ## ZServer startup
+    ##
+
+    # Resolver and Logger, used by other servers
+    if DNS_IP:
+        rs = resolver.caching_resolver(DNS_IP)
+    else:
+        rs=None
+
+    if READ_ONLY:
+        lg = logger.file_logger('-') # log to stdout
+    elif os.environ.has_key('ZSYSLOG'):
+        lg = logger.syslog_logger(os.environ['ZSYSLOG'])
+    elif os.environ.has_key('ZSYSLOG_SERVER'):
+        lg = logger.syslog_logger(string.split(os.environ['ZSYSLOG_SERVER'], ':'))
+    else:
+        lg = logger.file_logger(LOG_PATH)
+
+    # HTTP Server
+    if HTTP_PORT:
+        if type(HTTP_PORT) is type(0): HTTP_PORT=((IP_ADDRESS, HTTP_PORT),)
+        for address, port in HTTP_PORT:
+            hs = zhttp_server(
+                ip=address,
+                port=port,
+                resolver=rs,
+                logger_object=lg)
+
+            # Handler for a published module. zhttp_handler takes 3 arguments:
+            # The name of the module to publish, and optionally the URI base
+            # which is basically the SCRIPT_NAME, and optionally a dictionary
+            # with CGI environment variables which override default
+            # settings. The URI base setting is useful when you want to
+            # publish more than one module with the same HTTP server. The CGI
+            # environment setting is useful when you want to proxy requests
+            # from another web server to ZServer, and would like the CGI
+            # environment to reflect the CGI environment of the other web
+            # server.    
+            zh = zhttp_handler(MODULE, '', HTTP_ENV)
+            hs.install_handler(zh)
+
+    # WebDAV source Server (runs HTTP, but munges request to return
+    #  'manage_FTPget').
+    if WEBDAV_SOURCE_PORT:
+        if type(WEBDAV_SOURCE_PORT) is type(0):
+            WEBDAV_SOURCE_PORT=((IP_ADDRESS, WEBDAV_SOURCE_PORT),)
+        for address, port in WEBDAV_SOURCE_PORT:
+            hs = zhttp_server(
+                ip=address,
+                port=port,
+                resolver=rs,
+                logger_object=lg)
+
+            # Handler for a published module. zhttp_handler takes 3 arguments:
+            # The name of the module to publish, and optionally the URI base
+            # which is basically the SCRIPT_NAME, and optionally a dictionary
+            # with CGI environment variables which override default
+            # settings. The URI base setting is useful when you want to
+            # publish more than one module with the same HTTP server. The CGI
+            # environment setting is useful when you want to proxy requests
+            # from another web server to ZServer, and would like the CGI
+            # environment to reflect the CGI environment of the other web
+            # server.    
+            zh = WebDAVSrcHandler(MODULE, '', HTTP_ENV)
+            hs.install_handler(zh)
+
+    # FTP Server
+    if FTP_PORT:
+        if type(FTP_PORT) is type(0): FTP_PORT=((IP_ADDRESS, FTP_PORT),)
+        for address, port in FTP_PORT:
+            FTPServer(
+               module=MODULE,
+               ip=address,
+               port=port,
+               resolver=rs,
+               logger_object=lg)
+
+    # PCGI Server
+    if PCGI_FILE and not READ_ONLY:
+        PCGI_FILE=os.path.join(here, PCGI_FILE)
+        if os.path.exists(PCGI_FILE):
+            zpcgi = PCGIServer(
+                module=MODULE,
+                ip=IP_ADDRESS,
+                pcgi_file=PCGI_FILE,
+                resolver=rs,
+                logger_object=lg)
+
+
+    # FastCGI Server
+    if FCGI_PORT and not READ_ONLY:
+        fcgiPort = None
+        fcgiPath = None
         try:
-            if gid is not None:
-                try:
-                    os.setgid(gid)
-                except OSError:
-                    pass
-            os.setuid(uid)
-        except OSError:
-            pass
-    except KeyError:
-        zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
+            fcgiPort = string.atoi(FCGI_PORT)
+        except ValueError:
+            fcgiPath = FCGI_PORT
+        zfcgi = FCGIServer(module=MODULE,
+                           ip=IP_ADDRESS,
+                           port=fcgiPort,
+                           socket_file=fcgiPath,
+                           resolver=rs,
+                           logger_object=lg)
+
+
+    # Monitor Server
+    if MONITOR_PORT:
+        from AccessControl.User import emergency_user
+        if not hasattr(emergency_user, '__null_user__'):
+            pw = emergency_user._getPassword()
+        else:
+            pw = None
+            zLOG.LOG("z2", zLOG.WARNING, 'Monitor server not started'
+                     ' because no emergency user exists.')
+        if pw:
+            if type(MONITOR_PORT) is type(0): 
+                MONITOR_PORT=((IP_ADDRESS, MONITOR_PORT),)
+            for address, port in MONITOR_PORT:
+                monitor=secure_monitor_server(
+                    password=pw,
+                    hostname=address,
+                    port=port)
+
+    # Try to set uid to "-u" -provided uid.
+    # Try to set gid to  "-u" user's primary group. 
+    # This will only work if this script is run by root.
+    try:
+        import pwd
+        try:
+            try:    UID = string.atoi(UID)
+            except: pass
+            gid = None
+            if type(UID) == type(""):
+                uid = pwd.getpwnam(UID)[2]
+                gid = pwd.getpwnam(UID)[3]
+            elif type(UID) == type(1):
+                uid = pwd.getpwuid(UID)[2]
+                gid = pwd.getpwuid(UID)[3]
+            else:
+                raise KeyError 
+            try:
+                if gid is not None:
+                    try:
+                        os.setgid(gid)
+                    except OSError:
+                        pass
+                os.setuid(uid)
+            except OSError:
+                pass
+        except KeyError:
+            zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
+    except:
+        pass
+
+
+
+    # if it hasn't failed at this point, create a .pid file.
+    if not READ_ONLY:
+        pf = open(PID_FILE, 'w')
+        pid=str(os.getpid())
+        try: pid=str(os.getppid())+' '+pid
+        except: pass
+        pf.write(pid)
+        pf.close()
+
 except:
-    pass
-
-
-
-# if it hasn't failed at this point, create a .pid file.
-if not READ_ONLY:
-    pf = open(PID_FILE, 'w')
-    pid=str(os.getpid())
-    try: pid=str(os.getppid())+' '+pid
+    # Log startup exception and tell zdaemon not to restart us.
+    try:
+        zLOG.LOG("z2", zLOG.PANIC, "Startup exception",
+                 error=sys.exc_info())
     except: pass
-    pf.write(pid)
-    pf.close()
+    sys.exit(0)
 
 # Start Medusa, Ye Hass!
 sys.ZServerExitCode=0
