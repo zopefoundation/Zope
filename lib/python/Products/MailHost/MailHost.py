@@ -12,8 +12,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.65 2002/01/15 04:05:12 jens Exp $"""
-__version__ = "$Revision: 1.65 $"[11:-2]
+$Id: MailHost.py,v 1.66 2002/01/15 04:23:08 jens Exp $"""
+__version__ = "$Revision: 1.66 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, MessageDialog, InitializeClass
 from smtplib import SMTP
@@ -30,25 +30,13 @@ smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
 manage_addMailHostForm=DTMLFile('dtml/addMailHost_form', globals())
-def manage_addMailHost(self, id, title='', smtp_host=None,
-                       localhost='localhost', smtp_port=25,
-                       timeout=1.0, REQUEST=None):
+def manage_addMailHost( self, id, title='', smtp_host='localhost'
+                      , localhost='localhost', smtp_port=25
+                      , timeout=1.0, REQUEST=None ):
     ' add a MailHost into the system '
+    i = MailHost( id, title, smtp_host, smtp_port )   #create new mail host
+    self._setObject( id,i )   #register it
 
-    id=str(id)
-    title=str(title)
-    if smtp_host is not None:
-        smtp_host=str(smtp_host)
-    if type(smtp_port) is not type(1):
-        smtp_port=string.atoi(smtp_port)
-
-    i=MailHost()            #create new mail host
-    i.id=id                 #give it id
-    i.title=title           #title
-    i._init(smtp_host=smtp_host, smtp_port=smtp_port)
-
-    self=self.this()
-    self._setObject(id,i)   #register it
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
@@ -75,10 +63,14 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         )
 
 
-    def __init__(self):
-        'nothing yet'
-        pass
+    def __init__( self, id='', title='', smtp_host='localhost', smtp_port=25 ):
+        """Initialize a new MailHost instance """
+        self.id = id
+        self.title = title
+        self.smtp_host = str( smtp_host )
+        self.smtp_port = str( smtp_port )
 
+    # staying for now... (backwards compatibility)
     def _init(self, smtp_host, smtp_port):
         self.smtp_host=smtp_host
         self.smtp_port=smtp_port
