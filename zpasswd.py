@@ -85,7 +85,7 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.5 $ '[11:-2]
+__version__='$Revision: 1.6 $ '[11:-2]
 
 import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
@@ -119,6 +119,7 @@ def write_access(home, user='', group=''):
 
     ac_path=os.path.join(home, 'access')
     if not os.path.exists(ac_path):
+        print '-'*78
         print 'creating default access file'
         acfile=open(ac_path, 'w')
         pw = ''
