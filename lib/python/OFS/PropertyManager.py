@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property management"""
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import ExtensionClass, Globals
 import ZDOM
@@ -288,10 +288,15 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
 
     # Web interface
+
+    def _wrapperCheck(self, object):
+        if hasattr(object, 'aq_base'):
+            raise ValueError, 'Invalid property value: wrapped object'
     
     def manage_addProperty(self, id, value, type, REQUEST=None):
         """Add a new property via the web. Sets a new property with
         the given id, type, and value."""
+        self._wrapperCheck(value)
         if type_converters.has_key(type):
             value=type_converters[type](value)
         self._setProperty(id, value, type)
@@ -300,9 +305,11 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
 
     def manage_editProperties(self, REQUEST):
         """Edit object properties via the web."""
-        for p in self._properties:
-            n=p['id']
-            self._setPropValue(n, REQUEST.get(n, ''))
+        for prop in self._properties:
+            name=prop['id']
+            value=REQUEST.get(name, '')
+            self._wrapperCheck(value)
+            self._setPropValue(name, value)
         return MessageDialog(
                title  ='Success!',
                message='Your changes have been saved',
@@ -328,6 +335,7 @@ class PropertyManager(ExtensionClass.Base, ZDOM.ElementWithAttributes):
             if self.hasProperty(name):
                 if not 'w' in propdict[name].get('mode', 'wd'):
                     raise 'BadRequest', '%s cannot be changed' % name
+                self._wrapperCheck(value)
                 self._setPropValue(name, value)
     
         if REQUEST is not None:
