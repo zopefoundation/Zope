@@ -15,13 +15,11 @@
 """
 
 import os
-import sys
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
 from Products.PluginIndexes.common import safe_callable
-from OFS.SimpleItem import SimpleItem
 
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion

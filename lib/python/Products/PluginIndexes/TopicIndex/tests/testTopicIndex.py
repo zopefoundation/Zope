@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-import os ,sys, re, unittest
+import unittest
 
 import ZODB
 from Products.PluginIndexes.TopicIndex.TopicIndex import TopicIndex

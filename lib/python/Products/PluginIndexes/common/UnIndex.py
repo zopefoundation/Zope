@@ -16,9 +16,8 @@ $Id$"""
 import sys
 from cgi import escape
 from logging import getLogger
-from types import IntType, StringTypes
 
-from BTrees.OOBTree import OOBTree, OOSet
+from BTrees.OOBTree import OOBTree 
 from BTrees.IOBTree import IOBTree
 from BTrees.IIBTree import IITreeSet, IISet, union, intersection
 from OFS.SimpleItem import SimpleItem
@@ -73,6 +72,14 @@ class UnIndex(SimpleItem):
           'caller' -- reference to the calling object (usually
           a (Z)Catalog instance
         """
+
+        def _get(o, k, default):
+            """ return a value for a given key of a dict/record 'o' """
+            if isinstance(o, dict):
+                return o.get(k, default)
+            else:
+                return getattr(o, k, default)
+
         self.id = id
         self.ignore_ex=ignore_ex        # currently unimplimented
         self.call_methods=call_methods
@@ -81,15 +88,12 @@ class UnIndex(SimpleItem):
         self.useOperator = 'or'
 
         # allow index to index multiple attributes
-        try:
-            ia=extra['indexed_attrs']
-            if type(ia) in StringTypes:
-                self.indexed_attrs = ia.split(',')
-            else:
-                self.indexed_attrs = list(ia)
-            self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ] or [self.id]
-        except:
-            self.indexed_attrs = [ self.id ]
+        ia = _get(extra, 'indexed_attrs', id)
+        if isinstance(ia, str):
+            self.indexed_attrs = ia.split(',')
+        else:
+            self.indexed_attrs = list(ia)
+        self.indexed_attrs = [ attr.strip() for attr in  self.indexed_attrs if attr ] 
 
         self._length = BTrees.Length.Length()
         self.clear()

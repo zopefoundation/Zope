@@ -19,7 +19,6 @@ from logging import getLogger
 from ZODB.POSException import ConflictError
 from BTrees.IIBTree import IITreeSet
 from Persistence import Persistent
-from Globals import DTMLFile
 
 from RestrictedPython.Eval import RestrictionCapableEval
 
