@@ -336,6 +336,13 @@ setup(
     cmdclass={'install_data': install_data}
 )
 
+# logging
+setup(
+    name='logging',
+    author='Vinay Sajip',
+    packages=['logging'],
+    )
+
 # OFS
 setup(
     name='OFS',
@@ -647,7 +654,8 @@ setup(
     name='Top-level',
     author=AUTHOR,
 
-    py_modules=['Globals', 'ImageFile', 'LOG', 'ts_regex', 'xmlrpclib',]
+    py_modules=['Globals', 'ImageFile', 'LOG', 'ts_regex', 'xmlrpclib',
+                'Lifetime']
 )
 
 # Products base directory
