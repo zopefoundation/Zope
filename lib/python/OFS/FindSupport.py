@@ -11,7 +11,7 @@
 #
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 import sys, os, time, Globals, ExtensionClass
@@ -22,6 +22,7 @@ from DocumentTemplate.DT_Util import InstanceDict, TemplateDict
 from DateTime import DateTime
 from string import translate
 from AccessControl.DTML import RestrictedDTML
+from AccessControl import ClassSecurityInfo
 
 class FindSupport(ExtensionClass.Base):
     """Find support for Zope Folders"""
@@ -48,6 +49,9 @@ class FindSupport(ExtensionClass.Base):
          'help':('OFSP','Find.stx')},
         )
 
+    security = ClassSecurityInfo()
+
+    security.declareProtected('View management screens', 'ZopeFind')
     def ZopeFind(self, obj, obj_ids=None, obj_metatypes=None,
                  obj_searchterm=None, obj_expr=None,
                  obj_mtime=None, obj_mspec=None,
@@ -148,9 +152,10 @@ class FindSupport(ExtensionClass.Base):
 
 
 
-
+    security.declareProtected('View management screens', 'PrincipiaFind')
     PrincipiaFind=ZopeFind
 
+    security.declareProtected('View management screens', 'ZopeFindAndApply')
     def ZopeFindAndApply(self, obj, obj_ids=None, obj_metatypes=None,
                          obj_searchterm=None, obj_expr=None,
                          obj_mtime=None, obj_mspec=None,
@@ -296,7 +301,7 @@ def role_match(ob, permission, roles, lt=type([]), tt=type(())):
     return 1
 
 
-Globals.default__class_init__(FindSupport)
+Globals.InitializeClass(FindSupport)
 
 # Helper functions
 
