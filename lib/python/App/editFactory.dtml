@@ -17,19 +17,12 @@
     </tr>
   
   <tr>
-    <th align="LEFT" valign="TOP">
-      Name of new object type, which is the name that will appear in
-      the folder "add" list
-      </th>
+    <th align="LEFT" valign="TOP">Add list name</th>
     <td align="LEFT" valign="TOP"><input type="TEXT" name="object_type"
      size="40" value="<!--#var object_type-->"></td>
     </tr>
   
-  <tr><th ALIGN="LEFT">
-	  Select a method to begin the process of adding
-	  new objects. This is the method that will be invoked when a
-	  user adds a new object.
-      </th>
+  <tr><th ALIGN="LEFT">Method</th>
       <td ALIGN="LEFT"><select name="initial">
 	<!--#in objectIds-->
 	   <option
@@ -41,5 +34,9 @@
   <tr><td></td><td><br><input type="SUBMIT" value="Change"></td></tr>
 
 </table></form>
+
+The <strong>Method</strong> is the method that will be invoked when a
+user adds a new object.  This must be one of the objects in the
+product, typically a Document.
 
 </body></html>
