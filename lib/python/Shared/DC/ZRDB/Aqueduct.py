@@ -10,10 +10,10 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.6 1997/08/15 22:28:18 jim Exp $'''
-__version__='$Revision: 1.6 $'[11:-2]
+$Id: Aqueduct.py,v 1.7 1997/09/22 18:43:46 jim Exp $'''
+__version__='$Revision: 1.7 $'[11:-2]
 
-from Globals import ManageHTMLFile
+from Globals import HTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
 DateTime.now=DateTime.DateTime
 
@@ -328,6 +328,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.7  1997/09/22 18:43:46  jim
+# Got rid of ManageHTML
+#
 # Revision 1.6  1997/08/15 22:28:18  jim
 # Added machinery to get argument values from instance attributes.
 #
