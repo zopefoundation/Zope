@@ -163,12 +163,13 @@ class ZClassViewsSheet(OFS.PropertySheets.PropertySheet,
             if options[i]['action'] != actions[i]:
                 options[i]['action'] = actions[i]
                 changed=1
-            if (options[i].has_key('help') and options[i]['help'] != helps[i]) or \
-               (not options[i].has_key('help') and helps[i]):
+            if options[i].get('help') != (self.zclass_productid(), helps[i]):
                 if helps[i]:
                     options[i]['help'] = (self.zclass_productid(), helps[i])
-                else:
+                    changed=1
+                elif options[i].has_key('help'):
                     del options[i]['help']
+                    changed=1
         if changed:
             self.setClassAttr('manage_options', options)
             message='The changes were saved.'
