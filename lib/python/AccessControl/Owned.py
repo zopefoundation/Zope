@@ -85,8 +85,8 @@
 __doc__='''Support for owned objects
 
 
-$Id: Owned.py,v 1.2 2000/05/11 18:54:13 jim Exp $'''
-__version__='$Revision: 1.2 $'[11:-2]
+$Id: Owned.py,v 1.3 2000/05/15 16:44:00 jim Exp $'''
+__version__='$Revision: 1.3 $'[11:-2]
 
 import Globals, urlparse, SpecialUsers, ExtensionClass, string
 from AccessControl import getSecurityManager
@@ -257,8 +257,13 @@ class Owned(ExtensionClass.Base):
             # Otherwise change the ownership
             user=getSecurityManager().getUser()
             if aq_base(user) is SpecialUsers.super:
-                raise SuperCannotOwn, (
-                    "Objects cannot be owned by the superuser")
+                __creatable_by_super__=getattr(self,
+                                               '__creatable_by_super__',
+                                               None)
+                if (__creatable_by_super__ is None or
+                    (not __creatable_by_super__())):                    
+                    raise SuperCannotOwn, (
+                        "Objects cannot be owned by the superuser")
             self.changeOwnership(user)
 
         # Force all subs to acquire ownership!
