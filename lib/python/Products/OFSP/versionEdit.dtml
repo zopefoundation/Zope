@@ -1,0 +1,34 @@
+<HTML>
+<HEAD>
+<TITLE>Edit</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
+<!--#var manage_tabs-->
+
+<FORM ACTION="manage_edit" METHOD="POST">
+<TABLE CELLSPACING="2">
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <STRONG>Id</STRONG>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <!--#var id-->
+  </TD>
+</TR>
+<TR>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <EM><STRONG>Title</STRONG></EM>
+  </TD>
+  <TD ALIGN="LEFT" VALIGN="TOP">
+  <INPUT TYPE="TEXT" NAME="title" SIZE="40" VALUE="<!--#var title-->">
+  </TD>
+</TR>
+<TR>
+<TD></TD>
+<TD><BR><INPUT TYPE="SUBMIT" VALUE="Edit"></TD>
+</TR>
+</TABLE>
+</FORM>
+</BODY>
+</HTML>
+
