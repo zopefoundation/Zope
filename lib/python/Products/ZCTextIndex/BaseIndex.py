@@ -189,42 +189,30 @@ class BaseIndex(Persistent):
         # of the size of the same IIBTree, but the dict uses more
         # space when it is live in memory.  An IIBTree stores two C
         # arrays of ints, one for the keys and one for the values.  It
-        # holds upto 120 key-value pairs in a single bucket.
-        map = self._wordinfo.get(wid)
-        if map is None:
-            map = {}
+        # holds up to 120 key-value pairs in a single bucket.
+        doc2score = self._wordinfo.get(wid)
+        if doc2score is None:
+            doc2score = {}
         else:
             # _add_wordinfo() is called for each update.  If the map
             # size exceeds the DICT_CUTOFF, convert to an IIBTree.
-            if len(map) == self.DICT_CUTOFF:
-                map = IIBTree(map)
-        map[docid] = f
-        self._wordinfo[wid] = map # Not redundant, because of Persistency!
+            if len(doc2score) == self.DICT_CUTOFF:
+                doc2score = IIBTree(doc2score)
+        doc2score[docid] = f
+        self._wordinfo[wid] = doc2score # not redundant:  Persistency!
 
     def _del_wordinfo(self, wid, docid):
-        # XXX Not clear if the try/excepts here are guarding against
-        # corrupt data structures or if it is possible for the index
-        # to get in a state where it thinks an entry exits for the
-        # wid, docid pair and it doesn't.
-        try:
-            map = self._wordinfo[wid]
-        except KeyError:
-##            print "No info for wid", wid
-            return
-        try:
-            del map[docid]
-        except KeyError:
-##            print "doc %s does not use %s" % (docid, wid)
-            return
-        if len(map) == 0:
+        doc2score = self._wordinfo[wid]
+        del doc2score[docid]
+        if len(doc2score) == 0:
             del self._wordinfo[wid]
             return
-        if len(map) == self.DICT_CUTOFF:
+        if len(doc2score) == self.DICT_CUTOFF:
             new = {}
-            for k, v in map.items():
+            for k, v in doc2score.items():
                 new[k] = v
-            map = new
-        self._wordinfo[wid] = map # Not redundant, because of Persistency!
+            doc2score = new
+        self._wordinfo[wid] = doc2score # not redundant:  Persistency!
 
 def inverse_doc_frequency(term_count, num_items):
     """Return the inverse doc frequency for a term,
