@@ -216,6 +216,8 @@ Zope Changes
         now forbidden as they break WebDAV functionality. Existing
         Propertysheets are not affected
 
+      - Collector #348: decapitate() now recognizes both \r\n and \n\n
+        to be compliant with the HTTP RFC
 
   Zope 2.5.1 beta 1
     
