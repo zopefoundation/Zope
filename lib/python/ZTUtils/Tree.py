@@ -12,11 +12,12 @@
 ##############################################################################
 __doc__='''Tree manipulation classes
 
-$Id: Tree.py,v 1.9 2002/10/04 14:47:54 mj Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: Tree.py,v 1.10 2002/10/04 16:50:58 mj Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 from Acquisition import Explicit
 from ComputedAttribute import ComputedAttribute
+from types import ListType, TupleType
 
 class TreeNode(Explicit):
     __allow_access_to_unprotected_subobjects__ = 1
@@ -131,18 +132,21 @@ class TreeMaker:
     def getChildren(self, object):
         if self._values_function is not None:
             return self._values_function(object)
-        if self._values_filter and hasattr(object, 'aq_acquire'):
-            return object.aq_acquire(self._values, aqcallback,
-                                     self._values_filter)()
-        return getattr(object, self._values)()
+
+        children = getattr(object, self._values)
+        if not (isinstance(children, ListType) or
+                isinstance(children, TupleType)):
+            # Assume callable; result not useful anyway otherwise.
+            children = children()
+
+        if self._values_filter:
+            return self._values_filter(children)
+        return children
 
 def simple_type(ob,
                 is_simple={type(''):1, type(0):1, type(0.0):1,
                            type(0L):1, type(None):1 }.has_key):
     return is_simple(type(ob))
-
-def aqcallback(self, inst, name, value, filter):
-    return filter(self, inst, name, value)
 
 from binascii import b2a_base64, a2b_base64
 from string import translate, maketrans
