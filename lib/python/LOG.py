@@ -133,6 +133,16 @@ with a callable object that takes 5 arguments:
                traceback.  If provided, then a summary of the error
                is added to the detail.
 
+There is a default stupid logging facility that:
+
+  - swallows logging information by default,
+
+  - outputs to sys.stderr if the environment variable
+    STUPID_LOG_FILE is set to an empty string, and
+
+  - outputs to file if the environment variable
+    STUPID_LOG_FILE is set to a file name.
+    
 
 """
 import time
