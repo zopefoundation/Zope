@@ -89,10 +89,15 @@ Dummy TALES engine so that I can test out the TAL implementation.
 import re
 import string
 from TALVisitor import NAME_RE
+from TALVisitor import macroIndexer
+from TALCompiler import TALCompiler
 
 class DummyEngine:
 
-    def __init__(self):
+    def __init__(self, macros=None):
+        if macros is None:
+            macros = {}
+        self.macros = macros
         dict = {}
         self.locals = self.globals = dict
         self.stack = [dict]
@@ -156,6 +161,21 @@ class DummyEngine:
     def evaluateSequence(self, expr):
         # XXX Should return a sequence
         return self.evaluate(expr)
+
+    def evaluateMacro(self, macroName):
+        doc, localName = self.findMacroDocument(macroName)
+        if not doc:
+            # Local macro
+            macro = self.macros[localName]
+        else:
+            # External macro
+            macroDict = macroIndexer(doc)
+            if not macroDict.has_key(localName):
+                print "Macro", macroName, "not found"
+                return
+            macroNode = macroDict[localName]
+            macro, dummy = TALCompiler(macroNode)()
+        return macro
 
     def findMacroDocument(self, macroName):
         if not macroName:
