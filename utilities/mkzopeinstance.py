@@ -69,6 +69,7 @@ def main():
                 sys.exit(2)
     if not dirname:
         dirname = get_dirname()
+    dirname = os.path.expanduser(dirname)
     inituser = os.path.join(dirname, "inituser")
     if not (user or os.path.exists(inituser)):
         user, password = get_inituser()
