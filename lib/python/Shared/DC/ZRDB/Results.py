@@ -99,6 +99,10 @@ class Results:
     """
     _index=None
 
+    # We need to allow access to not-explicitly-protected
+    # individual record objects contained in the result.
+    __allow_access_to_unprotected_subobjects__=1
+
     def __init__(self,(items,data),brains=NoBrains, parent=None,
                  zbrains=None):
 
