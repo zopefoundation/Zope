@@ -11,21 +11,31 @@
 __doc__='''Class for reading RDB files
 
 
-$Id: RDB.py,v 1.9 1997/12/05 21:27:58 jim Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: RDB.py,v 1.10 1997/12/12 23:38:59 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import regex, regsub
-from string import split, strip, lower, atof, atoi, atol
+from string import split, strip, lower, atof, atoi, atol, find
 import DateTime
 from Missing import MV
 from array import array
 from Record import Record
 from Acquisition import Implicit
 
+def parse_text(s):
+    if find('\\') < 0 or (find('\\t') < 0 and find('\\n') < 0): return s
+    r=[]
+    for x in split(s,'\\\\'):
+	x=join(split(x,'\\n'),'\n')
+	r.append(join(split(x,'\\t'),'\t'))
+    return join(r,'\\')
+
+
 Parsers={'n': atof,
 	 'i': atoi,
 	 'l': atol,
 	 'd': DateTime.DateTime,
+	 't': parse_text,
 	 }
 
 
@@ -173,6 +183,9 @@ class File:
 ############################################################################## 
 #
 # $Log: RDB.py,v $
+# Revision 1.10  1997/12/12 23:38:59  jim
+# Added support for text (t) column type.
+#
 # Revision 1.9  1997/12/05 21:27:58  jim
 # Better brain and record-as-instance support.
 #
