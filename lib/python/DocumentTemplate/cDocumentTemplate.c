@@ -10,7 +10,7 @@
 
 static char cDocumentTemplate_module_documentation[] = 
 ""
-"\n$Id: cDocumentTemplate.c,v 1.12 1998/04/02 21:17:41 jim Exp $"
+"\n$Id: cDocumentTemplate.c,v 1.13 1998/04/02 22:35:45 jim Exp $"
 ;
 
 #include "ExtensionClass.h"
@@ -153,7 +153,7 @@ InstanceDict_subscript( InstanceDictobject *self, PyObject *key)
       if(self->validate != Py_None)
 	{
 	  UNLESS(v=PyObject_CallFunction(
-	    self->validate,"OOOO",
+	    self->validate,"OOOOO",
 	    self->inst, self->inst, key, r, self->namespace))
 	    return NULL;
 	  Py_DECREF(v);
@@ -830,7 +830,7 @@ void
 initcDocumentTemplate()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.12 $";
+  char *rev="$Revision: 1.13 $";
   PURE_MIXIN_CLASS(cDocument,
 	"Base class for documents that adds fast validation method",
 	Document_methods);
@@ -880,6 +880,10 @@ initcDocumentTemplate()
 Revision Log:
 
   $Log: cDocumentTemplate.c,v $
+  Revision 1.13  1998/04/02 22:35:45  jim
+  Fixed stupid bug that causes validation of non-acquired instance
+  attributes to fail.
+
   Revision 1.12  1998/04/02 21:17:41  jim
   Fixed (old) memory leak for DocumentTemplates wo validate.
 
