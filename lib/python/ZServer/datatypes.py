@@ -41,7 +41,6 @@ def get_default_host_info():
         if os.name == 'posix' and 'localhost' in hostname.lower(): 
             hostname = ''
         _default_host_info = hostname, ip
-
     return _default_host_info
 
 
@@ -59,6 +58,9 @@ class ServerFactory:
         if defaulthost:
             hostname = defaulthost
             ip = socket.gethostbyname(hostname)
+        elif defaulthost is '':
+            hostname = ''
+            ip = '127.0.0.1'
         else:
             hostname, ip = get_default_host_info()
         if not self.host:

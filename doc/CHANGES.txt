@@ -57,6 +57,9 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
+ 
+      - Collector #1507: Zope now binds again to all available IP addresses if
+        ip-address is unset
 
       - Use 'del' instead of 'list.remove()' in
         Catalog.delColumn(). There can be only one column with the
