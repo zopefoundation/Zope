@@ -86,7 +86,7 @@ from os.path import dirname as dn
 import sys
 
 # these are replacements from mkzopeinstance
-PYTHON = r'<<PYTHON>>'
+PYTHONW = r'<<PYTHONW>>'
 SOFTWARE_HOME=r'<<SOFTWARE_HOME>>'
 INSTANCE_HOME = r'<<INSTANCE_HOME>>'
 ZOPE_HOME = r'<<ZOPE_HOME>>'
@@ -97,12 +97,12 @@ PYTHONSERVICE_EXE=r'%s\bin\PythonService.exe' % ZOPE_HOME
 
 sys.path.insert(0, SOFTWARE_HOME)
 
-from Zope.Startup.nt import NTService
+from nt_svcutils.service import Service
 
 servicename = 'Zope_%s' % str(hash(INSTANCE_HOME))
 
-class InstanceService(NTService.ZopeService):
-    start_cmd = '"%s" "%s" -C "%s"' % (PYTHON, ZOPE_RUN, CONFIG_FILE)
+class InstanceService(Service):
+    start_cmd = '"%s" "%s" -C "%s"' % (PYTHONW, ZOPE_RUN, CONFIG_FILE)
     _svc_name_ = servicename
     _svc_display_name_ = 'Zope instance at %s' % INSTANCE_HOME
     _exe_name_ = PYTHONSERVICE_EXE
