@@ -102,6 +102,8 @@ TAL Overview
 
     "TALES Overview":tales.stx
 
+    "METAL Overview":metal.stx
+
     "tal:attributes":tal-attributes.stx
 
     "tal:define":tal-define.stx
