@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -174,6 +174,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
+	if not roles: roles=[]
 	if 'Shared' in roles:
             return MessageDialog(
 		   title  ='Illegal value', 
@@ -198,6 +199,7 @@ class UserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
 		   title  ='Illegal value', 
                    message='Password and confirmation do not match',
                    action ='manage_main')
+	if not roles: roles=[]
 	if 'Shared' in roles:
             return MessageDialog(
 		   title  ='Illegal value', 
