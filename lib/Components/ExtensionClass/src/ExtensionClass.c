@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.23 1998/01/21 19:00:49 jim Exp $
+  $Id: ExtensionClass.c,v 1.24 1998/02/12 16:35:41 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.23 1998/01/21 19:00:49 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.24 1998/02/12 16:35:41 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1482,13 +1482,13 @@ initializeBaseExtensionClass(PyExtensionClass *self)
 	{
 	  if(ml->ml_meth)
 	    {
-	      UNLESS(-1 != PyMapping_SetItemString(
-                               dict,ml->ml_name,
-			       newCMethod(self, NULL, 
-					  ml->ml_name,
-					  ml->ml_meth,
-					  ml->ml_flags,
-					  ml->ml_doc)))
+	      if(! PyMapping_HasKeyString(dict,ml->ml_name) &&
+		 PyMapping_SetItemString(
+		     dict,ml->ml_name,
+		     newCMethod(self, NULL, ml->ml_name, ml->ml_meth,
+				ml->ml_flags, ml->ml_doc)
+		     ) < 0
+		 )
 		return NULL;
 	    }
 	  else if(ml->ml_doc && *(ml->ml_doc))
@@ -3319,7 +3319,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.23 $";
+  char *rev="$Revision: 1.24 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -3360,6 +3360,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.24  1998/02/12 16:35:41  jim
+  Fixed bug in handling method chains used for C inheritence.
+
   Revision 1.23  1998/01/21 19:00:49  jim
   Fixed __len__ bugs and added free lists for methods and wrappers
 
