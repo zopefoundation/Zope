@@ -1,6 +1,6 @@
 """Document object"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 from Globals import HTML, HTMLFile, MessageDialog
 from string import join,split,strip,rfind,atoi
@@ -61,14 +61,16 @@ class Document(HTML, Explicit, RoleManager, Item_w__name__):
 	elif inst is parent:
 	    return 1
 	else:
-	    if str(name)[:6]=='manage': return 0
-	    if hasattr(parent,'__roles__'): roles=parent.__roles__
+	    # if str(name)[:6]=='manage': return 0
+	    if hasattr(parent,'__roles__'):
+		roles=parent.__roles__
 	    elif hasattr(parent, 'aq_acquire'):
 		try: roles=parent.aq_acquire('__roles__')
 		except AttributeError: return 0
 	    else: return 0
+	    value=parent
 	if roles is None: return 1
-	try: return md.AUTHENTICATED_USER.hasRole(roles)
+	try: return md.AUTHENTICATED_USER.hasRole(value, roles)
 	except AttributeError: return 0
 
     manage_editForm=HTMLFile('documentEdit', globals())

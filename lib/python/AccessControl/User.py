@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 
 from PersistentMapping import PersistentMapping
@@ -25,7 +25,7 @@ class User(Implicit, Persistent):
     def authenticate(self, password):
 	return password==self.__
 
-    def hasRole(self,roles=None):
+    def hasRole(self,inst,roles=None):
 	if roles is None:
 	    return 1
 	for role in roles:
