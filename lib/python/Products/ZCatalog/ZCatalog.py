@@ -38,7 +38,6 @@ from Products.PluginIndexes.TextIndex import Splitter
 import urllib, time, sys
 import string,logging
 from IZCatalog import IZCatalog
-from ProgressHandler import ProgressMixin, DefaultProgressHandler
 
 LOG = logging.getLogger('Zope.ZCatalog')
 
@@ -57,7 +56,7 @@ def manage_addZCatalog(self, id, title,
         return self.manage_main(self, REQUEST,update_menu=1)
 
 
-class ZCatalog(Folder, Persistent, Implicit, ProgressMixin):
+class ZCatalog(Folder, Persistent, Implicit):
     """ZCatalog object
 
     A ZCatalog contains arbirary index like references to Zope
@@ -461,7 +460,7 @@ class ZCatalog(Folder, Persistent, Implicit, ProgressMixin):
                 '/manage_catalogIndexes?manage_tabs_message=Index%20Cleared')
 
 
-    def reindexIndex(self, name, REQUEST):
+    def reindexIndex(self, name, REQUEST, pghandler=None):
         if isinstance(name, str):
             name = (name,)
 
@@ -469,12 +468,13 @@ class ZCatalog(Folder, Persistent, Implicit, ProgressMixin):
         num_paths = len(paths)   # inefficient        
 
         i = 0
-        self.pg_register(DefaultProgressHandler(steps=10))
-        self.pg_init('reindexing %s' % name, num_paths)
+        if pghandler:
+            pghandler.init('reindexing %s' % name, num_paths)
 
         for p in paths:
             i+=1
-            self.pg_report(i)
+            if pghandler: pghandler.report(i)
+
             obj = self.resolve_path(p)
             if not obj:
                 obj = self.resolve_url(p, REQUEST)
@@ -498,7 +498,8 @@ class ZCatalog(Folder, Persistent, Implicit, ProgressMixin):
                          DeprecationWarning)
                     self.catalog_object(obj, p, idxs=name)
 
-        self.pg_finish()
+        if pghandler:
+            pghandler.finish()
 
     def manage_reindexIndex(self, ids=None, REQUEST=None, RESPONSE=None,
                             URL1=None):

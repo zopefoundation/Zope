@@ -16,8 +16,9 @@ $Id: ZCatalog.py 25050 2004-05-27 15:06:40Z chrisw $
 """
 
 import time, sys
+from zLOG import LOG, INFO
 
-class DefaultProgressHandler:
+class StdoutHandler:
     """ A simple progress handler """
 
     def __init__(self, steps=100):
@@ -42,25 +43,9 @@ class DefaultProgressHandler:
         print >>self.fp, '%s: %s' % (self._ident, text)
 
 
-class ProgressMixin:
-    """ A simple machinery to provide progres informations for long running
-        ZCatalog operations like reindexing.
-    """
+class ZLogHandler(StdoutHandler):
+    """ Use zLOG """
 
-    def pg_register(self, handler=None):
-        self._v_pg_handler = handler
+    def output(self, text):
+        LOG(self._ident, INFO, text)
 
-    def pg_init(self, ident, max):
-        handler = getattr(self, '_v_pg_handler', None)
-        if not handler: return
-        handler.init(ident, max)
-
-    def pg_finish(self):
-        handler = getattr(self, '_v_pg_handler', None)
-        if not handler: return
-        handler.finish()
-
-    def pg_report(self, current, *args, **kw):
-        handler = getattr(self, '_v_pg_handler', None)
-        if not handler: return
-        handler.report(current, *args, **kw)
