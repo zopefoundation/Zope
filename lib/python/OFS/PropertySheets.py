@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -250,6 +250,11 @@ class PropertySheet(Traversable, Persistent, Implicit):
         self._wrapperCheck(value)
         if not self.valid_property_id(id):
             raise 'Bad Request', 'Invalid property id, %s.' % id
+
+        # Perform additional validation checks for security.
+        from ObjectManager import checkValidId
+        checkValidId(self, id)
+
         if not self.property_extensible_schema__():
             raise 'Bad Request', (
                 'Properties cannot be added to this property sheet')

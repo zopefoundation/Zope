@@ -29,6 +29,9 @@ Zope changes
         - A misspelled function name which prevented the addition of
           properties was corrected.
 
+        - Caused PropertySheets to restrict IDs the same way
+          ObjectManager does.
+
     Zope 2.3.0 alpha 1
     
       Features Added
