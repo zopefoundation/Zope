@@ -22,23 +22,27 @@ Zope Changes
 
    - Port ZOPE_CONFIG patch from Zope 2.7 to Zope 2.8
 
-
   after Zope 2.8a1
 
     Bugs fixed
 
-      - docutils: updated to V 0.3.5. The Zope core now contains a full copy
-        of the docutils package except some GPLed files which can not be included
+      - docutils: updated to V 0.3.5. The Zope core now contains a full copy of
+        the docutils package except some GPLed files which can not be included
         with the Zope distribution due to license constraints on svn.zope.org.
 
-      - docutils: moved from lib/python/docutils to lib/python/third_party/docutils 
+      - docutils: moved from lib/python/docutils to 
+        lib/python/third_party/docutils 
 
-      - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt' attribute
-        is no longer taken from the 'title' property but from the new 'alt' property. 
-        The border="0" attribute is no longer part of the HTML output except specified
-        otherwise.
+      - Collector #1557/OFS.Image: Introducing new 'alt' property. The 'alt'
+        attribute is no longer taken from the 'title' property but from the new
+        'alt' property.  The border="0" attribute is no longer part of the HTML 
+        output except specified otherwise.
            
-      - Collector #1511: made IPCServer show up in the Control Panel under "Network Services"
+      - Collector #1511: made IPCServer show up in the Control Panel under 
+        "Network Services"
+
+      - Collector #1443: Applied patch by Simon Eisenmann that reimplements 
+        the XML parser used in WebDAV fixing a memory leak.
 
   Zope 2.8a1
 
