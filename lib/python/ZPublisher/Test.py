@@ -130,11 +130,11 @@ Examples
             s
 
 
-$Id: Test.py,v 1.20 1998/09/09 18:04:19 jim Exp $
+$Id: Test.py,v 1.21 1998/09/21 23:48:59 jim Exp $
 '''
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
-import sys,traceback, profile, os
+import sys, traceback, profile, os, getopt, string, time
 repeat_count=100
 
 def main():
@@ -179,16 +179,14 @@ def main():
 
 
 def time(function,*args,**kwargs):
-    from timing import start, finish, milli
-
     repeat_range=range(repeat_count)
     apply(function,args,kwargs)
-    start()
+    t=time.clock()
     for i in repeat_range:
         apply(function,args,kwargs)
-    finish()
+    t=(time.clock()-t)/1000.0
 
-    return float(milli())/len(repeat_range)
+    return float(t)/len(repeat_range)
 
 
 
@@ -234,14 +232,16 @@ except:
     def getlineno(code):
         return code.co_firstlineno
 
-def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
 
-    import sys, os, getopt, string
+def setenv(env, 
+
+def publish(script,path_info,u=None,p=None,d=None,t=None,e=None,s=None,pm=0):
 
     profile=p
     debug=d
     timeit=t
     silent=s
+    if e is None: e={}
 
     if not script: script='+Main'
     if script[0]=='+': script='../../lib/python/'+script[1:]
@@ -253,7 +253,7 @@ def publish(script,path_info,u=None,p=None,d=None,t=None,e={},s=None,pm=0):
     env['REMOTE_ADDR']='204.183.226.81 '
     env['REMOTE_HOST']='bobo.remote.host'
     env['HTTP_USER_AGENT']='Bobo/%s' % __version__
-    env['HTTP_HOST']='ninny.digicool.com:8081 '
+    env['HTTP_HOST']='127.0.0.1'
     env['SERVER_SOFTWARE']='Bobo/%s' % __version__
     env['SERVER_PROTOCOL']='HTTP/1.0 '
     env['HTTP_ACCEPT']='image/gif, image/x-xbitmap, image/jpeg, */* '
