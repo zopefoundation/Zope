@@ -248,13 +248,15 @@ class ZClassPermissionsSheet(OFS.PropertySheets.PropertySheet,
     def manage_add(self, REQUEST, newPermission=''):
         "Remove some permissions"
         perms=self.classDefinedPermissions()
+        aperms=perms+self.classInheritedPermissions()
         changed=0
         message=[]
 
         newPermission=strip(newPermission)
         if newPermission:
-            if newPermission in perms:
-                message.append('The new permission, %s, is already in use' % s)
+            if newPermission in aperms:
+                message.append('The new permission, %s, is already in use'
+                               % newPermission)
             else:
                 perms.append(newPermission)
                 changed=1
