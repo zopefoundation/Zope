@@ -1,4 +1,4 @@
-'''$Id: DT_Util.py,v 1.15 1997/11/12 19:44:13 jim Exp $''' 
+'''$Id: DT_Util.py,v 1.16 1997/11/19 15:33:32 jim Exp $''' 
 
 ############################################################################
 #     Copyright 
@@ -52,7 +52,7 @@
 #   (540) 371-6909
 #
 ############################################################################ 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
 import sys, regex, string, types, math, os
 from string import rfind, strip, joinfields, atoi,lower,upper,capitalize
@@ -210,7 +210,7 @@ Python expression support
 
        <!--#var expr="_.string.lower(title)"-->
 
-"""
+""" #"
 
 def parse_params(text,
 		 result=None,
@@ -258,9 +258,13 @@ def parse_params(text,
 	name=unparmre.group(2)
 	l=len(unparmre.group(1))
 	if result.has_key(''):
-	    if parms.has_key(name): result[name]=parms[name]
+	    if parms.has_key(name):
+		if parms[name] is None: raise ParseError, (
+		    'Attribute %s requires a value' % name, tag)
+		    
+		result[name]=parms[name]
 	    else: raise ParseError, (
-		'Invalid parameter name, "%s"' % name, tag)
+		'Invalid attribute name, "%s"' % name, tag)
 	else:
 	    result['']=name
 	return apply(parse_params,(text[l:],result),parms)
@@ -270,7 +274,7 @@ def parse_params(text,
     
     if not parms.has_key(name):
 	raise ParseError, (
-	    'Invalid parameter name, "%s"' % name, tag)
+	    'Invalid attribute name, "%s"' % name, tag)
 
     result[name]=value
 
@@ -285,6 +289,11 @@ except: from pDocumentTemplate import InstanceDict, TemplateDict, render_blocks
 
 ############################################################################
 # $Log: DT_Util.py,v $
+# Revision 1.16  1997/11/19 15:33:32  jim
+# Updated parse_params so that you can define an attribute that, if
+# used, must have a value.  This is done by specifying None as a default
+# value.
+#
 # Revision 1.15  1997/11/12 19:44:13  jim
 # Took out setting __roles__ for pop and push.
 #
