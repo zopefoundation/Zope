@@ -1,4 +1,4 @@
-#!/usr/local/bin/python 
+#!/usr/local/bin/python1.4
 # $What$
 
 __doc__='''Command-line Bobo
@@ -65,7 +65,7 @@ Examples
             s
 
 
-$Id: Test.py,v 1.5 1996/11/11 22:14:26 jim Exp $
+$Id: Test.py,v 1.6 1997/02/14 17:28:55 jim Exp $
 '''
 #     Copyright 
 #
@@ -117,40 +117,22 @@ $Id: Test.py,v 1.5 1996/11/11 22:14:26 jim Exp $
 #
 #   (540) 371-6909
 #
-# $Log: Test.py,v $
-# Revision 1.5  1996/11/11 22:14:26  jim
-# Minor doc change
-#
-# Revision 1.4  1996/11/11 22:00:01  jim
-# Minor doc change
-#
-# Revision 1.3  1996/10/02 16:03:59  jim
-# Took out spurious line.
-#
-# Revision 1.2  1996/09/16 14:43:26  jim
-# Changes to make shutdown methods work properly.  Now shutdown methods
-# can simply sys.exit(0).
-#
-# Added on-line documentation and debugging support to bobo.
-#
-# Revision 1.1  1996/09/13 22:51:52  jim
-# *** empty log message ***
-#
 #
 # 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 #! /usr/local/bin/python
 
 import sys,traceback
-from cgi_module_publisher import publish_module
+repeat_count=100
 
 def main():
     import sys, os, getopt, string
+    global repeat_count
 
     try:
-	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:')
+	optlist,args=getopt.getopt(sys.argv[1:], 'dtu:p:r:')
 	if len(args) > 2 or len(args) < 1: raise TypeError, None
 	if len(args) == 2: path_info=args[1]
     except:
@@ -167,18 +149,22 @@ def main():
 	    u=val
 	elif opt=='-p':
 	    profile=val
+	elif opt=='-r':
+	    repeat_count=string.atoi(val)
 
     if (debug or 0)+(timeit or 0)+(profile and 1 or 0) > 1:
 	raise 'Invalid options', 'only one of -p, -t, and -d are allowed' 
-    
-    publish(args[0],path_info,u=u,p=profile,d=debug,t=timeit)
+
+    module=args[0]
+
+    publish(module,path_info,u=u,p=profile,d=debug,t=timeit)
 
 
 
 def time(function,*args,**kwargs):
     from timing import start, finish, milli
 
-    repeat_range=range(10)
+    repeat_range=range(repeat_count)
     apply(function,args,kwargs)
     start()
     for i in repeat_range:
@@ -195,6 +181,8 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
     profile=p
     debug=d
     timeit=t
+
+    if script[0]=='+': script='../../lib/python/'+script[1:]
 
     env={'SERVER_NAME':'bobo.server',
 	 'SERVER_PORT':'80',
@@ -220,7 +208,12 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 	env['HTTP_AUTHORIZATION']="Basic %s" % base64.encodestring(u)
 
     dir,file=os.path.split(script)
-    sys.path[0:0]=[dir]
+    cdir=os.path.join(dir,'Components')
+    sys.path[0:0]=[dir,cdir,os.path.join(cdir,sys.platform)]
+
+    # We delay import to here, in case cgi_module_publisher is part of the
+    # application distribution.
+    from cgi_module_publisher import publish_module
 
     if profile:
 	import __main__
@@ -284,3 +277,27 @@ def publish(script,path_info,u=None,p=None,d=None,t=None):
 	print '\n%s\n' % ('_'*60)
 
 if __name__ == "__main__": main()
+
+#
+# $Log: Test.py,v $
+# Revision 1.6  1997/02/14 17:28:55  jim
+# Added -r option to specify repeat count fot -t.
+#
+# Revision 1.5  1996/11/11 22:14:26  jim
+# Minor doc change
+#
+# Revision 1.4  1996/11/11 22:00:01  jim
+# Minor doc change
+#
+# Revision 1.3  1996/10/02 16:03:59  jim
+# Took out spurious line.
+#
+# Revision 1.2  1996/09/16 14:43:26  jim
+# Changes to make shutdown methods work properly.  Now shutdown methods
+# can simply sys.exit(0).
+#
+# Added on-line documentation and debugging support to bobo.
+#
+# Revision 1.1  1996/09/13 22:51:52  jim
+# *** empty log message ***
+#
