@@ -217,13 +217,22 @@ class Bindings:
     
     __ac_permissions__ = (
         ('View management screens', ('getBindingAssignments',)),
-        ('Change bindings', ('ZBindings_edit')),
+        ('Change bindings', ('ZBindings_edit', 'ZBindings_setClient')),
         )
+
+    _Bindings_client = None
 
     def ZBindings_edit(self, mapping):
         names = self._setupBindings(mapping)
         self._prepareBindCode()
         self._editedBindings()
+
+    def ZBindings_setClient(self, clientname):
+        '''Name the binding to be used as the "client".
+
+        This is used by classes such as DTMLFile that want to
+        choose an object on which to operate by default.'''
+        self._Bindings_client = str(clientname)
 
     def _editedBindings(self):
         # Override to receive notification when the bindings are edited.
@@ -305,13 +314,10 @@ class Bindings:
             names = self.getBindingAssignments()
             assigned_name = names.getAssignedName('name_ns')
             caller_namespace = kw.get(assigned_name, None)
-        # Create a local namespace.
-        my_namespace = self._Bindings_ns_class()
-        if caller_namespace is not None:
-            # Include the caller's namespace.
-            my_namespace._push(caller_namespace)
-            my_namespace.level = caller_namespace.level
-        return my_namespace
+        if caller_namespace is None:
+            # Create an empty namespace.
+            return self._Bindings_ns_class()
+        return caller_namespace
 
     def __call__(self, *args, **kw):
         '''Calls the script.
