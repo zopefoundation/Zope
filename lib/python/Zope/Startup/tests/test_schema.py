@@ -30,14 +30,26 @@ from App.config import getConfiguration
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
 
+try:
+    __file__
+except NameError:
+    import sys
+    __file__ = sys.argv[0]
 
+def getSchema():
+    startup = os.path.dirname(os.path.dirname(__file__))
+    schemafile = os.path.join(startup, 'zopeschema.xml')
+    return ZConfig.loadSchema(schemafile)
+    
 class StartupTestCase(unittest.TestCase):
+    def setUp(self):
+        self.schema = getSchema()
 
     def load_config_text(self, text):
         # We have to create a directory of our own since the existence
         # of the directory is checked.  This handles this in a
         # platform-independent way.
-        schema = Zope.Startup.getSchema()
+        schema = self.schema
         sio = cStringIO.StringIO(
             text.replace("<<INSTANCE_HOME>>", TEMPNAME))
         os.mkdir(TEMPNAME)
@@ -51,7 +63,7 @@ class StartupTestCase(unittest.TestCase):
         return conf
 
     def test_load_config_template(self):
-        schema = Zope.Startup.getSchema()
+        schema = self.schema
         cfg = getConfiguration()
         fn = os.path.join(cfg.zopehome, "skel", "etc", "zope.conf.in")
         f = open(fn)
