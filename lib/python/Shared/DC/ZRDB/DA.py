@@ -13,7 +13,7 @@
 __doc__='''Generic Database adapter'''
 
 
-__version__='$Revision: 1.107 $'[11:-2]
+__version__='$Revision: 1.108 $'[11:-2]
 
 import OFS.SimpleItem, Aqueduct, RDB, re
 import DocumentTemplate, marshal, md5, base64, Acquisition, os
@@ -430,7 +430,7 @@ class DA(
             try:     query=apply(self.template, (p,), argdata)
             except TypeError, msg:
                 msg = str(msg)
-                if find(msg,'client'):
+                if find(msg,'client')>=0:
                     raise NameError("'client' may not be used as an " +
                         "argument name in this context")
                 else: raise
