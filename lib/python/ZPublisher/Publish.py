@@ -478,18 +478,18 @@ Publishing a module using CGI
       containing the module to be published) to the module name in the
       cgi-bin directory.
 
-$Id: Publish.py,v 1.101 1998/09/22 16:44:37 jim Exp $"""
+$Id: Publish.py,v 1.102 1998/09/25 15:14:49 jim Exp $"""
 #'
 #
 ##########################################################################
-__version__='$Revision: 1.101 $'[11:-2]
+__version__='$Revision: 1.102 $'[11:-2]
 
 import sys, os, string, cgi, regex
 from string import *
 import CGIResponse
 from CGIResponse import Response
 from urllib import quote, unquote
-from cgi import FieldStorage, MiniFieldStorage
+from cgi import FieldStorage
 
 # Waaaa, I wish I didn't have to work this hard.
 try: from thread import allocate_lock
@@ -761,6 +761,11 @@ class ModulePublisher:
                 if hasattr(object,'__bobo_traverse__'):
                     request['URL']=URL
                     subobject=object.__bobo_traverse__(request,entry_name)
+                    if type(subobject) is type(()) and len(subobject) > 1:
+                        while len(subobject) > 2:
+                            parents.append(subobject[0])
+                            subobject=subobject[1:]
+                        object, subobject = subobject
                 else:
                     try:
                         subobject=getattr(object,entry_name)
@@ -773,25 +778,30 @@ class ModulePublisher:
                             elif entry_name=='..' and parents:
                                 subobject=parents[-1]
                             else: self.notFoundError(URL)
-    
-                try:
-                    try: doc=subobject.__doc__
-                    except: doc=getattr(object, entry_name+'__doc__')
-                    if not doc: raise AttributeError, entry_name
-                except: self.notFoundError("%s" % (URL))
 
-                if hasattr(subobject,'__roles__'): roles=subobject.__roles__
+                if subobject is object and entry_name=='.':
+                    URL=URL[:rfind(URL,'/')]
                 else:
-                    if not got:
-                        roleshack=entry_name+'__roles__'
-                        if hasattr(object, roleshack):
-                            roles=getattr(object, roleshack)
-    
-                # Promote subobject to object
-                parents.append(object)
-                object=subobject
+                    try:
+                        try: doc=subobject.__doc__
+                        except: doc=getattr(object, entry_name+'__doc__')
+                        if not doc: raise AttributeError, entry_name
+                    except: self.notFoundError("%s" % (URL))
 
-                steps.append(entry_name)
+                    if hasattr(subobject,'__roles__'):
+                        roles=subobject.__roles__
+                    else:
+                        if not got:
+                            roleshack=entry_name+'__roles__'
+                            if hasattr(object, roleshack):
+                                roles=getattr(object, roleshack)
+    
+                    # Promote subobject to object
+                
+                    parents.append(object)
+                    object=subobject
+
+                    steps.append(entry_name)
     
                 # Check for method:
                 if not path:
