@@ -45,6 +45,10 @@ Zope Changes
         text/<foo> types
 
     Bugs fixed
+
+      - RAMCacheManager: opimized performance by using cPickle instead
+        of pickle and by using the highest pickle protocol available
+        instead of using ASCII pickles (patch by Dieter Maurer)
         
       - Collector #631: Image URLs in StructuredText containing port
         numbers were not rendered correctly

@@ -26,11 +26,8 @@ import time
 import Globals
 from Globals import DTMLFile
 
-try: from cPickle import Pickler
-except: from pickle import Pickler
-
-try: from cStringIO import dumps
-except: from pickle import dumps
+try: from cPickle import Pickler, HIGHEST_PROTOCOL
+except: from pickle import Pickler, HIGHEST_PROTOCOL
 
 _marker = []  # Create a new marker object.
 
@@ -52,7 +49,17 @@ class CacheEntry:
             # us from caching something that might result in memory
             # leaks.  It's also convenient for determining the
             # approximate memory usage of the cache entry.
-            self.size = len(dumps(index)) + len(dumps(data))
+            # DM 2004-11-29: this code causes excessive time.
+            #   Note also that it does not prevent us from
+            #   caching objects with references to persistent objects
+            #   When we do, nasty persistency errors are likely
+            #   to occur ("shouldn't load data while connection is closed").
+            #self.size = len(dumps(index)) + len(dumps(data))
+            sizer = _ByteCounter()
+            pickler = Pickler(sizer, HIGHEST_PROTOCOL)
+            pickler.dump(index)
+            pickler.dump(data)
+            self.size = sizer.getCount()
         except:
             raise CacheException('The data for the cache is not pickleable.')
         self.created = time.time()
@@ -467,6 +474,16 @@ class RAMCacheManager (CacheManager, SimpleItem):
 
 Globals.default__class_init__(RAMCacheManager)
 
+
+class _ByteCounter:
+    '''auxiliary file like class which just counts the bytes written.'''
+    _count = 0
+
+    def write(self, bytes):
+        self._count += len(bytes)
+
+    def getCount(self):
+        return self._count
 
 manage_addRAMCacheManagerForm = DTMLFile('dtml/addRCM', globals())
 
