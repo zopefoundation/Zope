@@ -173,11 +173,15 @@ class ProductContext:
             if type(p) is tt: p, default= p
             else: default=('Manager',)
 
-            if pr is None: pr=PermissionRole(p,default)
+            if pr is None: pr=pr_=PermissionRole(p,default)
+            else: pr_=PermissionRole(p,default)
             
             if not perms.has_key(p):
                 perms[p]=None
                 OM.__ac_permissions__=OM.__ac_permissions__+((p,(),default),)
+                if not hasattr(Globals.ApplicationDefaultPermissions, pr_._p):
+                    setattr(Globals.ApplicationDefaultPermissions,
+                            pr_._p, default)
 
         for method in legacy:
             if type(method) is tt: name, method = method
