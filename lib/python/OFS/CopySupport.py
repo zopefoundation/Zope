@@ -1,6 +1,6 @@
 """Copy interface"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 import Globals, Moniker, rPickle, tempfile
 from cPickle import loads, dumps
@@ -37,6 +37,48 @@ class CopyContainer:
 	v=self.REQUEST['validClipData']=moniker.assert()
 	return v
 
+    def _verifyCopySource(self, src, REQUEST):
+
+        if not hasattr(src, 'meta_type'):
+            raise 'Invalid copy source', (
+                '''You cannot copy this object, because
+                the typ of the source object is unknown.<p>
+                ''')
+        mt=src.meta_type
+        if not hasattr(self, 'all_meta_types'):
+            raise 'Invalid Copy Destination', (
+                '''You cannot copy objects to this destination because
+                it is an invalid destination.<p>
+                ''')
+
+        method_name=None
+        meta_types=self.all_meta_types()
+        for d in meta_types:
+            if d['name']==mt:
+                method_name=d['action']
+                break
+
+        if method_name is not None:
+            if hasattr(self, method_name):
+                meth=getattr(self, method_name)
+                if hasattr(meth, '__roles__'):
+                    roles=meth.__roles__
+                    user=REQUEST.get('AUTHENTICATED_USER', None)
+                    __traceback_info__=method_name, user
+                    if (not hasattr(user, 'hasRole') or
+                        not user.hasRole(None, roles)):
+                        raise 'Unauthorized', (
+                            '''You are not authorized to perform this
+                            operation.<p>
+                            ''')
+                    return
+                    
+        raise 'Invalid copy source', (
+            '''You cannot copy this object, because
+            the type of the source object is unrecognized.<p>
+            ''')
+                
+
     def pasteFromClipboard(self, clip_id='', clip_data='', REQUEST=None):
 	""" """
 	if not clip_data: return eNoData
@@ -54,9 +96,10 @@ class CopyContainer:
 
 
     def manage_paste(self, moniker, clip_id, REQUEST=None):
-        """ """
 	try:    obj=moniker.bind()
 	except: return eNotFound
+
+        self._verifyCopySource(obj, REQUEST)
 
 	if moniker.op == 0:
 	    # Copy operation
@@ -64,7 +107,8 @@ class CopyContainer:
 	    obj=obj._getCopy(self)
 	    obj._setId(clip_id)
 	    self._setObject(clip_id, obj)
-	    obj._postCopy(self)
+            obj=obj.__of__(self)
+            obj._postCopy(self)
 
 	    if REQUEST is not None:
 		return self.manage_main(self, REQUEST, update_menu=1)
@@ -99,6 +143,19 @@ class CopyContainer:
 					validClipData=0)
 	    return ''
 
+    def manage_clone(self, obj, clip_id, REQUEST=None):
+        """Clone an object
+
+        By creating a new object with a different given id.
+        """
+        self._verifyCopySource(obj, REQUEST)
+        obj=obj._getCopy(self)
+        obj._setId(clip_id)
+        self._setObject(clip_id, obj)
+        obj=obj.__of__(self)
+        obj._postCopy(self)
+        return obj
+
 
 Globals.default__class_init__(CopyContainer)
 
@@ -110,8 +167,15 @@ class CopySource:
         # Ask an object to return a moniker for itself.
 	return Moniker.Moniker(self)
 
+    def _notifyOfCopyTo(self, container):
+        # Overide this to be pickly about where you go!
+        # If you don't want to go there, then raise an exception.
+        pass
+
     def _getCopy(self, container):
 	# Ask an object for a new copy of itself.
+        self._notifyOfCopyTo(container)
+            
 	f=tempfile.TemporaryFile()
 	self._p_jar.export_file(self,f)
 	f.seek(0)
