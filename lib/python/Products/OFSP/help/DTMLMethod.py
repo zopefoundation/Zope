@@ -1,3 +1,7 @@
+"""
+DTML Method
+"""
+
 class DTMLMethod:
     """
     A DTML Method is a Zope object that contains and executes DTML
@@ -104,7 +108,6 @@ class DTMLMethod:
         Returns the size of the unrendered source text of the DTML
         Method in bytes.
         
-        Permission -- XXX None XXX
         """
         
         
