@@ -63,13 +63,22 @@ Zope Changes
 
       Features Added
 
-        - None
+        - Database conflict errors are now logged.  Although conflict
+          errors are normally handled by retrying requests, frequent
+          conflict errors can degrade performance and should be dealt
+          with by redesigning applications.
 
       Features Changed
 
-        - None
+        - The process id displayed in the control panel now inclused
+          the thread id, in parentheses.
 
       Bugs Fixed
+
+        - Database connections were leaked when database conflict
+          errors occurred and handled by reexecuting requests.  When 7
+          connections leaked, the site would accept no more web
+          requests. 
 
         - Added some logic to the win32 binary installer to fix some
           dll loading problems people were getting on international
@@ -96,6 +105,18 @@ Zope Changes
           to other inherited, but not registered permissions in
           products and in class methods.  When this failed, a silly
           error message ("Waaa" ;) was output.
+
+	- SQL methods had an unused method, getFindContent allowed
+          anonymous users to read SQL method source.  This method was
+          renamed to PrincipiaSearchSource, and protected with a
+          permission.
+
+	- SQL methods could not be found with the find mechanism by
+          searching their source.
+
+        - The PrincipiaSearchSource method of DTML documents and
+          methods was not protected, so anonymous users could read
+          their source.
 
     Zope 2.0 beta 6
 
