@@ -14,7 +14,7 @@
 
 $Id$
 """
-import sys,  Globals, Moniker, tempfile, ExtensionClass
+import re, sys,  Globals, Moniker, tempfile, ExtensionClass
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
@@ -113,14 +113,19 @@ class CopyContainer(ExtensionClass.Base):
             return self.manage_main(self, REQUEST)
         return cp
 
+    copy_re=re.compile('^copy[0-9]*_of_')
+
     def _get_id(self, id):
         # Allow containers to override the generation of
         # object copy id by attempting to call its _get_id
         # method, if it exists.
-        n=0
-        if (len(id) > 8) and (id[8:]=='copy_of_'):
+        copy_match=self.copy_re.match(id)
+        if (copy_match) and (copy_match.end() < len(id)):
             n=1
-        orig_id=id
+            orig_id=self.copy_re.sub('', id)
+        else:
+            n=0
+            orig_id=id
         while 1:
             if self._getOb(id, None) is None:
                 return id

@@ -46,6 +46,9 @@ Zope Changes
 
     Bugs fixed
 
+      - Collector #1593: fixed dumb _get_id() implementation in
+        OFS.CopySupport that produced copy_of_copy_of....files
+
       - Collector #1450: files in utilities/ZODBTools are now installed
         during the installation process in the 'bin' directory
 
