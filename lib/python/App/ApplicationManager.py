@@ -12,7 +12,7 @@
 ##############################################################################
 __doc__="""System management components"""
 
-__version__='$Revision: 1.86 $'[11:-2]
+__version__='$Revision: 1.87 $'[11:-2]
 
 import sys,os,time,Globals, Acquisition, os, Undo
 from Globals import DTMLFile
@@ -436,6 +436,21 @@ class ApplicationManager(Folder,CacheManager):
 
     def getCLIENT_HOME(self):
         return getConfiguration().clienthome
+
+    def getServers(self):
+        # used only for display purposes
+        # return a sequence of two-tuples.  The first element of
+        # each tuple is the service name, the second is a string repr. of
+        # the port/socket/other on which it listens
+        from asyncore import socket_map
+        l = []
+        for k,v in socket_map.items():
+            # this is only an approximation
+            if hasattr(v, 'port'):
+                type = str(getattr(v, '__class__', 'unknown'))
+                port = v.port
+                l.append((str(type), 'Port: %s' % port))
+        return l
 
     def objectIds(self, spec=None):
         """ this is a patch for pre-2.4 Zope installations. Such
