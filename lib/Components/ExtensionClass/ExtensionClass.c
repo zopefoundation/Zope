@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.17 1997/11/13 21:05:35 jim Exp $
+  $Id: ExtensionClass.c,v 1.18 1997/12/11 16:00:22 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.17 1997/11/13 21:05:35 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.18 1997/12/11 16:00:22 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -110,10 +110,11 @@ static PyObject *py__add__, *py__sub__, *py__mul__, *py__div__,
   *py__getitem__, *py__setitem__, *py__delitem__,
   *py__getslice__, *py__setslice__, *py__delslice__, *py__len__,
   *py__getattr__, *py__setattr__, *py__delattr__,
-  *py__del__, *py__repr__, *py__str__, *py__class__,
+  *py__del__, *py__repr__, *py__str__, *py__class__, *py__name__,
   *py__hash__, *py__cmp__, *py__var_size__, *py__init__, *py__getinitargs__,
   *py__getstate__, *py__setstate__, *py__dict__, *pyclass_;
 
+static PyObject *concat_fmt=0;
 static PyObject *subclass_watcher=0;  /* Object that subclass events */
 
 static void
@@ -160,6 +161,7 @@ init_py_names()
   INIT_PY_NAME(__repr__);
   INIT_PY_NAME(__str__);
   INIT_PY_NAME(__class__);
+  INIT_PY_NAME(__name__);
   INIT_PY_NAME(__hash__);
   INIT_PY_NAME(__cmp__);
   INIT_PY_NAME(__var_size__);
@@ -196,7 +198,6 @@ typedef struct {
   PyCFunction	meth;
   int		flags;
   char		*doc;
-  PyObject	*dict;
 } CMethod;
 
 staticforward PyTypeObject CMethodType;
@@ -361,7 +362,6 @@ newCMethod(PyExtensionClass *type, PyObject *inst,
   self->meth=meth;
   self->flags=flags;
   self->doc=doc;
-  self->dict=NULL;
   return (PyObject*)self;
 }
 
@@ -389,8 +389,6 @@ bindCMethod(CMethod *m, PyObject *inst)
   self->meth=m->meth;
   self->flags=m->flags;
   self->doc=m->doc;
-  self->dict=m->dict;
-  Py_XINCREF(self->dict);
   return self;
 }
 
@@ -402,7 +400,6 @@ CMethod_dealloc(CMethod *self)
 #endif
   Py_XDECREF(self->type);
   Py_XDECREF(self->self);
-  Py_XDECREF(self->dict);
   PyMem_DEL(self);
 }
 
@@ -517,6 +514,15 @@ CMethod_getattro(CMethod *self, PyObject *oname)
       char *name;
 
       UNLESS(name=PyString_AsString(oname)) return NULL;
+        	        
+      if (name[0] != '_' && name[0] && name[1] != '_' &&
+	  PyEval_GetRestricted())
+	{
+	  PyErr_SetString(PyExc_RuntimeError,
+	       	  "function attributes not accessible in restricted mode");
+	  return NULL;
+	}
+
       if(strcmp(name,"__name__")==0 || strcmp(name,"func_name")==0 )
 	return PyString_FromString(self->name);
       if(strcmp(name,"func_code")==0 ||
@@ -547,7 +553,14 @@ CMethod_getattro(CMethod *self, PyObject *oname)
 	}
     }
 
-  if(self->dict && (r=PyObject_GetItem(self->dict, oname))) return r;
+  if(self->self)	/* Psuedo attributes */
+    {
+      UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return NULL;
+      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+      r=PyObject_GetAttr(self->self, oname);
+      Py_DECREF(oname);
+      return r;
+    }
 
   PyErr_SetObject(PyExc_AttributeError, oname);
   return NULL;
@@ -556,9 +569,19 @@ CMethod_getattro(CMethod *self, PyObject *oname)
 static int
 CMethod_setattro(CMethod *self, PyObject *oname, PyObject *v)
 {
-        if(! self->dict && ! (self->dict=PyDict_New())) return -1;
-  
-	return PyDict_SetItem(self->dict, oname, v);
+  int r;
+
+  if(self->self && ! PyEval_GetRestricted())	/* Psuedo attributes */
+    {
+      UNLESS(oname=Py_BuildValue("sO", self->name, oname)) return NULL;
+      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+      r=PyObject_SetAttr(self->self, oname, v);
+      Py_DECREF(oname);
+      return r;
+    }
+
+  PyErr_SetObject(PyExc_AttributeError, oname);
+  return -1;
 }
 
 static PyTypeObject CMethodType = {
@@ -768,6 +791,14 @@ PMethod_getattro(PMethod *self, PyObject *oname)
       char *name;
 
       UNLESS(name=PyString_AsString(oname)) return NULL;
+        
+      if (name[0] != '_' && name[0] && name[1] != '_' &&
+	  PyEval_GetRestricted())
+	{
+	  PyErr_SetString(PyExc_RuntimeError,
+	       	  "function attributes not accessible in restricted mode");
+	  return NULL;
+	}
 
       if(*name++=='i' && *name++=='m' && *name++=='_')
 	{
@@ -791,7 +822,48 @@ PMethod_getattro(PMethod *self, PyObject *oname)
 	}
     }
 
+  if(self->self && self->meth) /* Psuedo attrs */
+    {
+      PyObject *myname;
+
+      UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return NULL;
+      oname=Py_BuildValue("OO", myname, oname);
+      Py_DECREF(myname);
+      UNLESS(oname) return NULL;
+      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+      r=PyObject_GetAttr(self->self, oname);
+      Py_DECREF(oname);
+      return r;
+    }
+
+  PyErr_SetObject(PyExc_AttributeError, oname);
+  return NULL;
+
+
   return PyObject_GetAttr(self->meth, oname);
+}
+
+static int
+PMethod_setattro(PMethod *self, PyObject *oname, PyObject *v)
+{
+  int r;
+
+  if(self->self && self->meth && ! PyEval_GetRestricted()) /* Psuedo attrs */
+    {
+      PyObject *myname;
+
+      UNLESS(myname=PyObject_GetAttr(self->meth, py__name__)) return NULL;
+      oname=Py_BuildValue("OO", myname, oname);
+      Py_DECREF(myname);
+      UNLESS(oname) return NULL;
+      UNLESS_ASSIGN(oname,PyString_Format(concat_fmt, oname)) return NULL;
+      r=PyObject_SetAttr(self->self, oname, v);
+      Py_DECREF(oname);
+      return r;
+    }
+
+  PyErr_SetObject(PyExc_AttributeError, oname);
+  return -1;
 }
 
 static PyTypeObject PMethodType = {
@@ -814,9 +886,10 @@ static PyTypeObject PMethodType = {
   (ternaryfunc)PMethod_call,		/*tp_call*/
   (reprfunc)0,				/*tp_str*/
   (getattrofunc)PMethod_getattro,	/*tp_getattro*/
+  (setattrofunc)PMethod_setattro, 	/* tp_setattro */
   
   /* Space for future expansion */
-  0L,0L,0L,
+  0L,0L,
   "Storage manager for unbound C function PyObject data"
   /* Documentation string */
 };
@@ -1181,7 +1254,12 @@ EC_reduce(PyObject *self, PyObject *args)
   else
     {
       PyErr_Clear();
-      args=PyTuple_New(0);
+      if(ExtensionClassOf(self)->class_flags & EXTENSIONCLASS_BASICNEW_FLAG)
+	{
+	  args=Py_None;
+	  Py_INCREF(args);
+	}
+      else args=PyTuple_New(0);
     }
 
   if((state=PyObject_GetAttr(self,py__getstate__)))
@@ -1242,6 +1320,58 @@ inheritedAttribute(PyObject *self, PyObject *args)
   else if(UnboundPMethod_Check(name))
     ASSIGN(name,bindPMethod((PMethod*)name,self));
   return name;
+}
+
+static PyObject *
+basicnew(PyExtensionClass *self, PyObject *args)
+{
+  PyObject *inst=0;
+  typedef struct { PyObject_VAR_HEAD } PyVarObject__;
+
+  if(! self->tp_dealloc)
+    {
+      PyErr_SetString(PyExc_TypeError,
+		      "Attempt to create instance of an abstract type");
+      return NULL;
+    }
+
+  if(self->tp_itemsize)
+    {
+      /* We have a variable-sized object, we need to get it's size */
+      PyObject *var_size;
+      int size;
+      
+      UNLESS(var_size=CCL_getattr(self,py__var_size__, 0)) return NULL;
+      UNLESS_ASSIGN(var_size,PyObject_CallObject(var_size,NULL)) return NULL;
+      size=PyInt_AsLong(var_size);
+      if(PyErr_Occurred()) return NULL;
+      UNLESS(inst=PyObject_NEW_VAR(PyObject,(PyTypeObject *)self, size))
+	return NULL;
+      memset(inst,0,self->tp_basicsize+self->tp_itemsize*size);
+      ((PyVarObject__*)inst)->ob_size=size;
+    }
+  else
+    {
+      UNLESS(inst=PyObject_NEW(PyObject,(PyTypeObject *)self)) return NULL;
+      memset(inst,0,self->tp_basicsize);
+    }
+
+  inst->ob_refcnt=1;
+  inst->ob_type=(PyTypeObject *)self;
+  Py_INCREF(self);
+
+  if(ClassHasInstDict(self))
+    UNLESS(INSTANCE_DICT(inst)=PyDict_New()) goto err;
+
+  if(self->bases && subclass_watcher &&
+     ! PyObject_CallMethod(subclass_watcher,"created","O",inst))
+    PyErr_Clear();
+
+  return inst;
+
+err:
+  Py_DECREF(inst);
+  return NULL;
 }
 
 struct PyMethodDef ECI_methods[] = {
@@ -1520,6 +1650,26 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 	      if(strcmp(n,"name__")==0)
 		return PyString_FromString(self->tp_name);
 	      break;
+	    case 'b':
+	      if(self->class_flags & EXTENSIONCLASS_BASICNEW_FLAG &&
+		 strcmp(n,"basicnew__")==0
+		 )
+		return newCMethod(self,(PyObject*)self,
+		   "__basicnew__",(PyCFunction)basicnew,0,
+		   "__basicnew__() -- "
+		   "Create a new instance without executing it's constructor"
+                   );
+	      else if(strcmp(n,"bases__")==0)
+		{
+		  if(self->bases)
+		    {
+		      Py_INCREF(self->bases);
+		      return self->bases;
+		    }
+		  else
+		    return PyTuple_New(0);
+		}
+	      break;
 	    case 'r':
 	      if(strcmp(n,"reduce__")==0)
 		return newCMethod(self,(PyObject*)self,
@@ -1531,18 +1681,6 @@ CCL_getattro(PyExtensionClass *self, PyObject *name)
 		{
 		  Py_INCREF(self->class_dictionary);
 		  return self->class_dictionary;
-		}
-	      break;
-	    case 'b':
-	      if(strcmp(n,"bases__")==0)
-		{
-		  if(self->bases)
-		    {
-		      Py_INCREF(self->bases);
-		      return self->bases;
-		    }
-		  else
-		    return PyTuple_New(0);
 		}
 	      break;
 	    }
@@ -1709,6 +1847,8 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
 	{
 	  UNLESS_ASSIGN(var_size,PyObject_CallObject(var_size,arg))
 	    return NULL;
+	  size=PyInt_AsLong(var_size);
+	  if(PyErr_Occurred()) return NULL;
 	}
       else
 	{
@@ -1733,18 +1873,16 @@ CCL_call(PyExtensionClass *self, PyObject *arg, PyObject *kw)
       UNLESS(inst=PyObject_NEW_VAR(PyObject,(PyTypeObject *)self, size))
 	return NULL;
       memset(inst,0,self->tp_basicsize+self->tp_itemsize*size);
-      inst->ob_refcnt=1;
-      inst->ob_type=(PyTypeObject *)self;
       ((PyVarObject__*)inst)->ob_size=size;
     }
   else
     {
       UNLESS(inst=PyObject_NEW(PyObject,(PyTypeObject *)self)) return NULL;
       memset(inst,0,self->tp_basicsize);
-      inst->ob_refcnt=1;
-      inst->ob_type=(PyTypeObject *)self;
     }
 
+  inst->ob_refcnt=1;
+  inst->ob_type=(PyTypeObject *)self;
   Py_INCREF(self);
 
   if(ClassHasInstDict(self))
@@ -1966,7 +2104,12 @@ subclass_compare(PyObject *self, PyObject *v)
   PyObject *m;
   long r;
 
-  UNLESS(m=subclass_getspecial(self,py__cmp__)) return -1;
+  UNLESS(m=subclass_getspecial(self,py__cmp__))
+    {
+      PyErr_Clear();
+      return self-v;
+    }
+
   if(UnboundCMethod_Check(m) && AsCMethod(m)->meth==compare_by_name
      && SubclassInstance_Check(self,AsCMethod(m)->type)
      && ! HasMethodHook(self))
@@ -3071,13 +3214,15 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.17 $";
+  char *rev="$Revision: 1.18 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
   CMethodType.ob_type=&PyType_Type;
   ECTypeType.ob_type=&PyType_Type;
   ECType.ob_type=&ECTypeType;
+
+  UNLESS(concat_fmt=PyString_FromString("%s%s"));
   
   m = Py_InitModule4("ExtensionClass", CC_methods,
 		     ExtensionClass_module_documentation,
@@ -3110,6 +3255,31 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.18  1997/12/11 16:00:22  jim
+  Added __basicnew__ class protocol.
+
+  Added support for user-defined method attributes.  User-defined method
+  attributes can only be set or accessed for bound methods.
+  User-defined method attributes are stored in instances under a name
+  formed by concatinating the method and attribute names.  Default
+  values for user-defined method attributes may be set in the class
+  statement. For example, to define the default '__roles__' attribute of
+  a method, 'f'::
+
+     class C:
+        def f(self): print 'f called'
+        f__roles__=('manage',)
+
+  User-defined attributes may not be set in restricted execution mode.
+  User-defined attribute names may only be accessed in
+  restricted-execution mode if their names begin with double
+  underscores.
+
+  Added default __cmp__ support for extension subclasses.  I only
+  recently noticed that extension subclasses overcome Python's
+  willingness to only compare objects of the same type, because they
+  smell to Python like numeric types.
+
   Revision 1.17  1997/11/13 21:05:35  jim
   Fixed some bad return values.
 
