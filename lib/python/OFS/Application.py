@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.150 2001/06/01 19:51:16 andreas Exp $'''
-__version__='$Revision: 1.150 $'[11:-2]
+$Id: Application.py,v 1.151 2001/06/18 20:52:33 chrism Exp $'''
+__version__='$Revision: 1.151 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -500,30 +500,29 @@ def initialize(app):
                     error=sys.exc_info())
                 get_transaction().abort()
 
+def get_products():
+    """ Return a list of tuples in the form:
+    [(priority, dir_name, base_dir), ...] for each Product directory
+    found, sort before returning """
+    products = []
+    for product_dir in Products.__path__:
+        product_names=os.listdir(product_dir)
+        for name in product_names:
+            priority = (name != 'PluginIndexes') # import PluginIndexes 1st
+            products.append((priority, name, product_dir))
+    products.sort()
+    return products
 
 def import_products():
     # Try to import each product, checking for and catching errors.
     done={}
 
-    for product_dir in Products.__path__:
+    products = get_products()
 
-        product_names=os.listdir(product_dir)
-        product_names.sort()
-
-        # Hack !!!
-        # We must initialize the PluginIndexes first before
-        # all other products (ajung)
-
-        if "PluginIndexes" in product_names:
-            product_names.remove("PluginIndexes")
-            product_names.insert(0,"PluginIndexes")
-
-        for product_name in product_names:
-
-            if done.has_key(product_name): continue
-            done[product_name]=1
-            import_product(product_dir, product_name)
-
+    for priority, product_name, product_dir in products:
+        if done.has_key(product_name): continue
+        done[product_name]=1
+        import_product(product_dir, product_name)
 
 def import_product(product_dir, product_name, raise_exc=0, log_exc=1):
     path_join=os.path.join
@@ -578,29 +577,18 @@ def install_products(app):
     get_transaction().note('Prior to product installs')
     get_transaction().commit()
 
-    for product_dir in Products.__path__:
+    products = get_products()
 
-        product_names=os.listdir(product_dir)
-        product_names.sort()
-
-        # Hack !!!
-        # We must initialize the PluginIndexes first before
-        # all other products (ajung)
-
-        if "PluginIndexes" in product_names:
-            product_names.remove("PluginIndexes")
-            product_names.insert(0,"PluginIndexes")
-
-        for product_name in product_names:
-            # For each product, we will import it and try to call the
-            # intialize() method in the product __init__ module. If
-            # the method doesnt exist, we put the old-style information
-            # together and do a default initialization.
-            if done.has_key(product_name):
-                continue
-            done[product_name]=1
-            install_product(app, product_dir, product_name, meta_types,
-                            folder_permissions)
+    for priority, product_name, product_dir in products:
+        # For each product, we will import it and try to call the
+        # intialize() method in the product __init__ module. If
+        # the method doesnt exist, we put the old-style information
+        # together and do a default initialization.
+        if done.has_key(product_name):
+            continue
+        done[product_name]=1
+        install_product(app, product_dir, product_name, meta_types,
+                        folder_permissions)
 
     Products.meta_types=Products.meta_types+tuple(meta_types)
     Globals.default__class_init__(Folder.Folder)
