@@ -30,6 +30,10 @@ class Lexicon:
         self._nextwid = 1
         self._pipeline = pipeline
 
+        # Keep some statistics about indexing
+        self._nbytes = 0 # Number of bytes indexed (at start of pipeline)
+        self._nwords = 0 # Number of words indexed (after pipeline)
+
     def length(self):
         """Return the number of unique terms in the lexicon."""
         return self._nextwid - 1
@@ -45,8 +49,11 @@ class Lexicon:
 
     def sourceToWordIds(self, text):
         last = _text2list(text)
+        for t in last:
+            self._nbytes += len(t)
         for element in self._pipeline:
             last = element.process(last)
+        self._nwords += len(last)
         return map(self._getWordIdCreate, last)
 
     def termToWordIds(self, text):
