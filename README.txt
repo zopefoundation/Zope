@@ -31,3 +31,11 @@ Installing Zope
 
   Follow the instructions in "doc/INSTALL.txt" to install Zope.
 
+Reporting bugs
+
+  Bugs reports should be made through the Zope bugtracker at
+  http://collector.zope.org/Zope. A bug report should contain detailed
+  information about how to reproduce the bug, error messages (see /error_log
+  within the ZMI or var/event.log)
+
+
