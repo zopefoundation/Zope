@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.6 1997/02/12 17:06:45 chris Exp $
+#     $Id: pickle.py,v 1.7 1997/02/21 22:24:23 chris Exp $
 #
 #     Copyright 
 #
@@ -207,7 +207,6 @@ BININT1         = 'K'
 LONG            = 'L'
 BININT2         = 'M'
 NONE            = 'N'
-BININT8         = 'O'
 PERSID          = 'P'
 BINPERSID       = 'Q'
 REDUCE          = 'R'
@@ -287,58 +286,63 @@ class Pickler:
         d = id(object)
  
         t = type(object)
+
+	if ((t is TupleType) and (len(object) == 0)):
+	    if (self.bin):
+                save_empty_tuple(object)
+            else:
+                save_tuple(object)
+            return
+
+        if memo.has_key(d):
+            self.write(self.get(memo[d]))
+            return
+
         try:
-            f = self.quick_dispatch[t]
+            f = self.dispatch[t]
         except KeyError:
-            if memo.has_key(d):
-                self.write(self.get(memo[d]))
+            pid = self.inst_persistent_id(object)
+            if pid is not None:
+                self.save_pers(pid)
                 return
 
             try:
-                f = self.dispatch[t]
+                reduce = dispatch_table[t]
             except KeyError:
-                pid = self.inst_persistent_id(object)
-                if pid is not None:
-                    self.save_pers(pid)
-                    return
-
                 try:
-                    reduce = dispatch_table[t]
-                except KeyError:
-                    try:
-                        reduce = object.__reduce__
-                    except AttributeError:
-                        raise PicklingError, \
-                            "can't pickle %s objects" % `t.__name__`
-		    else:
-                        tup = reduce()
+                    reduce = object.__reduce__
+                except AttributeError:
+                    raise PicklingError, \
+                        "can't pickle %s objects" % `t.__name__`
                 else:
-                    tup = reduce(object)
+                    tup = reduce()
+            else:
+                tup = reduce(object)
 
-                if (type(tup) is not TupleType):
-                    raise PicklingError, "Value returned by %s must be a " \
-                                         "tuple" % reduce
+            if (type(tup) is not TupleType):
+                raise PicklingError, "Value returned by %s must be a " \
+                                     "tuple" % reduce
 
-                l = len(tup)
+            l = len(tup)
    
-		if ((l != 2) and (l != 3)):
-                    raise PicklingError, "tuple returned by %s must contain " \
-                                         "only two or three elements" % reduce
+	    if ((l != 2) and (l != 3)):
+                raise PicklingError, "tuple returned by %s must contain " \
+                                     "only two or three elements" % reduce
 
-                callable = tup[0]
-                arg_tup  = tup[1]
+            callable = tup[0]
+            arg_tup  = tup[1]
           
-                if (l > 2):
-                    state = tup[2]
-                else:
-                    state = None
+            if (l > 2):
+                state = tup[2]
+            else:
+                state = None
 
-                if (type(arg_tup) is not TupleType):
-                    raise PicklingError, "Second element of tuple returned " \
-                                         "by %s must be a tuple" % reduce
+            if (type(arg_tup) is not TupleType):
+                raise PicklingError, "Second element of tuple returned " \
+                                     "by %s must be a tuple" % reduce
 
-                self.save_reduce(callable, arg_tup, state) 
-                return
+            self.save_reduce(callable, arg_tup, state) 
+            return
 
         f(self, object)
 
@@ -368,11 +372,10 @@ class Pickler:
             write(BUILD)
 
     dispatch = {}
-    quick_dispatch = {}
 
     def save_none(self, object):
         self.write(NONE)
-    quick_dispatch[NoneType] = save_none
+    dispatch[NoneType] = save_none
 
     def save_int(self, object):
         if (self.bin):
@@ -388,7 +391,7 @@ class Pickler:
             self.write(BININT + i)
         else:
             self.write(INT + `object` + '\n')
-    quick_dispatch[IntType] = save_int
+    dispatch[IntType] = save_int
 
     def save_long(self, object):
         self.write(LONG + `object` + '\n')
@@ -396,7 +399,7 @@ class Pickler:
 
     def save_float(self, object):
         self.write(FLOAT + `object` + '\n')
-    quick_dispatch[FloatType] = save_float
+    dispatch[FloatType] = save_float
 
     def save_string(self, object):
         d = id(object)
@@ -418,11 +421,12 @@ class Pickler:
     dispatch[StringType] = save_string
 
     def save_tuple(self, object):
-        d = id(object)
 
         write = self.write
         save  = self.save
         memo  = self.memo
+
+        d = id(object)
 
         write(MARK)
 
@@ -430,8 +434,7 @@ class Pickler:
             save(element)
 
         if (memo.has_key(d)):
-            write(POP * len(object))
-            write(self.get(memo[d]))
+            write(POP * len(object) + self.get(memo[d]))
             return
 
         memo_len = len(memo)
@@ -449,12 +452,15 @@ class Pickler:
         save  = self.save
         memo  = self.memo
 
+	if (self.bin):
+            write(EMPTY_LIST)
+        else:
+            write(MARK + LIST)
+
         using_appends = (self.bin and (len(object) > 1))
 
         if (using_appends):
-            write(MARK + LIST + MARK)
-        else:
-            write(MARK + LIST)
+            write(MARK)
 
         for element in object:
             save(element)
@@ -477,12 +483,15 @@ class Pickler:
         save  = self.save
         memo  = self.memo
 
+	if (self.bin):
+            write(EMPTY_DICT)
+        else:
+            write(MARK + DICT)
+
         using_setitems = (self.bin and (len(object) > 1))
 
         if (using_setitems):
-            write(MARK + DICT + MARK)
-        else:
-            write(MARK + DICT)
+            write(MARK)
 
         items = object.items()
         for key, value in items:
@@ -576,9 +585,8 @@ def whichmodule(cls, clsname):
     import sys
 
     for name, module in sys.modules.items():
-        if name != '__main__' and \
-           hasattr(module, clsname) and \
-           getattr(module, clsname) is cls:
+        if hasattr(module, clsname) and \
+            getattr(module, clsname) is cls:
             break
     else:
         name = '__main__'
@@ -672,7 +680,7 @@ class Unpickler:
     dispatch[BINSTRING] = load_binstring
 
     def load_short_binstring(self):
-        len = mloads('i' + self.read(1))
+        len = mloads('i' + self.read(1) + '\000\000\000')
         self.append(self.read(len))
     dispatch[SHORT_BINSTRING] = load_short_binstring
 
@@ -744,6 +752,7 @@ class Unpickler:
 
     def find_class(self, module, name):
         env = {}
+
         try:
             exec 'from %s import %s' % (module, name) in env
         except ImportError:
