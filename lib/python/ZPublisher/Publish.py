@@ -84,16 +84,34 @@
 ##############################################################################
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
-$Id: Publish.py,v 1.123 1999/02/18 17:17:56 jim Exp $"""
-__version__='$Revision: 1.123 $'[11:-2]
+$Id: Publish.py,v 1.124 1999/02/22 20:48:35 jim Exp $"""
+__version__='$Revision: 1.124 $'[11:-2]
 
 import sys, os
 from string import lower, atoi, rfind, strip
 from Response import Response
 from Request import Request
 from maybe_lock import allocate_lock
+from mapply import mapply
 
-def publish(request, module_name, after_list, debug=0):
+def call_object(object, args, request):
+    result=apply(object,args) # Type s<cr> to step into published object.
+    return result
+
+def missing_name(name, request):
+    if name=='self': return request['PARENTS'][0]
+    request.response.self.badRequestError(name)
+
+def dont_publish_class(klass, request):
+    request.response.forbiddenError("class %s" % klass.__name__)
+
+def publish(request, module_name, after_list, debug=0,
+            # Optimize:
+            call_object=call_object,
+            missing_name=missing_name,
+            dont_publish_class=dont_publish_class,
+            mapply=mapply,
+            ):
 
     request_get=request.get
     response=request.response
@@ -136,54 +154,17 @@ def publish(request, module_name, after_list, debug=0):
                   (request_get('AUTHENTICATION_PATH'), auth_user))+info
         transaction.note(info)
 
-    # Now get object meta-data to decide if and how it should be called:
-    object_as_function=object
-            
-    # First, assume we have a method:
-    if hasattr(object_as_function,'im_func'):
-        f=object_as_function.im_func
-        c=f.func_code
-        defaults=f.func_defaults
-        argument_names=c.co_varnames[1:c.co_argcount]
-    else:
-        # Rather than sniff for FunctionType, assume its a
-        # function and fall back to returning the object itself:        
-        if hasattr(object_as_function,'func_defaults'):
-            defaults=object_as_function.func_defaults
-            c=object_as_function.func_code
-            argument_names=c.co_varnames[:c.co_argcount]
-
-            # Make sure we don't have a class that smells like a func
-            if hasattr(object_as_function, '__bases__'):
-                self.forbiddenError(entry_name)
-            
-        else: return response.setBody(object)
-
-    args=[]
-    nrequired=len(argument_names) - (len(defaults or []))
-    for name_index in range(len(argument_names)):
-        argument_name=argument_names[name_index]
-        v=request_get(argument_name, args)
-        if v is args:
-            if argument_name=='self': args.append(parents[0])
-            elif name_index < nrequired:
-                self.badRequestError(argument_name)
-            else: args.append(defaults[name_index-nrequired])
-        else: args.append(v)
-
-    args=tuple(args)
-    if debug: result=call_object(object,args)
-    else:     result=apply(object,args)
+    result=mapply(object,(),request,
+                  call_object,1,
+                  missing_name, 
+                  dont_publish_class,
+                  request)
 
     if result and result is not response: response.setBody(result)
 
     if transaction: transaction.commit()
 
     return response
-
-def call_object(object,args):
-    result=apply(object,args) # Type s<cr> to step into published object.
-    return result
 
 _l=allocate_lock()
 def get_module_info(module_name, modules={},
