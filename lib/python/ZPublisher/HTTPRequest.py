@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.83 $'[11:-2]
+__version__='$Revision: 1.84 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from types import StringType, UnicodeType
@@ -760,6 +760,9 @@ class HTTPRequest(BaseRequest):
                                     taintedform[tainted_key] = copied
                                 else:
                                     taintedform[tainted_key] = [copied]
+                            elif not isinstance(taintedform[tainted_key], lt):
+                                taintedform[tainted_key] = [
+                                    taintedform[tainted_key]]
                             taintedform[tainted_key].append(tainted)
 
                         elif taintedform.has_key(tainted_key):

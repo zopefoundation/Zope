@@ -324,28 +324,35 @@ class ProcessInputsTests(unittest.TestCase):
             ('tainted', '<tainted value>'),
             ('<tainted key>', 'value'),
             ('spacey key', 'val'), ('key', 'spacey val'),
-            ('multi', '1'), ('multi', '2'))
+            ('tinitmulti', '<1>'), ('tinitmulti', '2'),
+            ('tdefermulti', '1'), ('tdefermulti', '<2>'),
+            ('tallmulti', '<1>'), ('tallmulti', '<2>'))
         req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['<tainted key>', 'tainted'])
+        self.assertEquals(taintedformkeys, ['<tainted key>', 'tainted',
+            'tallmulti', 'tdefermulti', 'tinitmulti'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
 
     def testSimpleMarshallingWithTaints(self):
         inputs = (
-            ('foo', 'bar'), ('spam', 'eggs'),
-            ('number', '1'),
-            ('tainted', '<tainted value>'), ('<tainted key>', 'value'),
-            ('spacey key', 'val'), ('key', 'spacey val'),
-            ('multi', '1'), ('multi', '2'))
+            ('<tnum>:int', '42'), ('<tfract>:float', '4.2'),
+            ('<tbign>:long', '45'),
+            ('twords:string', 'Some <words>'), ('t2tokens:tokens', 'one <two>'),
+            ('<taday>:date', '2002/07/23'),
+            ('taccountedfor:required', '<yes>'),
+            ('tmultiline:lines', '<one\ntwo>'),
+            ('tmorewords:text', '<one\ntwo>\n'))
         req = self._processInputs(inputs)
 
         taintedformkeys = list(req.taintedform.keys())
         taintedformkeys.sort()
-        self.assertEquals(taintedformkeys, ['<tainted key>', 'tainted'])
+        self.assertEquals(taintedformkeys, ['<taday>', '<tbign>', '<tfract>',
+            '<tnum>', 't2tokens', 'taccountedfor', 'tmorewords', 'tmultiline',
+            'twords'])
 
         self._taintedKeysAlsoInForm(req)
         self._onlyTaintedformHoldsTaintedStrings(req)
