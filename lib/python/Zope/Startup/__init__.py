@@ -80,7 +80,7 @@ class ZopeStarter:
         import zLOG
         # don't initialize the event logger from the environment
         zLOG._call_initialize = 0
-        self.event_logger = zLOG.EventLogger.EventLogger.logger
+        self.event_logger = logging.getLogger()
 
     def info(self, msg):
         import zLOG
@@ -111,6 +111,7 @@ class ZopeStarter:
         # set up our initial logging environment (log everything to stderr
         # if we're not in debug mode).
         import zLOG
+        import zLOG.EventLogger
 
         from ZConfig.components.logger.loghandler import StartupHandler
 

@@ -126,12 +126,11 @@ class ZopeStarterTestCase(unittest.TestCase):
 
         # startup handler should take on the level of the event log handler
         # with the lowest level
+        logger = logging.getLogger()
         self.assertEqual(starter.startup_handler.level, 15) # 15 is BLATHER
-        self.assertEqual(starter.startup_handler,
-                     zLOG.EventLogger.EventLogger.logger.handlers[0])
-        self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
-                         15)
-        self.assertEqual(len(zLOG.EventLogger.EventLogger.logger.handlers), 1)
+        self.assertEqual(starter.startup_handler, logger.handlers[0])
+        self.assertEqual(logger.level, 15)
+        self.assertEqual(len(logger.handlers), 1)
         self.failUnlessEqual(starter.startup_handler.stream, sys.stderr)
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
@@ -276,8 +275,8 @@ class ZopeStarterTestCase(unittest.TestCase):
             starter.info('hello')
             starter.removeStartupHandler()
             starter.setupConfiguredLoggers()
-            self.assertEqual(zLOG.EventLogger.EventLogger.logger.level,
-                             logging.INFO)
+            logger = logging.getLogger()
+            self.assertEqual(logger.level, logging.INFO)
             starter.flushStartupHandlerBuffer()
             l = open(os.path.join(TEMPNAME, 'event.log')).read()
             self.failUnless(l.find('hello') > -1)
