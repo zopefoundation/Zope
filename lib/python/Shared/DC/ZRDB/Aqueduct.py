@@ -96,8 +96,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.29 1998/12/29 17:02:55 jim Exp $'''
-__version__='$Revision: 1.29 $'[11:-2]
+$Id: Aqueduct.py,v 1.30 1998/12/29 19:55:01 jim Exp $'''
+__version__='$Revision: 1.30 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -235,10 +235,10 @@ def default_input_form(id,arguments,action='query',
                 string.joinfields(
                     map(
                         lambda a:
-                        ('<tr><th>%s</th>\n'
-                         '    <td><input name="%s"\n'
-                         '               width=30 value="%s">'
-                         '</td></tr>'
+                        ('<tr> <th>%s</th>\n'
+                         '     <td><input name="%s"\n'
+                         '                width=30 value="%s">'
+                         '     </td></tr>'
                          % (nicify(a[0]),
                             (
                                 a[1].has_key('type') and
@@ -286,29 +286,26 @@ def custom_default_report(id, result, action='', no_table=0,
                           ):
     columns=result._searchable_result_columns()
     __traceback_info__=columns
-    heading=('<tr>\n%s\n</tr>' %
+    heading=('<tr>\n%s        </tr>' %
                  string.joinfields(
                      map(lambda c:
-                         '  <th>%s</th>\n' % nicify(c['name']),
+                         '          <th>%s</th>\n' % nicify(c['name']),
                          columns),
                      ''
                      )
                  )
 
-    if no_table: tr, _tr, td, _td, delim = '<p>', '</p>', '', '', ', '
-    else: tr, _tr, td, _td, delim = '<tr>', '</tr>', '<td>', '</td>', ''
-
-    if no_table: tr='<p>', '</p>'
-    else: tr, _tr = '<tr>', '</tr>'
+    if no_table: tr, _tr, td, _td, delim = '<p>', '</p>', '', '', ',\n'
+    else: tr, _tr, td, _td, delim = '<tr>', '</tr>', '<td>', '</td>', '\n'
 
     row=[]
     for c in columns:
         n=c['name']
         if goofy(n) >= 0: n='expr="_vars[\'%s]"' % (`'"'+n`[2:])
-        row.append('  %s<!--#var %s%s-->%s\n'
+        row.append('          %s<!--#var %s%s-->%s'
                    % (td,n,c['type']!='s' and ' null=""' or '',_td))
 
-    row=('%s\n%s\n%s' % (tr,string.joinfields(row,delim), _tr))
+    row=('     %s\n%s\n        %s' % (tr,string.joinfields(row,delim), _tr))
 
     return custom_default_report_src(
         id=id,heading=heading,row=row,action=action,no_table=no_table)
@@ -444,7 +441,6 @@ def decapitate(html, RESPONSE=None,
         RESPONSE.setHeader(k,v)
 
     return html
-
 
 
 def delimited_output(results,REQUEST,RESPONSE):
