@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.39 $'[11:-2]
+__version__='$Revision: 1.40 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -328,6 +328,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         self.dav__init(REQUEST, RESPONSE)
         raise 'Method Not Allowed', 'The resource already exists.'
 
+    COPY__roles__=('Anonymous',)
     def COPY(self, REQUEST, RESPONSE):
         """Create a duplicate of the source resource whose state
         and behavior match that of the source resource as closely
@@ -411,6 +412,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         RESPONSE.setBody('')
         return RESPONSE
 
+    MOVE__roles__=('Anonymous',)
     def MOVE(self, REQUEST, RESPONSE):
         """Move a resource to a new location. Though we may later try to
         make a move appear seamless across namespaces (e.g. from Zope
