@@ -1,9 +1,9 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.37 1998/03/18 17:54:29 brian Exp $"""
+$Id: ObjectManager.py,v 1.38 1998/03/18 20:48:10 jeffrey Exp $"""
 
-__version__='$Revision: 1.37 $'[11:-2]
+__version__='$Revision: 1.38 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo, Globals
 from Globals import HTMLFile, HTMLFile
@@ -112,7 +112,11 @@ class ObjectManager(
         self._objects=tuple(filter(lambda i,n=id: i['id']!=n, self._objects))
 
     def objectIds(self, spec=None):
-        # Return a list of subobject ids
+        """Return a list of subobject ids.
+
+	Returns a list of subobject ids of the current object.  If 'spec' is
+	specified, returns objects whose meta_type matches 'spec'.
+	"""
 	if spec is not None:
 	    if type(spec)==type('s'):
 		spec=[spec]
@@ -124,7 +128,11 @@ class ObjectManager(
 	return map(lambda i: i['id'], self._objects)
 
     def objectValues(self, spec=None):
-        # Return a list of the actual subobjects
+        """Return a list of the actual subobjects.
+
+	Returns a list of actual subobjects of the current object.  If
+	'spec' is specified, returns only objects whose meta_type match 'spec'
+	"""
 	if spec is not None:
 	    if type(spec)==type('s'):
 		spec=[spec]
@@ -136,7 +144,12 @@ class ObjectManager(
 	return map(lambda i,s=self: getattr(s,i['id']), self._objects)
 
     def objectItems(self, spec=None):
-        # Return a list of (id, subobject) tuples
+        """Return a list of (id, subobject) tuples.
+
+	Returns a list of (id, subobject) tuples of the current object.
+	If 'spec' is specified, returns only objects whose meta_type match
+	'spec'
+	"""
 	if spec is not None:
 	    if type(spec)==type('s'):
 		spec=[spec]
@@ -279,7 +292,13 @@ class ObjectManager(
 
     def manage_delObjects(self,ids=[],submit='',clip_id='',
 			  clip_data='',REQUEST=None):
-	"""Delete a subordinate object"""
+	"""Copy/Paste/Delete a subordinate object
+	
+	Based on the value of 'submit', the objects specified in 'ids' get
+	copied, pasted, or deleted.  'Copy' can only work on one object id.
+	'Paste' uses the parameters 'clip_id' and 'clip_data' to paste.
+	'Delete' removes the objects specified in 'ids'.
+	"""
 	if submit=='Copy':
 	    c=len(ids)
 	    if (c <= 0) or (c > 1):
@@ -325,19 +344,19 @@ class ObjectManager(
         self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
 				     self._properties))
     def propertyIds(self):
-        # Return a list of property ids
+        """ Return a list of property ids """
 	return map(lambda i: i['id'], self._properties)
 
     def propertyValues(self):
-        # Return a list of actual property objects
+        """ Return a list of actual property objects """
 	return map(lambda i,s=self: getattr(s,i['id']), self._properties)
 
     def propertyItems(self):
-        # Return a list of (id,property) tuples
+        """ Return a list of (id,property) tuples """
 	return map(lambda i,s=self: (i['id'],getattr(s,i['id'])), 
 		                    self._properties)
     def propertyMap(self):
-        # Return a tuple of mappings, giving meta-data for properties
+        """ Return a tuple of mappings, giving meta-data for properties """
         return self._properties
 
     def propertyMap_d(self):
@@ -347,7 +366,10 @@ class ObjectManager(
 	return filter(lambda x,r=n: x['id'] not in r, v)
 
     def manage_addProperty(self,id,value,type,REQUEST=None):
-	"""Add a new property (www)"""
+	"""Add a new property (www)
+
+	Sets a new property with id, type, and value.
+	"""
 	try:    value=type_converters[type](value)
 	except: pass
 	self._setProperty(id,value,type)
@@ -368,8 +390,42 @@ class ObjectManager(
 	       message='Your changes have been saved',
 	       action ='manage_propertiesForm')
 
+    def manage_changeProperties(self, REQUEST=None, **kw):
+	"""Change existing object properties.
+
+	Change object properties by passing either a mapping object
+	of name:value pairs {'foo':6} or passing name=value parameters
+	"""
+	if REQUEST is None:
+	    props={}
+	else:
+	    props=REQUEST
+
+	if kw:
+	    for name, value in kw.items():
+		props[name]=value
+
+	for name, value in props.items():
+	    if self.hasProperty(name):
+		setattr(self, name, value)
+    
+	if REQUEST is not None:
+	    return MessageDialog(
+		title  ='Success!',
+		message='Your changes have been saved',
+		action ='manage_propertiesForm')
+
+    def hasProperty(self, id):
+	"""returns 1 if object has a settable property 'id'"""
+	for p in self._properties:
+	    if id == p['id']: return 1
+	return 0
+
     def manage_delProperties(self,ids,REQUEST=None):
-	"""Delete one or more properties"""
+	"""Delete one or more properties
+
+	Deletes properties specified by 'ids'
+	"""
 	try:    p=self._reserved_names
 	except: p=()
 	if ids is None:
@@ -486,6 +542,10 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.38  1998/03/18 20:48:10  jeffrey
+# Added some new property management options and Encyclopedia-esque doc
+# strings
+#
 # Revision 1.37  1998/03/18 17:54:29  brian
 # Fixed bug that required objects to have a __len__ when a specifier was
 # given to objectValues, Ids, and Items.
