@@ -171,6 +171,12 @@ class ProcessInputsTests(unittest.TestCase):
             ('alist:int', '1'),
             ('alist:int', '2'),
 
+            ('explicitlist:int:list:default', '3'),
+            ('explicitlist:int:list:default', '4'),
+            ('explicitlist:int:list:default', '5'),
+            ('explicitlist:int:list', '1'),
+            ('explicitlist:int:list', '2'),
+
             ('bar.spam:record:default', 'eggs'),
             ('bar.foo:record:default', 'foo'),
             ('bar.foo:record', 'baz'),
@@ -184,9 +190,11 @@ class ProcessInputsTests(unittest.TestCase):
 
         formkeys = list(req.form.keys())
         formkeys.sort()
-        self.assertEquals(formkeys, ['alist', 'bar', 'foo', 'setrec'])
+        self.assertEquals(formkeys, ['alist', 'bar', 'explicitlist', 'foo',
+            'setrec'])
 
         self.assertEquals(req['alist'], [1, 2, 3, 4, 5])
+        self.assertEquals(req['explicitlist'], [1, 2, 3, 4, 5])
 
         self.assertEquals(req['foo'], 5)
         self.assertEquals(req['bar'].spam, 'eggs')
