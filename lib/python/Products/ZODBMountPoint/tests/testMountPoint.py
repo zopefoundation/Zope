@@ -21,8 +21,8 @@ import Testing
 import ZODB
 from OFS.Application import Application
 from OFS.Folder import Folder
-from Products.ZODBMountPoint.MountedObject \
-     import setConfiguration, manage_addMounts, getMountPoint
+import App.config
+from Products.ZODBMountPoint.MountedObject import manage_addMounts, getMountPoint
 from DBTab.DBTab import DBTab
 
 try:
@@ -59,11 +59,18 @@ class TestDBConfig:
     def getSectionName(self):
         return self.name
 
+original_config = None
+
 class DBTabTests (unittest.TestCase):
 
     
 
     def setUp(self):
+        global original_config
+        if original_config is None:
+            # stow away original config so we can reset it
+            original_config = App.config.getConfiguration()
+            
         databases = [TestDBConfig('test_main.fs', ['/']).getDB(),
                      TestDBConfig('test_mount1.fs', ['/mount1']).getDB(),
                      TestDBConfig('test_mount2.fs', ['/mount2']).getDB(),
@@ -77,7 +84,9 @@ class DBTabTests (unittest.TestCase):
             for point in points:
                 mount_points[point] = name
         conf = DBTab(mount_factories, mount_points)
-        setConfiguration(conf)
+        d = App.config.DefaultConfiguration()
+        d.dbtab = conf
+        App.config.setConfiguration(d)
         self.conf = conf
         db = conf.getDatabase('/')
         self.db = db
@@ -90,8 +99,9 @@ class DBTabTests (unittest.TestCase):
         get_transaction().commit()  # Get the mount points ready
 
 
+
     def tearDown(self):
-        setConfiguration(None)
+        App.config.setConfiguration(original_config)
         get_transaction().abort()
         self.app._p_jar.close()
         del self.app
@@ -99,7 +109,6 @@ class DBTabTests (unittest.TestCase):
         for db in self.conf.opened.values():
             db.close()
         del self.conf
-
 
     def testRead(self):
         self.assertEqual(self.app.mount1.id, 'mount1')

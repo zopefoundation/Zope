@@ -13,7 +13,7 @@
 ##############################################################################
 """DBTab mount point (stored in ZODB).
 
-$Id: MountedObject.py,v 1.1 2003/07/20 02:56:01 chrism Exp $
+$Id: MountedObject.py,v 1.2 2003/12/20 16:58:57 chrism Exp $
 """
 
 import os
@@ -24,25 +24,14 @@ from AccessControl.ZopeGuards import guarded_getattr
 from OFS.SimpleItem import SimpleItem
 from OFS.Folder import Folder
 from Products.PageTemplates.PageTemplateFile import PageTemplateFile
-
 from Mount import MountPoint
 
 
 _www = os.path.join(os.path.dirname(__file__), 'www')
 
-
-configuration = None
-
 def getConfiguration():
     from App.config import getConfiguration
-    global configuration
-    if configuration is None:
-        configuration = getConfiguration().dbtab
-    return configuration
-
-def setConfiguration(c):
-    global configuration
-    configuration = c
+    return getConfiguration().dbtab
 
 class SimpleTrailblazer:
     """Follows Zope paths.  If a path is not found, creates a Folder.
