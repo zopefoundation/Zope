@@ -84,8 +84,8 @@
 ##############################################################################
 """Rendering object hierarchies as Trees
 """
-__rcs_id__='$Id: TreeTag.py,v 1.38 1999/09/29 13:40:44 brian Exp $'
-__version__='$Revision: 1.38 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.39 1999/11/12 16:25:49 brian Exp $'
+__version__='$Revision: 1.39 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -342,6 +342,10 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
     diff.append(id)
 
+
+    _td_colspan='<TD COLSPAN="%s" NOWRAP></TD>'
+    _td_single ='<TD WIDTH="16" NOWRAP></TD>'
+
     sub=None
     if substate is state:
         output('<TABLE CELLSPACING="0">\n')
@@ -354,10 +358,11 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
         # Add +/- icon
         if items:
             if level:
-                if level > 3: output(  '<TD COLSPAN="%s"></TD>' % (level-1))
-                elif level > 1: output('<TD></TD>' * (level-1))
-                output('<TD WIDTH="16"></TD>\n')
-            output('<TD WIDTH="16" VALIGN="TOP">')
+                if level > 3:   output(_td_colspan % (level-1))
+                elif level > 1: output(_td_single * (level-1))
+                output(_td_single)
+                output('\n')
+            output('<TD WIDTH="16" VALIGN="TOP" NOWRAP>')
             for i in range(len(substate)):
                 sub=substate[i]
                 if sub[0]==id:
@@ -388,9 +393,10 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
             output('</TD>\n')
 
         else:
-            if level > 2: output('<TD COLSPAN="%s"></TD>' % level)
-            elif level > 0: output('<TD></TD>' * level)
-            output('<TD WIDTH="16"></TD>\n')
+            if level > 2:   output(_td_colspan % level)
+            elif level > 0: output(_td_single  * level)
+            output(_td_single)
+            output('\n')
             
     
         # add item text
@@ -407,8 +413,8 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 
         level=level+1
         dataspan=colspan-level
-        if level > 3: h='<TD COLSPAN="%s"></TD>' % (level-1)
-        elif level > 1: h='<TD></TD>' * (level-1)
+        if level > 3:   h=_td_colspan % (level-1)
+        elif level > 1: h=_td_single  * (level-1)
         else: h=''
 
         if have_arg('header'):
@@ -419,7 +425,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 output(doc(
                     None, md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16"></TD>'
+                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
                         '<TD%s VALIGN="TOP">'
                         % (h,
                            (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
@@ -440,7 +446,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                     try: output(doc(
                         None,md,
                         standard_html_header=(
-                            '<TR>%s<TD WIDTH="16"></TD>'
+                            '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
                             '<TD%s VALIGN="TOP">'
                             % (h,
                                (dataspan > 1 and
@@ -459,7 +465,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 try: output(doc(
                     None,md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16"></TD>'
+                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
                         '<TD%s VALIGN="TOP">'
                         % (h,
                            (dataspan > 1 and
@@ -498,7 +504,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
                 output(doc(
                     None, md,
                     standard_html_header=(
-                        '<TR>%s<TD WIDTH="16"></TD>'
+                        '<TR>%s<TD WIDTH="16" NOWRAP></TD>'
                         '<TD%s VALIGN="TOP">'
                         % (h,
                            (dataspan > 1 and (' COLSPAN="%s"' % dataspan)
