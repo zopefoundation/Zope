@@ -13,7 +13,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.38 $'[11:-2]
+__version__='$Revision: 1.39 $'[11:-2]
 
 import sys, os,  mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -203,8 +203,9 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         else:
             # The command was succesful
             lock = locknull.wl_getLock(token)
-            RESPONSE.setStatus(200)
+            RESPONSE.setStatus(200)                         
             RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+            RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
             RESPONSE.setBody(lock.asXML())
 
 

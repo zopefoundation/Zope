@@ -13,7 +13,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import sys, os,  mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -499,6 +499,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 lock = self.wl_getLock(token)
                 RESPONSE.setStatus(200)
                 RESPONSE.setHeader('Content-Type', 'text/xml; charset="utf-8"')
+                RESPONSE.setHeader('Lock-Token', 'opaquelocktoken:' + token)
                 RESPONSE.setBody(lock.asXML())
         else:
             # There's no body, so this likely to be a refresh request
