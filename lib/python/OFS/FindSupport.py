@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 __doc__="""Find support"""
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 
 import sys, os, time, Globals, ExtensionClass
@@ -44,7 +44,7 @@ class FindSupport(ExtensionClass.Base):
         )
     
     manage_options=(
-        {'label':'Find', 'action':'manage_findForm', 'target':'manage_main',
+        {'label':'Find', 'action':'manage_findForm', 
          'help':('OFSP','Find.stx')},         
         )
 

@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 """SMTP mail objects
-$Id: MailHost.py,v 1.71 2002/03/20 17:47:48 Torped Exp $"""
-__version__ = "$Revision: 1.71 $"[11:-2]
+$Id: MailHost.py,v 1.72 2002/03/28 19:59:00 andreasjung Exp $"""
+__version__ = "$Revision: 1.72 $"[11:-2]
 
 from Globals import Persistent, DTMLFile, InitializeClass
 from smtplib import SMTP
@@ -54,7 +54,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     manage_options=(
         (
         {'icon':'', 'label':'Edit',
-         'action':'manage_main', 'target':'manage_main',
+         'action':'manage_main', 
          'help':('MailHost','Mail-Host_Edit.stx')},
         )
         +RoleManager.manage_options
