@@ -84,19 +84,16 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.48 1998/12/04 20:15:30 jim Exp $"""
+$Id: ObjectManager.py,v 1.49 1999/01/06 23:20:06 brian Exp $"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher
 from Globals import HTMLFile, HTMLFile, Persistent
 from Globals import MessageDialog, default__class_init__
-from string import find,join,lower,split
 from urllib import quote
-from DocumentTemplate import html_quote
-from ZPublisher.Converters import type_converters
-from DateTime import DateTime
+
 
 class ObjectManager(
     App.Management.Navigation,
@@ -119,7 +116,7 @@ class ObjectManager(
     _properties =({'id':'title', 'type': 'string'},)
 
     manage_main          =HTMLFile('main', globals())
-    manage_propertiesForm=HTMLFile('properties', globals())
+
 
     manage_options=(
     {'icon':icon,              'label':'Objects',
@@ -409,176 +406,3 @@ class ObjectManager(
                 return self.manage_main(self, REQUEST, update_menu=1)
 
 
-    def _setProperty(self,id,value,type='string'):
-        self._checkId(id)
-        self._properties=self._properties+({'id':id,'type':type},)
-        setattr(self,id,value)
-
-    def _delProperty(self,id):
-        delattr(self,id)
-        self._properties=tuple(filter(lambda i, n=id: i['id'] != n,
-                                     self._properties))
-    def propertyIds(self):
-        """ Return a list of property ids """
-        return map(lambda i: i['id'], self._properties)
-
-    def propertyValues(self):
-        """ Return a list of actual property objects """
-        return map(lambda i,s=self: getattr(s,i['id']), self._properties)
-
-    def propertyItems(self):
-        """ Return a list of (id,property) tuples """
-        return map(lambda i,s=self: (i['id'],getattr(s,i['id'])), 
-                                    self._properties)
-    def propertyMap(self):
-        """ Return a tuple of mappings, giving meta-data for properties """
-        return self._properties
-
-    def propertyMap_d(self):
-        v=self._properties
-        try:    n=self._reserved_names
-        except: return v
-        return filter(lambda x,r=n: x['id'] not in r, v)
-
-    def manage_addProperty(self,id,value,type,REQUEST=None):
-        """Add a new property (www)
-
-        Sets a new property with id, type, and value.
-        """
-        try:    value=type_converters[type](value)
-        except: pass
-        self._setProperty(id,value,type)
-        if REQUEST is not None:
-            return self.manage_propertiesForm(self, REQUEST)
-
-    def manage_editProperties(self,REQUEST):
-        """Edit object properties"""
-        for p in self._properties:
-            n=p['id']
-            try:    setattr(self,n,REQUEST[n])
-            except: setattr(self,n,'')
-        return MessageDialog(
-               title  ='Success!',
-               message='Your changes have been saved',
-               action ='manage_propertiesForm')
-
-    def manage_changeProperties(self, REQUEST=None, **kw):
-        """Change existing object properties.
-
-        Change object properties by passing either a mapping object
-        of name:value pairs {'foo':6} or passing name=value parameters
-        """
-        if REQUEST is None:
-            props={}
-        else:
-            props=REQUEST
-
-        if kw:
-            for name, value in kw.items():
-                props[name]=value
-
-        for name, value in props.items():
-            if self.hasProperty(name):
-                setattr(self, name, value)
-    
-        if REQUEST is not None:
-            return MessageDialog(
-                title  ='Success!',
-                message='Your changes have been saved',
-                action ='manage_propertiesForm')
-
-    def hasProperty(self, id):
-        """returns 1 if object has a settable property 'id'"""
-        for p in self._properties:
-            if id == p['id']: return 1
-        return 0
-
-    def manage_delProperties(self,ids,REQUEST=None):
-        """Delete one or more properties
-
-        Deletes properties specified by 'ids'
-        """
-        try:    p=self._reserved_names
-        except: p=()
-        if ids is None:
-            return MessageDialog(title='No property specified',
-                   message='No properties were specified!',
-                   action ='./manage_propertiesForm',)
-        for n in ids:
-            if n in p:
-                return MessageDialog(
-                title  ='Cannot delete %s' % n,
-                message='The property <I>%s</I> cannot be deleted.' % n,
-                action ='manage_propertiesForm')
-            try:    self._delProperty(n)
-            except: raise 'BadRequest', (
-                          'The property <I>%s</I> does not exist' % n)
-        if REQUEST is not None:
-            return self.manage_propertiesForm(self, REQUEST)
-
-
-    def _defaultInput(self,n,t,v):
-        return '<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>' % (n,t,v)
-
-    def _stringInput(self,n,t,v):
-        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
-                % (n,t,html_quote(v)))
-
-    def _booleanInput(self,n,t,v):
-        if v: v="CHECKED"
-        else: v=''
-        return ('<INPUT TYPE="CHECKBOX" NAME="%s:%s" SIZE="50" %s></TD>'
-                % (n,t,v))
-
-    def _selectInput(self,n,t,v):
-        s=['<SELECT NAME="%s:%s">' % (n,t)]
-        map(lambda i: s.append('<OPTION>%s' % i), v)
-        s.append('</SELECT>')
-        return join(s,'\n')
-
-    def _linesInput(self,n,t,v):
-        try: v=html_quote(join(v,'\n'))
-        except: v=''
-        return (
-        '<TEXTAREA NAME="%s:lines" ROWS="10" COLS="40">%s</TEXTAREA>'
-        % (n,v))
-
-    def _tokensInput(self,n,t,v):
-        try: v=html_quote(join(v,' '))
-        except: v=''
-        return ('<INPUT NAME="%s:%s" SIZE="40" VALUE="%s"></TD>'
-                % (n,t,html_quote(v)))
-
-    def _textInput(self,n,t,v):
-        return ('<TEXTAREA NAME="%s:text" ROWS="10" COLS="40">%s</TEXTAREA>'
-                % (n,html_quote(v)))
-
-    _inputMap={
-        'float':        _defaultInput,
-        'int':          _defaultInput,
-        'long':         _defaultInput,
-        'string':       _stringInput,
-        'lines':        _linesInput,
-        'text':         _textInput,
-        'date':         _defaultInput,
-        'tokens':       _tokensInput,   
-#       'boolean':      _booleanInput,  
-        }
-
-    propertyTypes=map(lambda key: (lower(key), key), _inputMap.keys())
-    propertyTypes.sort()
-    propertyTypes=map(lambda key:
-                      {'id': key[1],
-                       'selected': key[1]=='string' and 'SELECTED' or ''},
-                      propertyTypes)
-                      
-
-    def propertyInputs(self):
-        imap=self._inputMap
-        r=[]
-        for p in self._properties:
-            n=p['id']
-            t=p['type']
-            v=getattr(self,n)
-            r.append({'id': n, 'input': imap[t](None,n,t,v)})
-        return r

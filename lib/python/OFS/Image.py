@@ -84,10 +84,11 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.47 $'[11:-2]
+__version__='$Revision: 1.48 $'[11:-2]
 
 import Globals
 from Globals import HTMLFile, MessageDialog
+from PropertyManager import PropertyManager
 from AccessControl.Role import RoleManager
 from SimpleItem import Item_w__name__
 from Globals import Persistent
@@ -99,18 +100,15 @@ manage_addFileForm=HTMLFile('imageAdd', globals(),Kind='File',kind='file')
 def manage_addFile(self,id,file,title='',precondition='',REQUEST=None):
     """Add a new File object.
 
-    Creates a new file object 'id' with the contents of 'file'"""
+    Creates a new File object 'id' with the contents of 'file'"""
 
     id, title = cookId(id, title, file)
     self._setObject(id, File(id,title,file,precondition))
     if REQUEST is not None: return self.manage_main(self,REQUEST)
 
 
-class File(Persistent,Implicit,RoleManager,Item_w__name__):
-    """
-    Principia object for arbitrary files.  A Files string representation is
-    its contents.
-    """
+class File(Persistent,Implicit,PropertyManager,RoleManager,Item_w__name__):
+    """A File object is a content object for arbitrary files."""
     
     meta_type='File'
     icon='p_/file'
@@ -122,6 +120,7 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
 
     manage_options=({'label':'Edit', 'action':'manage_main'},
                     {'label':'Upload', 'action':'manage_uploadForm'},
+                    {'label':'Properties', 'action':'manage_propertiesForm'},
                     {'label':'View', 'action':''},
                     {'label':'Security', 'action':'manage_access'},
                    )
@@ -132,8 +131,17 @@ class File(Persistent,Implicit,RoleManager,Item_w__name__):
     ('Change Images and Files', ['manage_edit','manage_upload','PUT']),
     ('View',
      ['index_html','view_image_or_file','getSize','getContentType', '']),
+
+    ('Manage properties', ('manage_addProperty',
+                           'manage_editProperties',
+                           'manage_delProperties',
+                           'manage_changeProperties',)),
     )
    
+
+    _properties=({'id':'title', 'type': 'string'},
+                 {'id':'content_type', 'type':'string'},
+                 )
 
     def __init__(self,id,title,file,content_type='application/octet-stream',
                  precondition=''):
@@ -272,6 +280,7 @@ class Image(File):
 
     manage_options=({'label':'Edit', 'action':'manage_main'},
                     {'label':'Upload', 'action':'manage_uploadForm'},
+                    {'label':'Properties', 'action':'manage_propertiesForm'},
                     {'label':'View', 'action':'view_image_or_file'},
                     {'label':'Security', 'action':'manage_access'},
                    )
