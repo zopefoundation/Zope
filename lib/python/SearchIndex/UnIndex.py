@@ -85,7 +85,7 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.16 $'[11:-2]
+__version__='$Revision: 1.17 $'[11:-2]
 
 
 from Globals import Persistent
@@ -241,13 +241,19 @@ class UnIndex(Persistent, Implicit):
         id = self.id              #name of the column
 
         cidid = "%s/%s" % (cid,id)
-        has_key = request.has_key
-        if has_key(cidid): keys = request[cidid]
-        elif has_key(id): keys = request[id]
-        else: return None
 
-        if type(keys) is not ListType and not TupleType:
+        if request.has_key(cidid):
+            keys = request[cidid]
+        elif request.has_key(id):
+            keys = request[id]
+        else:
+            return None
+
+        if not type(keys) in (ListType, TupleType):
             keys = [keys]
+
+        print "XXX,"
+        print keys
             
         index = self._index
         r = None
