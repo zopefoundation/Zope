@@ -112,6 +112,9 @@ Zope Changes
       - Collector #2561: XXBucket.values() returned keys instead of values 
 
       - Fixed the API docs for user objects.
+
+      - Fixed bad interaction between ZCatalog and dtml-in (submitted by
+        Steve Alexander)
    
 
     Zope 2.4 beta 2

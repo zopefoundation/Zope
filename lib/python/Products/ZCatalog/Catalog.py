@@ -673,7 +673,9 @@ class Catalog(Persistent, Acquisition.Implicit, ExtensionClass.Base):
                 if (type(so) is type('') and
                     lower(so) in ('reverse', 'descending')):
                     r.reverse()
-                r=LazyCat(map(lambda i: i[1], r), len(r))
+
+                r=map(lambda i: i[1], r)
+                r=LazyCat(r, reduce(lambda x,y: x+len(y), r, 0))
 
         return r
 
