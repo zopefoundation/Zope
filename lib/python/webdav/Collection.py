@@ -85,7 +85,7 @@
 
 """WebDAV support - collection objects."""
 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 import sys, os, string, Globals, davcmds, Lockable,re
 from common import urlfix, rfc1123_date

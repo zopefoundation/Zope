@@ -85,7 +85,7 @@
 
 """WebDAV xml request objects."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os, string
 from common import absattr, aq_base, urlfix, urlbase
@@ -226,6 +226,7 @@ class PropFind:
                     if dflag: ob._p_deactivate()
         if not top: return result
         result.write('</d:multistatus>')
+        
         return result.getvalue()
 
 
@@ -352,7 +353,7 @@ class Lock:
         self.scope = 'exclusive'
         self.type = 'write'
         self.owner = ''
-        timeout = request.get_header('Timeout', 'Infinite')
+        timeout = request.get_header('Timeout', 'infinite')
         self.timeout = string.strip(string.split(timeout,',')[-1])
         self.parse(data)
 
@@ -388,6 +389,7 @@ class Lock:
               result=None, url=None, top=1):
         """ Apply, built for recursion (so that we may lock subitems
         of a collection if requested """
+
         if result is None:
             result = StringIO()
             url = urlfix(self.request['URL'], 'LOCK')
@@ -401,6 +403,7 @@ class Lock:
             lock = LockItem(creator, self.owner, depth, self.timeout,
                             self.type, self.scope, token)
             if token is None: token = lock.getLockToken()
+            
         except ValueError, valerrors:
             errmsg = "412 Precondition Failed"
         except:
@@ -475,7 +478,8 @@ class Unlock:
             method = getattr(obj, 'wl_delLock')
             vld = getSecurityManager().validate(None,obj,'wl_delLock',method)
             if vld: obj.wl_delLock(token)
-            else: errmsg = "403 Forbidden"
+            else: 
+                errmsg = "403 Forbidden"
         elif not islockable:
             # Only set an error message if the command is being applied
             # to a top level object.  Otherwise, we're descending a tree

@@ -85,7 +85,7 @@
 
 """WebDAV support - null resource objects."""
 
-__version__='$Revision: 1.29 $'[11:-2]
+__version__='$Revision: 1.30 $'[11:-2]
 
 import sys, os, string, mimetypes, Globals, davcmds
 import Acquisition, OFS.content_types
@@ -232,7 +232,7 @@ class NullResource(Persistent, Acquisition.Implicit, Resource):
         creator = security.getUser()
         body = REQUEST.get('BODY', '')
         ifhdr = REQUEST.get_header('If', '')
-        depth = REQUEST.get_header('Depth', 'infinite')
+        depth = REQUEST.get_header('Depth', 'infinity')
 
         name = self.__name__
         parent = self.__parent__

@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.45 $'[11:-2]
+__version__='$Revision: 1.46 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass, Lockable
 from common import absattr, aq_base, urlfix, rfc1123_date, tokenFinder, urlbase
@@ -181,10 +181,12 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         found = 0; resourcetagged = 0
         taglist = IfParser(ifhdr)
         for tag in taglist:
+            
             if not tag.resource:
                 # There's no resource (url) with this tag
-                taglist = map(tokenFinder, tag.list)
-                wehave = filter(havetag, list)
+                tag_list = map(tokenFinder, tag.list)
+                wehave = filter(havetag, tag_list)
+
                 if not wehave: continue
                 if tag.NOTTED: continue
                 if refresh:
@@ -193,8 +195,9 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
                 found = 1; break
             elif urlbase(tag.resource) == url:
                 resourcetagged = 1
-                taglist = map(tokenFinder, tag.list)
-                wehave = filter(havetag, taglist)
+                tag_list = map(tokenFinder, tag.list)
+                wehave = filter(havetag, tag_list)
+
                 if not wehave: continue
                 if tag.NOTTED: continue
                 if refresh:
@@ -300,6 +303,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         if parent.manage_delObjects([name],REQUEST=None)  is None:
             RESPONSE.setStatus(204)
         else:
+            
             RESPONSE.setStatus(403)
 
         return RESPONSE
@@ -538,7 +542,7 @@ class Resource(ExtensionClass.Base, Lockable.LockableItem):
         creator = security.getUser()
         body = REQUEST.get('BODY', '')
         ifhdr = REQUEST.get_header('If', None)
-        depth = REQUEST.get_header('Depth', 'infinite')
+        depth = REQUEST.get_header('Depth', 'infinity')
         alreadylocked = Lockable.wl_isLocked(self)
 
         if body and alreadylocked:
