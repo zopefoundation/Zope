@@ -232,7 +232,7 @@ next_word(Splitter *self, char **startpos, char **endpos)
       c=tolower((unsigned char) *here);
       
       /* Check to see if this character is part of a word */
-      if(isalnum((unsigned char)c) || c=='/')
+      if(isalnum((unsigned char)c) || c=='/' || c=='_')
         { /* Found a word character */
 	  if(startpos && i==0) *startpos=here;
 	  if(i++ < MAX_WORD) *b++ = c;
@@ -478,7 +478,7 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.15 2001/03/16 16:57:38 brian Exp $\n"
+"$Id: Splitter.c,v 1.16 2001/03/21 22:06:32 jim Exp $\n"
 ;
 
 
@@ -486,7 +486,7 @@ void
 initSplitter() 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.15 $";
+  char *rev="$Revision: 1.16 $";
   
   /* Create the module and add the functions */
   m = Py_InitModule4("Splitter", Splitter_module_methods,
