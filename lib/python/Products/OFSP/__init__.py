@@ -83,10 +83,10 @@
 # 
 ##############################################################################
 __doc__='''Base Principia
-$Id: __init__.py,v 1.19 1999/02/22 20:51:44 jim Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: __init__.py,v 1.20 1999/03/08 21:25:02 michel Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
-import Session, Draft, ZClasses
+import Version, Draft, ZClasses
 import OFS.Image, OFS.Folder, AccessControl.User
 import OFS.DTMLMethod, OFS.DTMLDocument
 from ImageFile import ImageFile
@@ -94,7 +94,7 @@ from ImageFile import ImageFile
 product_name='Zope built-in objects'
 
 classes=('OFS.DTMLMethod.DTMLMethod', 'OFS.DTMLDocument.DTMLDocument',
-         'Session.Session', 'OFS.Image.File', 'OFS.Image.Image',
+         'Version.Version', 'OFS.Image.File', 'OFS.Image.Image',
          )
 klasses=('OFS.Folder.Folder', 'AccessControl.User.UserFolder')
 
@@ -105,8 +105,8 @@ meta_types=(
          'action':'manage_addPrincipiaDraftForm'},
         {'name': 'User Folder',
          'action':'manage_addUserFolder'},
-        {'name': 'Session',
-         'action':'manage_addSessionForm'},
+        {'name': 'Version',
+         'action':'manage_addVersionForm'},
         {'name': 'File',
          'action':'manage_addFileForm'},
         {'name': 'Image',
@@ -137,8 +137,8 @@ methods={
     'manage_addImageForm': OFS.Image.manage_addImageForm,
     'manage_addFile': OFS.Image.manage_addFile,
     'manage_addFileForm': OFS.Image.manage_addFileForm,
-    'manage_addSessionForm': Session.manage_addSessionForm,
-    'manage_addSession': Session.manage_addSession,
+    'manage_addVersionForm': Version.manage_addVersionForm,
+    'manage_addVersion': Version.manage_addVersion,
     'PUT': PUT,
     'PUT__roles__': ('Manager',),
     'manage_addUserFolder': AccessControl.User.manage_addUserFolder,
@@ -148,14 +148,14 @@ methods={
 methods.update(ZClasses.methods)
 
 misc_={
-    'session': ImageFile('images/session.gif', globals()),
+    'version': ImageFile('images/version.gif', globals()),
     }
 misc_.update(ZClasses.misc_)
 
 __ac_permissions__=(
     ZClasses.__ac_permissions__+
     (
-        ('Add Sessions',('manage_addSessionForm', 'manage_addSession')),
+        ('Add Versions',('manage_addVersionForm', 'manage_addVersion')),
         ('Add Documents, Images, and Files',
          ('manage_addDTMLDocumentForm', 'manage_addDTMLDocument',
           'manage_addDTMLMethodForm', 'manage_addDTMLMethod',
@@ -169,9 +169,9 @@ __ac_permissions__=(
         ('Change DTML Methods', ()),
         ('Change Images and Files', ()),
         ('Change proxy roles', ()),
-        ('Change Sessions', ()),
-        ('Join/leave Sessions', ()),
-        ('Save/discard Session changes', ()),
+        ('Change Versions', ()),
+        ('Join/leave Versions', ()),
+        ('Save/discard Version changes', ()),
         ('Manage users', ()),
         #('Add DraftFolders',
         # ('manage_addDraftFolderForm', 'manage_addDraftFolder')),

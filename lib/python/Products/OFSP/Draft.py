@@ -97,7 +97,7 @@ def manage_addPrincipiaDraft(self, id, baseid, PATH_INFO, REQUEST=None):
 class Draft(Persistent, Implicit, SimpleItem.Item):
     "Daft objects"
     _refid=''
-    _session='/session'
+    _version='/version'
     icon     ='misc_/OFSP/draft'
     meta_type='Principia Draft'
 
@@ -111,10 +111,10 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     def __init__(self, id, baseid, PATH_INFO):
         self.id=id
         self._refid=baseid
-        session=PATH_INFO
-        l=rfind(session,'/')
-        if l >= 0: session=session[:l]
-        self._session="%s/%s" % (session, id)
+        version=PATH_INFO
+        l=rfind(version,'/')
+        if l >= 0: version=version[:l]
+        self._version="%s/%s" % (version, id)
         self.users__draft__=uf=AccessControl.User.UserFolder()
         self.__allow_groups__=uf
     
@@ -149,24 +149,24 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     def __bobo_traverse__(self, REQUEST, name):
         if name[-9:]=='__draft__': return getattr(self, name)
 
-        dself=getdraft(self, self._session)
+        dself=getdraft(self, self._version)
         ref=getattr(dself.aq_parent.aq_base,dself._refid).aq_base.__of__(dself)
         if hasattr(ref, name): return dself, ref, getattr(ref, name)
         return getattr(self, name)
     
-    def nonempty(self): return Globals.SessionBase[self._session].nonempty()
+    def nonempty(self): return Globals.VersionBase[self._version].nonempty()
 
     manage_approve__draft__=Globals.HTMLFile('draftApprove', globals())
 
     def manage_Save__draft__(self, remark, REQUEST=None):
-        """Make session changes permanent"""
-        Globals.SessionBase[self._session].commit(remark)
+        """Make version changes permanent"""
+        Globals.VersionBase[self._version].commit(remark)
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
     def manage_Discard__draft__(self, REQUEST=None):
-        'Discard changes made during the session'
-        Globals.SessionBase[self._session].abort()
+        'Discard changes made during the version'
+        Globals.VersionBase[self._version].abort()
         if REQUEST:
             REQUEST['RESPONSE'].redirect(REQUEST['URL2']+'/manage_main')
 
@@ -180,19 +180,19 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
     def _postCopy(self, container, op=0):
 
         try: 
-            session=self.REQUEST['PATH_INFO']
-            l=rfind(session,'/')
-            if l >= 0: session=session[:l]
-            self._session="%s/%s" % (session, self.id)
+            version=self.REQUEST['PATH_INFO']
+            l=rfind(version,'/')
+            if l >= 0: version=version[:l]
+            self._version="%s/%s" % (version, self.id)
         finally:
           if 0:
             raise 'Copy Error', (
                 "This object can only be copied through the web.<p>")
 
-def getdraft(ob, session):
+def getdraft(ob, version):
     if hasattr(ob,'aq_parent'):
-        return getdraft(ob.aq_self, session).__of__(
-            getdraft(ob.aq_parent, session))
+        return getdraft(ob.aq_self, version).__of__(
+            getdraft(ob.aq_parent, version))
     if hasattr(ob,'_p_oid'):
-        ob=Globals.SessionBase[session].jar[ob._p_oid]
+        ob=Globals.VersionBase[version].jar[ob._p_oid]
     return ob
