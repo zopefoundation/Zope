@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.60 $'[11:-2]
+__version__='$Revision: 1.61 $'[11:-2]
 
 import time, string, App.Management, Globals
 from ZPublisher.Converters import type_converters
@@ -92,7 +92,7 @@ from DocumentTemplate.DT_Util import html_quote
 from Globals import HTMLFile, MessageDialog
 from string import find,join,lower,split,rfind
 from Acquisition import Implicit, Explicit
-from App.Common import rfc1123_date
+from App.Common import rfc1123_date, iso8601_date
 from webdav.common import urlbase
 from ExtensionClass import Base
 from Globals import Persistent
@@ -560,7 +560,7 @@ class DAVProperties(Virtual, PropertySheet, View):
         return self.pm
     
     def dav__creationdate(self):
-        return ''
+        return iso8601_date(43200.0)
 
     def dav__displayname(self):
         return absattr(self.v_self().id)
