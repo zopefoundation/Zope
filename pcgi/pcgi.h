@@ -67,6 +67,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <io.h>
 #include <iostream.h>
 #include <winsock.h>
+#include <fcntl.h>
 #endif
 
 #define MAXLINEBUFFER   12

@@ -55,7 +55,7 @@ IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 char spewbuf[1024];    /* yes, it's a global, but only for debugging */
 #endif
 
-static char _id_[]="$Id: pcgi-wrapper.c,v 1.5 1998/12/03 22:43:03 brian Exp $";
+static char _id_[]="$Id: pcgi-wrapper.c,v 1.6 1999/10/28 17:34:56 brian Exp $";
 
 /* Globals, OR: "I'll know I'll hate myself in the morning" */
 extern char **environ;
@@ -85,6 +85,10 @@ int main(int argc, char *argv[])
     CloseFileDescriptors = 1;
 #endif
 
+#ifdef WIN32
+    _setmode(fileno(stdin), O_BINARY);
+    _setmode(fileno(stdout), O_BINARY);
+#endif
 
     /*
     // Initialize resource info
