@@ -6,8 +6,8 @@ import OFS.SimpleItem
 import Globals
 from Scheduler.OneTimeEvent import OneTimeEvent
 
-#$Id: MailHost.py,v 1.14 1997/09/17 16:20:48 jim Exp $ 
-__version__ = "$Revision: 1.14 $"[11:-2]
+#$Id: MailHost.py,v 1.15 1997/09/17 21:08:15 jeffrey Exp $ 
+__version__ = "$Revision: 1.15 $"[11:-2]
 smtpError = "SMTP Error"
 MailHostError = "MailHost Error"
 
@@ -59,16 +59,16 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
     def sendTemplate(trueself, self, messageTemplate, 
                      statusTemplate=None, mto=None, mfrom=None, REQUEST):
         'render a mail template, then send it...'
-        mtemplate = getattr(self, messageTemplate)
-        messageText = mtemplate(self, trueself.REQUEST)
+	mtemplate = getattr(self, messageTemplate)
+	messageText = mtemplate(self, trueself.REQUEST)
 
-        headers, message = newDecapitate(messageText)
-        if mto: headers['to'] = mto
-        if mfrom: headers['from'] = mfrom
-        for requiredHeader in ('to', 'from', 'subject'):
-            if not headers.has_key(requiredHeader):
-                raise MailHostError,"Message missing SMTP Header '%s'"\
-                % requiredHeader
+	headers, message = newDecapitate(messageText)
+	if mto: headers['to'] = mto
+	if mfrom: headers['from'] = mfrom
+	for requiredHeader in ('to', 'from', 'subject'):
+	    if not headers.has_key(requiredHeader):
+		raise MailHostError,"Message missing SMTP Header '%s'"\
+		      % requiredHeader
         
 	Globals.Scheduler.schedule(OneTimeEvent(
 	    Send,
@@ -76,11 +76,12 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
 	     trueself.localHost,
 	     headers['from'], headers['to'],
 	     headers['subject'], messageText
-	     )
+	     ),
+	    threadsafe=1
 	    ))
 
 	return "SEND OK"
-        
+
     def send(self, messageText, mto=None, mfrom=None):
         headers, message = newDecapitate(messageText)
         if mto: headers['to'] = mto
@@ -93,6 +94,24 @@ class MailHost(Persistent, Acquisition.Implicit, OFS.SimpleItem.Item,
         SendMail(self.smtpHost, self.smtpPort, self.localHost).send( 
                             mfrom=headers['from'], mto=headers['to'],
                             subj=headers['subject'], body=messageText)
+
+    def scheduledSend(self, messageText, mto=None, mfrom=None):
+	headers, message = newDecapitate(messageText)
+	if mto: headers['to'] = mto
+	if mfrom: headers['from'] = mfrom
+	for requiredHeader in ('to', 'from', 'subject'):
+	    if not headers.has_key(requiredHeader):
+		raise MailHostError,"Message missing SMTP Header '%s'"\
+		      % requiredHeader
+    
+	Globals.Scheduler.schedule(OneTimeEvent(
+	    Send,
+	    (self.smtpHost, self.smtpPort, self.localHost,
+	     headers['from'], headers['to'],
+	     headers['subject'], messageText
+	     ),
+	    threadsafe=1
+	    ))
 
     def simple_send(self, mto, mfrom, subject, body):
         body="subject: %s\n\n%s" % (subject, body)
@@ -117,7 +136,7 @@ class SendMail:
     def getLine(self):
 	line=''
 	while 1:
-	    if not select([self.fd],[],[],1.0)[0]:
+	    if not select([self.fd],[],[],1.0)[0]:	#check the socket
 		break
 	    data=self.conn.recv(1)
 	    if (not data) or (data == '\n'):
@@ -193,6 +212,11 @@ def decapitate(message, **kw):
 
 
 #$Log: MailHost.py,v $
+#Revision 1.15  1997/09/17 21:08:15  jeffrey
+#threadsafe calls to Scheduler, added .scheduledSend method which is
+#the same interface as send, but uses the schedular to send message
+#instead of calling the SendMail class directly.
+#
 #Revision 1.14  1997/09/17 16:20:48  jim
 #Added use of scheduler.
 #
