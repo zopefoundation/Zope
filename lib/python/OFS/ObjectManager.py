@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.54 1999/03/22 17:34:50 jim Exp $"""
+$Id: ObjectManager.py,v 1.55 1999/03/24 18:44:51 jim Exp $"""
 
-__version__='$Revision: 1.54 $'[11:-2]
+__version__='$Revision: 1.55 $'[11:-2]
 
 import App.Management, Acquisition, App.Undo, Globals
 import App.FactoryDispatcher, ts_regex
@@ -111,13 +111,10 @@ class ObjectManager(
 
     meta_type  ='ObjectManager'
     meta_types = dynamic_meta_types = ()
-    id       ='default'
-    title=''
-    icon='p_/folder'
     _objects   =()
     _properties =({'id':'title', 'type': 'string'},)
 
-    manage_main          =HTMLFile('main', globals())
+    manage_main=HTMLFile('main', globals())
 
 
     manage_options=(
