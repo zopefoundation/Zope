@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.17 2002/09/18 15:48:59 shane Exp $'''
-__version__='$Revision: 1.17 $'[11:-2]
+$Id: Traversable.py,v 1.18 2003/02/26 16:51:46 caseman Exp $'''
+__version__='$Revision: 1.18 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -140,7 +140,11 @@ class Traversable:
                     else:
                         o = get(object, name, M)
                     if o is M:
-                        o=object[name]
+                        try:
+                            o=object[name]
+                        except AttributeError:
+                            # Raise a NotFound for easier debugging
+                            raise 'NotFound', name
                         if (restricted and not securityManager.validate(
                             object, object, N, o)):
                             raise Unauthorized, name
