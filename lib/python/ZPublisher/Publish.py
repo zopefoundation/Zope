@@ -13,7 +13,6 @@
 __doc__="""Python Object Publisher -- Publish Python objects on web servers
 
 $Id$"""
-__version__='$Revision: 1.167 $'[11:-2]
 
 import sys, os
 from Response import Response
@@ -85,7 +84,8 @@ def publish(request, module_name, after_list, debug=0,
                 raise Redirect, cancel
 
         after_list[0]=bobo_after
-        if debug_mode: response.debug_mode=debug_mode
+        if debug_mode:
+            response.debug_mode=debug_mode
         if realm and not request.get('REMOTE_USER',None):
             response.realm=realm
 
@@ -97,7 +97,8 @@ def publish(request, module_name, after_list, debug=0,
 
         request['PARENTS']=parents=[object]
 
-        if transactions_manager: transactions_manager.begin()
+        if transactions_manager:
+            transactions_manager.begin()
 
         object=request.traverse(path, validated_hook=validated_hook)
 
@@ -110,13 +111,16 @@ def publish(request, module_name, after_list, debug=0,
                       dont_publish_class,
                       request, bind=1)
 
-        if result is not response: response.setBody(result)
+        if result is not response:
+            response.setBody(result)
 
-        if transactions_manager: transactions_manager.commit()
+        if transactions_manager:
+            transactions_manager.commit()
 
         return response
     except:
-        if transactions_manager: transactions_manager.abort()
+        if transactions_manager:
+            transactions_manager.abort()
 
         # DM: provide nicer error message for FTP
         sm = None
@@ -126,11 +130,13 @@ def publish(request, module_name, after_list, debug=0,
         if sm is not None:
             from asyncore import compact_traceback
             cl,val= sys.exc_info()[:2]
-            sm('%s: %s %s' % (getattr(cl,'__name__',cl), val, debug_mode and compact_traceback()[-1] or ''))
-         
+            sm('%s: %s %s' % (
+                getattr(cl,'__name__',cl), val,
+                debug_mode and compact_traceback()[-1] or ''))
 
         if err_hook is not None:
-            if parents: parents=parents[0]
+            if parents:
+                parents=parents[0]
             try:
                 return err_hook(parents, request,
                                 sys.exc_info()[0],
@@ -152,7 +158,8 @@ def publish(request, module_name, after_list, debug=0,
                 finally:
                     newrequest.close()
 
-        else: raise
+        else:
+            raise
 
 
 def publish_module_standard(module_name,
