@@ -18,6 +18,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.StopDict import get_stopdict
+from PipelineFactory import splitter_factory, element_factory
 
 class Lexicon:
 
@@ -140,11 +141,15 @@ class Splitter:
         for s in lst:
             result += self.rxGlob.findall(s)
         return result
+        
+splitter_factory.registerFactory('Regex Splitter', Splitter)
 
 class CaseNormalizer:
 
     def process(self, lst):
         return [w.lower() for w in lst]
+        
+element_factory.registerFactory('Case Normalizer', CaseNormalizer)
 
 class StopWordRemover:
 
@@ -161,3 +166,6 @@ class StopWordRemover:
     else:
         def process(self, lst):
             return self._process(self.dict, lst)
+            
+            
+element_factory.registerFactory('Stop Word Remover', StopWordRemover)

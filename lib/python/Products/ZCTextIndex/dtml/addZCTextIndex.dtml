@@ -38,6 +38,21 @@ from the most relevant to the least relevant.
   </tr>
 
   <tr>
+    <td align="left" valign="top">
+    <div class="form-label">
+    Ranking Strategy
+    </div>
+    </td>
+    <td align="left" valign="top">
+      <select name="extra.index_type:record">
+        <dtml-in name="getIndexTypes">
+          <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+        </dtml-in>
+      </select>        
+    </td>
+  </tr>
+
+  <tr>
     <td align="left" valign"top">
     <div class="form-label">
     Lexicon
@@ -48,7 +63,7 @@ from the most relevant to the least relevant.
         <select name="extra.lexicon_id:record">
       </dtml-if>
       <option value="&dtml-id;">
-        &dtml-id; <dtml-var title fmt="(%s)" missing>
+        &dtml-id; <dtml-var name="title" fmt="(%s)" null>
       </option>
       <dtml-if sequence-end>
         </select>
@@ -58,18 +73,6 @@ from the most relevant to the least relevant.
     </dtml-in>
     </td> 
   </tr>
-
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-optional">
-    Type
-    </div>
-    </td>
-    <td align="left" valign="top">
-    ZCTextIndex
-    </td>
-  </tr>
-
 
   <tr>
     <td align="left" valign="top">

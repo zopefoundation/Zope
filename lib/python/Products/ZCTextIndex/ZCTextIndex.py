@@ -26,12 +26,17 @@ from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
 
-from Products.ZCTextIndex.OkapiIndex import OkapiIndex
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon import \
      Lexicon, Splitter, CaseNormalizer, StopWordRemover
 from Products.ZCTextIndex.NBest import NBest
 from Products.ZCTextIndex.QueryParser import QueryParser
+from PipelineFactory import splitter_factory, element_factory
+
+from Products.ZCTextIndex.CosineIndex import CosineIndex
+from Products.ZCTextIndex.OkapiIndex import OkapiIndex
+index_types = {'Okapi BM25 Rank':OkapiIndex, 
+               'Cosine Measure':CosineIndex}
 
 class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     """Persistent TextIndex"""
@@ -50,7 +55,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
 
     ## Constructor ##
 
-    def __init__(self, id, extra, caller, index_factory=OkapiIndex):
+    def __init__(self, id, extra, caller, index_factory=None):
         self.id = id
         self._fieldname = extra.doc_attr
         lexicon = getattr(caller, extra.lexicon_id, None)
@@ -64,7 +69,15 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
                 % lexicon.getId()
 
         self.lexicon = lexicon
-        self._index_factory = index_factory
+
+        if index_factory is None:
+            if extra.index_type not in index_types.keys():
+                raise ValueError, 'Invalid index type "%s"' % extra.index_type
+            self._index_factory = index_types[extra.index_type]
+            self._index_type = extra.index_type
+        else:
+            self._index_factory = index_factory
+            
         self.clear()
 
     ## External methods not in the Pluggable Index API ##
@@ -144,6 +157,10 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
     ## User Interface Methods ##
 
     manage_main = DTMLFile('dtml/manageZCTextIndex', globals())
+    
+    def getIndexType(self):
+        """Return index type string"""
+        return getattr(self, '_index_type', self._index_factory.__name__)
 
 InitializeClass(ZCTextIndex)
 
@@ -157,29 +174,39 @@ manage_addZCTextIndexForm = DTMLFile('dtml/addZCTextIndex', globals())
 
 manage_addLexiconForm = DTMLFile('dtml/addLexicon', globals())
 
-def manage_addLexicon(self, id, title, splitter=None, normalizer=None,
-                      stopwords=None, REQUEST=None):
+def manage_addLexicon(self, id, title='', splitter_name=None, 
+                      element_names=None, REQUEST=None):
     """Add ZCTextIndex Lexicon"""
-    elements = []
-    if splitter:
-        elements.append(Splitter())
-    if normalizer:
-        elements.append(CaseNormalizer())
-    if stopwords:
-        elements.append(StopWordRemover())
+    
+    elements = [element_factory.instantiate(name) for name in element_names]
+    
+    if splitter_name:
+        elements.insert(0, splitter_factory.instantiate(splitter_name))
+
     lexicon = PLexicon(id, title, *elements)
     self._setObject(id, lexicon)
     if REQUEST is not None:
         return self.manage_main(self, REQUEST, update_menu=1)
 
 class PLexicon(Lexicon, Persistent, Acquisition.Implicit, SimpleItem):
-    """Persistent Lexcion for ZCTextIndex"""
+    """Persistent Lexicon for ZCTextIndex"""
 
     meta_type = 'ZCTextIndex Lexicon'
+    
+    manage_options = ({'label':'Overview', 'action':'manage_main'},) + \
+                     SimpleItem.manage_options
 
     def __init__(self, id, title='', *pipeline):
         self.id = str(id)
         self.title = str(title)
         PLexicon.inheritedAttribute('__init__')(self, *pipeline)
+        
+    ## User Interface Methods ##
+        
+    def getPipelineNames(self):
+        """Return list of names of pipeline element classes"""
+        return [element.__class__.__name__ for element in self._pipeline]
+         
+    manage_main = DTMLFile('dtml/manageLexicon', globals())
 
 InitializeClass(PLexicon)

@@ -1,10 +1,15 @@
 <dtml-var manage_page_header>
 
 <dtml-var "manage_form_title(this(), _,
-           form_title='Add Lexicon',
+           form_title='Add ZCTextIndex Lexicon',
 	   )">
+     
+<p class="form-help">
+  A ZCTextIndex Lexicon processes and stores the words of documents indexed
+  with a ZCTextIndex. Multiple ZCTextIndexes can share the same lexicon.
+</p>
 
-<FORM ACTION="manage_addLexicon" METHOD="POST">
+<form action="manage_addLexicon" method="POST">
 <table cellspacing="0" cellpadding="2" border="0">
   <tr>
     <td align="left" valign="top">
@@ -16,6 +21,7 @@
     <input type="text" name="id" size="40" />
     </td>
   </tr>
+  
   <tr>
     <td align="left" valign="top">
     <div class="form-optional">
@@ -29,33 +35,28 @@
 
   <tr>
     <td align="left" valign="top">
-    <div class="form-label">
-    splitter?
+      <div class="form-label">Word Splitter</div>
     </td>
     <td align="left" valign="top">
-    <input type="checkbox" name="splitter" checked />
+      <select name="splitter_name">
+        <dtml-in name="getSplitterNames">
+          <option value="&dtml-sequence-item;">&dtml-sequence-item;</option>
+        </dtml-in>
+      </select>
     </td>
   </tr>
 
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    case normalizer?
-    </td>
-    <td align="left" valign="top">
-    <input type="checkbox" name="normalizer" checked />
-    </td>
-  </tr>
-
-  <tr>
-    <td align="left" valign="top">
-    <div class="form-label">
-    remove stop words?
-    </td>
-    <td align="left" valign="top">
-    <input type="checkbox" name="stopwords" checked />
-    </td>
-  </tr>
+  <dtml-in name="getElementNames">
+    <tr>
+      <td align="left" valign="top">
+        <div class="form-label">&dtml-sequence-item;</div>
+      </td>
+      <td align="left" valign="top">
+      <input type="checkbox" name="element_names:list" 
+             value="&dtml-sequence-item;" checked />
+      </td>
+    </tr>
+  </dtml-in>
 
   <tr>
     <td align="left" valign="top">

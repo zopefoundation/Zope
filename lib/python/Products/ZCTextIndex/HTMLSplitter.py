@@ -13,6 +13,7 @@
 ##############################################################################
 
 from Products.ZCTextIndex.ISplitter import ISplitter
+from Products.ZCTextIndex.PipelineFactory import splitter_factory
 
 import re
 
@@ -43,6 +44,8 @@ class HTMLWordSplitter:
         rx = re.compile("[A-Za-z]")
         return [word for word in text.split()
                 if len(word) > 1 and rx.search(word)]
+                
+splitter_factory.registerFactory('HTML Word Splitter', HTMLWordSplitter)
 
 if __name__ == "__main__":
     import sys

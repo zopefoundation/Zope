@@ -16,14 +16,17 @@
 Experimental plugin text index for ZCatalog.
 """
 
+from PipelineFactory import splitter_factory, element_factory
+from Products.ZCTextIndex import ZCTextIndex, HTMLSplitter
+
 def initialize(context):
-    from Products.ZCTextIndex import ZCTextIndex
 
     context.registerClass(
         ZCTextIndex.ZCTextIndex,
         permission = 'Add Pluggable Index',
         constructors = (ZCTextIndex.manage_addZCTextIndexForm,
-                      ZCTextIndex.manage_addZCTextIndex),
+                        ZCTextIndex.manage_addZCTextIndex,
+                        getIndexTypes),
         icon='www/index.gif',
         visibility=None
     )
@@ -32,6 +35,19 @@ def initialize(context):
         ZCTextIndex.PLexicon,
         permission = 'Add Vocabularies',
         constructors = (ZCTextIndex.manage_addLexiconForm,
-                        ZCTextIndex.manage_addLexicon),
+                        ZCTextIndex.manage_addLexicon,
+                        getSplitterNames, getElementNames),
         icon='www/lexicon.gif'
     )
+    
+## Functions below are for use in the ZMI constructor forms ##
+    
+def getSplitterNames(self):
+    return splitter_factory.getFactoryNames()
+    
+def getElementNames(self):
+    return element_factory.getFactoryNames()
+    
+def getIndexTypes(self):
+    return ZCTextIndex.index_types.keys()
+    
