@@ -16,10 +16,10 @@ class HTMLWordSplitter:
     def process(self, text):
         splat = []
         for t in text:
-            splat += self.split(t)
+            splat += self._split(t)
         return splat    
 
-    def split(self, text):    
+    def _split(self, text):    
         text = text.lower()
         remove = ["<[^>]*>",
                   "&[A-Za-z]+;",
@@ -27,7 +27,7 @@ class HTMLWordSplitter:
         for pat in remove:
             text = re.sub(pat, " ", text)
         rx = re.compile("[A-Za-z]")
-        return [word for word in text.split()
+        return [word for word in text._split()
                 if len(word) > 1 and rx.search(word)]
 
 if __name__ == "__main__":
