@@ -1,7 +1,6 @@
 # alias module for backwards compatibility
 
-import RestrictedPython
-Eval = RestrictedPython.Eval.RestrictionCapableEval
+from DT_Util import Eval
 
 def careful_mul(env, *factors):
     r = 1
