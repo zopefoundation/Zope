@@ -24,8 +24,7 @@ Using the Medusa Monitor
    o You must authenticate as superuser.
 
    o At the time of writing the superuser password (in the access
-     file) must be plain text, not encrypted.  This should be
-     rectified by full 2.0 release.
+     file) must be plain text, not encrypted.
 
   To use the monitor, start it from the shell prompt like so (as if
   from the Zope root; must be python 1.5.2 or later):
