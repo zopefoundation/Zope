@@ -104,15 +104,17 @@ import re
 
 
 class Lexicon(Persistent, Implicit):
-    """ maps words to word ids and then some
+    """Maps words to word ids and then some
 
-    The Lexicon object is an attempt to abstract voacbularies out of
+    The Lexicon object is an attempt to abstract vocabularies out of
     Text indexes.  This abstraction is not totally cooked yet, this
     module still includes the parser for the 'Text Index Query
     Language' and a few other hacks.
 
     """
 
+    # default for older objects
+    stop_syn={}
 
     def __init__(self, stop_syn=None):
         self._lexicon = OIBTree()
@@ -120,10 +122,10 @@ class Lexicon(Persistent, Implicit):
         if stop_syn is None:
             self.stop_syn = {}
         else:
-            self.stop_syn = {}
+            self.stop_syn = stop_syn
 
                 
-    def set_stop_syn(selfb, stop_syn):
+    def set_stop_syn(self, stop_syn):
         """ pass in a mapping of stopwords and synonyms.  Format is:
 
         {'word' : [syn1, syn2, ..., synx]}
@@ -160,9 +162,8 @@ class Lexicon(Persistent, Implicit):
 
     def Splitter(self, astring, words=None):
         """ wrap the splitter """
-
         if words is None:
-            word = self.stop_syn
+            words = self.stop_syn
         return Splitter(astring, words)
 
     def grep(self, query):
