@@ -53,6 +53,7 @@ class TestRunner:
         name, ext=os.path.splitext(filename)
         file, pathname, desc=imp.find_module(name, [path])
         saved_syspath = sys.path[:]
+        module = None
         try:
             sys.path.append(path)       # let module find things in its dir
 	    try:
@@ -61,7 +62,7 @@ class TestRunner:
 	    	(tb_t, tb_v, tb_tb) = sys.exc_info()
 		self.report("Module %s failed to load\n%s: %s" % (pathname,
 			tb_t, tb_v))
-		self.report(join( traceback.format_tb(tb_tb)) + '\n')
+		self.report(string.join(traceback.format_tb(tb_tb)) + '\n')
 		del tb_tb
         finally:
             file.close()
