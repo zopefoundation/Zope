@@ -121,7 +121,7 @@ def _read_and_report(file, rpt=None, fromEnd=0, both=0, n=99999999, show=0):
      
     tlast=0
     err=0
-    tnamelast=''
+    tnamelast=None
     while 1:
         if fromEnd:
             seek(pos-4)
@@ -310,7 +310,7 @@ reports={
                  )),
     }
 
-if __name__=='__main__':
+def main(argv):
     import getopt
 
     items=reports.items()
@@ -365,7 +365,7 @@ if __name__=='__main__':
     sys.path.append(os.path.split(sys.argv[0])[0])
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],'r:ebl:s:f:p:')
+        opts, args = getopt.getopt(argv,'r:ebl:s:f:p:')
         filename,=args
     except: error(usage,1,1)
     
@@ -406,3 +406,5 @@ if __name__=='__main__':
     except: error('Coud not open %s' % filename,1,1)
 
     _read_and_report(file, rpt, fromEnd, both, n, show)
+
+if __name__=='__main__': main(sys.argv[1:])
