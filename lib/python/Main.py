@@ -30,6 +30,10 @@ import OFS.Application
 import TreeDisplay.TreeTag
 import Scheduler.Scheduler
 
+# Setup support for broken objects:
+import OFS.Uninstalled, PickleJar
+PickleJar.PickleJar.Broken=OFS.Uninstalled.Broken
+
 # Open the application database
 Bobobase=OFS.Application.open_bobobase()
 SessionBase=Globals.SessionBase=TJar.TM(Bobobase)
@@ -49,6 +53,9 @@ if os.environ.has_key('PRINCIPIA_REALM'):
 # Revision Log
 #
 # $Log: Main.py,v $
+# Revision 1.16  1998/05/08 14:51:32  jim
+# Added support for uninstalled products.
+#
 # Revision 1.15  1998/03/18 20:22:45  jim
 # Added support for PRINCIPIA_HIDE_TRACEBACKS and PRINCIPIA_REALM.
 #
