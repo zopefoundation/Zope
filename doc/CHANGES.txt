@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
     
+      - Fixed bug in z2.py where it would eat certain socket error exceptions
+        at startup.
+    
       - Collector #550: Exceptions in XML-RPC requests no longer envoke
         standard_error_message. Plain text error messages are instead added to
         the fault string. In debug mode, a full traceback is also included

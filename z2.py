@@ -648,6 +648,7 @@ try:
                                       'socktype':'TCP',
                                       'protocol':'HTTP',
                                       'switch':'-w'}
+                raise
             # Handler for a published module. zhttp_handler takes 3 arguments:
             # The name of the module to publish, and optionally the URI base
             # which is basically the SCRIPT_NAME, and optionally a dictionary
@@ -681,6 +682,7 @@ try:
                                       'socktype':'TCP',
                                       'protocol':'WebDAV source',
                                       'switch':'-W'}
+                raise
 
             # Handler for a published module. zhttp_handler takes 3 arguments:
             # The name of the module to publish, and optionally the URI base
@@ -723,6 +725,7 @@ try:
                                       'socktype':'TCP',
                                       'protocol':'FTP',
                                       'switch':'-f'}
+                raise
 
     # PCGI Server
     if PCGI_FILE and not READ_ONLY:
@@ -757,6 +760,7 @@ try:
                                   'socktype':'TCP',
                                   'protocol':'FastCGI',
                                   'switch':'-F'}
+            raise
 
 
     # Monitor Server
@@ -783,6 +787,7 @@ try:
                                           'socktype':'TCP',
                                           'protocol':'monitor server',
                                           'switch':'-m'}
+                    raise
 
     if ICP_PORT:
         if isinstance(ICP_PORT, IntType): ICP_PORT=((IP_ADDRESS, ICP_PORT),)
@@ -796,6 +801,7 @@ try:
                                       'socktype':'UDP',
                                       'protocol':'ICP',
                                       'switch':'--icp'}
+                raise
 
     if not READ_ONLY:
         if os.path.exists(PID_FILE): os.unlink(PID_FILE)
