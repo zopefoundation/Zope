@@ -1,7 +1,7 @@
 # Author: David Goodger
 # Contact: goodger@users.sourceforge.net
-# Revision: $Revision: 1.3 $
-# Date: $Date: 2003/07/10 15:49:44 $
+# Revision: $Revision: 1.4 $
+# Date: $Date: 2003/09/29 20:09:25 $
 # Copyright: This module has been placed in the public domain.
 
 """
@@ -113,7 +113,7 @@ _directive_registry = {
       'meta': ('html', 'meta'),
       #'imagemap': ('html', 'imagemap'),
       'raw': ('misc', 'raw'),
-      'include': ('misc', 'include'),
+#      'include': ('misc', 'include'),
       'replace': ('misc', 'replace'),
       'unicode': ('misc', 'unicode_directive'),
       'class': ('misc', 'class_directive'),
