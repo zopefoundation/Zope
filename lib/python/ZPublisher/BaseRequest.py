@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE
 # 
 ##############################################################################
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 from string import join, split, find, rfind, lower, upper
 from urllib import quote
@@ -90,9 +90,7 @@ class BaseRequest:
 
     set=__setitem__
 
-    def __getitem__(self,key,
-                    default=_marker, # Any special internal marker will do
-                    ):
+    def get(self, key, default):
         """Get a variable value
 
         Return a value for the required variable name.
@@ -121,9 +119,19 @@ class BaseRequest:
             self.other[key]=v
             return v
         
-        raise KeyError, key
+        return default
 
-    __getattr__=get=__getitem__
+    def __getitem__(self, key, default=_marker):
+        v = self.get(key, default)
+        if v is _marker:
+            raise KeyError, key
+        return v
+
+    def __getattr__(self, key, default=_marker):
+        v = self.get(key, default)
+        if v is _marker:
+            raise AttributeError, key
+        return v
 
     def set_lazy(self, key, callable):
         pass            # MAYBE, we could do more, but let HTTPRequest do it

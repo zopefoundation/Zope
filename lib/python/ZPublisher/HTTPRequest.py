@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.58 $'[11:-2]
+__version__='$Revision: 1.59 $'[11:-2]
 
 import re, sys, os, string, urllib, time, whrandom, cgi
 from string import lower, atoi, rfind, split, strip, join, upper, find
@@ -754,12 +754,10 @@ class HTTPRequest(BaseRequest):
             name='HTTP_%s' % name
         return environ.get(name, default)
 
-
-    def __getitem__(self,key,
-                    default=_marker, # Any special internal marker will do
-                    URLmatch=re.compile('URL(PATH)?([0-9]+)$').match,
-                    BASEmatch=re.compile('BASE(PATH)?([0-9]+)$').match,
-                    ):
+    def get(self, key, default=None,
+            URLmatch=re.compile('URL(PATH)?([0-9]+)$').match,
+            BASEmatch=re.compile('BASE(PATH)?([0-9]+)$').match,
+            ):
         """Get a variable value
 
         Return a value for the required variable name.
@@ -843,17 +841,22 @@ class HTTPRequest(BaseRequest):
                 del self._lazies[key]
                 return v
 
-        if default is not _marker: return default
+        return default
 
-        raise KeyError, key
+    def __getitem__(self, key, default=_marker):
+        v = self.get(key, default)
+        if v is _marker:
+            raise KeyError, key
+        return v
 
-    __getattr__=__getitem__
+    def __getattr__(self, key, default=_marker):
+        v = self.get(key, default)
+        if v is _marker:
+            raise AttributeError, key
+        return v
 
     def set_lazy(self, key, callable):
         self._lazies[key] = callable
-
-    def get(self, key, default=None):
-        return self.__getitem__(key, default)
 
     def has_key(self, key):
         try: self[key]
