@@ -52,6 +52,9 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #683: WeDAV request without XML preamble
+       were not recognized by Zope and raised an exception.
+
      - Index constructors were called without acquisition context of the
        calling object. This caused caller.getPhysicalPath() to fail for
        indexes depending on this information.

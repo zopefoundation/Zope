@@ -17,7 +17,7 @@
    in favor of a standard xml package once some issues are
    worked out."""
 
-__version__='$Revision: 1.13 $'[11:-2]
+__version__='$Revision: 1.14 $'[11:-2]
 
 import sys, os
 import Shared.DC.xml.xmllib
@@ -294,6 +294,10 @@ class XmlParser(Shared.DC.xml.xmllib.XMLParser):
         self.node=None
 
     def parse(self, data):
+        # prepending a XML preample to make xmllib happy
+        # (Collector #863)
+        if not data.startswith("<?xml"):   
+            data = '<?xml version="1.0" ?>\n' + data
         self.feed(data)
         self.close()
         return self.root
