@@ -87,8 +87,8 @@ import os, sys, unittest
 import ZODB
 from Products.PythonScripts.PythonScript import PythonScript
 from AccessControl.SecurityManagement import newSecurityManager
+from AccessControl.SecurityManagement import noSecurityManager
 
-newSecurityManager(None, None)
 
 if __name__=='__main__':
     sys.path.append(os.path.join(os.pardir, os.pardir, os.pardir))
@@ -107,6 +107,13 @@ def readf(name):
                              ), 'r').read()
 
 class TestPythonScriptNoAq(unittest.TestCase):
+
+    def setUp(self):
+        newSecurityManager(None, None)
+
+    def tearDown(self):
+        noSecurityManager()
+
     def _newPS(self, txt, bind=None):
         ps = PythonScript('ps')
         ps.ZBindings_edit(bind or {})
