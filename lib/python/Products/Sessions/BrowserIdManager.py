@@ -11,7 +11,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.18 $'[11:-2]
+__version__='$Revision: 1.19 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -523,15 +523,13 @@ def getBrowserIdPieces(bid):
     return (bid[:8], bid[8:19])
 
 
-def isAWellFormedBrowserId(bid, binerr=binascii.Error,
-                            timestamperr=TimeStamp.error):
+def isAWellFormedBrowserId(bid, binerr=binascii.Error):
     try:
         rnd, ts = getBrowserIdPieces(bid)
         int(rnd)
         getB64TStampToInt(ts)
         return bid
-    except (TypeError, ValueError, AttributeError, IndexError, binerr,
-            timestamperr):
+    except (TypeError, ValueError, AttributeError, IndexError, binerr):
         return None
 
 
