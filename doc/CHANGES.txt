@@ -8,9 +8,6 @@ Zope Changes
 
     Features added
  
-     - Included STX i18n patch by Andrey Lebedev to provide compatibility
-       with utf-8 encoded strings.
-
      - Show known medusa servers in Control_Panel.
 
      - New startup and installation regime (./configure; make; make install
