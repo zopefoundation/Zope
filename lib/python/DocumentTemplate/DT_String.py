@@ -82,7 +82,7 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"$Id: DT_String.py,v 1.23 1999/03/25 20:30:56 jim Exp $"
+"$Id: DT_String.py,v 1.24 1999/03/30 18:26:34 jim Exp $"
 
 from string import split, strip
 import regex, ts_regex
@@ -527,7 +527,7 @@ class FileMixin:
         String.__state_names__ +
         ('edited_source',))
     
-    def __init__(self, file_name='', mapping=None, **vars):
+    def __init__(self, file_name='', mapping=None, __name__='', **vars):
         """\
         Create a document template based on a named file.
 
@@ -536,7 +536,7 @@ class FileMixin:
         """
         self.raw=file_name
         self.initvars(mapping, vars)
-        self.setName(file_name)
+        self.setName(__name__ or file_name)
 
     def read_raw(self):
         if self.edited_source: return self.edited_source
