@@ -158,6 +158,11 @@ def zpublisher_exception_hook(
             raise
         if t is ConflictError:
             # now what
+            # First, we need to close the current connection. We'll
+            # do this by releasing the hold on it. There should be
+            # some sane protocol for this, but for now we'll use
+            # brute force:
+            REQUEST._held=()
             raise ZPublisher.Retry
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
