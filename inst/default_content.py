@@ -84,15 +84,18 @@
 ##############################################################################
 
 import os
+from do import *
 
-def main(home):
+def main(home, user='', group=''):
     data_dir=os.path.join(home,'var')
+    ch(data_dir, user, group, 0711)
     db_path=os.path.join(data_dir, 'Data.fs')
     dd_path=os.path.join(data_dir, 'Data.fs.in')
     if not os.path.exists(db_path) and os.path.exists(dd_path):
         print '-'*78
         print 'creating default database'
-        open(dd_path,'wb').write(open(db_path,'rb').read())
+        open(db_path,'wb').write(open(dd_path,'rb').read())
+        ch(db_path, user, group)
 
 
 

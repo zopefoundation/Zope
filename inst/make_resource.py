@@ -86,17 +86,16 @@
 
 You must be in the directory containing this script.
 """
-print
-print '-'*78
 
+import os
 from do import *
 
-python=sys.executable
-name=os.environ.get('ZNAME','Zope')
-print 'Writing the pcgi resource file (ie cgi script), %s.cgi' % name
-cwd=os.environ.get('ZDIR',os.getcwd())
+def main(cwd=os.getcwd(), name='Zope', user='', group=''):
+    python=sys.executable
+    print 'Writing the pcgi resource file (ie cgi script), %s.cgi' % name
+    cwd=os.environ.get('ZDIR',cwd)
 
-open('%s.cgi' % name,'w').write('''#!%(cwd)s/pcgi/pcgi-wrapper
+    open('%s.cgi' % name,'w').write('''#!%(cwd)s/pcgi/pcgi-wrapper
 PCGI_NAME=Zope
 PCGI_MODULE_PATH=%(cwd)s/lib/python/Zope
 PCGI_PUBLISHER=%(cwd)s/pcgi/pcgi_publisher.py
@@ -110,4 +109,5 @@ BOBO_DEBUG_MODE=1
 INSTANCE_HOME=%(cwd)s
 ''' % vars())
 
-do('chmod 755 %s.cgi' % name)
+    ch(name, user, group, 0711)
+    

@@ -90,61 +90,29 @@ This must be run from the top-level directory of the installation.
 """
 
 import sys, os
-home=os.getcwd()
-print
-print '-'*78
-print 'Compiling py files'
-import compileall
-compileall.compile_dir(os.getcwd())
 
-import build_extensions
+def setup(me):
+    home=os.path.split(me)[0]
+    if not home or home=='.': home=os.getcwd()
+    sys.path.insert(0, os.path.join(home,'inst'))
+    return home
 
-# Munge the python path
-sys.path = sys.path + ['./utilities']
-import zpasswd
-import whrandom
-pw_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
-             "abcdefghijklmnopqrstuvwxyz" \
-             "0123456789!"
+def main(me):
+    home=setup(me)
 
-print
-print '-'*78
+    #import compilezpy
+    print '-'*78
+    #import build_extensions
+    print '-'*78
+    user=group=''
+    import zpasswd; zpasswd.write_access(home, user, group)
+    import default_content; default_content.main(home, user, group)
+    pcgi=os.path.join(home, 'Zope.cgi')
+    import make_resource; make_resource.main(home, pcgi, user, group)
+    import make_start; make_start.sh(home, user, group)
 
-os.chdir(home)
-data_dir=os.path.join(home, 'var')
-if not os.path.exists(data_dir):
-    print 'creating data directory'
-    os.mkdir('var')
+    print '-'*78
+    print
+    print 'Done!'
 
-for suffix in 'fs':
-    db_path=os.path.join(data_dir, 'Data.%s' % suffix)
-    dd_path=os.path.join(data_dir, 'Data.%s.in' % suffix)
-    if not os.path.exists(db_path) and os.path.exists(dd_path):
-        print 'creating default database'
-        os.system('cp %s %s' % (dd_path, db_path))
-
-ac_path=os.path.join(home, 'access')
-if not os.path.exists(ac_path):
-    print 'creating default access file'
-    acfile=open(ac_path, 'w')
-    pw = ''
-    for i in range(8):
-        pw = pw + whrandom.choice(pw_choices)
-    acfile.write('superuser:' + zpasswd.generate_passwd(pw, 'SHA'))
-    acfile.close()
-    os.system('chmod 644 access')
-
-    print "NOTE: The default super user name and password are 'superuser'"
-    print "      and '%s'.  Create a file named 'access' in this directory" % pw
-    print "      with a different super user name and password on one line"
-    print "      separated by a a colon. (e.g. 'spam:eggs').  You can also"
-    print "      specify a domain (e.g. 'spam:eggs:*.digicool.com')."
-    
-print
-print '-'*78
-print 'NOTE: change owndership or permissions on var so that it can be'
-print '      written by the web server!'
-print
-print '-'*78
-print
-print 'Done!'
+if __name__=='__main__': main(sys.argv[0])

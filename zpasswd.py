@@ -85,9 +85,9 @@
 ##############################################################################
 """Zope password change system"""
 
-__version__='$Revision: 1.1 $ '[11:-2]
+__version__='$Revision: 1.2 $ '[11:-2]
 
-import sys, string, sha, binascii, whrandom, getopt, getpass
+import sys, string, sha, binascii, whrandom, getopt, getpass, os
 
 try:
     from crypt import crypt
@@ -111,7 +111,7 @@ def generate_passwd(password, encoding):
 
     return pw
 
-def write_access(home):
+def write_access(home, user='', group=''):
     import whrandom
     pw_choices = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" \
                  "abcdefghijklmnopqrstuvwxyz" \
@@ -137,6 +137,8 @@ def write_access(home):
 
         %s zpasswd
         """ % (pw, sys.executable)
+
+        import do; do.ch(ac_path, user, group)
 
 def main(argv):
     short_options = ':u:p:e:d:'

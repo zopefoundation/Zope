@@ -82,51 +82,70 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Shared routines used by the various scripts.
+"""Try to do all of the installation steps.
+
+This must be run from the top-level directory of the installation.
+\(Yes, this is cheezy.  We'll fix this when we have a chance.
 
 """
-import os, sys, string
 
-cd=os.chdir
+import sys, os
+from do import *
 
-for a in sys.argv[1:]:
-    n,v = string.split(a,'=')
-    os.environ[n]=v
+def setup(me):
+    home=os.path.split(me)[0]
+    if not home or home=='.': home=os.getcwd()
+    home=os.path.split(home)[0]
+    if not home or home=='.': home=os.getcwd()
+    sys.path.insert(os.path.join(home,'inst'))
+    sys.path.insert(os.path.join(home,'inst'))
+    return home
 
-def do(command, picky=1):
-    print command
-    i=os.system(command)
-    if i and picky: raise SystemError, i
+def main(args):
+    me=args[0]
+    home=setup(me)
+    pcgi=os.path.join(home, 'Zope.cgi')
+    usage="""install [options]
 
-def wheres_Makefile_pre_in():
-    "Identify Makefile.pre.in location (in much the same way it does)."
-    return "%s/lib/python%s/config/Makefile.pre.in" % (sys.exec_prefix,
-                                                       sys.version[:3])
+    where options are:
 
-def error(message, error):
-    print message
-    if error: print "%s: %s" % error[:2]
-
-def ch(path, user, group, mode=0600):
-    if group:
-        mode=mode+060
-        do("chgrp %s %s" % (group, path), 0)
-
-    if user:
-        do("chown %s %s" % (group, path), 0)
-
-    do("chmod %s %s" % (oct(mode), path), 0)
+       -p   -- Supply the path to the PCGI resource file.
+               This defaults to %s.
     
+       -g   -- Supply the name of the unix group to which
+               the user that runs your web server belongs.
+               If not specified, the installer will attempt
+               to determine the group itself. If no group
+               is specified and the installer is unable to
+               determine the group, the install will fail.
+    
+       -u   -- Supply the name of the unix user used to
+               run your web server. If not specified, this
+               defaults to the userid of the current user,
+               or 'nobody' is the current user is root.
+    
+       -h   -- Show command summary
+    """ % (pcgi)
+    
+    try: options, args = getopt.getopt(sys.argv[1:], 'p:g:hu')
+    except: error(usage, sys.exc_info())
+    if args: error('', ('Unexpected arguments', args))
 
-def make(*args):
+    group=user=''
+    for k, v in options:
+        if k=='-p': pcgi=v
+        elif k=='-g': group=v
+        elif k=='-u': user=v
+
+    import compilezpy
+    print '-'*78
+    import zpasswd; zpasswd.write_access(home, user, group)
+    import default_content; default_content.main(home, user, group)
+    import make_resource; make_resource.main(home, pcgi, user, group)
+    import make_start; make_start.sh(home, user, group)
+
+    print '-'*78
     print
-    print '-'*48
-    print 'Compiling extensions in %s' % string.join(args,'/')
-    
-    for a in args: os.chdir(a)
-    # Copy over and use the prototype extensions makefile from python dist:
-    do("cp %s ." % wheres_Makefile_pre_in())
-    do('make -f Makefile.pre.in boot PYTHON=%s' % sys.executable)
-    do('make')
-    do('make clean')
-    for a in args: os.chdir('..')
+    print 'Done!'
+
+if __name__=='__main__': main(sys.argv[0])

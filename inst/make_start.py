@@ -82,51 +82,29 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-"""Shared routines used by the various scripts.
 
-"""
-import os, sys, string
+import sys, os
+from do import *
 
-cd=os.chdir
+def sh(home, user, group):
+    z2=os.path.join(home, 'z2.py')
+    start=os.path.join(home, 'start')
+    if not os.path.exists(start):
+        print '-'*78
+        print 'Creating start script, start'
+        open(start,'w').write(
+            "#! /bin/sh\n"
+            "exec %s %s -D $*"
+            % (sys.executable, z2))
+        ch(start,user,group,0711)
 
-for a in sys.argv[1:]:
-    n,v = string.split(a,'=')
-    os.environ[n]=v
+    stop=os.path.join(home, 'stop')
+    if not os.path.exists(stop):
+        print '-'*78
+        print 'Creating stop script, stop'
+        open(stop,'w').write(
+            "#! /bin/sh\n"
+            "kill `cat %s`" 
+            % os.path.join(home,'var','Z2.pid'))
+        ch(stop,user,group,0711)
 
-def do(command, picky=1):
-    print command
-    i=os.system(command)
-    if i and picky: raise SystemError, i
-
-def wheres_Makefile_pre_in():
-    "Identify Makefile.pre.in location (in much the same way it does)."
-    return "%s/lib/python%s/config/Makefile.pre.in" % (sys.exec_prefix,
-                                                       sys.version[:3])
-
-def error(message, error):
-    print message
-    if error: print "%s: %s" % error[:2]
-
-def ch(path, user, group, mode=0600):
-    if group:
-        mode=mode+060
-        do("chgrp %s %s" % (group, path), 0)
-
-    if user:
-        do("chown %s %s" % (group, path), 0)
-
-    do("chmod %s %s" % (oct(mode), path), 0)
-    
-
-def make(*args):
-    print
-    print '-'*48
-    print 'Compiling extensions in %s' % string.join(args,'/')
-    
-    for a in args: os.chdir(a)
-    # Copy over and use the prototype extensions makefile from python dist:
-    do("cp %s ." % wheres_Makefile_pre_in())
-    do('make -f Makefile.pre.in boot PYTHON=%s' % sys.executable)
-    do('make')
-    do('make clean')
-    for a in args: os.chdir('..')

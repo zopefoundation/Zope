@@ -89,9 +89,21 @@ This must be run from the top-level directory of the installation.
 
 """
 
-import os
-home=os.getcwd()
-import build_pcgi
-import make_resource
-os.chdir(home) # Just making sure
-import wo_pcgi
+import sys, os
+
+def setup(me):
+    home=os.path.split(me)[0]
+    if not home or home=='.': home=os.getcwd()
+    sys.path.insert(0, os.path.join(home,'inst'))
+    sys.path.insert(0, home)
+    return home
+
+def main(me):
+    home=setup(me)
+    
+    import build_pcgi
+    import make_resource; make_resource.main(home)
+    os.chdir(home) # Just making sure
+    import wo_pcgi
+
+if __name__=='__main__': main(sys.argv[0])
