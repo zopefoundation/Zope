@@ -205,9 +205,11 @@ Special symbology is used to indicate special constructs:
 
 '''
 
-import ts_regex, regex
+import ts_regex
+import regex
 from ts_regex import gsub
 from string import split, join, strip, find
+import string
 
 def untabify(aString,
              indent_tab=ts_regex.compile('\(\n\|^\)\( *\)\t').search_group,
@@ -366,8 +368,8 @@ class StructuredText:
 
         aStructuredString = gsub(
             '\"\([^\"\0]+\)\":'         # title: <"text":>
-            + ('\([-:a-zA-Z0-9_,./?=@#~&]+%s\)'
-               % not_punctuation_or_whitespace)
+            + ('\([-:%s0-9_,./?=@#~&]+%s\)'
+               % (string.letters,not_punctuation_or_whitespace))
             + optional_trailing_punctuation
             + trailing_space,
             '<a href="\\2">\\1</a>\\4\\5\\6',
@@ -375,8 +377,8 @@ class StructuredText:
 
         aStructuredString = gsub(
             '\"\([^\"\0]+\)\",[\0- ]+'            # title: <"text", >
-            + ('\([a-zA-Z]*:[-:a-zA-Z0-9_,./?=@#~&]*%s\)'
-               % not_punctuation_or_whitespace)
+            + ('\([%s]*:[-:%s0-9_,./?=@#~&]*%s\)'
+               % (string.letters,string.letters,not_punctuation_or_whitespace))
             + optional_trailing_punctuation
             + trailing_space,
             '<a href="\\2">\\1</a>\\4\\5\\6',
@@ -492,7 +494,7 @@ class HTML(StructuredText):
                                  ).match_group,
              nl=ts_regex.compile('\n').search,
              ol=ts_regex.compile(
-                 '[ \t]*\(\([0-9]+\|[a-zA-Z]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)'
+                 '[ \t]*\(\([0-9]+\|[%s]+\)[.)]\)+[ \t\n]+\([^\0]*\|$\)' % string.letters
                  ).match_group,
              olp=ts_regex.compile('[ \t]*([0-9]+)[ \t\n]+\([^\0]*\|$\)'
                                   ).match_group,
@@ -564,12 +566,12 @@ def html_quote(v,
 
 def html_with_references(text, level=1):
     text = gsub(
-        '[\0\n]\.\. \[\([0-9_a-zA-Z-]+\)\]',
+        '[\0\n]\.\. \[\([0-9_%s-]+\)\]' % string.letters,
         '\n  <a name="\\1">[\\1]</a>',
         text)
     
     text = gsub(
-        '\([\0- ,]\)\[\([0-9_a-zA-Z-]+\)\]\([\0- ,.:]\)',
+        '\([\0- ,]\)\[\([0-9_%s-]+\)\]\([\0- ,.:]\)' % string.letters,
         '\\1<a href="#\\2">[\\2]</a>\\3',
         text)
     
@@ -584,7 +586,7 @@ def html_with_references(text, level=1):
 def main():
     import sys, getopt
 
-    opts,args=getopt.getopt(sys.argv[1:],'tw')
+    opts,args=getopt.getopt(sys.argv[1:],'twl')
 
     if args:
         [infile]=args
@@ -596,6 +598,10 @@ def main():
 
         if filter(lambda o: o[0]=='-w', opts):
             print 'Content-Type: text/html\n'
+
+        if filter(lambda o: o[0]=='-l', opts):
+            import locale
+            locale.setlocale(locale.LC_ALL,"")
 
         if s[:2]=='#!':
             s=ts_regex.sub('^#![^\n]+','',s)
