@@ -4,7 +4,9 @@
 
 <body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
 <FONT SIZE="+2" COLOR="#77003B">
-Aqueduct Database Adapter<br>
+<!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--><br>
 Database Connection Information
 </FONT>
 

@@ -1,19 +1,18 @@
-<html><head><title>DA New Query</title></head>
+<html><head><title>New Database Adapter</title></head>
 
 <body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
 <FONT SIZE="+2" COLOR="#77003B">
-Aqueduct Database Adapter<br>
-New Native Query Template
+New Aqueduct Database Adapter
 </FONT>
 
 <form action="<!--#var PARENT_URL-->/manage_addDA" method="post">
 
 <table>     
             
-<tr>    <td><strong>Name:</strong></td>
-        <td><input name="name" size="40"></td></tr>
-<tr>	<td><strong>Description:</strong></td>
-        <td><input name="description" size="40"></td></tr>
+<tr>    <td><strong>Id:</strong></td>
+        <td><input name="id" size="40"></td></tr>
+<tr>	<td><strong>Title:</strong></td>
+        <td><input name="title" size="40"></td></tr>
 <tr>    <td><strong>Access key:</strong></td>
         <td><input name="key" size="40"></td></tr>
 <tr>    <td><strong>Arguments:</strong></td>

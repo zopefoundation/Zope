@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Shared Aqueduct classes and functions
 
-$Id: Aqueduct.py,v 1.4 1997/07/29 00:38:39 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+$Id: Aqueduct.py,v 1.5 1997/08/06 18:19:14 jim Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Globals import ManageHTMLFile
 import DocumentTemplate, DateTime, regex, regsub, string, urllib, rotor
@@ -26,6 +26,7 @@ class BaseQuery:
     def query_month(self): return self.query_date.month()
     def query_day(self): return self.query_date.day()
     query_date=DateTime.now()
+    manage_options=()
 
     def quoted_input(self): return quotedHTML(self.input_src)
     def quoted_report(self): return quotedHTML(self.report_src)
@@ -35,7 +36,7 @@ class BaseQuery:
     def _argdata(self,REQUEST,raw=0,return_missing_keys=0):
 	args=self.arguments
 	argdata={}
-	name=self.name
+	id=self.id
 	missing_keys=[]
 	for arg in args.keys():
 	    a=arg
@@ -46,7 +47,7 @@ class BaseQuery:
 		try: v=REQUEST[arg]
 		except (KeyError, AttributeError): pass
 		if v is REQUEST:
-		    try: v=REQUEST["%s.%s" % (name,arg)]
+		    try: v=REQUEST["%s.%s" % (id,arg)]
 		    except (KeyError, AttributeError): pass
 		if v is REQUEST:
 		    l=string.find(arg,'.')
@@ -55,7 +56,7 @@ class BaseQuery:
 			try: v=REQUEST[arg]
 			except (KeyError, AttributeError): pass
 			if v is REQUEST:
-			    try: v=REQUEST["%s.%s" % (name,arg)]
+			    try: v=REQUEST["%s.%s" % (id,arg)]
 			    except (KeyError, AttributeError): pass
 	    except:
 		# Hm, we got another error, must have been an invalid
@@ -94,18 +95,18 @@ class BaseQuery:
 	    )
 
 
-def default_input_form(name,arguments,action='query'):
-    name=nicify(name)
+def default_input_form(id,arguments,action='query'):
+    id=nicify(id)
     if arguments:
 	return (
 	    "%s\n%s%s" % (
 		'<html><head><title>%s Input Data</title></head><body>\n'
-		'<form action="<!--#var URL2-->/<!--#var name-->/%s" '
+		'<form action="<!--#var URL2-->/<!--#var id-->/%s" '
 		'method="get">\n'
 		'<h2>%s Input Data</h2>\n'
 		'Enter query parameters:<br>'
 		'<table>\n'
-		% (name,action,name),
+		% (id,action,id),
 		string.joinfields(
 		    map(
 			lambda a:
@@ -128,7 +129,7 @@ def default_input_form(name,arguments,action='query'):
     else:
 	return (
 	    '<html><head><title>%s Input Data</title></head><body>\n'
-	    '<form action="<!--#var URL2-->/<!--#var name-->/%s" '
+	    '<form action="<!--#var URL2-->/<!--#var id-->/%s" '
 	    'method="get">\n'
 	    '<h2>%s Input Data</h2>\n'
 	    'This query requires no input.<p>\n'
@@ -139,7 +140,7 @@ def default_input_form(name,arguments,action='query'):
 	    '         VALUE="<!--#var HTTP_REFERER-->">\n'
 	    '<!--#/if HTTP_REFERER-->\n'
 	    '</td></tr>\n</table>\n</form>\n</body>\n</html>\n'
-	    % (name, action, name)
+	    % (id, action, id)
 	    )
 
 
@@ -325,6 +326,9 @@ if __name__ == "__main__": main()
 ############################################################################## 
 #
 # $Log: Aqueduct.py,v $
+# Revision 1.5  1997/08/06 18:19:14  jim
+# Renamed description->title and name->id and other changes
+#
 # Revision 1.4  1997/07/29 00:38:39  jim
 # Changed to use get due to odbc lamosity.
 #

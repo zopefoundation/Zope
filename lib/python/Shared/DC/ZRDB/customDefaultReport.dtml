@@ -1,18 +1,23 @@
 <html> <head>
-<title><!--#var name capitalize spacify--> Results</title>
+<title><!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--> Results</title>
 </head>
 
 <body>
 
-<h2><!--#var name capitalize spacify--> Results</h2>
+<FONT SIZE="+2" COLOR="#77003B"><!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--> Results</FONT><br>
 <em>As of <!--#var query_date-->
 </em><br><br>
 
 <!--#if query_results-->
 
   <p>Results for this
-  <a href="<!--#var URL2-->/<!--#var name-->%(action)s">
-  <!--#var name capitalize spacify--> query</a>:</p>
+  <a href="<!--#var URL2-->/<!--#var id-->%(action)s"><!--#if title-->
+  <!--#var title--><!--#else title-->
+  <!--#var id--><!--#/if title--> query</a>:</p>
 
   <!--#in query_results size=50 start=query_start-->
      <!--#if sequence-start-->
@@ -52,8 +57,11 @@
 <!--#else query_results-->
 
   There was no data matching this.
-  <a href="<!--#var URL2-->/<!--#var name-->%(action)s">
-  <!--#var name capitalize spacify--> query</a>.
+  <!--#if title-->
+  <!--#var title--><!--#else title-->
+  <!--#var id--><!--#/if title-->
+  <a href="<!--#var URL2-->/<!--#var id-->%(action)s">
+   query</a>.
 
 <!--#/if query_results-->
 

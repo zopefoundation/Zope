@@ -1,6 +1,7 @@
-<HTML>
-<HEAD>
-<TITLE><!--#var name--></TITLE>
+<HTML><HEAD>
+<TITLE><!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--></TITLE>
 </HEAD>
 <FRAMESET FRAMEBORDER="NO" BORDER="0" FRAMESPACING="0" COLS="140,*">
   <FRAME SRC="<!--#var PARENT_URL-->/manage_menu" NAME="manage_menu"

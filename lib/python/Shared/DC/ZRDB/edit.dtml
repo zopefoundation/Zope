@@ -1,21 +1,23 @@
-<html><head><title>DA Query: <!--#var name--></title></head><body>
+<html><head><title>Edit <!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--></title></head><body>
 
 <body bgcolor="#FFFFFF" link="#3333FF" alink="#009999" vlink="#006600">
 <FONT SIZE="+2" COLOR="#77003B">
-Aqueduct Database Adapter<br>
-Edit Native Query Template, <!--#var name-->
-</FONT>
+Edit <!--#if title-->
+<!--#var title--><!--#else title-->
+<!--#var id--><!--#/if title--></FONT>
 
-<form action="<!--#var URL2-->/<!--#var name-->/manage_edit"
+<form action="<!--#var URL2-->/<!--#var id-->/manage_edit"
  method="<!--#var web__form__method-->">
 
 <table>
 
-<tr>	<td><strong>Name:</strong></td>
-        <td><!--#var name--></td></tr>
-<tr>	<td><strong>Description:</strong></td>
-        <td><input name="description" size="40"
-             value="<!--#var description-->"></td></tr>
+<tr>	<td><strong>ID:</strong></td>
+        <td><!--#var id--></td></tr>
+<tr>	<td><strong>Title:</strong></td>
+        <td><input name="title" size="40"
+             value="<!--#var title-->"></td></tr>
 <tr>	<td><strong>Access key:</strong></td>
 	<td><input name="key" size="40" value="<!--#var key-->"></td></tr>
 <tr>	<td><strong>Arguments:</strong></td>

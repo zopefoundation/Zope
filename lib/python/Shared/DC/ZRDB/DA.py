@@ -11,8 +11,8 @@
 __doc__='''Generic Database adapter
 
 
-$Id: DA.py,v 1.3 1997/07/28 21:31:04 jim Exp $'''
-__version__='$Revision: 1.3 $'[11:-2]
+$Id: DA.py,v 1.4 1997/08/06 18:19:29 jim Exp $'''
+__version__='$Revision: 1.4 $'[11:-2]
 
 import string, OFS.Folder, Aqueduct.Aqueduct, Aqueduct.RDB
 import DocumentTemplate, marshal, md5, zlib, base64, DateTime, Acquisition
@@ -25,7 +25,7 @@ log_file=None
 import sys, traceback
 
 class Folder(OFS.Folder.Folder):    
-
+    icon       ='AqueductDA/DBAdapterFolder_icon.gif'
     meta_type='Aqueduct Database Adapter Folder'
 
     manage_options=OFS.Folder.Folder.manage_options+(
@@ -42,7 +42,7 @@ class Folder(OFS.Folder.Folder):
     def manage_connection(self,value=None,check=None,REQUEST=None):
 	'change database connection data'
 	if value is None: return self.database_connection_string()
-	if check: self.database_connect()
+	if check: self.database_connect(value)
 	self.database_connection_string(value)
 	return self.manage_main(self,REQUEST)
 
@@ -73,11 +73,11 @@ class Folder(OFS.Folder.Folder):
 	try: self.database_connect()
 	except: pass
 
-    def manage_addDA(self,name,key,arguments,template,REQUEST):
+    def manage_addDA(self,id,key,arguments,template,REQUEST):
 	'Add a query'
 
-	q=Query(name,key,arguments,template)
-	self._setObject(name,q)
+	q=Query(id,key,arguments,template)
+	self._setObject(id,q)
 	return self.manage_main(self,REQUEST)
 
     test_url___allow_groups__=None
@@ -89,22 +89,23 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 
     'Database query object'
 
+    icon       ='AqueductDA/DBAdapter_icon.gif'
     meta_type='Aqueduct Database Adapter'
     hasAqueductClientInterface=1
 
     manage=ManageHTMLFile('AqueductDA/edit')
 
-    def __init__(self,name='',key='',arguments='',template='',description=''):
-	if not name: return
-	self.name=name
+    def __init__(self,id='',key='',arguments='',template='',title=''):
+	if not id: return
+	self.id=id
 	self.report_src=default_report_src
-	self.manage_edit(key,description,arguments,template)
+	self.manage_edit(key,title,arguments,template)
 
     def quoted_src(self): return quotedHTML(self.src)
 
-    def manage_edit(self,key,description,arguments,template,URL2=''):
+    def manage_edit(self,key,title,arguments,template,URL2=''):
 	'change query properties'
-	self.description=description
+	self.title=title
 	self.key=key
 	self.rotor=Rotor(key)
 	self.arguments_src=arguments
@@ -112,20 +113,20 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	self.src=template
 	self.template=DocumentTemplate.HTML(template)
 	self.manage_testForm=DocumentTemplate.HTML(
-	    default_input_form(self.name,self.arguments,
+	    default_input_form(self.id,self.arguments,
 			       action='manage_test'),
 	    __name__='test input form')
 	if URL2:
 	    return MessageDialog(
-		title=self.name+' changed',
-		message=self.name+' has been changed sucessfully.',
+		title=self.id+' changed',
+		message=self.id+' has been changed sucessfully.',
 		action=URL2+'/manage_main',
 		)
 
     def query_data(self,REQUEST):
 	try: DB__=self.database_connection()
 	except: raise 'Database Error', (
-	    '%s is not connected to a database' % self.name)
+	    '%s is not connected to a database' % self.id)
 	
 	argdata=self._argdata(REQUEST,1)
 	query_string=self._query_string(argdata,'manage_test')
@@ -138,7 +139,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 	'Provide a simple interface for testing a query'
 	try: DB__=self.database_connection()
 	except: raise 'Database Error', (
-	    '%s is not connected to a database' % self.name)
+	    '%s is not connected to a database' % self.id)
 	
 	argdata=self._argdata(REQUEST,1)
 	query_string=self._query_string(argdata,'manage_test')
@@ -184,7 +185,7 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 		if l >= 0: l=result[l:]
 		else: l=v
 		log_file.write("%s\n%s %s, %s:\n%s\n" % (
-		    '-'*30, serial, self.name, t, l))
+		    '-'*30, serial, self.id, t, l))
 		log_file.flush()
 	    serial="Error number: %s\n" % serial
 	    serial=zlib.compress(serial,1)
@@ -196,6 +197,9 @@ class Query(Aqueduct.Aqueduct.BaseQuery,Persistent,Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: DA.py,v $
+# Revision 1.4  1997/08/06 18:19:29  jim
+# Renamed description->title and name->id and other changes
+#
 # Revision 1.3  1997/07/28 21:31:04  jim
 # Get rid of add method here and test scaffolding.
 #
