@@ -10,3 +10,44 @@ Running Zope in Debug Mode
 
    o The Z_DEBUG_MODE environment variable gets set, which causes some 
      other cool stuff in Zope to happen.
+
+Using the Medusa Monitor
+
+  If you're running ZServer with a medusa monitor port, you can
+  connect and interact via a python prompt with a running Zope
+  session, while others interact with it over the web.
+
+  Some constraints:
+
+   o You must connect to a server running on the local host.
+
+   o You must authenticate as superuser.
+
+   o At the time of writing the superuser password (in the access
+     file) must be plain text, not encrypted.  This should be
+     rectified by full 2.0 release.
+
+  To use the monitor, start it from the shell prompt like so (as if
+  from the Zope root; must be python 1.5.2 or later):
+
+  python ZServer/medusa/monitor_client.py localhost 8099
+
+  You'll get back a python prompt.  To connect with the running Zope
+  session:
+
+  >>> import Zope
+  >>> app = Zope.app()
+  >>> dir(app.Control_Panel.Products)
+  ['ExternalMethod', 'MIMETools', 'MailHost', 'OFSP', 'ZCatalog',
+  'ZGadflyDA', 'ZSQLMethods', '_objects']
+  >>> 
+
+  To see ODB changes effected via the web since you got the app, you
+  may have to do a bit of magic:
+
+  >>> app._p_jar.sync()
+
+  To commit changes you make, before exiting, you may have to do
+  another bit of magic:
+
+  >>> get_transaction().commit()
