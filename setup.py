@@ -68,7 +68,7 @@ from distutils.command.install import install
 from distutils.command.install_data import install_data
 from distutils.util import convert_path
 
-class install_data(install_data):
+class ZopeInstallData(install_data):
     def finalize_options(self):
         self.set_undefined_options('install',
                                    ('install_purelib', 'install_dir'),
@@ -114,7 +114,7 @@ class install_data(install_data):
                             (out, _) = self.copy_file(g, dir)
                             self.outfiles.append(out)
 
-class install(install):
+class ZopeInstall(install):
     def finalize_unix (self):
         if self.install_base is not None or self.install_platbase is not None:
             if ((self.install_lib is None and
@@ -145,6 +145,12 @@ class install(install):
             self.install_base = self.prefix
             self.install_platbase = self.exec_prefix
             self.select_scheme("unix_prefix")
+
+class ZopeDistribution(distutils.core.Distribution):
+    def __init__(self, attrs):
+        distutils.core.Distribution.__init__(self, attrs)
+        self.cmdclass["install"] = ZopeInstall
+        self.cmdclass["install_data"] = ZopeInstallData
 
 AUTHOR = 'Zope Corporation and Contributors'
 ZOPE_ROOT = os.path.abspath(os.getcwd())
@@ -941,15 +947,14 @@ distutils.core.setup(
     data_files=setup_info.get('data_files', []),
     headers=setup_info.get('headers', []),
     ext_modules=setup_info.get('ext_modules', []),
-
-    cmdclass={'install': install, 'install_data': install_data}
+    distclass=ZopeDistribution,
     )
 distutils.core.setup(
     name='Zope',
     author=AUTHOR,
 
     py_modules=setup_info.get('py_modules', []),
-    cmdclass={'install': install, 'install_data': install_data}
+    distclass=ZopeDistribution,
     )
 setup_info = {}
 
@@ -1013,13 +1018,12 @@ distutils.core.setup(
     data_files=setup_info.get('data_files', []),
     headers=setup_info.get('headers', []),
     ext_modules=setup_info.get('ext_modules', []),
-
-    cmdclass={'install': install, 'install_data': install_data}
+    distclass=ZopeDistribution,
     )
 distutils.core.setup(
     name='Zope',
     author=AUTHOR,
 
     py_modules=setup_info.get('py_modules', []),
-    cmdclass={'install': install, 'install_data': install_data}
+    distclass=ZopeDistribution,
     )
