@@ -341,6 +341,9 @@ class PCGIServer(asyncore.dispatcher):
 class PCGIResponse(HTTPResponse):
 
     def write(self, data):
+        if type(data) != type(''):
+            raise TypeError('Value must be a string')
+
         if not self._wrote:
             self.stdout.write(str(self))
             self._wrote=1

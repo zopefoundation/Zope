@@ -151,6 +151,10 @@ class ZServerHTTPResponse(HTTPResponse):
         after beginning stream-oriented output.
 
         """
+
+        if type(data) != type(''):
+            raise TypeError('Value must be a string')
+
         stdout=self.stdout
 
         if not self._wrote:
