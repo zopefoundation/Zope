@@ -85,11 +85,11 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.109 1999/06/24 19:26:52 jim Exp $'''
-__version__='$Revision: 1.109 $'[11:-2]
+$Id: Application.py,v 1.110 1999/07/15 16:21:05 jim Exp $'''
+__version__='$Revision: 1.110 $'[11:-2]
 
 
-import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
+import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
