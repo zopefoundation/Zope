@@ -11,7 +11,7 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.13 2003/11/04 22:09:03 chrism Exp $
+"""$Id: DateIndex.py,v 1.14 2004/01/29 21:22:08 shane Exp $
 """
 
 from types import StringType, FloatType, IntType
@@ -176,7 +176,7 @@ class DateIndex(UnIndex):
             t_tup = value.toZone('UTC').parts()
         elif type( value ) in (FloatType, IntType):
             t_tup = time.gmtime( value )
-        elif type( value ) is StringType:
+        elif type( value ) is StringType and value:
             t_obj = DateTime( value ).toZone('UTC')
             t_tup = t_obj.parts()
         else:
