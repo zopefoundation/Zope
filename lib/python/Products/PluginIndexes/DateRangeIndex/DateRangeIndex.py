@@ -11,6 +11,9 @@
 # 
 ##############################################################################
 
+"""$Id: DateRangeIndex.py,v 1.3 2002/06/26 13:37:19 caseman Exp $
+"""
+
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest

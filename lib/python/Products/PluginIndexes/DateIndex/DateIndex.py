@@ -11,6 +11,9 @@
 # 
 ##############################################################################
 
+"""$Id: DateIndex.py,v 1.4 2002/06/26 13:37:19 caseman Exp $
+"""
+
 from DateTime.DateTime import DateTime
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
