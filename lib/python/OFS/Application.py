@@ -85,11 +85,11 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.94 1999/03/25 15:29:55 jim Exp $'''
-__version__='$Revision: 1.94 $'[11:-2]
+$Id: Application.py,v 1.95 1999/03/25 17:06:06 jim Exp $'''
+__version__='$Revision: 1.95 $'[11:-2]
 
 
-import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
+import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
@@ -98,7 +98,6 @@ from HelpSys.HelpSys import HelpSys
 from App.ApplicationManager import ApplicationManager
 from Globals import Persistent
 from FindSupport import FindSupport
-from ImageFile import ImageFile
 from urllib import quote
 from cStringIO import StringIO
 
@@ -146,47 +145,9 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
 
     # Create the help system object
     HelpSys=HelpSys()
-    
-    class misc_:
-        "Miscellaneous product information"
-        __roles__=None
 
-    class p_:
-        "Shared system information"
-        __roles__=None
-
-        folder=ImageFile('www/Folder_icon.gif', globals())
-        image =ImageFile('www/Image_icon.gif', globals())
-        file  =ImageFile('www/File_icon.gif', globals())
-        dtmldoc=doc=ImageFile('www/dtmldoc.gif', globals())
-        dtmlmethod =ImageFile('www/dtmlmethod.gif', globals())
-        
-        broken=ImageFile('www/broken.gif', globals())
-
-        UserFolder=ImageFile('AccessControl/www/UserFolder_icon.gif')
-        User_icon =ImageFile('AccessControl/www/User_icon.gif')
-
-        locked=ImageFile('www/modified.gif', globals())
-        lockedo=ImageFile('www/locked.gif', globals())
-
-        pl=ImageFile('TreeDisplay/www/Plus_icon.gif')
-        mi=ImageFile('TreeDisplay/www/Minus_icon.gif')
-        rtab=ImageFile('App/www/rtab.gif')
-        ltab=ImageFile('App/www/ltab.gif')
-        ControlPanel_icon=ImageFile('OFS/www/ControlPanel_icon.gif')
-        ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
-        DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
-        InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
-        BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
-        Product_icon=ImageFile('App/www/product.gif')
-        Factory_icon=ImageFile('App/www/factory.gif')
-        ProductFolder_icon=ImageFile('App/www/productFolder.gif')
-        PyPoweredSmall_Gif=ImageFile('App/www/PythonPoweredSmall.gif')
-
-        ZopeButton=ImageFile('App/www/zope_button.gif')
-
-        #up=ImageFile('www/UpFolder_icon.gif', globals())
-        #help=ImageFile('www/Help_icon.gif', globals())
+    p_=misc_.p_
+    misc_=misc_.misc_
 
     manage_options=(
     {'icon':'OFS/Folder_icon.gif', 'label':'Contents',
