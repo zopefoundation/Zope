@@ -147,7 +147,7 @@ class ZInstanceSheetsSheet(OFS.PropertySheets.View,
         rclass(pc)
         
 
-    def _delOb(self, id, value):
+    def _delOb(self, id):
         delattr(self, id)
         pc=self.aq_inner.aq_parent.aq_parent._zclass_propertysheets_class
         delattr(pc,id)
