@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.19 2003/04/17 17:46:57 fdrake Exp $'''
-__version__='$Revision: 1.19 $'[11:-2]
+$Id: Traversable.py,v 1.20 2003/07/08 17:03:52 evan Exp $'''
+__version__='$Revision: 1.20 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -30,23 +30,19 @@ class Traversable:
 
     absolute_url__roles__=None # Public
     def absolute_url(self, relative=0):
-        try:
-            req = self.REQUEST
-        except AttributeError:
-            req = {}
-        rpp = req.get('VirtualRootPhysicalPath', ('',))
+        '''Return a canonical URL for this object based on its
+        physical containment path, possibly modified by virtual hosting.
+        If the optional 'relative' argument is true, only return the
+        path portion of the URL.'''
         spp = self.getPhysicalPath()
-        i = 0
-        for name in rpp[:len(spp)]:
-            if spp[i] == name:
-                i = i + 1
-            else:
-                break
-        path = map(quote, spp[i:])
+        try:
+            toUrl = self.REQUEST.physicalPathToURL
+        except AttributeError:
+            return '/'.join(map(quote, spp[1:]))
         if relative:
-            # This is useful for physical path relative to a VirtualRoot
-            return '/'.join(path)
-        return '/'.join([req['SERVER_URL']] + req._script + path)
+            # Remove leading slash for backward compatibility sake.
+            return toUrl(spp, relative)[1:]
+        return toUrl(spp)
 
     getPhysicalRoot__roles__=() # Private
     getPhysicalRoot=Acquired

@@ -12,8 +12,8 @@
 ##############################################################################
 __doc__='''Application support
 
-$Id: Application.py,v 1.191 2003/06/24 13:30:29 chrism Exp $'''
-__version__='$Revision: 1.191 $'[11:-2]
+$Id: Application.py,v 1.192 2003/07/08 17:03:52 evan Exp $'''
+__version__='$Revision: 1.192 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os,  Products
@@ -135,11 +135,21 @@ class Application(Globals.ApplicationDefaultPermissions,
     test_url=ZopeAttributionButton
 
     def absolute_url(self, relative=0):
-        """Return an absolute url to the object. Note that the url
-        will reflect the acquisition path of the object if the object
-        has been acquired."""
-        if relative: return ''
-        return self.aq_acquire('REQUEST')['BASE1']
+        '''Return a canonical URL for this object based on its
+        physical containment path, possibly modified by virtual hosting.
+        If the optional 'relative' argument is true, only return the
+        path portion of the URL.'''
+        try:
+            # We need a REQUEST that uses physicalPathToURL to create
+            # BASE1 and BASEPATH1, so probe for it.
+            req = self.REQUEST
+            req.physicalPathToURL
+        except AttributeError:
+            return ''
+        # Take advantage of computed URL cache
+        if relative:
+            return req['BASEPATH1'][1:]
+        return req['BASE1']
 
     def getPhysicalPath(self):
         '''Returns a path that can be used to access this object again

@@ -71,6 +71,11 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector: #797 and #809: Application and Traversable now
+       delegate computation of absolute_url to the REQUEST object, and
+       both provide the same docstring.  This makes absolute_url
+       callable by URL, and fixes virtual hosting inconsistencies.
+
      - Collector: #964: standard_error_message refers to looking into the
        HTML code for more information which is deprecated. Referring to
        the error log now.
