@@ -1,5 +1,5 @@
 *shared*
 
-cDocumentTemplate cDocumentTemplate.c -I../../Components/ExtensionClass
+cDocumentTemplate cDocumentTemplate.c -I../../Components/ExtensionClass/src
 
 
