@@ -85,12 +85,12 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.80 1998/12/11 05:32:21 amos Exp $'''
-__version__='$Revision: 1.80 $'[11:-2]
+$Id: Application.py,v 1.81 1998/12/18 21:46:07 jim Exp $'''
+__version__='$Revision: 1.81 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
-import time, rotor, marshal
+import time, traceback
 from string import strip, lower, find, rfind, join
 from DateTime import DateTime
 from AccessControl.User import UserFolder
@@ -100,6 +100,7 @@ from Globals import Persistent
 from FindSupport import FindSupport
 from ImageFile import ImageFile
 from urllib import quote
+from cStringIO import StringIO
 
 
 _standard_error_msg='''\
@@ -173,6 +174,7 @@ class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
         ApplicationManagement_icon=ImageFile('App/www/cpSystem.gif')
         DatabaseManagement_icon=ImageFile('App/www/dbManage.gif')
         InstalledProduct_icon=ImageFile('App/www/installedProduct.gif')
+        BrokenProduct_icon=ImageFile('App/www/brokenProduct.gif')
         Product_icon=ImageFile('App/www/product.gif')
         Factory_icon=ImageFile('App/www/factory.gif')
         ProductFolder_icon=ImageFile('App/www/productFolder.gif')
@@ -288,10 +290,10 @@ class Expired(Persistent):
 
     __inform_commit__=__save__
 
-
-
 def open_bobobase():
     # Open the application database
+
+    import_products()
 
     Bobobase=Globals.Bobobase=Globals.PickleDictionary(Globals.BobobaseName)
 
@@ -338,6 +340,40 @@ def open_bobobase():
     get_transaction().commit()
 
     return Bobobase
+
+def import_products():
+    # Try to import each product, checking for and catching errors.
+    path_join=os.path.join
+    product_dir=path_join(SOFTWARE_HOME,'Products')
+    isdir=os.path.isdir
+    exists=os.path.exists
+    DictType=type({})
+
+    product_names=os.listdir(product_dir)
+    product_names.sort()
+    global_dict=globals()
+    silly=('__doc__',)
+
+    for product_name in product_names:
+        package_dir=path_join(product_dir, product_name)
+        if not isdir(package_dir): continue
+        if not exists(path_join(package_dir, '__init__.py')):
+            if not exists(path_join(package_dir, '__init__.pyc')):
+                continue
+
+        pname="Products.%s" % product_name
+        try:
+            product=__import__(pname, global_dict, global_dict, silly)
+            if hasattr(product, '__module_aliases__'):
+                for k, v in product.__aliases__:
+                    if not sys.modules.has_key(k):
+                        sys.modules[k]=v
+        except:
+            f=StringIO()
+            traceback.print_exc(100,f)
+            f=f.getvalue()
+            try: sys.modules[pname].__import_error__=f
+            except: pass
 
 def install_products(app):
     # Install a list of products into the basic folder class, so
@@ -410,35 +446,11 @@ def install_products(app):
         Application.misc_.__dict__[product_name]=misc_
 
         # Set up dynamic project information.
-        App.Product.initializeProduct(product_name, package_dir, app)
+        App.Product.initializeProduct(product, product_name, package_dir, app)
 
     Folder.dynamic_meta_types=tuple(meta_types)
 
     Globals.default__class_init__(Folder)
-
-
-def lcd(e):
-    _k1_='\357\261\390\247\357\362\306\216\226'
-    _k2_='\157\161\090\147\157\122\106\016\126'
-    rot=rotor.newrotor(_k2_, 13)
-    dat=rot.decrypt(e)
-    del rot
-    dat=list(dat)
-    dat.reverse()
-    dat=join(dat,'')
-    dat=marshal.loads(dat)
-    if type(dat) != type([]):
-        # Compatibility w/old lic files
-        rot=rotor.newrotor(_k1_, 13)
-        dat=rot.decrypt(e)
-        del rot
-        dat=list(dat)
-        dat.reverse()
-        dat=join(dat,'')
-        dat=marshal.loads(dat)
-    if type(dat) != type([]):
-        return None
-    return dat
 
 
 def pgetattr(product, name, default=install_products, __init__=0):
