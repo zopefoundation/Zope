@@ -22,9 +22,6 @@ Running Zope
     threads. ZServer is currently in beta, so this may not be a good
     choice for production systems.
 
-  - You can use the built-in ZopeHTTP web server.  This option is
-    no longer recommended.
-
   - You can use the PCGI publisher with an existing web server. 
     This is currently the recommended way to run Zope for production
     systems. 
@@ -32,9 +29,8 @@ Running Zope
 Choosing your database
 
   We currently support two Zope databases, ZODB 2 and ZODB 3.  To use
-  ZODB 3 use ZServer via the z2.py script described below.  To use 
-  ZODB 2, use the simple ZopeHTTP server or use PCGI publisher 
-  (without ZServer).
+  ZODB 3 use ZServer via the z2.py script described below.  To use
+  ZODB 2, use the PCGI publisher (without ZServer).
 
   (Alternatives for the curious and ZPublisher aware:
 
@@ -42,9 +38,8 @@ Choosing your database
       described below by providing the -2 command-line option to
       z2.py. 
 
-    - You can use ZODB 3 with the ZopeHTTPServer and the
-      PCGI publisher by changing the published module to
-      Zope. 
+    - You can use ZODB 3 with the PCGI publisher by changing the
+      published module to Zope.
   )
 
 Quick Start
@@ -172,13 +167,10 @@ Setting permissions on the var directory.
   running Zope you should ensure that you give adequate permissions
   to the Zope var directory for the userid Zope will run under.
 
-  Depending on how you choose to run Zope you will need to give different
-  permissions to the var directory. For example if you are using
-  ZopeHTTPServer which normally runs as your userid, you need only ensure
-  that your userid has read and write permissions to the var directory.
-  If you use Zope with an existing web server, it will probably run Zope
-  as 'nobody'. In this case 'nobody' needs read and write permissions to
-  the var directory.
+  Depending on how you choose to run Zope you will need to give
+  different permissions to the var directory.  If you use Zope with an
+  existing web server, it will probably run Zope as 'nobody'. In this
+  case 'nobody' needs read and write permissions to the var directory.
 
   If you change the way you run Zope you may need to modify the permissions
   of the var directory and the files in it to allow Zope to read and write
@@ -197,27 +189,6 @@ Using ZServer
   script or DOS BAT file to run the script with arguments.  The second
   approach is preferred to avoid having to reconfigure the z2.py script
   after a software update. 
-
-  Notes
-
-    * 'start.py' is now depricated, use 'z2.py' instead.
-
-    * 'zinit.py' is now depricated, use 'z2.py' with 'zdeamon.py' instead.
-
-Using Zope with ZopeHTTPServer
-
-  ZopeHTTPServer is a simple web server written in Python and it
-  allows you to run Zope without using PCGI and another web server.
-  The build script automatically creates a shell script named 'start'
-  which will run the built-in server. To start Zope using ZopeHTTPServer 
-  cd to the Zope directory and issue the command::
-
-    ./start
-
-  Now you should be able to access Zope through the web, just like with
-  ZServer::
-
-    http://localhost:9673/manage
 
 Starting Zope with an existing web server
 

@@ -48,8 +48,7 @@ Zope Installation Frequently Asked Questions
        on files and directories in your Zope installation. The var
        subdirectory of your installation and everything therein MUST be 
        writable by the user which runs cgi scripts on your web server 
-       (usually nobody if you are using PCGI, usually your userid if you
-       are using ZopeHTTPServer)
+       (usually nobody if you are using PCGI.)
        
        If you have ensured that the PCGI info file is correct and that all
        permissions are correct, you can look in the /var/tmp directory of
