@@ -14,10 +14,9 @@
 
 static char Missing_module_documentation[] = 
 ""
-"\n$Id: Missing.c,v 1.13 2002/06/10 22:48:46 jeremy Exp $"
+"\n$Id: Missing.c,v 1.14 2002/11/12 20:06:00 jeremy Exp $"
 ;
 
-#include <string.h>
 #include "ExtensionClass.h"
 
 /* Declarations for objects of type Missing */
@@ -303,6 +302,13 @@ initMissing(void)
 Revision Log:
 
   $Log: Missing.c,v $
+  Revision 1.14  2002/11/12 20:06:00  jeremy
+  Remove bogus include.
+
+  #include <string.h> is implied by ExtensionClass.h, because it includes
+  Python.h.  Also, it is an error to include standard headers before
+  Python.h.
+
   Revision 1.13  2002/06/10 22:48:46  jeremy
   Update ExtensionClass to ZPL 2.0.
 
