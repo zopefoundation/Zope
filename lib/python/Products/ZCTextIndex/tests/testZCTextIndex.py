@@ -212,12 +212,33 @@ class CosineIndexTests(ZCIndexTestsBase, testIndex.CosineIndexTest):
         self._ranking_idf()
         self._ranking_queries()
 
-        # A digression to exercise re-indexing.  This should leave
-        # things exactly as they were.
+        # A digression to exercise re-indexing.
         docs = self.docs
-        for variant in ("hot cold porridge python", "pease hot pithy ",
-                        docs[-1]):
+        for variant in "hot cold porridge python", "pease hot pithy":
             self.zc_index.index_object(len(docs), Indexable(variant))
+            try:
+                self._ranking_tf()
+            except (AssertionError, KeyError):
+                pass
+            else:
+                self.fail("expected _ranking_tf() to fail -- reindex")
+
+            try:
+                self._ranking_idf()
+            except (AssertionError, KeyError):
+                pass
+            else:
+                self.fail("expected _ranking_idf() to fail -- reindex")
+
+            try:
+                self._ranking_queries()
+            except AssertionError:
+                pass
+            else:
+                self.fail("expected _ranking_queries() to fail -- reindex")
+
+        # This should leave things exactly as they were.
+        self.zc_index.index_object(len(docs), Indexable(docs[-1]))
         self._ranking_tf()
         self._ranking_idf()
         self._ranking_queries()
@@ -292,9 +313,17 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
 
         self._checkAbsoluteScores()
 
-        # Exercise re-indexing.  This should leave things exactly as they were.
-        for variant in "one xyz", "xyz two three", "abc def", docs[-1]:
+        # Exercise re-indexing.
+        for variant in "one xyz", "xyz two three", "abc def":
             self.zc_index.index_object(len(docs), Indexable(variant))
+            try:
+                self._checkRelativeScores()
+            except AssertionError:
+                pass
+            else:
+                self.fail("expected _checkAbsoluteScores() to fail -- reindex")
+        # This should leave things exactly as they were.
+        self.zc_index.index_object(len(docs), Indexable(docs[-1]))
         self._checkAbsoluteScores()
 
     def _checkAbsoluteScores(self):
@@ -346,8 +375,15 @@ class OkapiIndexTests(ZCIndexTestsBase, testIndex.OkapiIndexTest):
             self.zc_index.index_object(i, Indexable(doc))
         self._checkRelativeScores()
 
-        # Exercise re-indexing.  This should leave things exactly as they were.
+        # Exercise re-indexing.
         self.zc_index.index_object(9, Indexable("two xyz"))
+        try:
+            self._checkRelativeScores()
+        except AssertionError:
+            pass
+        else:
+            self.fail("expected _checkRelativeScores() to fail after reindex")
+        # This should leave things exactly as they were.
         self.zc_index.index_object(9, Indexable(doc))
         self._checkRelativeScores()
 
