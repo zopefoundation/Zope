@@ -97,7 +97,6 @@ def indention(str):
    if str == '\n':
       return -1
 
-   #str   = expandtabs(str)    # covert tabs into spaces
    front = re.compile('( *)')
    m     = front.match(str)
 
@@ -109,46 +108,28 @@ def indention(str):
 
 def runner(struct,top,level,numbers):
 
-   """
-   returns run which is a pointer to
-   struct to be appended to
-   """
+   tmp = []
+   for x in numbers:
+      if level > x:
+         tmp.append(x)
+   numbers = tmp   
+   numbers.append(level)
 
-   i     = 3
-   run   = struct[top][1]
+   if len(numbers) == 1:
+      return (struct,numbers)
 
-   if level == 0:
-      return struct
-   if level == 1:
-      return run
-   if level == 2:
-      a = numbers[level-2]
-      return run[a-1][1]
-
-   a     = numbers[level-2]
-   run   = run[a-1][1]
-
-   while i <= level:
-      a     = numbers[i-2]
-      run   = run[a-1][1]
-      i     = i + 1
-
-   return run
-
-def find_level(indent, levels):
-
-   """
-   when the indention is less,
-   find which level it is a 
-   sublevel of
-   """
-
-   if levels.has_key(indent):
-      return levels[indent]
-
-   for key in levels.keys():
-      if key > indent:
-         return levels[key]
+   run = struct[top][1]
+   if level == numbers[len(numbers)-1]:
+      i = 1
+      while i < level:         
+         run = run[len(run)-1][1]
+         i = i + 1
+   else:
+      i = 1
+      while i <= level:
+         run = run[len(run)-1][1]
+         i = i + 1
+   return run,numbers
 
 def split_paragraphs(paragraphs):
 
@@ -164,7 +145,6 @@ def split_paragraphs(paragraphs):
    if type(paragraphs).__name__ == "list":
       for paragraph in paragraphs:
          tmp = tmp + expandtabs(paragraph)
-
       paragraphs = par.split(tmp)
    elif type(paragraphs).__name__ == "string":
       paragraphs = par.split(expandtabs(paragraphs))
@@ -177,6 +157,21 @@ def split_paragraphs(paragraphs):
 
    return paragraphs
 
+def parent_level(levels, level):
+   K = levels.keys()
+   greatest = 0
+   for key in K:
+      if key > greatest and key < level:
+         greatest = key
+   return greatest
+
+def find_level(levels,indention):
+   K = levels.keys()
+   for key in K:
+      if levels[key] == indention:
+         return key
+   return -1
+
 def StructuredText(paragraphs):
 
    """
@@ -188,75 +183,71 @@ def StructuredText(paragraphs):
 
    current_level     = 0
    current_indent    = 0
-   levels            = {0:0} # what level
+   levels            = {0:0}
    ind               = []    # structure based on indention levels
    top               = -1    # which header are we under
-   numbers           = {0:0} # how many sub-paragraphs already at a level
+   numbers           = [0]   # Which levels have paragraphs
    struct            = []    # the structure to be returned
-   
+
    paragraphs = split_paragraphs(paragraphs)
-   
+
    if not paragraphs:
       result = ["",[]]
       return result
-
-   for paragraph in paragraphs:      
+         
+   for paragraph in paragraphs:
       if paragraph == '\n':
          ind.append([-1, paragraph])
       else :
          ind.append([indention(paragraph), strip(paragraph)+"\n"])
 
+   current_indent = indention(paragraphs[0])
+   levels[0]      = current_indent
+
    for indent,paragraph in ind :
-
-      if indent > -1:
-         if indent == 0:
-
-            """
-            a new top header, start over, everything underneath is
-            a sub-paragraph
-            """
-
-            current_level  = 0
-            current_indent = 0
-            top            = top + 1
-            levels         = {0:0}
-            numbers        = {0:0}
-
-            struct.append([paragraph,[]])
-
-         elif indent > current_indent:
-                           
-            current_indent          = indent
-            current_level           = current_level + 1
-            levels[current_indent]  = current_level
-
-            if not numbers.has_key(current_level-1):
-               numbers[current_level-1] = 0
-
-            run = runner(struct,top,current_level,numbers)
-            run.append([paragraph,[]])
-            numbers[current_level-1] = numbers[current_level-1] + 1
-         
-         elif (indent == current_indent):
-            if not numbers.has_key(current_level-1):
-               numbers[current_level-1] = 0
-            
-            run = runner(struct,top,current_level,numbers)
-            run.append([paragraph,[]])            
-            numbers[current_level-1] = numbers[current_level-1] + 1
-
-         elif indent < current_indent :
-
-            current_level = find_level(indent,levels)
+      if indent == 0:         
+         struct.append([paragraph,[]])
+         current_level  = 0
+         current_indent = 0
+         numbers        = [0]
+         levels         = {0:0}
+         top            = top + 1
+      elif indent == current_indent:         
+         run,numbers = runner(struct,top,current_level,numbers)
+         run.append([paragraph,[]])
+      elif indent > current_indent:         
+         current_level  = current_level + 1
+         current_indent = indent
+         levels[current_level] = indent
+         run,numbers = runner(struct,top,current_level,numbers)
+         run.append([paragraph,[]])
+         levels[current_level] = indent
+      elif indent < current_indent:
+         l = parent_level(levels,current_level)
+         if indent > 0 and indent < levels[0]:
+            levels[0]      = indent
             current_indent = indent
-            
-            if not numbers.has_key(current_level-1):
-               numbers[current_level-1] = 0
-            
-            run = runner(struct,top,current_level,numbers)
-            run.append([paragraph,[]])
-            numbers[current_level-1] = numbers[current_level-1] + 1
-
+            run,numbers    = runner(struct,top,current_level,numbers)
+         elif find_level(levels,indent) != -1:
+            current_level  = find_level(levels,indent)
+            current_indent = indent
+            run,numbers    = runner(struct,top,current_level,numbers)
+         elif levels[current_level] > indent and levels[l] < indent:
+            levels[current_level] = indent
+            current_indent        = indent
+            run,numbers           = runner(struct,top,current_level,numbers)
+            current_level         = l
+         else:
+            tmp = {}
+            for i in range(current_level):
+               if indent > levels[i]:
+                  tmp[i] = levels[i]
+               elif indent == levels[i]:
+                  current_level  = i
+                  current_indent = indent
+                  run,numbers    = runner(struct,top,current_level,numbers)
+            levels = tmp
+         run.append([paragraph,[]])
    return struct
 
 class doc_text:
@@ -592,7 +583,7 @@ class doc_underline:
 
 class doc_href1:
    def __init__(self,str=''):
-      self.expr   = re.compile('\"[ a-zA-Z0-9.:/;,]+\":[a-zA-Z0-9.:/;,]+(?=(\s+|\.|\!|\?))').search
+      self.expr   = re.compile('\"[ a-zA-Z0-9.:/;,\n]+\":[a-zA-Z0-9.:/;,\n]+(?=(\s+|\.|\!|\?))').search
       self.str    = [str]
       self.typ    = "href1"
 
@@ -788,7 +779,6 @@ class DOC:
      instance. '-underline **this**' would be stored as an underline
      instance with a strong instance stored in its string
    """
-   
 
    def __init__(self):
       self.types  = [doc_unorder_list(),
