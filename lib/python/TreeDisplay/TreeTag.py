@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.24 1998/07/23 14:03:08 jim Exp $'
-__version__='$Revision: 1.24 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.25 1998/07/23 18:17:16 jim Exp $'
+__version__='$Revision: 1.25 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -352,7 +352,7 @@ def tpRenderTABLE(self, id, root_url, url, state, substate, diff, data,
 	    
 	if items==1:
 	    # leaves
-            if have_arg['leaves']:
+            if have_arg('leaves'):
                 doc=args['leaves']
                 if md.has_key(doc): doc=md.getitem(doc,0)
                 else: doc=None
