@@ -85,7 +85,7 @@
 
 """WebDAV support - resource objects."""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import sys, os, string, mimetypes, davcmds, ExtensionClass
 from common import absattr, aq_base, urlfix, rfc1123_date
@@ -269,7 +269,7 @@ class Resource(ExtensionClass.Base):
             raise 'Precondition Failed', 'Destination resource exists.'
         try: parent._checkId(name, allow_dup=1)
         except: raise 'Forbidden', sys.exc_info()[1]
-        try: parent._verifyObjectPaste(self, REQUEST)
+        try: parent._verifyObjectPaste(self)
         except 'Unauthorized':
             raise 'Unauthorized', sys.exc_info()[1]
         except: raise 'Forbidden', sys.exc_info()[1]
@@ -328,7 +328,7 @@ class Resource(ExtensionClass.Base):
             raise 'Precondition Failed', 'Resource %s exists.' % dest
         try: parent._checkId(name, allow_dup=1)
         except: raise 'Forbidden', sys.exc_info()[1]
-        try: parent._verifyObjectPaste(self, REQUEST)
+        try: parent._verifyObjectPaste(self)
         except: raise 'Forbidden', sys.exc_info()[1]
 
         ob=aq_base(self._getCopy(parent))

@@ -84,9 +84,9 @@
 ##############################################################################
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.95 2000/05/26 16:14:00 shane Exp $"""
+$Id: ObjectManager.py,v 1.96 2000/05/30 15:26:34 brian Exp $"""
 
-__version__='$Revision: 1.95 $'[11:-2]
+__version__='$Revision: 1.96 $'[11:-2]
 
 import App.Management, Acquisition, Globals, CopySupport, Products
 import os, App.FactoryDispatcher, ts_regex, Products
@@ -506,7 +506,7 @@ class ObjectManager(
             obj=obj.aq_parent
             connection=obj._p_jar
         ob=connection.importFile(file)
-        if REQUEST: self._verifyObjectPaste(ob, REQUEST)
+        if REQUEST: self._verifyObjectPaste(ob)
         id=ob.id
         if hasattr(id, 'im_func'): id=id()
         self._setObject(id, ob)
