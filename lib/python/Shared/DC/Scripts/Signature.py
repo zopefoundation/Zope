@@ -88,7 +88,7 @@
 This provides support for simulating function signatures
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 class FuncCode:
 
@@ -105,6 +105,9 @@ class FuncCode:
 # This is meant to be imported directly into a class.
 
 def _setFuncSignature(self, defaults=None, varnames=(), argcount=0):
+    # Simplify calls.
+    if argcount == 0 and varnames:
+        argcount = len(varnames)
     # Generate a change only if we have to.
     if self.func_defaults != defaults:
         self.func_defaults = defaults
