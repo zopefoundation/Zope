@@ -195,6 +195,13 @@ class DateTime:
         effect of this is as if you had taken the value of time.time()
         at that time on a machine in the specified timezone).
 
+        New in Zope 2.7:
+        A new keyword parameter "datefmt" can be passed to the 
+        constructor. If set to "international", the constructor
+        is forced to treat ambigious dates as "days before month
+        before year". This useful if you need to parse non-US
+        dates in a reliable way
+
     If a string argument passed to the DateTime constructor cannot be
     parsed, it will raise DateTime.SyntaxError. Invalid date, time, or
     timezone components will raise a DateTime.DateTimeError.

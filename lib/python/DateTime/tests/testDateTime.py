@@ -306,6 +306,19 @@ class DateTimeTests(unittest.TestCase):
         self.assertEqual(dts[5], "%+03d%02d" % divmod( (-offset/60), 60) )
 
 
+    def testInternationalDateformat(self):
+
+        for year in range(1990, 2020):
+            for month in range (1,13):
+                for day in range(1,32):
+                    try: d_us = DateTime("%d/%d/%d" % (year,month,day))
+                    except: continue
+
+                    d_int = DateTime("%d.%d.%d" % (day,month,year), datefmt="international")
+                    self.assertEqual(d_us, d_int)
+
+
+
 def test_suite():
     return unittest.makeSuite(DateTimeTests)
 

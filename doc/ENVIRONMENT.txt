@@ -199,12 +199,12 @@ Security related
     ZSP_OWNEROUS_SKIP
 
         If set, will cause the Zope Security Policy to skip checks relating
-	to ownership, for servers on which ownership is not important.
+        to ownership, for servers on which ownership is not important.
 
     ZSP_AUTHENTICATED_SKIP
 
         If set, will cause the Zope Security Policy to skip checks relating
-	to authentication, for servers which serve only anonymous content.
+        to authentication, for servers which serve only anonymous content.
 
     DISALLOW_LOCAL_PRODUCTS
 
@@ -272,11 +272,9 @@ Structured Text
 
     STX_DEFAULT_LEVEL
 
-       Set this variable to change the default level for <Hx> elements.
-       The default level is 3.
-
-
-DTML
+        Set this variable to change the default level for <Hx> elements.
+        The default level is 3.
+        
 
     ZOPE_DTML_REQUEST_AUTOQUOTE
 
@@ -288,6 +286,15 @@ DTML
         HTML quoted when interpolated with a <dtml-var> or &dtml-;
         construct.
 
+DateTime
+
+    DATETIME_FORMAT 
+
+        Set this variable either to "us" or "international" to force
+        the DateTime module to parse date strings either with
+        month before days before year or days before month before
+        year. If unset the default behaviour of DateTime is untouched
+        and parses ambigious date formats as US date.
 
 Esoteric
 

@@ -22,6 +22,14 @@ Zope Changes
        support for obtaining a more useful value from other headers if a
        front-end proxy is in use. See doc/ENVIRONMENT.txt for details.
 
+     - DateTime module: added support to parse international dateformats. The
+       Datetime constructor has a new "datefmt" parameter to enforce the
+       parsing of a date as "us" or "international" date. The new field        
+       descriptor field descriptor "date_international" can be used to
+       enforce this behaviour inside the ZPublisher. See also 
+       doc/ENVIRONMENT.txt to check with the DATETIME_FORMAT 
+ 
+
     Bugs Fixed
 
      - Collector #771: ZCatalog failed to index DTML Document if the name

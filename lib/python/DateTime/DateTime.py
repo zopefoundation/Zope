@@ -12,15 +12,20 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.84 $'[11:-2]
+__version__='$Revision: 1.85 $'[11:-2]
 
 
-import re, math,  DateTimeZone
+import os, re, math,  DateTimeZone
 from time import time, gmtime, localtime, asctime
 from time import daylight, timezone, altzone, strftime
 from types import InstanceType,IntType,FloatType,StringType,UnicodeType
 try: from time import tzname
 except: tzname=('UNKNOWN','UNKNOWN')
+
+
+_default_datefmt = os.environ.get('DATETIME_FORMAT', "us").lower()
+if not _default_datefmt in ('us', 'international'):
+    raise ValueError, "DATETIME_FORMAT must be either 'us' or 'international'"
 
 # To control rounding errors, we round system time to the nearest
 # millisecond.  Then delicate calculations can rely on that the
@@ -456,7 +461,7 @@ class DateTime:
     __roles__=None
     __allow_access_to_unprotected_subobjects__=1
 
-    def __init__(self,*args):
+    def __init__(self,*args, **kw):
         """Return a new date-time object
 
         A DateTime object always maintains its value as an absolute
@@ -601,6 +606,13 @@ class DateTime:
             effect of this is as if you had taken the value of time.time()
             at that time on a machine in the specified timezone).
 
+            New in Zope 2.7:
+            A new keyword parameter "datefmt" can be passed to the 
+            constructor. If set to "international", the constructor
+            is forced to treat ambigious dates as "days before month
+            before year". This useful if you need to parse non-US
+            dates in a reliable way
+
         In any case that a floating point number of seconds is given
         or derived, it's rounded to the nearest millisecond.
 
@@ -612,6 +624,9 @@ class DateTime:
         The module function Timezones() will return a list of the
         timezones recognized by the DateTime module. Recognition of
         timezone names is case-insensitive.""" #'
+
+        datefmt = kw.get('datefmt', _default_datefmt)
+        assert datefmt in ('us', 'international')
 
         d=t=s=None
         ac=len(args)
@@ -656,7 +671,7 @@ class DateTime:
                 if arg.find(' ')==-1 and arg[4]=='-':
                     yr,mo,dy,hr,mn,sc,tz=self._parse_iso8601(arg)
                 else:
-                    yr,mo,dy,hr,mn,sc,tz=self._parse(arg)
+                    yr,mo,dy,hr,mn,sc,tz=self._parse(arg, datefmt)
 
 
                 if not self._validDate(yr,mo,dy):
@@ -860,7 +875,7 @@ class DateTime:
         tz = self.localZone(ltm)
         return tz
 
-    def _parse(self,st):
+    def _parse(self,st, datefmt=_default_datefmt):
         # Parse date-time components from a string
         month=year=tz=tm=None
         spaces        =self.space_chars
@@ -987,8 +1002,13 @@ class DateTime:
                     day=ints[0]
                     month=ints[1]
                 else:
-                    day=ints[1]
-                    month=ints[0]
+                    if datefmt=="us":
+                        day=ints[1]
+                        month=ints[0]
+                    else:
+                        day=ints[0]
+                        month=ints[1]
+    
             elif ints[0] <= 12:
                 month=ints[0]
                 day=ints[1]
@@ -1685,3 +1705,4 @@ class strftimeFormatter:
 def Timezones():
     """Return the list of recognized timezone names"""
     return _cache._zlst
+
