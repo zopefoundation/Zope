@@ -488,16 +488,15 @@ class BasicUserFolder(Implicit, Persistent, Navigation, Tabs, RoleManager,
         """Return the named user object or None"""
         raise NotImplementedError
 
-    def getUserById(self, id, default=_marker):
+    def getUserById(self, id, default=None):
         """Return the user corresponding to the given id.
         """
         # The connection between getting by ID and by name is not a strong
         # one
-        try:
-            return self.getUser(id)
-        except:
-            if default is _marker: raise
+        user = self.getUser(id)
+        if user is None:
             return default
+        return user
 
     def _doAddUser(self, name, password, roles, domains, **kw):
         """Create a new user. This should be implemented by subclasses to
