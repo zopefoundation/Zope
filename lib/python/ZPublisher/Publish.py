@@ -518,7 +518,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.42 1997/04/23 20:04:46 brian Exp $"""
+$Id: Publish.py,v 1.43 1997/05/14 15:07:22 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -572,7 +572,7 @@ $Id: Publish.py,v 1.42 1997/04/23 20:04:46 brian Exp $"""
 #
 # See end of file for change log.
 #
-__version__='$Revision: 1.42 $'[11:-2]
+__version__='$Revision: 1.43 $'[11:-2]
 
 
 def main():
@@ -828,7 +828,10 @@ class ModulePublisher:
 	try:
 	    transaction=get_transaction()
 	    info="\t" + self.env('PATH_INFO')
-	    try: info=self.request['AUTHENTICATED_USER']+info
+	    u=self.request['AUTHENTICATED_USER']
+	    try: u="%s.%s" % (u, self.request['session__domain'])
+	    except: pass
+	    try: info=u+info
 	    except: pass
 	    transaction.begin(info)
 	except: transaction=None
@@ -1618,6 +1621,9 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.43  1997/05/14 15:07:22  jim
+# Added session domain to user id, for generating session info.
+#
 # Revision 1.42  1997/04/23 20:04:46  brian
 # Fixed change that got around HTTP_CGI_AUTHORIZATION hack.
 #
