@@ -12,7 +12,7 @@
 ##############################################################################
 """ Basic ZPublisher request management.
 
-$Id: BaseRequest.py,v 1.54 2003/11/28 16:46:47 jim Exp $
+$Id: BaseRequest.py,v 1.55 2004/03/03 11:07:01 ctheune Exp $
 """
 
 from urllib import quote
@@ -252,6 +252,9 @@ class BaseRequest:
 
         request['TraversalRequestNameStack'] = request.path = path
 
+        # Set the posttraverse for duration of the traversal here
+        self._post_traverse = post_traverse = []
+
         entry_name = ''
         try:
             # We build parents in the wrong order, so we
@@ -376,6 +379,9 @@ class BaseRequest:
                 steps.append(entry_name)
         finally:
             parents.reverse()
+ 
+        # After traversal post traversal hooks aren't available anymore
+        del self._post_traverse
 
         request['PUBLISHED'] = parents.pop(0)
 
@@ -449,7 +455,20 @@ class BaseRequest:
         # Remove http request method from the URL.
         request['URL']=URL
 
+        # Run post traversal hooks here
+        result = None
+        if post_traverse:
+            result = exec_callables(post_traverse)
+
+        if result is not None:
+            object = result
+
         return object
+
+    def post_traverse(self, f, args=()):
+        """Set a callable object and argument tuple to be combined if traversal succeeds."""
+        if hasattr(self, "_post_traverse"):
+            self._post_traverse.append((f, tuple(args)))
 
     retry_count=0
     def supports_retry(self): return 0
@@ -459,8 +478,13 @@ class BaseRequest:
         """
         self._held=self._held+(object,)
 
-
-
+def exec_callables(callables):
+    result = None
+    for (f, args) in callables:
+        # Don't catch exceptions here. And don't hide them anyway.
+        result = f(*args)
+        if result is not None:
+            return result
 
 def old_validation(groups, request, auth,
                    roles=UNSPECIFIED_ROLES):
