@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.56 2000/07/26 15:43:39 brian Exp $"""
-__version__ = "$Revision: 1.56 $"[11:-2]
+$Id: MailHost.py,v 1.57 2000/11/27 16:01:21 brian Exp $"""
+__version__ = "$Revision: 1.57 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -272,7 +272,7 @@ def _encode(body, encode=None):
 
 def extractheaders(message):
     # return headers of message
-    mfile=StringIO(message)
+    mfile=StringIO(string.strip(message))
     mo=rfc822.Message(mfile)
 
     hd={}
