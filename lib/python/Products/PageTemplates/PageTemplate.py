@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.10 $'[11:-2]
+__version__='$Revision: 1.11 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -119,8 +119,7 @@ class PageTemplate:
             self.content_type = str(content_type)
         if hasattr(text, 'read'):
             text = text.read()
-        if self._text <> text:
-            self.write(text)
+        self.write(text)
 
     def pt_getContext(self):
         c = {'template': self,
@@ -169,7 +168,8 @@ class PageTemplate:
             errend = find(text, '-->')
             if errend >= 0:
                 text = text[errend + 4:]
-        self._text = text
+        if self._text != text:
+            self._text = text
         self._cook()
 
     def read(self):
@@ -179,17 +179,13 @@ class PageTemplate:
             try:
                 return self.pt_render(source=1)
             except:
-                tb = traceback.extract_tb(sys.exc_info()[2])
-                tb.reverse()
-                self._v_errors = ["Macro expansion failed",
-                                  "%s: %s" % sys.exc_info()[:2],
-                                  ] + map(str, tb)
+                return ('%s\n Macro expansion failed\n %s\n-->\n%s' %
+                        (self._error_start, "%s: %s" % sys.exc_info()[:2],
+                         self._text) )
                                   
-        if self.html():
-            return ('%s\n %s\n-->\n%s' % (self._error_start,
-                                         join(self._v_errors, '\n '),
-                                         self._text))
-        return self._text
+        return ('%s\n %s\n-->\n%s' % (self._error_start,
+                                      join(self._v_errors, '\n '),
+                                      self._text))
 
     def _cook(self):
         """Compile the TAL and METAL statments.
