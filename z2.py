@@ -72,9 +72,9 @@ Options:
     
   -u username or uid number
   
-    The username to run ZServer as. You may want to run ZServer as 'nobody'
-    or some other user with limited resouces. The only works under Unix, and
-    if ZServer is started by root. The default is: %(UID)s
+    The username to run ZServer as.  You may want to run ZServer as
+    a dedicated user.  This only works under Unix, and if ZServer
+    is started as root, and is required in that case.
 
   -P [ipaddress:]number
 
@@ -233,7 +233,7 @@ if swhome != 'INSERT_SOFTWARE_HOME':
     sys.path.insert(5, '%s' % swhome)
 
 
-import os, sys, getopt, codecs
+import os, sys, getopt, codecs, string
 # workaround to allow unicode encoding conversions in DTML
 dummy = codecs.lookup('iso-8859-1')
 
@@ -266,8 +266,9 @@ IP_ADDRESS=''
 DNS_IP=''
 
 # User id to run ZServer as. Note that this only works under Unix, and if
-# ZServer is started by root.
-UID='nobody'
+# ZServer is started by root. This no longer defaults to 'nobody' since
+# that can lead to a Zope file compromise.
+UID=None
 
 # Log file location. If this is a relative path, then it is joined the
 # the 'var' directory.
@@ -498,6 +499,11 @@ if Zpid and not READ_ONLY:
 
 os.chdir(CLIENT_HOME)
 
+def _warn_nobody():
+    zLOG.LOG("z2", zLOG.INFO, "Running Zope as 'nobody' can compromise " + \
+                              "your Zope files; consider using a " + \
+                              "dedicated user account for Zope") 
+
 try:
     # Import logging support
     import zLOG
@@ -691,47 +697,90 @@ try:
         for address, port in ICP_PORT:
             ICPServer(address,port)
 
-    # Try to set uid to "-u" -provided uid.
-    # Try to set gid to  "-u" user's primary group. 
-    # This will only work if this script is run by root.
-    try:
-        import pwd
-        try:
-            try:    UID = int(UID)
-            except: pass
-            gid = None
-            if type(UID) == type(""):
-                uid = pwd.getpwnam(UID)[2]
-                gid = pwd.getpwnam(UID)[3]
-            elif type(UID) == type(1):
-                uid = pwd.getpwuid(UID)[2]
-                gid = pwd.getpwuid(UID)[3]
-            else:
-                raise KeyError 
-            try:
-                if gid is not None:
-                    try:
-                        os.setgid(gid)
-                    except OSError:
-                        pass
-                os.setuid(uid)
-            except OSError:
-                pass
-        except KeyError:
-            zLOG.LOG("z2", zLOG.ERROR, ("can't find UID %s" % UID))
-    except:
-        pass
-
-
-
-    # if it hasn't failed at this point, create a .pid file.
     if not READ_ONLY:
+        if os.path.exists(PID_FILE): os.unlink(PID_FILE)
         pf = open(PID_FILE, 'w')
         pid=str(os.getpid())
         try: pid=str(os.getppid())+' '+pid
         except: pass
         pf.write(pid)
         pf.close()
+
+    # Warn if we were started as nobody.
+    try:
+        import pwd
+        if os.getuid():
+            if pwd.getpwuid(os.getuid())[0] == 'nobody':
+                _warn_nobody()
+    except:
+        pass
+
+    # Drop root privileges if we have them, and do some sanity checking
+    # to make sure we're not starting with an obviously insecure setup.
+    try:
+        if os.getuid() == 0:
+            try:
+                import initgroups
+            except:
+                raise SystemExit, 'initgroups is required to safely setuid'
+            if UID == None:
+                raise SystemExit, 'A user was not specified to setuid ' + \
+                                  'to; fix this to start as root'
+            import stat
+            client_home_stat = os.stat(CLIENT_HOME)
+            client_home_faults = []
+            if not (client_home_stat[stat.ST_MODE]&01000):
+                client_home_faults.append('does not have the sticky bit set')
+            if client_home_stat[stat.ST_UID] != 0:
+                client_home_faults.append('is not owned by root')
+            if len(client_home_faults) > 0:
+                raise SystemExit, CLIENT_HOME + ' ' + \
+                                  string.join(client_home_faults, ', ') + \
+                                  '; fix this to start as root'
+            try:
+                try:    UID = string.atoi(UID)
+                except: pass
+                gid = None
+                if type(UID) == type(""):
+                    uid = pwd.getpwnam(UID)[2]
+                    gid = pwd.getpwnam(UID)[3]
+                elif type(UID) == type(1):
+                    uid = pwd.getpwuid(UID)[2]
+                    gid = pwd.getpwuid(UID)[3]
+                    UID = pwd.getpwuid(UID)[0]
+                else:
+                    raise KeyError 
+                if UID == 'nobody':
+                    _warn_nobody()
+                try:
+                    initgroups.initgroups(UID, gid)
+                    if gid is not None:
+                        try:
+                            os.setgid(gid)
+                        except OSError:
+                            pass
+                    os.setuid(uid)
+                except OSError:
+                    pass
+            except KeyError:
+                zLOG.LOG("z2", zLOG.ERROR, ("Can't find UID %s" % UID))
+    except AttributeError:
+        pass
+    except:
+        raise
+
+    # Check umask sanity.
+    try:
+        # umask is silly, blame POSIX.  We have to set it to get its value.
+        current_umask = os.umask(0)
+        os.umask(current_umask)
+        if current_umask != 077: 
+            current_umask = '%03o' % current_umask
+            zLOG.LOG("z2", zLOG.INFO, 'Your umask of ' + current_umask + \
+                     ' may be too permissive; for the security of your ' + \
+                     'Zope data, it is recommended you use 077')
+    except:
+        pass
 
 except:
     # Log startup exception and tell zdaemon not to restart us.

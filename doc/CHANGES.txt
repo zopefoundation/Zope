@@ -120,6 +120,9 @@ Zope Changes
 
       - Collector #17: Fixed broken links in StandardCacheManagers help
 
+      - Collector #1: UNIX security fixes: make starting Zope as 'root'
+        secure, stop using 'nobody', warn of insecure umasks
+
   Zope 2.5.1 beta 1
     
     Bugs Fixed
