@@ -9,7 +9,7 @@
 # interested in using this software in a commercial context, or in
 # purchasing support, please contact the author.
 
-RCS_ID =  '$Id: http_server.py,v 1.8 1999/07/20 16:53:49 amos Exp $'
+RCS_ID =  '$Id: http_server.py,v 1.9 1999/08/02 17:41:21 amos Exp $'
 
 # python modules
 import os
@@ -380,7 +380,7 @@ class http_channel (asynchat.async_chat):
 	def kill_zombies (self):
 		now = int (time.time())
 		for channel in asyncore.socket_map.keys():
-			if channel.__class__ == http_channel:
+			if channel.__class__ == self.__class__:
 				if (now - channel.creation_time) > channel.zombie_timeout:
 					channel.close()
 
