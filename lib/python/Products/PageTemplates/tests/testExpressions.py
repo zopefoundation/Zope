@@ -12,6 +12,8 @@ class ExpressionTests(unittest.TestCase):
         e.compile('path:x')
         e.compile('x/y')
         e.compile('string:Fred')
+        e.compile('string:A$B')
+        e.compile('string:a${x/y}b')
         e.compile('python: 2 + 2')
         
 def test_suite():

@@ -89,7 +89,7 @@ Page Template-specific implementation of TALES, with handlers
 for Python expressions, Python string literals, and paths.
 """
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import re, sys
 from TALES import Engine, TALESError, _valid_name, NAME_RE
@@ -116,6 +116,7 @@ def installHandlers(engine):
 
 class PathExpr:
     def __init__(self, name, expr):
+        self._s = expr
         self._name = name
         self._path = path = split(expr, '/')
         self._base = base = path.pop(0)
@@ -163,31 +164,44 @@ class PathExpr:
         return mm['_ob']
 
     def __str__(self):
-        return '%s expression "%s"' % (self._name, join(self._path, '/'))
+        return '%s expression "%s"' % (self._name, self._s)
 
     def __repr__(self):
-        return '<PathExpr %s:%s>' % (self._name, join(self._path, '/'))
+        return '<PathExpr %s:%s>' % (self._name, self._s)
 
             
-_interp1 = re.compile(r'\$(%s)' % NAME_RE)
-_interp2 = re.compile(r'\${(%s)}' % NAME_RE)
+_interp = re.compile(r'\$(%(n)s)|\${(%(n)s(?:/%(n)s)*)}' % {'n': NAME_RE})
 
 class StringExpr:
     def __init__(self, name, expr):
         self._s = expr
+        if '%' in expr:
+            expr = replace(expr, '%', '%%')
+        self._vars = vars = []
         if '$' in expr:
-            exprs = split(expr, '$$')
-            for i in range(len(exprs)):
-                expr = exprs[i]
-                if '$' in expr:
-                    expr = _interp1.sub(r'%(\1)s', expr)
-                    expr = _interp2.sub(r'%(\1)s', expr)
-                exprs[i] = expr
-            expr = join(exprs, '$')
+            parts = []
+            for exp in split(expr, '$$'):
+                if parts: parts.append('$')
+                m = _interp.search(exp)
+                if m is not None:
+                    parts.append(exp[:m.start()])
+                    parts.append('%s')
+                    vars.append(PathExpr('path', m.group(1) or m.group(2)))
+                    exp = exp[m.end():]
+                    m = _interp.search(exp)
+                if '$' in exp:
+                    raise TALESError, ('$ must be doubled or '
+                                       'followed by a variable name '
+                                       'in string expression "%s"' % expr)
+                parts.append(exp)
+            expr = join(parts, '')
         self._expr = expr
         
     def __call__(self, econtext):
-        return self._expr % econtext.contexts['var']
+        vvals = []
+        for var in self._vars:
+            vvals.append(var(econtext))
+        return self._expr % tuple(vvals)
 
     def __str__(self):
         return 'string expression %s' % `self._s`
