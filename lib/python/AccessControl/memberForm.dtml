@@ -1,0 +1,39 @@
+<HTML>
+<HEAD>
+<TITLE>
+Access Control
+</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2">
+Access Control
+</FONT>
+<BR>
+<P>
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_editMember" METHOD="POST">
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">Name</TD>
+  <TD VALIGN="TOP"><!--#var memberName-->, in <B><!--#var groupName--></B></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">Password</TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="password" VALUE="<!--#var memberPassword-->"
+   SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">(Confirm)</TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="confirm" VALUE="<!--#var memberPassword-->"
+   SIZE="20">
+  <INPUT TYPE="HIDDEN" NAME="name" VALUE="<!--#var memberName-->">
+  <INPUT TYPE="HIDDEN" NAME="group" VALUE="<!--#var groupName-->">
+  <BR>
+  <INPUT TYPE="SUBMIT" VALUE="Save Changes">
+  </TD>
+  </TR>
+  </TABLE>
+  </FORM>
+</BODY>
+</HTML>

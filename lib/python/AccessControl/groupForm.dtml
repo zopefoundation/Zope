@@ -1,0 +1,99 @@
+<HTML>
+<HEAD>
+<TITLE>
+Access Control
+</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555" ALINK="#77003B">
+<FONT SIZE="+2">
+Access Control
+</FONT>
+<BR>
+<P>
+<TABLE>
+<!--#if memberNames-->
+
+
+<TR>
+  <TD VALIGN="TOP">
+  The following members are defined for the group <B><!--#var groupName--></B>.
+  To edit a member, select a member from the list and click the
+  <I>Edit Member</I> button.
+  </TD>
+  <TD VALIGN="TOP">
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_memberForm" METHOD="POST">
+  <SELECT NAME="name">
+  <!--#in memberNames-->
+  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+  <!--#/in memberNames-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="HIDDEN" NAME="group" VALUE="<!--#var groupName-->">
+  <INPUT TYPE="SUBMIT" VALUE="Edit Member">
+  </FORM>
+  </TD>
+</TR>
+<!--#else memberNames-->
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  There are no members defined for the group <B><!--#var groupName--></B>.
+  </TD>
+</TR>
+<!--#/if memberNames-->
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  <BR>
+  To add a new member to this group, enter the name, password and
+  confirmation of password for the new member and click the
+  <I>Add Member</I> button.
+  </TD>
+</TR>
+<TR>
+  <TD COLSPAN="2" VALIGN="TOP">
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_addMember" METHOD="POST">
+  <TABLE>
+  <TR>
+  <TD VALIGN="TOP">Name</TD>
+  <TD VALIGN="TOP"><INPUT TYPE="TEXT" NAME="name" SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">Password</TD>
+  <TD VALIGN="TOP"><INPUT TYPE="PASSWORD" NAME="password" SIZE="20"></TD>
+  </TR>
+  <TR>
+  <TD VALIGN="TOP">(Confirm)</TD>
+  <TD VALIGN="TOP">
+  <INPUT TYPE="PASSWORD" NAME="confirm" SIZE="20"><BR>
+  <INPUT TYPE="HIDDEN" NAME="group" VALUE="<!--#var groupName-->">
+  <INPUT TYPE="SUBMIT" VALUE="Add Member">
+  </TD>
+  </TR>
+  </TABLE>
+  </FORM>
+  </TD>
+</TR>
+<!--#if memberNames-->
+<TR>
+  <TD VALIGN="TOP">
+  <BR>
+  To delete one or more members from this group, select the members
+  you wish to delete and click the <I>Delete Members</I> button.
+  </TD>
+  <TD VALIGN="TOP">
+  <BR>
+  <FORM ACTION="<!--#var PARENT_URL-->/manage_deleteMember" METHOD="POST">
+  <SELECT NAME="names:list" MULTIPLE SIZE="5" >
+  <!--#in memberNames-->
+  <OPTION VALUE="<!--#var sequence-item-->"> <!--#var sequence-item-->
+  <!--#/in memberNames-->
+  </SELECT>
+  <BR>
+  <INPUT TYPE="HIDDEN" NAME="group" VALUE="<!--#var groupName-->">
+  <INPUT TYPE="SUBMIT" VALUE="Delete Members">
+  </FORM>
+  </TD>
+</TR>
+<!--#/if memberNames-->
+</TABLE>
+</BODY>
+</HTML>

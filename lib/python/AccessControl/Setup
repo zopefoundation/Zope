@@ -1,1 +1,5 @@
-*shared*
+# install ACL.py
+# install groupForm.dtml
+# install groupsForm.dtml
+# install memberForm.dtml
+# install www www/%(package)s
