@@ -176,7 +176,7 @@ def interpretit(it, engine=None, stream=None):
     from TALInterpreter import TALInterpreter
     program, macros = it
     if engine is None:
-        engine = DummyEngine()
+        engine = DummyEngine(macros)
     TALInterpreter(program, macros, engine, stream)()
 
 if __name__ == "__main__":
