@@ -30,6 +30,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_simple_identity(self):
         self._run_check("""<html a='b' b="c" c=d><title>My Title</html>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<html a="b" b="c" c="d">'
                         '<title>My Title</title></html>'),
             ])
@@ -37,10 +38,12 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_implied_list_closings(self):
         self._run_check("""<ul><li><p><p><li></ul>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<ul><li><p></p><p></p></li><li></li></ul>'),
             ])
         self._run_check("""<dl><dt><dt><dd><dd><ol><li><li></ol></dl>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<dl><dt></dt><dt></dt><dd></dd>'
                         '<dd><ol><li></li><li></li></ol></dd></dl>'),
             ])
@@ -49,6 +52,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
         self._run_check("""<p>text <table><tr><th>head\t<tr><td>cell\t"""
                         """<table><tr><td>cell \n \t \n<tr>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<p>text</p> <table><tr><th>head</th>'
                         '</tr>\t<tr><td>cell\t<table><tr><td>cell</td>'
                         '</tr> \n \t \n<tr></tr></table></td></tr></table>'),
@@ -56,6 +60,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
         self._run_check("""<table><tr><td>cell """
                         """<table><tr><td>cell </table></table>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<table><tr><td>cell <table><tr><td>cell</td></tr>'
                         ' </table></td></tr></table>'),
             ])
@@ -68,6 +73,7 @@ class HTMLTALParserTestCases(unittest.TestCase):
     def check_code_attr_syntax(self):
         output = [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a b="v" c="v" d="v" e></a>'),
             ]
         self._run_check("""<a b='v' c="v" d=v e>""", output)
@@ -79,10 +85,12 @@ class HTMLTALParserTestCases(unittest.TestCase):
         self._run_check(
             """<a b='xxx\n\txxx' c="yyy\t\nyyy" d='\txyz\n'>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext',
              '<a b="xxx\n\txxx" c="yyy\t\nyyy" d="\txyz\n"></a>')])
         self._run_check("""<a b='' c="" d=>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a b="" c="" d=""></a>'),
             ])
 
@@ -90,36 +98,43 @@ class HTMLTALParserTestCases(unittest.TestCase):
         # we expect entities *not* to be replaced by HTLMParser!
         self._run_check("""<a b='&amp;&gt;&lt;&quot;&apos;'>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a b="&amp;&gt;&lt;&quot;\'"></a>'),
             ])
         self._run_check("""<a b='\"'>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', "<a b='\"'></a>"),
             ])
         self._run_check("""<a b='&'>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a b="&amp;"></a>'),
             ])
         self._run_check("""<a b='<'>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a b="&lt;"></a>'),
             ])
 
     def check_code_attr_funky_names(self):
         self._run_check("""<a a.b='v' c:d=v e-f=v>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<a a.b="v" c:d="v" e-f="v"></a>'),
             ])
 
     def check_code_pcdata_entityref(self):
         self._run_check("""&nbsp;""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '&nbsp;'),
             ])
 
     def check_code_short_endtags(self):
         self._run_check("""<html><img/></html>""", [
             ('version', TAL_VERSION),
+            ('mode', 'html'),
             ('rawtext', '<html><img/></html>'),
             ])
 
