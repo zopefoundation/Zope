@@ -1,1291 +1,243 @@
-PLACEHOLDER for transience docs
-
-Core Session Tracking Release 0.9 Documentation
-
-  This is the documentation to the Core Session Tracking product.
-  Session tracking allows you to keep state between HTTP requests for
-  anonymous users.
-
-  The Big Picture
-
-    There are four major components to the CoreSessionTracking design:
-
-      - Session Id Manager -- this is the component which determines a
-        remote client's session id.  The session id is contained in the
-        "session token", which is encoded in a form or cookie variable.
-        The session id manager examines and modifies cookie and
-        form variables to determine or set the client's session id.
-        There may be more than one session id manager in a Zope
-        installation, but commonly there will only be one.  Application
-        developers will generally not talk directly to a session id
-        manager.  Instead, they will talk to session data managers,
-        which will delegate some calls to a session id manager.  Session
-        id managers have "fixed" Zope ids so they can be found via
-        acquisition by session data managers.
-
-      - Session Data Manager -- this is the component which is
-        responsible for handing out session data to callers.  When
-        session data is required, the session data manager talks to a
-        session id manager to determine the current session token and
-        creates a new session data object or hands back an existing
-        session data object based on the token.  It also has interfaces
-        for encoding a URL with session information and performing other
-        utility functions.  Developers will generally use methods of
-        session data managers to obtain session data objects when
-        writing application code.  Many session data managers can use
-        one session id manager.  Many session data managers can be
-        instantiated on a single Zope installation.  Different session
-        data managers can implement different policies related to
-        session data object storage (e.g. to which session data
-        container the session data objects are stored).
-
-      - Session Data Container -- this is the component which actually
-        holds information related to sessions.  Currently, it is used to
-        hold a special "session data object" instance for each ongoing
-        session.  Developers will generally not interact with session
-        data containers.  The current implementation defines two types
-        of session data containers: internal and external.  "Internal"
-        session data containers are RAM-based, and they are available
-        for use on a per-session-data-manager basis, while "external"
-        session data containers are persistent Zope objects which may be
-        used to store (and persist) session data objects. External
-        session data containers are traversable, and they are meant to
-        be instantiated within a nonundoing database, as accesses to
-        session data containers are very write-intensive.  Internal
-        sesion data containers are not traversable, one is created for
-        each Session Data Manager instantiated, and they are managed
-        through their parent data manager.  Session data containers are
-        responsibile for expiring the session data objects which live
-        within them.  The implementation of a session data container
-        shipped with CoreSessionTracking is engineered to reduce the
-        potential inherent in the ZODB for "conflict errors" related to
-        the ZODB's optimistic concurrency strategy.
-
-      - Session Data Object -- these are the components which are stored
-        in session data containers and managed by session data managers.
-        Developers interact with a session data object after obtaining
-        one from a session data manager.  A single session data object
-        actually stores the useful information related to a single
-        anonymous user's session.  Session data objects can be expired
-        by session data containers, or they can be manually invalidated in
-        the course of a script.
-
-  Prerequisites
-
-    For Installation and Configuration
-
-      Zope 2.2.X + (earlier versions will not work)
-
-      Access to the filesystem which houses the Zope installation.
-
-      Manager-level privileges on the Zope installation you wish to install
-      session-tracking on.
-
-      An understanding of the Zope management interface.
-
-    For Development
-
-      An understanding of DTML and/or Python.
-
-  Installation
-
-    Untar and ungzip the CoreSessionTracking0-x.tar.gz file into your
-    Zope's lib/python/Products directory and restart your Zope
-    instance.  NOTE: if you use an INSTANCE_HOME setup, you may
-    alternately untar and ungzip the CoreSessionTracking product into
-    your INSTANCE_HOME/Products directory.
-
-  Upgrading From Previous Versions of CoreSessionTracking
-
-    Unfortunately, version 0.8 and above of CoreSessionTracking is
-    incompatible with previous versions.  There is no mechanism
-    provided to save data entered in to External Data Containers by
-    pre-0.8 CoreSessionTracking installations.  Sorry.
-
-    In order to upgrade prior versions follow these steps:
-
-      - delete all Session Id Managers, Session Data Managers, and
-        Session Data Container objects from your Zope.  (Hint:
-        write down all their respective configuration information
-        before deleting them, so that reinstantiating them is easy).
-
-      - shut down your Zope site.
-
-      - delete your CoreSessionTracking Product directory.
-
-      - follow the directions in "Installation" above to install
-        the new CoreSessionTracking Product directory.
-
-      - restart your Zope site.
-
-      - reinstall all of your Session Id Managers, Session Data
-        Managers, and Session Data Container objects.
-
-    Note also that the export feature of Session Data Containers in
-    pre-0.8 CoreSessionTracking installations produces a .zexp file
-    that is *not* compatible with the import feature of
-    CoreSessionTracking 0.8.
-
-  Configuration
-
-    Before using sessioning within Zope, you'll need to:
-
-     - instantiate at least one session id manager
-
-     - instantiate at least one session data manager
-
-     - optionally instantiate one or more external session data containers
-
-    The basics to perform these tasks are outlined in the sections
-    following.
-
-    Instantiating A Session Id Manager
-
-      Though you'll likely interact mostly with "session data manager"
-      objects while you develop session-aware code, before you can
-      instantiate a session data manager object, you must instantiate a
-      "session id manager."  A session id manager is an object which
-      doles out and otherwise manages session tokens.  All session
-      data managers need to talk to a session id manager to get token
-      information.
-
-      You can add an initial session id manager anywhere in your Zope
-      tree, but chances are you'll want to create it in your root
-      folder if you don't anticipate the need for multiple session id
-      managers.  In other words, just put one session id manager in
-      the root Folder unless you have special needs.  In the container
-      of your choosing, select "Session Id Manager" from the add
-      dropdown list in the Zope management interface.
-
-      Form options available are:
-
-        id -- you cannot choose an 'id' for your session id manager.
-        It must always be "session_id_mgr".  Additionally, you cannot
-        rename a session id manager.  This is required in the current
-        implementation so that session data managers can find session
-        id managers via Zope acquisition.  This may be changed in a
-        later release.
-
-        title -- the session id manager title.
-
-        session token key -- the cookie name and/or form variable name
-        used for this session id manager instance.  This will be the
-        name looked up in the 'cookies' or 'form' REQUEST namespaces
-        when the session id manager attempts to find a cookie or form
-        variable with a session token in it.
-
-        token key search namespaces -- choose a "priority" for each
-        token key namespace.  A priority of "1" is highest.  For
-        instance, setting 'cookies' to '1' and 'form vars' to '2'
-        means that the session id manager checks for cookies with a
-        session token first, then form variables second.  Choosing
-        "off" for either 'cookies' or 'form vars' entirely excludes
-        that namespace from being searched for a session token.  The
-        namepace identifiers ('cookies' and 'form') refer to the
-        REQUEST namespaces searched for the token key
-        (ie. REQUEST.cookies, REQUEST.form).
-
-        cookie path -- this is the 'path' element which should be sent
-        in the session token cookie.  For more information, see the
-        Netscape Cookie specification at
-        http://home.netscape.com/newsref/std/cookie_spec.html.
-
-        cookie domain -- this is the "domain" element which should be
-        sent in the session token cookie. For more information, see
-        the Netscape Cookie specification at
-        http://home.netscape.com/newsref/std/cookie_spec.html.
-        Leaving this form element blank results in no domain element
-        in the cookie.  If you change the cookie domain here, the
-        value you enter must have at least two dots (as per the cookie
-        spec).
-
-        cookie lifetime in days -- session id cookies sent to browsers
-        will last this many days on a remote system before expiring if
-        this value is set.  If this value is 0, cookies will persist
-        on client browsers for only as long as the browser is open.
-
-        only send cookie over https -- if this flag is set, only send
-        cookies to remote browsers if they're communicating with us
-        over https.  The session id cookie sent under this
-        circumstance will also have the 'secure' flag set in it, which
-        the remote browser should interpret as a request to refrain
-        from sending the cookie back to the server over an insecure
-        (non-https) connection.  NOTE: In the case you wish to share
-        session id cookies between https and non-https connections
-        from the same browser, do not set this flag.
-
-      After reviewing and changing these options, click the "Add"
-      button to instantiate a session id manager.
-
-      You can manage a session id manager by visiting it in the
-      management interface.  In addition to adjusting the settings you
-      chose at add-time, you can additionally turn a session id
-      manager "off" via this management interface, which will cause
-      session data managers to ignore it when attempting to acquire a
-      session id manager.  Session data managers will instead acquire
-      a session id manager nearer the root of the ZODB.
-
-    Instantiating Multiple Session Id Managers (Optional)
-
-      If you've got special needs, you may want to instantiate more
-      than one session id manager.  Having multiple session id
-      managers may be useful in cases where you have a "secure"
-      section of a site and an "insecure" section of a site, each
-      using a different session id manager with respectively
-      restrictive security settings.  Some special considerations are
-      required for this setup.
-
-      Once you've instantiated one session id manager, you will not be
-      able to instantiate another session id manager in a place where
-      the new session id manager can acquire the original session id
-      manager via its containment path (for programmers: the session
-      id manager's class' Zope __replaceable__ property is set to
-      UNIQUE).  This means, practically, that if you wish to have
-      multiple session id managers, you need to carefully think about
-      where they should go, and then you need to place them in the
-      most deeply-nested containers first, working your way out
-      towards the root.
-
-    Instantiating A Session Data Manager
-
-      After instantiating at least one session id manager, it's
-      possible to instantiate a session data manager.  You'll need to
-      do this in order to use session tracking.
-
-      You can place a session data manager in any Zope container,as
-      long as a session id manager object can be acquired from that
-      container.  The session data manager will use the first acquired
-      session id manager which is active (ie. it will use any acquired
-      session id manager that has not been been "turned off" via its
-      Zope management interface).
-
-      Choose "Session Data Manager" within the container you wish to
-      house the session data manager from the "Add" dropdown box in
-      the Zope management interface.
-
-      The session data manager add form displays these options:
-
-        id -- choose an id for the session data manager
-
-        title -- choose a title for the session data manager
-
-        internal session data container object timeout -- enter the
-        number of minutes after which the session data objects managed
-        by the "internal" session data container of this data manager
-        manager should expire.  The default is 20 minutes.  Entering 0
-        will result in the generation of completely persistent session
-        data objects, which will never be expired.  Using completely
-        persistent session data objects is *not* recommended for
-        RAM-based sessioning, as your server will eventually run out
-        of available RAM, because session data garbage collection will
-        have no effect.
-
-        external session data container path (optional) -- if you've
-        instantiated an "external" session data container Zope object
-        (by adding a "Session Data Container" in the Zope management
-        interface), you may enter its Zope path in this text box in
-        order to use it to store your session data objects.  If you
-        leave this option blank, session data objects will be stored
-        in a RAM-based session data container internal to this session
-        data manager.  You need only use an external session data
-        container if you wish to use sessioning in conjunction with
-        ZEO or if you wish your session data to persist across server
-        reboots.  An example of a path to a Zope session data
-        container is '/nonundo_db/session_data_container'.
-
-        session onStart method path (optional) -- when a session
-        starts, you may call an external method or PythonScript.  This
-        is the Zope path to the external method or PythonScript object
-        to be called.  If you leave this option blank, no onStart
-        function will be called.  An example of a method path is
-        '/afolder/amethod'.
-
-        session onEnd method path (optional) -- when a session ends,
-        you may call an external method or PythonScript.  This is the
-        Zope path to the external method or PythonScript object to be
-        called.  If you leave this option blank, no onEnd function
-        will be called.  An example of a method path is
-        '/afolder/amethod'.
-
-      After reviewing and changing these options, click the "Add"
-      button to instantiate a session data manager.
-
-      You can manage a session data manager by visiting it in the
-      management interface.  You may change all options available
-      during the add process by doing this.
-
-      Each session data manager has one "internal" session data
-      container.  This session data container stores its data objects
-      in RAM.  Since these data objects are stored in RAM, they will
-      not persist across server restarts, and they cannot be shared
-      across ZEO clients.  Additionally, each session data object
-      added to this manager's internal session data container will
-      increase Zope's RAM consumption.  "Garbage collection" in the
-      form of the expiration and flushing of "stale" session data
-      objects is automatic based on the timeout provided to the
-      'internal session data container timeout'.  "Stale" session data
-      objects will be cleared if they've not been accessed in the
-      number of minutes you provide to this option.![1]
-
-        ![1] See "Session Data Object Expiration Considerations" in the
-        Concepts and Caveats section below for details on session data
-        expiration.
-
-      If you don't want to store session data objects in RAM or if you
-      wish to use sessioning across ZEO clients, use an "external"
-      session data container instead.  Specifying a non-null path in
-      the "external session data container path" box causes the data
-      manager to use the external session data container specified
-      here, instead of the "internal" data container.
-
-    Instantiating An External Session Data Container (Optional)
-
-      If you want your session data objects to persist across server
-      reboots, or if you have a potentially very large collection of
-      session data objects, or if you'd like to share sessions between
-      ZEO clients, you will want to instantiate an external session
-      data container.  A heavily-utilized external session data
-      container *should be instantiated inside a database which is
-      nonundoing*!  Although you may instantiate an external session
-      data container in any storage, if you make heavy use of an
-      external session data container in an undoing database (such as
-      a database backed by FileStorage), your database will grow in
-      size very quickly due to the high-write nature of session
-      tracking.
-
-      (For a product which allows you to use a mounted undoing
-      database, see Shane Hathaway's ExternalMount product at
-      http://www.zope.org/Members/hathawsh/ExternalMount.)
-
-      To instantiate an external Session Data Container, choose
-      "Session Data Container" within the container you wish to house
-      the session data manager from the "Add" dropdown box in the Zope
-      management interface.
-
-      You can select the values of these options when adding an
-      external data container:
-
-        id -- choose a Zope Id for this session data container.
-
-        title -- choose a title for this session data container
-
-        data object timemout in minutes -- choose a timeout value in
-        minutes for session data objects contained within this data
-        container.
-
-      Multiple session data managers can make use of a single external
-      session data container to the extent that they may share the
-      session data objects placed in the container between them.  This
-      is not a recommended practice, however, as it has not been
-      tested at all.
-
-      The 'data object timeout in minutes' value is the number of
-      minutes that session data objects are to be kept since their
-      last-accessed time before they are flushed from the data
-      container.  For instance, if a session data object is accessed
-      at 1:00 pm, and if the timeout is set to 20 minutes, if the
-      session data object is not accessed again by 1:19:59, it will be
-      flushed from the data container at 1:20:00 or a time shortly
-      thereafter![1].  "Accessed", in this terminology, means "pulled
-      out of the container" by a call to the session data manager's
-      getSessionData() method or an equivalent.
-
-        ![1] See "Session Data Object Expiration Considerations" in the
-        Concepts and Caveats section below for details on session data
-        expiration.
-
-   Configuring for Shared Session Data Between ZEO Clients (Optional)
-
-     Types of Configurations
-
-       There are two types of configurations in which the session
-       tracking machinery can be used with ZEO.  The first
-       configuration ("A") is where your "main" ZODB database is
-       backed by a undoing storage such as FileStorage.  In this case
-       you need to "mount" a nonundoing storage on your ZEO clients.
-       The second configuration ("B") is where you've got a nonundo
-       storage backing your your "main" ZEO ZODB database.  In both
-       cases, you need to perform an initial common set of tasks.  The
-       remaining configuration steps differ per setup, as explained in
-       the following sections.
-
-     Common Tasks Under Either Configuration
-
-       Install the CoreSessionTracking product on each of your ZEO
-       clients.
-
-       If you use cookies as a session id token conveyance mechanism,
-       change the cookie "domain" setting in the active session id
-       manager to cause the session data cookie to be sent back to any
-       box in the domain which holds all of the ZEO clients.  For
-       example, if you've got three ZEO clients in the
-       "subdomain.bigbox.com" subdomain named respectively
-       "box1.subdomain.bigbox.com", "box2.subdomain.bigbox.com", and
-       "box3.subdomain.bigbox.com", you'll want to set your cookie
-       domain to ".subdomain.bigbox.com".  The session id cookie
-       should be sent back by standards-respecting visiting clients to
-       any of the three ZEO clients in the cluster.
-
-       The combination of Core Session Tracking, ZEO, and
-       formvar-based session tokens has not been tested, but there is
-       no reason it shouldn't work.  You'll just need to figure the
-       configuration issues out yourself, and when you do, please let
-       me (chrism@digicool.com) know!.
-
-     Configuration A:  Your ZEO Storage Server Uses an Undoing Storage to
-       Back Its "Main" ZODB Database
-
-       Set up an additional ZEO storage server backed by a nonundoing
-       storage or configure your existing ZEO storage server to
-       additionally serve a separate nonundoing storage (see the ZEO
-       docs for more information).  Create a "mount" of this storage
-       in your "main" database's instance space (via a Product such as
-       MountedClientStorage or External Mount, which will need to be
-       installed on all of your clients too).  Instantiate an external
-       session data container inside the mounted database through the
-       management interface.
-
-       After you've succesfully instantiated an external session data
-       container inside the mounted database, instantiate a session id
-       manager and a session data manager in an appropriate place
-       within the ZODB (they need not be in the same database as the
-       session data container).  Point the session data manager's
-       "external session data container path" at the "mounted"
-       external session data container you created.  Use this session
-       data manager in your code.  All ZEO clients which reference
-       this session data manager during operation will share the same
-       session data.
-
-     Configuration B:  Your ZEO Storage Server Uses a Non-Undoing Storage
-       to Back its "Main" ZODB Database.
-
-       Use one of the clients to instantiate an external session data
-       container in an appropriate place in the ZODB if you haven't
-       already done so.  Instantiate a session id manager and a
-       session data manager in appropriate places within the ZODB.
-       Point the session data manager's "external session data
-       container path" at the external session data container you
-       created.  Use this session data manager in your code.  All ZEO
-       clients which reference this session data manager during
-       operation will share the same session data.
-
-    Randall Kern has additionally written a ZEO + sessioning How-To at
-    http://www.zope.org/Members/randy/ZEO-Sessions.
-
-    Note that ZODB conflict errors (see the Concepts and Caveats
-    section of this document for an explanation of conflict errors)
-    may be problematic for configurations in which many ZEO clients
-    share a session data container via ZEO.  This configuration has
-    not been highly tested.
-
-    Configuring Sessioning Permissions
-
-      You need only configure sessioning permissions if your
-      requirements deviate substantially from the norm.  In this case,
-      here is a description of the permissions related to sessioning:
-
-        Permissions related to session id managers:
-
-          Add Session Id Managers -- allows a role to add session id
-          managers.  By default, enabled for 'Manager'.
-
-          Change Session Id Manager -- allows a role to change an
-          instance of a session id manager.  By default, enabled for
-          'Manager'.
-
-          Access contents information -- allows a role to obtain data
-          about session tokens.  By default, enabled for 'Manager' and
-          'Anonymous'.
-
-        Permissions related to session data managers:
-
-          Add Session Data Managers -- allows a role to add session
-          data managers.  By default, enabled for 'Manager'.
-
-          Change Session Data Manager -- allows a role to call
-          management-related methods of a session data manager.  By
-          default, enabled for 'Manager'.
-
-          Access session data -- allows a role to obtain access to the
-          session data object related to the current session token.
-          By default, enabled for 'Manager' and 'Anonymous'.  You may
-          wish to deny this permission to roles who have DTML or
-          Web-based Python scripting capabilities who should not be
-          able to access session data.
-
-          Access arbitrary user session data -- allows a role to
-          obtain and otherwise manipulate any session data object for
-          which the token value (the key) is known.  By default,
-          enabled for 'Manager'.  (For more information, see the
-          'getSessionDataByKey' method described in the
-          SessioningInterfaces.py file.)
-
-          Access contents information -- allows a role to obtain data
-          about session tokens.  By default, enabled for 'Manager' and
-          'Anonymous'.
-
-        Permissions related to session data containers:
-
-          Add Session Data Containers -- allows a role to add session
-          data containers.  By default, enabled for 'Manager'.
-
-          Change Session Data Container -- allows a role to make
-          changes to a session data container.
-
-          Access session data -- allows a role to obtain and otherwise
-          manipulate the session data object related to the current
-          session token.
-
-  Developing Using Sessioning
-
-    Overview
-
-      Developers generally interact with a Session Data Manager
-      instance in order to make use of sessioning in Zope.  Methods
-      named in this section are those of session data managers unless
-      otherwise specified.
-
-      All of the methods implemented by Session Data Managers, Session
-      Id Managers and Session Data objects are fully documented in the
-      "SessioningInterfaces.py" file accompanying this software.
-      This section of the documentation will concentrate on explaining
-      common operations having to do with session-tracking and why
-      they might be important to you.
-
-    Terminology
-
-      Here's a mini-glossary of terminology used by the session
-      tracking product:
-
-        token (aka 'token value') -- the string or integer used to
-        represent a single anonymous visitor to the part of the Zope
-        site managed by a single session id manager.
-        E.g. "12083789728".
-
-        token key namespaces -- the session token key/value pair will
-        be found in one of these namespaces.  They refer to namespaces
-        codified in the Zope REQUEST object.  E.g. "cookies" or
-        "form".
-
-        token key -- the key which is looked for in the REQUEST
-        namespaces enumerated by the token key namespaces configured.
-        This references the token as its value.  E.g. "_ZopeId".
-
-        session data object -- an instance of the session data object
-        class that is found by asking a session data container for the
-        item with a key that is a token value.
-
-    Obtaining the Token Value
-
-      You can obtain the token value associated with the current
-      request from a session data manager::
-
-        <dtml-var "sessiondatamanager.getToken()">
-
-      This snippet will print the token value to the remote browser.
-      If no token exists for the current request, a new token is
-      created implicitly and returned.
-
-      If you wish to obtain the current token value without implicitly
-      creating a new token for the current request, you can use the
-      'create' argument to the 'getToken()' method to suppress this
-      behavior::
-
-        <dtml-var "sessiondatamanager.getToken(create=0)">
-
-      This snippet will print a representation of the None value if
-      there isn't a session token associated with the current request,
-      or it will print the token value if there is one associated with
-      the current request.  Using 'create=0' is useful if you do not
-      wish to cause the sessioning machinery to attach a new session
-      token to the current request, perhaps if you do not wish a
-      session cookie to be set.
-
-      The token value *is not* the session data.  The token value
-      represents the key by which the 'getSessionData' method obtains
-      a session data object representing the visitor marked by the
-      token.  The token value is either a string or an integer and has
-      no business meaning.  In your code, you should not rely on the
-      session token composition, length, or type as a result, as it is
-      subject to change.
-
-    Determining Which Token Key Namespace Holds The Session Token
-
-      For some applications, it is advantageous to know from which
-      token key namespace (currently either 'cookies' or 'form') the
-      token has been gathered.  There are two methods of session data
-      managers which allow you to accomplish this,
-      'isTokenFromCookie()', and 'isTokenFromForm()'::
-
-        <dtml-if "sessiondatamanager.isTokenFromCookie()">
-          The token came from a cookie.
-        </dtml-if>
-
-        <dtml-if "sessiondatamanager.isTokenFromForm()">
-          The token came from a form.
-        </dtml-if>
-
-      The 'isTokenFromCookie()' method will return true if the token
-      in the current request comes from the 'REQUEST.cookies'
-      namespace.  This is true if the token was sent to the Zope
-      server as a cookie.
-
-      The 'isTokenFromForm()' method will return true if the token in
-      the current request comes from the 'REQUEST.form' namespace.
-      This is true if the token key/value pair was sent to the Zope
-      server encoded in a URL or as part of a form element.
-
-      If a token doesn't actually exist in the current request when
-      one of these methods is called, an error will be raised.
-
-      During typical operations, you shouldn't need to use these
-      methods, as you shouldn't care from which REQUEST namespace the
-      token key/value pair was obtained.  However, for highly
-      customized applications, this pair of methods may be useful.
-
-    Obtaining the Token Key/Value Pair and Embedding It Into A Form
-
-      You can obtain the "token key" from a session data manager
-      instance.  The token key is the name which is looked for in
-      token key namespaces by a session id manager.  We've already
-      determined how to obtain the token value.  It is useful to
-      obtain the token key/value pair if you wish to embed a session
-      token key/value pair as a hidden form field for use in POST
-      requests::
-
-        <html>
-        <body>
-        <form action="thenextmethod">
-        <input type=submit name="submit" value=" GO ">
-        <input type=hidden name="<dtml-var "sessiondatamanager.getTokenKey()">"
-         value="<dtml-var "sessiondatamanager.getToken()">">
-        </form>
-        </body>
-        </html>
-
-    Determining Whether A Session Token is "New"
-
-      A session token is "new" if it has been set in the current
-      request but has not yet been acknowledged by the client --
-      meaning it has not been sent back by the client in a request.
-      This is the case when a new session token is created by the
-      sessioning machinery due to a call to 'getSessionData()' or
-      similar as opposed to being received by the sessioning machinery
-      in a token key namespace.  You can use the 'isTokenNew()' method
-      of session data managers to determine whether the session is
-      new::
-
-        <dtml-if "sessiondatamanager.isTokenNew()">
-          Token is new.
-        <dtml-else>
-          Token is not new.
-        </dtml-if>
-
-      This method may be useful in cases where applications wish to
-      prevent or detect the regeneration of new tokens when the same
-      client visits repeatedly without sending back a token in the
-      request (such as may be the case when a visitor has cookies
-      "turned off" in their browser and the session id manager only
-      uses cookies).
-
-      If there is no session token associated with the current
-      request, this method will raise an error.
-
-      You shouldn't need to use this method during typical operations,
-      but it may be useful in advanced applications.
-
-    Determining Whether A Session Data Object Exists For The Token Associated
-      With This Request
-
-      If you wish to determine whether a session data object with a
-      key that is the current request's token exists in the data
-      manager's associated session data container, you can use the
-      'hasSessionData()' method of the session data manager.  This
-      method returns true if there is session data associated with the
-      current session token::
-
-        <dtml-if "sessiondatamanager.hasSessionData()">
-           The sessiondatamanager object has session data for the token
-           associated with this request.
-        <dtml-else>
-           The sessiondatamanager object does not have session data for
-           the token associated with this request.
-        </dtml-if>
-
-      The 'hasSessionData()' method is useful in highly customized
-      applications, but is probably less useful otherwise.  It is
-      recommended that you use 'getSessionData()' instead, allowing
-      the session data manager to determine whether or not to create a
-      new data object for the current request.
-
-    Embedding A Session Token Into An HTML Link
-
-      You can embed the token key/value pair into an HTML link for use
-      during HTTP GET requests.  When a user clicks on a link with a
-      URL encoded with the session token, the token will be passed
-      back to the server in the REQUEST.form namespace.  If you wish
-      to use formvar-based session tracking, you will need to encode
-      all of your "public" HTML links this way.  You can use the
-      'encodeUrl()' method of session data managers in order to
-      perform this encoding::
-
-        <html>
-        <body>
-        <a href="<dtml-var "sessiondatamgr.encodeUrl('/amethod')">">Here</a>
-         is a link.
-        </body>
-        </html>
-
-      The above dtml snippet will encode the URL "/amethod" (the
-      target of the word "Here") with the session token key/value pair
-      appended as a query string.  You can additionally pass URLs
-      which already contain query strings to the 'encodeUrl()' method
-      successfully.
-
-    Obtaining A Session Data Object
-
-      Use the 'getSessionData()' method of session data managers to
-      obtain the session data object associated with the session token
-      in the current request::
-
-        <dtml-let data="sessiondatamanager.getSessionData()">
-          The 'data' name now refers to a new or existing session data object.
-        </dtml-let>
-
-      The 'getSessionData()' method implicitly creates a new session
-      token and data object if either does not exist in the current
-      request.  To inhibit this behavior, use the create=0 flag to the
-      'getSessionData()' method::
- 
-        <dtml-let data="sessiondatamanager.getSessionData(create=0)">
-           The 'data' name now refers to an existing session data object or
-           None if there was no existing token or session data object.
-        </dtml-let>
-
-      The 'getSessionData()' method is a highly used method.  It is
-      probably the most-commonly used method of session data managers.
- 
-    Modifying A Session Data Object
-
-      Once you've used 'getSessionData()' to obtain a session data
-      object, you can set key/value pairs of the returned session data
-      object.  These key/value pairs are where you store information
-      related to a particular anonymous visitor.  You can use the
-      'set', 'get', and 'has_key' methods of session data objects to
-      perform actions related to it::
-
-        <dtml-let data="sessiondatamanager.getSessionData()">
-          <dtml-call "data.set('foo', 'bar')">
-          <dtml-comment>Set 'foo' key to 'bar' value.</dtml-comment>
-          <dtml-var "data.get('foo')">
-          <dtml-comment>Will print 'bar'</dtml-comment>
-          <dtml-if "data.has_key('foo')">
-            This will be printed.
-          <dtml-else>
-            This will not be printed.
-          </dtml-if>
-        </dtml-let>
-
-      An essentially arbtrary set of key/value pairs can be placed
-      into a session data object.  Keys and values can be any kinds of
-      Python objects (note: see Concepts and Caveats section for
-      exceptions to this rule).  The session data container which
-      houses the session data object determines its expiration policy.
-      Session data objects will be available across client requests
-      for as long as they are not expired.
-
-     Manually Invalidating A Session Data Object
-
-      Developers can manually invalidate a session data object.  When
-      a session data object is invalidated, it will be flushed from
-      the system, and will not be returned on subsequent requests to
-      'getSessionData()'.  The 'invalidate()' method of a session data
-      object causes this to happen::
-
-        <dtml-let data="sessiondatamanager.getSessionData()">
-          <dtml-call "data.invalidate()">
-        </dtml-let>
-
-      Subsequent calls to 'getSessionData()' in this same request will
-      return a new session data object.  Manual invalidation of
-      session data is useful in cases where you know the session data
-      is stale and you wish to flush it from the data manager.
-
-      If an onEnd event is defined for a session data object, the
-      onEnd method will be called before the data object is
-      invalidated.
-
-    Manually Invalidating A Session Token Cookie
-
-      Developers may manually invalidate the cookie associated with
-      the session token, if any.  To do so, they can use the
-      'flushTokenCookie()' method of a session data manager.  For
-      example::
-
-        <dtml-call "sessiondatamanager.flushTokenCookie()">
-
-      If the 'cookies' namespace isn't a valid token key namespace
-      when this call is performed, an exception will be raised.
-
-    An Example Of Using Session Data from DTML
-
-      An example of obtaining a session data object from a session
-      data manager named 'sessiondatamgr' and setting one of its
-      key-value pairs in DTML follows::
-
-        <dtml-with sessiondatamgr>
-          <dtml-let a=getSessionData>
-            Before change: <dtml-var a><br>
-            <dtml-call "a.set('zopetime', ZopeTime())">
-            <dtml-comment>
-            'zopetime' will be set to a datetime object for the current
-            session
-            </dtml-comment>
-            After change:  <dtml-var a><br>
-          </dtml-let>
-        </dtml-with>
-   
-      The first time you run this method, the "before change"
-      representation of the session data object will be that of an
-      empty dictionary, and the "after change" representation will
-      show a key/value pair of 'zopetime' associated with a DateTime
-      object.  Assuming you've configured your session id manager with
-      cookies and they're working on your browser properly, the second
-      and subsequent times you view this method, the "before change"
-      representation of the session data object will have a datetime
-      object in it that was the same as the last call's "after change"
-      representation of the same session data object.  This
-      demonstrates the very basics of session management, because it
-      demonstrates that we are able to associate an object (the
-      session data object obtained via getSessionData) with an
-      anonymous visitor between HTTP requests.
-
-      NOTE: To use this method in conjunction with formvar-based
-      sessioning, you'd need to encode a link to its URL with the
-      session token by using the session data manager's 'encodeUrl()'
-      method.
-
-      Using the 'mapping' Keyword With A Session Data Object in a 'dtml-with'
-
-        DTML has the facility to treat a session data object as a
-        mapping, making it easier to spell some of the more common
-        methods of access to session data objects.  The 'mapping'
-        keyword to dtml-with means "treat name lookups that follow
-        this section as queries to my contents by name."  For
-        example::
-
-          <dtml-let a="sm.getSessionData()">
-              <dtml-call "a.set('zopetime', ZopeTime())">
-              <dtml-comment>
-                'zopetime' will be set to a datetime object for the current
-                session... the "set" it calls is the set method of the
-                session data object.
-              </dtml-comment>
-          </dtml-let>
-
-          <dtml-with "sm.getSessionData()" mapping>
-              <dtml-var zopetime>
-              <dtml-comment>
-                'dtml-var zopetime' will print the DateTime object just set
-                because we've used the mapping keyword to map name lookups
-                into the current session data object.
-              </dtml-comment>
-          </dtml-with>
-
-    Using Session Data From Python
-
-      Here's an example of using a session data manager and session
-      data object from a set of Python external methods::
-
-        import time
-        def setCurrentTime(self):
-            sessiondatamgr = self.sessiondatamgr
-            a = sessiondatamgr.getSessionData()
-            a.set('thetime', time.time())
-
-        def getLastTime(self):
-            sessiondatamgr = self.sessiondatamgr
-            a = sessiondatamgr.getSessionData()
-            return a.get('thetime')
-
-   Using Session onStart and onEnd Events
-
-      The configuration of a Session Data Manager allows a method to
-      be called when a session data object is created (onStart) or
-      when it is invalidated or timed out (onEnd).  The events are
-      independent of each other.  A session data manager can define,
-      for example, an onStart event but no onEnd event for the session
-      data objects it creates, and vice versa.  Or it can define both
-      or neither events.
-
-      Why is this useful?  It is advantageous to be able to
-      prepopulate a session data object with "default" values before
-      it's used by application code.  You can use a session onStart
-      event to populate the session data object with default values.
-      It's also sometimes advantageous to be able to write the
-      contents of a session data object out to a permanent data store
-      before it is timed out or invalidated.  You can use a session
-      onEnd event for this.
-
-      An onStart or onEnd event for a session data object is defined
-      by way of specifying a "session on{Start|End} method path" in
-      the Settings tab of a Session Data Manager.  This is the Zope
-      "physical path" of a specially-written External Method or Python
-      Script which can perform an action on the contents of the data
-      object at event time.  For example, if you've written a method
-      which aims to prepopulate a session data object named
-      "onstartmethod" in the root of your Zope instance, you would set
-      the onStart method path on the Settings screen to
-      "/onstartmethod".  Likewise, if you've written a method which
-      does post-processing on the contents of a session data object
-      named "onendmethod" in a folder of the Zope root named
-      "afolder", you would set the onEnd method path in the Settings
-      screen to "/afolder/onendmethod".  See the section below
-      "Writing onStart and onEnd Methods" for an introduction to
-      writing onStart and onEnd methods.
-
-      onStart and onEnd events do not raise exceptions if logic in the
-      method code fails.  Instead, an error is logged in the Zope
-      debug log.  You can see debug messages in the log if you've
-      turned on debug logging via setting the "STUPID_LOG_FILE"
-      environment variable to a filename as documented in
-      doc/LOGGING.txt file that ships with Zope.
-
-    Writing onStart and onEnd Methods
-
-      Session data objects optionally call a Zope method when they are
-      created (onStart), and when they are timed out or invalidated
-      (onEnd).
-
-      Specially-written PythonScripts or External Methods can be
-      written to serve the purpose of being called on session data
-      object creation and invalidation.
-
-      The PythonScript or External Method should define a single
-      argument.  The session data object being created or terminated
-      will be passed in to this argument.
-
-      For example, to create a method to handle a session data object
-      onStart event which preopulates the session data object with a
-      DateTime object, you might write an PythonScript named 'onStart'
-      which had a function parameter of "sdo" and a body of::
-         
-          sdo['date'] = context.ZopeTime()
-
-      If you set the path to this method as the onStart event, before
-      any application handles the new session data object, it will be
-      prepopulated with a key 'date' that has the value of a DateTime
-      object set to the current time.
-
-      To create a method to handle a session onEnd event which writes
-      a log message, you might write an External Method with the
-      following body::
-
-         from zLOG import LOG, WARNING
-         def onEnd(sdo):
-             logged_out = sdo.get('logged_out', None)
-             if logged_out is None:
-                 LOG('session end', WARNING,
-                     'session ended without user logging out!')
-
-      If you set the path to this method as the onEnd event, a message
-      will be logged if the 'logged_out' key is not found in the
-      session data object.
-
-      Note that for onEnd events, there *is no guarantee that the
-      onEnd event will be called in the context of the user who
-      originated the session!* Due to the
-      "expire-after-so-many-minutes-of-inavtivity" behavior of session
-      data containers, a session data object onEnd event initiated by
-      one user may be called while a completely different user is
-      visiting the application.  Your onEnd event method *should not*
-      naively make any assumptions about user state.  For example, the
-      result of the Zope call "getSecurityManager.getUser()" in an
-      onEnd session event method will almost surely *not* be the user
-      who originated the session.
-
-      The session data object onStart method will always be called in
-      the context of the user who starts the session.
-
-      For both onStart and onEnd events, it is almost always desirable
-      to set proxy roles on event methods to replace the roles granted
-      to the executing user when the method is called because the
-      executing user will likely not be the user for whom the session
-      data object was generated.  For more information about proxy
-      roles, see the "Users and Security" chapter of the Zope Book at
-      http://www.zope.org/Members/michel/ZB/.
-
-      For additional information about using session onEnd events in
-      combination with data object timeouts, see the section entitled
-      "Session Data Object Expiration Considerations" in the Concepts
-      and Caveats section of this document.
-
-  Operation/Administration
-
-    Session Data Object Expiration
-
-      Session data objects expire after the period between their last
-      access and "now" exceeds the timeout value provided to the
-      session data container which hold them.  No special action need
-      be taken to expire session data objects.![1]
-
-        ![1] See "Session Data Object Expiration Considerations" in the
-        Concepts and Caveats section below for details on session data
-        expiration.
-
-    Importing And Exporting Session Data Objects
-
-      In some circumstances, it is useful to be able to "export" all
-      the session data from a specific session data container in order
-      to "import" it to another.  This may be necessary when migrating
-      data between containers or when upgrading the session tracking
-      implementation to a more recent version.
-
-      You can export data from a session data container by visiting
-      its "Advanced" tab, and choosing "Export Session Data".  A file
-      will be written to the hard disk of the Zope server you're
-      talking to in the 'var' directory of the Zope instance named
-      "sessiondata.zexp".
-
-      To import exported session data, choose "Import Session Data"
-      from the Advanced tab of the session data container you're
-      migrating to.  The "sessiondata.zexp" file containing the
-      exported session data will be read from disk and placed into the
-      data container.
-
-      The contents of RAM-based (internal) session data containers
-      cannot be exported, and you may not import session data into an
-      internal session data container.
-
-  Concepts and Caveats
-
-    Session Id (Non-)Expiration
-
-      Unlike many other sessioning implementations, core session
-      tracking session tokens (ids) do not actually themselves expire.
-      They persist for as long as their conveyance mechanism allows.
-      For example, a session token will last for as long as the session
-      token cookie persists on the client, or for as long as someone
-      uses a bookmarked URL with a session token in it.  The same id
-      will be obtained by a session id manager on every visit by that
-      client to a site - potentially indefinitely depending on which
-      conveyance mechanisms you use and your configuration for cookie
-      persistence.  It may be useful to think of a Zope session id as
-      a "browser id" for this reason.
-
-      In lieu of exipry of session ids, the session data container
-      which holds session data objects implements a policy for data
-      object expiration.  If asked for a session data object related
-      to a particular session id which has been expired by a session
-      data container, a session data manager will a return a new
-      session data object.
-
-    Session Data Object Expiration Considerations
-
-      Because Zope has no scheduling facility, the sessioning
-      machinery depends on the continual exercising of itself to
-      expire session data objects.  If the sessioning machinery is not
-      exercised continually, it's possible that session data
-      objects will stick around longer than the time specified by
-      their data container timeout value.  For example:
-
-        - User A exercises application machinery that generates a
-        session data object.  It is inserted into a session data
-        container which advertises a 20-minute timeout.
-
-        - User A "leaves" the site.
-
-        - 40 minutes go by with no visitors to the site.
-
-        - User B visits 60 minutes after User A first generated his
-        session data object, and exercises app code which hands out
-        session data objects.  *User A's session is expired at this
-        point, 40 minutes "late".*
-
-      As shown, the time between a session's onStart and onEnd is not
-      by any means *guaranteed* to be anywhere close to the amount of
-      time represented by the timeout value of its session data
-      container.  It's possible that in future releases of
-      CoreSessionTracking, a scheduling facility will address this
-      issue, but for now the timeout value of the data container
-      should only be considered a "target" value.
-
-      Additionally, even when continually exercised, the sessioning
-      machinery has a built in error potential of roughly 20% with
-      respect to expiration of session data objects to reduce resource
-      requirements.  This means, for example, if a session data
-      container timeout is set to 20 minutes, data objects added to it
-      may expire anywhere between 16 and 24 minutes after they are
-      last accessed.  This error potential can currently only be
-      changed by modifying the source code of the sessioning
-      machinery.
-
-    Sessioning and Transactions
-
-      The existing session data container implementations interact
-      with Zope's transaction system.  If a transaction is aborted,
-      the changes made to session data objects during the transaction
-      will be rolled back.
-
-    Acquisition-Wrapped Objects
-
-      The sessioning machinery unwraps acquisition-wrapped objects
-      before storing them during a session_data_object.set or
-      session_data_object.__setitem__ operation.  Practically, this
-      means you can safely pass acquisition-wrapped objects in to the
-      sessioning machinery (for example, a DTML Document obtained via
-      traversal) as values within a session data object.  The stored
-      reference will be to the bare unwrapped object. (new in 0.9)
-
-    Mutable Data Stored Within Session Data Objects
-
-      If you mutate an object stored as a value within a session data
-      object, you'll need to notify the sessioning machinery that the
-      object has changed by calling 'set' or '__setitem__' on the
-      session data object with the new object value.  For example::
-
-         session = self.session_data_mgr.getSessionData()
-         foo = {}
-         foo['before'] = 1
-         session.set('foo', foo)
-
-	 # mutate the dictionary
-
-         foo['after'] = 1
-
-	 # performing session.get('foo') 10 minutes from now will likely
-         # return a dict with only 'before' within!
-
-      You'll need to treat mutable objects immutably, instead.  Here's
-      an example that makes the intent of the last example work by
-      doing so::
-
-         session = self.session_data_mgr.getSessionData()
-         foo = {}
-         foo['before'] = 1
-         session.set('foo', foo)
-
-	 # mutate the dictionary
-         foo['after'] = 1
-
-	 # tickle the persistence machinery
-	 session.set('foo', foo)
-
-      An easy-to-remember rule for manipulating data objects in
-      session storage: always explicitly place an object back into
-      session storage whenever you change it.  For further reference,
-      see the "Persistent Components" chapter of the Zope Developer's
-      Guide at http://www.zope.org/Documentation/ZDG.
-
-    Session Data Object Keys
-
-      A session data object has essentially the same restrictions as a
-      Python dictionary.  Keys within a session data object must be
-      hashable (strings, tuples, and other immutable basic Python
-      types; or instances which have a __hash__ method).  This is a
-      requirement of all Python objects that are to be used as keys to
-      a dictionary.  For more information, see the associated Python
-      documentation at
-      http://www.python.org/doc/current/ref/types.html (Mappings ->
-      Dictionaries).
-
-    In-Memory Session Data Container RAM Utilization
-
-      Each session data object which is added to an "internal"
-      (RAM-based) session data container will consume at least 2K of
-      RAM.
-
-    Mounted Database-Based Session Data Container/Internal Session
-    Data Container Caveats
-
-      Persistent objects which have references to other persistent
-      objects in the same database cannot be committed into a mounted
-      database because the ZODB does not currently handle
-      cross-database references.
-
-      "Internal" (RAM-based) session data containers are currently
-      implemented as objects within (automatically) mounted ZODB
-      databases.  For this reason, they are equivalent in operation to
-      external session data containers which are placed in a manually
-      mounted database.
-
-      If you use an internal session data container or an external
-      session data container that is accessed via a "mounted"
-      database, you cannot store persistent object instances which
-      have already been stored in the "main" database as keys or
-      values in a session data object.  If you try to do so, it is
-      likely that an 'InvalidObjectReference' exception will be raised
-      by the ZODB when the transaction involving the object attempts
-      to commit.  As a result, the transaction will fail and the
-      session data object (and other objects touched in the same
-      transaction) will fail to be committed to storage.
-
-      If your "main" ZODB database is backed by a nonundoing storage,
-      you can avoid this condition by storing session data objects in
-      an external data container instantiated within the "main" ZODB
-      database.  If this is not an option, you should ensure that
-      objects you store as values or keys in a session data object
-      held in a mounted session data container are instantiated "from
-      scratch" (via their constructors), as opposed to being "pulled
-      out" of the main ZODB.
-
-    Conflict Errors
-
-      This session tracking software stores all session state in
-      Zope's ZODB.  The ZODB uses an optimistic concurrency strategy
-      to maintain transactional integrity for simultaneous writes.
-      This means that if two objects in the ZODB are changed at the
-      same time by two different connections (site visitors) that a
-      "ConflictError" will be raised.  Zope retries requests that
-      raise a ConflictError at most 3 times.  If your site is
-      extremely busy, you may notice ConflictErrors in the Zope debug
-      log (or they may be printed to the console from which you run
-      Zope).  An example of one of these errors is as follows::
-
-       2001-01-16T04:26:58 INFO(0) Z2 CONFLICT Competing writes at, /getData
-       Traceback (innermost last):
-       File /zope/lib/python/ZPublisher/Publish.py, line 175, in publish
-       File /zope/lib/python/Zope/__init__.py, line 235, in commit
-       File /zope/lib/python/ZODB/Transaction.py, line 251, in commit
-       File /zope/lib/python/ZODB/Connection.py, line 268, in commit
-       ConflictError: '\000\000\000\000\000\000\002/'
-
-      Errors like this in your debug log (or console if you've not
-      redirected debug logging to a file) are normal to an extent.  If
-      your site is undergoing heavy load, you can expect to see a
-      ConflictError perhaps every 20 to 30 seconds.  The requests
-      which experience conflict errors will be retried automatically
-      by Zope, and the end user should *never* see one.  Generally,
-      session data objects attempt to provide application-level
-      conflict resolution to reduce the limitations imposed by
-      conflict errors NOTE: to take advantage of this feature, you
-      must be running Zope 2.3.1 or better, and you must be using it
-      with a storage such as FileStorage or SessionStorage which
-      supports application-level conflict resolution.
-
-  Zope Versions and Sessioning
-
-      Zope Versions are not particularly useful in combination with
-      sessioning.  Particularly, if you change the properties of a
-      session data manager or session id manager while working in a
-      Version on a "production" site, it may cause the sessioning
-      machinery to stop working for unversioned visitors to the site
-      due to the "locking" nature of versions.  To work around this
-      problem, do not lock any sessioning-related objects while in a
-      Version.  Alternately, do not use Versions.
-
-  Extending The Session Tracking Product
-
-    Implementing Alternate Session Data Managers and Data Containers
-
-      Alternate session data managers and data containers (perhaps
-      using a SQL database as a persistence mechanism) may be
-      implemented if they adhere to the interfaces outlined in the
-      SessioningInterfaces.py documentation which ships with this
-      software.
-
-  Bug Reports and Feature Requests
-
-    Please use the CoreSessionTracking Discussion Wiki page at
-    http://dev.zope.org/Wikis/DevSite/Projects/CoreSessionTracking/FrontPage
-    or send email to zope@zope.org (the Zope general mail list).
+Transient Object Documentation
+
+  This is the documentation to the Transience product.
+
+  Transient Object Overview
+
+    A transient object persists, but for a limited period of time.
+    To facilitate persistence of items for a limited duration, the
+    TransientObjectContainer provides a container which stores
+    TransientObjects.  A TransientObject is dictionary-like; it 
+    accepts string keys only.  The TransientObjectContainer 
+    maintains a time-out mechanism to flush out expired entries.
+    The container also has a notification mechanism whereby it can
+    notify a script or method that an object has been added or removed
+    from the container.
+
+  Adding a TransientObjectContainer
+
+    id
+
+      The ID of the TransientObjectContainer is the container's name.
+
+    title (optional)
+
+      The title of the object.
+
+    timeout_minutes
+
+      The minimum number of minutes that objects in the container will
+      persist for.  Objects in the container are passively deleted, so
+      they may not be deleted exactly after timeout_minutes elapses.
+
+    addNotification (optional)
+
+      The name of an object to receive notifications when objects are
+      added to the TransientObjectContainer.  See NotificationTargets.
+
+    delNotification (optional)
+
+      The name of an object to receive notifications when objects are
+      deleted from the TransientObjectContainer.  See NotificationTargets.
+  
+  Implementation
+
+   TransientObjectContainer
+
+    Interfaces:
+
+      - ItemWithId
+
+      - StringKeyedHomogenousItemContainer
+
+      - TransientItemContainer
+
+    Constructors
+
+      manage_addTransientObjectContainer(id, title="", timeoutMinutes=20,
+		addNotification=None, delNotification=None)
+	
+	Creates a TransientObjectContainer with the given id and title, which
+	will contain objects for at least timeout_minutes.  If addNotification
+	or delNotification are provided, they are callables (either bound
+	methods, functions, or names of objects in Zope).
+
+    Interface ItemWithID
+
+      getId()
+
+	Returns the ID of the TransientObjectContainer.
+
+    Interface StringKeyedHomogenousItemContainer
+
+      new(name)
+
+        Creates a new TransientObject in the container with the specified
+	name.  Will raise a KeyError if the name already exists in the
+	container.  Returns the TransientObject.
+
+      new_ _or_ _existing(name)
+
+        Returns a TransientObject from the container with the given name,
+	creating it if it does not exist.
+
+    Interface TransientItemContainer
+
+      setTimeoutMinutes(timeoutMinutes)
+
+        Sets the timeout of all objects in the container to timeoutMinutes.
+	If this time is not the same as the prior timeoutMinutes, all items
+	in the container are flushed.
+
+      getTimeoutMinutes(timeoutMinutes)
+
+        Returns the number of minutes after which objects in the container
+	will expire.
+
+      getAddNotificationTarget()
+
+        Returns the notification target to be informed when new objects
+	are added to the container.  The result may be a string, which
+	indicates a path to an object in Zope, or may be a function or
+	bound method.
+
+      setAddNotificationTarget(target)
+
+        Sets the notification target to be informed when new objects are
+	added to the container.  The target may be a string, which indicates
+	a path to an object in Zope, or may be a function or bound method.
+	See NotifcationTargets for more information.
+      
+      getDelNotificationTarget()
+
+        Returns the notification target to be informed when objects
+	are deleted from the container.  The result may be a string, which
+	indicates a path to an object in Zope, or may be a function or
+	bound method.
+
+      setDelNotificationTarget(target)
+
+        Sets the notification target to be informed when objects are
+	delted from the container.  The target may be a string, which indicates
+	a path to an object in Zope, or may be a function or bound method.
+	See NotifcationTargets for more information.
+
+   Notification Targets
+
+   	A NotificationTarget is a callable (a bound method, function, or
+	named Zope object) which is called when an object is added or removed
+	from a TransientObjectContainer. 
+
+	NotificationTargets are called with two arguments, the first being
+	the item being added or removed from the container, and the second
+	being the container itself.  Within Zope, the container will be
+	acquisition wrapped, allowing the container to be used as a context
+	to reference other Zope objects.
+
+   TransientObject
+
+    Interfaces:
+
+      - ItemWithId
+
+      - Transient
+
+      - DictionaryLike
+
+      - TTWDictionary
+
+      - ImmutablyValuedMappingOfPickleableObjects
+
+    Constructors
+
+      Transient Objects are constructed by their TransientObjectContainer's
+      new or new_or_existing methods.
+
+
+    Interface ItemWithID
+
+      getId()
+
+      	Returns the ID of the TransientObject.
+
+    Interface Transient
+
+      invalidate()
+
+      	Marks the object as being invalidated -- this causes the parent to
+	call the delete notification for the object.
+
+      getLastAccessed()
+
+        Returns a last accessed timestamp.
+
+      setLastAccessed()
+
+        Updates the object's last accessed timestamp, subject to a timer
+	granularity (currently 30 seconds).  Thus, multiple rapid calls to
+	setLastAccessed() will only update the timestamp once.
+
+      getCreated()
+
+        Returns the object's creation timestamp.  This timestamp is set
+	when the object is created in its container.
+
+    Interface DictionaryLike
+
+      keys()
+
+      	Returns a list of keys in the object.
+
+      values()
+
+        Returns a list of values in the object.
+
+      items()
+
+        Returns a list of (key, value) pairs for all keys in the object.
+
+      get(key, default=None)
+
+        Returns the value corresponding to the given key.  If the key does
+	not exist, and a default is specified, the default is returned,
+	otherwise a KeyError will be raised.
+
+      has_key(key)
+
+        Tests to see if the given key exists in the TransientObject. If the
+	key exists, a 1 will be returned, otherwise a 0 will be returned.
+
+      clear()
+
+        Removes all values from the TransientObject.
+
+      update(dict)
+
+        Updates the TransientObject from the dictionary provided, copying
+	keys and values from the dictionary into the TransientObject.
+
+    Interface TTWDictionary
+
+      set(key, value)
+
+      	Sets the value for a specific key in the TransientObject.
+
+      delete(key)
+
+        Removes a key/value pair from the TransientObject.
+
+    Interface ImmutablyValuedMappingOfPickleableObjects
+
+      _&nbsp;&nbsp;_setitem_&nbsp;&nbsp;_(key, value)
+
+        Sets the value for a specific key in the TransientObject.  If
+	the key or value is acquisition wrapped, it is unwrapped prior
+	to storage.
+
+      _&nbsp;&nbsp;_getitem_&nbsp;&nbsp;_(key)
+
+        Retrieves the value for the given key in the TransientObject.
+
+      _&nbsp;&nbsp;_delitem_&nbsp;&nbsp;_(key)
+
+        Deletes the given key from the TransientObject.
