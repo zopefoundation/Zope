@@ -82,8 +82,8 @@
 # file.
 # 
 ##############################################################################
-'''$Id: DT_Util.py,v 1.49 1998/12/04 20:15:28 jim Exp $''' 
-__version__='$Revision: 1.49 $'[11:-2]
+'''$Id: DT_Util.py,v 1.50 1999/01/06 22:27:36 jim Exp $''' 
+__version__='$Revision: 1.50 $'[11:-2]
 
 import regex, string, math, os
 from string import strip, join, atoi, lower, split, find
@@ -187,6 +187,16 @@ for name in ('None', 'abs', 'chr', 'divmod', 'float', 'hash', 'hex', 'int',
 d['string']=string
 d['math']=math
 d['whrandom']=whrandom
+
+try:
+    import random
+    d['random']=random
+except: pass
+
+try:
+    import DateTime
+    d['DateTime']=DateTime.DateTime
+except: pass
 
 def test(self, *args):
     l=len(args)
