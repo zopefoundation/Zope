@@ -2,7 +2,7 @@
 <HEAD>
 <TITLE>Properties</TITLE>
 </HEAD>
-<BODY>
+<BODY BGCOLOR="#FFFFFF" LINK="#000099" VLINK="#555555">
 <H2>Properties</H2>
 <P>
 <!--#if propertyMap-->
