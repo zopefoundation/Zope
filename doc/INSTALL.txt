@@ -72,15 +72,15 @@ Creating a Zope Instance Home
   Once you've performed the install step, to begin actually using
   Zope, you will need to create an "instance home", which is a
   directory that contains configuration and data for a Zope server
-  process.  The instance home is created using the 'mkzopeinstance'
+  process.  The instance home is created using the 'mkzopeinstance.py'
   script::
 
-    /where/to/install/zope/bin/mkzopeinstance /location/of/zope/instance
+    /where/to/install/zope/bin/mkzopeinstance.py /location/of/zope/instance
 
   You will be asked to provide a user name and password for an
-  administrator's account during the 'mkzopeinstance'.  Command-line
+  administrator's account during 'mkzopeinstance'.  Command-line
   options to 'mkzopeinstance' are available, and can be investigated
-  by running 'mkzopeinstance --help'.
+  by running 'mkzopeinstance.py --help'.
 
 Starting Zope
 

@@ -57,7 +57,7 @@ install: build
 	   --home="${PREFIX}" ${BUILD_FLAGS} ${INSTALL_FLAGS}
 	@echo
 	@echo Zope binaries installed successfully.
-	@echo Now run \'${PREFIX}/bin/mkzopeinstance\'
+	@echo Now run \'${PREFIX}/bin/mkzopeinstance.py\'
 
 # uninstall:   Uninstall a software home.
 uninstall:
@@ -81,7 +81,7 @@ inplace: install
 # instance:    Do an inplace build and create an instance home in the resulting
 #              software home.
 instance: inplace
-	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance" ${MKZ_FLAGS} "${BASE_DIR}" 
+	${PYTHON} "${BASE_DIR}/bin/mkzopeinstance.py" ${MKZ_FLAGS} "${BASE_DIR}" 
 
 # uninstance:  Remove the instance files made by make instance (w/ prejudice)
 uninstance:

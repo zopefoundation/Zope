@@ -671,8 +671,8 @@ setup(
         ['ZConfig/tests/input', ['ZConfig/tests/input/*']],
         ['ZConfig/tests/library/thing', ['ZConfig/tests/library/thing/*']],
         ['ZConfig/tests/library/widget', ['ZConfig/tests/library/widget/*']],
+        ['ZConfig/scripts', ['ZConfig/scripts/zconfig']],
         ],
-    scripts=["ZConfig/scripts/zconfig"],
     )
 
 # Other top-level packages (XXX should these be broken out at all?)
@@ -1092,7 +1092,7 @@ distutils.core.setup(
     author=AUTHOR,
 
     data_files=installed_data_files,
-    scripts=["utilities/mkzeoinstance", "utilities/mkzopeinstance"],
+    scripts=["utilities/mkzeoinstance.py", "utilities/mkzopeinstance.py"],
     distclass=ZopeDistribution,
     )
 

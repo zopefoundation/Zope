@@ -55,7 +55,7 @@ install: build
            --prefix="$(PREFIX)" $(BUILD_FLAGS) $(INSTALL_FLAGS)
 	@ echo.
 	@ echo Zope binaries installed successfully.
-	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance'
+	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance.py'
 
 # uninstall:   Uninstall a software home.
 uninstall:
