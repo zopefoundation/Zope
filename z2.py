@@ -482,8 +482,6 @@ try:
             FCGI_PORT=v
         elif o=='-M': DETAILED_LOG_FILE=v
 
-    __builtins__.__debug__=DEBUG
-
 except SystemExit: sys.exit(0)
 except:
     print __doc__ % vars()
