@@ -1,6 +1,6 @@
 """Image object that is stored in a file"""
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 from string import rfind
 from Globals import package_home
@@ -20,7 +20,7 @@ class ImageFile:
     def index_html(self, RESPONSE):
 	"""Default document"""
 	RESPONSE['content-type']=self.content_type
-	f=open(self.path)
+	f=open(self.path,'rb')
 	data=f.read()
 	f.close()
         return data
