@@ -13,10 +13,10 @@
 """
 Simple ZODB-based transient object implementation.
 
-$Id: TransientObject.py,v 1.4 2002/03/24 04:44:32 chrism Exp $
+$Id: TransientObject.py,v 1.5 2002/04/04 20:22:42 chrism Exp $
 """
 
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 from Persistence import Persistent
 from Acquisition import Implicit
@@ -160,6 +160,7 @@ class TransientObject(Persistent, Implicit):
 
     set = __setitem__
     __guarded_setitem__ = __setitem__
+    __guarded_delitem__ = __delitem__
     delete = __delitem__
 
     # -----------------------------------------------------------------
