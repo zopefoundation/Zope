@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.1 $'[11:-2]
+__version__='$Revision: 1.2 $'[11:-2]
 
 import sha, binascii
 from string import upper
@@ -106,7 +106,7 @@ def pw_validate(reference, attempt):
         result = reference[5:] == attempt
     elif upper(reference[:7]) == '{CRYPT}' and crypt is not None:
         #if crypt is None, it's not compiled in and everything will fail
-        attempt = crypt(attempt, reference[7:9])
+        attempt = crypt.crypt(attempt, reference[7:9])
         result = reference[7:] == attempt
     else:
         result = reference == attempt
