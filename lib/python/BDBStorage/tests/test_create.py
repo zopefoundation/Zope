@@ -17,8 +17,10 @@
 import os
 import time
 import unittest
-import BerkeleyTestBase
+
 from bsddb3Storage.BerkeleyBase import BerkeleyConfig
+from bsddb3Storage.tests import BerkeleyTestBase
+from bsddb3Storage.Full import Full
 
 
 
@@ -85,12 +87,30 @@ class FullOpenCloseTest(BerkeleyTestBase.FullTestBase):
 
 
 
+class OpenRecoveryTest(BerkeleyTestBase.FullTestBase):
+    def _mk_dbhome(self, dir):
+        self._dir = dir
+
+    def checkOpenWithBogusConfig(self):
+        class C: pass
+        c = C()
+        # This instance won't have the necessary attributes, so the creation
+        # will fail.  We want to be sure that everything gets cleaned up
+        # enough to fix that and create a proper storage.
+        self.assertRaises(AttributeError, Full, self._dir, config=c)
+        c = BerkeleyConfig()
+        s = Full(self._dir, config=c)
+        s.close()
+
+
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(MinimalCreateTest, 'check'))
     suite.addTest(unittest.makeSuite(FullCreateTest, 'check'))
     suite.addTest(unittest.makeSuite(FullOpenExistingTest, 'check'))
     suite.addTest(unittest.makeSuite(FullOpenCloseTest, 'check'))
+    suite.addTest(unittest.makeSuite(OpenRecoveryTest, 'check'))
     return suite
 
 
