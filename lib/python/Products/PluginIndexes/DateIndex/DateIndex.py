@@ -11,11 +11,14 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.14 2004/01/29 21:22:08 shane Exp $
+"""$Id: DateIndex.py,v 1.15 2004/02/06 15:20:17 poster Exp $
 """
 
+from datetime import tzinfo, timedelta
 from types import StringType, FloatType, IntType
 from DateTime.DateTime import DateTime
+from OFS.PropertyManager import PropertyManager
+from datetime import date, datetime
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
@@ -29,8 +32,48 @@ import time
 
 _marker = []
 
+###############################################################################
+# copied from Python 2.3 datetime.tzinfo docs
+# A class capturing the platform's idea of local time.
 
-class DateIndex(UnIndex):
+ZERO = timedelta(0)
+STDOFFSET = timedelta(seconds = -time.timezone)
+if time.daylight:
+    DSTOFFSET = timedelta(seconds = -time.altzone)
+else:
+    DSTOFFSET = STDOFFSET
+
+DSTDIFF = DSTOFFSET - STDOFFSET
+
+class LocalTimezone(tzinfo):
+
+    def utcoffset(self, dt):
+        if self._isdst(dt):
+            return DSTOFFSET
+        else:
+            return STDOFFSET
+
+    def dst(self, dt):
+        if self._isdst(dt):
+            return DSTDIFF
+        else:
+            return ZERO
+
+    def tzname(self, dt):
+        return time.tzname[self._isdst(dt)]
+
+    def _isdst(self, dt):
+        tt = (dt.year, dt.month, dt.day,
+              dt.hour, dt.minute, dt.second,
+              dt.weekday(), 0, -1)
+        stamp = time.mktime(tt)
+        tt = time.localtime(stamp)
+        return tt.tm_isdst > 0
+
+Local = LocalTimezone()
+###############################################################################
+
+class DateIndex(UnIndex, PropertyManager):
     """ Index for Dates """
 
     __implements__ = (PluggableIndex.UniqueValueIndex,
@@ -38,13 +81,18 @@ class DateIndex(UnIndex):
 
     meta_type = 'DateIndex'
     query_options = ['query', 'range']
+    
+    index_naive_time_as_local = True # False means index as UTC
+    _properties=({'id':'index_naive_time_as_local', 
+                  'type':'boolean',
+                  'mode':'w'},)
 
     manage = manage_main = DTMLFile( 'dtml/manageDateIndex', globals() )
     manage_main._setName( 'manage_main' )
     manage_options = ( { 'label' : 'Settings'
                        , 'action' : 'manage_main'
                        },
-                     )
+                     ) + PropertyManager.manage_options
 
     def clear( self ):
         """ Complete reset """
@@ -179,6 +227,13 @@ class DateIndex(UnIndex):
         elif type( value ) is StringType and value:
             t_obj = DateTime( value ).toZone('UTC')
             t_tup = t_obj.parts()
+        elif type( value ) is date:
+            t_tup = value.timetuple()
+        elif type( value ) is datetime:
+            if self.index_naive_time_as_local and value.tzinfo is None:
+                value = value.replace(tzinfo=Local)
+            # else if tzinfo is None, naive time interpreted as UTC
+            t_tup = value.utctimetuple()
         else:
             return default
 

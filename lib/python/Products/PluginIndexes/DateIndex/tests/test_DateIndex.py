@@ -15,7 +15,8 @@ import Zope
 import unittest
 
 from DateTime import DateTime
-from Products.PluginIndexes.DateIndex.DateIndex import DateIndex
+from datetime import date, datetime, tzinfo, timedelta
+from Products.PluginIndexes.DateIndex.DateIndex import DateIndex, Local
 from types import IntType, FloatType
 import time
 
@@ -35,6 +36,66 @@ class Dummy:
     def __str__(self):
         return "<Dummy %s, date %s>" % (self._name, str(self._date))
 
+###############################################################################
+# excerpted from the Python module docs
+###############################################################################
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
+def first_sunday_on_or_after(dt):
+    days_to_go = 6 - dt.weekday()
+    if days_to_go:
+        dt += timedelta(days_to_go)
+    return dt
+
+# In the US, DST starts at 2am (standard time) on the first Sunday in April.
+DSTSTART = datetime(1, 4, 1, 2)
+# and ends at 2am (DST time; 1am standard time) on the last Sunday of Oct.
+# which is the first Sunday on or after Oct 25.
+DSTEND = datetime(1, 10, 25, 1)
+
+class USTimeZone(tzinfo):
+
+    def __init__(self, hours, reprname, stdname, dstname):
+        self.stdoffset = timedelta(hours=hours)
+        self.reprname = reprname
+        self.stdname = stdname
+        self.dstname = dstname
+
+    def __repr__(self):
+        return self.reprname
+
+    def tzname(self, dt):
+        if self.dst(dt):
+            return self.dstname
+        else:
+            return self.stdname
+
+    def utcoffset(self, dt):
+        return self.stdoffset + self.dst(dt)
+
+    def dst(self, dt):
+        if dt is None or dt.tzinfo is None:
+            # An exception may be sensible here, in one or both cases.
+            # It depends on how you want to treat them.  The default
+            # fromutc() implementation (called by the default astimezone()
+            # implementation) passes a datetime with dt.tzinfo is self.
+            return ZERO
+        assert dt.tzinfo is self
+
+        # Find first Sunday in April & the last in October.
+        start = first_sunday_on_or_after(DSTSTART.replace(year=dt.year))
+        end = first_sunday_on_or_after(DSTEND.replace(year=dt.year))
+
+        # Can't compare naive to aware objects, so strip the timezone from
+        # dt first.
+        if start <= dt.replace(tzinfo=None) < end:
+            return HOUR
+        else:
+            return ZERO
+
+Eastern  = USTimeZone(-5, "Eastern",  "EST", "EDT")
+###############################################################################
+
 class DI_Tests(unittest.TestCase):
     def setUp(self):
         self._values = (
@@ -46,6 +107,10 @@ class DI_Tests(unittest.TestCase):
             (5, Dummy('e', DateTime('2062-05-08 15:16:17'))), # 1018883325
             (6, Dummy('f', 1072742620.0)),                    # 1073545923
             (7, Dummy('f', 1072742900)),                      # 1073545928
+            (8, Dummy('g', date(2034,2,5))),                   # 1073599200
+            (9, Dummy('h', datetime(2034,2,5,15,17,5))),       # (1073600117UTC)
+            (10, Dummy('i', datetime(2034,2,5,10,17,5, 
+                                     tzinfo=Eastern))),        # 1073600117
         )
         self._index = DateIndex('date')
         self._noop_req  = {'bar': 123}
@@ -76,11 +141,17 @@ class DI_Tests(unittest.TestCase):
         for k, v in expectedValues:
             self.failUnless(k in result)
 
-    def _convert(self, date):
-        if type(date) in (FloatType, IntType):
-            yr, mo, dy, hr, mn = time.gmtime(date)[:5]
+    def _convert(self, dt):
+        if type(dt) in (FloatType, IntType):
+            yr, mo, dy, hr, mn = time.gmtime(dt)[:5]
+        elif type(dt) is date:
+            yr, mo, dy, hr, mn = dt.timetuple()[:5]
+        elif type(dt) is datetime:
+            if dt.tzinfo is None: # default behavior of index
+                dt = dt.replace(tzinfo=Local)
+            yr, mo, dy, hr, mn = dt.utctimetuple()[:5]
         else:
-            yr, mo, dy, hr, mn = date.toZone('UTC').parts()[:5]
+            yr, mo, dy, hr, mn = dt.toZone('UTC').parts()[:5]
         return (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
 
     def test_empty(self):
@@ -128,11 +199,25 @@ class DI_Tests(unittest.TestCase):
         self.failUnless(index._apply_index(self._noop_req) is None)
 
         self._checkApply(self._request, values[1:2])
-        self._checkApply(self._min_req, values[3:6])
-        self._checkApply(self._max_req, values[1:4] + values[6:])
-        self._checkApply(self._range_req, values[2:6] + values[6:] )
+        self._checkApply(self._min_req, values[3:6] + values[8:])
+        self._checkApply(self._max_req, values[1:4] + values[6:8])
+        self._checkApply(self._range_req, values[2:] )
         self._checkApply(self._float_req, [values[6]] )
         self._checkApply(self._int_req, [values[7]] )
+    
+    def test_naive_convert_to_utc(self):
+        values = self._values
+        index = self._index
+        index.index_naive_time_as_local = False
+        self._populateIndex()
+        for k, v in values[9:]: 
+            # assert that the timezone is effectively UTC for item 9,
+            # and still correct for item 10
+            yr, mo, dy, hr, mn = v.date().utctimetuple()[:5]
+            val = (((yr * 12 + mo) * 31 + dy) * 24 + hr) * 60 + mn
+            self.failUnlessEqual(self._index.getEntryForObject(k), val)
+            
+        
 
 def test_suite():
     suite = unittest.TestSuite()
