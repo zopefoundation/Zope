@@ -56,16 +56,17 @@ setup_info = {}
 def setup(name=None, author=None, cmdclass=None, **kwargs):
     setup_info = sys.modules[__name__].setup_info
     for keyword in kwargs.keys():
-	if not setup_info.has_key(keyword):
-	    setup_info[keyword] = []	
-	setup_info[keyword] += kwargs[keyword]
+        if not setup_info.has_key(keyword):
+            setup_info[keyword] = []
+        setup_info[keyword] += kwargs[keyword]
 
 # Override install_data to install into module directories, and to support
 # globbing on data_files.
 
 from types import StringType
+from distutils.command.install import install
 from distutils.command.install_data import install_data
-from distutils.errors import DistutilsFileError
+from distutils.errors import DistutilsFileError, DistutilsOptionError
 from distutils.util import convert_path
 from glob import glob
 
@@ -114,6 +115,37 @@ class install_data(install_data):
                         if os.path.isfile(g):
                             (out, _) = self.copy_file(g, dir)
                             self.outfiles.append(out)
+
+class install(install):
+    def finalize_unix (self):
+        if self.install_base is not None or self.install_platbase is not None:
+            if ((self.install_lib is None and
+                 self.install_purelib is None and
+                 self.install_platlib is None) or
+                self.install_headers is None or
+                self.install_scripts is None or
+                self.install_data is None):
+                raise DistutilsOptionError, \
+                      "install-base or install-platbase supplied, but " + \
+                      "installation scheme is incomplete"
+            return
+
+        if self.home is not None:
+            self.install_base = self.install_platbase = self.home
+            self.select_scheme("unix_home")
+        else:
+            if self.prefix is None:
+                if self.exec_prefix is not None:
+                    raise DistutilsOptionError, \
+                          "must not supply exec-prefix without prefix"
+                raise DistutilsOptionError, "must supply installation path"
+            else:
+                if self.exec_prefix is None:
+                    self.exec_prefix = self.prefix
+
+            self.install_base = self.prefix
+            self.install_platbase = self.exec_prefix
+            self.select_scheme("unix_prefix")
 
 AUTHOR = 'Zope Corporation and Contributors'
 ZOPE_ROOT = os.path.abspath(os.getcwd())
@@ -714,11 +746,11 @@ setup(
     author=AUTHOR,
 
     packages=['Products.PluginIndexes',
-	      'Products.PluginIndexes.DateIndex',
-	      'Products.PluginIndexes.DateIndex.tests',
-	      'Products.PluginIndexes.DateRangeIndex',
-	      'Products.PluginIndexes.DateRangeIndex.tests',
-	      'Products.PluginIndexes.FieldIndex',
+              'Products.PluginIndexes.DateIndex',
+              'Products.PluginIndexes.DateIndex.tests',
+              'Products.PluginIndexes.DateRangeIndex',
+              'Products.PluginIndexes.DateRangeIndex.tests',
+              'Products.PluginIndexes.FieldIndex',
               'Products.PluginIndexes.FieldIndex.tests',
               'Products.PluginIndexes.KeywordIndex',
               'Products.PluginIndexes.KeywordIndex.tests',
@@ -737,11 +769,11 @@ setup(
 
     data_files=[['Products/PluginIndexes', ['Products/PluginIndexes/*.txt']],
                 ['Products/PluginIndexes/DateIndex',
-		    ['Products/PluginIndexes/DateIndex/README.txt']],
+                    ['Products/PluginIndexes/DateIndex/README.txt']],
                 ['Products/PluginIndexes/DateIndex/dtml',
                     ['Products/PluginIndexes/DateIndex/dtml/*']],
                 ['Products/PluginIndexes/DateRangeIndex',
-		    ['Products/PluginIndexes/DateRangeIndex/README.txt']],
+                    ['Products/PluginIndexes/DateRangeIndex/README.txt']],
                 ['Products/PluginIndexes/DateRangeIndex/dtml',
                     ['Products/PluginIndexes/DateRangeIndex/dtml/*']],
                 ['Products/PluginIndexes/FieldIndex/dtml',
@@ -883,7 +915,7 @@ setup(
               'Products.Transience.tests'],
 
     data_files=[['Products/Transience', ['Products/Transience/*.stx']],
-		['Products/Transience/dtml', ['Products/Transience/dtml/*']],
+                ['Products/Transience/dtml', ['Products/Transience/dtml/*']],
                 ['Products/Transience/help',
                     ['Products/Transience/help/*.stx']],
                 ['Products/Transience/www', ['Products/Transience/www/*']]],
@@ -912,19 +944,19 @@ setup(
     author=AUTHOR,
 
     ext_modules=[
-	Extension(name='Products.ZCTextIndex.stopper',
-	          sources=['Products/ZCTextIndex/stopper.c']),
-	Extension(name='Products.ZCTextIndex.okascore',
-		  sources=['Products/ZCTextIndex/okascore.c'])],
+        Extension(name='Products.ZCTextIndex.stopper',
+                  sources=['Products/ZCTextIndex/stopper.c']),
+        Extension(name='Products.ZCTextIndex.okascore',
+                  sources=['Products/ZCTextIndex/okascore.c'])],
 
     packages=['Products.ZCTextIndex', 'Products.ZCTextIndex.tests'],
 
     data_files=[['Products/ZCTextIndex', ['Products/ZCTextIndex/README.txt']],
-		['Products/ZCTextIndex/dtml', ['Products/ZCTextIndex/dtml/*']],
-		['Products/ZCTextIndex/help', ['Products/ZCTextIndex/help/*']],
-		['Products/ZCTextIndex/tests',
-		    ['Products/ZCTextIndex/tests/python.txt']],
-		['Products/ZCTextIndex/www', ['Products/ZCTextIndex/www/*']]],
+                ['Products/ZCTextIndex/dtml', ['Products/ZCTextIndex/dtml/*']],
+                ['Products/ZCTextIndex/help', ['Products/ZCTextIndex/help/*']],
+                ['Products/ZCTextIndex/tests',
+                    ['Products/ZCTextIndex/tests/python.txt']],
+                ['Products/ZCTextIndex/www', ['Products/ZCTextIndex/www/*']]],
     cmdclass={'install_data': install_data}
 )
 
@@ -988,13 +1020,14 @@ distutils_setup(
     headers=setup_info.get('headers', []),
     ext_modules=setup_info.get('ext_modules', []),
 
-    cmdclass={'install_data': install_data}
+    cmdclass={'install': install, 'install_data': install_data}
 )
 distutils_setup(
     name='Zope',
     author=AUTHOR,
 
-    py_modules=setup_info.get('py_modules', [])
+    py_modules=setup_info.get('py_modules', []),
+    cmdclass={'install': install, 'install_data': install_data}
 )
 setup_info = {}
 
@@ -1071,11 +1104,12 @@ distutils_setup(
     headers=setup_info.get('headers', []),
     ext_modules=setup_info.get('ext_modules', []),
 
-    cmdclass={'install_data': install_data}
+    cmdclass={'install': install, 'install_data': install_data}
 )
 distutils_setup(
     name='Zope',
     author=AUTHOR,
 
-    py_modules=setup_info.get('py_modules', [])
+    py_modules=setup_info.get('py_modules', []),
+    cmdclass={'install': install, 'install_data': install_data}
 )
