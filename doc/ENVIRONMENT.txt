@@ -13,14 +13,13 @@ Zope installation
 
         See also: SOFTWARE_HOME
 
+    SOFTWARE_HOME
 
-    SOFTWARE_HOME 
-        
-        The SOFTWARE_HOME usually keeps the directory name of the 
+        The SOFTWARE_HOME usually keeps the directory name of the
         Zope core installation.
 
         Order of product initialization:
-            
+
             All Products are initialized in ascending alphabetical order by
             product name, regardless of whether an INSTANCE_HOME exists.
             If two products with the same name exist in both SOFTWARE_HOME
@@ -30,12 +29,10 @@ Zope installation
 
         See also: INSTANCE_HOME
 
-
     ZOPE_HOME
 
         ZOPE_HOME is the root of the Zope software, where the ZServer
         package, z2.py, and the default import directory may be found.
-
 
     FORCE_PRODUCT_LOAD
 
@@ -60,6 +57,7 @@ Zope installation
         nonempty string          set            Products are loaded
         empty string             set            Products are not loaded
 
+
 Profiling
 
     PROFILE_PUBLISHER
@@ -75,12 +73,10 @@ SiteAccess
 
         If set, all SiteRoots are suppressed (used by SiteAccess products).
 
-
     SUPPRESS_SITEROOT
 
         If set, all site access rules are suppressed (used by SiteAccess
         products).
-
 
 
 ZEO
@@ -88,11 +84,10 @@ ZEO
     CLIENT_HOME
 
         CLIENT_HOME allows ZEO clients to easily keep distinct pid and log
-        files. This is currently an *experimental* feature. 
- 
+        files. This is currently an *experimental* feature.
 
     ZEO_CLIENT
-        
+
         If you want a persistent client cache which retains cache contents
         across ClientStorage restarts, you need to define the environment
         variable, ZEO_CLIENT, to a unique name for the client.  This is
@@ -100,14 +95,17 @@ ZEO
         the client cache is stored in temporary files which are removed
         when the ClientStorage shuts down.
 
-Debugging and Logging
+    ZEO_CACHE_TRACE
 
-    EVENT_LOG_FORMAT or STUPID_LOG_FORMAT
-        
-        Set this variable if you like to customize the output format of
-        Zope event logger.  EVENT_LOG_FORMAT is the preferred envvar
-        but STUPID_LOG_FORMAT also works.
-        
+        To enable cache tracing, set this environment variable to the
+        basename of a file to which the ZEO client process can write.
+        ZEO will append a hyphen and the storage name to the filename,
+        to distinguish different storages.  If the file doesn't exist,
+        the ZEO will try to create it.  See lib/python/ZEO/README.txt
+        for more information.
+
+
+Debugging and Logging
 
     EVENT_LOG_FILE="path" or STUPID_LOG_FILE="path"
 
@@ -119,13 +117,11 @@ Debugging and Logging
 
         See also: LOGGING.txt
 
-
     EVENT_LOG_SEVERITY <number> or STUPID_LOG_SEVERITY <number>
 
         If set, Zope logs only messages whose severity is level is
         higher than the specified one.  EVENT_LOG_SEVERITY is the
         preferred envvar but STUPID_LOG_SEVERITY also works.
-
 
     ZSYSLOG="/dev/log"
 
@@ -135,7 +131,6 @@ Debugging and Logging
 
         See also: LOGGING.txt
 
-
     ZSYSLOG_FACILITY="facilityname"
 
         Setting this environment variable will cause Zope to use the syslog
@@ -144,7 +139,6 @@ Debugging and Logging
         work on UNIX.
 
         See also: LOGGING.txt
-
 
     ZSYSLOG_SERVER="machine.name:port"
 
@@ -166,11 +160,11 @@ Debugging and Logging
 
     Z_DEBUG_MODE      "yes" or "no"
     BOBO_DEBUG_MODE   "yes" or "no"  (obsolete)
-     
+
         Run Zope in debug mode if set. Same as -D options (z2.py)
 
 
-Misc.
+Miscellaneous
 
     Z_REALM       "your realm"
     BOBO_REALM    "your realm" (obsolete)
@@ -180,12 +174,11 @@ Misc.
         the username/password requester
 
 
-Security related 
+Security related
 
     NO_SECURITY
 
        Unknown. Used by TAL
-
 
     ZOPE_SECURITY_POLICY
 
@@ -194,18 +187,15 @@ Security related
         performance reasons Zope will use the cAccessControl module (Zope
         2.5+)
 
-
     ZSP_OWNEROUS_SKIP
 
         If set, will cause the Zope Security Policy to skip checks relating
 	to ownership, for servers on which ownership is not important.
 
-
     ZSP_AUTHENTICATED_SKIP
 
         If set, will cause the Zope Security Policy to skip checks relating
 	to authentication, for servers which serve only anonymous content.
-
 
     DISALLOW_LOCAL_PRODUCTS
 
@@ -218,8 +208,7 @@ ZODB related
 
         If this variable is set, it should be set to an integer number of
         bytes.  Additions to the database are not allowed if the database
-        size exceeds the quota. 
-
+        size exceeds the quota.
 
     ZOPE_READ_ONLY
 
@@ -229,19 +218,20 @@ ZODB related
         time given.  Note that changes made by another process after the
         database has been opened are not visible.
 
+
 Session related
 
     ZSESSION_ADD_NOTIFY
 
     	An optional full Zope path name of a callable object to be set as
         the "script to call on object addition" of the session_data
-        transient object container created in temp_folder at startup. 
+        transient object container created in temp_folder at startup.
 
     ZSESSION_DEL_NOTIFY
 
     	An optional full Zope path name of a callable object to be set as
         the "script to call on object deletion" of the session_data
-        transient object container created in temp_folder at startup. 
+        transient object container created in temp_folder at startup.
 
     ZSESSION_TIMEOUT_MINS
 
@@ -256,24 +246,26 @@ Session related
 
 WebDAV
 
-    WEBDAV_SOURCE_PORT_CLIENTS 
+    WEBDAV_SOURCE_PORT_CLIENTS
 
         Setting this variable enables the retrieval of the document source
         through the standard HTTP port instead of the WebDAV port. The value
         of this variable is a regular expression that is matched against
-        the user-agent string of the client. 
+        the user-agent string of the client.
 
         Example::
-  
+
             WEBDAV_SOURCE_PORT_CLIENTS="cadaver.*"   enables retrieval
-            of the document source for the Cadaver WebDAV client                
+            of the document source for the Cadaver WebDAV client
+
 
 Structured Text
 
     STX_DEFAULT_LEVEL
 
        Set this variable to change the default level for <Hx> elements.
-       The default level is 3.  
+       The default level is 3.
+
 
 DTML
 
@@ -287,16 +279,14 @@ DTML
         HTML quoted when interpolated with a <dtml-var> or &dtml-;
         construct.
 
-Esoteric 
+
+Esoteric
 
     Z_MAX_STACK_SIZE
 
         This variable allows you to customize the size of the Zope stack
         used by the SecurityManager (default 100).
 
-
     FORCE_PRODUCT_RELOAD
 
         unknown (Shane's Refresh product ???)
-
-
