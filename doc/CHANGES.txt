@@ -6,6 +6,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #573: ZTUtils Iterator didn't catch AttributeError.
+
       - Deprecated hasRole alias in User.py failed to return result.
 
       - Collector #580: TALES evaluateBoolean() was squishing 'default'.
