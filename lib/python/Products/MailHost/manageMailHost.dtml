@@ -21,13 +21,13 @@
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Host</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpHost" SIZE="40" VALUE="<dtml-var smtpHost html_quote>">
+    <INPUT TYPE="TEXT" NAME="smtp_host" SIZE="40" VALUE="<dtml-var smtp_host html_quote>">
   </TD>
 </TR>
 <TR VALIGN="TOP">
   <TH ALIGN="LEFT">SMTP Port</TH>
   <TD ALIGN="LEFT">
-    <INPUT TYPE="TEXT" NAME="smtpPort:int" SIZE="4" VALUE="<dtml-var smtpPort html_quote>">
+    <INPUT TYPE="TEXT" NAME="smtp_port:int" SIZE="4" VALUE="<dtml-var smtp_port html_quote>">
   </TD>
 </TR>
 
