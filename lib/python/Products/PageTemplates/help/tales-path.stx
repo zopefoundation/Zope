@@ -24,6 +24,7 @@ TALES Path expressions
       nothing
       here/some-file 2001_02.html.tar.gz/foo
       root/to/branch | default
+      request/name | string:Anonymous Coward
 
     When a path expression is evaluated, Zope attempts to traverse the
     path, from left to right, until it succeeds or runs out of paths
@@ -39,6 +40,12 @@ TALES Path expressions
 
     If a traversal step fails, evaluation immediately proceeds to the next
     path.  If there are no further paths, an error results.
+
+    The expression in a series of paths seperated by vertical bars can
+    be any TALES expression. For example, 'request/name |
+    string:Anonymous Coward'. This is useful chiefly for providing
+    default values such as strings and numbers which are not
+    expressable as path expressions.
 
     If no path is given the result is *nothing*.
 

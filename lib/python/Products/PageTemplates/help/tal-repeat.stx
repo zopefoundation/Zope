@@ -110,11 +110,16 @@ repeat: Repeat an element
         </tr>
       </table>
 
-    Objects (already sorted by meta-type) in groups by meta-type::
+    Insert objects. Seperates groups of objects by meta-type by
+    drawing a rule between them::
 
-      <table border="1">
-        <tr tal:repeat="object objects">
-          <td><span tal:condition="repeat/object/first/meta_type"
-                    tal:replace="object/meta_type">Meta Type</span></td>
-        </tr>
-      </table>
+
+      <div tal:repeat="object objects">
+        <h2 tal:condition="repeat/object/first/meta_type"
+	    tal:content="object/meta_type">Meta Type</h2>
+        <p tal:content="object/getId">Object ID</p>
+        <hr tal:condition="repeat/object/last/meta_type" />
+      </div>
+
+    Note, the objects in the above example should already be sorted by
+    meta-type.
