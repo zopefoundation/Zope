@@ -8,9 +8,14 @@ class ExpressionTests(unittest.TestCase):
     def testCompile(self):
         '''Test expression compilation'''
         e = Expressions.getEngine()
-        e.compile('x')
-        e.compile('path:x')
-        e.compile('x/y')
+        for p in ('x', 'x/y', 'x/y/z'):
+            e.compile(p)
+            for m in range(2 ** 3):
+                mods = ''
+                if m & 1: mods = 'if'
+                if m & 2: mods = mods + ' exists'
+                if m & 4: mods = mods + ' nocall'
+                e.compile('(%s) %s' % (mods, p))
         e.compile('string:Fred')
         e.compile('string:A$B')
         e.compile('string:a ${x/y} b ${y/z} c')
