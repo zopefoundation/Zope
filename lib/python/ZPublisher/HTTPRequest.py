@@ -11,7 +11,7 @@
 # 
 ##############################################################################
 
-__version__='$Revision: 1.72 $'[11:-2]
+__version__='$Revision: 1.73 $'[11:-2]
 
 import re, sys, os,  urllib, time, random, cgi, codecs
 from BaseRequest import BaseRequest
@@ -491,35 +491,27 @@ class HTTPRequest(BaseRequest):
                     if mapping_object.has_key(key):
                         if flags&RECORDS:
                             #Get the list and the last record
-                            #in the list
+                            #in the list. reclist is mutable.
                             reclist = mapping_object[key]
                             x = reclist[-1]
                             if not hasattr(x,attr):
                                 #If the attribute does not
                                 #exist, setit
                                 if flags&SEQUENCE: item=[item]
-                                reclist.remove(x)
                                 setattr(x,attr,item)
-                                reclist.append(x)
-                                mapping_object[key] = reclist
                             else:
                                 if flags&SEQUENCE:
                                     # If the attribute is a
                                     # sequence, append the item
                                     # to the existing attribute
-                                    reclist.remove(x)
                                     y = getattr(x, attr)
                                     y.append(item)
                                     setattr(x, attr, y)
-                                    reclist.append(x)
-                                    mapping_object[key] = reclist
                                 else:
                                     # Create a new record and add
                                     # it to the list
                                     n=record()
                                     setattr(n,attr,item)
-                                    reclist.append(n)
-                                    mapping_object[key]=reclist
                         elif flags&RECORD:
                             b=mapping_object[key]
                             if flags&SEQUENCE:
