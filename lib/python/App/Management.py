@@ -85,15 +85,16 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.48 2001/06/08 18:15:24 evan Exp $"""
+$Id: Management.py,v 1.49 2001/09/04 16:46:23 shane Exp $"""
 
-__version__='$Revision: 1.48 $'[11:-2]
+__version__='$Revision: 1.49 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
 from Globals import DTMLFile, HTMLFile
 from string import split, join, find
 from AccessControl import getSecurityManager
+from Acquisition import aq_base
 
 class Tabs(ExtensionClass.Base):
     """Mix-in provides management folder tab support."""
@@ -140,6 +141,11 @@ class Tabs(ExtensionClass.Base):
     def manage_workspace(self, REQUEST):
         """Dispatch to first interface in manage_options
         """
+        from AccessControl.User import nobody
+        if aq_base(getSecurityManager().getUser()) is aq_base(nobody):
+            # No authentication credentials presented.
+            raise 'Unauthorized', (
+                'You are not authorized to view this object.')
         options=self.filtered_manage_options(REQUEST)
         try:
             m=options[0]['action']
