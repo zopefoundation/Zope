@@ -87,6 +87,14 @@
 """
 import os, sys, string
 
+try: import thread
+except:
+    print "*******************************************"
+    print "Error: "
+    print "Zope requires Python thread support!"
+    print "*******************************************"
+    sys.exit(1)
+
 cd=os.chdir
 
 def do(command, picky=1):
