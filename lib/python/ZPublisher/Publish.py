@@ -491,7 +491,7 @@ Publishing a module using Fast CGI
     o Configure the Fast CGI-enabled web server to execute this
       file.
 
-$Id: Publish.py,v 1.52 1997/09/11 21:27:45 jim Exp $"""
+$Id: Publish.py,v 1.53 1997/09/23 10:32:57 jim Exp $"""
 #'
 #     Copyright 
 #
@@ -546,7 +546,7 @@ $Id: Publish.py,v 1.52 1997/09/11 21:27:45 jim Exp $"""
 # See end of file for change log.
 #
 ##########################################################################
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 
 def main():
@@ -841,7 +841,8 @@ class ModulePublisher:
 	try:  # Try to bind the top-level object to the request
 	    object=object.__of__(RequestContainer(REQUEST=self.request))
 	except: pass
-    
+
+	steps=[]
 	while path:
 	    entry_name,path=path[0], path[1:]
 	    URL="%s/%s" % (URL,quote(entry_name))
@@ -881,6 +882,8 @@ class ModulePublisher:
 		# Promote subobject to object
 		parents.append(object)
 		object=subobject
+
+		steps.append(entry_name)
     
 		# Check for method:
 		if (not path and hasattr(object,method) and
@@ -896,6 +899,7 @@ class ModulePublisher:
 
 	# Do authorization checks
 	user=None
+	i=0
 	if roles is not None:
 
 	    last_parent_index=len(parents)
@@ -943,7 +947,10 @@ class ModulePublisher:
 
 		break
 
-	if user is not None: request['AUTHENTICATED_USER']=user
+	steps=join(steps[:-i],'/')
+	if user is not None:
+	    request['AUTHENTICATED_USER']=user
+	    request['AUTHENTICATION_PATH']=steps
 	del parents[0]
    
 	# Attempt to start a transaction:
@@ -951,10 +958,7 @@ class ModulePublisher:
 	except: transaction=None
 	if transaction is not None:
 	    info="\t" + request['PATH_INFO']
-	    try:
-		u=request['AUTHENTICATED_USER']
-		try: info=u+info
-		except: pass
+	    try: info=("%s %s" % (steps,request['AUTHENTICATED_USER']))+info
 	    except: pass
 	    transaction.begin(info)
 
@@ -1461,6 +1465,10 @@ def publish_module(module_name,
 
 #
 # $Log: Publish.py,v $
+# Revision 1.53  1997/09/23 10:32:57  jim
+# Added machinery to compute AUTHENTICATION_PATH, which is used, with
+# AUTHENTICATED_USER to label transactions.
+#
 # Revision 1.52  1997/09/11 21:27:45  jim
 # *** empty log message ***
 #
