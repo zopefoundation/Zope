@@ -6,6 +6,9 @@ Zope Changes
 
     Bugs Fixed
 
+      - New "Transience" (session data storage) implementation.
+        More reliable under high load.
+
       - Collector #402: PythonScript recompile utility should only be 
         usable by Manager to prevent abuse.
 
