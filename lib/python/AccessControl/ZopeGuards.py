@@ -11,13 +11,14 @@
 #
 ##############################################################################
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import sys
 
 import RestrictedPython
 from RestrictedPython.Guards import safe_builtins, full_write_guard
 from RestrictedPython.Utilities import utility_builtins
+from RestrictedPython.Eval import RestrictionCapableEval
 from SecurityManagement import getSecurityManager
 from SecurityInfo import secureModule
 from SimpleObjectPolicies import Containers, ContainerAssertions
@@ -406,3 +407,5 @@ _safe_globals = {'__builtins__': safe_builtins,
                 }
 
 get_safe_globals = _safe_globals.copy
+
+RestrictionCapableEval.globals.update(_safe_globals)

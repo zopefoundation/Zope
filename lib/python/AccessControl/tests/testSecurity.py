@@ -13,8 +13,8 @@
 """Document Template Tests
 """
 
-__rcs_id__='$Id: testSecurity.py,v 1.11 2003/01/27 22:55:27 gvanrossum Exp $'
-__version__='$Revision: 1.11 $'[11:-2]
+__rcs_id__='$Id: testSecurity.py,v 1.12 2004/01/16 18:18:51 tseaver Exp $'
+__version__='$Revision: 1.12 $'[11:-2]
 
 import os, sys, unittest
 
@@ -77,6 +77,33 @@ class SecurityTests (DTMLTests):
             y = 10
         res = html(c=c)
         assert res == '10', res
+
+    def testNewDTMLBuiltins(self):
+
+        NEW_BUILTINS_TEMPLATE = """
+        <dtml-var expr="_.min([1,2])">
+        <dtml-var expr="_.max([2,3])">
+        <dtml-var expr="_.sum([1,2,3,4])">
+        <dtml-var expr="[x for x in (1, 2, 3)]">
+        """
+
+        EXPECTED = ['1', '3', '10', '[1, 2, 3]']
+
+        #
+        #   XXX:    these expressions seem like they should work, with
+        #           the following ExPECTED, but they raise Unauthorized
+        #           on the 'next' name.
+        #
+        #<dtml-var expr="_.iter([1,2,3]).next()">
+        #<dtml-var expr="_.enumerate([1,2,3]).next()">
+        #
+        #EXPECTED = ['1', '3', '10', '1', '(0, 1)']
+
+        template = self.doc_class(NEW_BUILTINS_TEMPLATE)
+        res = template()
+        lines = filter(None, [x.strip() for x in res.split('\n')])
+
+        self.assertEqual(lines, EXPECTED)
 
     # Note: we need more tests!
 
