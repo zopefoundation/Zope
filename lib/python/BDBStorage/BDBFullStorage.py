@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.54 $'.split()[-2:][0]
+__version__ = '$Revision: 1.55 $'.split()[-2:][0]
 
 import sys
 import time
@@ -33,7 +33,6 @@ from ZODB.utils import p64, U64
 from ZODB.referencesf import referencesf
 from ZODB.TimeStamp import TimeStamp
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
-import zLOG
 
 # BerkeleyBase.BerkeleyBase class provides some common functionality for both
 # the Full and Minimal implementations.  It in turn inherits from
@@ -295,24 +294,6 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             self.__ltid = rec[0]
         else:
             self.__ltid = ZERO
-
-    def close(self):
-        # Set this flag before acquiring the lock so we don't block waiting
-        # for the autopack thread to give up the lock.
-        self._stop = True
-        self._lock_acquire()
-        try:
-            # We must stop the autopacker and checkpointing threads first
-            # before closing any tables.  I'm not sure about the join()
-            # timeout, but I'd be surprised if any particular iteration of a
-            # pack-related loops take longer than a few seconds.
-            if self._autopacker:
-                zLOG.LOG('Full storage', zLOG.INFO, 'stopping autopack thread')
-                self._autopacker.stop()
-                self._autopacker.join(30)
-            BerkeleyBase.close(self)
-        finally:
-            self._lock_release()
 
     def _doabort(self, txn, tid):
         # First clean up the oid indexed (or oid+tid indexed) tables.
@@ -1350,7 +1331,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # to pass that around to the helper methods, so just assert they're
         # the same.
         assert zreferencesf == referencesf
-        zLOG.LOG('Full storage', zLOG.INFO, 'classic pack started')
+        self.log('classic pack started')
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
@@ -1362,7 +1343,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             self._dopack(t)
         finally:
             self._packlock.release()
-        zLOG.LOG('Full storage', zLOG.INFO, 'classic pack finished')
+        self.log('classic pack finished')
 
     def _dopack(self, t, gc=True):
         # t is a TimeTime, or time float, convert this to a TimeStamp object,
@@ -1420,9 +1401,8 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         Autopacking is different than classic pack() in that it doesn't do
         cyclic garbage detection unless the gc flag is True.
         """
-        zLOG.LOG('Full storage', zLOG.INFO,
-                 'autopack started (packtime: %s, gc? %s)'
-                 % (t, gc and 'yes' or 'no'))
+        self.log('autopack started (packtime: %s, gc? %s)', t,
+                 (gc and 'yes' or 'no'))
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
@@ -1434,7 +1414,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             self._dopack(t, gc)
         finally:
             self._packlock.release()
-        zLOG.LOG('Full storage', zLOG.INFO, 'autopack finished')
+        self.log('autopack finished')
 
     def _collect_revs(self, txn, packtid):
         ct = co = None

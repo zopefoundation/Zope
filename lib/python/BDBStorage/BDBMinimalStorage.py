@@ -15,7 +15,7 @@
 """Berkeley storage without undo or versioning.
 """
 
-__version__ = '$Revision: 1.17 $'[-2:][0]
+__version__ = '$Revision: 1.18 $'[-2:][0]
 
 import time
 import threading
@@ -29,7 +29,6 @@ from ZODB import POSException
 from ZODB.utils import U64, p64
 from ZODB.referencesf import referencesf
 from ZODB.ConflictResolution import ConflictResolvingStorage, ResolvedSerial
-import zLOG
 
 # BerkeleyBase class provides some common functionality for BerkeleyDB-based
 # storages.  It in turn inherits from BaseStorage which itself provides some
@@ -137,25 +136,6 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
             config = self._config
             self._autopacker = _Autopack(self, config.frequency)
             self._autopacker.start()
-
-    def close(self):
-        # Set this flag before acquiring the lock so we don't block waiting
-        # for the autopack thread to give up the lock.
-        self._stop = True
-        self._lock_acquire()
-        try:
-            # We must stop the autopacker and checkpointing threads first
-            # before closing any tables.  I'm not sure about the join()
-            # timeout, but I'd be surprised if any particular iteration of a
-            # pack-related loops take longer than a few seconds.
-            if self._autopacker:
-                zLOG.LOG('Minimal storage', zLOG.INFO,
-                         'stopping autopack thread')
-                self._autopacker.stop()
-                self._autopacker.join(30)
-            BerkeleyBase.close(self)
-        finally:
-            self._lock_release()
 
     def _doabort(self, txn, tid):
         co = cs = None
@@ -377,7 +357,7 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
         # to pass that around to the helper methods, so just assert they're
         # the same.
         assert zreferencesf == referencesf
-        zLOG.LOG('Minimal storage', zLOG.INFO, 'classic pack started')
+        self.log('classic pack started')
         # A simple wrapper around the bulk of packing, but which acquires a
         # lock that prevents multiple packs from running at the same time.
         self._packlock.acquire()
@@ -392,7 +372,7 @@ class Minimal(BerkeleyBase, ConflictResolvingStorage):
             self._dopack()
         finally:
             self._packlock.release()
-        zLOG.LOG('Minimal storage', zLOG.INFO, 'classic pack finished')
+        self.log('classic pack finished')
 
     def _dopack(self):
         # Do a mark and sweep for garbage collection.  Calculate the set of

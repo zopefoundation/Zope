@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.25 $'.split()[-2:][0]
+__version__ = '$Revision: 1.26 $'.split()[-2:][0]
 
 import os
 import time
@@ -301,16 +301,36 @@ class BerkeleyBase(BaseStorage):
         # performed by the methods in the derived storage class.
         pass
 
+    def log(self, msg, *args):
+        zLOG.LOG(self.__class__.__name__, zLOG.INFO, msg % args)
+
     def close(self):
-        """Close the storage by closing the databases it uses and by closing
-        its environment.
+        """Close the storage.
+
+        All background threads are stopped and joined first, then all the
+        tables are closed, and finally the environment is force checkpointed
+        and closed too.
         """
-        # Close all the tables
+        # Set this flag before acquiring the lock so we don't block waiting
+        # for the autopack thread to give up the lock.
+        self._stop = True
+        self._lock_acquire()
+        try:
+            self._doclose()
+        finally:
+            self._lock_release()
+
+    def _doclose(self):
+        # Stop the autopacker thread
+        if self._autopacker:
+            self.log('stopping autopacking thread')
+            self._autopacker.stop()
+            self._autopacker.join(SLEEP_TIME * 2)
         if self._checkpointer:
-            zLOG.LOG('Full storage', zLOG.INFO,
-                     'stopping checkpointing thread')
+            self.log('stopping checkpointing thread')
             self._checkpointer.stop()
             self._checkpointer.join(SLEEP_TIME * 2)
+        # Close all the tables
         for d in self._tables:
             d.close()
         # As recommended by Keith Bostic @ Sleepycat, we need to do
@@ -426,18 +446,18 @@ class _WorkThread(threading.Thread):
 
     def run(self):
         name = self._name
-        zLOG.LOG('Berkeley storage', zLOG.INFO, '%s thread started' % name)
+        self._storage.log('%s thread started', name)
         while not self._stop:
             now = time.time()
             if now > self._nextcheck:
-                zLOG.LOG('Berkeley storage', zLOG.INFO, 'running %s' % name)
+                self._storage.log('running %s', name)
                 self._dowork(now)
                 self._nextcheck = now + self._interval
             # Now we sleep for a little while before we check again.  Sleep
             # for the minimum of self._interval and SLEEP_TIME so as to be as
             # responsive as possible to .stop() calls.
             time.sleep(min(self._interval, SLEEP_TIME))
-        zLOG.LOG('Berkeley storage', zLOG.INFO, '%s thread finished' % name)
+        self._storage.log('%s thread finished', name)
 
     def stop(self):
         self._stop = True
