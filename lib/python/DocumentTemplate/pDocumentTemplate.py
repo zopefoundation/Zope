@@ -85,8 +85,8 @@
 __doc__='''Python implementations of document template some features
 
 
-$Id: pDocumentTemplate.py,v 1.26 2000/12/19 16:20:44 evan Exp $'''
-__version__='$Revision: 1.26 $'[11:-2]
+$Id: pDocumentTemplate.py,v 1.27 2001/01/16 18:08:27 evan Exp $'''
+__version__='$Revision: 1.27 $'[11:-2]
 
 import string, sys, types
 from string import join
@@ -167,7 +167,10 @@ class MultiMapping:
 
     def push(self,d): self.dicts.insert(0,d)
 
-    def pop(self,n=1): del self.dicts[:n]
+    def pop(self, n=1):
+        r = self.dicts[-1]
+        del self.dicts[:n]
+        return r
 
     def keys(self):
         kz = []
