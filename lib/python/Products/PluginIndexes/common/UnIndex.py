@@ -13,14 +13,17 @@
 
 """Simple column indices"""
 
-__version__='$Revision: 1.19 $'[11:-2]
+__version__='$Revision: 1.20 $'[11:-2]
+
+import sys
+from cgi import escape
+from types import StringType, ListType, IntType, TupleType
 
 from Globals import Persistent
 from Acquisition import Implicit
 import BTree
 import IOBTree
 from zLOG import LOG, ERROR
-from types import StringType, ListType, IntType, TupleType
 
 from BTrees.OOBTree import OOBTree, OOSet
 from BTrees.IOBTree import IOBTree
@@ -29,8 +32,8 @@ from OFS.SimpleItem import SimpleItem
 import BTrees.Length
 
 from Products.PluginIndexes.common.util import parseIndexRequest
-import sys
-from cgi import escape
+from Products.PluginIndexes.common import safe_callable
+
 
 _marker = []
 
@@ -279,7 +282,7 @@ class UnIndex(Persistent, Implicit, SimpleItem):
         # we'll do so.
         try:
             datum = getattr(obj, attr)
-            if callable(datum):
+            if safe_callable(datum):
                 datum = datum()
         except AttributeError:
             datum = _marker

@@ -11,6 +11,8 @@
 #
 ##############################################################################
 
+from types import StringType, UnicodeType
+
 from zLOG import LOG, ERROR
 from BTrees.OOBTree import OOSet, difference
 
@@ -18,6 +20,7 @@ from Globals import DTMLFile
 from Products.PluginIndexes import PluggableIndex
 
 from Products.PluginIndexes.common.UnIndex import UnIndex
+from Products.PluginIndexes.common import safe_callable
 
 class KeywordIndex(UnIndex):
 
@@ -87,17 +90,21 @@ class KeywordIndex(UnIndex):
 
     def _get_object_keywords(self, obj, attr):
         newKeywords = getattr(obj, attr, ())
-        if callable(newKeywords):
+        if safe_callable(newKeywords):
             newKeywords = newKeywords()
-        if hasattr(newKeywords,'capitalize'): # is it string-like ?
-            newKeywords = [newKeywords]
+        if (isinstance(newKeywords, StringType)
+            or isinstance(newKeywords, UnicodeType)): #Python 2.1 compat isinstance
+            return (newKeywords,)
         else:
-            # Uniqueify keywords
             unique = {}
-            for k in newKeywords:
-                unique[k] = None
-            newKeywords = unique.keys()
-        return newKeywords
+            try:
+                for k in newKeywords:
+                    unique[k] = None
+            except TypeError:
+                # Not a sequence
+                return (newKeywords,)
+            else:
+                return unique.keys()
 
     def unindex_objectKeywords(self, documentId, keywords):
         """ carefully unindex the object with integer id 'documentId'"""
@@ -125,7 +132,7 @@ class KeywordIndex(UnIndex):
 
 manage_addKeywordIndexForm = DTMLFile('dtml/addKeywordIndex', globals())
 
-def manage_addKeywordIndex(self, id, extra=None, 
+def manage_addKeywordIndex(self, id, extra=None,
         REQUEST=None, RESPONSE=None, URL3=None):
     """Add a keyword index"""
     return self.manage_addIndex(id, 'KeywordIndex', extra=extra, \

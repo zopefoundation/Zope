@@ -14,7 +14,7 @@
 """Text Index
 
 """
-__version__ = '$Revision: 1.35 $'[11:-2]
+__version__ = '$Revision: 1.36 $'[11:-2]
 
 
 import  re
@@ -31,6 +31,7 @@ from BTrees.IOBTree import IOBTree
 from BTrees.OIBTree import OIBTree
 from BTrees.IIBTree import IIBTree, IIBucket, IISet, IITreeSet
 from BTrees.IIBTree import difference, weightedIntersection
+from Products.PluginIndexes.common import safe_callable
 
 from Lexicon import Lexicon
 
@@ -282,7 +283,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
         # index is this attribute.  If it smells callable, call it.
         try:
             source = getattr(obj, self.id)
-            if callable(source):
+            if safe_callable(source):
                 source = source()
 
             if not isinstance(source, UnicodeType):
@@ -295,7 +296,7 @@ class TextIndex(Persistent, Implicit, SimpleItem):
 
         try:
             encoding = getattr(obj, self.id+'_encoding')
-            if callable(encoding ):
+            if safe_callable(encoding ):
                 encoding = str(encoding())
             else:
                 encoding = str(encoding)

@@ -11,12 +11,15 @@
 #
 ##############################################################################
 
-"""$Id: DateRangeIndex.py,v 1.5 2002/12/05 21:35:52 caseman Exp $
+"""$Id: DateRangeIndex.py,v 1.6 2003/06/17 19:01:06 sidnei Exp $
 """
+
+import os
 
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.common import safe_callable
 from OFS.SimpleItem import SimpleItem
 
 from BTrees.IOBTree import IOBTree
@@ -25,7 +28,6 @@ from BTrees.IIBTree import IISet, IITreeSet, union, intersection, multiunion
 from Globals import package_home, DTMLFile, InitializeClass
 from AccessControl import ClassSecurityInfo
 from DateTime.DateTime import DateTime
-import os
 
 _dtmldir = os.path.join( package_home( globals() ), 'dtml' )
 
@@ -158,12 +160,12 @@ class DateRangeIndex(UnIndex):
             return 0
 
         since = getattr( obj, self._since_field, None )
-        if callable( since ):
+        if safe_callable( since ):
             since = since()
         since = self._convertDateTime( since )
 
         until = getattr( obj, self._until_field, None )
-        if callable( until ):
+        if safe_callable( until ):
             until = until()
         until = self._convertDateTime( until )
 

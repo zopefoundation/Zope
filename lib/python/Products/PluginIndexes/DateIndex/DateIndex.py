@@ -11,14 +11,15 @@
 #
 ##############################################################################
 
-"""$Id: DateIndex.py,v 1.11 2003/06/08 08:56:28 andreasjung Exp $
+"""$Id: DateIndex.py,v 1.12 2003/06/17 19:01:06 sidnei Exp $
 """
 
+from types import StringType, FloatType, IntType
 from DateTime.DateTime import DateTime
 from Products.PluginIndexes import PluggableIndex
 from Products.PluginIndexes.common.UnIndex import UnIndex
 from Products.PluginIndexes.common.util import parseIndexRequest
-from types import StringType, FloatType, IntType
+from Products.PluginIndexes.common import safe_callable
 
 from Globals import DTMLFile
 from BTrees.IOBTree import IOBTree
@@ -63,7 +64,7 @@ class DateIndex(UnIndex):
 
         try:
             date_attr = getattr( obj, self.id )
-            if callable( date_attr ):
+            if safe_callable( date_attr ):
                 date_attr = date_attr()
 
             ConvertedDate = self._convert( value=date_attr, default=_marker )

@@ -30,6 +30,7 @@ from AccessControl.Permissions import manage_zcatalog_indexes, search_zcatalog
 from Products.PluginIndexes.common.PluggableIndex import \
      PluggableIndexInterface
 from Products.PluginIndexes.common.util import parseIndexRequest
+from Products.PluginIndexes.common import safe_callable
 
 from Products.ZCTextIndex.ILexicon import ILexicon
 from Products.ZCTextIndex.Lexicon import \
@@ -168,7 +169,7 @@ class ZCTextIndex(Persistent, Acquisition.Implicit, SimpleItem):
         text = getattr(obj, self._fieldname, None)
         if text is None:
             return 0
-        if callable(text):
+        if safe_callable(text):
             text = text()
         if text is None:
             return 0
