@@ -16,8 +16,8 @@ Aqueduct database adapters, etc.
 This module can also be used as a simple template for implementing new
 item types. 
 
-$Id: SimpleItem.py,v 1.24 1998/11/26 21:11:35 amos Exp $'''
-__version__='$Revision: 1.24 $'[11:-2]
+$Id: SimpleItem.py,v 1.25 1998/11/30 15:27:13 jeffrey Exp $'''
+__version__='$Revision: 1.25 $'[11:-2]
 
 import regex, sys, Globals, App.Management
 from DateTime import DateTime
@@ -83,7 +83,7 @@ class Item(CopySource, App.Management.Tabs):
 
     def tpValues(self):
 	"My sub-objects as used by the tree tag"
-	 return ()
+	return ()
 
     _manage_editedDialog=Globals.HTMLFile('editedDialog', globals())
     def manage_editedDialog(self, REQUEST, **args):
@@ -198,6 +198,9 @@ def pretty_tb(t,v,tb):
 ############################################################################## 
 #
 # $Log: SimpleItem.py,v $
+# Revision 1.25  1998/11/30 15:27:13  jeffrey
+# fixed Syntax error in tpValues
+#
 # Revision 1.24  1998/11/26 21:11:35  amos
 # Added more doc strings and converted some comments to doc strings.
 #
