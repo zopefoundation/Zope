@@ -25,7 +25,7 @@ from bsddb3 import db
 from ZODB import POSException
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.9 $
+# $Revision: 1.10 $
 __version__ = '0.1'
 
 
@@ -87,8 +87,8 @@ class BerkeleyBase(BaseStorage):
             # JF: unlinking might be too inefficient.  JH: might use mmap
             # files.  BAW: maybe just truncate the file, or write a length
             # into the headers and just zero out the length.
-##            self._commitlog.close(unlink=1)
-##            self._commitlog = None
+            self._commitlog.close(unlink=1)
+            self._commitlog = None
         
     def _setupDB(self, name, flags=0):
         """Open an individual database with the given flags.
