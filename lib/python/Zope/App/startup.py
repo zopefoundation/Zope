@@ -169,7 +169,8 @@ def zpublisher_exception_hook(published, REQUEST, t, v, traceback):
             error_log_url = log.raising((t, v, traceback))
 
         if (getattr(REQUEST.get('RESPONSE', None), '_error_format', '')
-            !='text/html'): raise
+            !='text/html'):
+            raise t, v, traceback
 
         if (published is None or published is app or
             type(published) is ListType):
