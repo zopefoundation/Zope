@@ -597,6 +597,17 @@ try:
             zh = WebDAVSrcHandler(MODULE, '', HTTP_ENV)
             hs.install_handler(zh)
 
+            # enable document retrieval of the document source on the 
+            # standard HTTP port
+
+            clients = os.environ.get('WEBDAV_SOURCE_PORT_CLIENTS')
+            if clients:
+                import re
+                sys.WEBDAV_SOURCE_PORT_CLIENTS = re.compile(clients).search
+            else:
+                sys.WEBDAV_SOURCE_PORT_CLIENTS = None
+
+
     # FTP Server
     if FTP_PORT:
         if type(FTP_PORT) is type(0): FTP_PORT=((IP_ADDRESS, FTP_PORT),)

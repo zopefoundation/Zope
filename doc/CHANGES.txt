@@ -23,6 +23,10 @@ Zope Changes
         to perform calculation of the week number based on the
         Julian calendar.
 
+      - WebDAV: the new environment variable WEBDAV_SOURCE_PORT_CLIENTS
+        enables retrieval of the document source for dedicated WebDAV 
+        clients (see ENVIRONMENT.txt for usage)
+
     Bugs:
 
       - Collector #32: Use difflib instead of ndiff

@@ -216,6 +216,21 @@ Session related
         The number of items to use as a "maximum number of subobjects"
         value of the "/temp_folder" session data transient object container.
 
+
+WebDAV
+
+    WEBDAV_SOURCE_PORT_CLIENTS 
+
+        Setting this variable enables the retrieval of the document source
+        through the standard HTTP port instead of the WebDAV port. The value
+        of this variable is a regular expression that is matched against
+        the user-agent string of the client. 
+
+        Example::
+  
+            WEBDAV_SOURCE_PORT_CLIENTS="cadaver.*"   enables retrieval
+            of the document source for the Cadaver WebDAV client                
+
 Esoteric 
 
     Z_MAX_STACK_SIZE

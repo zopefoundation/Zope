@@ -61,6 +61,7 @@ register_subsystem('ZServer HTTPServer')
 
 CONTENT_LENGTH  = re.compile('Content-Length: ([0-9]+)',re.I)
 CONNECTION      = re.compile('Connection: (.*)', re.I)
+USER_AGENT      = re.compile('User-Agent: (.*)', re.I)
 
 # maps request some headers to environment variables.
 # (those that don't start with 'HTTP_')
@@ -196,6 +197,31 @@ class zhttp_handler:
             env['QUERY_STRING'] = query
         env['GATEWAY_INTERFACE']='CGI/1.1'
         env['REMOTE_ADDR']=request.channel.addr[0]
+
+
+
+        # This is a really bad hack to support WebDAV
+        # clients accessing documents through GET
+        # on the HTTP port. We check if your WebDAV magic
+        # machinery is enabled and if the client is recognized
+        # as WebDAV client. If yes, we fake the environment
+        # to pretend the ZPublisher to have a WebDAV request.
+        # This sucks like hell but it works pretty fine ;-)
+
+        if env['REQUEST_METHOD']=='GET':
+            if sys.WEBDAV_SOURCE_PORT_CLIENTS:
+
+                agent = get_header(USER_AGENT,request.header)
+                
+                if sys.WEBDAV_SOURCE_PORT_CLIENTS(agent):
+
+                    env['WEBDAV_SOURCE_PORT'] = 1
+                    path_info  = env['PATH_INFO']
+                    path_info  = os.path.join(path_info,'manage_FTPget')
+                    path_info  = os.path.normpath(path_info)
+                    if os.sep != '/': path_info = path_info.replace(os.sep,'/')
+                    env['PATH_INFO'] = path_info
+
 
         # If we're using a resolving logger, try to get the
         # remote host from the resolver's cache.
