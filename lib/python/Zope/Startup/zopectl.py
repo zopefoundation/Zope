@@ -80,8 +80,9 @@ class ZopeCtlOptions(ZDOptions):
         ZDOptions.realize(self, *args, **kw)
         config = self.configroot
         self.directory = config.instancehome
+        self.clienthome = config.clienthome
         self.program = [os.path.join(self.directory, "bin", "runzope")]
-        self.sockname = os.path.join(config.clienthome, "zopectlsock")
+        self.sockname = os.path.join(self.clienthome, "zopectlsock")
         self.user = None
         self.python = sys.executable
         self.zdrun = os.path.join(os.path.dirname(zdaemon.__file__),
@@ -122,6 +123,41 @@ class ZopeCmd(ZDCmd):
         #(to indicate it's web-restartable)
         os.putenv('ZMANAGED', '1')
         ZDCmd.do_start(self, arg)
+
+    def get_startup_cmd(self, python, more):
+        cmdline = ( '%s -c "from Zope.Startup.options import ZopeOptions; '
+                    'from Zope.Startup import handlers as h; '
+                    'from App import config; '
+                    'opts=ZopeOptions(); '
+                    'opts.configfile=\'%s\'; '
+                    'opts.realize(); '
+                    'h.handleConfig(opts.configroot,opts.confighandlers);'
+                    'config.setConfiguration(opts.configroot); ' %
+                    (python, self.options.configfile)
+                    )
+        return cmdline + more + '\"'
+
+    def do_debug( self, arg ):
+        cmdline = self.get_startup_cmd(self.options.python + ' -i',
+                                       'import Zope; app=Zope.app()')
+        print ('Starting debugger (the name "app" is bound to the top-level '
+               'Zope object)')
+        os.system(cmdline)
+
+    def help_debug(self):
+        print "debug -- run the Zope debugger to inspect your database"
+        print "         manually using a Python interactive shell"
+
+    def do_run( self, arg ):
+        cmdline = self.get_startup_cmd(self.options.python,
+            'import Zope; app=Zope.app(); execfile(\'%s\')' % arg)
+        os.system(cmdline)
+
+    def help_run(self):
+        print "run <script> -- run a Python script with the Zope environment"
+        print "                set up.  The script can use the name 'app' to"
+        print "                access the top-level Zope object"
+
 
 def main(args=None):
     # This is exactly like zdctl.main(), but uses ZopeCtlOptions and
