@@ -1,4 +1,4 @@
-#     $Id: pickle.py,v 1.5 1997/02/10 22:08:32 cici Exp $
+#     $Id: pickle.py,v 1.6 1997/02/12 17:06:45 chris Exp $
 #
 #     Copyright 
 #
@@ -680,6 +680,18 @@ class Unpickler:
         k = self.marker()
         self.stack[k:] = [tuple(self.stack[k+1:])]
     dispatch[TUPLE] = load_tuple
+
+    def load_empty_tuple(self):
+        self.stack.append(())
+    dispatch[EMPTY_TUPLE] = load_empty_tuple
+
+    def load_empty_list(self):
+        self.stack.append([])
+    dispatch[EMPTY_LIST] = load_empty_list
+
+    def load_empty_dictionary(self):
+        self.stack.append({})
+    dispatch[EMPTY_DICT] = load_empty_dictionary
 
     def load_list(self):
         k = self.marker()
