@@ -62,7 +62,16 @@ Zope Changes
 
   Releases
 
-    Zope 2.x
+    Zope 2.x.x
+    
+      Features Changed
+      
+
+      Bugs Fixed
+
+
+
+    Zope 2.1.1
 
       Bugs Fixed 
 
@@ -104,6 +113,31 @@ Zope Changes
           overwritten in TextIndex.py and UnTextIndex.py in the
           SearchIndex package, which caused problems for some third-
           party product authors.
+
+        - There were a number of problems with the load-site utility
+	  (utilities/load_site.py):
+
+	- A recent change caused HTML files to have their headers and
+	  footers replaced with var tags for standard headers and
+	  footers.  While this is sometimes very useful, it is
+	  sometimes disastrous.  This feature is now enabled with the
+	  -D option.
+	  
+	- Handling of files with a '.dtml' extension was broken. These
+	  are now handled correctly. Files with '.dtml' suffixes now
+	  get uploaded as methods.
+	  
+	- A workaround for old sites that had a bug in Document (aka
+	  DTMLMethod) upload has been disabled. This workaround is now
+	  enabled when the -9 option is used.
+
+      The following bug fixes were accidentially excluded from 2.1.0:
+
+        - Redefining the "views" on a ZClass could incorrectly affect
+          the views available on instances of base classes of the ZClass.
+
+        - The new 'url' option to DTML 'var' tags did not work properly
+          for DTML and other callable objects.
 
 
     Zope 2.1.0
