@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
 from WriteLockInterface import WriteLockInterface, LockItemInterface
 from EtagSupport import EtagSupport
@@ -111,9 +111,13 @@ class LockableItem(EtagSupport):
                            'wl_lockItems', 'wl_lockValues', 'wl_lockTokens',)
     security.declareProtected('WebDAV Lock items',
                               'wl_grantLockToUser', 'wl_setLock')
-    security.declareProtected('WebDAV Unlock items',
-                              'wl_delLock')
-    security.declareProtected('Manage WebDAV Locks', 'wl_killAllLocks')
+    security.declareProtected('WebDAV Unlock items', 'wl_delLock')
+    security.declareProtected('Manage WebDAV Locks', 'wl_clearLocks')
+
+    # Setting default roles for permissions - we want owners of conent
+    # to be able to lock.
+    security.setPermissionDefault('WebDAV Lock items', ('Manager', 'Owner',))
+    security.setPermissionDefault('WebDAV Unlock items',('Manager','Owner',))
 
 
     def wl_lockmapping(self, killinvalids=0):
@@ -182,8 +186,19 @@ class LockableItem(EtagSupport):
     def wl_clearLocks(self):
         # Called by lock management machinery to quickly and effectively
         # destroy all locks.
-        locks = self.wl_lockmapping()
-        locks.clear()
+        try:
+            locks = self.wl_lockmapping()
+            locks.clear()
+        except:
+            # The locks may be totally messed up, so we'll just delete
+            # and replace.
+            if hasattr(self, '_dav_writelocks'): del self._dav_writelocks
+            if WriteLockInterface.isImplementedBy(self):
+                self._dav_writelocks = PersistentMapping()
+
+        # Call into a special hook used by LockNullResources to delete
+        # themselves.  Could be used by other objects who want to deal
+        # with the state of empty locks.
         if hasattr(Acquisition.aq_base(self), '__no_valid_write_locks__'):
             self.__no_valid_write_locks__()
     
