@@ -102,7 +102,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.52 $'[11:-2]
+__version__='$Revision: 1.53 $'[11:-2]
 
 import Globals, string, struct, mimetypes, content_types
 from Globals import HTMLFile, MessageDialog
@@ -305,6 +305,12 @@ class Image(File):
     icon='p_/image'
     height=0
     width=0
+
+    _properties=({'id':'title', 'type': 'string'},
+                 {'id':'content_type', 'type':'string'},
+                 {'id':'height', 'type':'int'},
+                 {'id':'width', 'type':'int'},
+                 )
     
     manage_options=({'label':'Edit', 'action':'manage_main'},
                     {'label':'Upload', 'action':'manage_uploadForm'},
