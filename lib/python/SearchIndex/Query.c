@@ -16,7 +16,8 @@ typedef struct
     PyObject *tests;
 } FieldTestobject;
 
-staticforward PyTypeObject AttrTesttype, ItemTesttype;
+staticforward PyTypeObject AttrTesttype, CompAttrTesttype, MethodTesttype;
+staticforward PyTypeObject ItemTesttype;
 
 typedef struct
 {
@@ -116,9 +117,28 @@ AttrTest__getitem__(FieldTestobject *self, PyObject *key)
     PyObject *ob;
 
     UNLESS(ob=PyObject_GetAttr(key, self->key)) return NULL;
+    ASSIGN(ob, PyObject_GetItem(self->tests, ob));
+    return ob;
+}
 
-    UNLESS_ASSIGN(ob, PyObject_GetItem(self->tests, ob)) return NULL;
+static PyObject *
+CompAttrTest__getitem__(FieldTestobject *self, PyObject *key)
+{
+    PyObject *ob;
 
+    UNLESS(ob=PyObject_GetAttr(key, self->key)) return NULL;
+    UNLESS_ASSIGN(ob, PyObject_CallObject(ob, NULL)) return NULL;
+    ASSIGN(ob, PyObject_GetItem(self->tests, ob));
+    return ob;
+}
+
+static PyObject *
+MethodTest__getitem__(FieldTestobject *self, PyObject *key)
+{
+    PyObject *ob;
+
+    UNLESS(ob=PyObject_GetAttr(key, self->key)) return NULL;
+    ASSIGN(ob,PyObject_CallObject(ob, self->tests));
     return ob;
 }
 
@@ -134,6 +154,18 @@ static PyMappingMethods AttrTest_as_mapping = {
     (objobjargproc)0,                 /*mp_ass_subscript*/
 };
 
+static PyMappingMethods CompAttrTest_as_mapping = {
+    (inquiry)meaningless_len,         /*mp_length*/
+    (binaryfunc)CompAttrTest__getitem__,  /*mp_subscript*/
+    (objobjargproc)0,                 /*mp_ass_subscript*/
+};
+
+static PyMappingMethods MethodTest_as_mapping = {
+    (inquiry)meaningless_len,         /*mp_length*/
+    (binaryfunc)MethodTest__getitem__,  /*mp_subscript*/
+    (objobjargproc)0,                 /*mp_ass_subscript*/
+};
+
 static PyObject *
 AttrTest(PyObject *self, PyObject *args)
 {
@@ -145,7 +177,36 @@ AttrTest(PyObject *self, PyObject *args)
     return (PyObject *)new_FieldTestobject(key, test, &AttrTesttype);
 }
 
-static char AttrTesttype__doc__[] = "";
+static PyObject *
+CompAttrTest(PyObject *self, PyObject *args)
+{
+    PyObject *key, *test;
+
+    if (!PyArg_ParseTuple(args, "OO", &key, &test))
+        return NULL;
+
+    return (PyObject *)new_FieldTestobject(key, test, &CompAttrTesttype);
+}
+
+static PyObject *
+MethodTest(PyObject *self, PyObject *args)
+{
+    PyObject *key, *test;
+
+    if (!PyArg_ParseTuple(args, "OO", &key, &test))
+        return NULL;
+
+    UNLESS(PyTuple_Check(test))
+      {
+	PyErr_SetString(PyExc_TypeError,
+			"second argument to MethodTest must be an "
+			"argument tuple");
+	return NULL;
+      }
+
+    self=(PyObject *)new_FieldTestobject(key, test, &MethodTesttype);
+    return self;
+}
 
 static PyTypeObject AttrTesttype = {
     PyObject_HEAD_INIT(NULL)
@@ -169,7 +230,57 @@ static PyTypeObject AttrTesttype = {
 
     /* Space for future expansion */
     0L,0L,0L,0L,
-    AttrTesttype__doc__ /* Documentation string */
+    "Test objects that apply sub-tests to attribute values",
+};
+
+static PyTypeObject CompAttrTesttype = {
+    PyObject_HEAD_INIT(NULL)
+    0,				/*ob_size*/
+    "CompAttrTest",		/*tp_name*/
+    sizeof(FieldTestobject),		/*tp_basicsize*/
+    0,				/*tp_itemsize*/
+    /* methods */
+    (destructor)FieldTest_dealloc,	/*tp_dealloc*/
+    (printfunc)0,		/*tp_print*/
+    (getattrfunc)0,	/*tp_getattr*/
+    (setattrfunc)0,	/*tp_setattr*/
+    (cmpfunc)0,		/*tp_compare*/
+    (reprfunc)0,		/*tp_repr*/
+    0,			/*tp_as_number*/
+    0,		/*tp_as_sequence*/
+    &CompAttrTest_as_mapping,		/*tp_as_mapping*/
+    (hashfunc)0,		/*tp_hash*/
+    (ternaryfunc)Query__call__,		/*tp_call*/
+    (reprfunc)0,		/*tp_str*/
+
+    /* Space for future expansion */
+    0L,0L,0L,0L,
+    "Test objects that apply sub-tests to computed attribute values",
+};
+
+static PyTypeObject MethodTesttype = {
+    PyObject_HEAD_INIT(NULL)
+    0,				/*ob_size*/
+    "MethodTest",		/*tp_name*/
+    sizeof(FieldTestobject),		/*tp_basicsize*/
+    0,				/*tp_itemsize*/
+    /* methods */
+    (destructor)FieldTest_dealloc,	/*tp_dealloc*/
+    (printfunc)0,		/*tp_print*/
+    (getattrfunc)0,	/*tp_getattr*/
+    (setattrfunc)0,	/*tp_setattr*/
+    (cmpfunc)0,		/*tp_compare*/
+    (reprfunc)0,		/*tp_repr*/
+    0,			/*tp_as_number*/
+    0,		/*tp_as_sequence*/
+    &MethodTest_as_mapping,		/*tp_as_mapping*/
+    (hashfunc)0,		/*tp_hash*/
+    (ternaryfunc)Query__call__,		/*tp_call*/
+    (reprfunc)0,		/*tp_str*/
+
+    /* Space for future expansion */
+    0L,0L,0L,0L,
+    "Test objects that call test methods",
 };
 
 static PyObject *
@@ -364,8 +475,8 @@ static PyTypeObject Ortype = {
 static PyObject *
 Range__getitem__(Rangeobject *self, PyObject *key)
 {
-    if ((PyObject_Compare(key, self->low) >= 0) &&
-        (PyObject_Compare(key, self->high) <= 0))
+    if ((self->low ==Py_None || PyObject_Compare(key, self->low)  >= 0) &&
+        (self->high==Py_None || PyObject_Compare(key, self->high) <= 0))
     {
         return PyInt_FromLong(1);
     }
@@ -636,6 +747,13 @@ static PyTypeObject Stringtype = {
 static struct PyMethodDef Query_methods[] = {
   {"AttrTest",    (PyCFunction)AttrTest,  1,
    "AttrTest(name,subtest) -- Define a test on an attribute."},
+  {"CompAttrTest",    (PyCFunction)CompAttrTest,  1,
+   "CompAttrTest(name,subtest) -- Define a test on a computed attribute."},
+  {"MethodTest",    (PyCFunction)MethodTest,  1,
+   "MethodTest(method,arg) -- Define a test on method and argument.\n\n"
+   "Matches occur for those objects for which: o.method(arg)\n"
+   "is true."
+  },
   {"ItemTest",    (PyCFunction)ItemTest,  1,
    "ItemTest(key,subtest) -- Define a test on an item."},
   {"FieldTest",   (PyCFunction)FieldTest, 1,
