@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control package"""
 
-__version__='$Revision: 1.153 $'[11:-2]
+__version__='$Revision: 1.154 $'[11:-2]
 
 import Globals, socket, SpecialUsers,re
 import os
@@ -236,8 +236,8 @@ class BasicUser(Implicit):
                 if not hasattr(object, 'aq_inContextOf'):
                     # Object is not wrapped, so return false.
                     return 0
-            if object.aq_inContextOf(context, 1):
-                return 1
+            return object.aq_inContextOf(context, 1)
+
         # This is lame, but required to keep existing behavior.
         return 1
 
