@@ -10,8 +10,8 @@
 ############################################################################## 
 __doc__='''Principia Factories
 
-$Id: Factory.py,v 1.1 1998/08/03 13:43:27 jim Exp $'''
-__version__='$Revision: 1.1 $'[11:-2]
+$Id: Factory.py,v 1.2 1998/08/14 16:48:52 brian Exp $'''
+__version__='$Revision: 1.2 $'[11:-2]
 
 import OFS.SimpleItem, Acquisition, Globals
 
@@ -32,12 +32,12 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
         self.initial=initial
         self.__of__(product)._register()
 
-    def _notifyOfCopyTo(self, container):
+    def _notifyOfCopyTo(self, container, op=0):
         if container.__class__ is not Product:
             raise TypeError, (
                 'Factories can only be copied to <b>products</b>.')
 
-    def _postCopy(self, container):
+    def _postCopy(self, container, op=0):
         self._register()
 
     def _register(self):
@@ -62,6 +62,9 @@ class Factory(OFS.SimpleItem.Item, Acquisition.Implicit):
 ############################################################################## 
 #
 # $Log: Factory.py,v $
+# Revision 1.2  1998/08/14 16:48:52  brian
+# Updated copy support in leverish things
+#
 # Revision 1.1  1998/08/03 13:43:27  jim
 # new folderish control panel and product management
 #

@@ -1,5 +1,5 @@
 __doc__="""System management components"""
-__version__='$Revision: 1.32 $'[11:-2]
+__version__='$Revision: 1.33 $'[11:-2]
 
 
 import sys,os,time,string,Globals, Acquisition
@@ -75,15 +75,8 @@ class ApplicationManager(Folder,CacheManager):
         if not hasattr(self, 'Products'):
             self.Products=ProductFolder()
 
-    def copyToClipboard(self, REQUEST):
-	return Globals.MessageDialog(title='Not Supported',
-				     message='This item cannot be copied',
-				     action ='./manage_main',)
-
-    def cutToClipboard(self, REQUEST):
-	return Globals.MessageDialog(title='Not Supported',
-				     message='This item cannot be cut',
-				     action ='./manage_main',)
+    def _canCopy(self, op=0):
+        return 0
 
     def _init(self):
 	pass

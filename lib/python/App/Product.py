@@ -53,6 +53,9 @@ class ProductFolder(Folder):
         for factory in getattr(self, id)._factories(): factory._unregister()
         ProductFolder.inheritedAttribute('_delObject')(self, id)
 
+    def _canCopy(self, op=0):
+        return 0
+
 class Product(Folder):
     """Model a product that can be created through the web.
     """
@@ -107,12 +110,12 @@ class Product(Folder):
         self.id=id
         self.title=title
 
-    def _notifyOfCopyTo(self, container):
+    def _notifyOfCopyTo(self, container, op=0):
         if container.__class__ is not ProductFolder:
             raise TypeError, (
                 'Products can only be copied to <b>product folders</b>.')
 
-    def _postCopy(self, container):
+    def _postCopy(self, container, op=0):
         for factory in self._factories():
             factory._register()
 
