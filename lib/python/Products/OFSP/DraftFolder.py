@@ -14,33 +14,47 @@ Provide an area where people can work without others seeing their changes.
 A Draft folder is a surrogate for a folder.  It get\'s subobjects by
 gettingthem from a session copy of a base folder.
 
-$Id: DraftFolder.py,v 1.9 1998/01/02 17:41:19 brian Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: DraftFolder.py,v 1.10 1998/01/02 18:35:04 jim Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
-
-import Globals, Session, time
-from AccessControl.Role import RoleManager
-from AccessControl.User import UserFolder
-from App.Management import Management
-from Persistence import Persistent
-from Acquisition import Implicit
-from OFS.SimpleItem import Item
-from Session import Session
+import time, OFS.SimpleItem, AccessControl.Role, App.Management, App.Undo
+import AccessControl.User
+import Persistence, Acquisition, Globals
+import AccessControl.User, Session
+from string import rfind
 from Globals import HTMLFile
 from string import rfind
-
-
-
 
 addForm=HTMLFile('draftFolderAdd', globals())
 
 def add(self,id,baseid,title='',REQUEST=None):
-    """ """
-    self._setObject(id, DraftFolder(id, baseid, title, self, REQUEST))
-    if REQUEST: return self.manage_main(self,REQUEST)
+    """Add a new Folder object"""
+    i=DraftFolder()
+    i._init(id, baseid, title, self,REQUEST)
+    self._setObject(id,i)
+    if REQUEST is not None: return self.manage_main(self,REQUEST)
 
+def hack(self):
+    return ({'icon':icon, 'label':'Contents',
+	     'action':'manage_main',   'target':'manage_main'},
+	    {'icon':'OFS/Properties_icon.gif', 'label':'Properties',
+	     'action':'manage_propertiesForm',   'target':'manage_main'},
+	    {'icon':'', 'label':'Security',
+	     'action':'manage_access',   'target':'manage_main'},
+	    {'icon':'App/undo_icon.gif', 'label':'Undo',
+	     'action':'manage_UndoForm',   'target':'manage_main'},
+	    {'icon':'OFS/DraftFolderControl.gif', 'label':'Supervise',
+	     'action':'manage_Supervise',   'target':'manage_main'},
+	   )
 
-class DraftFolder(Persistent,Implicit,RoleManager,Management,Item):
+class DraftFolder(
+    Persistence.Persistent,
+    AccessControl.Role.RoleManager,
+    OFS.SimpleItem.Item,
+    Acquisition.Implicit,
+    App.Management.Navigation,
+    App.Undo.UndoSupport,
+    ):
     """ """
     meta_type='Draft Folder'
     icon='misc_/OFSP/DraftFolderIcon'
@@ -134,7 +148,7 @@ class DraftFolder(Persistent,Implicit,RoleManager,Management,Item):
 	if PATH_INFO[:1] != '/': PATH_INFO='/'+PATH_INFO
 	if PATH_INFO==self.cookie+'/manage':
 	    if not cookie: return self.manage
-	    return Management.manage
+	    return App.Management.Navigation.manage
 	if PATH_INFO==self.cookie+'/manage_menu': return self.manage_menu
 
 	if name=='manage_Supervise': 
@@ -180,12 +194,12 @@ class DraftFolder(Persistent,Implicit,RoleManager,Management,Item):
 	except: return ()
 
 
-class Supervisor(UserFolder, Session):
+class Supervisor(AccessControl.User.UserFolder, Session.Session):
     manage=manage_main=HTMLFile('DraftFolderSupervisor', globals())
     manage_options=()
 
     def __init__(self):
-	UserFolder.__init__(self)
+	AccessConreol.User.UserFolder.__init__(self)
     
     
     
@@ -193,6 +207,9 @@ class Supervisor(UserFolder, Session):
 ############################################################################## 
 #
 # $Log: DraftFolder.py,v $
+# Revision 1.10  1998/01/02 18:35:04  jim
+# Factored old Management mix-in into Navigation and Tabs.
+#
 # Revision 1.9  1998/01/02 17:41:19  brian
 # Made undo available only in folders
 #
