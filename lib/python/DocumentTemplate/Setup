@@ -21,5 +21,6 @@ cDocumentTemplate ./cDocumentTemplate.c -I/projects/_/ExtensionClass
 # install VSEval.py
 # install __init__.py
 # install gparse.py
+# install ts_regex.py
 
 
