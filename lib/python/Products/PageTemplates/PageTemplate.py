@@ -87,7 +87,7 @@
 HTML- and XML-based template objects using TAL, TALES, and METAL.
 """
 
-__version__='$Revision: 1.17 $'[11:-2]
+__version__='$Revision: 1.18 $'[11:-2]
 
 import os, sys, traceback, pprint
 from TAL.TALParser import TALParser
@@ -103,7 +103,7 @@ Z_DEBUG_MODE = os.environ.get('Z_DEBUG_MODE') == '1'
 
 class MacroCollection(Base):
     def __of__(self, parent):
-        return parent._v_macros
+        return parent.pt_macros()
 
 class PageTemplate(Base):
     "Page Templates using TAL, TALES, and METAL"
@@ -173,6 +173,11 @@ class PageTemplate(Base):
         
     def pt_warnings(self):
         return self._v_warnings
+
+    def pt_macros(self):
+        if self._v_errors:
+            raise PTRuntimeError, 'Page Template %s has errors.' % self.id
+        return self._v_macros
 
     def write(self, text):
         assert type(text) is type('')
