@@ -84,7 +84,7 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 import sys, os, math, regex, ts_regex, DateTimeZone
@@ -1282,6 +1282,21 @@ class DateTime:
         Dates are output as: YYYY-MM-DD HH:MM:SS
         """
         return "%.4d-%.2d-%.2d %.2d:%.2d:%.2d" % (
+            self._year, self._month, self._day,
+            self._hour, self._minute, self._second)
+
+    def HTML4(self):
+       """Return the object in the format used in the HTML4.0 specification,
+       one of the standard forms in ISO8601.  See
+               http://www.w3.org/TR/NOTE-datetime
+
+        Dates are output as: YYYY-MM-DDTHH:MM:SSZ
+           T, Z are literal characters.
+           The time is in UTC.
+        """
+
+        newdate = self.toZone('UTC')
+        return "%0.4d-%0.2d-%0.2dT%0.2d:%0.2d:%0.2dZ" % (
             self._year, self._month, self._day,
             self._hour, self._minute, self._second)
 
