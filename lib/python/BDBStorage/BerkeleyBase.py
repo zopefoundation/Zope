@@ -14,7 +14,7 @@
 
 """Base class for BerkeleyStorage implementations.
 """
-__version__ = '$Revision: 1.28 $'.split()[-2:][0]
+__version__ = '$Revision: 1.29 $'.split()[-2:][0]
 
 import os
 import time
@@ -218,7 +218,17 @@ class BerkeleyBase(BaseStorage):
         # Our storage is based on the underlying BSDDB btree database type.
         if reclen is not None:
             d.set_re_len(reclen)
-        d.open(self._prefix + name, dbtype, db.DB_CREATE)
+        openflags = db.DB_CREATE
+        # DB 4.1.24 requires that operations happening in a transaction must
+        # be performed on a database that was opened in a transaction.  Since
+        # we do the former, we must do the latter.  However, earlier DB
+        # versions don't transactionally protect database open, so this is the
+        # most portable way to write the code.
+        try:
+            openflags |= db.DB_AUTO_COMMIT
+        except AttributeError:
+            pass
+        d.open(self._prefix + name, dbtype, openflags)
         self._tables.append(d)
         return d
 
