@@ -57,6 +57,10 @@ class BaseTest(unittest.TestCase):
         return conf.servers[0]
 
     def check_prepare(self, factory):
+        # On Linux the default hostname is an empty string, but on Windows
+        # it's "localhost".  So factory.prepare() will replace factory.host
+        # with "127.0.0.1" only on non-Windows boxes.
+        expected_factory_host = factory.host or "127.0.0.1"
         port = factory.port
         o = object()
         factory.prepare("127.0.0.1", o, "module",
@@ -68,7 +72,7 @@ class BaseTest(unittest.TestCase):
             self.assert_(factory.host is None)
             self.assert_(factory.port is None)
         else:
-            self.assertEqual(factory.host, "127.0.0.1")
+            self.assertEqual(factory.host, expected_factory_host)
             self.assertEqual(factory.port, 9300 + port)
 
 
