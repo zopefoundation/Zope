@@ -11,8 +11,8 @@
 # 
 ##############################################################################
 __doc__='''Python Scripts Product Initialization
-$Id: __init__.py,v 1.9 2001/12/14 18:59:28 evan Exp $'''
-__version__='$Revision: 1.9 $'[11:-2]
+$Id: __init__.py,v 1.10 2001/12/21 17:09:13 evan Exp $'''
+__version__='$Revision: 1.10 $'[11:-2]
 
 import PythonScript
 try:
@@ -40,6 +40,8 @@ def initialize(context):
 
     context.registerHelp()
     context.registerHelpTitle('Script (Python)')
+    global _m
+    _m['recompile'] = recompile
     
 # utility stuff
 
@@ -57,5 +59,3 @@ def recompile(self):
     if names:
         return 'The following Scripts were recompiled:\n' + '\n'.join(names)
     return 'No Scripts were found that required recompilation.'
-
-_m = {'recompile': recompile}
