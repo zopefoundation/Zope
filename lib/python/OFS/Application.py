@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.79 1998/12/04 20:15:29 jim Exp $'''
-__version__='$Revision: 1.79 $'[11:-2]
+$Id: Application.py,v 1.80 1998/12/11 05:32:21 amos Exp $'''
+__version__='$Revision: 1.80 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys,App.Product, App.ProductRegistry
@@ -136,7 +136,7 @@ page.  Thank you for your patience.</P>
 class Application(Globals.ApplicationDefaultPermissions, Folder.Folder,
                   App.ProductRegistry.ProductRegistry, FindSupport):
     """Top-level system object"""
-    title    ='Principia'
+    title    ='Zope'
     __roles__=['Manager', 'Anonymous']
     __defined_roles__=('Manager','Anonymous')
     web__form__method='GET'
