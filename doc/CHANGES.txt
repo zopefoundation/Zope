@@ -19,6 +19,11 @@ Zope Changes
           properly. Also <dtml-var stxdoc ftm=structured-text> will no longer
           produce <html>..<body>  and </body>..</html>
 
+        - Collector #2438:  Using a slice operation like [30:] on a 
+          ZCatalog search result caused a MemoryError because 
+          the __getslice__ implementation used  range() instead
+          of xrange().
+
 
     Zope 2.4 beta 2
 

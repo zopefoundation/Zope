@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__doc__='''$Id: Lazy.py,v 1.4 2001/03/15 13:16:23 jim Exp $'''
-__version__='$Revision: 1.4 $'[11:-2]
+__doc__='''$Id: Lazy.py,v 1.5 2001/07/24 20:46:27 andreasjung Exp $'''
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 class Lazy:
@@ -137,7 +137,7 @@ class Lazy:
     
     def __getslice__(self,i1,i2):
         r=[]
-        for i in range(i1,i2):
+        for i in xrange(i1,i2):
             try: r.append(self[i])
             except IndexError: return r
         return r
