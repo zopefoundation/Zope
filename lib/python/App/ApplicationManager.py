@@ -1,6 +1,6 @@
 
 __doc__="""Application management component"""
-__version__='$Revision: 1.4 $'[11:-2]
+__version__='$Revision: 1.5 $'[11:-2]
 
 
 import sys,os,time,Globals
@@ -16,18 +16,17 @@ class ApplicationManager(Acquirer,Management):
     manage_undoForm=HTMLFile('App/undo')
 
     manage_options=(
-    {'icon':'App/arrow.jpg', 'label':'Application Manager',
-     'action':'manage_main',   'target':'manage_main'},
-    {'icon':'App/arrow.jpg', 'label':'Compact Database',
-     'action':'manage_packForm','target':'manage_main'},
-    {'icon':'App/arrow.jpg','label':'Undo Changes',
-     'action':'manage_undoForm','target':'manage_main'},
+    {'icon':'App/arrow.jpg', 'label':'Application',
+     'action':'manage_app',   'target':'_top'},
     )
-
     title        ='Application Manager'
     name         ='application manager'
     process_id   =os.getpid()
     process_start=int(time.time())
+
+    def manage_app(self, URL2):
+	"""Return to the main management screen"""
+	raise 'Redirect', URL2+'/manage'
 
     def parentObject(self):
 	try:    return (self.aq_parent,)
@@ -57,6 +56,11 @@ class ApplicationManager(Acquirer,Management):
 	db.save_index()
 	db.file.close()
 	sys.exit(0)
+
+    def manage_pack(self, days=0, REQUEST):
+	"""Pack the database"""
+	Globals.Bobobase._jar.db.pack(time.time()-days*86400,1)
+	return self.manage_main(self, REQUEST)
 
     def revert_points(self): return ()
 
