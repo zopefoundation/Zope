@@ -1,14 +1,13 @@
 import os,sys,unittest
-execfile(os.path.join(sys.path[0],'framework.py'))
-
-from UnicodeSplitter import UnicodeSplitter
+from Products.PluginIndexes.TextIndex.Splitter.UnicodeSplitter.UnicodeSplitter import UnicodeSplitter
 
 class UnicodeSplitterTests(unittest.TestCase):
 
     def setUp(self):
 
         texts = ('The quick brown fox jumps over the lazy dog',
-                 'Bei den dreitägigen Angriffen seien auch bis auf einen alle Flugplätze der Taliban zerstört worden',
+                 'Bei den dreitägigen Angriffen seien auch bis'
+                 ' auf einen alle Flugplätze der Taliban zerstört worden',
             )
 
         self.testdata = []
@@ -43,4 +42,5 @@ class UnicodeSplitterTests(unittest.TestCase):
             raise AssertionError
         
 
-framework()
+def test_suite():
+    return unittest.makeSuite(UnicodeSplitterTests)
