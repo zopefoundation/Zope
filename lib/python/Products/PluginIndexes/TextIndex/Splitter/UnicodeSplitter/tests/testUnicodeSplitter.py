@@ -35,12 +35,24 @@ class UnicodeSplitterTests(unittest.TestCase):
         sw_dict = {'the':None,'dog':'fox'}
 
         fields = list(UnicodeSplitter(text,sw_dict))
-        if fields != expected:
-            for i in range(min(len(fields),len(expected))):
-                print fields[i],expected[i]
-            
-            raise AssertionError
+        self.assertEquals( fields, expected )
         
 
 def test_suite():
     return unittest.makeSuite(UnicodeSplitterTests)
+
+def debug():
+    return test_suite().debug()
+
+def pdebug():
+    import pdb
+    pdb.run('debug()')
+
+def main():
+    unittest.TextTestRunner().run( test_suite() )
+
+if __name__ == '__main__':
+   if len(sys.argv) > 1:
+      globals()[sys.argv[1]]()
+   else:
+      main()
