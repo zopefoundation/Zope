@@ -9,8 +9,8 @@
 #       rights reserved. 
 #
 ############################################################################ 
-__rcs_id__='$Id: TreeTag.py,v 1.2 1997/09/04 21:59:55 brian Exp $'
-__version__='$Revision: 1.2 $'[11:-2]
+__rcs_id__='$Id: TreeTag.py,v 1.3 1997/09/04 22:08:19 brian Exp $'
+__version__='$Revision: 1.3 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -119,6 +119,8 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
     tpUrl=self.tpURL()
     url = (url and ('%s/%s' % (url, tpUrl))) or tpUrl
     treeData['tree-item-url']=url
+    treeData['tree-item-expanded']=0
+
 
     try:    id=self.tpId()
     except: id=None
@@ -144,6 +146,7 @@ def tpRenderTABLE(self, root_url, url, state, substate, data,
                 exp=i+1
                 break
         if exp:
+	    treeData['tree-item-expanded']=1
             del substate[exp-1]
             output('<A HREF="%s?state=%s">%s</A>' %
                    (root_url,quote(str(state)[1:-1]+','), icoMinus))
