@@ -1,14 +1,16 @@
 """Image object"""
 
-__version__='$Revision: 1.8 $'[11:-2]
+__version__='$Revision: 1.9 $'[11:-2]
 
 from Persistence import Persistent
 from Globals import HTMLFile
 from Globals import MessageDialog
 from AccessControl.Role import RoleManager
 import SimpleItem
+import Acquisition
 
-class Image(Persistent,RoleManager,SimpleItem.Item_w__name__):
+class Image(Persistent,RoleManager,SimpleItem.Item_w__name__,
+	    Acquisition.Implicit):
     """Image object"""
     meta_type='Image'
     icon     ='OFS/Image_icon.gif'
@@ -16,7 +18,8 @@ class Image(Persistent,RoleManager,SimpleItem.Item_w__name__):
     manage_editForm   =HTMLFile('OFS/imageEdit')
     manage=manage_main=manage_editForm
 
-    def manage_edit(self,title,file='',content_type='',acl_type='A',acl_roles=[], REQUEST=None):
+    def manage_edit(self,title,file='',content_type='',
+		    acl_type='A',acl_roles=[], REQUEST=None):
 	""" """
 	try:    headers=file.headers
 	except: headers=None
