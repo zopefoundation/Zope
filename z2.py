@@ -308,9 +308,7 @@ try:
             FTP_PORT=v
         elif o=='-P':
             if v:
-                try:
-                    v=string.atoi(v)
-                    if v < 1: raise 'Invalid port', v
+                try: v=string.atoi(v)
                 except: raise 'Invalid port', v
             FTP_PORT=v+21
             HTTP_PORT=v+80
