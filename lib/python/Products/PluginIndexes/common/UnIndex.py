@@ -109,7 +109,7 @@ class UnIndex(SimpleItem):
         """
         histogram = {}
         for item in self._index.items():
-            if type(item) is IntType:
+            if isinstance(item,int):
                 entry = 1 # "set" length is 1
             else:
                 key, value = item
@@ -343,18 +343,18 @@ class UnIndex(SimpleItem):
                 setlist = index.items(lo)
 
             for k, set in setlist:
-                if type(set) is IntType:
+                if isinstance(set, int):
                     set = IISet((set,))
                 r = set_func(r, set)
         else: # not a range search
             for key in record.keys:
                 set=index.get(key, None)
                 if set is not None:
-                    if type(set) is IntType:
+                    if isinstance(set, int):
                         set = IISet((set,))
                     r = set_func(r, set)
 
-        if type(r) is IntType:  r=IISet((r,))
+        if isinstance(r, int):  r=IISet((r,))
         if r is None:
             return IISet(), (self.id,)
         else:
@@ -395,7 +395,7 @@ class UnIndex(SimpleItem):
             rl=[]
             for i in self._index.keys():
                 set = self._index[i]
-                if type(set) is IntType:
+                if isinstance(set, int):
                     l = 1
                 else:
                     l = len(set)
@@ -412,7 +412,7 @@ class UnIndex(SimpleItem):
     def items(self):
         items = []
         for k,v in self._index.items():
-            if type(v) is IntType:
+            if isinstance(v, int):
                 v = IISet((v,))
             items.append((k, v))
         return items
