@@ -13,8 +13,10 @@
 ##############################################################################
 """ Tests of the ZopeStarter class """
 
-import os
 import cStringIO
+import logging
+import os
+import sys
 import tempfile
 import unittest
 
@@ -23,7 +25,6 @@ import Zope.Startup
 from Zope.Startup import ZopeStarter
 
 from App.config import getConfiguration, setConfiguration
-import logging
 
 TEMPNAME = tempfile.mktemp()
 TEMPPRODUCTS = os.path.join(TEMPNAME, "Products")
@@ -102,7 +103,6 @@ class ZopeStarterTestCase(unittest.TestCase):
 
     def testSetupStartupHandler(self):
         import zLOG
-        import sys
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode on
@@ -246,8 +246,6 @@ class ZopeStarterTestCase(unittest.TestCase):
 
     def testSetupConfiguredLoggers(self):
         import zLOG
-        import logging
-        import sys
         conf = self.load_config_text("""
             instancehome <<INSTANCE_HOME>>
             debug-mode off
