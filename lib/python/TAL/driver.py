@@ -99,21 +99,23 @@ from Products.ParsedXML.DOM import Core, ExpatBuilder
 
 # Import local classes
 from CopyingDOMVisitor import CopyingDOMVisitor
-from TALVisitor import TALVisitor
 from DummyEngine import DummyEngine
 
 FILE = "test/test1.xml"
 
 def main():
     noVersionTest = 0
+    compile = 0
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "n")
+        opts, args = getopt.getopt(sys.argv[1:], "cn")
     except getopt.error, msg:
         sys.stderr.write("%s\n" % str(msg))
         sys.stderr.write("usage: driver.py [-n] [file]\n")
         sys.stderr.write("-n turns of the Python 1.5.2 test\n")
         sys.exit(2)
     for o, a in opts:
+        if o == '-c':
+            compile = not compile
         if o == '-n':
             noVersionTest = 1
     if not noVersionTest:
@@ -126,8 +128,12 @@ def main():
     else:
         file = FILE
     doc = parsefile(file)
-    doc = talizetree(doc)
-    printtree(doc)
+    if compile:
+        it = compiletree(doc)
+        interpretit(it)
+    else:
+        doc = talizetree(doc)
+        printtree(doc)
 
 def parsefile(file):
     return ExpatBuilder.parse(file, 1)
@@ -143,11 +149,23 @@ def copytree(root, dom=None):
     return CopyingDOMVisitor(root, dom)()
 
 def talizetree(root, dom=None, engine=None):
+    from TALVisitor import TALVisitor
     if dom is None:
         dom = Core.theDOMImplementation
     if engine is None:
         engine = DummyEngine()
     return TALVisitor(root, dom, engine)()
+
+def compiletree(root):
+    from TALCompiler import TALCompiler
+    return TALCompiler(root)()
+
+def interpretit(it, engine=None, stream=None):
+    from TALInterpreter import TALInterpreter
+    program, macros = it
+    if engine is None:
+        engine = DummyEngine()
+    TALInterpreter(program, macros, engine, stream)()
 
 if __name__ == "__main__":
     main()
