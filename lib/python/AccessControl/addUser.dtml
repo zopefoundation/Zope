@@ -10,6 +10,9 @@ To add a new user, enter the name,
   password, confirmation
 <!--#/unless-->
 and roles for the new user and click &quot;Add&quot;.
+<EM>Domains</EM> is an optional list of domains from 
+which the user is allowed to login. 
+</P>
 
 <FORM ACTION="manage_users" METHOD="POST">
 <TABLE>
@@ -46,7 +49,7 @@ and roles for the new user and click &quot;Add&quot;.
 
 <TR>
 <TD VALIGN="TOP">
-<STRONG>Domains</STRONG>
+<EM><STRONG>Domains</STRONG></EM>
 </TD>
 <TD VALIGN="TOP">
 <INPUT TYPE="TEXT" NAME="domains:tokens" VALUE="" SIZE="40">
