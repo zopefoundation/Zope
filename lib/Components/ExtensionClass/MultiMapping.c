@@ -1,6 +1,6 @@
 /*
 
-  $Id: MultiMapping.c,v 1.1 1996/10/22 22:27:42 jim Exp $
+  $Id: MultiMapping.c,v 1.2 1996/10/23 18:37:45 jim Exp $
 
   Sample extension class program that implements multi-mapping objects. 
 
@@ -59,6 +59,9 @@
   Full description
 
   $Log: MultiMapping.c,v $
+  Revision 1.2  1996/10/23 18:37:45  jim
+  Fixed misspelling in class name.
+
   Revision 1.1  1996/10/22 22:27:42  jim
   *** empty log message ***
 
@@ -200,7 +203,7 @@ static char MMtype__doc__[] =
 static PyExtensionClass MMtype = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/*ob_size*/
-	"MultMapping",			/*tp_name*/
+	"MultiMapping",			/*tp_name*/
 	sizeof(MMobject),		/*tp_basicsize*/
 	0,				/*tp_itemsize*/
 	/* methods */
