@@ -91,6 +91,11 @@ Zope Changes
 
     Bugs fixed
 
+      - WebDAV: Zope escaped nested object properties derived from
+        internal dav__* functions in PropertySheets.py although they
+        are considered to be safe and do not need any escaping. This 
+        caused Zope to be completely incomplete with Windows XP. Fixed !
+
       - Collector #2532: ZCatalog.availableSplitters is now protected
         by security mechanism.
 

@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.78 $'[11:-2]
+__version__='$Revision: 1.79 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -363,6 +363,7 @@ class PropertySheet(Traversable, Persistent, Implicit):
         for item in self._propertyMap():
             name, type=item['id'], item.get('type','string')
             value=self.getProperty(name)
+
             if type=='tokens':
                 value=join(str(value), ' ')
             elif type=='lines':
@@ -376,7 +377,10 @@ class PropertySheet(Traversable, Persistent, Implicit):
                 # Quote non-xml items here?
                 attrs='' 
 
-            prop='  <n:%s%s>%s</n:%s>' % (name, attrs, xml_escape(value), name)
+            if hasattr(self,"dav__"+name):
+                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, value, name)
+            else:
+                prop='  <n:%s%s>%s</n:%s>' % (name, attrs, xml_escape(value), name)
 
             result.append(prop)
         if not result: return ''
