@@ -12,8 +12,8 @@
 ##############################################################################
 '''This module implements a mix-in for traversable objects.
 
-$Id: Traversable.py,v 1.18 2003/02/26 16:51:46 caseman Exp $'''
-__version__='$Revision: 1.18 $'[11:-2]
+$Id: Traversable.py,v 1.19 2003/04/17 17:46:57 fdrake Exp $'''
+__version__='$Revision: 1.19 $'[11:-2]
 
 
 from Acquisition import Acquired, aq_inner, aq_parent, aq_base
@@ -22,8 +22,9 @@ from AccessControl import Unauthorized
 from AccessControl.ZopeGuards import guarded_getattr
 from urllib import quote
 
+NotFound = 'NotFound'
+
 _marker=[]
-StringType=type('')
 
 class Traversable:
 
@@ -75,7 +76,7 @@ class Traversable:
         N=None
         M=_marker
 
-        if type(path) is StringType: path = path.split('/')
+        if isinstance(path, str): path = path.split('/')
         else: path=list(path)
 
         REQUEST={'TraversalRequestNameStack': path}
@@ -104,7 +105,7 @@ class Traversable:
 
                 if name[0] == '_':
                     # Never allowed in a URL.
-                    raise 'NotFound', name
+                    raise NotFound, name
 
                 if name=='..':
                     o=getattr(object, 'aq_parent', M)
@@ -143,8 +144,8 @@ class Traversable:
                         try:
                             o=object[name]
                         except AttributeError:
-                            # Raise a NotFound for easier debugging
-                            raise 'NotFound', name
+                            # Raise NotFound for easier debugging
+                            raise NotFound, name
                         if (restricted and not securityManager.validate(
                             object, object, N, o)):
                             raise Unauthorized, name
