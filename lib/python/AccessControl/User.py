@@ -14,8 +14,9 @@
 
 __version__='$Revision: 1.182 $'[11:-2]
 
-import Globals, socket, SpecialUsers,re
 import os
+
+import Globals, socket, SpecialUsers,re
 from Globals import DTMLFile, MessageDialog, Persistent, PersistentMapping
 from App.Management import Navigation, Tabs
 from Acquisition import Implicit
@@ -31,7 +32,6 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.ZopeSecurityPolicy import _noroles
 
-ListType=type([])
 
 _marker=[]
 
@@ -248,7 +248,7 @@ class BasicUser(Implicit):
 
     def has_role(self, roles, object=None):
         """Check to see if a user has a given role or roles."""
-        if type(roles)==type('s'):
+        if isinstance(roles, str):
             roles=[roles]
         if object is not None:
             user_roles = self.getRolesInContext(object)
@@ -263,7 +263,7 @@ class BasicUser(Implicit):
     def has_permission(self, permission, object):
         """Check to see if a user has a given permission on an object."""
         roles=rolesForPermissionOn(permission, object)
-        if type(roles) is type(''):
+        if isinstance(roles, str):
             roles=[roles]
         return self.allowed(object, roles)
 
