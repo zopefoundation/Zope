@@ -209,7 +209,8 @@ class ProductContext:
 
         for method in constructors[1:]:
             if type(method) is tt: name, method = method
-            else: name=method.__name__
+            else:
+                name=os.path.split(method.__name__)[-1]
             if not productObject.__dict__.has_key(name):
                 m[name]=method
                 m[name+'__roles__']=pr
