@@ -166,10 +166,10 @@ class TestCopySupport( unittest.TestCase ):
 
     def testPasteMultiNotSameID( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failIf( 'file1' in self.folder2.objectIds() )
+        self.failIf( 'file1' in self.folder1.objectIds() )
         manage_addFile(self.folder1, 'file1',
                        file='', content_type='text/plain')
-        self.failIf( 'file2' in self.folder2.objectIds() )
+        self.failIf( 'file2' in self.folder1.objectIds() )
         manage_addFile(self.folder1, 'file2',
                        file='', content_type='text/plain')
         self.failIf( 'file' in self.folder2.objectIds() )
@@ -189,10 +189,10 @@ class TestCopySupport( unittest.TestCase ):
 
     def testPasteMultiSameID( self ):
         self.failUnless( 'file' in self.folder1.objectIds() )
-        self.failIf( 'file1' in self.folder2.objectIds() )
+        self.failIf( 'file1' in self.folder1.objectIds() )
         manage_addFile(self.folder1, 'file1',
                        file='', content_type='text/plain')
-        self.failIf( 'file2' in self.folder2.objectIds() )
+        self.failIf( 'file2' in self.folder1.objectIds() )
         manage_addFile(self.folder1, 'file2',
                        file='', content_type='text/plain')
         self.failIf( 'file' in self.folder2.objectIds() )
