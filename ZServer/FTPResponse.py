@@ -98,8 +98,7 @@ class FTPResponse(ZServerHTTPResponse):
     """
 
     def __str__(self):
-        ZServerHTTPResponse.__str__(self)
-        return
+        return ZServerHTTPResponse.__str__(self)
 
     def outputBody(self):
         pass
