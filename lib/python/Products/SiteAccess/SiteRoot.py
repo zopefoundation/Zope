@@ -9,6 +9,7 @@ from Acquisition import Implicit, ImplicitAcquisitionWrapper
 from ExtensionClass import Base
 from ZPublisher import BeforeTraverse
 import os
+from cgi import escape
 
 from AccessRule import _swallow
 
@@ -38,7 +39,7 @@ class Traverser(Persistent, Item):
         self.addToContainer(container)
         if nextURL:
             return MessageDialog(title='Item Added',
-              message='This object now has a %s' % self.meta_type,
+              message='This object now has a %s' % escape(self.meta_type),
               action=nextURL)
 
     def manage_beforeDelete(self, item, container):
@@ -60,7 +61,7 @@ class Traverser(Persistent, Item):
         if id != self.id:
             raise MessageDialog(
                 title='Invalid Id',
-                message='Cannot change the id of a %s' % self.meta_type,
+                message='Cannot change the id of a %s' % escape(self.meta_type),
                 action ='./manage_main',)
 
 class SiteRoot(Traverser, Implicit):
@@ -99,7 +100,7 @@ class SiteRoot(Traverser, Implicit):
             return MessageDialog(title='SiteRoot changed.',
               message='The title is now "%s"<br>'
                       'The base is now "%s"<br>'
-                      'The path is now "%s"<br>' % (title, base, path),
+                      'The path is now "%s"<br>' % map(escape, (title, base, path)),
               action='%s/manage_main' % REQUEST['URL1'])
 
     def __call__(self, client, request, response=None):

@@ -24,6 +24,7 @@ import time
 import Globals
 from Globals import DTMLFile
 import urlparse, httplib
+from cgi import escape
 from urllib import quote
 from App.Common import rfc1123_date
 
@@ -213,7 +214,7 @@ class AcceleratedHTTPCacheManager (CacheManager, SimpleItem):
         if sort_by == id:
             newsr = not sort_reverse
         url = url + '&sort_reverse=' + (newsr and '1' or '0')
-        return '<a href="%s">%s</a>' % (url, name)
+        return '<a href="%s">%s</a>' % (escape(url, 1), escape(name))
 
 
 Globals.default__class_init__(AcceleratedHTTPCacheManager)

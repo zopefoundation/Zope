@@ -21,6 +21,7 @@ $Id$
 from OFS.Cache import Cache, CacheManager
 from OFS.SimpleItem import SimpleItem
 from thread import allocate_lock
+from cgi import escape
 import time
 import Globals
 from Globals import DTMLFile
@@ -433,7 +434,7 @@ class RAMCacheManager (CacheManager, SimpleItem):
         if sort_by == id:
             newsr = not sort_reverse
         url = url + '&sort_reverse=' + (newsr and '1' or '0')
-        return '<a href="%s">%s</a>' % (url, name)
+        return '<a href="%s">%s</a>' % (escape(url, 1), escape(name))
 
 Globals.default__class_init__(RAMCacheManager)
 

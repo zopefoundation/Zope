@@ -12,7 +12,7 @@
 ##############################################################################
 """Version object"""
 
-__version__='$Revision: 1.53 $'[11:-2]
+__version__='$Revision: 1.54 $'[11:-2]
 
 import Globals, time
 from AccessControl.Role import RoleManager
@@ -23,6 +23,7 @@ from OFS.SimpleItem import Item
 from Globals import HTML
 from App.Dialogs import MessageDialog
 from OFS.ObjectManager import BeforeDeleteException
+from cgi import escape
 
 class VersionException(BeforeDeleteException): pass
 
@@ -108,7 +109,7 @@ class Version(Persistent,Implicit,RoleManager,Item):
                 action=REQUEST['URL1']+'/manage_main',
                 message=('If cookies are enabled by your browser, then '
                          'you should have joined version %s.'
-                         % self.id)
+                         % escape(self.id))
                 )
         return RESPONSE.redirect(REQUEST['URL1']+'/manage_main')
 

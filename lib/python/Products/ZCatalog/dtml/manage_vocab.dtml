@@ -10,14 +10,14 @@
 
 <dtml-in words previous size=20 start=query_start >
   <span class="list-nav">
-  <a href="&dtml-URL;?query_start=<dtml-var previous-sequence-start-number>">
+  <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
     [Previous <dtml-var previous-sequence-size> entries]
   </a>
   </span>
 </dtml-in>
 <dtml-in words next size=20 start=query_start >
   <span class="list-nav">
-  <a href="&dtml-URL;?query_start=<dtml-var next-sequence-start-number>">
+  <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
     [Next <dtml-var next-sequence-size> entries]
   </a>
   </span>
@@ -47,7 +47,7 @@
 
 <dtml-in words previous size=20 start=query_start >
   <div class="list-nav">
-  <a href="&dtml-URL;?query_start=<dtml-var previous-sequence-start-number>">
+  <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
     [Previous <dtml-var previous-sequence-size> entries]
   </a>
   </div>
@@ -55,7 +55,7 @@
 
 <dtml-in words next size=20 start=query_start >
   <div class="list-nav">
-  <a href="&dtml-URL;?query_start=<dtml-var next-sequence-start-number>">
+  <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
     [Next <dtml-var next-sequence-size> entries]
   </a>
   </div>

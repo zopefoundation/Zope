@@ -35,12 +35,12 @@ function toggleSelect() {
 </p>
   <div class="form-text">
   <dtml-in searchResults previous size=20 start=query_start >
-    <a href="&dtml-URL;?query_start=<dtml-var previous-sequence-start-number>">
+    <a href="&dtml-URL;?query_start=&dtml-previous-sequence-start-number;">
       [Previous <dtml-var previous-sequence-size> entries]
     </a>
   </dtml-in>
   <dtml-in searchResults next size=20 start=query_start >
-    <a href="&dtml-URL;?query_start=<dtml-var next-sequence-start-number>">
+    <a href="&dtml-URL;?query_start=&dtml-next-sequence-start-number;">
       [Next <dtml-var next-sequence-size> entries]
     </a>
   </dtml-in>

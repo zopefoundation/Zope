@@ -13,6 +13,7 @@
 import OFS.Folder
 from HelpSys.HelpTopic import TextTopic
 from Globals import HTML, DTMLFile, MessageDialog
+from cgi import escape
 import DateTime
 import DocumentTemplate
 import StructuredText
@@ -98,7 +99,8 @@ window.open("%s/manage_main", "manage_main");
 <a href="%s/manage_main" target="manage_main"
 onClick="javascript:window.open('%s/manage_main', 'manage_main').focus()"
 >Show lesson examples</a> in another window.
-</p>""" % (url, url, url)
+</p>""" % (url.replace('"', '\\"'), escape(url, 1),
+           escape(url, 1).replace("'", "\\'"))
 
 
     tutorialNavigation=DTMLFile('dtml/tutorialNav', globals())

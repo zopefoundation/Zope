@@ -8,6 +8,7 @@ from ZPublisher.BeforeTraverse import \
  registerBeforeTraverse, unregisterBeforeTraverse, queryBeforeTraverse, \
  NameCaller
 import os
+from cgi import escape
 
 SUPPRESS_ACCESSRULE = os.environ.has_key('SUPPRESS_ACCESSRULE')
 
@@ -60,12 +61,13 @@ def manage_addAccessRule(self, method_id=None, REQUEST=None, **ignored):
         if REQUEST:
             return MessageDialog(title='Access Rule Set',
               message='"%s" is now the Access Rule for this object'
-                      % method_id,
+                      % escape(method_id),
               action='%s/manage_main' % REQUEST['URL1'])
     else:
         if REQUEST:
             return MessageDialog(title='Invalid Method Id',
-              message='"%s" is not the Id of a method of this object' % method_id,
+              message='"%s" is not the Id of a method of this object'
+                      % escape(method_id),
               action='%s/manage_main' % REQUEST['URL1'])
 
 def getAccessRule(self, REQUEST=None):
