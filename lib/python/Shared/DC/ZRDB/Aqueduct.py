@@ -84,8 +84,8 @@
 ##############################################################################
 __doc__='''Shared classes and functions
 
-$Id: Aqueduct.py,v 1.34 1999/07/21 13:31:56 jim Exp $'''
-__version__='$Revision: 1.34 $'[11:-2]
+$Id: Aqueduct.py,v 1.35 1999/07/21 13:33:08 jim Exp $'''
+__version__='$Revision: 1.35 $'[11:-2]
 
 import Globals, os
 from Globals import HTMLFile, Persistent
@@ -366,7 +366,7 @@ def parse(text,
                 l=len(grps[0])
         else:
             ts_results = unparmre.match_group(text, (1,2))
-            if ts_reults:
+            if ts_results:
                 start, grps = ts_results
                 name=grps[1]
                 l=len(grps[0])
