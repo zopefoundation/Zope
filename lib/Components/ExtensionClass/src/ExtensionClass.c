@@ -21,7 +21,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.53 2002/06/10 22:48:46 jeremy Exp $\n"
+"$Id: ExtensionClass.c,v 1.54 2002/06/18 22:40:15 jeremy Exp $\n"
 ;
 
 #include <stdio.h>
@@ -821,6 +821,34 @@ PMethod_call(PMethod *self, PyObject *args, PyObject *kw)
 }
 
 static PyObject *
+PMethod_repr(PMethod *self)
+{
+    char *func_name, buf[8192];
+    int n;
+
+    func_name = PyString_AS_STRING(((PyFunctionObject*)self->meth)->func_name);
+    if (self->self) {
+	PyObject *repr = PyObject_Repr(self->self);
+	if (!repr)
+	    return NULL;
+	n = snprintf(buf, sizeof(buf),
+		     "<bound method %s.%s of %s>",
+		     self->type->tp_name, func_name,
+		     PyString_AS_STRING(repr));
+	if (n == -1)
+	    n = sizeof(buf) - 1;
+    }
+    else {
+	n = snprintf(buf, sizeof(buf),
+		     "<unbound method %s.%s>",
+		     self->type->tp_name, func_name);
+	if (n == -1)
+	    n = sizeof(buf) - 1;
+    }
+    return PyString_FromStringAndSize(buf, n);
+}
+
+static PyObject *
 PMethod_getattro(PMethod *self, PyObject *oname)
 {
   PyObject *r;
@@ -924,7 +952,7 @@ static PyTypeObject PMethodType = {
   0,					/*tp_getattr*/
   (setattrfunc)0,			/*tp_setattr*/
   (cmpfunc)0,				/*tp_compare*/
-  (reprfunc)0,				/*tp_repr*/
+  (reprfunc)PMethod_repr,		/*tp_repr*/
   0,					/*tp_as_number*/
   0,					/*tp_as_sequence*/
   0,					/*tp_as_mapping*/
