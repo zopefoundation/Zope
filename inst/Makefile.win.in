@@ -1,0 +1,86 @@
+# Zope2 build and install Makefile for win32 (nmake-style).
+
+# We do as much as possible in Python in order to avoid needing to
+# learn autoconf or some other awful thing. ;-)
+
+NAME=Zope
+MAJOR_VERSION=<<ZOPE_MAJOR_VERSION>>
+MINOR_VERSION=<<ZOPE_MINOR_VERSION>>
+RELEASE_TAG=<<VERSION_RELEASE_TAG>>
+PACKAGE_NAME=$(NAME)-$(MAJOR_VERSION).$(MINOR_VERSION)-$(RELEASE_TAG)
+
+PYTHON="<<PYTHON>>"
+PREFIX=<<PREFIX>>
+BASE_DIR=<<BASE_DIR>>
+BUILD_BASE=<<BUILD_BASE>>
+DISTUTILS_OPTS=<<DISTUTILS_OPTS>>
+INSTALL_FLAGS=<<INSTALL_FLAGS>>
+BUILD_SUBDIR=build
+BUILD_FLAGS=--build-base="$(BUILD_BASE)" \
+            --build-lib="$(BUILD_BASE)\$(BUILD_SUBDIR)" \
+            --build-scripts="$(BUILD_BASE)\$(BUILD_SUBDIR)\build_scripts.tmp" \
+            --build-temp="$(BUILD_BASE)\$(BUILD_SUBDIR)\build_temp.tmp"
+
+RM=del /f /q
+!IF ("$(OS)" == "Windows_NT")
+RMRF=rmdir /s /q
+!ELSE
+RMRF=deltree /y
+!ENDIF
+CD=cd
+XCOPY=xcopy /i /s /e /y
+COPY=copy
+
+.PHONY : clean install uninstall instance untestinst testinst
+
+default: build
+
+build:
+	$(PYTHON) "$(BASE_DIR)\inst\setup.py" \
+            $(DISTUTILS_OPTS) build $(BUILD_FLAGS)
+	@ echo.
+	@ echo Zope built.  Next, do 'nmake install' (or 'nmake instance'
+	@ echo to run a Zope instance directly from the build directory).
+	@ echo.
+
+install: build
+	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) install \
+           --prefix="$(PREFIX)" $(BUILD_FLAGS) $(INSTALL_FLAGS)
+	@ echo.
+	@ echo Zope binaries installed successfully.
+	@ echo Now run '$(PYTHON) $(PREFIX)\bin\mkzopeinstance'
+
+instance: build
+	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) build_ext -i
+	$(PYTHON) "$(BASE_DIR)\bin\mkzopeinstance" .
+
+# testinst makes an instance home in the build directory without asking
+# any questions.  this is useful when testing.  instances made with
+# this can be removed via "make untestinst"
+testinst: build
+	$(PYTHON) "$(BASE_DIR)\inst\setup.py" $(DISTUTILS_OPTS) build_ext -i
+	$(PYTHON) "$(BASE_DIR)\bin\mkzopeinstance" --user=admin:admin .
+
+# remove the instance files made with testinst (w/ prejudice)
+untestinst:
+	$(RM) "$(BASE_DIR)/bin/zopectl.py"
+	$(RM) "$(BASE_DIR)/bin/ntservice.py"
+	$(RMRF) "$(BASE_DIR)/etc"
+	$(RMRF) "$(BASE_DIR)/log"
+
+uninstall:
+	$(RMRF) "$(PREFIX)"
+
+TESTOPTS=-v1 -d lib/python
+
+test: build
+	$(PYTHON) "$(BASE_DIR)\utilities\testrunner.py" $(TESTOPTS)
+
+clean:
+	$(RMRF) "$(BUILD_BASE)\$(BUILD_SUBDIR)"
+	$(CD) "$(BASE_DIR)
+	$(RM) /s *.pyc *pyo
+
+clobber: clean untestinst
+	$(RM) /s *.obj *.pyd 
+

@@ -102,6 +102,8 @@ Configuration:
 
 Options:
 
+  --quiet                       suppress nonessential output
+
   --ignore-zlib                 allow configuration to proceeed if
                                 Python zlib module is not found.
 
