@@ -1,6 +1,6 @@
 /*
 
-  $Id: Acquisition.c,v 1.21 1998/05/07 22:10:49 jim Exp $
+  $Id: Acquisition.c,v 1.22 1998/05/20 17:17:17 jim Exp $
 
   Acquisition Wrappers -- Implementation of acquisition through wrappers
 
@@ -312,7 +312,7 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 		PyObject *filter, PyObject *extra, PyObject *orig,
 		int sob, int sco)
 {
-  PyObject *r;
+  PyObject *r, *v, *tb;
   char *name;
 
   name=PyString_AsString(oname);
@@ -321,7 +321,20 @@ Wrapper_acquire(Wrapper *self, PyObject *oname,
 
   if(sob && self->obj)
     {
-      if((r=PyObject_GetAttr(self->obj,oname)))
+      if(isWrapper(self->obj))
+	{
+	  r=Wrapper_acquire((Wrapper*)self->obj,
+			    oname,filter,extra,orig,1,1);
+	  if(r) goto acquired;
+	  PyErr_Fetch(&r,&v,&tb);
+	  if(r != PyExc_AttributeError || PyObject_Compare(v,oname) != 0)
+	    {
+	      PyErr_Restore(r,v,tb);
+	      return NULL;
+	    }
+	  r=NULL;
+	}
+      else if((r=PyObject_GetAttr(self->obj,oname)))
 	{
 	  if(isWrapper(r) && WRAPPER(r)->container==self->obj)
 	    {
@@ -893,7 +906,7 @@ void
 initAcquisition()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.21 $";
+  char *rev="$Revision: 1.22 $";
   PURE_MIXIN_CLASS(Acquirer,
     "Base class for objects that implicitly"
     " acquire attributes from containers\n"
@@ -912,7 +925,7 @@ initAcquisition()
   /* Create the module and add the functions */
   m = Py_InitModule4("Acquisition", methods,
 	   "Provide base classes for acquiring objects\n\n"
-	   "$Id: Acquisition.c,v 1.21 1998/05/07 22:10:49 jim Exp $\n",
+	   "$Id: Acquisition.c,v 1.22 1998/05/20 17:17:17 jim Exp $\n",
 		     OBJECT(NULL),PYTHON_API_VERSION);
 
   d = PyModule_GetDict(m);
@@ -935,6 +948,10 @@ initAcquisition()
 
 /*****************************************************************************
   $Log: Acquisition.c,v $
+  Revision 1.22  1998/05/20 17:17:17  jim
+  Fixed a bug in aq_acquire machinery.  If aq_self was a wrapper,
+  then aq_acquire needed to be called on it, but that wasn't hapenning.
+
   Revision 1.21  1998/05/07 22:10:49  jim
   Added aq_inContextOf method.
 
