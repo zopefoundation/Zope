@@ -15,7 +15,7 @@
 """Berkeley storage with full undo and versioning support.
 """
 
-__version__ = '$Revision: 1.60 $'.split()[-2:][0]
+__version__ = '$Revision: 1.61 $'.split()[-2:][0]
 
 import time
 import cPickle as pickle
@@ -575,20 +575,28 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # Get the metadata for the previous revision, so that we can dig out
         # the non-version revid, but only if there /is/ a previous revision
         if prevrevid <> ZERO:
-            ovid, onvrevid = unpack(
-                '>8s8s', self._metadata[oid+prevrevid][:16])
-            if ovid == ZERO:
-                # The last revision of this object was made on the
-                # non-version, we don't care where the current change is
-                # made.  But if we're storing this change on a version then
-                # the non-version revid will be the previous revid
-                if version:
-                    nvrevid = prevrevid
+            try:
+                ovid, onvrevid = unpack(
+                    '>8s8s', self._metadata[oid+prevrevid][:16])
+            except KeyError:
+                # prev_txn is just a hint.  If the transaction it points to
+                # does not exist, perhaps because it's been packed away, just
+                # ignore it.  Also, check to see if the data matches.  If
+                # not...
+                prevrevid = ZERO
             else:
-                # We're making another change to this object on this version.
-                # The non-version revid is the same as for the previous
-                # revision of the object.
-                nvrevid = onvrevid
+                if ovid == ZERO:
+                    # The last revision of this object was made on the
+                    # non-version, we don't care where the current change is
+                    # made.  But if we're storing this change on a version
+                    # then the non-version revid will be the previous revid
+                    if version:
+                        nvrevid = prevrevid
+                else:
+                    # We're making another change to this object on this
+                    # version.  The non-version revid is the same as for the
+                    # previous revision of the object.
+                    nvrevid = onvrevid
         # Check for George Bailey Events
         if data is None:
             lrevid = DNE
@@ -629,8 +637,14 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
         # - data can be None, which indicates a George Bailey object
         #   (i.e. one who's creation has been transactionally undone).
         #
-        # If prev_txn is not None, it should contain the same data as
-        # the argument data.  If it does, write a backpointer to it.
+        # prev_txn is a backpointer.  In the original database, it's possible
+        # that the data was actually living in a previous transaction.  This
+        # can happen for transactional undo and other operations, and is used
+        # as a space saving optimization.  Under some circumstances the
+        # prev_txn may not actually exist in the target database (i.e. self)
+        # for example, if it's been packed away.  In that case, the prev_txn
+        # should be considered just a hint, and is ignored if the transaction
+        # doesn't exist.
         if transaction is not self._transaction:
             raise POSException.StorageTransactionError(self, transaction)
         self._lock_acquire()
@@ -1759,6 +1773,11 @@ class _TransactionsIterator(_GetItemBase):
         self._stop = stop
         self._closed = False
         self._first = True
+
+    def __len__(self):
+        # This is a lie.  It's here only for Python 2.1 support for
+        # list()-ifying these objects.
+        return 0
 
     def next(self):
         """Return the ith item in the sequence of transaction data.
