@@ -98,7 +98,7 @@ class Script:
     def ZScriptHTML_tryAction(REQUEST, argvars):
         """
 
-        Apply the test parameters. provided by the dictionary 'argvars'.
+        Apply the test parameters provided by the dictionary 'argvars'.
         This will call the current script with the given arguments and
         return the result.
 
