@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: SendMailTag.py,v 1.8 2000/06/19 19:52:26 brian Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: SendMailTag.py,v 1.9 2000/06/20 18:10:47 brian Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 from MailHost import MailBase
 from DocumentTemplate.DT_Util import *
@@ -182,8 +182,7 @@ class SendMailTag:
             mhost=md[self.mailhost]
         elif self.smtphost:
             mhost=MailBase()
-            mhost._init(localHost=gethostname(), smtpHost=self.smtphost,
-                        smtpPort=self.port)
+            mhost._init(self.smtphost, self.port)
 
         mhost.send(self.section(md.this, md), self.mailto, self.mailfrom,
                    self.subject, self.encode)

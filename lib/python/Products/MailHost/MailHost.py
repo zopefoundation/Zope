@@ -84,8 +84,8 @@
 ##############################################################################
 """SMTP mail objects
 
-$Id: MailHost.py,v 1.54 2000/06/19 19:52:26 brian Exp $"""
-__version__ = "$Revision: 1.54 $"[11:-2]
+$Id: MailHost.py,v 1.55 2000/06/20 18:10:47 brian Exp $"""
+__version__ = "$Revision: 1.55 $"[11:-2]
 
 from Globals import Persistent, HTMLFile, HTML, MessageDialog
 from smtplib import SMTP
@@ -122,8 +122,6 @@ def add(self, id, title='', smtp_host=None,
     if REQUEST is not None:
         REQUEST['RESPONSE'].redirect(self.absolute_url()+'/manage_main')
 
-import pdb
-
 class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
     'a mailhost...?'
     meta_type='Mail Host'
@@ -137,7 +135,7 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
         (
         {'icon':'', 'label':'Edit',
          'action':'manage_main', 'target':'manage_main',
-         'help':('MailHost','Mail-Host_Edit.stx')},
+         'help':('MailHost','Mail-Host_Edit.dtml')},
         )
         +OFS.SimpleItem.Item.manage_options
         +RoleManager.manage_options
@@ -201,8 +199,6 @@ class MailBase(Acquisition.Implicit, OFS.SimpleItem.Item, RoleManager):
 
     def send(self, messageText, mto=None, mfrom=None, subject=None,
              encode=None):
-
-#        pdb.set_trace()
         headers = extractheaders(messageText)
 
         if not headers['subject']:
