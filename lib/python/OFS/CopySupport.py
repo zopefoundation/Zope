@@ -1,7 +1,7 @@
 __doc__="""Copy interface"""
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
-import sys, Globals, Moniker, tempfile
+import sys, string, Globals, Moniker, tempfile
 from marshal import loads, dumps
 from urllib import quote, unquote
 from zlib import compress, decompress
@@ -215,19 +215,32 @@ class CopyContainer:
                 method_name=d['action']
                 break
         if method_name is not None:
+
+
             if hasattr(self, method_name):
                 meth=getattr(self, method_name)
-                if hasattr(meth, '__roles__'):
-                    roles=meth.__roles__
-                    user=REQUEST.get('AUTHENTICATED_USER', None)
-                    __traceback_info__=method_name, user
-                    if (not hasattr(user, 'hasRole') or
-                        not user.hasRole(None, roles)):
-                        raise 'Unauthorized', (
-                              """You are not authorized to perform this
-                                 operation."""
-                              )
-                    return
+            else:
+                # Handle strange names that come from the Product
+                # machinery ;(
+                mn=string.split(method_name, '/')
+                if len(mn) > 1:
+                    pname= mn[1]
+                    product=self.aq_acquire('_getProducts')()._product(pname)
+                    fname=mn[2]
+                    factory=getattr(product, fname)
+                    meth=getattr(factory, factory.initial)
+
+            if hasattr(meth, '__roles__'):
+                roles=meth.__roles__
+                user=REQUEST.get('AUTHENTICATED_USER', None)
+                __traceback_info__=method_name, user
+                if (not hasattr(user, 'hasRole') or
+                    not user.hasRole(None, roles)):
+                    raise 'Unauthorized', (
+                          """You are not authorized to perform this
+                             operation."""
+                          )
+                return
         raise CopyError, MessageDialog(
               title='Not Supported',
               message='The object <EM>%s</EM> does not support this ' \
@@ -382,6 +395,9 @@ eNotSupported=fMessageDialog(
 ############################################################################## 
 #
 # $Log: CopySupport.py,v $
+# Revision 1.21  1998/09/21 20:01:50  brian
+# Added support for pasting of "Product" based objects
+#
 # Revision 1.20  1998/08/26 18:33:44  brian
 # Updated permissions in Folder folder for the copy/paste methods and added
 # cvs log to Folder.py
