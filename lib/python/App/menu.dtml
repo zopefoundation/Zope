@@ -21,7 +21,7 @@
   </TD>
 </TR>
 </TABLE>
-<!--#tree sort=title_or_id nowrap=1-->
+<!--#tree sort=id nowrap=1-->
 <A HREF="<!--#var tree-item-url-->/manage_main" TARGET="manage_main">
 <IMG SRC="<!--#var SCRIPT_NAME-->/<!--#var icon-->" BORDER="0"
  ALT="Click to open this item"></A> 
