@@ -84,12 +84,12 @@
 ##############################################################################
 """Help system support module"""
 
-__version__='$Revision: 1.5 $'[11:-2]
+__version__='$Revision: 1.6 $'[11:-2]
 
 
 import Globals, Acquisition
 import StructuredText.StructuredText
-import sys, os, string, ts_regex
+import sys, os, string, regex
 
 
 stx_class=StructuredText.StructuredText.HTML
@@ -282,8 +282,8 @@ class classobject(object):
 
 
 
-pre_match=ts_regex.compile('[A-Za-z0-9_]*([^)]*)[ -]*').match
-sig_match=ts_regex.compile('[A-Za-z0-9_]*([^)]*)').match
+pre_match=regex.compile('[A-Za-z0-9_]*([^)]*)[ -]*').match #TS
+sig_match=regex.compile('[A-Za-z0-9_]*([^)]*)').match #TS
 
 class methodobject(object):
 

@@ -84,10 +84,10 @@
 ##############################################################################
 """Encapsulation of date/time values"""
 
-__version__='$Revision: 1.36 $'[11:-2]
+__version__='$Revision: 1.37 $'[11:-2]
 
 
-import sys, os, math, regex, DateTimeZone
+import sys, os, math, regex, ts_regex, DateTimeZone
 from string import strip,split,upper,lower,atoi,atof,find,join
 from time import time, gmtime, localtime, asctime
 from time import timezone, strftime, mktime
@@ -112,7 +112,7 @@ CENTURY=1900
 jd1901 =2415385L
 
 
-numericTimeZoneMatch=regex.compile('[+-][\0-\9][\0-\9][\0-\9][\0-\9]').match
+numericTimeZoneMatch=regex.compile('[+-][\0-\9][\0-\9][\0-\9][\0-\9]').match #TS
 
 
 
@@ -637,9 +637,9 @@ class DateTime:
     DateTimeError='DateTimeError'
     SyntaxError  ='Invalid Date-Time String'
     DateError    ='Invalid Date Components'
-    int_pattern  =regex.compile('\([0-9]+\)')
-    flt_pattern  =regex.compile(':\([0-9]+\.[0-9]+\)')
-    name_pattern =regex.compile('\([a-z][a-z]+\)', regex.casefold)
+    int_pattern  =ts_regex.compile('\([0-9]+\)') #TS
+    flt_pattern  =ts_regex.compile(':\([0-9]+\.[0-9]+\)') #TS
+    name_pattern =ts_regex.compile('\([a-z][a-z]+\)', ts_regex.casefold) #TS
     space_chars  =' \t\n'
     delimiters   ='-/.:,'
     _month_len  =((0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31), 
@@ -727,14 +727,21 @@ class DateTime:
             # dot-separated date string such as '1999.12.31'.
             if i > 0: b=i-1
             else: b=i
-            if fltpat.match(string, b) >= 0:
-                s=fltpat.group(1)
+
+	    ts_results = fltpat.match_group(string, (1,), b)
+            if ts_results:
+                #s=ts_results[1][0]
+                s=ts_results[1]
                 i=i+len(s)
                 ints.append(atof(s))
                 continue
             
-            if intpat.match(string,i) >= 0:
-                s=intpat.group(1)
+	    #TS
+	    ts_results = intpat.match_group(string, (1,), i)
+            if ts_results: 
+                #s=ts_results[1][0]
+                s=ts_results[1]
+
                 ls=len(s)
                 i=i+ls
                 if (ls==4 and d and d in '+-' and
@@ -745,8 +752,10 @@ class DateTime:
                     ints.append(v)
                 continue
 
-            if wordpat.match(string,i) >= 0:
-                o,s=wordpat.group(1),lower(wordpat.group(1))
+
+	    ts_results = wordpat.match_group(string, (1,), i)
+            if ts_results:
+                o,s=ts_results[1],lower(ts_results[1])
                 i=i+len(s)
                 if i < l and string[i]=='.': i=i+1
                 # Check for month name:
