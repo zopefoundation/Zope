@@ -47,9 +47,9 @@
   <!--#var meta_type-->
   <!--#else-->
   Object
-  <!--#/if-->
-  at <!--#var SCRIPT_NAME--><!--#var 
-  expr="PATH_INFO[:(_.string.rfind(PATH_INFO,'/'))]"-->
+  <!--#/if--> 
+  at /<!--#var 
+  expr="tabs_path_info(SCRIPT_NAME, PATH_INFO)"-->
   </STRONG>
   </TD>
 </TR>
