@@ -149,7 +149,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         if name[-9:]=='__draft__': return getattr(self, name)
 
         
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             jar=Globals.VersionBase[self._version].jar
@@ -168,7 +168,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
         return getattr(self, name)
     
     def nonempty(self):        
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             return Globals.VersionBase[self._version].nonempty()
@@ -180,7 +180,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
 
     def manage_Save__draft__(self, remark, REQUEST=None):
         """Make version changes permanent"""
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             Globals.VersionBase[self._version].commit(remark)
@@ -196,7 +196,7 @@ class Draft(Persistent, Implicit, SimpleItem.Item):
 
     def manage_Discard__draft__(self, REQUEST=None):
         'Discard changes made during the version'
-        try: db=self._jar.db()
+        try: db=self._p_jar.db()
         except:
             # BoboPOS 2
             Globals.VersionBase[self._version].abort()
