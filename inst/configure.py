@@ -38,7 +38,7 @@ def main():
     MAKEFILE=open(os.path.join(BASE_DIR, 'inst', IN_MAKEFILE)).read()
     REQUIRE_LF_ENABLED = 1
     REQUIRE_ZLIB = 1
-    REQURE_PYEXPAT = 1 
+    REQUIRE_PYEXPAT = 1 
     INSTALL_FLAGS = ''
     DISTUTILS_OPTS = ''
     try:
