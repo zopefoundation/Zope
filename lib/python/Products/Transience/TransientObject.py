@@ -26,10 +26,11 @@ from Products.Transience.TransienceInterfaces import ItemWithId, Transient, \
 from AccessControl import ClassSecurityInfo
 import Globals
 import logging
+import sys
 from ZODB.POSException import ConflictError
 
 DEBUG = int(os.environ.get('Z_TOC_DEBUG', 0))
-LOG = logging.getLogger('Zope.Transience')
+LOG = logging.getLogger('Zope.TransientObject')
 
 def TLOG(*args):
     sargs = []
@@ -149,10 +150,12 @@ class TransientObject(Persistent, Implicit):
         return 0
 
     def clear(self):
+        self._p_changed = 1
         self._container.clear()
         self.setLastModified()
 
     def update(self, d):
+        self._p_changed = 1
         for k in d.keys():
             self[k] = d[k]
 
@@ -161,6 +164,7 @@ class TransientObject(Persistent, Implicit):
     #
 
     def __setitem__(self, k, v):
+        self._p_changed = 1
         self._container[k] = v
         self.setLastModified()
 
@@ -168,6 +172,7 @@ class TransientObject(Persistent, Implicit):
         return self._container[k]
 
     def __delitem__(self, k):
+        self._p_changed = 1
         del self._container[k]
         self.setLastModified()
 
