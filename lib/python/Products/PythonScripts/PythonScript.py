@@ -89,7 +89,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys, os, traceback, re
 from Globals import DTMLFile, package_home
@@ -280,7 +280,7 @@ class PythonScript(Script, Historical, Cacheable):
             return
         self._makeFunction(1)
 
-    def _exec(self, globals, args, kw):
+    def _exec(self, bound_names, args, kw):
         """Call a Python Script
 
         Calling a Python Script is an actual function invocation.
@@ -309,11 +309,11 @@ class PythonScript(Script, Historical, Cacheable):
         if f is None:
             f = self._makeFunction()
 
-        __traceback_info__ = globals, args, kw, self.func_defaults
+        __traceback_info__ = bound_names, args, kw, self.func_defaults
 
-        if globals is not None:
+        if bound_names is not None:
             # Updating func_globals directly *should* be thread-safe.
-            f.func_globals.update(globals)
+            f.func_globals.update(bound_names)
     
         # Execute the function in a new security context.
         security=getSecurityManager()
