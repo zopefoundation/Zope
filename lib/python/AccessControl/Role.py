@@ -84,7 +84,7 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.41 $'[11:-2]
+__version__='$Revision: 1.42 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
@@ -249,7 +249,8 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
         _method_manage_access=HTMLFile('methodAccess', globals()),
         **kw):
         "Return an interface for making permissions settings"
-        if self._isBeingUsedAsAMethod():
+        if hasattr(self, '_isBeingUsedAsAMethod') and \
+           self._isBeingUsedAsAMethod():
             return apply(_method_manage_access,(trueself, self, REQUEST), kw)
         else:
             return apply(_normal_manage_access,(trueself, self, REQUEST), kw)
