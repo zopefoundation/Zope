@@ -6,6 +6,19 @@ Zope Changes
 
   Releases
 
+    Zope 1.9 beta 3
+
+      New Features
+
+        - Z SQL Methods (FKA Aqueduct) and the Z Gadfly Database Adapter
+          are now included.
+
+        - The argument handling for ZopeHTTPServer has been changed to 
+          be a bit more flexible wrt the order of argumements.  
+          While options must still come first, environment settings
+          can be given in any order.  This makes startup scripts loke
+          serve.py quite a bit simpler.
+
     Zope 1.9 beta 2
 
       In addition to various documentation updates, this release includes:
