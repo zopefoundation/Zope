@@ -24,6 +24,10 @@ Zope Changes
 
     Bugs Fixed
 
+     - Collector #771: ZCatalog failed to index DTML Document if the name
+       of a catalog metadata was identical with the name of an acquired
+       object.
+
      - Collector #686: intSets no longer lose their values.
 
      - Collector #685: Improved documentation explaining how, where and 
