@@ -13,8 +13,8 @@
 __doc__='''Define Zope\'s default security policy
 
 
-$Id: ZopeSecurityPolicy.py,v 1.21 2002/10/01 14:09:46 gvanrossum Exp $'''
-__version__='$Revision: 1.21 $'[11:-2]
+$Id: ZopeSecurityPolicy.py,v 1.22 2003/06/09 16:26:39 shane Exp $'''
+__version__='$Revision: 1.22 $'[11:-2]
 
 
 _use_python_impl = 0
@@ -115,16 +115,22 @@ if _use_python_impl:
 
                 roles=getattr(container, '__roles__', _noroles)
                 if roles is _noroles:
+                    # Try to acquire __roles__.  If it can't be
+                    # acquired, the value is unprotected.  Deny access
+                    # to acquired unprotected values even if they are
+                    # in a simple container.
                     if containerbase is container:
                         # Container is not wrapped.
                         roles=_noroles
-                        if containerbase is not accessedbase: return 0
+                        if containerbase is not accessedbase:
+                            return 0
                     else:
                         # Try to acquire roles
                         try: roles = container.aq_acquire('__roles__')
                         except AttributeError:
                             roles=_noroles
-                            if containerbase is not accessedbase: return 0
+                            if containerbase is not accessedbase:
+                                return 0
 
                 # We need to make sure that we are allowed to
                 # get unprotected attributes from the container. We are
