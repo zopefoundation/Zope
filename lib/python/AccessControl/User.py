@@ -1,6 +1,6 @@
 """Access control package"""
 
-__version__='$Revision: 1.61 $'[11:-2]
+__version__='$Revision: 1.62 $'[11:-2]
 
 import Globals, App.Undo, socket, regex
 from Globals import HTMLFile, MessageDialog, Persistent, PersistentMapping
@@ -182,7 +182,11 @@ try:
     super=User(data[0],data[1],('manage',), ds)
     del data
 except:
-    super=User('superuser','123',('manage',),[])
+    raise 'InstallError', 'No access file found - see INSTALL.txt'
+
+
+
+
 super.allowed=lambda parent, roles=None: 1
 super.has_role=lambda roles=None: 1
 super.hasRole=super.allowed
