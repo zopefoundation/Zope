@@ -468,8 +468,8 @@ err:
 }
 
 static struct PyMethodDef Splitter_module_methods[] = {
-    { "Splitter", (PyCFunction)get_Splitter, METH_VARARGS,
-      "Splitter(doc[,synstop]) -- Return a word splitter" },
+    { "ZopeSplitter", (PyCFunction)get_Splitter, METH_VARARGS,
+      "ZopeSplitter(doc[,synstop]) -- Return a word splitter" },
     { NULL, NULL }
 };
 
@@ -478,18 +478,18 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.2 2001/05/30 15:57:35 andreas Exp $\n"
+"$Id: ZopeSplitter.c,v 1.2 2001/08/07 19:40:06 andreasjung Exp $\n"
 ;
 
 
 void
-initSplitter(void)
+initZopeSplitter(void)
 {
   PyObject *m, *d;
   char *rev="$Revision: 1.2 $";
   
   /* Create the module and add the functions */
-  m = Py_InitModule4("Splitter", Splitter_module_methods,
+  m = Py_InitModule4("ZopeSplitter", Splitter_module_methods,
                      Splitter_module_documentation,
                      (PyObject*)NULL,PYTHON_API_VERSION);
   

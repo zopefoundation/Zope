@@ -1,1 +1,1 @@
-from Splitter import Splitter
+from ISO_8859_1_Splitter import ISO_8859_1_Splitter as Splitter

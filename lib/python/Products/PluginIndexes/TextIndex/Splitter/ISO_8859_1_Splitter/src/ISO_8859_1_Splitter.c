@@ -523,8 +523,8 @@ err:
 }
 
 static struct PyMethodDef Splitter_module_methods[] = {
-    { "Splitter", (PyCFunction)get_Splitter, METH_VARARGS,
-      "Splitter(doc[,synstop]) -- Return a word splitter" },
+    { "ISO_8859_1_Splitter", (PyCFunction)get_Splitter, METH_VARARGS,
+      "ISO_8859_1_Splitter(doc[,synstop]) -- Return a word splitter" },
     { NULL, NULL }
 };
 
@@ -533,19 +533,19 @@ static char Splitter_module_documentation[] =
 "\n"
 "for use in an inverted index\n"
 "\n"
-"$Id: Splitter.c,v 1.4 2001/06/01 16:09:39 andreas Exp $\n"
+"$Id: ISO_8859_1_Splitter.c,v 1.2 2001/08/07 19:40:06 andreasjung Exp $\n"
 ;
 
 
 void
-initSplitter(void) 
+initISO_8859_1_Splitter(void) 
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.4 $";
+  char *rev="$Revision: 1.2 $";
   
   /* Create the module and add the functions */
   initSplitterTrtabs();
-  m = Py_InitModule4("Splitter", Splitter_module_methods,
+  m = Py_InitModule4("ISO_8859_1_Splitter", Splitter_module_methods,
                      Splitter_module_documentation,
                      (PyObject*)NULL,PYTHON_API_VERSION);
   
