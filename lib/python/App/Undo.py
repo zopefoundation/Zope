@@ -11,10 +11,8 @@
 #
 ##############################################################################
 """
-$Id: Undo.py,v 1.33 2003/07/20 02:55:51 chrism Exp $"""
-__version__='$Revision: 1.33 $'[11:-2]
-
-import base64
+$Id: Undo.py,v 1.34 2003/08/04 09:59:40 andreasjung Exp $"""
+__version__='$Revision: 1.34 $'[11:-2]
 
 from Acquisition import aq_base, aq_parent, aq_inner
 from AccessControl import getSecurityManager
@@ -100,7 +98,6 @@ class UndoSupport(ExtensionClass.Base):
         r = self._p_jar.db().undoInfo(
             first_transaction, last_transaction, spec)
 
-        encode = base64.encodestring
         for d in r:
             d['time']=t=DateTime(d['time'])
             desc = d['description']
