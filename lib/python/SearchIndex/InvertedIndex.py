@@ -30,7 +30,7 @@ Example usage:
     print i['blah']
 
       
-$Id: InvertedIndex.py,v 1.20 1997/03/05 19:28:18 chris Exp $'''
+$Id: InvertedIndex.py,v 1.21 1997/03/20 21:51:01 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -82,6 +82,12 @@ $Id: InvertedIndex.py,v 1.20 1997/03/05 19:28:18 chris Exp $'''
 #   (540) 371-6909
 #
 # $Log: InvertedIndex.py,v $
+# Revision 1.21  1997/03/20 21:51:01  jim
+# Rearranged and, or, and near.
+# Got rid of get/setstate.
+# Made result-list-specific methods use mapping prootcol to make it
+# easier to mix with other mapping types.
+#
 # Revision 1.20  1997/03/05 19:28:18  chris
 # fixed typo
 #
@@ -147,7 +153,7 @@ $Id: InvertedIndex.py,v 1.20 1997/03/05 19:28:18 chris Exp $'''
 #
 #
 # 
-__version__='$Revision: 1.20 $'[11:-2]
+__version__='$Revision: 1.21 $'[11:-2]
 
 
 import regex, regsub, string, copy
@@ -181,7 +187,7 @@ class ResultList:
     '''\
        addentry(document_key, *info)
        add a document and related information to this ResultList'''
-    self._dict[document_key] = info
+    self[document_key] = info
 
 
   def __str__(self):
@@ -194,6 +200,10 @@ class ResultList:
 
   def __getitem__(self, key):
     return self._dict[key]
+
+  def __setitem__(self, key, v):
+    self._dict[key]=v
+    # Note self.__changed__(1) via the 
 
 
   def __delitem__(self, key):
@@ -235,15 +245,27 @@ class ResultList:
        by calculating the geometric mean of each pair of corresponding 
        frequencies.'''
 
-    result = {}
+    result = self.__class__()
 
-    for key in x.keys():
-      try:
-        result[key] = ( pow(self[key][0] * x[key][0], 0.5), None )
-      except KeyError:
-        pass
+    for key,v in self.items():
+	try:
+	    xv=x[key]
+	    v=pow(v[0]*xv[0],0.5), v[1]+xv[1]
+	    result[key] = v
+	except KeyError: pass
 
-    return self.__class__(result)
+    return result
+
+  def and_not(self, x):
+    '''Return items in the reciever that are not in the argument'''
+
+    result = self.__class__()
+
+    for key,v in self.items():
+	try: x[key]
+ 	except KeyError: result[key] = v
+
+    return result
 
   
   def __or__(self, x):
@@ -252,18 +274,14 @@ class ResultList:
        combined by calculating the sum of each pair of corresponding 
        frequencies.'''
 
-    result = {}
+    result = self.__class__()
 
-    for key in self.keys():
-      result[key] = ( self[key][0], None )
-
-    for key in x.keys():
-      try:
-        result[key] = (result[key][0] + x[key][0], None)
-      except KeyError:
-        result[key] = ( x[key][0], None )
-
-    return self.__class__(result)
+    for key,v in self.items():
+	try:
+	    xv=x[key]
+	    v=v[0]+xv[0], v[1]+xv[1]
+	except: pass
+	result[key] = v
 
 
   def Not(self, index):
@@ -305,39 +323,30 @@ class ResultList:
   
        Returns a ResultList containing documents which contain'''
               
-    result = {}
+    result = self.__class__()
 
-    for key in self.keys():
-      try:
-        value = x[key]
-      except KeyError:
-        continue
+    for key,v in self.items():
+	try: value = x[key]
+	except KeyError: value=None
+	if value is None: continue
 
-      positions1 = self[key][1]
-      positions2 = value[1]
+	positions = v[1]+value[1]
+	positions.sort()
+	positionsr=[]
+	rel = pow(v[0] * value[0], 0.5)
 
-      for position1 in positions1:
-        for position2 in positions2:
-
-          if (position1 is None or position2 is None):
-	    break
-
-	  prox = position2 - position1
-	  if ((prox > 0) and (prox <= distance)):
-            rel = pow(self[key][0] * value[0], 0.5)
-
-	    try:
-              pos = result[key][1] + [ position2 ]
-            except KeyError:
-              pos = [ position2 ]
-
-            result[key] = (rel, pos)
-        else:
-          continue
-
-        break
-
-    return self.__class__(result)
+	pl=positions[0]
+	rl=-1
+	for i in range(1,len(positions)):
+	    p=positions[i]
+	    d=p-pl
+	    if d > 0 and d <= distance:
+		if pl != rl: positionsr.append(pl)
+		positionsr.append(p)
+		rl=p
+	    pl=p
+	result[key]=positionsr
+    return result
 
 
   def __getstate__(self):
@@ -624,18 +633,6 @@ class Index:
         d[doc_key] = 1
 
     return d.keys()
-
-  
-  def __getstate__(self):
-    return None
-
-
-  def __setstate__(self, state):
-    pass
-
-
-  def __getinitargs__(self):
-    return (self._index_object, self.list_class)
 
 
 
