@@ -40,7 +40,7 @@
 	<TD align=left>
           <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Change">
 	</TD>
-	<TD align=right>
+	<TD align=left>
 	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Taller">
 	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Shorter">
 	  <INPUT NAME=SUBMIT TYPE="SUBMIT" VALUE="Wider">
