@@ -162,13 +162,15 @@ Examples
             s
 
 
-$Id: Test.py,v 1.35 1999/09/03 21:43:53 jim Exp $
+$Id: Test.py,v 1.36 2001/06/05 20:24:57 fred Exp $
 '''
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, traceback, profile, os, getopt, string
 from time import clock
 repeat_count=100
+TupleType=type(())
+
 
 def main():
     import sys, os, getopt, string
@@ -260,13 +262,11 @@ def publish_module(module_name,
             for k, v in extra.items(): request[k]=v
             response = publish(request, module_name, after_list, debug=debug)
         except SystemExit, v:
-            if hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_info()[2]
+            must_die=sys.exc_info()
             response.exception(must_die)
         except ImportError, v:
-            if type(v) is type(()) and len(v)==3: must_die=v
-            elif hasattr(sys, 'exc_info'): must_die=sys.exc_info()
-            else: must_die = SystemExit, v, sys.exc_info()[2]
+            if isinstance(v, TupleType) and len(v)==3: must_die=v
+            else: must_die=sys.exc_info()
             response.exception(1, v)
         except:
             response.exception()
@@ -411,7 +411,7 @@ def publish(script=None,path_info='/',
         if b: exec b in dbdata
 
         for b in dbdata['breakpoints']:
-            if type(b) is type(()):
+            if isinstance(b, TupleType):
                 apply(db.set_break,b)
             else:
                 fbreak(db,b)    
