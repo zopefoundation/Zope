@@ -31,7 +31,7 @@ from data
   <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN" VALUE="<!--#var HTTP_REFERER-->">
 <!--#else HTTP_REFERER-->
   <INPUT NAME="CANCEL_ACTION" TYPE="HIDDEN"
-   VALUE="<!--#var PARENT_URL-->/manage">
+   VALUE="manage">
 <!--#/if HTTP_REFERER-->
 </td></tr>
 

@@ -60,7 +60,7 @@
   To add a new item, select an item type and click the &quot;Add&quot; button.
   </TD>
   <TD VALIGN="TOP">
-  <FORM ACTION="<!--#var PARENT_URL-->/manage_addObject" METHOD="GET">
+  <FORM ACTION="manage_addObject" METHOD="GET">
   <SELECT NAME="type">
   <!--#in all_meta_types mapping-->
     <OPTION VALUE="<!--#var name-->"><!--#var name-->
@@ -78,7 +78,7 @@
     click the &quot;Delete&quot; button.
     </TD>
     <TD VALIGN="TOP">  
-    <FORM ACTION="<!--#var PARENT_URL-->/manage_delObjects" METHOD="GET">
+    <FORM ACTION="manage_delObjects" METHOD="GET">
     <SELECT NAME="ids:list" MULTIPLE SIZE="5">
     <!--#in objectValues-->
       <OPTION VALUE="<!--#var id-->">
