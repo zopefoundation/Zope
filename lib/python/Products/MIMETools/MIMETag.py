@@ -82,8 +82,8 @@
 # attributions are listed in the accompanying credits file.
 # 
 ##############################################################################
-__rcs_id__='$Id: MIMETag.py,v 1.3 1999/05/20 01:54:02 michel Exp $'
-__version__='$Revision: 1.3 $'[11:-2]
+__rcs_id__='$Id: MIMETag.py,v 1.4 2000/03/16 17:18:26 evan Exp $'
+__version__='$Revision: 1.4 $'[11:-2]
 
 from DocumentTemplate.DT_Util import *
 from DocumentTemplate.DT_String import String
@@ -105,7 +105,12 @@ class MIMETag:
         self.sections = []
 
         for tname, args, section in blocks:
-            args = parse_params(args, type=None, disposition=None,
+            if tname == 'mime':
+                args = parse_params(args, type=None, disposition=None,
+                         encode=None, name=None, multipart=None)
+                self.multipart = args.get('multipart', 'mixed')
+            else:
+                args = parse_params(args, type=None, disposition=None,
                                 encode=None, name=None)
 
             has_key=args.has_key
@@ -143,7 +148,7 @@ class MIMETag:
     def render(self, md):
         contents=[]
         mw = MimeWriter(StringIO())
-        outer = mw.startmultipartbody('mixed')
+        outer = mw.startmultipartbody(self.multipart)
         for x in self.sections:
             inner = mw.nextpart()
             t, d, e, n, b = x
