@@ -1,8 +1,8 @@
 """HTTP 1.1 / WebDAV client library."""
 
-__version__='$Revision: 1.15 $'[11:-2]
+__version__='$Revision: 1.16 $'[11:-2]
 
-import sys, os, string, regex, time, types
+import sys, os, string,  time, types,re
 import socket, httplib, mimetools
 from types import FileType
 from mimetypes import guess_type
@@ -57,8 +57,9 @@ class Resource:
         self.username=username
         self.password=password
         self.url=url
-        if urlregex.match(url) >= 0:
-            host,port,uri=urlregex.group(1,2,3)
+        mo = urlregex(match(url))
+        if mo:
+            host,port,uri=mo.group(1,2,3)
             self.host=host
             self.port=port and string.atoi(port[1:]) or 80
             self.uri=uri or '/'
@@ -156,11 +157,11 @@ class Resource:
             return self.__snd_request('POST', self.uri, headers, body)
 
     def put(self, file='', content_type='', content_enc='',
-            isbin=regex.compile('[\0-\6\177-\277]').search,
+            isbin=re.compile('[\0-\6\177-\277]').search,
             **kw):
         headers=self.__get_headers(kw)
         filetype=type(file)
-        if filetype is type('') and (isbin(file) < 0) and \
+        if filetype is type('') and (isbin(file) is None) and \
            os.path.exists(file):
             ob=open(file, 'rb')
             body=ob.read()
@@ -423,7 +424,8 @@ find_xml="""<?xml version="1.0" encoding="utf-8" ?>
 ##############################################################################
 # Implementation details below here
 
-urlregex=regex.compile('http://\([^:/]+\)\(:[0-9]+\)?\(/.+\)?', regex.casefold)
+
+urlregex=re.compile('http://([^:/]+)(:[0-9]+)?(/.+)?', re.I)
 
 def marshal_string(name, val):
     return '%s=%s' % (name, quote(str(val)))
