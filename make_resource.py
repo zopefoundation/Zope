@@ -97,8 +97,8 @@ print 'Writing the pcgi resource file (ie cgi script), %s.cgi' % name
 cwd=os.environ.get('ZDIR',os.getcwd())
 
 open('%s.cgi' % name,'w').write('''#!%(cwd)s/pcgi/pcgi-wrapper
-PCGI_NAME=Main
-PCGI_MODULE_PATH=%(cwd)s/lib/python/Main.py
+PCGI_NAME=Zope
+PCGI_MODULE_PATH=%(cwd)s/lib/python/Zope
 PCGI_PUBLISHER=%(cwd)s/pcgi/pcgi_publisher.py
 PCGI_EXE=%(python)s
 PCGI_SOCKET_FILE=%(cwd)s/var/pcgi.soc
