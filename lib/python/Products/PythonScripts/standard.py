@@ -90,17 +90,17 @@ Scripts.  It can be accessed from Python with the statement
 "import Products.PythonScripts.standard"
 """
 
-__version__='$Revision: 1.2 $'[11:-2]
+__version__='$Revision: 1.3 $'[11:-2]
 
 from AccessControl import ModuleSecurityInfo, getSecurityManager
 security = ModuleSecurityInfo()
 
-security.public('special_formats')
+security.declarePublic('special_formats')
 from DocumentTemplate.DT_Var import special_formats
 
 from Globals import HTML
 
-security.public('DTML')
+security.declarePublic('DTML')
 class DTML(HTML):
     """DTML objects are DocumentTemplate.HTML objects that allow
        dynamic, temporary creation of restricted DTML."""
