@@ -85,9 +85,9 @@
 
 """Standard management interface support
 
-$Id: Management.py,v 1.40 2001/01/11 22:38:41 chrism Exp $"""
+$Id: Management.py,v 1.41 2001/01/12 20:49:58 shane Exp $"""
 
-__version__='$Revision: 1.40 $'[11:-2]
+__version__='$Revision: 1.41 $'[11:-2]
 
 import sys, Globals, ExtensionClass, urllib
 from Dialogs import MessageDialog
@@ -229,6 +229,9 @@ class Navigation(ExtensionClass.Base):
     manage_logout__roles__=None
     def manage_logout(self):
         """Logout current user"""
+        p = getattr(REQUEST, '_logout_path', None)
+        if p is not None:
+            return apply(self.restrictedTraverse(p))
         return """<html>
 <head><title>Not implmented</title></head>
 <body>
