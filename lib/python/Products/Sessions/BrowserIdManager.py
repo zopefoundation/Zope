@@ -75,7 +75,7 @@
 #
 ############################################################################
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 import Globals
 from Persistence import Persistent
 from ZODB import TimeStamp
@@ -266,7 +266,7 @@ class BrowserIdManager(Item, Persistent, Implicit, RoleManager, Owned, Tabs):
             raise BrowserIdManagerErr, 'There is no current browser id.'
         name = self.getBrowserIdName()
         if '?' in url:
-            return '%s&%s=%s' % (url, name, bid)
+            return '%s&amp;%s=%s' % (url, name, bid)
         else:
             return '%s?%s=%s' % (url, name, bid)
 
