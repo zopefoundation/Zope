@@ -329,7 +329,8 @@ class Bindings:
         # Try to find unbound parameters in the namespace, if the
         # namespace is bound.
         if self.getBindingAssignments().isNameAssigned('name_ns'):
-            for name in self.func_code.co_varnames:
+            code = self.func_code
+            for name in code.co_varnames[:code.co_argcount]:
                 try:
                     namevals[name] = namespace[name]
                 except KeyError:

@@ -166,6 +166,15 @@ class CodeBlock:
         self.munge_data = {}
         self.munge(f.func_code)
 
+        stack = []
+        max_stack = 0
+        for op in f.func_code.co_code.opcodes:
+            try: op.execute(stack)
+            except: stack = []
+            max_stack = max(max_stack, len(stack))
+        if max_stack > f.func_code.co_stacksize:
+            f.func_code.set_stacksize(max_stack)
+
         if not self.errors: self.t = f.as_tuple()
 
     def munge(self, fc, depth=0):
@@ -198,7 +207,7 @@ class CodeBlock:
                 window.do_op()
             elif op and forbid.get(op.op, 0):
                 errors.append(self.forbidden % (opname, line))
-                window.do_op() #???
+                window.do_op() # This is necessary to track stack usage.
             else:
                 for m in mungers:
                     handler = getattr(m, opname, None)
@@ -217,6 +226,7 @@ class CodeBlock:
                         break
                 else:
                     window.do_op()
+
     def __call__(self, *args, **kargs):
         F = code_editor.Function(self.t)
         F.func_globals = self.globals
@@ -417,13 +427,10 @@ def GuardedBinaryOps(guards):
 def _wrap(w):
     load_guard = ((ops.LOAD_FAST,), ((guard,),))
     # Load the guard function before the guarded object, call after.
-    w.insert_code(load_guard, w.before_code_for(spos))
-    if spos == 0:
-        w.set_code(0, cf1)
-    else:
-        iops = w.insert_code(cf1, w.after_code_for(spos))
-        # Fix the execution stack.
-        if w.use_stack: w.stack[spos] = (w.stack[spos][0], iops[0])
+    iops1 = w.insert_code(load_guard, w.before_code_for(spos))
+    iops2 = w.insert_code(cf1, w.after_code_for(spos))
+    # Fix the execution stack.
+    if w.use_stack: w.stack[spos] = (iops1[0], iops2[0])
 
 def _WriteGuardWrapper():
     def model_handler(self, *args):

@@ -252,6 +252,8 @@ class EditableCodeWorker:
         self.co_name = name
     def set_filename(self, filename):
         self.co_filename = filename
+    def set_stacksize(self, stacksize):
+        self.co_stacksize = stacksize
     def as_tuple(self):
         # the assembling might change co_names or co_varnames - so
         # make sure it's done *before* we start gathering them.
