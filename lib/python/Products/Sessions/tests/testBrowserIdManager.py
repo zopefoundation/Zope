@@ -85,9 +85,9 @@
 """
 Test suite for session id manager.
 
-$Id: testBrowserIdManager.py,v 1.5 2001/11/21 22:36:21 chrism Exp $
+$Id: testBrowserIdManager.py,v 1.6 2001/11/27 03:46:33 chrism Exp $
 """
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 import sys
 if __name__ == "__main__":
@@ -344,7 +344,7 @@ class TestBrowserIdManager(TestCase):
         assert r == '%s?%s=%s' % (u, keystring, key)
         u = 'http://www.zope.org/Members/mcdonc?foo=bar&spam=eggs'
         r = self.m.encodeUrl(u)
-        assert r == '%s&%s=%s' % (u, keystring, key)
+        assert r == '%s&amp;%s=%s' % (u, keystring, key)
 
 def test_suite():
     testsuite = makeSuite(TestBrowserIdManager, 'test')
