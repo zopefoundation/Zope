@@ -332,7 +332,10 @@ class Catalog(Persistent, Acquisition.Implicit):
 
         for x in self.indexes.values():
             if hasattr(x, 'unindex_object'):
-                x.unindex_object(rid)
+                try:
+                    x.unindex_object(rid)
+                except KeyError:
+                    pass  #fugedaboudit
 
         del self.data[rid]
         del self.uids[uid]

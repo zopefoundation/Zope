@@ -136,13 +136,22 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
     __ac_permissions__=(
 
         ('Manage ZCatalog Entries',
-         ['manage_catalogObject', 'manage_uncatalogObject', 
+         ['manage_catalogObject', 'manage_uncatalogObject',
+	  'catalog_object', 'uncatalog_object',
+	  
           'manage_catalogView', 'manage_catalogFind',
-          'manage_catalogFindResults', 'manage_main'], 
+	  'manage_catalogSchema', 'manage_catalogIndexes',
+	  'manage_catalogStatus',
+	  
+          'manage_catalogReindex', 'manage_catalogFoundItems',
+	  'manage_catalogClear', 'manage_addColumn', 'manage_delColumns',
+	  'manage_addIndex', 'manage_delIndexs', 'manage_main',], 
          ['Manager']),
 
          ('Search ZCatalog',
-          ['searchResults','__call__'],
+          ['searchResults', '__call__', 'uniqueValuesFor',
+	   'getpath', 'schema', 'indexes', 'index_objects',
+	   'all_meta_types', 'valid_roles', 'resolve_url',],
           ['Anonymous', 'Manager']), 
         )
 
@@ -228,7 +237,7 @@ class ZCatalog(Folder, FindSupport, Persistent, Implicit):
 	references and refreshing objects"""
 	items = tuple(self._catalog.uids.items())
 
-        self._catalog.clear()
+#        self._catalog.clear()
 
 	for path, i in items:
 	    try:
