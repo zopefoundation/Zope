@@ -36,7 +36,7 @@
   USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   DAMAGE.
 
-  $Id: cAccessControl.c,v 1.7 2001/07/03 12:52:56 matt Exp $
+  $Id: cAccessControl.c,v 1.8 2001/07/03 19:37:52 matt Exp $
 
   If you have questions regarding this software,
   contact:
@@ -51,6 +51,7 @@
 #include <stdio.h>
 
 #include "ExtensionClass.h"
+#include "Acquisition.h"
 
 #define OBJECT(o) ((PyObject *) (o))
 
@@ -339,7 +340,6 @@ static PyExtensionClass imPermissionRoleType = {
 */
 
 static PyObject *Containers = NULL;
-static PyObject *aq_base = NULL;
 static PyObject *_noroles = NULL;
 static PyObject *Unauthorized = NULL;
 static PyObject *LOG = NULL;
@@ -348,6 +348,7 @@ static PyObject *_what_not_even_god_should_do = NULL;
 static PyObject *Anonymous = NULL;
 static PyObject *imPermissionRoleObj = NULL;
 static PyObject *defaultPermission = NULL;
+static PyObject *__roles__ = NULL;
 
 /* --------------------------------------------------------------
 ** ZopeSecurityPolicy Methods
@@ -392,16 +393,9 @@ static int ZopeSecurityPolicy_setup(void) {
 	Py_DECREF(module);
 	module = NULL;
 
-	/*| from Acquisition import aq_base
-	*/
-
-	IMPORT(module,"Acquisition");
-	GETATTR(module, aq_base);
-	Py_DECREF(module);
-	module = NULL;
-
 	defaultPermission = Py_BuildValue("(s)", "Manager");
 	_what_not_even_god_should_do = Py_BuildValue("[]");
+	__roles__ = PyString_FromString("__roles__");
 
 	return 1;
 
@@ -662,12 +656,12 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 	**| accessedbase = getattr(accessed, 'aq_base', container)
 	*/
 
-	containerbase = PyObject_CallFunction(aq_base, "O", container);
+	containerbase = aq_base(container);
 	if (containerbase == NULL) goto err;
 	
-	accessedbase = PyObject_GetAttrString(accessed, "aq_base");
-	if (accessedbase == NULL) {
-		PyErr_Clear();
+	if (aq_isWrapper(accessed))
+		accessedbase = aq_base(accessed);
+	else {
 		Py_INCREF(container);
 		accessedbase = container;
 	}
@@ -695,7 +689,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 	if (roles == NULL || roles == _noroles) {
 		Py_XDECREF(roles);
-		roles = PyObject_GetAttrString(value, "__roles__");
+		roles = PyObject_GetAttr(value, __roles__);
 		if (roles == NULL) {
 			PyErr_Clear();
 			Py_INCREF(_noroles);
@@ -739,7 +733,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 
 		Py_XDECREF(roles);
 
-		roles = PyObject_GetAttrString(container, "__roles__");
+		roles = PyObject_GetAttr(container, __roles__);
 		if (roles == NULL) {
 			PyErr_Clear();
 			Py_INCREF(_noroles);
@@ -747,11 +741,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 		}
 
 		if (roles == _noroles) {
-			PyObject *aq;
-
-			aq = PyObject_GetAttrString(container, "aq_acquire");
-			if (aq == NULL) {
-				PyErr_Clear();
+			if (aq_isWrapper(container) != 1) {
 				Py_DECREF(roles);
 				if (containerbase != accessedbase)  {
 					rval = PyInt_FromLong(0);
@@ -762,10 +752,7 @@ static PyObject *ZopeSecurityPolicy_validate(PyObject *self, PyObject *args) {
 				roles = _noroles;
 			} else {
 				Py_DECREF(roles);
-				roles = PyObject_CallFunction(aq, "s",
-					"__roles__");
-				Py_DECREF(aq); 
-				aq = NULL;
+				roles = aq_acquire(container, __roles__);
 				if (roles == NULL) {
 					/* XXX not JUST AttributeError*/
 					/* XXX should we clear the error? */
@@ -1289,9 +1276,9 @@ static PyObject *PermissionRole_of(PermissionRole *self, PyObject *args) {
 	**|	return r
 	*/
 
-	_p = PyObject_GetAttrString(parent, "aq_inner");
 
-	if (_p) {
+	if (aq_isWrapper(parent)) {
+		_p = aq_inner(parent);
 		result = PyObject_CallMethod(OBJECT(r),"__of__","O", _p);
 		Py_DECREF(_p);
 		/* Dont need goto */
@@ -1503,13 +1490,15 @@ static PyObject *imPermissionRole_of(imPermissionRole *self, PyObject *args) {
 	**|    obj = obj.aq_parent
 	*/
 
-		tobj = PyObject_GetAttrString(obj, "aq_inner");
+		if (aq_isWrapper(obj) <= 0) break;
+		tobj = aq_inner(obj);
 		if (tobj == NULL) break;
 		Py_DECREF(obj);
 		obj = tobj;
 
 		if (obj == Py_None) break;
-		tobj = PyObject_GetAttrString(obj, "aq_parent");
+		if (aq_isWrapper(obj) <= 0) break;
+		tobj = aq_parent(obj);
 		if (tobj == NULL) goto err;
 		Py_DECREF(obj);
 		obj = tobj;
@@ -1774,9 +1763,11 @@ static PyObject *permissionName(PyObject *name) {
 PUBLIC void initcAccessControl(void) {
 	PyObject *module;
 	PyObject *dict;
-	char *rev = "$Revision: 1.7 $";
+	char *rev = "$Revision: 1.8 $";
 
 	if (!ExtensionClassImported) return;
+
+	aq_init();
 
 	ZopeSecurityPolicyType.tp_getattro =
 		(getattrofunc) PyExtensionClassCAPI->getattro;
