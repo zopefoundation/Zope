@@ -56,7 +56,7 @@
 #
 ############################################################################## 
 __doc__="""Bobo call interface"""
-__version__='$Revision: 1.12 $'[11:-2]
+__version__='$Revision: 1.13 $'[11:-2]
 
 import sys,regex,socket,mimetools
 from httplib import HTTP, replyprog
@@ -141,6 +141,7 @@ exceptmap   ={'AccessError'      :AccessError,
 
 
 class RemoteException:
+
     def __init__(self,etype=None,evalue=None,efile=None,eline=None,url=None,
 		 query=None,http_code=None,http_msg=None, http_resp=None):
         """Contains information about an exception which
@@ -164,7 +165,9 @@ class RemoteException:
 
 
 class RemoteMethod:
+
     username=password=''
+
     def __init__(self,url,*args):
 	while url[-1:]=='/': url=url[:-1]
 	self.url=url
@@ -198,20 +201,25 @@ class RemoteMethod:
 	    try: q=type2marshal[type(v)](k,v)
 	    except KeyError: q='%s=%s' % (k,quote(v))
 	    query.append(q)
-	query=join(query,'&')
+
+	if query:
+	    method='POST'
+	    query=join(query,'&')
+	else: method='GET'
+
 	try:
 	    h=HTTP()
 	    h.connect(self.host, self.port)
-	    h.putrequest('POST', self.rurl)
+	    h.putrequest(method, self.rurl)
 	    h.putheader('Content-Type', 'application/x-www-form-urlencoded')
-	    h.putheader('Content-Length', str(len(query)))
+	    if query: h.putheader('Content-Length', str(len(query)))
 	    for hn,hv in self.headers.items(): h.putheader(hn,hv)
 	    if self.username and self.password:
 	        credentials=gsub('\012','',encodestring('%s:%s' % (
 		                           self.username,self.password)))
 	        h.putheader('Authorization',"Basic %s" % credentials)
 	    h.endheaders()
-	    h.send(query)
+	    if query: h.send(query)
 	    ec,em,headers=h.getreply()
 	    response     =h.getfile().read()
 	except:
@@ -563,6 +571,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.13  1997/09/11 22:27:27  jim
+# Added logic to usef GET when no query parameters.
+#
 # Revision 1.12  1997/07/09 15:03:08  jim
 # Fixed usage info.
 #
