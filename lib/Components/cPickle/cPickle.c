@@ -1,5 +1,5 @@
 /*
-     $Id: cPickle.c,v 1.41 1997/06/20 19:45:10 jim Exp $
+     $Id: cPickle.c,v 1.42 1997/07/02 13:24:51 jim Exp $
 
      Copyright 
 
@@ -55,7 +55,7 @@
 static char cPickle_module_documentation[] = 
 "C implementation and optimization of the Python pickle module\n"
 "\n"
-"$Id: cPickle.c,v 1.41 1997/06/20 19:45:10 jim Exp $\n"
+"$Id: cPickle.c,v 1.42 1997/07/02 13:24:51 jim Exp $\n"
 ;
 
 #include "Python.h"
@@ -82,9 +82,7 @@ static char cPickle_module_documentation[] =
 #define POP_MARK    '1'
 #define DUP         '2'
 #define FLOAT       'F'
-#ifdef  FORMAT_1_3
 #define BINFLOAT    'G'
-#endif
 #define INT         'I'
 #define BININT      'J'
 #define BININT1     'K'
@@ -2173,7 +2171,6 @@ finally:
     return res;
 }
 
-#ifdef FORMAT_1_3
 static int
 load_binfloat(Unpicklerobject *self) {
     PyObject *py_float = 0;
@@ -2246,7 +2243,6 @@ finally:
 
     return res;
 }
-#endif
 
 static int
 load_string(Unpicklerobject *self) {
@@ -3295,12 +3291,10 @@ load(Unpicklerobject *self)
                     break;
                 continue;
 
-#ifdef FORMAT_1_3
             case BINFLOAT:
                 if (load_binfloat(self) < 0)
                     break;
                 continue;
-#endif
 
             case BINSTRING:
                 if (load_binstring(self) < 0)
@@ -3877,7 +3871,7 @@ init_stuff(PyObject *module, PyObject *module_dict) {
 void
 initcPickle() {
     PyObject *m, *d;
-    char *rev="$Revision: 1.41 $";
+    char *rev="$Revision: 1.42 $";
     PyObject *format_version;
     PyObject *compatible_formats;
 
@@ -3912,6 +3906,9 @@ initcPickle() {
 
 /****************************************************************************
  $Log: cPickle.c,v $
+ Revision 1.42  1997/07/02 13:24:51  jim
+ Turned on BINFLOAT on read even when not enabled fro write.
+
  Revision 1.41  1997/06/20 19:45:10  jim
  Fixed dumb bug in __main__ fix. :-(
 
