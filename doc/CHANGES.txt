@@ -86,6 +86,12 @@ Zope Changes
 
       Bugs Fixed
 
+        - Attempting to cut an object then paste it into itself or
+          one of its subobjects would cause a recursion problem.
+
+        - Certain ZCatalog reindex operations could fail due to an
+          unintended transaction abort.
+
         - Database connections were leaked when database conflict
           errors occurred and handled by reexecuting requests.  When 7
           connections leaked, the site would accept no more web
