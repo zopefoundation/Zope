@@ -103,7 +103,7 @@ that allows one to simply make a single web request.
 The module also provides a command-line interface for calling objects.
 
 """
-__version__='$Revision: 1.35 $'[11:-2]
+__version__='$Revision: 1.36 $'[11:-2]
 
 import sys, regex, socket, mimetools
 from httplib import HTTP
@@ -209,7 +209,7 @@ class Function:
 	    
         try:
             h=HTTP()
-            h.connect(self.host, self.port)
+            h.connect((self.host, self.port))
             h.putrequest(method, self.rurl)
             for hn,hv in headers.items():
                 h.putheader(translate(hn,dashtrans),hv)
@@ -274,7 +274,7 @@ class Function:
 
         try:
             sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            sock.connect(self.host,self.port)
+            sock.connect((self.host,self.port))
             sock.send(rq)
             reply=sock.makefile('rb')
             sock=None
