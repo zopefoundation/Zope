@@ -118,7 +118,7 @@ class AcceleratedHTTPCache (Cache):
 
     def ZCache_invalidate(self, ob):
         # Note that this only works for default views of objects.
-        phys_path = os.getPhysicalPath()
+        phys_path = ob.getPhysicalPath()
         if self.hit_counts.has_key(phys_path):
             del self.hit_counts[phys_path]
         ob_path = quote(join(phys_path, '/'))
