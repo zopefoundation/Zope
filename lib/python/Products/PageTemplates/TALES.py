@@ -87,7 +87,7 @@
 An implementation of a generic TALES engine
 """
 
-__version__='$Revision: 1.6 $'[11:-2]
+__version__='$Revision: 1.7 $'[11:-2]
 
 import re, sys, ZTUtils
 from MultiMapping import MultiMapping
@@ -109,6 +109,11 @@ class TALESError(Exception):
 
 class Undefined(TALESError):
     '''Exception raised on traversal of an undefined path'''
+    def __str__(self):
+        if self.type is not None:
+            return '"%s" not found in "%s"' % (self.value,
+                                               self.expression)
+        return self.expression
 
 class RegistrationError(Exception):
     '''TALES Type Registration Error'''
