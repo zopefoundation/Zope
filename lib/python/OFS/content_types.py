@@ -83,7 +83,7 @@
 # 
 ##############################################################################
 """A utility module for content-type handling."""
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 from string import split, strip, lower, find
 import re, mimetypes
@@ -95,7 +95,12 @@ def text_type(s):
     # Yuk. See if we can figure out the type by content.
     if (lower(strip(s)[:6]) == '<html>' or find(s, '</') > 0):
         return 'text/html'
-    return 'text/plain'
+
+    elif s.strip().startswith('<?xml'):
+        return 'text/xml'
+
+    else:
+        return 'text/plain'
 
 
 
