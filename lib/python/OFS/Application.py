@@ -11,8 +11,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.35 1998/01/02 17:39:48 jim Exp $'''
-__version__='$Revision: 1.35 $'[11:-2]
+$Id: Application.py,v 1.36 1998/01/08 17:40:21 jim Exp $'''
+__version__='$Revision: 1.36 $'[11:-2]
 
 
 import Globals,Folder,os,regex,sys
@@ -103,7 +103,7 @@ class Application(Folder.Folder):
 
     def folderClass(self): return Folder.Folder
 
-    def __class_init__(self): pass
+    def __class_init__(self): Globals.default__class_init__(self)
 
     def PrincipiaRedirect(self,destination,URL1):
 	"""Utility function to allow user-controlled redirects"""
@@ -283,6 +283,9 @@ class Misc_:
 ############################################################################## 
 #
 # $Log: Application.py,v $
+# Revision 1.36  1998/01/08 17:40:21  jim
+# Modified __class_init__ to use default class init defined in Globals.
+#
 # Revision 1.35  1998/01/02 17:39:48  jim
 # Got rid of old commented line.
 #

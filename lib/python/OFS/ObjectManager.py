@@ -1,13 +1,13 @@
 
 __doc__="""Object Manager
 
-$Id: ObjectManager.py,v 1.30 1998/01/02 18:45:06 jim Exp $"""
+$Id: ObjectManager.py,v 1.31 1998/01/08 17:40:42 jim Exp $"""
 
-__version__='$Revision: 1.30 $'[11:-2]
+__version__='$Revision: 1.31 $'[11:-2]
 
 import Persistence, App.Management, Acquisition, App.Undo
 from Globals import HTMLFile, HTMLFile
-from Globals import MessageDialog
+from Globals import MessageDialog, default__class_init__
 from string import find,join,lower
 from urllib import quote
 from DocumentTemplate import html_quote
@@ -60,6 +60,8 @@ class ObjectManager(
 	    except: pass
 	mt.sort()
         self.meta_types=tuple(mt)
+	
+	default__class_init__(self)
 
     def all_meta_types(self):
 	return self.meta_types+self.dynamic_meta_types
@@ -458,6 +460,9 @@ class ObjectManager(
 ##############################################################################
 #
 # $Log: ObjectManager.py,v $
+# Revision 1.31  1998/01/08 17:40:42  jim
+# Modified __class_init__ to use default class init defined in Globals.
+#
 # Revision 1.30  1998/01/02 18:45:06  jim
 # Ooops, want implicit acquisition.
 #
