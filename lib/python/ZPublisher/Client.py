@@ -56,7 +56,7 @@
 #
 ############################################################################## 
 __doc__="""Bobo call interface"""
-__version__='$Revision: 1.11 $'[11:-2]
+__version__='$Revision: 1.12 $'[11:-2]
 
 import sys,regex,socket,mimetools
 from httplib import HTTP, replyprog
@@ -550,7 +550,7 @@ def main():
 	The -u option may be used to provide a user name and password.
 
 	Optional arguments may be provides as name=value pairs.
-	"""
+	""" % sys.argv[0]
 	sys.exit(1)
 
     # The "main" program for this module
@@ -563,6 +563,9 @@ if __name__ == "__main__": main()
 
 #
 # $Log: Client.py,v $
+# Revision 1.12  1997/07/09 15:03:08  jim
+# Fixed usage info.
+#
 # Revision 1.11  1997/07/09 14:51:53  jim
 # Added command-line interface.
 #
