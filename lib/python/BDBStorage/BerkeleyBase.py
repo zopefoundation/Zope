@@ -24,7 +24,7 @@ from bsddb3 import db
 # are overridden here, some of which are not.
 from ZODB.BaseStorage import BaseStorage
 
-# $Revision: 1.2 $
+# $Revision: 1.3 $
 __version__ = '0.1'
 
 
@@ -150,6 +150,9 @@ class BerkeleyBase(BaseStorage):
     def tpc_vote(self, transaction):
         # BAW: This wrapper framework should probably be in BaseStorage's
         # tpc_vote()
+        if transaction is not self._transaction:
+            raise POSException.StorageTransactionError(self, transaction)
+
         self._lock_acquire()
         try:
             self._vote(transaction)
@@ -170,9 +173,9 @@ class BerkeleyBase(BaseStorage):
 
         These are all ignored.
         """
-        self._txn.commit()
+        self._transaction.commit()
 
-    def _abort(self, tid, user, desc, ext):
+    def _abort(self):
         """Called from BaseStorage.tpc_abort(), this aborts the underlying
         BSDDB transaction.
         
@@ -185,7 +188,7 @@ class BerkeleyBase(BaseStorage):
         """
         # BAW: this appears to be broken.  Look in BaseStorage.tpc_abort();
         # _abort() is never called with any arguments. :/
-        self._txn.abort()
+        self._transaction.abort()
 
     def _clear_temp(self):
         """Called from BaseStorage.tpc_abort(), BaseStorage.tpc_begin(),
