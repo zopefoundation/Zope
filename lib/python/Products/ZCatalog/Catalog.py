@@ -157,13 +157,14 @@ class Catalog(Persistent, Acquisition.Implicit):
         """ returns instances of self._v_brains, or whatever is passed 
         into self.useBrains.
         """
-        self.useBrains(self._v_brains)
-        
         r=self._v_result_class(self.data[index]).__of__(self.aq_parent)
         r.data_record_id_ = index
         return r
 
 
+    def __setstate__(self, state):
+        Persistent.__setstate__(self, state)
+        self.useBrains(self._v_brains)
 
     def useBrains(self, brains):
         
@@ -178,11 +179,9 @@ class Catalog(Persistent, Acquisition.Implicit):
                 return self.__record_schema__.has_key(key)
         
         scopy={}
-        for key, value in self.schema.items():
-            scopy[key]=value
-        scopy['data_record_id_']=len(self.schema.keys())
+        scopy = self.schema.copy()
 
-        mybrains.__theCircularGottaCoverUpABugRefOfJoy = mybrains
+        scopy['data_record_id_']=len(self.schema.keys())
         mybrains.__record_schema__ = scopy
 
         self._v_brains = brains
@@ -386,7 +385,6 @@ class Catalog(Persistent, Acquisition.Implicit):
 
 
     def instantiate(self, record):
-        self.useBrains(self._v_brains)
 
         r=self._v_result_class(record[1])
         r.data_record_id_ = record[0]
@@ -442,9 +440,6 @@ class Catalog(Persistent, Acquisition.Implicit):
                           type([]): orify,
                           type(''): Query.String,
                           }, **kw):
-
-        
-        self.useBrains(self._v_brains)
 
         #################################################################
         # Get search arguments:
