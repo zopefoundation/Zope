@@ -55,7 +55,7 @@
     'and' or 'or' tag, otherwise, no text is inserted.
 
 '''
-__rcs_id__='$Id: sqltest.py,v 1.14 2001/11/28 15:51:13 matt Exp $'
+__rcs_id__='$Id: sqltest.py,v 1.15 2002/01/31 13:29:47 chrism Exp $'
 
 ############################################################################
 #     Copyright 
@@ -65,7 +65,7 @@ __rcs_id__='$Id: sqltest.py,v 1.14 2001/11/28 15:51:13 matt Exp $'
 #       rights reserved.
 #
 ############################################################################ 
-__version__='$Revision: 1.14 $'[11:-2]
+__version__='$Revision: 1.15 $'[11:-2]
 
 import sys
 from DocumentTemplate.DT_Util import ParseError, parse_params, name_param
@@ -79,36 +79,57 @@ class SQLTest:
     optional=multiple=None
 
     def __init__(self, args):
-        args = parse_params(args, name='', type=None, column=None,
+        args = parse_params(args, name='', expr='', type=None, column=None,
                             multiple=1, optional=1, op=None)
-        self.__name__ = name_param(args,'sqlvar')
-        has_key=args.has_key
-        if not has_key('type'):
-            raise ParseError, ('the type attribute is required', 'sqltest')
+        name,expr = name_param(args,'sqlvar',1)
+
+	if expr is None:
+	    expr=name
+	else: expr=expr.eval
+	self.__name__, self.expr = name, expr
+
+        self.args=args
+        if not args.has_key('type'):
+	    raise ParseError, ('the type attribute is required', 'sqltest')
+
         self.type=t=args['type']
         if not valid_type(t):
             raise ParseError, ('invalid type, %s' % t, 'sqltest')
-        if has_key('optional'): self.optional=args['optional']
-        if has_key('multiple'): self.multiple=args['multiple']
-        if has_key('column'): self.column=args['column']
-        else: self.column=self.__name__
 
+        if args.has_key('optional'): self.optional=args['optional']
+        if args.has_key('multiple'): self.multiple=args['multiple']
+        if args.has_key('column'):
+            self.column=args['column']
+        elif self.__name__ is None:
+            err = ' the column attribute is required if an expression is used'
+            raise ParseError, (err, 'sqltest')
+	else:
+            self.column=self.__name__
+	
         # Deal with optional operator specification
         op = '='                        # Default
-        if has_key('op'):
+        if args.has_key('op'):
             op = args['op']
             # Try to get it from the chart, otherwise use the one provided
             op = comparison_operators.get(op, op)
         self.op = op
 
     def render(self, md):
-        name=self.__name__
+
+	name=self.__name__
+	
         t=self.type
-        try: v = md[name]
-        except KeyError, key:
-            if str(key)==name and self.optional: return ''
-            raise KeyError, key, sys.exc_info()[2]
-            
+        args=self.args
+        try:
+	    expr=self.expr
+	    if type(expr) is type(''):
+		v=md[expr]
+	    else:
+		v=expr(md)
+	except KeyError:
+	    if args.has_key('optional') and args['optional']:
+		return ''
+            raise 'Missing Input', 'Missing input variable, <em>%s</em>' % name
         
         if type(v) in (ListType, TupleType):
             if len(v) > 1 and not self.multiple:
@@ -122,9 +143,12 @@ class SQLTest:
             if not v and type(v) is StringType and t != 'string': continue
             if t=='int':
                 try:
-                    if type(v) is StringType: atoi(v)
+                    if type(v) is StringType:
+			if v[-1:]=='L':
+			    v=v[:-1]
+			atoi(v)
                     else: v=str(int(v))
-                except:
+                except ValueError:
                     raise ValueError, (
                         'Invalid integer value for <em>%s</em>' % name)
             elif t=='float':
@@ -132,7 +156,7 @@ class SQLTest:
                 try:
                     if type(v) is StringType: atof(v)
                     else: v=str(float(v))
-                except:
+                except ValueError:
                     raise ValueError, (
                         'Invalid floating-point value for <em>%s</em>' % name)
             else:
@@ -140,8 +164,14 @@ class SQLTest:
                 v=md.getitem('sql_quote__',0)(v)
                 #if find(v,"\'") >= 0: v=join(split(v,"\'"),"''")
                 #v="'%s'" % v
-    
             vs.append(v)
+
+	if not vs and t=='nb':
+	    if args.has_key('optional') and args['optional']:
+		return ''
+	    else:
+                err = 'Invalid empty string value for <em>%s</em>' % name
+                raise ValueError, err
 
         if not vs:
             if self.optional: return ''
