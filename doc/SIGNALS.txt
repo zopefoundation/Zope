@@ -1,0 +1,37 @@
+Signals are a posix inter-process communications mechanism.
+If you are using Windows then this documentation is not
+for you.
+
+Zope responds to signals which are sent to the process id
+written to the file /path/to/var/Z2.pid. 
+
+    SIGHUP  - close open database connections and sockets,
+              then restart the server process. The common
+              idiom for restarting a Zope server is
+              kill -SIGHUP `cat /path/to/var/z2.pid`
+
+    SIGTERM - close open database connections and sockets,
+              then shut down. The default stop script uses
+              kill -SIGTERM `cat /path/to/var/Z2.pid`
+
+    SIGUSR2 - close and re-open all Zope log files (z2.log,
+              event log, detailed log.) The common idiom
+              after rotating Zope log files is
+              kill -SIGUSR2 `cat /path/to/var/z2.pid`
+
+    SIGINT  - same as SIGTERM
+
+
+
+Exactly which process has its pid written to this file 
+depends on whether Zope is run under the management
+process. If using a management process (the default)
+then its pid is recorded here. Relevant signals sent to
+the management process are forwarded on to the server
+process. (Specifically, it forwards all those signals
+listed above, plus SIGQUIT and SIGUSR1)
+
+If not using a management process (-Z0 on the z2.py
+command line) then the server process records its own
+pid here.
+
