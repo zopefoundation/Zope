@@ -18,11 +18,6 @@ import sys
 import getopt
 
 from cgi import escape
-from string import rfind
-try:
-    from strop import rfind
-except ImportError:
-    pass
 
 try:
     from cStringIO import StringIO
@@ -163,9 +158,9 @@ class TALInterpreter:
             self.col = 0
 
     def stream_write(self, s,
-                     len=len, rfind=rfind):
+                     len=len):
         self._stream_write(s)
-        i = rfind(s, '\n')
+        i = s.rfind('\n')
         if i < 0:
             self.col = self.col + len(s)
         else:
