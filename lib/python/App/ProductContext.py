@@ -228,7 +228,8 @@ class ProductContext:
               },)
 
         m[name]=initial
-        m[name+'__roles__']=pr
+        try: initial.__roles__=pr
+        except: m[name+'__roles__']=pr
 
         for method in constructors[1:]:
             if type(method) is tt: name, method = method
@@ -236,7 +237,8 @@ class ProductContext:
                 name=os.path.split(method.__name__)[-1]
             if not productObject.__dict__.has_key(name):
                 m[name]=method
-                m[name+'__roles__']=pr
+                try: method.__roles__ = pr
+                except: m[name+'__roles__']=pr
 
         if icon:
             name=os.path.split(icon)[1]

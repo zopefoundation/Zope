@@ -99,12 +99,10 @@ def default__class_init__(self):
     for name, v in dict_items:
         if hasattr(v,'_need__name__') and v._need__name__:
             v.__dict__['__name__']=name
-            if name=='manage' or name[:7]=='manage_':
-                name=name+'__roles__'
-                if not have(name): dict[name]='Manager',
-        elif name=='manage' or name[:7]=='manage_' and type(v) is ft:
-            name=name+'__roles__'
-            if not have(name): dict[name]='Manager',
+        if ((name=='manage' or name[:7]=='manage_') and
+            not hasattr(v, '__roles__')):
+            try: v.__roles__ = ('Manager',)
+            except: dict[name+'__roles__'] = ('Manager',)
 
     # Look for a SecurityInfo object on the class. If found, call its
     # apply() method to generate __ac_permissions__ for the class. We
