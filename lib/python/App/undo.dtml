@@ -15,12 +15,22 @@ Select one or more transactions below and then click on the &quot;Undo&quot;
 button to undo the transactions.  Note that even though a transaction
 is shown below, you will not be able to undo it if later transactions
 modified objects that were modified by the transaction.
-<table cellspacing=4>
+<table>
+  <tr><td colspan=2 align=center><INPUT TYPE="SUBMIT" VALUE=" Undo "></td></tr>
+  <tr><td></td></tr>
+  <!--#if first_transaction-->
+     <tr><td colspan=2 align=center>
+     <a href="manage_UndoForm?first_transaction:int=<!--#var
+       expr="first_transaction*2-last_transaction"
+       -->&last_transaction:int=<!--#var first_transaction-->">
+     Later Transactions</h>
+     </td></tr>
+  <!--#/if-->
   <!--#in undoable_transactions mapping-->
     <tr>
-    <td><input type=checkbox name="transaction_info:list"
+    <td valign=top><input type=checkbox name="transaction_info:list"
         value="<!--#var id--> <!--#var pos-->"></td>
-    <td>
+    <td valign=top>
         <strong><!--#var desc--></strong> by <strong><!--#var user--></strong>
         (<!--#var path-->) on 
         <!--#var time fmt=Mon--> <!--#var time fmt=day--> at
@@ -28,6 +38,16 @@ modified objects that were modified by the transaction.
     </td>
   </tr>
   <!--#/in-->
+  <tr><td colspan=2 align=center>
+  <!--#if last_transaction-->
+     <a href="manage_UndoForm?first_transaction:int=<!--#var
+       last_transaction-->&last_transaction:int=<!--#var
+       expr="last_transaction*2-first_transaction"-->">
+  <!--#else-->
+     <a href="manage_UndoForm?first_transaction:int=20&last_transaction:int=40">
+  <!--#/if-->
+  Earlier Transactions</h>
+  </td></tr>
   <tr><td></td></tr>
   <tr><td colspan=2 align=center><INPUT TYPE="SUBMIT" VALUE=" Undo "></td></tr>
 </table>
