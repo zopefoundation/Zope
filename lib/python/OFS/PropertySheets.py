@@ -84,7 +84,7 @@
 ##############################################################################
 
 """Property sheets"""
-__version__='$Revision: 1.69 $'[11:-2]
+__version__='$Revision: 1.70 $'[11:-2]
 
 import time, string, App.Management, Globals
 from webdav.WriteLockInterface import WriteLockInterface
@@ -581,6 +581,8 @@ class DAVProperties(Virtual, PropertySheet, View):
         vself=self.v_self()
         if hasattr(vself, 'content_type'):
             return vself.content_type
+        if hasattr(vself, 'default_content_type'):
+            return absattr(vself.default_content_type)
         return ''
 
     def dav__getcontentlength(self):
