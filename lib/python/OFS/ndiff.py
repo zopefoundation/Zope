@@ -514,7 +514,7 @@ def fancy_replace(a, alo, ahi, b, blo, bhi):
             btags = btags + ' ' * (la - lb)
         combined = map(lambda x,y: _combine[x+y], atags, btags)
         print '-', aelt, '+', belt, '?', \
-              ''.string.join(combined).rstrip()
+              ''.join(combined).rstrip()
     else:
         # the synch pair is identical
         print ' ', aelt,
