@@ -13,8 +13,8 @@
 """User folder tests
 """
 
-__rcs_id__='$Id: testUserFolder.py,v 1.8 2004/01/30 14:00:32 shh Exp $'
-__version__='$Revision: 1.8 $'[11:-2]
+__rcs_id__='$Id: testUserFolder.py,v 1.9 2004/01/30 16:58:45 Brian Exp $'
+__version__='$Revision: 1.9 $'[11:-2]
 
 import os, sys, base64, unittest
 
@@ -28,11 +28,6 @@ from AccessControl.SecurityManagement import newSecurityManager
 from AccessControl.SecurityManagement import noSecurityManager
 from AccessControl.User import BasicUserFolder
 from AccessControl.User import User
-
-# XXX: Uncomment to enforce C implementation
-#from AccessControl.SecurityManager import setSecurityPolicy
-#from AccessControl.cAccessControl import ZopeSecurityPolicy
-#setSecurityPolicy(ZopeSecurityPolicy(True, True))
 
 
 class UserFolderTests(unittest.TestCase):
@@ -140,9 +135,16 @@ class UserFolderTests(unittest.TestCase):
         user = self.uf.validate(self.app.REQUEST, '', ['role1'])
         self.assertEqual(user, None)
 
-    def testNotValidateWithoutRoles(self):
+    def testValidateWithoutRoles(self):
+        # Note - calling uf.validate without specifying roles will cause
+        # the security machinery to determine the needed roles by looking
+        # at the object itself (or its container). I'm putting this note
+        # in to clarify because the original test expected failure but it
+        # really should have expected success, since the user and the
+        # object being checked both have the role 'role1', even though no
+        # roles are passed explicitly to the userfolder validate method.
         user = self.uf.validate(self.app.REQUEST, self.basic)
-        self.assertEqual(user, None)
+        self.assertEqual(user.getUserName(), 'user1')
 
     def testNotValidateWithEmptyRoles(self):
         user = self.uf.validate(self.app.REQUEST, self.basic, [])
@@ -240,4 +242,3 @@ def test_suite():
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
-
