@@ -83,6 +83,7 @@ def index(rt, mboxfile, db):
     extra = Extra()
     extra.lexicon_id = 'lexicon'
     extra.doc_attr = 'text'
+    extra.index_type = 'Okapi BM25 Rank'
     caller = Extra()
     caller.lexicon = lexicon
     rt["index"] = idx = ZCTextIndex("index", extra, caller)
