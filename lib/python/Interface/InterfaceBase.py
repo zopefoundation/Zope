@@ -11,15 +11,15 @@ class InterfaceBase:
         """ Returns the documentation for the object. """
         return self.__doc__
 
-    def getKey(self, key):
+    def getData(self, key):
         """ Returns the value associated with 'key'. """
         return self.__meta_data[key]
 
-    def getKeys(self):
+    def getDataKeys(self):
         """ Returns a list of all keys. """
         return self.__meta_data.keys()
 
-    def setKey(self, key, value):
+    def setData(self, key, value):
         """ Associates 'value' with 'key'. """
         self.__meta_data[key] = value
 
