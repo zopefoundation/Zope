@@ -44,9 +44,9 @@ Special symbology is used to indicate special constructs:
 
 - Text surrounded by '**' characters (with white-space to the left of the
   first '**' and whitespace or puctuation to the right of the second '**')
-  is emphasized.
+  is made strong.
 
-$Id: StructuredText.py,v 1.3 1996/12/06 15:57:37 jim Exp $'''
+$Id: StructuredText.py,v 1.4 1997/02/17 23:36:35 jim Exp $'''
 #     Copyright 
 #
 #       Copyright 1996 Digital Creations, L.C., 910 Princess Anne
@@ -98,6 +98,9 @@ $Id: StructuredText.py,v 1.3 1996/12/06 15:57:37 jim Exp $'''
 #   (540) 371-6909
 #
 # $Log: StructuredText.py,v $
+# Revision 1.4  1997/02/17 23:36:35  jim
+# Added support for "foo title", http:/foohost/foo
+#
 # Revision 1.3  1996/12/06 15:57:37  jim
 # Fixed bugs in character tags.
 #
@@ -222,8 +225,9 @@ class StructuredText:
 ctag_prefix="\([\0- (]\|^\)"
 ctag_suffix="\([\0- ,.:;!?)]\|$\)"
 ctag_middle="[%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s]"
+ctag_middl2="[%s][%s]\([^\0- %s][^%s]*[^\0- %s]\|[^%s]\)[%s][%s]"
 em    =regex.compile(ctag_prefix+(ctag_middle % (("*",)*6) )+ctag_suffix)
-strong=regex.compile(ctag_prefix+(ctag_middle % (("**",)*6))+ctag_suffix)
+strong=regex.compile(ctag_prefix+(ctag_middl2 % (("*",)*8))+ctag_suffix)
 code  =regex.compile(ctag_prefix+(ctag_middle % (("\'",)*6))+ctag_suffix)
 	
 def ctag(s):
@@ -336,29 +340,50 @@ def html_quote(v,
 
 def html_with_references(text):
     text = gsub(
-	'[\0\n].. \[\([-_0-9_a-zA-Z]+\)\]',
+	'[\0\n].. \[\([-_0-9_a-zA-Z-]+\)\]',
 	'\n  <a name="\\1">[\\1]</a>',
 	text)
     
     text = gsub(
-	'\([\0- ,]\)\[\([0-9_a-zA-Z]+\)\]\([\0- ,.:]\)',
+	'\([\0- ,]\)\[\([0-9_a-zA-Z-]+\)\]\([\0- ,.:]\)',
 	'\\1<a href="#\\2">[\\2]</a>\\3',
 	text)
     
     text = gsub(
-	'\([\0- ]\)\([a-z]+://[^\0- ]+\)',
-	'\\1<a href="\\2">\\2</a>',
+	'\([\0- ,]\)\[\([^]]+\)\.html\]\([\0- ,.:]\)',
+	'\\1<a href="\\2.html">[\\2]</a>\\3',
 	text)
+
+    text = gsub(
+	'\(\"[^\"\0]+\"\),[\0- ]+'               # title part
+	'\([a-zA-Z]+:[-:a-zA-Z0-9_,./?=]+\)'  # URL
+	'\(,\|\([.:?;]\)\)'                   # trailing puctuation
+	'\([\0- ]\)',                         # trailing space
+	'<a href="\\2">\\1</a>\\4\\5',
+	text)
+
     return HTML(text,level=1)
     
 
 def main():
-    import sys
+    import sys, getopt
 
-    if '-t' in sys.argv:
-	import regex, string
+    opts,args=getopt.getopt(sys.argv[1:],'tw')
 
+    if args:
+	[infile]=args
+	s=open(infile,'r').read()
+    else:
 	s=sys.stdin.read()
+
+    if opts:
+	import regex, string, regsub
+
+	if filter(lambda o: o[0]=='-w', opts):
+	    print 'Content-Type: text/html\n'
+
+	if s[:2]=='#!': s=regsub.sub('^#![^\n]+','',s)
+
 	r=regex.compile('\([\0-\n]*\n\)')
 	if r.match(s) >= 0:
 	    s=s[len(r.group(1)):]
@@ -372,7 +397,7 @@ def main():
 	    ''' % (t,s)
 	print s
     else:
-	print html_with_references(sys.stdin.read())
+	print html_with_references(s)
 
 if __name__=="__main__": main()
 
