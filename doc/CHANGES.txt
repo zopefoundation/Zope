@@ -28,6 +28,8 @@ Zope Changes
 
     Bugs Fixed
 
+      - Collector #292: PythonScript.write() didn't properly refresh bindings.
+
       - Dumb bug in zdaemon fixed in which it would try to kill
         process numbers 1, 2, 3, 10, 12, and 15 when it caught a
         signal related to any of these signal numbers.   Instead, it

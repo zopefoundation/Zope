@@ -17,7 +17,7 @@ This product provides support for Script objects containing restricted
 Python code.
 """
 
-__version__='$Revision: 1.43 $'[11:-2]
+__version__='$Revision: 1.44 $'[11:-2]
 
 import sys, os, traceback, re, marshal
 from Globals import DTMLFile, MessageDialog, package_home
@@ -413,9 +413,9 @@ class PythonScript(Script, Historical, Cacheable):
             if body != self._body:
                 self._body = body
             if bup:
-                self._setupBindings(bindmap)
-
-            self._makeFunction()
+                self.ZBindings_edit(bindmap)
+            else:
+                self._makeFunction()
         except:
             LOG(self.meta_type, ERROR, 'write failed', error=sys.exc_info())
             raise
