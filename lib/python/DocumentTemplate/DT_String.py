@@ -1,9 +1,10 @@
 
 from string import *
-import DT_Doc, DT_Var, DT_In, DT_If, regex
+import DT_Doc, DT_Var, DT_In, DT_If, regex, DT_Raise
 Var=DT_Var.Var
 
 from DT_Util import *
+from DT_Comment import Comment
 
 class String:
     __doc__=DT_Doc.String__doc__
@@ -29,6 +30,8 @@ class String:
 	'if': DT_If.If,
 	'unless': DT_If.Unless,
 	'else': DT_If.Else,
+	'comment': Comment,
+	'raise': DT_Raise.Raise,
 	}
 
     def SubTemplate(self, name): return String('', __name__=name)
@@ -161,7 +164,9 @@ class String:
 		    sargs=args
 		    sstart=start
 		else:
-		    try: result.append(scommand(blocks))
+		    try:
+			if scommand is not Comment:
+			    result.append(scommand(blocks))
 		    except ParseError, m: self.parse_error(m[0],stag,text,l)
 
 		    return start
