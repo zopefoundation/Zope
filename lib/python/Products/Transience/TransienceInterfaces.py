@@ -143,17 +143,26 @@ class HomogeneousItemContainer(Interface.Base):
         """
 
 class StringKeyedHomogeneousItemContainer(HomogeneousItemContainer):
-    def set(self, k, v):
-        """
-        Sets key k to value v.  "k" must be a string, and "v" must support
-        the homogenous item container's subobject interface; a TypeError
-        is raised if either condition is untrue.
-        """
-
     def new(self, k):
         """
         Creates a new subobject of the type supported by this container
-        with key "k".  "k" must be a string else a TypeError is raised.
+        with key "k" and returns it.
+
+        If an object already exists in the container with key "k", a
+        KeyError is raised.
+
+        "k" must be a string, else a TypeError is raised.
+        """
+
+    def new_or_existing(self, k):
+        """
+        If an object already exists in the container with key "k", it
+        is returned.
+
+        Otherwiser, create a new subobject of the type supported by this
+        container with key "k" and return it.
+
+        "k" must be a string, else a TypeError is raised.
         """
     
 class TransientItemContainer(Interface.Base):
