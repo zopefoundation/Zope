@@ -308,19 +308,20 @@ class BaseRequest:
                           "Object name begins with an underscore at: %s" % URL)
                     else: return response.forbiddenError(entry_name)
 
-                bobo_got = 0
-                try:
-                    if hasattr(object,'__bobo_traverse__'):
+                if hasattr(object,'__bobo_traverse__'):
+                    try:
                         subobject=object.__bobo_traverse__(request,entry_name)
-                        bobo_got = 1
                         if type(subobject) is type(()) and len(subobject) > 1:
                             # Add additional parents into the path
                             parents[-1:] = list(subobject[:-1])
                             object, subobject = subobject[-2:]
-                except (AttributeError, KeyError):
-                    pass
-
-                if not bobo_got:
+                    except (AttributeError, KeyError):
+                        if debug_mode:
+                            return response.debugError(
+                                "Cannot locate object at: %s" % URL)
+                        else:
+                            return response.notFoundError(URL)
+                else:
                     try:
                         # Note - no_acquire_flag is necessary to support
                         # things like DAV.  We have to make sure

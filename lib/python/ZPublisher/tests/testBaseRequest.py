@@ -50,17 +50,6 @@ class DummyObjectWithBBT(DummyObjectBasic):
     def __bobo_traverse__(self, REQUEST, name):
         raise AttributeError, name
 
-    def dummyMethod(self):
-        """Dummy method with docstring."""
-        return 'Dummy Value'
-
-    def __getitem__(self, name):
-        if name.startswith('no_key_'):
-            raise KeyError, name
-        name = name.replace('key_', '')
-        return getattr(self, name)
-
-
 class DummyObjectWithBD(DummyObjectBasic):
     """Dummy class with docstring."""
 
@@ -75,7 +64,7 @@ class DummyObjectWithBDBBT(DummyObjectWithBD):
     """Dummy class with docstring."""
 
     def __bobo_traverse__(self, REQUEST, name):
-        if name == self.default_path[0]:
+        if name == self._default_path[0]:
             return getattr(self, name)
         raise AttributeError, name
 
@@ -165,28 +154,6 @@ class TestBaseRequest(TestCase):
         r = self.makeBaseRequest()
         self.failUnlessRaises(NotFound, r.traverse, 'folder/objWithBBT/bbt_foo')
 
-    def test_traverse_withBBT_fallback_getattr(self):
-        # Test that if __bobo_traverse__ raises AttributeError
-        # that we fallback to getattr()
-        r = self.makeBaseRequest()
-        r.traverse('folder/objWithBBT/dummyMethod')
-        self.assertEqual(r.URL, '/folder/objWithBBT/dummyMethod')
-
-    def test_traverse_withBBT_fallback_getitem(self):
-        # Test that if __bobo_traverse__ raises AttributeError
-        # and getattr raises AttributeError
-        # that we fallback to __getitem__
-        r = self.makeBaseRequest()
-        r.traverse('folder/objWithBBT/key_dummyMethod')
-        self.assertEqual(r.URL, '/folder/objWithBBT/key_dummyMethod')
-
-    def test_traverse_withBBT_fallback_getitem_NotFound(self):
-        # Test that if all else fails, we get a NotFound
-        from ZPublisher import NotFound
-        r = self.makeBaseRequest()
-        self.failUnlessRaises(NotFound, r.traverse,
-                              'folder/objWithBBT/no_key_dummyMethod')
-
     def test_traverse_withBDBBT(self):
         # Test for an object which has a __browser_default__
         # and __bobo_traverse__
@@ -202,7 +169,6 @@ class TestBaseRequest(TestCase):
         # Test for an object which has a __browser_default__
         # and __bobo_traverse__
         # __bobo_traverse__ should raise an AttributeError, which will
-        # end up falling back to getattr, then __getitem__ to finally
         # raise a NotFound
         from ZPublisher import NotFound
         r = self.makeBaseRequest()
