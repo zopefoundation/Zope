@@ -4,7 +4,7 @@ See Minimal.py for an implementation of Berkeley storage that does not support
 undo or versioning.
 """
 
-__version__ = '$Revision: 1.27 $'[-2:][0]
+__version__ = '$Revision: 1.28 $'[-2:][0]
 
 import struct
 import time
@@ -157,7 +157,7 @@ class Full(BerkeleyBase, ConflictResolvingStorage):
             # Convert to a Python long integer.  Note that cursor.last()
             # returns key/value, and we want the key (which for the _version
             # table is is the vid).
-            self.__nextvid = utils.U64(vid[0])
+            self.__nextvid = utils.U64(record[0])
         else:
             self.__nextvid = 0L
         # DEBUGGING
