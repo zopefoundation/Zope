@@ -18,8 +18,6 @@ import DocumentTemplate
 import StructuredText
 import  re
 
-from zExceptions import BadRequest
-
 
 pre_pat=re.compile(r'<PRE>(.+?)</PRE>', re.IGNORECASE|re.DOTALL)
 tutorialExamplesFile='ZopeTutorialExamples.zexp'
@@ -132,7 +130,7 @@ class GlossaryTopic(TutorialTopic):
         Returns the URL to a API documentation for a given class.
         """
         names=klass.split('.')
-        url="%s/Control_Panel/Products/%s/Help/%s.py#%s" % (REQUEST['BASEPATH1'],
+        url="%s/Control_Panel/Products/%s/Help/%s.py#%s" % (REQUEST['SCRIPT_NAME'],
                 names[0], names[1], names[2])
         return '<a href="%s">API Documentation</a>' % url
 
@@ -140,8 +138,16 @@ class GlossaryTopic(TutorialTopic):
         """
         Returns the URL to a DTML Reference page for a given tag.
         """
-        url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['BASEPATH1'], tag)
+        url="%s/Control_Panel/Products/OFSP/Help/dtml-%s.stx" % (REQUEST['SCRIPT_NAME'], tag)
         return '<a href="%s">DTML Reference</a>' % url
+
+    def zptLink(self, tag, REQUEST):
+        """
+        Returns the URL to a ZPT Reference page for a given topic.
+        """
+        url="%s/Control_Panel/Products/PageTemplates/Help/%s.stx" % (REQUEST['SCRIPT_NAME'], tag)
+        return '<a href="%s">ZPT Reference</a>' % url
+
 
 
 addTutorialForm=DTMLFile('dtml/tutorialAdd', globals())
@@ -162,7 +168,7 @@ def addTutorial(self, id, REQUEST=None, RESPONSE=None):
         from Products.ZGadflyDA.DA import data_sources
         data_sources()
     except:
-        raise BadRequest, 'The ZGadflyDA product must be installed!'
+        raise 'Bad Request', 'The ZGadflyDA product must be installed!'
 
     # work around old Zope bug in importing
     try:

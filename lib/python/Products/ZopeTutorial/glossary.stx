@@ -1,8 +1,6 @@
 Glossary
 
-  <!-- XXX fix this -->
-  For general information about Zope <a
-  href="http://www.zope.org/SiteIndex/searchForm"
+  For general information about Zope <a href="http://www.zope.org/"
   target="_blank">search</a> Zope.org.
 
   For Zope documentation try the <a href="http://zdp.zope.org"
@@ -99,7 +97,14 @@ Glossary
     target="_blank">Advanced DTML chapter</a> of The Zope Book.
 
     <dtml-var "dtmlLink('sendmail', REQUEST)">
-    
+  
+  [File] -- A Zope object that contains binary or textual data. Files
+  don't contain dynamic data.
+
+    For more information on Folders see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/BasicObject.stx"
+    target="_blank">Basic Objects chapter</a> of The Zope Book.
+  
   [Folder] -- A Zope object that contains other Zope objects. You can
   move objects between Folders by cutting and pasting them. You can
   add new objects to Folders with the product add list.
@@ -135,6 +140,29 @@ Glossary
   Use the &lt;dtml-sendmail&gt; tag to send email.
 
     <dtml-var "apiLink('MailHost.MailHost.MailHost', REQUEST)">
+
+  [Page Template] -- A dynamic web page object.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+  [Page Template Macro] -- A device for sharing presentation between
+  page templates.
+
+    For more information on macros see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/AdvZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+  [Page Template Statements] -- Special attributes that connect
+  templates to other components and dynamically tailor the HTML of the
+  template.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal', REQUEST)">
   
   [Paste] -- Insert the objects from the clipboard into the current Folder.
   
@@ -156,6 +184,60 @@ Glossary
   [standard_html_footer] -- The standard Zope footer object. By
   convention this object displays an HTML footer.
   
+  [standard_template.pt] -- The standard Zope macro template. By
+  convention this object defines a whole page macro and a number of
+  slots. Other templates then use the macro and fill one or more
+  slots.
+
+  [tal:attributes] -- A ZTP statement that sets one or more tag
+  attributes.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+  [tal:condition] -- A ZTP statement that conditionally includes a tag.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal-condition', REQUEST)">
+
+  [tal:content] -- A ZPT statement that replaces the content of a tag.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal-content', REQUEST)">
+
+  [tal:define] -- A ZPT statement that defines one or more variables.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal-define', REQUEST)">
+
+  [tal:repeat] -- A ZPT statement that loops over a list of objects
+  inserting a copy of the statement element for each item in the list.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal-repeat', REQUEST)">
+
+  [tal:replace] -- A ZPT statement that replaces a tag and its
+  contents entirely.
+
+    For more information on ZPT see the <a
+    href="http://zope.org/Documentation/Books/ZopeBook/2_6Edition/ZPT.stx"
+    target="_blank">Page Templates chapter</a> of The Zope Book.
+
+    <dtml-var "zptLink('tal-replace', REQUEST)">
+
   [title] -- Most Zope objects can have titles. Titles are optional
   one line descriptions.
   

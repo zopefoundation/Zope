@@ -43,47 +43,47 @@ Lesson 1. "Elvis Lives" Home Page
   Let's create a home page for "Elvis Lives", an organization that
   tracks Elvis sightings.
   
-  First you need to create a [DTML Document]
-  for the home page. Zope uses 'DTML Documents' for web pages.
+  First you need to create a [Page Template]
+  for the home page. Zope uses 'Page Templates' for web pages.
   
-    1. Select 'DTML Document' from the "Select type to add..." list.
+    1. Select 'Page Template' from the "Select type to add..." list.
 
-    2. Type 'home.html' for the document [id].
+    2. Type 'home.html' for the template [id].
     
-    3. Type 'Elvis Lives' for the document [title].
-  
-    4. Click the 'Add and Edit' button.
+    3. Click the 'Add and Edit' button.
   
   You should now see a screen
   where you can edit your web page.
   
-    1. Change the contents of the document to::
-      
-      <dtml-var standard_html_header>
+    1. Change the title of the template to 'Elvis Lives'.
 
-      <dtml-var header.gif>
+    1. Change the contents of the template to::
+      
+      <html>
+
+      <img tal:replace="structure container/header.gif">
 
       <p>
-      Welcome to <i><dtml-var title></i>,
-      your source for information about
-      Elvis and Elvis sightings.
+      Welcome to <i tal:content="template/title">title</i>,
+      your source for information about Elvis and
+      Elvis sightings.
       </p>
 
-      <dtml-var standard_html_footer>
+      </html>
       
     2. Click the 'Save Changes' button.
     
-  The contents of the document are a mixture of HTML and special
-  tags called [DTML].
+  The contents of the template is HTML along with special attributes
+  called [Page Template Statements].
   
-  The [<dtml-var>] tag inserts things into web pages.  In this page,
-  we use this tag to insert a page header, an image, a title, and a
-  page footer.
+  The [tal:content] and [tal:replace] statements inserts things into
+  tags.  In this page we use these statement to insert an image and
+  a title.
   
   Now let's see what our page
   looks like.
   
-    1. Click the 'View' tab at the top of the screen.
+    1. Click the 'Test' tab at the top of the screen.
   
   Congratulations you've created
   a web page with Zope.
@@ -93,16 +93,14 @@ Lesson 1. "Elvis Lives" Home Page
     Zope allows you to create and manage objects through
     the web.
 
-    * Zope uses [DTML Document]s
+    * Zope uses [Page Template]s
     for web pages.
 
     * You can create Zope objects by choosing them from the "Select
       type to add..." list.
 
-    * You can view Zope objects by clicking the 'View' tab.
-
     * You can insert content in web pages with the
-    [<dtml-var>] tag.
+    [tal:content] and [tal:replace] statements.
 
   In the next lesson you'll expand
   your web site.
@@ -117,7 +115,7 @@ Lesson 2. Going to Graceland
     1. Click on the 'graceland' [Folder].
     
     2. Inside you should see a number of objects including an
-    'index_html' document.
+    'index_html' page.
     
   If a [Folder] contains an object named [index_html], that object
   provides the folder's default view. This is just like how an
@@ -133,44 +131,42 @@ Lesson 2. Going to Graceland
     3. Return to the enclosing folder by clicking the 'lesson2' link
     in the folder's URL.
     
-    4. Click on the 'home.html' document to edit it.
+    4. Click on the 'home.html' template to edit it.
     
-    5. Change the contents of the 'home.html' document to::
+    5. Change the contents of the 'home.html' template to::
     
-      <dtml-var standard_html_header>
+      <html>
 
-      <dtml-var header.gif>
+      <img tal:replace="structure container/header.gif">
 
       <p>
-      Welcome to <i><dtml-var title></i>,
-      your source for information about
-      Elvis and Elvis sightings.
+      Welcome to <i tal:content="template/title">title</i>,
+      your source for information about Elvis and
+      Elvis sightings.
       </p>
-      
-      <h2>About Elvis</h2>
-      
+
       <p>
       Elvis was born in
       <a href="graceland">Graceland</a>.
       </p>
 
-      <dtml-var standard_html_footer>
+      </html>
       
     6. Click the 'Save Changes' button.
   
   This adds a link the the 'graceland' folder. Now let's test
   out the link.
   
-    7. Click the 'View' tab.
+    7. Click the 'Test' tab.
   
   You've successfully created a multi-page site with a link between two
   Zope objects.
 
   Summary
     
-    Zope files and documents have a lot in common with
-    conventional web pages--they have names, are arranged in hierarchies,
-    and have URLs that correspond to their locations.
+    Zope files and templates have a lot in common with conventional
+    web pages--they have names, are arranged in hierarchies, and have
+    URLs that correspond to their locations.
     
     * [Folder]s contain other Zope objects.
 
@@ -201,8 +197,8 @@ Lesson 3. Elvis's Favorite Foods
   Now we've got some place to put our food related resources. Let's
   move some objects into this folder.
   
-    1. Select the 'sandwiches', 'pie', and 'meatloaf' documents by
-    clicking their check boxes.
+    1. Select the 'sandwiches.html', 'pie.html', and 'meatloaf.html'
+    templates by clicking their check boxes.
     
     2. Click the 'Cut' button.
 
@@ -213,23 +209,23 @@ Lesson 3. Elvis's Favorite Foods
   Now that we've moved some objects, we need to update the links to
   them because an object's URL is related to its location.
   
-    1. Return to the 'home.html' document in the 'lesson3' folder,
+    1. Return to the 'home.html' template in the 'lesson3' folder,
     by clicking on the 'lesson3' location link and then clicking 
-    on the 'home.html' document.
+    on the 'home.html' page.
     
-    2. Change the links to the sandwiches, pie and cake documents
+    2. Change the links to the sandwiches, pie and cake templates
     to::
     
       <p>
       Elvis liked to eat
-      <a href="food/sandwiches">sandwiches</a>,
-      <a href="food/pie">pie</a>, and 
-      <a href="food/meatloaf">meatloaf</a>.
+      <a href="food/sandwiches.html">sandwiches</a>,
+      <a href="food/pie.html">pie</a>, and 
+      <a href="food/meatloaf.html">meatloaf</a>.
       </p>
       
     3. Click the 'Save Changes' button.
     
-    4. Click the 'View' tab at the top of the screen.
+    4. Click the 'Test' tab at the top of the screen.
   
   Notice that the food resources are now correctly linked from the home
   page in their new location.
@@ -254,7 +250,7 @@ Lesson 3. Elvis's Favorite Foods
 Lesson 4. Site Contact Information
 
   <dtml-var "tutorialShowLesson(4, REQUEST)">
-  
+
   Part of running an Elvis web site is getting in touch with Elvis
   fans the world over. One way to do this is to provide contact
   information on your site so that visitors can email you. Let's
@@ -263,9 +259,10 @@ Lesson 4. Site Contact Information
   
     1. Click the 'Properties' tab.
     
-    2. Type 'webmaster' in the Name field.
+    2. Type 'mail_link' in the Name field.
     
-    3. Type your email address in the Value field.
+    3. Type a mail link to your email address
+    (e.g. 'mailto:me@example.com') in the Value field.
     
     4. Click the 'Add' button.
     
@@ -274,47 +271,55 @@ Lesson 4. Site Contact Information
   address on each web page by changing the standard web page footer.
   
     1. Click the 'Contents' tab to return to the list of items in the
-      folder, then click the 'standard_html_footer' [DTML Method] to
+      folder, then click the 'standard_template.pt' [Page Template] to
       edit it.
     
-    2. Change the contents of the method to::
+    2. Change the contents of the template to add a mail to link at
+    the bottom of the page::
     
-      <hr>
-      <a href="mailto:<dtml-var webmaster>?subject=<dtml-var
-      title>">Email Webmaster</a>
-      </body>
+      <html metal:define-macro="page">
+        <body> 
+          <div metal:define-slot="body">
+          This is where the page's body text goes.
+          </div>
+          <hr>
+          <a tal:attributes="href container/mail_link">mail
+            webmaster</a>
+        </body>
       </html>
    
     3. Click the 'Save Changes' button.
 
-  We've change the standard Zope footer. Now let's verify that this
-  change is reflected in our web pages.
+  We've change the standard Zope page macro. Now let's verify that
+  this change is reflected in our web pages.
     
-    1. Navigate to the 'home.html' document in the 'lesson4' folder
+    1. Navigate to the 'home.html' template in the 'lesson4' folder
     by clicking on the 'lesson4' location link and then clicking 
-    on the 'home.html' document.
+    on the 'home.html' page.
     
-    2. Now click the 'View' tab to view the web site.
+    2. Now click the 'Test' tab to view the web site.
     
   Notice that there is now an email link at the bottom of every web
   page. The email link uses the property you defined and includes the
   title of the web page as the email subject.
   
-  The email link appears on every page because every page
-  includes the 'standard_html_footer' object with the
-  [<dtml-var>] tag.
-    
+  The email link appears on every page because every page template
+  uses a [Page Template Macro] defined in the 'standard_template.pt'
+  template. Macros provide a way of sharing presentation elements
+  between pages. The 'standard_template.pt' template gives you a
+  convention for making pages share a common structure.
+
   Summary
-  
+
     By consolidating content into components such as a common footer
     you can provide a uniform look and feel for your web site.
   
     * [Properties] contain small pieces of content.
     
-    * Use the [<dtml-var>] tag to insert properties into web
-    pages.
+    * Use the [tal:attributes] statement to change tag attributes.
     
-    * [standard_html_footer] is used as the default Zope web page footer.
+    * [standard_template.pt] is used to provide shared look and feel
+    between templates.
 
   In the next lesson you'll see how to organize content
   with a collection of Zope objects.
@@ -326,9 +331,9 @@ Lesson 5. Recent Elvis Sightings
   list them on your web site. Let's look at a simple system for
   organizing sightings and displaying them on your web site.
   
-    1. Click the 'sightings' web page.
+    1. Click the 'sightings.html' web page.
   
-    2. Click the 'View' tab to view it.
+    2. Click the 'Test' tab to view it.
     
   Notice how the page lists a number of Elvis sightings. Also notice
   that these sightings weren't specifically listed in the contents of
@@ -336,24 +341,24 @@ Lesson 5. Recent Elvis Sightings
   
     1. Click the 'sightingsFolder' folder to enter it.
     
-    2. Click on the 'Shelbyville' method to examine it.
+    2. Click on the 'sighting2' file to examine it.
   
     3. Go back the 'sightingsFolder' folder by clicking the
     'sightingsFolder' location link.
     
-    4. Select the 'Shelbyville' method by clicking its check box.
+    4. Select the 'sighting2' file by clicking its check box.
   
     5. Click the 'Delete' button.
     
   You just deleted a Zope object that describes an Elvis sighting.
   Let's see how this affects the 'sightings' web page.
   
-    1. Click the 'sightings' web page.
+    1. Click the 'sightings.html' web page.
     
-    2. Click the 'View' tab to view it.
+    2. Click the 'Test' tab to view it.
     
   The Shelbyville sighting is not longer listed. So the list of
-  sightings is somehow built from the methods in the 'sightingsFolder'
+  sightings is somehow built from the files in the 'sightingsFolder'
   folder.
   
   What if you want the Shelbyville sighting back? Since you deleted
@@ -368,66 +373,74 @@ Lesson 5. Recent Elvis Sightings
     
     4. Click the 'sightingsFolder' folder to enter it.
     
-  Sure enough the 'Shelbyville' sighting has returned.  
+  Sure enough the 'sighting2' sighting has returned.  
   
   Summary
   
     Multiple Zope objects can be combined to form complex web pages.
   
-    * [DTML Method]s contain chunks of content.
+    * [File]s contain chunks of textual or binary content.
   
-    * Web pages can insert content from 'DTML Methods'.
+    * Web pages can insert content from 'Files'.
   
     * You can recover from mistakes with [Undo].
 
   In the next lesson you'll learn about
   looping over lists of Zope objects.
   
-Lesson 6. Recent Elvis Sightings, cont.  
+Lesson 6. Recent Elvis Sightings, cont.
   
   <dtml-var "tutorialShowLesson(6, REQUEST)">
-  So we've seen that the 'sightings' page is built from objects in the
-  'sightingsFolder' folder. How does it work?
+  So we've seen that the 'sightings.html' page is built from objects
+  in the 'sightingsFolder' folder. How does it work?
   
-    1. Click the 'sightings' document to edit it.
+    1. Click the 'sightings.html' template to edit it.
   
-    2. Change the contents of the document to::
-    
-      <dtml-var standard_html_header>
-      <h2><dtml-var title></h2>
-      
+    2. Change the contents of the template to::
+
+      <html>
+
+      <h1 tal:content="template/title">title</h1>
+
       <table border="1">
-      <dtml-in expr="sightingsFolder.objectValues()">
-      <tr><td>
-        <dtml-var sequence-item>
-      </td></tr>
-      </dtml-in>
+        <tr>
+        <td>
+        <div tal:repeat="sighting container/sightingsFolder/objectValues"
+             tal:content="structure sighting">
+        Sighting goes here
+        </div>
+        </td>
+        </tr>
       </table>
-      
-      <dtml-var standard_html_footer>
+
+      </html>
       
     3. Click the 'Save Changes' button.
     
-    4. Click the 'View' tab.
+    4. Click the 'Test' tab.
     
   Notice how each sighting now has a box drawn around it.
   
-  What's going on? The [<dtml-in>] tag iterates over a list of
-  objects. The &lt;'dtml-var sequence-item'&gt; tag inserts the
-  current object. The 'expr="sightingsFolder.objectValues()"' part of
-  the [<dtml-in>] tags tells it how to get a list of objects. It
-  calls the 'objectValues' method of the 'sightingsFolder' folder.
-  'objectValues' returns all the objects contained by a folder.
+  What's going on? The [tal:repeat] statement iterates over a list of
+  sightings. The list is defined by the expression
+  'container/sightingsFolder/objectValues'. The expression calls the
+  'objectValues' method of the 'sightingsFolder' folder. It returns
+  all the objects contained by a folder.
+
+  Notice the 'sighting' part of the repeat statement. It is a local
+  variable that takes the value of each object in the list in
+  turn. This variable is used by the the [tal:content] statement to
+  insert the contents of each file object inside the table.
   
   Summary
-  
+
     You can programmatically build web pages with groups of objects
     by looping over them and inserting them.
   
-    * [<dtml-in>] iterates over a list of objects.
+    * [tal:repeat] iterates over a list of objects.
     
-    * &lt;'dtml-var sequence-item'&gt; inserts the current object
-    when looping over a list of objects.
+    * [tal:repeat] defines a local variable that you can use to get
+    access to objects in the list.
     
     * You can get the contents of a folder by calling its
     'objectValues' method.
@@ -441,45 +454,39 @@ Lesson 7. Elvis Photo Archive
   The King had many faces. We can offer our site visitors a peek at
   the many sides of Elvis with a photo archive.
   
-    1. Click the 'photos' document.
+    1. Click the 'photos.html' template.
   
-    2. Click the 'View' tab to view it.
+    2. Click the 'Test' tab to view it.
   
-  This page shows the photos in the archive one after another. It's not
-  very fancy.
+  This page shows the photos in the archive one after another. It uses
+  Image objects stored in the 'photoArchive' folder. It's not very
+  fancy.  Let's improve it to display the title and size of the
+  photos.
   
-  Let's improve it to organize the photos by title and size.
-  The improved photo archive will list
-  the photos by title and includes a link each
-  picture.
-  
-    1. Click your browser's back button to return to the 'photos'
-    document to edit it.
+    1. Click your browser's back button to return to the 'photos.html'
+    template to edit it.
     
-    2. Change the document contents to::
+    2. Change the contents to::
     
-      <dtml-var standard_html_header>
-      
-      <h2><dtml-var title></h2>
+      <html>
 
-      <dtml-in expr="photoArchive.objectValues()">
-      <p>
-        <a href="<dtml-var absolute_url>"><dtml-var title></a>
-        (<dtml-var getSize> bytes)
+      <p tal:repeat="photo container/photoArchive/objectValues"> 
+        <img tal:replace="structure photo">
+        <span tal:replace="photo/title">title</span>
+        (<span tal:replace="photo/getSize">size</span> bytes)
       </p>
-      </dtml-in>
-      
-      <dtml-var standard_html_footer>
+
+      </html>
      
     3. Click the 'Save Changes' button.
     
-    4. Click the 'View' tab.
+    4. Click the 'Test' tab.
     
-  Notice how the photo list now shows a link to each photo along with
-  its size.
+  Notice how each photo now includes a title
+  and size information.
   
   Summary
-  
+
     [Image]s can display themselves and can also provide useful
     information such as size, title, and URL.
   
@@ -487,10 +494,8 @@ Lesson 7. Elvis Photo Archive
   
     * Get the size of an [Image] with the 'getSize' method.
     
-    * Get the URL of an object with the 'absolute_url' method.
-  
   In the next lesson you'll learn how to create
-  pictures with DTML scripting.
+  pictures with Python scripting.
   
 Lesson 8. Elvis Photo Archive, cont. 
 
@@ -498,9 +503,9 @@ Lesson 8. Elvis Photo Archive, cont.
   Now that we have a working photo archive, let's enhance it to handle
   submissions from site visitors.
   
-    1. Click the 'photoForm' document.
+    1. Click the 'form.html' template.
     
-    2. Click the 'View' tab to view it.
+    2. Click the 'Test' tab to view it.
     
     3. Upload a picture (JPG, GIF, PNG or other graphics format supported
     by your browser.)
@@ -516,150 +521,162 @@ Lesson 8. Elvis Photo Archive, cont.
   Let's investigate how this works, and add the ability to give our
   uploaded photo a title.
   
-    1. Click the 'photoForm' document.
+    1. Click the 'form.html' template.
     
-    2. Change the contents of the document to::
+    2. Change the contents to::
     
-      <dtml-var standard_html_header>
-      
-      <h2><dtml-var title></h2>
-      
+      <html>
+
+      <h1 tal:content="template/title">title</h1>
+
       <p>Upload a picture to the Elvis Photo Archive.</p>
-      
-      <form action="photoAction" method="post"
+
+      <form action="action.py" method="post"
       enctype="multipart/form-data">
-      <p>Title: <input type="text" name="photo_title"></p>
       <p>File: <input type="file" name="file"></p>
+      <p>Title: <input type="text" name="title"></p>
       <input type="submit">
       </form>
-      
-      <dtml-var standard_html_footer>
-  
+
+      </html>
+
     3. Click the 'Save Changes' button.
     
-  This document collects data needed to create an Image. It calls the
-  'photoAction' document with that data. The 'photoAction' document
-  actually creates the Image. Now let's customize the 'photoAction'
-  document to handle the image title.
+  This page collects data needed to create an Image. It calls the
+  'action.py' script with that data. The 'action.py' script actually
+  creates the Image. Now let's customize the script to handle the
+  image title.
     
-    1. Click the 'photoAction' document to edit it. 
+    1. Click the 'action.py' script to edit it. 
    
-    2. Change the contents of the document to::
+    2. Change the parameter list to 'file, title'.
+
+    3. Change the contents of the script to::
     
-      <dtml-var standard_html_header>
+      """
+      Create a new image in the photo archive folder.
+      Then return a confirmation page.
+      """
+      folder=container['photoArchive']
+      folder.manage_addImage(id='', file=file, title=title)
+      page=container['thanks.html']
+      return page()
       
-      <h2><dtml-var title></h2>
-      
-      <dtml-call
-        expr="photoArchive.manage_addImage(
-          id='', file=file, title=photo_title)">
-      
-      <p>Thanks for your photo submission.</p>
-      
-      <dtml-var standard_html_footer>
-      
-  The 'photoAction' document uses the [<dtml-call>] tag to
-  perform an action without inserting anything into the web page. It
-  calls the 'manage_addImage' method on the 'photoArchive' folder.
-  'manage_addImage' is a folder method that creates a new
-  Image.
+  The script collects the form data, creates an image object in a
+  folder and then returns a thanks page. It gets access to form data
+  through its parameters. It calls the 'manage_addImage' folder method
+  on the photo archive folder to create a new image there. Finally it
+  locates the thanks page and renders and returns it.
   
   Summary
   
-    You can use forms to pass information between Zope objects.
+    * You can use forms to pass information between Zope objects.
     You can programmatically create new Zope objects.
   
-    * Zope documents can be the action of HTML forms.
-  
-    * The [<dtml-call>] tag performs an action without inserting
-    anything into a web page.
+    * Scripts can be the action of HTML forms.
   
     * Create new [Image]s in folder with the 'manage_addImage' method. 
+
+    * Scripts can render and return templates.
 
   In the next lesson you'll learn about [HTTP Cookies] and
   personalizing your web site.
 
 Lesson 9. Elvis, Up Close and Personal
   
-  <dtml-var "tutorialShowLesson(9, REQUEST)">
-  People who come to your site want a personal relationship with
-  Elvis. You can provide this by tailoring your site to your viewer's
-  needs and preferences. Let's add the ability to bring new Elvis
-  sightings to the attention of site visitors. This way when a visitor
-  comes to your site they'll immediately know which sightings are new
-  since they last visited.
+  <dtml-var "tutorialShowLesson(9, REQUEST)"> People who come to your
+  site want a personal relationship with Elvis. You can provide this
+  by tailoring your site to the needs and preferences of your viewers.
+  Let's add the ability to bring new Elvis sightings to the attention
+  of site visitors. This way when a visitor comes to your site they'll
+  immediately know which sightings are new since they last visited.
   
-    1. Click the 'sightings' document to edit it.
+    1. Click the 'sightings.html' template to edit it.
     
-    2. Click the 'View' tab to view it.
+    2. Click the 'Test' tab to view it.
     
   All the sightings should be
-  marked as New.
+  marked as new.
   
     3. Reload the page.
     
-  Now none of the sightings should be marked as New. This is because
+  Now none of the sightings should be marked as new. This is because
   you've already seen them.
   
     4. Click the 'sightingsFolder' folder to enter it.
     
-    5. Choose 'DTML Method' from the "Select type to add..." list.
+    5. Choose 'File' from the "Select type to add..." list.
     
-    6. Type 'Seattle' for the id. Since the title is optional and isn't
-    really needed in this case, leave the title field blank.
+    6. Type 'Seattle' for the id. 
     
-    7. Click the 'Add and Edit' button.
+    7. Click the 'Add' button.
+
+    8. Now click on the new file to edit it.
+
+    9. Change the content type to "text/html'.
     
-    8. Change the contents of the method to::
+    10. Change the contents of the file to::
     
-      <p>6/1/2000 -- Seattle</p>
+      <p>6/1/2003 -- Seattle</p>
       <p>Elvis spotted spare changing on Broadway.
       He denied being the King.</p>
     
-    9. Click the 'Save Changes' button.
+    11. Click the 'Save Changes' button.
     
   Now you've created a new sighting. Let's see if it is marked as new
   by the sightings page.
   
-    10. Click the 'sightings' document in the 'lesson9' folder.
+    12. Click the 'sightings.html' page in the 'lesson9' folder.
     
-    11. Click the 'View' tab.
+    13. Click the 'Test' tab.
     
-  Sure enough our new sighting is marked New.
+  Sure enough our new sighting is marked new.
   
   How does this work? It uses [HTTP Cookies]. When you visit the
-  'sightings' page a cookie is set that records the current time. Then
-  each time you return to the page sightings that are newer than the
-  cookie will be marked as new.
+  'sightings.html' page a cookie is set that records the current
+  time. Then each time you return to the page sightings that are newer
+  than the cookie will be marked as new.
   
-  Let's look at the DTML for the 'sightings' page to see how this is
-  done.
+  Let's look at 
+  how this works.
   
-    1. Click the 'sightings' document to view its contents.
+    1. Click the 'sightings.html' template to view its contents.
     
-  The document sets a cookie with this code::
-  
-    <dtml-call expr="RESPONSE.setCookie('lastVisited',
-      _.DateTime())">
- 
-  The document checks each sighting when displaying it to see if it is
-  newer than the 'lastVisited' cookie::
-  
-    <dtml-if expr="bobobase_modification_time() >
-      _.DateTime(lastVisited)">
+  Notice that the page uses the [tal:define] statement to defines a
+  'lastVisit' variable. It is defined by calling the 'lastVisit.py'
+  script. This variable holds the time that the user last visited the
+  page as recorded in a cookie.
+
+  Later in the template this time is compared to the modification time
+  of each sighting object. If the sighting is new then it is marked as
+  such by including a bold tag.  The bold tag uses the [tal:condition]
+  statement to optionally include its contents. In this case the
+  condition checks to see whether the 'bobobase_modification_date' of
+  the sighting is newer than the last visit. This strangely named
+  method keeps track of the last modification date of Zope objects.
+
+  Now let's examine the 
+  'lastVisit.py' script.
+
+    2. Click on the 'lastVisit.py' script to view it.
+
+  Notice how it includes comments explaining its functioning. Comments
+  begin with a number sign. The script does two things: it retrieves a
+  cookie from the request, and it sets a new cookie using the
+  response.
   
   Summary
   
-    You can use cookies to personalize a web page. Zope documents
+    You can use cookies to personalize a web page. Zope templates
     can dynamically control their presentation.
   
-    * You can set cookies with the 'RESPONSE.setCookie' method.
+    * You can set cookies with the response 'setCookie' method.
     
-    * The [<dtml-if>] tag allows you to test conditions.
+    * The [tal:condition] statement allows you to test conditions.
     
     * The [DateTime] function allows you to get the current time.
 
-    * The 'bobobase_modification_time' method returns the last
+    * The 'bobobase_modification_date' method returns the last
     modification time of an object.
  
   In the next lesson you'll learn how to create
@@ -676,53 +693,53 @@ Lesson 10. So You've Seen Elvis
     
     2. Type the name of your mail server in the 'SMTP Host' field.
     
-  Your mail server is typically named 'mail'. For example,
+  Your mail server is typically named 'mail' or 'smtp'. For example,
   'mail.elvislives.com'. If you don't know the name of your mail
   server, ask your system administrator, or check the configuration of
   your mail client.
   
     3. Click the 'Save Changes' button.
     
-  Now Zope can send mail. Next let's edit the template for the Elvis
-  sighting report mail message.
+  Now Zope can send mail. Next let's edit the mail 
+  sending script.
   
-    1. Click the 'reportAction' document to edit it.
+    1. Click the 'action.py' script to edit it.
     
-  This document is called when a site visitor fills out an Elvis
-  sighting form. This document sends you mail telling you about the
-  sighting. Mail is sent with the [<dtml-sendmail>] tag which
-  works with the mail host you just configured.
+  This script is called when a site visitor fills out an Elvis
+  sighting form. It sends you mail telling you about the
+  sighting. Mail is sent by calling the 'simple_send' method of the
+  Mail Host object.
   
-  Notice that the 'to' and the 'from' line both reference a
-  property named 'send_to'.
+  To get this script to work you need to change the 'recipient' and
+  'sender' variables.
  
-    2. Click the 'Properties' tab to edit properties.
+    2. Change the 'recipient' and 'sender' variables to your email
+    address in place of 'user@host'.
     
-    3. Type your email address into the 'send_to' property field.
+    3. Click the 'Save Changes' button.
     
-    4. Click the 'Save Changes' button.
+    4. Now go to the 'form.html' page in the 'lesson10' folder.
     
-    5. Now go to the 'reportForm' document in the 'lesson10' folder.
+    5. Click the 'Test' tab to view it.
     
-    6. Click the 'View' tab to view it.
+    6. Fill out the Elvis sighting form and submit it.
     
-    7. Fill out the Elvis sighting form and submit it.
-    
-  You should now receive a piece of email describing the Elvis
+  You should soon receive a piece of email describing the Elvis
   sighting.
   
-  Congratulations, you've built a mail form. If you receive
-  a Zope error, there is a good chance that you haven't set the 'SMTP
-  Host' setting on your mail host object correctly. 
+  Congratulations, you've built a mail form. If you receive a Zope
+  error, there is a good chance that you haven't set the 'SMTP Host'
+  setting on your mail host object correctly.
  
   Summary
   
     After you create a mail host, you can send mail from any
-    Zope document using the [<dtml-sendmail>] tag.
+    script by calling its 'simple_send' method.
   
     * [Mail Host]s allow you to send email.
     
-    * The [<dtml-sendmail>] tag sends an email message.
+    * The scripts format email messages and pass them to the Mail
+      Host.
 
   In the next lesson you'll learn how to use Zope
   to put a database on the web.
@@ -768,30 +785,38 @@ Lesson 11. The Elvis Files
   Now let's see how to use
   this ZSQL Method in a web page.
   
-    1. Click the 'sightings' DTML Document in the 'lesson11' folder
+    1. Click the 'sightings.html' template in the 'lesson11' folder
     to edit it. 
 
   Notice that the sightings are generated by iterating over the
-  'sightings' ZSQL Method with the [<dtml-in>] tag.
+  results of the 'getSightings' ZSQL Method with the [tal:repeat]
+  statement.
   
-    2. Add a line between each sighting by changing the contents of
-    the 'sightings' DTML Document to::
+    2. Add a line after each sighting by changing the contents of
+    the 'sightings.html' template to::
     
-      <dtml-var standard_html_header>
-      <h2><dtml-var title></h2>
+      <html>
 
-      <dtml-in getSightings>
-      <p><dtml-var date> -- <dtml-var location></p>
-      <p>Reported by <dtml-var name></p>
-      <p><dtml-var description></p>
+      <div tal:repeat="sighting container/getSightings">
+
+      <p><span tal:replace="sighting/date">date</span> -- 
+         <span tal:replace="sighting/location">location</span>
+      </p>
+
+      <p>Reported by <span tal:replace="sighting/name">name</span>
+      </p>
+
+      <p tal:content="sighting/description">description
+      </p>
+
       <hr>
-      </dtml-in>
-      
-      <dtml-var standard_html_footer>
+      </div>
+
+      </html>
       
     3. Click the 'Save Changes' button.
     
-    4. Click the 'View' tab to view the document.
+    4. Click the 'Test' tab to view the page.
     
   Summary
   
@@ -813,23 +838,24 @@ Lesson 12. The Elvis Files, cont.
   allow folks to report sightings you'll need a report form just like
   you used in lesson 10. 
 
-    1. Click on the 'reportForm' DTML Document to view its contents.
+    1. Click on the 'form.html' template to view its contents.
 
-  This document is almost exactly like the report form used in Lesson
-  10. It collects data and calls the 'reportAction' document to
+  This page is almost exactly like the report form used in Lesson
+  10. It collects data and calls the 'action.py' script to
   process the data.
 
-    2. Click on the 'reportAction' DTML Document to view its contents.
+    2. Click on the 'action.py' Python Script to view its contents.
 
-  This document is more simple than the 'reportAction' document in
-  Lesson 10. All it does is 
-  thank the user and call the 'insertSighting' ZSQL Method with this
+  It calls the 'insertSighting' ZSQL Method with this
   code::
 
-    <dtml-call insertSighting>
+    insert(name=name, location=location, date=date,
+           description=description)
 
-  The real work is done by the 'insertSighting' ZSQL Method. Let's see
-  how.
+  Then it returns a confirmation page.
+
+  The real work is done by the
+  'insertSighting' ZSQL Method. Let's see how.
 
     3. Click on the 'insertSighting' ZSQL Method to view its contents.
 
@@ -845,7 +871,7 @@ Lesson 12. The Elvis Files, cont.
   
   This code inserts a row into the 'elvis_sightings' table. Notice how
   the arguments of this ZSQL Method correspond to the form elements in
-  the 'reportSighting' document.
+  the 'form.html' template.
 
   You can test this SQL code to make sure it
   works correctly.
@@ -861,10 +887,10 @@ Lesson 12. The Elvis Files, cont.
   returned. In this case the database will not return anything, since
   the SQL 'INSERT' command produces no results.
 
-  Now return to the 'sightings' document to see if the sample data was
-  added to the list of sightings. Play with the system a little bit
-  and see how the links between the 'sightings', 'reportForm', and
-  'reportAction' documents allow a visitor to navigate the site.
+  Now return to the 'sightings.html' page to see if the sample data
+  was added to the list of sightings. Play with the system a little
+  bit and see how the links between the 'sightings.html', 'form.html',
+  and 'action.py' objects allow a visitor to navigate the site.
 
   Summary
 
@@ -875,7 +901,7 @@ Lesson 12. The Elvis Files, cont.
     * [ZSQL Method]s can change information in a relational
     database.
 
-    * You can pass arguments to ZSQL Methods from DTML. 
+    * You can pass arguments to ZSQL Methods from scripts. 
 
     * Many ZSQL Methods can use the same [Database Connection].
 
@@ -896,13 +922,8 @@ Congratulations
   href="http://www.zope.org/Documentation/How-To"
   target="_blank">How-Tos</a>, <a
   href="http://www.zope.org/Resources/MailingLists"
-  target="_blank">mailing lists</a>, Guides and the <a
+  target="_blank">mailing lists</a>, example applications (available in
+  the 'Examples' folder in the root folder, and the <a
   href="http://zdp.zope.org" target="_blank">Zope Documentation
   Project</a>.
-  
-  Please <a href="mailto:docs@zope.com">let us know</a> what you
-  liked and disliked about the Zope Tutorial. Telling us what you
-  think helps us improve it.  *Please note*: email sent to this
-  address may be posted to a publically-accessible forum, and
-  your email address may be exposed on this forum.
   
