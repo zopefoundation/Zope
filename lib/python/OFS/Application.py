@@ -85,8 +85,8 @@
 __doc__='''Application support
 
 
-$Id: Application.py,v 1.128 2000/06/09 23:52:45 evan Exp $'''
-__version__='$Revision: 1.128 $'[11:-2]
+$Id: Application.py,v 1.129 2000/07/06 19:42:23 jim Exp $'''
+__version__='$Revision: 1.129 $'[11:-2]
 
 import Globals,Folder,os,sys,App.Product, App.ProductRegistry, misc_
 import time, traceback, os, string, Products
@@ -504,8 +504,13 @@ def install_products(app):
                     Folder.__dict__['__ac_permissions__']=tuple(
                         list(Folder.__ac_permissions__)+new_permissions)
 
-                get_transaction().note('Installed product '+product_name)
-                get_transaction().commit()
+                if os.environ.get('ZEO_CLIENT',''):
+                    # we don't want to install products from clients!
+                    get_transaction().abort()
+                else:
+                    get_transaction().note('Installed product '+product_name)
+                    get_transaction().commit()
+
             except:
                 LOG('Zope',ERROR,'Couldn\'t install %s' % product_name,
                     error=sys.exc_info())

@@ -396,6 +396,8 @@ class Distribution:
 def initializeProduct(productp, name, home, app):
     # Initialize a levered product
 
+    
+
     products=app.Control_Panel.Products
 
     if hasattr(productp, '__import_error__'): ie=productp.__import_error__
@@ -407,6 +409,7 @@ def initializeProduct(productp, name, home, app):
     try:
         if ihasattr(products,name):
             old=getattr(products, name)
+            if os.environ.get('ZEO_CLIENT',''): return old            
             if (ihasattr(old,'version') and old.version==fver and
                 hasattr(old, 'import_error_') and
                 old.import_error_==ie):
