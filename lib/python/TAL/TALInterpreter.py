@@ -87,9 +87,14 @@ Interpreter for a pre-compiled TAL program.
 """
 
 import sys
-import string
 import getopt
 import cgi
+
+from string import join, lower, rfind
+try:
+    from strop import lower, rfind
+except ImportError:
+    pass
 
 try:
     from cStringIO import StringIO
@@ -148,6 +153,7 @@ class AltTALGenerator(TALGenerator):
             self.repldict = None
         return TALGenerator.replaceAttrs(self, attrlist, repldict)
 
+
 class TALInterpreter:
 
     def __init__(self, program, macros, engine, stream=None,
@@ -159,6 +165,7 @@ class TALInterpreter:
         self.TALESError = engine.getTALESError()
         self.Default = engine.getDefault()
         self.stream = stream or sys.stdout
+        self._stream_write = self.stream.write
         self.debug = debug
         self.wrap = wrap
         self.metal = metal
@@ -183,12 +190,14 @@ class TALInterpreter:
 
     def restoreState(self, state):
         (self.position, self.col, self.stream, scopeLevel, level) = state
+        self._stream_write = self.stream.write
         assert self.level == level
         while self.scopeLevel > scopeLevel:
             self.do_endScope()
 
     def restoreOutputState(self, state):
         (dummy, self.col, self.stream, scopeLevel, level) = state
+        self._stream_write = self.stream.write
         assert self.level == level
         assert self.scopeLevel == scopeLevel
 
@@ -216,35 +225,44 @@ class TALInterpreter:
         assert self.level == 0
         assert self.scopeLevel == 0
         if self.col > 0:
-            self.stream_write("\n")
+            self._stream_write("\n")
+            self.col = 0
 
     def stream_write(self, s):
-        self.stream.write(s)
-        i = string.rfind(s, '\n')
+        self._stream_write(s)
+        i = rfind(s, '\n')
         if i < 0:
             self.col = self.col + len(s)
         else:
             self.col = len(s) - (i + 1)
 
+    bytecode_handlers = {}
+
     def interpret(self, program):
         self.level = self.level + 1
+        handlers = self.bytecode_handlers
+        _apply = apply
+        _tuple = tuple
+        tup = (self,)
         try:
-            for item in program:
-                methodName = "do_" + item[0]
-                args = item[1:]
-                if self.debug:
-                    s = "%s%s%s\n" % ("    "*self.level, methodName,
+            if self.debug:
+                for (opcode, args) in program:
+                    s = "%sdo_%s%s\n" % ("    "*self.level, opcode,
                                       repr(args))
                     if len(s) > 80:
                         s = s[:76] + "...\n"
                     sys.stderr.write(s)
-                method = getattr(self, methodName)
-                apply(method, args)
+                    _apply(handlers[opcode], tup + args)
+            else:
+                for (opcode, args) in program:
+                    _apply(handlers[opcode], tup + args)
         finally:
             self.level = self.level - 1
+            del tup
 
     def do_version(self, version):
         assert version == TAL_VERSION
+    bytecode_handlers["version"] = do_version
 
     def do_mode(self, mode):
         assert mode in ("html", "xml")
@@ -253,27 +271,30 @@ class TALInterpreter:
             self.endsep = " />"
         else:
             self.endsep = "/>"
+    bytecode_handlers["mode"] = do_mode
 
     def do_setPosition(self, position):
         self.position = position
+    bytecode_handlers["setPosition"] = do_setPosition
 
     def do_startEndTag(self, name, attrList):
-        self.startTagCommon(name, attrList, self.endsep)
+        self.do_startTag(name, attrList, self.endsep)
+    bytecode_handlers["startEndTag"] = do_startEndTag
 
-    def do_startTag(self, name, attrList):
-        self.startTagCommon(name, attrList, ">")
-
-    def startTagCommon(self, name, attrList, end):
+    def do_startTag(self, name, attrList, end=">"):
         if not attrList:
-            self.stream_write("<%s%s" % (name, end))
+            s = "<%s%s" % (name, end)
+            self.do_rawtextOffset(s, len(s))
             return
-        self.stream_write("<" + name)
-        align = self.col+1
+        _len = len
+        self._stream_write("<" + name)
+        self.col = self.col + _len(name) + 1
+        align = self.col + 1 + _len(name)
         if align >= self.wrap/2:
             align = 4 # Avoid a narrow column far to the right
         for item in attrList:
-            if len(item) == 2:
-                name, value = item[:2]
+            if _len(item) == 2:
+                name, value = item
             else:
                 ok, name, value = self.attrAction(item)
                 if not ok:
@@ -284,11 +305,19 @@ class TALInterpreter:
                 s = "%s=%s" % (name, quote(value))
             if (self.wrap and
                 self.col >= align and
-                self.col + 1 + len(s) > self.wrap):
-                self.stream_write("\n" + " "*align + s)
+                self.col + 1 + _len(s) > self.wrap):
+                self._stream_write("\n" + " "*align)
+                self.col = self.col + align
             else:
-                self.stream_write(" " + s)
-        self.stream_write(end)
+                s = " " + s
+            self._stream_write(s)
+            if "\n" in s:
+                self.col = _len(s) - (rfind(s, "\n") + 1)
+            else:
+                self.col = self.col + _len(s)
+        self._stream_write(end)
+        self.col = self.col + _len(end)
+    bytecode_handlers["startTag"] = do_startTag
 
     actionIndex = {"replace":0, "insert":1, "metal":2, "tal":3, "xmlns":4}
     def attrAction(self, item):
@@ -301,15 +330,15 @@ class TALInterpreter:
             return 0, name, value
         ok = 1
         if action <= 1 and self.tal:
-            if self.html and string.lower(name) in BOOLEAN_HTML_ATTRS:
+            if self.html and lower(name) in BOOLEAN_HTML_ATTRS:
                 evalue = self.engine.evaluateBoolean(item[3])
                 if evalue is self.Default:
                     if action == 1: # Cancelled insert
                         ok = 0
-                elif not evalue:
-                    ok = 0
-                else:
+                elif evalue:
                     value = None
+                else:
+                    ok = 0
             else:
                 evalue = self.engine.evaluateText(item[3])
                 if evalue is self.Default:
@@ -320,7 +349,7 @@ class TALInterpreter:
                     if value is None:
                         ok = 0
         elif action == 2 and self.metal:
-            i = string.rfind(name, ":") + 1
+            i = rfind(name, ":") + 1
             prefix, suffix = name[:i], name[i:]
             ##self.dumpMacroStack(prefix, suffix, value)
             what, macroName, slots = self.macroStack[-1]
@@ -355,31 +384,37 @@ class TALInterpreter:
         sys.stderr.write("+--------------------------------------\n")
 
     def do_endTag(self, name):
-        self.stream_write("</%s>" % name)
+        s = "</%s>" % name
+        self._stream_write(s)
+        self.col = self.col + len(s)
+    bytecode_handlers["endTag"] = do_endTag
 
     def do_beginScope(self):
         self.engine.beginScope()
         self.scopeLevel = self.scopeLevel + 1
+    bytecode_handlers["beginScope"] = do_beginScope
 
     def do_endScope(self):
         self.engine.endScope()
         self.scopeLevel = self.scopeLevel - 1
+    bytecode_handlers["endScope"] = do_endScope
 
     def do_setLocal(self, name, expr):
-        if not self.tal:
-            return
-        value = self.engine.evaluateValue(expr)
-        self.engine.setLocal(name, value)
+        if self.tal:
+            value = self.engine.evaluateValue(expr)
+            self.engine.setLocal(name, value)
+    bytecode_handlers["setLocal"] = do_setLocal
 
     def do_setGlobal(self, name, expr):
-        if not self.tal:
-            return
-        value = self.engine.evaluateValue(expr)
-        self.engine.setGlobal(name, value)
+        if self.tal:
+            value = self.engine.evaluateValue(expr)
+            self.engine.setGlobal(name, value)
+    bytecode_handlers["setGlobal"] = do_setGlobal
 
     def do_rawAttrs(self, dict):
         if self.tal:
             self.engine.setLocal("attrs", dict)
+    bytecode_handlers["rawAttrs"] = do_rawAttrs
 
     def do_insertText(self, expr, block):
         if not self.tal:
@@ -391,8 +426,8 @@ class TALInterpreter:
         if text is self.Default:
             self.interpret(block)
             return
-        text = cgi.escape(text)
-        self.stream_write(text)
+        self.stream_write(cgi.escape(text))
+    bytecode_handlers["insertText"] = do_insertText
 
     def do_insertStructure(self, expr, repldict, block):
         if not self.tal:
@@ -405,7 +440,7 @@ class TALInterpreter:
             self.interpret(block)
             return
         text = str(structure)
-        if not repldict and not self.strictinsert:
+        if not (repldict or self.strictinsert):
             # Take a shortcut, no error checking
             self.stream_write(text)
             return
@@ -413,6 +448,7 @@ class TALInterpreter:
             self.insertHTMLStructure(text, repldict)
         else:
             self.insertXMLStructure(text, repldict)
+    bytecode_handlers["insertStructure"] = do_insertStructure
 
     def insertHTMLStructure(self, text, repldict):
         from HTMLTALParser import HTMLTALParser
@@ -442,13 +478,22 @@ class TALInterpreter:
         iterator = self.engine.setRepeat(name, expr)
         while iterator.next():
             self.interpret(block)
+    bytecode_handlers["loop"] = do_loop
 
-    def do_rawtext(self, text):
-        self.stream_write(text)
+    def do_rawtextColumn(self, s, col):
+        self._stream_write(s)
+        self.col = col
+    bytecode_handlers["rawtextColumn"] = do_rawtextColumn
+
+    def do_rawtextOffset(self, s, offset):
+        self._stream_write(s)
+        self.col = self.col + offset
+    bytecode_handlers["rawtextOffset"] = do_rawtextOffset
 
     def do_condition(self, condition, block):
         if not self.tal or self.engine.evaluateBoolean(condition):
             self.interpret(block)
+    bytecode_handlers["condition"] = do_condition
 
     def do_defineMacro(self, macroName, macro):
         if not self.metal:
@@ -457,6 +502,7 @@ class TALInterpreter:
         self.pushMacro("define-macro", macroName, None)
         self.interpret(macro)
         self.popMacro()
+    bytecode_handlers["defineMacro"] = do_defineMacro
 
     def do_useMacro(self, macroName, macroExpr, compiledSlots, block):
         if not self.metal:
@@ -477,6 +523,7 @@ class TALInterpreter:
         self.pushMacro("use-macro", macroName, compiledSlots)
         self.interpret(macro)
         self.popMacro()
+    bytecode_handlers["useMacro"] = do_useMacro
 
     def do_fillSlot(self, slotName, block):
         if not self.metal:
@@ -485,6 +532,7 @@ class TALInterpreter:
         self.pushMacro("fill-slot", slotName, None)
         self.interpret(block)
         self.popMacro()
+    bytecode_handlers["fillSlot"] = do_fillSlot
 
     def do_defineSlot(self, slotName, block):
         if not self.metal:
@@ -500,6 +548,7 @@ class TALInterpreter:
         else:
             self.interpret(block)
         self.popMacro()
+    bytecode_handlers["defineSlot"] = do_defineSlot
 
     def do_onError(self, block, handler):
         if not self.tal:
@@ -507,6 +556,7 @@ class TALInterpreter:
             return
         state = self.saveState()
         self.stream = stream = StringIO()
+        self._stream_write = stream.write
         try:
             self.interpret(block)
         except self.TALESError, err:
@@ -521,6 +571,8 @@ class TALInterpreter:
         else:
             self.restoreOutputState(state)
             self.stream_write(stream.getvalue())
+    bytecode_handlers["onError"] = do_onError
+
 
 def test():
     from driver import FILE, parsefile
