@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Method objects."""
 
-__version__='$Revision: 1.81 $'[11:-2]
+__version__='$Revision: 1.82 $'[11:-2]
 
 import History
 from Globals import HTML, DTMLFile, MessageDialog
@@ -30,6 +30,7 @@ import  Globals, sys, Acquisition
 from AccessControl import getSecurityManager
 from AccessControl.DTML import RestrictedDTML
 from Cache import Cacheable
+from zExceptions.TracebackSupplement import PathTracebackSupplement
 
 _marker = []  # Create a new marker object.
 
@@ -102,6 +103,7 @@ class DTMLMethod(RestrictedDTML, HTML, Acquisition.Implicit, RoleManager,
                 # Return cached results.
                 return data
 
+        __traceback_supplement__ = (PathTracebackSupplement, self)
         kw['document_id']   =self.getId()
         kw['document_title']=self.title
 

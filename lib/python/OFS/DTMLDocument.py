@@ -12,7 +12,7 @@
 ##############################################################################
 """DTML Document objects."""
 
-__version__='$Revision: 1.49 $'[11:-2]
+__version__='$Revision: 1.50 $'[11:-2]
 
 from ZPublisher.Converters import type_converters
 from Globals import HTML, DTMLFile, MessageDialog
@@ -26,6 +26,7 @@ from sgmllib import SGMLParser
 from urllib import quote
 import Globals
 from AccessControl import getSecurityManager
+from zExceptions.TracebackSupplement import PathTracebackSupplement
 
 done='done'
 
@@ -109,6 +110,7 @@ class DTMLDocument(PropertyManager, DTMLMethod):
                 # Return cached results.
                 return data
 
+        __traceback_supplement__ = (PathTracebackSupplement, self)
         kw['document_id']   =self.getId()
         kw['document_title']=self.title
         if hasattr(self, 'aq_explicit'):

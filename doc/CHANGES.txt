@@ -8,6 +8,8 @@ Zope Changes
 
     Features added
  
+     - DTML Methods and Documents supply a traceback supplement when called.
+
      - OFS: OrderSupport and OrderedFolder added. OrderSupport is a mixin class
        that adds the IOrderedContainer interface to ObjectManagers.
        OrderedFolder - meta_type 'Folder (Ordered)' - is a new Folder class
