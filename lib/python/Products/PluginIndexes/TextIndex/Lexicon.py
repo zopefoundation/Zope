@@ -155,7 +155,10 @@ class Lexicon(Persistent, Implicit):
         """ wrap the splitter """
         if words is None:
             words = self.stop_syn
-        return self.SplitterFunc(astring, words, encoding)
+        try:
+            return self.SplitterFunc(astring, words, encoding)
+        except:
+            return self.SplitterFunc(astring, words)
 
 
     def query_hook(self, q):

@@ -237,7 +237,10 @@ class GlobbingLexicon(Lexicon):
         ## don't do anything, less efficient but there's not much
         ## sense in stemming a globbing lexicon.
 
-        return self.SplitterFunc(astring,None,encoding)
+        try:
+            return self.SplitterFunc(astring,None,encoding)
+        except:
+            return self.SplitterFunc(astring,None)
 
 
     def createRegex(self, pat):
