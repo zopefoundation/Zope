@@ -84,7 +84,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.114 $'[11:-2]
+__version__='$Revision: 1.115 $'[11:-2]
 
 import Globals, string, struct, content_types
 from OFS.content_types import guess_content_type
@@ -239,13 +239,6 @@ class File(Persistent,Implicit,PropertyManager,
             data=data.next
 
         return ''
- 
-    def __call__(self):
-        # allow publisher to call the object directly - this lets File
-        # and Image objects act as the default document if they want.
-        request=self.REQUEST
-        response=request.RESPONSE
-        return self.index_html(request, response)
 
     def view_image_or_file(self, URL1):
         """
@@ -561,12 +554,7 @@ class Image(File):
 
 
     def __str__(self):
-        width=self.width and ('width="%s" ' % self.width) or ''
-        height=self.height and ('height="%s" ' % self.height) or ''
-        return '<img src="%s" %s%salt="%s">' % (
-            self.absolute_url(), width, height, self.title_or_id()
-            )
-
+        return self.tag()
 
     def tag(self, height=None, width=None, alt=None,
             scale=0, xscale=0, yscale=0, **args):
@@ -585,29 +573,32 @@ class Image(File):
         # Auto-scaling support
         xdelta = xscale or scale
         ydelta = yscale or scale
-        if xdelta and width != None:
+
+        if xdelta and width:
             width = str(int(width) * xdelta)
-        if ydelta and height != None:
+        if ydelta and height:
             height = str(int(height) * ydelta)
 
-        string='<img src="%s"' % (self.absolute_url())
+        result='<img src="%s"' % (self.absolute_url())
 
         if alt is None:
-            alt=self.title_or_id()
-        if alt:
-            string = '%s alt="%s"' % (string, alt)
+            alt=getattr(self, 'title', '')
+        result = '%s alt="%s"' % (result, alt)
 
         if height:
-            string = '%s height="%s"' % (string, height)
+            result = '%s height="%s"' % (result, height)
 
         if width:
-            string = '%s width="%s"' % (string, width)
+            result = '%s width="%s"' % (result, width)
+
+        if not 'border' in map(string.lower, args.keys()):
+            result = '%s border="0"' % result
 
         for key in args.keys():
             value = args.get(key)
-            string = '%s %s="%s"' % (string, key, value)
+            result = '%s %s="%s"' % (result, key, value)
 
-        return string + '>'
+        return '%s>' % result
 
 
 def cookId(id, title, file):
