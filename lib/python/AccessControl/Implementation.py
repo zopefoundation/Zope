@@ -63,6 +63,10 @@ def setImplementation(name):
         if hasattr(mod, "initialize"):
             mod.initialize(impl)
 
+    from AccessControl.SecurityManager import setSecurityPolicy
+    policy = impl.ZopeSecurityPolicy(True, True)
+    setSecurityPolicy(policy)
+
     _implementation_set = 1
 
 _implementation_name = None
