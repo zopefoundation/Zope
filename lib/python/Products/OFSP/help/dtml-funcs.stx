@@ -149,7 +149,36 @@ functions: DTML Functions
       sequences of key-value tuples, with ordering done on the
       keys. This function is useful for constructing ordered select
       lists.
- 
+
+    SecurityCalledByExecutable() -- Return a true if the current
+    object (e.g. DTML document or method) is being called by an
+    executable (e.g. another DTML document or method, a script or a
+    SQL method).
+
+    SecurityCheckPermission(permission, object) -- Check whether the
+    security context allows the given permission on the given
+    object. For example, 'SecurityCheckPermission("Add Documents,
+    Images, and Files", this())' would return true if the current user
+    was authorized to create documents, images, and files in the
+    current location.
+
+    SecurityGetUser() -- Return the current user object. This is
+    normally the same as the 'REQUEST.AUTHENTICATED_USER'
+    object. However, the 'AUTHENTICATED_USER' object is insecure since
+    it can be replaced.
+
+    SecurityValidate([object] [,parent] [,name] [,value]) -- Return
+    true if the value is accessible to the current user. 'object' is
+    the object the value was accessed in, 'parent' is the container of
+    the value, and 'name' is the named used to access the value (for
+    example, if it was obtained via 'getattr'). You may omit some of
+    the arguments, however it is best to provide all available
+    arguments.
+
+    SecurityValidateValue(object) -- Return true if the object is
+    accessible to the current user. This function is the same as
+    calling 'SecurityValidate(None, None, None, object)'.
+
     str(object) -- Return a string containing a nicely printable
     representation of an object. For strings, this returns the string
     itself. 
