@@ -198,9 +198,9 @@ class HTMLClass:
         i=0
         for c in doc.getChildNodes():
             if i==0:
-                output('<pre>')
+                output('\n<pre>\n')
                 output(escape(c.getNodeValue()))
-                output('</pre>\n')
+                output('\n</pre>\n')
             else:
                 getattr(self, self.element_types[c.getNodeName()])(
                     c, level, output)
