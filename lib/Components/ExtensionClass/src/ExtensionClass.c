@@ -1,6 +1,6 @@
 /*
 
-  $Id: ExtensionClass.c,v 1.10 1997/04/25 22:15:02 jim Exp $
+  $Id: ExtensionClass.c,v 1.11 1997/04/27 09:20:26 jim Exp $
 
   Extension Class
 
@@ -65,7 +65,7 @@ static char ExtensionClass_module_documentation[] =
 "  - They provide access to unbound methods,\n"
 "  - They can be called to create instances.\n"
 "\n"
-"$Id: ExtensionClass.c,v 1.10 1997/04/25 22:15:02 jim Exp $\n"
+"$Id: ExtensionClass.c,v 1.11 1997/04/27 09:20:26 jim Exp $\n"
 ;
 
 #include <stdio.h>
@@ -1669,14 +1669,18 @@ subclass_getspecial(PyObject *inst, PyObject *oname)
   PyExtensionClass *self;
 
   self=(PyExtensionClass*)(inst->ob_type);
-  r= INSTANCE_DICT(inst);
-  r = PyObject_GetItem(r,oname);
-  UNLESS(r)
+  if(HasInstDict(inst))
     {
-      PyErr_Clear();
-      r=CCL_getattr(self,oname,0);
+      r= INSTANCE_DICT(inst);
+      r = PyObject_GetItem(r,oname);
+      UNLESS(r)
+	{
+	  PyErr_Clear();
+	  r=CCL_getattr(self,oname,0);
+	}
     }
-      
+  else r=CCL_getattr(self,oname,0);
+  
   return r;
 }
 
@@ -1698,6 +1702,11 @@ subclass_getattro(PyObject *self, PyObject *name)
 static int
 subclass_simple_setattro(PyObject *self, PyObject *name, PyObject *v)
 {
+  if(! HasInstDict(self))
+    {
+      PyErr_SetObject(PyExc_AttributeError, name);
+      return -1;
+    }
   if(v)
     return PyDict_SetItem(INSTANCE_DICT(self),name,v);
   else
@@ -1707,6 +1716,11 @@ subclass_simple_setattro(PyObject *self, PyObject *name, PyObject *v)
 static int
 subclass_simple_setattr(PyObject *self, char *name, PyObject *v)
 {
+  if(! HasInstDict(self))
+    {
+      PyErr_SetString(PyExc_AttributeError, name);
+      return -1;
+    }
   if(v)
     return PyDict_SetItemString(INSTANCE_DICT(self),name,v);
   else
@@ -2447,7 +2461,7 @@ subclass_dealloc(PyObject *self)
       return; /* we added a reference; don't delete now */
     }
   
-  Py_XDECREF(INSTANCE_DICT(self));
+  if(HasInstDict(self)) Py_XDECREF(INSTANCE_DICT(self));
   Py_DECREF(self->ob_type);
 
   UNLESS(dealloc_base(self,(PyExtensionClass*)self->ob_type))
@@ -2736,16 +2750,6 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
   copy_member(ob_size);
   copy_member(class_flags);
 
-  if(type->bases)
-    copy_member(tp_basicsize);
-  else
-    {
-      self->tp_basicsize=type->tp_basicsize/sizeof(PyObject*)*sizeof(PyObject*);
-      if(self->tp_basicsize < type->tp_basicsize)
-	self->tp_basicsize += sizeof(PyObject*); /* To align on PyObject */
-      self->tp_basicsize += sizeof(PyObject*); /* For instance dictionary */
-    }
-
   copy_member(tp_itemsize);
   copy_member(tp_print);
   self->tp_dealloc=subclass_dealloc;
@@ -2767,6 +2771,17 @@ subclass__init__(PyExtensionClass *self, PyObject *args)
 
   UNLESS(self->class_flags & EXTENSIONCLASS_NOINSTDICT_FLAG)
     self->class_flags |= EXTENSIONCLASS_INSTDICT_FLAG;
+
+  if(type->bases || ! ClassHasInstDict(self))
+    copy_member(tp_basicsize);
+  else
+    {
+      self->tp_basicsize=type->tp_basicsize/sizeof(PyObject*)*sizeof(PyObject*);
+      if(self->tp_basicsize < type->tp_basicsize)
+	self->tp_basicsize += sizeof(PyObject*); /* To align on PyObject */
+      self->tp_basicsize += sizeof(PyObject*); /* For instance dictionary */
+    }
+
 
   if(dynamic || has_number_methods(self))
     {
@@ -2876,7 +2891,7 @@ void
 initExtensionClass()
 {
   PyObject *m, *d;
-  char *rev="$Revision: 1.10 $";
+  char *rev="$Revision: 1.11 $";
   PURE_MIXIN_CLASS(Base, "Minimalbase class for Extension Classes", NULL);
 
   PMethodType.ob_type=&PyType_Type;
@@ -2913,6 +2928,9 @@ initExtensionClass()
 
 /****************************************************************************
   $Log: ExtensionClass.c,v $
+  Revision 1.11  1997/04/27 09:20:26  jim
+  Fixed bugs in handling dict-less subclasses.
+
   Revision 1.10  1997/04/25 22:15:02  jim
   Fixed memory leak in destruction of instances of subclasses of
   pure mix-in (and only pure mix-in) base classes.
