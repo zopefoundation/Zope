@@ -142,6 +142,8 @@ Zope Changes
         points to the Zope root, where the ZServer package and default
         imports may be found.
 
+      - Collector #516 -- "title" property on image tags
+
   Zope 2.6.0 alpha 1
 
     Features Added

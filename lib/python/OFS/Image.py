@@ -12,7 +12,7 @@
 ##############################################################################
 """Image object"""
 
-__version__='$Revision: 1.138 $'[11:-2]
+__version__='$Revision: 1.139 $'[11:-2]
 
 import Globals, struct
 from OFS.content_types import guess_content_type
@@ -709,7 +709,7 @@ class Image(File):
         return self.tag()
 
     def tag(self, height=None, width=None, alt=None,
-            scale=0, xscale=0, yscale=0, css_class=None, **args):
+            scale=0, xscale=0, yscale=0, css_class=None, title=None, **args):
         """
         Generate an HTML IMG tag for this image, with customization.
         Arguments to self.tag() can be any valid attributes of an IMG tag.
@@ -742,6 +742,10 @@ class Image(File):
         if alt is None:
             alt=getattr(self, 'title', '')
         result = '%s alt="%s"' % (result, escape(alt, 1))
+
+        if title is None:
+            title=getattr(self, 'title', '')
+        result = '%s title="%s"' % (result, escape(title, 1))
 
         if height:
             result = '%s height="%s"' % (result, height)
