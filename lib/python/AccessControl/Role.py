@@ -84,12 +84,12 @@
 ##############################################################################
 """Access control support"""
 
-__version__='$Revision: 1.34 $'[11:-2]
+__version__='$Revision: 1.35 $'[11:-2]
 
 
 from Globals import HTMLFile, MessageDialog, Dictionary
 from string import join, strip, split, find
-from Acquisition import Implicit
+from Acquisition import Implicit, Acquired
 import Globals, ExtensionClass, PermissionMapping, Products
 from Permission import Permission
 from App.Common import aq_base
@@ -118,7 +118,7 @@ class RoleManager(ExtensionClass.Base, PermissionMapping.RoleManager):
    
     __ac_roles__=('Manager', 'Owner', 'Anonymous')
 
-
+    permissionMappingPossibleValues=Acquired
 
     #------------------------------------------------------------
 
